@@ -62,6 +62,11 @@ generic capability probe when this verified backend already answers that questio
 The separate [Ordinary game capture workflow](../.github/workflows/ordinary-game-capture.yml)
 is manual and supports `all`, `worker-animations`, `novice-flow`, `worker-routes`
 or `building-catalog`.
+The explicit `worker-animations,novice-flow` subset is available when those two
+owner modules are prepared and the resource/building bridges are still incomplete.
+The CLI also accepts a comma-separated list of unique registered IDs. Unknown,
+duplicate, empty or path/command selections fail; unavailable requested modules
+still block before launch. A subset never silently becomes `all` or skips a case.
 It pins the selected ref's event SHA, checks all requested adapters before any
 browser launch, runs one WebGL2 prerequisite and clean pack, then executes cases
 sequentially. Each case receives a fresh normal supervisor and isolated browser;
