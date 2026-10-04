@@ -161,6 +161,23 @@ try {
     assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),
       createHash('sha256').update(await readFile(path.join(sourceRoot, filename))).digest('hex'), filename);
   }
+  for (const filename of ['src/environment-art.mjs', 'src/presentation/assets/interactive-runtime-image.mjs']) {
+    const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
+    assert.equal(response.status, 200, filename);
+    assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
+    assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+    assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.deepEqual(bytes, await readFile(path.join(root, filename)), filename);
+    assert.deepEqual(bytes, await readFile(path.join(sourceRoot, filename)), filename);
+  }
+  for (const filename of ['src/presentation/assets/', 'src/presentation/assets/unknown.mjs',
+    'src/presentation/assets/interactive-runtime-image.mjs/extra', 'src/presentation//assets/interactive-runtime-image.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
+        404, `image-loading admission remains exact (${method}): ${filename}`);
+    }
+  }
   // Preserve exact shipped audio bytes at both the canonical and legacy paths.
   for (const helper of ['audio-decoded-cache', 'audio-shipped-response']) {
     for (const filename of [`src/${helper}.mjs`, `src/client/audio/${helper}.mjs`]) {
