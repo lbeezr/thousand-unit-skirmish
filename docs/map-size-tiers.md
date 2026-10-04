@@ -25,8 +25,9 @@ until a separately reviewed grid-limit, memory/path/visibility/transport/browser
 capacity slice passes. [The source-bound XL audit](map-grid-limit-audit-2026-10-04.md)
 also demonstrates wrapped 16-bit vision indices and projects cache/path/render
 costs. Small now has an authored [Threefold Basin candidate](qa-threefold-basin-2026-10-04.md).
-Medium now has an authored [Riven Escarpment candidate](qa-riven-escarpment-2026-10-04.md)
-with a 207-unit / 79.615-second Worker route. Large remains unauthored; no tier
+Medium now has authored [Riven Escarpment](qa-riven-escarpment-2026-10-04.md),
+admitted for [ordinary human Skirmish](qa-medium-skirmish-admission-2026-10-04.md)
+with a static 207-unit / 79.615-second Worker route. Large remains unauthored; no tier
 has a supported-capacity claim. [Existing elevation](map-elevation-capabilities.md)
 supports these layouts within its current three-level, single-surface contract.
 The first Tiny candidate is Terraced Vale; its static base route is 133 units,
@@ -71,7 +72,7 @@ Historical seeded PvE maps are both smaller than 160 and remain resumable with
 their exact pool, identity and seeds. Fresh ordinary AI now selects only accepted
 Terraced Vale160/Skirmish@1. Status exposes `ordinarySetup.pve.available:true`,
 the exact map/pair and its one-entry `supportedMapIds`. Human-compatible Small
-does not acquire AI support. [Admission proof](qa-tiny-skirmish-pve-admission-2026-10-04.md)
+and Medium do not acquire AI support. [Admission proof](qa-tiny-skirmish-pve-admission-2026-10-04.md)
 retains rendered/deployed acceptance as an incomplete owned step.
 
 ## Progressive authoring and capacity gates

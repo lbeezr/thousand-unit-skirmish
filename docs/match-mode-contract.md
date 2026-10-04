@@ -23,7 +23,7 @@ map, so another human-compatible map cannot inherit its preset's AI capability.
 | --- | --- | --- |
 | `authored@1` | Any validated authored map; hidden legacy identity | Exact authored capture, hold, deadline or elimination combination. Existing capture-post AI remains the current behavior. |
 | `objective-control@1` | Validated maps with at least one marked victory post | Exact authored rules and timers. `aiStrategyId: capture-posts`; existing curated PvE map restrictions still apply. |
-| `skirmish@1` | Tiny `veyrholds-terraced-vale` and reviewed Small `veyrholds-threefold-basin`; historical Millrace/Rootways remain compatible for recovery and explicit fixtures | `victoryPolicy: recovery-elimination`, `aiStrategyId: base-elimination`. Human PvP/Practice supported. PvE accepted only on Terraced Vale: `pveSupported:true`, `pveMapIds:['veyrholds-terraced-vale']`; Small and historical Skirmish maps remain unsupported for AI. |
+| `skirmish@1` | Tiny `veyrholds-terraced-vale`, reviewed Small `veyrholds-threefold-basin` and Medium `veyrholds-riven-escarpment`; historical Millrace/Rootways remain compatible for recovery and explicit fixtures | `victoryPolicy: recovery-elimination`, `aiStrategyId: base-elimination`. Human PvP/Practice supported. PvE accepted only on Terraced Vale: `pveSupported:true`, `pveMapIds:['veyrholds-terraced-vale']`; Small, Medium and historical Skirmish maps remain unsupported for AI. |
 | `bannerfall@1` | Shipped `bannerfall-arena` | Original reinforcement prototype: `victoryPolicy: designated-stronghold`, `aiStrategyId: unsupported`, `pveSupported:false`. Human PvP/Practice only; `defaultMapId` chooses its arena and `fixedArmySize:16` keeps the eight-Infantry opening. [Exact rules](bannerfall-mode.md). |
 
 The hidden identity preserves elimination-only Lab maps and unusual legacy
@@ -41,6 +41,13 @@ with unchanged authored timers. Registry presets override inherited compact
 worker maps for fresh explicit human identities. An explicitly configured
 `RTS_MAP` root battlefield remains a historical/internal fixture path; fresh
 normal REST entry still uses the new preset.
+
+Choosing reviewed Small or Medium in an ordinary Skirmish lobby preserves its
+active mode through the existing map-only configuration interface; no second
+Skirmish opt-in is required. Medium admission does not change its authored map,
+opening, economy, fog or defeat predicate. [Paid Medium entry and recovery](qa-medium-skirmish-admission-2026-10-04.md)
+are native source evidence; full battle pacing and served/browser acceptance
+remain open. AI owner `01a10297` retains any future Medium PvE qualification.
 
 The ordinary server catalog applies the [160-floor policy](map-size-tiers.md).
 Currently restored compact maps stay visible with `selectable:false` and

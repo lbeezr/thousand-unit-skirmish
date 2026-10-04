@@ -112,21 +112,25 @@ persistently ordered workers are excluded from idle-worker selection.
 4. Contest objectives and react to the opposing plan and scenario events.
 5. Reach a clear result, then rematch or try another authored scenario.
 
-[Bellweather · Millrace](maps.md) is the default regional two-seat scenario.
+Ordinary two-seat play starts Tiny Terraced Vale in economy Skirmish; reviewed
+Small Threefold Basin and Medium Riven Escarpment are human map choices.
+[Bellweather · Millrace](maps.md) remains a historical authored regional scenario.
 [Fortified Crossing](../maps/fortified-crossing.json) supplies a small-opening
 custom skirmish with construction, research and crossing rewards.
 [Forked Vale](forked-vale-scenario.md) remains a laboratory scenario.
 Larger maps test travel, resource regions, forest clearing, and elevation.
 Match length and economy pacing must come from observed play.
 
-The current normal objective strip names authored **Objective Control** or
-**Elimination** rules explicitly. Objective maps can finish before substantial
-base development; they disable elimination. The [victory audit and mode proposal](victory-modes-audit-2026-10-03.md)
-records the precise recovery-aware defeat rules and a pending separation of
-economy Skirmish from fast Objective Control. Quick original custom-inspired
-modes should test the core while the longer RTS develops in parallel; automatic
-reinforcement/evolution and fantasy-world territorial play remain distinct later
-slices, with research and a representative regional proof before a full world map.
+The objective strip names the active **Skirmish**, **Objective Control** or
+authored **Elimination** rules explicitly. Skirmish uses recovery-aware defeat;
+workers and paid land queues preserve survival, so Town Center destruction
+alone is insufficient. Distinct Objective Control maps retain their fast authored
+capture/hold/deadline rules. The [mode contract](match-mode-contract.md) and
+[victory audit](victory-modes-audit-2026-10-03.md) record the exact rules and
+legacy recovery. Fresh PvE supports only Tiny Skirmish. Quick original
+custom-inspired modes test the core separately; [Bannerfall](bannerfall-mode.md)
+is a bounded human/Practice reinforcement prototype. Fantasy-world territorial
+play remains later work requiring a representative regional proof.
 
 Resource stocks and worker cargo display whole units rounded down; costs and
 positive shortfalls round up. Affordability uses exact authoritative values, so
