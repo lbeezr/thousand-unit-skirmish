@@ -3,6 +3,7 @@ import { validFarmStock } from '../src/farm-harvest.mjs';
 import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
 import { validGateState, buildingBlocksMovement, isPalisade } from '../src/palisade-gate.mjs';
 import assert from 'node:assert/strict';
+import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -36,7 +37,7 @@ const functions = [
   ['cellIndex', 'nearestOpenCellInComponent'], ['rebuildWalkableComponents', 'findAvailableCellNear'],
   ['buildingAccessCells', 'findBuildingAttackApproachCell'],
   ['reservedResourceNodes', 'rejectBuild'], ['pendingMoveAssignmentsByUnit', 'pathIntersectsCells'],
-  ['creditRefund', 'cancelTraining'], ['destroyBuilding', 'pendingMoveAssignmentsByUnit'],
+  ['creditRefund', 'cancelTraining'], ['destroyBuilding', 'pendingMoveAssignmentsByUnit'], ['invalidateVisionCoverage', 'activateMap'],
   ['palisadeConstructionIntent', 'preparePalisadeBuilderAssignments'], ['distanceToBuildingEdge', 'destroyBuilding'],
   ['updateWallBuildOrders', 'updateTeamResearch'],
 ].map(([a, b]) => extract(a, b)).join('\n');
@@ -46,7 +47,7 @@ function fixture(team = 0) {
     buildingTargetId: null, repairing: false, orderRevision: 0,
     attackTargetId: -1, attackBuildingTargetId: -1, path: [], pathIndex: 0,
     queuedWaypoints: [], moveGoalCell: -1, gatherForestCell: -1, gatherPhase: '' };
-  const context = vm.createContext({ workerPerformingActions: createWorkerPerformingActions(), validFarmStock, ...economyServerBindings(), validGateState, buildingBlocksMovement, BUILDING_DEFINITIONS: definitions, UNIT_DEFINITIONS,
+  const context = vm.createContext({ VisionCoverageCache, visionCoverageGeneration: 0, workerPerformingActions: createWorkerPerformingActions(), validFarmStock, ...economyServerBindings(), validGateState, buildingBlocksMovement, BUILDING_DEFINITIONS: definitions, UNIT_DEFINITIONS,
     MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8, CELL_COUNT: 256,
     blocked: new Uint8Array(256), buildingBlocked: new Uint8Array(256), townCenterBlocked: new Uint8Array(256),
     elevationLevelByCell: new Uint8Array(256), canTraverseElevation,
