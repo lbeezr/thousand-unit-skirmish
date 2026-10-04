@@ -6,14 +6,6 @@ export function woodWorkArea(source) {
   return { type: 'wood', x: source.x, z: source.z };
 }
 
-export function validWoodWorkArea(area, map) {
-  return area === null || area === undefined || (!!area && !Array.isArray(area)
-    && Object.keys(area).length === 3 && area.type === 'wood'
-    && Number.isFinite(area.x) && Number.isFinite(area.z)
-    && area.x >= -map.width / 2 && area.x < map.width / 2
-    && area.z >= -map.height / 2 && area.z < map.height / 2);
-}
-
 export function inWoodWorkArea(area, source) {
   return area?.type === 'wood' && source.type === 'wood' && Number.isFinite(source.stock) && source.stock > 0
     && Number.isFinite(source.x) && Number.isFinite(source.z)

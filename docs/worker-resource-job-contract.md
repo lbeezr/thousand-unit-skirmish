@@ -11,9 +11,10 @@ head `0ccce3cb`) and identified staging source `64cc391e`: a forest cell or ordi
 Wood node consumes six Wood, deposits six, then clears gather execution while
 nearby Wood remains. The isolated prototype continues both paths and conserves
 stock/bank/cargo. These are local native 160 × 160 source replays, not live staging
-observations. The prototype still uses provisional `gatherWorkArea`; canonical
-runtime adoption of the shared field below remains unfinished. No merge or
-containing deployed build is asserted.
+observations. PR #283 adopts the canonical `workIntent` below for runtime capture,
+validation, restore, external cancellation and Wood continuation. Construction
+reacquisition remains with its named owner; the shared field alone does not fix it.
+Source merge and a containing deployed build are recorded separately in QA evidence.
 
 ## Exact durable field
 
@@ -89,9 +90,12 @@ IDs, or the existing owned unfinished non-repair building target. It cannot infe
 an older discarded wall job from every nearby unfinished structure. Preserve
 existing cargo, target/path state, bank, paid progress and generations.
 
-Nine independent-shape/area tests pass. Remaining work: replace the provisional
-runtime field, cover external commands/internal deposit/queued precedence/cold
-restore/area exhaustion/paid conservation, update old depletion tests that expect
-stopping, independent review and normal merge/postmerge proof. Economy retains
-that source outcome. Identified containing delivery and ordinary gameplay are
-separate Railway/Mac acceptance; no deployment or browser-control claim.
+The independent-shape/area tests and full-authority resource-job replays cover
+external commands, internal deposit, queued precedence, cold restore, area
+exhaustion and paid conservation. Native scenarios also restart an actual server
+process against its untouched checkpoint. Older geometry/depot proofs explicitly
+control individual cuts and account for incidental partial continuation instead
+of assuming natural depletion cancels a job. Dated exact-source results belong in
+QA evidence. Economy retains the source outcome through review/merge/postmerge.
+Identified containing delivery and ordinary gameplay are separate Railway/Mac
+acceptance; no deployment or browser-control claim.

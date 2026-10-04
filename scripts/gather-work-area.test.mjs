@@ -1,21 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { GATHER_WORK_AREA_RADIUS, woodWorkArea, validWoodWorkArea, nearbyWoodSources } from '../src/gather-work-area.mjs';
+import { GATHER_WORK_AREA_RADIUS, woodWorkArea, nearbyWoodSources } from '../src/gather-work-area.mjs';
 
-const map = { width: 160, height: 160 }, anchor = woodWorkArea({ x: -11.5, z: 0.5 });
+const anchor = woodWorkArea({ x: -11.5, z: 0.5 });
 const source = (id, x, stock = 6, type = 'wood') => ({ id, type, x, z: 0.5, stock });
 test('a work area retains the manually chosen source anchor', () => {
   assert.deepEqual(anchor, { type: 'wood', x: -11.5, z: 0.5 });
   assert.equal(GATHER_WORK_AREA_RADIUS, 8);
-  assert.ok(validWoodWorkArea(anchor, map));
-  assert.ok(validWoodWorkArea(undefined, map));
-  assert.ok(validWoodWorkArea(null, map));
-});
-test('work area checkpoint input rejects unsupported or unbounded shapes', () => {
-  for (const area of [{ ...anchor, type: 'food' }, { ...anchor, x: Infinity }, { ...anchor, z: NaN },
-    { ...anchor, x: -81 }, { ...anchor, z: 80 }, { ...anchor, radius: 1000 }, [], 'wood']) {
-    assert.equal(validWoodWorkArea(area, map), false);
-  }
 });
 test('continuation excludes exhausted, far, foreign-type and malformed sources', () => {
   const candidates = [source('near', -10.5), source('edge', -3.5), source('far', -3.499),

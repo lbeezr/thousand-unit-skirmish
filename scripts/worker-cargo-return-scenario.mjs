@@ -100,11 +100,13 @@ try {
     }
     await checkpointWith(checkpointPath, cp => [0, 125].every(id => cp.state.units[id].z < -32));
   }
+  const targets = [];
   for (const [team, client] of clients.entries()) {
     const workers = client.latest.units.filter(u => u[1] === team && u[5] === 'worker');
     const column = frontier ? (team ? 133 : 26) : (team ? 112 : 16);
     const row = frontier ? 41 : 37;
     const cell = row * map.width + column;
+    targets[team] = cell;
     send(client, { type: 'gather', ids: [workers[0][0]], forestCell: cell, clientOrderToken: 1 });
     assert.match((await client.wait(m => m.type === 'notice' && m.clientOrderToken === 1)).message, /^GATHER ORDER/);
     send(client, { type: 'build', buildingType: 'barracks', ids: [workers[1][0]],
@@ -113,15 +115,31 @@ try {
     const placement = await client.wait(m => m.type === 'notice' && m.clientOrderToken === 2 && !m.message.startsWith('PLANNING'));
     assert.match(placement.message, frontier ? /BUILD REJECTED · WOULD BLOCK A ROUTE/ : /BARRACKS PLACED/);
   }
-  const expectedWood = frontier ? 181 : 6;
+  await checkpointWith(checkpointPath, cp => targets.every(cell =>
+    cp.state.forestStocks.some(([id, stock]) => id === cell && stock === 0)));
+  // Explicit replacement now ends an area job; depletion alone continues it.
+  for (const [team, client] of clients.entries()) {
+    for (const [type, token, expected] of [['stop', 3, /^STOP ORDER/], ['returnCargo', 4, /^RETURN CARGO ORDER/]]) {
+      send(client, { type, ids: [team * 125], clientOrderToken: token });
+      assert.match((await client.wait(m => m.type === 'notice' && m.clientOrderToken === token)).message, expected);
+    }
+  }
   const checkpoint = await checkpointWith(checkpointPath, cp =>
-    cp.state.teamWood.every(wood => Math.abs(wood - expectedWood) < 0.001));
+    [0, 125].every(id => cp.state.units[id].cargo === 0 && cp.state.units[id].gatherPhase === ''));
+  const sourceDraw = checkpoint.state.forestStocks.reduce((sum, [, stock]) => sum + 6 - stock, 0)
+    + checkpoint.state.resourceNodes.filter(n => n.type === 'wood').reduce((sum, n) =>
+      sum + map.resourceNodes.find(source => source.id === n.id).stock - n.stock, 0);
+  const paidWood = frontier ? 0 : 2 * 175;
+  assert.ok(Math.abs(sourceDraw - (checkpoint.state.teamWood.reduce((sum, wood) => sum + wood, 0) - 350 + paidWood)) < 1e-4,
+    'all drawn Wood is delivered once, including partial continuation, after the registered construction debit');
+  assert.ok(checkpoint.state.teamWood.every(wood => wood >= (frontier ? 181 : 6)));
   for (const id of [0, 125]) {
     const worker = checkpoint.state.units[id];
     assert.equal(worker.cargo, 0, 'all harvested cargo must be deposited once');
-    assert.equal(worker.gatherPhase, '', 'depleted tree order must finish');
+    assert.equal(worker.gatherPhase, '', 'explicit return must finish');
+    assert.equal(worker.workIntent, null, 'explicit replacement ends the Wood job');
   }
-  console.log(`${mapId}: both seats preserve harvesting access and deposit exactly six wood`);
+  console.log(`${mapId}: both seats preserve harvesting access and bank all ${sourceDraw} drawn Wood exactly once`);
 } finally {
   clients.forEach(c => c.socket.close());
   child.kill('SIGINT'); await once(child, 'exit'); await rm(temp, { recursive: true, force: true });

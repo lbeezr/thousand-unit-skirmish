@@ -81,7 +81,7 @@ function authority(team, overrides = {}) {
   });
   const names = ['commandUnitAt', 'commandUnits', 'clearAttackMoveOrder',
     'workerDropoffCandidates', 'routeWorkerToDropoff', 'workerAtDropoff',
-    'assignReturnCargo', 'stopGathering', 'updateWorkerEconomy', 'workerTaskStatus'];
+    'assignReturnCargo', 'stopGathering', 'ensureGatherWorkIntent', 'updateWorkerEconomy', 'workerTaskStatus'];
   vm.runInContext(economyServerFunctions + names.map(name => fn(server, name)).join('\n'), context);
   const order = extra => context.assignReturnCargo({ team }, {
     type: 'returnCargo', ids: [0], unitGenerations: [unit.generation], clientOrderToken: 100, ...extra,

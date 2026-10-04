@@ -105,6 +105,11 @@ then leaves them idle. This also delivers the final food from an exhausted sheep
 it needs no new Gather order. An unavailable drop-off preserves the cargo.
 Forest cells currently yield six wood each; exhaustion clears their movement
 and sight block. Berry brushwood and regrowth are future experiments.
+After a tree or Wood node runs out, its Worker seeks visible reachable Wood
+within eight world units of the originally assigned source. The work area stays
+fixed across deliveries and replacements. When that area is exhausted, remaining
+cargo is delivered and the Worker idles. Explicit replacement orders, including
+Stop, Move and Return cargo, end the job; they preserve carried resources.
 An exhausted finite resource node also releases its construction site. Living
 sheep, partial carcasses and other positive-stock nodes still protect their
 cells. Buildings, units, terrain and route checks continue to apply.
