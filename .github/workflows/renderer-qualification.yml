@@ -41,6 +41,14 @@ jobs:
           node scripts/renderer-qualification.mjs --preflight "$EVIDENCE" > "$EVIDENCE/preflight.log"
       - name: Pack clean source
         run: node scripts/pack-railway-release.mjs > "${{ runner.temp }}/renderer-pack.json"
+      - name: Install locked packed runtime dependencies
+        run: |
+          node --input-type=module - "${{ runner.temp }}/renderer-pack.json" <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          const pack = JSON.parse(readFileSync(process.argv[2], 'utf8'));
+          execFileSync('npm', ['ci', '--omit=dev', '--no-audit', '--no-fund'], { cwd: pack.directory, stdio: 'inherit' });
+          NODE
       - name: Capture live packed-game movement
         env:
           EVIDENCE: ${{ runner.temp }}/renderer-qualification

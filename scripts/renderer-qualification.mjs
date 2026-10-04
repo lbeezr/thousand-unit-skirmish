@@ -44,11 +44,23 @@ export function validateRelease(pack, source) {
   assert.equal(pack.sourceRevision, source.revision, 'pack must match the checked-out source');
   assert.equal(pack.sourceDirty, false, 'qualification requires a clean release');
   assert.match(pack.digest, /^sha256:[a-f0-9]{64}$/, 'release digest is required');
-  assert.ok(Array.isArray(pack.files) && pack.files.includes('server.mjs') && pack.files.includes('src/main.js'),
-    'pack must contain the game server and renderer');
+  assert.ok(Array.isArray(pack.files) && ['room-supervisor.mjs', 'server.mjs', 'src/main.js', 'package-lock.json']
+    .every(file => pack.files.includes(file)), 'pack must contain the supervisor, game server, renderer and lockfile');
   assert.equal(new Set(pack.files).size, pack.files.length, 'release entries must be unique');
   for (const file of pack.files) assert.ok(typeof file === 'string' && file !== ''
     && !path.isAbsolute(file) && !file.split(/[\\/]/).includes('..'), 'release entry must stay inside the pack');
+}
+
+// Retain only exact known local paths. Queries, invite codes, remote URLs and
+// arbitrary error messages never enter an uploaded evidence artifact.
+export function safeRequestPath(value, origin, files) {
+  try {
+    const url = new URL(value);
+    if (url.origin !== origin) return null;
+    return files.includes(url.pathname.slice(1))
+      || ['/', '/vendor/three.module.js', '/vendor/three.core.js', '/api/rooms/status', '/favicon.ico'].includes(url.pathname)
+      ? url.pathname : null;
+  } catch { return null; }
 }
 
 export function validateFrame(frame, png, canvasPng) {
@@ -138,10 +150,15 @@ async function reservePort() {
 export async function qualifyPackedGame(packFile, evidenceDirectory) {
   await mkdir(evidenceDirectory, { recursive: true });
   const report = { schemaVersion: 1, scope: 'local-packed-game-movement', status: 'failed', sandbox: 'enabled',
-    uid: process.getuid?.() ?? null, source: null, release: null, frames: [], assets: [], browserEvents: [], issues: [],
+    uid: process.getuid?.() ?? null, source: null, release: null, runtimeDependencies: [], frames: [], assets: [],
+    browserEvents: [], droppedBrowserEvents: 0, unexpectedBrowserEvent: false, issues: [],
     cleanup: { maxAttempts: 3, attempts: 0, errors: [] } };
   let stage = 'release', browser, page, server, temporary;
-  const recordBrowserEvent = event => { if (report.browserEvents.length < 100) report.browserEvents.push(event); };
+  const recordBrowserEvent = event => {
+    if (event.expected !== true) report.unexpectedBrowserEvent = true;
+    if (report.browserEvents.length < 100) report.browserEvents.push(event);
+    else report.droppedBrowserEvents++;
+  };
   try {
     assert.ok(Number.isInteger(report.uid) && report.uid > 0, 'qualification must run as a non-root user');
     report.source = { revision: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
@@ -155,13 +172,20 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
     for (const file of [...pack.files].sort()) digest.update(file).update('\0').update(await readFile(path.join(pack.directory, file))).update('\0');
     assert.equal(`sha256:${digest.digest('hex')}`, pack.digest, 'packed bytes must match the release digest');
     report.release = { sourceRevision: pack.sourceRevision, digest: pack.digest, files: pack.files.length };
+    stage = 'dependencies';
+    const lockBytes = await readFile(path.join(pack.directory, 'package-lock.json'));
+    const lock = JSON.parse(lockBytes), installed = JSON.parse(await readFile(path.join(pack.directory, 'node_modules/three/package.json'), 'utf8'));
+    assert.equal(installed.name, 'three', 'packed runtime must install Three.js');
+    assert.ok(typeof lock.packages?.['node_modules/three']?.version === 'string', 'lockfile must identify Three.js');
+    assert.equal(installed.version, lock.packages['node_modules/three'].version, 'installed Three.js must match the release lockfile');
+    report.runtimeDependencies.push({ name: 'three', version: installed.version, lockSha256: sha256(lockBytes), files: [] });
     stage = 'server';
     temporary = await mkdtemp(path.join(os.tmpdir(), 'rts-packed-renderer-'));
     const port = await reservePort(), origin = `http://127.0.0.1:${port}`;
     let serverLog = '', serverError;
-    server = spawn(process.execPath, [path.join(pack.directory, 'server.mjs')], { cwd: pack.directory,
+    server = spawn(process.execPath, [path.join(pack.directory, 'room-supervisor.mjs')], { cwd: pack.directory,
       env: { PATH: process.env.PATH, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_MAP: 'maps/open-field.json',
-        RTS_CUSTOM_MAP_DIRECTORY: path.join(temporary, 'maps'), RTS_MATCH_STATE_PATH: path.join(temporary, 'match.json') },
+        RTS_CUSTOM_MAP_DIRECTORY: path.join(temporary, 'maps'), RTS_ROOM_DATA_DIRECTORY: path.join(temporary, 'rooms') },
       stdio: ['ignore', 'pipe', 'pipe'] });
     server.on('error', error => { serverError = error; });
     for (const stream of [server.stdout, server.stderr]) stream.on('data', bytes => { serverLog = (serverLog + bytes).slice(-12000); });
@@ -174,23 +198,41 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
       assert.ok(Date.now() < deadline, 'packed server startup timed out'); await sleep(100);
     }
     // Retain only known safe startup facts, never protocol frames or session tokens.
-    report.server = { map: 'open-field', logBytes: Buffer.byteLength(serverLog), listening: true };
-    for (const file of ['index.html', 'src/main.js']) {
+    report.server = { entry: 'room-supervisor.mjs', map: 'open-field', logBytes: Buffer.byteLength(serverLog), listening: true };
+    const roomStatus = await fetch(`${origin}/api/rooms/status`, { signal: AbortSignal.timeout(5000) });
+    assert.equal(roomStatus.status, 200, 'packed supervisor must serve the room-status API');
+    assert.equal((await roomStatus.json()).enabled, true, 'packed room service must be enabled');
+    for (const file of ['index.html', 'src/main.js', 'vendor/three.module.js', 'vendor/three.core.js']) {
       const response = await fetch(`${origin}/${file}`, { signal: AbortSignal.timeout(5000) });
       assert.equal(response.status, 200, 'packed entry file must be served');
       const hash = sha256(Buffer.from(await response.arrayBuffer()));
-      assert.equal(hash, sha256(await readFile(path.join(pack.directory, file))), 'served entry must match packed bytes');
-      report.assets.push({ path: file, sha256: hash });
+      const vendor = file.startsWith('vendor/');
+      assert.equal(hash, sha256(await readFile(path.join(pack.directory, vendor ? `node_modules/three/build/${path.basename(file)}` : file))),
+        'served entry must match packed runtime bytes');
+      (vendor ? report.runtimeDependencies[0].files : report.assets).push({ path: file, sha256: hash });
     }
     stage = 'browser'; browser = withProfileCleanup(await createFortifiedBrowser(), report.cleanup); report.browser = browser.version;
     page = await browser.page('about:blank', { beforeScript: `(${installReadbackProbe.toString()})()` });
     page.cdp.on('Runtime.consoleAPICalled', event => {
       if (event.type === 'error') recordBrowserEvent({ kind: 'console-error' });
     });
-    page.cdp.on('Network.responseReceived', event => {
-      if (event.response.status >= 400) recordBrowserEvent({ kind: 'http-error', status: event.response.status });
+    const requests = new Map();
+    page.cdp.on('Network.requestWillBeSent', event => {
+      if (requests.size < 2000) requests.set(event.requestId, safeRequestPath(event.request.url, origin, pack.files));
     });
-    page.cdp.on('Network.loadingFailed', event => recordBrowserEvent({ kind: 'request-failed', canceled: event.canceled === true }));
+    page.cdp.on('Network.responseReceived', event => {
+      if (event.response.status >= 400) {
+        const pathname = safeRequestPath(event.response.url, origin, pack.files);
+        recordBrowserEvent({ kind: 'http-error', status: event.response.status, path: pathname,
+          // Chrome's implicit optional icon request is not a game resource.
+          expected: event.response.status === 404 && pathname === '/favicon.ico' });
+      }
+    });
+    page.cdp.on('Network.loadingFinished', event => requests.delete(event.requestId));
+    page.cdp.on('Network.loadingFailed', event => {
+      recordBrowserEvent({ kind: 'request-failed', path: requests.get(event.requestId) ?? null, canceled: event.canceled === true });
+      requests.delete(event.requestId);
+    });
     await page.cdp.call('Page.navigate', { url: `${origin}/?rendererCapture=environment-state` });
     stage = 'assets';
     const status = await page.wait('window.__rtsEnvironmentAssetStatus?.ready && window.__rtsEnvironmentAssetStatus', 'pilot runtime assets', 30000);
@@ -240,9 +282,22 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
           if (['console-error', 'exception', 'resource-error', 'promise-rejection'].includes(flag?.kind)) recordBrowserEvent({ kind: flag.kind });
         }
       } catch { report.status = 'failed'; report.issues.push({ stage: 'evidence', code: 'browser-evidence-unavailable' }); }
-      if (report.browserEvents.length) { report.status = 'failed'; report.issues.push({ stage: 'browser', code: 'browser-errors' }); }
+      try {
+        const state = await page.cdp.evaluate(`({entry:document.documentElement.dataset.entry, boot:document.documentElement.dataset.boot,
+          assets:window.__rtsEnvironmentAssetStatus && {state:window.__rtsEnvironmentAssetStatus.state,
+            ready:window.__rtsEnvironmentAssetStatus.ready, oak:window.__rtsEnvironmentAssetStatus.oakDepletionAtlas,
+            loaded:window.__rtsEnvironmentAssetStatus.loadedFiles?.length}, canvas:Boolean(document.querySelector('#viewport canvas'))})`);
+        report.boot = { entry: ['menu', 'game'].includes(state?.entry) ? state.entry : null,
+          ready: state?.boot === 'ready', canvas: state?.canvas === true,
+          assets: state?.assets ? { state: ['loading', 'unavailable', 'load-failed', 'ready'].includes(state.assets.state) ? state.assets.state : null,
+            ready: state.assets.ready === true, oakDepletionAtlas: state.assets.oak === true,
+            loaded: Number.isInteger(state.assets.loaded) && state.assets.loaded >= 0 ? state.assets.loaded : null } : null };
+      } catch { report.status = 'failed'; report.issues.push({ stage: 'evidence', code: 'boot-evidence-unavailable' }); }
+      if (report.unexpectedBrowserEvent) { report.status = 'failed'; report.issues.push({ stage: 'browser', code: 'browser-errors' }); }
     }
-    for (const cleanup of [() => browser?.dispose(), () => stopChild(server, { graceMs: 2500 }),
+    // The supervisor gives its one default worker seven seconds to stop; let it
+    // reap that child before the shared helper's fallback kill and data removal.
+    for (const cleanup of [() => browser?.dispose(), () => stopChild(server, { graceMs: 9000 }),
       () => temporary && rm(temporary, { recursive: true, force: true })]) {
       try { await cleanup(); } catch { report.status = 'failed'; report.issues.push({ stage: 'cleanup', code: 'cleanup-failed' }); }
     }
