@@ -58,6 +58,7 @@ the build they name.
 | Inspect the measured snapshot base-row allocation change and exact wire regressions | [Snapshot row allocation](qa-snapshot-row-allocation-2026-10-04.md) |
 | Understand the remaining maximum-tick tail and rejected zero-separation probe | [Remaining tick tail](qa-remaining-tick-tail-2026-10-04.md) |
 | Understand forced open-ground turns and their relation to screen headings | [Direct open-ground Move](qa-direct-open-ground-move-2026-10-04.md) |
+| Check displacement-driven sprite clocks, UV advancement and real atlas-cell differences without a browser | [CPU animation integration](qa-unit-displacement-animation-2026-10-04.md) |
 | Verify route progress through a parked army and preserved Stop intent | [Crowd forward-progress QA](qa-crowd-forward-progress-2026-10-03.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
 | Work on connected walls and explicit manual gates | [Palisade runtime](palisade-runtime.md), [gates](palisade-gates.md) |
