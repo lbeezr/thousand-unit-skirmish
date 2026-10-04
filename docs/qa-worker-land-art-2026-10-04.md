@@ -104,12 +104,12 @@ current-roster keys can also be admitted with the same manifest contract.
 | --- | --- | --- |
 | 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
 | 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
-| 3 | Fill wood/food/build/repair/attack/defeat's seven absent headings: **40 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
+| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **39 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
 | 4 | Seven remaining readable dedicated Stone-work headings and SE selector adoption. | SE now has dedicated pick poses; the broad eight-view attempt failed strike facing in the other rows. Animation owner also needs the actual Stone state/resource selector enabled after artwork exists; current default intentionally returns idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
 There are now 8 of 8 walk headings, eight distinct idle headings, SE land-action
-motion and SE Stone artwork awaiting default selector adoption. **47 land-action/heading cells remain** (40+7).
+motion and SE Stone artwork awaiting default selector adoption. **46 land-action/heading cells remain** (39+7).
 Fishing's seven missing headings are excluded and retained by its separate owner.
 The animation-owner ID is outside this executor's live collaboration tree; the
 manifest contract and retained dependencies are recorded here for parent routing.
@@ -429,3 +429,53 @@ owner; local browser fails sandbox-unavailable. No source merge is called delive
 records exact clean code `95dc1d23f234b7cf4695bd9669846d4a1d95a0ca`,1176files,
 `sha256:2e7ac2f7b357ef2d6aceb7a86838d4f014755b55e6d017324394ab3a6e11e059`. All default runtime files are included; subsequent
 receipt/doc checkpoint is distinct from the measured source.
+
+
+## Eighth usable slice: faithful NW axe reuse for one-shot attack
+
+NW food merged in [PR257](https://github.com/lbeezr/thousand-unit-skirmish/pull/257)
+at `f8237601a40aaeb38ad2b26804dfec19e6db2fd7` after [independent agent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/257#pullrequestreview-5404025824)
+of exacthead `82edceaae917b9bd5b1ffd3ed04bfa2b0de8c7a8`,98 focused checks and
+packedHTTP/hash. No containing deployed/native game claim.
+
+Packv0.23.0 replaces only the NW attack idle placeholder with the actual public
+NW axe windup/downstrike/recovery from [merged wood PR253](https://github.com/lbeezr/thousand-unit-skirmish/pull/253).
+An axe swing toward an enemy is recognizable combat in the same actual NW
+bearing; source has no baked tree/contact target. This is faithful public
+same-heading reuse, not generating/mirroring/copy-labelling other headings.
+The shared frame IDs retain their original `gather-wood-north-west-*` names.
+The attack clip owns3x280ms timing,840ms one-shot, matching the existing Human
+attack lifetime. Wood keeps its own3x240ms loop; no state/clock/economy helper
+changes. Six remaining attack headings still use the existing opt-in nearest
+approximation and remain production gaps; this does not establish their facing.
+
+[Admission](../scripts/admit-worker-attack-north-west.py) only edits that clip,
+pack version and provenance; all color/source/mask file bytes and dimensions
+are unchanged. [Reuse/preservation receipt](qa-evidence/worker-land-art-2026-10-04/attack-north-west-reuse.json)
+records the exact original NW attack placeholder,134 previous frames/55clips,
+full prior metadata/pixel hashes, public source PR and unchanged world scale.
+Historical clip tests reconstruct this one explicitly admitted placeholder and
+continue hashing every other original field; fishing/source pixels stay exact.
+No new generation charge or asset allocation is involved.
+
+All100 focused checks pass, including [new exact default attack tests](../scripts/worker-nw-attack-art.test.mjs)
+for both Human seats selected/unselected, actual NW UV rectangles, three keys,
+terminal clamp until839ms, idle/work at840ms, new attack events restarting and
+movement/confirmed work resumption. CI registers the check once; sharding passes.
+Atlas validation, manifest byte-idempotence and unchanged runtime-file hashes
+pass. PackedHTTP/docs/whitespace/clean packaging and independent review follow
+in this slice. Native recipe: in a containing normal Human match put a Worker
+screen-right of an enemy, strikeNW/left, observe windup/hit/recovery, repeat
+attack, Stop and resume wood/move. Record exact build/map/seat/selection/root;
+CPU checks do not close target contact or deployment/native acceptance.
+
+**46 cells remain**:6wood+6food+7build+7repair+6attack+7defeat+7Stone.
+Next useful art: actual NW build/repair hammer keys (share a recognizable work
+loop), NW defeat and NW Stone; then fill the remaining true world headings.
+The ranked breadth goal continues; cosmetic smoothing remains later work.
+
+
+[Clean NW attack release](qa-evidence/worker-land-art-2026-10-04/attack-north-west-clean-release.json)
+records exact code `c879b67c17b4909524f8eb8d8be442bacf16cb2f`,1176files,
+`sha256:96e54d2d1658f97d4696b1edc293bdf1500c48404db66d775342211f10041254`. PackedHTTP/docs/whitespace pass, no new pixel files.
+The later receipt checkpoint is distinct from this measured clean source.

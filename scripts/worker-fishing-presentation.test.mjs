@@ -55,6 +55,12 @@ test('published atlas preserves prior action pixels/metadata and all four approv
       ({ frameId: `walk-${direction}-${i}`, durationMs: 100 })));
     walk.sequence = [{ frameId: `idle-${direction}-0`, durationMs: 1000 }];
   }
+  const attack = originalClips.find(c => c.stateId === 'attack' && c.directionId === 'north-west');
+  assert.equal(attack.loop, false);
+  assert.deepEqual(attack.sequence, [0, 1, 2].map(i =>
+    ({ frameId: `gather-wood-north-west-${i}`, durationMs: 280 })));
+  attack.loop = true;
+  attack.sequence = [{ frameId: 'idle-north-west-0', durationMs: 1000 }];
   assert.equal(sha256(JSON.stringify(originalClips)), preservation.originalClipMetadataSha256);
   assert.equal(asset.frames.length, preservation.originalFrames + 4 + 40 + 4 + 3 + 3);
   assert.equal(asset.clips.length, preservation.originalClips + 4);
