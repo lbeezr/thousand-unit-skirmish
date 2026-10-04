@@ -144,3 +144,12 @@ recovery, fog, defense, rematch/reconnect, process restart and defeat observatio
 remain open. No deployment or browser screenshot is claimed. Keep
 `pveSupported: false` until applicable ordinary acceptance
 are satisfied.
+
+Subsequent availability decision: the parent accepts these source/cold-restore
+proofs as sufficient to expose ordinary **development** PvE for verified
+Terraced Vale only. The mode owner owns that admission/capability change;
+served/browser acceptance still determines completion and must not prevent the
+normal option needed to test it. The [real process receiving case](qa-pve-tiny-process-recovery-2026-10-04.md)
+records the subsequently passing normal PvE process recovery after mode-owner
+[PR250](https://github.com/lbeezr/thousand-unit-skirmish/pull/250). The earlier disabled-state
+receipt above describes its measured source, not a continuing availability hold.
