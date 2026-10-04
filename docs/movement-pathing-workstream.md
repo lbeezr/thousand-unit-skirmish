@@ -90,11 +90,11 @@ Changes to another lane's host functions are agreed with that affected owner.
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
-physical-clearance work. The [summary](qa-evidence/forest-gap-2026-10-04/summary.json)
-and [compressed raw record](qa-evidence/forest-gap-2026-10-04/replay.json.gz) retain
+physical-clearance work. The [current summary](qa-evidence/forest-gap-2026-10-04/group-summary.json)
+and [compressed raw record](qa-evidence/forest-gap-2026-10-04/group-replay.json.gz) retain
 42 scenarios, each repeated from the same validated initial checkpoint at clean
-source `d914317fa8835c785623d7bb4589fc29f9d2f2d9`, including fresh main's Worker
-route shortening. All 84 runs match their paired route/motion/harvest records;
+source `c4ad43b7e2ac8e810c1a462d085b324e64182183`, including Worker route shortening
+and [forest group jobs](qa-forest-group-jobs-2026-10-04.md). All 84 runs match their paired route/motion/harvest records;
 this establishes repeatability of the fixed-tick adapter inputs, not the whole
 asynchronous server. Actual actor identities remain intact without normalization.
 The forest-gap experiment owner retains this fixture/evidence; movement owner
@@ -130,22 +130,35 @@ tick. Cumulative ticks without that improvement before belt crossing reach
 physical throughput or hardware timings. Raw records retain per-actor distance,
 crossing, route-publication and pending/timeout fields.
 
-For both seats, a single plug at `(column31,row24)` blocks the one-row gap.
-Normal harvesting clears only cell 1567, changes navigation revision 0→1, and
-reduces the 16-Infantry mean planned route from 64 to 27 world units. A checkpoint
-with two Wood carried is validated and restored into a fresh fixed-tick adapter.
+For both seats, a single added plug at `(column31,row24)` blocks the one-row gap.
+Normal Gather anchors the authored group: the Worker first selects the tied
+northern frontier cell 1502/1504 (column30/32,row23), then the plug cell 1567.
+Those two cuts change navigation revision 0→2 and reduce the 16-Infantry mean
+planned route from 64 to 27 world units. The after-route measures both cleared
+cells, not an isolated plug removal. A checkpoint with two Wood carried is
+validated and restored into a fresh fixed-tick adapter.
 Original/restored units and forest stocks match while harvesting; bank balances
-match through depletion and the same Stop/Return orders. Both deliver exactly
-six Wood (500→506), finish with zero cargo, and retain unit health. The plug map
-starts with 313 cells/1,878 Wood and ends with 312 live cells/1,872 remaining Wood.
+match through depletion and the same Stop/Return orders. At plug clearance each
+branch has banked ten and carries two Wood. Both ultimately deliver exactly
+12 Wood (500→512), finish with zero cargo, and retain unit health. The exact
+cleared set and unchanged stock elsewhere are checked in both branches; stock
+draw equals banked plus carried Wood at every compared tick. The plug map starts
+with 313 cells/1,878 Wood and ends with 311 live cells/1,866 remaining Wood.
 This proves adapter checkpoint conservation, not a native process/socket restart.
+
+The earlier [summary](qa-evidence/forest-gap-2026-10-04/summary.json) and
+[raw record](qa-evidence/forest-gap-2026-10-04/replay.json.gz) at clean `d914317f`
+remain historical: before group jobs, the same Gather cleared only the plug,
+revision 0→1, and banked six Wood. Its primary/control route aggregates match the
+current record. The old six-Wood witness failed against group jobs as expected;
+the fixture was updated to observe actual selection, without changing live rules.
 
 Run `node --test scripts/forest-gap.test.mjs` for the 15 focused regressions, or
 `FOREST_GAP_RECORD=/tmp/forest-gap.json.gz node scripts/forest-gap-characterization.mjs all 2 1800`
 for the full bounded record (`small` selects six scenarios). The runner checks
 source identity at both ends and retains failures; the experiment is opt-in.
-Seventy-seven focused forest, replay, arrival, movement, segment and Worker route
-tests pass at the measured code head. Pilot data with fresh random actor identities,
+Ninety-three focused forest, final-approach, replay, arrival, movement, segment and
+Worker route tests pass at the measured code head. Pilot data with fresh random actor identities,
 combat near enemy homes or the superseded pending-route observation is excluded
 from this table; no performance optimization is inferred from those comparisons.
 
@@ -155,8 +168,9 @@ Canopy density, species and visual scale do not change navigation. One open row
 does not establish a one-unit physical throat or a cavalry clearance. Proposed
 permeable/tight/dense forest treatments still need explicit swept clearance,
 opposing/mixed-speed traffic, actual ordinary-game appearance and their own
-resource-quantity controls. The urgent forest-job/frontier stall fix remains
-with the forest owner; 2,000-unit hardware/rendered capacity remains U7 work.
+resource-quantity controls. Forest-job/frontier fixes and their ordinary-game
+acceptance remain with the [forest owner](qa-forest-group-jobs-2026-10-04.md);
+2,000-unit hardware/rendered capacity remains U7 work.
 Tree-variety owner
 `01a107c8-d1d5-7113-8371-57b914ac502d` retains model/appearance work. Building-rotation
 owner `01a107c9-6a7d-7534-b592-ef8d18cd0001` retains orientation/ghost preview;
