@@ -115,3 +115,14 @@ this measured release. [Browser preflight](qa-evidence/worker-land-art-2026-10-0
 records the actual sandbox failure. Independent review is pending: this executor
 has no live peer/parent reviewer route; no self-review is claimed as an independent
 review. Main merge, containing deployment and native acceptance stay open.
+
+After the parent supplied [PR225's merged unit-loader binding subset](sprite-atlas-contract-v1.md#current-unit-loader-binding-subset)
+at main `26ac28db`, it was read in full and included at refreshed code head
+`e7beead69d2d687581a1fe1607cb3ffe0da65a54`. This slice matches `human` / existing
+v3 directory, one selected actor/color page with aligned mask, exact `walk|east`,
+eight 100 ms looping keys, shared root and unchanged max-alpha-height/world scale.
+Atlas validation and both new decoded-pixel/runtime-playback checks pass after
+the refresh. No new selector, state or shared timing extension is required;
+Stone still requires the animation owner's bounded extension when supplied art
+exists. The earlier clean release remains a receipt for its stated source, not
+the later documentation-only contract merge.
