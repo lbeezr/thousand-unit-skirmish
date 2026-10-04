@@ -32,14 +32,14 @@ export async function measureTinyMatch(seeds, { limitSeconds = ceilingSeconds, i
   const map = JSON.parse(mapBytes);
   assertMatchModeCompatibility(NORMAL_HUMAN_MATCH_MODE, map, { mode: 'pve' });
   const fixture = await createPveHeadlessFixture(map, NORMAL_HUMAN_MATCH_MODE), r = fixture.replay;
-  const trace = [], samples = [], depletions = [], restores = [];
+  const trace = [], samples = [], depletions = [], farmDepletions = [], restores = [];
   const metrics = seeds.map((seed, team) => ({ team, seed, firstVisibleEnemyTick: null,
     firstNativeAttackObservedTick: null, firstDamageObservedTick: null, firstPaidRecruitTick: null,
     firstBarracksCompleteTick: null, firstDepotCompleteTick: null,
     firstExpansionCompleteTick: null, maxMilitary: 8, maxWorkers: 4,
     purchasedBuildings: [], belowInfantryFoodSeconds: 0, firstBelowInfantryFoodTick: null,
     commandDebits: { food: 0, wood: 0 }, commandCredits: { food: 0, wood: 0 } }));
-  const depleted = new Set(), complete = new Set();
+  const depleted = new Set(), depletedFarms = new Set(), complete = new Set();
   try {
     if (initial) r.restore(initial); else initial = r.checkpoint();
     assert.equal(initial.state.tickNumber, 0, 'measure only a fresh opening');
@@ -62,6 +62,9 @@ export async function measureTinyMatch(seeds, { limitSeconds = ceilingSeconds, i
         let state = r.checkpoint().state;
         for (const node of state.resourceNodes) if (node.stock <= 0 && !depleted.has(node.id)) {
           depleted.add(node.id); depletions.push({ tick: step, id: node.id, type: node.type });
+        }
+        for (const building of state.buildings) if (building.type === 'farm' && building.complete && building.harvestStock === 0 && !depletedFarms.has(building.id)) {
+          depletedFarms.add(building.id); farmDepletions.push({ tick: step, id: building.id, team: building.team });
         }
         for (const team of [0, 1]) {
           const observation = view(team), metric = metrics[team];
@@ -110,7 +113,8 @@ export async function measureTinyMatch(seeds, { limitSeconds = ceilingSeconds, i
               military: alive.filter(unit => unit.kind !== 'worker').length,
               cargo: ['food', 'wood'].map(type => ({ type, amount: alive.filter(unit => unit.cargoType === type).reduce((sum, unit) => sum + unit.cargo, 0) })),
               homeHp: state.homeTownCenters[team].hp,
-              buildings: state.buildings.filter(building => building.team === team && building.hp > 0).map(building => ({ id: building.id, type: building.type, hp: building.hp, complete: building.complete, queue: building.productionQueue.length })) };
+              buildings: state.buildings.filter(building => building.team === team && building.hp > 0).map(building => ({ id: building.id, type: building.type, hp: building.hp, complete: building.complete, queue: building.productionQueue.length,
+                ...(building.type === 'farm' ? { harvestStock: building.harvestStock } : {}) })) };
           }), nodes: state.resourceNodes.map(node => ({ id: node.id, type: node.type, stock: node.stock })) });
         if (state.matchWinner !== -1 || step === limitSeconds * hz) break;
       }
@@ -122,7 +126,7 @@ export async function measureTinyMatch(seeds, { limitSeconds = ceilingSeconds, i
       timesSeconds: Object.fromEntries(Object.entries(metric).filter(([name]) => name.endsWith('Tick')).map(([name, tick]) => [name.replace(/Tick$/, ''), seconds(tick)])) }));
     return { initial, result: { mapId: map.id, mapSha256: hash(mapBytes), terrainSeed: map.terrainSeed,
       mode: NORMAL_HUMAN_MATCH_MODE, seeds, decisionOrder: [0, 1], terminal,
-      seats: seatSummary, depletions, restores, rejectedOrders: trace.filter(item => item.rejected),
+      seats: seatSummary, depletions, farmDepletions, restores, rejectedOrders: trace.filter(item => item.rejected),
       trace, samples, final } };
   } finally { await fixture.dispose(); }
 }
@@ -138,16 +142,25 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     opponent: { module: 'src/pve-opponent.mjs', productionLimits: PVE_PRODUCTION_LIMITS,
       qualification: 'not independently qualified; same implementation in both seats' },
     renderer: false, servedRelease: null, deployment: null };
-  const summary = { schemaVersion: 1, provenance, runs: [] };
-  for (const seeds of [[20260925, 0], [0, 20260925]]) {
+  const summary = { schemaVersion: 1, status: 'running', provenance, activeSeeds: null, runs: [] };
+  try { for (const seeds of [[20260925, 0], [0, 20260925]]) {
+    summary.activeSeeds = seeds;
+    await writeFile(path.join(output, 'summary.json'), JSON.stringify(summary, null, 2) + '\n');
     const first = await measureTinyMatch(seeds), repeat = await measureTinyMatch(seeds, { initial: first.initial });
     assert.deepEqual(repeat, first, 'complete commands, notices, samples and terminal authority must repeat exactly');
     const name = `seeds-${seeds.join('-')}.json`, bytes = JSON.stringify(first);
     await writeFile(path.join(output, name), bytes);
-    const { terminal, seats, depletions, rejectedOrders, restores, mapId, mapSha256, terrainSeed, mode } = first.result;
+    const { terminal, seats, depletions, farmDepletions, rejectedOrders, restores, mapId, mapSha256, terrainSeed, mode } = first.result;
     summary.runs.push({ file: name, sha256: hash(bytes), seeds, mapId, mapSha256, terrainSeed, mode,
-      exactRepeat: true, terminal, seats, depletions, rejectedOrders: rejectedOrders.length, restores });
+      exactRepeat: true, terminal, seats, depletions, farmDepletions, rejectedOrders: rejectedOrders.length, restores });
     await writeFile(path.join(output, 'summary.json'), JSON.stringify(summary, null, 2) + '\n');
     console.log(JSON.stringify(summary.runs.at(-1)));
+  }
+    summary.status = 'passed'; summary.activeSeeds = null;
+    await writeFile(path.join(output, 'summary.json'), JSON.stringify(summary, null, 2) + '\n');
+  } catch (error) {
+    summary.status = 'failed'; summary.error = { message: error.message };
+    await writeFile(path.join(output, 'summary.json'), JSON.stringify(summary, null, 2) + '\n');
+    throw error;
   }
 }
