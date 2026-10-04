@@ -27,7 +27,7 @@ export function validateRelease(pack, source) {
     && !path.isAbsolute(file) && !file.split(/[\\/]/).includes('..'), 'release entry must stay inside the pack');
 }
 
-export function validateFrame(frame, png) {
+export function validateFrame(frame, png, canvasPng) {
   assert.match(frame.version ?? '', /^WebGL 2\.0/, 'game must use WebGL2');
   assert.equal(frame.contextLost, false, 'game WebGL context was lost');
   assert.equal(frame.glError, 0, 'game readback returned a GL error');
@@ -41,6 +41,12 @@ export function validateFrame(frame, png) {
   assert.equal(png.toString('ascii', 12, 16), 'IHDR', 'PNG dimensions are required');
   assert.equal(png.readUInt32BE(16), 1280, 'screenshot width must match the viewport');
   assert.equal(png.readUInt32BE(20), 720, 'screenshot height must match the viewport');
+  assert.ok(Number.isInteger(frame.canvasWidth) && frame.canvasWidth >= 320
+    && Number.isInteger(frame.canvasHeight) && frame.canvasHeight >= 200, 'game canvas dimensions are required');
+  assert.ok(canvasPng.length > 10000 && canvasPng.subarray(0, 8).equals(png.subarray(0, 8)), 'canvas capture must be a nonempty PNG');
+  assert.equal(canvasPng.toString('ascii', 12, 16), 'IHDR', 'canvas PNG dimensions are required');
+  assert.equal(canvasPng.readUInt32BE(16), frame.canvasWidth, 'canvas PNG must match the drawing buffer width');
+  assert.equal(canvasPng.readUInt32BE(20), frame.canvasHeight, 'canvas PNG must match the drawing buffer height');
   assert.ok(frame.worker && Number.isInteger(frame.worker.id) && Number.isInteger(frame.worker.team)
     && Number.isFinite(frame.worker.x) && Number.isFinite(frame.worker.z), 'live worker coordinates are required');
   assert.equal(frame.worker.task, 'moving', 'worker must be moving during capture');
@@ -51,6 +57,7 @@ export function validateMotion(start, frames) {
   let previous = start;
   for (const frame of frames) {
     assert.match(frame.pngSha256 ?? '', /^[a-f0-9]{64}$/, 'movement PNG digest is required');
+    assert.match(frame.canvasSha256 ?? '', /^[a-f0-9]{64}$/, 'movement canvas digest is required');
     assert.equal(frame.worker.id, start.worker.id, 'captures must follow the commanded worker');
     assert.equal(frame.worker.team, start.worker.team, 'captures must retain the commanded team');
     assert.ok(frame.number > previous.number && frame.time > previous.time, 'rendered frames must advance');
@@ -59,6 +66,7 @@ export function validateMotion(start, frames) {
     previous = frame;
   }
   assert.notEqual(frames[0].pngSha256, frames[1].pngSha256, 'movement screenshots must differ');
+  assert.notEqual(frames[0].canvasSha256, frames[1].canvasSha256, 'game canvas pixels must advance independently of the HUD');
 }
 
 // Read immediately after the real animation callback renders: the game's default
@@ -74,6 +82,7 @@ export function installReadbackProbe() {
   window.addEventListener('error', event => window.__rtsQualification.errors.push({
     kind: event.target === window ? 'exception' : 'resource-error',
   }), true);
+  window.addEventListener('unhandledrejection', () => window.__rtsQualification.errors.push({ kind: 'promise-rejection' }));
   window.requestAnimationFrame = callback => nativeRaf(time => {
     callback(time);
     window.__rtsQualification.number = ++number;
@@ -87,7 +96,9 @@ export function installReadbackProbe() {
       pixels.push(...pixel);
     }
     pending.resolve({ number, time, version: gl.getParameter(gl.VERSION), contextLost: gl.isContextLost(),
-      glError: gl.getError(), pixels, worker: window.__rtsEnvironmentStateSnapshot?.workers.find(w => w.id === pending.workerId) });
+      glError: gl.getError(), pixels, canvasWidth: gl.drawingBufferWidth, canvasHeight: gl.drawingBufferHeight,
+      canvasPng: canvas.toDataURL('image/png').split(',')[1],
+      worker: window.__rtsEnvironmentStateSnapshot?.workers.find(w => w.id === pending.workerId) });
     pending = null;
   });
 }
@@ -104,7 +115,8 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
   await mkdir(evidenceDirectory, { recursive: true });
   const report = { schemaVersion: 1, scope: 'local-packed-game-movement', status: 'failed', sandbox: 'enabled',
     uid: process.getuid?.() ?? null, source: null, release: null, frames: [], assets: [], browserEvents: [], issues: [] };
-  let stage = 'release', browser, server, temporary;
+  let stage = 'release', browser, page, server, temporary;
+  const recordBrowserEvent = event => { if (report.browserEvents.length < 100) report.browserEvents.push(event); };
   try {
     assert.ok(Number.isInteger(report.uid) && report.uid > 0, 'qualification must run as a non-root user');
     report.source = { revision: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
@@ -130,7 +142,8 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
     for (const stream of [server.stdout, server.stderr]) stream.on('data', bytes => { serverLog = (serverLog + bytes).slice(-12000); });
     const deadline = Date.now() + 20000;
     while (true) {
-      assert.ok(!serverError && server.exitCode === null, 'packed server exited before startup');
+      if (serverError) throw serverError;
+      assert.equal(server.exitCode, null, 'packed server exited before startup');
       const response = await fetch(`${origin}/health`, { signal: AbortSignal.timeout(1000) }).catch(() => null);
       if (response?.ok && (await response.json()).ok) break;
       assert.ok(Date.now() < deadline, 'packed server startup timed out'); await sleep(100);
@@ -145,14 +158,15 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
       report.assets.push({ path: file, sha256: hash });
     }
     stage = 'browser'; browser = await createFortifiedBrowser(); report.browser = browser.version;
-    const page = await browser.page(`${origin}/?rendererCapture=environment-state`, { beforeScript: `(${installReadbackProbe.toString()})()` });
+    page = await browser.page('about:blank', { beforeScript: `(${installReadbackProbe.toString()})()` });
     page.cdp.on('Runtime.consoleAPICalled', event => {
-      if (event.type === 'error') report.browserEvents.push({ kind: 'console-error' });
+      if (event.type === 'error') recordBrowserEvent({ kind: 'console-error' });
     });
     page.cdp.on('Network.responseReceived', event => {
-      if (event.response.status >= 400) report.browserEvents.push({ kind: 'http-error', status: event.response.status });
+      if (event.response.status >= 400) recordBrowserEvent({ kind: 'http-error', status: event.response.status });
     });
-    page.cdp.on('Network.loadingFailed', event => report.browserEvents.push({ kind: 'request-failed', canceled: event.canceled === true }));
+    page.cdp.on('Network.loadingFailed', event => recordBrowserEvent({ kind: 'request-failed', canceled: event.canceled === true }));
+    await page.cdp.call('Page.navigate', { url: `${origin}/?rendererCapture=environment-state` });
     stage = 'assets';
     const status = await page.wait('window.__rtsEnvironmentAssetStatus?.ready && window.__rtsEnvironmentAssetStatus', 'pilot runtime assets', 30000);
     assert.equal(status.oakDepletionAtlas, true, 'default oak atlas must decode');
@@ -176,20 +190,33 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
       await page.wait(`window.__rtsEnvironmentStateSnapshot.workers.some(w => w.id === ${worker.id} && w.task === 'moving' && Math.hypot(w.x - ${previous.worker.x},w.z - ${previous.worker.z}) >= 0.3)`, 'live worker displacement');
       const frame = await page.cdp.evaluate(`window.__rtsQualification.request(${worker.id})`);
       const png = Buffer.from((await page.cdp.call('Page.captureScreenshot', { format: 'png', fromSurface: true })).data, 'base64');
-      validateFrame(frame, png);
+      const canvasPng = Buffer.from(frame.canvasPng, 'base64'); delete frame.canvasPng;
+      validateFrame(frame, png, canvasPng);
       const name = `movement-${i}.png`; await writeFile(path.join(evidenceDirectory, name), png);
+      frame.canvas = `canvas-${i}.png`; await writeFile(path.join(evidenceDirectory, frame.canvas), canvasPng);
+      frame.canvasSha256 = sha256(canvasPng);
       frame.png = name; frame.pngSha256 = sha256(png); frame.readbackSha256 = sha256(Buffer.from(frame.pixels));
       report.frames.push(frame); previous = frame;
     }
     validateMotion(start, report.frames); report.start = start; report.command = command;
-    report.browserEvents.push(...await page.cdp.evaluate('window.__rtsQualification.errors'));
-    assert.deepEqual(page.errors, [], 'game browser exceptions are disallowed');
-    assert.deepEqual(report.browserEvents, [], 'game console/network failures are disallowed');
     report.status = 'passed';
   } catch (error) {
     report.issues.push({ stage, code: error instanceof assert.AssertionError ? 'contract-failed' : 'execution-failed',
+      systemCode: ['ENOENT', 'EACCES', 'EPERM', 'ENOSPC', 'ECONNREFUSED', 'EADDRINUSE', 'ETIMEDOUT'].includes(error.code) ? error.code : null,
+      errorType: ['Error', 'TypeError', 'RangeError', 'AssertionError'].includes(error.name) ? error.name : 'Error',
       message: error instanceof assert.AssertionError ? error.message.split('\n')[0] : `Qualification failed during ${stage}` });
   } finally {
+    if (page) {
+      if (page.errors.length) recordBrowserEvent({ kind: 'exception', count: page.errors.length });
+      try {
+        const flags = await page.cdp.evaluate('window.__rtsQualification.errors');
+        assert.ok(Array.isArray(flags), 'browser probe error flags are required');
+        for (const flag of flags.slice(0, 100)) {
+          if (['console-error', 'exception', 'resource-error', 'promise-rejection'].includes(flag?.kind)) recordBrowserEvent({ kind: flag.kind });
+        }
+      } catch { report.status = 'failed'; report.issues.push({ stage: 'evidence', code: 'browser-evidence-unavailable' }); }
+      if (report.browserEvents.length) { report.status = 'failed'; report.issues.push({ stage: 'browser', code: 'browser-errors' }); }
+    }
     for (const cleanup of [() => browser?.dispose(), () => stopChild(server, { graceMs: 2500 }),
       () => temporary && rm(temporary, { recursive: true, force: true })]) {
       try { await cleanup(); } catch { report.status = 'failed'; report.issues.push({ stage: 'cleanup', code: 'cleanup-failed' }); }

@@ -98,7 +98,7 @@ registers both new CPU tests and adds these commands:
 | `npm run test:fast` | Registered `.test.mjs` contracts, recursive syntax, both type gates and import/docs guards. CPU only; fixtures may start native processes. “Fast” is relative to scenario work, not a fixed time promise. |
 | `npm run test:simulation` | Remaining CPU scenario registrations, preserving their order. Together with `test:fast`, partitions every full-suite registration exactly once. |
 | `npm run test:visual` | WebGL2 readback prerequisite, then actual `game-dev` four-frame environment pilot capture. Requires an existing authorized renderer executor/launcher. This preview does not prove Worker/Spearman motion, a clean packed game or staging acceptance. |
-| `npm run test:performance` | Existing `checkpoint-performance-scenario.mjs 10 move 1`: one CPU timing/recovery sample. No GPU, soak or before/after performance claim. |
+| `npm run test:performance` | Existing `checkpoint-performance-scenario.mjs 10 move 1`: one CPU timing/checkpoint sample; it does not restart the server. No GPU, soak or before/after performance claim. |
 
 Append `-- --list` to inspect a lane without executing it. Full/fast/simulation
 support `--shard=INDEX/COUNT`; visual/performance reject shards. Append
@@ -117,17 +117,38 @@ retains earlier executions from a dirty `53a47ee` tree: startup blocked the visu
 lane before capture, and the existing 2,000-unit move performance workload failed
 its planning-count assertion (six completed jobs versus two expected). The visual
 attempt predates the new WebGL2 prerequisite; neither record is execution evidence
-for the merged wiring revision. Renderer availability remains with the cloud
-testing owner; the code-quality owner retains the route-completion diagnostic.
-Lane wiring does not make either workload pass or change its assertions.
+for the merged wiring revision. [Fixture correction #296](https://github.com/lbeezr/thousand-unit-skirmish/pull/296)
+subsequently separated the two issued formation jobs from legitimate blocked-route
+repair jobs, preserving the route-failure and timing budgets, and updated the exact
+Practice launch identity. At clean `7ea51a9109bbc6c98442a4114a62a78583da9267`,
+`npm run test:fast` passed 939/939 checks and `test:simulation -- --shard=7/16`
+passed 11/11, including the complete native Practice scenario. At final clean
+`6fc75877e9e7804ceeab3e009965cc2751b9a00c`, `test:performance` passed 1/1
+declared workload (2,000 units, one ten-second move/checkpoint sample).
+These scoped passes do not establish full-suite or rendered acceptance.
 
-Full-suite success is also unverified. The recorded CPU shard 2 at `d8f10423`
-failed the stale Practice launch-identity expectation in
-[`shore-fishing-adoption-scenario.mjs`](../scripts/shore-fishing-adoption-scenario.mjs);
-the other shard results were incomplete in that record. The code-quality owner
-retains result collection and that fixture repair. Focused contracts, type/guard
-checks and release packing pass in the wiring evidence; they are separate from
-full-suite or rendered acceptance.
+Collection of all three original shards at `d8f10423f0feda3c219201401c08ee772a7fa0fc`
+is complete: 1,029 passed, three failed and 72 unrun of 1,104 registered checks.
+The failures were Millrace PvE production timeout, the now-corrected Practice
+fixture, and Forked Vale sight-fixture state. [Sight fixture correction #304](https://github.com/lbeezr/thousand-unit-skirmish/pull/304)
+restores valid combat stances and asserts checkpoint recovery before testing the
+authored 24-unit match; the complete native scenario passes both seats at its
+reviewed final head `7668c7196b934f4548431e6634c22be4ab1aa466`. It changes no
+runtime sight ranges or forest rules. Millrace's production timeout remains owned
+by the AI workstream (`01a10297`). Full-suite success and rendered acceptance remain
+unverified; the original fail-fast runs leave those 72 checks unexecuted.
+
+The delivery owner reports staging deployment `c487990a-70c0-4f71-a125-8786681e87ee`
+SUCCESS at 14:50:50 UTC on 4 October 2026, source
+`1acaf9a46fd4d6ed71e1aa32a3f3543ea4a56ad3`, with one online instance and no failures.
+Its source ancestry includes #296, #297 and #304. This delivery identity is
+separate from render evidence. [Hosted qualification #306](https://github.com/lbeezr/thousand-unit-skirmish/pull/306)
+adds a bounded normal-sandbox, non-root attempt on standard GitHub-hosted Actions:
+WebGL2 preflight, clean locally served pack, live worker movement, two advancing
+canvas captures/readbacks, full-page PNGs and retained diagnostics. The CI owner
+retains actual hosted execution/artifact inspection; staging pixels, the full
+environment pilot and ordinary roster/art acceptance remain with the cloud testing
+and implementation owners. A queued run does not establish renderer support.
 
 ## Critical regression contracts
 
