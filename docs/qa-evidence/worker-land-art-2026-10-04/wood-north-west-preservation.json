@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "38d9daf2",
+  "originalFrames": 128,
+  "originalClips": 53,
+  "originalFrameMetadataSha256": "ca54a887c08bd4e7982584727325f986b15aaee68cfca97f1da2990d2a110bf7",
+  "originalClipMetadataSha256": "51cb069aa34bb7990005ff430672342f81ee6904a4b8ba36e31562ca29c1a76a",
+  "originalFrameRgbaSha256": "1045ef55cf01e757f23348314696df5dd69cae7f02ffcd1be63a7b7225bea686",
+  "originalTeamMaskSha256": "074b247161d7a4a1839f7d6dad87816a9ccf73b24acf29d75a7cd4629815cfb3",
+  "originalTeamMaskPixelsSha256": "2daeb1f36095b44b318410b3f4e8b5d989dcc7bb023d1426c492dab0a3053e74",
+  "originalDimensionsPx": {
+    "width": 2048,
+    "height": 4096
+  },
+  "worldUnitsPerPixel": 0.0052421832906788795,
+  "originalMaskCopy": "stone-era-team-mask.png",
+  "authorizedExtension": "Append a right-side strip with zero mask; retain every prior frame/clip and all old mask pixels. New dimensions2560x4096; longest side remains4096. Prior encoded mask hash is retained, not compared to resized file."
+}

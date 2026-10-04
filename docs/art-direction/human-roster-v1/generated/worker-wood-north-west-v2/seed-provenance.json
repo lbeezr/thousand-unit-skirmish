@@ -1,0 +1,26 @@
+{
+  "sourceRevision": "38d9daf2",
+  "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+  "frameId": "idle-north-west-0",
+  "sourceRectPx": {
+    "x": 1100,
+    "y": 284,
+    "width": 146,
+    "height": 232
+  },
+  "sourceGroundPivotPx": {
+    "x": 73,
+    "y": 232
+  },
+  "seedSha256": "d44d6be19716f418103e402059f1965b5cd2ee0f97e118a3233cae4536a200ff",
+  "referenceSha256": "1c7fd458d7112568f144ae56f4e1e1f1990ede244de0de9ad7d0fedd12b16048",
+  "referenceCanvasPx": {
+    "width": 1536,
+    "height": 1024
+  },
+  "slots": {
+    "columns": 3,
+    "rows": 1
+  },
+  "priorIteration": "../worker-wood-north-west-v1/raw.png"
+}
