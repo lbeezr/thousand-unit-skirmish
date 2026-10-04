@@ -39,6 +39,7 @@ const make = async factory => { const f = await factory({ mapPath: null, supervi
 const command = (room, team, value, pattern) => room.clients[team].command({ ...value, clientOrderToken: order++ }, pattern);
 const checkpoint = (room, pred = () => true) => room.f.checkpoint(pred, room.checkpointPath);
 const stock = (s, id) => s.state.resourceNodes.find(n => n.id === id);
+const sessionIdentities = snapshot => snapshot.state.seatSessions.map(({ id, team, tokenHash }) => ({ id, team, tokenHash }));
 function record(stage, s, extra = {}) {
   records.push({ stage, tick: s.state.tickNumber, matchId: s.matchId, mapHash: s.mapHash,
     exploredSha256: s.state.explored.map(cells => sha(Buffer.from(cells, 'base64'))),
@@ -103,8 +104,7 @@ async function recover(room) {
 function preserved(before, after) {
   assert.equal(after.matchId, before.matchId); assert.equal(after.mapHash, before.mapHash);
   assert.deepEqual(after.mapDefinition, before.mapDefinition);
-  const sessions = snapshot => snapshot.sessions.map(({ id, team, tokenHash }) => ({ id, team, tokenHash }));
-  assert.deepEqual(sessions(after), sessions(before), 'paused cold session identities');
+  assert.deepEqual(sessionIdentities(after), sessionIdentities(before), 'paused cold session identities');
   for (const field of ['teamFood', 'teamWood', 'teamStone', 'resourceNodes', 'buildings', 'units', 'explored']) {
     assert.ok(Object.hasOwn(before.state, field), `saved ${field} exists`);
     assert.deepEqual(after.state[field], before.state[field], `paused cold ${field}`);
@@ -122,8 +122,7 @@ async function resetProof(room, before, lobby) {
   for (const message of messages) assert.equal(mapHash(message.map), correctedHash);
   const reset = await checkpoint(room, s => s.mapHash === correctedHash && s.state.buildings.length === 0 && s.state.units.length === before.state.currentArmySize);
   assert.equal(reset.matchId, before.matchId); assert.equal(reset.matchModeId, 'authored'); assert.equal(reset.matchModeVersion, 1);
-  const sessions = snapshot => snapshot.sessions.map(({ id, team, tokenHash }) => ({ id, team, tokenHash }));
-  assert.deepEqual(sessions(reset), sessions(before), 'explicit reset retains session identities');
+  assert.deepEqual(sessionIdentities(reset), sessionIdentities(before), 'explicit reset retains session identities');
   assert.deepEqual(reset.state.teamFood, [150, 150]); assert.deepEqual(reset.state.teamWood, [250, 250]); assert.deepEqual(reset.state.teamStone, [0, 0]);
   for (const n of map.resourceNodes) assert.equal(stock(reset, n.id).stock, n.stock);
   for (const n of map.resourceNodes.filter(n => /^s[01]-(berries|timber)$/.test(n.id))) {
