@@ -192,6 +192,7 @@ run(['--test', 'scripts/fog-checkpoint-boundary.test.mjs', 'scripts/fog-checkpoi
 run(['--test', 'scripts/pve-wildlife-disclosure.test.mjs'], 'Opponent actual-cell wildlife resource disclosure');
 run(['--test', 'scripts/pve-skirmish-loss.test.mjs'], 'Canonical both-seat Skirmish paid army and producer loss recovery');
 run(['--test', 'scripts/pve-tiny-search.test.mjs'], 'Tiny configured Skirmish policy: canonical authored elimination, fog, paid production and reset');
+run(['--test', 'scripts/pve-fog-restart.test.mjs'], 'Native observation phase and both-seat Tiny paid foundation fog recovery');
 run(['--test', 'scripts/pve-objective-rotation.test.mjs'], 'PvE public objective rotation after paid obstruction and checkpoint replay');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');

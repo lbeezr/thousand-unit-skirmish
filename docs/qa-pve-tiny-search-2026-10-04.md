@@ -144,3 +144,11 @@ fog restore; served bytes and ordinary New Game/fog/recovery/defense/rematch/
 reconnect/process-restart/defeat observation. Keep `pveSupported: false` until
 the receiving owners close the applicable ordinary gate. Source merge is a
 useful bounded fix, not completion of that gate.
+
+2026-10-04 correctness follow-up: the [foundation phase investigation](qa-pve-fog-restart-phase-2026-10-04.md)
+explains the fifteen-cell Azure discrepancy as an off-phase cached mask in the
+diagnostic comparison. At the next native snapshot phase, both seat views match;
+the corrected test now restores a fresh fixture and passes paid recovery on both
+Tiny seats without weakening fog equality or changing server restore. Native
+Skirmish admission and ordinary served acceptance remain open. The original
+failure and sealed Tiny archive above remain historical evidence.
