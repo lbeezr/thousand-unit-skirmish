@@ -356,9 +356,9 @@ PR8 waits for the asset/renderer owner's agreed lifetime interface.
 
 | Slice | Canonical boundary / current consumers | Retirement owner and criteria |
 | --- | --- | --- |
-| Map audio reference, [PR298](https://github.com/lbeezr/thousand-unit-skirmish/pull/298) | `src/world/map-audio-reference.mjs` contains the byte-identical validator and has no imports. The named export in `src/audio-event-profile.mjs` preserves binding identity; `server.mjs`, `src/main.js`, `src/audio-shipped-loader.mjs` and validator fixtures keep their old paths. Playback choice/cooldown code is unchanged. Canonical and legacy paths are exact HTTP entries. Initial extraction graph at `4fcf4f42`: 176 runtime modules, 320 edges, 119 browser / 76 server / 32 shared, zero cycles. Subsequent PR295 adds an independent renderer leaf; the PR records refreshed counts. | Audio/world boundary owner retains the compatibility export. Migrate known validator consumers through their owners, check tracked and external/release consumers, then prove canonical source and an identified served/packed release before removing only the named forwarding export. The playback module itself remains. No removal is scheduled in this slice. |
+| Map audio reference, [PR298](https://github.com/lbeezr/thousand-unit-skirmish/pull/298) | `src/world/map-audio-reference.mjs` contains the byte-identical validator and has no imports. The named export in `src/audio-event-profile.mjs` preserves binding identity; at extraction, `server.mjs`, `src/main.js`, `src/audio-shipped-loader.mjs` and validator fixtures keep their old paths. The loader uses the canonical validator after [PR349](https://github.com/lbeezr/thousand-unit-skirmish/pull/349); main/server and compatibility fixtures retain their entry. Playback choice/cooldown code is unchanged. Canonical and legacy paths are exact HTTP entries. Initial extraction graph at `4fcf4f42`: 176 runtime modules, 320 edges, 119 browser / 76 server / 32 shared, zero cycles. Subsequent PR295 adds an independent renderer leaf; the PR records refreshed counts. | Audio/world boundary owner retains the compatibility export. Migrate known validator consumers through their owners, check tracked and external/release consumers, then prove canonical source and an identified served/packed release before removing only the named forwarding export. The playback module itself remains. No removal is scheduled in this slice. |
 | Pure action/base rules, [PR314](https://github.com/lbeezr/thousand-unit-skirmish/pull/314) | `src/rules/gameplay-action-rules.mjs` preserves all implementation bytes from `908d80f6`; `src/rules/base-lifecycle.mjs` changes only the relative import of the same definitions module. The old paths explicitly forward the same three/two named values; the action entry also preserves its two existing JSDoc type names. At extraction, production/research consume the action shim; the import-only [PR336](https://github.com/lbeezr/thousand-unit-skirmish/pull/336) checkpoint below migrates both to the canonical leaf. `server.mjs` still consumes the lifecycle shim. Both paths remain rules responsibilities. Action rules retain exact public canonical/legacy paths; lifecycle remains HTTP-private at both paths. | Rules/extraction owner retains both shims. Action consumers `production-actions` and `research-actions` use the canonical leaf after PR336; lifecycle consumers are `server.mjs`, Worker action test/scenario/probe, Skiff contracts and wall-construction fixtures. The two matching contract tests now consume canonical exports and verify old-path binding identity. Later caller migration inventories tracked runtime/tools/tests/docs and supported external consumers through their owners. Remove each shim only after that inventory and owner confirmation, canonical implementation coverage, source/served/packed checks and an identified containing release succeed without it. Keep lifecycle HTTP denial; retain action-path reload safety under existing `no-store` behavior. No shim retirement occurs in this slice. |
-| Client audio helpers, [PR322](https://github.com/lbeezr/thousand-unit-skirmish/pull/322) | `src/client/audio/audio-decoded-cache.mjs` and `src/client/audio/audio-shipped-response.mjs` preserve all implementation bytes from `33b05ed1`, without imports. Each old path explicitly forwards its sole named value. `audio.mjs` and `audio-shipped-loader.mjs` retain their existing imports. Canonical and legacy paths remain client responsibilities and exact public HTTP entries; rules/world/simulation/AI and server hosts cannot import either path. | Audio boundary/extraction owner retains both shims. Matching cache/reader contracts exercise canonical exports and verify legacy binding identity; shared-decode/loader/lifecycle consumers still exercise the shims. Before retirement, inventory runtime/tools/tests/docs and supported external consumers with their owners; retain canonical coverage, check source/packed/served imports without the shim, identify a containing release and confirm page reload safety under the existing `no-store` policy. Caller migration and shim removal are later bounded integration steps; no playback, recordings, errors or cache lifetime changes are included. |
+| Client audio helpers, [PR322](https://github.com/lbeezr/thousand-unit-skirmish/pull/322) | `src/client/audio/audio-decoded-cache.mjs` and `src/client/audio/audio-shipped-response.mjs` preserve all implementation bytes from `33b05ed1`, without imports. Each old path explicitly forwards its sole named value. At extraction, `audio.mjs` and `audio-shipped-loader.mjs` retain their existing imports; the caller batch [PR349](https://github.com/lbeezr/thousand-unit-skirmish/pull/349) below migrates both to the canonical leaves. Canonical and legacy paths remain client responsibilities and exact public HTTP entries; rules/world/simulation/AI and server hosts cannot import either path. | Audio boundary/extraction owner retains both shims. Matching cache/reader contracts exercise canonical exports and verify legacy binding identity; shared-decode/loader/lifecycle consumers exercise the original shims at extraction and the same canonical bindings after PR349. Before retirement, inventory runtime/tools/tests/docs and supported external consumers with their owners; retain canonical coverage, check source/packed/served imports without the shim, identify a containing release and confirm page reload safety under the existing `no-store` policy. Caller migration is recorded in PR349; shim removal remains a later bounded integration step; no playback, recordings, errors or cache lifetime changes are included. |
 | Verified interactive image, [PR327](https://github.com/lbeezr/thousand-unit-skirmish/pull/327) | `src/presentation/assets/interactive-runtime-image.mjs` contains the exact private `fetchVerifiedRuntimeImage` body from `f73c6702`. Its sole `environment-art.mjs` call supplies the same interactive root, TextureLoader and Three constants explicitly. Existing environment exports, manifest/status/readiness, oak fallback, texture/material registries and batch updates stay in the host. The helper has no imports and one named export; its exact public module entry is separate from private hosts/adapters. | The asset-loading boundary owner owns this host call, not a new compatibility shim: the helper was private before extraction. Keep the unchanged public environment host and its orchestration/lifetime contracts. Same-fixture original/canonical checks preserve requests/cache/SHA, sampling/dimensions, failure identity and rejected-texture disposal. Renderer/resource-state/appearance acceptance remains with its existing owner; no new assets or default binding are introduced. |
 
 Candidate 3's atomic [PR314](https://github.com/lbeezr/thousand-unit-skirmish/pull/314)
@@ -461,8 +461,8 @@ The offline opponent adapter keeps its separately documented retirement policy.
 The import-only [PR336](https://github.com/lbeezr/thousand-unit-skirmish/pull/336)
 checkpoint changes just the two action-rule specifiers in `production-actions.mjs`
 and `research-actions.mjs`, preserving the three imported ESM bindings and every
-other source byte in those consumers. A fresh tracked-runtime audit finds **15
-remaining compatibility imports across seven consumer files**. Ten of the eleven
+other source byte in those consumers. At that checkpoint, the tracked-runtime
+audit finds **15 remaining compatibility imports across seven consumer files**. Ten of the eleven
 retained compatibility paths still have runtime consumers; the action shim now
 has none. It remains supported: `gameplay-action-rules.test.mjs` deliberately
 checks its three value bindings, its two JSDoc type names and exact public HTTP
@@ -475,7 +475,32 @@ same full native research scenario timeout on preceding main and the caller
 head, before any research command at its initial Infantry Move; that unchanged
 check's research/recovery acceptance remains open with the building/movement
 owners. Native both-seat production/research cancellation and paid reservation
-lifecycle pass separately.
+lifecycle pass separately. The exact standalone command and both failing SHAs
+are routed to Universal movement `01a107ba` in
+[PR332](https://github.com/lbeezr/thousand-unit-skirmish/pull/332#issuecomment-5982378433)
+and Building/action `01a107c9-0032` in
+[PR339](https://github.com/lbeezr/thousand-unit-skirmish/pull/339#issuecomment-5982522735).
+Passing separate progression/cancellation checks do not close that failure.
+
+The related client caller batch
+[PR349](https://github.com/lbeezr/thousand-unit-skirmish/pull/349) changes six import
+literals across five existing consumers: the cache in `audio.mjs`, bounded reader
+and named map validator in `audio-shipped-loader.mjs`, resource formatting in
+`selection-portrait.mjs` and `wall-placement.mjs`, and objective rule projection
+in `match-mode-controls.mjs`. The same canonical ESM functions and reader alias
+are used; every other byte in those consumers remains unchanged. Its
+[exact-hunk note](https://github.com/lbeezr/thousand-unit-skirmish/pull/349#issuecomment-5982544346)
+records active feature scopes and leaves semantic audio/HUD/ghost/mode wiring
+with their owners. Main/server imports and all leaf/shim implementations stay
+unchanged.
+
+The current tracked-runtime audit now finds **nine compatibility imports in two
+consumer files**: six in `src/main.js`, three in `server.mjs`. Eight of the eleven
+retained paths still have runtime consumers; action rules and both audio shims
+have none. All eleven remain supported while fixture/public/type/external and
+identified-release reload-safety obligations remain. The validator's forwarding
+export in `audio-event-profile.mjs` still serves main/server; its playback/profile
+library and consumers remain needed. No alias, test or registration is removed.
 
 The audit parses imports/re-exports/literal dynamic imports, then inspects
 fixture/file-path references separately. Intentional export-identity tests,
@@ -487,13 +512,13 @@ after the image-loading extraction.
 
 | Retained compatibility surface / owner | Actual runtime callers | Tool/fixture work before retirement |
 | --- | --- | --- |
-| `audio-event-profile.mjs`'s **validator export only** / audio-world boundary owner | `server.mjs`, `src/main.js`, `src/audio-shipped-loader.mjs` | Validator imports in `audio-runtime-scenario`, `audio-shipped-loader.test`, `stone-map-profile.test` and `wildlife-import-parity.test`; retain canonical/legacy parity while the alias is supported. Playback/profile consumers still need this module, so retirement removes only `validateMapAudioReference`'s forwarding export. |
+| `audio-event-profile.mjs`'s **validator export only** / audio-world boundary owner | `server.mjs`, `src/main.js`; the loader uses the canonical world validator after PR349 | Validator imports in `audio-runtime-scenario`, `audio-shipped-loader.test`, `stone-map-profile.test` and `wildlife-import-parity.test`; retain canonical/legacy parity while the alias is supported. Playback/profile consumers still need this module, so retirement removes only `validateMapAudioReference`'s forwarding export. |
 | `gameplay-action-rules.mjs` / rules owner | None after PR336; `src/production-actions.mjs` and `src/research-actions.mjs` use the canonical rules leaf | The action contract already exercises canonical values and deliberately checks the legacy namespace. Preserve its two JSDoc type names while supported. Rejection order, affordability, production/research UI and native payment/recovery checks remain required. |
 | `base-lifecycle.mjs` / rules owner with server/Worker/naval receivers | `server.mjs` | `base-lifecycle.test`, Worker performing-action test/scenario/probe, `skiff-contracts.test` and `wall-construction-draft.test`. Retarget injected fixture bindings with their owners; preserve real refunds/repair/reservation scenarios and both old/canonical HTTP denials. |
 | `formation-assignment.mjs` / movement owner | `server.mjs` | `formation-assignment-scenario` still exercises the legacy import plus explicit canonical binding identity. Keep formation pairing/ties and real pathing/native command consumers; both helper paths remain HTTP-private. |
-| HUD aliases `resource-format`, `population-readout`, `objective-summary` / HUD integration owner | `src/main.js` uses all three; `selection-portrait` and `wall-placement` use resource formatting; `match-mode-controls` uses objective rules | Matching canonical/legacy contracts; contextual HUD, construction/wildlife client fixtures, roster/shore-fishing checks, population browser runner and Practice/Bannerfall entry checks. `contextual-hud.test` already imports canonical objective summary while still using legacy resource/population helpers; do not revert or rename it. |
+| HUD aliases `resource-format`, `population-readout`, `objective-summary` / HUD integration owner | `src/main.js` uses all three; selection/wall/match-mode leaf consumers use canonical helpers after PR349 | Matching canonical/legacy contracts; contextual HUD, construction/wildlife client fixtures, roster/shore-fishing checks, population browser runner and Practice/Bannerfall entry checks. `contextual-hud.test` already imports canonical objective summary while still using legacy resource/population helpers; do not revert or rename it. |
 | Authoring aliases `scenario-authoring`, `map-resize` / authoring owner | `src/main.js` uses both | `scenario-authoring.test` retains both binding identities; server-hardening and packed-release checks intentionally exercise exact compatibility HTTP paths. Map persistence already imports canonical resize. Reconcile the owning authoring/saga links with their owners rather than changing unrelated historical receipts. |
-| Audio aliases `audio-decoded-cache`, `audio-shipped-response` / audio boundary owner | `src/audio.mjs` and `src/audio-shipped-loader.mjs`, respectively | Matching contracts already use canonical implementations plus legacy identity; shared-decode/loader/lifecycle consumers reach those aliases through the real runtime. Canonical reader coverage is registered. Preserve both-path HTTP bytes and playback/cache/error/cancellation checks until alias deletion is justified. |
+| Audio aliases `audio-decoded-cache`, `audio-shipped-response` / audio boundary owner | None after PR349; `src/audio.mjs` and `src/audio-shipped-loader.mjs` use canonical leaves | Matching contracts already use canonical implementations plus legacy identity; shared-decode/loader/lifecycle checks reach the same canonical functions through the real runtime. Canonical reader coverage is registered. Preserve both-path HTTP bytes and playback/cache/error/cancellation checks until alias deletion is justified. |
 
 The next caller work is a bounded integration queue, not another batch of leaf
 copies. Each row retains its owning review and the common source/served/packed
@@ -506,14 +531,15 @@ checks above; no source or test is renamed solely to make a path look tidy.
    paid lifecycle checks establish the scoped migration. Full research recovery
    retains the baseline scenario limitation recorded above and in the PR.
    Its shim-retirement decision stays in steps 5–6 below.
-2. The audio owner can propose the cache import in `audio.mjs` and bounded reader
-   import in `audio-shipped-loader.mjs`. The loader's validator import is a
-   separate shared world contract; coordinate it with the validator's other
-   receivers. Keep every cache/scheduling/reader test and all coverage floors.
-3. The HUD owner can propose only resource imports in `selection-portrait.mjs`
-   and `wall-placement.mjs`, then the objective import in `match-mode-controls.mjs`,
-   with the actual contextual/construction/selection consumers. This clears
-   three edge consumers without touching the main composition host.
+2. Client batch PR349 migrates the cache import in `audio.mjs` and bounded reader
+   import in `audio-shipped-loader.mjs`, plus that loader's named validator to
+   its pure world leaf. The validator's main/server receivers retain their
+   current API/path. Keep every cache/scheduling/reader/validator contract and
+   all coverage floors; audio shim retirement remains steps 5–6.
+3. The same batch migrates resource imports in `selection-portrait.mjs` and
+   `wall-placement.mjs`, plus the objective import in `match-mode-controls.mjs`,
+   preserving actual contextual/construction/selection consumers. These three
+   leaf callers no longer traverse aliases; the main composition host does.
 4. Main/client, authoring and validator owners then agree the six retained
    compatibility imports in `src/main.js`; server, movement, rules and validator
    owners agree its three counterparts in `server.mjs`. Use exact import hunks

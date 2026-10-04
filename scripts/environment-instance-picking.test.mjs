@@ -13,7 +13,8 @@ import { decodeRgba8 } from './sprite-pixel-bounds.mjs';
 const root = new URL('../', import.meta.url);
 const main = await readFile(new URL('src/main.js', root), 'utf8');
 function functionSource(name) {
-  const start = main.indexOf(`function ${name}(`);
+  const normalStart = main.indexOf(`function ${name}(`);
+  const start = normalStart >= 0 ? normalStart : main.indexOf(`function* ${name}(`);
   assert.ok(start >= 0, name);
   return main.slice(start, main.indexOf('\n}', start + 1) + 2);
 }
@@ -119,6 +120,41 @@ test('stock atlas map offset/repeat, alphaTest, replacement image and parent tra
   assert.equal(picker(rayAt(3), [candidate]), null);
 });
 
+test('read-only ordinary capture describes current instance IDs, excludes hidden stock and tracks rebuild/depletion', () => {
+  const camera = new THREE.OrthographicCamera(-4, 4, 4, -4, .1, 20);
+  camera.position.z = 5; camera.updateMatrixWorld();
+  const mesh = quad(image(8, 8)), cleared = quad(image(8, 8));
+  cleared.setMatrixAt(0, new THREE.Matrix4().makeScale(0, 0, 0));
+  const slots = new Map([[3, { mesh, index: 0, x: 0, z: 0, family: 'actual-canopy' }],
+    [4, { mesh, index: 0, x: 0, z: 0, family: 'hidden-canopy' }],
+    [5, { mesh: cleared, index: 0, x: 0, z: 0, family: 'depleted-canopy' }]]);
+  const stocks = new Map([[3, 6], [4, 2], [5, 0]]), fog = new Uint8Array(160 * 160);
+  fog[3] = 2; fog[4] = 0; fog[5] = 2;
+  const context = vm.createContext({ THREE, camera, renderer: { domElement: { getBoundingClientRect: () => ({ left: 11, top: 23, width: 1280, height: 720 }) } },
+    groundHeight: () => 0, forestTreeSlots: slots, latestForestStocks: stocks, latestFogCells: fog,
+    mapDefinition: { id: 'veyrholds-terraced-vale', fogOfWar: true, resourceNodes: [] },
+    latestResourceStocks: new Map(), woodTreeMeshes: new Map(), woodTreeNodeStages: new Map(), woodTreeNodeSlots: new Map(),
+    MAP_WIDTH: 160, MAP_HEIGHT: 160, resourceVisualStage, latestForestEpoch: 7, localTeam: 0, selected: new Set([9]),
+    forestStumpMesh: mesh, forestStumpSlots: new Map([[5, { index: 0, x: 0, z: 0, visible: true }]]),
+    units: [{ id: 9, team: 0, kind: 'worker', hp: 1, renderX: 0, renderZ: 0 }, { id: 10, team: 1, kind: 'worker', hp: 1 }],
+  });
+  for (const name of ['harvestableTreeCandidates', 'treeTargetCaptureSnapshot']) vm.runInContext(functionSource(name), context);
+  const before = [...stocks], snapshot = JSON.parse(JSON.stringify(context.treeTargetCaptureSnapshot()));
+  assert.equal(snapshot.mapId, 'veyrholds-terraced-vale'); assert.equal(snapshot.epoch, 7);
+  assert.deepEqual(snapshot.targets.map(t => t.forestCell), [3]);
+  assert.deepEqual(snapshot.rejected.map(t => [t.forestCell, t.reason]), [[4, 'hidden'], [5, 'depleted']]);
+  assert.equal('stock' in snapshot.rejected[0], false, 'hidden current stock must not be exposed by diagnostics');
+  assert.equal(snapshot.rejected[1].stock, 0);
+  assert.deepEqual(snapshot.workers.map(w => w.id), [9]); assert.deepEqual([...stocks], before);
+  fog[4] = 1;
+  assert.ok([...context.harvestableTreeCandidates()].some(target => target.forestCell === 4), 'remembered art still selects its authored forest group');
+  const remembered = context.treeTargetCaptureSnapshot();
+  assert.equal(remembered.targets.some(target => target.forestCell === 4), false, 'last-known stock is not current capture stock');
+  assert.equal(remembered.rejected.some(target => target.forestCell === 4), false, 'remembered authored group is not an unknown/depleted negative');
+  context.forestTreeSlots = new Map([[8, slots.get(3)]]); context.latestForestEpoch = 8; fog[8] = 2;
+  assert.equal(context.treeTargetCaptureSnapshot().targets[0].forestCell, 8);
+});
+
 test('canonical actual crown pixels issue existing forest/node Gather IDs and respect stock, fog and map lifetime', async () => {
   const previous = { fetch: globalThis.fetch, document: globalThis.document, Image: globalThis.Image, location: globalThis.location, warn: console.warn };
   class ImageMock {
@@ -169,7 +205,7 @@ test('canonical actual crown pixels issue existing forest/node Gather IDs and re
       matchWinner: -1, buildPlacementActive: false, ui: {}, tapOrderArmed: false, cursorShift: false,
       cursorPointer: null, battlefieldCursor, setBattlefieldCursor: mode => { context.cursorMode = mode; },
     });
-    for (const name of ['pickForestCellAt', 'pickHarvestableTreeAt', 'issueForestGather', 'issueGather', 'issueContextOrder', 'syncBattlefieldCursor']) vm.runInContext(functionSource(name), context);
+    for (const name of ['pickForestCellAt', 'harvestableTreeCandidates', 'pickHarvestableTreeAt', 'issueForestGather', 'issueGather', 'issueContextOrder', 'syncBattlefieldCursor']) vm.runInContext(functionSource(name), context);
     const samples = [], matrix = new THREE.Matrix4();
     for (const family of families) {
       const [cell, slot] = [...slots].find(([, entry]) => entry.family === family);

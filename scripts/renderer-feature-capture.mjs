@@ -14,8 +14,11 @@ export const CAPTURE_CASES = Object.freeze({
   'building-catalog': './renderer-building-catalog-scenario.mjs',
 });
 export function selectedCases(selection) {
-  assert.ok(selection === 'all' || Object.hasOwn(CAPTURE_CASES, selection), 'select a registered capture case or all');
-  return selection === 'all' ? Object.keys(CAPTURE_CASES) : [selection];
+  if (selection === 'all') return Object.keys(CAPTURE_CASES);
+  const cases = typeof selection === 'string' ? selection.split(',') : [];
+  assert.ok(cases.length > 0 && new Set(cases).size === cases.length
+    && cases.every(id => Object.hasOwn(CAPTURE_CASES, id)), 'select unique registered capture cases or all');
+  return cases;
 }
 export async function loadCaptureCases(selection, { exists = lstat, load = url => import(url) } = {}) {
   const adapters = [], issues = [];
@@ -142,7 +145,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     const result = await runFeatureBatch(process.argv[2], process.argv[3], process.argv[4]);
     console.log(JSON.stringify(result)); process.exitCode = result.status === 'passed' ? 0 : 1;
   } else {
-    process.stderr.write('Usage: node scripts/renderer-feature-capture.mjs --check all|CASE\n       node scripts/renderer-feature-capture.mjs PACK_JSON EVIDENCE_DIRECTORY all|CASE\n');
+    process.stderr.write('Usage: node scripts/renderer-feature-capture.mjs --check all|CASE[,CASE]\n       node scripts/renderer-feature-capture.mjs PACK_JSON EVIDENCE_DIRECTORY all|CASE[,CASE]\n');
     process.exitCode = 2;
   }
 }

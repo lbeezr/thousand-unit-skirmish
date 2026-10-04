@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
+import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 
@@ -21,6 +22,7 @@ export function minimapFixture(team = 0) {
   canvas.releasePointerCapture = id => captured.delete(id);
   const noop = () => {};
   Object.assign(w, {
+    ...browserRecoveryBindings(),
     ...wildlifeClientBindings(), resourceNodeVisuals: new Map(), latestForestStocks: new Map(), latestBuildings: [],
     minimapCanvas: canvas, minimapPointerId: null,
     MAP_WIDTH: 64, MAP_HEIGHT: 64, MAP_HALF_X: 32, MAP_HALF_Z: 32,

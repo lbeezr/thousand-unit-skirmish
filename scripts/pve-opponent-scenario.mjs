@@ -600,9 +600,10 @@ async function verifyProposalController() {
   assert.equal(opponent.team, 0);
   assert.equal(requests.length, 1);
   assert.deepEqual(Object.keys(requests[0].observation).sort(), [
-    'buildings', 'fogOfWar', 'map', 'objectives', 'population', 'research', 'resourceNodes', 'resources',
+    'buildings', 'fogOfWar', 'forestCells', 'map', 'objectives', 'population', 'research', 'resourceNodes', 'resources',
     'schemaVersion', 'team', 'tick', 'units', 'visibility', 'workerProduction',
   ]);
+  assert.deepEqual(requests[0].observation.forestCells, [], 'legacy proposal fixture has no disclosed forest; node-only action schema is unchanged');
   assert.equal(Object.hasOwn(requests[0].observation.map, 'spawnPoints'), false);
   assert.deepEqual(acceptedSocket.sent, [{
     type: 'gather', ids: [0], nodeId: 'lifecycle-food', clientOrderToken: 1,

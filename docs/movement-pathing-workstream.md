@@ -87,13 +87,91 @@ Changes to another lane's host functions are agreed with that affected owner.
 | U6 · movement + transport/mode/AI/recovery | Use the existing [all-command phase contract](movement-tick-phase-proposal.md#required-cross-owner-decision): named dispatcher, planner hook, AI decision ticks and checkpoint sections only. | Fixed intake sequence/eligibility and aggregate navigation budget, pending jobs/cache reuse across callers, clock/callback perturbation replay and durable recovery. Retain four-turn failure until new complete tick evidence qualifies a shipping policy. |
 | U7 · movement acceptance; benchmark/map/capture owners supply their existing interfaces | Benchmark `01a101bc-9d2a-733a-916f-104264e9102c` owns report validity; map `01a103e8-8bfd-7013-8fee-94450f88501b` owns XL admission/index support; CI `01a10378` owns capture interfaces; organization `01a10711` owns relocations. Movement writes scenarios/acceptance only. | Full caller journey matrix, native/replay and actual ordinary-game rendered sequences at identified source/release. Keep 320 tests experimental until map admission lands. No duplicate report format, map-limit patch, renderer interface or path-only move. |
 
-The user's sparse/permeable, narrow-pass and dense/impassable forest exploration
-is a future U4/U5 fixture experiment after explicit land footprint/clearance.
-Current forests occupy whole blocked cells with six wood per cell; canopy density,
-species and visual scale do not change navigation. Compare actual swept clearance
-and group filtering/reforming through proposed one/two-unit passages before naming
-their physical capacity. Preserve resource quantities and keep this experiment
-separate from the urgent forest-stall fix. Tree-variety owner
+### Forest cell-gap characterization — 4 October 2026
+
+The bounded experiment measures the current cell-based behavior before U4/U5
+physical-clearance work. The [current summary](qa-evidence/forest-gap-2026-10-04/group-summary.json)
+and [compressed raw record](qa-evidence/forest-gap-2026-10-04/group-replay.json.gz) retain
+42 scenarios, each repeated from the same validated initial checkpoint at clean
+source `c4ad43b7e2ac8e810c1a462d085b324e64182183`, including Worker route shortening
+and [forest group jobs](qa-forest-group-jobs-2026-10-04.md). All 84 runs match their paired route/motion/harvest records;
+this establishes repeatability of the fixed-tick adapter inputs, not the whole
+asynchronous server. Actual actor identities remain intact without normalization.
+The forest-gap experiment owner retains this fixture/evidence; movement owner
+`01a107ba` consumes the measurements for U4/U5 and map owner `01a103e8` retains
+map admission. No live collision, map catalog, art or CI-policy change is included.
+
+The authored flat 64×48 map uses seed 881 and forest rectangles at
+`(column28,row4,width8,height20)` and `(column28,row24+g,width8,height20−g)`.
+Four-cell north/south bypasses remain open. Each seat has 16 Infantry plus four
+Workers in the primary cases; box, line and column formations cross separately
+from each seat. Additional one/64-Infantry box cases bound traffic. Ordinary Move
+stages the army, and reserved exit goals lie at least four columns beyond the
+belt. Enemy homes/idle rosters are outside the route region; unchanged unit health
+rules out combat as the cause of missing arrivals. The table ranges over both
+seats and three formations, using logical ticks from the crossing order.
+
+| Gap rows | Forest cells / Wood (change from closed) | Mean planned distance range | First / last completed belt crossing | All at unique assigned goals |
+| --- | --- | --- | --- | --- |
+| 0 | 320 / 1,920 (0) | 63.50–65.25 | 387–399 / 453–470 | 797–849 ticks |
+| 1 | 312 / 1,872 (−48) | 25.76–28.26 | 168–179 / 228–246 | 347–387 ticks |
+| 2 | 304 / 1,824 (−96) | 25.52–27.65 | 168–179 / 226–240 | 325–385 ticks |
+| 4 | 288 / 1,728 (−192) | 25.52–27.18 | 168–181 / 214–240 | 325–385 ticks |
+
+Every closed-belt route uses a north/south bypass; every open-gap route uses the
+gap. All actors arrive and reform at unique, unchanged goals before the finite
+1,800-tick deadline, with zero illegal cell steps or unfinished actors. The
+one/64-Infantry controls also complete (289–751 / 403–825 ticks respectively).
+No-progress is a 0.05-world-unit remaining-route improvement observation; a
+published replacement route starts a new window, and an empty pending route
+cannot masquerade as arrival. Maximum no-progress within these windows is one
+tick. Cumulative ticks without that improvement before belt crossing reach
+0/10/16 for the one/16/64-Infantry groups; these are queue observations, not
+physical throughput or hardware timings. Raw records retain per-actor distance,
+crossing, route-publication and pending/timeout fields.
+
+For both seats, a single added plug at `(column31,row24)` blocks the one-row gap.
+Normal Gather anchors the authored group: the Worker first selects the tied
+northern frontier cell 1502/1504 (column30/32,row23), then the plug cell 1567.
+Those two cuts change navigation revision 0→2 and reduce the 16-Infantry mean
+planned route from 64 to 27 world units. The after-route measures both cleared
+cells, not an isolated plug removal. A checkpoint with two Wood carried is
+validated and restored into a fresh fixed-tick adapter.
+Original/restored units and forest stocks match while harvesting; bank balances
+match through depletion and the same Stop/Return orders. At plug clearance each
+branch has banked ten and carries two Wood. Both ultimately deliver exactly
+12 Wood (500→512), finish with zero cargo, and retain unit health. The exact
+cleared set and unchanged stock elsewhere are checked in both branches; stock
+draw equals banked plus carried Wood at every compared tick. The plug map starts
+with 313 cells/1,878 Wood and ends with 311 live cells/1,866 remaining Wood.
+This proves adapter checkpoint conservation, not a native process/socket restart.
+
+The earlier [summary](qa-evidence/forest-gap-2026-10-04/summary.json) and
+[raw record](qa-evidence/forest-gap-2026-10-04/replay.json.gz) at clean `d914317f`
+remain historical: before group jobs, the same Gather cleared only the plug,
+revision 0→1, and banked six Wood. Its primary/control route aggregates match the
+current record. The old six-Wood witness failed against group jobs as expected;
+the fixture was updated to observe actual selection, without changing live rules.
+
+Run `node --test scripts/forest-gap.test.mjs` for the 15 focused regressions, or
+`FOREST_GAP_RECORD=/tmp/forest-gap.json.gz node scripts/forest-gap-characterization.mjs all 2 1800`
+for the full bounded record (`small` selects six scenarios). The runner checks
+source identity at both ends and retains failures; the experiment is opt-in.
+Ninety-three focused forest, final-approach, replay, arrival, movement, segment and
+Worker route tests pass at the measured code head. Pilot data with fresh random actor identities,
+combat near enemy homes or the superseded pending-route observation is excluded
+from this table; no performance optimization is inferred from those comparisons.
+
+Current forests occupy whole blocked cells with six Wood per cell. Unit-center
+occupancy and 0.56 soft separation do not define a body radius or swept hull.
+Canopy density, species and visual scale do not change navigation. One open row
+does not establish a one-unit physical throat or a cavalry clearance. Proposed
+permeable/tight/dense forest treatments still need explicit swept clearance,
+opposing/mixed-speed traffic, actual ordinary-game appearance and their own
+resource-quantity controls. Forest-job/frontier fixes and their ordinary-game
+acceptance remain with the [forest owner](qa-forest-group-jobs-2026-10-04.md);
+2,000-unit hardware/rendered capacity remains U7 work.
+Tree-variety owner
 `01a107c8-d1d5-7113-8371-57b914ac502d` retains model/appearance work. Building-rotation
 owner `01a107c9-6a7d-7534-b592-ef8d18cd0001` retains orientation/ghost preview;
 any doorway/egress goal region must use the same authoritative access policy,

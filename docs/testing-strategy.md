@@ -176,6 +176,13 @@ full-suite result follows from this fixture correction.
 
 ## Critical regression contracts
 
+[Browser resume QA](qa-browser-resume-2026-10-04.md) distinguishes visible blur,
+hidden tabs, freeze/discard, transport interruption and responsive server
+non-progress. Deterministic client/protocol checks establish bounded presentation
+and freshness, while the owned cloud adapter still needs a real default-policy
+hidden/freeze capture. Synthetic events and the #323 launcher with disabled
+background throttling cannot establish that acceptance.
+
 Source fixes for [selectors (#284)](https://github.com/lbeezr/thousand-unit-skirmish/pull/284),
 [direct routes (#285)](https://github.com/lbeezr/thousand-unit-skirmish/pull/285)
 and [Infantry identity (#286)](https://github.com/lbeezr/thousand-unit-skirmish/pull/286)

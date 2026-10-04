@@ -12,8 +12,10 @@ const runtime = () => ({ page: page(), openPage: async () => page(), origin: 'ht
 
 test('explicit selections cannot dispatch paths, commands, unknown or duplicate cases', () => {
   assert.deepEqual(selectedCases('all'), Object.keys(CAPTURE_CASES));
+  assert.deepEqual(selectedCases('worker-animations,novice-flow'), ['worker-animations', 'novice-flow']);
   for (const id of Object.keys(CAPTURE_CASES)) assert.deepEqual(selectedCases(id), [id]);
-  for (const value of ['', '../private', 'worker-routes;echo', 'worker-routes,worker-routes', 'unknown', null]) assert.throws(() => selectedCases(value));
+  for (const value of ['', '../private', 'worker-routes;echo', 'worker-routes,worker-routes', 'unknown', null,
+    'novice-flow,unknown', 'novice-flow,', ',novice-flow', 'novice-flow, worker-animations']) assert.throws(() => selectedCases(value));
 });
 test('absent owned files block; broken imports and malformed exports fail safely', async () => {
   const missing = await loadCaptureCases('all', { exists: async () => { throw Object.assign(new Error('private-token'), { code: 'ENOENT' }); } });
@@ -141,6 +143,11 @@ test('owner exports are validated through the actual loader before qualification
     load: async () => ({ id: 'novice-flow', contextVersion: 1, run: async () => ({ status: 'blocked', checks: [{ id: 'not-rendered', passed: false }] }) }) });
   assert.equal(prepared.issues.length, 0); assert.equal(prepared.adapters[0].contextVersion, 1);
 });
+test('an explicit prepared subset loads real owner exports without silently adding unavailable cases', async () => {
+  const loaded = await loadCaptureCases('worker-animations,novice-flow');
+  assert.deepEqual(loaded.issues, []);
+  assert.deepEqual(loaded.adapters.map(adapter => [adapter.id, adapter.contextVersion]), [['worker-animations', 1], ['novice-flow', 1]]);
+});
 test('ordinary workflow is manual, source-pinned, globally serialized, read-only and validates cases before preflight', async () => {
   const workflow = await readFile(new URL('../.github/workflows/ordinary-game-capture.yml', import.meta.url), 'utf8');
   assert.match(workflow, /workflow_dispatch:/); assert.doesNotMatch(workflow, /pull_request:|push:/);
@@ -148,6 +155,7 @@ test('ordinary workflow is manual, source-pinned, globally serialized, read-only
   assert.match(workflow, /group: ordinary-game-capture\n  cancel-in-progress: false/);
   assert.match(workflow, /timeout-minutes: 20/); assert.match(workflow, /retention-days: 1/);
   for (const id of Object.keys(CAPTURE_CASES)) assert.ok(workflow.includes(`- ${id}`));
+  assert.ok(workflow.includes('worker-animations,novice-flow'));
   assert.ok(workflow.indexOf('--check "$CASES"') < workflow.indexOf('renderer-qualification.mjs --preflight'));
   assert.doesNotMatch(workflow, /no-sandbox|sudo|secrets\.|continue-on-error/);
 });

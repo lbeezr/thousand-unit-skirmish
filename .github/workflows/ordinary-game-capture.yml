@@ -12,6 +12,7 @@ on:
           - all
           - worker-animations
           - novice-flow
+          - 'worker-animations,novice-flow'
           - worker-routes
           - building-catalog
 

@@ -218,6 +218,26 @@ function visibleResources(state, map, visibility, team) {
   return visible.sort((left, right) => left.id.localeCompare(right.id));
 }
 
+// Static authored addresses locate trees; only current peer sight supplies
+// usable stock. Missing changed entries mean the native initial six wood.
+function visibleForestCells(state, map, visibility) {
+  if (!Array.isArray(state.forestStocks) || !Number.isInteger(map?.width)
+    || !Number.isInteger(map?.height)) return [];
+  const stocks = new Map(state.forestStocks), cells = new Map();
+  for (const obstacle of map.obstacles || []) {
+    if (obstacle.material !== 'forest') continue;
+    for (let row = obstacle.row; row < obstacle.row + obstacle.height; row++) {
+      for (let column = obstacle.column; column < obstacle.column + obstacle.width; column++) {
+        const cell = row * map.width + column, x = column + .5 - map.width / 2, z = row + .5 - map.height / 2;
+        if (visibility && visibility.cellStateAtWorld(x, z) !== 2) continue;
+        const stock = stocks.has(cell) ? stocks.get(cell) : 6;
+        if (Number.isFinite(stock) && stock > 0 && stock <= 6) cells.set(cell, { cell, x, z, stock });
+      }
+    }
+  }
+  return [...cells.values()].sort((a, b) => a.cell - b.cell);
+}
+
 function normalizeObjectiveZone(zone) {
   if (!zone || !Number.isInteger(zone.column) || !Number.isInteger(zone.row)
     || !Number.isInteger(zone.width) || !Number.isInteger(zone.height)
@@ -339,6 +359,7 @@ export function toOpponentObservation(state, team, map = null) {
     ),
     research,
     resourceNodes: visibleResources(state, map, visibility, team),
+    forestCells: visibleForestCells(state, map, visibility),
     objectives: projectObjectives(state, map, visibility, units),
   };
 }
@@ -563,7 +584,13 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED, matchMod
     }
 
     const nodesByType = { food: [], wood: [] };
-    for (const node of observation.resourceNodes) {
+    const sources = [...observation.resourceNodes];
+    // Keep ordinary-node preferences; forest is the missing Wood fallback.
+    if (!sources.some(node => node.type === 'wood' && node.stock > 0)) {
+      for (const tree of observation.forestCells || []) sources.push({ ...tree,
+        id: `forest:${tree.cell}`, type: 'wood', forestCell: tree.cell });
+    }
+    for (const node of sources) {
       if (RESOURCE_TYPES.includes(node.type) && node.stock > 0
         && Number.isFinite(node.x) && Number.isFinite(node.z)) {
         nodesByType[node.type].push(node);
@@ -575,7 +602,7 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED, matchMod
     if (workers.length === 0 || RESOURCE_TYPES.every((type) => nodesByType[type].length === 0)) return [];
 
     const tick = Number.isSafeInteger(observation.tick) ? observation.tick : 0;
-    const observedNodesById = new Map(observation.resourceNodes.map((node) => [node.id, node]));
+    const observedNodesById = new Map(sources.map((node) => [node.id, node]));
     const availableNodeIds = new Set(RESOURCE_TYPES.flatMap((type) => nodesByType[type].map((node) => node.id)));
     const typeLoads = { food: 0, wood: 0 };
     const nodeLoads = new Map();
@@ -653,7 +680,8 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED, matchMod
       .map(([nodeId, ids]) => ({
         type: 'gather',
         ids: ids.sort((left, right) => left - right),
-        nodeId,
+        ...(Number.isInteger(observedNodesById.get(nodeId)?.forestCell)
+          ? { forestCell: observedNodesById.get(nodeId).forestCell } : { nodeId }),
       }));
   }
 

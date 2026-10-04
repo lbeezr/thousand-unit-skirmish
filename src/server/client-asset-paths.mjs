@@ -12,7 +12,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
   'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
   'src/room-lobby-ui.mjs', 'src/room-lobby-chat-ui.mjs', 'src/room-lobby.css',
-  'src/room-presence.mjs', 'src/match-mode-controls.mjs',
+  'src/room-presence.mjs', 'src/match-mode-controls.mjs', 'src/browser-state-recovery.mjs',
   'src/practice-entry-controls.mjs',
   'src/game-entry.mjs', 'src/game-entry-session.mjs', 'src/game-menu.css',
   'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
