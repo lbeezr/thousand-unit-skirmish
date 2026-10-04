@@ -48,12 +48,15 @@ Current runtime defaults:
   Meshy replacements remain unfinished. Other tree species retain their art.
 - Normal matches bind team zero to the seven-role Human roster and team one to
   the seven-role Boughward roster through `src/unit-sprite-runtime.mjs`.
-  Human Worker uses `cast-human-sprite-v3`, Infantry `infantry-sprite-v3`,
+  Human Worker uses `cast-human-sprite-v3`, Infantry `infantry-sprite-v4`,
   Spearman `spearman-sprite-v1`, Archer `archer-sprite-v2`, and Scout/Rider/Siege
   Engine their v1 packs. Boughward uses `boughward-<role>-sprite-v1` throughout.
   Required actions resolve at all eight headings with approximate authored-action
   reuse. This is first-pass coverage; directional motion, ground/scale review and
   authored team masks remain unfinished. Runtime files are in the Docker image.
+  Infantry's [registered public legacy slice](human-foot-unit-coverage.md) supplies
+  eight actual views, two-key walk/attack and an idle-to-terminal defeat transition;
+  its containing deployment and ordinary-game acceptance remain open.
 - `?humanRosterPreview=0` restores the older mixed-cast Worker lane; explicit
   legacy preview flags retain their comparison paths. See the
   [Human](art-direction/human-roster-v1/README.md) and
