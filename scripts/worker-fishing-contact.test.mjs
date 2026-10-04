@@ -80,7 +80,7 @@ test('actual four-key runtime contacts water only in reach and clears for Stop, 
       runtime.update(unit, 2300, .94); assert.equal(rope.visible, false, 'wrap retains crouch root');
       const wrapped = new THREE.Matrix4(); actor.getMatrixAt(0, wrapped);
       assert.deepEqual(wrapped.elements, first.elements, 'contact cannot move the actor root at wrap');
-      for (const change of [{ workResourceVariant: null, task: 'idle' }, { walking: true },
+      for (const change of [{ performingAction: null }, { workResourceVariant: null, task: 'idle' }, { walking: true },
         { attackStartedAt: 2600 }, { hp: 0, defeatStartedAt: 2600 }, { kind: 'infantry' },
         { angle: Math.PI / 2 }]) {
         const active = worker(team);
