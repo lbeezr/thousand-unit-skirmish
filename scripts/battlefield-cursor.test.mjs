@@ -16,6 +16,9 @@ test('context order priority and capable selections', () => {
   assert.equal(cursor({ ...selected, enemyBuilding: true }), 'attack');
   assert.equal(cursor({ ...selected, military: false, workers: true, enemyBuilding: true }), 'unavailable');
   assert.equal(cursor({ ...selected, resource: 'food' }), 'unavailable');
+  assert.equal(cursor({ ...selected, workers: true, resource: 'food', exhaustedFarm: true }), 'unavailable');
+  assert.equal(cursor({ ...selected, workers: true, farmConstruction: true }), 'build-valid');
+  assert.equal(cursor({ ...selected, farmConstruction: true }), 'unavailable');
   assert.equal(cursor({ ...selected, workers: true, resource: 'food' }), 'gather');
   assert.equal(cursor({ ...selected, workers: true, resource: 'wood' }), 'gather-wood');
   assert.equal(cursor({ ...selected, workers: true, forest: true }), 'gather-wood');

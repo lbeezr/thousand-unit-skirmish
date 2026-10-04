@@ -87,6 +87,57 @@ and optimization remain outside that slice.
 Owned Farm sources use owned-building visibility under fog; hidden neutral and
 enemy sources retain their existing filtering.
 
+### Farm selection feedback follow-on
+
+Action/production owns a compact Food plot identity and reusable selected-building
+detail fields, motivated by the player's report that the Farm did not look
+harvestable or workable. The existing dismissible portrait → Selection panel
+pattern keeps role, stock and instructions beside current health and lifecycle
+actions. Productive, unfinished and exhausted plots have separate instructions;
+desktop uses selected Workers/right-click, touch uses Gather / move then tap.
+Enemy and hidden plots expose no private stock or assignment controls. The normal
+hover uses the same visible building picker, names the role and action, and
+marks exhausted harvest unavailable rather than suggesting a Gather can succeed.
+
+Visual backing: the existing [Food symbol](../assets/ui/icons/food.svg),
+approved [Worker portrait treatment](../assets/ui/portraits/PROVENANCE.md) and
+selected [Farm production reference](art-direction/frontier-economy-meshy-v1/farm-reference-v1.png)
+support the compact identity and planted-plot description. The new
+[Farm reference/model record](art-direction/frontier-economy-meshy-v1/README.md)
+is a preserved production study, not approved selection artwork or a shipped
+crop model. The card labels the existing Food symbol, identifies the temporary
+House model, and links the exact public design study in a new tab. It publishes
+no private source, copies no art and adds no HTTP admission. Building01a0fcf5
+retains approved Farm illustration/runtime art; that distinct asset is a gap.
+
+Small flow storyboard: click your plot → compact Food plot/stock identity;
+open its portrait → current health, description, source-study link and Worker
+instruction; Escape/close → focus returns to the same portrait. Server stock
+updates keep those nodes stable. Completion changes construction instruction
+to harvest instruction; zero stock changes READY to EXHAUSTED and offers the
+existing no-refund clear. Selecting an enemy, dead plot or different unit hides
+stale Farm details. No modal encyclopedia or decorative production action is added.
+
+[Selection cue direction](ui-audio-direction.md#routine-commands) already calls
+for one short, quiet acknowledgement. `selectBuilding` emits the existing
+`select` event with `buildingType: farm`; the audio runtime resolves any existing
+profile binding or its generic synthesized cue. Existing mute, volume, hidden-tab,
+cooldown, bus and overlap limits continue to apply. No Farm-specific recorded
+sound is approved/shipped; the existing generic acknowledgement is intentional.
+
+Both-seat actual DOM/focus/audio-call and Three-picking/hover checks belong in
+the next small PR, separate from the reviewed Farm body fix in
+[PR339](https://github.com/lbeezr/thousand-unit-skirmish/pull/339). HUD01a101f7-35be
+retains `renderer-novice-flow-scenario.mjs`; Building01a0fcf5 retains
+`renderer-building-catalog-scenario.mjs`. Action/production retains this card's
+ordinary Farm acceptance at 1280 × 720 with desktop/touch, both teams, fog and
+normal/strategic zoom using the [qualified capture contract](renderer-qualification.md).
+Capture should use paid Build Farm → construction → selected plot → Worker
+body Gather → depot credit, then existing finite exhaustion/clear/replant;
+it must not inject bank/stock or substitute the source study for game art.
+Source/CPU/default release and deployed identity remain separate from those
+ordinary-game pixels and listening/usability acceptance.
+
 ```sh
 node --test scripts/farm-harvest.test.mjs scripts/farm-client.test.mjs scripts/roster-building-ui.test.mjs
 node scripts/farm-scenario.mjs --output=NEW_DIRECTORY

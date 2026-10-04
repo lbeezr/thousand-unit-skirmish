@@ -9,6 +9,8 @@ export function battlefieldCursor(s) {
   if (!s.count) return s.friendly && s.shift ? (s.alreadySelected ? 'select-remove' : 'select-add') : 'select';
   if (s.enemy) return 'attack';
   if (s.enemyBuilding) return s.military ? 'attack' : 'unavailable';
+  if (s.exhaustedFarm) return 'unavailable';
+  if (s.farmConstruction) return s.workers ? 'build-valid' : 'unavailable';
   if (s.resource || s.forest) {
     if (!s.workers) return 'unavailable';
     return s.forest || s.resource === 'wood' ? 'gather-wood' : 'gather';
