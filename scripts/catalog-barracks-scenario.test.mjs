@@ -156,14 +156,13 @@ test('adapter cannot capture or launch without source, ordinary-entry and exact 
   const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-catalog-scenario-test-'));
   try {
     const mapBytes = await readFile(new URL('../docs/qa-evidence/default-frontier-buildings-2026-10-03/acceptance-map-flat.json', import.meta.url));
-    const pack = { directory, sourceRevision: revision, sourceDirty: false, digest: `sha256:${'b'.repeat(64)}`,
-      files: ['room-supervisor.mjs', 'server.mjs', 'src/main.js', 'package-lock.json'] };
+    const qualifiedSource = Object.freeze({ revision, digest: `sha256:${'b'.repeat(64)}` });
     for (const [index, entryEvidence] of [undefined, { ordinaryEntry: true, sourceRevision: revision,
       mapId: CATALOG_BARRACKS_MAP, mapSha256: '0'.repeat(64) }, { ordinaryEntry: false, sourceRevision: revision,
       mapId: CATALOG_BARRACKS_MAP, mapSha256: createHash('sha256').update(mapBytes).digest('hex') }].entries()) {
       const output = path.join(directory, String(index));
       const report = await runCatalogBarracksScenario({ page: { cdp: { evaluate() { assert.fail('invalid entry queried the browser'); } } },
-        pack, revision, browserVersion: { product: 'CPU mock' }, outputDirectory: output, entryEvidence },
+        source: qualifiedSource, outputDirectory: output, entryEvidence },
       { capture() { assert.fail('invalid entry captured pixels'); } });
       assert.equal(report.status, 'failed'); assert.equal(report.issues[0].stage, 'context');
       assert.equal(report.readability, 'unverified'); assert.equal(report.paidBarracksAcceptance, 'open');

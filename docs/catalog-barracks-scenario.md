@@ -13,54 +13,70 @@ the wider eight-family/Barracks acceptance remain open.
 
 ## Shared execution boundary
 
-CI owns renderer core, browser/server launch, packed dependency verification,
-cleanup and workflow dispatch. HUD owns ordinary room creation/join/launch and
-map import. This adapter launches nothing and performs no capability probe.
-Use the already qualified [PR323 run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37215311854)
-and coordinate one reviewed hosted batch containing the three owners' scenarios.
-Do not edit or dispatch a parallel workflow for this slice.
+CI owns renderer core, browser/server launch, clean-pack/dependency verification,
+cleanup, registry and workflow dispatch. This case uses existing HUD menu and
+Map Studio behavior; it changes no production entry helper. No capability probe
+or launch runs on import. Coordinate one reviewed hosted batch using the already
+qualified [PR323 run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37215311854).
+Actual execution and original PNG inspection remain pending.
 
-The shared runner now has a before-cleanup case call and a version 1
-[capture context](../scripts/renderer-capture-context.mjs). Its registered
-`building-catalog` filename is `scripts/renderer-building-catalog-scenario.mjs`;
-that wrapper is not supplied here. The remaining integration gap is the bridge
-from HUD's ordinary flat-map entry/import receipt to this adapter, together with
-the qualified pack and browser version. Version 1 currently supplies only
-immutable source/digest identity, owned pages, origin, capture and evidence
-directory. CI owns any context extension or runner wiring; HUD owns the entry
-and exact import receipt. The bridge must make this call before shared cleanup:
+The registered [version-1 wrapper](../scripts/renderer-building-catalog-scenario.mjs)
+exports `id = 'building-catalog'`, `contextVersion = 1`, and `run(context)`.
+It accepts the existing immutable [capture context](../scripts/renderer-capture-context.mjs)
+without browser/pack fields or a context extension:
 
 ```js
-const catalogReport = await runCatalogBarracksScenario({
-  page, pack, revision: pack.sourceRevision, browserVersion: browser.version,
-  outputDirectory: catalogEvidenceDirectory, team: 0,
-  entryEvidence: {
-    ordinaryEntry: true, sourceRevision: pack.sourceRevision,
-    mapId: 'frontier-buildings-acceptance-flat', mapSha256: importedMapSha256,
-  },
+const result = await run({
+  version: 1, page, openPage, origin, source, capture, evidenceDirectory,
 });
-assert.equal(catalogReport.status, 'captured-needs-review');
+// source = frozen { revision: fullCleanSourceSHA, digest: cleanPackDigest }
+// page = the shared fresh about:blank CDP page
+// capture({page, mapId, checkpoint}) = shared source-bound checkpoint hook
+// evidenceDirectory = this registered case's absolute owned artifact folder
+// id = 'building-catalog'; contextVersion = 1
 ```
 
-Import [the existing flat map](qa-evidence/default-frontier-buildings-2026-10-03/acceptance-map-flat.json)
-through ordinary Map Studio and retain its actual file hash in HUD's receipt.
-The adapter requires that exact hash and checks the applied map again through
-the existing helper. Supply a clean, digest-verified containing pack with its
-existing locked dependencies installed. Establish the flags below on the
-ordinary room document before loading main; preserve the room/session privately
-in the harness rather than artifacts:
+The wrapper verifies the loopback health source/digest and clean identity, then
+compares the served default Barracks manifest with this checked-out source and
+Complete view 01 with its retained pixel hash. The runner owns clean packaging
+and locked dependencies. The checkpoint sequence receives verified public
+runtime metadata and the injected shared capture hook; it owns no pack/browser.
 
-`rendererCapture=environment-state&assetReadability=1&assetScenario=catalog-barracks`
+On the fresh page, the wrapper installs the room-only
+`catalogBarracksBeforeScript()` plus a passive file-import observer before
+navigation. It opens the ordinary root menu, clicks **Map Studio**, uploads
+[the existing flat fixture](qa-evidence/default-frontier-buildings-2026-10-03/acceptance-map-flat.json)
+through the actual `#studio-import-file` input with `DOM.setFileInputFiles`,
+and clicks **Save & Play Map**. The capture-phase observer hashes the actual
+chosen file before the normal handler clears its input; it retains only size
+and SHA256. The real editor ID, applied map, owned Azure seat and starting banks
+must settle before the sequence starts. This is an authored paid-acceptance
+fixture entered through ordinary authoring controls; it does not establish a
+normal New Game match or unassisted first play. No direct publish command,
+synthetic bank, teleport or world override is used.
 
-Compose the adapter's `catalogBarracksBeforeScript()` with the existing qualified
-probe in the same designated page's `beforeScript`. It leaves the initial menu
-untouched, then adds QA flags only when the real room document loads. Ordinary
-`roomEntryUrl` deliberately drops old query options, so putting QA flags on the
-initial menu URL would both bypass normal entry and fail to preserve them through
-room creation. Do not alter that production URL helper. After artifacts are
-written, the caller must propagate a returned `failed` status to batch failure;
-awaiting the adapter alone cannot establish a successful batch. Its nonenumerable
-`cause` retains local diagnosis without serializing private CDP messages.
+Only the actual room document receives
+`rendererCapture=environment-state&assetReadability=1&assetScenario=catalog-barracks`.
+The initial menu stays ordinary. `roomEntryUrl` drops old query options, so
+placing diagnostic flags on the initial menu would bypass normal entry and
+lose them during room creation; the production helper is unchanged.
+
+All seven PNGs go through `context.capture()`. The wrapper checks the owned
+page, exact order, applied map, source and owned checkpoint directory, then
+propagates a returned sequence failure into the shared case's failed checks.
+Its `building-catalog-entry.json` retains only reduced identity/import/receipt
+facts and safe failed-stage IDs, separate from the runner's qualification.
+The shared result's `passed` means seven captured contract-checked receipts;
+owner sidecars still say `captured-needs-review`, readability unverified and
+paid Barracks acceptance open. It never means inspected pixels.
+
+```sh
+node scripts/renderer-feature-capture.mjs --check building-catalog
+node scripts/renderer-feature-capture.mjs --check all
+node --test scripts/renderer-building-catalog-scenario.test.mjs scripts/catalog-barracks-scenario.test.mjs
+```
+
+These commands load/test source only; they perform no browser capture or dispatch.
 
 `assetReadability` opens a developer QA panel. `assetScenario` enables only
 read-only observations after the normal renderer draws, including owned banks,
