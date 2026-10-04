@@ -1,0 +1,11 @@
+✔ an unresolved bound is never a victory or draw; actual native results retain their reason (1.109054ms)
+✔ canonical paid Tiny opening records actual purchases/recruits and repeats all authority (1389.93868ms)
+✔ measurements cannot silently extend the existing completion ceiling or alter seed identities (4.432319ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1462.945607

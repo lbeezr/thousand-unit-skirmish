@@ -23,3 +23,12 @@ change stronghold loss into Skirmish defeat, or advertise unsupported AI. A
 contract/tooling milestone uses its own focused checks; it does not invent game
 deployment acceptance. Runtime items remain owned until actual play, or until a
 concrete blocker and receiving owner are recorded.
+
+The approved pacing/economy owner retains the existing
+[balance guide and Tiny receipt](first-skirmish-balance.md#tiny-paid-match-baseline--4-october-2026).
+At its named source, the paid same-policy mirror finishes one Skirmish game at
+39:53 and leaves one ongoing at the unchanged 60-minute bound. That source-only
+baseline does not justify changing economy timers or the distinct Objective
+Control/Bannerfall contracts. AI `01a10297` and movement `01a107ba` retain the
+unresolved completion diagnosis; staging/rendered ordinary matches and matched
+human expansion/growth choices remain separate acceptance with their owners.
