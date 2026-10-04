@@ -15,7 +15,7 @@ First admission: only keys0..2 wood axe windup/down-right strike/recovery. Each
 keeps a front three-quarter body/chest/face; none is relabelled SE or mirrored.
 These same true East axe pixels also supply an independently timed attack.
 At that first admission, keys3..5 food and6..8 hammer were retained candidates.
-The second food admission is recorded below; hammer remains unadmitted.
+The second food and third hammer admissions are recorded below.
 
 One232/307 scale is used throughout the candidate sheet, calibrated from its
 307px standing body reference. The axe envelope is331px→250px, below the old
@@ -44,4 +44,17 @@ frame rectangle and the frozen fishing-era ROI. All146 preceding frames/58clips,
 mask/dimensions/world scale remain exact. Existing default food selector consumes
 East; five other missing food headings retain exact idle. Fishing uses its
 existing same-heading food fallback; no dedicated fishing art/count is supplied.
-Hammer keys6..8 remain source candidates, excluded from runtime coverage.
+At the second admission, hammer keys6..8 remained source candidates; third admission follows.
+
+
+Third admission (packv0.27.0): keys6..8 become actual East hammer windup/strike/
+recovery, shared faithfully by build/repair. Each action loops3x240ms720ms.
+Same232/307 source scale; roots[384,784,1184]/baseline992 register to[128,244]
+in256x256 cells. Rebuild with `python3 scripts/admit-worker-hammer-east.py`.
+The last spare strip cells(2304,3456),(2304,3712),(2048,3776) preserve every old
+reserved rectangle and the frozen fishing ROI.149 preceding frames/59clips,
+mask/dimensions/world scale remain except the declared East build idle hold.
+All nine keys in this source iteration are now admitted; original raw, all
+extractions and earlier admission reviews remain. No extra generation or charge.
+Default CPU both-seat build/repair productive gating, Stop/resume, move/attack
+and action switch are checked; exact target-bearing/native acceptance stays open.

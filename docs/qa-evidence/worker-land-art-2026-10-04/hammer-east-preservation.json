@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "48735b95b96382cb1311d1a8fd015feeb285f4bc",
+  "originalFrames": 149,
+  "originalClips": 59,
+  "originalFrameMetadataSha256": "0e48151c663d3ae0e6bf40e3b2b53984d179c9a59051c5f6430c5914b6a99ff1",
+  "originalClipMetadataSha256": "f588b536dc2baadad8b3264e813fe90d074b6395040330a47c29cb536f07be2e",
+  "originalFrameRgbaSha256": "447fdea58ec916589f3c72fda33a7d9d7b4959b6d0e02eec113ea1750ab88764",
+  "originalTeamMaskSha256": "d740bcc5711c84da12c15abbbbd2bfa51113a1369a9214d2fb39ec73d6815fb0",
+  "originalDimensionsPx": {
+    "width": 2560,
+    "height": 4096
+  },
+  "worldUnitsPerPixel": 0.0052421832906788795,
+  "originalReplacedClips": [
+    {
+      "stateId": "build",
+      "directionId": "east",
+      "loop": true,
+      "sequence": [
+        {
+          "frameId": "idle-east-0",
+          "durationMs": 1000
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packVersion": "0.26.0",
+  "packVersion": "0.27.0",
   "scope": "Human Worker land art; excludes fishing; default source/package evidence, not deployed/native proof",
   "actions": [
     {
@@ -52,15 +52,15 @@
     },
     {
       "action": "build",
-      "authoredHeadingCount": 2,
+      "authoredHeadingCount": 3,
       "authoredHeadings": [
+        "east",
         "south-east",
         "north-west"
       ],
       "missingHeadings": [
         "north",
         "north-east",
-        "east",
         "south",
         "south-west",
         "west"
@@ -68,15 +68,15 @@
     },
     {
       "action": "repair",
-      "authoredHeadingCount": 2,
+      "authoredHeadingCount": 3,
       "authoredHeadings": [
+        "east",
         "south-east",
         "north-west"
       ],
       "missingHeadings": [
         "north",
         "north-east",
-        "east",
         "south",
         "south-west",
         "west"
@@ -131,13 +131,13 @@
       ]
     }
   ],
-  "authoredCells": 25,
+  "authoredCells": 27,
   "totalCells": 64,
-  "remainingCells": 39,
+  "remainingCells": 37,
   "byHeading": {
     "north": 1,
     "north-east": 1,
-    "east": 4,
+    "east": 6,
     "south-east": 8,
     "south": 1,
     "south-west": 1,
