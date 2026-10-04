@@ -16,6 +16,7 @@ import { isHistoricalConfluenceDefinition } from './src/confluence-opening-compa
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
 import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
+import { exploredForestFringe } from './src/forest-fringe.mjs';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
 import { creditResourceBalance } from './src/economy-ledger.mjs';
@@ -2043,6 +2044,7 @@ function markVisionFrom(team, x, z, sight = VISION_RADIUS_CELLS) {
   let coverage = sourceCoverages.get(sight);
   if (!coverage) {
     const cells = [];
+    const forestCandidates = [];
     const radius = sight + (elevationLevelByCell[sourceCell] > 0 ? HIGH_GROUND_VISION_BONUS_CELLS : 0);
     if (!visionRaysByRadius.has(radius)) visionRaysByRadius.set(radius, buildVisionRays(radius));
     const rays = visionRaysByRadius.get(radius);
@@ -2051,6 +2053,7 @@ function markVisionFrom(team, x, z, sight = VISION_RADIUS_CELLS) {
       const row = centerRow + dz;
       if (column < 0 || column >= MAP_WIDTH || row < 0 || row >= MAP_HEIGHT) continue;
       let sightBlocked = false;
+      let firstBlockerIsForest = false;
       for (const [rayX, rayZ] of ray) {
         const rayColumn = centerColumn + rayX;
         const rayRow = centerRow + rayZ;
@@ -2058,19 +2061,26 @@ function markVisionFrom(team, x, z, sight = VISION_RADIUS_CELLS) {
         if (visionBlockers[rayCell] && visionBlockHeights[rayCell] >= VISION_EYE_HEIGHT
           || buildingBlocked[rayCell]) {
           sightBlocked = true;
+          firstBlockerIsForest = forestCellMask[rayCell] === 1 && !buildingBlocked[rayCell];
           break;
         }
       }
       if (!sightBlocked) cells.push(row * MAP_WIDTH + column);
+      else if (firstBlockerIsForest && forestCellMask[row * MAP_WIDTH + column]) {
+        forestCandidates.push(row * MAP_WIDTH + column);
+      }
     }
-    coverage = Uint16Array.from(cells);
+    coverage = { visible: Uint16Array.from(cells),
+      fringe: exploredForestFringe(cells, forestCandidates, forestCellMask, MAP_WIDTH) };
     sourceCoverages.set(sight, coverage);
   }
-  for (let index = 0; index < coverage.length; index++) {
-    const cell = coverage[index];
+  for (let index = 0; index < coverage.visible.length; index++) {
+    const cell = coverage.visible[index];
     visible[cell] = 1;
     explored[cell] = 1;
   }
+  // Scenery is remembered, but live occupants and depletion remain LOS-private.
+  for (const cell of coverage.fringe) explored[cell] = 1;
 }
 
 function updateVisionMasks() {

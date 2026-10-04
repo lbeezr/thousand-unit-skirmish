@@ -5,6 +5,41 @@ import { createHash, webcrypto } from 'node:crypto';
 import { loadShippedAudio, shippedAudioCacheState } from '../src/audio-shipped-loader.mjs';
 import { SHIPPED_AUDIO_REFERENCES } from '../src/audio-shipped-catalog.mjs';
 import { validateMapAudioReference } from '../src/audio-event-profile.mjs';
+import * as audioProfile from '../src/audio-event-profile.mjs';
+import * as mapAudio from '../src/world/map-audio-reference.mjs';
+
+test('map metadata validator preserves compatibility exports and binding identity', () => {
+  assert.deepEqual(Object.keys(audioProfile), ['bindingKeysForEvent', 'createProfileDecisionGate',
+    'resolveEventBinding', 'validateMapAudioReference']);
+  assert.deepEqual(Object.keys(mapAudio), ['validateMapAudioReference']);
+  assert.equal(validateMapAudioReference, mapAudio.validateMapAudioReference);
+});
+
+test('portable map audio metadata retains exact IDs, optional version/hash and rejection messages', () => {
+  assert.equal(mapAudio.validateMapAudioReference(undefined), null);
+  for (const value of [
+    { packId: 'local', profileId: 'field' },
+    { packId: 'p'.repeat(120), profileId: 'P_0.:x', version: 'v'.repeat(80), sha256: 'abcdef01'.repeat(8) },
+  ]) {
+    const input = Object.freeze({ ...value });
+    assert.deepEqual(mapAudio.validateMapAudioReference(input), value);
+    assert.deepEqual(input, value);
+    assert.notEqual(mapAudio.validateMapAudioReference(input), input);
+  }
+  const invalidIdMessage = 'Map audio must reference a packId and profileId using stable IDs.';
+  for (const value of [null, false, 0, [], {},
+    { packId: '', profileId: 'field' }, { packId: 'p'.repeat(121), profileId: 'field' },
+    { packId: 'local', profileId: '../field' }, { packId: 'local', profileId: 'field', remoteUrl: 'https://example.test' },
+  ]) assert.throws(() => mapAudio.validateMapAudioReference(value), { message: invalidIdMessage });
+  const invalidVersionMessage = 'Shipped audio requires a stable version and SHA-256 manifest hash together.';
+  for (const extra of [{ version: 'v1' }, { sha256: '0'.repeat(64) },
+    { version: '', sha256: '0'.repeat(64) }, { version: 'v'.repeat(81), sha256: '0'.repeat(64) },
+    { version: '../v1', sha256: '0'.repeat(64) }, { version: 'v1', sha256: 'A'.repeat(64) },
+    { version: 'v1', sha256: '0'.repeat(63) },
+  ]) assert.throws(() => mapAudio.validateMapAudioReference({ packId: 'local', profileId: 'field', ...extra }),
+    { message: invalidVersionMessage });
+});
+
 const root = new URL('../', import.meta.url);
 const ref = SHIPPED_AUDIO_REFERENCES[0];
 const manifestBytes = await readFile(new URL(`assets/audio/runtime/${ref.packId}/${ref.version}/manifest.json`, root));
