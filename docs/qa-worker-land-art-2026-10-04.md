@@ -53,6 +53,7 @@ headings and motion/action cells reviewed, rather than trusting manifest labels:
 | [Worker v1](qa-evidence/worker-land-art-2026-10-04/worker-sprite-v1-reuse-preflight.png) / Worker v2 | Two-key walk, static land work/defeat. | Yellow cap/tunic and blue sash, different identity; v1 also has visible neighbouring-cell fragments. Not a current-roster motion supply. |
 | Current-roster retained walk sources | NE/SE/SW variants and East v1/v2. | NE/SE/SW already used; East v1 is admitted here. v2 is the same bearing and further SE/NE iterations do not fill another direction. |
 | Current-roster retained land-work/combat sources | Wood/food/build/repair/attack/defeat eight-key SE strips. | Already used. No matching N/NE/E/S/SW/W/NW action strip, or Stone strip, is present in this checkout. |
+| Earlier [Vaelora Worker study](art-direction/human-vaelora-sprites-v1/README.md) | Matching-character Walk/Chop/Defeat labelled SE. | Follow-up connected-silhouette extraction recovers all eight complete Chop keys (whole-sheet margins intact); the actual pose comparison still reads SE and does not prove another heading. Defeat's final source view touches the sheet's right edge. Preserve studies; do not crop missing terminal pixels or relabel this SE strip as East to inflate coverage. |
 
 That is an **art-input gap**, not an animation-binding defect. Rough short keys
 are acceptable, but moving a whole idle image, copying SE into seven labels,
@@ -101,3 +102,16 @@ changes; record revision, map, heading, seat and selection status.
 Default source binding and package/HTTP inclusion are separate from a containing
 deployment and native acceptance. Those final observations remain incomplete
 until their exact revision and captures are recorded here.
+
+The first slice is [PR226](https://github.com/lbeezr/thousand-unit-skirmish/pull/226),
+initial code `7a31b1da`, refreshed with main `5200ffdf` at code head
+`350350de0e8f5a02d09ca34e5439f7762c3f66b5`. All 57 focused/CI-sharding checks pass,
+atlas validation/docs/whitespace pass, and `railway-release-scenario.mjs` passes
+real packed HTTP/hash admission. [Clean release](qa-evidence/worker-land-art-2026-10-04/clean-release.json)
+has 1,170 files and digest
+`sha256:99a2a103d524f14d4ee2213e8de614cf71c2ac3319d3b7733ae87b4c021c0b47`
+at that exact source head. Subsequent checkpoint-only commits are separate from
+this measured release. [Browser preflight](qa-evidence/worker-land-art-2026-10-04/browser-preflight.json)
+records the actual sandbox failure. Independent review is pending: this executor
+has no live peer/parent reviewer route; no self-review is claimed as an independent
+review. Main merge, containing deployment and native acceptance stay open.
