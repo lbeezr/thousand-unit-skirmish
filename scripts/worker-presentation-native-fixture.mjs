@@ -28,10 +28,10 @@ export async function createWorkerPresentationNativeFixture() {
         assert.equal(unit.performingAction, wire[17], `${name}: actual receipt ${id}`);
         const presentation = activeState(unit, now + 640);
         assert.equal(unit.walking, false, `${name}: interpolation settled for ${id}`);
-        if (wire[17] === null) assert.ok(!['gather', 'gather-fish', 'build', 'repair'].includes(presentation),
+        if (wire[17] === null) assert.ok(!['gather', 'gather-fish', 'gather-stone', 'build', 'repair'].includes(presentation),
           `${name}: no invented work for ${id}`);
         else assert.equal(presentation, wire[17].startsWith('gather-')
-          ? wire[17] === 'gather-stone' ? 'idle' : wire[16] === 'shore-fish' ? 'gather-fish' : 'gather'
+          ? wire[17] === 'gather-stone' ? 'gather-stone' : wire[16] === 'shore-fish' ? 'gather-fish' : 'gather'
           : wire[17], `${name}: confirmed work selects its supported state for ${id}`);
         return { id, action: unit.performingAction, walking: unit.walking,
           state: presentation, frame: fixture.frameId(id), heading: unit.angle };

@@ -60,7 +60,8 @@ for (const team of [0, 1]) {
       assert.equal(f.frameId(0), 'gather-wood-south-east-0', 'a different resource starts its own real clip');
       assert.equal(unit.spriteClockStartedAt, 1400);
       f.apply([row({ ...data, performingAction: 'gather-stone' })], { now: 1450 });
-      assert.equal(f.frameId(0), 'idle-south-east-0', 'missing Stone sprites cannot be wood artwork');
+      assert.equal(f.frameId(0), team ? 'idle-south-east-0' : 'gather-stone-south-east-0',
+        'Stone uses dedicated artwork where supplied, otherwise its exact idle heading');
     } finally { f.dispose(); }
   });
 }
@@ -81,6 +82,69 @@ test('confirmed activity: missing or unknown protocol and incompatible actions c
     f.apply([row(data)]);
     f.apply([row(data).slice(0, 17)]);
     assert.equal(f.frameId(0), 'idle-south-east-0', 'a missing current action slot clears');
+  } finally { f.dispose(); }
+});
+
+for (const team of [0, 1]) for (const selected of [false, true]) {
+  test(`Stone: Human seat ${team}, selected ${selected}, productive keys clear and resume through actual receipt buffers`, async () => {
+    const f = await createUnitPresentationClientFixture({ localTeam: team, teamCivilizations: ['human', 'human'] });
+    try {
+      const data = { team, task: 'gathering', cargoType: 'wood', cargo: 1,
+        performingAction: 'gather-stone', workHeading: 3 * Math.PI / 4 };
+      f.apply([row(data)], { initial: true });
+      const unit = f.unit(0); unit.angle = unit.targetAngle = data.workHeading;
+      if (selected) f.context.selected.add(0);
+      f.frame(1000, 0);
+      assert.equal(f.frameId(0), 'gather-stone-south-east-0');
+      for (const [now, key] of [[1210, 1], [1420, 2], [1630, 3], [1840, 0]]) {
+        f.frame(now, 0.05);
+        assert.equal(f.frameId(0), `gather-stone-south-east-${key}`, 'actual UV keys advance and loop');
+      }
+      f.apply([row(data)], { now: 1850 });
+      assert.equal(unit.spriteClockStartedAt, 1000, 'continuous productive receipts do not reset');
+      unit.angle = unit.targetAngle = 0; f.frame(1860, 0.01);
+      assert.equal(f.frameId(0), 'idle-north-0', 'missing heading stays facing north');
+      unit.angle = unit.targetAngle = data.workHeading; f.frame(1870, 0.01);
+      assert.equal(unit.spriteClockStartedAt, 1000, 'a heading fallback does not reset work time');
+      f.clearObservations();
+      const version = f.mesh(0).geometry.getAttribute('instanceAtlasRect').version;
+      f.apply([row({ ...data, performingAction: null })], { now: 1900 });
+      assert.equal(f.frameId(0), 'idle-south-east-0', 'no-progress clear needs no input or frame tick');
+      assert.ok(f.mesh(0).geometry.getAttribute('instanceAtlasRect').version > version);
+      assert.equal(unit.task, 'gathering', 'waiting intent remains available');
+      f.apply([row(data)], { now: 2000 });
+      assert.equal(f.frameId(0), 'gather-stone-south-east-0');
+      assert.equal(unit.spriteClockStartedAt, 2000);
+      f.apply([row({ ...data, task: 'idle', performingAction: null })], { now: 2100 });
+      assert.equal(f.frameId(0), 'idle-south-east-0', 'Stop clears immediately');
+      f.apply([row(data)], { now: 2200 });
+      assert.equal(f.frameId(0), 'gather-stone-south-east-0');
+      f.apply([row({ ...data, performingAction: 'gather-wood' })], { now: 2300 });
+      assert.equal(f.frameId(0), 'gather-wood-south-east-0');
+      f.apply([row(data)], { now: 2400 });
+      assert.equal(f.frameId(0), 'gather-stone-south-east-0', 'resource switches start the dedicated clip');
+      assert.equal(f.context.selected.has(0), selected);
+    } finally { f.dispose(); }
+  });
+}
+
+test('Stone: move and fresh attack interrupt dedicated work, then resume; defeat stays terminal', async () => {
+  const f = await createUnitPresentationClientFixture();
+  try {
+    const data = { task: 'gathering', performingAction: 'gather-stone', workHeading: 3 * Math.PI / 4 };
+    f.apply([row(data)], { initial: true });
+    const unit = f.unit(0); unit.angle = unit.targetAngle = data.workHeading;
+    f.frame(1000, 0); assert.equal(f.frameId(0), 'gather-stone-south-east-0');
+    f.apply([row({ ...data, x: 2, z: -2 })], { now: 1100 });
+    f.frame(1200, 0.016); assert.match(f.frameId(0), /^walk-south-east-/);
+    for (let step = 1; step <= 40; step++) f.frame(1200 + step * 16, 0.016);
+    assert.match(f.frameId(0), /^gather-stone-south-east-/);
+    f.apply([row({ ...data, x: 2, z: -2, attackTick: 5, attackX: 3, attackZ: -3 })], { now: 1900 });
+    assert.equal(f.frameId(0), 'attack-south-east-0');
+    f.frame(2740, 0.05); assert.equal(f.frameId(0), 'gather-stone-south-east-0');
+    f.apply([row({ ...data, x: 2, z: -2, hp: 0 })], { now: 2800 });
+    assert.equal(f.frameId(0), 'defeat-south-east-0');
+    assert.equal(unit.performingAction, null);
   } finally { f.dispose(); }
 });
 

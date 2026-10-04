@@ -56,7 +56,7 @@ reads well; use the appearance matrix below.
 | --- | --- |
 | Idle | Living, stationary, no fresh attack or confirmed work; includes assigned work waiting for progress. |
 | Walk / turn | Position/facing changes. Movement suppresses a retained work swing. |
-| Gather | Compatible version-1 `performingAction` confirms positive food/wood/Stone progress; art selection follows the confirmed resource, not previous cargo. Missing Stone sprites retain idle and the existing neutral procedural cue. |
+| Gather | Compatible version-1 `performingAction` confirms positive food/wood/Stone progress; art selection follows the confirmed resource, not previous cargo. Dedicated Stone clips use their exact heading; missing Stone views retain that heading's idle and the existing neutral procedural cue. |
 | Build / Repair | Compatible version-1 `performingAction` confirms positive construction progress or repaired HP; stationary presentation uses the corresponding existing action. |
 | Attack | Fresh `lastAttackTick`; deduplicate and use target coordinates only if present. This is not proof of damage. |
 | Hit | Positive HP decreases. |

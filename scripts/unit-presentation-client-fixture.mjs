@@ -43,7 +43,8 @@ export function workerSnapshotRow({ id = 0, team = 0, x = 0, z = 0, hp = 100,
     attackTick, attackX, attackZ, audioExecution, workHeading, workResourceVariant, performingAction];
 }
 
-export async function createUnitPresentationClientFixture({ localTeam = 0, maxUnits = 8 } = {}) {
+export async function createUnitPresentationClientFixture({ localTeam = 0, maxUnits = 8,
+  teamCivilizations = ['human', 'boughward'] } = {}) {
   const scene = new THREE.Scene();
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async url => {
@@ -58,7 +59,7 @@ export async function createUnitPresentationClientFixture({ localTeam = 0, maxUn
   try {
     runtime = createUnitSpriteRuntime({ THREE: { ...THREE, TextureLoader }, scene, capacity: 4,
       teamHex: [0x5aa7d7, 0xe67a5e], cameraQuaternion: new THREE.Quaternion(), roles,
-      roleSpriteVersions: { human: 'v3' }, teamCivilizations: ['human', 'boughward'],
+      roleSpriteVersions: { human: 'v3' }, teamCivilizations,
       approximateActionDirections: true });
   } finally { globalThis.fetch = originalFetch; }
   // Construction synchronously dispatches atlas requests. Release the temporary
