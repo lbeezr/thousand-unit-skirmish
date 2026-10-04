@@ -20,8 +20,9 @@ test('fast and simulation partition every default check exactly once, preserving
   for (const lane of [fast, simulation]) {
     assert.deepEqual(lane, full.filter(check => lane.includes(check)));
   }
-  for (const file of ['audio-shipped-response', 'gameplay-action-rules', 'websocket-frame', 'websocket-deflate-offer']) {
-    const floor = fast.find(check => check.args.includes(`--test-coverage-include=src/${file === 'websocket-frame' || file === 'websocket-deflate-offer' ? 'networking/' : ''}${file}.mjs`));
+  for (const file of ['src/audio-shipped-response.mjs', 'src/rules/gameplay-action-rules.mjs',
+    'src/networking/websocket-frame.mjs', 'src/networking/websocket-deflate-offer.mjs']) {
+    const floor = fast.find(check => check.args.includes(`--test-coverage-include=${file}`));
     assert.ok(floor, file);
     assert.ok(floor.args.includes('--test-coverage-lines=100'));
     assert.ok(floor.args.includes('--test-coverage-branches=100'));
