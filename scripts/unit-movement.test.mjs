@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { canTraverseUnitStep } from '../src/unit-movement.mjs';
+import { canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from '../src/unit-obstacle-detour.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { farmHarvestNode, farmBuildingId } from '../src/farm-harvest.mjs';
@@ -46,7 +47,7 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     spatialBucketTeamNext:teamNext,spatialBucketOfUnit:bucketOf,
     spatialBucketColumn:x=>Math.max(0,Math.min(bucketColumns-1,Math.floor((x+half)/bucketSize))),
     spatialBucketRow:z=>Math.max(0,Math.min(bucketColumns-1,Math.floor((z+half)/bucketSize))),
-    elevationLevelByCell:levels,canTraverseUnitStep,findStationaryWorkerDetour,SEPARATION_DIAGNOSTICS_ENABLED:false,
+    elevationLevelByCell:levels,canTraverseUnitStep,canTraverseFlatUnitSegment,findStationaryWorkerDetour,SEPARATION_DIAGNOSTICS_ENABLED:false,
     tickNumber:1,dirty:false,worldToCell:cell,cellToWorld:point,isWalkable:walkable,
     resourceNodeStates:new Map([['berries',{x,z:-1,hp:1}]]),buildingsById:new Map(),farmHarvestNode,farmBuildingId,
     enqueueRouteRepairs:list=>repairs.push(...list),spreadInteractingUnits(){},advanceQueuedWaypoints(){},updateWildlifeMotion(){}});

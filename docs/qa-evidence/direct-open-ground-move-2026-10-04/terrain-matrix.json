@@ -1,0 +1,2967 @@
+{
+  "head": "723bd381bb2e813dd7758c6f5c002985b25f294a",
+  "node": "v24.19.0",
+  "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+  "platform": "linux",
+  "maxTicks": 2700,
+  "records": [
+    {
+      "group": 16,
+      "kind": "single-choke",
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "19cc668c6c8495309f2c6382bdf2e87f240313095f7bc5aad8ce91c593379d90",
+          "initialRouteSha256": "f723cb60fb3a91e507a9b1deb65390bbe36906bb92a367d23a7eb3d044bb7015",
+          "ticks": 608,
+          "arrived": 16,
+          "firstArrival": 487,
+          "stalled": [],
+          "events": [],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 600,
+              "arrived": 15,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.046,
+            "p95": 0.213,
+            "max": 5.15
+          },
+          "simulationMs": {
+            "p50": 0.043,
+            "p95": 0.201,
+            "max": 5.06
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 16,
+            "uniqueStartCells": 14,
+            "uniqueDestinationCells": 16,
+            "nonEmptyPaths": 16,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 11,
+            "expandedCells": 753,
+            "discoveredCells": 1719,
+            "elapsedMs": 4.756,
+            "planningWorkMs": 4.007,
+            "maxPlanningSliceMs": 2.365,
+            "queueWaitMs": 0.108,
+            "setupMs": 0.974,
+            "pathPlanningWorkMs": 3.021,
+            "maxPathPlanningSliceMs": 2.365,
+            "finalizationMs": 0.013,
+            "planningSliceCount": 4,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 555,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 2,
+            "firstServiceWaitMs": 0.351
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 16,
+              "searchCount": 11,
+              "expandedCells": 753,
+              "maxPlanningSliceMs": 2.365,
+              "planningSliceCount": 4,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 555
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 31,
+              "p95": 61,
+              "max": 69
+            },
+            "distanceChecksPerTick": {
+              "p50": 31,
+              "p95": 61,
+              "max": 69
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 11,
+              "p95": 24,
+              "max": 33
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 16,
+              "p95": 18,
+              "max": 20
+            },
+            "maxCandidatesPerCall": {
+              "p50": 5,
+              "p95": 10,
+              "max": 10
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 28,
+          "noProgressEpisodes": 0,
+          "recoveredEpisodes": 0
+        },
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "19cc668c6c8495309f2c6382bdf2e87f240313095f7bc5aad8ce91c593379d90",
+          "initialRouteSha256": "f723cb60fb3a91e507a9b1deb65390bbe36906bb92a367d23a7eb3d044bb7015",
+          "ticks": 608,
+          "arrived": 16,
+          "firstArrival": 487,
+          "stalled": [],
+          "events": [],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 600,
+              "arrived": 15,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.051,
+            "p95": 0.211,
+            "max": 4.988
+          },
+          "simulationMs": {
+            "p50": 0.049,
+            "p95": 0.201,
+            "max": 4.811
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 16,
+            "uniqueStartCells": 14,
+            "uniqueDestinationCells": 16,
+            "nonEmptyPaths": 16,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 11,
+            "expandedCells": 753,
+            "discoveredCells": 1719,
+            "elapsedMs": 5.033,
+            "planningWorkMs": 4.385,
+            "maxPlanningSliceMs": 2.913,
+            "queueWaitMs": 0.132,
+            "setupMs": 0.862,
+            "pathPlanningWorkMs": 3.511,
+            "maxPathPlanningSliceMs": 2.913,
+            "finalizationMs": 0.012,
+            "planningSliceCount": 4,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 555,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 2,
+            "firstServiceWaitMs": 0.367
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 16,
+              "searchCount": 11,
+              "expandedCells": 753,
+              "maxPlanningSliceMs": 2.913,
+              "planningSliceCount": 4,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 555
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 31,
+              "p95": 61,
+              "max": 69
+            },
+            "distanceChecksPerTick": {
+              "p50": 31,
+              "p95": 61,
+              "max": 69
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 11,
+              "p95": 24,
+              "max": 33
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 16,
+              "p95": 18,
+              "max": 20
+            },
+            "maxCandidatesPerCall": {
+              "p50": 5,
+              "p95": 10,
+              "max": 10
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 28,
+          "noProgressEpisodes": 0,
+          "recoveredEpisodes": 0
+        }
+      ]
+    },
+    {
+      "group": 64,
+      "kind": "single-choke",
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "d543758c2178c9816ec74cc2cf4f6fe5fdfec19dd2ce5ed09f4250186e2f55eb",
+          "initialRouteSha256": "32dc267d948850ea21575c270dde3e7e502d42d964059985b814e9d63f916ca3",
+          "ticks": 647,
+          "arrived": 64,
+          "firstArrival": 474,
+          "stalled": [],
+          "events": [],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 0,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 600,
+              "arrived": 49,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.114,
+            "p95": 0.369,
+            "max": 6.869
+          },
+          "simulationMs": {
+            "p50": 0.111,
+            "p95": 0.348,
+            "max": 6.658
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 64,
+            "uniqueStartCells": 44,
+            "uniqueDestinationCells": 64,
+            "nonEmptyPaths": 64,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 51,
+            "expandedCells": 6028,
+            "discoveredCells": 10677,
+            "elapsedMs": 13.99,
+            "planningWorkMs": 11.731,
+            "maxPlanningSliceMs": 3.321,
+            "queueWaitMs": 0.078,
+            "setupMs": 2.233,
+            "pathPlanningWorkMs": 9.43,
+            "maxPathPlanningSliceMs": 3.321,
+            "finalizationMs": 0.068,
+            "planningSliceCount": 10,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 1766,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 8,
+            "firstServiceWaitMs": 0.43
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 64,
+              "searchCount": 51,
+              "expandedCells": 6028,
+              "maxPlanningSliceMs": 3.321,
+              "planningSliceCount": 10,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 1766
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.063,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.046,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.025,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.019,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 309,
+              "p95": 581,
+              "max": 647
+            },
+            "distanceChecksPerTick": {
+              "p50": 309,
+              "p95": 581,
+              "max": 647
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 117,
+              "p95": 185,
+              "max": 200
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 65,
+              "p95": 73,
+              "max": 77
+            },
+            "maxCandidatesPerCall": {
+              "p50": 11,
+              "p95": 18,
+              "max": 19
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 237,
+          "noProgressEpisodes": 4,
+          "recoveredEpisodes": 4
+        },
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "d543758c2178c9816ec74cc2cf4f6fe5fdfec19dd2ce5ed09f4250186e2f55eb",
+          "initialRouteSha256": "32dc267d948850ea21575c270dde3e7e502d42d964059985b814e9d63f916ca3",
+          "ticks": 647,
+          "arrived": 64,
+          "firstArrival": 474,
+          "stalled": [],
+          "events": [],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 0,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 600,
+              "arrived": 49,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.121,
+            "p95": 0.382,
+            "max": 6.515
+          },
+          "simulationMs": {
+            "p50": 0.116,
+            "p95": 0.368,
+            "max": 6.428
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 64,
+            "uniqueStartCells": 44,
+            "uniqueDestinationCells": 64,
+            "nonEmptyPaths": 64,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 51,
+            "expandedCells": 6028,
+            "discoveredCells": 10677,
+            "elapsedMs": 8.916,
+            "planningWorkMs": 8.152,
+            "maxPlanningSliceMs": 3.611,
+            "queueWaitMs": 0.097,
+            "setupMs": 1.363,
+            "pathPlanningWorkMs": 6.693,
+            "maxPathPlanningSliceMs": 3.611,
+            "finalizationMs": 0.095,
+            "planningSliceCount": 10,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 1766,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 8,
+            "firstServiceWaitMs": 0.337
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 64,
+              "searchCount": 51,
+              "expandedCells": 6028,
+              "maxPlanningSliceMs": 3.611,
+              "planningSliceCount": 10,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 1766
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.065,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.029,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.021,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.019,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 309,
+              "p95": 581,
+              "max": 647
+            },
+            "distanceChecksPerTick": {
+              "p50": 309,
+              "p95": 581,
+              "max": 647
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 117,
+              "p95": 185,
+              "max": 200
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 65,
+              "p95": 73,
+              "max": 77
+            },
+            "maxCandidatesPerCall": {
+              "p50": 11,
+              "p95": 18,
+              "max": 19
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 237,
+          "noProgressEpisodes": 4,
+          "recoveredEpisodes": 4
+        }
+      ]
+    },
+    {
+      "group": 256,
+      "kind": "single-choke",
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "e008cc17b3bfb3c6255861390f2d42e437690d10282e613c32a6208a525a0f2b",
+          "initialRouteSha256": "1d13b7362f831771066d983075e2fbdf170e107962c9c2645690acfb440754f0",
+          "ticks": 852,
+          "arrived": 256,
+          "firstArrival": 368,
+          "stalled": [],
+          "events": [],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 450,
+              "arrived": 12,
+              "noProgress150Ticks": 1
+            },
+            {
+              "tick": 600,
+              "arrived": 106,
+              "noProgress150Ticks": 3
+            },
+            {
+              "tick": 750,
+              "arrived": 234,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.315,
+            "p95": 0.768,
+            "max": 8.554
+          },
+          "simulationMs": {
+            "p50": 0.311,
+            "p95": 0.749,
+            "max": 8.463
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 256,
+            "uniqueStartCells": 168,
+            "uniqueDestinationCells": 256,
+            "nonEmptyPaths": 256,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 242,
+            "expandedCells": 53134,
+            "discoveredCells": 76483,
+            "elapsedMs": 21.906,
+            "planningWorkMs": 21.073,
+            "maxPlanningSliceMs": 4.294,
+            "queueWaitMs": 0.087,
+            "setupMs": 1.312,
+            "pathPlanningWorkMs": 19.597,
+            "maxPathPlanningSliceMs": 4.294,
+            "finalizationMs": 0.164,
+            "planningSliceCount": 34,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 3527,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 32,
+            "firstServiceWaitMs": 0.33
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 256,
+              "searchCount": 242,
+              "expandedCells": 53134,
+              "maxPlanningSliceMs": 4.294,
+              "planningSliceCount": 34,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 3527
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.082,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.038,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.036,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.041,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 428,
+              "p95": 1810,
+              "max": 2116
+            },
+            "distanceChecksPerTick": {
+              "p50": 428,
+              "p95": 1810,
+              "max": 2116
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 76,
+              "p95": 469,
+              "max": 624
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 69,
+              "p95": 183,
+              "max": 198
+            },
+            "maxCandidatesPerCall": {
+              "p50": 13,
+              "p95": 26,
+              "max": 28
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 634,
+          "noProgressEpisodes": 4,
+          "recoveredEpisodes": 4
+        },
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "e008cc17b3bfb3c6255861390f2d42e437690d10282e613c32a6208a525a0f2b",
+          "initialRouteSha256": "1d13b7362f831771066d983075e2fbdf170e107962c9c2645690acfb440754f0",
+          "ticks": 852,
+          "arrived": 256,
+          "firstArrival": 368,
+          "stalled": [],
+          "events": [],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 450,
+              "arrived": 12,
+              "noProgress150Ticks": 1
+            },
+            {
+              "tick": 600,
+              "arrived": 106,
+              "noProgress150Ticks": 3
+            },
+            {
+              "tick": 750,
+              "arrived": 234,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.329,
+            "p95": 0.806,
+            "max": 9.691
+          },
+          "simulationMs": {
+            "p50": 0.326,
+            "p95": 0.794,
+            "max": 9.594
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 256,
+            "uniqueStartCells": 168,
+            "uniqueDestinationCells": 256,
+            "nonEmptyPaths": 256,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 242,
+            "expandedCells": 53134,
+            "discoveredCells": 76483,
+            "elapsedMs": 26.564,
+            "planningWorkMs": 25.605,
+            "maxPlanningSliceMs": 3.945,
+            "queueWaitMs": 0.23,
+            "setupMs": 2.025,
+            "pathPlanningWorkMs": 23.42,
+            "maxPathPlanningSliceMs": 3.945,
+            "finalizationMs": 0.16,
+            "planningSliceCount": 34,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 3527,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 32,
+            "firstServiceWaitMs": 0.482
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 256,
+              "searchCount": 242,
+              "expandedCells": 53134,
+              "maxPlanningSliceMs": 3.945,
+              "planningSliceCount": 34,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 3527
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.114,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.035,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.028,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.027,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 428,
+              "p95": 1810,
+              "max": 2116
+            },
+            "distanceChecksPerTick": {
+              "p50": 428,
+              "p95": 1810,
+              "max": 2116
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 76,
+              "p95": 469,
+              "max": 624
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 69,
+              "p95": 183,
+              "max": 198
+            },
+            "maxCandidatesPerCall": {
+              "p50": 13,
+              "p95": 26,
+              "max": 28
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 634,
+          "noProgressEpisodes": 4,
+          "recoveredEpisodes": 4
+        }
+      ]
+    },
+    {
+      "group": 64,
+      "kind": "s-bend",
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "9c893049a7fe141d608c4de36de9ab9d8e6406ac4570be54af376a540d5ebc3c",
+          "initialRouteSha256": "9928df51a1d63b7398715d26f7cb565f70d93df961aa141aa0585d2e9a3a536b",
+          "ticks": 711,
+          "arrived": 64,
+          "firstArrival": 507,
+          "stalled": [],
+          "events": [],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 600,
+              "arrived": 16,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.096,
+            "p95": 0.304,
+            "max": 4.967
+          },
+          "simulationMs": {
+            "p50": 0.092,
+            "p95": 0.304,
+            "max": 4.84
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 64,
+            "uniqueStartCells": 44,
+            "uniqueDestinationCells": 64,
+            "nonEmptyPaths": 64,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 64,
+            "expandedCells": 14491,
+            "discoveredCells": 20574,
+            "elapsedMs": 14.496,
+            "planningWorkMs": 13.838,
+            "maxPlanningSliceMs": 3.861,
+            "queueWaitMs": 0.071,
+            "setupMs": 0.915,
+            "pathPlanningWorkMs": 12.784,
+            "maxPathPlanningSliceMs": 3.861,
+            "finalizationMs": 0.139,
+            "planningSliceCount": 10,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 3001,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 8,
+            "firstServiceWaitMs": 0.35
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 64,
+              "searchCount": 64,
+              "expandedCells": 14491,
+              "maxPlanningSliceMs": 3.861,
+              "planningSliceCount": 10,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 3001
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 582,
+              "p95": 702,
+              "max": 743
+            },
+            "distanceChecksPerTick": {
+              "p50": 582,
+              "p95": 702,
+              "max": 743
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 204,
+              "p95": 272,
+              "max": 280
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 64,
+              "p95": 72,
+              "max": 76
+            },
+            "maxCandidatesPerCall": {
+              "p50": 16,
+              "p95": 19,
+              "max": 21
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 34,
+          "noProgressEpisodes": 0,
+          "recoveredEpisodes": 0
+        },
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "9c893049a7fe141d608c4de36de9ab9d8e6406ac4570be54af376a540d5ebc3c",
+          "initialRouteSha256": "9928df51a1d63b7398715d26f7cb565f70d93df961aa141aa0585d2e9a3a536b",
+          "ticks": 711,
+          "arrived": 64,
+          "firstArrival": 507,
+          "stalled": [],
+          "events": [],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 600,
+              "arrived": 16,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.091,
+            "p95": 0.311,
+            "max": 5.764
+          },
+          "simulationMs": {
+            "p50": 0.087,
+            "p95": 0.303,
+            "max": 5.632
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 64,
+            "uniqueStartCells": 44,
+            "uniqueDestinationCells": 64,
+            "nonEmptyPaths": 64,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 64,
+            "expandedCells": 14491,
+            "discoveredCells": 20574,
+            "elapsedMs": 11.55,
+            "planningWorkMs": 10.702,
+            "maxPlanningSliceMs": 3.139,
+            "queueWaitMs": 0.137,
+            "setupMs": 0.909,
+            "pathPlanningWorkMs": 9.722,
+            "maxPathPlanningSliceMs": 3.139,
+            "finalizationMs": 0.071,
+            "planningSliceCount": 10,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 3001,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 8,
+            "firstServiceWaitMs": 0.386
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 64,
+              "searchCount": 64,
+              "expandedCells": 14491,
+              "maxPlanningSliceMs": 3.139,
+              "planningSliceCount": 10,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 3001
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 582,
+              "p95": 702,
+              "max": 743
+            },
+            "distanceChecksPerTick": {
+              "p50": 582,
+              "p95": 702,
+              "max": 743
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 204,
+              "p95": 272,
+              "max": 280
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 64,
+              "p95": 72,
+              "max": 76
+            },
+            "maxCandidatesPerCall": {
+              "p50": 16,
+              "p95": 19,
+              "max": 21
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 34,
+          "noProgressEpisodes": 0,
+          "recoveredEpisodes": 0
+        }
+      ]
+    },
+    {
+      "group": 64,
+      "kind": "dynamic-route",
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "714e3de77f548c9e3d26117e7ec1795798ae0eb6cd0d64b2a0fb8374457c1b11",
+          "initialRouteSha256": "32dc267d948850ea21575c270dde3e7e502d42d964059985b814e9d63f916ca3",
+          "ticks": 672,
+          "arrived": 64,
+          "firstArrival": 469,
+          "stalled": [],
+          "events": [
+            {
+              "tick": 15,
+              "type": "paid-house",
+              "footprint": [
+                3012,
+                3013,
+                3014,
+                3108,
+                3109,
+                3110,
+                3204,
+                3205,
+                3206
+              ],
+              "navigationRevision": 1,
+              "revisionChanged": true,
+              "repairedUnits": 39
+            }
+          ],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 600,
+              "arrived": 39,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.103,
+            "p95": 0.497,
+            "max": 6.449
+          },
+          "simulationMs": {
+            "p50": 0.098,
+            "p95": 0.486,
+            "max": 6.315
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 64,
+            "uniqueStartCells": 44,
+            "uniqueDestinationCells": 64,
+            "nonEmptyPaths": 64,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 51,
+            "expandedCells": 6028,
+            "discoveredCells": 10677,
+            "elapsedMs": 11.27,
+            "planningWorkMs": 10.364,
+            "maxPlanningSliceMs": 3.928,
+            "queueWaitMs": 0.098,
+            "setupMs": 1.194,
+            "pathPlanningWorkMs": 9.103,
+            "maxPathPlanningSliceMs": 3.928,
+            "finalizationMs": 0.067,
+            "planningSliceCount": 10,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 1766,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 8,
+            "firstServiceWaitMs": 0.343
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 64,
+              "searchCount": 51,
+              "expandedCells": 6028,
+              "maxPlanningSliceMs": 3.928,
+              "planningSliceCount": 10,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 1766
+            },
+            {
+              "mode": "shared-start",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.147,
+              "planningSliceCount": 3,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 39,
+              "searchCount": 39,
+              "expandedCells": 3838,
+              "maxPlanningSliceMs": 0.678,
+              "planningSliceCount": 6,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 904
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 390,
+              "p95": 778,
+              "max": 842
+            },
+            "distanceChecksPerTick": {
+              "p50": 390,
+              "p95": 778,
+              "max": 842
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 112,
+              "p95": 270,
+              "max": 314
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 66,
+              "p95": 73,
+              "max": 78
+            },
+            "maxCandidatesPerCall": {
+              "p50": 14,
+              "p95": 22,
+              "max": 24
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 27,
+          "noProgressEpisodes": 0,
+          "recoveredEpisodes": 0
+        },
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "714e3de77f548c9e3d26117e7ec1795798ae0eb6cd0d64b2a0fb8374457c1b11",
+          "initialRouteSha256": "32dc267d948850ea21575c270dde3e7e502d42d964059985b814e9d63f916ca3",
+          "ticks": 672,
+          "arrived": 64,
+          "firstArrival": 469,
+          "stalled": [],
+          "events": [
+            {
+              "tick": 15,
+              "type": "paid-house",
+              "footprint": [
+                3012,
+                3013,
+                3014,
+                3108,
+                3109,
+                3110,
+                3204,
+                3205,
+                3206
+              ],
+              "navigationRevision": 1,
+              "revisionChanged": true,
+              "repairedUnits": 39
+            }
+          ],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 600,
+              "arrived": 39,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.103,
+            "p95": 0.369,
+            "max": 5.869
+          },
+          "simulationMs": {
+            "p50": 0.1,
+            "p95": 0.354,
+            "max": 5.868
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 64,
+            "uniqueStartCells": 44,
+            "uniqueDestinationCells": 64,
+            "nonEmptyPaths": 64,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 51,
+            "expandedCells": 6028,
+            "discoveredCells": 10677,
+            "elapsedMs": 9.95,
+            "planningWorkMs": 9.219,
+            "maxPlanningSliceMs": 3.625,
+            "queueWaitMs": 0.076,
+            "setupMs": 1.028,
+            "pathPlanningWorkMs": 8.097,
+            "maxPathPlanningSliceMs": 3.625,
+            "finalizationMs": 0.094,
+            "planningSliceCount": 10,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 1766,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 8,
+            "firstServiceWaitMs": 0.332
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 64,
+              "searchCount": 51,
+              "expandedCells": 6028,
+              "maxPlanningSliceMs": 3.625,
+              "planningSliceCount": 10,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 1766
+            },
+            {
+              "mode": "shared-start",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.119,
+              "planningSliceCount": 3,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 39,
+              "searchCount": 39,
+              "expandedCells": 3838,
+              "maxPlanningSliceMs": 0.773,
+              "planningSliceCount": 6,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 904
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 390,
+              "p95": 778,
+              "max": 842
+            },
+            "distanceChecksPerTick": {
+              "p50": 390,
+              "p95": 778,
+              "max": 842
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 112,
+              "p95": 270,
+              "max": 314
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 66,
+              "p95": 73,
+              "max": 78
+            },
+            "maxCandidatesPerCall": {
+              "p50": 14,
+              "p95": 22,
+              "max": 24
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 27,
+          "noProgressEpisodes": 0,
+          "recoveredEpisodes": 0
+        }
+      ]
+    },
+    {
+      "group": 64,
+      "kind": "dynamic-goal",
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "848dcd884d80349efe9684c837691ef56c1fb504e29ef2feadd46b1cb4068d6e",
+          "initialRouteSha256": "32dc267d948850ea21575c270dde3e7e502d42d964059985b814e9d63f916ca3",
+          "ticks": 668,
+          "arrived": 64,
+          "firstArrival": 475,
+          "stalled": [],
+          "events": [
+            {
+              "tick": 15,
+              "type": "paid-house",
+              "footprint": [
+                3039,
+                3040,
+                3041,
+                3135,
+                3136,
+                3137,
+                3231,
+                3232,
+                3233
+              ],
+              "navigationRevision": 1,
+              "revisionChanged": true,
+              "repairedUnits": 25
+            }
+          ],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 600,
+              "arrived": 47,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.113,
+            "p95": 0.414,
+            "max": 4.968
+          },
+          "simulationMs": {
+            "p50": 0.112,
+            "p95": 0.398,
+            "max": 4.878
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 64,
+            "uniqueStartCells": 44,
+            "uniqueDestinationCells": 64,
+            "nonEmptyPaths": 64,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 51,
+            "expandedCells": 6028,
+            "discoveredCells": 10677,
+            "elapsedMs": 10.713,
+            "planningWorkMs": 9.884,
+            "maxPlanningSliceMs": 3.367,
+            "queueWaitMs": 0.081,
+            "setupMs": 1.78,
+            "pathPlanningWorkMs": 8.002,
+            "maxPathPlanningSliceMs": 3.367,
+            "finalizationMs": 0.102,
+            "planningSliceCount": 10,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 1766,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 8,
+            "firstServiceWaitMs": 0.462
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 64,
+              "searchCount": 51,
+              "expandedCells": 6028,
+              "maxPlanningSliceMs": 3.367,
+              "planningSliceCount": 10,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 1766
+            },
+            {
+              "mode": "shared-start",
+              "unitCount": 1,
+              "searchCount": 1,
+              "expandedCells": 106,
+              "maxPlanningSliceMs": 0.115,
+              "planningSliceCount": 3,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 106
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 25,
+              "searchCount": 22,
+              "expandedCells": 2428,
+              "maxPlanningSliceMs": 0.382,
+              "planningSliceCount": 5,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 892
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 2,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.031,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 2,
+              "maxPlanningSliceExpandedCells": 0
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 339,
+              "p95": 560,
+              "max": 648
+            },
+            "distanceChecksPerTick": {
+              "p50": 339,
+              "p95": 560,
+              "max": 648
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 98,
+              "p95": 182,
+              "max": 224
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 66,
+              "p95": 74,
+              "max": 79
+            },
+            "maxCandidatesPerCall": {
+              "p50": 10,
+              "p95": 15,
+              "max": 19
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 195,
+          "noProgressEpisodes": 2,
+          "recoveredEpisodes": 2
+        },
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "848dcd884d80349efe9684c837691ef56c1fb504e29ef2feadd46b1cb4068d6e",
+          "initialRouteSha256": "32dc267d948850ea21575c270dde3e7e502d42d964059985b814e9d63f916ca3",
+          "ticks": 668,
+          "arrived": 64,
+          "firstArrival": 475,
+          "stalled": [],
+          "events": [
+            {
+              "tick": 15,
+              "type": "paid-house",
+              "footprint": [
+                3039,
+                3040,
+                3041,
+                3135,
+                3136,
+                3137,
+                3231,
+                3232,
+                3233
+              ],
+              "navigationRevision": 1,
+              "revisionChanged": true,
+              "repairedUnits": 25
+            }
+          ],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 600,
+              "arrived": 47,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.098,
+            "p95": 0.387,
+            "max": 5.233
+          },
+          "simulationMs": {
+            "p50": 0.096,
+            "p95": 0.385,
+            "max": 5.094
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 64,
+            "uniqueStartCells": 44,
+            "uniqueDestinationCells": 64,
+            "nonEmptyPaths": 64,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 51,
+            "expandedCells": 6028,
+            "discoveredCells": 10677,
+            "elapsedMs": 9.471,
+            "planningWorkMs": 8.823,
+            "maxPlanningSliceMs": 3.806,
+            "queueWaitMs": 0.071,
+            "setupMs": 1.098,
+            "pathPlanningWorkMs": 7.624,
+            "maxPathPlanningSliceMs": 3.806,
+            "finalizationMs": 0.101,
+            "planningSliceCount": 10,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 1766,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 8,
+            "firstServiceWaitMs": 0.304
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 64,
+              "searchCount": 51,
+              "expandedCells": 6028,
+              "maxPlanningSliceMs": 3.806,
+              "planningSliceCount": 10,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 1766
+            },
+            {
+              "mode": "shared-start",
+              "unitCount": 1,
+              "searchCount": 1,
+              "expandedCells": 106,
+              "maxPlanningSliceMs": 0.118,
+              "planningSliceCount": 3,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 106
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 25,
+              "searchCount": 22,
+              "expandedCells": 2428,
+              "maxPlanningSliceMs": 0.442,
+              "planningSliceCount": 5,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 892
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 2,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.028,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 2,
+              "maxPlanningSliceExpandedCells": 0
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 339,
+              "p95": 560,
+              "max": 648
+            },
+            "distanceChecksPerTick": {
+              "p50": 339,
+              "p95": 560,
+              "max": 648
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 98,
+              "p95": 182,
+              "max": 224
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 66,
+              "p95": 74,
+              "max": 79
+            },
+            "maxCandidatesPerCall": {
+              "p50": 10,
+              "p95": 15,
+              "max": 19
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 195,
+          "noProgressEpisodes": 2,
+          "recoveredEpisodes": 2
+        }
+      ]
+    },
+    {
+      "group": 16,
+      "kind": "disconnect-rejection",
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "19cc668c6c8495309f2c6382bdf2e87f240313095f7bc5aad8ce91c593379d90",
+          "initialRouteSha256": "f723cb60fb3a91e507a9b1deb65390bbe36906bb92a367d23a7eb3d044bb7015",
+          "ticks": 608,
+          "arrived": 16,
+          "firstArrival": 487,
+          "stalled": [],
+          "events": [
+            {
+              "tick": 15,
+              "type": "disconnect-rejected",
+              "navigationRevision": 0
+            }
+          ],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 600,
+              "arrived": 15,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.05,
+            "p95": 0.201,
+            "max": 4.655
+          },
+          "simulationMs": {
+            "p50": 0.047,
+            "p95": 0.193,
+            "max": 4.562
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 16,
+            "uniqueStartCells": 14,
+            "uniqueDestinationCells": 16,
+            "nonEmptyPaths": 16,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 11,
+            "expandedCells": 753,
+            "discoveredCells": 1719,
+            "elapsedMs": 4.036,
+            "planningWorkMs": 3.373,
+            "maxPlanningSliceMs": 2.194,
+            "queueWaitMs": 0.105,
+            "setupMs": 0.68,
+            "pathPlanningWorkMs": 2.676,
+            "maxPathPlanningSliceMs": 2.194,
+            "finalizationMs": 0.016,
+            "planningSliceCount": 4,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 555,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 2,
+            "firstServiceWaitMs": 0.328
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 16,
+              "searchCount": 11,
+              "expandedCells": 753,
+              "maxPlanningSliceMs": 2.194,
+              "planningSliceCount": 4,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 555
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 31,
+              "p95": 61,
+              "max": 69
+            },
+            "distanceChecksPerTick": {
+              "p50": 31,
+              "p95": 61,
+              "max": 69
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 11,
+              "p95": 24,
+              "max": 33
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 16,
+              "p95": 18,
+              "max": 20
+            },
+            "maxCandidatesPerCall": {
+              "p50": 5,
+              "p95": 10,
+              "max": 10
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 28,
+          "noProgressEpisodes": 0,
+          "recoveredEpisodes": 0
+        },
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "19cc668c6c8495309f2c6382bdf2e87f240313095f7bc5aad8ce91c593379d90",
+          "initialRouteSha256": "f723cb60fb3a91e507a9b1deb65390bbe36906bb92a367d23a7eb3d044bb7015",
+          "ticks": 608,
+          "arrived": 16,
+          "firstArrival": 487,
+          "stalled": [],
+          "events": [
+            {
+              "tick": 15,
+              "type": "disconnect-rejected",
+              "navigationRevision": 0
+            }
+          ],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 600,
+              "arrived": 15,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 0.035,
+            "p95": 0.217,
+            "max": 4.718
+          },
+          "simulationMs": {
+            "p50": 0.034,
+            "p95": 0.194,
+            "max": 4.623
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 16,
+            "uniqueStartCells": 14,
+            "uniqueDestinationCells": 16,
+            "nonEmptyPaths": 16,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 11,
+            "expandedCells": 753,
+            "discoveredCells": 1719,
+            "elapsedMs": 4.922,
+            "planningWorkMs": 4.179,
+            "maxPlanningSliceMs": 2.558,
+            "queueWaitMs": 0.07,
+            "setupMs": 0.719,
+            "pathPlanningWorkMs": 3.328,
+            "maxPathPlanningSliceMs": 2.558,
+            "finalizationMs": 0.131,
+            "planningSliceCount": 4,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 555,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 2,
+            "firstServiceWaitMs": 0.288
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 16,
+              "searchCount": 11,
+              "expandedCells": 753,
+              "maxPlanningSliceMs": 2.558,
+              "planningSliceCount": 4,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 555
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 31,
+              "p95": 61,
+              "max": 69
+            },
+            "distanceChecksPerTick": {
+              "p50": 31,
+              "p95": 61,
+              "max": 69
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 11,
+              "p95": 24,
+              "max": 33
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 16,
+              "p95": 18,
+              "max": 20
+            },
+            "maxCandidatesPerCall": {
+              "p50": 5,
+              "p95": 10,
+              "max": 10
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 28,
+          "noProgressEpisodes": 0,
+          "recoveredEpisodes": 0
+        }
+      ]
+    },
+    {
+      "group": 996,
+      "kind": "large-single-choke",
+      "team": 0,
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "b872540d6f47a771af471afdad2b59c366021c8e07e48303084e352b2fd89af4",
+          "initialRouteSha256": "85747b2eb6520ca0dfb4301c3ee38a2bb95b40a6b52fd6ffe912dd0dd36fca2f",
+          "ticks": 1199,
+          "arrived": 996,
+          "firstArrival": 278,
+          "stalled": [],
+          "events": [],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 5,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 42,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 600,
+              "arrived": 153,
+              "noProgress150Ticks": 3
+            },
+            {
+              "tick": 750,
+              "arrived": 356,
+              "noProgress150Ticks": 10
+            },
+            {
+              "tick": 900,
+              "arrived": 730,
+              "noProgress150Ticks": 3
+            },
+            {
+              "tick": 1050,
+              "arrived": 938,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 1.403,
+            "p95": 2.222,
+            "max": 20.419
+          },
+          "simulationMs": {
+            "p50": 1.394,
+            "p95": 2.221,
+            "max": 20.315
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 996,
+            "uniqueStartCells": 476,
+            "uniqueDestinationCells": 996,
+            "nonEmptyPaths": 996,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 917,
+            "expandedCells": 467516,
+            "discoveredCells": 581680,
+            "elapsedMs": 129.173,
+            "planningWorkMs": 127.719,
+            "maxPlanningSliceMs": 5.381,
+            "queueWaitMs": 0.142,
+            "setupMs": 4.739,
+            "pathPlanningWorkMs": 122.299,
+            "maxPathPlanningSliceMs": 5.381,
+            "finalizationMs": 0.681,
+            "planningSliceCount": 146,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 5059,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 144,
+            "firstServiceWaitMs": 0.391
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 996,
+              "searchCount": 917,
+              "expandedCells": 467516,
+              "maxPlanningSliceMs": 5.381,
+              "planningSliceCount": 146,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 5059
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.107,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.091,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.034,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.036,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.035,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.031,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.038,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.062,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.037,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.033,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.031,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 353,
+              "p95": 1942,
+              "max": 2170
+            },
+            "distanceChecksPerTick": {
+              "p50": 353,
+              "p95": 1942,
+              "max": 2170
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 62,
+              "p95": 442,
+              "max": 484
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 63,
+              "p95": 254,
+              "max": 295
+            },
+            "maxCandidatesPerCall": {
+              "p50": 12,
+              "p95": 19,
+              "max": 20
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 424,
+          "noProgressEpisodes": 10,
+          "recoveredEpisodes": 10
+        },
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "b872540d6f47a771af471afdad2b59c366021c8e07e48303084e352b2fd89af4",
+          "initialRouteSha256": "85747b2eb6520ca0dfb4301c3ee38a2bb95b40a6b52fd6ffe912dd0dd36fca2f",
+          "ticks": 1199,
+          "arrived": 996,
+          "firstArrival": 278,
+          "stalled": [],
+          "events": [],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 5,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 450,
+              "arrived": 42,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 600,
+              "arrived": 153,
+              "noProgress150Ticks": 3
+            },
+            {
+              "tick": 750,
+              "arrived": 356,
+              "noProgress150Ticks": 10
+            },
+            {
+              "tick": 900,
+              "arrived": 730,
+              "noProgress150Ticks": 3
+            },
+            {
+              "tick": 1050,
+              "arrived": 938,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 1.393,
+            "p95": 2.436,
+            "max": 23.045
+          },
+          "simulationMs": {
+            "p50": 1.387,
+            "p95": 2.416,
+            "max": 22.939
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 0,
+            "mode": "shared-start",
+            "unitCount": 996,
+            "uniqueStartCells": 476,
+            "uniqueDestinationCells": 996,
+            "nonEmptyPaths": 996,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 917,
+            "expandedCells": 467516,
+            "discoveredCells": 581680,
+            "elapsedMs": 134.825,
+            "planningWorkMs": 133.337,
+            "maxPlanningSliceMs": 5.555,
+            "queueWaitMs": 0.23,
+            "setupMs": 4.087,
+            "pathPlanningWorkMs": 128.595,
+            "maxPathPlanningSliceMs": 5.555,
+            "finalizationMs": 0.655,
+            "planningSliceCount": 146,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 5059,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 144,
+            "firstServiceWaitMs": 0.616
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 996,
+              "searchCount": 917,
+              "expandedCells": 467516,
+              "maxPlanningSliceMs": 5.555,
+              "planningSliceCount": 146,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 5059
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.123,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.083,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.032,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.032,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.034,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.033,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.085,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.04,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.036,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.032,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.034,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 353,
+              "p95": 1942,
+              "max": 2170
+            },
+            "distanceChecksPerTick": {
+              "p50": 353,
+              "p95": 1942,
+              "max": 2170
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 62,
+              "p95": 442,
+              "max": 484
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 63,
+              "p95": 254,
+              "max": 295
+            },
+            "maxCandidatesPerCall": {
+              "p50": 12,
+              "p95": 19,
+              "max": 20
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 424,
+          "noProgressEpisodes": 10,
+          "recoveredEpisodes": 10
+        }
+      ]
+    },
+    {
+      "group": 996,
+      "kind": "large-single-choke",
+      "team": 1,
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "f9843c08eaf2af3ef8e43342b797d834ffa94c4c6db17452e9160e20d7de87e0",
+          "initialRouteSha256": "37bc841dc7da422fb4bc87745f83aa1667e68fceb0eeb37369e164d722f45107",
+          "ticks": 1261,
+          "arrived": 996,
+          "firstArrival": 344,
+          "stalled": [],
+          "events": [],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 450,
+              "arrived": 6,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 600,
+              "arrived": 75,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 750,
+              "arrived": 414,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 900,
+              "arrived": 653,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 1050,
+              "arrived": 906,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 1200,
+              "arrived": 992,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 1.364,
+            "p95": 2.628,
+            "max": 30.441
+          },
+          "simulationMs": {
+            "p50": 1.355,
+            "p95": 2.611,
+            "max": 30.255
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 1,
+            "mode": "shared-start",
+            "unitCount": 996,
+            "uniqueStartCells": 476,
+            "uniqueDestinationCells": 996,
+            "nonEmptyPaths": 996,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 974,
+            "expandedCells": 481539,
+            "discoveredCells": 604876,
+            "elapsedMs": 145.742,
+            "planningWorkMs": 143.715,
+            "maxPlanningSliceMs": 4.776,
+            "queueWaitMs": 0.13,
+            "setupMs": 4.776,
+            "pathPlanningWorkMs": 136.593,
+            "maxPathPlanningSliceMs": 4.53,
+            "finalizationMs": 2.347,
+            "planningSliceCount": 147,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 5146,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 145,
+            "firstServiceWaitMs": 0.385
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 996,
+              "searchCount": 974,
+              "expandedCells": 481539,
+              "maxPlanningSliceMs": 4.776,
+              "planningSliceCount": 147,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 5146
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.141,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.052,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.038,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.028,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 236,
+              "p95": 1421,
+              "max": 1763
+            },
+            "distanceChecksPerTick": {
+              "p50": 236,
+              "p95": 1421,
+              "max": 1763
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 38,
+              "p95": 421,
+              "max": 530
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 33,
+              "p95": 211,
+              "max": 247
+            },
+            "maxCandidatesPerCall": {
+              "p50": 13,
+              "p95": 23,
+              "max": 25
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 823,
+          "noProgressEpisodes": 2,
+          "recoveredEpisodes": 2
+        },
+        {
+          "sourceSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+          "traceSha256": "f9843c08eaf2af3ef8e43342b797d834ffa94c4c6db17452e9160e20d7de87e0",
+          "initialRouteSha256": "37bc841dc7da422fb4bc87745f83aa1667e68fceb0eeb37369e164d722f45107",
+          "ticks": 1261,
+          "arrived": 996,
+          "firstArrival": 344,
+          "stalled": [],
+          "events": [],
+          "samples": [
+            {
+              "tick": 150,
+              "arrived": 0,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 300,
+              "arrived": 0,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 450,
+              "arrived": 6,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 600,
+              "arrived": 75,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 750,
+              "arrived": 414,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 900,
+              "arrived": 653,
+              "noProgress150Ticks": 2
+            },
+            {
+              "tick": 1050,
+              "arrived": 906,
+              "noProgress150Ticks": 0
+            },
+            {
+              "tick": 1200,
+              "arrived": 992,
+              "noProgress150Ticks": 0
+            }
+          ],
+          "tickMs": {
+            "p50": 1.38,
+            "p95": 2.29,
+            "max": 28.972
+          },
+          "simulationMs": {
+            "p50": 1.371,
+            "p95": 2.281,
+            "max": 28.857
+          },
+          "initialPlanning": {
+            "orderId": 1,
+            "team": 1,
+            "mode": "shared-start",
+            "unitCount": 996,
+            "uniqueStartCells": 476,
+            "uniqueDestinationCells": 996,
+            "nonEmptyPaths": 996,
+            "alreadyInDestinationCell": 0,
+            "routeFailures": 0,
+            "searchCount": 974,
+            "expandedCells": 481539,
+            "discoveredCells": 604876,
+            "elapsedMs": 126.04,
+            "planningWorkMs": 124.456,
+            "maxPlanningSliceMs": 4.016,
+            "queueWaitMs": 0.117,
+            "setupMs": 4.016,
+            "pathPlanningWorkMs": 119.429,
+            "maxPathPlanningSliceMs": 3.805,
+            "finalizationMs": 1.011,
+            "planningSliceCount": 147,
+            "maxPlanningSliceWorkItems": 8,
+            "maxPlanningSliceExpandedCells": 5146,
+            "createdTick": 0,
+            "firstAppliedTick": 0,
+            "lastAppliedTick": 0,
+            "firstPlanningTick": 0,
+            "serviceTurns": 145,
+            "firstServiceWaitMs": 0.372
+          },
+          "planning": [
+            {
+              "mode": "shared-start",
+              "unitCount": 996,
+              "searchCount": 974,
+              "expandedCells": 481539,
+              "maxPlanningSliceMs": 4.016,
+              "planningSliceCount": 147,
+              "maxPlanningSliceWorkItems": 8,
+              "maxPlanningSliceExpandedCells": 5146
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.119,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.046,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.063,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            },
+            {
+              "mode": "blocked-route-repair",
+              "unitCount": 1,
+              "searchCount": 0,
+              "expandedCells": 0,
+              "maxPlanningSliceMs": 0.034,
+              "planningSliceCount": 2,
+              "maxPlanningSliceWorkItems": 1,
+              "maxPlanningSliceExpandedCells": 0
+            }
+          ],
+          "separation": {
+            "enabled": true,
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "candidateVisitsPerTick": {
+              "p50": 236,
+              "p95": 1421,
+              "max": 1763
+            },
+            "distanceChecksPerTick": {
+              "p50": 236,
+              "p95": 1421,
+              "max": 1763
+            },
+            "closeNeighborContributionsPerTick": {
+              "p50": 38,
+              "p95": 421,
+              "max": 530
+            },
+            "moveVectorCallsPerTick": {
+              "p50": 33,
+              "p95": 211,
+              "max": 247
+            },
+            "maxCandidatesPerCall": {
+              "p50": 13,
+              "p95": 23,
+              "max": 25
+            }
+          },
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 823,
+          "noProgressEpisodes": 2,
+          "recoveredEpisodes": 2
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "canonical replay drains real planning callbacks between ticks; excludes asynchronous planning/movement interleaving",
+    "real server tick bodies, no peers or checkpoint writes; transport/rendering and wall-clock scheduler capacity excluded",
+    "cloud host not isolated; timings observational, no comparable hardware speedup or supported-capacity claim"
+  ]
+}

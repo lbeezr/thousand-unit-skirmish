@@ -1,0 +1,653 @@
+{
+  "head": "723bd381bb2e813dd7758c6f5c002985b25f294a",
+  "serverSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+  "pathLineSha256": "9e1d246a57b452c96e7a916665cde63ea3ac9058aca986db04d35f58fce99889",
+  "node": "v24.19.0",
+  "camera": [
+    0.78,
+    1.12,
+    0.78
+  ],
+  "records": [
+    {
+      "name": "heading-0",
+      "start": {
+        "x": -0.5,
+        "z": -0.5
+      },
+      "click": {
+        "x": 11.5,
+        "z": 11.5
+      },
+      "runs": [
+        {
+          "goal": {
+            "x": 11.5,
+            "z": 11.5
+          },
+          "path": [
+            5723
+          ],
+          "distance": 16.97056274847706,
+          "straight": 16.970562748477143,
+          "ratio": 0.9999999999999952,
+          "maxDeviation": 0,
+          "clickError": 0,
+          "headings": [
+            0.785398
+          ],
+          "ticks": 196,
+          "invalidSteps": 0,
+          "traceSha256": "beb43e6eed2631d6e19e359bec200d5f57a7c6f9414b46e46a8338e7d7f251c7"
+        },
+        {
+          "goal": {
+            "x": 11.5,
+            "z": 11.5
+          },
+          "path": [
+            5723
+          ],
+          "distance": 16.97056274847706,
+          "straight": 16.970562748477143,
+          "ratio": 0.9999999999999952,
+          "maxDeviation": 0,
+          "clickError": 0,
+          "headings": [
+            0.785398
+          ],
+          "ticks": 196,
+          "invalidSteps": 0,
+          "traceSha256": "beb43e6eed2631d6e19e359bec200d5f57a7c6f9414b46e46a8338e7d7f251c7"
+        }
+      ]
+    },
+    {
+      "name": "heading-1",
+      "start": {
+        "x": -0.5,
+        "z": -0.5
+      },
+      "click": {
+        "x": 11.5,
+        "z": -12.5
+      },
+      "runs": [
+        {
+          "goal": {
+            "x": 11.5,
+            "z": -12.5
+          },
+          "path": [
+            3419
+          ],
+          "distance": 16.970562748477064,
+          "straight": 16.970562748477143,
+          "ratio": 0.9999999999999954,
+          "maxDeviation": 1.25607396694702e-15,
+          "clickError": 0,
+          "headings": [
+            2.356194
+          ],
+          "ticks": 196,
+          "invalidSteps": 0,
+          "traceSha256": "f4efbec3f5c64948c5c8c414f4a9bf127e5433a2b0dd1e6aee17a7d1e674ce6f"
+        },
+        {
+          "goal": {
+            "x": 11.5,
+            "z": -12.5
+          },
+          "path": [
+            3419
+          ],
+          "distance": 16.970562748477064,
+          "straight": 16.970562748477143,
+          "ratio": 0.9999999999999954,
+          "maxDeviation": 1.25607396694702e-15,
+          "clickError": 0,
+          "headings": [
+            2.356194
+          ],
+          "ticks": 196,
+          "invalidSteps": 0,
+          "traceSha256": "f4efbec3f5c64948c5c8c414f4a9bf127e5433a2b0dd1e6aee17a7d1e674ce6f"
+        }
+      ]
+    },
+    {
+      "name": "heading-2",
+      "start": {
+        "x": -0.5,
+        "z": -0.5
+      },
+      "click": {
+        "x": -12.5,
+        "z": 11.5
+      },
+      "runs": [
+        {
+          "goal": {
+            "x": -12.5,
+            "z": 11.5
+          },
+          "path": [
+            5699
+          ],
+          "distance": 16.970562748477064,
+          "straight": 16.970562748477143,
+          "ratio": 0.9999999999999954,
+          "maxDeviation": 1.25607396694702e-15,
+          "clickError": 0,
+          "headings": [
+            -0.785398
+          ],
+          "ticks": 196,
+          "invalidSteps": 0,
+          "traceSha256": "e8334418f851f2cf1cab2c1eb58ee5dfe947b3ac2b6d914dcdfb5b1895f844ca"
+        },
+        {
+          "goal": {
+            "x": -12.5,
+            "z": 11.5
+          },
+          "path": [
+            5699
+          ],
+          "distance": 16.970562748477064,
+          "straight": 16.970562748477143,
+          "ratio": 0.9999999999999954,
+          "maxDeviation": 1.25607396694702e-15,
+          "clickError": 0,
+          "headings": [
+            -0.785398
+          ],
+          "ticks": 196,
+          "invalidSteps": 0,
+          "traceSha256": "e8334418f851f2cf1cab2c1eb58ee5dfe947b3ac2b6d914dcdfb5b1895f844ca"
+        }
+      ]
+    },
+    {
+      "name": "heading-3",
+      "start": {
+        "x": -0.5,
+        "z": -0.5
+      },
+      "click": {
+        "x": -12.5,
+        "z": -12.5
+      },
+      "runs": [
+        {
+          "goal": {
+            "x": -12.5,
+            "z": -12.5
+          },
+          "path": [
+            3395
+          ],
+          "distance": 16.97056274847706,
+          "straight": 16.970562748477143,
+          "ratio": 0.9999999999999952,
+          "maxDeviation": 0,
+          "clickError": 0,
+          "headings": [
+            -2.356194
+          ],
+          "ticks": 196,
+          "invalidSteps": 0,
+          "traceSha256": "fb0191495e40b07fc8dc594647499a377ded2d98dc753b37cb73b57d706ed97a"
+        },
+        {
+          "goal": {
+            "x": -12.5,
+            "z": -12.5
+          },
+          "path": [
+            3395
+          ],
+          "distance": 16.97056274847706,
+          "straight": 16.970562748477143,
+          "ratio": 0.9999999999999952,
+          "maxDeviation": 0,
+          "clickError": 0,
+          "headings": [
+            -2.356194
+          ],
+          "ticks": 196,
+          "invalidSteps": 0,
+          "traceSha256": "fb0191495e40b07fc8dc594647499a377ded2d98dc753b37cb73b57d706ed97a"
+        }
+      ]
+    },
+    {
+      "name": "heading-4",
+      "start": {
+        "x": -0.5,
+        "z": -0.5
+      },
+      "click": {
+        "x": 11.5,
+        "z": -0.5
+      },
+      "runs": [
+        {
+          "goal": {
+            "x": 11.5,
+            "z": -0.5
+          },
+          "path": [
+            4571
+          ],
+          "distance": 11.999999999999996,
+          "straight": 12,
+          "ratio": 0.9999999999999997,
+          "maxDeviation": 0,
+          "clickError": 0,
+          "headings": [
+            1.570796
+          ],
+          "ticks": 139,
+          "invalidSteps": 0,
+          "traceSha256": "7787d616dacd7167e676bc1a8df5d977499139050c199c63647785bc3fa2aca8"
+        },
+        {
+          "goal": {
+            "x": 11.5,
+            "z": -0.5
+          },
+          "path": [
+            4571
+          ],
+          "distance": 11.999999999999996,
+          "straight": 12,
+          "ratio": 0.9999999999999997,
+          "maxDeviation": 0,
+          "clickError": 0,
+          "headings": [
+            1.570796
+          ],
+          "ticks": 139,
+          "invalidSteps": 0,
+          "traceSha256": "7787d616dacd7167e676bc1a8df5d977499139050c199c63647785bc3fa2aca8"
+        }
+      ]
+    },
+    {
+      "name": "heading-5",
+      "start": {
+        "x": -0.5,
+        "z": -0.5
+      },
+      "click": {
+        "x": -0.5,
+        "z": 11.5
+      },
+      "runs": [
+        {
+          "goal": {
+            "x": -0.5,
+            "z": 11.5
+          },
+          "path": [
+            5711
+          ],
+          "distance": 11.999999999999996,
+          "straight": 12,
+          "ratio": 0.9999999999999997,
+          "maxDeviation": 0,
+          "clickError": 0,
+          "headings": [
+            0
+          ],
+          "ticks": 139,
+          "invalidSteps": 0,
+          "traceSha256": "00ed028b2d18d4a6fe41a36ca7b6424e04ba247d2f55a85ae63168b6c6e3c041"
+        },
+        {
+          "goal": {
+            "x": -0.5,
+            "z": 11.5
+          },
+          "path": [
+            5711
+          ],
+          "distance": 11.999999999999996,
+          "straight": 12,
+          "ratio": 0.9999999999999997,
+          "maxDeviation": 0,
+          "clickError": 0,
+          "headings": [
+            0
+          ],
+          "ticks": 139,
+          "invalidSteps": 0,
+          "traceSha256": "00ed028b2d18d4a6fe41a36ca7b6424e04ba247d2f55a85ae63168b6c6e3c041"
+        }
+      ]
+    },
+    {
+      "name": "heading-6",
+      "start": {
+        "x": -0.5,
+        "z": -0.5
+      },
+      "click": {
+        "x": -12.5,
+        "z": -0.5
+      },
+      "runs": [
+        {
+          "goal": {
+            "x": -12.5,
+            "z": -0.5
+          },
+          "path": [
+            4547
+          ],
+          "distance": 12,
+          "straight": 12,
+          "ratio": 1,
+          "maxDeviation": 0,
+          "clickError": 0,
+          "headings": [
+            -1.570796
+          ],
+          "ticks": 139,
+          "invalidSteps": 0,
+          "traceSha256": "de51fb834a74a33a5f7f940a80c13c87be017450026f8d05f298e1f1cfd0762a"
+        },
+        {
+          "goal": {
+            "x": -12.5,
+            "z": -0.5
+          },
+          "path": [
+            4547
+          ],
+          "distance": 12,
+          "straight": 12,
+          "ratio": 1,
+          "maxDeviation": 0,
+          "clickError": 0,
+          "headings": [
+            -1.570796
+          ],
+          "ticks": 139,
+          "invalidSteps": 0,
+          "traceSha256": "de51fb834a74a33a5f7f940a80c13c87be017450026f8d05f298e1f1cfd0762a"
+        }
+      ]
+    },
+    {
+      "name": "heading-7",
+      "start": {
+        "x": -0.5,
+        "z": -0.5
+      },
+      "click": {
+        "x": -0.5,
+        "z": -12.5
+      },
+      "runs": [
+        {
+          "goal": {
+            "x": -0.5,
+            "z": -12.5
+          },
+          "path": [
+            3407
+          ],
+          "distance": 12,
+          "straight": 12,
+          "ratio": 1,
+          "maxDeviation": 0,
+          "clickError": 0,
+          "headings": [
+            3.141593
+          ],
+          "ticks": 139,
+          "invalidSteps": 0,
+          "traceSha256": "8d2de138202b255511582029cad5736a923684e1eb2b6ef2e88896baf7ebc4b5"
+        },
+        {
+          "goal": {
+            "x": -0.5,
+            "z": -12.5
+          },
+          "path": [
+            3407
+          ],
+          "distance": 12,
+          "straight": 12,
+          "ratio": 1,
+          "maxDeviation": 0,
+          "clickError": 0,
+          "headings": [
+            3.141593
+          ],
+          "ticks": 139,
+          "invalidSteps": 0,
+          "traceSha256": "8d2de138202b255511582029cad5736a923684e1eb2b6ef2e88896baf7ebc4b5"
+        }
+      ]
+    },
+    {
+      "name": "arbitrary-0",
+      "start": {
+        "x": -8.27,
+        "z": -9.19
+      },
+      "click": {
+        "x": 13.71,
+        "z": -2.83
+      },
+      "runs": [
+        {
+          "goal": {
+            "x": 13.5,
+            "z": -2.5
+          },
+          "path": [
+            4381
+          ],
+          "distance": 22.77474478451952,
+          "straight": 22.77474478451954,
+          "ratio": 0.9999999999999991,
+          "maxDeviation": 2.96387777495938e-14,
+          "clickError": 0.39115214431215944,
+          "headings": [
+            1.272652
+          ],
+          "ticks": 263,
+          "invalidSteps": 0,
+          "traceSha256": "6fdb9e5f6c0e231f34cf3192b4fcc7c43c4146683e37e343fee32b5876844ae9"
+        },
+        {
+          "goal": {
+            "x": 13.5,
+            "z": -2.5
+          },
+          "path": [
+            4381
+          ],
+          "distance": 22.77474478451952,
+          "straight": 22.77474478451954,
+          "ratio": 0.9999999999999991,
+          "maxDeviation": 2.96387777495938e-14,
+          "clickError": 0.39115214431215944,
+          "headings": [
+            1.272652
+          ],
+          "ticks": 263,
+          "invalidSteps": 0,
+          "traceSha256": "6fdb9e5f6c0e231f34cf3192b4fcc7c43c4146683e37e343fee32b5876844ae9"
+        }
+      ]
+    },
+    {
+      "name": "arbitrary-1",
+      "start": {
+        "x": -8.27,
+        "z": -9.19
+      },
+      "click": {
+        "x": 2.19,
+        "z": 11.37
+      },
+      "runs": [
+        {
+          "goal": {
+            "x": 2.5,
+            "z": 11.5
+          },
+          "path": [
+            5714
+          ],
+          "distance": 23.325286707776932,
+          "straight": 23.325286707777032,
+          "ratio": 0.9999999999999958,
+          "maxDeviation": 1.7058908514637396e-14,
+          "clickError": 0.3361547262794326,
+          "headings": [
+            0.479945
+          ],
+          "ticks": 270,
+          "invalidSteps": 0,
+          "traceSha256": "7ffb23324dd5749a22e40d7c888a67eb8a08072730328b65aef2601cc038b788"
+        },
+        {
+          "goal": {
+            "x": 2.5,
+            "z": 11.5
+          },
+          "path": [
+            5714
+          ],
+          "distance": 23.325286707776932,
+          "straight": 23.325286707777032,
+          "ratio": 0.9999999999999958,
+          "maxDeviation": 1.7058908514637396e-14,
+          "clickError": 0.3361547262794326,
+          "headings": [
+            0.479945
+          ],
+          "ticks": 270,
+          "invalidSteps": 0,
+          "traceSha256": "7ffb23324dd5749a22e40d7c888a67eb8a08072730328b65aef2601cc038b788"
+        }
+      ]
+    },
+    {
+      "name": "arbitrary-2",
+      "start": {
+        "x": -8.27,
+        "z": -9.19
+      },
+      "click": {
+        "x": -17.61,
+        "z": 4.83
+      },
+      "runs": [
+        {
+          "goal": {
+            "x": -17.5,
+            "z": 4.5
+          },
+          "path": [
+            5022
+          ],
+          "distance": 16.510875203937537,
+          "straight": 16.510875203937555,
+          "ratio": 0.9999999999999989,
+          "maxDeviation": 2.9263685561722417e-14,
+          "clickError": 0.3478505426185216,
+          "headings": [
+            -0.59321
+          ],
+          "ticks": 191,
+          "invalidSteps": 0,
+          "traceSha256": "df8555c2596f8dcaaa6674c1f52c7de29d8cdfdf2e813dac259b7d79aca658c7"
+        },
+        {
+          "goal": {
+            "x": -17.5,
+            "z": 4.5
+          },
+          "path": [
+            5022
+          ],
+          "distance": 16.510875203937537,
+          "straight": 16.510875203937555,
+          "ratio": 0.9999999999999989,
+          "maxDeviation": 2.9263685561722417e-14,
+          "clickError": 0.3478505426185216,
+          "headings": [
+            -0.59321
+          ],
+          "ticks": 191,
+          "invalidSteps": 0,
+          "traceSha256": "df8555c2596f8dcaaa6674c1f52c7de29d8cdfdf2e813dac259b7d79aca658c7"
+        }
+      ]
+    },
+    {
+      "name": "arbitrary-3",
+      "start": {
+        "x": -8.27,
+        "z": -9.19
+      },
+      "click": {
+        "x": -2.93,
+        "z": -21.77
+      },
+      "runs": [
+        {
+          "goal": {
+            "x": -2.5,
+            "z": -21.5
+          },
+          "path": [
+            2541
+          ],
+          "distance": 13.59518297044951,
+          "straight": 13.595182970449498,
+          "ratio": 1.0000000000000009,
+          "maxDeviation": 1.3066075265491765e-14,
+          "clickError": 0.507740090991444,
+          "headings": [
+            2.703277
+          ],
+          "ticks": 157,
+          "invalidSteps": 0,
+          "traceSha256": "4a1d0eacee2841ebffa5cfd39bc2fef4f86c118e2f8d656e5ec516fea961b9ff"
+        },
+        {
+          "goal": {
+            "x": -2.5,
+            "z": -21.5
+          },
+          "path": [
+            2541
+          ],
+          "distance": 13.59518297044951,
+          "straight": 13.595182970449498,
+          "ratio": 1.0000000000000009,
+          "maxDeviation": 1.3066075265491765e-14,
+          "clickError": 0.507740090991444,
+          "headings": [
+            2.703277
+          ],
+          "ticks": 157,
+          "invalidSteps": 0,
+          "traceSha256": "4a1d0eacee2841ebffa5cfd39bc2fef4f86c118e2f8d656e5ec516fea961b9ff"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "real authoritative command/planner/tick bodies with fixed callback drain; no browser pixels or wall-clock capacity claim",
+    "one isolated land Infantry; cell-center destination quantization measured separately; crowd/terrain checked by focused suites"
+  ]
+}
