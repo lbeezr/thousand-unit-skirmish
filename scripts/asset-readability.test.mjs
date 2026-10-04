@@ -71,6 +71,7 @@ test('runtime observations preserve source coverage and cannot claim readability
 async function fixture({ changeResponse, manifest = manifests[0] } = {}) {
   const dom = new JSDOM(await read('index.html'), { pretendToBeVisual: true });
   const focusCalls = [], document = dom.window.document;
+  const normalCommandBar = document.querySelector('.contextual-command-bar');
   const observation = { point: { x: 3, z: 5 }, manifestPath: `/${town.manifest}`, manifest,
     spriteVisible: true, footRuntimeVersion: 'v3', mapId: 'fixture', zoom: 0.91, width: 1280, height: 720, dpr: 1 };
   const review = mountAssetReadability({ document, getObservation: () => observation, focus: value => focusCalls.push(value),
@@ -80,13 +81,16 @@ async function fixture({ changeResponse, manifest = manifests[0] } = {}) {
       return new Response(bytes);
     } });
   await review.ready;
-  return { dom, document, review, focusCalls, observation };
+  return { dom, document, review, focusCalls, observation, normalCommandBar };
 }
 
 test('catalog consumes existing normal controls, preserves live state, and only camera buttons invoke the supplied hook', async () => {
   const f = await fixture();
   try {
     const before = structuredClone(f.observation), root = f.document.querySelector('#asset-readability');
+    assert.equal(f.document.querySelector('.contextual-command-bar'), f.normalCommandBar,
+      'normal main HUD queries must retain the real command bar after mounting the panel');
+    assert.ok(f.normalCommandBar.querySelector('[data-context-summary]'));
     f.review.update(1000);
     assert.equal(f.review.snapshot.building.defaultBinding, true);
     assert.equal(f.review.snapshot.building.readability, 'unverified');
