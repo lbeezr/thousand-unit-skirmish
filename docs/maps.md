@@ -29,7 +29,7 @@ two valley passes, a raised southern causeway and a high northern flank.
 It adds three expansion pockets per seat and preserves short home access.
 The 157-unit base route targets 60.4 Worker seconds; opening units/banks remain
 ordinary. [Small evidence](qa-threefold-basin-2026-10-04.md) separates static,
-paid/native and capacity receipts from pending default/deployed/browser adoption.
+paid/native and capacity receipts from pending Skirmish/deployed/browser adoption.
 
 ## Vaelora default roster — 30 September 2026
 

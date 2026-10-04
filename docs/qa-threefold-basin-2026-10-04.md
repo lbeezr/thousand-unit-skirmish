@@ -118,10 +118,11 @@ preserve these distinct sources. The candidate SHA-256 is
 
 The 2,000-unit all-captured duration maximum is 15.404 ms and start-lag maximum
 32.432 ms; these include partial preparation/recovery windows, unlike the table's
-final 300-tick percentiles. Maximum captured checkpoint capture/serialization/
-write costs are 4.052/13.262/4.257 ms. Clock factors were approximately
+final 300-tick percentiles. For the 2,000 load, maximum captured checkpoint
+capture/serialization/write costs are 4.052/13.262/4.257 ms. Clock factors were approximately
 0.99945–0.99991. Two-peer compressed wire deltas were 2.82–3.58 MB per measured
-2,000-unit wave over approximately 11–12 seconds, before network framing. Healthy
+2,000-unit wave over approximately 11–12 seconds, including WebSocket framing
+and excluding TCP/TLS overhead. Healthy
 ticks do not remove the 1.85-second order-notice latency.
 
 The first load also activates the 256×256 validator fixture before restoring

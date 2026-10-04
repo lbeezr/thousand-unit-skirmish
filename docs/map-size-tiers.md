@@ -33,8 +33,10 @@ The first Tiny candidate is Terraced Vale; its static base route is 133 units,
 
 [Pure policy](../src/map-size-policy.mjs) exports `MAP_SIZE_TIERS`,
 `mapSizeIdentity(map)` and `ordinaryMapCatalog(maps, currentMapId)`.
-The helper receives the existing regional ordinary descriptors, not the entire
-canonical fixture store; large Lab maps still require their explicit Practice path.
+The runtime supplies canonical descriptors for ordinary selection. Eligible
+160-side Labs retain their authored Objective Control identity; compact Labs
+remain available through explicit Authored Practice. Size eligibility does not
+admit a map to Skirmish without its registry binding.
 Each descriptor adds exact `width`, `height`, `sizeTierId`, `sizeTierLabel`,
 `ordinarySelectable`, `supportedUnitCapacity: null`; the catalog helper also
 adds `selectable` and `legacyCurrent`. Rectangles use the shorter side's tier;
