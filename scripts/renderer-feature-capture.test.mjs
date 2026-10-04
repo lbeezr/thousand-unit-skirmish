@@ -19,7 +19,7 @@ test('explicit selections cannot dispatch paths, commands, unknown or duplicate 
 });
 test('absent owned files block; broken imports and malformed exports fail safely', async () => {
   const missing = await loadCaptureCases('all', { exists: async () => { throw Object.assign(new Error('private-token'), { code: 'ENOENT' }); } });
-  assert.equal(missing.adapters.length, 0); assert.equal(missing.issues.length, 4);
+  assert.equal(missing.adapters.length, 0); assert.equal(missing.issues.length, Object.keys(CAPTURE_CASES).length);
   assert.ok(missing.issues.every(issue => issue.code === 'case-unavailable'));
   for (const load of [async () => { throw Object.assign(new Error('private-token'), { code: 'ERR_MODULE_NOT_FOUND' }); },
     async () => ({ id: 'wrong', run() {} }), async () => ({ id: 'worker-routes' })]) {
@@ -71,7 +71,7 @@ test('sequential batch binds screenshots to one pack and preserves blocked cases
         return { manifest: { source: { revision }, scene: { mapId: context.mapId }, viewport: { width: 1280, height: 720 }, image: { file: 'color.png', sha256: 'c'.repeat(64) } } };
       } });
     assert.deepEqual(sequence, Object.keys(CAPTURE_CASES)); assert.equal(report.status, 'blocked');
-    assert.deepEqual(report.cases.map(entry => entry.status), ['blocked', 'passed', 'passed', 'passed']);
+    assert.deepEqual(report.cases.map(entry => entry.status), Object.keys(CAPTURE_CASES).map(id => id === 'worker-animations' ? 'blocked' : 'passed'));
     assert.ok(report.cases.every(entry => entry.result.captures[0].source.revision === revision));
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
@@ -148,12 +148,18 @@ test('an explicit prepared subset loads real owner exports without silently addi
   assert.deepEqual(loaded.issues, []);
   assert.deepEqual(loaded.adapters.map(adapter => [adapter.id, adapter.contextVersion]), [['worker-animations', 1], ['novice-flow', 1]]);
 });
+test('prepared forest, site and tree adapters satisfy the actual version1 loader contract', async () => {
+  const loaded = await loadCaptureCases('forest-jobs,site-composition,tree-targeting');
+  assert.deepEqual(loaded.issues, []);
+  assert.deepEqual(loaded.adapters.map(adapter => [adapter.id, adapter.contextVersion]),
+    [['forest-jobs', 1], ['site-composition', 1], ['tree-targeting', 1]]);
+});
 test('ordinary workflow is manual, source-pinned, globally serialized, read-only and validates cases before preflight', async () => {
   const workflow = await readFile(new URL('../.github/workflows/ordinary-game-capture.yml', import.meta.url), 'utf8');
   assert.match(workflow, /workflow_dispatch:/); assert.doesNotMatch(workflow, /pull_request:|push:/);
   assert.match(workflow, /ref: \$\{\{ github.sha \}\}/); assert.match(workflow, /contents: read/);
   assert.match(workflow, /group: ordinary-game-capture\n  cancel-in-progress: false/);
-  assert.match(workflow, /timeout-minutes: 20/); assert.match(workflow, /retention-days: 1/);
+  assert.match(workflow, /timeout-minutes: 30/); assert.match(workflow, /retention-days: 1/);
   for (const id of Object.keys(CAPTURE_CASES)) assert.ok(workflow.includes(`- ${id}`));
   assert.ok(workflow.includes('worker-animations,novice-flow'));
   assert.ok(workflow.indexOf('--check "$CASES"') < workflow.indexOf('renderer-qualification.mjs --preflight'));

@@ -12,6 +12,9 @@ export const CAPTURE_CASES = Object.freeze({
   'novice-flow': './renderer-novice-flow-scenario.mjs',
   'worker-routes': './renderer-worker-route-scenario.mjs',
   'building-catalog': './renderer-building-catalog-scenario.mjs',
+  'forest-jobs': './renderer-forest-job-scenario.mjs',
+  'site-composition': './renderer-site-composition-scenario.mjs',
+  'tree-targeting': './renderer-tree-targeting-scenario.mjs',
 });
 export function selectedCases(selection) {
   if (selection === 'all') return Object.keys(CAPTURE_CASES);

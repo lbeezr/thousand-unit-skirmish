@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { economyResources } from '../src/economy-profile.mjs';
+import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 
 // Tiny authored stocks expose a carrying-state bug; no runtime economy/position injection.
 // --reproduce-only asserts the original zero-wire/disabled-control behavior on an old build.
@@ -39,7 +40,11 @@ function productionReturnControl(client, team, id, transmit = false) {
   assert.equal(row[6], reproduceOnly ? 0 : 0.004);
   assert.equal(row[7], 'food');
   const payloads = [], toasts = [], noop = () => {};
-  const context = vm.createContext({ localTeam: team, matchWinner: -1,
+  const recovery = browserRecoveryBindings();
+  recovery.browserStateRecovery.reset(client.latest, performance.now());
+  assert.equal(recovery.browserStateRecovery.tick, client.latest.tick, 'real recovery consumes the current seat snapshot');
+  assert.equal(recovery.browserStateRecovery.status(performance.now()), null);
+  const context = vm.createContext({ ...recovery, localTeam: team, matchWinner: -1,
     units: [], teamUnits: [[], []], selected: new Set([id]), MAX_UNITS: 2000, MAX_PER_TEAM: 1000,
     WORKER_TASK_STATES: new Set(['idle', 'returning']), nextAttackFocusSlot: 0,
     attackFocusMesh: {}, unitHealthBackground: {}, unitHealthFill: {},
