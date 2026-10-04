@@ -57,6 +57,7 @@ export async function runUnassistedContest(contractFile, opening = null) {
   try {
     if (opening) r.restore(opening);
     initial = r.checkpoint(); initialViews = [r.observe(0), r.observe(1)]; startTick = initial.state.tickNumber;
+    assert.equal(startTick, 0, 'only the untouched native opening may be restored');
     assert.deepEqual(initial.state.teamFood, [150, 150]);
     assert.deepEqual(initial.state.teamWood, [250, 250]);
     assert.equal(initial.state.units.filter(u => u.hp > 0).length, 24);
