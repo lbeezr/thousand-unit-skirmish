@@ -285,6 +285,8 @@ run(['--test', 'scripts/ruleset-revision.test.mjs'], 'Resolved ruleset identity 
 run(['--test', 'scripts/gameplay-definitions.test.mjs'], 'Gameplay definition validation');
 run(['--test', 'scripts/client-build-recovery.test.mjs'], 'Build placement connection recovery');
 run(['--test', 'scripts/construction-selection.test.mjs'], 'Selected-only construction client commands');
+run(['--test', 'scripts/construction-targeting.test.mjs'], 'Owned unfinished construction picking and contextual orders');
+run(['scripts/construction-targeting-scenario.mjs'], 'Both-seat paid Palisade right-click construction and cold recovery');
 run(['scripts/construction-selection-scenario.mjs'], 'Both-seat selected builders and unselected work recovery');
 run(['--test', 'scripts/client-rematch-recovery.test.mjs'], 'Client roster and ownership after rematch');
 run(['--test', 'scripts/client-camera-recovery.test.mjs'], 'Camera ownership through seat recovery');

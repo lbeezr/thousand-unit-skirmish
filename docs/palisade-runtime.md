@@ -56,6 +56,18 @@ footprint. Per-cell dispatch cannot partially spend/admit a line.
 
 ## Worker sequence and lifecycle
 
+Ordinary right-click on an owned unfinished wall or gate sends the existing
+`build {buildingId, ids}` resume command for selected living owned Workers only.
+It targets that clicked site without recentering the camera. Thin Palisade art
+retains its whole reserved one-cell ground footprint as a picking fallback;
+hidden visuals stay unpickable. Military-only selection, Shift waypoints and
+explicit Move/Patrol/Follow/Attack Move retain their existing order paths. The
+construction help button still chooses the nearest unfinished friendly site
+to the selected Workers and focuses it; it does not recruit other Workers.
+The [reported interruption and targeted-resume checks](qa-palisade-construction-orders-2026-10-04.md)
+separate retained deployed behavior, this client correction and the pending
+server continuation slice.
+
 Every admitted Worker receives an independent canonical row-major list of new
 building IDs, tied to its unit generation and order revision. Workers route and
 construct through the existing formation/interaction/build-time mechanisms.
