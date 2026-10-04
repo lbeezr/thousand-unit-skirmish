@@ -9,6 +9,11 @@ one-human Practice scenario. It has broad valley passes, high flank routes,
 flat city campuses and two expansion pockets per seat. Its 133-unit base route
 takes about 51 game-seconds for a Worker; opening units/banks stay ordinary.
 Elimination applies, with two bonus-only posts and no deadline.
+Four neutral Sheep use the existing mirrored home/terrace food nodes: two per
+seat, with the home Sheep visible at opening. Their stocks stay 650/1,000,
+all IDs/coordinates stay fixed and total map food stays 6,100. Valley food
+remains ordinary. [Tiny Sheep adoption](qa-terraced-vale-sheep-2026-10-04.md)
+records normal claim/Gather and exact pre-adoption checkpoint recovery.
 [Map and native evidence](qa-terraced-vale-2026-10-03.md) records the paid economy,
 routes, recovery, diagnostic and remaining deployed/browser acceptance.
 

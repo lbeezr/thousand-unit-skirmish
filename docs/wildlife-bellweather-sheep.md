@@ -5,10 +5,13 @@
 implemented below, with [six Sheep on the historical Millrace map](qa-millrace-sheep-2026-10-03.md).
 It delivers no new generated art or accepted animal stock/gatherer-cap balance.
 
-Current ordinary Tiny entry is Terraced Vale 160 and contains no Sheep. The
-six-animal Millrace regression selects its historical map explicitly; ordinary
-authored Sheep scenarios use the admitted 160×160 publication floor. Native
-acceptance must identify the actual Sheep-bearing map alongside the build.
+Current ordinary Tiny entry is Terraced Vale 160 with four neutral Sheep:
+existing home and terrace food nodes become two animals per seat. The home
+Sheep is visible at opening; terrace Sheep is reached by ordinary scouting.
+IDs, positions, stocks, seed, terrain, wood and starting banks remain unchanged.
+The six-animal Millrace regression still selects its historical map explicitly.
+[Tiny adoption evidence](qa-terraced-vale-sheep-2026-10-04.md) retains identified
+staging/native acceptance alongside the default source and release checks.
 
 [Wiki wildlife entry](lore/wildlife.md) · [Art evolution](lore/art-evolution.md)
 
@@ -37,6 +40,27 @@ graze and prone captures have cleared private source/deformation review. Eight
 body headings and normalized atlas candidates have also cleared independent
 source/pixel review; no new animal artwork is admitted to the game. The ranked backlog below
 owns publication, binding, collar fitting and delivered appearance.
+
+## Tiny default adoption — 4 October 2026
+
+**Veyrholds · Terraced Vale** converts `s0-home-food`, `s1-home-food`,
+`s0-terrace-food` and `s1-terrace-food` to the existing animal identity.
+Each home node retains 650 food and each terrace node retains 1,000 food;
+valley food remains ordinary. Total map food stays 6,100, node wood 7,950,
+and starting banks 150 food/250 wood per seat. This is an identity conversion,
+not a new animal-stock balance. The [generator](../scripts/generate-terraced-vale.mjs)
+retains the four identities on regeneration and keeps all other map bytes.
+
+The exact pre-adoption shipped-map revision can recover without losing food
+or ongoing orders. [Compatibility](../src/terraced-vale-sheep.mjs) runs only after
+normal checkpoint validation: full untouched stock becomes neutral alive,
+partial stock becomes neutral carcass, and zero remains depleted. Positions,
+stock, cargo, banks, paths, epoch, timing and match rules survive. Changed or
+forged map revisions are refused; depleted food is never replenished.
+Existing claim/Herd/Stop, shared Gather, current-cell fog and static art apply
+by default. No new runtime mesh, currency, animal reproduction or art is added.
+Wildlife retains actual default use, release inclusion, identified delivery
+and ordinary native acceptance with the active Railway owner.
 
 ## Implemented neutral food foundation — 3 October 2026
 
