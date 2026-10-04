@@ -278,8 +278,8 @@ its [specific removal criteria](model-controlled-opponent-research.md#boundary).
 
 The current runtime, mode, movement, Worker job/animation, HUD and art owners
 retain their files. In particular, [resource continuation PR283](https://github.com/lbeezr/thousand-unit-skirmish/pull/283)
-and the new animation diagnostic [PR287](https://github.com/lbeezr/thousand-unit-skirmish/pull/287)
-make `server.mjs`, `main.js`, worker receipts and presentation fixtures active
+and the animation diagnostic [PR287](https://github.com/lbeezr/thousand-unit-skirmish/pull/287)
+(merged during this audit) make `server.mjs`, `main.js`, worker receipts and presentation fixtures active
 coordination surfaces. The testing-strategy owner `01a103db-7bbd` retains
 `AGENTS.md`, testing-strategy docs, package and CI edits. This plan's write scope
 is `docs/architecture.md` and the inventory in `docs/README.md`; it reserves no
