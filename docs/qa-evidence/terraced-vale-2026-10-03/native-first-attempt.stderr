@@ -1,0 +1,17 @@
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+AssertionError [ERR_ASSERTION]: PLANNING MOVE · 1 UNITS
+    at order (file:///workspace/map-scale-audit/scripts/terraced-vale-native-scenario.mjs:84:39)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async travel (file:///workspace/map-scale-audit/scripts/terraced-vale-native-scenario.mjs:89:20) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

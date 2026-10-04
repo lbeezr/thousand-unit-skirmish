@@ -1,0 +1,18 @@
+{
+  "sourceRevision": "1784387cb300597ff12102f331aea775834a0541",
+  "releaseDigest": "sha256:813c629c18683f5d58cfa8d660820c95fa93d4fdab0154555ebc59cf50a29436",
+  "startedAt": "2026-10-04T00:17:04.192Z",
+  "browserVerified": false,
+  "hostedVerified": false,
+  "passed": true,
+  "normalCatalog": true,
+  "selectedMapId": "veyrholds-terraced-vale",
+  "dimensions": [
+    160,
+    160
+  ],
+  "fogBytes": 6400,
+  "oneHumanPractice": true,
+  "workerArrivalGameSeconds": 4.033333333333333,
+  "finishedAt": "2026-10-04T00:17:08.498Z"
+}
