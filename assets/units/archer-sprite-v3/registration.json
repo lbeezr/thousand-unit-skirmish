@@ -1,0 +1,950 @@
+{
+  "role": "archer",
+  "sourceRevision": "9351320d68b3b9c949166b7d5991973004b7553d",
+  "sourcePath": "assets/units/archer-sprite-v1/archer-atlas-source.png",
+  "sourceSha256": "7a9416163b426ae0355aa74cc8e641f559ca0b27c3544335df20388644b83510",
+  "previousDefault": "archer-sprite-v2",
+  "sourceColumnsInRuntimeOrder": [
+    5,
+    4,
+    3,
+    2,
+    1,
+    0,
+    7,
+    6
+  ],
+  "pivotPx": [
+    160,
+    308
+  ],
+  "sharedScale": 1,
+  "worldPerPixel": 0.006949637276785714,
+  "bodyReferencePx": 175,
+  "reusedUniquePoses": 48,
+  "newlyAuthoredPoses": 0,
+  "interpolatedPoses": 0,
+  "mirroredPoses": 0,
+  "motionKeysPerHeading": {
+    "idle": 1,
+    "walk": 2,
+    "attack": 2,
+    "defeat": 2
+  },
+  "defeatTransition": "existing directional idle 120 ms then existing terminal 730 ms; no collapse interpolation",
+  "missingActionHeadingCells": [],
+  "measurements": [
+    {
+      "frameId": "idle-north-0",
+      "sourceRow": 0,
+      "sourceColumn": 5,
+      "sourceBoxPx": [
+        925,
+        30,
+        1062,
+        210
+      ],
+      "sourceRootPx": [
+        77,
+        178
+      ],
+      "translationPx": [
+        83,
+        130
+      ]
+    },
+    {
+      "frameId": "idle-north-east-0",
+      "sourceRow": 0,
+      "sourceColumn": 4,
+      "sourceBoxPx": [
+        771,
+        32,
+        880,
+        202
+      ],
+      "sourceRootPx": [
+        41,
+        168
+      ],
+      "translationPx": [
+        119,
+        140
+      ]
+    },
+    {
+      "frameId": "idle-east-0",
+      "sourceRow": 0,
+      "sourceColumn": 3,
+      "sourceBoxPx": [
+        599,
+        33,
+        703,
+        208
+      ],
+      "sourceRootPx": [
+        23,
+        173
+      ],
+      "translationPx": [
+        137,
+        135
+      ]
+    },
+    {
+      "frameId": "idle-south-east-0",
+      "sourceRow": 0,
+      "sourceColumn": 2,
+      "sourceBoxPx": [
+        430,
+        30,
+        528,
+        202
+      ],
+      "sourceRootPx": [
+        43,
+        170
+      ],
+      "translationPx": [
+        117,
+        138
+      ]
+    },
+    {
+      "frameId": "idle-south-0",
+      "sourceRow": 0,
+      "sourceColumn": 1,
+      "sourceBoxPx": [
+        242,
+        26,
+        357,
+        202
+      ],
+      "sourceRootPx": [
+        51,
+        174
+      ],
+      "translationPx": [
+        109,
+        134
+      ]
+    },
+    {
+      "frameId": "idle-south-west-0",
+      "sourceRow": 0,
+      "sourceColumn": 0,
+      "sourceBoxPx": [
+        62,
+        22,
+        173,
+        200
+      ],
+      "sourceRootPx": [
+        50,
+        176
+      ],
+      "translationPx": [
+        110,
+        132
+      ]
+    },
+    {
+      "frameId": "idle-west-0",
+      "sourceRow": 0,
+      "sourceColumn": 7,
+      "sourceBoxPx": [
+        1294,
+        26,
+        1388,
+        202
+      ],
+      "sourceRootPx": [
+        42,
+        174
+      ],
+      "translationPx": [
+        118,
+        134
+      ]
+    },
+    {
+      "frameId": "idle-north-west-0",
+      "sourceRow": 0,
+      "sourceColumn": 6,
+      "sourceBoxPx": [
+        1105,
+        28,
+        1205,
+        204
+      ],
+      "sourceRootPx": [
+        50,
+        174
+      ],
+      "translationPx": [
+        110,
+        134
+      ]
+    },
+    {
+      "frameId": "walk-north-0",
+      "sourceRow": 1,
+      "sourceColumn": 5,
+      "sourceBoxPx": [
+        921,
+        221,
+        1061,
+        392
+      ],
+      "sourceRootPx": [
+        81,
+        169
+      ],
+      "translationPx": [
+        79,
+        139
+      ]
+    },
+    {
+      "frameId": "walk-north-east-0",
+      "sourceRow": 1,
+      "sourceColumn": 4,
+      "sourceBoxPx": [
+        768,
+        219,
+        880,
+        398
+      ],
+      "sourceRootPx": [
+        44,
+        177
+      ],
+      "translationPx": [
+        116,
+        131
+      ]
+    },
+    {
+      "frameId": "walk-east-0",
+      "sourceRow": 1,
+      "sourceColumn": 3,
+      "sourceBoxPx": [
+        596,
+        224,
+        705,
+        385
+      ],
+      "sourceRootPx": [
+        26,
+        159
+      ],
+      "translationPx": [
+        134,
+        149
+      ]
+    },
+    {
+      "frameId": "walk-south-east-0",
+      "sourceRow": 1,
+      "sourceColumn": 2,
+      "sourceBoxPx": [
+        420,
+        219,
+        520,
+        388
+      ],
+      "sourceRootPx": [
+        53,
+        167
+      ],
+      "translationPx": [
+        107,
+        141
+      ]
+    },
+    {
+      "frameId": "walk-south-0",
+      "sourceRow": 1,
+      "sourceColumn": 1,
+      "sourceBoxPx": [
+        243,
+        216,
+        347,
+        392
+      ],
+      "sourceRootPx": [
+        50,
+        174
+      ],
+      "translationPx": [
+        110,
+        134
+      ]
+    },
+    {
+      "frameId": "walk-south-west-0",
+      "sourceRow": 1,
+      "sourceColumn": 0,
+      "sourceBoxPx": [
+        63,
+        216,
+        176,
+        392
+      ],
+      "sourceRootPx": [
+        49,
+        174
+      ],
+      "translationPx": [
+        111,
+        134
+      ]
+    },
+    {
+      "frameId": "walk-west-0",
+      "sourceRow": 1,
+      "sourceColumn": 7,
+      "sourceBoxPx": [
+        1288,
+        217,
+        1383,
+        393
+      ],
+      "sourceRootPx": [
+        48,
+        174
+      ],
+      "translationPx": [
+        112,
+        134
+      ]
+    },
+    {
+      "frameId": "walk-north-west-0",
+      "sourceRow": 1,
+      "sourceColumn": 6,
+      "sourceBoxPx": [
+        1109,
+        219,
+        1205,
+        392
+      ],
+      "sourceRootPx": [
+        46,
+        171
+      ],
+      "translationPx": [
+        114,
+        137
+      ]
+    },
+    {
+      "frameId": "walk-north-1",
+      "sourceRow": 2,
+      "sourceColumn": 5,
+      "sourceBoxPx": [
+        927,
+        416,
+        1055,
+        574
+      ],
+      "sourceRootPx": [
+        75,
+        156
+      ],
+      "translationPx": [
+        85,
+        152
+      ]
+    },
+    {
+      "frameId": "walk-north-east-1",
+      "sourceRow": 2,
+      "sourceColumn": 4,
+      "sourceBoxPx": [
+        767,
+        411,
+        881,
+        587
+      ],
+      "sourceRootPx": [
+        45,
+        174
+      ],
+      "translationPx": [
+        115,
+        134
+      ]
+    },
+    {
+      "frameId": "walk-east-1",
+      "sourceRow": 2,
+      "sourceColumn": 3,
+      "sourceBoxPx": [
+        595,
+        415,
+        702,
+        570
+      ],
+      "sourceRootPx": [
+        27,
+        153
+      ],
+      "translationPx": [
+        133,
+        155
+      ]
+    },
+    {
+      "frameId": "walk-south-east-1",
+      "sourceRow": 2,
+      "sourceColumn": 2,
+      "sourceBoxPx": [
+        426,
+        413,
+        514,
+        574
+      ],
+      "sourceRootPx": [
+        47,
+        159
+      ],
+      "translationPx": [
+        113,
+        149
+      ]
+    },
+    {
+      "frameId": "walk-south-1",
+      "sourceRow": 2,
+      "sourceColumn": 1,
+      "sourceBoxPx": [
+        240,
+        410,
+        340,
+        578
+      ],
+      "sourceRootPx": [
+        53,
+        166
+      ],
+      "translationPx": [
+        107,
+        142
+      ]
+    },
+    {
+      "frameId": "walk-south-west-1",
+      "sourceRow": 2,
+      "sourceColumn": 0,
+      "sourceBoxPx": [
+        65,
+        406,
+        168,
+        570
+      ],
+      "sourceRootPx": [
+        47,
+        162
+      ],
+      "translationPx": [
+        113,
+        146
+      ]
+    },
+    {
+      "frameId": "walk-west-1",
+      "sourceRow": 2,
+      "sourceColumn": 7,
+      "sourceBoxPx": [
+        1288,
+        407,
+        1383,
+        572
+      ],
+      "sourceRootPx": [
+        48,
+        163
+      ],
+      "translationPx": [
+        112,
+        145
+      ]
+    },
+    {
+      "frameId": "walk-north-west-1",
+      "sourceRow": 2,
+      "sourceColumn": 6,
+      "sourceBoxPx": [
+        1112,
+        411,
+        1203,
+        581
+      ],
+      "sourceRootPx": [
+        43,
+        168
+      ],
+      "translationPx": [
+        117,
+        140
+      ]
+    },
+    {
+      "frameId": "attack-north-0",
+      "sourceRow": 3,
+      "sourceColumn": 5,
+      "sourceBoxPx": [
+        912,
+        577,
+        1037,
+        754
+      ],
+      "sourceRootPx": [
+        90,
+        175
+      ],
+      "translationPx": [
+        70,
+        133
+      ]
+    },
+    {
+      "frameId": "attack-north-east-0",
+      "sourceRow": 3,
+      "sourceColumn": 4,
+      "sourceBoxPx": [
+        758,
+        582,
+        885,
+        759
+      ],
+      "sourceRootPx": [
+        54,
+        175
+      ],
+      "translationPx": [
+        106,
+        133
+      ]
+    },
+    {
+      "frameId": "attack-east-0",
+      "sourceRow": 3,
+      "sourceColumn": 3,
+      "sourceBoxPx": [
+        578,
+        579,
+        713,
+        760
+      ],
+      "sourceRootPx": [
+        44,
+        179
+      ],
+      "translationPx": [
+        116,
+        129
+      ]
+    },
+    {
+      "frameId": "attack-south-east-0",
+      "sourceRow": 3,
+      "sourceColumn": 2,
+      "sourceBoxPx": [
+        405,
+        578,
+        545,
+        758
+      ],
+      "sourceRootPx": [
+        68,
+        178
+      ],
+      "translationPx": [
+        92,
+        130
+      ]
+    },
+    {
+      "frameId": "attack-south-0",
+      "sourceRow": 3,
+      "sourceColumn": 1,
+      "sourceBoxPx": [
+        223,
+        573,
+        363,
+        757
+      ],
+      "sourceRootPx": [
+        70,
+        182
+      ],
+      "translationPx": [
+        90,
+        126
+      ]
+    },
+    {
+      "frameId": "attack-south-west-0",
+      "sourceRow": 3,
+      "sourceColumn": 0,
+      "sourceBoxPx": [
+        45,
+        578,
+        173,
+        755
+      ],
+      "sourceRootPx": [
+        67,
+        175
+      ],
+      "translationPx": [
+        93,
+        133
+      ]
+    },
+    {
+      "frameId": "attack-west-0",
+      "sourceRow": 3,
+      "sourceColumn": 7,
+      "sourceBoxPx": [
+        1271,
+        578,
+        1404,
+        758
+      ],
+      "sourceRootPx": [
+        65,
+        178
+      ],
+      "translationPx": [
+        95,
+        130
+      ]
+    },
+    {
+      "frameId": "attack-north-west-0",
+      "sourceRow": 3,
+      "sourceColumn": 6,
+      "sourceBoxPx": [
+        1079,
+        575,
+        1222,
+        757
+      ],
+      "sourceRootPx": [
+        76,
+        180
+      ],
+      "translationPx": [
+        84,
+        128
+      ]
+    },
+    {
+      "frameId": "attack-north-1",
+      "sourceRow": 4,
+      "sourceColumn": 5,
+      "sourceBoxPx": [
+        918,
+        761,
+        1047,
+        935
+      ],
+      "sourceRootPx": [
+        84,
+        172
+      ],
+      "translationPx": [
+        76,
+        136
+      ]
+    },
+    {
+      "frameId": "attack-north-east-1",
+      "sourceRow": 4,
+      "sourceColumn": 4,
+      "sourceBoxPx": [
+        757,
+        769,
+        882,
+        939
+      ],
+      "sourceRootPx": [
+        55,
+        168
+      ],
+      "translationPx": [
+        105,
+        140
+      ]
+    },
+    {
+      "frameId": "attack-east-1",
+      "sourceRow": 4,
+      "sourceColumn": 3,
+      "sourceBoxPx": [
+        575,
+        761,
+        700,
+        943
+      ],
+      "sourceRootPx": [
+        47,
+        180
+      ],
+      "translationPx": [
+        113,
+        128
+      ]
+    },
+    {
+      "frameId": "attack-south-east-1",
+      "sourceRow": 4,
+      "sourceColumn": 2,
+      "sourceBoxPx": [
+        408,
+        759,
+        533,
+        943
+      ],
+      "sourceRootPx": [
+        65,
+        182
+      ],
+      "translationPx": [
+        95,
+        126
+      ]
+    },
+    {
+      "frameId": "attack-south-1",
+      "sourceRow": 4,
+      "sourceColumn": 1,
+      "sourceBoxPx": [
+        224,
+        759,
+        352,
+        944
+      ],
+      "sourceRootPx": [
+        69,
+        183
+      ],
+      "translationPx": [
+        91,
+        125
+      ]
+    },
+    {
+      "frameId": "attack-south-west-1",
+      "sourceRow": 4,
+      "sourceColumn": 0,
+      "sourceBoxPx": [
+        44,
+        752,
+        172,
+        944
+      ],
+      "sourceRootPx": [
+        68,
+        190
+      ],
+      "translationPx": [
+        92,
+        118
+      ]
+    },
+    {
+      "frameId": "attack-west-1",
+      "sourceRow": 4,
+      "sourceColumn": 7,
+      "sourceBoxPx": [
+        1268,
+        754,
+        1403,
+        944
+      ],
+      "sourceRootPx": [
+        68,
+        188
+      ],
+      "translationPx": [
+        92,
+        120
+      ]
+    },
+    {
+      "frameId": "attack-north-west-1",
+      "sourceRow": 4,
+      "sourceColumn": 6,
+      "sourceBoxPx": [
+        1090,
+        760,
+        1223,
+        943
+      ],
+      "sourceRootPx": [
+        65,
+        181
+      ],
+      "translationPx": [
+        95,
+        127
+      ]
+    },
+    {
+      "frameId": "defeat-north-0",
+      "sourceRow": 5,
+      "sourceColumn": 5,
+      "sourceBoxPx": [
+        927,
+        972,
+        1052,
+        1066
+      ],
+      "sourceRootPx": [
+        55,
+        92
+      ],
+      "translationPx": [
+        105,
+        216
+      ]
+    },
+    {
+      "frameId": "defeat-north-east-0",
+      "sourceRow": 5,
+      "sourceColumn": 4,
+      "sourceBoxPx": [
+        757,
+        972,
+        870,
+        1062
+      ],
+      "sourceRootPx": [
+        43,
+        88
+      ],
+      "translationPx": [
+        117,
+        220
+      ]
+    },
+    {
+      "frameId": "defeat-east-0",
+      "sourceRow": 5,
+      "sourceColumn": 3,
+      "sourceBoxPx": [
+        563,
+        974,
+        721,
+        1055
+      ],
+      "sourceRootPx": [
+        67,
+        79
+      ],
+      "translationPx": [
+        93,
+        229
+      ]
+    },
+    {
+      "frameId": "defeat-south-east-0",
+      "sourceRow": 5,
+      "sourceColumn": 2,
+      "sourceBoxPx": [
+        376,
+        955,
+        534,
+        1053
+      ],
+      "sourceRootPx": [
+        65,
+        96
+      ],
+      "translationPx": [
+        95,
+        212
+      ]
+    },
+    {
+      "frameId": "defeat-south-0",
+      "sourceRow": 5,
+      "sourceColumn": 1,
+      "sourceBoxPx": [
+        209,
+        972,
+        358,
+        1066
+      ],
+      "sourceRootPx": [
+        38,
+        92
+      ],
+      "translationPx": [
+        122,
+        216
+      ]
+    },
+    {
+      "frameId": "defeat-south-west-0",
+      "sourceRow": 5,
+      "sourceColumn": 0,
+      "sourceBoxPx": [
+        47,
+        962,
+        175,
+        1068
+      ],
+      "sourceRootPx": [
+        68,
+        104
+      ],
+      "translationPx": [
+        92,
+        204
+      ]
+    },
+    {
+      "frameId": "defeat-west-0",
+      "sourceRow": 5,
+      "sourceColumn": 7,
+      "sourceBoxPx": [
+        1254,
+        982,
+        1417,
+        1061
+      ],
+      "sourceRootPx": [
+        92,
+        77
+      ],
+      "translationPx": [
+        68,
+        231
+      ]
+    },
+    {
+      "frameId": "defeat-north-west-0",
+      "sourceRow": 5,
+      "sourceColumn": 6,
+      "sourceBoxPx": [
+        1070,
+        975,
+        1214,
+        1051
+      ],
+      "sourceRootPx": [
+        76,
+        74
+      ],
+      "translationPx": [
+        84,
+        234
+      ]
+    }
+  ]
+}

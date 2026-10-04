@@ -56,7 +56,7 @@ export function spriteDirectory(role, version) {
   const supportedVersions = {
     worker: ['v1', 'v2', 'v3'],
     infantry: ['v1', 'v2', 'v3', 'v4'],
-    archer: ['v1', 'v2'],
+    archer: ['v1', 'v2', 'v3'],
     spearman: ['v1'],
     scout: ['v1'],
     rider: ['v1'],

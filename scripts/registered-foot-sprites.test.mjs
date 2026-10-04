@@ -10,7 +10,7 @@ import { createUnitSpriteRuntime, spriteActionClip, spriteClipDuration } from '.
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url));
 const directions = ['north','north-east','east','south-east','south','south-west','west','north-west'];
 const roster = normalRoster(read('src/main.js').toString());
-const roles = ['infantry'];
+const roles = ['infantry', 'archer'];
 
 for (const role of roles) {
   const directory = `assets/units/${role}-sprite-${roster.unitSpritePreviewVersions[role]}`;
