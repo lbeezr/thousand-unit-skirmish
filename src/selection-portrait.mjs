@@ -66,7 +66,18 @@ export const SCOUT_PORTRAITS = Object.freeze({
   }),
 });
 
-const UNIT_PORTRAITS = Object.freeze({ ...WORKER_PORTRAITS, ...INFANTRY_PORTRAITS, ...ARCHER_PORTRAITS, ...SCOUT_PORTRAITS, ...SPEARMAN_PORTRAITS });
+export const RIDER_PORTRAITS = Object.freeze({
+  'rider': Object.freeze({
+    entryId: 'unit.rider', appearanceFamily: 'Human',
+    asset: '/assets/ui/portraits/human-rider-source.png', sourceWidth: 467, sourceHeight: 523, contain: true,
+  }),
+  'boughward-rider': Object.freeze({
+    entryId: 'unit.rider', appearanceFamily: 'Boughward',
+    asset: '/assets/ui/portraits/boughward-rider-source.png', sourceWidth: 552, sourceHeight: 618, contain: true,
+  }),
+});
+
+const UNIT_PORTRAITS = Object.freeze({ ...WORKER_PORTRAITS, ...INFANTRY_PORTRAITS, ...ARCHER_PORTRAITS, ...SCOUT_PORTRAITS, ...RIDER_PORTRAITS, ...SPEARMAN_PORTRAITS });
 
 function unitPortrait(kind, appearanceRole) {
   const portrait = UNIT_PORTRAITS[appearanceRole];
