@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { createDecodedAudioCache } from '../src/audio-decoded-cache.mjs';
+import * as canonical from '../src/client/audio/audio-decoded-cache.mjs';
+import * as legacy from '../src/audio-decoded-cache.mjs';
+
+const { createDecodedAudioCache } = canonical;
+
+test('canonical decoded cache retains the sole legacy export binding', () => {
+  assert.deepEqual(Object.keys(canonical), ['createDecodedAudioCache']);
+  assert.deepEqual(Object.keys(legacy), ['createDecodedAudioCache']);
+  assert.equal(legacy.createDecodedAudioCache, createDecodedAudioCache);
+});
 
 const MiB = 1024 * 1024;
 const pcm = (bytes, channels = 1) => ({ length: bytes / (4 * channels), numberOfChannels: channels });

@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { readBoundedAudioResponse as read } from '../src/audio-shipped-response.mjs';
+import * as canonical from '../src/client/audio/audio-shipped-response.mjs';
+import * as legacy from '../src/audio-shipped-response.mjs';
+
+const { readBoundedAudioResponse: read } = canonical;
+
+test('canonical shipped reader retains the sole legacy export binding', () => {
+  assert.deepEqual(Object.keys(canonical), ['readBoundedAudioResponse']);
+  assert.deepEqual(Object.keys(legacy), ['readBoundedAudioResponse']);
+  assert.equal(legacy.readBoundedAudioResponse, read);
+});
 
 const mime = 'audio/mpeg';
 const headers = { 'content-type': mime };

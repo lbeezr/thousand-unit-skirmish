@@ -85,6 +85,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   ],
   client: [
     'client/hud/resource-format', 'client/hud/population-readout', 'client/hud/objective-summary',
+    'client/audio/audio-decoded-cache', 'client/audio/audio-shipped-response',
     'audio', 'audio-assets', 'audio-composer', 'audio-composition',
     'audio-composition-player', 'audio-decoded-cache', 'audio-library-store',
     'audio-library-ui', 'audio-policy', 'audio-recognition-check',
