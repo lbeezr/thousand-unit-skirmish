@@ -6,6 +6,7 @@ import { writeFile } from 'node:fs/promises';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 import { pathingBaselineMap } from './pathing-baseline-cases.mjs';
 import { canTraverseUnitStep } from '../src/unit-movement.mjs';
+import { arrivedAtMoveGoal } from './pathing-arrival.mjs';
 
 process.env.RTS_MAP='maps/open-field.json';process.env.RTS_GAME_MODE='pvp';process.env.RTS_PREGAME='0';
 process.env.RTS_TICK_DIAGNOSTICS='1';delete process.env.RTS_MATCH_STATE_PATH;
@@ -49,11 +50,11 @@ for(const turnsPerTick of limits)for(const spec of cases) {
           if(!canTraverseUnitStep(previous[index],cell,map.width,r.levels,r.isWalkable))illegalSteps++;
           if(r.components[cell]!==r.components[u.moveGoalCell])disconnectedGoals++;
         }
-        if(army.every(u=>!u.movePlanningPending&&u.pathIndex===u.path.length
-          &&Math.hypot(u.x-r.point(u.moveGoalCell).x,u.z-r.point(u.moveGoalCell).z)<.02))break;
+        if(army.every(u=>arrivedAtMoveGoal(u,r.point(u.moveGoalCell))))break;
       }
       assert.equal(illegalSteps,0);assert.equal(disconnectedGoals,0);
-      assert.ok(army.every(u=>!u.movePlanningPending&&u.pathIndex===u.path.length));
+      assert.ok(army.every(u=>arrivedAtMoveGoal(u,r.point(u.moveGoalCell))),
+        'bounded run must finish at every assigned goal, including cleared/empty paths');
       assert.ok(notices.some(n=>n.message===`MOVE ORDER · ${spec.group} UNITS`));
       assert.equal(routeCommitted.size,spec.group);assert.equal(movementStarted.size,spec.group);
       runs.push({sourceSha256:fixture.sourceSha256,acceptedAtTick,arrivalTick:r.tick,

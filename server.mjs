@@ -4076,6 +4076,8 @@ function clearAttackTarget(unit) {
 }
 
 function processMovePlanningSlice(job) {
+  let workItems = 0;
+  let expandedCellsAtStart;
   try {
     if (activeMovePlanningJob !== job) return;
     if (job.epoch !== movePlanningEpoch) {
@@ -4090,8 +4092,7 @@ function processMovePlanningSlice(job) {
     }
     job.firstPlanningTick ??= movePlanningServiceTick ?? tickNumber;
     job.serviceTurns = (job.serviceTurns || 0) + 1;
-    const expandedCellsAtStart = job.diagnostics.expandedCells;
-    let workItems = 0;
+    expandedCellsAtStart = job.diagnostics.expandedCells;
     // Whole searches remain atomic. An oversized search finishes, then this
     // job yields; clock observations measure work but never select assignments.
     while ((job.currentGoalGroup || job.nextGroup < job.groups.length)
@@ -4165,6 +4166,8 @@ function processMovePlanningSlice(job) {
         : `${job.orderLabel} FAILED · PLEASE RETRY`);
     } catch {}
     scheduleNextMovePlanning();
+    return { workItems, expandedCells: expandedCellsAtStart === undefined ? 0
+      : job.diagnostics.expandedCells - expandedCellsAtStart };
   }
 }
 
