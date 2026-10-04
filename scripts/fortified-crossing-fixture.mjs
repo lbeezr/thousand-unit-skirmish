@@ -10,7 +10,8 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-export async function createFortifiedFixture({ mapPath = 'maps/fortified-crossing.json', timeoutMs = 90_000, diagnostics = false, supervisor = false, matchModeId = null } = {}) {
+export async function createFortifiedFixture({ mapPath = 'maps/fortified-crossing.json', timeoutMs = 90_000, diagnostics = false, supervisor = false, matchModeId = null, entrypointPath = null } = {}) {
+  assert.ok(!entrypointPath || !supervisor, 'Custom diagnostic entrypoints use a direct disposable worker');
   const reservation = createServer(); reservation.listen(0, '127.0.0.1'); await once(reservation, 'listening');
   const port = reservation.address().port; await new Promise(resolve => reservation.close(resolve));
   const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-fortified-'));
@@ -27,7 +28,7 @@ export async function createFortifiedFixture({ mapPath = 'maps/fortified-crossin
     child = null;
   }
   async function start() {
-    child = spawn(process.execPath, [path.join(ROOT, supervisor ? 'room-supervisor.mjs' : 'server.mjs')], { cwd: ROOT,
+    child = spawn(process.execPath, [entrypointPath ?? path.join(ROOT, supervisor ? 'room-supervisor.mjs' : 'server.mjs')], { cwd: ROOT,
       env: { ...process.env, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_GAME_MODE: 'pvp',
         RTS_MAP: mapPath ?? '', RTS_MATCH_STATE_PATH: checkpointPath,
         RTS_CUSTOM_MAP_DIRECTORY: path.join(directory, 'custom'),
