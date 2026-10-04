@@ -5,6 +5,7 @@ import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
 import { createProductionPolicy, PVE_PRODUCTION_LIMITS as limits } from '../src/pve-production.mjs';
 import { productionAction } from '../src/production-actions.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { replayZeroWorkerRecovery } from './pve-zero-worker-case.mjs';
 
 process.env.RTS_MAP = 'maps/open-field.json';
 process.env.RTS_GAME_MODE = 'pvp';
@@ -83,6 +84,51 @@ for (const team of [0, 1]) for (const seed of [0, 20260925, 0xffff_ffff]) {
     const result = await runLossRecovery(team, seed);
     assert.deepEqual(await runLossRecovery(team, seed), result, 'complete fixed-tick match replays identically');
     console.log(JSON.stringify(result));
+  });
+}
+
+for (const team of [0, 1]) for (const seed of [0, 20260925, 0xffff_ffff]) {
+  test(`seat ${team}, seed ${seed}: restart an empty economy at the native Worker price`, () => {
+    for (const count of [0, 1, 3]) for (const food of [49, 50, 99, 100]) {
+      const state = budgetFixture(team);
+      state.units.friendly = state.units.friendly.filter(unit => unit.kind !== 'worker')
+        .concat(state.units.friendly.filter(unit => unit.kind === 'worker')
+          .map((unit, index) => ({ ...unit, hp: index < count ? unit.hp : 0 })));
+      state.resources.food = food;
+      refreshWorkerOption(state);
+      const policy = createProductionPolicy(seed); policy.next(state);
+      const expected = food >= 50 + (count ? limits.foodReserve : 0)
+        ? [{ type: 'trainUnit', kind: 'worker', buildingId: state.buildings.friendly[0].id }] : [];
+      assert.deepEqual(policy.next({ ...state, tick: 300 }), expected,
+        `${count} living Workers, ${food} food: retain the reserve once gathering can recover`);
+      assert.deepEqual(policy.next({ ...state, tick: 300 }), [], 'one snapshot never spends twice');
+    }
+    for (const [label, mutate] of [
+      ['busy producer', state => { state.buildings.friendly[0].queue = 1; }],
+      ['blocked exit', state => { state.buildings.friendly[0].productionBlocked = true; }],
+      ['full population', state => { state.population.available = 0; }],
+      ['foreign producer', state => { state.buildings.friendly[0].team = 1 - team; }],
+    ]) {
+      const state = budgetFixture(team);
+      state.units.friendly = state.units.friendly.filter(unit => unit.kind !== 'worker');
+      state.resources.food = 50; mutate(state); refreshWorkerOption(state);
+      const policy = createProductionPolicy(seed); policy.next(state);
+      assert.deepEqual(policy.next({ ...state, tick: 300 }), [], label);
+    }
+  });
+}
+
+for (const team of [0, 1]) {
+  test(`Medium seat ${team}: real total Worker loss, last-price training, cold paid queue and deposit exactly replay`, async () => {
+    const first = await replayZeroWorkerRecovery(team);
+    const stages = first.result.stages;
+    assert.equal(stages.purchase - stages.loss, 300, 'replace at the normal 10-second production delay');
+    assert.equal(stages.restart, stages.purchase, 'cold restore retains the actual paid queue tick');
+    assert.ok(stages.spawn > stages.purchase);
+    assert.ok(stages.deposit > stages.spawn, 'the paid replacement makes a real resource deposit');
+    assert.deepEqual(await replayZeroWorkerRecovery(team, first.initial), first,
+      'all legal losses, commands, notices, paid recovery and final checkpoints repeat');
+    console.log(JSON.stringify({ team, stages, recoverySeconds: (stages.deposit - stages.loss) / 30 }));
   });
 }
 
