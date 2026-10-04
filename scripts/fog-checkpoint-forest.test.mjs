@@ -159,6 +159,37 @@ async function order(replay, command, expectedNotice) {
   replay.drain();
 }
 
+test('legal clearing invalidates warmed positive fringe coverage for stationary sources', async () => {
+  const terrain = { ...map, id: 'fog-fringe-cache-clearing', obstacles: [
+    { column: 25, row: 64, width: 3, height: 32, material: 'forest' },
+  ] };
+  const fixture = await createPveHeadlessFixture(terrain, { matchModeId: 'authored', matchModeVersion: 1 });
+  const replay = fixture.replay, fringe = forestCell + 1, deep = forestCell + 2;
+  try {
+    const initial = replay.observe(0);
+    const workers = initial.units.filter(unit => unit[1] === 0 && unit[5] === 'worker');
+    const gatherer = workers[0][0], stationary = workers[1];
+    assert.equal(fogCode(initial, fringe), 1, 'positive fringe is warmed before geometry changes');
+    assert.equal(fogCode(initial, deep), 0);
+    await order(replay, { type: 'gather', ids: [gatherer], forestCell }, /^GATHER ORDER/);
+    let cleared = false;
+    for (let tick = 0; tick < 400; tick++) {
+      replay.step();
+      if (replay.checkpoint().state.forestStocks.some(([cell, stock]) => cell === forestCell && stock === 0)) {
+        cleared = true; break;
+      }
+    }
+    assert.ok(cleared, 'player-command gathering clears the first blocker');
+    const after = replay.observe(0), observer = after.units.find(unit => unit[0] === stationary[0]);
+    assert.deepEqual(observer.slice(2, 4), stationary.slice(2, 4), 'existing source remains stationary');
+    assert.equal(fogCode(after, fringe), 2, 'clearing replaces cached fringe with direct sight');
+    assert.equal(fogCode(after, deep), 1, 'new second layer remains explored-only');
+    const beforeRestore = [after, replay.observe(1)];
+    replay.restore(replay.checkpoint());
+    for (const team of [0, 1]) assertRecoveredWorkerObservation(replay.observe(team), beforeRestore[team]);
+  } finally { await fixture.dispose(); }
+});
+
 for (const delay of [0, 2]) {
   test(`forest clears before a later Worker cell crossing: off-cadence ${delay === 0 ? 2 : 1} restores exactly`, async () => {
     const fixture = await createPveHeadlessFixture(map, { matchModeId: 'authored', matchModeVersion: 1 });

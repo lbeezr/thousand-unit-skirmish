@@ -99,7 +99,9 @@ owned central CI registry is untouched.
 Coverage: both-seat eight-bearing masks and actual legal Worker approach/retreat;
 seeds 93025/17/42 on authored Terraced Vale, sight 7/8/11 and real high-ground data;
 map corners/row wrapping, nonrecursive depth, rock/building exclusions, unchanged
-current masks; actual client terrain/minimap alpha, omission memory and rematch;
+current masks; legal clearing invalidates warmed positive-fringe coverage while
+an existing source stays stationary, followed by exact restore; actual client
+terrain/minimap alpha, omission memory and rematch;
 native hidden occupant and productive node changes, attack/forest-gather denial,
 private totals/queues, warm token reconnect, untouched checkpoint/new-process
 restart and rematch. Native setup explicitly seeds three already-cut forest cells
