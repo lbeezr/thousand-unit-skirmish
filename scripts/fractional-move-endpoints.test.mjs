@@ -339,6 +339,64 @@ for (const team of [0, 1]) test(`seat ${team}: an old overlapped pose escapes th
   } finally { await f.dispose(); }
 });
 
+for (const team of [0, 1]) for (const queued of [false, true]) for (const restore of [false, true])
+test(`seat ${team}: adjacent fractional first leg rejoins safely ${queued ? 'from the queue' : 'from ordinary Move'} ${restore ? 'after recovery' : 'with live authority'}`, async (t) => {
+  const scene = { ...map, obstacles: [{ column: 33, row: 25, width: 1, height: 1, material: 'stone' }] };
+  const f = await createPathingReplayFixture(scene, { traceLandSteps: true }), r = f.replay;
+  try {
+    quiet(r);
+    for (const seat of [0, 1]) r.order(seat, { type: 'stop', ids: r.units.filter(u => u.team === seat).map(u => u.id) });
+    let u = r.units.find(u => u.team === team && u.kind === 'infantry');
+    const { id, generation, hp } = u;
+    const finish = (x, z, limit) => {
+      for (let tick = 0; tick <= limit; tick++) {
+        if (u.x === x && u.z === z) return tick;
+        if (tick === limit) break;
+        r.step();
+        for (const s of r.landSteps.filter(s => s.id === id))
+          assert.ok(canTraverseStaticBodySegment(s.from, s.to, .22, map.width, map.height, r.isWalkable),
+            `every actual substep stays clear: ${JSON.stringify(s.from)} -> ${JSON.stringify(s.to)}`);
+        assert.equal(u.hp, hp);
+      }
+      assert.fail(`adjacent leg did not arrive in ${limit} ticks: position=(${u.x},${u.z}) revision=${u.orderRevision}`);
+    };
+    // Reach the review's fractional start through actual commands from spawn,
+    // without trusted placement or an inherited overlapping pose.
+    move(r, u, .75, .9);
+    if (queued) move(r, u, 1.5, .5, true);
+    const setupTicks = finish(.75, .9, 600);
+    assert.ok(canTraverseStaticBodySegment(u, u, .22, map.width, map.height, r.isWalkable));
+    if (!queued) move(r, u, 1.5, .5, false, false);
+    const acceptedRevision = u.orderRevision;
+    if (restore) {
+      const saved = r.checkpoint(); assert.ok(r.validate(saved)); r.restore(saved); u = r.units[id];
+    }
+    const revision = u.orderRevision;
+    assert.equal(revision, acceptedRevision + Number(restore), 'recovery rebuilds the transient plan once');
+    r.drain(); const publishedPath = [...u.path];
+    const elapsed = finish(1.5, .5, 600);
+    assert.ok(elapsed <= 30, `safe start-center rejoin is bounded, observed ${elapsed} ticks`);
+    assert.deepEqual(publishedPath, [r.cell(.75, .9), r.cell(1.5, .5)]);
+    assert.equal(u.orderRevision, revision, 'a static first leg does not loop through replacement repairs');
+    assert.deepEqual([u.moveGoalPoint.requestedX, u.moveGoalPoint.requestedZ], [1.5, .5]);
+    assert.equal(u.generation, generation); assert.equal(u.queuedWaypoints.length, 0);
+    assert.equal(u.pathIndex, u.path.length); assert.equal(u.movePlanningPending, false);
+    t.diagnostic(`command-only setup ${setupTicks} ticks; adjacent leg ${elapsed} ticks; traversal repairs ${u.orderRevision - revision}`);
+  } finally { await f.dispose(); }
+});
+
+for (const team of [0, 1]) test(`seat ${team}: explicit safe-center control clears the adjacent stone in bounded time`, async () => {
+  const scene = { ...map, obstacles: [{ column: 33, row: 25, width: 1, height: 1, material: 'stone' }] };
+  const f = await createPathingReplayFixture(scene), r = f.replay;
+  try {
+    quiet(r); const u = r.units.find(u => u.team === team && u.kind === 'infantry');
+    move(r, u, .75, .9); arrive(r, u);
+    move(r, u, .5, .5); arrive(r, u, 15);
+    move(r, u, 1.5, .5); arrive(r, u, 15);
+    assert.deepEqual([u.x, u.z], [1.5, .5]);
+  } finally { await f.dispose(); }
+});
+
 for (const team of [0, 1]) test(`seat ${team}: native accepted v2 queued projection survives real process restart`, async () => {
   const f = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 30000 });
   let clients, tokens, token = 6100;

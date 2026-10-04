@@ -4124,11 +4124,13 @@ function applyPlannedMoveAssignment(job, assignment) {
     && Math.abs(start % MAP_WIDTH - path[0] % MAP_WIDTH)
       + Math.abs(Math.floor(start / MAP_WIDTH) - Math.floor(path[0] / MAP_WIDTH)) > 1;
   // A shared cell-center route can graze an obstacle from one assignee's
-  // fractional position. Rejoin its start center before taking the shortcut.
-  unit.path = distantFirstWaypoint && (!canTraverseFlatUnitSegment(
+  // fractional position, even on an adjacent first leg. Rejoin its start
+  // center whenever the adopted body cannot safely enter that route.
+  const unsafeFirstApproach = path.length > 0 && ((distantFirstWaypoint && !canTraverseFlatUnitSegment(
     unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z, firstGoal.x + MAP_HALF_X, firstGoal.z + MAP_HALF_Z,
-    MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS)
-    || (radius && !canTraverseStaticBodySegment(unit, firstGoal, radius, MAP_WIDTH, MAP_HEIGHT, isWalkable))) ? [start, ...path] : path;
+    MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS))
+    || (radius > 0 && !canTraverseStaticBodySegment(unit, firstGoal, radius, MAP_WIDTH, MAP_HEIGHT, isWalkable)));
+  unit.path = unsafeFirstApproach ? [start, ...path] : path;
   unit.pathIndex = 0;
   unit.movePlanningPending = false;
   unit.buildingTargetId = job.preserveAssignmentBuildingTarget

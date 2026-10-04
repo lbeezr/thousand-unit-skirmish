@@ -344,6 +344,17 @@ Both seats also exercise a real Move from an inherited overlapping pose:
 short escape never deepens that overlap, reaches the projected point and
 preserves the accepted order revision. Those inherited escape substeps are
 reported as recovery, not zero-penetration starts.
+Independent review at `25ef0606` found an adjacent first-leg liveness failure:
+an Infantry reaches `(0.75,0.9)` through a real Move from spawn beside stone
+`[1,2]×[1,2]`, then Move to `(1.5,0.5)` freezes at
+`(0.8264705882,0.8592156863)` through 599 repairs in 600 ticks. All admitted
+substeps remain statically clear. The route's fractional-start sweep needs
+the same safe start-center rejoin even when its first cell is adjacent;
+distance alone cannot admit that first approach. Eight command-only regressions
+cover both seats, ordinary/queued continuation and pending-plan recovery;
+two explicit center controls pass before the fix. The fixed traversal must
+arrive within 30 ticks, keep every actual substep clear and introduce no
+traversal repairs. Pending recovery retains its existing one-time plan rebuild.
 The private study consumes production's exact geometry helpers while retaining
 its separate authored candidate profile and historical evidence. New study
 registration remains the [existing CI-owner handoff](https://github.com/lbeezr/thousand-unit-skirmish/pull/369#issuecomment-5984188895);
