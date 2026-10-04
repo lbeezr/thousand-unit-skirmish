@@ -138,7 +138,7 @@ center and one Storehouse; Ember has four Workers, twelve Infantry and a viable
 home/Barracks/expansion. Azure has about 180 Food/10 Wood; Ember about
 245 Food/3,010 Wood. Azure's surviving land Worker keeps elimination open.
 Ember's last durable attack is at 2,975.3 seconds; its army remains near
-`(+37,-35)` with native routes still pending while emitting accepted search
+`(+37,-35)` with unfinished native paths while emitting accepted search
 orders. The retained final authority and trace support diagnosis; they do not
 identify a policy or route cause. Do not interpret the timeout as a balance
 problem or raise the completion ceiling to close it.
