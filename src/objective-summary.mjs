@@ -5,6 +5,11 @@ const time = (value) => {
 };
 
 // Describe existing authored rules; this does not select or alter a match mode.
+export function mapScenarioSummary(definition = {}) {
+  if (definition.bannerfall?.version === 1) return 'Protect your original Town Center and destroy the enemy stronghold. Free waves reinforce your army; enemy troop kills unlock Riders.';
+  return definition.summary || 'Control the marked objectives and protect your army.';
+}
+
 export function mapVictoryRule(definition = {}) {
   if (definition.bannerfall?.version === 1) return { label: 'Bannerfall',
     description: 'Bannerfall · Destroy the enemy original Town Center to win; losing both on the same combat tick is a draw. Free waves of up to two troops arrive every 15 seconds up to 12 supply per side. Six enemy troop kills unlock Rider reinforcements. Blocked or capped waves are skipped. Other buildings cannot replace the stronghold.' };

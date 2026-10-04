@@ -17,6 +17,7 @@ import { formatResourceStock } from '../src/resource-format.mjs';
 import { readWorkerPerformingAction } from '../src/worker-work-presentation.mjs';
 import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
 import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
+import { fixedMatchArmySize } from '../src/match-mode-controls.mjs';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 export const controlsMap = {
@@ -101,7 +102,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
   }
   const query = selector => w.document.querySelector(selector);
   Object.assign(w, {...selection,...economyProfile,...economyClient,...audioPolicy,...wildlifeClientBindings(),
-    THREE,UNIT_DEFINITIONS,BUILDING_DEFINITIONS,farmHarvestNode,isShoreFish,applyUnitStances,
+    THREE,UNIT_DEFINITIONS,BUILDING_DEFINITIONS,farmHarvestNode,isShoreFish,applyUnitStances,fixedMatchArmySize,
     rememberNotice,classifyOrderNotice,formatResourceStock,readWorkerPerformingAction,TextEncoder,WebSocket:WireSocket,
     mapDefinition:map,MAP_WIDTH:map.width,MAP_HEIGHT:map.height,MAP_HALF_X:map.width/2,MAP_HALF_Z:map.height/2,
     localTeam:team,cameraSeatTeam:team,isHost:false,matchWinner:-1,matchWinnerReason:null,
@@ -172,7 +173,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     'keyboardTargetIsEditing','controlGroupIndexFromKey','selectionCenterShortcutAllowed',
     'showToast','setOrderStatus','armOrderStatusTimeout','beginOrderStatus','finishOrderStatus','applyOrderNotice','sendTrackedOrder','sendCommand',
     'appendUnitFromState','applyState','applyWaypointQueueCounts','updateFogFromState','applyForestState',
-    'syncMatchResultActions','updateMatchResult','formatVictoryHoldTime','setPlayer','connectSocket'];
+    'syncMatchResultActions','updateMatchResult','formatVictoryHoldTime','updateMatchArmySizeControls','setPlayer','connectSocket'];
   // Control-group painting is a layout side effect; group contents are changed
   // only by production assign/recall/revalidation bodies above.
   w.updateControlGroupUI=noop;w.cameraNavigationKeydown=()=>false;w.wallPlacementKeydown=()=>false;
