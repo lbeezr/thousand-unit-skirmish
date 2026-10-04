@@ -9,6 +9,18 @@ This queue records source evidence separately from ordinary-game acceptance.
 
 ## Current source, admission and served boundary
 
+The approved pacing lane's separate
+[paid Tiny baseline](first-skirmish-balance.md#tiny-paid-match-baseline--4-october-2026)
+contains main `96b1c3ad`/U3 and leaves reversed seeds `[0,20260925]` ongoing at the
+unchanged 3,600-second ceiling, while `[20260925,0]` completes at 2,393 seconds.
+The unchanged canonical reversed-seed Skirmish completion test also fails on
+that runtime. AI `01a10297` retains the completion diagnosis in this queue;
+movement `01a107ba` retains the pending routes/clearance contract. Exact raw
+terminal/trace/sample evidence is linked from the balance guide. This is no
+qualified-opponent, balance, hidden-information or policy-fix claim; preserve
+the original assertions/deadlines while investigating. The pacing lane changes
+no AI/runtime source and launches no competing qualification plan.
+
 Ordinary development PvE is admitted for Terraced Vale Tiny Skirmish only,
 through mode-owner [PR250](https://github.com/lbeezr/thousand-unit-skirmish/pull/250).
 Medium remains human-only; its unfinished diagnostic games do not authorize
