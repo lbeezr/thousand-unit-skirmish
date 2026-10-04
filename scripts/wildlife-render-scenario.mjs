@@ -5,6 +5,7 @@ import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { decodeRgba8 } from './sprite-pixel-bounds.mjs';
 import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
 import { createStaticSheepRuntime } from '../src/sheep-static-preview.mjs';
+import { authoredWildlifeBodyHeading } from '../src/wildlife-heading.mjs';
 
 // Real worker HTTP/WS paths and Three meshes; PNG decoding is CPU-only, not WebGL evidence.
 const map = JSON.parse(await readFile(new URL('../docs/qa-evidence/sheep-eight-view-default-2026-10-03/game-map.json', import.meta.url)));
@@ -14,7 +15,7 @@ let renderer;
 try {
   await fixture.start();
   const base = `http://127.0.0.1:${fixture.port}/`;
-  const approved = ['src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/wildlife-motion.mjs', 'src/sheep-static-preview.mjs',
+  const approved = ['src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/wildlife-motion.mjs', 'src/wildlife-heading.mjs', 'src/sheep-static-preview.mjs',
     'assets/wildlife/bellweather-sheep-static-v1/static-preview-binding.json',
     'assets/wildlife/bellweather-sheep-static-v1/sprite-atlas-pack-v1.json',
     'assets/wildlife/bellweather-sheep-static-v1/sheep-atlas-runtime.png'];
@@ -55,6 +56,10 @@ try {
   client.send({ type: 'publishMap', map, persist: true });
   await client.wait(message => message.type === 'mapPublished', 'typed sheep map accepted', after);
   const changed = await client.wait(message => message.type === 'mapChange' && message.map.id === map.id, 'typed sheep map loaded', after);
+  for (const row of changed.state.resourceNodes.filter(node => node.wildlifeSpecies === 'bellweather-sheep')) {
+    const authored = changed.map.resourceNodes.find(node => node.id === row.id);
+    assert.equal(row.wildlifeHeading, authoredWildlifeBodyHeading(authored), 'ordinary map-change rows disclose canonical body yaw');
+  }
   renderer.reset(changed.map.resourceNodes); await renderer.ready();
   const represent = state => {
     // The server omits wildlife outside current seat visibility, independently
@@ -75,7 +80,7 @@ try {
   assert.equal(northCompanion.children[2].geometry, group.children[2].geometry, 'same pose shares immutable geometry');
   assert.equal(alive.nodes.find(node => node.id === 'east-pose').mode, 'static-illustration');
   const eastGroup = scene.children.find(group => group.userData.wildlifeNodeId === 'east-pose');
-  assert.equal(eastGroup.children[0].rotation.y, Math.PI / 2);
+  assert.equal(eastGroup.children[0].rotation.y, authoredWildlifeBodyHeading(map.resourceNodes.find(node => node.id === 'east-pose')));
   const meshes = map.resourceNodes.filter(node => node.wildlifeNoseYawDegrees !== undefined).map(node => {
     assert.equal(alive.nodes.find(row => row.id === node.id).mode, 'static-illustration', node.id);
     return scene.children.find(group => group.userData.wildlifeNodeId === node.id).children[2];

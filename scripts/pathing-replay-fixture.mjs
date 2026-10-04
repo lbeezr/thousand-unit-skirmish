@@ -93,6 +93,7 @@ export const replay = {
     migrateWildlifeClaimsCheckpoint(migrated);
     migrateMatchModeCheckpoint(migrated);
     migrateWildlifeHerdCheckpoint(migrated);
+    migrateWildlifeHeadingCheckpoint(migrated);
     restoreMatchCheckpoint(migrated);
   },
   validate(snapshot) {
@@ -102,6 +103,7 @@ export const replay = {
     migrateWildlifeClaimsCheckpoint(migrated);
     migrateMatchModeCheckpoint(migrated);
     migrateWildlifeHerdCheckpoint(migrated);
+    migrateWildlifeHeadingCheckpoint(migrated);
     return validateMatchCheckpoint(migrated);
   },
   get tick() { return tickNumber; }, get navigationRevision() { return navigationRevision; },

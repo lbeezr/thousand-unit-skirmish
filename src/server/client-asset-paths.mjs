@@ -1,7 +1,7 @@
 // Exact public client paths; add explicit entries rather than admitting folders.
 export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/frontier-building-preview.mjs',
-  'src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/wildlife-motion.mjs', 'src/wildlife-herding.mjs', 'src/sheep-static-preview.mjs',
+  'src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/wildlife-motion.mjs', 'src/wildlife-heading.mjs', 'src/wildlife-herding.mjs', 'src/sheep-static-preview.mjs',
   'environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs',
   'water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs',
   'src/water-study-fish-binding.mjs',

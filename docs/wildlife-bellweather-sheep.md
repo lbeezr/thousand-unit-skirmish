@@ -11,7 +11,7 @@ It delivers no new generated art or accepted animal stock/gatherer-cap balance.
 now replaces the earlier public-input illustration in the normal game renderer,
 including default Millrace Sheep. All eight original PNGs were materialized,
 visually inspected and preserved with provenance. Alive Sheep select their
-authoritative heading view (initially the authored nose pose); missing/failed art uses the geometric proxy, carcasses
+authoritative body heading through the still-only legacy nose conversion; missing/failed art uses the geometric proxy, carcasses
 use the food-cache marker, and depleted/hidden Sheep are suppressed. There is
 no articulated animal animation or full model in runtime; the bounded motion
 slice translates the existing static art. [Current evidence](qa-sheep-eight-view-default-2026-10-03.md)
@@ -71,7 +71,7 @@ covers normal default Millrace and both seats. This is gentle positional motion
 with existing static directional art; grazing/walking clips remain art work.
 
 Visible state rows add actual `x`/`z` in world units, `wildlifeHeading` in radians
-(`[0, 2π)`, zero faces +Z, positive turns toward +X), and live-only
+(`[0, 2π)`, body-forward zero faces +Z, positive turns toward +X), and live-only
 `wildlifeActivity`. Sequence, target and remaining wait ticks stay private in
 checkpoint schema **24**. Exact stationary schema23 saves initialize motion
 without changing stock/cargo; schema24 restores current positions and progress.
@@ -80,6 +80,48 @@ resource click target, ring, callout and minimap consume disclosed positions;
 missing/fog-hidden rows immediately hide and expose no remembered click target.
 The motion slice adds no ownership. The subsequent automatic claim slice below
 adds only a real team label; controllable herding and collar art remain separate.
+
+### Canonical body heading — 4 October 2026
+
+The shared [heading module](../src/wildlife-heading.mjs) defines canonical body
+yaw for private `wildlifeMotion.heading` and public `wildlifeHeading`: radians
+in `[0, 2π)`, body-forward zero along +Z, positive toward +X. Actual wandering
+and Herd steps use `atan2(dx,dz)` without an art offset. The existing authored
+`wildlifeNoseYawDegrees` remains a legacy nose input, including implicit nose
+zero when absent. Initial body yaw is `wrap(nose − 42.03499984741211°)`; no new
+authored field or map hash change is needed.
+
+The admitted original standing views remain nose-labelled. Only their snapshot
+adapter adds the exact offset back before sector selection; a standalone
+authored fallback already contains nose yaw and adds nothing. The body-aligned
+geometric proxy and future body-forward action frames use canonical body yaw
+directly. Direction is the nearest 45° world sector, with exact half-sector
+ties choosing increasing yaw: 22.5° becomes north-east and 337.5° wraps to north.
+A `16 × Number.EPSILON` allowance in sector units absorbs floating-point tie
+roundoff. Camera quarter rotations affect the existing billboard transform,
+not world-heading labels or the nose/body conversion.
+
+Checkpoint schema **29** converts exact schema28 Sheep private headings by
+subtracting that offset once. Positions, motion sequence/goal/wait/activity,
+Herd paths/progress, anchors, ownership, food stock, cargo and banks stay exact.
+Frozen carcass/depleted headings also convert to preserve their former still
+pose. An old moving save preserves its displayed pose at restore; the next
+actual moving step recomputes body heading from its movement vector. The
+schema23→24 initializer retains legacy nose yaw until the existing stance,
+claim, mode and Herd migrations reach schema28; the final conversion then runs
+once. Current schema29 restores never convert again. Invalid or ambiguous old
+headings reject without partial conversion. [Focused evidence](qa-sheep-body-heading-2026-10-04.md)
+records exact migration, sector and default still compatibility checks.
+
+The private action art contract uses eight body yaws at 45° increments, original
+512 px root `[256,256]` at 256 px/world and the normalized 128 px root `[64,64]`
+at 64 px/world. Its walk has eight samples at a 0.216-world-unit stride: 1,200 ms
+at wander speed 0.18 and 360 ms at Herd speed 0.6. A future action binding must
+advance phase by actual visible movement distance and pause when stationary;
+wandering uses walk, grazing uses the planted 3-second graze, idle uses idle,
+and carcass uses the static prone pose. Depleted/undisclosed rows hide. These
+shared contracts add no new art binding or appearance acceptance. The art owner
+retains private packet transfer, publication and frame admission.
 
 Alive Sheep now claim automatically when a living land unit is within **1.4
 world units**, the Sheep cell is currently visible to that team, and the short
@@ -92,7 +134,7 @@ with exact distance ties settled by lower stable unit ID. Without a contender,
 the last owner remains. Claim changes apply only while alive: carcass/depleted
 labels stay frozen and shared Gather rights remain unchanged.
 
-Visible rows and checkpoint schema **27** carry `wildlifeTeam: null | 0 | 1`
+Visible rows and current checkpoint schema **29** carry `wildlifeTeam: null | 0 | 1`
 (neutral, Azure, Ember). Claims grant no sight or population. Only the owner
 may issue the separate Herd/Stop authority commands below. Exact schema25 saves initialize neutral labels without altering
 position, private motion, stock, cargo or banks; older compatible migrations
@@ -432,10 +474,10 @@ not duplicate its `src/main.js`, neutral renderer or server changes. Its disclos
 wire fields are current `x`/`z`, radians `wildlifeHeading` (zero +Z, positive +X)
 and `wildlifeActivity: idle|grazing|wandering`. Movement integration does not supply
 articulated action clips or close the separate native appearance acceptance.
-The [specific heading question](https://github.com/lbeezr/thousand-unit-skirmish/pull/165#issuecomment-5974302024)
-must distinguish authored nose pose from body-forward action captures before
-rank 4 proceeds. Existing idle views have about 42 degrees of head/body offset;
-do not relabel them as neutral walking frames or apply that offset twice.
+The former [heading question](https://github.com/lbeezr/thousand-unit-skirmish/pull/165#issuecomment-5974302024)
+is resolved by the canonical body contract above. Existing idle views retain
+their exact 42.03499984741211-degree nose/body conversion; future body-forward
+action frames consume body yaw directly. Do not apply the offset twice.
 
 For moving integration, art, ground height, fog, picking, rings/callouts, minimap
 and diagnostic captures must use one disclosed authoritative current position.
@@ -456,7 +498,7 @@ are captured from the actual rig under the same camera/world lighting; a smaller
 normalized atlas candidate preserves the capture root and scale. Independent
 directional source/pixel review has also passed. Temporal/native appearance and
 new-export publication remain incomplete.
-The shared heading interface is unresolved. Actual server ownership now exists,
+The shared heading interface is canonical body yaw as documented above. Actual server ownership now exists,
 so private collar fitting can advance; full pose/heading attachment and accessible
 readability remain unaccepted. Normal Linux browser preflight fails before
 screenshots. These conditions pause their dependent actions only.
