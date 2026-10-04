@@ -53,10 +53,10 @@ try {
   const small = root.welcome.maps.find(map => map.id === 'veyrholds-threefold-basin');
   assert.equal(small.ordinarySelectable, true);
   assert.equal(small.supportedUnitCapacity, null);
-  assert.deepEqual(small.matchModes.map(mode => [mode.id, mode.version]), [['authored', 1]],
-    'ordinary size eligibility does not invent a Small Skirmish binding');
+  assert.deepEqual(small.matchModes.map(mode => [mode.id, mode.version]), [['authored', 1], ['skirmish', 1]],
+    'Small exposes only its actual authored and registered human Skirmish rules');
   assert.equal(root.latest.scenarioClockStarted, false);
-  records.push({ name: 'Unconfigured root and fresh status use Tiny Skirmish; ordinary choices contain three Tiny maps and authored-only Small; XL remains unavailable' });
+  records.push({ name: 'Unconfigured root and fresh status use Tiny Skirmish; three real Tiny maps and reviewed Small are ordinary choices; XL remains unavailable' });
 
   const created = await create({ mode: 'pvp', pregame: true });
   assert.deepEqual(created.launchOptions, { mode: 'pvp', pregame: true, ...NORMAL_HUMAN_MATCH_MODE });

@@ -28,3 +28,12 @@ One shared scale/root and spare atlas row y=2816 preserve all 92 prior frames,
 other clips, mask and world scale. Five walk headings now play; S/W/NW hold
 idle. Rough gait/loop polish and identified deployment/native review remain
 open. See the [land checkpoint](../../../docs/qa-worker-land-art-2026-10-04.md).
+
+Version 0.17.0 adds eight approved-seed **South walk** keys (screen-up-right,
+back view). The [retained source iteration](../../../docs/art-direction/human-roster-v1/generated/worker-walk-south-v1/README.md)
+uses the public default South idle as reference. Register with
+`python3 scripts/admit-worker-south-walk.py`; eight 100 ms keys use spare row
+y=3072 and a shared fixed root/scale. All 100 previous frames, every other clip,
+mask, dimensions and world scale are preserved. Six walk headings now play;
+W/NW hold idle. Native/deployment acceptance and gait/registration polish stay
+open, with 52 remaining land-action/heading cells in the linked checkpoint.

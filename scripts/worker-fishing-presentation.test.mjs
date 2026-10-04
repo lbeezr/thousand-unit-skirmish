@@ -49,14 +49,14 @@ test('published atlas preserves prior action pixels/metadata and all four approv
   // Reconstruct those historical clips for the frozen fishing-era hash;
   // all other original metadata and original/fishing pixels remain protected.
   const originalClips = structuredClone(asset.clips.slice(0, preservation.originalClips));
-  for (const direction of ['east', 'north']) {
+  for (const direction of ['east', 'north', 'south']) {
     const walk = originalClips.find(c => c.stateId === 'walk' && c.directionId === direction);
     assert.deepEqual(walk.sequence, Array.from({ length: 8 }, (_, i) =>
       ({ frameId: `walk-${direction}-${i}`, durationMs: 100 })));
     walk.sequence = [{ frameId: `idle-${direction}-0`, durationMs: 1000 }];
   }
   assert.equal(sha256(JSON.stringify(originalClips)), preservation.originalClipMetadataSha256);
-  assert.equal(asset.frames.length, preservation.originalFrames + 4 + 16);
+  assert.equal(asset.frames.length, preservation.originalFrames + 4 + 24);
   assert.equal(asset.clips.length, preservation.originalClips + 1);
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), preservation.worldUnitsPerPixel);
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', manifest)));
