@@ -60,6 +60,14 @@ test('oak depletion guard rejects lost default sampling and a missing authored m
   await assert.rejects(audit({ environment }), /frontier-oak-depletion-atlas-v1: approved runtime asset is not default-bound/);
 });
 
+test('painted scree guard rejects a disconnected terrace-face consumer', async () => {
+  const source = await readFile(path.join(root, 'src/environment-art.mjs'), 'utf8');
+  for (const [from, to] of [["texture: base === 'scree' ? groundTexture('scree', definition) : null", 'texture: null'],
+    ['if (cliffFaces) meshes.push(cliffFaces)', 'if (false) meshes.push(cliffFaces)']]) {
+    await assert.rejects(audit({ environment: source.replace(from, to) }), /scree cliff faces/);
+  }
+});
+
 test('a default Worker downgrade cannot silently strand the approved fishing manifest', async () => {
   const main = (await readFile(path.join(root, 'src/main.js'), 'utf8')).replace("{ human: 'v3', infantry:", "{ human: 'v2', infantry:");
   await assert.rejects(audit({ main }), /human-worker-fishing-SE: approved runtime asset is not default-bound/);
