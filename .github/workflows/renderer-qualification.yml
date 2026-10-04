@@ -31,7 +31,7 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
       - name: Check capture contracts
-        run: node --test scripts/renderer-capability.test.mjs scripts/renderer-qualification.test.mjs
+        run: node --test scripts/renderer-capability.test.mjs scripts/renderer-qualification.test.mjs scripts/renderer-qualification-building-orientation.test.mjs
       - name: Establish sandboxed WebGL2 capability
         env:
           EVIDENCE: ${{ runner.temp }}/renderer-qualification
@@ -49,10 +49,10 @@ jobs:
           const pack = JSON.parse(readFileSync(process.argv[2], 'utf8'));
           execFileSync('npm', ['ci', '--omit=dev', '--no-audit', '--no-fund'], { cwd: pack.directory, stdio: 'inherit' });
           NODE
-      - name: Capture live packed-game movement
+      - name: Capture live packed-game movement and paid building placement
         env:
           EVIDENCE: ${{ runner.temp }}/renderer-qualification
-        run: node scripts/renderer-qualification.mjs "${{ runner.temp }}/renderer-pack.json" "$EVIDENCE" > "$EVIDENCE/capture.log"
+        run: node scripts/renderer-qualification.mjs "${{ runner.temp }}/renderer-pack.json" "$EVIDENCE" --buildings > "$EVIDENCE/capture.log"
       - name: Retain bounded renderer evidence
         if: always()
         uses: actions/upload-artifact@v7

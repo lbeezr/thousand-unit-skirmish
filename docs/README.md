@@ -216,6 +216,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Sheep model-reference pilot](bellweather-sheep-model-reference-pilot.md): preserved 2 October input and static-capture contracts; private model and later runtime adoption remain separate.
 - [Default low-bank shade](qa-shore-bank-shade-2026-10-03.md): contour-following land value cue, bounded geometry and preserved before/after CPU studies with native-render limits.
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
+- [Building orientation](building-orientation.md): manual facing, final-art placement, authority/recovery and exit contracts; optional smart-facing follow-on.
 - [Finished Frontier runtime](frontier-building-runtime.md): all six default finished building families, state fallback, packaging, shared depth/texture ownership and open normal-match QA.
 - [Ordinary-game building acceptance](qa-frontier-building-adoption.md): exact paid maps/sites, selected/hover/team semantics and pending deployed Mac coverage owned by the building workstream.
 - [Barracks and Archery Range replacement](frontier-barracks-range-authoring.md): inspected new concepts versus old default sprites, precise production gaps and retained ownership through default gameplay verification.

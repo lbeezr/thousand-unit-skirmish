@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { attachBuildingSprite, buildingSpriteUrl, applyBuildingGroundDepth } from '../src/building-sprites.mjs';
 import { barracksModelVisualState, buildingFinishedDetailsVisible } from '../src/building-visual-state.mjs';
 import { CAMERA_VIEW_DIRECTION } from '../src/camera-controls.mjs';
+import { validBuildingOrientation } from '../src/building-orientation.mjs';
 
 function groundDepthShader() {
   const material = new THREE.SpriteMaterial({ depthTest: true, depthWrite: false });
@@ -260,7 +261,7 @@ test('authoritative cap rejects new buildings before worker lookup but keeps exi
   const source = server.slice(start, server.indexOf('\nfunction ', start + 1));
   const limit = Number(server.match(/const MAX_BUILDINGS = (\d+);/)[1]);
   const notices = []; let lookups = 0, resumes = 0;
-  const context = vm.createContext({ MAX_BUILDINGS: limit, buildings: [], teamUpgrades: [[], []],
+  const context = vm.createContext({ validBuildingOrientation, MAX_BUILDINGS: limit, buildings: [], teamUpgrades: [[], []],
     BUILDING_DEFINITIONS: { barracks: {} }, buildingRulesFor: () => ({}),
     missingGameplayPrerequisites: () => [],
     rejectBuild: (_player, reason) => notices.push(reason),

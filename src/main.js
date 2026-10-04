@@ -37,6 +37,9 @@ import { mountAssetReadability } from './asset-readability.mjs';
 import { farmHarvestNode } from './farm-harvest.mjs';
 import { attachBuildingSprite } from './building-sprites.mjs';
 import { frontierBuildingManifestUrl } from './frontier-building-preview.mjs';
+import { buildingCanRotate, buildingOrientationAngle, turnBuildingOrientation } from './building-orientation.mjs';
+import { createBuildingPlacementPreview } from './building-placement-preview.mjs';
+import { buildingRotationSettings, buildingRotationKeyDirection, mountBuildingRotationControls } from './building-rotation-controls.mjs';
 import {
   createCapturedBuildingSprite, disposeCapturedBuildingSprite,
   updateCapturedBuildingSprite,
@@ -703,7 +706,10 @@ let lastUnitPickState = null;
 let moveMarkerAge = 0;
 let buildPlacementActive = false;
 let buildPlacementType = 'archery-range';
+let buildPlacementOrientation = 0;
 let buildPlacementPending = false;
+let pendingBuildingPlacement = null;
+let lastBuildingPlacementPointer = null;
 let pendingBuildOrderToken = null;
 let pendingBuildBaseline = new Set();
 const wallPlacementGesture = new WallPlacementGesture();
@@ -1371,6 +1377,7 @@ function createGameplayBuildingVisual(building) {
     const feedback = new Set([visual.outline, visual.productionLamp, visual.rallyMarker,
       visual.healthIndicator?.group, visual.combatFeedback?.targetRing, visual.combatFeedback?.impactFlash]);
     const fallbackRoot = new THREE.Group();
+    fallbackRoot.userData.buildingOrientationRoot = true;
     for (const child of [...visual.group.children]) {
       if (!feedback.has(child) && !child.userData.buildingTeamStandard) fallbackRoot.add(child);
     }
@@ -3336,36 +3343,9 @@ function animateArrowEffects(now) {
   if (impactCount) arrowImpactMesh.instanceMatrix.needsUpdate = true;
 }
 
-const placementGhost = new THREE.Group();
-const placementGhostMaterials = [
-  new THREE.MeshBasicMaterial({ color: 0x9cdb8a, transparent: true, opacity: 0.25, depthWrite: false }),
-  new THREE.MeshBasicMaterial({ color: 0x9cdb8a, transparent: true, opacity: 0.52, depthWrite: false }),
-];
-const ghostFootprint = new THREE.Mesh(new THREE.PlaneGeometry(ARCHERY_RANGE_SIZE, ARCHERY_RANGE_SIZE), placementGhostMaterials[0]);
-ghostFootprint.rotation.x = -Math.PI / 2;
-ghostFootprint.position.y = 0.025;
-placementGhost.add(ghostFootprint);
-const ghostFoundation = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.18, 2.8), placementGhostMaterials[1]);
-ghostFoundation.position.y = 0.13;
-placementGhost.add(ghostFoundation);
-const ghostRoof = new THREE.Mesh(new THREE.BoxGeometry(3.38, 0.13, 2.6), placementGhostMaterials[1]);
-ghostRoof.rotation.x = -0.12;
-ghostRoof.position.y = 1.3;
-placementGhost.add(ghostRoof);
-const ghostBarracksWalls = new THREE.Mesh(new THREE.BoxGeometry(2.35, 0.72, 2.35), placementGhostMaterials[1]);
-ghostBarracksWalls.position.y = 0.52;
-ghostBarracksWalls.visible = false;
-placementGhost.add(ghostBarracksWalls);
-const ghostBarracksRoofPanels = [-1, 1].map((side) => {
-  const panel = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.16, 3.12), placementGhostMaterials[1]);
-  panel.position.set(side * 0.72, 1.02, 0);
-  panel.rotation.z = -side * 0.42;
-  panel.visible = false;
-  placementGhost.add(panel);
-  return panel;
-});
-placementGhost.visible = false;
-placementGhost.renderOrder = 4;
+const buildingPlacementPreview = createBuildingPlacementPreview();
+const placementGhost = buildingPlacementPreview.group;
+placementGhost.userData.preview = buildingPlacementPreview;
 scene.add(placementGhost);
 const wallPlacementGhost = createWallPlacementGhost();
 scene.add(wallPlacementGhost.group);
@@ -4764,7 +4744,7 @@ function updateEnvironmentStateCaptureSnapshot(state) {
     };
   });
   const buildings = (Array.isArray(state.buildings) ? state.buildings : []).map((building) => ({
-    id: building.id, team: building.team, type: building.type,
+    id: building.id, team: building.team, type: building.type, orientation: building.orientation ?? 0,
     x: building.x, z: building.z, progress: building.progress, complete: building.complete,
     groundStage: constructionGroundStage(building.progress, building.complete),
   }));
@@ -8124,7 +8104,10 @@ function updateBuildPlacementGhost(clientX, clientY) {
     syncBattlefieldCursor(); return;
   }
   wallPlacementGhost.group.visible = false;
-  const placement = buildPlacementAt(clientX, clientY);
+  if (wallPointerCell(clientX, clientY)) lastBuildingPlacementPointer = { x: clientX, y: clientY };
+  const pointer = document.activeElement?.matches('[data-building-rotate]') ? lastBuildingPlacementPointer : { x: clientX, y: clientY };
+  const placement = buildPlacementPending ? pendingBuildingPlacement
+    : pointer && wallPointerCell(pointer.x, pointer.y) ? buildPlacementAt(pointer.x, pointer.y) : null;
   placementGhost.visible = Boolean(placement);
   if (ui.placementStatus) {
     const message = placement
@@ -8135,15 +8118,11 @@ function updateBuildPlacementGhost(clientX, clientY) {
     if (ui.placementStatus.dataset.state !== state) ui.placementStatus.dataset.state = state;
   }
   syncBattlefieldCursor();
-  if (!placement) return;
-  placementGhost.position.set(placement.x, groundHeight(placement.x,placement.z), placement.z);
-  placementGhost.scale.set(buildingFootprint(buildPlacementType) / 3, 1, buildingFootprint(buildPlacementType) / 3);
-  const tint = placement.valid ? 0x9cdb8a : 0xe7836d;
-  for (const material of placementGhostMaterials) material.color.setHex(tint);
-  const isBarracks = buildPlacementType === 'barracks';
-  ghostRoof.visible = !isBarracks;
-  ghostBarracksWalls.visible = isBarracks;
-  for (const panel of ghostBarracksRoofPanels) panel.visible = isBarracks;
+  buildingPlacementPreview.update({ type: buildPlacementType, size: buildingFootprint(buildPlacementType),
+    orientation: buildPlacementOrientation, teamColor: TEAM_HEX[localTeam], camera, placement,
+    height: placement ? groundHeight(placement.x, placement.z) : 0, mode: frontierBuildingsPreview });
+  for (const button of document.querySelectorAll('[data-building-rotate]')) button.disabled = buildPlacementPending;
+
 }
 
 function updateBuildPlacementHint() {
@@ -8157,6 +8136,10 @@ function updateBuildPlacementHint() {
   const activeLabel = buildingLabel(buildPlacementType);
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   const wall = buildPlacementActive && buildPlacementType === 'palisade-wall';
+  for (const button of document.querySelectorAll('[data-building-rotate]')) {
+    button.hidden = !buildPlacementActive || !buildingCanRotate(buildPlacementType, BUILDING_DEFINITIONS);
+    button.disabled = buildPlacementPending;
+  }
   if (ui.fieldHintPrimaryKey) ui.fieldHintPrimaryKey.textContent = wall ? 'DRAG / ENTER' : coarsePointer ? 'TAP' : 'LMB';
   if (ui.fieldHintAction) ui.fieldHintAction.textContent = buildPlacementActive ? `PLACE ${activeLabel}`
     : tapOrderArmed ? 'ISSUE ORDER' : coarsePointer ? 'SELECT UNITS' : 'DRAG TO SELECT';
@@ -8233,8 +8216,11 @@ function cancelBuildPlacement(announce = true) {
   buildPlacementActive = false;
   buildPlacementPending = false;
   pendingBuildOrderToken = null;
+  pendingBuildingPlacement = null;
+  lastBuildingPlacementPointer = null;
   pendingBuildBaseline = new Set();
   placementGhost.visible = false;
+  placementGhost.userData?.preview?.reset();
   resetWallPlacement();
   updateBuildPlacementHint();
   if (typeof closeDockDetails === 'function') closeDockDetails({ restoreFocus: false });
@@ -8263,9 +8249,13 @@ function beginBuildPlacement(type) {
   persistentTargetMode = null;
   updateCommandUI();
   buildPlacementType = type;
+  buildPlacementOrientation = 0;
+  pendingBuildingPlacement = null;
+  lastBuildingPlacementPointer = null;
   buildPlacementActive = true;
   buildPlacementPending = false;
   placementGhost.visible = false;
+  placementGhost.userData?.preview?.reset();
   resetWallPlacement();
   pendingBuildOrderToken = null;
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
@@ -8285,7 +8275,8 @@ function beginBuildPlacement(type) {
 function submitBuildPlacement(clientX, clientY, wallPoints = null) {
   if (!buildPlacementActive || buildPlacementPending) return;
   const wall = buildPlacementType === 'palisade-wall';
-  const placement = wall ? wallPlacementAt(wallPoints) : buildPlacementAt(clientX, clientY);
+  const placement = wall ? wallPlacementAt(wallPoints)
+    : wallPointerCell(clientX, clientY) ? buildPlacementAt(clientX, clientY) : null;
   if (!placement) { showToast('MOVE THE POINTER OVER THE BATTLEFIELD'); return; }
   if (!placement.valid) {
     showToast(`${buildingLabel(buildPlacementType)} SITE BLOCKED · ${placement.blockedReason}`);
@@ -8296,12 +8287,13 @@ function submitBuildPlacement(clientX, clientY, wallPoints = null) {
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
   const command = wall ? { type: 'buildWall', ids, points: wallPoints,
     axisOrder: cursorShift ? 'row-first' : 'column-first' } : {
-    type: 'build', buildingType: buildPlacementType, ids, x: placement.x, z: placement.z,
+    type: 'build', buildingType: buildPlacementType, ids, x: placement.x, z: placement.z, orientation: buildPlacementOrientation,
   };
   const buildOrderToken = sendTrackedOrder(command, 'BUILD', ids.length, 'WORKERS');
   if (buildOrderToken !== null) {
     pendingBuildOrderToken = buildOrderToken;
     buildPlacementPending = true;
+    if (!wall) pendingBuildingPlacement = placement;
     resetWallPlacement();
     if (wall) pendingWallPreview = placement;
     updateEconomyUI();
@@ -9339,6 +9331,22 @@ function selectionCenterShortcutAllowed(event) {
     && !(event.target instanceof Element && event.target.closest('button, a[href], summary, [role="button"]'));
 }
 
+function rotateBuildPlacement(direction) {
+  if (!buildPlacementActive || buildPlacementPending || !buildingCanRotate(buildPlacementType, BUILDING_DEFINITIONS)) return;
+  buildPlacementOrientation = turnBuildingOrientation(buildPlacementOrientation, direction);
+  updateBuildPlacementGhost(cursorPointer?.x, cursorPointer?.y);
+}
+
+mountBuildingRotationControls(document, buildingRotationSettings, rotateBuildPlacement);
+window.addEventListener('keydown', event => {
+  const direction = buildingRotationKeyDirection(event, buildingRotationSettings.get(), {
+    active: buildPlacementActive && buildingCanRotate(buildPlacementType, BUILDING_DEFINITIONS),
+    pending: buildPlacementPending, editing: keyboardTargetIsEditing(event),
+    dialogOpen: Boolean(document.querySelector('dialog[open]')),
+  });
+  if (direction) { event.preventDefault(); rotateBuildPlacement(direction); }
+});
+
 window.addEventListener('keydown', (event) => {
   lastFriendlyUnitClick = null;
   lastUnitPickState = null;
@@ -10362,6 +10370,7 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
           buildPlacementPending = false;
           pendingBuildOrderToken = null;
           pendingWallPreview = null;
+          pendingBuildingPlacement = null;
           updateEconomyUI();
         }
         if (feedback.showToast) showToast(notice, 2200);
@@ -10609,6 +10618,22 @@ function animate(now) {
   for (const visual of capturedBuildingVisuals) {
     updateCapturedBuildingSprite(visual.sprite, camera, visual.lifecycleInput);
     visual.fallbackRoot.visible = !visual.sprite.visible;
+    visual.fallbackRoot.rotation.y = visual.fallbackRoot.parent?.userData.buildingOrientationRoot
+      ? 0 : buildingOrientationAngle(visual.lifecycleInput?.orientation ?? 0);
+  }
+  if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state') {
+    const sprite = buildingPlacementPreview.sprite;
+    const art = object => object ? { visible: object.visible, key: object.userData.capturedBuildingArt?.requestKey,
+      scale: object.scale.toArray(), center: object.center.toArray(), position: object.position.toArray() } : null;
+    window.__rtsBuildingPlacementSnapshot = { active: buildPlacementActive, pending: buildPlacementPending,
+      type: buildPlacementType, orientation: buildPlacementOrientation, visible: placementGhost.visible,
+      position: placementGhost.position.toArray(), art: art(sprite),
+      valid: ui.placementStatus?.dataset.state === 'clear',
+      buildings: latestBuildings.filter(building => building.team === localTeam).map(building => ({
+        id: building.id, type: building.type, orientation: building.orientation ?? 0, x: building.x, z: building.z,
+        complete: building.complete, art: art(buildingVisuals.get(building.id)?.frontierCaptureEntry?.sprite),
+      })),
+    };
   }
   renderer.render(scene, camera);
   if (assetReadability) {

@@ -43,7 +43,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'production-actions', 'pve-match', 'research-actions',
   ],
   world: [
-    'dock-placement', 'elevation', 'map-size-policy', 'map-utils', 'regions',
+    'building-orientation', 'dock-placement', 'elevation', 'map-size-policy', 'map-utils', 'regions',
     'world/map-audio-reference',
     'practice-entry-catalog', 'scenario-regions', 'shore-fishing', 'shore-fishing-placement', 'terrain-materials',
     'town-center-spawn', 'unit-heading', 'water-contours', 'water-route-graph',
@@ -92,7 +92,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'audio-shipped-catalog', 'audio-shipped-loader', 'audio-shipped-response',
     'audio-studio', 'audio-zones', 'battlefield-cursor', 'combat-stance-ui',
     'economy-client', 'environment-pilot', 'environment-review',
-    'frontier-building-preview', 'game-entry', 'game-entry-session', 'hud-layout',
+    'building-placement-preview', 'building-rotation-controls', 'frontier-building-preview', 'game-entry', 'game-entry-session', 'hud-layout',
     'match-mode-controls', 'navigation-settings', 'objective-summary',
     'order-feedback', 'population-readout', 'practice-entry-controls', 'pve-entry',
     'resource-format', 'room-lobby-chat-ui', 'room-lobby-ui', 'room-presence',
