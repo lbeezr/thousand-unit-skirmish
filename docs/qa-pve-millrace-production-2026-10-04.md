@@ -61,8 +61,11 @@ does not turn the existing timeout into a pass. No policy, production rule,
 retry, server, map, fog, checkpoint or admission change is included.
 
 The AI backlog now records merged PR255/277/281, their source-specific results
-and parent-reported served `53a47ee379660f30b65776ea813f3a986d29aa37`. Ancestry
-contains PR255 and PR281; no deployment or served behavior is inferred from it.
+and the parent's staging receipt: deployment `c487990a` succeeded at 14:50:50 UTC
+on 4 October, serving `1acaf9a46fd4d6ed71e1aa32a3f3543ea4a56ad3`, with 1/1
+service online and production unchanged. This supersedes earlier `53a47ee`.
+Ancestry contains PR255 and PR281; no AI deployment call or rendered behavior
+is inferred from that infrastructure receipt.
 Actual rendered Tiny acceptance remains open. Medium remains human-only, with
 one final paired game still unfinished at 3600 seconds. Those source changes
 do not repair or explain this historical authored Millrace timeout.

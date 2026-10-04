@@ -18,13 +18,17 @@ human defaults; the AI lane changes neither. The
 passes paid foundation, queue and reset recovery. Actual rendered Tiny
 entry/fog/recovery/rematch acceptance remains open.
 
-Parent-reported served revision is
-`53a47ee379660f30b65776ea813f3a986d29aa37`. Git ancestry confirms it contains
+The parent verified staging deployment `c487990a` as `SUCCESS` at 14:50:50 UTC
+on 4 October 2026, serving source
+`1acaf9a46fd4d6ed71e1aa32a3f3543ea4a56ad3`, with 1/1 service online and
+production unchanged. This supersedes the earlier supplied `53a47ee` receipt.
+Git ancestry confirms the current served source contains
 merged [PR255](https://github.com/lbeezr/thousand-unit-skirmish/pull/255)
 (`a510ea78`) and [PR281](https://github.com/lbeezr/thousand-unit-skirmish/pull/281)
-(`41e30deb`). This is a supplied served identity plus source ancestry, not a new
-deployment call or verification of rendered play at that build. Deployment is
-paused. Central staging `01a10227-2c6d` retains deployed acceptance; map/human
+(`41e30deb`). This is the parent's infrastructure receipt plus source ancestry,
+not an AI-owned deployment call or verification of rendered play at that build.
+Independent AI deployment remains paused. Central staging `01a10227-2c6d`
+retains deployed acceptance; map/human
 owner `01a103e8` retains independent rendered balance evidence.
 
 The [Sheep-map search receipt](qa-pve-sheep-search-2026-10-04.md) retains PR255's
