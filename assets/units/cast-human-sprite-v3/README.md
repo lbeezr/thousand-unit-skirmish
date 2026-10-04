@@ -72,3 +72,14 @@ unchanged, with a zero mask extension. Existing default productive wood selector
 uses this exact heading. Six other missing wood headings retain exact idle.
 See the land checkpoint for preservation/default CPU playback; identified
 native/deployed function remains open with48 remaining art cells.
+
+
+Version0.22.0 adds **NW food** bare-hand reach/collect/stow, three240ms keys.
+[Source/provenance](../../../docs/art-direction/human-roster-v1/generated/worker-food-north-west-v1/README.md)
+and rejected/useful prior iterations are retained. Rebuild with
+`python3 scripts/admit-worker-food-north-west.py` after the NW wood strip.
+It fills existing x2048/y960,1216,1472;131 old frames/54clips/mask/dimensions/world
+scale remain exact. Existing default productive food selector consumes NW;
+six other missing food headings retain exact idle. NW fishing uses its established
+same-heading food fallback; no dedicated fishing artwork is supplied. Source/
+default CPU playback checked; actual deployment/native and47 art cells remain.
