@@ -15,8 +15,10 @@ window ongoing with no rejected orders. Their terminal states have different
 causes; surviving units alone do not establish a balanced match.
 
 - Seeds `[20260925, 0]`: Azure has no military, one living Worker, effectively
-  zero food and 68.2 wood. Nearby food and wood are exhausted, and the 75-wood
-  Farm is unaffordable. Ember retains twelve military units and four Workers,
+  zero food and 68.2 wood. Nearby food and wood are exhausted. A native Farm
+  costs 60 wood, but the policy requires 85 including its 25-wood reserve, so
+  the recovery purchase is blocked by policy rather than native affordability.
+  Ember retains twelve military units and four Workers,
   searching away from Azure's still-undefeated home. This includes a real late
   economy stall and failure to finish target acquisition.
 - Seeds `[0, 20260925]`: both sides retain military, Workers, production and

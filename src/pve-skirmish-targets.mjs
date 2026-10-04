@@ -1,7 +1,8 @@
 import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS } from './gameplay-definitions.mjs';
+import { mapSizeIdentity } from './map-size-policy.mjs';
 
 export const PVE_SKIRMISH_LIMITS = Object.freeze({ retryTicks: 300, maxRetryTicks: 1800,
-  searchTicks: 1800, searchCandidates: 64, recentCombatTicks: 120 });
+  searchTicks: 1800, maxSearchTicks: 5400, searchCandidates: 64, recentCombatTicks: 120 });
 const identity = unit => `${unit.id}:${unit.generation}`;
 const landUnit = kind => UNIT_DEFINITIONS[kind] && UNIT_DEFINITIONS[kind].movementDomain !== 'water';
 const fighting = (unit, tick) => unit.focusedCount > 0 || (unit.lastAttack
@@ -48,10 +49,21 @@ export function createSkirmishTargetPolicy(seed = 0) {
       const cell = Math.floor(point.z + height / 2) * width + Math.floor(point.x + width / 2);
       return (bytes.charCodeAt(cell >> 2) >> ((cell & 3) * 2)) & 3;
     };
-    const expired = search && tick >= search.tick + PVE_SKIRMISH_LIMITS.searchTicks
-      && Math.hypot(center.x - search.x, center.z - search.z) > 2;
+    // Only movement by the original generation-bound cohort refreshes progress.
+    // New reinforcements and replacement identities cannot prolong a stuck goal.
+    if (search) for (const unit of soldiers) {
+      const previous = search.positions.get(identity(unit));
+      if (previous && Math.hypot(unit.x - previous.x, unit.z - previous.z) >= .5) {
+        search.progressTick = tick;
+        search.positions.set(identity(unit), { x: unit.x, z: unit.z });
+      }
+    }
+    const withinBound = search && tick >= search.tick && tick - search.tick < PVE_SKIRMISH_LIMITS.maxSearchTicks;
+    const retained = withinBound && (tick - search.tick < PVE_SKIRMISH_LIMITS.searchTicks
+      || search.longRoute && tick - search.progressTick < PVE_SKIRMISH_LIMITS.retryTicks);
+    const expired = search && !retained && Math.hypot(center.x - search.x, center.z - search.z) > 2;
     // Forward sight can reveal a goal before the army arrives there.
-    if (search && tick >= search.tick && tick - search.tick < PVE_SKIRMISH_LIMITS.searchTicks
+    if (retained
       && (tick === search.tick || Math.hypot(center.x - search.x, center.z - search.z) > 2)) return search;
     const clamp = point => ({ x: Math.max(-width / 2 + 1.5, Math.min(width / 2 - 1.5, Math.floor(point.x) + .5)),
       z: Math.max(-height / 2 + 1.5, Math.min(height / 2 - 1.5, Math.floor(point.z) + .5)) });
@@ -96,8 +108,16 @@ export function createSkirmishTargetPolicy(seed = 0) {
     point ??= remembered?.point;
     point ??= candidates.sort((a, b) => a.score - b.score)[0];
     if (!point) { search = null; return null; }
-    search = { key: `search:${point.x}:${point.z}`, type: 'attackMove', x: point.x, z: point.z, tick,
-      unknownPreferred: !covering && seen(point) === 0 };
+    // Preserve the admitted Tiny policy; qualify longer-map journeys separately.
+    // Short routes keep their deadline even if formation retries cause movement.
+    const slowestSpeed = Math.min(...soldiers.map(unit => UNIT_DEFINITIONS[unit.kind].combat.moveSpeed));
+    const tier = mapSizeIdentity({ width, height }).sizeTierId;
+    const longRoute = tier !== 'tiny' && tier !== 'internal'
+      && Math.hypot(point.x - center.x, point.z - center.z) / slowestSpeed * 30
+      > PVE_SKIRMISH_LIMITS.searchTicks;
+    search = { key: `search:${point.x}:${point.z}`, type: 'attackMove', x: point.x, z: point.z, tick, longRoute,
+      unknownPreferred: !covering && seen(point) === 0, progressTick: tick,
+      positions: new Map(soldiers.map(unit => [identity(unit), { x: unit.x, z: unit.z }])) };
     return search;
   }
 
