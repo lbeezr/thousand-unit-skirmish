@@ -1,0 +1,281 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "7afd398242a5a2d84719110c422faf850e1885d3",
+  "mapId": "veyrholds-threefold-basin",
+  "mapSHA256": "6d9769ce30a1da374ffa41660dd99a804fd078a6f706113ddce40e1785e3ba0b",
+  "passed": true,
+  "capacityClaim": false,
+  "browserVerified": false,
+  "hostedVerified": false,
+  "hardwareComparisonAdmitted": false,
+  "workload": {
+    "loads": [
+      24,
+      250,
+      500,
+      1000,
+      2000
+    ],
+    "wavesPerLoad": 3,
+    "minimumWallSecondsPerWave": 10,
+    "minimumGameTicksAfterAcceptance": 300,
+    "fog": true,
+    "opening": "4 Workers per seat plus Infantry; existing selectArmySize diagnostics above 24",
+    "memoryStopBytes": 536870912,
+    "capacityClaim": false,
+    "fullArmyArrival": false,
+    "paidEconomy": false,
+    "browser": false,
+    "hosted": false,
+    "clockMethod": "checkpoint game seconds divided by checkpoint capture savedAt wall timestamps within each wave",
+    "noticeMethod": "clientOrderToken final notice receipt; first observed movement from an authoritative stopped checkpoint baseline, neither is exact server application"
+  },
+  "host": {
+    "platform": "linux",
+    "arch": "x64",
+    "cpus": 5,
+    "cpuModel": "AMD EPYC 7763 64-Core Processor",
+    "memoryBytes": 18882699264,
+    "loadBefore": [
+      0.01,
+      0.01,
+      0
+    ],
+    "isolated": false,
+    "loadAfter": [
+      0.17,
+      0.05,
+      0.01
+    ]
+  },
+  "rows": [
+    {
+      "armySize": 24,
+      "wavesPassed": 3,
+      "coldRecovery": true,
+      "minimumObservedGameTicksAfterAcceptance": 300,
+      "allActorsMovedEachWave": true,
+      "routeFailures": 0,
+      "peakServerRssBytes": 106528768,
+      "peakCheckpointBytes": 200013,
+      "peakCheckpointCaptureMs": 0.938,
+      "peakCheckpointSerializeMs": 0.962,
+      "peakCheckpointWriteMs": 1.669,
+      "peakPathIndices": 3398,
+      "maximumFinalNoticeReceiptMs": 28.958,
+      "steadyFinalWindowP95PeakMs": 1.41,
+      "allCapturedWindowEnvelope": {
+        "sampledWindows": 64,
+        "tickP95PeakMs": 3.824,
+        "tickMaxMs": 4.746,
+        "startLagP95PeakMs": 1.357,
+        "startLagMaxMs": 10.913,
+        "maximumPlanningSliceMs": 3.198,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "waveSkippedSlotDelta": 0,
+      "capturedSkippedSlotsTotalPeak": 0,
+      "clockFactors": [
+        0.9998182148700206,
+        0.9999090991728372,
+        0.9999090991728141
+      ],
+      "compressedWireBytesByWave": [
+        364059,
+        386011,
+        387436
+      ],
+      "transportWindowWallSeconds": [
+        11.049,
+        11.059,
+        10.943
+      ]
+    },
+    {
+      "armySize": 250,
+      "wavesPassed": 3,
+      "coldRecovery": true,
+      "minimumObservedGameTicksAfterAcceptance": 300,
+      "allActorsMovedEachWave": true,
+      "routeFailures": 0,
+      "peakServerRssBytes": 144568320,
+      "peakCheckpointBytes": 616163,
+      "peakCheckpointCaptureMs": 1.128,
+      "peakCheckpointSerializeMs": 4.787,
+      "peakCheckpointWriteMs": 2.523,
+      "peakPathIndices": 34179,
+      "maximumFinalNoticeReceiptMs": 231.093,
+      "steadyFinalWindowP95PeakMs": 2.3,
+      "allCapturedWindowEnvelope": {
+        "sampledWindows": 61,
+        "tickP95PeakMs": 7.242,
+        "tickMaxMs": 7.242,
+        "startLagP95PeakMs": 2.741,
+        "startLagMaxMs": 5.122,
+        "maximumPlanningSliceMs": 6.736,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "waveSkippedSlotDelta": 0,
+      "capturedSkippedSlotsTotalPeak": 0,
+      "clockFactors": [
+        0.9999090991727996,
+        0.9998182148700583,
+        0.9998182148700352
+      ],
+      "compressedWireBytesByWave": [
+        698737,
+        730547,
+        753722
+      ],
+      "transportWindowWallSeconds": [
+        10.972,
+        10.962,
+        10.994
+      ]
+    },
+    {
+      "armySize": 500,
+      "wavesPassed": 3,
+      "coldRecovery": true,
+      "minimumObservedGameTicksAfterAcceptance": 300,
+      "allActorsMovedEachWave": true,
+      "routeFailures": 0,
+      "peakServerRssBytes": 137523200,
+      "peakCheckpointBytes": 1083438,
+      "peakCheckpointCaptureMs": 1.045,
+      "peakCheckpointSerializeMs": 4.928,
+      "peakCheckpointWriteMs": 3.724,
+      "peakPathIndices": 69869,
+      "maximumFinalNoticeReceiptMs": 427.968,
+      "steadyFinalWindowP95PeakMs": 2.946,
+      "allCapturedWindowEnvelope": {
+        "sampledWindows": 62,
+        "tickP95PeakMs": 8.351,
+        "tickMaxMs": 8.351,
+        "startLagP95PeakMs": 6.534,
+        "startLagMaxMs": 7.262,
+        "maximumPlanningSliceMs": 2.513,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "waveSkippedSlotDelta": 0,
+      "capturedSkippedSlotsTotalPeak": 0,
+      "clockFactors": [
+        0.9998182148700206,
+        0.9998182148700583,
+        0.9999090991728141
+      ],
+      "compressedWireBytesByWave": [
+        1003451,
+        1067082,
+        1161888
+      ],
+      "transportWindowWallSeconds": [
+        10.984,
+        10.984,
+        11.013
+      ]
+    },
+    {
+      "armySize": 1000,
+      "wavesPassed": 3,
+      "coldRecovery": true,
+      "minimumObservedGameTicksAfterAcceptance": 300,
+      "allActorsMovedEachWave": true,
+      "routeFailures": 0,
+      "peakServerRssBytes": 163110912,
+      "peakCheckpointBytes": 2052280,
+      "peakCheckpointCaptureMs": 1.211,
+      "peakCheckpointSerializeMs": 6.458,
+      "peakCheckpointWriteMs": 8.447,
+      "peakPathIndices": 146428,
+      "maximumFinalNoticeReceiptMs": 826.606,
+      "steadyFinalWindowP95PeakMs": 4.648,
+      "allCapturedWindowEnvelope": {
+        "sampledWindows": 60,
+        "tickP95PeakMs": 14.05,
+        "tickMaxMs": 14.05,
+        "startLagP95PeakMs": 5.764,
+        "startLagMaxMs": 17.084,
+        "maximumPlanningSliceMs": 4.003,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "waveSkippedSlotDelta": 0,
+      "capturedSkippedSlotsTotalPeak": 0,
+      "clockFactors": [
+        0.9998182148700206,
+        0.9996364958197367,
+        0.9998182148700352
+      ],
+      "compressedWireBytesByWave": [
+        1615050,
+        1758918,
+        1896941
+      ],
+      "transportWindowWallSeconds": [
+        10.971,
+        11.02,
+        11.035
+      ]
+    },
+    {
+      "armySize": 2000,
+      "wavesPassed": 3,
+      "coldRecovery": true,
+      "minimumObservedGameTicksAfterAcceptance": 300,
+      "allActorsMovedEachWave": true,
+      "routeFailures": 0,
+      "peakServerRssBytes": 243412992,
+      "peakCheckpointBytes": 4008144,
+      "peakCheckpointCaptureMs": 4.052,
+      "peakCheckpointSerializeMs": 13.262,
+      "peakCheckpointWriteMs": 4.257,
+      "peakPathIndices": 300263,
+      "maximumFinalNoticeReceiptMs": 1849.538,
+      "steadyFinalWindowP95PeakMs": 7.912,
+      "allCapturedWindowEnvelope": {
+        "sampledWindows": 65,
+        "tickP95PeakMs": 12.548,
+        "tickMaxMs": 15.404,
+        "startLagP95PeakMs": 1.325,
+        "startLagMaxMs": 32.432,
+        "maximumPlanningSliceMs": 9.51,
+        "initialTickWindowsWithoutLag": 1,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "waveSkippedSlotDelta": 0,
+      "capturedSkippedSlotsTotalPeak": 1,
+      "clockFactors": [
+        0.9995456610631501,
+        0.9994548428130458,
+        0.9995456610631647
+      ],
+      "compressedWireBytesByWave": [
+        2819858,
+        3054534,
+        3582082
+      ],
+      "transportWindowWallSeconds": [
+        10.979,
+        10.961,
+        11.928
+      ]
+    }
+  ],
+  "qualification": [
+    "Not paid-grown armies, full army arrival, mass combat, or demonstrated lane use.",
+    "First load includes previous 256x256 boundary activation; RSS is not a clean cross-map comparison.",
+    "One skipped preparation slot at tick 4 of the 2000 load; every measured wave skipped-slot delta is zero.",
+    "One cold-recovery first-tick window lacks lag because no prior tick exists; disclosed explicitly, finite duration still gated.",
+    "Full ladder predates continuous planning RSS sampling added in c069e887; all retained rolling windows and planning maxima pass the later independent evaluator.",
+    "Final corrected harness exercised separately at 24 units; do not attribute the full ladder to that later source."
+  ]
+}

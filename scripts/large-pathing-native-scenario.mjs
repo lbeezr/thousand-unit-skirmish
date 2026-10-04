@@ -33,6 +33,7 @@ try {
       u.z-(Math.floor(u.moveGoalCell/map.width)-map.height/2+.5))<.02;
   await order({type:'move',ids,unitGenerations:army.map(u=>u[8]),x:direction*16.5,z:.5},/MOVE ORDER/);
   const initialPlanning=(await fixture.health()).movePlanning;
+  const initialTickTiming=(await fixture.health()).tickTiming;
   const mid=await fixture.checkpoint(s=>s.mapDefinition.id===map.id&&s.state.tickNumber>=initial.state.tickNumber+150
     &&s.state.units.filter(u=>selected.has(u.id)&&u.pathIndex<u.path.length
       &&Math.hypot(u.x-initial.state.units[u.id].x,u.z-initial.state.units[u.id].z)>.2).length>=100);
@@ -85,7 +86,8 @@ try {
     roster:initial.state.units.length,selected:ids.length,arrived:ids.length,
     midTick:mid.state.tickNumber,arrivalTicks:arrived.state.tickNumber-initial.state.tickNumber,
     orders,activeRouteRestart:true,stopPreserved:stoppedIds.length,replacementPreserved:replacementIds.length,
-    idleRestart:true,replacementResults,initialPlanning,overlappingPlanning,
+    idleRestart:true,replacementResults,initialPlanning,overlappingPlanning,initialTickTiming,
+    planningTurnsPerTick:Number(process.env.RTS_MOVE_PLANNING_TURNS_PER_TICK??0),
     limits:['actual asynchronous two-seat loopback server; natural roster and ordinary commands, no actor injection',
       'no renderer, deployment, comparable hardware speedup or supported capacity claim']};
   if(process.env.LARGE_PATHING_NATIVE_RECORD)await writeFile(process.env.LARGE_PATHING_NATIVE_RECORD,JSON.stringify(report,null,2)+'\n');

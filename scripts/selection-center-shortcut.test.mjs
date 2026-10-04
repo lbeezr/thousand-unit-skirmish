@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 function between(start, end) {
   const a = source.indexOf(start), b = source.indexOf(end, a + start.length);
@@ -14,6 +15,7 @@ function fixture() {
   canvas.setPointerCapture = () => {};
   const noop = () => {};
   Object.assign(w, {
+    ...wildlifeClientBindings(),
     renderer: { domElement: canvas }, mapDefinition: {}, mapFitActive: true,
     matchMenu: { hidden: true }, helpPanel: { hidden: true }, scenarioBriefPanel: { hidden: true },
     appShell: null, localTeam: 0, selectedBuildingId: null, latestBuildings: [], selected: new Set([1, 2, 3, 4]),
@@ -34,6 +36,7 @@ function fixture() {
     heldCameraKeys: { release: noop }, issueContextOrder: (...args) => orders.push(args),
   });
   w.eval([
+    wildlifeClientFunctionSource(source),
     between('function selectedIds()', 'function issueStationaryOrder('),
     between('function centerCameraOnSelection()', 'function centerCameraOnHomeBase('),
     between('function keyboardTargetIsEditing(', 'function clearHeldCameraKeys('),

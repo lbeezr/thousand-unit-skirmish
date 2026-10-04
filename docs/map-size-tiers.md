@@ -22,8 +22,10 @@ AoE/WC3 tiles. Actual arrival requires native route/collision/clock measurement.
 
 The current validator accepts at most 256 on either axis: **XL 320 is blocked**
 until a separately reviewed grid-limit, memory/path/visibility/transport/browser
-capacity slice passes. Small–Large fit the schema but have no authored ordinary
-map or performance acceptance yet. Do not offer them as working map choices.
+capacity slice passes. [The source-bound XL audit](map-grid-limit-audit-2026-10-04.md)
+also demonstrates wrapped 16-bit vision indices and projects cache/path/render
+costs. Small now has an authored [Threefold Basin candidate](qa-threefold-basin-2026-10-04.md).
+Medium/Large remain unauthored; no tier has a supported-capacity claim.
 The first Tiny candidate is Terraced Vale; its static base route is 133 units,
 51.154 s Worker/Infantry, 29.556 s Scout. Native acceptance is recorded separately.
 
@@ -31,8 +33,10 @@ The first Tiny candidate is Terraced Vale; its static base route is 133 units,
 
 [Pure policy](../src/map-size-policy.mjs) exports `MAP_SIZE_TIERS`,
 `mapSizeIdentity(map)` and `ordinaryMapCatalog(maps, currentMapId)`.
-The helper receives the existing regional ordinary descriptors, not the entire
-canonical fixture store; large Lab maps still require their explicit Practice path.
+The runtime supplies canonical descriptors for ordinary selection. Eligible
+160-side Labs retain their authored Objective Control identity; compact Labs
+remain available through explicit Authored Practice. Size eligibility does not
+admit a map to Skirmish without its registry binding.
 Each descriptor adds exact `width`, `height`, `sizeTierId`, `sizeTierLabel`,
 `ordinarySelectable`, `supportedUnitCapacity: null`; the catalog helper also
 adds `selectable` and `legacyCurrent`. Rectangles use the shorter side's tier;
@@ -46,16 +50,20 @@ lost session, modified terrain/resource state or deleted authored save. New
 selection and fresh defaults must consume the same server-owned policy. Legacy
 internal test launches remain explicit fixtures, separate from ordinary entry.
 
-This module/proposal does not yet bind server/supervisor/UI defaults. Mode runtime
+The runtime consumes this policy for ordinary server projection and selection.
+Fresh normal two-seat entry uses Terraced Vale/Skirmish; Authored Practice starts
+on the same Tiny map and explicitly retains internal Labs. See the
+[floor acceptance record](qa-ordinary-map-floor-2026-10-04.md). Mode runtime
 owner task `01a103cc` owns server projection/selection and registry compatibility;
 entry owner branch `codex/match-mode-entry-ui-v1` owns the normal selectors and
 Practice entry. Agreement is recorded on [PR176](https://github.com/lbeezr/thousand-unit-skirmish/pull/176#issuecomment-5974560958)
 and [Practice PR155](https://github.com/lbeezr/thousand-unit-skirmish/pull/155#issuecomment-5974561478).
 Preserve one-human Practice, ready/start/rematch and current legacy room identity.
-Current seeded PvE maps are both smaller than 160; base-elimination AI has not
-been accepted. Do not advertise the elimination Tiny candidate as supported PvE
-or erase legacy bot checkpoints. The owning mode/entry slice must provide honest
-fresh-AI capability behavior before removing that old normal launch path.
+Current seeded PvE maps are both smaller than 160. Fresh ordinary AI creation
+returns a clear unavailable explanation while qualifying Tiny AI acceptance is
+pending. Existing seeded rooms/checkpoints and their historical pool remain
+resumable. Status exposes `ordinarySetup.pve.available:false` and its reason for
+the entry owner; Tiny is not advertised as supported PvE.
 
 ## Progressive authoring and capacity gates
 

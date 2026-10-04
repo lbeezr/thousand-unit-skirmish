@@ -20,7 +20,7 @@ function fixture({clockStep=0,expandedPerSearch=50,count=24}={}) {
   const context=vm.createContext({units,activeMovePlanningJob:job,movePlanningEpoch:0,movePlanningQueue:[],
     MOVE_PLANNING_SLICE_BUDGET_MS:5,MOVE_PLANNING_MAX_WORK_ITEMS_PER_SLICE:8,
     MOVE_PLANNING_MAX_EXPANDED_CELLS_PER_SLICE:4096,TICK_RATE:30,tickNumber:0,dirty:false,navigationRevision:1,
-    pendingMoveStartBroadcasts:new Set(),performance:{now:()=>{clock+=clockStep;return clock;}},
+    pendingMoveStartBroadcasts:new Set(),movePlanningServiceTick:null,performance:{now:()=>{clock+=clockStep;return clock;}},
     nearestOpenCell:c=>c,worldToCell:()=>1,
     findPathAStar(start,destination,diagnostics){
       searches.push(destination);diagnostics.searchCount++;diagnostics.expandedCells+=expandedPerSearch;

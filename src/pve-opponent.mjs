@@ -6,6 +6,7 @@ import { matchModeDefinition, normalizeMatchMode } from './match-modes.mjs';
 import { createObjectiveRotationPolicy } from './pve-objective-rotation.mjs';
 import { TECHNOLOGY_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 import { farmHarvestNodeId } from './farm-harvest.mjs';
+import { readDisclosedWildlife } from './wildlife-client-state.mjs';
 /**
  * Team-visible adapter and deterministic opening policy for an ordinary RTS
  * WebSocket player. The server assigns the seat and remains authoritative for
@@ -198,13 +199,16 @@ function visibleResources(state, map, visibility, team) {
     .filter((node) => typeof node?.id === 'string')
     .map((node) => [node.id, node]));
   const visible = [];
+  const wildlife = readDisclosedWildlife(map, state, team, point =>
+    !visibility || visibility.cellStateAtWorld(point.x, point.z) === 2)?.rows;
   for (const record of stateNodes) {
     if (typeof record?.id !== 'string' || typeof record.type !== 'string'
       || !Number.isFinite(record.stock)) continue;
     const farm = record.sourceBuildingId === undefined ? null : state.buildings?.find(building =>
       building.id === record.sourceBuildingId && building.team === team && building.type === 'farm'
       && building.complete && building.hp > 0 && record.type === 'food' && record.id === farmHarvestNodeId(building.id));
-    const location = mapNodes.get(record.id) ?? farm;
+    const authored = mapNodes.get(record.id);
+    const location = authored?.wildlifeSpecies === undefined ? authored ?? farm : wildlife?.get(record.id);
     if (!location || !Number.isFinite(location.x) || !Number.isFinite(location.z)) continue;
     // The server always publishes owned structures, including occupied centers
     // outside the cell visibility mask. Neutral authored nodes still need sight.

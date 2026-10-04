@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
@@ -197,6 +197,13 @@ const port = await freePort();
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), 'rts-pve-room-launch-'));
 const roomDataDirectory = path.join(tempRoot, 'room-data');
 const customMapDirectory = path.join(tempRoot, 'default-maps');
+const legacyRoomId = 'L'.repeat(32);
+await mkdir(roomDataDirectory, { recursive: true });
+await mkdir(path.join(roomDataDirectory, 'rooms', legacyRoomId), { recursive: true });
+await writeFile(path.join(roomDataDirectory, 'rooms.json'), JSON.stringify({ version: 3, rooms: [{
+  id: legacyRoomId, createdAt: Date.now(), lastActiveAt: Date.now(),
+  launchOptions: { mode: 'pve', mapSeed: MAP_SEED, policySeed: POLICY_SEED }, mapId: MAP_ID,
+}] }));
 const supervisor = startSupervisor(port, roomDataDirectory, customMapDirectory);
 const clients = [];
 let roomId = null;
@@ -212,13 +219,14 @@ try {
     body: JSON.stringify({ mode: 'pve', mapSeed: MAP_SEED, policySeed: POLICY_SEED }),
     cache: 'no-store',
   });
-  assert.equal(createdResponse.status, 201, 'the supervisor should create a seeded PvE room');
-  const created = await createdResponse.json();
+  assert.equal(createdResponse.status, 400, 'fresh ordinary AI is blocked until the 160-map capability is accepted');
+  assert.match((await createdResponse.json()).error, /160.*Skirmish AI acceptance/);
+  const created = await (await fetch(`http://127.0.0.1:${port}/api/rooms/${legacyRoomId}`)).json();
   roomId = created.roomId;
   assert.match(roomId, /^[A-Za-z0-9_-]{32}$/);
   assert.deepEqual(created.launchOptions, {
     mode: 'pve', mapSeed: MAP_SEED, policySeed: POLICY_SEED,
-  }, 'creation returns complete PvE launch options');
+  }, 'an existing room retains complete historical PvE launch options');
 
   const human = createClient(port, roomId);
   clients.push(human);
@@ -274,6 +282,7 @@ try {
     mapSeed: MAP_SEED,
     policySeed: POLICY_SEED,
     teamOneReservedFor: 'deterministic-opponent',
+    freshOrdinaryAiUnavailable: true, legacySeededRoomStillPlayable: true,
     rematchMapAndSeedsPreserved: true,
     newWorkerGenerationGathered: true,
   }));

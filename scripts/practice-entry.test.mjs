@@ -9,6 +9,15 @@ import { mapVictoryRule } from '../src/objective-summary.mjs';
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const millrace = JSON.parse(readFileSync(new URL('../maps/bellweather-millrace.json', import.meta.url)));
 const catalog = practiceEntryCatalog(millrace), roomId = 'R'.repeat(32);
+test('the actual Practice provider projects exact size identity without consumer injection', () => {
+  const tiny = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  const setup = practiceEntryCatalog(tiny);
+  assert.deepEqual([setup.map.width, setup.map.height, setup.map.sizeTierId, setup.map.sizeTierLabel],
+    [160, 160, 'tiny', 'Tiny']);
+  assert.equal(setup.map.ordinarySelectable, true);
+  assert.equal(catalog.map.sizeTierLabel, 'Internal fixture');
+  assert.equal(catalog.map.ordinarySelectable, false);
+});
 const json = (value, status = 200) => new Response(JSON.stringify(value), { status });
 const turn = () => new Promise(resolve => setImmediate(resolve));
 async function menu(setup = catalog, create = () => json({ roomId })) {

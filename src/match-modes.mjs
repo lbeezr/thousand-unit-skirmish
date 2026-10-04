@@ -1,17 +1,19 @@
 // Match victory policy is independent of the pvp/pve opponent setup.
 // Callers supply validated canonical maps; this module does not validate terrain.
+export const NORMAL_MATCH_MAP_ID = 'veyrholds-terraced-vale';
+export const NORMAL_HUMAN_MATCH_MODE = Object.freeze({ matchModeId: 'skirmish', matchModeVersion: 1 });
 const definitions = Object.freeze([
   Object.freeze({ id: 'authored', version: 1, label: 'Authored Rules',
     victoryPolicy: 'authored', aiStrategyId: 'capture-posts',
-    pveSupported: true, selectable: false }),
+    pveSupported: true, selectable: false, defaultMapId: NORMAL_MATCH_MAP_ID }),
   Object.freeze({ id: 'objective-control', version: 1, label: 'Objective Control',
     victoryPolicy: 'authored', aiStrategyId: 'capture-posts',
-    pveSupported: true, selectable: true }),
+    pveSupported: true, selectable: true, defaultMapId: 'woodland-expanse' }),
   Object.freeze({ id: 'skirmish', version: 1, label: 'Skirmish',
     victoryPolicy: 'recovery-elimination', aiStrategyId: 'base-elimination',
-    pveSupported: false, selectable: true }),
+    pveSupported: false, selectable: true, defaultMapId: NORMAL_MATCH_MAP_ID }),
 ]);
-const skirmishMapIds = new Set(['bellweather-millrace', 'underbough-rootways']);
+const skirmishMapIds = new Set(['bellweather-millrace', 'underbough-rootways', NORMAL_MATCH_MAP_ID]);
 
 /** Missing fields preserve legacy authored rules; explicit invalid fields reject. */
 export function normalizeMatchMode(value = {}) {

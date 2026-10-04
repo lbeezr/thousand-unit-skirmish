@@ -1,4 +1,5 @@
 import { economyClientBindings } from './economy-client-fixture.mjs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -86,7 +87,7 @@ for (const team of [0, 1]) test(`seat ${team} browser preview enforces the share
   const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
   const placement = source.slice(source.indexOf('function buildPlacementAt('), source.indexOf('\nfunction updateBuildPlacementGhost('));
   const map = { ...mapFor('east'), resourceNodes: [], triggers: [] };
-  const context = vm.createContext({ ...economyClientBindings(), BUILDING_DEFINITIONS: B, buildPlacementType: 'dock',
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), BUILDING_DEFINITIONS: B, buildPlacementType: 'dock',
     MAP_WIDTH: 20, MAP_HEIGHT: 20, MAP_HALF_X: 10, MAP_HALF_Z: 10,
     mapDefinition: map, dockPlacementContext: createDockPlacementContext(map, B.dock), localTeam: team,
     latestFood: [0, 0], latestWood: [100, 100], latestBuildings: [],
@@ -95,7 +96,7 @@ for (const team of [0, 1]) test(`seat ${team} browser preview enforces the share
     selectedIds: () => [0], units: [{ kind: 'worker' }], teamUnits: [[], []],
     latestForestStocks: new Map(), latestResourceStocks: new Map(),
   });
-  vm.runInContext(placement, context);
+  vm.runInContext(wildlifeClientFunctionSource() + placement, context);
   assert.equal(context.buildPlacementAt(0, 0).valid, true);
   context.mapDefinition.resourceNodes.push({ id: 'shore-food', x: -1.5, z: -1.5, stock: 10 });
   assert.equal(context.buildPlacementAt(0, 0).blockedReason, 'RESOURCE IN THIS SITE');
