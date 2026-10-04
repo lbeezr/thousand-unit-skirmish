@@ -34,11 +34,12 @@ const groupMap = () => ({ id:'forest-group-jobs',name:'Forest group jobs',width:
   resourceNodes:[{id:'ordinary-wood',type:'wood',x:-18.5,z:5.5,stock:30}],triggers:[],scenarioEvents:[] });
 
 test('authored forest grouping is bounded at map edges, excludes diagonal-only neighbors, and ignores live clearing',()=>{
-  const mask=Uint8Array.from([1,0,0,1, 0,1,0,1, 0,1,0,0]);
+  const mask=Uint8Array.from([1,0,0,1, 1,0,1,1, 0,1,0,0]);
   const g=forestGatherGroups(mask,4);
-  assert.equal(g.byCell[0]===g.byCell[5],false);assert.equal(g.byCell[3],g.byCell[7]);
-  assert.equal(g.byCell[3]===g.byCell[4],false,'rows never wrap');assert.equal(g.byCell[5],g.byCell[9]);
-  assert.equal(g.groups.flat().length,5);mask.fill(0);assert.equal(g.groups.flat().length,5,'derived membership owns its cells');
+  assert.equal(g.byCell[0],g.byCell[4]);assert.equal(g.byCell[3],g.byCell[7]);assert.equal(g.byCell[6],g.byCell[7]);
+  assert.notEqual(g.byCell[4],g.byCell[9],'diagonal-only authored trees remain separate');
+  assert.notEqual(g.byCell[3],g.byCell[4],'forest cells at opposite row edges never wrap');
+  assert.equal(g.groups.flat().length,6);mask.fill(0);assert.equal(g.groups.flat().length,6,'derived membership owns its cells');
 });
 test('candidate ordering never reads hidden stock and soft reservations retain a finite deterministic nearest choice',()=>{
   const seen=[];

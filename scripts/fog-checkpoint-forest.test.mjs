@@ -194,19 +194,23 @@ test('legal clearing invalidates warmed positive fringe coverage for stationary 
   } finally { await fixture.dispose(); }
 });
 
-for (const delay of [0, 2]) {
-  test(`forest clears before a later Worker cell crossing: off-cadence ${delay === 0 ? 2 : 1} restores exactly`, async () => {
+for (const [delay, remainder] of [[1, 2], [0, 1]]) {
+  test(`forest clears before a later Worker cell crossing: off-cadence ${remainder} restores exactly`, async () => {
     const fixture = await createPveHeadlessFixture(map, { matchModeId: 'authored', matchModeVersion: 1 });
     const replay = fixture.replay;
     try {
       const ownWorkers = replay.observe(0).units.filter(unit => unit[1] === 0 && unit[5] === 'worker');
       const gatherer = ownWorkers[0][0], mover = ownWorkers[1][0];
-      for (let tick = 0; tick < delay; tick++) replay.step();
+      // Legal staging makes the oracle independent of a shortened approach.
+      // Start on known open cell centers; six ordinary mover steps cross a
+      // source-cell boundary on the 180th productive tick, after the cut.
+      await order(replay, { type: 'move', ids: [gatherer], x: -55.5, z: .5 }, /PLANNING MOVE|MOVE ORDER/);
+      await order(replay, { type: 'move', ids: [mover], x: -64.5, z: .5 }, /PLANNING MOVE|MOVE ORDER/);
+      for (let tick = 0; tick < 200; tick++) replay.step();
+      while (replay.checkpoint().state.tickNumber % 3 !== remainder) replay.step();
       await order(replay, { type: 'gather', ids: [gatherer], forestCell }, /^GATHER ORDER/);
-      // Legal timing makes the second Worker cross a vision-source cell on the
-      // depletion tick, after updateWorkerEconomy's mid-step vision refresh.
-      for (let tick = 0; tick < 6; tick++) replay.step();
-      await order(replay, { type: 'move', ids: [mover], x: ownWorkers[1][2], z: 35.5 }, /^PLANNING MOVE|^MOVE ORDER/);
+      for (let tick = 0; tick < 174; tick++) replay.step();
+      await order(replay, { type: 'move', ids: [mover], x: -64.5, z: 3.5 }, /^PLANNING MOVE|^MOVE ORDER/);
 
       let previous = replay.checkpoint(), cleared = null;
       for (let tick = 0; tick < 400; tick++) {
@@ -220,7 +224,7 @@ for (const delay of [0, 2]) {
       }
       assert.ok(cleared, 'legal gathering must deplete the tree');
       assert.equal(cleared.state.tickNumber, previous.state.tickNumber + 1);
-      assert.equal(cleared.state.tickNumber % 3, delay === 0 ? 2 : 1, 'depletion must be outside the periodic refresh');
+      assert.equal(cleared.state.tickNumber % 3, remainder, 'depletion must be outside the periodic refresh');
       assert.notEqual(unitCell(cleared.state.units[mover]), unitCell(previous.state.units[mover]),
         'another Worker must cross a vision-source cell later in the depletion tick');
       assert.ok(previous.state.forestStocks.some(([cell, stock]) => cell === forestCell && stock > 0));
@@ -231,7 +235,7 @@ for (const delay of [0, 2]) {
       // Keep fog and every authoritative observation field strict. The shared
       // helper clears only the documented transient Worker presentation receipt.
       const before = [replay.observe(0), replay.observe(1)];
-      if (delay === 2) cleared = replay.checkpoint();
+      if (remainder === 1) cleared = replay.checkpoint();
       replay.restore(cleared);
       for (const team of [0, 1]) assertRecoveredWorkerObservation(replay.observe(team), before[team]);
 
