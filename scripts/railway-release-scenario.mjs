@@ -447,6 +447,32 @@ try {
   for (const frontierRoot of frontierRoots) for (const absent of ['model-provenance.json', 'meshy_output/house.glb', 'preview.html', 'source/build_military.py', 'models/barracks-complete.glb']) {
     assert.equal((await fetch(`${base}/${frontierRoot}${absent}`, { headers: { authorization } })).status, 404);
   }
+  const economyRoot = 'assets/buildings/frontier-economy-models-v1/';
+  const economyPaths = [];
+  for (const family of ['mill', 'farm', 'dock']) {
+    const manifestPath = economyRoot + family + '-complete-renderer.json';
+    const response = await fetch(`${base}/${manifestPath}`, {headers: {authorization}});
+    assert.equal(response.status, 200); const manifest = await response.json();
+    assert.equal(manifest.asset, family); assert.equal(manifest.stateOrder.length, family === 'farm' ? 8 : 5);
+    economyPaths.push(manifestPath);
+    for (const entry of [manifest.completeState, ...manifest.states]) for (const view of entry.views) {
+      const assetPath = economyRoot + view.path; economyPaths.push(assetPath);
+      assert.ok(contextRules.includes('!' + assetPath));
+      for (const method of ['GET', 'HEAD']) {
+        const frame = await fetch(`${base}/${assetPath}`, {method, headers: {authorization}});
+        assert.equal(frame.status, 200); assert.match(frame.headers.get('content-type'), /image\/png/);
+        assert.equal(Number(frame.headers.get('content-length')), view.bytes);
+        const bytes = Buffer.from(await frame.arrayBuffer());
+        if (method === 'GET') assert.equal(createHash('sha256').update(bytes).digest('hex'), view.sha256);
+        else assert.equal(bytes.length, 0);
+      }
+    }
+  }
+  assert.equal(economyPaths.length, 147);
+  assert.deepEqual(releaseManifest.files.filter(file => file.startsWith(economyRoot)).sort(), economyPaths.sort());
+  for (const absent of ['source/capture_economy.py', 'source/farm-capture-receipt.json', 'captures/runtime-v1/farm-complete-view-01.png', 'models/farm.glb', 'runtime/mill-exhausted-view-00.png', 'runtime/farm-complete-view-08.png']) {
+    for (const method of ['GET', 'HEAD']) assert.equal((await fetch(`${base}/${economyRoot}${absent}`, {method, headers: {authorization}})).status, 404);
+  }
   const resourceStateModule = await fetch(`${base}/src/resource-visual-state.mjs`, { headers: { authorization } });
   assert.equal(resourceStateModule.status, 200);
   assert.match(await resourceStateModule.text(), /resourceVisualStage/);

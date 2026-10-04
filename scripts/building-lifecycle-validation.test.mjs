@@ -100,3 +100,17 @@ test('CLI reports metadata only and returns failure for incomplete full admissio
     assert.equal(run('--unknown').status, 1);
   } finally { await rm(directory, {recursive: true, force: true}); }
 });
+
+
+test('Farm exhaustion requires complete, damage and critical entries and stays Farm-specific', () => {
+  const order = [...states, 'exhausted', 'exhausted-damaged', 'exhausted-critical'];
+  const manifest = fixture(order); manifest.asset = 'farm';
+  manifest.stateMapping = {harvest: {exhaustedStates: {complete: 'exhausted', damaged: 'exhausted-damaged', critical: 'exhausted-critical'}}};
+  assert.equal(validateBuildingLifecycle(manifest, strict).states.length, 8);
+  for (const mutate of [m => {m.asset = 'mill';}, m => {delete m.stateMapping;},
+    m => {m.stateMapping.harvest.exhaustedStates.critical = 'complete';},
+    m => {m.stateOrder.pop(); m.states.pop();}]) {
+    const invalid = structuredClone(manifest); mutate(invalid);
+    assert.throws(() => validateBuildingLifecycle(invalid, strict));
+  }
+});

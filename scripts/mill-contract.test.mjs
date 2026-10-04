@@ -22,7 +22,7 @@ function serverFunction(name) {
   return server.slice(start, end < 0 ? undefined : end);
 }
 
-test('Mill is a cheaper food-only Frontier depot with an explicit existing placeholder', () => {
+test('Mill is a cheaper food-only Frontier depot with authored default art and an existing procedural fallback', () => {
   assert.ok(FACTION_DEFINITIONS.frontier.buildings.includes('mill'));
   assert.deepEqual(BUILDING_DEFINITIONS.mill.dropoff, ['food']);
   assert.deepEqual(BUILDING_DEFINITIONS.mill.products, []);
@@ -31,7 +31,7 @@ test('Mill is a cheaper food-only Frontier depot with an explicit existing place
   assert.ok(BUILDING_DEFINITIONS.mill.buildSeconds < BUILDING_DEFINITIONS.storehouse.buildSeconds);
   assert.ok(BUILDING_DEFINITIONS.mill.maxHp < BUILDING_DEFINITIONS.storehouse.maxHp);
   assert.deepEqual(buildingPresentation('mill'), { backend: 'procedural', role: 'house' });
-  assert.equal(frontierBuildingPreviewUrl('mill', '1'), null, 'no authored Mill asset is claimed');
+  assert.ok(frontierBuildingPreviewUrl('mill', '1').endsWith('/frontier-economy-models-v1/mill-complete-renderer.json'));
 });
 
 test('pre-Mill content pins cannot claim a Mill that their definitions never contained', () => {

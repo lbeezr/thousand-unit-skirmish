@@ -127,10 +127,7 @@ reference generation alone does not select those designs or close in-game delive
 The [Frontier economy source slice](art-direction/frontier-economy-meshy-v1/README.md)
 identifies Mill, Farm and Dock as missing authored base families and records
 three user-authorized Meshy tasks backed by isolated reference art. The
-art-direction/economy source owner retains model delivery and the next measured
-export; existing eight-model lifecycle work and private wall/gate/Skiff outcomes
-continue independently. Default adoption, packaging, deployment and game review
-remain separate acceptance steps in the [adoption ledger](asset-adoption-checklist.md).
+art-direction/economy owner now integrates the [registered runtime lifecycle family](../assets/buildings/frontier-economy-models-v1/README.md), including Farm exhaustion, default binding and exact runtime admission. [QA](qa-frontier-economy-art-2026-10-04.md) owns clean packaging, identified staging deployment and actual game review. Existing eight-model lifecycle work and private wall/gate/Skiff outcomes continue independently; their remaining coverage stays in the [adoption ledger](asset-adoption-checklist.md).
 
 The [Frontier style kit](frontier-civilization-art-style.md) defines eight coherent Complete building concepts for the [architecture wiki](lore/frontier-architecture.md). Next: calibrate House/Town Center beside Workers, derive registered directions and lifecycle states, and integrate useful building packs progressively. Use the [atlas production plan](building-atlas-production-plan.md) for role coverage and scale targets. Source concepts do not claim runtime replacement.
 

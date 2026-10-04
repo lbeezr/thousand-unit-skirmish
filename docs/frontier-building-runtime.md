@@ -1,5 +1,7 @@
 # Finished Frontier buildings in normal matches
 
+Mill, Farm and Dock now extend the default roster to eleven authored families through the [economy lifecycle pack](../assets/buildings/frontier-economy-models-v1/README.md): all five construction/health states and three Farm exhaustion variants. The [dated economy acceptance record](qa-frontier-economy-art-2026-10-04.md) owns its release/deployment/game evidence; the eight Complete families below retain their existing per-state fallback limits.
+
 [Asset guide](assets.md) · [Renderer contract](renderer-state-contract.md) ·
 [Preserved source history](lore/art-evolution.md) · [Manual facing and placement](building-orientation.md)
 
