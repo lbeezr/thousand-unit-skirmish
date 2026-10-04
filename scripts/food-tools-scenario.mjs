@@ -122,7 +122,8 @@ try {
   s=await fixture.checkpoint(s=>s.state.buildings.length===0&&s.state.teamUpgrades.every(u=>!u.foodTools));
   assert.deepEqual(s.state.teamFood,[500,500]);assert.deepEqual(s.state.teamWood,[600,600]);
   const result={evidenceType:'authoritative-websocket-scenario',sourceRevision,sourceDirty,profile,
-    rulesetRevision:GAMEPLAY_RULESET_REVISION,technology:TECHNOLOGY_DEFINITIONS['food-tools'],records,
+    rulesetRevision:economyRulesetRevision(profile),gameplayRulesetRevision:GAMEPLAY_RULESET_REVISION,
+    technology:TECHNOLOGY_DEFINITIONS['food-tools'],records,
     selectedOwnerValidation:true,activeAndCompletedColdRecovery:true,exactPriorContentRecovery:true,
     actualGatherRates:true,finiteCropConservation:true,proportionalRefund:true,futureWorkers:true,
     opponentResearchPrivate:true,rematchReset:true,banksCropCargoInjected:false,ordinaryGameFrames:0};
