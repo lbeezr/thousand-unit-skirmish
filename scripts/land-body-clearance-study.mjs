@@ -20,6 +20,24 @@ const identity = async () => ({ head: git(['rev-parse', 'HEAD']), sourceDirty: B
   files: Object.fromEntries(await Promise.all(files.map(async file => [file,
     createHash('sha256').update(await readFile(new URL(`../${file}`, import.meta.url))).digest('hex')])) ) });
 const before = await identity(), records = [];
+const rawHash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+const range = values => ({ first: values.length ? Math.min(...values) : null, last: values.length ? Math.max(...values) : null });
+function summarize(record) {
+  const { initialCheckpoint, runs, ...spec } = record, run = runs[0];
+  return { ...spec, repeats: runs.length, fullRunHashes: runs.map(rawHash), ...(run ? {
+    sourceSha256: run.sourceSha256, initialCheckpointSha256: run.initialCheckpointSha256,
+    navigationMaskSha256: run.navigationMaskSha256, navigationRevision: run.navigationRevision,
+    ticks: run.ticks, actors: run.actors.length, arrived: run.arrived,
+    arrivals: range(run.actors.flatMap(u => u.arrivalTick === null ? [] : [u.arrivalTick])),
+    crossings: range(run.actors.flatMap(u => u.crossedTick === null ? [] : [u.crossedTick])),
+    maxNoDisplacementTicks: Math.max(...run.actors.map(u => u.maxNoDisplacementTicks)),
+    observedSubsteps: run.observedSubsteps, selectedSubsteps: run.selectedSubsteps,
+    staticContactSteps: run.staticContactSteps, pairContactSteps: run.pairContactSteps,
+    minimumStaticContactMargin: run.minimumStaticContactMargin, minimumPairMargin: run.minimumPairMargin,
+    maxStaticQueries: run.maxStaticQueries, traceSha256: run.traceSha256,
+    invalidCenterSubsteps: run.invalidCenterSubsteps, unobservedPositionMutations: run.unobservedPositionMutations,
+    healthLoss: run.healthLoss } : {}) };
+}
 const report = { ...before, node: process.version, platform: process.platform, selection, maxTicks,
   profile: LAND_BODY_STUDY, records,
   scope: 'Candidate circles swept along admitted authoritative land substeps; diagnostic hypotheses, not production radii.',
@@ -41,7 +59,6 @@ try {
     const first = await runLandBodyCase(spec, { maxTicks, captureInput: value => { initialCheckpoint = value; } });
     const record = { ...spec, deterministicReplay: false, initialCheckpoint, runs: [first] }; records.push(record);
     const second = await runLandBodyCase(spec, { maxTicks, initialCheckpoint }); record.runs.push(second);
-    const rawHash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
     assert.equal(rawHash(second), rawHash(first), 'full raw geometry/motion/actor records must repeat without identity normalization');
     record.deterministicReplay = true;
     console.log(JSON.stringify({ id: spec.id, ticks: first.ticks, arrived: first.arrived, actors: first.actors.length,
@@ -55,5 +72,5 @@ try {
 finally {
   if (process.env.LAND_BODY_RECORD) await writeFile(process.env.LAND_BODY_RECORD, gzipSync(JSON.stringify(report) + '\n'));
   if (process.env.LAND_BODY_SUMMARY) await writeFile(process.env.LAND_BODY_SUMMARY, JSON.stringify({ ...report,
-    records: records.map(({ initialCheckpoint, runs, ...r }) => ({ ...r, runs: runs.map(({ observations, ...run }) => run) })) }, null, 2) + '\n');
+    records: records.map(summarize) }, null, 2) + '\n');
 }
