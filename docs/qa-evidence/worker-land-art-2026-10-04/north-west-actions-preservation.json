@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "2fd14ca3f9d07700923963ebe233290bce3c6538",
+  "originalFrames": 134,
+  "originalClips": 55,
+  "originalFrameMetadataSha256": "a19a585edd38f20e151599f37ef43cb76f7fb5258bf0a641e6bb7de168373878",
+  "originalClipMetadataSha256": "7a09ed71ea1a9ec066f20c93dbbc3eae8a97515d2469776289923ca9092d5326",
+  "originalFrameRgbaSha256": "b9a13baf71629f1707c81b8efed69a2b7181337dff6d04148351a12d67d7e7d6",
+  "originalTeamMaskSha256": "d740bcc5711c84da12c15abbbbd2bfa51113a1369a9214d2fb39ec73d6815fb0",
+  "originalDimensionsPx": {
+    "width": 2560,
+    "height": 4096
+  },
+  "worldUnitsPerPixel": 0.0052421832906788795,
+  "originalReplacedClips": [
+    {
+      "stateId": "build",
+      "directionId": "north-west",
+      "loop": true,
+      "sequence": [
+        {
+          "frameId": "idle-north-west-0",
+          "durationMs": 1000
+        }
+      ]
+    },
+    {
+      "stateId": "defeat",
+      "directionId": "north-west",
+      "loop": false,
+      "sequence": [
+        {
+          "frameId": "idle-north-west-0",
+          "durationMs": 1000
+        }
+      ]
+    }
+  ]
+}

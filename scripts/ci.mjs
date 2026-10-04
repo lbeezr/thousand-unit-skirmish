@@ -68,7 +68,7 @@ run(['scripts/region-event-scenario.mjs'], 'Region event recovery and rematch');
 run(['scripts/regional-ambience-scenario.mjs'], 'Regional ambience bus and lifecycle');
 run(['scripts/audio-shore-profile-scenario.mjs'], 'Ordinary Shore Fishing regional audio selection and lifecycle');
 run(['scripts/terrain-authoring-scenario.mjs'], 'Seeded terrain authoring and height surfaces');
-run(['--test', 'scripts/map-scale-audit.test.mjs', 'scripts/confluence-grounds.test.mjs'], 'Source-bound scale audit and admitted Confluence Practice arena');
+run(['--test', 'scripts/map-scale-audit.test.mjs', 'scripts/confluence-grounds.test.mjs', 'scripts/riven-escarpment.test.mjs'], 'Source-bound scale audit, Confluence arena and Medium escarpment');
 run(['scripts/landscape-authoring-scenario.mjs'], 'Organic regional landscape shapes');
 run(['scripts/forest-habitat-scenario.mjs'], 'Graduated woodland habitat margins');
 run(['scripts/forest-composition-scenario.mjs'], 'Regional dominant species groves');
@@ -96,6 +96,7 @@ run(['--test', 'scripts/unit-presentation-client.test.mjs'], 'Client snapshot an
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
 run(['--test', 'scripts/worker-land-art.test.mjs'], 'Retained Worker land-action artwork and playback');
 run(['--test', 'scripts/worker-nw-attack-art.test.mjs'], 'Public NW axe attack reuse and one-shot playback');
+run(['--test', 'scripts/worker-north-west-actions-art.test.mjs'], 'NW hammer/pick/defeat artwork and default playback');
 run(['--test', 'scripts/worker-performing-action.test.mjs'], 'Authoritative Worker positive-progress receipts');
 run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 'Worker work receipt commands, client frames, exhausted repair delivery and recovery');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
