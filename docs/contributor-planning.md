@@ -13,6 +13,7 @@ its existing issue, PR, or owning guide, rather than another parallel roadmap.
 | --- | --- |
 | Outcome | A player-observable behavior, or an explicitly scoped source/experiment milestone. |
 | Owner | The worker retaining responsibility through integration and verification. Role lanes identify primary owners, not exclusive files. |
+| Art/story backing | For player-facing creative or visual work, link the actual art, storyboard or exploration, selected treatment and reason; include a sequence for motion/state changes. Follow the [visual development contract](art-direction-contract-v1.md#visual-development-backing). Existing sources can satisfy this; internal changes without presentation impact can record N/A. |
 | Acceptance/evidence | The normal entry path, map/action/state, focused checks and actual observation; record revisions and evidence links. |
 | Dependencies | The concrete input/interface needed, its owner and readiness. Distinguish blocked work from independent work. |
 | Write scope | Expected files/contracts and likely overlap with active owners. Update it when the implementation changes. |

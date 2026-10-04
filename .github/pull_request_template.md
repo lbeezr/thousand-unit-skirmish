@@ -2,6 +2,7 @@
 Describe the concrete problem, resulting behavior and bounded scope.
 
 - Outcome owner and normal entry path:
+- Art/storyboard/exploration backing and selected treatment (N/A for internal changes without presentation impact):
 - Focused checks and independent review (exact head):
 - Conflicts resolved against current main:
 - Runtime binding, HTTP admission and release inclusion:

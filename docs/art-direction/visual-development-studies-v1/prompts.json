@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-04",
+  "tool": "built-in image_gen.imagegen",
+  "status": "exploratory-unselected",
+  "outputs": [
+    {
+      "file": "bellweather-match-study-v1.png",
+      "useCase": "stylized-concept",
+      "prompt": "Use case: stylized-concept.\nCreate one wide landscape art-direction board for our original painterly RTS Thousand Unit Skirmish, set in Vaelora's Bellweather region. This is an EXPLORATORY GAMEPLAY COMPOSITION, not a screenshot and not a marketing splash painting.\nReference inputs: image 1 is Bellweather ecology, for sage/olive meadow, butter highlights, cream, ochre earth, broad oak and pear silhouettes; image 2 is the selected Frontier Town Center, preserve its recognizable wide honey-oak/cream-limestone civic hall, sage roofs, rear bell tower and delivery arcades; image 3 is the approved Human Worker identity, preserve cream shirt, sage vest, leather pack/rolled blanket, brown trousers and tools; image 4 is the Frontier House, preserve smaller simple domestic roof and chimney.\nBoard layout: warm off-white paper border and dark pine editorial labels, large central elevated-isometric gameplay-scale scene (about 46 degrees above horizontal, orthographic rather than cinematic). Depict a modest inhabited opening settlement on quiet painted meadow: civic hall, two smaller houses, a broad open-front food/wood Storehouse in the same craft family, about ten clearly visible Workers performing gathering/carrying, a broad oak grove with a harvested opening, pear/berry food, a restrained shallow blue-green stream and a small group of infantry near the open route. Enough quiet open ground for clicking and commands; absolutely no dense decorative clutter, no castles, new factions, magic crystals or campaign characters. Human bodies, entrances, building bases and trees share a plausible single scale; show houses distinctly smaller than civic hall. Grounded soft contact shadows and coherent warm upper-left light, painterly broad value shapes, avoid photorealism or plastic 3D finish. Small straight rectangular Azure blue standards identify owner; cultural ochre is distinct from blue. A few opposing rust-Ember standards/units at the far edge may show team recognition without a large battle.\nInclude a slim proposed compact dark-green HUD strip with only readable short labels \"Food\", \"Wood\", \"Population\", and \"Selection\"; show how UI leaves most battlefield visible. This is a UI composition suggestion, no invented prices or game mechanics.\nBelow main scene: a same-scale lineup of Worker / House / Town Center / Oak, not each independently fitted to a box; and a smaller wide strategic-zoom thumbnail of the SAME scene preserving broad silhouettes.\nTitle exactly \"BELLWEATHER MATCH STUDY\". Subtitle exactly \"Exploratory composition\". Three sparse numbered callouts with short exact labels \"Quiet command space\", \"Shared scale and light\", \"Roles survive zoom\". Bottom label exactly \"Source concepts, not game capture\". Make all text clean, readable, correctly spelled. The point is to demonstrate how existing art, playable routes, roles, ownership and compact UI are judged TOGETHER.",
+      "sourceOutput": "exec-7f5b5dbe-10aa-4b6d-8587-270adedcc3cf.png",
+      "references": [
+        {
+          "path": "docs/art-direction/vaelora-v1/bellweather-ecology.png",
+          "role": "regional ecology and palette"
+        },
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/town-center.png",
+          "role": "selected civic architecture"
+        },
+        {
+          "path": "docs/art-direction/human-vaelora-sprites-v1/source/Idle/facings.png",
+          "role": "selected Human Worker identity"
+        },
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/house.png",
+          "role": "selected domestic architecture"
+        }
+      ]
+    },
+    {
+      "file": "house-lifecycle-storyboard-v1.png",
+      "useCase": "stylized-concept",
+      "prompt": "Use case: stylized-concept.\nCreate one wide landscape visual-development STORYBOARD for the original RTS Vaelora / Thousand Unit Skirmish. This board demonstrates temporal continuity, not final sprites or game screenshots.\nReference image 1 is the selected Frontier House identity. Preserve its cream limestone/limewash, honey oak frame, muted sage shingle gable, one chimney, small dormer, modest covered door, right-side lean-to wood storage, readable domestic rather than civic scale. Reference image 2 is the approved Human Worker for the small builder in panels; preserve sage vest, cream sleeves, brown trousers, leather pack. Do not redesign either between panels.\nLayout: a precise two-row, three-column storyboard on clean warm ivory paper, consistent generous borders. All six panels have the exact same elevated-isometric orthographic camera, ground baseline/pivot, image framing, building dimensions and upper-left warm light. Building occupies most of its panel with one small Worker for scale. Background is a tiny quiet meadow pad only; no scenery or UI. Broad painterly production keys, construction joints and damage must be instantly understandable.\nTop row: panel 1 FOUNDATION: ONLY the low limestone foundation matching the final footprint, doorway threshold and timber/material stack, no completed walls. Panel 2 FRAME: skeletal oak posts, beams and rafters of the same cottage, partial masonry and a builder, no finished roof; window and door positions match final house. Panel 3 COMPLETE: the intact reference cottage, clearly finished roof/walls and same footprint.\nBottom row: panel 4 DAMAGED: SAME cottage with localized roof gaps, broken shutter and small wall damage, still recognizable and mostly standing; no fire. Panel 5 CRITICAL: SAME cottage with extensive roof loss, exposed rafters and broken wall sections, but chimney/door and core frame still standing; no final collapse, no persistent ruins, no smoke. Panel 6 REPAIRED: visibly restored to the identical COMPLETE architecture, a Worker beside the door with hammer; do not introduce a new style or upgraded building.\nSmall straight rectangular Azure standard with a plain centered pale bar, consistent placement; no new grain crest and no forked Azure flag.\nTitle exactly \"ONE HOUSE, SIX STATES\". Subtitle exactly \"Exploratory lifecycle storyboard\".\nClear numbered captions exactly \"1 Foundation\", \"2 Frame\", \"3 Complete\", \"4 Damaged\", \"5 Critical\", \"6 Repaired\". Small progression arrows reading left-to-right top row then left-to-right bottom row. One shared understated ground alignment line per row reinforces fixed registration. Bottom note exactly \"Same design. Same camera. Same ground anchor.\" Additional bottom note exactly \"State concepts, not runtime frames\".\nThis should let a non-artist understand why isolated Complete art is insufficient: every state must remain the SAME building. Avoid health percentage numbers, extra prose, ornate page decoration, fantastic machinery, photorealism, cropping or inconsistent zoom.",
+      "sourceOutput": "exec-9f429967-f268-4017-8a7b-3147f9b0fd4e.png",
+      "references": [
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/house.png",
+          "role": "selected House identity"
+        },
+        {
+          "path": "docs/art-direction/human-vaelora-sprites-v1/source/Idle/facings.png",
+          "role": "selected Worker identity and illustrative scale"
+        }
+      ]
+    },
+    {
+      "file": "economy-silhouette-explorations-v1.png",
+      "useCase": "stylized-concept",
+      "prompt": "Use case: stylized-concept.\nGenerate one wide landscape ART EXPLORATION BOARD for Vaelora / Thousand Unit Skirmish's Frontier economy buildings. This is a reviewable set of visual alternatives, NOT approved runtime artwork or new mechanics.\nInput 1: selected Frontier House, reference ONLY shared material/style and modest scale; do not make all buildings look like houses. Input 2: selected Storehouse, reference ONLY honey-oak structure, cream stone footings, sage roofing and readable work frontage; avoid duplicating its generic loading shed for all three roles. Input 3: Bellweather ecology, reference quiet cream/sage/ochre palette and broad painterly field/stream forms.\nLayout: warm ivory paper, dark pine editorial typography, three clearly divided equal-width columns labelled \"MILL\", \"FARM\", \"DOCK\". Each column contains TWO small elevated-isometric concept alternatives labelled A and B, with consistent 46-degree-like orthographic view, warm upper-left lighting, restrained props and enough whitespace to compare the silhouettes. Broad readable silhouettes rather than miniature-detail rendering. Show a small Human Worker in sage vest, cream shirt, brown clothes and leather pack beside each concept for relative scale.\nMILL: land-placeable FOOD DROP-OFF, not a generator or watermill. Variant A: compact low oak grain-processing hall with a small visible stationary wind sail structure, grain sacks and one food-handling entrance. Variant B: modest taller timber windmill with broad stationary sails and small cream/sage store annex. Both clearly grain/wind related and legally imaginable on ordinary dry land; no waterwheel or river required. Labels exactly \"A Compact grain hall\" and \"B Taller windmill\". Meaning caption exactly \"Food drop-off\".\nFARM: FINITE FOOD PATCH with modest field shed, distinct from a domestic cottage. Variant A: a square barley patch with a low tool shed and clean harvest edge. Variant B: three broad parallel crop beds plus a tiny lean-to at the end; avoid extensive irrigation or orchard estate. Labels exactly \"A Patch and shed\" and \"B Parallel beds\". Meaning caption exactly \"Finite food\". Small bottom inset with two legible mini states labelled exactly \"Productive\" and \"Exhausted\": one full barley crop patch, same patch with bare soil/stubble after harvest. No implicit crop growth timer, automatic regrowth or food-generation machine.\nDOCK: small DRY-LAND SHORELINE producer for unarmed cargo/fishing skiffs. Variant A: broad low open work apron at shore with simple timber supports, a minimal pier/berth edge and boat-building supplies. Variant B: narrow sage-roofed open shed with a clear visible berth alongside it; berth entrance unobstructed. Show one tiny plain unarmed rowing skiff per concept, a few neutral sacks/baskets. Labels exactly \"A Open apron\" and \"B Covered berth\". Meaning caption exactly \"Skiffs and food return\". No weapons, naval combat, shipyards for warships, trade mechanics or large quay.\nAll three columns share cream limestone, oak joints, muted sage roofs, restrained ochre and quiet Bellweather ground. Small plain straight rectangular Azure pennant with a centered pale bar only where useful; no invented crests. Avoid tall Gothic fantasy spires, glowing mechanisms, muddy overdetail, giant building bases or glossy plastic render.\nTitle exactly \"ECONOMY SILHOUETTE EXPLORATIONS\". Subtitle exactly \"Distinct jobs, shared craft\". Bottom note exactly \"Explorations, not selected assets\". Make text clean, short and readable. The point is to show alternative shapes BEFORE picking a design and producing its directions/states, while already established gameplay meaning constrains the artwork.",
+      "sourceOutput": "exec-afe4a490-a9a9-47ea-a0b3-e2a51dba5d43.png",
+      "references": [
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/house.png",
+          "role": "shared domestic materials"
+        },
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/storehouse.png",
+          "role": "shared working architecture"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/bellweather-ecology.png",
+          "role": "regional ecology and palette"
+        }
+      ]
+    }
+  ]
+}

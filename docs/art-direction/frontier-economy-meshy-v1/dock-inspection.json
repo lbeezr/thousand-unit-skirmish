@@ -1,0 +1,15 @@
+{
+  "schema": "frontier-economy-source-inspection.v1",
+  "sourceFile": "meshy_output/20261004_124236_frontier-dock-v1_01a107cb/dock.glb",
+  "bytes": 62514200,
+  "sha256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+  "gltfVersion": "2.0",
+  "meshCount": 1,
+  "primitiveCount": 1,
+  "triangles": 1767254,
+  "materialCount": 1,
+  "imageCount": 3,
+  "embeddedImages": true,
+  "externalUris": [],
+  "note": "Structural inspection only; full geometry/lower-band bounds are recorded by the existing inspect-building-glb.mjs tool in the accompanying measurement. World scale/pivot, clearance and visual topology still require authoring review."
+}
