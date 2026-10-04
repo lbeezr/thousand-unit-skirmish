@@ -75,6 +75,7 @@ run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush edit
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default bindings and release dependencies');
 run(['--test', 'scripts/oak-depletion-atlas-runtime.test.mjs'], 'Generic oak depletion atlas loading, fallback and registration');
+run(['--test', 'scripts/terrain-cliff-faces.test.mjs'], 'Painted scree cliff faces preserve terrain, UV joins and fallback');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-synthesis-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--experimental-test-coverage', '--test-coverage-include=src/audio-shipped-response.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
@@ -103,6 +104,8 @@ run(['--test', 'scripts/worker-south-actions-art.test.mjs'], 'south full land-ac
 run(['--test', 'scripts/worker-performing-action.test.mjs'], 'Authoritative Worker positive-progress receipts');
 run(['--test', 'scripts/gather-work-area.test.mjs', 'scripts/work-intent.test.mjs', 'scripts/resource-job.test.mjs'],
   'Bounded wood work, accepted replacement orders and checkpoint resource conservation');
+run(['--test', 'scripts/food-stone-continuation.test.mjs'],
+  'Source-only Food/Stone audit, typed replacement, recovery and rejected reachability');
 run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 'Worker work receipt commands, client frames, exhausted repair delivery and recovery');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');
@@ -412,6 +415,7 @@ const scenarios = [
   ['scripts/environment-plant-pack-scenario.mjs', 'Regional plant contract rejection cases'],
   ['scripts/harvestable-woodland-scenario.mjs', 'Harvestable woodland gameplay'],
   ['scripts/resource-job-continuation-scenario.mjs', 'Native wood depletion, continuation and cold recovery'],
+  ['scripts/food-stone-continuation-scenario.mjs', 'Native both-seat Food/Stone depletion and typed cold recovery audit'],
   ['scripts/worker-cargo-return-scenario.mjs', 'Highland Grove forest route repair and deposits'],
   ['scripts/worker-cargo-return-scenario.mjs', 'Frontier Reach forest route repair and deposits', 'frontier-160'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
