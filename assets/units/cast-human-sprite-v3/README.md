@@ -18,3 +18,13 @@ with `python3 scripts/admit-worker-east-walk.py`; validate with
 The [land-action checkpoint](../../../docs/qa-worker-land-art-2026-10-04.md)
 records source hashes, playback checks and the remaining 54 land-action/heading
 gaps. Delivered/native acceptance remains open; this is incomplete coverage.
+
+Version 0.16.0 adds eight approved-seed **North walk** keys (screen-down-left).
+The source preserves the default North idle's character, axe and backpack.
+Register with `python3 scripts/admit-worker-north-walk.py`; source, prompt,
+seed, extraction and first-pass review are retained under
+[`worker-walk-north-v1`](../../../docs/art-direction/human-roster-v1/generated/worker-walk-north-v1/README.md).
+One shared scale/root and spare atlas row y=2816 preserve all 92 prior frames,
+other clips, mask and world scale. Five walk headings now play; S/W/NW hold
+idle. Rough gait/loop polish and identified deployment/native review remain
+open. See the [land checkpoint](../../../docs/qa-worker-land-art-2026-10-04.md).
