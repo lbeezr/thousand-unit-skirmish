@@ -104,8 +104,8 @@ current-roster keys can also be admitted with the same manifest contract.
 | --- | --- | --- |
 | 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
 | 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
-| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **12 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
-| 4 | Two remaining readable dedicated Stone-work headings; retain PR263 default selector adoption. | SE, NW, E, N, NE and S now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. PR263 now enables exact authored Stone state/resource selection from productive receipts; missing headings retain their own idle. No economy edits. |
+| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **6 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
+| 4 | One remaining readable dedicated Stone-work heading; retain PR263 default selector adoption. | SE, NW, E, N, NE, S and SW now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. PR263 now enables exact authored Stone state/resource selection from productive receipts; missing headings retain their own idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
 There are now 8 of 8 walk headings, eight distinct idle headings, SE+NW land-action
@@ -1000,3 +1000,48 @@ measures `d9114ee4bed50f54e3a7c50acff910c448850ac1`, `sourceDirty:false`,1179 fi
 SUCCESS `e541d903-178b-47cb-8d1b-4358c93c5a8a` source
 `64cc391e6d9c4164dca7bd45696cf3862fe19729`, predating these slices.
 Containing deployment/native acceptance remains open, independent of source merge.
+
+
+## SW complete usable land heading — 4 October 2026
+
+[SW public-seed iteration](art-direction/human-roster-v1/generated/worker-south-west-actions-v1/README.md)
+retains actual `walk-south-west-0`, prompt/reference/raw and all15 complete poses.
+Every pose faces directly away/screen-up; axe, empty hands, blunt rectangular
+hammer and pick remain distinguishable, with back-camera occlusion preserved.
+Defeat ends prone head top/boots bottom with backpack upward; foreshortening does
+not require a profile-shaped silhouette. No mirror/facing relabel, private pixels,
+paid external job or discarded iteration.
+
+[Registration](qa-evidence/worker-land-art-2026-10-04/south-west-actions-registration.json)
+uses one271/301 scale, roots174/518/846, row contacts300/584/883/1201 and reviewed
+fallen contacts. Standing body roughly222–225px versus224px legacy SW walk;
+maximum271 preserves the old272px/world scale. [Preservation](qa-evidence/worker-land-art-2026-10-04/south-west-actions-preservation.json)
+protects every previous4608x4096 RGBA pixel,202records and73clips except three
+declared SW idle placeholders. New512 strip makes5120x4096 aligned zero mask,
+217frames/77clips. Decoded color80MiB+mask20MiB=100MiB, up10MiB from South.
+Whole earlier art/fishing ROI/sampling/world scale remain exact. Simple motion,
+minor contact/loop differences remain polish, separate from usable breadth.
+
+[Default tests](../scripts/worker-south-west-actions-art.test.mjs) inspect actual
+Three UV/matrix/root, both seats selected/unselected, each positive-work720ms
+loop, Stop/resume, moving/attack interruptions, cargo Return→idle, attack840ms
+one-shot and defeat priority/clamp. PR263 automatically binds exact SW Stone.
+Axe attack reuses wood; repair reuses hammer. No economy/receipt/producer/clock
+helper changes. [Wood](qa-evidence/worker-land-art-2026-10-04/gather-wood-south-west-keys.png),
+[food](qa-evidence/worker-land-art-2026-10-04/gather-food-south-west-keys.png),
+[hammer](qa-evidence/worker-land-art-2026-10-04/build-south-west-keys.png),
+[pick](qa-evidence/worker-land-art-2026-10-04/gather-stone-south-west-keys.png),
+[defeat](qa-evidence/worker-land-art-2026-10-04/defeat-south-west-keys.png) previews
+are source evidence, not actual GPU/game acceptance.
+
+Current [matrix](qa-evidence/worker-land-art-2026-10-04/land-action-coverage.json):
+Walk8/8; Wood/Food/Build/Repair/Attack/Defeat/Stone each7/8, authored57/64;
+**7 cells remain**, all W up-left/back-three-quarter. Ranked next: W complete
+land heading, then parent identified delivered/native default acceptance, then
+observation-led contact/loop/costume refinements. Carry/Return remains all8walk+cue.
+Parent thread `01a0f784-c5d7-72e0-82e8-1747b4c840c1` Railway/Mac receiving route
+owns containing deployment/native capture; animation `01a103d4` owns productive
+receipts/target bearing. Local browser sandbox remains unavailable. At a containing
+default build, observe SW↔S↔SW turns, all five work loops, Stop/resume, root/tool
+contact, attack completion, prone corpse and cargo Return→deposit/idle, both Human
+seats selected/unselected, ordinary/strategic zoom, Bellweather · Millrace.

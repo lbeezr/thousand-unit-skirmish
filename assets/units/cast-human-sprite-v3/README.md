@@ -181,3 +181,13 @@ South idle clips replaced. Aligned page/mask4608x4096,202frames/73clips; decoded
 color72MiB plus mask18MiB. Walk8/8, seven land work/combat actions6/8;14 cells
 remain in SW/W. Native/deployed acceptance remains owned by the parent receiving
 Railway/Mac route; simple contact/loop polish is retained explicitly in land QA.
+
+
+v0.32.0 adds fifteen complete true SW/direct-back land poses from the
+[retained public seed iteration](../../../docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/README.md).
+Wood/food/build/repair/Stone720ms loops, faithful axe attack and prone defeat840ms
+one-shots bind by default. One271/301 scale, fixed roots/pivots, unchanged world
+units/pixel; entire earlier4608x4096 RGBA/202records protected, only declared SW
+idle clips replaced. Page/mask5120x4096,217frames/77clips; decoded80+20MiB.
+Walk8/8, seven other land actions7/8; W has seven art cells left. Identified
+parent Railway/Mac native/deployed acceptance and motion/contact polish remain open.
