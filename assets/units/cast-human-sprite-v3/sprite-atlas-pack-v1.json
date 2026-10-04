@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "packId": "cast-human-sprite",
-  "packVersion": "0.27.0",
+  "packVersion": "0.28.0",
   "maturity": "runtime-candidate",
   "provenance": {
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
     "source": "Vaelora Human roster role and action sheets",
     "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging",
-    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four-key hand-net fishing pilot for the actual south-east heading, approved for public/default integration. Original four pose pixels preserved. Seven fishing headings remain unproduced; root/loop polish remains tracked in docs/worker-fishing-animation.md. East walk reuses eight retained current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. South walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North-West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. Stone SE walk reuses four dedicated pick-windup/strike/recovery keys; default selector adoption owned by animation owner; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW wood work adds three compact axe windup/strike/recovery keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW food work adds three bare-hand reach/pick/stow keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW attack faithfully reuses the public NW axe windup/strike/recovery pixels, 3x280ms one-shot; see docs/qa-worker-land-art-2026-10-04.md; six other attack headings remain absent. NW hammer build/repair, dedicated pick mining and terminal defeat add nine real left-profile keys; Stone state/bearing adoption and native acceptance remain open; see docs/qa-worker-land-art-2026-10-04.md. East adds three actual down-right front-three-quarter axe keys, with independent wood loop and attack one-shot timing; previous art/world scale preserved. See docs/qa-worker-land-art-2026-10-04.md. East food work adds three bare-hand reach/pick/stow keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. East hammer work adds three true down-right hammer windup/strike/recovery keys shared by build/repair, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage."
+    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four-key hand-net fishing pilot for the actual south-east heading, approved for public/default integration. Original four pose pixels preserved. Seven fishing headings remain unproduced; root/loop polish remains tracked in docs/worker-fishing-animation.md. East walk reuses eight retained current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. South walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North-West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. Stone SE walk reuses four dedicated pick-windup/strike/recovery keys; default selector adoption owned by animation owner; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW wood work adds three compact axe windup/strike/recovery keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW food work adds three bare-hand reach/pick/stow keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW attack faithfully reuses the public NW axe windup/strike/recovery pixels, 3x280ms one-shot; see docs/qa-worker-land-art-2026-10-04.md; six other attack headings remain absent. NW hammer build/repair, dedicated pick mining and terminal defeat add nine real left-profile keys; Stone state/bearing adoption and native acceptance remain open; see docs/qa-worker-land-art-2026-10-04.md. East adds three actual down-right front-three-quarter axe keys, with independent wood loop and attack one-shot timing; previous art/world scale preserved. See docs/qa-worker-land-art-2026-10-04.md. East food work adds three bare-hand reach/pick/stow keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. East hammer work adds three true down-right hammer windup/strike/recovery keys shared by build/repair, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. East dedicated pick mining and terminal prone defeat add six real front-three-quarter keys; Existing exact Stone default binding consumes the new East clip; target-bearing/native acceptance remain open; see docs/qa-worker-land-art-2026-10-04.md."
   },
   "files": [
     {
@@ -16,10 +16,10 @@
       "usage": "source",
       "format": "png",
       "dimensionsPx": {
-        "width": 2560,
+        "width": 3072,
         "height": 4096
       },
-      "sha256": "2943f7d14d1799efb6a8d077729f15a380c73c15eb069b6e6599df84bd302ee2"
+      "sha256": "b9965868342575aab6ede0dc7eca0d93f9a502605e7f0f8b5c85cdbc836b596a"
     },
     {
       "id": "cast-human-atlas-runtime",
@@ -27,10 +27,10 @@
       "usage": "runtime",
       "format": "png",
       "dimensionsPx": {
-        "width": 2560,
+        "width": 3072,
         "height": 4096
       },
-      "sha256": "2943f7d14d1799efb6a8d077729f15a380c73c15eb069b6e6599df84bd302ee2"
+      "sha256": "b9965868342575aab6ede0dc7eca0d93f9a502605e7f0f8b5c85cdbc836b596a"
     },
     {
       "id": "cast-human-team-mask",
@@ -38,10 +38,10 @@
       "usage": "team-mask",
       "format": "png",
       "dimensionsPx": {
-        "width": 2560,
+        "width": 3072,
         "height": 4096
       },
-      "sha256": "d740bcc5711c84da12c15abbbbd2bfa51113a1369a9214d2fb39ec73d6815fb0"
+      "sha256": "6d9e19742c1371cfe9691fb43ba0085e60ca9eac033377664705fd830756291d"
     }
   ],
   "pages": [
@@ -51,7 +51,7 @@
       "runtimeFileId": "cast-human-atlas-runtime",
       "maskFileId": "cast-human-team-mask",
       "dimensionsPx": {
-        "width": 2560,
+        "width": 3072,
         "height": 4096
       },
       "colorSpace": "srgb",
@@ -6659,6 +6659,264 @@
             }
           ],
           "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-stone-east-0",
+          "groundPivotPx": {
+            "x": 160,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 81,
+            "y": 41,
+            "width": 147,
+            "height": 258
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 2560,
+              "y": 0,
+              "width": 320,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 2560,
+                "y": 0,
+                "width": 320,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-stone-east-1",
+          "groundPivotPx": {
+            "x": 160,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 90,
+            "y": 108,
+            "width": 200,
+            "height": 200
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 2560,
+              "y": 320,
+              "width": 320,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 2560,
+                "y": 320,
+                "width": 320,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-stone-east-2",
+          "groundPivotPx": {
+            "x": 160,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 87,
+            "y": 69,
+            "width": 163,
+            "height": 232
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 2560,
+              "y": 640,
+              "width": 320,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 2560,
+                "y": 640,
+                "width": 320,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "defeat-east-0",
+          "groundPivotPx": {
+            "x": 256,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 512,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 185,
+            "y": 87,
+            "width": 172,
+            "height": 157
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 2560,
+              "y": 960,
+              "width": 512,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 2560,
+                "y": 960,
+                "width": 512,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "defeat-east-1",
+          "groundPivotPx": {
+            "x": 256,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 512,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 163,
+            "y": 113,
+            "width": 214,
+            "height": 131
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 2560,
+              "y": 1216,
+              "width": 512,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 2560,
+                "y": 1216,
+                "width": 512,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "defeat-east-2",
+          "groundPivotPx": {
+            "x": 256,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 512,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 125,
+            "y": 128,
+            "width": 261,
+            "height": 116
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 2560,
+              "y": 1472,
+              "width": 512,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 2560,
+                "y": 1472,
+                "width": 512,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
         }
       ],
       "clips": [
@@ -7303,8 +7561,16 @@
           "loop": false,
           "sequence": [
             {
-              "frameId": "idle-east-0",
-              "durationMs": 1000
+              "frameId": "defeat-east-0",
+              "durationMs": 280
+            },
+            {
+              "frameId": "defeat-east-1",
+              "durationMs": 280
+            },
+            {
+              "frameId": "defeat-east-2",
+              "durationMs": 280
             }
           ]
         },
@@ -7830,6 +8096,25 @@
             },
             {
               "frameId": "build-east-2",
+              "durationMs": 240
+            }
+          ]
+        },
+        {
+          "stateId": "gather-stone",
+          "directionId": "east",
+          "loop": true,
+          "sequence": [
+            {
+              "frameId": "gather-stone-east-0",
+              "durationMs": 240
+            },
+            {
+              "frameId": "gather-stone-east-1",
+              "durationMs": 240
+            },
+            {
+              "frameId": "gather-stone-east-2",
               "durationMs": 240
             }
           ]
