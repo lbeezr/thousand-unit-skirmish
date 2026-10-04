@@ -88,7 +88,8 @@ Changes to another lane's host functions are agreed with that affected owner.
 | U7 · movement acceptance; benchmark/map/capture owners supply their existing interfaces | Benchmark `01a101bc-9d2a-733a-916f-104264e9102c` owns report validity; map `01a103e8-8bfd-7013-8fee-94450f88501b` owns XL admission/index support; CI `01a10378` owns capture interfaces; organization `01a10711` owns relocations. Movement writes scenarios/acceptance only. | Full caller journey matrix, native/replay and actual ordinary-game rendered sequences at identified source/release. Keep 320 tests experimental until map admission lands. No duplicate report format, map-limit patch, renderer interface or path-only move. |
 
 The user's sparse/permeable, narrow-pass and dense/impassable forest exploration
-is a future U4/U5 fixture experiment after explicit land footprint/clearance.
+is a bounded U4/U5 fixture experiment, with physical passage claims dependent on
+explicit land footprint/clearance.
 Current forests occupy whole blocked cells with six wood per cell; canopy density,
 species and visual scale do not change navigation. Compare actual swept clearance
 and group filtering/reforming through proposed one/two-unit passages before naming
@@ -98,6 +99,20 @@ separate from the urgent forest-stall fix. Tree-variety owner
 owner `01a107c9-6a7d-7534-b592-ef8d18cd0001` retains orientation/ghost preview;
 any doorway/egress goal region must use the same authoritative access policy,
 with its exact footprint/consumer boundary agreed before movement adoption.
+
+Movement owns the next cell-gap characterization in the existing
+`createPathingReplayFixture`/native woodland harness; map owns any admitted layout
+change. Use flat 64×48, seed 881, forest slabs `(column 28, row 4, width 8, height 20)`
+and `(28, 24+g, 8, 20-g)` for `g=0/1/2/4`, retaining four-cell north/south bypasses.
+Start with 16 Infantry per seat in box/line/column, then 1/16/64; add one `g=1`
+forest plug at `(31,24)` that harvest opens. Record distance, illegal steps,
+first/last crossing, queue/stall with a free exit, distinct reformed goals, loaded
+Worker round trips, Stop/replacement/restart, stock/cargo/bank conservation and
+navigation revision. These characterize cell gaps, not one/two-body throats.
+Future body-width acceptance includes radius, spacing, wall margin and swept bends.
+Seeded authoritative root placement, canopy/LOS, harvest work and movement
+footprints remain separate; client jitter and the current art-registration defect
+do not define new forest rules. No runtime density or resource changes in U1.
 
 ### Measurable acceptance and evidence limits
 
