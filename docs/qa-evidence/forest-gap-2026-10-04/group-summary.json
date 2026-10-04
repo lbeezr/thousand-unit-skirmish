@@ -1,0 +1,485 @@
+{
+  "head": "c4ad43b7e2ac8e810c1a462d085b324e64182183",
+  "sourceDirty": false,
+  "fixtureSha256": "7f81e051a89746dff3caa55319f45d968110c11cbc0861301227fae8817240ed",
+  "runnerSha256": "12899def8e7d42dfe34d3de268a16cd6939c358ac5403d56243996cf9eb6b5c9",
+  "node": "v24.19.0",
+  "platform": "linux",
+  "selection": "all",
+  "repeats": 2,
+  "maxTicks": 1800,
+  "scope": "cell-gap route/formation characterization; actual fixed-tick server bodies",
+  "controls": {
+    "width": 64,
+    "height": 48,
+    "seed": 881,
+    "flat": true,
+    "planning": "callback default; drained between fixed ticks",
+    "formations": [
+      "box",
+      "line",
+      "column"
+    ],
+    "traffic": [
+      1,
+      16,
+      64
+    ],
+    "bypassRows": {
+      "north": [
+        0,
+        3
+      ],
+      "south": [
+        44,
+        47
+      ]
+    },
+    "noProgress": "no 0.05-unit improvement in remaining route distance; repair starts a new observation window",
+    "queue": "ticks without route-distance progress before completing the belt crossing",
+    "freeExit": "reserved goals are at least four columns beyond the belt; inactive enemy homes/rosters are outside the route region; no health loss",
+    "wood": "six per live forest cell; totals differ with authored gaps and plug"
+  },
+  "limits": [
+    "Land occupancy is unit-center/cell based;0.56 soft separation is not a physical radius or swept hull.",
+    "A one-cell gap does not establish a one-unit physical throat, cavalry radius or visual forest permeability.",
+    "Rule-function orders through the existing adapter; listening, peers, asynchronous intake and native process restart excluded.",
+    "Fresh-adapter loaded recovery uses production checkpoint validation/restore; it is not a real process/transport restart.",
+    "Logical ticks/distances are measurements, not hardware timings,2k capacity, rendered pixels or deployed acceptance."
+  ],
+  "outcome": "passed",
+  "rawFile": "group-replay.json.gz",
+  "rawSha256": "ecc2d16cc83b20b978164c244e5335877532bd5049134080aa4b557abd9ad590",
+  "serverSha256": "bc3525bca4762a93259aae49ba54ad098b8c0850ad32a1e719bef4874f84a022",
+  "scenarios": 42,
+  "totalRuns": 84,
+  "allFixedCheckpointRepeatsEqual": true,
+  "allArrivedAtUniqueUnchangedGoals": true,
+  "allExitsFree": true,
+  "invalidSteps": 0,
+  "unfinishedActors": 0,
+  "maxPendingActors": 1,
+  "maxNoProgressTicksWithinPublishedRoutes": 1,
+  "primary16": [
+    {
+      "gap": 0,
+      "inventory": {
+        "forestCells": 320,
+        "woodPerCell": 6,
+        "totalForestWood": 1920,
+        "woodDifferenceFromClosedBelt": 0
+      },
+      "scenarios": 6,
+      "plannedMeanLengthRange": [
+        63.5,
+        65.25
+      ],
+      "firstCrossingTickRange": [
+        387,
+        399
+      ],
+      "lastCrossingTickRange": [
+        453,
+        470
+      ],
+      "completionTickRange": [
+        797,
+        849
+      ],
+      "arrived": 96,
+      "observedBypass": 96,
+      "maxNoProgressTicks": 1,
+      "maxCumulativeQueueObservationTicks": 10
+    },
+    {
+      "gap": 1,
+      "inventory": {
+        "forestCells": 312,
+        "woodPerCell": 6,
+        "totalForestWood": 1872,
+        "woodDifferenceFromClosedBelt": -48
+      },
+      "scenarios": 6,
+      "plannedMeanLengthRange": [
+        25.760191,
+        28.259615
+      ],
+      "firstCrossingTickRange": [
+        168,
+        179
+      ],
+      "lastCrossingTickRange": [
+        228,
+        246
+      ],
+      "completionTickRange": [
+        347,
+        387
+      ],
+      "arrived": 96,
+      "observedBypass": 0,
+      "maxNoProgressTicks": 1,
+      "maxCumulativeQueueObservationTicks": 7
+    },
+    {
+      "gap": 2,
+      "inventory": {
+        "forestCells": 304,
+        "woodPerCell": 6,
+        "totalForestWood": 1824,
+        "woodDifferenceFromClosedBelt": -96
+      },
+      "scenarios": 6,
+      "plannedMeanLengthRange": [
+        25.515001,
+        27.652482
+      ],
+      "firstCrossingTickRange": [
+        168,
+        179
+      ],
+      "lastCrossingTickRange": [
+        226,
+        240
+      ],
+      "completionTickRange": [
+        325,
+        385
+      ],
+      "arrived": 96,
+      "observedBypass": 0,
+      "maxNoProgressTicks": 1,
+      "maxCumulativeQueueObservationTicks": 5
+    },
+    {
+      "gap": 4,
+      "inventory": {
+        "forestCells": 288,
+        "woodPerCell": 6,
+        "totalForestWood": 1728,
+        "woodDifferenceFromClosedBelt": -192
+      },
+      "scenarios": 6,
+      "plannedMeanLengthRange": [
+        25.515001,
+        27.180821
+      ],
+      "firstCrossingTickRange": [
+        168,
+        181
+      ],
+      "lastCrossingTickRange": [
+        214,
+        240
+      ],
+      "completionTickRange": [
+        325,
+        385
+      ],
+      "arrived": 96,
+      "observedBypass": 0,
+      "maxNoProgressTicks": 1,
+      "maxCumulativeQueueObservationTicks": 5
+    }
+  ],
+  "controls1And64": [
+    {
+      "gap": 0,
+      "group": 1,
+      "scenarios": 2,
+      "plannedMeanLengthRange": [
+        65,
+        65
+      ],
+      "firstCrossingTickRange": [
+        422,
+        422
+      ],
+      "lastCrossingTickRange": [
+        422,
+        422
+      ],
+      "completionTickRange": [
+        751,
+        751
+      ],
+      "arrived": 2,
+      "observedBypass": 2,
+      "maxNoProgressTicks": 0,
+      "maxCumulativeQueueObservationTicks": 0
+    },
+    {
+      "gap": 0,
+      "group": 64,
+      "scenarios": 2,
+      "plannedMeanLengthRange": [
+        62,
+        62
+      ],
+      "firstCrossingTickRange": [
+        341,
+        352
+      ],
+      "lastCrossingTickRange": [
+        476,
+        487
+      ],
+      "completionTickRange": [
+        821,
+        825
+      ],
+      "arrived": 128,
+      "observedBypass": 128,
+      "maxNoProgressTicks": 1,
+      "maxCumulativeQueueObservationTicks": 16
+    },
+    {
+      "gap": 1,
+      "group": 1,
+      "scenarios": 2,
+      "plannedMeanLengthRange": [
+        25,
+        25
+      ],
+      "firstCrossingTickRange": [
+        191,
+        191
+      ],
+      "lastCrossingTickRange": [
+        191,
+        191
+      ],
+      "completionTickRange": [
+        289,
+        289
+      ],
+      "arrived": 2,
+      "observedBypass": 0,
+      "maxNoProgressTicks": 0,
+      "maxCumulativeQueueObservationTicks": 0
+    },
+    {
+      "gap": 1,
+      "group": 64,
+      "scenarios": 2,
+      "plannedMeanLengthRange": [
+        29,
+        29
+      ],
+      "firstCrossingTickRange": [
+        145,
+        156
+      ],
+      "lastCrossingTickRange": [
+        275,
+        287
+      ],
+      "completionTickRange": [
+        407,
+        414
+      ],
+      "arrived": 128,
+      "observedBypass": 0,
+      "maxNoProgressTicks": 1,
+      "maxCumulativeQueueObservationTicks": 4
+    },
+    {
+      "gap": 2,
+      "group": 1,
+      "scenarios": 2,
+      "plannedMeanLengthRange": [
+        25,
+        25
+      ],
+      "firstCrossingTickRange": [
+        191,
+        191
+      ],
+      "lastCrossingTickRange": [
+        191,
+        191
+      ],
+      "completionTickRange": [
+        289,
+        289
+      ],
+      "arrived": 2,
+      "observedBypass": 0,
+      "maxNoProgressTicks": 0,
+      "maxCumulativeQueueObservationTicks": 0
+    },
+    {
+      "gap": 2,
+      "group": 64,
+      "scenarios": 2,
+      "plannedMeanLengthRange": [
+        28.25,
+        28.25
+      ],
+      "firstCrossingTickRange": [
+        145,
+        156
+      ],
+      "lastCrossingTickRange": [
+        275,
+        286
+      ],
+      "completionTickRange": [
+        403,
+        410
+      ],
+      "arrived": 128,
+      "observedBypass": 0,
+      "maxNoProgressTicks": 1,
+      "maxCumulativeQueueObservationTicks": 3
+    },
+    {
+      "gap": 4,
+      "group": 1,
+      "scenarios": 2,
+      "plannedMeanLengthRange": [
+        25,
+        25
+      ],
+      "firstCrossingTickRange": [
+        191,
+        191
+      ],
+      "lastCrossingTickRange": [
+        191,
+        191
+      ],
+      "completionTickRange": [
+        289,
+        289
+      ],
+      "arrived": 2,
+      "observedBypass": 0,
+      "maxNoProgressTicks": 0,
+      "maxCumulativeQueueObservationTicks": 0
+    },
+    {
+      "gap": 4,
+      "group": 64,
+      "scenarios": 2,
+      "plannedMeanLengthRange": [
+        27.5,
+        27.5
+      ],
+      "firstCrossingTickRange": [
+        145,
+        156
+      ],
+      "lastCrossingTickRange": [
+        275,
+        286
+      ],
+      "completionTickRange": [
+        404,
+        410
+      ],
+      "arrived": 128,
+      "observedBypass": 0,
+      "maxNoProgressTicks": 1,
+      "maxCumulativeQueueObservationTicks": 5
+    }
+  ],
+  "harvest": [
+    {
+      "team": 0,
+      "inventory": {
+        "forestCells": 313,
+        "woodPerCell": 6,
+        "totalForestWood": 1878,
+        "woodDifferenceFromClosedBelt": -42
+      },
+      "before": {
+        "minLength": 63,
+        "maxLength": 65,
+        "meanLength": 64,
+        "northBypass": 8,
+        "southBypass": 8,
+        "gapRoutes": 0
+      },
+      "after": {
+        "minLength": 25,
+        "maxLength": 29,
+        "meanLength": 27,
+        "northBypass": 0,
+        "southBypass": 0,
+        "gapRoutes": 16
+      },
+      "crossingTicks": 347,
+      "plugCell": 1567,
+      "initialTarget": 1502,
+      "loadedTick": 754,
+      "loadedCargo": 2,
+      "restart": "fresh fixed-tick adapter; checkpoint validator/restore",
+      "exactLoadedContinuation": true,
+      "continuationTraceSha256": "57664c0ba1a0895a85896eea275fd5540a43d967e327b789366272b8fe9dd9b3",
+      "revisionBefore": 0,
+      "revisionAfter": 2,
+      "conservedThroughDepletion": true,
+      "woodAtPlugClear": 510,
+      "cargoAtPlugClear": 2,
+      "woodBefore": 500,
+      "woodAfter": 512,
+      "bankedWood": 12,
+      "restoredWoodAfter": 512,
+      "restoredBankedWood": 12,
+      "restoredZeroCargo": true,
+      "clearedCells": [
+        1502,
+        1567
+      ]
+    },
+    {
+      "team": 1,
+      "inventory": {
+        "forestCells": 313,
+        "woodPerCell": 6,
+        "totalForestWood": 1878,
+        "woodDifferenceFromClosedBelt": -42
+      },
+      "before": {
+        "minLength": 63,
+        "maxLength": 65,
+        "meanLength": 64,
+        "northBypass": 8,
+        "southBypass": 8,
+        "gapRoutes": 0
+      },
+      "after": {
+        "minLength": 25,
+        "maxLength": 29,
+        "meanLength": 27,
+        "northBypass": 0,
+        "southBypass": 0,
+        "gapRoutes": 16
+      },
+      "crossingTicks": 359,
+      "plugCell": 1567,
+      "initialTarget": 1504,
+      "loadedTick": 722,
+      "loadedCargo": 2,
+      "restart": "fresh fixed-tick adapter; checkpoint validator/restore",
+      "exactLoadedContinuation": true,
+      "continuationTraceSha256": "83c765d977a60c2386ce8b4597367b7baf63d180010f40413e361ec8382f62bf",
+      "revisionBefore": 0,
+      "revisionAfter": 2,
+      "conservedThroughDepletion": true,
+      "woodAtPlugClear": 510,
+      "cargoAtPlugClear": 2,
+      "woodBefore": 500,
+      "woodAfter": 512,
+      "bankedWood": 12,
+      "restoredWoodAfter": 512,
+      "restoredBankedWood": 12,
+      "restoredZeroCargo": true,
+      "clearedCells": [
+        1504,
+        1567
+      ]
+    }
+  ]
+}

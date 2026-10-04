@@ -1,6 +1,6 @@
 import { createWorkerPerformingActions } from '../src/worker-performing-action.mjs';
 import { validFarmStock } from '../src/farm-harvest.mjs';
-import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
+import { economyServerBindings, economyServerFunctions, visionServerBindings, visionServerFunctions } from './economy-server-fixture.mjs';
 import { validGateState, buildingBlocksMovement, isPalisade } from '../src/palisade-gate.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -46,7 +46,7 @@ function fixture(team = 0) {
     buildingTargetId: null, repairing: false, orderRevision: 0,
     attackTargetId: -1, attackBuildingTargetId: -1, path: [], pathIndex: 0,
     queuedWaypoints: [], moveGoalCell: -1, gatherForestCell: -1, gatherPhase: '' };
-  const context = vm.createContext({ workerPerformingActions: createWorkerPerformingActions(), validFarmStock, ...economyServerBindings(), validGateState, buildingBlocksMovement, BUILDING_DEFINITIONS: definitions, UNIT_DEFINITIONS,
+  const context = vm.createContext({ workerPerformingActions: createWorkerPerformingActions(), validFarmStock, ...economyServerBindings(), ...visionServerBindings(), validGateState, buildingBlocksMovement, BUILDING_DEFINITIONS: definitions, UNIT_DEFINITIONS,
     MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8, CELL_COUNT: 256,
     blocked: new Uint8Array(256), buildingBlocked: new Uint8Array(256), townCenterBlocked: new Uint8Array(256),
     elevationLevelByCell: new Uint8Array(256), canTraverseElevation,
@@ -62,7 +62,8 @@ function fixture(team = 0) {
     navigationRevision: 0, attackFlowFields: new Map(), dirty: false,
     broadcastGameplayNotice() {}, sendOrderNotice() {}, clearAttackTarget() {},
   });
-  vm.runInContext(economyServerFunctions + functions, context);
+  vm.runInContext(economyServerFunctions + visionServerFunctions + functions, context);
+  context.invalidateVisionCoverage('fixture-initial');
   context.rebuildWalkableComponents();
   const assessPlacement = cells => {
     const groups = context.captureBuildingConnectivity(), oldMask = context.buildingBlocked;
@@ -177,16 +178,25 @@ for (const team of [0, 1]) test(`seat ${team}: existing cancellation/destruction
   f.context.buildingBlocked[119] = 1;
   f.context.teamWood[team] -= tuning.cost.wood;
   f.worker.buildingTargetId = building.id;
+  const initialCoverage = f.context.visionCoverageBySourceCell;
+  initialCoverage.set(119, 8, { visible: [119], fringe: [] });
+  const generation = initialCoverage.metrics().generation;
   f.context.cancelConstruction({ team: 1 - team }, { buildingId: building.id });
   assert.equal(f.context.teamWood[team], 85);
+  assert.equal(f.context.visionCoverageBySourceCell, initialCoverage, 'foreign cancellation cannot invalidate authority geometry');
   f.context.cancelConstruction({ team }, { buildingId: building.id });
   assert.equal(f.context.teamWood[team], 94, 'refunds only 60% unbuilt work: nine wood');
   assert.equal(f.context.buildingBlocked[119], 0);
   assert.equal(f.worker.buildingTargetId, null);
   assert.equal(f.context.navigationRevision, 1);
+  assert.notEqual(f.context.visionCoverageBySourceCell, initialCoverage, 'removal replaces the real cache');
+  assert.equal(f.context.visionCoverageBySourceCell.has(119, 8), false, 'stale visibility is not retained');
+  assert.equal(f.context.visionCoverageBySourceCell.metrics().generation, generation + 1);
+  assert.equal(f.context.visionCoverageBySourceCell.metrics().reason, 'building-removal');
   f.context.cancelConstruction({ team }, { buildingId: building.id });
   assert.equal(f.context.teamWood[team], 94);
   assert.equal(f.context.destroyBuilding(building), false, 'replayed removal has no effect');
+  assert.equal(f.context.visionCoverageBySourceCell.metrics().generation, generation + 1, 'replay does not invalidate twice');
   const second = prepare({ nextBuildingId: 2 }).plan.buildings[0];
   second.hp = 0;
   f.context.buildings.push(second); f.context.buildingsById.set(second.id, second);
@@ -194,6 +204,7 @@ for (const team of [0, 1]) test(`seat ${team}: existing cancellation/destruction
   f.context.destroyBuilding(second);
   assert.equal(f.context.teamWood[team], 94, 'combat destruction itself returns no refund');
   assert.equal(f.context.buildingBlocked[119], 0);
+  assert.equal(f.context.visionCoverageBySourceCell.metrics().generation, generation + 2, 'combat removal also invalidates coverage');
 });
 
 test('existing construction retains damage through completion; repairs retain the ten-wood minimum', () => {

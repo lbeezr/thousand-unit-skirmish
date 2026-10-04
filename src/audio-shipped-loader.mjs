@@ -1,6 +1,6 @@
 import { validateAudioPack, MAX_PACK_BYTES, MAX_SOURCE_BYTES } from './audio-assets.mjs';
-import { validateMapAudioReference } from './audio-event-profile.mjs';
-import { readBoundedAudioResponse as readBounded } from './audio-shipped-response.mjs';
+import { validateMapAudioReference } from './world/map-audio-reference.mjs';
+import { readBoundedAudioResponse as readBounded } from './client/audio/audio-shipped-response.mjs';
 const cache = new Map();
 let cacheBytes = 0;
 async function verify(bytes, expected, crypto) {
