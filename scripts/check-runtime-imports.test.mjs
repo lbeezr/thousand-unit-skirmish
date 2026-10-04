@@ -123,12 +123,12 @@ test('domain membership rejects duplicate ownership and supports exact canonical
     /duplicate runtime domain membership: src\/a.mjs/);
   assert.throws(() => check({}, { runtimeDomains: { client: ['server.mjs'] } }),
     /duplicate runtime domain membership: server.mjs/);
-  const files = { 'src/formation-assignment.mjs': "export * from './simulation/movement/formation-assignment.mjs';",
-    'src/simulation/movement/formation-assignment.mjs': "import '../../resource-format.mjs';", 'src/resource-format.mjs': '' };
+  const files = { 'src/formation-assignment.mjs': "export * from './simulation/movement/fixture-formation.mjs';",
+    'src/simulation/movement/fixture-formation.mjs': "import '../../resource-format.mjs';", 'src/resource-format.mjs': '' };
   const options = { runtimeDomains: { ...RUNTIME_DOMAINS, simulation: [...RUNTIME_DOMAINS.simulation,
-    'src/simulation/movement/formation-assignment.mjs'] } };
+    'src/simulation/movement/fixture-formation.mjs'] } };
   assert.throws(() => check(files, options), /simulation domain cannot reach client domain/);
-  assert.doesNotThrow(() => check({ ...files, 'src/simulation/movement/formation-assignment.mjs': '' }, options));
+  assert.doesNotThrow(() => check({ ...files, 'src/simulation/movement/fixture-formation.mjs': '' }, options));
 });
 
 test('repository audits require new modules to have a reviewed responsibility', () => {
