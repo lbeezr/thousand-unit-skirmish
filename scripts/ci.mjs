@@ -114,8 +114,8 @@ run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife 
 run(['--test', 'scripts/sheep-relocated-client.test.mjs'], 'Relocated Sheep actual-cell rendering, picking and minimap fog');
 run(['--test', 'scripts/wildlife-client-state.test.mjs', 'scripts/wildlife-client-controls.test.mjs', 'scripts/sheep-placement-client.test.mjs'], 'Owned Sheep selection, normal Herd/Stop input and actual food placement');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');
-run(['--test', 'scripts/millrace-sheep.test.mjs'], 'Default Millrace Sheep budget and exact legacy map compatibility');
-run(['scripts/millrace-sheep-scenario.mjs'], 'Normal default Sheep visibility, harvest, art and recovery');
+run(['--test', 'scripts/millrace-sheep.test.mjs'], 'Historical Millrace Sheep budget and exact legacy map compatibility');
+run(['scripts/millrace-sheep-scenario.mjs'], 'Historical Millrace Sheep visibility, harvest, art and recovery');
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
 run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites');
 run(['--test', 'scripts/frontier-building-default.test.mjs'], 'Normal finished Frontier building art, fallback and shared depth');
@@ -198,7 +198,7 @@ run(['--test', 'scripts/wildlife-claims.test.mjs'], 'Automatic Sheep claim owner
 run(['--test', 'scripts/wildlife-herding.test.mjs', 'scripts/sheep-herding-authority.test.mjs'], 'Owner-only Sheep Herd authority, live food occupancy and checkpoint recovery');
 run(['scripts/sheep-herding-scenario.mjs'], 'Both-seat Sheep Herd, shared harvest, construction and recovery');
 run(['scripts/sheep-claims-scenario.mjs'], 'Both-seat automatic Sheep claims and recovery');
-run(['scripts/sheep-motion-scenario.mjs'], 'Default both-seat Sheep motion and recovery');
+run(['scripts/sheep-motion-scenario.mjs'], 'Historical Millrace both-seat Sheep motion and recovery');
 run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');
 run(['scripts/fractional-cargo-return-scenario.mjs'], 'Both-seat sub-cent Sheep cargo and production-client return recovery');
 run(['--test', 'scripts/shore-fishing.test.mjs', 'scripts/shore-fishing-placeholder.test.mjs'], 'Shore fish bank access and placeholder');

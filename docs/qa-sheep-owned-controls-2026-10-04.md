@@ -33,7 +33,8 @@ Worker, Farm, Skiff, stance and cargo regression assertions. Exact counts,
 reviewed source, live-server results and packed release belong in the owning PR.
 
 Current ordinary Tiny defaults to Terraced Vale 160, which has no Sheep. The
-normal-input proof publishes an admitted 160×160 Sheep-bearing arena; historical
+normal-input proof starts explicit Authored Rules without `RTS_MAP` and publishes
+an admitted 160×160 Sheep-bearing arena, preserving the ordinary floor; historical
 Millrace motion/claims proofs select their map explicitly.
 
 On an identified native build containing this change, run a Sheep-bearing map as

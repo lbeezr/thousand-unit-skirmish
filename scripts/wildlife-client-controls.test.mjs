@@ -214,7 +214,7 @@ for (const team of [0,1]) {
 }
 
 test('production input → HTTP/WS authoritative two-seat natural claim, Herd movement and Stop', {timeout:45_000},async t=>{
-  const server=await createFortifiedFixture({mapPath:null,timeoutMs:18_000});t.after(()=>server.dispose());await server.start();
+  const server=await createFortifiedFixture({mapPath:null,matchModeId:'authored',timeoutMs:18_000});t.after(()=>server.dispose());await server.start();
   const clients=[await server.connect(0),await server.connect(1)];
   const authored={id:'sheep-client-input-native',name:'Sheep Client Input Native',width:160,height:160,
     terrainSeed:17,terrainBase:'meadow',fogOfWar:true,startingArmySize:8,
@@ -224,6 +224,9 @@ test('production input → HTTP/WS authoritative two-seat natural claim, Herd mo
       {id:'owned-sheep-1',type:'food',stock:100,x:9.5,z:-4.5,wildlifeSpecies:'bellweather-sheep'},
     ]};
   const afterPublish=clients.map(client=>client.messages.length);clients[0].send({type:'publishMap',map:authored});
+  const publication=await clients[0].wait(message=>message.type==='mapPublished'||message.type==='mapRejected',
+    'ordinary Sheep arena publication result',afterPublish[0]);
+  assert.equal(publication.type,'mapPublished',publication.message);
   const applied=await Promise.all(clients.map((client,team)=>client.wait(message=>message.type==='mapChange'
     &&message.state.mapId===authored.id,'ordinary normal map publication',afterPublish[team])));
   const map=applied[0].map;

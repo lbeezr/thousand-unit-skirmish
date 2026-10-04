@@ -21,7 +21,7 @@ Object.assign(map, { id: 'sheep-herding-proof', name: 'SHEEP HERDING PROOF', sum
     { id: 'hidden-sheep', type: 'food', x: .5, z: -14.5, stock: 100 },
   ].map(node => ({ ...node, wildlifeSpecies: 'bellweather-sheep' })),
 });
-const fixture = await createFortifiedFixture({ mapPath: null, timeoutMs: 45_000 });
+const fixture = await createFortifiedFixture({ mapPath: null, matchModeId: 'authored', timeoutMs: 45_000 });
 const sourceHash = async () => createHash('sha256').update(await readFile(new URL('../server.mjs', import.meta.url))).digest('hex');
 const serverSha256 = await sourceHash();
 const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera();
