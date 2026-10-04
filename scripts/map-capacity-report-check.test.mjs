@@ -12,4 +12,16 @@ test('retained valid windows pass without becoming hardware or capacity acceptan
   assert.equal(result.passed, true); assert.equal(result.tickMaxMs, 8); assert.equal(result.maximumPlanningSliceMs, 12);
   assert.equal(capturedBudgetEnvelope([]).passed, false);
   assert.equal(capturedBudgetEnvelope([{ health: { tickTiming: {} } }]).passed, false);
+  assert.equal(capturedBudgetEnvelope([sample(3)], [{}]).passed, false);
+  assert.equal(capturedBudgetEnvelope([sample(3)], [{ maxPlanningSliceMs: NaN }]).passed, false);
+});
+test('a cold first tick has no lag observation and remains explicitly counted, with its duration gated', () => {
+  const initial = { health: { tickTiming: { sampleCount: 1, windowSeconds: 0, p95Ms: 12, maxMs: 12,
+    startLagP95Ms: null, startLagMaxMs: null } } };
+  const result = capturedBudgetEnvelope([initial, sample(4)]);
+  assert.equal(result.passed, true); assert.equal(result.initialTickWindowsWithoutLag, 1);
+  initial.health.tickTiming.sampleCount = 300;
+  assert.equal(capturedBudgetEnvelope([initial]).passed, false);
+  initial.health.tickTiming.sampleCount = 1; initial.health.tickTiming.maxMs = 120;
+  assert.equal(capturedBudgetEnvelope([initial]).passed, false);
 });
