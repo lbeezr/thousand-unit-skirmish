@@ -1,0 +1,55 @@
+name: Renderer qualification
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/renderer-qualification.yml'
+      - 'scripts/renderer-qualification*.mjs'
+      - 'scripts/renderer-capability.mjs'
+      - 'scripts/fortified-browser-fixture.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: renderer-qualification-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  packed-game:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Check capture contracts
+        run: node --test scripts/renderer-capability.test.mjs scripts/renderer-qualification.test.mjs
+      - name: Establish sandboxed WebGL2 capability
+        env:
+          EVIDENCE: ${{ runner.temp }}/renderer-qualification
+        run: |
+          mkdir -p "$EVIDENCE"
+          test "$(id -u)" -gt 0
+          node scripts/renderer-capability.mjs --launch > "$EVIDENCE/preflight.json"
+      - name: Pack clean source
+        run: node scripts/pack-railway-release.mjs > "${{ runner.temp }}/renderer-pack.json"
+      - name: Capture live packed-game movement
+        env:
+          EVIDENCE: ${{ runner.temp }}/renderer-qualification
+        run: node scripts/renderer-qualification.mjs "${{ runner.temp }}/renderer-pack.json" "$EVIDENCE" > "$EVIDENCE/capture.log"
+      - name: Retain bounded renderer evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: renderer-qualification-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/renderer-qualification/
+          if-no-files-found: error
+          retention-days: 1
