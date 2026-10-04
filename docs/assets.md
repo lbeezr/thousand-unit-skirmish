@@ -235,6 +235,14 @@ Veilcap and pod-vine pockets outside the forest cells. Pale Clearings has
 and [runtime evidence](qa-evidence/vaelora-vesperra-woodland-margins-2026-10-01/README.md).
 Margin plants use building-footprint clearing and remain independent of wood stock.
 
+The [tree-variety source pilot](tree-variety-pilot.md) audits actual model/view
+lineage and prepares stable seeded pine yaw/scale reuse. It remains unbound:
+private source GLBs, matching lifecycle views, shared slot coordination,
+independent review and qualified ordinary-game evidence are still missing.
+The painterly-style audit selects a two-heading oak material diagnostic next,
+blocked by its missing private GLB. No default art replacement or expanded
+production is authorized by this source preparation.
+
 Vesperra jungle-loam now defaults to a quieter moss/soil source, with
 `jungleSurface=legacy` preserving the previous comparison. Explicit other
 regions keep their current ground. [Manifest](../assets/environment/frontier-v1/vesperra-quiet-loam-manifest.json),

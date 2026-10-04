@@ -29,3 +29,24 @@ export function forestAgeFactors(points, seed=0, radius=1.6) {
   }
   return factors;
 }
+
+// Prepared pine pilot: caller supplies the immutable map seed and original wood
+// cell, never stock, iteration order, time or a reconnect/session identifier.
+// This selector is not bound to environment-art until the slot owner agrees the
+// shared seam. Version 1 must retain its hash for existing saved map identities.
+/** @param {number} cell @param {number} [seed] */
+export function pineViewVariation(cell, seed=0) {
+  if (![cell, seed].every(n => Number.isInteger(n) && n >= 0 && n <= 0xffffffff)) {
+    throw new RangeError('Pine appearance requires unsigned 32-bit cell and map seed');
+  }
+  /** @param {number} salt */
+  const sample = salt => {
+    let n = (cell ^ Math.imul(seed, 0x9e3779b1) ^ salt) >>> 0;
+    n = Math.imul(n ^ (n >>> 16), 0x21f0aaad);
+    n = Math.imul(n ^ (n >>> 15), 0x735a2d97);
+    return (n ^ (n >>> 15)) >>> 0;
+  };
+  const viewIndex = sample(0x70696e65) >>> 29;
+  return Object.freeze({ viewIndex, modelYawDegrees: viewIndex * 45,
+    scale: 0.7 + 0.3 * sample(0x7363616c) / 0xffffffff, flip: false, yaw: 0 });
+}
