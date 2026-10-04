@@ -8,6 +8,8 @@ room-data/
 coverage/
 *.log
 capture.json
+!assets/units/spearman-sprite-v2/capture.json
+!assets/units/spearman-sprite-v2/source/capture.json
 .game-dev/goals/
 assets/generated/
 meshy_output/

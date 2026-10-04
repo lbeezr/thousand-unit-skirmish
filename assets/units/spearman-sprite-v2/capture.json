@@ -1,0 +1,1868 @@
+{
+  "role": "spearman",
+  "sourcePath": "assets/units-buildings/frontier-glb-sample-v2/models/unit-art-v2.glb",
+  "sourceSha256": "c3caad9b3dbf4db9acbb870b933ad526c0efaf408ff0ce5d65926dc257aac812",
+  "sourceGeometry": "public shared humanoid core, spear/helmet and team sash; no shield",
+  "providerJobs": 0,
+  "charges": 0,
+  "reusedSpriteFrames": 0,
+  "newlyAuthoredPoseSamples": 12,
+  "newlyRenderedFrames": 96,
+  "mirroredFrames": 0,
+  "rootPx": [
+    128.00006103515625,
+    153.66253662109375
+  ],
+  "cameraGameVector": [
+    0.78,
+    1.12,
+    0.78
+  ],
+  "orthographicScale": 2.799999952316284,
+  "canvasPx": [
+    256,
+    256
+  ],
+  "sourceBodyHeight": 0.8,
+  "limbVertexCounts": {
+    "arm-left": 24,
+    "arm-right": 24,
+    "leg-left": 48,
+    "leg-right": 48
+  },
+  "poseTechnique": "public rigid geometry with explicit separate leg/arm articulation, spear windup/thrust/recovery and backward fall; fixed root/camera/scale",
+  "samples": [
+    {
+      "frameId": "idle-north-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "idle-north-east-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "idle-east-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "idle-south-east-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "idle-south-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "idle-south-west-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "idle-west-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "idle-north-west-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "walk-north-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "walk-north-east-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "walk-east-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "walk-south-east-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "walk-south-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "walk-south-west-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "walk-west-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "walk-north-west-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "walk-north-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "walk-north-east-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "walk-east-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "walk-south-east-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "walk-south-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "walk-south-west-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "walk-west-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "walk-north-west-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "walk-north-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "walk-north-east-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "walk-east-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "walk-south-east-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "walk-south-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "walk-south-west-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "walk-west-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "walk-north-west-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "walk-north-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "walk-north-east-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "walk-east-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "walk-south-east-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "walk-south-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "walk-south-west-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "walk-west-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "walk-north-west-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "attack-north-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "attack-north-east-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "attack-east-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "attack-south-east-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "attack-south-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "attack-south-west-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "attack-west-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "attack-north-west-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "attack-north-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "attack-north-east-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "attack-east-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "attack-south-east-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "attack-south-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "attack-south-west-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "attack-west-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "attack-north-west-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "attack-north-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "attack-north-east-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "attack-east-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "attack-south-east-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "attack-south-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "attack-south-west-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "attack-west-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "attack-north-west-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "defeat-north-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "defeat-north-east-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "defeat-east-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "defeat-south-east-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "defeat-south-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "defeat-south-west-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "defeat-west-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "defeat-north-west-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "defeat-north-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "defeat-north-east-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "defeat-east-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "defeat-south-east-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "defeat-south-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "defeat-south-west-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "defeat-west-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "defeat-north-west-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "defeat-north-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "defeat-north-east-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "defeat-east-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "defeat-south-east-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "defeat-south-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "defeat-south-west-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "defeat-west-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "defeat-north-west-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "defeat-north-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "defeat-north-east-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "defeat-east-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "defeat-south-east-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "defeat-south-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "defeat-south-west-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "defeat-west-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "defeat-north-west-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    }
+  ],
+  "sharedWorldPerPixel": 0.023695867102252688,
+  "bodyReferenceWorld": 1.2161865234375,
+  "bodyReferenceProjectedPx": 51.32483728868825,
+  "missingActionHeadingCells": [],
+  "measurements": [
+    {
+      "frameId": "idle-north-0",
+      "file": "source/idle-north-0.png",
+      "sha256": "b175e95cdc12080dfcb04b74f0e0f7c8cb0fd0c2a41da2ab4bae1950a8b4411c",
+      "alphaBoundsPx": [
+        101,
+        95,
+        152,
+        171
+      ],
+      "maskPixels": 268
+    },
+    {
+      "frameId": "idle-north-east-0",
+      "file": "source/idle-north-east-0.png",
+      "sha256": "d68342335c393413bdda4cba203818e19909b0843def44f53815a0aba7d4c400",
+      "alphaBoundsPx": [
+        100,
+        84,
+        159,
+        165
+      ],
+      "maskPixels": 316
+    },
+    {
+      "frameId": "idle-east-0",
+      "file": "source/idle-east-0.png",
+      "sha256": "7d046a0c8489578f0b9f65b76caa1438bcbcc57264c55aa14901dfddac03b272",
+      "alphaBoundsPx": [
+        103,
+        70,
+        157,
+        171
+      ],
+      "maskPixels": 220
+    },
+    {
+      "frameId": "idle-south-east-0",
+      "file": "source/idle-south-east-0.png",
+      "sha256": "44f64c5961e30197cdfd0144007d02584cdd16717a7e7f8007941e2d8034f1fb",
+      "alphaBoundsPx": [
+        115,
+        64,
+        150,
+        167
+      ],
+      "maskPixels": 34
+    },
+    {
+      "frameId": "idle-south-0",
+      "file": "source/idle-south-0.png",
+      "sha256": "f26e4c9806c87c25f9772169b64b6c8acc0d8b396d631a30e14ebc130e62c6e4",
+      "alphaBoundsPx": [
+        104,
+        68,
+        155,
+        166
+      ],
+      "maskPixels": 53
+    },
+    {
+      "frameId": "idle-south-west-0",
+      "file": "source/idle-south-west-0.png",
+      "sha256": "631aa8193710bc8307f8c89985062250c34b7b51951aa5b325ec3e06bbecb50d",
+      "alphaBoundsPx": [
+        97,
+        81,
+        156,
+        159
+      ],
+      "maskPixels": 30
+    },
+    {
+      "frameId": "idle-west-0",
+      "file": "source/idle-west-0.png",
+      "sha256": "2ab7c89ad8061a48d6622dc20cc880f7480dc3be452588e44e867dbb46b8a6e9",
+      "alphaBoundsPx": [
+        99,
+        88,
+        152,
+        166
+      ],
+      "maskPixels": 13
+    },
+    {
+      "frameId": "idle-north-west-0",
+      "file": "source/idle-north-west-0.png",
+      "sha256": "78efa69ed5ac0b2c719d71d0925fcac2ad275747a4d840ab0be434f45f312b8f",
+      "alphaBoundsPx": [
+        106,
+        93,
+        140,
+        170
+      ],
+      "maskPixels": 73
+    },
+    {
+      "frameId": "walk-north-0",
+      "file": "source/walk-north-0.png",
+      "sha256": "a8eac3de5354408f9020272507aa3e704824695b0af92cf418a08d278f39b605",
+      "alphaBoundsPx": [
+        98,
+        95,
+        155,
+        171
+      ],
+      "maskPixels": 267
+    },
+    {
+      "frameId": "walk-north-east-0",
+      "file": "source/walk-north-east-0.png",
+      "sha256": "c22e2152da698bddad12c74642b48c3c4ebd53d7ba289711ed8df3345afd69e7",
+      "alphaBoundsPx": [
+        100,
+        84,
+        159,
+        165
+      ],
+      "maskPixels": 321
+    },
+    {
+      "frameId": "walk-east-0",
+      "file": "source/walk-east-0.png",
+      "sha256": "04f9e4e7e670671b51eaa5981147afdf4ea7ffebc9367ef4f5e1499d05030df6",
+      "alphaBoundsPx": [
+        106,
+        70,
+        154,
+        171
+      ],
+      "maskPixels": 222
+    },
+    {
+      "frameId": "walk-south-east-0",
+      "file": "source/walk-south-east-0.png",
+      "sha256": "0df4722293dfd57e1185fa09e7cf4c3f6bbb0db33b6efe5d2ab2ccacc750e0e2",
+      "alphaBoundsPx": [
+        115,
+        64,
+        150,
+        167
+      ],
+      "maskPixels": 34
+    },
+    {
+      "frameId": "walk-south-0",
+      "file": "source/walk-south-0.png",
+      "sha256": "5ab0ea60bb29f3f85ce206a36c4022247deb897c006758ff39273bac77c1ed3b",
+      "alphaBoundsPx": [
+        101,
+        68,
+        158,
+        166
+      ],
+      "maskPixels": 53
+    },
+    {
+      "frameId": "walk-south-west-0",
+      "file": "source/walk-south-west-0.png",
+      "sha256": "c9b928758bd43a42717c0796d02a4c0025e6d4bd3fed4ac7ee0c7366f380e246",
+      "alphaBoundsPx": [
+        97,
+        81,
+        156,
+        159
+      ],
+      "maskPixels": 31
+    },
+    {
+      "frameId": "walk-west-0",
+      "file": "source/walk-west-0.png",
+      "sha256": "bfa7030db57085cc6d0def72fe78437aac9125d8df1b1759eceba2688745cf69",
+      "alphaBoundsPx": [
+        101,
+        88,
+        151,
+        166
+      ],
+      "maskPixels": 19
+    },
+    {
+      "frameId": "walk-north-west-0",
+      "file": "source/walk-north-west-0.png",
+      "sha256": "9a6e8a4d0b6c19d38d776e220c4feebaa9838c3abe0f7cce3710be45fbeaa1a2",
+      "alphaBoundsPx": [
+        106,
+        93,
+        140,
+        170
+      ],
+      "maskPixels": 73
+    },
+    {
+      "frameId": "walk-north-1",
+      "file": "source/walk-north-1.png",
+      "sha256": "36a31cac27e4ae739c87558d6911dd8b12b8ea6129348473cec69a222705d345",
+      "alphaBoundsPx": [
+        98,
+        94,
+        152,
+        167
+      ],
+      "maskPixels": 268
+    },
+    {
+      "frameId": "walk-north-east-1",
+      "file": "source/walk-north-east-1.png",
+      "sha256": "ec8bad1f63c451d0a772166f1fe2f1913bd34aa4a99eaeaf026f4f1b9ee2813e",
+      "alphaBoundsPx": [
+        100,
+        83,
+        159,
+        166
+      ],
+      "maskPixels": 312
+    },
+    {
+      "frameId": "walk-east-1",
+      "file": "source/walk-east-1.png",
+      "sha256": "102b0b3ab2040eca6e0b6a15943ac5164fca3f9b602c49d25785204720937451",
+      "alphaBoundsPx": [
+        104,
+        70,
+        156,
+        169
+      ],
+      "maskPixels": 222
+    },
+    {
+      "frameId": "walk-south-east-1",
+      "file": "source/walk-south-east-1.png",
+      "sha256": "055c8876c0e16cd46b7a88486a0a077fa9475fcf73ead539176fd0195c36255a",
+      "alphaBoundsPx": [
+        112,
+        63,
+        152,
+        167
+      ],
+      "maskPixels": 34
+    },
+    {
+      "frameId": "walk-south-1",
+      "file": "source/walk-south-1.png",
+      "sha256": "8d1468722b4034378f579e07765ef313abff2949f013809c58a9d833eba1531d",
+      "alphaBoundsPx": [
+        103,
+        68,
+        158,
+        162
+      ],
+      "maskPixels": 52
+    },
+    {
+      "frameId": "walk-south-west-1",
+      "file": "source/walk-south-west-1.png",
+      "sha256": "98bcd0a7358459958c7f2198ad8be4b880a90e3b0c9abbb2d771f2850bb17e38",
+      "alphaBoundsPx": [
+        97,
+        80,
+        156,
+        161
+      ],
+      "maskPixels": 29
+    },
+    {
+      "frameId": "walk-west-1",
+      "file": "source/walk-west-1.png",
+      "sha256": "76df77d946c995354254eea8696ce02a9ab29c889b6f71e1990c4b0d52fa70ad",
+      "alphaBoundsPx": [
+        99,
+        87,
+        152,
+        166
+      ],
+      "maskPixels": 10
+    },
+    {
+      "frameId": "walk-north-west-1",
+      "file": "source/walk-north-west-1.png",
+      "sha256": "e9fc89c2f4d496857012eb58feb3aa4016ad496defab92e2cbd390d4977c3975",
+      "alphaBoundsPx": [
+        104,
+        92,
+        145,
+        170
+      ],
+      "maskPixels": 70
+    },
+    {
+      "frameId": "walk-north-2",
+      "file": "source/walk-north-2.png",
+      "sha256": "d9e17b851c2b1b6b48debbb47a38712de34de62b919f52551928647a416d2f9e",
+      "alphaBoundsPx": [
+        101,
+        95,
+        150,
+        171
+      ],
+      "maskPixels": 267
+    },
+    {
+      "frameId": "walk-north-east-2",
+      "file": "source/walk-north-east-2.png",
+      "sha256": "2f7046946519cb8d6aefed28e4f277b7bddcdd640cc1b99c84d26b8b7727bbf3",
+      "alphaBoundsPx": [
+        100,
+        84,
+        159,
+        165
+      ],
+      "maskPixels": 314
+    },
+    {
+      "frameId": "walk-east-2",
+      "file": "source/walk-east-2.png",
+      "sha256": "a984bc00fe23a8ef264447057944b585a0b46d5438bc58f8b8ef355463aa90df",
+      "alphaBoundsPx": [
+        100,
+        70,
+        160,
+        171
+      ],
+      "maskPixels": 217
+    },
+    {
+      "frameId": "walk-south-east-2",
+      "file": "source/walk-south-east-2.png",
+      "sha256": "25f095328ccb45d0ffe6ea9dbfa7d8e76e9e9f804ba890d1b1583bb14aa64e74",
+      "alphaBoundsPx": [
+        115,
+        64,
+        150,
+        167
+      ],
+      "maskPixels": 34
+    },
+    {
+      "frameId": "walk-south-2",
+      "file": "source/walk-south-2.png",
+      "sha256": "a17bd6a155f964496a2a71870b899fc0b25c0d52c487cbd78b81f79556ae3c1b",
+      "alphaBoundsPx": [
+        106,
+        68,
+        155,
+        166
+      ],
+      "maskPixels": 53
+    },
+    {
+      "frameId": "walk-south-west-2",
+      "file": "source/walk-south-west-2.png",
+      "sha256": "6e9b203d1616726e28082ca4a04f7e03cc015efc0b21283745e1dadc4abb6466",
+      "alphaBoundsPx": [
+        97,
+        81,
+        156,
+        159
+      ],
+      "maskPixels": 30
+    },
+    {
+      "frameId": "walk-west-2",
+      "file": "source/walk-west-2.png",
+      "sha256": "3a400ae5bccd712e20e4ff0edb54621b907ac53d95a81c85e2adbc8ed1bc177e",
+      "alphaBoundsPx": [
+        96,
+        88,
+        156,
+        166
+      ],
+      "maskPixels": 8
+    },
+    {
+      "frameId": "walk-north-west-2",
+      "file": "source/walk-north-west-2.png",
+      "sha256": "cbb88c0d3c6ab356e00eb7f559ead6f59efdc5bc803e1f88fbb03d0570c012bf",
+      "alphaBoundsPx": [
+        106,
+        93,
+        140,
+        170
+      ],
+      "maskPixels": 72
+    },
+    {
+      "frameId": "walk-north-3",
+      "file": "source/walk-north-3.png",
+      "sha256": "a4cda039a641f4aaff53f28fc94ea82a206ec217539cffbe520fe6139350458e",
+      "alphaBoundsPx": [
+        101,
+        94,
+        152,
+        169
+      ],
+      "maskPixels": 266
+    },
+    {
+      "frameId": "walk-north-east-3",
+      "file": "source/walk-north-east-3.png",
+      "sha256": "0e8f6fc30f870e15442de207afa70bf4cdbb94a9a15f3c50a495c4a6490f5dd6",
+      "alphaBoundsPx": [
+        100,
+        83,
+        159,
+        165
+      ],
+      "maskPixels": 315
+    },
+    {
+      "frameId": "walk-east-3",
+      "file": "source/walk-east-3.png",
+      "sha256": "3c4d2e73ccbe09125bb27bcf9824d2d2bbaa2d563f1161ae753e44cc1060c81f",
+      "alphaBoundsPx": [
+        103,
+        70,
+        158,
+        167
+      ],
+      "maskPixels": 219
+    },
+    {
+      "frameId": "walk-south-east-3",
+      "file": "source/walk-south-east-3.png",
+      "sha256": "b7a47719a568749247b5d23a7ab5e5846384cffe2b125e3cfea58c5238509478",
+      "alphaBoundsPx": [
+        111,
+        63,
+        152,
+        167
+      ],
+      "maskPixels": 34
+    },
+    {
+      "frameId": "walk-south-3",
+      "file": "source/walk-south-3.png",
+      "sha256": "815e8d18f67e6e740eaea50639e0db3d1334b73c7b1a2305f37923e3317e6f19",
+      "alphaBoundsPx": [
+        104,
+        68,
+        155,
+        166
+      ],
+      "maskPixels": 51
+    },
+    {
+      "frameId": "walk-south-west-3",
+      "file": "source/walk-south-west-3.png",
+      "sha256": "6813e95c2e955bfaa7389f5512a82d87e2e648eee57bb00e324ddbd37ae712a3",
+      "alphaBoundsPx": [
+        97,
+        80,
+        156,
+        161
+      ],
+      "maskPixels": 29
+    },
+    {
+      "frameId": "walk-west-3",
+      "file": "source/walk-west-3.png",
+      "sha256": "4e9912123072bf532aaa7620573655d60529041f97d8889eeb2c3a0b8d3cec3a",
+      "alphaBoundsPx": [
+        98,
+        87,
+        152,
+        163
+      ],
+      "maskPixels": 10
+    },
+    {
+      "frameId": "walk-north-west-3",
+      "file": "source/walk-north-west-3.png",
+      "sha256": "357841f999928a5c9772201eeed23686be68e5752f47274437a6103c4cf69dd9",
+      "alphaBoundsPx": [
+        104,
+        92,
+        145,
+        170
+      ],
+      "maskPixels": 74
+    },
+    {
+      "frameId": "attack-north-0",
+      "file": "source/attack-north-0.png",
+      "sha256": "4aef2bee437ae6fb26bda7426ad4900c7930e851785df6886525278e5a79d170",
+      "alphaBoundsPx": [
+        101,
+        95,
+        167,
+        173
+      ],
+      "maskPixels": 210
+    },
+    {
+      "frameId": "attack-north-east-0",
+      "file": "source/attack-north-east-0.png",
+      "sha256": "8677045d3f2499c82ba191a870086b14e32a5f5b358e33e5bf7fd4d3620b906e",
+      "alphaBoundsPx": [
+        100,
+        97,
+        159,
+        169
+      ],
+      "maskPixels": 309
+    },
+    {
+      "frameId": "attack-east-0",
+      "file": "source/attack-east-0.png",
+      "sha256": "42a239f2bcba34f80694b95115c3c70a84b7302619812e0731a4a78b5fbf6295",
+      "alphaBoundsPx": [
+        103,
+        95,
+        181,
+        168
+      ],
+      "maskPixels": 217
+    },
+    {
+      "frameId": "attack-south-east-0",
+      "file": "source/attack-south-east-0.png",
+      "sha256": "2ac75a2239eb339ca7797c6ef773449a82ffa41cbbf46f2da71e1ae9db38a655",
+      "alphaBoundsPx": [
+        100,
+        79,
+        175,
+        167
+      ],
+      "maskPixels": 33
+    },
+    {
+      "frameId": "attack-south-0",
+      "file": "source/attack-south-0.png",
+      "sha256": "b8a8cdcec2cbc757bad4f378a5ec4ee911cedc6066c00851ee1cf537e8a2193d",
+      "alphaBoundsPx": [
+        89,
+        62,
+        156,
+        168
+      ],
+      "maskPixels": 51
+    },
+    {
+      "frameId": "attack-south-west-0",
+      "file": "source/attack-south-west-0.png",
+      "sha256": "746a17eaa001c70b25ba87072b90fedd0bc66128e9fa21745239c46fd88f7907",
+      "alphaBoundsPx": [
+        98,
+        66,
+        156,
+        162
+      ],
+      "maskPixels": 42
+    },
+    {
+      "frameId": "attack-west-0",
+      "file": "source/attack-west-0.png",
+      "sha256": "f0dbf842a50b4b2fc65b0e00779754507a69929852c033ac32471595bef39c5c",
+      "alphaBoundsPx": [
+        75,
+        88,
+        152,
+        169
+      ],
+      "maskPixels": 43
+    },
+    {
+      "frameId": "attack-north-west-0",
+      "file": "source/attack-north-west-0.png",
+      "sha256": "c9c440eca7aad33ce5f041c47ee12b3d8e0464c5942e3e0ecb9708074e39dc06",
+      "alphaBoundsPx": [
+        81,
+        93,
+        156,
+        167
+      ],
+      "maskPixels": 60
+    },
+    {
+      "frameId": "attack-north-1",
+      "file": "source/attack-north-1.png",
+      "sha256": "6b5d6d6ccfa15bedf10912c565bc8050bc201291f3dfb3749a502326948d1f7b",
+      "alphaBoundsPx": [
+        91,
+        97,
+        160,
+        183
+      ],
+      "maskPixels": 233
+    },
+    {
+      "frameId": "attack-north-east-1",
+      "file": "source/attack-north-east-1.png",
+      "sha256": "c1798ebb64cb23068051ea735c0f4d7111a8b3bfab2ce8e92e9539aa47ee3236",
+      "alphaBoundsPx": [
+        100,
+        99,
+        159,
+        185
+      ],
+      "maskPixels": 290
+    },
+    {
+      "frameId": "attack-east-1",
+      "file": "source/attack-east-1.png",
+      "sha256": "4a3d1e53e28a58c69433eb3c8546cfcab88513b90e576b356bb2b4c58828a0fb",
+      "alphaBoundsPx": [
+        104,
+        97,
+        203,
+        168
+      ],
+      "maskPixels": 192
+    },
+    {
+      "frameId": "attack-south-east-1",
+      "file": "source/attack-south-east-1.png",
+      "sha256": "5ecca2c6f68d2fd5ac3ac9f673b8929df856bbfaa3adf012df1cd38744c21f99",
+      "alphaBoundsPx": [
+        110,
+        93,
+        207,
+        167
+      ],
+      "maskPixels": 35
+    },
+    {
+      "frameId": "attack-south-1",
+      "file": "source/attack-south-1.png",
+      "sha256": "654124d8ac3dff87cd4476363449ed6dde6665d134b6d14ba49c2f006ea90789",
+      "alphaBoundsPx": [
+        96,
+        75,
+        166,
+        168
+      ],
+      "maskPixels": 57
+    },
+    {
+      "frameId": "attack-south-west-1",
+      "file": "source/attack-south-west-1.png",
+      "sha256": "1518400497661c920e05c0846d9278f93d998c161d4166f08621e4607f50435e",
+      "alphaBoundsPx": [
+        97,
+        73,
+        156,
+        162
+      ],
+      "maskPixels": 64
+    },
+    {
+      "frameId": "attack-west-1",
+      "file": "source/attack-west-1.png",
+      "sha256": "4099b67952779dbf619905d85848178ef0025bda627212fb2a1ca71a0206b856",
+      "alphaBoundsPx": [
+        53,
+        87,
+        152,
+        163
+      ],
+      "maskPixels": 78
+    },
+    {
+      "frameId": "attack-north-west-1",
+      "file": "source/attack-north-west-1.png",
+      "sha256": "cb8e08148eb36fb06215c63b5a474dcbe46649c26d74198d808f879ea2920c8f",
+      "alphaBoundsPx": [
+        49,
+        93,
+        146,
+        167
+      ],
+      "maskPixels": 78
+    },
+    {
+      "frameId": "attack-north-2",
+      "file": "source/attack-north-2.png",
+      "sha256": "ab51af844d22a63b5f9758ec5a640a8e230d2592e47a1d22817314d2a81b6366",
+      "alphaBoundsPx": [
+        100,
+        96,
+        167,
+        173
+      ],
+      "maskPixels": 220
+    },
+    {
+      "frameId": "attack-north-east-2",
+      "file": "source/attack-north-east-2.png",
+      "sha256": "9e71074af0712d8e8336166996b98982a216326b96fdf75eb4e45c9c4dfd2653",
+      "alphaBoundsPx": [
+        100,
+        97,
+        159,
+        169
+      ],
+      "maskPixels": 301
+    },
+    {
+      "frameId": "attack-east-2",
+      "file": "source/attack-east-2.png",
+      "sha256": "1bc07a944b881a6cb3891464c73e93c5f5ed4b869c7d3175fef8a898fe235cef",
+      "alphaBoundsPx": [
+        104,
+        96,
+        190,
+        168
+      ],
+      "maskPixels": 210
+    },
+    {
+      "frameId": "attack-south-east-2",
+      "file": "source/attack-south-east-2.png",
+      "sha256": "1b7371e1d1c41b020401f7f97fc4f0f5adb0ea800fd3585c93e6f5f60aed469c",
+      "alphaBoundsPx": [
+        101,
+        89,
+        190,
+        167
+      ],
+      "maskPixels": 35
+    },
+    {
+      "frameId": "attack-south-2",
+      "file": "source/attack-south-2.png",
+      "sha256": "f024f5f879af0c04e334bef5a1b25fadc768e10be8d624956a72e21d348d2ce4",
+      "alphaBoundsPx": [
+        90,
+        65,
+        156,
+        168
+      ],
+      "maskPixels": 58
+    },
+    {
+      "frameId": "attack-south-west-2",
+      "file": "source/attack-south-west-2.png",
+      "sha256": "531737623a133043d064b0af3e81e7a7f110f9d515575474429ff479dd071a9f",
+      "alphaBoundsPx": [
+        97,
+        65,
+        156,
+        162
+      ],
+      "maskPixels": 48
+    },
+    {
+      "frameId": "attack-west-2",
+      "file": "source/attack-west-2.png",
+      "sha256": "8caaf9ca57bf72eadaba962e7fa9ce9fc1451da213b81e24c7015e2c6e4481a1",
+      "alphaBoundsPx": [
+        66,
+        87,
+        152,
+        164
+      ],
+      "maskPixels": 50
+    },
+    {
+      "frameId": "attack-north-west-2",
+      "file": "source/attack-north-west-2.png",
+      "sha256": "414c54799f6caa52434bcb31dd50bcebe2de277f80e167075d6df0431ee55b8f",
+      "alphaBoundsPx": [
+        67,
+        93,
+        154,
+        167
+      ],
+      "maskPixels": 67
+    },
+    {
+      "frameId": "defeat-north-0",
+      "file": "source/defeat-north-0.png",
+      "sha256": "60680f6210b9a45461a1faba6038e35028c9209563e8e5e617804be72e486bbf",
+      "alphaBoundsPx": [
+        102,
+        89,
+        160,
+        169
+      ],
+      "maskPixels": 298
+    },
+    {
+      "frameId": "defeat-north-east-0",
+      "file": "source/defeat-north-east-0.png",
+      "sha256": "fd7bcc3ff653bc1c840e67814ab53e9e63f38bba7ecb8ecab210947a5cfc271b",
+      "alphaBoundsPx": [
+        100,
+        73,
+        159,
+        163
+      ],
+      "maskPixels": 342
+    },
+    {
+      "frameId": "defeat-east-0",
+      "file": "source/defeat-east-0.png",
+      "sha256": "37f58fc9055b9c15ddc66a684b73c9026fb26f02506a5367c624d8a3a4d9fade",
+      "alphaBoundsPx": [
+        100,
+        62,
+        154,
+        169
+      ],
+      "maskPixels": 251
+    },
+    {
+      "frameId": "defeat-south-east-0",
+      "file": "source/defeat-south-east-0.png",
+      "sha256": "303999e7a04793ac48e9e38ca6b3a4b2f4286b959722130a90872854e4785eb5",
+      "alphaBoundsPx": [
+        107,
+        64,
+        146,
+        167
+      ],
+      "maskPixels": 82
+    },
+    {
+      "frameId": "defeat-south-0",
+      "file": "source/defeat-south-0.png",
+      "sha256": "d1fd13ed6df92665a1bb00cf427703a697b3ca12173affac708f45736fc890c7",
+      "alphaBoundsPx": [
+        95,
+        77,
+        153,
+        166
+      ],
+      "maskPixels": 46
+    },
+    {
+      "frameId": "defeat-south-west-0",
+      "file": "source/defeat-south-west-0.png",
+      "sha256": "63df293fbfa2c527315792e5c45ac3a97924275d26636cd5d9fa9f78dc67b2bc",
+      "alphaBoundsPx": [
+        97,
+        94,
+        156,
+        159
+      ],
+      "maskPixels": 23
+    },
+    {
+      "frameId": "defeat-west-0",
+      "file": "source/defeat-west-0.png",
+      "sha256": "4cce4b8db2fd2b30fe7d1a0e6686ea6adb1e9cb99ea9e7d37547a1a13817d5df",
+      "alphaBoundsPx": [
+        102,
+        91,
+        156,
+        167
+      ],
+      "maskPixels": 21
+    },
+    {
+      "frameId": "defeat-north-west-0",
+      "file": "source/defeat-north-west-0.png",
+      "sha256": "b0171773ff759679879971853d86b29c45d647cc70412b694938114c16f0e960",
+      "alphaBoundsPx": [
+        110,
+        93,
+        150,
+        170
+      ],
+      "maskPixels": 97
+    },
+    {
+      "frameId": "defeat-north-1",
+      "file": "source/defeat-north-1.png",
+      "sha256": "a5bb01d74e5d41111c8037cd130dff109c08b081ea6c9ec271c971cf46700984",
+      "alphaBoundsPx": [
+        104,
+        79,
+        190,
+        162
+      ],
+      "maskPixels": 355
+    },
+    {
+      "frameId": "defeat-north-east-1",
+      "file": "source/defeat-north-east-1.png",
+      "sha256": "73512718b024e1abac8f89df6ace52c8dca6e8f676667172a4442d8565aac540",
+      "alphaBoundsPx": [
+        100,
+        53,
+        158,
+        155
+      ],
+      "maskPixels": 371
+    },
+    {
+      "frameId": "defeat-east-1",
+      "file": "source/defeat-east-1.png",
+      "sha256": "f33162f6f7c7a89273b75fc98c27f486db393def804013d6f61f7872bf1d7a34",
+      "alphaBoundsPx": [
+        86,
+        53,
+        152,
+        162
+      ],
+      "maskPixels": 321
+    },
+    {
+      "frameId": "defeat-south-east-1",
+      "file": "source/defeat-south-east-1.png",
+      "sha256": "41a1aca1ccc6c25cd9ab4f7ef5816b5721451fafb429afdb3532b3ab1d25c0af",
+      "alphaBoundsPx": [
+        67,
+        77,
+        145,
+        167
+      ],
+      "maskPixels": 191
+    },
+    {
+      "frameId": "defeat-south-1",
+      "file": "source/defeat-south-1.png",
+      "sha256": "a625a5e870a522ec72f6358754cd2a465143440493fe4ae357f28e87dbc010e6",
+      "alphaBoundsPx": [
+        65,
+        110,
+        152,
+        165
+      ],
+      "maskPixels": 36
+    },
+    {
+      "frameId": "defeat-south-west-1",
+      "file": "source/defeat-south-west-1.png",
+      "sha256": "d58dd24ff0173dbed5f10344983400af010c3c38d6985a8930434f5e64a3a5cd",
+      "alphaBoundsPx": [
+        97,
+        122,
+        157,
+        159
+      ],
+      "maskPixels": 30
+    },
+    {
+      "frameId": "defeat-west-1",
+      "file": "source/defeat-west-1.png",
+      "sha256": "ce057af04c194e048409ec179f9dd0e78990143ae65d1395b2c1c8fc150bf9ec",
+      "alphaBoundsPx": [
+        104,
+        110,
+        170,
+        164
+      ],
+      "maskPixels": 65
+    },
+    {
+      "frameId": "defeat-north-west-1",
+      "file": "source/defeat-north-west-1.png",
+      "sha256": "6df0ffa8114e86d8eacbc463aeaa30812c419767bfd78840c65c1cd62656b94c",
+      "alphaBoundsPx": [
+        112,
+        94,
+        189,
+        168
+      ],
+      "maskPixels": 248
+    },
+    {
+      "frameId": "defeat-north-2",
+      "file": "source/defeat-north-2.png",
+      "sha256": "875805caeeadd335b2249de958a237add75037dc36db8e3803cb069d575cc78e",
+      "alphaBoundsPx": [
+        107,
+        86,
+        209,
+        165
+      ],
+      "maskPixels": 328
+    },
+    {
+      "frameId": "defeat-north-east-2",
+      "file": "source/defeat-north-east-2.png",
+      "sha256": "8e9918ad750ae7dd055f08ce88c9bd3859193ded2b5f812aac886d2ed2af5f44",
+      "alphaBoundsPx": [
+        100,
+        60,
+        158,
+        156
+      ],
+      "maskPixels": 362
+    },
+    {
+      "frameId": "defeat-east-2",
+      "file": "source/defeat-east-2.png",
+      "sha256": "b5019a2886ee6a80fda49aedd33998cc52b02f1f2c305ff5a53ada7a570636f5",
+      "alphaBoundsPx": [
+        75,
+        66,
+        149,
+        164
+      ],
+      "maskPixels": 331
+    },
+    {
+      "frameId": "defeat-south-east-2",
+      "file": "source/defeat-south-east-2.png",
+      "sha256": "944060044165b6ac1b481a2b37eae8a2adfb3bb0ae389d78c9ed93a2bf08f156",
+      "alphaBoundsPx": [
+        40,
+        103,
+        139,
+        167
+      ],
+      "maskPixels": 269
+    },
+    {
+      "frameId": "defeat-south-2",
+      "file": "source/defeat-south-2.png",
+      "sha256": "998209b10f1ba06487e969e24c6d6cae3d3b0415c49aba4f8b512176ccf33727",
+      "alphaBoundsPx": [
+        47,
+        123,
+        149,
+        175
+      ],
+      "maskPixels": 227
+    },
+    {
+      "frameId": "defeat-south-west-2",
+      "file": "source/defeat-south-west-2.png",
+      "sha256": "dad5b158315e94d1f40ec4ed1bdb87fc43fa02f6f6e0c2a78dafca41581e000c",
+      "alphaBoundsPx": [
+        97,
+        129,
+        156,
+        187
+      ],
+      "maskPixels": 226
+    },
+    {
+      "frameId": "defeat-west-2",
+      "file": "source/defeat-west-2.png",
+      "sha256": "23e7b2ea01583ff796962e107c022954f374cc3a8560698fa29b56db063fc3e6",
+      "alphaBoundsPx": [
+        107,
+        123,
+        182,
+        183
+      ],
+      "maskPixels": 263
+    },
+    {
+      "frameId": "defeat-north-west-2",
+      "file": "source/defeat-north-west-2.png",
+      "sha256": "8cbc2179cd27458128af931ba0c906fc02ab313cc7e8b401252a2a27d690b0f3",
+      "alphaBoundsPx": [
+        117,
+        108,
+        216,
+        168
+      ],
+      "maskPixels": 301
+    },
+    {
+      "frameId": "defeat-north-3",
+      "file": "source/defeat-north-3.png",
+      "sha256": "e97d8e3d67218c64d08415cc1b35d87040ddc0b95a50b94a74c6d7f686e0d65c",
+      "alphaBoundsPx": [
+        110,
+        92,
+        214,
+        163
+      ],
+      "maskPixels": 282
+    },
+    {
+      "frameId": "defeat-north-east-3",
+      "file": "source/defeat-north-east-3.png",
+      "sha256": "060441ea26ad2398549d381a145d6469a2be8fa9260ad0e491f77077990a6827",
+      "alphaBoundsPx": [
+        100,
+        76,
+        159,
+        156
+      ],
+      "maskPixels": 311
+    },
+    {
+      "frameId": "defeat-east-3",
+      "file": "source/defeat-east-3.png",
+      "sha256": "c05420a53946aa44228224863aecb8f2e75487f86709e7c2b8e60f1b16c0c0be",
+      "alphaBoundsPx": [
+        71,
+        83,
+        149,
+        163
+      ],
+      "maskPixels": 297
+    },
+    {
+      "frameId": "defeat-south-east-3",
+      "file": "source/defeat-south-east-3.png",
+      "sha256": "fbcc7a984cbf0f940a0cdc28df37e718ee5b2c73042ff6946a5a42520392a998",
+      "alphaBoundsPx": [
+        34,
+        117,
+        134,
+        170
+      ],
+      "maskPixels": 290
+    },
+    {
+      "frameId": "defeat-south-3",
+      "file": "source/defeat-south-3.png",
+      "sha256": "a83ea9bb415747b9aab4fea3f30d634389a8cf5e9d7d934dd17f75ad0b93493f",
+      "alphaBoundsPx": [
+        43,
+        122,
+        145,
+        189
+      ],
+      "maskPixels": 278
+    },
+    {
+      "frameId": "defeat-south-west-3",
+      "file": "source/defeat-south-west-3.png",
+      "sha256": "a3d3490bddcf21f5957d668d741b9a12e96e46e473ceb2dd70241ffca64bb136",
+      "alphaBoundsPx": [
+        97,
+        129,
+        156,
+        212
+      ],
+      "maskPixels": 318
+    },
+    {
+      "frameId": "defeat-west-3",
+      "file": "source/defeat-west-3.png",
+      "sha256": "d8ece484d3a50e9f45dc6fa31bfd402157cebf64a9714ff5d65769bd2915cbd8",
+      "alphaBoundsPx": [
+        107,
+        122,
+        185,
+        206
+      ],
+      "maskPixels": 312
+    },
+    {
+      "frameId": "defeat-north-west-3",
+      "file": "source/defeat-north-west-3.png",
+      "sha256": "b75476288a96b48c33d8ec2c2a7dbaf24b8e3cf7e701f7d5fc879adcd0a8b456",
+      "alphaBoundsPx": [
+        122,
+        119,
+        222,
+        170
+      ],
+      "maskPixels": 310
+    }
+  ],
+  "groundContact": "geometric source origin; projected depth can put feet below pivot, handled by existing spriteGroundDepthBias",
+  "blenderSourceSha256": "443ce076db49c19fa19367f3d52d232c8f766b335eee88b3750f6af7df8e3ba3"
+}

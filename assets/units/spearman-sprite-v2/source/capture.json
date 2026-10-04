@@ -1,0 +1,708 @@
+{
+  "role": "spearman",
+  "sourcePath": "assets/units-buildings/frontier-glb-sample-v2/models/unit-art-v2.glb",
+  "sourceSha256": "c3caad9b3dbf4db9acbb870b933ad526c0efaf408ff0ce5d65926dc257aac812",
+  "sourceGeometry": "public shared humanoid core, spear/helmet and team sash; no shield",
+  "providerJobs": 0,
+  "charges": 0,
+  "reusedSpriteFrames": 0,
+  "newlyAuthoredPoseSamples": 12,
+  "newlyRenderedFrames": 96,
+  "mirroredFrames": 0,
+  "rootPx": [
+    128.00006103515625,
+    153.66253662109375
+  ],
+  "cameraGameVector": [
+    0.78,
+    1.12,
+    0.78
+  ],
+  "orthographicScale": 2.799999952316284,
+  "canvasPx": [
+    256,
+    256
+  ],
+  "sourceBodyHeight": 0.8,
+  "limbVertexCounts": {
+    "arm-left": 24,
+    "arm-right": 24,
+    "leg-left": 48,
+    "leg-right": 48
+  },
+  "poseTechnique": "public rigid geometry with explicit separate leg/arm articulation, spear windup/thrust/recovery and backward fall; fixed root/camera/scale",
+  "samples": [
+    {
+      "frameId": "idle-north-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "idle-north-east-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "idle-east-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "idle-south-east-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "idle-south-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "idle-south-west-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "idle-west-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "idle-north-west-0",
+      "state": "idle",
+      "key": 0,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "walk-north-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "walk-north-east-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "walk-east-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "walk-south-east-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "walk-south-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "walk-south-west-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "walk-west-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "walk-north-west-0",
+      "state": "walk",
+      "key": 0,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "walk-north-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "walk-north-east-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "walk-east-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "walk-south-east-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "walk-south-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "walk-south-west-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "walk-west-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "walk-north-west-1",
+      "state": "walk",
+      "key": 1,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "walk-north-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "walk-north-east-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "walk-east-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "walk-south-east-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "walk-south-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "walk-south-west-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "walk-west-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "walk-north-west-2",
+      "state": "walk",
+      "key": 2,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "walk-north-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "walk-north-east-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "walk-east-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "walk-south-east-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "walk-south-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "walk-south-west-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "walk-west-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "walk-north-west-3",
+      "state": "walk",
+      "key": 3,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "attack-north-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "attack-north-east-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "attack-east-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "attack-south-east-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "attack-south-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "attack-south-west-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "attack-west-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "attack-north-west-0",
+      "state": "attack",
+      "key": 0,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "attack-north-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "attack-north-east-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "attack-east-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "attack-south-east-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "attack-south-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "attack-south-west-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "attack-west-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "attack-north-west-1",
+      "state": "attack",
+      "key": 1,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "attack-north-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "attack-north-east-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "attack-east-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "attack-south-east-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "attack-south-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "attack-south-west-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "attack-west-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "attack-north-west-2",
+      "state": "attack",
+      "key": 2,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "defeat-north-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "defeat-north-east-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "defeat-east-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "defeat-south-east-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "defeat-south-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "defeat-south-west-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "defeat-west-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "defeat-north-west-0",
+      "state": "defeat",
+      "key": 0,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "defeat-north-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "defeat-north-east-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "defeat-east-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "defeat-south-east-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "defeat-south-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "defeat-south-west-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "defeat-west-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "defeat-north-west-1",
+      "state": "defeat",
+      "key": 1,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "defeat-north-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "defeat-north-east-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "defeat-east-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "defeat-south-east-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "defeat-south-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "defeat-south-west-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "defeat-west-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "defeat-north-west-2",
+      "state": "defeat",
+      "key": 2,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    },
+    {
+      "frameId": "defeat-north-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "north",
+      "yawRadians": 0.0
+    },
+    {
+      "frameId": "defeat-north-east-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "north-east",
+      "yawRadians": 0.7853981633974483
+    },
+    {
+      "frameId": "defeat-east-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "east",
+      "yawRadians": 1.5707963267948966
+    },
+    {
+      "frameId": "defeat-south-east-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "south-east",
+      "yawRadians": 2.356194490192345
+    },
+    {
+      "frameId": "defeat-south-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "south",
+      "yawRadians": 3.141592653589793
+    },
+    {
+      "frameId": "defeat-south-west-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "south-west",
+      "yawRadians": 3.9269908169872414
+    },
+    {
+      "frameId": "defeat-west-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "west",
+      "yawRadians": 4.71238898038469
+    },
+    {
+      "frameId": "defeat-north-west-3",
+      "state": "defeat",
+      "key": 3,
+      "heading": "north-west",
+      "yawRadians": 5.497787143782138
+    }
+  ]
+}

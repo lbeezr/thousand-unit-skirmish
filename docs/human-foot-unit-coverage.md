@@ -121,11 +121,17 @@ head `ca02319bea4ec89355f7e7be21894c1f8043cb87` passes 21 focused tests and
 [Spearman PR241](https://github.com/lbeezr/thousand-unit-skirmish/pull/241) art
 commit `dcad82a5572979da512fe38e5da938a0a4df5981` passes 25 combined focused
 tests and [clean release](qa-evidence/human-foot-art-2026-10-04/spearman-clean-release.json).
-Each packed HTTP scenario also passes. Later evidence-only commits do not
+Each packed HTTP scenario also passes. Later provenance/evidence commits do not
 change these sprite/default bytes. Author review covers actual direction/pose
 provenance, geometry articulation, root/scale/crop, timings, source preservation
 and the exact default/version/HTTP/Docker changes. No independent review is
 recorded.
+
+The final tracked-file audit found that the global `capture.json` ignore rule
+had excluded Spearman's two capture receipts from its first art commit. Exact
+exceptions now retain both public-source receipts, without changing sprite or
+release bytes. A tracked-file export passes all 25 focused checks and canonical
+manifest/file validation, proving the source inputs exist in another checkout.
 
 Automatic approval review rejected the expected-head merge of PR228. Its stated
 reason was that default-branch history/release mutation is consequential,
