@@ -90,7 +90,7 @@ directory row, which now names these three default candidates.
 
 ## Ranked retained backlog after all source slices
 
-1. **Infantry merge/delivery/acceptance:** resolve the concrete automatic-approval rejection below, merge PR228 through repository rules, identify the containing staging revision, then run the ordinary recipe below. Author diff/source review and clean packaging are complete. Art owner retains this outcome; parent-owned Railway/Mac routes support identified delivery/capture.
+1. **Infantry merge/delivery/acceptance:** finish independent review of the corrected exact heads below, rerun checks and have the parent obtain the precise remaining approval required by the preserved automatic denial. Then merge PR228 through repository rules, identify the containing staging revision and run the ordinary recipe below. Review is an owned action; native acceptance remains separately open. Art owner retains the outcome with parent Railway/Mac support.
 2. **Archer integration/acceptance:** [PR230](https://github.com/lbeezr/thousand-unit-skirmish/pull/230) has author diff/source review and clean packaging; retarget onto refreshed main after PR228 merges, resolve conflicts and rerun proportionate checks, then own release/deployed/native steps through paid Range production. It is wired into default candidates and packaging, not an export-only packet. Native browser sandbox remains unavailable here.
 3. **Spearman integration/acceptance:** review the local rigid poses, fixed camera/root and per-heading timing at the exact candidate head; retarget after the preceding PRs merge and verify clean release/containing staging/native use. Both-seat paid Barracks Spearman production and ordinary zoom must prove the coarse helmet/long-spear role, planted stride, thrust/recovery and terminal fall. Four real keys are a functional minimum; blocky finish is later work. Art owner retains this outcome with parent Railway/Mac support. No missing source cells remain after this candidate; no deployed/native closure is claimed.
 4. **Polish after function:** smoother loops, more defeat intermediates, costume/finish and team-mask refinement. Do not delay usable direction coverage for this work.
@@ -101,14 +101,14 @@ At a named served source/release SHA, enter Millrace or Terraced Vale through Cr
 
 A release/hash/CPU pass is a milestone. Review, deployed identity and actual in-game function remain incomplete until recorded here; there is no cosmetic approval gate.
 
-Current [repository integration rules](../AGENTS.md#integration) assign
-proportionate checks and merges to the implementation owner under standing
-staging authorization. No independent review has been recorded; it is not
-invented as a repository merge hold. Author diff/source review and exact-head
-release checks are recorded in each PR. Ordinary native acceptance remains open
-because this executor's browser preflight cannot start its sandbox.
+The [contributor planning guide](contributor-planning.md) requires independent
+review before a merge. Earlier author-only checks did not satisfy that step.
+The art owner obtains review, resolves findings and reruns exact-head checks;
+parent obtains any precise approval still required by the preserved tool denial.
+Ordinary native acceptance remains separate and open because this executor's
+browser preflight cannot start its sandbox.
 
-## Exact published checkpoint and concrete blockers
+## Initial published checkpoint and preserved merge denial
 
 All three branches were refreshed against main
 `545ef48095c3e7aa410118c3226d6122b47d835a`, including the separate Worker East
@@ -124,8 +124,8 @@ tests and [clean release](qa-evidence/human-foot-art-2026-10-04/spearman-clean-r
 Each packed HTTP scenario also passes. Later provenance/evidence commits do not
 change these sprite/default bytes. Author review covers actual direction/pose
 provenance, geometry articulation, root/scale/crop, timings, source preservation
-and the exact default/version/HTTP/Docker changes. No independent review is
-recorded.
+and the exact default/version/HTTP/Docker changes. At this initial checkpoint,
+independent review had not been recorded; the later review is below.
 
 The final tracked-file audit found that the global `capture.json` ignore rule
 had excluded Spearman's two capture receipts from its first art commit. Exact
@@ -139,10 +139,48 @@ independent exact-head review and deployed/native acceptance remain pending, and
 the general request for reviewed PRs does not clearly authorize merging before
 those gates. The merge did not occur; no alternate merge route was attempted.
 PR230 and PR241 remain stacked, and no deployment was changed. This is an actual
-automatic-approval restriction despite current author-owned integration rules,
-not a cosmetic publication hold. Next decision: explicit user approval of the
-concrete reviewed-by-author stack's merge sequence, or completion of the named
-review/acceptance requirements through the existing parent-supported routes.
-The art owner retains all three outcomes; parent Mac/Railway support is needed
-for exact deployment/native observation. Source gaps are zero; all 63 original
-deployed/native cells remain unverified here.
+automatic-approval restriction. Its result is retained, with no alternate route
+or retry. Independent review is required and is obtained below; after its
+findings and exact-head checks are complete, the parent obtains any precise
+remaining merge authorization. That approval requirement is distinct from
+identified deployment and native acceptance. The art owner retains all three
+outcomes; parent Mac/Railway support is needed for exact deployment/native
+observation. Source gaps are zero; all 63 original deployed/native cells remain
+unverified here.
+
+## Independent review and corrected bounds — 4 October 2026
+
+A separate read-only reviewer found no blocking source-merge issues at refreshed
+heads Infantry `5a9d6ae7a863c2eed4386a81a918ef08b4fdd4dc`, Archer
+`3de0b6c5f44d786f113bb8b21ac252f4fed45ab7`, and Spearman
+`90b111779545e24dac25829b4010f71aa5378259`, all containing main
+`be656c47fb6ecb83291878791bff17f4eb8f4cf3`. The
+[independent report](qa-evidence/human-foot-art-2026-10-04/independent-source-review-first-pass.md)
+records actual source reconstruction, physical views/model rotations,
+articulation, root/scale/crop, timing, public provenance and exact admissions.
+It preserves limits on approximate painted bearings and native acceptance.
+
+The reviewer found one P3 metadata issue: half-width bounds did not contain all
+root-offset, camera-rotated strike/fall pixels. The current renderer ignores
+those fields and disables frustum culling, so it was nonblocking. The generators
+now derive conservative bounds from every root-relative opaque box in the fixed
+game-camera basis, including the existing screen-preserving depth correction.
+`heightWorld`, world-per-pixel, frames, pivots, clips and all color/mask/source PNG
+hashes are unchanged. A new actual Three-camera corner-enclosure assertion fails
+on the former metadata and passes on the corrected manifests. The reviewer must
+confirm the final corrected heads before merge; no denied action is retried.
+
+Current corrected implementation heads: Infantry
+`ac6ae3c921908174c255e3f77a6e1afde98bbe05`, Archer
+`1cc1602d5597b29e8f67c4a94780e9ec61862854`, Spearman
+`6eb72e939b85eaf4373a5bfedd85a22585fe9650`. Focused tests including the separate
+Worker coexistence suite pass 29/31/33 respectively; canonical manifests pass.
+Exact-head type/HTTP/release checks and final review are recorded in each PR.
+
+Small [Infantry](qa-evidence/human-foot-art-2026-10-04/source-previews/infantry-source-preview.webp),
+[Archer](qa-evidence/human-foot-art-2026-10-04/source-previews/archer-source-preview.webp)
+and [Spearman](qa-evidence/human-foot-art-2026-10-04/source-previews/spearman-source-preview.webp)
+previews replay retained keys at one declared world scale on a neutral
+background. Their [receipts](qa-evidence/human-foot-art-2026-10-04/source-previews/preview-receipts.json)
+identify source atlas hashes. These create no new artwork and establish no
+deployed/native appearance or acceptance.

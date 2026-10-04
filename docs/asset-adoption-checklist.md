@@ -57,21 +57,23 @@ Mac QA machine was reported offline at the latest routing check.
 Human foot-unit coverage is retained in the [owned workstream](human-foot-unit-coverage.md).
 The Infantry v4 and Archer v3 default candidates each reuse 48 complete public
 poses for all eight idle/walk/attack/defeat headings, with zero new poses. Default binding/HTTP/release
-are author-owned checks; independent review, containing deployment and ordinary
-in-game observation remain incomplete. Parent Railway/Mac routes support those
-steps, and the art owner retains acceptance. No paid or private-source work.
+are author-owned checks. Independent source review found no blocking issues;
+one nonblocking bounds-metadata finding is corrected, with final exact-head
+review retained in the workstream. Containing deployment and ordinary in-game
+observation remain incomplete. Parent Railway/Mac routes support those steps,
+and the art owner retains acceptance. No paid or private-source work.
 
 Spearman v2 adds 96 local CPU renders from 12 newly authored rigid poses using the
 public Frontier humanoid/spear geometry and palette. It supplies genuine eight-view
 idle/stride/thrust/fall clips with zero provider charges; prior art and rejected
 captures remain. Exact default/server/Docker admission is included. Its coarse
-appearance, independent review, containing deployment and actual gameplay
-verification remain incomplete under the same owner and supporting Railway/Mac
-routes. Author diff/source review, 25 focused combined checks and three clean
-candidate release receipts are recorded in the workstream. Automatic approval
-review rejected PR228's merge because pending review/native acceptance was not
-accepted under the general authorization; PR230/PR241 remain stacked. No merge
-or deployment is claimed. The workstream records the exact required decision.
+containing deployment and actual gameplay verification remain incomplete under
+the same owner and supporting Railway/Mac routes. Independent source review and
+the corrected bounds finding are recorded in the workstream, with 33 focused
+checks including Worker coexistence. The initial automatic approval rejection
+of PR228 is preserved; the parent obtains any precise remaining authorization
+after final review/checks. PR230/PR241 remain stacked. No merge or deployment is
+claimed. Native acceptance is tracked separately from source merge permission.
 
 Package paths are under `assets/` unless linked otherwise. Release inclusion
 comes from an actual clean `release:pack` at follow-up `1757064`: 1,113 files,

@@ -1,0 +1,44 @@
+[
+  {
+    "role": "infantry",
+    "sourceDirectory": "assets/units/infantry-sprite-v4",
+    "runtimeSha256": "0785d0af974188261687874640f73cae00993904a6ba8c858347e0bae0d37a98",
+    "newArtwork": false,
+    "virtualPixelsPerWorld": 26,
+    "allEightHeadings": true,
+    "states": [
+      "walk",
+      "attack",
+      "defeat"
+    ],
+    "meaning": "Existing source frames composited on neutral review background, not native or deployment acceptance"
+  },
+  {
+    "role": "archer",
+    "sourceDirectory": "assets/units/archer-sprite-v3",
+    "runtimeSha256": "30d5c893cd6191ef7fee1070d948d022a488fb71aa68d11fdc2d7df3e44ab8fa",
+    "newArtwork": false,
+    "virtualPixelsPerWorld": 26,
+    "allEightHeadings": true,
+    "states": [
+      "walk",
+      "attack",
+      "defeat"
+    ],
+    "meaning": "Existing source frames composited on neutral review background, not native or deployment acceptance"
+  },
+  {
+    "role": "spearman",
+    "sourceDirectory": "assets/units/spearman-sprite-v2",
+    "runtimeSha256": "2163c1787240b0e2816a561d01a189b967bf39056e564af0cd878e3c839c878f",
+    "newArtwork": false,
+    "virtualPixelsPerWorld": 26,
+    "allEightHeadings": true,
+    "states": [
+      "walk",
+      "attack",
+      "defeat"
+    ],
+    "meaning": "Existing source frames composited on neutral review background, not native or deployment acceptance"
+  }
+]
