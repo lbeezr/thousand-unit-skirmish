@@ -1,5 +1,6 @@
 import { stopChild } from './temporary-resources.mjs';
 import { checkClientImports } from './check-client-imports.mjs';
+import { compareServedBuildIdentity } from './check-served-build-identity.mjs';
 import { BROWSER_ENTRYPOINTS, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS } from './check-runtime-imports.mjs';
 import { CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH } from '../src/server/client-asset-paths.mjs';
 import assert from 'node:assert/strict';
@@ -41,6 +42,8 @@ async function setupRelease() {
   };
   delete environment.RTS_ROOM_DATA_DIRECTORY;
   delete environment.RTS_CUSTOM_MAP_DIRECTORY;
+  // A developer's provider metadata must not contaminate this packed fixture.
+  delete environment.RAILWAY_GIT_COMMIT_SHA;
 }
 
 function rejectsMissingConfiguration(override, expected) {
@@ -112,7 +115,25 @@ try {
   assert.equal((await fetch(`${base}/api/rooms`, { method: 'POST' })).status, 401);
   assert.equal((await fetch(`${base}/`, { headers: { authorization: 'Basic bad' } })).status, 401);
   assert.equal((await fetch(`${base}/`, { headers: { authorization } })).status, 200);
-  assert.equal((await fetch(`${base}/health`, { headers: { authorization } })).status, 200);
+  const packedManifest = JSON.parse(await readFile(path.join(root, 'release-manifest.json'), 'utf8'));
+  assert.deepEqual(JSON.parse(await readFile(path.join(root, 'src/server/release-identity.json'), 'utf8')),
+    { sourceRevision: packedManifest.sourceRevision, sourceDirty: packedManifest.sourceDirty,
+      digest: packedManifest.digest }, 'Docker-copied private sidecar must match the packed manifest');
+  const healthResponse = await fetch(`${base}/health`, { headers: { authorization } });
+  assert.equal(healthResponse.status, 200);
+  const health = await healthResponse.json();
+  assert.deepEqual(health.buildIdentity, { status: 'identified', origin: 'packed-manifest',
+    sourceRevision: packedManifest.sourceRevision, sourceDirty: packedManifest.sourceDirty,
+    digest: packedManifest.digest });
+  assert.deepEqual(await (await fetch(`${base}/ready`)).json(), { ok: true },
+    'public readiness must not expose build or match metadata');
+  const expectedIdentity = { sourceRevision: packedManifest.sourceRevision, digest: packedManifest.digest };
+  const comparison = compareServedBuildIdentity(health, expectedIdentity);
+  assert.equal(comparison.ok, !packedManifest.sourceDirty,
+    'allow-dirty disposable fixture must never pass clean release acceptance');
+  assert.ok(compareServedBuildIdentity(health,
+    { ...expectedIdentity, sourceRevision: '0'.repeat(40) }).issues.includes('source-mismatch'),
+  'a reachable/authenticated packed game must still reject the wrong expected source');
   // Exercise the actual packed HTTP host, independently of source declaration
   // shape. A manifest entry omitted from server membership must fail here.
   for (const filename of new Set([...CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH])) {
@@ -125,6 +146,7 @@ try {
     assert.equal((await response.arrayBuffer()).byteLength, 0, `HEAD must omit the body: ${filename}`);
   }
   for (const filename of ['server.mjs', 'scripts/check-runtime-imports.mjs', 'src/server/client-asset-paths.mjs',
+    'src/server/build-identity.mjs', 'src/server/release-identity.json', 'release-manifest.json',
     'src/room-launch-options.mjs', 'src/main.js.map', 'src/main.js/extra', 'SRC/main.js', 'src//main.js']) {
     assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
       `exact client admission must deny: ${filename}`);
@@ -192,7 +214,6 @@ try {
   const sheepImageResponse = await fetch(new URL(sheepFile.path, sheepDirectory), { headers: { authorization } });
   assert.equal(sheepImageResponse.status, 200);
   assert.equal(createHash('sha256').update(Buffer.from(await sheepImageResponse.arrayBuffer())).digest('hex'), sheepFile.sha256);
-  const packedManifest = JSON.parse(await readFile(path.join(root, 'release-manifest.json'), 'utf8'));
   assert.deepEqual(packedManifest.files.filter(file => file.startsWith('assets/wildlife/')).sort(),
     ['sheep-atlas-runtime.png', 'sprite-atlas-pack-v1.json', 'static-preview-binding.json']
       .map(file => `assets/wildlife/bellweather-sheep-static-v1/${file}`).sort(),
