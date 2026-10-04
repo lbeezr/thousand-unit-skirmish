@@ -4,7 +4,7 @@ import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { randomUUID } from 'node:crypto';
 import { createServer as createNetServer } from 'node:net';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, open, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -139,9 +139,16 @@ try {
     const mapFilename = `.perf-checkpoint-${process.pid}.json`;
     const ownedMapPath = path.join(ROOT, 'maps', mapFilename);
     const openField = JSON.parse(await readFile(path.join(ROOT, 'maps/open-field.json'), 'utf8'));
-    await writeFile(ownedMapPath, JSON.stringify(checkpointAttackMap(openField), null, 2), { flag: 'wx' });
+    const mapFile = await open(ownedMapPath, 'wx');
     tempMapPath = ownedMapPath;
     mapRelativePath = `maps/${mapFilename}`;
+    let writeError = null;
+    try { await mapFile.writeFile(JSON.stringify(checkpointAttackMap(openField), null, 2)); }
+    catch (error) { writeError = error; throw error; }
+    finally {
+      try { await mapFile.close(); }
+      catch (error) { if (!writeError) throw error; }
+    }
   }
   port = await reservePort();
   identity = await performanceIdentity(ROOT, mapRelativePath, identityOptions());

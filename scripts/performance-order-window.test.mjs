@@ -289,6 +289,34 @@ test('independent attack fixtures have stable raw map identity and exclude only 
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
 
+test('attack setup cleans a partial owned write and preserves preexisting files and original errors', async () => {
+  const driver = readFileSync(new URL('./checkpoint-performance-scenario.mjs', import.meta.url), 'utf8');
+  const setup = driver.match(/  if \(workloadMode === 'attack-move'\) \{[\s\S]*?(?=\n  port = await reservePort)/)?.[0];
+  const cleanup = driver.match(/  if \(tempMapPath\) await rm\(tempMapPath, \{ force: true \}\);/)?.[0];
+  assert.ok(setup && cleanup, 'actual runner setup and owned-map cleanup found');
+  for (const failureCode of ['ENOSPC', 'EEXIST']) {
+    const failure = Object.assign(new Error(failureCode), { code: failureCode });
+    let ownedFilePresent = false, closed = false;
+    const removed = [];
+    const context = { path, ROOT: '/fixture', process: { pid: 123 }, workloadMode: 'attack-move',
+      tempMapPath: null, mapRelativePath: 'maps/open-field.json', checkpointAttackMap,
+      readFile: async () => '{}',
+      open: async (_filename, flags) => {
+        assert.equal(flags, 'wx');
+        if (failureCode === 'EEXIST') throw failure;
+        ownedFilePresent = true;
+        return { writeFile: async () => { throw failure; },
+          close: async () => { closed = true; throw new Error('secondary close error'); } };
+      },
+      rm: async filename => { removed.push(filename); ownedFilePresent = false; },
+    };
+    await assert.rejects(vm.runInNewContext(`(async () => { try { ${setup} } finally { ${cleanup} } })()`, context), error => error === failure);
+    assert.equal(ownedFilePresent, false);
+    assert.equal(closed, failureCode === 'ENOSPC');
+    assert.deepEqual(removed, failureCode === 'ENOSPC' ? ['/fixture/maps/.perf-checkpoint-123.json'] : []);
+  }
+});
+
 test('resource observation measures the actual process and stops with both boundary samples', async () => {
   const actual = await resourceSnapshot(process.pid);
   if (process.platform === 'linux') assert.ok(actual.serverRssBytes > 0);
