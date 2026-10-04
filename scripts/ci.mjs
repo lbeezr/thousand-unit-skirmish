@@ -223,6 +223,8 @@ run(['--test', 'scripts/water-route-graph.test.mjs'], 'Isolated water route topo
 run(['--test', 'scripts/dock-placement.test.mjs'], 'Dock shoreline and water berth placement');
 run(['scripts/dock-scenario.mjs'], 'Both-seat paid Dock construction and recovery');
 run(['--test', 'scripts/water-unit-runtime.test.mjs', 'scripts/skiff-contracts.test.mjs'], 'Skiff water movement, paid queue and placeholder controls');
+run(['--test', 'scripts/skiff-counterflow.test.mjs'], 'Reciprocal Skiff passing, interruption and recovery on Confluence');
+run(['scripts/skiff-counterflow-scenario.mjs'], 'Paid Practice Skiff counterflow, Stop/replacement, cold recovery and owned Dock deposits');
 run(['scripts/skiff-scenario.mjs'], 'Both-seat paid Skiff production, berth occupancy and recovery');
 run(['--test', 'scripts/skiff-fishing.test.mjs'], 'Finite Skiff food, owned Dock delivery and conservation');
 run(['scripts/skiff-fishing-scenario.mjs'], 'Both-seat Skiff/Worker shared fish stock and cargo recovery');
