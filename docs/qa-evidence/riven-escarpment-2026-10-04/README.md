@@ -2,9 +2,9 @@
 
 [Owning QA](../../qa-riven-escarpment-2026-10-04.md) records scope and repeat commands.
 
-- `static-audit.json`: source-bound shared audit methods/rules/map hashes, the full
+- `static-audit.json.gz`: source-bound shared audit methods/rules/map hashes, the full
   Medium row including city placements and resources, plus authored site/route geometry.
-- `grid-cost.json`: clean source `3750ef09`, typed-array/geometry/transport accounting;
+- `grid-cost.json.gz`: clean source `3750ef09`, typed-array/geometry/transport accounting;
   projections exclude JS overhead and are not measured RSS/GPU/network costs.
 - `native-24.json.gz`: complete clean-source `3750ef09` three-wave 24-unit report,
   every retained health sample, diagnostic budget checks and cold recovery.

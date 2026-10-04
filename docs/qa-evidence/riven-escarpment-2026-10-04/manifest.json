@@ -16,9 +16,11 @@
       "uncompressedSha256": "88701cb589242ee281a5bcb4c61c06eb4f8c52de36b4ea784ec4f7b8dc489c13"
     },
     {
-      "path": "grid-cost.json",
-      "bytes": 10166,
-      "sha256": "c7fd78103f77416b0ce2f55da5dd498a3e25e15b69da8926b27562be5160542f"
+      "path": "grid-cost.json.gz",
+      "bytes": 2477,
+      "sha256": "1d23035283dc4c1425651ebbf4d264253ab75858be0635b3b4319ee0acfce918",
+      "compression": "gzip",
+      "uncompressedSha256": "c7fd78103f77416b0ce2f55da5dd498a3e25e15b69da8926b27562be5160542f"
     },
     {
       "path": "layout.png",
@@ -38,9 +40,11 @@
       "sha256": "3cd2365b603d15e7401cb88f1cda1082faefaf77c6a12edd1b4392e78487a3ed"
     },
     {
-      "path": "static-audit.json",
-      "bytes": 28264,
-      "sha256": "fc3039ba07de7f10140d93feca28c428dac8ed9aa11d5333fe135d9681e3397f"
+      "path": "static-audit.json.gz",
+      "bytes": 5932,
+      "sha256": "965fc65476a3a8639a7748e4e0365b90b24a2cae72a41cf79b93df5d5382b746",
+      "compression": "gzip",
+      "uncompressedSha256": "fc3039ba07de7f10140d93feca28c428dac8ed9aa11d5333fe135d9681e3397f"
     },
     {
       "path": "summary.json",
