@@ -32,6 +32,25 @@ reset and the third process restart, the native AI gathers again. These ticks
 describe that real-time run, not deterministic duration assertions. CI now runs
 this actual default PvE profile rather than its earlier explicit human control.
 
+Current-main integration adds the Stone art and Terraced Vale Sheep in PR248/249,
+then repeats the actual PvE process case at candidate `5766a1df` on main
+`38d9daf2`. That run passes at checkpoint ticks 4, 381 and 1,462; recruits 24/25
+and deposit continuation remain observed. The four existing food markers now
+carry Sheep identity; the canonical map file SHA256 is
+`2e352328e0b6795c04a11505672d17971231cc2e7ad34a858ff6418423d5d1f6`.
+All 67 integrated client/mode/CI/cold-foundation checks pass, including strict
+both-seat immediate foundation restoration and exact repeats. Independent review
+also passes the actual default PvE process case on this integrated source.
+
+Refreshed full-match checks expose a separate AI gameplay regression on the
+Sheep map: configured seeds `[20260925, 0]` remain ongoing at 3,600 seconds under
+both native Authored and Skirmish identities. The opposite assignment exactly
+repeats an Ember elimination at 2,236 seconds under both identities. Thus 2/4
+full-match cases pass; this process-recovery slice does not claim a green full
+suite or carry the old 495/2,676-second results onto the new map. The AI lane
+retains diagnosis and a bounded policy follow-up; ordinary development
+availability and the passing paid process contract remain separate claims.
+
 ## Retained human control and regression boundary
 
 The initial default PvE run on main `be656c47` stops at the normal status's

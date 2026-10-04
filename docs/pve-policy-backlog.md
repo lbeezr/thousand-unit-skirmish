@@ -19,6 +19,14 @@ now passes through normal PvE creation; rendered/served completion remains open.
 
 ## Ranked backlog
 
+Current-main priority: Sheep integration PR249 changes the verified Tiny map's
+four food markers. Paid process recovery and both-seat strict cold-foundation
+repeats pass, but the refreshed full-match matrix times out at 3,600 seconds for
+seeds `[20260925, 0]` under both native identities; the opposite assignment
+repeats elimination at 2,236 seconds. The AI lane owns diagnosis and a bounded
+follow-up in policy/scenario modules. Preserve the older map's measurements;
+do not infer new-map full-game readiness from them or from paid process recovery.
+
 | Rank / state | Next outcome and concrete action | Write boundary | Dependency / acceptance |
 | --- | --- | --- | --- |
 | 1 — bounded source fix / Tiny acceptance retained | Close ordinary readiness on unchanged Terraced Vale Tiny160; preserve measured pacing and both-seat recovery. | AI search helper, deterministic tests and [Tiny evidence](qa-pve-tiny-search-2026-10-04.md); registry/server/fog remain with mode owner `01a103cc`, map with `01a103e8`. | Same-checkpoint baseline times out twice at 3,600s; bounded search completes at 495/2,676s with exact replay and zero rejected orders. PR229 now admits actual native Tiny Skirmish; the prior authored-identity receipts remain historical. [Foundation follow-up](qa-pve-fog-restart-phase-2026-10-04.md) distinguishes publication parity from immediate off-phase reads. After runtime PR233, strict both-seat Tiny fresh-fixture recovery passes at the original foundation ticks without time advance. No capacity, balanced-pacing, fairness or served-game claim. |
