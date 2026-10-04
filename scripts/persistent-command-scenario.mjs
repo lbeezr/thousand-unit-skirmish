@@ -256,7 +256,59 @@ try {
   await azure.waitForState(state => unitById(state, ids[0])?.[8] !== generation);
   await ember.waitForState(state => unitById(state, ids[1])?.[8] !== generation);
   assert.deepEqual(azure.state.latest.persistentOrders, []);
+  stage = 'combat acquisition and return to patrol';
+  for (let team = 0; team < 2; team++) {
+    const client = clients[team], enemyClient = clients[1-team];
+    const id = ids[team], victimId = team ? 0 : 125, z = team ? 9.5 : -9.5;
+    const row = unitById(client.state.latest, id);
+    const victim = unitById(enemyClient.state.latest, victimId);
+    formationMoveCommand(client, [id], [row[8]], { x: -3.5, z }, { token: 10 + team });
+    formationMoveCommand(enemyClient, [victimId], [victim[8]], { x: 0.5, z }, { token: 12 + team });
+    stage = `combat seat ${team}: patroller staging`;
+    await client.waitForState(state => Math.hypot(unitById(state, id)[2] + 3.5, unitById(state, id)[3] - z) < 0.5);
+    stage = `combat seat ${team}: victim staging`;
+    await enemyClient.waitForState(state => Math.hypot(unitById(state, victimId)[2] - 0.5, unitById(state, victimId)[3] - z) < 0.5);
+    send(enemyClient, { type: 'holdPosition', ids: [victimId], clientOrderToken: 14 + team });
+    await waitForNotice(enemyClient, 'HOLD POSITION ORDER', 14 + team);
+    formationMoveCommand(client, [id], [row[8]], { x: 4.5, z }, { type: 'patrol', token: 16 + team });
+    await waitForNotice(client, 'PATROL ORDER', 16 + team);
+    stage = `combat seat ${team}: wounded leader`;
+    await enemyClient.waitForState(state => unitById(state, victimId)?.[4] > 0 && unitById(state, victimId)[4] <= 20);
+    const deathFollower = recoveryPatrolIds[1-team];
+    send(enemyClient, { type: 'follow', ids: [deathFollower], targetId: victimId, targetGeneration: victim[8], clientOrderToken: 42 + team });
+    await waitForNotice(enemyClient, 'FOLLOW ORDER', 42 + team);
+    stage = `combat seat ${team}: kill`;
+    await enemyClient.waitForState(state => unitById(state, victimId)?.[4] === 0);
+    await enemyClient.waitForState(state => !state.persistentOrders.some(row => row[0] === deathFollower));
+    stage = `combat seat ${team}: resume outbound`;
+    await client.waitForState(state => unitById(state, id)?.[4] > 0 && unitById(state, id)[2] > 3.5);
+    stage = `combat seat ${team}: repeated return`;
+    await client.waitForState(state => unitById(state, id)?.[2] < -2.5);
+    assert.ok(client.state.latest.persistentOrders.some(row => row[0] === id && row[1] === 'patrol'));
+    send(client, { type: 'stop', ids: [id], clientOrderToken: 18 + team });
+    await waitForNotice(client, 'STOP ORDER', 18 + team);
+  }
+  stage = 'live construction blocks Patrol endpoint';
+  const patrolRow = unitById(azure.state.latest, ids[0]);
+  formationMoveCommand(azure, [ids[0]], [patrolRow[8]], { x: -14.5, z: -15.5 }, { token: 30 });
+  await azure.waitForState(state => Math.hypot(unitById(state, ids[0])[2] + 14.5, unitById(state, ids[0])[3] + 15.5) < 0.5);
+  formationMoveCommand(azure, [ids[0]], [patrolRow[8]], { x: -8.5, z: -15.5 }, { type: 'patrol', token: 31 });
+  await waitForNotice(azure, 'PATROL ORDER', 31);
+  send(azure, { type: 'build', ids: [1], buildingType: 'barracks', x: -8.5, z: -15.5, clientOrderToken: 32 });
+  await waitForNotice(azure, 'BARRACKS PLACED', 32);
+  await azure.waitForState(state => state.persistentOrders.some(row => row[0] === ids[0] && row[2] === 'blocked'));
+  const blocked = await waitForCheckpoint(checkpointPath, checkpoint => checkpoint.state.units[ids[0]].persistentOrder?.status === 'blocked');
+  const construction = blocked.state.buildings.find(building => building.type === 'barracks' && building.team === 0 && !building.complete);
+  assert.ok(construction, 'endpoint obstruction is a real unfinished paid building');
+  send(azure, { type: 'cancelConstruction', buildingId: construction.id });
+  await azure.waitForState(state => !state.buildings.some(building => building.id === construction.id)
+    && state.persistentOrders.some(row => row[0] === ids[0] && row[2] === 'active'));
+  await azure.waitForState(state => unitById(state, ids[0])[2] > -9.5);
   stage = 'accepted packet replay after rematch process restart';
+  const replayGenerations = clients.map((client, team) => unitById(client.state.latest, ids[team])[8]);
+  send(azure, { type: 'reset' });
+  await Promise.all(clients.map((client, team) => client.waitForState(state =>
+    unitById(state, ids[team])?.[8] !== replayGenerations[team])));
   for (let team = 0; team < 2; team++) {
     const row = unitById(clients[team].state.latest, ids[team]);
     // Park through the ordinary command so autonomous stance scanning cannot
@@ -314,63 +366,12 @@ try {
     assert.ok(moved.persistentOrders.every(row => unitById(moved, row[0])?.[1] === team), 'enemy intent stays private');
     send(client, { type: 'stop', ids: [actor.id], unitGenerations: [actor.generation], clientOrderToken: 52 });
     await waitForNotice(client, 'STOP ORDER', 52);
-    send(client, { type: 'setStance', ids: [actor.id], unitGenerations: [actor.generation],
-      stance: 'aggressive', clientOrderToken: 53 });
-    await waitForNotice(client, 'STANCE ORDER', 53);
     replayRecords.push({ team, staleAcceptedPacketRejected: true, foreignRecoveredPacketRejected: true,
       unchangedCheckpointActor: true, recoveredGenerationMoves: true, privateOpponentState: true });
   }
   console.log(JSON.stringify({ stage, actualProcessRestart: true, checkpointSchemaVersion: rematch.schemaVersion,
     checkpointTick: rematch.state.tickNumber, results: replayRecords,
     limits: ['Native accepted-packet generation/seat replay only; no impaired transport, full-suite, pixels or deployment acceptance.'] }));
-  stage = 'combat acquisition and return to patrol';
-  for (let team = 0; team < 2; team++) {
-    const client = clients[team], enemyClient = clients[1-team];
-    const id = ids[team], victimId = team ? 0 : 125, z = team ? 9.5 : -9.5;
-    const row = unitById(client.state.latest, id);
-    const victim = unitById(enemyClient.state.latest, victimId);
-    formationMoveCommand(client, [id], [row[8]], { x: -3.5, z }, { token: 10 + team });
-    formationMoveCommand(enemyClient, [victimId], [victim[8]], { x: 0.5, z }, { token: 12 + team });
-    stage = `combat seat ${team}: patroller staging`;
-    await client.waitForState(state => Math.hypot(unitById(state, id)[2] + 3.5, unitById(state, id)[3] - z) < 0.5);
-    stage = `combat seat ${team}: victim staging`;
-    await enemyClient.waitForState(state => Math.hypot(unitById(state, victimId)[2] - 0.5, unitById(state, victimId)[3] - z) < 0.5);
-    send(enemyClient, { type: 'holdPosition', ids: [victimId], clientOrderToken: 14 + team });
-    await waitForNotice(enemyClient, 'HOLD POSITION ORDER', 14 + team);
-    formationMoveCommand(client, [id], [row[8]], { x: 4.5, z }, { type: 'patrol', token: 16 + team });
-    await waitForNotice(client, 'PATROL ORDER', 16 + team);
-    stage = `combat seat ${team}: wounded leader`;
-    await enemyClient.waitForState(state => unitById(state, victimId)?.[4] > 0 && unitById(state, victimId)[4] <= 20);
-    const deathFollower = recoveryPatrolIds[1-team];
-    send(enemyClient, { type: 'follow', ids: [deathFollower], targetId: victimId, targetGeneration: victim[8], clientOrderToken: 42 + team });
-    await waitForNotice(enemyClient, 'FOLLOW ORDER', 42 + team);
-    stage = `combat seat ${team}: kill`;
-    await enemyClient.waitForState(state => unitById(state, victimId)?.[4] === 0);
-    await enemyClient.waitForState(state => !state.persistentOrders.some(row => row[0] === deathFollower));
-    stage = `combat seat ${team}: resume outbound`;
-    await client.waitForState(state => unitById(state, id)?.[4] > 0 && unitById(state, id)[2] > 3.5);
-    stage = `combat seat ${team}: repeated return`;
-    await client.waitForState(state => unitById(state, id)?.[2] < -2.5);
-    assert.ok(client.state.latest.persistentOrders.some(row => row[0] === id && row[1] === 'patrol'));
-    send(client, { type: 'stop', ids: [id], clientOrderToken: 18 + team });
-    await waitForNotice(client, 'STOP ORDER', 18 + team);
-  }
-  stage = 'live construction blocks Patrol endpoint';
-  const patrolRow = unitById(azure.state.latest, ids[0]);
-  formationMoveCommand(azure, [ids[0]], [patrolRow[8]], { x: -14.5, z: -15.5 }, { token: 30 });
-  await azure.waitForState(state => Math.hypot(unitById(state, ids[0])[2] + 14.5, unitById(state, ids[0])[3] + 15.5) < 0.5);
-  formationMoveCommand(azure, [ids[0]], [patrolRow[8]], { x: -8.5, z: -15.5 }, { type: 'patrol', token: 31 });
-  await waitForNotice(azure, 'PATROL ORDER', 31);
-  send(azure, { type: 'build', ids: [1], buildingType: 'barracks', x: -8.5, z: -15.5, clientOrderToken: 32 });
-  await waitForNotice(azure, 'BARRACKS PLACED', 32);
-  await azure.waitForState(state => state.persistentOrders.some(row => row[0] === ids[0] && row[2] === 'blocked'));
-  const blocked = await waitForCheckpoint(checkpointPath, checkpoint => checkpoint.state.units[ids[0]].persistentOrder?.status === 'blocked');
-  const construction = blocked.state.buildings.find(building => building.type === 'barracks' && building.team === 0 && !building.complete);
-  assert.ok(construction, 'endpoint obstruction is a real unfinished paid building');
-  send(azure, { type: 'cancelConstruction', buildingId: construction.id });
-  await azure.waitForState(state => !state.buildings.some(building => building.id === construction.id)
-    && state.persistentOrders.some(row => row[0] === ids[0] && row[2] === 'active'));
-  await azure.waitForState(state => unitById(state, ids[0])[2] > -9.5);
   console.log('Persistent commands passed: both-seat patrol return, friendly generation validation, mixed-speed Scout following, Patrol/Follow restart, leader death, Hold, reset, combat acquisition, resumed patrol and live endpoint obstruction/removal.');
 } catch (error) { throw new Error(`${stage}: ${error.message}\n${serverLogs}\n${JSON.stringify(clients.map(client => client.messages.filter(message => message.type === 'notice').slice(-8)))}`, { cause: error }); }
 finally { for (const client of clients) await closeClient(client); await stopServer(child); await rm(dataDirectory, { recursive: true, force: true }); }
