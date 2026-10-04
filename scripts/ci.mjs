@@ -79,6 +79,7 @@ run(['--test', 'scripts/oak-depletion-atlas-runtime.test.mjs'], 'Generic oak dep
 run(['--test', 'scripts/interactive-runtime-image.test.mjs'], 'Verified interactive image hash, dimensions and disposal');
 run(['--test', 'scripts/terrain-cliff-faces.test.mjs'], 'Painted scree cliff faces preserve terrain, UV joins and fallback');
 run(['--test', 'scripts/environment-instance-picking.test.mjs'], 'Actual tree alpha maps clicks to existing forest and wood-node Gather targets');
+run(['--test', 'scripts/renderer-tree-targeting-scenario.test.mjs'], 'Ordinary tree capture identity, privacy and existing adapter contract');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-synthesis-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--experimental-test-coverage', '--test-coverage-include=src/client/audio/audio-shipped-response.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',

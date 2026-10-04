@@ -57,7 +57,7 @@ decoded images are read on each click. Alpha bytes are cached by image identity,
 without adding image requests or GPU textures. Level-zero alpha models ordinary
 magnified art; distant mip coverage still requires visual acceptance.
 
-Eight focused picker tests cover all five canonical families and normal
+Nine focused picker tests cover all five canonical families and normal
 context-click→Gather serialization, alpha overlaps/gaps, all current atlas
 attribute forms, generic stock-atlas map transforms, parent/mirror transforms,
 inactive/hidden/clipped instances, stock/fog negatives, image replacement,
@@ -74,20 +74,34 @@ node --test scripts/environment-instance-picking.test.mjs
 
 The qualified hosted backend in [PR323](https://github.com/lbeezr/thousand-unit-skirmish/pull/323)
 is proven; no repeated capability probe or Mac path is needed. The ordinary
-adapter interface is being integrated by the CI/capture owner in
-[PR331](https://github.com/lbeezr/thousand-unit-skirmish/pull/331). Terrain owns a
-bounded Terraced Vale tree case using that runner and its existing checkpoint
-helper. Its exact registered entry is a concrete shared dependency: the initial
-registry covers animation, novice flow, Worker routes and buildings, not trees.
-Do not substitute the old forced Open Field pilot for this case.
+version1 adapter interface from merged
+[PR331](https://github.com/lbeezr/thousand-unit-skirmish/pull/331) is reused by
+[`renderer-tree-targeting-scenario.mjs`](../scripts/renderer-tree-targeting-scenario.mjs),
+exporting `tree-targeting`, `contextVersion=1` and `run(context)` without a
+launcher or import-time work. Terrain owns this bounded Terraced Vale case.
+CI owns its shared registry/dispatch entry, requested on PR331; the initial
+registry covers animation, novice flow, Worker routes and buildings. No tree
+GPU run has occurred and the absent tree entry is not a passed capture.
 
-Enter through the normal menu, create a Terraced Vale Tiny room, select one
-Worker and click an opaque upper crown at ordinary and closest zoom. Capture
-the same default rendered frame, actual issued Gather identity and received
-forest/node stock. Check a decorative plant, fog-hidden cell and depleted tree;
-they must not manufacture a wood target. Repeat after a legitimate rematch or
-map rebuild and inspect lifecycle/root/depth registration. Preserve the
-forest-mass/frontier behavior owned by the server forest task `01a1072a`.
+The adapter enters through New Game and visible Match Controls, applies the
+canonical map, selects an own-seat Worker with pointer input and clicks actual
+opaque forest/node pixels at ordinary zoom. It zooms through wheel input and
+clicks a crown beyond the old circle, records the actual native Gather send and
+applied-order acknowledgement, waits for legitimate harvested depletion,
+checks current hidden/depleted exclusions, then uses Reset battlefield and
+checks the new forest epoch. Source-bound before/issued/negative/reset PNGs
+receive small sanitized `tree-target.json` receipts. Stock, units, clips and
+map state are never injected. A bounded read-only diagnostic describes existing
+instances/seat stock and has no independent draw or command consumer. Hidden
+current stock and opponent Worker rows are omitted. Four CPU adapter contracts
+cover version/import, send privacy/bounds and independent-instance matching.
+
+Inspect those actual images for root/depth/zoom/depletion, and click a visible
+decorative plant separately; it must not manufacture wood. Decorative exclusion
+is proven at source/CPU level but is not yet a separate image checkpoint in the
+bounded adapter. Preserve the forest-mass/frontier behavior owned by server
+forest task `01a1072a`. Missing negative targets return blocked checks; a phase
+timeout/error fails and cannot become an ordinary-game pass.
 
 Record tested source, clean release digest and deployed source separately in
 the owning PR. Source/CPU/package checks do not close ordinary pixels or staging
