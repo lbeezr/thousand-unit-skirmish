@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { toOpponentObservation } from '../src/pve-opponent.mjs';
+import './pve-forest-disclosure.test.mjs';
 
 const sheep = { id: 'moving-food', type: 'food', wildlifeSpecies: 'bellweather-sheep', stock: 100, x: 2.5, z: -3.5 };
 const map = { id: 'wildlife-disclosure', width: 16, height: 16, fogOfWar: true, resourceNodes: [sheep,
