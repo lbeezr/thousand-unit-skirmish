@@ -11,6 +11,7 @@ import { researchAction, researchOptions } from '../src/research-actions.mjs';
 import { setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from '../src/hud-layout.mjs';
 import { livingIdleWorkerIds, livingUnitIdsOfKinds } from '../src/unit-selection.mjs';
 import { formatResourceStock, formatResourceRequirement } from '../src/resource-format.mjs';
+import { ownedPopulationReadout } from '../src/population-readout.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
@@ -116,6 +117,112 @@ function fixture(team = 0) {
     escape() { d.activeElement.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true, cancelable: true })); },
   };
 }
+
+// Exercise selection with the actual economy/command handlers. The default
+// fixture deliberately lets other tests set availability independently.
+function economyFixture(team) {
+  const f = fixture(team), w = f.w;
+  Object.assign(w, { ownedPopulationReadout, matchMedia: () => ({ matches: false }),
+    buildPlacementPending: false, buildPlacementType: 'barracks', attackMoveMode: false,
+    INFANTRY_FOOD_COST: UNIT_DEFINITIONS.infantry.cost.food,
+    INFANTRY_TRAIN_SECONDS: UNIT_DEFINITIONS.infantry.trainSeconds,
+    WORKER_FOOD_COST: UNIT_DEFINITIONS.worker.cost.food,
+    WORKER_TRAIN_SECONDS: UNIT_DEFINITIONS.worker.trainSeconds,
+    ARCHER_FOOD_COST: UNIT_DEFINITIONS.archer.cost.food,
+    ARCHER_WOOD_COST: UNIT_DEFINITIONS.archer.cost.wood,
+    BARRACKS_WOOD_COST: BUILDING_DEFINITIONS.barracks.cost.wood,
+    ARCHERY_RANGE_WOOD_COST: BUILDING_DEFINITIONS['archery-range'].cost.wood,
+    WORKER_QUEUE_LIMIT: 5, ARCHERY_RANGE_QUEUE_LIMIT: 5,
+    syncTargetOrderUI() {}, syncBattlefieldCursor() {},
+  });
+  w.eval([
+    fn('findTrainableArcheryRange', 'buildingLabel'),
+    fn('updateBuildingResearchControls', 'updateResearchOptions'),
+    fn('buildingSupportsRally', 'syncTargetOrderUI'),
+    fn('updateBuildingLifecycleActions', 'updateRosterBuildingOptions'),
+    fn('updateRosterBuildingOptions', 'updateEconomyUI'),
+    fn('updateEconomyUI', 'updateRoomUI'),
+    fn('selectBuilding', 'pickFriendly'),
+    fn('applyWaypointQueueCounts', 'updateRosterProductionOptions'),
+  ].join('\n'));
+  w.updateEconomyUI();
+  return f;
+}
+
+for (const team of [0, 1]) test(`seat ${team}: selection immediately refreshes paid construction without a Move or snapshot`, t => {
+  const f = economyFixture(team), w = f.w; t.after(() => f.dom.window.close());
+  const builds = [w.ui.buildBarracks, w.ui.buildRange, w.ui.buildHouse,
+    w.ui.rosterBuildingOptions.querySelector('[data-building="mill"]')];
+  const assertDisabled = value => { for (const button of builds) assert.equal(button.disabled, value, button.textContent); };
+  assertDisabled(true);
+  w.selectIdleWorkers(); assertDisabled(false);
+  w.selectMilitary(); assertDisabled(true);
+  w.selectWorkers(); assertDisabled(false);
+  f.select(); assertDisabled(true);
+  w.selectIdleWorkers(); assertDisabled(false);
+  assert.equal(w.sentCommands.length, 0, 'selection needs no Move command to refresh Build');
+
+  const wood = [500, 500]; wood[team] = 0;
+  w.updateEconomyUI({ wood }); assertDisabled(true);
+  w.selectIdleWorkers(); assertDisabled(true);
+  w.updateEconomyUI({ wood: [500, 500] }); assertDisabled(false);
+  w.selectIdleWorkers(); assertDisabled(false);
+  w.buildPlacementPending = true; w.updateSelectionUI(); assertDisabled(true);
+  w.buildPlacementPending = false; w.updateSelectionUI(); assertDisabled(false);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: selected Range production follows completion, resources and authoritative availability`, t => {
+  const f = economyFixture(team), w = f.w; t.after(() => f.dom.window.close());
+  const barracks = { id: 7, team, type: 'barracks', complete: true, productionQueue: [] };
+  const range = { id: 8, team, type: 'archery-range', complete: false, progress: .5, productionQueue: [] };
+  w.latestBuildings = [barracks, range];
+  w.selectBuilding(barracks); assert.equal(f.bar.querySelector('[data-product="infantry"]').dataset.producer, '7');
+  w.selectBuilding(range);
+  const train = f.bar.querySelector('[data-product="archer"]');
+  const assertAvailable = (available, reason) => {
+    assert.equal(train.getAttribute('aria-disabled'), String(!available));
+    assert.equal(train.disabled, false, 'unavailable contextual production stays inspectable');
+    if (reason) assert.match(train.textContent, reason);
+  };
+  assertAvailable(false, /Complete a production building/);
+  train.focus(); range.complete = true; range.progress = 1;
+  w.updateEconomyUI(); w.updateSelectionUI({ refreshEconomy: false });
+  assertAvailable(true); assert.equal(f.d.activeElement, train);
+  assert.equal(f.bar.querySelector('[data-context-proxy="train-archer"]').hidden, true);
+  const food = [500, 500]; food[team] = 0;
+  w.updateEconomyUI({ food }); assertAvailable(false, /Need .*food/);
+  train.click(); assert.equal(w.sentCommands.length, 0);
+  w.updateEconomyUI({ food: [500, 500] }); assertAvailable(true);
+  range.productionBlocked = true; w.updateEconomyUI(); assertAvailable(false, /spawn area/);
+  range.productionBlocked = false;
+  range.productionQueue = Array(5).fill('archer'); w.updateEconomyUI(); assertAvailable(false, /Queue full/);
+  range.productionQueue = [];
+  const population = [null, null]; population[team] = { available: 0 };
+  w.updateEconomyUI({ population }); assertAvailable(false, /Population full/);
+  w.updateEconomyUI({ population: [null, null] }); assertAvailable(true);
+  range.productionOptions = [{ kind: 'archer', available: false, reason: 'REQUIRES MILITARY TIER II' }];
+  w.updateEconomyUI(); assertAvailable(false, /REQUIRES MILITARY TIER II/);
+  range.productionOptions[0].available = true; w.updateEconomyUI(); assertAvailable(true);
+  w.selectBuilding(range); w.updateSelectionUI();
+  assert.equal(f.bar.querySelector('[data-product="archer"]'), train);
+  assert.equal(f.d.activeElement, train);
+  train.click(); assert.deepEqual(JSON.parse(JSON.stringify(w.sentCommands)), [{ type: 'trainUnit', kind: 'archer', buildingId: 8 }]);
+});
+
+test('waypoint-only and post-economy selection renders retain live availability without a second economy pass', t => {
+  const f = economyFixture(0), w = f.w; t.after(() => f.dom.window.close());
+  const update = w.updateEconomyUI; let economyPasses = 0;
+  w.updateEconomyUI = (...args) => { economyPasses++; update(...args); };
+  w.selectIdleWorkers(); assert.equal(economyPasses, 1);
+  w.applyWaypointQueueCounts([[0, 2]]);
+  assert.equal(w.ui.selectedWaypoints.hidden, false); assert.match(w.ui.selectedWaypoints.textContent, /2 QUEUED/);
+  assert.equal(economyPasses, 1, 'waypoint-only messages do not change selection or economy');
+  w.updateEconomyUI({ wood: [0, 500] });
+  w.updateSelectionUI({ refreshEconomy: false });
+  assert.equal(economyPasses, 2); assert.equal(w.ui.buildBarracks.disabled, true);
+  const snapshot = fn('applyState', 'updateEnvironmentStateCaptureSnapshot');
+  assert.match(snapshot, /updateEconomyUI\(state, audioReset\);[\s\S]*updateSelectionUI\(\{ refreshEconomy: false \}\);/);
+});
 
 for (const team of [0, 1]) test(`seat ${team}: shipped stance binding follows selection, confirmed snapshots and visible focus recovery`, t => {
   const f = fixture(team); t.after(() => f.dom.window.close());
