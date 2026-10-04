@@ -27,6 +27,7 @@ with their respective lanes.
 | 2 · complete | The parked-formation stall reproduces with a one/two-tick older Move. Bounded repulsion merged in [PR #209](https://github.com/lbeezr/thousand-unit-skirmish/pull/209), `64cc391`; independent review and [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#4-october-postmerge-acceptance) pass. | Only `getMoveVector`'s final force combination and focused tests/tools. Combat-owner targeting/stances remain untouched. | 235 postmerge checks; all eight headings on both seats; four large parked cases twice; nine terrain route pairs; native parked controls and active/idle restarts at the exact merge source. |
 | 3 · qualification complete | The [1/4/8 comparison](qa-move-planning-tick-budget-2026-10-04.md) recommended four turns, but [paid whole-tick qualification](qa-paid-battle-tick-budget-2026-10-04.md) failed the 33.333 ms maximum at 2,000 units. Retain callback default; 1/4/8 remain reproduction controls. This decision is complete. | Movement planner plus the single allocated outer-tick hook; inner combat/Worker/wildlife/mode bodies stay with their owners. Any later default proposal first needs evidence addressing the recorded non-planning tail. | Four native paid battle/economy/recovery runs pass functionally. Four's two budget overruns have zero planning turns. Repeated candidate traces, Stop/replacement, FIFO fairness, topology and recovery remain covered. This does not complete the all-command pipeline. |
 | 4 · pending capture | Complete the corrected rendered 2,000-unit workload through paid economy, combat and restart. | Existing browser workload; identified sandboxed WebGL2/runtime and device/network profile. | Actual rendered run, authoritative goals/positions, paid work and recovery. Native/tool-only checks cannot close the render/deployed acceptance gap. |
+| 5 · attribution complete; proposed experiment | [Repeated callback/four comparison](qa-tick-cost-attribution-2026-10-04.md) confirms overruns under both policies and identifies `snapshotUnits` base-row construction as a measured allocation seam. Report this evidence before optimizing; keep callback default. | Read-only disposable observer, harness and retained QA. Separate future edit only to base-row literal; coordinate the mode owner before any vision change. | Four uninstrumented plus two diagnostic paid native runs pass functionally. Exact wire/body tests and independent review. No policy-causality or capacity claim; exact disclosure/bytes and fresh allocation comparison required for a later optimization. |
 
 ## Baseline inspection and resolved findings
 
@@ -82,9 +83,15 @@ planning work at the tick boundary; one current queue turn per tick substantiall
 delays a 996-unit order. The subsequent
 [paid whole-tick decision](qa-paid-battle-tick-budget-2026-10-04.md) retains callback
 scheduling: four turns do not qualify at 2,000 units. The zero-planning overruns
-identify broadcast/vision and a scenario timing outlier for a future read-only
-profile before another default proposal. These component samples do not yet
-isolate a subroutine or justify changing another owner's inner simulation.
+identify broadcast/vision and a scenario timing outlier. The subsequent
+[read-only attribution](qa-tick-cost-attribution-2026-10-04.md) retains callback's
+32 and four's six overruns across repeated 1,860-tick observations, quantifies
+payload/compression and vision-cache work, and proposes a narrow `snapshotUnits`
+array-construction experiment. Profiles estimate that function at 400/373 MB;
+its existing nine-element literal immediately appends two base fields. Measure
+a single eleven-element literal while preserving exact private rows/bytes before
+claiming any allocation benefit. This evidence does not justify changing another
+owner's inner simulation or the mode owner's immediate visibility refresh.
 The proposal retains its original allocation scope.
 
 The full rendered 2,000-unit workload remains owned by movement. Read-only Railway
