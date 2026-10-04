@@ -12,7 +12,7 @@ Art proceeds separately against stable presentation interfaces.
 
 The [victory audit](victory-modes-audit-2026-10-03.md) led to separate economy
 Skirmish and fast Objective Control. Ordinary human entry now starts Tiny
-Skirmish, with reviewed Small and Medium choices; fresh PvE supports only Tiny.
+Skirmish, with reviewed Small, Medium and Large choices; fresh PvE supports only Tiny.
 Identified served and rendered acceptance remain owned. Quick original
 reinforcement/evolution modes and a regional territorial slice are testing
 grounds developed alongside the longer RTS. [Bannerfall](bannerfall-mode.md)

@@ -69,6 +69,27 @@ test('reviewed Medium supports ordinary human Skirmish and retains exact224 geom
   assert.deepEqual(matchModeDefinition(skirmish).pveMapIds, [NORMAL_MATCH_MAP_ID]);
 });
 
+test('reviewed Large supports ordinary human Skirmish and retains exact256 geometry, economy and fog', () => {
+  const map = deepFreeze(JSON.parse(readFileSync(new URL('../maps/veyrholds-crownroads.json', import.meta.url))));
+  assert.deepEqual([map.width, map.height, map.startingArmySize, map.fogOfWar], [256, 256, 24, true]);
+  assert.deepEqual(map.startingResources, { food: 150, wood: 250 });
+  for (const options of [{ mode: 'pvp' }, { mode: 'pvp', practice: true }]) {
+    const descriptor = assertMatchModeCompatibility(skirmish, map, options);
+    assert.equal(descriptor.id, 'skirmish');
+    assert.equal(descriptor.selectable, true);
+    assert.equal(descriptor.pveSupported, false);
+  }
+  assert.deepEqual(matchModeCatalog(map).map(mode => mode.id), ['authored', 'skirmish']);
+  assert.throws(() => assertMatchModeCompatibility(skirmish, map, { mode: 'pve' }), /AI is accepted only on Terraced Vale/);
+  assert.deepEqual(matchModeCatalog(map, { mode: 'pve' }).map(mode => mode.id), ['authored']);
+  assert.deepEqual(effectiveMapForMatchMode(map, skirmish), map);
+  assert.deepEqual(map.triggers, []);
+  assert.deepEqual(map.scenarioEvents, []);
+  assert.equal(Object.hasOwn(map, 'timedVictory'), false);
+  assert.equal(matchModeDefinition(NORMAL_HUMAN_MATCH_MODE).defaultMapId, NORMAL_MATCH_MAP_ID);
+  assert.deepEqual(matchModeDefinition(skirmish).pveMapIds, [NORMAL_MATCH_MAP_ID]);
+});
+
 test('legacy omission preserves authored identity independently of opponent setup', () => {
   for (const options of [undefined, {}, { mode: 'pvp' }, { mode: 'pve', practice: false }]) {
     assert.deepEqual(normalizeMatchMode(options), authored);
