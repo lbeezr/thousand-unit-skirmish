@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "scope": "renderer-capability-only",
+  "status": "blocked",
+  "source": {
+    "revision": "e445d344bafe68823b51babe60ccdad6508ce8ad",
+    "dirty": false
+  },
+  "backend": "Chromium/CDP",
+  "platform": "linux",
+  "architecture": "x64",
+  "sandbox": "enabled",
+  "maxLaunchAttempts": 1,
+  "launchAttempts": 1,
+  "browser": null,
+  "renderer": null,
+  "softwareRenderer": null,
+  "webglReadbackPassed": false,
+  "renderedGameFrames": 0,
+  "screenshots": 0,
+  "consoleErrors": [],
+  "issues": [
+    {
+      "code": "sandbox-unavailable",
+      "message": "The Linux browser sandbox could not start.",
+      "nextStep": "Use a provider-provisioned runtime with a working browser sandbox."
+    },
+    {
+      "code": "storage-unavailable",
+      "message": "Browser profile/configuration storage could not be used.",
+      "nextStep": "Provide writable per-job temporary, XDG configuration, and cache directories."
+    }
+  ],
+  "cleanup": {
+    "maxAttempts": 3,
+    "attempts": 0,
+    "errors": []
+  }
+}

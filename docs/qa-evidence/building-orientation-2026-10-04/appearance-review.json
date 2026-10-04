@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "scope": "one-House-one-quarter-turn-flat-map-local-packed-game",
+  "source": {
+    "revision": "2a4d070f7d85c5da5563bb10422c8185641a0729",
+    "dirty": false
+  },
+  "release": {
+    "sourceRevision": "2a4d070f7d85c5da5563bb10422c8185641a0729",
+    "digest": "sha256:ae5a497edf612fbe23771928420abcab1098fd7cdff771823fbf37e93705149c",
+    "files": 1213
+  },
+  "workflowRun": "https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37223391879",
+  "artifactId": 11310863375,
+  "appearance": "accepted-bounded-case",
+  "reviewers": [
+    "orientation implementation owner",
+    "independent parent evidence review"
+  ],
+  "observations": [
+    "The default ghost is translucent and uses the approved final House image.",
+    "The quarter-turn ghost visibly changes facing while remaining at the same snapped site.",
+    "The opaque completed paid House matches the rotated ghost image, site, scale and anchor.",
+    "Native HUD wood changes from1000 to925 and capacity from15 to23.",
+    "No obvious black rectangular base is visible in these three frames."
+  ],
+  "sourceArtOverride": false,
+  "scopeLimitations": [
+    "Other families and other quarter turns lack actual frame acceptance in this run.",
+    "Raised-ground and occlusion cases remain open.",
+    "This local packed-game capture does not establish staging served bytes or deployment.",
+    "Known upstream Tiny completion test failure at main5669ad8d still blocks a green broader fast lane."
+  ]
+}

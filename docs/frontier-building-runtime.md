@@ -1,7 +1,7 @@
 # Finished Frontier buildings in normal matches
 
 [Asset guide](assets.md) · [Renderer contract](renderer-state-contract.md) ·
-[Preserved source history](lore/art-evolution.md)
+[Preserved source history](lore/art-evolution.md) · [Manual facing and placement](building-orientation.md)
 
 The existing finished **Town Center, House, Storehouse, Stable, Workshop and
 Watchtower** captures, plus the new local **Barracks and Archery Range** captures,
@@ -82,8 +82,9 @@ into these new model captures.
 The recorded camera remains orthographic at 46° elevation, eight 45° azimuths,
 128 pixels/world unit and ground pivot `[512, 647.1527325565025]`. An 8-unit canvas
 retains the measured 4.4-unit Town Center and 2.3-unit House base widths; there
-is no independent fitting/cropping. Orthographic facing uses camera direction,
-so panning and different map positions cannot choose a different heading.
+is no independent fitting/cropping. Orthographic facing uses camera direction relative to the persisted building
+quarter turn, so panning and different map positions cannot choose a different
+heading. The final-art placement ghost uses that same view/scale/anchor contract.
 Game occupancy remains the authoritative **5 × 5 Town Center / 3 × 3 others**;
 the renderer does not change placement, collision or costs.
 

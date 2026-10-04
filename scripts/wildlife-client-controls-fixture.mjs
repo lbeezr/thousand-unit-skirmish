@@ -180,6 +180,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     'syncMatchResultActions','updateMatchResult','formatVictoryHoldTime','updateMatchArmySizeControls','setPlayer','connectSocket'];
   // Control-group painting is a layout side effect; group contents are changed
   // only by production assign/recall/revalidation bodies above.
+  w.pickHarvestableTreeAt=()=>null; // This Sheep fixture has no rendered tree crowns.
   w.updateControlGroupUI=noop;w.cameraNavigationKeydown=()=>false;w.wallPlacementKeydown=()=>false;
   w.eval([wildlifeClientFunctionSource(source),...names.map(declaration)].join('\n'));
   const listeners=program.filter(node=>{

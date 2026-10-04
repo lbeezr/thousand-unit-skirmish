@@ -109,7 +109,10 @@ export function createProductionPolicy(seed) {
       if (observation.population && observation.population.available < neededPopulation && observation.population.capacity < 1000
         && friendly.filter((unit) => unit.kind !== 'worker').length < limits.military) {
         const house = observation.buildings.friendly.find((building) => building.type === 'house' && !building.complete);
-        const builder = workers.find((worker) => ['idle', 'gathering'].includes(worker.task) && worker.cargo === 0);
+        // Home housing must not pull a zero-cargo Worker off a distant harvest
+        // journey before its first delivery. Use an idle or nearby gatherer.
+        const builder = workers.find((worker) => worker.cargo === 0 && (worker.task === 'idle'
+          || worker.task === 'gathering' && home && Math.hypot(worker.x - home.x, worker.z - home.z) <= 12));
         if (!builder || !home) return [];
         if (house) {
           postpone(observation.tick);

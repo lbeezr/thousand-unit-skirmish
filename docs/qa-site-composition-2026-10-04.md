@@ -21,6 +21,15 @@ CPU factory contracts exercise loaded and unloaded textures, ordering relative
 to real actor/captured building constants, elevated contact, capacity refusal
 and empty membership. They do not establish rendered appearance.
 
+The treatment preserves the existing [earthwork source](../assets/environment/frontier-interactive-v1/construction-earthwork.png),
+[foundation source](../assets/environment/frontier-interactive-v1/construction-foundation.png)
+and their [runtime/provenance manifest](../assets/environment/frontier-interactive-v1/manifest.json).
+Existing [Worker production backing](human-foot-unit-coverage.md) and
+[Watchtower capture](../assets/buildings/frontier-civilization-models-v1/captures/watchtower-complete-view-01.png)
+remain unchanged. The selected correction puts that approved detail beneath its
+actors and samples the original soil core along connected wall cells; no new
+art is generated. Before/after pixels remain a separate required comparison.
+
 ## Layer audit
 
 | Content | Current order / pass | Depth and alpha convention |
@@ -72,3 +81,91 @@ construction contact, mixed-stage palisades, gate/gap/corner, completion,
 cancel/removal and elevated terrain occlusion. Inspect actual PNGs and retain
 simulation state and source/release identities; screenshot manifests alone
 cannot pass visual acceptance. Identified staging delivery remains separate.
+
+## Second bounded increment: connected palisade ground
+
+The original ground pipeline places the same 3×3 square on every 1×1 wall or
+gate. Adjacent sites therefore overlap across two cells in each direction.
+The candidate removes walls/gates from that pipeline and draws two preallocated
+union meshes (earthwork/foundation), each at most 128 one-cell quads. No positive
+area overlaps between cells or stages. Authoritative reciprocal connections,
+same owner, surviving unfinished membership and equal sampled center height
+determine joined edges. Diagonals, gaps, completed/open gates and removed sites
+do not bridge. A gate under construction joins just like its owned segment;
+its operation rules are untouched.
+
+Both existing textures were visually inspected. A shared mirrored soil-core
+sample (central 30–70%) avoids repeating their square grass/stone curb inside
+the strip. World coordinates keep this placement stable across stage changes,
+snapshot ordering and reconstruction. Only exposed union edges feather; there
+are no stacked alpha squares. Vertices sample the real terrain just inside each
+cell corner and retain +0.002 lift and depth testing. Two fixed buffers update
+only when signatures change; progress within one stage causes no upload. Other
+building site art and every map, ledger, navigation and picking rule remain.
+
+CPU controls cover reciprocal versus stale/missing connections, mixed stages,
+straight/corner/junction, gap/diagonal/opponent, gate completion/open state,
+duplicates, terrain step, exact triangle coverage, overflow, stable buffers,
+real renderer reconciliation and completion/removal. These are topology and
+composition contracts, not a GPU visual pass. The adapter still needs the
+CI-owned registration and exact baseline/candidate captures described above.
+
+## Prepared owned regression adapter
+
+`scripts/renderer-site-composition-scenario.mjs` exports `site-composition`,
+`contextVersion=1` and `run(context)` for the merged shared capture contract.
+It enters `/` → Practice with Authored Rules, joins the same disposable room
+with a second real seat, then publishes an explicitly declared 64×64 authored
+regression map. It uses default loaded assets and normal socket Build/BuildWall,
+CancelConstruction and Move. This is a construction regression, not ordinary
+New Game/menu usability or deployment acceptance.
+
+Four workers per seat naturally build Watchtower, House, an eight-cell L and
+its adjacent Gate. Fourteen checkpoints cover earthwork, productive foundation,
+cancelled middle gap, completed captured buildings/cleared ground, and real
+foreground/rear Worker approaches for both seats. A second declared raised map
+with fog covers owned TownCenter and naturally completed House terrain contact.
+The terrain rectangles do not overlap; the level-1 rim provides legal access
+to level 2. The House position avoids the real offset TownCenter footprint.
+
+Each shared screenshot retains only disclosed scene/render projections and
+exact source/release identity. A read-only opt-in snapshot records actual
+rendered-frame captured/fallback visibility, screen coordinates, terrain contact
+and live Worker action. The adapter returns **blocked** until actual retained
+PNGs receive visual inspection; image receipts and state metadata never pass
+the dark-square, occlusion or raised/fog checks. CPU orchestration tests validate
+that boundary and propagate screenshot failures without producing pixels.
+
+`node scripts/site-composition-scene-scenario.mjs REPORT.json` exercises the same
+declared maps through the public Practice room service and authoritative server.
+It checks the real 22-site paid ledger, productive wall progress, both real
+cancelled gaps, natural completion of 20 surviving sites, real front/rear Move
+arrival and naturally completed raised House. It is scene preparation with
+zero rendered frames and no DOM/deployed acceptance. The initial overlapping
+elevation draft was rejected; a later raised House draft intersected the offset
+TownCenter and was also rejected. Both fixture errors were corrected without
+changing admission, economy, maps or simulation rules.
+
+CI owner `01a10378` retains the explicit registry/manual selector admission;
+the shared registry currently has no `site-composition` case and the existing
+dispatch-access denial remains unresolved. No new access or bypass is requested.
+The rendering owner retains exact baseline/candidate PNG inspection, dark-square
+diagnosis, clean packaging and identified staging verification.
+
+Independent read-only source review approved PR334 at `4f5fcde3`, PR343 at
+`9915594f` and PR359 at `fe37c699`, with no actionable findings. The reviewer ran
+all ten focused candidate tests, 512 palisade occupancy patterns/9,216 edge
+assertions and 36 raised/ramp contacts; maximum decal error was 5.6e-7. These
+source/geometry checks do not establish rendered appearance.
+
+The layer correction refreshed automatically against main `ed0caf3d`; its exact
+resolved `4d1d9ae9` passed factory checks, types, imports, docs and clean packaging,
+then merged as [PR334](https://github.com/lbeezr/thousand-unit-skirmish/pull/334)
+at `9c535f5b`. Connected ground refreshed without conflicts; exact resolved
+`06e0cfa7` passed 47 focused checks, types, imports, docs and clean packaging,
+then merged as [PR343](https://github.com/lbeezr/thousand-unit-skirmish/pull/343)
+at `5669ad8d`. PR359 retains capture preparation and its exact-head integration
+checks. No source conflict required a substantive resolution. The next actual
+appearance action remains CI-owned case admission/authorized dispatch, then
+rendering-owner inspection of real baseline/candidate PNGs. No containing
+deployment or staging appearance is inferred from these merges.
