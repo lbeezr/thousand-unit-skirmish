@@ -75,6 +75,7 @@ run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush edit
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default bindings and release dependencies');
 run(['--test', 'scripts/asset-readability.test.mjs'], 'Read-only asset catalog consuming the existing production sidecar');
+run(['--test', 'scripts/catalog-barracks-scenario.test.mjs'], 'Catalog and paid Barracks adapter contracts (CPU observations)');
 run(['--test', 'scripts/oak-depletion-atlas-runtime.test.mjs'], 'Generic oak depletion atlas loading, fallback and registration');
 run(['--test', 'scripts/interactive-runtime-image.test.mjs'], 'Verified interactive image hash, dimensions and disposal');
 run(['--test', 'scripts/terrain-cliff-faces.test.mjs'], 'Painted scree cliff faces preserve terrain, UV joins and fallback');
