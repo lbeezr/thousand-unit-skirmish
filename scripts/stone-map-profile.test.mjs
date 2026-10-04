@@ -13,6 +13,7 @@ import { applyResourceBrush, createResourceBrushEditor, previewResourceBrush,
   resourceBrushMapKey } from '../src/resource-brush-authoring.mjs';
 import { mountResourceBrushControls } from '../src/resource-brush-controls.mjs';
 import { createRoomLobby } from '../src/room-lobby-ui.mjs';
+import { mapChoiceLabel } from '../src/match-mode-controls.mjs';
 import { createStoneAuthoringFixture } from './stone-authoring-fixture.mjs';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import * as mapUtils from '../src/map-utils.mjs';
@@ -183,12 +184,62 @@ test('a profile-mislabelled checkpoint with valid baseline pin/checksum is rejec
   assert.ok((await Promise.all(rejected.map(name => readFile(path.join(room.directory, name), 'utf8')))).includes(original));
 });
 
-test('ordinary room lobby selects shipped Stone and both seats naturally pay, refund and recover conservation', async t => {
+test('ordinary Tiny lobby omits compact Stone, preserves readiness on rejection and resets to the admitted arena', async t => {
+  const room = await createFortifiedFixture({ supervisor: true, mapPath: null, timeoutMs: 15000 });
+  t.after(() => room.dispose()); await room.start();
+  const response = await fetch(`http://127.0.0.1:${room.port}/api/rooms`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode: 'pvp', pregame: true }),
+  });
+  assert.equal(response.status, 201); const { roomId } = await response.json();
+  const clients = [await room.connect(0, null, roomId), await room.connect(1, null, roomId)];
+  const host = clients[0], joined = await host.wait(row => row.type === 'lobby' && row.lobby.seats.length === 2);
+  assert.equal(joined.lobby.mapId, 'veyrholds-terraced-vale');
+  assert.deepEqual([host.welcome.map.width, host.welcome.map.height], [160, 160]);
+  assert.equal(joined.lobby.matchModeId, 'skirmish'); assert.equal(joined.lobby.matchModeVersion, 1);
+  assert.ok(joined.lobby.maps.every(map => map.width >= 160 && map.height >= 160 && map.selectable));
+  assert.equal(joined.lobby.maps.some(map => map.id === 'stone-defense-field'), false);
+  const views = clients.map(client => {
+    const dom = new JSDOM('<dialog></dialog>'); t.after(() => dom.window.close());
+    const root = dom.window.document.querySelector('dialog');
+    root.showModal = () => { root.open = true; }; root.close = () => { root.open = false; };
+    return { root, ui: createRoomLobby({ root, send: command => { client.send(command); return true; }, copyInvite() {} }) };
+  });
+  const update = lobby => views.forEach((view, team) => view.ui.update(lobby, clients[team].welcome.player, true, host.welcome.map));
+  update(joined.lobby);
+  assert.equal(views[0].root.querySelector('#lobby-map').querySelector('option[value="stone-defense-field"]'), null);
+  for (const [team, client] of clients.entries()) {
+    const after = client.messages.length; views[team].root.querySelector('#lobby-ready').click();
+    const ready = await client.wait(row => row.type === 'lobby'
+      && row.lobby.seats.some(seat => seat.id === client.welcome.player.id && seat.ready), 'Tiny Ready', after);
+    update(ready.lobby);
+  }
+  const ready = await host.wait(row => row.type === 'lobby' && row.lobby.canLaunch);
+  const afterRejection = host.messages.length;
+  host.send({ type: 'configureLobby', revision: ready.lobby.revision, mapId: 'stone-defense-field',
+    matchModeId: 'authored', matchModeVersion: 1 });
+  const rejected = await host.wait(row => row.type === 'lobbyRejected', 'compact Stone rejection', afterRejection);
+  assert.deepEqual(rejected.lobby, ready.lobby, 'invalid compact map/rules cannot change the tuple or accepted readiness');
+  update(rejected.lobby);
+  assert.equal(views[0].root.querySelector('#lobby-launch').disabled, false);
+  const afterLaunch = host.messages.length; views[0].root.querySelector('#lobby-launch').click();
+  const launched = await host.wait(row => row.type === 'lobby' && row.lobby.phase === 'running', 'Tiny launch', afterLaunch);
+  update(launched.lobby); assert.ok(views.every(view => !view.root.open));
+  await Promise.all(clients.map(client => client.state(state => state.scenarioClockStarted && state.mapId === joined.lobby.mapId,
+    'admitted Tiny two-seat clock')));
+  const afterReset = host.messages.length; host.send({ type: 'reset' });
+  const reset = await host.wait(row => row.type === 'lobby' && row.lobby.phase === 'lobby', 'Tiny reset', afterReset);
+  assert.equal(reset.lobby.mapId, joined.lobby.mapId); assert.equal(reset.lobby.matchModeId, 'skirmish');
+  assert.equal(reset.lobby.matchModeVersion, 1); assert.ok(reset.lobby.seats.every(seat => !seat.ready));
+  update(reset.lobby); assert.equal(views[0].root.querySelector('#lobby-launch').disabled, true);
+});
+
+test('internal Practice selects shipped Stone and both seats naturally pay, refund and recover conservation', async t => {
   const fixture = await createFortifiedFixture({ supervisor: true, mapPath: null, timeoutMs: 90000 });
   t.after(() => fixture.dispose()); await fixture.start();
   const response = await fetch(`http://127.0.0.1:${fixture.port}/api/rooms`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mode: 'pvp', pregame: true }),
+    body: JSON.stringify({ mode: 'pvp', practice: true }),
   });
   assert.equal(response.status, 201);
   const { roomId } = await response.json();
@@ -202,35 +253,17 @@ test('ordinary room lobby selects shipped Stone and both seats naturally pay, re
   const map = JSON.parse(await readFile(new URL('../maps/stone-defense-field.json', import.meta.url), 'utf8'));
   const nodes = map.resourceNodes.filter(node => node.type === 'stone');
   assert.equal(map.economyProfileId, STONE_ECONOMY_PROFILE_ID);
-  const lobbyViews = clients.map(client => {
-    const dom = new JSDOM('<dialog></dialog>'); t.after(() => dom.window.close());
-    const root = dom.window.document.querySelector('dialog');
-    root.showModal = () => { root.open = true; }; root.close = () => { root.open = false; };
-    const ui = createRoomLobby({ root, send: command => { client.send(command); return true; }, copyInvite() {} });
-    return { dom, root, ui };
-  });
-  const updateLobby = lobby => lobbyViews.forEach((view, team) => view.ui.update(lobby, clients[team].welcome.player));
-  const joined = await clients[0].wait(message => message.type === 'lobby' && message.lobby.seats.length === 2);
-  updateLobby(joined.lobby);
-  const select = lobbyViews[0].root.querySelector('#lobby-map');
-  assert.equal(select.disabled, false);
-  assert.equal([...select.options].find(option => option.value === map.id)?.textContent, 'Lab · STONE DEFENSE FIELD');
-  select.value = map.id; select.dispatchEvent(new lobbyViews[0].dom.window.Event('change'));
+  assert.ok(clients.every(client => client.welcome.state.practice && client.welcome.state.lobby === undefined));
+  assert.ok(clients.every(client => client.welcome.matchModeId === 'authored' && client.welcome.matchModeVersion === 1));
+  const offered = clients[0].welcome.maps.find(entry => entry.id === map.id);
+  assert.equal(offered?.name, 'Lab · STONE DEFENSE FIELD');
+  assert.deepEqual([offered.width, offered.height], [map.width, map.height]);
+  assert.equal(offered.internalFixture, true); assert.equal(offered.ordinarySelectable, false);
+  assert.equal(offered.selectable, true); assert.match(mapChoiceLabel(offered), /Internal fixture.*STONE DEFENSE FIELD/);
+  clients[0].send({ type: 'selectMap', mapId: map.id });
   await Promise.all(clients.map(client => client.wait(message => message.type === 'mapChange' && message.map.id === map.id)));
-  const configured = await clients[0].wait(message => message.type === 'lobby' && message.lobby.mapId === map.id);
-  assert.equal(configured.lobby.armySize, 24); updateLobby(configured.lobby);
-  for (const [team, client] of clients.entries()) {
-    const after = client.messages.length;
-    lobbyViews[team].root.querySelector('#lobby-ready').click();
-    const ready = await client.wait(message => message.type === 'lobby'
-      && message.lobby.seats.some(seat => seat.id === client.welcome.player.id && seat.ready), 'ordinary Ready', after);
-    updateLobby(ready.lobby);
-  }
-  assert.equal(lobbyViews[0].root.querySelector('#lobby-launch').disabled, false);
-  lobbyViews[0].root.querySelector('#lobby-launch').click();
-  const launched = await clients[0].wait(message => message.type === 'lobby' && message.lobby.phase === 'running');
-  updateLobby(launched.lobby);
-  assert.ok(lobbyViews.every(view => !view.root.open));
+  await Promise.all(clients.map(client => client.state(state => state.mapId === map.id && state.armySize === 24
+    && state.practice && state.scenarioClockStarted, 'two-seat internal Stone Practice')));
   assert.ok(clients.every(client => !client.messages.some(message => message.type === 'mapPublished')));
   assert.ok(!(await readdir(path.join(path.dirname(checkpointPath), 'custom-maps'))).includes(`${map.id}.json`));
   const workers = clients.map((client, team) => client.latest.units.filter(row => row[1] === team && row[5] === 'worker').map(row => row[0]));
@@ -333,7 +366,8 @@ test('ordinary room lobby selects shipped Stone and both seats naturally pay, re
   assert.ok(final.state.buildings.every(building => Number.isFinite(building.attackCooldown)
     && building.attackCooldown >= 0 && building.attackCooldown <= GAMEPLAY_DEFINITIONS.buildings.watchtower.combat.period));
   console.log(JSON.stringify({ proof: 'native-two-seat-stone-loop', mapId: map.id,
-    entry: 'Create Room → Map → Lab · STONE DEFENSE FIELD → Ready → Launch match',
+    entry: 'Practice → Battlefield → Internal fixture · Lab · STONE DEFENSE FIELD',
+    practice: true, ordinarySelectable: false,
     shippedCatalog: true, customMapPublished: false, schemaVersion: final.schemaVersion,
     rulesetRevision: final.rulesetRevision, stockPerSeat: 200, initialStone: 0,
     bankedBeforeDefense: banked.state.teamStone, paidStone: paid.state.teamStone,
