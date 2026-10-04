@@ -203,8 +203,8 @@ report. The full CPU suite was not executed or claimed.
 
 Current-main integration retains those runtime/helper/test/scenario bytes and
 adds the construction helper to the simulation import domain. The 39 guard/lane
-tests pass. Registration checks show 1,125 full entries partitioned into 943
-fast and 182 simulation entries, with each full entry present exactly once
+tests pass. Registration checks after integrating main `cade7c8b` show 1,133
+full entries partitioned into 950 fast and 183 simulation entries, with each full entry present exactly once
 across three shards. The eleven-case continuation driver is admitted once as a
 positive simulation executable; registration is distinct from suite execution.
 Final integration review, clean integrated release and fresh-main verification
