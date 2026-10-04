@@ -102,7 +102,8 @@ for (const team of [0, 1]) for (const recoverAt of ['none', 'pending', 'active',
           const worker = r.units[id], half = BUILDING_DEFINITIONS[site.type].footprint / 2;
           assert.ok(Math.hypot(Math.max(0, Math.abs(worker.x - site.x) - half),
             Math.max(0, Math.abs(worker.z - site.z) - half)) <= 1.4, 'productive work requires unchanged legal edge reach');
-          assert.equal(r.snapshot(team).units.find(row => row[0] === id)[17], 'build', 'receipt describes actual productive work');
+          if (!site.complete) assert.equal(r.snapshot(team).units.find(row => row[0] === id)[17], 'build',
+            'receipt describes actual productive work; completion clears the active target');
         }
       }
       assert.ok(r.buildings.find(b => b.id === siteId).complete, 'safe approach must still finish paid work');
