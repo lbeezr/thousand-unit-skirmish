@@ -26,7 +26,7 @@ try {
   const main = await (await fetch(new URL('src/main.js', base))).text();
   assert.match(main, /import \{ createNeutralWildlifeRenderer \} from '\.\/neutral-wildlife-renderer\.mjs'/);
   assert.match(main, /wildlifeRenderer\.reset\(definition\.resourceNodes/);
-  assert.match(main, /applyWildlifeState\(state, initial\)/);
+  assert.match(main, /applyWildlifeState\(state, initial \|\| matchRestarted\)/);
   assert.match(main, /wildlifeRenderer\.reconcile\(view \? \[\.\.\.view\.rows\.values\(\)\] : \[\]/);
   assert.match(main, /wildlifeRenderer\.update\(camera\)/);
   globalThis.Image = class {

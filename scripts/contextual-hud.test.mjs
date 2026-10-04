@@ -72,7 +72,7 @@ function fixture(team = 0) {
     BARRACKS_QUEUE_LIMIT: 5, MAX_PER_TEAM: 1000, MAX_UNITS: 2000,
     sentCommands: [], sendCommand(command) { w.sentCommands.push(command); },
     updateBuildingLifecycleActions() {},
-    updateCommandUI() {}, updateEconomyUI() {}, updateBuildingSelectionVisual() {},
+    updateCommandUI() {}, updateEconomyUI() {}, updateBuildingSelectionVisual() {}, updateBuildPlacementHint() {},
     syncSelectionMesh() {}, clearHeldCameraKeys() {}, showToast() {},
     keyboardTargetIsEditing: event => event.target?.matches('input, select, textarea'),
     cameraNavigationKeydown: () => false, audio: { playEvent() {} },
@@ -735,4 +735,35 @@ for (const team of [0, 1]) test(`seat ${team}: selected Stone cargo keeps its la
   assert.equal(f.w.units[own].cargo, 3.125, 'issuing the order never grants a bank or discards cargo');
   f.w.mapDefinition = {}; f.w.updateSelectionUI();
   assert.equal(button.hidden, true); assert.doesNotMatch(f.bar.querySelector('[data-context-summary]').textContent, /stone/);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: owned Sheep uses the existing compact Herd/Stop strip and returns cleanly to army context`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const node = { id: 'owned-hud-sheep', type: 'food', stock: 100, x: 2.5, z: 3.5,
+    wildlifeSpecies: 'bellweather-sheep' };
+  const row = { ...node, wildlifeState: 'alive', wildlifeTeam: team,
+    wildlifeHeading: 0, wildlifeActivity: 'grazing' };
+  Object.assign(f.w, { mapDefinition: { id: 'sheep-hud', width: 16, height: 16, fogOfWar: true,
+    resourceNodes: [node] }, MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8,
+    latestFogCells: new Uint8Array(256).fill(2), latestForestStocks: new Map(), resourceNodeVisuals: new Map(),
+    wildlifeRenderer: { reconcile() {}, isAvailable: () => true }, TEAM_NAMES: ['Azure', 'Ember'],
+  });
+  f.w.applyWildlifeState({ mapId: 'sheep-hud', forestEpoch: 7, resourceNodes: [row] });
+  f.w.selectWildlife(row);
+  assert.equal(f.w.selected.size, 0); assert.equal(f.w.selectedBuildingId, null);
+  assert.equal(f.bar.hidden, false); assert.equal(f.bar.dataset.context, 'wildlife');
+  assert.match(f.bar.querySelector('[data-context-summary]').textContent,
+    new RegExp(`Bellweather Sheep · ${team === 0 ? 'Azure' : 'Ember'} · 100 food`));
+  const target = f.bar.querySelector('[data-context-proxy="order-target-toggle"]');
+  assert.equal(target.hidden, false); assert.equal(target.querySelector('[data-command-label]').textContent, 'Herd');
+  const stop = f.bar.querySelector('[data-stationary-order="stop"]');
+  assert.equal(stop.hidden, false); assert.equal(stop.disabled, false);
+  const visible = [...f.bar.querySelectorAll('button')].filter(button => !button.closest('[hidden]'));
+  assert.deepEqual(visible.map(button => button.dataset.stationaryOrder || button.dataset.contextProxy), ['order-target-toggle', 'stop']);
+  assert.equal(f.d.querySelector('#assign-selected-group').disabled, true);
+  f.w.selectWorkers();
+  assert.equal(f.w.selectedWildlifeId, null); assert.deepEqual([...f.w.selected], [team * 2]);
+  assert.equal(f.bar.dataset.context, 'workers');
+  assert.equal(f.bar.querySelector('[data-context-build]').hidden, false);
+  assert.equal(f.bar.querySelector('[data-context-groups]').hidden, false);
 });
