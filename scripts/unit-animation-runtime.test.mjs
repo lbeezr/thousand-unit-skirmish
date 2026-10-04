@@ -41,7 +41,7 @@ async function withRuntime(run, role = null, version = null) {
 function actor(team = 0, kind = 'worker') {
   return { id: team, team, slot: 0, kind, hp: 100, task: 'idle', angle: 3 * Math.PI / 4,
     renderX: 0, renderZ: 0, walking: false, attackStartedAt: 0, defeatStartedAt: 0,
-    cargo: 0, cargoType: null, workResourceVariant: null };
+    cargo: 0, cargoType: null, workResourceVariant: null, performingAction: null };
 }
 
 function assertFrame(scene, role, team, frameId, message) {
@@ -92,6 +92,7 @@ test('a fresh attack plays once then resumes idle or work, on both default civil
     for (const team of [0, 1]) for (const kind of ['worker', 'infantry', 'spearman', 'archer', 'scout', 'rider', 'siege-engine']) {
       const unit = actor(team, kind), role = civilizationSpriteRole(kind, team ? 'boughward' : 'human');
       unit.task = kind === 'worker' ? 'gathering' : null; unit.cargoType = 'food';
+      unit.performingAction = kind === 'worker' ? 'gather-food' : null;
       const duration = runtime.durationMs(role, 'attack');
       unit.attackStartedAt = 1000;
       const clip = spriteActionClip(new Map(packs[role].assets[0].clips.map(c => [`${c.stateId}|${c.directionId}`, c])),
@@ -120,16 +121,16 @@ test('ordinary Worker actions, interruption and resumption bind real frames rega
       };
       draw({}, 'idle-south-east-0');
       draw({ task: 'moving', walking: true }, 'walk-south-east-0');
-      draw({ walking: false, task: 'gathering', cargoType: 'wood' }, 'gather-wood-south-east-0');
+      draw({ walking: false, task: 'gathering', cargoType: 'wood', performingAction: 'gather-wood' }, 'gather-wood-south-east-0');
       runtime.update(unit, now, 1);
       assertFrame(scene, role, team, `gather-wood-south-east-${team ? 0 : 2}`);
       draw({ task: 'idle' }, 'idle-south-east-0');
       draw({ task: 'gathering' }, 'gather-wood-south-east-0');
-      draw({ task: 'building' }, 'build-south-east-0');
-      draw({ task: 'repairing' }, 'repair-south-east-0');
+      draw({ task: 'building', performingAction: 'build' }, 'build-south-east-0');
+      draw({ task: 'repairing', performingAction: 'repair' }, 'repair-south-east-0');
       draw({ walking: true }, 'walk-south-east-0');
       draw({ walking: false }, 'repair-south-east-0');
-      draw({ task: 'gathering', cargoType: 'food' }, 'gather-food-south-east-0');
+      draw({ task: 'gathering', cargoType: 'food', performingAction: 'gather-food' }, 'gather-food-south-east-0');
       draw({ workResourceVariant: 'shore-fish' }, `${team ? 'gather-food' : 'gather-fish'}-south-east-0`);
       draw({ task: 'returning', walking: true, cargo: 10, workResourceVariant: null }, 'walk-south-east-0');
       draw({ walking: false }, 'idle-south-east-0');
@@ -156,7 +157,7 @@ test('all shipped headings resolve available frames without resetting continuous
         const clip = spriteActionClip(clips, 'walk', direction, null, role, true);
         assertFrame(scene, role, team, clip.sequence[index % clip.sequence.length].frameId);
       }
-      unit.walking = false; unit.task = 'gathering'; unit.cargoType = 'food';
+      unit.walking = false; unit.task = 'gathering'; unit.cargoType = 'food'; unit.performingAction = 'gather-food';
       runtime.update(unit, 2000, 1); assert.equal(unit.spriteClockStartedAt, 2000);
       runtime.update(unit, 2300, 1); assert.equal(unit.spriteClockStartedAt, 2000);
       runtime.update(unit, 10000, 0);

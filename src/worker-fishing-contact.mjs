@@ -1,6 +1,7 @@
 import { shoreFishSitePositions } from './shore-fishing-placement.mjs';
 import { headingToTarget } from './unit-heading.mjs';
 import { WATER_LEVEL } from './water-surface-geometry.mjs';
+import { workerWorkAction } from './worker-work-presentation.mjs';
 
 const sitesByMap = new WeakMap();
 export function fishingVisualSites(map) {
@@ -12,7 +13,7 @@ export function fishingVisualSites(map) {
 // Resolve the cosmetic target from the current authoritative position/bearing.
 // Ambiguity or stale identity fails closed; this is never a gather/reach rule.
 export function fishingWaterContact(unit, map) {
-  if (unit.kind !== 'worker' || unit.hp <= 0 || unit.workResourceVariant !== 'shore-fish'
+  if (workerWorkAction(unit) !== 'gather-food' || unit.workResourceVariant !== 'shore-fish'
     || ![unit.serverX, unit.serverZ, unit.workHeading].every(Number.isFinite)) return null;
   const matches = fishingVisualSites(map).filter(site => {
     const heading = headingToTarget(unit.serverX, unit.serverZ, site.water.x, site.water.z);

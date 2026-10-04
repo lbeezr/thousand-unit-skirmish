@@ -17,7 +17,7 @@ const clips = new Map(asset.clips.map(c => [`${c.stateId}|${c.directionId}`, c])
 const main = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const frameMotion = main.slice(main.indexOf('    const dx = unit.serverX - unit.renderX;'),
-  main.indexOf('    const working = !walking', main.indexOf('    const dx = unit.serverX - unit.renderX;')));
+  main.indexOf('    const workAction = workerWorkAction(unit);', main.indexOf('    const dx = unit.serverX - unit.renderX;')));
 function animate(unit, frameDelta = 1 / 60) {
   vm.runInNewContext(frameMotion, { unit, frameDelta, alpha: 1 - Math.exp(-frameDelta * 16),
     THREE, moved: false });
@@ -25,7 +25,7 @@ function animate(unit, frameDelta = 1 / 60) {
 function villager() {
   return { kind: 'worker', hp: 100, task: 'idle', renderX: 0, renderZ: 0,
     serverX: 0, serverZ: 0, angle: 0, targetAngle: 0, workHeading: null,
-    motionPhase: 0, walking: false, attackStartedAt: 0 };
+    motionPhase: 0, walking: false, attackStartedAt: 0, performingAction: null };
 }
 const camera = new THREE.OrthographicCamera(-4, 4, 4, -4, 0.1, 100);
 camera.position.set(...CAMERA_VIEW_DIRECTION).multiplyScalar(10);
@@ -66,7 +66,7 @@ test('actual Human walk and berry clips keep every heading, with honest idle hol
 
 test('arrival turns toward left/right berries, Stop retains heading, and jitter cannot reset it', () => {
   for (const target of [[-1,1], [1,-1]]) {
-    const unit = villager(); unit.task = 'gathering'; unit.cargoType = 'food';
+    const unit = villager(); unit.task = 'gathering'; unit.cargoType = 'food'; unit.performingAction = 'gather-food';
     unit.serverX = 0.6; unit.workHeading = headingToTarget(0.6, 0, ...target);
     animate(unit);
     assert.equal(activeState(unit, 1000), 'walk', 'travel suppresses work');
@@ -169,7 +169,8 @@ test('runtime samples exact atlas rectangles without horizontal mirroring or tim
       roleSpriteVersions:{human:'v3'},humanAppearancePreview:true,approximateActionDirections:true});
     assert.equal(await runtime.ready,true);
     for (const team of [0,1]) for (const state of ['walk','gather']) for (const [index,direction] of directions.entries()) {
-      const unit = {...villager(),team,slot:0,angle:index*Math.PI/4,walking:state==='walk',task:'gathering',cargoType:'food'};
+      const unit = {...villager(),team,slot:0,angle:index*Math.PI/4,walking:state==='walk',task:'gathering',cargoType:'food',
+        performingAction:'gather-food'};
       runtime.update(unit,1000,1);
       const mesh = scene.children[team];
       const rect = mesh.geometry.getAttribute('instanceAtlasRect');

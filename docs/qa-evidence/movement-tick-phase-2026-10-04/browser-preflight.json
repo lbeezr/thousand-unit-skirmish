@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "scope": "browser-startup",
+  "status": "unsupported",
+  "browser": null,
+  "screenshots": 0,
+  "issues": [
+    {
+      "code": "sandbox-unavailable",
+      "message": "The Linux browser sandbox could not start.",
+      "nextStep": "Use a provider-provisioned runtime with a working browser sandbox."
+    }
+  ]
+}

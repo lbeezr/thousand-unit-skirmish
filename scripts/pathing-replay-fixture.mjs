@@ -63,7 +63,24 @@ export const replay = {
       replayPlanningCallbacks.shift()();
     }
   },
-  step() { this.drain(); runSimulationTick(); },
+  planningTurn() {
+    const callback = replayPlanningCallbacks.shift();
+    if (!callback) return false;
+    callback();
+    return true;
+  },
+  step({ planningTurns } = {}) {
+    if (planningTurns === undefined) this.drain();
+    else {
+      if (!Number.isInteger(planningTurns) || planningTurns < 0 || planningTurns > 10000) {
+        throw new Error('Invalid replay planning turn count');
+      }
+      for (let turn = 0; turn < planningTurns; turn++) {
+        if (!this.planningTurn()) break;
+      }
+    }
+    runSimulationTick();
+  },
   get units() { return units; }, get buildings() { return buildings; },
   get wood() { return teamWood; },
   get food() { return teamFood; }, get resources() { return resourceNodeStates; },
