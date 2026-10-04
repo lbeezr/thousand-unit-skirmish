@@ -57,7 +57,7 @@ test('East axe keys preserve all preceding art and use three distinct whole same
   }
   assert.equal(hashes.size, 3);
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), preservation.worldUnitsPerPixel);
-  assert.equal(spriteActionClip(clips, 'gather', 'east', 'food', 'human', true).sequence[0].frameId, 'idle-east-0');
+  assert.equal(spriteActionClip(clips, 'gather', 'east', 'food', 'human', true).sequence[0].frameId, 'gather-food-east-0');
   for (const heading of ['north', 'north-east', 'south', 'south-west', 'west']) {
     assert.equal(spriteActionClip(clips, 'gather', heading, 'wood', 'human', true).sequence[0].frameId, `idle-${heading}-0`);
   }
