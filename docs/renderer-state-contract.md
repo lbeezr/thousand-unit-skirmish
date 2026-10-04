@@ -213,6 +213,11 @@ batches. Render only nonempty batches.
 
 Construction ground uses no image for `clear`, `earthwork` below progress 0.4,
 and `foundation` from 0.4 until completion. A completed structure clears its decal.
+Ground color draws after terrain/haze and before props, building color and Workers
+at transparent order -0.5, with depth testing and no depth writes. A late ground
+pass cannot rely on Worker depth: those soft-edged sprites do not write it.
+The [composition investigation](qa-site-composition-2026-10-04.md) records the
+source cause, layer audit and separately pending hosted visual checks.
 Forest-cell clearing uses its own visible stock data rather than inventing
 ordinary resource IDs.
 
