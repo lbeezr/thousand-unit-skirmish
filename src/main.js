@@ -26,7 +26,7 @@ import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from './hud-layout.mjs';
 import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
-import { updateSelectionPortrait } from './selection-portrait.mjs';
+import { updateSelectionPortrait, farmSelectionFacts } from './selection-portrait.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
 import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel, fixedMatchArmySize } from './match-mode-controls.mjs';
@@ -3781,6 +3781,7 @@ function updateSelectionUI({ refreshEconomy = true } = {}) {
     const training = Math.round(Math.max(0, Math.min(1, Number(selectedBuilding.trainingProgress) || 0)) * 100);
     ui.selectedBuildingName.textContent = selectedBuilding.home ? 'TOWN CENTER · HOME' : `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`;
     ui.selectedBuildingState.textContent = selectedBuilding.attackers > 0 ? 'UNDER ATTACK'
+      : selectedBuilding.complete && rule.harvest && selectedBuilding.harvestStock <= 0 ? 'EXHAUSTED'
       : selectedBuilding.complete ? 'READY' : `BUILDING · ${construction}%`;
     ui.selectedBuildingCard.dataset.danger = healthRatio <= 0.25 || selectedBuilding.attackers > 0 ? 'high'
       : healthRatio <= 0.55 ? 'medium' : 'none';
@@ -3793,9 +3794,7 @@ function updateSelectionUI({ refreshEconomy = true } = {}) {
       : selectedBuilding.productionBlocked ? 'Production blocked · clear the spawn area.'
         : queued > 0 ? `${queued.toLocaleString()} ${troop} queued · ${training}% training`
           : troop ? `Ready to train ${troop}.`
-            : rule.harvest ? selectedBuilding.harvestStock > 0
-              ? `Food plot · ${formatResourceStock(selectedBuilding.harvestStock)} / ${rule.harvest.stock} food remaining.`
-              : 'Food plot exhausted · clear it, then build a new Farm.'
+            : rule.harvest ? farmSelectionFacts(selectedBuilding).stock
             : rule.dropoff?.length ? `Drop-off: ${profileDropoffResources(selectedBuilding.type, mapDefinition?.economyProfileId).join(' and ')}.`
             : rule.combat ? `Defends against visible enemies · ${rule.combat.range}-cell range.`
             : selectedBuilding.type === 'palisade-gate' ? selectedBuilding.gateOpen
@@ -4455,9 +4454,7 @@ function updateCommandUI() {
     : utilityBuilding ? BUILDING_DEFINITIONS[selectedBuilding.type].combat
       ? `Defends visible enemies within ${BUILDING_DEFINITIONS[selectedBuilding.type].combat.range} cells · ${BUILDING_DEFINITIONS[selectedBuilding.type].sight} sight.`
       : BUILDING_DEFINITIONS[selectedBuilding.type].harvest
-        ? selectedBuilding.harvestStock > 0
-          ? `Finite food plot · Select Workers and right-click this Farm to harvest. Build another Farm with Workers to plant more.`
-          : 'Food plot exhausted · Clear exhausted Farm, then select Workers and build a new Farm. No regrowth.'
+        ? farmSelectionFacts(selectedBuilding, coarsePointer).instruction
       : BUILDING_DEFINITIONS[selectedBuilding.type].dropoff
         ? `Workers deposit ${profileDropoffResources(selectedBuilding.type, mapDefinition?.economyProfileId).join(' and ')} here when complete.`
         : selectedBuilding.type === 'palisade-gate'
@@ -8370,6 +8367,7 @@ function setBattlefieldCursor(mode) {
 }
 
 function syncBattlefieldCursor() {
+  renderer.domElement.title = '';
   const ids = selectedIds();
   const ownedBuilding = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
   const state = {
@@ -8393,21 +8391,39 @@ function syncBattlefieldCursor() {
       && !state.building && !state.selectedBuilding) {
     const rect = renderer.domElement.getBoundingClientRect();
     const x = cursorPointer.x - rect.left, y = cursorPointer.y - rect.top;
+    const hoveredBuilding = pickBuildingAt(x, y, building => building.hp > 0);
+    const farm = hoveredBuilding?.type === 'farm' ? hoveredBuilding : null;
+    const farmFacts = farm?.team === localTeam ? farmSelectionFacts(farm) : null;
+    let farmHint = farmFacts ? `${farmFacts.stock} ${farmFacts.instruction}`
+      : farm ? 'Enemy Farm · Your Workers cannot harvest this plot.' : '';
     if (ids.length) {
+      state.farmTargetMode = farm ? persistentTargetMode : null;
+      if (farm && persistentTargetMode === 'follow') {
+        const leader = pickAt(x, y, unit => unit.team === localTeam, { advance: false }).unit;
+        state.farmFollowTarget = Boolean(leader && ids.some(id => id !== leader.id));
+      }
       state.enemy = Boolean(pickAt(x, y, (unit) => unit.team !== localTeam, { advance: false }).unit);
       if (!state.enemy) state.enemyBuilding = Boolean(pickBuildingAt(x, y, (building) => building.team !== localTeam));
       if (!state.enemy && !state.enemyBuilding) {
+        state.farmConstruction = Boolean(!cursorShift && !attackMoveMode && !persistentTargetMode
+          && !selectedWaterUnits() && state.workers && farm?.team === localTeam && !farm.complete);
         const tree = pickHarvestableTreeAt(x, y);
+        state.exhaustedFarm = Boolean(!tree && farm?.team === localTeam && farm.complete && farm.harvestStock <= 0);
+        if (tree && !state.farmConstruction) farmHint = '';
         state.resource = tree?.node?.type || pickResourceNodeAt(x, y, { visibleOnly: true })?.type;
         state.forest = tree?.forestCell !== undefined;
         if (!state.resource && !state.forest) state.forest = pickForestCellAt(x, y) !== null;
       }
+      if (farmFacts && ((!farm.complete && !state.farmConstruction)
+        || ['patrol', 'follow'].includes(persistentTargetMode))) farmHint = farmFacts.stock;
+      if (state.enemy || (state.enemyBuilding && farm?.team === localTeam)) farmHint = '';
     }
     if (cursorShift) {
       const friendly = pickAt(x, y, (unit) => unit.team === localTeam, { advance: false }).unit;
       state.friendly = Boolean(friendly);
       state.alreadySelected = Boolean(friendly && selected.has(friendly.id));
     }
+    renderer.domElement.title = farmHint;
   }
   setBattlefieldCursor(battlefieldCursor(state));
 }

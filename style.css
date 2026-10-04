@@ -225,6 +225,11 @@ h2 { font-size: 16px; font-weight: 700; }
 .building-selection-card[data-danger="medium"] .building-health-bar i { background: #e3c46f; }
 .building-selection-card[data-danger="high"] .building-health-bar i { background: #ef9278; }
 .building-selection-production { margin: 11px 0 0; color: #c8d7bb; font: 500 10px/1.45 'DM Mono', monospace; }
+.building-selection-art { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+.building-selection-art[hidden], .building-selection-description[hidden], .building-selection-instruction[hidden] { display: none; }
+.building-selection-art img { flex: 0 0 40px; }
+.building-selection-art figcaption { color: #a8b49e; font: 500 10px/1.45 'DM Mono', monospace; }
+.building-selection-description, .building-selection-instruction { margin: 10px 0 0; color: #c8d7bb; font: 500 11px/1.5 'Manrope', sans-serif; }
 .building-selection-actions { display: none; gap: 7px; margin-top: 12px; }
 .building-selection-actions button { min-height: 32px; padding: 0 10px; border: 1px solid rgba(213,239,120,.26); border-radius: 3px; background: rgba(213,239,120,.07); color: #dbe9c6; font: 600 10px 'DM Mono', monospace; cursor: pointer; }
 .building-selection-actions button span { color: var(--lime); }
