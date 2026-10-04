@@ -1,5 +1,5 @@
 import { stopChild } from './temporary-resources.mjs';
-import { checkClientImports } from './check-client-imports.mjs';
+import { checkClientImports } from './browser/check-client-imports.mjs';
 import { compareServedBuildIdentity } from './release/check-served-build-identity.mjs';
 import { BROWSER_ENTRYPOINTS, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS } from './check-runtime-imports.mjs';
 import { CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH } from '../src/server/client-asset-paths.mjs';
