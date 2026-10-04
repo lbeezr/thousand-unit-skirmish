@@ -659,6 +659,30 @@ and performance-tool responsibilities remain in the purpose-based queue above;
 no bulk test rename, measurement rerun or workload change is implied. The three
 server compatibility imports remain outside the movement owner's active window.
 
+### Release verification tooling boundary
+
+[PR378](https://github.com/lbeezr/thousand-unit-skirmish/pull/378) continues the
+same release-tooling stage with `scripts/release/railway-smoke.mjs` and
+`scripts/release/check-served-build-identity.mjs`. The existing CLI's lookup,
+readiness/auth/import/asset/WS sequence and the helper's three identity functions
+are unchanged except their required relative imports. The smoke CLI consumes
+the canonical helper, and the actual packed-release scenario does too. The
+existing mocked CLI mismatch case follows the canonical entry; its assertions
+remain unchanged. This is source/tool organization, not a provider lookup or
+deployment action.
+
+The old smoke command remains a three-line launcher with unchanged arguments,
+cwd, usage, JSON and exit behavior. The old identity helper explicitly forwards
+the same three named functions, preserving object identity for capture/QA tools
+and contract fixtures. Package commands, capture consumers and external command
+contracts remain supported while their owners migrate. The architecture/tooling
+owner retains both root entries until those supported consumers are inventoried
+and agree their migration, source/mock/native packed checks pass without the
+entries, and the owning command/API documentation is reconciled. No caller or
+policy is silently retired. Bounded health reads, failure sanitization and
+early source-mismatch rejection retain their existing contracts; this slice
+does not strengthen, weaken or otherwise change access/deployment policy.
+
 ### Coupling and size ratchets
 
 Use the audited values above as a starting comparison and record each scoped
