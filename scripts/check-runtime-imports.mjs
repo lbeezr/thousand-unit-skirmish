@@ -97,6 +97,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'water-study-preview',
   ],
   authoring: [
+    'authoring/scenario-authoring', 'authoring/map-resize',
     'landscape-authoring', 'map-resize', 'map-studio-viewport',
     'resource-brush-authoring', 'resource-brush-controls', 'resource-cluster-authoring',
     'scenario-authoring', 'settlement-authoring', 'terrain-authoring',

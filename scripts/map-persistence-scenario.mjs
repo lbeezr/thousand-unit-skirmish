@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { TERRAIN_MATERIALS } from '../src/terrain-materials.mjs';
-import { resizeWorldMarkers } from '../src/map-resize.mjs';
+import { resizeWorldMarkers } from '../src/authoring/map-resize.mjs';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SERVER_PATH = path.join(ROOT, 'server.mjs');
