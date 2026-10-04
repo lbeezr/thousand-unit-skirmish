@@ -877,3 +877,10 @@ Authored36/64; **28 art cells remain**, NE/S/SW/W each7. Ranked next: actual NE
 family, then S/SW/W public heading seeds, faithful same-heading action reuse.
 Polish follows breadth. Initial Git CLI credential loss was recovered through
 its existing authenticated gh helper; source publication is unblocked.
+
+
+All150 focused tests pass; byte-idempotent admission, atlas/docs/whitespace and
+actual packaged guarded HTTP/WebSocket/hash checks pass. [Clean North release](qa-evidence/worker-land-art-2026-10-04/north-actions-clean-release.json)
+measures `293174540ec5297d6c9c3a8b8336dd8d36cae147`, `sourceDirty:false`, 1179 files,
+`sha256:997da6d77d944112d8e8a202433c30152e3e81ab916cd31176cdac0bbf97476d`. Measured code and receipt commits are distinguished.
+Exact containing deployed/native acceptance remains open.
