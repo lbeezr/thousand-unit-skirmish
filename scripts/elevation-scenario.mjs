@@ -244,6 +244,8 @@ try {
   ]);
   assert.equal(azureWelcome.player.team, 0);
   assert.equal(emberWelcome.player.team, 1);
+  const baselineUnitRowWidth = azureWelcome.state.units[0]?.length;
+  assert.ok(baselineUnitRowWidth, 'flat baseline should disclose positional unit rows');
 
   const ridgePatches = Array.from({ length: 29 }, (_, index) => ({
     column: 4 + index * 2, row: 29, width: 1, height: 5, level: 1,
@@ -387,7 +389,7 @@ try {
     'elevated vision must remain private to its owning team');
   assert.equal(visibleAt(azureSight, 41, 51), false,
     'elevated vision must not leak to unrelated far map cells');
-  assert.ok(azureSight.units.every((unit) => unit.length === 11),
+  assert.ok(azureSight.units.every((unit) => unit.length === baselineUnitRowWidth),
     'elevation should not change positional unit snapshot shapes');
 
   const checkpoint = await checkpointWith(checkpointPath, (snapshot) => (
