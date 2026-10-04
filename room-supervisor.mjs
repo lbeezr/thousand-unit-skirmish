@@ -7,6 +7,7 @@ import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/p
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
+import { practiceEntryCatalog } from './src/practice-entry-catalog.mjs';
 import {
   buildRoomWorkerEnvironment,
   completeRoomLaunchOptions,
@@ -42,6 +43,14 @@ const WORKER_STOP_TIMEOUT_MS = 7_000;
 const MAX_ROOM_OPTIONS_BYTES = 4096;
 const INDEX_SAVE_INTERVAL_MS = 20_000;
 const ROOM_SWEEP_INTERVAL_MS = 60_000;
+const practiceSetup = (async () => {
+  const maps = path.join(ROOT, 'maps');
+  const file = path.resolve(ROOT, process.env.RTS_MAP || 'maps/bellweather-millrace.json');
+  if (!file.startsWith(`${maps}${path.sep}`)) return null;
+  // The existing default worker validates this same canonical startup file.
+  try { return practiceEntryCatalog(JSON.parse(await readFile(file, 'utf8'))); }
+  catch { return null; }
+})();
 
 if (RAILWAY_DEPLOYMENT && !VOLUME_MOUNT_PATH) {
   throw new Error('Attach a Railway volume before starting the match service.');
@@ -550,7 +559,7 @@ async function handleRequest(request, response) {
   if (!hasAccess(request)) { requireAccess(response); return; }
 
   if (url.pathname === '/api/rooms/status' && request.method === 'GET') {
-    sendJson(response, 200, { enabled: true, roomCount: rooms.size, roomLimit: MAX_ROOMS });
+    sendJson(response, 200, { enabled: true, roomCount: rooms.size, roomLimit: MAX_ROOMS, practiceSetup: await practiceSetup });
     return;
   }
 

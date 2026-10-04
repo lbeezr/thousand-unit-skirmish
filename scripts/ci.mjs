@@ -94,7 +94,7 @@ run(['--test', 'scripts/unit-animation-runtime.test.mjs'], 'Default unit action 
 run(['--test', 'scripts/unit-presentation-client.test.mjs'], 'Client snapshot and unit presentation buffers');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
 run(['--test', 'scripts/worker-performing-action.test.mjs'], 'Authoritative Worker positive-progress receipts');
-run(['scripts/worker-performing-action-scenario.mjs'], 'Worker work receipt commands, exhausted repair delivery and recovery');
+run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 'Worker work receipt commands, client frames, exhausted repair delivery and recovery');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');
 run(['--test', 'scripts/unit-movement.test.mjs'], 'Unit separation terrain boundaries');
@@ -151,9 +151,9 @@ run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor state
 run(['--test', 'scripts/hud-action-icons.test.mjs'], 'Default HUD action glyphs and semantics');
 run(['scripts/hud-action-icons-serving-scenario.mjs'], 'Default HUD action glyph HTTP bytes');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
-run(['--test', 'scripts/match-modes.test.mjs'], 'Versioned match mode policies and map compatibility');
+run(['--test', 'scripts/match-modes.test.mjs', 'scripts/match-mode-controls.test.mjs'], 'Versioned match modes and supported UI choices');
+run(['--test', 'scripts/game-entry.test.mjs', 'scripts/game-navigation.test.mjs', 'scripts/room-presence.test.mjs', 'scripts/practice-entry.test.mjs'], 'Explicit main menu, mode-aware Practice, session entry and room presence');
 run(['--test', 'scripts/match-mode-checkpoint.test.mjs'], 'Match mode checkpoint identity and legacy preservation');
-run(['--test', 'scripts/game-entry.test.mjs', 'scripts/game-navigation.test.mjs'], 'Explicit main menu and session entry');
 run(['scripts/game-menu-scenario.mjs'], 'Fresh menu matches and protected resume authority');
 run(['--test', 'scripts/room-pregame.test.mjs', 'scripts/room-lobby-ui.test.mjs'], 'Pregame authority and lobby controls');
 run(['--test', 'scripts/room-lobby-chat.test.mjs', 'scripts/room-lobby-chat-ui.test.mjs'], 'Bounded pregame room chat');
@@ -185,6 +185,7 @@ run(['--test', 'scripts/pve-home-defense.test.mjs'], 'PvE visible economic raids
 run(['--test', 'scripts/pve-regroup.test.mjs'], 'PvE bounded regroup after wipeout, paid recovery and restart replay');
 run(['--test', 'scripts/pve-skirmish-targets.test.mjs', 'scripts/pve-skirmish-replay.test.mjs'], 'Explicit Skirmish AI targets, fog fairness and paid producer restart replay');
 run(['--test', 'scripts/pve-mode-adapter.test.mjs', 'scripts/pve-skirmish-checkpoint.test.mjs'], 'Authoritative AI mode activation and canonical Skirmish recovery');
+run(['--test', 'scripts/pve-skirmish-loss.test.mjs'], 'Canonical both-seat Skirmish paid army and producer loss recovery');
 run(['--test', 'scripts/pve-objective-rotation.test.mjs'], 'PvE public objective rotation after paid obstruction and checkpoint replay');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');

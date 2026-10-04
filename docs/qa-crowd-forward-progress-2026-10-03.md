@@ -85,3 +85,18 @@ complete after active-travel restart; the parked replacements, eight Stops and
 exact newer goals/revisions survive arrival and idle restart. Native initial arrival
 is at 1,260 / 1,290 ticks. Review confirms the force combination and generation,
 terrain, query and timing contracts; the separate postmerge checkout is clean.
+
+## 4 October deployment and phase follow-up
+
+Read-only Railway state now confirms successful staging deployment
+`e541d903-178b-47cb-8d1b-4358c93c5a8a` at exact source `64cc391`, containing both
+#193 and #209. Direct health access and rendered gameplay remain unverified.
+A bounded private TMP/XDG launch resolved the storage error and still reports
+`sandbox-unavailable`, with zero screenshots. Movement retains the capture and
+ordinary staging acceptance; the [phase proposal](movement-tick-phase-proposal.md#deployed-and-rendered-acceptance-retained)
+records the precise runtime resource and separate local/staging recipes.
+
+The same proposal records a real-body callback-phase reproduction and exact
+planner/outer-tick allocation, including the latency tradeoff and subsequent
+all-command contract. Its diagnostic adapter preserves the default 16-unit
+route/trace hashes. This follow-up changes no production movement or tick code.
