@@ -14,6 +14,11 @@ regression floor; another validation-only tranche is not the primary outcome.
 Human sessions inform usability and balance while implementation proceeds.
 Art production stays independent and placeholders remain usable throughout.
 
+The [current building action coverage](#canonical-building-action-coverage--4-october-2026)
+below is the maintained production/research/unlock audit and bounded starter
+progression backlog. Original F1–F4 requirements and dated completion records
+remain historical scope and evidence.
+
 ## Current boundaries
 
 The authoritative simulation is in `server.mjs`; browser integration/rendering
@@ -371,3 +376,165 @@ save/reload, elimination victory and synchronized rematch (`qa-staging-muo1git3`
 The deployed HUD observation and earlier narrow-layout evidence remain in QA.
 These proofs establish the requested foundation; they do not certify final
 balance, finished art, unassisted novice usability or full F4 variants/scale.
+
+## Canonical building action coverage — 4 October 2026
+
+Inspected main `e445d344bafe68823b51babe60ccdad6508ce8ad`: all thirteen Frontier
+building definitions and all six technologies. This owns action/production/unlock
+coverage, not another asset catalog or planning queue. Source establishes current
+behavior; dated receipts establish only their named revisions. Ordinary rendered
+and novice acceptance remain open unless a receipt explicitly establishes them.
+
+**Farm answer:** Farm is itself one owned finite harvest plot. Its definition
+has `products: []` and `harvest: {type: 'food', stock: 200, access: 'owner'}`.
+It is neither a farmhouse producer nor an unimplemented plot factory. Selected
+Workers → Build Farm → valid 3 × 3 site → 60 wood debit → 15 accumulated
+Worker-seconds → 200 food on that same building is implemented. Left-click
+selects the Farm and clears unit selection; select Workers again, then right-click
+its body/base (or arm Gather / move and tap) to harvest. Clicking the selected
+Farm cannot produce another plot. Mill, Storehouse or Town Center receive carried
+food; only delivery credits the bank. Repair never refills it. Clear exhaustion
+without refund, then build a fresh paid Farm to replant.
+
+Two narrow client defects reproduced on both seats against the inspected source:
+visible Farm body hits outside the 26-pixel base target issue Move, and its card
+says `Population capacity +0`. The correction reuses the normal visible owned
+completed building picker for Farm resource targeting, retains construction/enemy
+target priority, and describes finite stock/exhaustion. Utility cards name actual
+defense/gate/wall/drop-off roles; unfinished utilities no longer promise production.
+Research completion also falsely promised `+20% ATTACK` for Tier II, armor and
+engineering; it now reports `UPGRADE ACTIVE`, preserving the research audio cue.
+These corrections change targeting/feedback, not tuning or progression.
+
+### Coverage matrix
+
+`F/W/S` mean food/wood/Stone. Building times are accumulated Worker-seconds;
+unit/research times are simulation seconds. Product entries give price, time and
+population. Values are provisional. Ordinary builds need selected living owned
+reachable Workers, a clear level connected site, affordability and room below
+the 128-building limit. Workshop is the only technology-gated building. Every
+building shares unfinished cancellation/refund and completed paid repair; shared
+queue/research lifecycle is traced below. `A` means one of the eight default
+Complete-art families, with per-state fallbacks; `P` means a declared procedural
+placeholder. Neither marker claims appearance acceptance. Script names below
+refer to the existing [test command guide](testing.md) and CPU registry.
+
+| Building / role | Requirements / building price / work / footprint | Implemented production, research, upgrades and unlocks | Target / feedback / persistent effect | Missing design versus missing wiring | Default integration / tests / actual playable acceptance |
+| --- | --- | --- | --- | --- | --- |
+| Town Center — economy hub / expansion | 100F + 400W; 60s; 5 × 5 expansion. Authored home retains existing bounds and compatibility queue. | Worker 50F, 25s, 1 pop; Military Tier II 200F + 150W, 35s. Rally; +5 capacity; F/W drop-off (+S in Stone profile). Tier unlocks Workshop, armor and mounted forging. | Select owned center → contextual Train / research; reachable land rally. Population, depot, units and research recover; other viable forces/producers can survive home loss. | No new age tree required. No missing action handler found. Training card omits secondary functions; proposed B2 addresses role summaries. | A; registry/actions/server/main. `town-center-scenario`, `worker-production-spawn-scenario`, `expansion-ai-runtime-scenario`, `progression-scenario`; [integrated F1–F3 proof](#2026-09-30--f1f3-integrated-completion). Fresh normal-entry expansion/unassisted proof pending. |
+| House — population | 75W; 15s; 3 × 3 | +8 completed capacity. No units/research. | Select → capacity role. Completion adds cap; destruction reduces it without deleting living units. | No missing production design: training controls intentionally absent. No capacity wiring gap found. | A; registry/population/server/main. `population-scenario`, contextual HUD tests, integrated F2 and paid settlement. Ordinary population-block/recovery observation pending. |
+| Storehouse — mixed depot | 100W; 20s; 3 × 3 | F/W drop-off (+S in Stone profile). No units, research or gather bonus. | Workers choose reachable completed friendly depot; selected card lists accepted resources; loss replans carried cargo. | Economy upgrades are future design, not disconnected buttons. No depot handler gap found. | A; registry/profile/routing/server. `storehouse-routing.test`, `storehouse-scenario`, economy tests; [depot study](qa-mill-depot-economy-2026-10-03.md). Ordinary travel-choice proof pending; routes remain Resource-owned. |
+| Mill — food depot | 75W; 15s; 3 × 3 | Food-only drop-off. No passive supply, plots, units or research. | Workers return food automatically; selected Mill describes food-only function. Wood/Stone need another compatible depot. | Plot producer/economy research absent design; no omitted registered action. | P (House); registry/profile/server/main. `mill-contract.test`, `mill-scenario`; [paid Mill QA](qa-mill-food-dropoff-2026-10-03.md). Native deposits/recovery pass; distinct art/novice recognition pending separately. |
+| Farm — finite food plot | 60W; 15s; 3 × 3 | One 200-food pool; owned Workers Gather at 1 food/Worker-second, carry 10. Clear exhausted plot, then fresh paid Build Farm. No products/research/drop-off. | Select shows stock/exhaustion; Worker right-click/touch sends Gather `farm:<id>`. `harvestStock` persists once; crop destruction preserves cargo. | Farmhouse/child plots, growth/regrowth/upgrades absent design. Body target and +0 card are reproduced wiring/feedback defects corrected here. | P (House); registry/farm-harvest/server/main. `farm-harvest.test`, `farm-client.test`, `farm-scenario --fog`, `pve-farm-policy.test`; [native Farm QA](qa-finite-farm-2026-10-03.md). New body targeting proves Three CPU ray + actual command serialization, not pixels. Ordinary cycle remains B1. |
+| Barracks — melee producer | 175W; 20s; 3 × 3 | Infantry 50F, 12s, 1 pop; Spearman 60F + 20W, 12s, 1 pop. Infantry Forging 100F + 75W, 25s, ×1.2 Infantry damage. Tier II enables Military Armor 100F + 100W, 25s, +1 melee/+1 pierce armor to military tags. Rally/cancel. | Completed owned selection → exact product/research prices/refusals; ordered paid queue spawns units. Forging excludes Spearman; armor includes it. | No registered producer handler gap found. Blacksmith not required for existing forging. Spearman weapon research undecided design. | A; registry/production/research/combat/server/main. `roster-options-scenario`, `production-lifecycle-scenario`, `research-scenario`, `progression-scenario`; integrated F1–F3. Fresh mixed-product ordinary proof remains B1. |
+| Archery Range — ranged producer | 150W; 20s; 3 × 3 | Archer 25F + 45W, 7s, 1 pop; Archer Fletching 125F + 125W, 25s, ×1.2 Archer damage. Rally/cancel. | Select → Train Archer/research with authoritative refusals; blocked exit preserves paid queue. | No registered wiring gap found. Earlier selected-Range concerns remain in [HUD backlog](hud-controls-backlog.md); require exact state/button evidence for another fix. | A; registry/production/research/combat/server/main. `roster-options-scenario`, `research-scenario`, contextual HUD; historical deployed observations exist, current rendered interaction remains B1/HUD. |
+| Stable — scouting / mounted producer | 200W; 25s; 3 × 3 | Scout 40F + 30W, 16s, 1 pop; Rider 85F + 25W, 20s, 2 pop. Tier II enables Mounted Forging 120F + 100W, 25s, ×1.2 mounted damage. Rally/cancel. | Both units available before Tier II; research waits for tier. Current/new mounted units derive effects from team completion flags. | No Scout/Rider age gate exists. Further tiers are undecided design; no hidden product found. | A; registry/production/research/combat/server/main. `roster-options-scenario --mounted`, `field-roles-scenario`; integrated F3. Scripted roles do not establish novice progression. |
+| Workshop — siege producer / unlock | Tier II; 250W; 30s; 3 × 3 | Siege Engineering 150F + 150W, 30s, requires Tier II; unlocks Siege Engine 80F + 160W, 30s, 3 pop. Rally/cancel. | Build button shows research requirement; completed selection exposes engineering and locked product/reason; engineering flag enables production. | Engineering `effects: []` is a real unlock, not no-op research. No missing product handler found. | A; registry/prerequisites/production/research/server/main. `roster-options-scenario --siege`, `siege-defense-scenario`, `siege-ai-runtime-scenario`; integrated F3. Fresh ordinary tier→build→research→train→counter loop remains B1. |
+| Watchtower — stationary defense | 50F + 150W; Stone profile adds 50S; 35s; 3 × 3 | Automatic 8 pierce damage / 1.25s, 7-cell range, 10-cell sight; completed only. No unit/research/rally/manual attack. | Select → defense role; visible eligible enemy targeting/shared damage; recovers after save. | Military armor/forging do not affect towers. Tower tiers/target control absent design. +0 utility card was misleading feedback, corrected here. | A; registry/combat/targeting/profile/server/main. `watchtower-scenario`, `watchtower-targeting.test`, `farm-stone-paid-scenario`; [mixed paid QA](qa-farm-stone-paid-2026-10-04.md). Human range/counter recognition pending. |
+| Palisade — land barrier | 15W per unique segment; 5s; 1 × 1; atomic connected-line payment | Drag-line Build wall; sequenced Worker construction/connections; cancel unfinished/repair complete. No product/research/rally. | Full reserved cell resumes unfinished work; blocks land. Completion adds no population/bank credit. | Automatic gates, stone walls/upgrades absent design. +0 utility feedback corrected. | P; palisade profile/planner/build intent/server/main. Wall/gate/construction target tests/native scenarios; [palisade UI QA](qa-palisade-drag-ui-2026-10-03.md). Normal drag/keyboard rendered proof pending with HUD/qualified capture. |
+| Palisade Gate — manual shared passage | 15W; 5s; 1 × 1 | Owner Open / Close; open admits both teams; closure refuses occupation or lost connectivity. Cancel/repair. No product/research. | Selected state/button → `setGateOpen`; traversal/`gateOpen` recover. | Friendly-only/automatic operation absent design. +0/generic hint corrected. | P; wall definition/gate transition/server/main. Gate/construction tests/native scenarios; [gate QA](qa-palisade-gates-2026-10-03.md). Rendered occupied/refused closure pending. |
+| Dock — shoreline fishing producer / depot | 100W; 20s; 3 × 3 plus valid connected level-zero water berth | Skiff 75W, 10s, 1 pop; owned boat food drop-off. No research; rally deliberately unsupported. | Select → Train Skiff; boats Move/Gather/Return on water. Reserved/occupied berth preserves blocked paid queue. Land Workers cannot deposit here. | Transport/combat boats/naval upgrades/rally absent design. Lack of rally is validated, not a dead UI action. | P (House foundation/Skiff box); shoreline/water/fishing/server/main. Dock/Skiff/shoreline scenarios; [ordinary entry QA](qa-skiff-normal-entry-2026-10-03.md). Source/normal-entry proofs exist; identified rendered fishing proof remains naval/HUD-owned. |
+
+### End-to-end action and persistence trace
+
+Definitions: [gameplay registry](../src/gameplay-definitions.mjs),
+[production availability](../src/production-actions.mjs),
+[research availability](../src/research-actions.mjs),
+[profile prices/drop-offs](../src/economy-profile.mjs). No Market, Blacksmith,
+farmhouse, temple, economy technology or building level-up is registered.
+Artwork/lore/reference names grant no gameplay function.
+
+Visible actions: [client](../src/main.js) `updateRosterBuildingOptions` and
+the retained House/Barracks/Range controls reach the same placement flow.
+`beginBuildPlacement` / `submitBuildPlacement` send selected Worker IDs with
+tracked generation/token. `pickFriendly` / `selectBuilding` clear unit selection
+and establish one owned building context. `updateRosterProductionOptions` lists
+that producer's products; `updateResearchOptions` lists all its research with
+inspectable locked reasons. `updateBuildingLifecycleActions` exposes cancel,
+repair, exhausted clear and Gate operation in their real states. Non-producers
+have no product buttons; build controls require Worker context. Normal Gather
+uses `issueContextOrder` → `pickResourceNodeAt` → `issueGather`, including the
+Farm body correction. Touch armed Orders uses the same context handler.
+
+Authority: [server](../server.mjs) `buildBuilding` / `buildWallLine`, `trainUnit`
+(home Worker compatibility delegates to `trainWorker`), `researchUpgrade`,
+`assignGather`, `setGateOpen`, cancel and repair validate ownership, state,
+prerequisites, generation, costs and spatial contracts. Production reserves roster
+and population at queue admission; five entries per producer. Build validates
+site/access/connectivity before one profile-aware debit/foundation insertion.
+Invalid commands create no paid effect. Tick consumers finish construction,
+advance queues, pause blocked exits, spawn units, initialize Farm stock once, or
+set generic technology flags. One active research project per team; training and
+research can run together, not a separate research queue per building.
+
+Cancellation refunds unbuilt fraction, untrained head fraction, full pending
+training price or unresearched fraction, rounded to six decimals; the next head
+starts at full duration. Destruction loses queues/research without refund.
+Exhausted Farm clear gives zero refund; replant uses a new paid identity. Repair
+spends wood proportionally at 40 HP/Worker-second, full repair price
+`max(10, 0.3 × building wood price)`; zero wood pauses and crop never refills.
+These are existing lifecycle rules, not proposed completed-building refunds.
+
+Persistence: `captureMatchCheckpoint` saves buildings/progress, paid queues,
+remaining training, team research/completions, gate state, crop stock and Worker
+cargo/orders. Schema 29 validates roster/content/economy/mode pins, products,
+research producer and valid Farm stock/owned references. Restore retains paid
+progress/effects; rematch rebuilds authored initial state. The
+[Farm adapter](../src/farm-harvest.mjs) exposes `farm:<id>` from building stock
+without adding authored map nodes. HUD/filtered AI consume owned options and
+sources; enemy queues/research stay private.
+
+All six technologies are consumed: Infantry/Archer/mounted damage and military
+armor resolve team flags for current/new units; Tier II gates Workshop/armor/
+mounted research; engineering gates Siege Engine. Empty Tier/Engineering effect
+arrays create real unlocks. Completion feedback was inaccurate, not missing stat
+implementation. No unconsumed registered product/research action was found.
+Utility destruction still emits generic `PRODUCTION QUEUE LOST` with no queue;
+B2 retains that small feedback cleanup rather than inventing a capability.
+
+Default/source boundary: all thirteen roles are normal roster/menu/server content
+without preview flags. Eight Complete families use
+[default captured bindings](../src/frontier-building-preview.mjs); Farm/Mill/Dock
+use House placeholders and walls/gates procedural geometry via
+[presentation profiles](../src/gameplay-presentation.mjs). Existing packaging/
+static admission carries the modified client/server and existing imports; no
+new asset, service, import admission or content pin is needed. Read
+[building asset coverage](building-atlas-production-plan.md) for states/doorways,
+owned by Building01a0fcf5, rather than duplicating its catalog.
+
+### Recommended starter progression and executable backlog
+
+**Proposed teaching/acceptance order, not new rules:** existing Town Center/
+Workers → gather F/W → buy Worker/House → choose Mill versus Storehouse for trips
+→ plant one Farm when nearby finite food is inconvenient/exhausted. Choose
+Barracks, Range or Stable for the first army and role-relevant forging. Scout/
+Rider already work in tier one. Research Tier II at Town Center, then choose
+armor, mounted forging or Workshop → engineering → siege for visible defenses.
+Tower/walls/manual Gate and shoreline Dock are optional map-dependent branches.
+Do not add prerequisite gates to open buildings to force this teaching sequence.
+
+**Recommended Farm model:** retain `farm` as one buildable food plot and Mill as
+its optional depot. Describe Build Farm as planting finite food; make the existing
+target/stock/clear cycle discoverable before another entity. A farmhouse with
+child plots would require explicit producer, footprint/placement/radius, work,
+price/yield, ownership, cancel/refund/destruction and child persistence decisions.
+This audit does not adopt it. Growth/regrowth/fertilizer/economy research remain
+separate decisions; no decorative button should promise them.
+
+The following details the roadmap's existing Interface/Content streams, not a
+second queue. Owner IDs retain existing task lanes.
+
+| Slice / status | Bounded outcome / write scope | Owner / dependencies | Observable acceptance / evidence |
+| --- | --- | --- | --- |
+| B0 — narrow correction implemented here | Visible-body Farm Gather; truthful utility selection and six-tech completion. `src/main.js`, one server notice, existing Farm/HUD/research/audio tests and owning guides only. | Action/production owner (this task); preserves Resource routes, Forest work, Universal movement. Retains exact-head independent review, clean pack and authorized integration. | Both-seat pre-fix controls fail with Move/+0. Corrected actual Three picking/serialization and DOM role checks pass. All six actual completion handlers set flags/preserve audio without false damage promises. Exact-head/native/package results belong in the PR; no pixels inferred. |
+| B1 — next ordinary acceptance | Paid Farm build/gather/clear/replant from normal Tiny entry; execute each producer's real queue/research choice through proposed progression. Existing native scenarios plus one separately owned ordinary-capture adapter; no shared renderer rewrite. | Action/production retains completion; HUD01a101f7-35be owns novice capture. [PR323](https://github.com/lbeezr/thousand-unit-skirmish/pull/323) supplies qualified packed renderer; [ordinary adapter PR331](https://github.com/lbeezr/thousand-unit-skirmish/pull/331) supplies execution after integration. Resource01a101f7-5683 retains route acceptance. | Frozen reviewed source/clean digest, actual normal entry, screenshot plus button/target/state and bank/crop/cargo assertions, no injected bank/stock. Both seats for ownership; cold recovery; fresh-player Farm/Mill explanation. Qualification alone cannot close this feature. |
+| B2 — compact role/effect explanations, proposed | Existing producer summaries explain secondary capacity/depot and each research effect/unlock; exact Workshop prerequisite; no queue-loss text for queue-less utility destruction. Existing text/buttons/notices only. | Action/production + HUD; B0/B1 observations justify confusion fixes; no new tech/assets/architecture. | Correct descriptions for thirteen roles/six technologies; inspectable locks, shortages, active project/exhaustion; focus retained; normal narrow HUD acceptance via qualified workflow. |
+| B3 — progression/balance observation, proposed | Paired Tiny openings compare neutral food versus Farm, Mill/Storehouse trips and one Tier II siege decision; record spend/deposits/labor/travel/exhaustion/losses/player alternatives. Retain tuning absent evidence. | Action/production + Maps; B1, [paired Farm measurement](qa-paired-farm-food-2026-10-04.md) and paid AI Farm tests. | Contested/recovery records distinguish conservation/usefulness from timing/balance. Current AI already plants/replants one bounded starvation Farm; no broad farm optimization is silently added. |
+| B4 — farmhouse/regrowth decision, deferred proposal | Decide only if B1/B3 expose need; settle plot lifecycle/parent-child contract before any new registered action. One paid recoverable plot cycle first. | Product decision + Action/production; Building owns any resulting brief; depends on observed use. | Small written contract and executable paid acceptance precede a button. No automatic economic tier, giant tech tree, paid generation, gold/copper ledger or new service follows. |
+
+Source/CPU tests establish the correction contract. The one normal-sandbox
+renderer capability attempt in this cloud workspace at inspected main was blocked
+by `sandbox-unavailable` and `storage-unavailable`: zero game frames/screenshots.
+PR323's qualified hosted path is separate capability, not a current Farm capture.
+Deployment identity/digest and ordinary rendered acceptance remain separate B1
+evidence; a merge does not establish them.

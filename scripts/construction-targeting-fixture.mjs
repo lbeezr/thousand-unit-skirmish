@@ -26,7 +26,7 @@ export function constructionTargetingFixture({ team = 0, units = [], selection =
     selectedWildlifeId: null, selectedBuildingId: null, matchWinner: -1,
     attackMoveMode: false, persistentTargetMode: null, buildPlacementActive: false,
     selectedWaterUnits: () => false, pickAt: () => ({ unit: null }),
-    pickResourceNodeAt: () => null, pickForestCellAt: () => null,
+    pickResourceNodeAt: () => null, pickForestCellAt: () => null, pickHarvestableTreeAt: () => null,
     issueAttack: unit => payloads.push({ type: 'attack', targetId: unit.id }),
     issueAttackBuilding: building => payloads.push({ type: 'attackBuilding', buildingId: building.id }),
     issueGather: node => payloads.push({ type: 'gather', nodeId: node.id }),
