@@ -1,0 +1,2690 @@
+{
+  "schemaVersion": 29,
+  "economyProfileId": "stone-defense-v1",
+  "matchId": "zeH5sIhnnUWgCDDI7t86kQ",
+  "mapHash": "3uGjdX_oWE2AtGuLaem-L7BWf1Or-KMiZtY6sVZLMTI",
+  "mapDefinition": {
+    "id": "siltmouths-confluence-grounds",
+    "name": "Siltmouths · Confluence Grounds",
+    "region": "siltmouths",
+    "summary": "Tiny 160 · connected fishing bays, broad fords, flat campuses · paid Stone/Farm/Dock/Skiff · nearby neutral Sheep",
+    "width": 160,
+    "height": 160,
+    "terrainSeed": 93027,
+    "terrainBase": "meadow",
+    "fogOfWar": true,
+    "economyProfileId": "stone-defense-v1",
+    "startingArmySize": 24,
+    "startingResources": {
+      "food": 150,
+      "wood": 250
+    },
+    "spawnPoints": [
+      {
+        "team": 0,
+        "x": -58.5,
+        "z": 0.5
+      },
+      {
+        "team": 1,
+        "x": 58.5,
+        "z": 0.5
+      }
+    ],
+    "terrainPatches": [
+      {
+        "column": 0,
+        "row": 0,
+        "width": 160,
+        "height": 26,
+        "material": "dry-grass"
+      },
+      {
+        "column": 63,
+        "row": 59,
+        "width": 34,
+        "height": 15,
+        "material": "dirt"
+      },
+      {
+        "column": 40,
+        "row": 63,
+        "width": 6,
+        "height": 6,
+        "material": "dirt"
+      },
+      {
+        "column": 47,
+        "row": 63,
+        "width": 16,
+        "height": 6,
+        "material": "dirt"
+      },
+      {
+        "column": 97,
+        "row": 63,
+        "width": 16,
+        "height": 6,
+        "material": "dirt"
+      },
+      {
+        "column": 114,
+        "row": 63,
+        "width": 6,
+        "height": 6,
+        "material": "dirt"
+      },
+      {
+        "column": 46,
+        "row": 64,
+        "width": 1,
+        "height": 5,
+        "material": "dirt"
+      },
+      {
+        "column": 113,
+        "row": 64,
+        "width": 1,
+        "height": 5,
+        "material": "dirt"
+      },
+      {
+        "column": 63,
+        "row": 92,
+        "width": 34,
+        "height": 13,
+        "material": "dirt"
+      },
+      {
+        "column": 40,
+        "row": 96,
+        "width": 8,
+        "height": 5,
+        "material": "dirt"
+      },
+      {
+        "column": 59,
+        "row": 96,
+        "width": 4,
+        "height": 5,
+        "material": "dirt"
+      },
+      {
+        "column": 97,
+        "row": 96,
+        "width": 4,
+        "height": 5,
+        "material": "dirt"
+      },
+      {
+        "column": 112,
+        "row": 96,
+        "width": 8,
+        "height": 5,
+        "material": "dirt"
+      },
+      {
+        "column": 48,
+        "row": 97,
+        "width": 1,
+        "height": 4,
+        "material": "dirt"
+      },
+      {
+        "column": 58,
+        "row": 97,
+        "width": 1,
+        "height": 4,
+        "material": "dirt"
+      },
+      {
+        "column": 101,
+        "row": 97,
+        "width": 1,
+        "height": 4,
+        "material": "dirt"
+      },
+      {
+        "column": 111,
+        "row": 97,
+        "width": 1,
+        "height": 4,
+        "material": "dirt"
+      },
+      {
+        "column": 49,
+        "row": 98,
+        "width": 9,
+        "height": 3,
+        "material": "dirt"
+      },
+      {
+        "column": 102,
+        "row": 98,
+        "width": 9,
+        "height": 3,
+        "material": "dirt"
+      },
+      {
+        "column": 30,
+        "row": 102,
+        "width": 3,
+        "height": 3,
+        "material": "dirt"
+      },
+      {
+        "column": 127,
+        "row": 102,
+        "width": 3,
+        "height": 3,
+        "material": "dirt"
+      }
+    ],
+    "elevationPatches": [
+      {
+        "column": 0,
+        "row": 0,
+        "width": 160,
+        "height": 10,
+        "level": 2
+      },
+      {
+        "column": 0,
+        "row": 10,
+        "width": 74,
+        "height": 16,
+        "level": 2
+      },
+      {
+        "column": 86,
+        "row": 10,
+        "width": 74,
+        "height": 16,
+        "level": 2
+      },
+      {
+        "column": 0,
+        "row": 26,
+        "width": 70,
+        "height": 33,
+        "level": 1
+      },
+      {
+        "column": 90,
+        "row": 26,
+        "width": 70,
+        "height": 33,
+        "level": 1
+      },
+      {
+        "column": 0,
+        "row": 59,
+        "width": 63,
+        "height": 42,
+        "level": 1
+      },
+      {
+        "column": 97,
+        "row": 59,
+        "width": 63,
+        "height": 42,
+        "level": 1
+      },
+      {
+        "column": 63,
+        "row": 74,
+        "width": 7,
+        "height": 18,
+        "level": 1
+      },
+      {
+        "column": 90,
+        "row": 74,
+        "width": 7,
+        "height": 18,
+        "level": 1
+      },
+      {
+        "column": 0,
+        "row": 142,
+        "width": 75,
+        "height": 1,
+        "level": 1
+      },
+      {
+        "column": 85,
+        "row": 142,
+        "width": 75,
+        "height": 1,
+        "level": 1
+      },
+      {
+        "column": 0,
+        "row": 143,
+        "width": 70,
+        "height": 17,
+        "level": 1
+      },
+      {
+        "column": 90,
+        "row": 143,
+        "width": 70,
+        "height": 17,
+        "level": 1
+      }
+    ],
+    "obstacles": [
+      {
+        "column": 74,
+        "row": 10,
+        "width": 12,
+        "height": 28,
+        "material": "water"
+      },
+      {
+        "column": 13,
+        "row": 18,
+        "width": 4,
+        "height": 34,
+        "material": "forest"
+      },
+      {
+        "column": 143,
+        "row": 18,
+        "width": 4,
+        "height": 34,
+        "material": "forest"
+      },
+      {
+        "column": 11,
+        "row": 19,
+        "width": 2,
+        "height": 33,
+        "material": "forest"
+      },
+      {
+        "column": 17,
+        "row": 19,
+        "width": 2,
+        "height": 34,
+        "material": "forest"
+      },
+      {
+        "column": 141,
+        "row": 19,
+        "width": 2,
+        "height": 34,
+        "material": "forest"
+      },
+      {
+        "column": 147,
+        "row": 19,
+        "width": 2,
+        "height": 33,
+        "material": "forest"
+      },
+      {
+        "column": 10,
+        "row": 20,
+        "width": 1,
+        "height": 32,
+        "material": "forest"
+      },
+      {
+        "column": 19,
+        "row": 20,
+        "width": 3,
+        "height": 31,
+        "material": "forest"
+      },
+      {
+        "column": 138,
+        "row": 20,
+        "width": 3,
+        "height": 31,
+        "material": "forest"
+      },
+      {
+        "column": 149,
+        "row": 20,
+        "width": 1,
+        "height": 32,
+        "material": "forest"
+      },
+      {
+        "column": 8,
+        "row": 21,
+        "width": 2,
+        "height": 30,
+        "material": "forest"
+      },
+      {
+        "column": 22,
+        "row": 21,
+        "width": 2,
+        "height": 28,
+        "material": "forest"
+      },
+      {
+        "column": 136,
+        "row": 21,
+        "width": 2,
+        "height": 28,
+        "material": "forest"
+      },
+      {
+        "column": 150,
+        "row": 21,
+        "width": 2,
+        "height": 30,
+        "material": "forest"
+      },
+      {
+        "column": 7,
+        "row": 22,
+        "width": 1,
+        "height": 27,
+        "material": "forest"
+      },
+      {
+        "column": 24,
+        "row": 22,
+        "width": 1,
+        "height": 26,
+        "material": "forest"
+      },
+      {
+        "column": 135,
+        "row": 22,
+        "width": 1,
+        "height": 26,
+        "material": "forest"
+      },
+      {
+        "column": 152,
+        "row": 22,
+        "width": 1,
+        "height": 27,
+        "material": "forest"
+      },
+      {
+        "column": 6,
+        "row": 23,
+        "width": 1,
+        "height": 25,
+        "material": "forest"
+      },
+      {
+        "column": 153,
+        "row": 23,
+        "width": 1,
+        "height": 25,
+        "material": "forest"
+      },
+      {
+        "column": 5,
+        "row": 24,
+        "width": 1,
+        "height": 23,
+        "material": "forest"
+      },
+      {
+        "column": 25,
+        "row": 24,
+        "width": 1,
+        "height": 23,
+        "material": "forest"
+      },
+      {
+        "column": 134,
+        "row": 24,
+        "width": 1,
+        "height": 23,
+        "material": "forest"
+      },
+      {
+        "column": 154,
+        "row": 24,
+        "width": 1,
+        "height": 23,
+        "material": "forest"
+      },
+      {
+        "column": 4,
+        "row": 25,
+        "width": 1,
+        "height": 21,
+        "material": "forest"
+      },
+      {
+        "column": 155,
+        "row": 25,
+        "width": 1,
+        "height": 21,
+        "material": "forest"
+      },
+      {
+        "column": 26,
+        "row": 26,
+        "width": 1,
+        "height": 19,
+        "material": "forest"
+      },
+      {
+        "column": 133,
+        "row": 26,
+        "width": 1,
+        "height": 19,
+        "material": "forest"
+      },
+      {
+        "column": 3,
+        "row": 27,
+        "width": 1,
+        "height": 18,
+        "material": "forest"
+      },
+      {
+        "column": 27,
+        "row": 27,
+        "width": 1,
+        "height": 17,
+        "material": "forest"
+      },
+      {
+        "column": 132,
+        "row": 27,
+        "width": 1,
+        "height": 17,
+        "material": "forest"
+      },
+      {
+        "column": 156,
+        "row": 27,
+        "width": 1,
+        "height": 18,
+        "material": "forest"
+      },
+      {
+        "column": 28,
+        "row": 29,
+        "width": 1,
+        "height": 12,
+        "material": "forest"
+      },
+      {
+        "column": 131,
+        "row": 29,
+        "width": 1,
+        "height": 12,
+        "material": "forest"
+      },
+      {
+        "column": 2,
+        "row": 30,
+        "width": 1,
+        "height": 13,
+        "material": "forest"
+      },
+      {
+        "column": 157,
+        "row": 30,
+        "width": 1,
+        "height": 13,
+        "material": "forest"
+      },
+      {
+        "column": 29,
+        "row": 32,
+        "width": 1,
+        "height": 5,
+        "material": "forest"
+      },
+      {
+        "column": 130,
+        "row": 32,
+        "width": 1,
+        "height": 5,
+        "material": "forest"
+      },
+      {
+        "column": 75,
+        "row": 38,
+        "width": 10,
+        "height": 21,
+        "material": "water"
+      },
+      {
+        "column": 41,
+        "row": 45,
+        "width": 7,
+        "height": 15,
+        "material": "forest"
+      },
+      {
+        "column": 49,
+        "row": 45,
+        "width": 7,
+        "height": 17,
+        "material": "forest"
+      },
+      {
+        "column": 104,
+        "row": 45,
+        "width": 7,
+        "height": 17,
+        "material": "forest"
+      },
+      {
+        "column": 112,
+        "row": 45,
+        "width": 7,
+        "height": 15,
+        "material": "forest"
+      },
+      {
+        "column": 39,
+        "row": 46,
+        "width": 2,
+        "height": 14,
+        "material": "forest"
+      },
+      {
+        "column": 48,
+        "row": 46,
+        "width": 1,
+        "height": 17,
+        "material": "forest"
+      },
+      {
+        "column": 56,
+        "row": 46,
+        "width": 1,
+        "height": 16,
+        "material": "forest"
+      },
+      {
+        "column": 103,
+        "row": 46,
+        "width": 1,
+        "height": 16,
+        "material": "forest"
+      },
+      {
+        "column": 111,
+        "row": 46,
+        "width": 1,
+        "height": 17,
+        "material": "forest"
+      },
+      {
+        "column": 119,
+        "row": 46,
+        "width": 2,
+        "height": 14,
+        "material": "forest"
+      },
+      {
+        "column": 38,
+        "row": 47,
+        "width": 1,
+        "height": 13,
+        "material": "forest"
+      },
+      {
+        "column": 57,
+        "row": 47,
+        "width": 1,
+        "height": 14,
+        "material": "forest"
+      },
+      {
+        "column": 102,
+        "row": 47,
+        "width": 1,
+        "height": 14,
+        "material": "forest"
+      },
+      {
+        "column": 121,
+        "row": 47,
+        "width": 1,
+        "height": 13,
+        "material": "forest"
+      },
+      {
+        "column": 58,
+        "row": 48,
+        "width": 2,
+        "height": 11,
+        "material": "forest"
+      },
+      {
+        "column": 100,
+        "row": 48,
+        "width": 2,
+        "height": 11,
+        "material": "forest"
+      },
+      {
+        "column": 22,
+        "row": 49,
+        "width": 1,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 37,
+        "row": 49,
+        "width": 1,
+        "height": 10,
+        "material": "forest"
+      },
+      {
+        "column": 60,
+        "row": 49,
+        "width": 1,
+        "height": 9,
+        "material": "forest"
+      },
+      {
+        "column": 99,
+        "row": 49,
+        "width": 1,
+        "height": 9,
+        "material": "forest"
+      },
+      {
+        "column": 122,
+        "row": 49,
+        "width": 1,
+        "height": 10,
+        "material": "forest"
+      },
+      {
+        "column": 137,
+        "row": 49,
+        "width": 1,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 36,
+        "row": 50,
+        "width": 1,
+        "height": 8,
+        "material": "forest"
+      },
+      {
+        "column": 123,
+        "row": 50,
+        "width": 1,
+        "height": 8,
+        "material": "forest"
+      },
+      {
+        "column": 19,
+        "row": 51,
+        "width": 2,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 61,
+        "row": 51,
+        "width": 1,
+        "height": 4,
+        "material": "forest"
+      },
+      {
+        "column": 98,
+        "row": 51,
+        "width": 1,
+        "height": 4,
+        "material": "forest"
+      },
+      {
+        "column": 139,
+        "row": 51,
+        "width": 2,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 58,
+        "row": 59,
+        "width": 1,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 101,
+        "row": 59,
+        "width": 1,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 42,
+        "row": 60,
+        "width": 6,
+        "height": 2,
+        "material": "forest"
+      },
+      {
+        "column": 112,
+        "row": 60,
+        "width": 6,
+        "height": 2,
+        "material": "forest"
+      },
+      {
+        "column": 43,
+        "row": 62,
+        "width": 5,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 49,
+        "row": 62,
+        "width": 6,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 105,
+        "row": 62,
+        "width": 6,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 112,
+        "row": 62,
+        "width": 5,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 46,
+        "row": 63,
+        "width": 1,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 113,
+        "row": 63,
+        "width": 1,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 51,
+        "row": 72,
+        "width": 3,
+        "height": 26,
+        "material": "forest"
+      },
+      {
+        "column": 106,
+        "row": 72,
+        "width": 3,
+        "height": 26,
+        "material": "forest"
+      },
+      {
+        "column": 49,
+        "row": 73,
+        "width": 2,
+        "height": 25,
+        "material": "forest"
+      },
+      {
+        "column": 54,
+        "row": 73,
+        "width": 3,
+        "height": 25,
+        "material": "forest"
+      },
+      {
+        "column": 103,
+        "row": 73,
+        "width": 3,
+        "height": 25,
+        "material": "forest"
+      },
+      {
+        "column": 109,
+        "row": 73,
+        "width": 2,
+        "height": 25,
+        "material": "forest"
+      },
+      {
+        "column": 48,
+        "row": 74,
+        "width": 1,
+        "height": 23,
+        "material": "forest"
+      },
+      {
+        "column": 57,
+        "row": 74,
+        "width": 2,
+        "height": 23,
+        "material": "forest"
+      },
+      {
+        "column": 75,
+        "row": 74,
+        "width": 10,
+        "height": 18,
+        "material": "water"
+      },
+      {
+        "column": 101,
+        "row": 74,
+        "width": 2,
+        "height": 23,
+        "material": "forest"
+      },
+      {
+        "column": 111,
+        "row": 74,
+        "width": 1,
+        "height": 23,
+        "material": "forest"
+      },
+      {
+        "column": 47,
+        "row": 75,
+        "width": 1,
+        "height": 21,
+        "material": "forest"
+      },
+      {
+        "column": 59,
+        "row": 75,
+        "width": 1,
+        "height": 21,
+        "material": "forest"
+      },
+      {
+        "column": 100,
+        "row": 75,
+        "width": 1,
+        "height": 21,
+        "material": "forest"
+      },
+      {
+        "column": 112,
+        "row": 75,
+        "width": 1,
+        "height": 21,
+        "material": "forest"
+      },
+      {
+        "column": 46,
+        "row": 76,
+        "width": 1,
+        "height": 18,
+        "material": "forest"
+      },
+      {
+        "column": 60,
+        "row": 76,
+        "width": 1,
+        "height": 19,
+        "material": "forest"
+      },
+      {
+        "column": 74,
+        "row": 76,
+        "width": 1,
+        "height": 16,
+        "material": "water"
+      },
+      {
+        "column": 85,
+        "row": 76,
+        "width": 1,
+        "height": 16,
+        "material": "water"
+      },
+      {
+        "column": 99,
+        "row": 76,
+        "width": 1,
+        "height": 19,
+        "material": "forest"
+      },
+      {
+        "column": 113,
+        "row": 76,
+        "width": 1,
+        "height": 18,
+        "material": "forest"
+      },
+      {
+        "column": 45,
+        "row": 78,
+        "width": 1,
+        "height": 15,
+        "material": "forest"
+      },
+      {
+        "column": 61,
+        "row": 78,
+        "width": 1,
+        "height": 16,
+        "material": "forest"
+      },
+      {
+        "column": 98,
+        "row": 78,
+        "width": 1,
+        "height": 16,
+        "material": "forest"
+      },
+      {
+        "column": 114,
+        "row": 78,
+        "width": 1,
+        "height": 15,
+        "material": "forest"
+      },
+      {
+        "column": 44,
+        "row": 80,
+        "width": 1,
+        "height": 11,
+        "material": "forest"
+      },
+      {
+        "column": 115,
+        "row": 80,
+        "width": 1,
+        "height": 11,
+        "material": "forest"
+      },
+      {
+        "column": 62,
+        "row": 81,
+        "width": 1,
+        "height": 11,
+        "material": "forest"
+      },
+      {
+        "column": 97,
+        "row": 81,
+        "width": 1,
+        "height": 11,
+        "material": "forest"
+      },
+      {
+        "column": 43,
+        "row": 84,
+        "width": 1,
+        "height": 4,
+        "material": "forest"
+      },
+      {
+        "column": 63,
+        "row": 84,
+        "width": 1,
+        "height": 4,
+        "material": "forest"
+      },
+      {
+        "column": 96,
+        "row": 84,
+        "width": 1,
+        "height": 4,
+        "material": "forest"
+      },
+      {
+        "column": 116,
+        "row": 84,
+        "width": 1,
+        "height": 4,
+        "material": "forest"
+      },
+      {
+        "column": 57,
+        "row": 97,
+        "width": 1,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 102,
+        "row": 97,
+        "width": 1,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 20,
+        "row": 105,
+        "width": 27,
+        "height": 24,
+        "material": "water"
+      },
+      {
+        "column": 74,
+        "row": 105,
+        "width": 12,
+        "height": 9,
+        "material": "water"
+      },
+      {
+        "column": 113,
+        "row": 105,
+        "width": 27,
+        "height": 24,
+        "material": "water"
+      },
+      {
+        "column": 19,
+        "row": 108,
+        "width": 1,
+        "height": 21,
+        "material": "water"
+      },
+      {
+        "column": 47,
+        "row": 108,
+        "width": 1,
+        "height": 29,
+        "material": "water"
+      },
+      {
+        "column": 112,
+        "row": 108,
+        "width": 1,
+        "height": 29,
+        "material": "water"
+      },
+      {
+        "column": 140,
+        "row": 108,
+        "width": 1,
+        "height": 21,
+        "material": "water"
+      },
+      {
+        "column": 17,
+        "row": 109,
+        "width": 2,
+        "height": 19,
+        "material": "water"
+      },
+      {
+        "column": 48,
+        "row": 109,
+        "width": 2,
+        "height": 28,
+        "material": "water"
+      },
+      {
+        "column": 110,
+        "row": 109,
+        "width": 2,
+        "height": 28,
+        "material": "water"
+      },
+      {
+        "column": 141,
+        "row": 109,
+        "width": 2,
+        "height": 19,
+        "material": "water"
+      },
+      {
+        "column": 15,
+        "row": 110,
+        "width": 2,
+        "height": 17,
+        "material": "water"
+      },
+      {
+        "column": 50,
+        "row": 110,
+        "width": 2,
+        "height": 27,
+        "material": "water"
+      },
+      {
+        "column": 108,
+        "row": 110,
+        "width": 2,
+        "height": 27,
+        "material": "water"
+      },
+      {
+        "column": 143,
+        "row": 110,
+        "width": 2,
+        "height": 17,
+        "material": "water"
+      },
+      {
+        "column": 14,
+        "row": 111,
+        "width": 1,
+        "height": 15,
+        "material": "water"
+      },
+      {
+        "column": 52,
+        "row": 111,
+        "width": 1,
+        "height": 26,
+        "material": "water"
+      },
+      {
+        "column": 107,
+        "row": 111,
+        "width": 1,
+        "height": 26,
+        "material": "water"
+      },
+      {
+        "column": 145,
+        "row": 111,
+        "width": 1,
+        "height": 15,
+        "material": "water"
+      },
+      {
+        "column": 13,
+        "row": 112,
+        "width": 1,
+        "height": 13,
+        "material": "water"
+      },
+      {
+        "column": 53,
+        "row": 112,
+        "width": 1,
+        "height": 25,
+        "material": "water"
+      },
+      {
+        "column": 106,
+        "row": 112,
+        "width": 1,
+        "height": 25,
+        "material": "water"
+      },
+      {
+        "column": 146,
+        "row": 112,
+        "width": 1,
+        "height": 13,
+        "material": "water"
+      },
+      {
+        "column": 12,
+        "row": 113,
+        "width": 1,
+        "height": 11,
+        "material": "water"
+      },
+      {
+        "column": 54,
+        "row": 113,
+        "width": 1,
+        "height": 24,
+        "material": "water"
+      },
+      {
+        "column": 105,
+        "row": 113,
+        "width": 1,
+        "height": 24,
+        "material": "water"
+      },
+      {
+        "column": 147,
+        "row": 113,
+        "width": 1,
+        "height": 11,
+        "material": "water"
+      },
+      {
+        "column": 75,
+        "row": 114,
+        "width": 10,
+        "height": 30,
+        "material": "water"
+      },
+      {
+        "column": 11,
+        "row": 115,
+        "width": 1,
+        "height": 7,
+        "material": "water"
+      },
+      {
+        "column": 55,
+        "row": 115,
+        "width": 1,
+        "height": 22,
+        "material": "water"
+      },
+      {
+        "column": 104,
+        "row": 115,
+        "width": 1,
+        "height": 22,
+        "material": "water"
+      },
+      {
+        "column": 148,
+        "row": 115,
+        "width": 1,
+        "height": 7,
+        "material": "water"
+      },
+      {
+        "column": 56,
+        "row": 117,
+        "width": 8,
+        "height": 20,
+        "material": "water"
+      },
+      {
+        "column": 96,
+        "row": 117,
+        "width": 8,
+        "height": 20,
+        "material": "water"
+      },
+      {
+        "column": 10,
+        "row": 118,
+        "width": 1,
+        "height": 1,
+        "material": "water"
+      },
+      {
+        "column": 64,
+        "row": 118,
+        "width": 6,
+        "height": 19,
+        "material": "water"
+      },
+      {
+        "column": 90,
+        "row": 118,
+        "width": 6,
+        "height": 19,
+        "material": "water"
+      },
+      {
+        "column": 149,
+        "row": 118,
+        "width": 1,
+        "height": 1,
+        "material": "water"
+      },
+      {
+        "column": 70,
+        "row": 119,
+        "width": 5,
+        "height": 18,
+        "material": "water"
+      },
+      {
+        "column": 85,
+        "row": 119,
+        "width": 5,
+        "height": 18,
+        "material": "water"
+      },
+      {
+        "column": 21,
+        "row": 129,
+        "width": 26,
+        "height": 1,
+        "material": "water"
+      },
+      {
+        "column": 113,
+        "row": 129,
+        "width": 26,
+        "height": 1,
+        "material": "water"
+      },
+      {
+        "column": 25,
+        "row": 130,
+        "width": 22,
+        "height": 1,
+        "material": "water"
+      },
+      {
+        "column": 113,
+        "row": 130,
+        "width": 22,
+        "height": 1,
+        "material": "water"
+      },
+      {
+        "column": 32,
+        "row": 131,
+        "width": 15,
+        "height": 6,
+        "material": "water"
+      },
+      {
+        "column": 113,
+        "row": 131,
+        "width": 15,
+        "height": 6,
+        "material": "water"
+      },
+      {
+        "column": 10,
+        "row": 133,
+        "width": 3,
+        "height": 24,
+        "material": "forest"
+      },
+      {
+        "column": 147,
+        "row": 133,
+        "width": 3,
+        "height": 24,
+        "material": "forest"
+      },
+      {
+        "column": 8,
+        "row": 134,
+        "width": 2,
+        "height": 23,
+        "material": "forest"
+      },
+      {
+        "column": 13,
+        "row": 134,
+        "width": 3,
+        "height": 23,
+        "material": "forest"
+      },
+      {
+        "column": 144,
+        "row": 134,
+        "width": 3,
+        "height": 23,
+        "material": "forest"
+      },
+      {
+        "column": 150,
+        "row": 134,
+        "width": 2,
+        "height": 23,
+        "material": "forest"
+      },
+      {
+        "column": 7,
+        "row": 135,
+        "width": 1,
+        "height": 21,
+        "material": "forest"
+      },
+      {
+        "column": 16,
+        "row": 135,
+        "width": 2,
+        "height": 21,
+        "material": "forest"
+      },
+      {
+        "column": 142,
+        "row": 135,
+        "width": 2,
+        "height": 21,
+        "material": "forest"
+      },
+      {
+        "column": 152,
+        "row": 135,
+        "width": 1,
+        "height": 21,
+        "material": "forest"
+      },
+      {
+        "column": 6,
+        "row": 136,
+        "width": 1,
+        "height": 19,
+        "material": "forest"
+      },
+      {
+        "column": 18,
+        "row": 136,
+        "width": 1,
+        "height": 19,
+        "material": "forest"
+      },
+      {
+        "column": 141,
+        "row": 136,
+        "width": 1,
+        "height": 19,
+        "material": "forest"
+      },
+      {
+        "column": 153,
+        "row": 136,
+        "width": 1,
+        "height": 19,
+        "material": "forest"
+      },
+      {
+        "column": 5,
+        "row": 137,
+        "width": 1,
+        "height": 17,
+        "material": "forest"
+      },
+      {
+        "column": 19,
+        "row": 137,
+        "width": 1,
+        "height": 17,
+        "material": "forest"
+      },
+      {
+        "column": 140,
+        "row": 137,
+        "width": 1,
+        "height": 17,
+        "material": "forest"
+      },
+      {
+        "column": 154,
+        "row": 137,
+        "width": 1,
+        "height": 17,
+        "material": "forest"
+      },
+      {
+        "column": 4,
+        "row": 138,
+        "width": 1,
+        "height": 14,
+        "material": "forest"
+      },
+      {
+        "column": 20,
+        "row": 138,
+        "width": 1,
+        "height": 15,
+        "material": "forest"
+      },
+      {
+        "column": 139,
+        "row": 138,
+        "width": 1,
+        "height": 15,
+        "material": "forest"
+      },
+      {
+        "column": 155,
+        "row": 138,
+        "width": 1,
+        "height": 14,
+        "material": "forest"
+      },
+      {
+        "column": 3,
+        "row": 140,
+        "width": 1,
+        "height": 11,
+        "material": "forest"
+      },
+      {
+        "column": 156,
+        "row": 140,
+        "width": 1,
+        "height": 11,
+        "material": "forest"
+      },
+      {
+        "column": 21,
+        "row": 141,
+        "width": 1,
+        "height": 10,
+        "material": "forest"
+      },
+      {
+        "column": 138,
+        "row": 141,
+        "width": 1,
+        "height": 10,
+        "material": "forest"
+      },
+      {
+        "column": 44,
+        "row": 143,
+        "width": 15,
+        "height": 14,
+        "material": "forest"
+      },
+      {
+        "column": 101,
+        "row": 143,
+        "width": 15,
+        "height": 14,
+        "material": "forest"
+      },
+      {
+        "column": 2,
+        "row": 144,
+        "width": 1,
+        "height": 4,
+        "material": "forest"
+      },
+      {
+        "column": 42,
+        "row": 144,
+        "width": 2,
+        "height": 13,
+        "material": "forest"
+      },
+      {
+        "column": 59,
+        "row": 144,
+        "width": 2,
+        "height": 13,
+        "material": "forest"
+      },
+      {
+        "column": 99,
+        "row": 144,
+        "width": 2,
+        "height": 13,
+        "material": "forest"
+      },
+      {
+        "column": 116,
+        "row": 144,
+        "width": 2,
+        "height": 13,
+        "material": "forest"
+      },
+      {
+        "column": 157,
+        "row": 144,
+        "width": 1,
+        "height": 4,
+        "material": "forest"
+      },
+      {
+        "column": 22,
+        "row": 145,
+        "width": 1,
+        "height": 3,
+        "material": "forest"
+      },
+      {
+        "column": 40,
+        "row": 145,
+        "width": 2,
+        "height": 11,
+        "material": "forest"
+      },
+      {
+        "column": 61,
+        "row": 145,
+        "width": 2,
+        "height": 11,
+        "material": "forest"
+      },
+      {
+        "column": 97,
+        "row": 145,
+        "width": 2,
+        "height": 11,
+        "material": "forest"
+      },
+      {
+        "column": 118,
+        "row": 145,
+        "width": 2,
+        "height": 11,
+        "material": "forest"
+      },
+      {
+        "column": 137,
+        "row": 145,
+        "width": 1,
+        "height": 3,
+        "material": "forest"
+      },
+      {
+        "column": 39,
+        "row": 146,
+        "width": 1,
+        "height": 10,
+        "material": "forest"
+      },
+      {
+        "column": 63,
+        "row": 146,
+        "width": 2,
+        "height": 9,
+        "material": "forest"
+      },
+      {
+        "column": 95,
+        "row": 146,
+        "width": 2,
+        "height": 9,
+        "material": "forest"
+      },
+      {
+        "column": 120,
+        "row": 146,
+        "width": 1,
+        "height": 10,
+        "material": "forest"
+      },
+      {
+        "column": 38,
+        "row": 147,
+        "width": 1,
+        "height": 7,
+        "material": "forest"
+      },
+      {
+        "column": 65,
+        "row": 147,
+        "width": 1,
+        "height": 6,
+        "material": "forest"
+      },
+      {
+        "column": 94,
+        "row": 147,
+        "width": 1,
+        "height": 6,
+        "material": "forest"
+      },
+      {
+        "column": 121,
+        "row": 147,
+        "width": 1,
+        "height": 7,
+        "material": "forest"
+      },
+      {
+        "column": 37,
+        "row": 148,
+        "width": 1,
+        "height": 5,
+        "material": "forest"
+      },
+      {
+        "column": 122,
+        "row": 148,
+        "width": 1,
+        "height": 5,
+        "material": "forest"
+      },
+      {
+        "column": 66,
+        "row": 149,
+        "width": 1,
+        "height": 2,
+        "material": "forest"
+      },
+      {
+        "column": 93,
+        "row": 149,
+        "width": 1,
+        "height": 2,
+        "material": "forest"
+      },
+      {
+        "column": 41,
+        "row": 156,
+        "width": 1,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 61,
+        "row": 156,
+        "width": 1,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 98,
+        "row": 156,
+        "width": 1,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 118,
+        "row": 156,
+        "width": 1,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 45,
+        "row": 157,
+        "width": 14,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 101,
+        "row": 157,
+        "width": 14,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 49,
+        "row": 158,
+        "width": 3,
+        "height": 1,
+        "material": "forest"
+      },
+      {
+        "column": 108,
+        "row": 158,
+        "width": 3,
+        "height": 1,
+        "material": "forest"
+      }
+    ],
+    "resourceNodes": [
+      {
+        "id": "s0-berries",
+        "x": -50.5,
+        "z": 6.5,
+        "type": "food",
+        "stock": 240
+      },
+      {
+        "id": "s0-timber",
+        "x": -50.5,
+        "z": -9.5,
+        "type": "wood",
+        "stock": 500
+      },
+      {
+        "id": "s0-stone-0",
+        "x": -51.5,
+        "z": -13.5,
+        "type": "stone",
+        "stock": 67
+      },
+      {
+        "id": "s0-stone-1",
+        "x": -45.5,
+        "z": -6.5,
+        "type": "stone",
+        "stock": 67
+      },
+      {
+        "id": "s0-stone-2",
+        "x": -49.5,
+        "z": -4.5,
+        "type": "stone",
+        "stock": 66
+      },
+      {
+        "id": "s0-sheep-0",
+        "x": -49.5,
+        "z": 3.5,
+        "type": "food",
+        "stock": 130,
+        "wildlifeSpecies": "bellweather-sheep"
+      },
+      {
+        "id": "s0-sheep-1",
+        "x": -48.5,
+        "z": 7.5,
+        "type": "food",
+        "stock": 130,
+        "wildlifeSpecies": "bellweather-sheep"
+      },
+      {
+        "id": "s0-sheep-2",
+        "x": -46.5,
+        "z": 4.5,
+        "type": "food",
+        "stock": 130,
+        "wildlifeSpecies": "bellweather-sheep"
+      },
+      {
+        "id": "s0-shore-fish",
+        "x": -56.5,
+        "z": 24.5,
+        "type": "food",
+        "stock": 180,
+        "resourceVariant": "shore-fish"
+      },
+      {
+        "id": "s0-expansion-food",
+        "x": -36.5,
+        "z": -43.5,
+        "type": "food",
+        "stock": 650
+      },
+      {
+        "id": "s0-expansion-wood",
+        "x": -24.5,
+        "z": -43.5,
+        "type": "wood",
+        "stock": 850
+      },
+      {
+        "id": "s0-expansion-stone",
+        "x": -31.5,
+        "z": -37.5,
+        "type": "stone",
+        "stock": 100
+      },
+      {
+        "id": "s1-berries",
+        "x": 50.5,
+        "z": 6.5,
+        "type": "food",
+        "stock": 240
+      },
+      {
+        "id": "s1-timber",
+        "x": 50.5,
+        "z": -9.5,
+        "type": "wood",
+        "stock": 500
+      },
+      {
+        "id": "s1-stone-0",
+        "x": 51.5,
+        "z": -13.5,
+        "type": "stone",
+        "stock": 67
+      },
+      {
+        "id": "s1-stone-1",
+        "x": 45.5,
+        "z": -6.5,
+        "type": "stone",
+        "stock": 67
+      },
+      {
+        "id": "s1-stone-2",
+        "x": 49.5,
+        "z": -4.5,
+        "type": "stone",
+        "stock": 66
+      },
+      {
+        "id": "s1-sheep-0",
+        "x": 49.5,
+        "z": 3.5,
+        "type": "food",
+        "stock": 130,
+        "wildlifeSpecies": "bellweather-sheep"
+      },
+      {
+        "id": "s1-sheep-1",
+        "x": 48.5,
+        "z": 7.5,
+        "type": "food",
+        "stock": 130,
+        "wildlifeSpecies": "bellweather-sheep"
+      },
+      {
+        "id": "s1-sheep-2",
+        "x": 46.5,
+        "z": 4.5,
+        "type": "food",
+        "stock": 130,
+        "wildlifeSpecies": "bellweather-sheep"
+      },
+      {
+        "id": "s1-shore-fish",
+        "x": 56.5,
+        "z": 24.5,
+        "type": "food",
+        "stock": 180,
+        "resourceVariant": "shore-fish"
+      },
+      {
+        "id": "s1-expansion-food",
+        "x": 36.5,
+        "z": -43.5,
+        "type": "food",
+        "stock": 650
+      },
+      {
+        "id": "s1-expansion-wood",
+        "x": 24.5,
+        "z": -43.5,
+        "type": "wood",
+        "stock": 850
+      },
+      {
+        "id": "s1-expansion-stone",
+        "x": 31.5,
+        "z": -37.5,
+        "type": "stone",
+        "stock": 100
+      },
+      {
+        "id": "north-ford-food",
+        "x": -0.5,
+        "z": -13.5,
+        "type": "food",
+        "stock": 500
+      },
+      {
+        "id": "south-ford-wood",
+        "x": -0.5,
+        "z": 18.5,
+        "type": "wood",
+        "stock": 600
+      }
+    ],
+    "triggers": [],
+    "scenarioEvents": [],
+    "audio": {
+      "packId": "vaelora-siltmouths",
+      "profileId": "landscape",
+      "version": "v2",
+      "sha256": "1d64164f3d97048f3e68ef2b094d04359281da7ddafed86cbeee628b83ce8c44"
+    },
+    "victoryMode": "any"
+  },
+  "state": {
+    "tickNumber": 13111,
+    "teamFood": [
+      172.76666666666668,
+      173.03333333333333
+    ],
+    "teamWood": [
+      70,
+      71.79999999999995
+    ],
+    "teamStone": [
+      17.00000000000108,
+      17.00000000000108
+    ],
+    "buildings": [
+      {
+        "id": 1,
+        "team": 0,
+        "type": "farm",
+        "x": -60.5,
+        "z": 14.5,
+        "footprint": [
+          14898,
+          14899,
+          14900,
+          15058,
+          15059,
+          15060,
+          15218,
+          15219,
+          15220
+        ],
+        "hp": 600,
+        "progress": 1,
+        "complete": true,
+        "queue": 0,
+        "productionQueue": [],
+        "trainingRemaining": 0,
+        "productionBlocked": false,
+        "rallyCell": -1,
+        "harvestStock": 199.10000000000005
+      },
+      {
+        "id": 2,
+        "team": 1,
+        "type": "farm",
+        "x": 60.5,
+        "z": 14.5,
+        "footprint": [
+          15019,
+          15020,
+          15021,
+          15179,
+          15180,
+          15181,
+          15339,
+          15340,
+          15341
+        ],
+        "hp": 600,
+        "progress": 1,
+        "complete": true,
+        "queue": 0,
+        "productionQueue": [],
+        "trainingRemaining": 0,
+        "productionBlocked": false,
+        "rallyCell": -1,
+        "harvestStock": 199.06666666666672
+      },
+      {
+        "id": 3,
+        "team": 0,
+        "type": "mill",
+        "x": -58.5,
+        "z": 8.5,
+        "footprint": [
+          13940,
+          13941,
+          13942,
+          14100,
+          14101,
+          14102,
+          14260,
+          14261,
+          14262
+        ],
+        "hp": 1000,
+        "progress": 1,
+        "complete": true,
+        "queue": 0,
+        "productionQueue": [],
+        "trainingRemaining": 0,
+        "productionBlocked": false,
+        "rallyCell": -1
+      },
+      {
+        "id": 4,
+        "team": 1,
+        "type": "mill",
+        "x": 58.5,
+        "z": 8.5,
+        "footprint": [
+          14057,
+          14058,
+          14059,
+          14217,
+          14218,
+          14219,
+          14377,
+          14378,
+          14379
+        ],
+        "hp": 1000,
+        "progress": 1,
+        "complete": true,
+        "queue": 0,
+        "productionQueue": [],
+        "trainingRemaining": 0,
+        "productionBlocked": false,
+        "rallyCell": -1
+      },
+      {
+        "id": 5,
+        "team": 0,
+        "type": "watchtower",
+        "x": -46.5,
+        "z": -12.5,
+        "footprint": [
+          10592,
+          10593,
+          10594,
+          10752,
+          10753,
+          10754,
+          10912,
+          10913,
+          10914
+        ],
+        "hp": 1200,
+        "progress": 1,
+        "complete": true,
+        "queue": 0,
+        "productionQueue": [],
+        "trainingRemaining": 0,
+        "productionBlocked": false,
+        "rallyCell": -1,
+        "attackCooldown": 0.18333333333333335,
+        "attackScanOffset": 0,
+        "lastAttackTick": 9959,
+        "lastAttackX": -49.5,
+        "lastAttackZ": -7.3600000000000705
+      },
+      {
+        "id": 6,
+        "team": 1,
+        "type": "watchtower",
+        "x": 46.5,
+        "z": -12.5,
+        "footprint": [
+          10685,
+          10686,
+          10687,
+          10845,
+          10846,
+          10847,
+          11005,
+          11006,
+          11007
+        ],
+        "hp": 1200,
+        "progress": 1,
+        "complete": true,
+        "queue": 0,
+        "productionQueue": [],
+        "trainingRemaining": 0,
+        "productionBlocked": false,
+        "rallyCell": -1,
+        "attackCooldown": 0.18333333333333335,
+        "attackScanOffset": 0,
+        "lastAttackTick": 9983,
+        "lastAttackX": 49.5,
+        "lastAttackZ": -6.443285713206562
+      },
+      {
+        "id": 7,
+        "team": 0,
+        "type": "dock",
+        "x": -48.5,
+        "z": 23.5,
+        "footprint": [
+          16350,
+          16351,
+          16352,
+          16510,
+          16511,
+          16512,
+          16670,
+          16671,
+          16672
+        ],
+        "hp": 1200,
+        "progress": 1,
+        "complete": true,
+        "queue": 0,
+        "productionQueue": [],
+        "trainingRemaining": 0,
+        "productionBlocked": false,
+        "rallyCell": -1
+      },
+      {
+        "id": 8,
+        "team": 1,
+        "type": "dock",
+        "x": 48.5,
+        "z": 23.5,
+        "footprint": [
+          16447,
+          16448,
+          16449,
+          16607,
+          16608,
+          16609,
+          16767,
+          16768,
+          16769
+        ],
+        "hp": 1200,
+        "progress": 1,
+        "complete": true,
+        "queue": 0,
+        "productionQueue": [],
+        "trainingRemaining": 0,
+        "productionBlocked": false,
+        "rallyCell": -1
+      }
+    ],
+    "resourceNodes": [
+      {
+        "id": "s0-berries",
+        "type": "food",
+        "x": -50.5,
+        "z": 6.5,
+        "stock": 240
+      },
+      {
+        "id": "s0-timber",
+        "type": "wood",
+        "x": -50.5,
+        "z": -9.5,
+        "stock": 219.99999999980778
+      },
+      {
+        "id": "s0-stone-0",
+        "type": "stone",
+        "x": -51.5,
+        "z": -13.5,
+        "stock": 0
+      },
+      {
+        "id": "s0-stone-1",
+        "type": "stone",
+        "x": -45.5,
+        "z": -6.5,
+        "stock": 67
+      },
+      {
+        "id": "s0-stone-2",
+        "type": "stone",
+        "x": -49.5,
+        "z": -4.5,
+        "stock": 66
+      },
+      {
+        "id": "s0-sheep-0",
+        "type": "food",
+        "x": -49.72910259710444,
+        "z": 3.2708974028955584,
+        "stock": 129.73333333333335,
+        "wildlifeHerd": null,
+        "wildlifeGrazeAnchor": {
+          "x": -49.72910259710444,
+          "z": 3.2708974028955584
+        },
+        "wildlifeSpecies": "bellweather-sheep",
+        "wildlifeState": "carcass",
+        "wildlifeTeam": 0,
+        "wildlifeMotion": {
+          "sequence": 35,
+          "targetX": -49.72910259710444,
+          "targetZ": 3.2708974028955584,
+          "waitTicks": 0,
+          "activity": "idle",
+          "heading": 4.317763326359487
+        }
+      },
+      {
+        "id": "s0-sheep-1",
+        "type": "food",
+        "x": -48.462931416118835,
+        "z": 7.3585757814724655,
+        "stock": 130,
+        "wildlifeHerd": null,
+        "wildlifeGrazeAnchor": {
+          "x": -48.5,
+          "z": 7.5
+        },
+        "wildlifeSpecies": "bellweather-sheep",
+        "wildlifeState": "alive",
+        "wildlifeTeam": 0,
+        "wildlifeMotion": {
+          "sequence": 56,
+          "targetX": -48.28574664530048,
+          "targetZ": 7.285746645300476,
+          "waitTicks": 0,
+          "activity": "wandering",
+          "heading": 1.960779260665868
+        }
+      },
+      {
+        "id": "s0-sheep-2",
+        "type": "food",
+        "x": -46.32835839536245,
+        "z": 4.3786066097037635,
+        "stock": 130,
+        "wildlifeHerd": null,
+        "wildlifeGrazeAnchor": {
+          "x": -46.5,
+          "z": 4.5
+        },
+        "wildlifeSpecies": "bellweather-sheep",
+        "wildlifeState": "alive",
+        "wildlifeTeam": 0,
+        "wildlifeMotion": {
+          "sequence": 58,
+          "targetX": -46.241,
+          "targetZ": 4.5,
+          "waitTicks": 0,
+          "activity": "wandering",
+          "heading": 0.6237797120425235
+        }
+      },
+      {
+        "id": "s0-shore-fish",
+        "type": "food",
+        "x": -56.5,
+        "z": 24.5,
+        "stock": 108.40000000000387,
+        "resourceVariant": "shore-fish"
+      },
+      {
+        "id": "s0-expansion-food",
+        "type": "food",
+        "x": -36.5,
+        "z": -43.5,
+        "stock": 650
+      },
+      {
+        "id": "s0-expansion-wood",
+        "type": "wood",
+        "x": -24.5,
+        "z": -43.5,
+        "stock": 850
+      },
+      {
+        "id": "s0-expansion-stone",
+        "type": "stone",
+        "x": -31.5,
+        "z": -37.5,
+        "stock": 100
+      },
+      {
+        "id": "s1-berries",
+        "type": "food",
+        "x": 50.5,
+        "z": 6.5,
+        "stock": 240
+      },
+      {
+        "id": "s1-timber",
+        "type": "wood",
+        "x": 50.5,
+        "z": -9.5,
+        "stock": 218.1999999998079
+      },
+      {
+        "id": "s1-stone-0",
+        "type": "stone",
+        "x": 51.5,
+        "z": -13.5,
+        "stock": 0
+      },
+      {
+        "id": "s1-stone-1",
+        "type": "stone",
+        "x": 45.5,
+        "z": -6.5,
+        "stock": 67
+      },
+      {
+        "id": "s1-stone-2",
+        "type": "stone",
+        "x": 49.5,
+        "z": -4.5,
+        "stock": 66
+      },
+      {
+        "id": "s1-sheep-0",
+        "type": "food",
+        "x": 49.343022294576585,
+        "z": 3.6569777054234134,
+        "stock": 129.50000000000003,
+        "wildlifeHerd": null,
+        "wildlifeGrazeAnchor": {
+          "x": 49.343022294576585,
+          "z": 3.6569777054234134
+        },
+        "wildlifeSpecies": "bellweather-sheep",
+        "wildlifeState": "carcass",
+        "wildlifeTeam": 1,
+        "wildlifeMotion": {
+          "sequence": 38,
+          "targetX": 49.343022294576585,
+          "targetZ": 3.6569777054234134,
+          "waitTicks": 0,
+          "activity": "idle",
+          "heading": 0.4864834194320462
+        }
+      },
+      {
+        "id": "s1-sheep-1",
+        "type": "food",
+        "x": 48.5,
+        "z": 7.224,
+        "stock": 130,
+        "wildlifeHerd": null,
+        "wildlifeGrazeAnchor": {
+          "x": 48.5,
+          "z": 7.5
+        },
+        "wildlifeSpecies": "bellweather-sheep",
+        "wildlifeState": "alive",
+        "wildlifeTeam": 1,
+        "wildlifeMotion": {
+          "sequence": 58,
+          "targetX": 48.5,
+          "targetZ": 7.224,
+          "waitTicks": 36,
+          "activity": "grazing",
+          "heading": 3.552236670281393
+        }
+      },
+      {
+        "id": "s1-sheep-2",
+        "type": "food",
+        "x": 46.764,
+        "z": 4.5,
+        "stock": 130,
+        "wildlifeHerd": null,
+        "wildlifeGrazeAnchor": {
+          "x": 46.5,
+          "z": 4.5
+        },
+        "wildlifeSpecies": "bellweather-sheep",
+        "wildlifeState": "alive",
+        "wildlifeTeam": 1,
+        "wildlifeMotion": {
+          "sequence": 57,
+          "targetX": 46.764,
+          "targetZ": 4.5,
+          "waitTicks": 39,
+          "activity": "grazing",
+          "heading": 1.175757059750274
+        }
+      },
+      {
+        "id": "s1-shore-fish",
+        "type": "food",
+        "x": 56.5,
+        "z": 24.5,
+        "stock": 108.40000000000387,
+        "resourceVariant": "shore-fish"
+      },
+      {
+        "id": "s1-expansion-food",
+        "type": "food",
+        "x": 36.5,
+        "z": -43.5,
+        "stock": 650
+      },
+      {
+        "id": "s1-expansion-wood",
+        "type": "wood",
+        "x": 24.5,
+        "z": -43.5,
+        "stock": 850
+      },
+      {
+        "id": "s1-expansion-stone",
+        "type": "stone",
+        "x": 31.5,
+        "z": -37.5,
+        "stock": 100
+      },
+      {
+        "id": "north-ford-food",
+        "type": "food",
+        "x": -0.5,
+        "z": -13.5,
+        "stock": 500
+      },
+      {
+        "id": "south-ford-wood",
+        "type": "wood",
+        "x": -0.5,
+        "z": 18.5,
+        "stock": 600
+      }
+    ],
+    "cargo": [
+      {
+        "id": 0,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 1,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 2,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 3,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 4,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 5,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 6,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 7,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 8,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 9,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 10,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 11,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 12,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 13,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 14,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 15,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 16,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 17,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 18,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 19,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 20,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 21,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 22,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 23,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 24,
+        "team": 0,
+        "cargo": 0,
+        "cargoType": null
+      },
+      {
+        "id": 25,
+        "team": 1,
+        "cargo": 0,
+        "cargoType": null
+      }
+    ]
+  }
+}

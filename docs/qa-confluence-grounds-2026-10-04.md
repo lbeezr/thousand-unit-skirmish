@@ -32,6 +32,7 @@ deliberately provides flat building pads.
 | Static shortest elevation-cost base route | 135 units, cost 13,515; Worker/Infantry 51.923 s, Scout 30 s |
 | Forest-cleared base route | 131 units; Worker/Infantry 50.385 s, Scout 29.111 s |
 | Center crossings | North rim 10 rows, north ford 15, south ford 13, south rim 16 |
+| Forced alternate base routes | North ford 135 units, south ford 153, north rim 259, south rim 293; static cardinal routes with all other center crossings masked |
 | Flat city packing | Both seats fit the audit's 30-building template with circulation rings and 96 added house population |
 | Water graph | 3,632 cells with one-cell clearance; both Dock exits and both shore-fish approaches connected |
 | Ordinary opening | 24 total units; each seat 150 food, 250 wood, zero Stone; fog enabled |
@@ -61,9 +62,14 @@ all-land reachability, four distinct forced crossing alternatives, flat campuses
 city packing, both actual Dock placements and shared navigable fishing bays.
 The native scenario uses the actual root Practice DOM handler, creates a public
 Practice room and selects the canonical map. It never writes a bank, cargo,
-position, resource or checkpoint fixture. Native paid economy, firing, fishing,
-water traversal and recovery/reset results are pending until retained receipts
-are recorded here. The repeatable audit identifies this row as
+position, resource or checkpoint fixture. The accepted native run at clean source
+`38174fc50bcda8d2cba119ff14e2d80034ce3b8a` passes the paid economy, both tower
+firing arcs, shared finite fishing, sequential water traversal, cold recovery,
+authored reset and one-human clock/movement. Retained
+[summary](qa-evidence/confluence-grounds-2026-10-04/summary.json),
+[full receipt](qa-evidence/confluence-grounds-2026-10-04/report.json) and
+[source hashes](qa-evidence/confluence-grounds-2026-10-04/source-inputs.json)
+separate that result from the failed counterflow case. The repeatable audit identifies this row as
 `admitted-test-arena`, separately from regional Skirmish candidates and micro Labs.
 The refreshed 30-map checkout also identifies Bannerfall as `quick-custom-mode`;
 `seededPve` retains the historical two-map pool, while `ordinaryPve` identifies
@@ -71,6 +77,46 @@ the separately accepted Tiny/Skirmish AI map. Those identities are distinct from
 the new testing arena.
 The [static receipt](qa-evidence/confluence-grounds-2026-10-04/static-audit.json)
 retains methods, timing assumptions, source hashes and the measured arena row.
+
+Each seat naturally funds 460 wood, 50 food and 50 Stone of paid Farm/Mill/
+Watchtower/Dock/Skiff costs. The run verifies rejection of an unfunded tower,
+owned-only Farm gathering, nearby Mill food delivery, Sheep carcass harvesting,
+and both Skiffs' exact stopped-cargo deposit at an admitted owned Dock berth.
+All recorded phases conserve ordinary stock + cargo + bank + paid costs, with
+completed Farms adding only their explicit 200-food stock. Cold restart retains
+map/match identity, paid buildings, crops, stocks and banks; reset restores the
+24-unit authored opening. The guest leaves and the remaining human still moves
+a Worker and advances the Practice clock. Full recovery/session checkpoints stay
+private; [retained economic state](qa-evidence/confluence-grounds-2026-10-04/retained-economy.json)
+contains only the measured economic fields. No AI or human-match acceptance is inferred.
+
+## Counterflow collision diagnostic
+
+The native paid run at `61ebee31` reached both own-Dock cargo/bank receipts, then
+issued opposing cross-bay Moves simultaneously. Both Skiffs stopped nose-to-nose
+near world x −0.42/+0.42, z 40.5. An authoritative checkpoint at tick 14,130
+reported both `waterMoveBlocked:true`, with path index 63 of 114; the route-arrival
+check ultimately timed out. The static graph is connected and the channel has
+room for alternate routes. `water-unit-runtime.advance` waits when the next swept
+hull cells are occupied; ordinary Move has no general reciprocal traffic solver.
+
+Retained [failure receipt](qa-evidence/confluence-grounds-2026-10-04/diagnostic-counterflow-timeout.json)
+and [extracted checkpoint observation](qa-evidence/confluence-grounds-2026-10-04/counterflow-observation.json)
+contain no recovery session state. Reproduce the historical simultaneous case at
+the exact committed `61ebee31` scenario, then send the two documented cross-bay
+Moves; the current scenario checks those crossings sequentially. Passing
+sequential arrivals establishes useful topology, not counterflow capacity.
+This slice does not change the collision runtime or hide the failed experiment.
+The Skiff runtime owner retains resolution; the existing
+[water movement contract](skiff-water-movement.md) and
+[selected-group limits](skiff-selected-groups.md) already exclude a general water
+traffic solver. A future ordinary naval usability slice should cover reciprocal
+passing and unblocking, with the authored arena as a representative fixture.
+
+An earlier [failed harness assertion](qa-evidence/confluence-grounds-2026-10-04/diagnostic-dock-target-cleanup.json)
+expected Skiff `dropoffBuildingId` to survive a completed return. Runtime correctly
+clears that completed target. The corrected proof verifies the prior owned Dock,
+actual admitted berth arrival, exact bank delta and repeat-return rejection.
 
 ## Integration and remaining acceptance
 
@@ -91,6 +137,21 @@ follow-up. A source layout schematic, local native receipt or release pack canno
 substitute for those checks. Human balance, representative large-city/unit loads
 and supported capacity remain open. Medium/Large continue as separate authored
 slices; XL still requires a widened visibility index and bounded cache design.
+
+The docs-only [XL visibility design PR252](https://github.com/lbeezr/thousand-unit-skirmish/pull/252)
+merged at `42016cf8e9869c0724c355fdefc65b7136678072` after independent exact-head
+review. It proposes 32-bit indices, an 8 MiB live payload / 8,192-entry cache,
+deterministic eviction and explicit same-tick geometry invalidation. It changes
+no runtime index, cache or validator; implementation/budgets remain future work.
+
+Broader focused checks passed 20 of 21 cases. The remaining pre-existing Stone
+lobby regression still expects compact `stone-defense-field` in a normal managed
+room. That expectation conflicts with the already-applied ordinary human floor;
+the mode/floor owner needs an explicit internal-fixture regression path. The
+exact source/test boundary and receiving action are recorded on
+[PR251](https://github.com/lbeezr/thousand-unit-skirmish/pull/251#issuecomment-5975904210)
+and [PR250](https://github.com/lbeezr/thousand-unit-skirmish/pull/250#issuecomment-5975956800).
+Do not reopen compact ordinary eligibility to satisfy the old assertion.
 
 The latest read-only staging deployment listing still reports SUCCESS
 deployment `e541d903-178b-47cb-8d1b-4358c93c5a8a` with source

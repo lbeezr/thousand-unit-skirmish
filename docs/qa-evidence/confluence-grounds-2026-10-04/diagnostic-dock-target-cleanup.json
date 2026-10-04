@@ -1,0 +1,2950 @@
+{
+  "sourceRevision": "4f9a9ae975ab849a4f1f9b5a1cc3375c1992b778",
+  "sourceDirty": false,
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nnull !== 7\n\n    at file:///workspace/admitted-practice-arena/scripts/confluence-grounds-scenario.mjs:174:12",
+  "records": [
+    {
+      "stage": "ordinary-practice-authored-start",
+      "tick": 30,
+      "elapsedGameSeconds": 0.9666666666666666,
+      "wallElapsedSeconds": 1.8826132309999999,
+      "banks": {
+        "food": [
+          150,
+          150
+        ],
+        "wood": [
+          250,
+          250
+        ],
+        "stone": [
+          0,
+          0
+        ]
+      },
+      "paid": [
+        {
+          "food": 0,
+          "wood": 0,
+          "stone": 0
+        },
+        {
+          "food": 0,
+          "wood": 0,
+          "stone": 0
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 500
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 500
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [],
+      "cargo": []
+    },
+    {
+      "stage": "unfunded-tower-rejected",
+      "tick": 300,
+      "elapsedGameSeconds": 9.966666666666642,
+      "wallElapsedSeconds": 10.902306356999999,
+      "banks": {
+        "food": [
+          150,
+          150
+        ],
+        "wood": [
+          250,
+          250
+        ],
+        "stone": [
+          0,
+          0
+        ]
+      },
+      "paid": [
+        {
+          "food": 0,
+          "wood": 0,
+          "stone": 0
+        },
+        {
+          "food": 0,
+          "wood": 0,
+          "stone": 0
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 500
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 500
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [],
+      "cargo": []
+    },
+    {
+      "stage": "natural-local-wood-banked",
+      "tick": 4770,
+      "elapsedGameSeconds": 158.96666666666022,
+      "wallElapsedSeconds": 159.9159279,
+      "banks": {
+        "food": [
+          150,
+          150
+        ],
+        "wood": [
+          530,
+          531.7333333333333
+        ],
+        "stone": [
+          0,
+          0
+        ]
+      },
+      "paid": [
+        {
+          "food": 0,
+          "wood": 0,
+          "stone": 0
+        },
+        {
+          "food": 0,
+          "wood": 0,
+          "stone": 0
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 219.99999999980778
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 218.26666666647455
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [],
+      "cargo": []
+    },
+    {
+      "stage": "natural-local-stone-banked",
+      "tick": 6090,
+      "elapsedGameSeconds": 202.96666666665772,
+      "wallElapsedSeconds": 203.925247033,
+      "banks": {
+        "food": [
+          150,
+          150
+        ],
+        "wood": [
+          530,
+          531.7333333333333
+        ],
+        "stone": [
+          67.00000000000108,
+          67.00000000000108
+        ]
+      },
+      "paid": [
+        {
+          "food": 0,
+          "wood": 0,
+          "stone": 0
+        },
+        {
+          "food": 0,
+          "wood": 0,
+          "stone": 0
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 219.99999999980778
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 218.26666666647455
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [],
+      "cargo": []
+    },
+    {
+      "stage": "paid-farm-complete",
+      "tick": 6420,
+      "elapsedGameSeconds": 213.9666666666571,
+      "wallElapsedSeconds": 214.889964012,
+      "banks": {
+        "food": [
+          150,
+          150
+        ],
+        "wood": [
+          470,
+          471.73333333333335
+        ],
+        "stone": [
+          67.00000000000108,
+          67.00000000000108
+        ]
+      },
+      "paid": [
+        {
+          "food": 0,
+          "wood": 60,
+          "stone": 0
+        },
+        {
+          "food": 0,
+          "wood": 60,
+          "stone": 0
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 219.99999999980778
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 218.26666666647455
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [
+        {
+          "id": 1,
+          "team": 0,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 200
+        },
+        {
+          "id": 2,
+          "team": 1,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 200
+        }
+      ],
+      "cargo": []
+    },
+    {
+      "stage": "paid-mill-complete",
+      "tick": 6570,
+      "elapsedGameSeconds": 218.9666666666568,
+      "wallElapsedSeconds": 219.898613273,
+      "banks": {
+        "food": [
+          150,
+          150
+        ],
+        "wood": [
+          395,
+          396.73333333333335
+        ],
+        "stone": [
+          67.00000000000108,
+          67.00000000000108
+        ]
+      },
+      "paid": [
+        {
+          "food": 0,
+          "wood": 135,
+          "stone": 0
+        },
+        {
+          "food": 0,
+          "wood": 135,
+          "stone": 0
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 219.99999999980778
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 218.26666666647455
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [
+        {
+          "id": 1,
+          "team": 0,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 200
+        },
+        {
+          "id": 2,
+          "team": 1,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 200
+        },
+        {
+          "id": 3,
+          "team": 0,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "type": "mill",
+          "complete": true
+        }
+      ],
+      "cargo": []
+    },
+    {
+      "stage": "paid-watchtower-complete",
+      "tick": 7200,
+      "elapsedGameSeconds": 239.9666666666556,
+      "wallElapsedSeconds": 240.92218442100003,
+      "banks": {
+        "food": [
+          100,
+          100
+        ],
+        "wood": [
+          245,
+          246.73333333333335
+        ],
+        "stone": [
+          17.00000000000108,
+          17.00000000000108
+        ]
+      },
+      "paid": [
+        {
+          "food": 50,
+          "wood": 285,
+          "stone": 50
+        },
+        {
+          "food": 50,
+          "wood": 285,
+          "stone": 50
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 219.99999999980778
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 218.26666666647455
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": null
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [
+        {
+          "id": 1,
+          "team": 0,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 200
+        },
+        {
+          "id": 2,
+          "team": 1,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 200
+        },
+        {
+          "id": 3,
+          "team": 0,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 5,
+          "team": 0,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 6,
+          "team": 1,
+          "type": "watchtower",
+          "complete": true
+        }
+      ],
+      "cargo": []
+    },
+    {
+      "stage": "paid-dock-complete",
+      "tick": 7740,
+      "elapsedGameSeconds": 257.96666666665624,
+      "wallElapsedSeconds": 258.901322366,
+      "banks": {
+        "food": [
+          100,
+          100
+        ],
+        "wood": [
+          145,
+          146.73333333333335
+        ],
+        "stone": [
+          17.00000000000108,
+          17.00000000000108
+        ]
+      },
+      "paid": [
+        {
+          "food": 50,
+          "wood": 385,
+          "stone": 50
+        },
+        {
+          "food": 50,
+          "wood": 385,
+          "stone": 50
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 219.99999999980778
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 218.26666666647455
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [
+        {
+          "id": 1,
+          "team": 0,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 200
+        },
+        {
+          "id": 2,
+          "team": 1,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 200
+        },
+        {
+          "id": 3,
+          "team": 0,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 5,
+          "team": 0,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 6,
+          "team": 1,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 7,
+          "team": 0,
+          "type": "dock",
+          "complete": true
+        },
+        {
+          "id": 8,
+          "team": 1,
+          "type": "dock",
+          "complete": true
+        }
+      ],
+      "cargo": []
+    },
+    {
+      "stage": "paid-skiffs-trained",
+      "tick": 8070,
+      "elapsedGameSeconds": 268.966666666665,
+      "wallElapsedSeconds": 269.906016271,
+      "banks": {
+        "food": [
+          100,
+          100
+        ],
+        "wood": [
+          70,
+          71.73333333333335
+        ],
+        "stone": [
+          17.00000000000108,
+          17.00000000000108
+        ]
+      },
+      "paid": [
+        {
+          "food": 50,
+          "wood": 460,
+          "stone": 50
+        },
+        {
+          "food": 50,
+          "wood": 460,
+          "stone": 50
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 219.99999999980778
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 218.26666666647455
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 180
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [
+        {
+          "id": 1,
+          "team": 0,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 200
+        },
+        {
+          "id": 2,
+          "team": 1,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 200
+        },
+        {
+          "id": 3,
+          "team": 0,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 5,
+          "team": 0,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 6,
+          "team": 1,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 7,
+          "team": 0,
+          "type": "dock",
+          "complete": true
+        },
+        {
+          "id": 8,
+          "team": 1,
+          "type": "dock",
+          "complete": true
+        }
+      ],
+      "cargo": []
+    },
+    {
+      "stage": "nearby-neutral-sheep-harvested",
+      "tick": 8280,
+      "elapsedGameSeconds": 275.96666666667056,
+      "wallElapsedSeconds": 276.95295543699996,
+      "banks": {
+        "food": [
+          100,
+          100
+        ],
+        "wood": [
+          70,
+          71.73333333333335
+        ],
+        "stone": [
+          17.00000000000108,
+          17.00000000000108
+        ]
+      },
+      "paid": [
+        {
+          "food": 50,
+          "wood": 460,
+          "stone": 50
+        },
+        {
+          "food": 50,
+          "wood": 460,
+          "stone": 50
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 219.99999999980778
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 129.73333333333335,
+          "wildlifeState": "carcass",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 175.90000000000023
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 218.26666666647455
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 129.4666666666667,
+          "wildlifeState": "carcass",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 175.93333333333356
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [
+        {
+          "id": 1,
+          "team": 0,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 200
+        },
+        {
+          "id": 2,
+          "team": 1,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 200
+        },
+        {
+          "id": 3,
+          "team": 0,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 5,
+          "team": 0,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 6,
+          "team": 1,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 7,
+          "team": 0,
+          "type": "dock",
+          "complete": true
+        },
+        {
+          "id": 8,
+          "team": 1,
+          "type": "dock",
+          "complete": true
+        }
+      ],
+      "cargo": [
+        {
+          "id": 0,
+          "team": 0,
+          "cargo": 0.26666666666666666,
+          "cargoType": "food",
+          "gatherPhase": "gathering",
+          "dropoffBuildingId": 1000000000
+        },
+        {
+          "id": 12,
+          "team": 1,
+          "cargo": 0.5333333333333333,
+          "cargoType": "food",
+          "gatherPhase": "gathering",
+          "dropoffBuildingId": 1000000001
+        },
+        {
+          "id": 24,
+          "team": 0,
+          "cargo": 4.099999999999995,
+          "cargoType": "food",
+          "gatherPhase": "gathering",
+          "dropoffBuildingId": null
+        },
+        {
+          "id": 25,
+          "team": 1,
+          "cargo": 4.066666666666662,
+          "cargoType": "food",
+          "gatherPhase": "gathering",
+          "dropoffBuildingId": null
+        }
+      ]
+    },
+    {
+      "stage": "finite-farm-and-shared-worker-skiff-fish",
+      "tick": 8520,
+      "elapsedGameSeconds": 283.96666666667693,
+      "wallElapsedSeconds": 284.92505336799996,
+      "banks": {
+        "food": [
+          100.3,
+          100.6
+        ],
+        "wood": [
+          70,
+          71.73333333333335
+        ],
+        "stone": [
+          17.00000000000108,
+          17.00000000000108
+        ]
+      },
+      "paid": [
+        {
+          "food": 50,
+          "wood": 460,
+          "stone": 50
+        },
+        {
+          "food": 50,
+          "wood": 460,
+          "stone": 50
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 219.99999999980778
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 129.70000000000002,
+          "wildlifeState": "carcass",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 170.00000000000054
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 218.26666666647455
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 129.40000000000003,
+          "wildlifeState": "carcass",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 170.00000000000054
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [
+        {
+          "id": 1,
+          "team": 0,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 199.10000000000005
+        },
+        {
+          "id": 2,
+          "team": 1,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 199.06666666666672
+        },
+        {
+          "id": 3,
+          "team": 0,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 5,
+          "team": 0,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 6,
+          "team": 1,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 7,
+          "team": 0,
+          "type": "dock",
+          "complete": true
+        },
+        {
+          "id": 8,
+          "team": 1,
+          "type": "dock",
+          "complete": true
+        }
+      ],
+      "cargo": [
+        {
+          "id": 0,
+          "team": 0,
+          "cargo": 0.8999999999999999,
+          "cargoType": "food",
+          "gatherPhase": "gathering",
+          "dropoffBuildingId": 3
+        },
+        {
+          "id": 12,
+          "team": 1,
+          "cargo": 0.9333333333333332,
+          "cargoType": "food",
+          "gatherPhase": "gathering",
+          "dropoffBuildingId": 4
+        },
+        {
+          "id": 24,
+          "team": 0,
+          "cargo": 10,
+          "cargoType": "food",
+          "gatherPhase": "to-base",
+          "dropoffBuildingId": 7
+        },
+        {
+          "id": 25,
+          "team": 1,
+          "cargo": 10,
+          "cargoType": "food",
+          "gatherPhase": "to-base",
+          "dropoffBuildingId": 8
+        }
+      ]
+    },
+    {
+      "stage": "farm-food-delivered-to-nearby-mill",
+      "tick": 8550,
+      "elapsedGameSeconds": 284.9666666666777,
+      "wallElapsedSeconds": 285.9338988669999,
+      "banks": {
+        "food": [
+          111.2,
+          111.53333333333333
+        ],
+        "wood": [
+          70,
+          71.73333333333335
+        ],
+        "stone": [
+          17.00000000000108,
+          17.00000000000108
+        ]
+      },
+      "paid": [
+        {
+          "food": 50,
+          "wood": 460,
+          "stone": 50
+        },
+        {
+          "food": 50,
+          "wood": 460,
+          "stone": 50
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 219.99999999980778
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 129.70000000000002,
+          "wildlifeState": "carcass",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 169.06666666666726
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 218.26666666647455
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 129.40000000000003,
+          "wildlifeState": "carcass",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 169.06666666666726
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [
+        {
+          "id": 1,
+          "team": 0,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 199.10000000000005
+        },
+        {
+          "id": 2,
+          "team": 1,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 199.06666666666672
+        },
+        {
+          "id": 3,
+          "team": 0,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 5,
+          "team": 0,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 6,
+          "team": 1,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 7,
+          "team": 0,
+          "type": "dock",
+          "complete": true
+        },
+        {
+          "id": 8,
+          "team": 1,
+          "type": "dock",
+          "complete": true
+        }
+      ],
+      "cargo": [
+        {
+          "id": 1,
+          "team": 0,
+          "cargo": 0.9333333333333332,
+          "cargoType": "food",
+          "gatherPhase": "gathering",
+          "dropoffBuildingId": 1000000000
+        },
+        {
+          "id": 13,
+          "team": 1,
+          "cargo": 0.9333333333333332,
+          "cargoType": "food",
+          "gatherPhase": "gathering",
+          "dropoffBuildingId": 1000000001
+        }
+      ]
+    },
+    {
+      "stage": "both-paid-watchtowers-fire",
+      "tick": 9840,
+      "elapsedGameSeconds": 327.96666666671194,
+      "wallElapsedSeconds": 328.929429642,
+      "banks": {
+        "food": [
+          151.2,
+          151.53333333333333
+        ],
+        "wood": [
+          70,
+          71.73333333333335
+        ],
+        "stone": [
+          17.00000000000108,
+          17.00000000000108
+        ]
+      },
+      "paid": [
+        {
+          "food": 50,
+          "wood": 460,
+          "stone": 50
+        },
+        {
+          "food": 50,
+          "wood": 460,
+          "stone": 50
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 219.99999999980778
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 129.70000000000002,
+          "wildlifeState": "carcass",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 115.56666666667019
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 218.26666666647455
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 129.40000000000003,
+          "wildlifeState": "carcass",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 115.60000000000352
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [
+        {
+          "id": 1,
+          "team": 0,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 199.10000000000005
+        },
+        {
+          "id": 2,
+          "team": 1,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 199.06666666666672
+        },
+        {
+          "id": 3,
+          "team": 0,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 5,
+          "team": 0,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 6,
+          "team": 1,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 7,
+          "team": 0,
+          "type": "dock",
+          "complete": true
+        },
+        {
+          "id": 8,
+          "team": 1,
+          "type": "dock",
+          "complete": true
+        }
+      ],
+      "cargo": [
+        {
+          "id": 1,
+          "team": 0,
+          "cargo": 5.933333333333322,
+          "cargoType": "food",
+          "gatherPhase": "gathering",
+          "dropoffBuildingId": 3
+        },
+        {
+          "id": 13,
+          "team": 1,
+          "cargo": 5.933333333333322,
+          "cargoType": "food",
+          "gatherPhase": "gathering",
+          "dropoffBuildingId": 4
+        },
+        {
+          "id": 24,
+          "team": 0,
+          "cargo": 8.49999999999998,
+          "cargoType": "food",
+          "gatherPhase": "gathering",
+          "dropoffBuildingId": 7
+        },
+        {
+          "id": 25,
+          "team": 1,
+          "cargo": 8.466666666666647,
+          "cargoType": "food",
+          "gatherPhase": "gathering",
+          "dropoffBuildingId": 8
+        }
+      ],
+      "targetHp": [
+        92,
+        92
+      ]
+    },
+    {
+      "stage": "stopped-fish-cargo-before-owned-dock-delivery",
+      "tick": 10140,
+      "elapsedGameSeconds": 337.9666666667199,
+      "wallElapsedSeconds": 338.940992576,
+      "banks": {
+        "food": [
+          171.2,
+          171.53333333333333
+        ],
+        "wood": [
+          70,
+          71.73333333333335
+        ],
+        "stone": [
+          17.00000000000108,
+          17.00000000000108
+        ]
+      },
+      "paid": [
+        {
+          "food": 50,
+          "wood": 460,
+          "stone": 50
+        },
+        {
+          "food": 50,
+          "wood": 460,
+          "stone": 50
+        }
+      ],
+      "resources": [
+        {
+          "id": "s0-berries",
+          "stock": 240
+        },
+        {
+          "id": "s0-timber",
+          "stock": 219.99999999980778
+        },
+        {
+          "id": "s0-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s0-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s0-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s0-sheep-0",
+          "stock": 129.70000000000002,
+          "wildlifeState": "carcass",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 0
+        },
+        {
+          "id": "s0-shore-fish",
+          "stock": 108.33333333333721
+        },
+        {
+          "id": "s0-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s0-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s0-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "s1-berries",
+          "stock": 240
+        },
+        {
+          "id": "s1-timber",
+          "stock": 218.26666666647455
+        },
+        {
+          "id": "s1-stone-0",
+          "stock": 0
+        },
+        {
+          "id": "s1-stone-1",
+          "stock": 67
+        },
+        {
+          "id": "s1-stone-2",
+          "stock": 66
+        },
+        {
+          "id": "s1-sheep-0",
+          "stock": 129.40000000000003,
+          "wildlifeState": "carcass",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-1",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-sheep-2",
+          "stock": 130,
+          "wildlifeState": "alive",
+          "wildlifeTeam": 1
+        },
+        {
+          "id": "s1-shore-fish",
+          "stock": 108.36666666667054
+        },
+        {
+          "id": "s1-expansion-food",
+          "stock": 650
+        },
+        {
+          "id": "s1-expansion-wood",
+          "stock": 850
+        },
+        {
+          "id": "s1-expansion-stone",
+          "stock": 100
+        },
+        {
+          "id": "north-ford-food",
+          "stock": 500
+        },
+        {
+          "id": "south-ford-wood",
+          "stock": 600
+        }
+      ],
+      "buildings": [
+        {
+          "id": 1,
+          "team": 0,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 199.10000000000005
+        },
+        {
+          "id": 2,
+          "team": 1,
+          "type": "farm",
+          "complete": true,
+          "harvestStock": 199.06666666666672
+        },
+        {
+          "id": 3,
+          "team": 0,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "type": "mill",
+          "complete": true
+        },
+        {
+          "id": 5,
+          "team": 0,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 6,
+          "team": 1,
+          "type": "watchtower",
+          "complete": true
+        },
+        {
+          "id": 7,
+          "team": 0,
+          "type": "dock",
+          "complete": true
+        },
+        {
+          "id": 8,
+          "team": 1,
+          "type": "dock",
+          "complete": true
+        }
+      ],
+      "cargo": [
+        {
+          "id": 24,
+          "team": 0,
+          "cargo": 1.6666666666666685,
+          "cargoType": "food",
+          "gatherPhase": "",
+          "dropoffBuildingId": 7
+        },
+        {
+          "id": 25,
+          "team": 1,
+          "cargo": 1.633333333333335,
+          "cargoType": "food",
+          "gatherPhase": "",
+          "dropoffBuildingId": 8
+        }
+      ],
+      "deliveries": [
+        {
+          "team": 0,
+          "skiffId": 24,
+          "dockId": 7,
+          "cargo": 1.6666666666666685,
+          "bankBefore": 171.2
+        },
+        {
+          "team": 1,
+          "skiffId": 25,
+          "dockId": 8,
+          "cargo": 1.633333333333335,
+          "bankBefore": 171.53333333333333
+        }
+      ]
+    }
+  ],
+  "lastStates": [
+    {
+      "mapId": "siltmouths-confluence-grounds",
+      "tick": 10230,
+      "food": [
+        172.86666666666665,
+        null
+      ],
+      "wood": [
+        70,
+        null
+      ],
+      "stone": [
+        17.00000000000108,
+        null
+      ],
+      "units": [
+        [
+          0,
+          0,
+          -58.5,
+          11.49,
+          100,
+          "worker",
+          0,
+          null,
+          1475199947,
+          "idle",
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          1,
+          0,
+          -56.5,
+          12.5,
+          100,
+          "worker",
+          0,
+          null,
+          1475199947,
+          "idle",
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          2,
+          0,
+          -49.5,
+          21.5,
+          100,
+          "worker",
+          0,
+          null,
+          1475199947,
+          "idle",
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          3,
+          0,
+          -46.5,
+          21.5,
+          100,
+          "worker",
+          0,
+          null,
+          1475199947,
+          "idle",
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          24,
+          0,
+          -48.5,
+          26.5,
+          120,
+          "skiff",
+          0,
+          null,
+          1475199946,
+          null,
+          0
+        ]
+      ]
+    },
+    {
+      "mapId": "siltmouths-confluence-grounds",
+      "tick": 10230,
+      "food": [
+        null,
+        173.16666666666666
+      ],
+      "wood": [
+        null,
+        71.73333333333335
+      ],
+      "stone": [
+        null,
+        17.00000000000108
+      ],
+      "units": [
+        [
+          12,
+          1,
+          58.5,
+          11.42,
+          100,
+          "worker",
+          0,
+          null,
+          1475199947,
+          "idle",
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          13,
+          1,
+          56.5,
+          12.5,
+          100,
+          "worker",
+          0,
+          null,
+          1475199947,
+          "idle",
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          14,
+          1,
+          49.5,
+          21.5,
+          100,
+          "worker",
+          0,
+          null,
+          1475199947,
+          "idle",
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          15,
+          1,
+          46.5,
+          21.5,
+          100,
+          "worker",
+          0,
+          null,
+          1475199947,
+          "idle",
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          25,
+          1,
+          48.5,
+          26.5,
+          120,
+          "skiff",
+          0,
+          null,
+          1475199946,
+          null,
+          0
+        ]
+      ]
+    }
+  ]
+}
