@@ -105,11 +105,11 @@ current-roster keys can also be admitted with the same manifest contract.
 | 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
 | 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
 | 3 | Fill wood/food/build/repair/attack/defeat's seven absent headings: **42 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
-| 4 | Eight readable dedicated Stone-work headings. | Current assets contain no pick/mining sequence. Animation owner also needs the actual Stone state/resource selector enabled after artwork exists; current default intentionally returns idle. No economy edits. |
+| 4 | Seven remaining readable dedicated Stone-work headings and SE selector adoption. | SE now has dedicated pick poses; the broad eight-view attempt failed strike facing in the other rows. Animation owner also needs the actual Stone state/resource selector enabled after artwork exists; current default intentionally returns idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
 There are now 8 of 8 walk headings, eight distinct idle headings, SE land-action
-motion and no Stone motion. **50 land-action/heading cells remain** (42+8).
+motion and SE Stone artwork awaiting default selector adoption. **49 land-action/heading cells remain** (42+7).
 Fishing's seven missing headings are excluded and retained by its separate owner.
 The animation-owner ID is outside this executor's live collaboration tree; the
 manifest contract and retained dependencies are recorded here for parent routing.
@@ -260,3 +260,53 @@ All90 focused checks, atlas/docs/whitespace and packed HTTP/hash scenario pass.
 [All-eight-walk clean release](qa-evidence/worker-land-art-2026-10-04/eight-walks-clean-release.json)
 records exact source `d4ba9de1ebcabaadec1a40e65a5cec3cf0c696ff`, 1173 files,
 `sha256:dc2aef04126c74cba565c950bb09923dbf60c3a69857713fba3baf19e2a85bd7` and three runtime file hashes.
+
+## Fifth slice: dedicated Stone SE and exact adoption dependency
+
+[Retained Stone iteration](art-direction/human-roster-v1/generated/worker-stone-eight-v1/README.md)
+contains the public eight-idle seed/layout/prompt, raw attempt and all32 extracted
+whole poses. The attempted eight-heading sheet failed functional facing: several
+strike rows rotate to the same right-bearing pose. Only actual SE keys12–15 are
+admitted. Other rows are retained rejected candidates; no eight-heading claim.
+
+Default packv0.20.0 now contains `human / gather-stone|south-east`, four210ms
+looping keys, with a visibly dedicated mining pick and unchanged Worker costume.
+[Admission](../scripts/admit-worker-stone-se.py) uses shared232/183 scale, fixed
+column roots[156,412,668,924], baseline779 and local ground root[160,244]. Four
+320x256 cells fit spare row3840 without repacking prior124 frames, resizing the
+atlas or changing world scale/mask/other clips. [Registration](qa-evidence/worker-land-art-2026-10-04/stone-se-registration.json),
+[key sheet](qa-evidence/worker-land-art-2026-10-04/stone-se-keys.png) and
+[840ms loop](qa-evidence/worker-land-art-2026-10-04/stone-se-loop.webp) retain source
+hashes and aspect-correct ordinary/strategic pixel review. Loop/drift polish stays open.
+
+**Concrete default binding dependency for animation01a103d4 / PR216:**
+`activeState` still returns idle for confirmed `performingAction: gather-stone`.
+The dedicated SE clip exists, but default work currently displays `idle-south-east-0`.
+Enabling the state alone is insufficient: Human approximate `gather-stone` lookup
+currently returns SE for all other headings. Extend the bounded selector/heading
+policy so authored SE plays and seven missing headings retain their exact idle.
+Keep receipt precedence/interruptions and shared clocks; no economy changes.
+The art task leaves those owned helpers unchanged and retains source/pack ownership.
+Default Stone playback, containing deployment and native root/contact acceptance
+remain incomplete until this concrete adopter change and exact-build capture.
+
+All eight walks merged in [PR244](https://github.com/lbeezr/thousand-unit-skirmish/pull/244)
+at `384ac60cb56f372d6e6cfa75a187b0e1eeb5e548` after [independent agent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/244#pullrequestreview-5403864264)
+verified exacthead `dc63ad095b2087020b023d910bd9856c03ff8ee7`, all90 focused tests
+and packedHTTP checks. Native/deployed acceptance remains open.
+
+[Stone SE preservation](qa-evidence/worker-land-art-2026-10-04/stone-se-preservation.json)
+protects all124 prior frame records/pixels, every prior clip/mask and same world
+scale/dimensions against the merged eight-walk baseline. Rebuild is byte-idempotent.
+
+All92 focused pixel/default-walk/runtime/receipt/clock/heading/fishing/sharding
+checks, atlas/docs/whitespace and packedHTTP/hash pass. This verifies Stone art
+admission, not default Stone action playback. [Actual selector-gap observation](qa-evidence/worker-land-art-2026-10-04/stone-selector-gap.json)
+records the exact idle state/frame and approximate-heading mismatch that the
+animation owner must resolve with the supplied clip.
+
+[Stone pack clean release](qa-evidence/worker-land-art-2026-10-04/stone-clean-release.json)
+records code `b2d8e6702236a1598bb7cbe302b17107de218b07`, 1175 files and
+`sha256:37e05e727ece6d2a3ef78f9037a16cb51ba67120a9c546bd6c368a1a80acb08e`. The existing three runtime files include this clip;
+no directory/defaultadoption flag or new HTTPpath is required. Stone state
+and exactheading policy adoption remain owned by the animation consumer.

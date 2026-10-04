@@ -18,7 +18,6 @@ import {
   roomIndexDocument,
   roomResponseMetadata,
   freshRoomLaunchOptions,
-  FRESH_PVE_UNAVAILABLE_REASON,
 } from './src/room-launch-options.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -572,7 +571,8 @@ async function handleRequest(request, response) {
     sendJson(response, 200, { enabled: true, roomCount: rooms.size, roomLimit: MAX_ROOMS, practiceSetup: await practiceSetup,
       ordinarySetup: { minimumSide: ORDINARY_MAP_MIN_SIDE, defaultMapId: NORMAL_MATCH_MAP_ID,
         ...NORMAL_HUMAN_MATCH_MODE, mapSizeTiers: MAP_SIZE_TIERS,
-        pve: { available: false, reason: FRESH_PVE_UNAVAILABLE_REASON } } });
+        pve: { available: true, mapId: NORMAL_MATCH_MAP_ID,
+          supportedMapIds: [NORMAL_MATCH_MAP_ID], ...NORMAL_HUMAN_MATCH_MODE } } });
     return;
   }
 

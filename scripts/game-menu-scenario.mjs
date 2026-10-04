@@ -182,11 +182,17 @@ try {
   host.send({ type: 'launchMatch', revision });
   await until(() => host.lobby.phase === 'running' && guest.lobby.phase === 'running', 'launch');
   const aiMenu = await menu(); aiMenu.click('menu-new-game');
-  await until(() => /160.*Skirmish AI acceptance/.test(aiMenu.dom.window.document.querySelector('#game-menu-status').textContent),
-    'honest unavailable fresh AI explanation');
-  assert.equal(aiMenu.navigations.length, 0, 'unsupported ordinary AI cannot create or navigate to a compact fresh match');
-  assert.equal(aiMenu.dom.window.document.querySelector('#menu-create-room').disabled, false,
-    'AI unavailability does not block human room creation');
+  await until(() => aiMenu.navigations.length, 'normal Play vs AI creates a fresh Tiny Skirmish room');
+  const aiId = aiMenu.navigations[0].searchParams.get('room');
+  const aiRoom = (await (await api(`/api/rooms/${aiId}`)).json());
+  assert.equal(aiRoom.launchOptions.mode, 'pve');
+  assert.equal(aiRoom.launchOptions.matchModeId, 'skirmish');
+  assert.equal(aiRoom.launchOptions.matchModeVersion, 1);
+  const aiHuman = await connect(aiId);
+  assert.equal(aiHuman.welcome.map.id, 'veyrholds-terraced-vale');
+  assert.deepEqual([aiHuman.welcome.map.width, aiHuman.welcome.map.height], [160, 160]);
+  assert.equal(aiHuman.welcome.state.connected, 2);
+  assert.equal(aiHuman.welcome.state.matchModeId, 'skirmish');
   const studioMenu = await menu(); studioMenu.click('menu-studio');
   await until(() => studioMenu.navigations.length, 'new studio');
   assert.equal(studioMenu.navigations[0].searchParams.get('studio'), '1');
@@ -302,7 +308,7 @@ try {
   tinyMenu.dom.window.close(); tinyResume.dom.window.close();
   console.log(JSON.stringify({ passed: ['authenticated menu without automatic default admission', 'read-only active/stale session inspection',
     'interrupted authentication retains saved Resume without admission', 'strict Resume cannot allocate a new seat', 'departed menu ignores completed real Practice creation', 'fresh PvP lobby and both-seat launch', 'explicit saved-room Resume',
-    'truthful unavailable fresh AI and playable Map Studio rooms', 'one-player practice across all current lab maps and rematch',
+    'normal Play vs AI creates Tiny Skirmish and playable Map Studio rooms', 'one-player practice across all current lab maps and rematch',
     'practice checkpoint/seat recovery and real Worker food deposit', 'normal-menu Skirmish Practice selection and same-mode recovery', 'old default identity/checkpoint retained', 'entry and lazy client import delivery',
     'configured Tiny normal-menu one-seat Practice and strict Resume after restart'],
     modules: imports.length, modeUiModules: modeImports.length, practiceLabMaps: labMaps.map(map => map.id) }));

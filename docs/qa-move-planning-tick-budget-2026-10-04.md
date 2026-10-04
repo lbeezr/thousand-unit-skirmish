@@ -5,6 +5,11 @@ Default production scheduling remains callback-based. This record measures the
 opt-in candidates; it does not select a new default or complete command intake at
 the tick boundary. [Workstream](movement-pathing-workstream.md).
 
+Subsequent [paid whole-tick qualification](qa-paid-battle-tick-budget-2026-10-04.md)
+rejects the four-turn default change because two complete 2,000-unit ticks exceed
+33.333 ms with zero planning turns. Callback default is retained by that completed
+decision; the recommendation below describes the earlier route/planning evidence.
+
 ## Source and policy
 
 The qualified comparison runs commit `319d70bfe259437fa2712be8aaad3e8ee942ad90`,

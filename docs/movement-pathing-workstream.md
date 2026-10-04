@@ -25,7 +25,7 @@ with their respective lanes.
 | --- | --- | --- | --- |
 | 1 · complete | Clock-independent service work merged in [PR #193](https://github.com/lbeezr/thousand-unit-skirmish/pull/193), `331df72`; [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#integration-and-remaining-evidence) pass. | Planning constants, queue-slice helper and diagnostics only. | 209 postmerge checks; nine route pairs preserve hashes; native large routes and recovery. Atomic-search overshoot remains explicit. |
 | 2 · complete | The parked-formation stall reproduces with a one/two-tick older Move. Bounded repulsion merged in [PR #209](https://github.com/lbeezr/thousand-unit-skirmish/pull/209), `64cc391`; independent review and [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#4-october-postmerge-acceptance) pass. | Only `getMoveVector`'s final force combination and focused tests/tools. Combat-owner targeting/stances remain untouched. | 235 postmerge checks; all eight headings on both seats; four large parked cases twice; nine terrain route pairs; native parked controls and active/idle restarts at the exact merge source. |
-| 3 · experiment | The parent allocated the planner functions and one pre-`simulateTick` call. The [1/4/8 comparison](qa-move-planning-tick-budget-2026-10-04.md) implements an opt-in fixed phase with default callback scheduling retained. Report measured cost/response and a recommended budget before any default change. | Movement planner plus the single outer-tick hook; inner combat/Worker/wildlife/mode bodies stay with their owners. The subsequent gameplay-command envelope contract is specified separately. | Repeated commands assigned to the same ticks produce identical candidate traces; Stop/replacement, FIFO/fair service, topology and recovery remain correct. Planner-only integration does not complete the all-command pipeline. |
+| 3 · qualification complete | The [1/4/8 comparison](qa-move-planning-tick-budget-2026-10-04.md) recommended four turns, but [paid whole-tick qualification](qa-paid-battle-tick-budget-2026-10-04.md) failed the 33.333 ms maximum at 2,000 units. Retain callback default; 1/4/8 remain reproduction controls. This decision is complete. | Movement planner plus the single allocated outer-tick hook; inner combat/Worker/wildlife/mode bodies stay with their owners. Any later default proposal first needs evidence addressing the recorded non-planning tail. | Four native paid battle/economy/recovery runs pass functionally. Four's two budget overruns have zero planning turns. Repeated candidate traces, Stop/replacement, FIFO fairness, topology and recovery remain covered. This does not complete the all-command pipeline. |
 | 4 · pending capture | Complete the corrected rendered 2,000-unit workload through paid economy, combat and restart. | Existing browser workload; identified sandboxed WebGL2/runtime and device/network profile. | Actual rendered run, authoritative goals/positions, paid work and recovery. Native/tool-only checks cannot close the render/deployed acceptance gap. |
 
 ## Baseline inspection and resolved findings
@@ -79,8 +79,13 @@ rules, and the subsequent mode/AI/transport/Worker/wildlife command contract.
 Buffering asynchronous results alone would not make their readiness reproducible.
 The [allocated experiment](qa-move-planning-tick-budget-2026-10-04.md) services fixed
 planning work at the tick boundary; one current queue turn per tick substantially
-delays a 996-unit order. Default callback scheduling remains in place while its
-1/4/8 candidates are measured. The proposal retains its original allocation scope.
+delays a 996-unit order. The subsequent
+[paid whole-tick decision](qa-paid-battle-tick-budget-2026-10-04.md) retains callback
+scheduling: four turns do not qualify at 2,000 units. The zero-planning overruns
+identify broadcast/vision and a scenario timing outlier for a future read-only
+profile before another default proposal. These component samples do not yet
+isolate a subroutine or justify changing another owner's inner simulation.
+The proposal retains its original allocation scope.
 
 The full rendered 2,000-unit workload remains owned by movement. Read-only Railway
 state confirms staging successfully deployed `64cc391` (both #193 and #209), but

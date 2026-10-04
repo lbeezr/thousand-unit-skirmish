@@ -103,6 +103,7 @@ run(['--test', 'scripts/crowd-forward-progress.test.mjs'], 'Parked crowd route p
 run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals and team reservation');
 run(['--test', 'scripts/move-planning-slices.test.mjs'], 'Clock-independent route planning, stale results and fair queue turns');
 run(['--test', 'scripts/move-planning-tick.test.mjs', 'scripts/move-planning-tick-error.test.mjs', 'scripts/pathing-arrival.test.mjs'], 'Opt-in planning tick budgets, order invalidation, topology and recovery');
+run(['--test', 'scripts/tick-samples.test.mjs'], 'Opt-in whole-tick diagnostic chronology and values');
 run(['scripts/pathing-native-scenario.mjs', 'dynamic-goal'], 'Native paid obstruction and formation arrival');
 run(['--test', 'scripts/dynamic-wall-pathing.test.mjs'], 'Paid wall and closed gate queued formation destinations');
 run(['scripts/dynamic-wall-native-scenario.mjs'], 'Native both-seat queued paid wall arrival');
@@ -116,6 +117,8 @@ run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife 
 run(['--test', 'scripts/sheep-relocated-client.test.mjs'], 'Relocated Sheep actual-cell rendering, picking and minimap fog');
 run(['--test', 'scripts/wildlife-client-state.test.mjs', 'scripts/wildlife-client-controls.test.mjs', 'scripts/sheep-placement-client.test.mjs'], 'Owned Sheep selection, normal Herd/Stop input and actual food placement');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');
+run(['--test', 'scripts/terraced-vale.test.mjs', 'scripts/terraced-vale-sheep.test.mjs', 'scripts/terraced-vale-sheep-entry.test.mjs'], 'Tiny default Sheep balance, reachability, real entry and exact old-map recovery');
+run(['scripts/terraced-vale-sheep-scenario.mjs'], 'Tiny default both-seat Sheep claim, shared food and recovery');
 run(['--test', 'scripts/millrace-sheep.test.mjs'], 'Historical Millrace Sheep budget and exact legacy map compatibility');
 run(['scripts/millrace-sheep-scenario.mjs'], 'Historical Millrace Sheep visibility, harvest, art and recovery');
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
@@ -398,6 +401,7 @@ const scenarios = [
   ['scripts/room-expiry-scenario.mjs', 'Invite expiry and pending reconnect protection'],
   ['scripts/impaired-connection-scenario.mjs', 'Delayed two-seat transport and interrupted-order recovery'],
   ['scripts/pve-room-launch-scenario.mjs', 'PvE room launch and rematch integration'],
+  ['scripts/tiny-skirmish-pve-entry-scenario.mjs', 'Fresh Tiny Skirmish AI admission, paid economy and cold resume'],
   ['scripts/railway-release-scenario.mjs', 'Railway release integration'],
 ];
 

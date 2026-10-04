@@ -39,6 +39,9 @@ test('reviewed Small supports human Skirmish with its exact authored geometry an
   assert.equal(assertMatchModeCompatibility(skirmish, map).id, 'skirmish');
   assert.equal(assertMatchModeCompatibility(skirmish, map, { practice: true }).id, 'skirmish');
   assert.throws(() => assertMatchModeCompatibility(skirmish, map, { mode: 'pve' }), /does not support PvE/);
+  assert.equal(assertMatchModeCompatibility(skirmish, map).pveSupported, false);
+  assert.equal(matchModeCatalog(map).find(mode => mode.id === 'skirmish').pveSupported, false);
+  assert.deepEqual(matchModeCatalog(map, { mode: 'pve' }).map(mode => mode.id), ['authored']);
   assert.deepEqual(effectiveMapForMatchMode(map, skirmish), map);
   assert.ok(map.triggers.every(trigger => trigger.victory === false));
   assert.equal(Object.hasOwn(map, 'timedVictory'), false);
@@ -76,9 +79,11 @@ test('registry exposes the agreed policy and honest AI support as immutable desc
     victoryPolicy: 'authored', aiStrategyId: 'capture-posts', pveSupported: true, selectable: true,
     defaultMapId: 'woodland-expanse' });
   assert.deepEqual(matchModeDefinition(skirmish), { id: 'skirmish', version: 1, label: 'Skirmish',
-    victoryPolicy: 'recovery-elimination', aiStrategyId: 'base-elimination', pveSupported: false, selectable: true,
+    victoryPolicy: 'recovery-elimination', aiStrategyId: 'base-elimination', pveSupported: true,
+    pveMapIds: [NORMAL_MATCH_MAP_ID], selectable: true,
     defaultMapId: 'veyrholds-terraced-vale' });
-  assert.throws(() => { matchModeDefinition(skirmish).pveSupported = true; }, TypeError);
+  assert.throws(() => { matchModeDefinition(skirmish).pveSupported = false; }, TypeError);
+  assert.throws(() => { matchModeDefinition(skirmish).pveMapIds.push('veyrholds-threefold-basin'); }, TypeError);
 });
 
 test('Bannerfall advertises its fixed human arena without changing implicit authored defaults', () => {
@@ -139,7 +144,7 @@ test('Bannerfall projection fixes the opening and removes economy/objectives wit
   assert.equal(effectiveMapForMatchMode(canonical, bannerfall).bannerfall.waveSeconds, 15);
 });
 
-test('Tiny normal map supports human Skirmish without inventing objective or AI capability', () => {
+test('accepted Tiny supports human and AI Skirmish without changing authored economy or objectives', () => {
   assert.equal(NORMAL_MATCH_MAP_ID, 'veyrholds-terraced-vale');
   assert.deepEqual(NORMAL_HUMAN_MATCH_MODE, skirmish);
   assert.throws(() => { NORMAL_HUMAN_MATCH_MODE.matchModeId = 'authored'; }, TypeError);
@@ -147,11 +152,11 @@ test('Tiny normal map supports human Skirmish without inventing objective or AI 
   assert.deepEqual([map.width, map.height], [160, 160]);
   assert.equal(assertMatchModeCompatibility(skirmish, map).id, 'skirmish');
   assert.equal(assertMatchModeCompatibility(skirmish, map, { mode: 'pvp', practice: true }).id, 'skirmish');
-  assert.throws(() => assertMatchModeCompatibility(skirmish, map, { mode: 'pve' }), /does not support PvE/);
+  assert.equal(assertMatchModeCompatibility(skirmish, map, { mode: 'pve' }).pveSupported, true);
   assert.throws(() => assertMatchModeCompatibility(objective, map), /not compatible/);
   assert.deepEqual(matchModeCatalog(map).map(mode => mode.id), ['authored', 'skirmish']);
   assert.deepEqual(matchModeCatalog(map, { mode: 'pvp', practice: true }).map(mode => mode.id), ['authored', 'skirmish']);
-  assert.deepEqual(matchModeCatalog(map, { mode: 'pve' }).map(mode => mode.id), ['authored']);
+  assert.deepEqual(matchModeCatalog(map, { mode: 'pve' }).map(mode => mode.id), ['authored', 'skirmish']);
   const effective = effectiveMapForMatchMode(map, skirmish);
   assert.deepEqual(effective, map, 'Tiny already has bonus-only posts and no hold or deadline');
   assert.notEqual(effective, map);
@@ -233,9 +238,10 @@ test('map compatibility does not silently change unsupported selections', () => 
   assert.equal(assertMatchModeCompatibility(authored, { id: 'land-only', triggers: [] }).id, 'authored');
 });
 
-test('Skirmish rejects PvE while retaining explicit human Practice', () => {
+test('historical Skirmish maps reject PvE while retaining human Practice and historical authored AI', () => {
   for (const map of maps) {
     assert.throws(() => assertMatchModeCompatibility(skirmish, map, { mode: 'pve' }), /does not support PvE/);
+    assert.equal(matchModeCatalog(map).find(mode => mode.id === 'skirmish').pveSupported, false);
     assert.equal(assertMatchModeCompatibility(skirmish, map, { mode: 'pvp', practice: true }).id, 'skirmish');
     for (const mode of [authored, objective]) {
       assert.equal(assertMatchModeCompatibility(mode, map, { mode: 'pve' }).pveSupported, true);

@@ -5,7 +5,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from '../src/match-modes.mjs';
-import { FRESH_PVE_UNAVAILABLE_REASON } from '../src/room-launch-options.mjs';
+import { FRESH_PVE_UNSUPPORTED_REASON } from '../src/room-launch-options.mjs';
 
 const fixture = await createFortifiedFixture({ supervisor: true, mapPath: null, timeoutMs: 15000 });
 const records = [], origin = `http://127.0.0.1:${fixture.port}`;
@@ -39,7 +39,8 @@ try {
   assert.deepEqual(mode(status.practiceSetup), authored);
   assert.equal(status.practiceSetup.map.id, NORMAL_MATCH_MAP_ID);
   assert.equal(status.practiceSetup.map.sizeTierLabel, 'Tiny');
-  assert.deepEqual(status.ordinarySetup.pve, { available: false, reason: FRESH_PVE_UNAVAILABLE_REASON });
+  assert.deepEqual(status.ordinarySetup.pve, { available: true, mapId: NORMAL_MATCH_MAP_ID,
+    supportedMapIds: [NORMAL_MATCH_MAP_ID], ...NORMAL_HUMAN_MATCH_MODE });
   const root = await fixture.connect(0);
   assert.equal(root.welcome.map.id, NORMAL_MATCH_MAP_ID);
   assert.deepEqual(mode(root.welcome), NORMAL_HUMAN_MATCH_MODE);
@@ -107,10 +108,10 @@ try {
   await practice.state(state => state.scenarioClockStarted, 'one-human Practice clock starts');
   records.push({ name: 'One-human Authored Practice opens Tiny and preserves explicit Shore Fishing and Stone Defense internal Labs' });
 
-  const unavailable = await fetch(`${origin}/api/rooms`, { method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ mode: 'pve', mapSeed: 0, policySeed: 1 }) });
-  assert.equal(unavailable.status, 400); assert.equal((await unavailable.json()).error, FRESH_PVE_UNAVAILABLE_REASON);
-  records.push({ name: 'Fresh ordinary AI creation is honestly unavailable while its160-map acceptance is pending' });
+  const unsupported = await fetch(`${origin}/api/rooms`, { method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ mode: 'pve', mapSeed: 0, policySeed: 1, ...authored }) });
+  assert.equal(unsupported.status, 400); assert.equal((await unsupported.json()).error, FRESH_PVE_UNSUPPORTED_REASON);
+  records.push({ name: 'Fresh ordinary AI supports only Tiny Skirmish; explicitly requested historical Authored AI remains resume-only' });
 
   await fixture.stop();
   const oldId = 'O'.repeat(32), aiId = 'A'.repeat(32);
@@ -146,6 +147,6 @@ try {
   console.log(JSON.stringify({ status: 'passed', records,
     serverSha256: createHash('sha256').update(await readFile(new URL('../server.mjs', import.meta.url))).digest('hex'),
     supervisorSha256: createHash('sha256').update(await readFile(new URL('../room-supervisor.mjs', import.meta.url))).digest('hex'),
-    limits: ['Native room/protocol acceptance; browser rendering, identified staging deployment and AI capability acceptance remain open.',
+    limits: ['Native room/protocol acceptance; browser rendering and identified staging deployment remain open.',
       'Explicit RTS_MAP roots and one-human internal Labs are separate from ordinary fresh REST entry; canonical fixture validation stays16–256.'] }));
 } finally { await fixture.dispose(); }

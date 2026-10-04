@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "packId": "cast-human-sprite",
-  "packVersion": "0.19.0",
+  "packVersion": "0.20.0",
   "maturity": "runtime-candidate",
   "provenance": {
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
     "source": "Vaelora Human roster role and action sheets",
     "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging",
-    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four-key hand-net fishing pilot for the actual south-east heading, approved for public/default integration. Original four pose pixels preserved. Seven fishing headings remain unproduced; root/loop polish remains tracked in docs/worker-fishing-animation.md. East walk reuses eight retained current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. South walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North-West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage."
+    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four-key hand-net fishing pilot for the actual south-east heading, approved for public/default integration. Original four pose pixels preserved. Seven fishing headings remain unproduced; root/loop polish remains tracked in docs/worker-fishing-animation.md. East walk reuses eight retained current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. South walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North-West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. Stone SE walk reuses four dedicated pick-windup/strike/recovery keys; default selector adoption owned by animation owner; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage."
   },
   "files": [
     {
@@ -19,7 +19,7 @@
         "width": 2048,
         "height": 4096
       },
-      "sha256": "8c5a66e3405c70254acd7395828e4231960d53e39b5e32588445b9964f3361b0"
+      "sha256": "dd135521c4ed6802dc78635826af4ec8664c64fa601f8da1a47a96e1d0bab038"
     },
     {
       "id": "cast-human-atlas-runtime",
@@ -30,7 +30,7 @@
         "width": 2048,
         "height": 4096
       },
-      "sha256": "8c5a66e3405c70254acd7395828e4231960d53e39b5e32588445b9964f3361b0"
+      "sha256": "dd135521c4ed6802dc78635826af4ec8664c64fa601f8da1a47a96e1d0bab038"
     },
     {
       "id": "cast-human-team-mask",
@@ -5455,6 +5455,178 @@
             }
           ],
           "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-stone-south-east-0",
+          "groundPivotPx": {
+            "x": 160,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 80,
+            "y": 11,
+            "width": 163,
+            "height": 231
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 0,
+              "y": 3840,
+              "width": 320,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 0,
+                "y": 3840,
+                "width": 320,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-stone-south-east-1",
+          "groundPivotPx": {
+            "x": 160,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 65,
+            "y": 6,
+            "width": 137,
+            "height": 238
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 320,
+              "y": 3840,
+              "width": 320,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 320,
+                "y": 3840,
+                "width": 320,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-stone-south-east-2",
+          "groundPivotPx": {
+            "x": 160,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 57,
+            "y": 45,
+            "width": 223,
+            "height": 196
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 640,
+              "y": 3840,
+              "width": 320,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 640,
+                "y": 3840,
+                "width": 320,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-stone-south-east-3",
+          "groundPivotPx": {
+            "x": 160,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 55,
+            "y": 10,
+            "width": 160,
+            "height": 232
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 960,
+              "y": 3840,
+              "width": 320,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 960,
+                "y": 3840,
+                "width": 320,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
         }
       ],
       "clips": [
@@ -6431,6 +6603,29 @@
             {
               "frameId": "gather-fish-south-east-3",
               "durationMs": 300
+            }
+          ]
+        },
+        {
+          "stateId": "gather-stone",
+          "directionId": "south-east",
+          "loop": true,
+          "sequence": [
+            {
+              "frameId": "gather-stone-south-east-0",
+              "durationMs": 210
+            },
+            {
+              "frameId": "gather-stone-south-east-1",
+              "durationMs": 210
+            },
+            {
+              "frameId": "gather-stone-south-east-2",
+              "durationMs": 210
+            },
+            {
+              "frameId": "gather-stone-south-east-3",
+              "durationMs": 210
             }
           ]
         }

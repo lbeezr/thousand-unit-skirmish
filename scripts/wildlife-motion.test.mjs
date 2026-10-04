@@ -89,11 +89,12 @@ test('actual checkpoint capture copies private motion before deferred serializat
     sessions: new Map(), resourceNodeStates: new Map([[node.id, node]]), units: [], buildings: [],
     teamUpgrades: [{}, {}], teamResearch: [null, null], workerProduction: [{}, {}], homeTownCenters: [{}, {}],
     triggerStates: new Map(), scenarioEventStates: new Map(), victoryHoldState: { activeTeams: [], progressSeconds: [], triggerIds: [] },
+    // Visibility is already supplied; this isolated capture proof owns motion copying.
+    ensureVisionMasks: () => { visionChecks++; },
     visibleCellsByTeam: [[], []], exploredCellsByTeam: [[], []], forestStockEntries: () => [], mapDefinition: map,
     authoredMapDefinition: map, matchMode: { matchModeId: 'authored', matchModeVersion: 1 },
     matchMapHash: () => 'map', matchEconomyProfileId: () => 'profile', economyRulesetRevision: () => 'rules',
-    privateProductionView: () => ({}), pregame: null, bannerfallState: null,
-    ensureVisionMasks: () => { visionChecks++; } };
+    privateProductionView: () => ({}), pregame: null, bannerfallState: null };
   Object.assign(defaults, { Buffer, unitGenerationCounters: [], teamFood: [0, 0], teamWood: [0, 0], teamStone: [0, 0],
     DEFAULT_FACTION_ID: 'default', matchId: 'room', tickNumber: 10, currentArmySize: 0, nextBuildingId: 1,
     forestEpoch: 0, matchElapsedSeconds: 0, scenarioClockStarted: true, matchWinner: -1,

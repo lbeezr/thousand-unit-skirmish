@@ -11,6 +11,7 @@ import { cancelWildlifeHerd, startWildlifeHerd, stepWildlifeHerd, validWildlifeH
 import { migrateWildlifeMotionCheckpoint, sameWildlifeCell, wildlifeCell, wildlifeStepUnoccupied, stepWildlifeMotion, validWildlifeMotion } from './src/wildlife-motion.mjs';
 import { migrateWildlifeHeadingCheckpoint } from './src/wildlife-heading.mjs';
 import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
+import { migrateTerracedValeSheepCheckpoint } from './src/terraced-vale-sheep.mjs';
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
 import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
@@ -1081,7 +1082,7 @@ function recordTickStartLag(lagMs) {
   tickStartLagCount = Math.min(TICK_SAMPLE_WINDOW, tickStartLagCount + 1);
 }
 
-function tickTimingPayload() {
+function tickTimingPayload(includeSamples = false) {
   const count = tickDurationCount;
   const base = (tickDurationCursor - count + TICK_SAMPLE_WINDOW) % TICK_SAMPLE_WINDOW;
   let slowestTick = null;
@@ -1120,7 +1121,10 @@ function tickTimingPayload() {
       lastOverloadSkippedSlots,
       lastOverloadTick,
     },
-    ...(tickDiagnosticSamples ? { slowestTick, scenarioTiming: (() => {
+    ...(tickDiagnosticSamples ? {
+      ...(includeSamples ? { samples: Array.from({ length: count }, (_, index) =>
+        tickDiagnosticSamples[(base + index) % TICK_SAMPLE_WINDOW]).filter(Boolean) } : {}),
+      slowestTick, scenarioTiming: (() => {
       const values = Array.from({ length: count }, (_, index) =>
         tickDiagnosticSamples[(base + index) % TICK_SAMPLE_WINDOW])
         .filter(sample => sample?.scenarioEvaluated).map(sample => sample.scenarioMs).sort((a, b) => a - b);
@@ -3324,7 +3328,8 @@ function restoreMatchCheckpoint(snapshot) {
   if (shippedMapIds.has(definition.id)) {
     const shippedDefinition = mapCatalog.get(definition.id);
     if (matchMapHash(shippedDefinition) !== snapshot.mapHash
-      && migrateMillraceSheepCheckpoint(snapshot, shippedDefinition, matchMapHash)) {
+      && (migrateMillraceSheepCheckpoint(snapshot, shippedDefinition, matchMapHash)
+        || migrateTerracedValeSheepCheckpoint(snapshot, shippedDefinition, matchMapHash))) {
       ({ definition, state, explored, savedMatchMode } = validateMatchCheckpoint(snapshot));
     }
     assertSnapshot(matchMapHash(shippedDefinition) === snapshot.mapHash, 'shipped map changed since checkpoint');
@@ -8442,7 +8447,7 @@ const server = createServer(async (request, response) => {
         lastBytes: lastCheckpointBytes, lastWriteMs: lastCheckpointWriteMs,
         lastCaptureMs: lastCheckpointCaptureMs, lastSerializeMs: lastCheckpointSerializeMs,
       },
-      tickTiming: tickTimingPayload(),
+      tickTiming: tickTimingPayload(url.searchParams.get('tickSamples') === '1'),
       separationWork: separationWorkPayload(),
       movePlanning: movePlanningSamples,
       transport: {

@@ -1,0 +1,129 @@
+{
+  "sourceRevision": "dc63ad095b2087020b023d910bd9856c03ff8ee7",
+  "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+  "referenceCanvasPx": {
+    "width": 1024,
+    "height": 1536
+  },
+  "slots": {
+    "columns": 4,
+    "rows": 8,
+    "width": 256,
+    "height": 192
+  },
+  "referenceSha256": "fef516fd18c3fb5ef9e4563bc7f612c6f5fa9e2c39bb4376bd21d3355133ec7c",
+  "frames": [
+    {
+      "worldDirection": "north",
+      "frameId": "idle-north-0",
+      "sourceRectPx": {
+        "x": 938,
+        "y": 284,
+        "width": 154,
+        "height": 232
+      },
+      "sourceGroundPivotPx": {
+        "x": 77,
+        "y": 232
+      }
+    },
+    {
+      "worldDirection": "north-east",
+      "frameId": "idle-north-east-0",
+      "sourceRectPx": {
+        "x": 798,
+        "y": 284,
+        "width": 132,
+        "height": 232
+      },
+      "sourceGroundPivotPx": {
+        "x": 66,
+        "y": 232
+      }
+    },
+    {
+      "worldDirection": "east",
+      "frameId": "idle-east-0",
+      "sourceRectPx": {
+        "x": 534,
+        "y": 284,
+        "width": 126,
+        "height": 232
+      },
+      "sourceGroundPivotPx": {
+        "x": 63,
+        "y": 232
+      }
+    },
+    {
+      "worldDirection": "south-east",
+      "frameId": "idle-south-east-0",
+      "sourceRectPx": {
+        "x": 668,
+        "y": 284,
+        "width": 122,
+        "height": 232
+      },
+      "sourceGroundPivotPx": {
+        "x": 61,
+        "y": 232
+      }
+    },
+    {
+      "worldDirection": "south",
+      "frameId": "idle-south-0",
+      "sourceRectPx": {
+        "x": 1654,
+        "y": 284,
+        "width": 213,
+        "height": 232
+      },
+      "sourceGroundPivotPx": {
+        "x": 107,
+        "y": 232
+      }
+    },
+    {
+      "worldDirection": "south-west",
+      "frameId": "idle-south-west-0",
+      "sourceRectPx": {
+        "x": 1439,
+        "y": 284,
+        "width": 207,
+        "height": 232
+      },
+      "sourceGroundPivotPx": {
+        "x": 104,
+        "y": 232
+      }
+    },
+    {
+      "worldDirection": "west",
+      "frameId": "idle-west-0",
+      "sourceRectPx": {
+        "x": 1254,
+        "y": 284,
+        "width": 177,
+        "height": 232
+      },
+      "sourceGroundPivotPx": {
+        "x": 89,
+        "y": 232
+      }
+    },
+    {
+      "worldDirection": "north-west",
+      "frameId": "idle-north-west-0",
+      "sourceRectPx": {
+        "x": 1100,
+        "y": 284,
+        "width": 146,
+        "height": 232
+      },
+      "sourceGroundPivotPx": {
+        "x": 73,
+        "y": 232
+      }
+    }
+  ]
+}

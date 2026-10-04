@@ -1,0 +1,16 @@
+{
+  "toolOutput": "/workspace/generated_images/exec-216f41ae-b101-4ee1-97a4-2f15e5fe10f2.png",
+  "iteration": 1,
+  "status": "partial SE-row admission; rejected full-eight-heading candidate",
+  "acceptedSourceFrameIndexes": [
+    12,
+    13,
+    14,
+    15
+  ],
+  "rejected": "Other rows do not consistently retain their requested strike bearing. Several turn into the same right-facing stroke; their different ready poses do not establish full action-direction coverage. No relabeling or false8heading claim.",
+  "acceptedReview": "SE row preserves side/right bearing through ready, windup, downward pick strike and recovery. Current Worker gear/identity retained; mining pick is visibly different from axe. Four complete source-edge-clear articulated poses.",
+  "registration": "One shared232/183 scale, source roots[156,412,668,924], baseline779, localroot[160,244]; no per-frame scale/centering.",
+  "runtime": "gather-stone|south-east four210ms looping keys. Current default selector intentionally idle; animation owner01a103d4/PR216 must adopt dedicated Stone clips. Art task does not edit economy/state/clock helpers.",
+  "publication": "User-authorized bounded builtin image tool from eight public default idle seeds; no private pixels or paid external provider/rigging job. Full rejected raw and all32 extracted poses preserved."
+}
