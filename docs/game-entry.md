@@ -11,15 +11,26 @@ Worker/Barracks vignette beside the choices. It uses the working title and
 existing shipped images, with no additional controls or game-state meaning.
 Narrow and short layouts reduce the art to keep entry choices nearby.
 
-- **New Game** creates a fresh seeded Play vs AI room on Millrace or Rootways.
-  Its map and authored army remain fixed for that match.
+- **New Game** creates the server-supported fresh Play vs AI room: currently
+  Skirmish on Tiny Terraced Vale, 160 × 160. The menu reads
+  `ordinarySetup.pve.available` and labels the admitted map/rules; unavailable
+  service capabilities disable this choice with the server's explanation while
+  human entry and saved Resume remain usable. No preview URL is required.
+  Its map and starting army remain fixed for that match. Existing saved authored
+  AI matches on Millrace or Rootways still resume with their original identities.
 - **Practice** creates a fresh room for one-player testing. Open Match Controls
   and choose any **Battlefield**, including lab maps. Movement, economy, capture,
   timed events and rematch run with one connected player. There is no AI commander;
   enemy units retain their normal combat behavior. Map and army controls stay
   available to Azure. A friend may join Ember, but a second seat is not required.
   The optional **Practice rules** disclosure chooses a supported mode before
-  creation. Authored Rules is the default with lab access; explicit Objective
+  creation. Registry presets show their actual starting map: Bannerfall Arena
+  for Bannerfall and Woodland Expanse for Objective Control. Bannerfall fixes
+  its opening at 16 total units; its army-size controls are disabled in the
+  lobby and running Practice. Its brief describes free waves every 15 seconds,
+  six enemy troop kills unlocking Rider reinforcements, and destruction of the
+  opposing original Town Center. Bannerfall has human and Practice support;
+  its AI is unavailable. Authored Rules is the default with lab access; explicit Objective
   Control or Skirmish starts on the server's configured compatible map. The
   button describes the chosen mode's compatible-map limit before starting.
   A temporary status failure keeps that choice. If the server withdraws it,
@@ -86,7 +97,9 @@ Match Controls displays the active mode and win condition during play. This is
 read-only: the runtime has no running-match mode-change command. Ordinary
 Practice starts with authored rules and retains its lab map access; Practice
 rules can instead choose an explicit mode before creation. New Game
-retains its supported AI setup; this UI does not offer Skirmish against AI.
+uses the server's admitted Skirmish AI setup on Terraced Vale. Its in-match
+**New Game** action starts another supported fresh room; a late room lookup
+cannot enable duplicate creation while that request is pending.
 When the server projects map tiers, choices display its label and exact dimensions;
 a restored current legacy map remains visible but cannot be selected afresh. The
 160-minimum catalog/default migration belongs to the runtime/map slices and is

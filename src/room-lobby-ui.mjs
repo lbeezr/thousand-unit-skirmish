@@ -1,6 +1,6 @@
 import { createRoomLobbyChat } from './room-lobby-chat-ui.mjs';
 import { roomEntryUrl } from './game-entry-session.mjs';
-import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel } from './match-mode-controls.mjs';
+import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel, fixedMatchArmySize } from './match-mode-controls.mjs';
 
 const TEAMS = ['Azure', 'Ember'];
 const SIZES = [250, 500, 1000, 2000];
@@ -111,8 +111,9 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
     }
     map.value = lobby.mapId;
     size.replaceChildren();
+    const fixedSize = fixedMatchArmySize(lobby);
     // Authored map openings can be smaller than the manual army-size presets.
-    for (const count of [...new Set([lobby.armySize, ...SIZES])].sort((a, b) => a - b)) {
+    for (const count of (fixedSize ? [fixedSize] : [...new Set([lobby.armySize, ...SIZES])].sort((a, b) => a - b))) {
       const option = element('option', String(count), size);
       option.value = String(count);
     }
@@ -121,6 +122,8 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
       online, editable: host, pending });
     const waiting = pending || modes.pending;
     map.disabled = size.disabled = !online || waiting || !host || !modes.supported;
+    size.disabled ||= Boolean(fixedSize);
+    size.title = fixedSize ? `This mode fixes the opening army at ${fixedSize} total units.` : '';
     ready.disabled = !online || waiting || !own || !modes.supported;
     ready.textContent = own?.ready ? 'Not ready' : 'Ready';
     launch.hidden = !host;
@@ -163,7 +166,9 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
     if (configuration) submit({ type: 'configureLobby', ...configuration });
     else render();
   });
-  size.addEventListener('change', () => submit({ type: 'configureLobby', armySize: Number(size.value) }));
+  size.addEventListener('change', () => {
+    if (!size.disabled) submit({ type: 'configureLobby', armySize: Number(size.value) });
+  });
   ready.addEventListener('click', () => {
     const own = lobby?.seats.find(seat => seat.id === player?.id && seat.team === player?.team);
     submit({ type: 'setReady', ready: !own?.ready });

@@ -2,6 +2,53 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
+import { mountPveEntry } from '../src/pve-entry.mjs';
+
+const json = (value, status = 200) => new Response(JSON.stringify(value), { status });
+const turn = () => new Promise(resolve => setImmediate(resolve));
+
+test('fresh AI controls use published capability without changing an existing legacy AI run', async () => {
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  for (const mode of ['human', 'legacy-ai']) for (const available of [false, true]) {
+    const dom = new JSDOM(html, { url: `https://game.test/?room=${'R'.repeat(32)}${mode === 'legacy-ai' ? '&mode=pve&mapSeed=1&policySeed=2' : ''}` });
+    const requests = [], navigations = [], pending = new Map();
+    const capability = { available, reason: 'Fresh AI maintenance.', mapId: 'veyrholds-terraced-vale',
+      matchModeId: 'skirmish', matchModeVersion: 1 };
+    mountPveEntry({ win: dom.window, navigate: url => navigations.push(url), fetchImpl: (url, options) => {
+      requests.push({ url, options }); return new Promise(resolve => pending.set(url, resolve));
+    } });
+    pending.get('/api/rooms/status')(json({ enabled: true, ordinarySetup: { pve: capability } })); await turn();
+    const start = dom.window.document.querySelector('#pve-start'), next = dom.window.document.querySelector('#pve-new-map');
+    const button = mode === 'human' ? start : next;
+    assert.equal(button.hidden, false); assert.equal(button.disabled, !available);
+    assert.equal(next.textContent, 'NEW GAME');
+    if (!available) {
+      assert.match(button.title, /maintenance/); button.dispatchEvent(new dom.window.Event('click')); await turn();
+      assert.equal(requests.filter(row => row.options?.method === 'POST').length, 0);
+    } else {
+      button.click(); button.click(); assert.equal(requests.filter(row => row.options?.method === 'POST').length, 1);
+      assert.deepEqual(JSON.parse(requests.at(-1).options.body), { mode: 'pve' });
+    }
+    // A late room response must preserve both the actual run and pending creation.
+    pending.get(`/api/rooms/${'R'.repeat(32)}`)(json(mode === 'legacy-ai'
+      ? { launchOptions: { mode: 'pve', mapSeed: 1, policySeed: 2 }, mapId: 'bellweather-millrace' }
+      : { launchOptions: { mode: 'pvp' } })); await turn();
+    assert.equal(button.disabled, true);
+    assert.equal(dom.window.document.querySelector('.pve-run-stamp').hidden, mode !== 'legacy-ai');
+    if (mode === 'legacy-ai') assert.match(dom.window.document.querySelector('.pve-run-map-seed').textContent, /MAP SEED 1$/);
+    if (available) {
+      button.dispatchEvent(new dom.window.Event('click')); start.dispatchEvent(new dom.window.Event('click'));
+      assert.equal(requests.filter(row => row.options?.method === 'POST').length, 1);
+      pending.get('/api/rooms')(json({ error: 'Capacity reached.' }, 503)); await turn();
+      assert.equal(button.disabled, false); assert.match(dom.window.document.querySelector('#pve-entry-status').textContent, /CAPACITY/);
+      button.click(); assert.equal(requests.filter(row => row.options?.method === 'POST').length, 2);
+      pending.get('/api/rooms')(json({ roomId: 'N'.repeat(32), launchOptions: { mode: 'pve', mapSeed: 12, policySeed: 34 } }));
+      await turn(); assert.equal(navigations.length, 1);
+      assert.equal(new URL(navigations[0]).searchParams.get('room'), 'N'.repeat(32));
+    }
+    dom.window.close();
+  }
+});
 
 // Model reflected attributes like the browser: assigning the same value still
 // queues a mutation. Drain in bounded batches so a regression fails, not hangs.
@@ -82,7 +129,7 @@ test('PvE entry settles after room status and host UI updates', async () => {
     };
     globalThis.MutationObserver = dom.MutationObserver;
     globalThis.fetch = (url) => new Promise((resolve) => pending.set(url, resolve));
-    await import('../src/pve-entry.mjs');
+    mountPveEntry();
     assert.ok(dom.buttons.every((button) => button.disabled));
     assert.ok(dom.create.hidden && dom.join.hidden);
 

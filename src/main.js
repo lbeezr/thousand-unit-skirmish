@@ -24,12 +24,12 @@ import { SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
 import { validateMapAudioReference } from './audio-event-profile.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from './hud-layout.mjs';
-import { mapVictoryRule, objectiveSummary, rememberNotice } from './objective-summary.mjs';
+import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateSelectionPortrait } from './selection-portrait.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
-import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel } from './match-mode-controls.mjs';
+import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel, fixedMatchArmySize } from './match-mode-controls.mjs';
 import { roomPresence } from './room-presence.mjs';
 import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
@@ -121,6 +121,16 @@ let latestLobby = null;
 let activeMatchMode = {};
 const roomLobby = createRoomLobby({ root: document.querySelector('#room-lobby'), send: sendCommand, copyInvite: copyRoomInvite });
 const matchModeView = createMatchModeControls({ root: document.querySelector('#match-mode-view'), id: 'active-match-mode', onChange: () => false });
+
+function updateMatchArmySizeControls() {
+  const fixedSize = fixedMatchArmySize(activeMatchMode);
+  for (const button of document.querySelectorAll('.size-options button')) {
+    button.disabled = !isHost || Boolean(fixedSize);
+    button.title = fixedSize ? `This mode fixes the opening army at ${fixedSize} total units.`
+      : isHost ? 'Change match size for both players' : 'Only the room host can change match size';
+  }
+  updateLobbyHostControls();
+}
 
 function applyLobby(lobby) {
   latestLobby = lobby || null;
@@ -2599,7 +2609,7 @@ function buildMap(definition) {
   if (title) title.textContent = definition.name || definition.id.toUpperCase();
   if (summary) summary.textContent = `${mapVictoryRule(definition).label} · Open objectives for the win rule`;
   document.querySelector('#scenario-brief-name').textContent = definition.name || definition.id.toUpperCase();
-  document.querySelector('#scenario-brief-summary').textContent = definition.summary || 'Control the marked objectives and protect your army.';
+  document.querySelector('#scenario-brief-summary').textContent = mapScenarioSummary(definition);
   const deadline = document.querySelector('#scenario-brief-deadline');
   const decisiveZone = definition.triggers?.find((trigger) => trigger.id === definition.timedVictory?.objectiveId);
   deadline.hidden = !definition.timedVictory;
@@ -4538,6 +4548,7 @@ function applyState(state, initial = false) {
   const modeChanged = JSON.stringify(identity) !== JSON.stringify(activeMatchMode);
   activeMatchMode = identity;
   matchModeView.update({ identity, map: mapDefinition, canonicalMap: null, online: true, editable: false });
+  if (modeChanged) updateMatchArmySizeControls();
   if (modeChanged) setMapCatalog(knownMaps, mapDefinition?.id);
   if (practiceStatus) practiceStatus.hidden = state.practice !== true;
   const matchRestarted = (matchWinner >= 0 && state.winner === -1)
@@ -5196,10 +5207,7 @@ function setPlayer(player) {
   syncMatchResultActions();
   ui.playerTeam.textContent = localTeam === null ? 'SPECTATOR' : TEAM_NAMES[localTeam].toUpperCase();
   ui.playerTeam.dataset.team = localTeam === 0 ? 'azure' : localTeam === 1 ? 'ember' : 'spectator';
-  for (const button of document.querySelectorAll('.size-options button')) {
-    button.disabled = !isHost;
-    button.title = isHost ? 'Change match size for both players' : 'Only the room host can change match size';
-  }
+  updateMatchArmySizeControls();
   document.querySelector('#reset-army').disabled = !isHost;
   document.querySelector('#reset-army').title = isHost ? 'Reset all units for both players' : 'Only the room host can reset the match';
   ui.mapSelect.disabled = !isHost;
@@ -9434,7 +9442,9 @@ document.addEventListener('focusin', (event) => {
 });
 
 for (const button of document.querySelectorAll('.size-options button')) {
-  button.addEventListener('click', () => sendCommand({ type: 'selectArmySize', count: Number(button.dataset.count) }));
+  button.addEventListener('click', () => {
+    if (!button.disabled && !fixedMatchArmySize(activeMatchMode)) sendCommand({ type: 'selectArmySize', count: Number(button.dataset.count) });
+  });
 }
 initializeRoomControls();
 ui.roomCreate.addEventListener('click', createPrivateRoom);

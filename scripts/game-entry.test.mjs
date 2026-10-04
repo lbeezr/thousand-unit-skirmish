@@ -4,11 +4,43 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { bootGameEntry } from '../src/game-entry.mjs';
 import { isGameEntry, savedRoomSession, LAST_ROOM_STORAGE_KEY, SESSION_STORAGE_PREFIX } from '../src/game-entry-session.mjs';
+import { practiceEntryCatalog } from '../src/practice-entry-catalog.mjs';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const room = 'R'.repeat(32), token = 'T'.repeat(43);
 const json = (value, status = 200) => new Response(JSON.stringify(value), { status, headers: { 'content-type': 'application/json' } });
 const turn = () => new Promise(resolve => setImmediate(resolve));
+
+test('New Game follows the published AI capability through refresh while Resume and human entry remain available', async () => {
+  const tiny = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  let capability = { available: false, reason: 'AI is unavailable during maintenance.' };
+  const f = await fixture({ stored: { [LAST_ROOM_STORAGE_KEY]: room, [`${SESSION_STORAGE_PREFIX}${room}`]: token },
+    handler: (url, options) => json(url === '/api/rooms/status' ? { enabled: true,
+      ordinarySetup: { pve: capability }, practiceSetup: practiceEntryCatalog(tiny) }
+      : options?.method === 'POST' ? { roomId: room, launchOptions: { mode: 'pve', mapSeed: 12, policySeed: 34 } }
+        : { valid: true }) });
+  const button = f.node('menu-new-game');
+  assert.equal(button.hidden, false); assert.equal(button.disabled, true);
+  assert.match(button.querySelector('span').textContent, /maintenance/);
+  assert.equal(f.win.document.activeElement, f.node('menu-practice'));
+  assert.equal(f.node('menu-resume').disabled, false); assert.equal(f.node('menu-create-room').disabled, false);
+  button.dispatchEvent(new f.win.Event('click')); await turn();
+  assert.equal(f.requests.filter(row => row.options?.method === 'POST').length, 0);
+  capability = { available: true, mapId: tiny.id, matchModeId: 'skirmish', matchModeVersion: 1 };
+  await f.controller.refresh();
+  assert.equal(button.disabled, false);
+  assert.match(button.querySelector('span').textContent, /Play vs AI · Skirmish · Tiny · 160 × 160 · Veyrhold/);
+  assert.doesNotMatch(button.textContent, /Millrace|Rootways|Small|Bannerfall/);
+  button.click(); button.click(); await turn();
+  assert.equal(f.requests.filter(row => row.options?.method === 'POST').length, 1);
+  assert.deepEqual(JSON.parse(f.requests.at(-1).options.body), { mode: 'pve' });
+  assert.equal(f.navigations.length, 1);
+  capability = { available: false, reason: 'AI temporarily offline.' }; await f.controller.refresh();
+  assert.equal(button.disabled, true); assert.equal(f.node('menu-resume').disabled, false);
+  f.node('menu-resume').click(); await turn();
+  assert.equal(new URL(f.navigations.at(-1)).searchParams.get('resume'), '1');
+  f.win.close();
+});
 async function fixture({ url = 'http://game.test/', stored = {}, handler } = {}) {
   const dom = new JSDOM(html, { url }), win = dom.window;
   for (const [key, value] of Object.entries(stored)) win.sessionStorage.setItem(key, value);
@@ -21,7 +53,7 @@ async function fixture({ url = 'http://game.test/', stored = {}, handler } = {})
   const controller = await bootGameEntry({ win, loadGame: async () => loaded.push(true), navigate: value => navigations.push(value),
     fetchImpl: async (path, options) => {
       requests.push({ path, options });
-      return handler ? handler(path, options) : json({ enabled: true });
+      return handler ? handler(path, options) : json({ enabled: true, ordinarySetup: { pve: { available: true } } });
     } });
   return { win, controller, requests, navigations, loaded, node: id => win.document.getElementById(id) };
 }
@@ -48,7 +80,7 @@ test('a fresh profile never loads the renderer or joins the shared battlefield',
 
 test('stale profiles retain saved bytes and hide unconfirmed Resume without joining', async () => {
   const f = await fixture({ stored: { [`${SESSION_STORAGE_PREFIX}default`]: token },
-    handler: path => json(path === '/api/rooms/status' ? { enabled: true } : { valid: false }) });
+    handler: path => json(path === '/api/rooms/status' ? { enabled: true, ordinarySetup: { pve: { available: true } } } : { valid: false }) });
   assert.deepEqual(f.loaded, []); assert.deepEqual(f.navigations, []);
   assert.equal(f.node('menu-resume').hidden, true);
   assert.equal(f.win.sessionStorage.getItem(`${SESSION_STORAGE_PREFIX}default`), token);
@@ -61,7 +93,7 @@ for (const target of ['default', room]) {
   test(`Resume ${target === 'default' ? 'legacy default' : 'invite room'} is explicit and revalidated before navigation`, async () => {
     let valid = true;
     const f = await fixture({ stored: { [LAST_ROOM_STORAGE_KEY]: target, [`${SESSION_STORAGE_PREFIX}${target}`]: token },
-      handler: path => json(path === '/api/rooms/status' ? { enabled: true } : { valid }) });
+      handler: path => json(path === '/api/rooms/status' ? { enabled: true, ordinarySetup: { pve: { available: true } } } : { valid }) });
     assert.equal(f.node('menu-resume').hidden, false); assert.deepEqual(f.navigations, []);
     valid = false; f.node('menu-resume').click(); await turn();
     assert.deepEqual(f.navigations, []); assert.match(f.node('game-menu-status').textContent, /expired/);
@@ -81,7 +113,7 @@ for (const [id, expected, studio] of [
   test(`${id} creates one clean room and strips prior entry parameters`, async () => {
     let release;
     const f = await fixture({ url: 'http://game.test/?utm_source=old&mode=pve&mapSeed=7', handler: (path, options) =>
-      options?.method === 'POST' ? new Promise(resolve => { release = resolve; }) : json({ enabled: true }) });
+      options?.method === 'POST' ? new Promise(resolve => { release = resolve; }) : json({ enabled: true, ordinarySetup: { pve: { available: true } } }) });
     f.node(id).click(); f.node(id).click(); f.node('menu-create-room').click();
     assert.equal(f.requests.filter(row => row.options?.method === 'POST').length, 1);
     assert.deepEqual(JSON.parse(f.requests.at(-1).options.body), expected);
@@ -97,7 +129,7 @@ for (const [id, expected, studio] of [
 
 test('join checks same-server links, expiry and pending duplicate submits', async () => {
   let release;
-  const f = await fixture({ handler: path => path === '/api/rooms/status' ? json({ enabled: true }) : new Promise(resolve => { release = resolve; }) });
+  const f = await fixture({ handler: path => path === '/api/rooms/status' ? json({ enabled: true, ordinarySetup: { pve: { available: true } } }) : new Promise(resolve => { release = resolve; }) });
   f.node('menu-join').click(); const dialog = f.node('menu-join-dialog'), form = dialog.querySelector('form'), input = form.querySelector('input');
   const submit = () => form.dispatchEvent(new f.win.Event('submit', { cancelable: true }));
   input.value = `http://other.test/?room=${room}`; submit(); await turn();
@@ -111,7 +143,7 @@ test('join checks same-server links, expiry and pending duplicate submits', asyn
 
 test('cancel and browser-back restoration invalidate unfinished navigation', async () => {
   let release;
-  const f = await fixture({ handler: (path, options) => path === '/api/rooms/status' ? json({ enabled: true })
+  const f = await fixture({ handler: (path, options) => path === '/api/rooms/status' ? json({ enabled: true, ordinarySetup: { pve: { available: true } } })
     : new Promise(resolve => { release = resolve; }) });
   f.node('menu-join').click(); const dialog = f.node('menu-join-dialog');
   dialog.querySelector('input').value = room;
@@ -129,7 +161,7 @@ for (const action of ['menu-new-game', 'menu-practice', 'menu-resume', 'menu-joi
     let waiting = false, finish;
     const f = await fixture({ stored: action === 'menu-resume'
       ? { [LAST_ROOM_STORAGE_KEY]: room, [`${SESSION_STORAGE_PREFIX}${room}`]: token } : {},
-      handler: path => path === '/api/rooms/status' ? json({ enabled: true })
+      handler: path => path === '/api/rooms/status' ? json({ enabled: true, ordinarySetup: { pve: { available: true } } })
         : waiting ? new Promise(resolve => { finish = resolve; }) : json({ valid: true }) });
     waiting = true;
     f.node(action).click();
@@ -165,7 +197,7 @@ for (const lookup of ['availability', 'saved session']) test(`leaving ignores a 
   const f = await fixture({ stored: { [LAST_ROOM_STORAGE_KEY]: room, [`${SESSION_STORAGE_PREFIX}${room}`]: token },
     handler: path => waiting && path === (lookup === 'availability' ? '/api/rooms/status' : `/api/session?room=${room}`)
       ? new Promise(resolve => { finish = resolve; })
-      : json(path === '/api/rooms/status' ? { enabled: true } : { valid: true }) });
+      : json(path === '/api/rooms/status' ? { enabled: true, ordinarySetup: { pve: { available: true } } } : { valid: true }) });
   waiting = true;
   const refreshing = f.controller.refresh();
   await turn();
@@ -191,7 +223,7 @@ for (const lookup of ['availability', 'saved session']) test(`leaving ignores a 
 
 for (const cancel of ['button', 'escape']) test(`Join ${cancel} cancellation invalidates before queued close and preserves the next game action`, async () => {
   const pending = [];
-  const f = await fixture({ handler: path => path === '/api/rooms/status' ? json({ enabled: true })
+  const f = await fixture({ handler: path => path === '/api/rooms/status' ? json({ enabled: true, ordinarySetup: { pve: { available: true } } })
     : new Promise(resolve => pending.push(resolve)) });
   f.node('menu-join').click(); const dialog = f.node('menu-join-dialog');
   dialog.querySelector('input').value = room;
@@ -231,7 +263,7 @@ test('invite and refresh route to the existing game exactly once; root refresh r
 for (const status of [401, 503]) test(`Resume HTTP ${status} is an interruption, retains the saved choice, and retries the same room`, async () => {
   let responseStatus = 200;
   const f = await fixture({ stored: { [LAST_ROOM_STORAGE_KEY]: room, [`${SESSION_STORAGE_PREFIX}${room}`]: token },
-    handler: path => path === '/api/rooms/status' ? json({ enabled: true }) : responseStatus === 200
+    handler: path => path === '/api/rooms/status' ? json({ enabled: true, ordinarySetup: { pve: { available: true } } }) : responseStatus === 200
       ? json({ valid: true }) : new Response('Authentication required.', { status: responseStatus }) });
   responseStatus = status; f.node('menu-resume').click(); await turn();
   assert.deepEqual(f.navigations, []);
@@ -247,7 +279,7 @@ for (const status of [401, 503]) test(`Resume HTTP ${status} is an interruption,
 
 test('menu, create and join authentication interruptions show a sign-in action without parsing a text challenge as JSON', async () => {
   let interrupted = false;
-  const handler = () => interrupted ? new Response('Authentication required.', { status: 401 }) : json({ enabled: true });
+  const handler = () => interrupted ? new Response('Authentication required.', { status: 401 }) : json({ enabled: true, ordinarySetup: { pve: { available: true } } });
   const f = await fixture({ handler }); interrupted = true;
   f.node('menu-create-room').click(); await turn();
   assert.match(f.node('game-menu-status').textContent, /sign.in/i);
@@ -265,7 +297,7 @@ for (const status of [401, 503]) test(`back-cache refresh preserves only the sam
   let responseStatus = 200, valid = true;
   const f = await fixture({ stored: { [LAST_ROOM_STORAGE_KEY]: room, [`${SESSION_STORAGE_PREFIX}${room}`]: token },
     handler: path => responseStatus !== 200 ? new Response('Temporarily interrupted', { status: responseStatus })
-      : json(path === '/api/rooms/status' ? { enabled: true } : { valid }) });
+      : json(path === '/api/rooms/status' ? { enabled: true, ordinarySetup: { pve: { available: true } } } : { valid }) });
   responseStatus = status;
   f.win.dispatchEvent(new f.win.PageTransitionEvent('pageshow', { persisted: true })); await turn();
   assert.equal(f.node('menu-resume').hidden, false); assert.equal(f.node('menu-resume').disabled, false);

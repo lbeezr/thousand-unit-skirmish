@@ -5,11 +5,14 @@ export function createPracticeEntryControls({ root, onChange = () => {} }) {
   const select = root.querySelector('select'), summary = root.querySelector('[data-rule]');
   const mapName = root.querySelector('[data-map]');
   let setup = null, choices = [], chosen = null, supported = true;
+  let maps = new Map();
   const key = choice => `${choice.id}@${choice.version}`;
   const identity = choice => ({ matchModeId: choice.id, matchModeVersion: choice.version });
   function describe() {
     if (!chosen) return;
-    const view = matchModePresentation({ identity: identity(chosen), map: setup.map });
+    const map = maps.get(key(chosen));
+    const view = matchModePresentation({ identity: identity(chosen), map });
+    mapName.textContent = `Starts on ${mapChoiceLabel(map)}.`;
     summary.textContent = `${view.summary} ${view.rule}`;
   }
   select.addEventListener('change', () => {
@@ -25,6 +28,15 @@ export function createPracticeEntryControls({ root, onChange = () => {} }) {
       const view = setup ? matchModePresentation({ identity: setup, catalog: setup.matchModes, map: setup.map }) : null;
       const available = Boolean(view?.active && !view.error && Array.isArray(setup.matchModes) && setup.map?.id);
       choices = available ? view.choices : [];
+      maps = new Map(choices.map(choice => [key(choice), setup.map]));
+      if (available && Array.isArray(setup.presets)) for (const preset of setup.presets) {
+        const offered = matchModePresentation({ identity: preset, catalog: [preset.matchMode], map: preset.map });
+        const choice = offered.active;
+        if (!offered.error && preset.matchMode?.selectable === true && choice?.selectable && choice.defaultMapId === preset.map?.id
+          && offered.choices.some(value => key(value) === key(choice)) && !maps.has(key(choice))) {
+          choices.push(choice); maps.set(key(choice), preset.map);
+        }
+      }
       // An interrupted/withheld catalog cannot replace the player's intent.
       chosen = choices.find(choice => chosen && key(choice) === key(chosen)) || chosen || view?.active;
       const allowed = chosen && choices.some(choice => key(choice) === key(chosen));
