@@ -1,11 +1,9 @@
-// Scenario adapter only. CI owns the qualified packed server/browser lifecycle;
-// the HUD adapter owns ordinary room entry and map import. No launch or dispatch.
+// Owned checkpoint sequence. The version-1 wrapper supplies ordinary entry,
+// verified served metadata and the shared capture hook. No launch or dispatch.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { captureCheckpoint } from './capture-checkpoint.mjs';
-import { validateRelease } from './renderer-qualification.mjs';
 import { frontierBuildingManifestUrl } from '../src/frontier-building-preview.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
@@ -15,6 +13,7 @@ export const CATALOG_BARRACKS_FLAGS = Object.freeze({ rendererCapture: 'environm
   assetReadability: '1', assetScenario: 'catalog-barracks' });
 const mapSource = new URL('../docs/qa-evidence/default-frontier-buildings-2026-10-03/acceptance-map-flat.json', import.meta.url);
 const manifestPath = type => `assets/${new URL(frontierBuildingManifestUrl(type)).pathname.split('/assets/').at(-1)}`;
+export const CATALOG_BARRACKS_MANIFEST = manifestPath('barracks');
 const observationExpression = `(${observeCatalogPage.toString()})()`;
 
 function installRoomFlags(flags) {
@@ -143,7 +142,7 @@ async function clickPoint(page, point, button = 'left') {
     type, x: point.x, y: point.y, button, clickCount: 1 });
 }
 
-async function clickControl(page, selector, label = null) {
+export async function clickControl(page, selector, label = null) {
   await revealCatalogTarget(page, selector, label);
   const point = await page.cdp.evaluate(`(() => {
     return [...document.querySelectorAll(${JSON.stringify(selector)})].map(node => {
@@ -185,34 +184,57 @@ async function projectGround(page, site) {
   })()`);
 }
 
-export async function runCatalogBarracksScenario({ page, pack, revision, browserVersion, outputDirectory, entryEvidence, team = 0 } = {},
-  { capture = captureCheckpoint } = {}) {
+export async function loadCatalogRuntime(origin, { fetchImpl = fetch, read = readFile } = {}) {
+  const url = new URL(origin);
+  assert.ok(url.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname)
+    && url.origin === origin, 'catalog assets require the owned loopback origin');
+  const local = await read(new URL(`../${CATALOG_BARRACKS_MANIFEST}`, import.meta.url));
+  const get = async relative => {
+    const response = await fetchImpl(`${origin}/${relative}`, { redirect: 'error', signal: AbortSignal.timeout(10000) });
+    assert.equal(response.status, 200, 'ordinary default asset must be served');
+    return Buffer.from(await response.arrayBuffer());
+  };
+  const served = await get(CATALOG_BARRACKS_MANIFEST);
+  assert.equal(hash(served), hash(local), 'served default manifest must match this clean source');
+  const manifest = JSON.parse(served), view = manifest.completeState.views.find(row => row.index === 1);
+  const viewPath = path.posix.join(path.posix.dirname(CATALOG_BARRACKS_MANIFEST), view.path);
+  assert.equal(hash(await get(viewPath)), view.sha256, 'served Complete pixels must match the existing pin');
+  return { manifest, manifestSha256: hash(served), defaultView: {
+    manifest: CATALOG_BARRACKS_MANIFEST, path: viewPath, sha256: view.sha256 } };
+}
+
+export async function runCatalogBarracksScenario({ page, source, runtime, outputDirectory, entryEvidence, team = 0 } = {},
+  { capture } = {}) {
   const report = { schemaVersion: 1, scope: 'catalog-and-paid-barracks', status: 'failed', frames: [],
     readability: 'unverified', paidBarracksAcceptance: 'open', issues: [] };
   let stage = 'context';
   try {
-    validateRelease(pack, { revision, dirty: false });
+    assert.match(source?.revision ?? '', /^[a-f0-9]{40}$/, 'source revision is required');
+    assert.match(source?.digest ?? '', /^sha256:[a-f0-9]{64}$/, 'qualified release digest is required');
+    assert.equal(typeof capture, 'function', 'the shared source-bound capture hook is required');
     assert.ok(path.isAbsolute(outputDirectory), 'an isolated absolute output directory is required');
     const mapBytes = await readFile(mapSource);
     assert.equal(entryEvidence?.ordinaryEntry, true, 'HUD-owned ordinary entry evidence is required');
-    assert.equal(entryEvidence.sourceRevision, revision); assert.equal(entryEvidence.mapId, CATALOG_BARRACKS_MAP);
+    assert.equal(entryEvidence.sourceRevision, source.revision); assert.equal(entryEvidence.mapId, CATALOG_BARRACKS_MAP);
     assert.equal(entryEvidence.mapSha256, hash(mapBytes), 'ordinary map import must match the existing fixture');
-    report.source = { revision, dirty: false }; report.release = { digest: pack.digest, files: pack.files.length };
+    report.source = { revision: source.revision, dirty: false }; report.release = { digest: source.digest };
     report.scenario = { team, mapId: CATALOG_BARRACKS_MAP, mapSha256: hash(mapBytes), entry: 'ordinary-ui' };
-    const barracksManifest = JSON.parse(await readFile(path.join(pack.directory, manifestPath('barracks'))));
-    assert.ok(pack.files.includes(manifestPath('barracks')), 'default Barracks manifest must be packed');
+    const barracksManifest = runtime.manifest;
     const view = barracksManifest.completeState.views.find(view => view.index === 1);
     const viewPath = path.posix.join(path.posix.dirname(manifestPath('barracks')), view.path);
-    assert.ok(pack.files.includes(viewPath), 'normal-camera Complete view must be packed');
-    assert.equal(hash(await readFile(path.join(pack.directory, viewPath))), view.sha256, 'packed Complete pixels must match the existing pin');
-    report.defaultView = { manifest: manifestPath('barracks'), path: viewPath, sha256: view.sha256 };
+    assert.deepEqual(runtime.defaultView, { manifest: manifestPath('barracks'), path: viewPath, sha256: view.sha256 },
+      'verified served default view must retain existing pins');
+    report.defaultView = runtime.defaultView;
     await mkdir(outputDirectory, { recursive: true });
     const observe = () => page.cdp.evaluate(observationExpression);
     const wait = async (predicate, label, timeout = 20000) => page.wait(`(() => {const o=${observationExpression};return (${predicate}) ? o : null;})()`, label, timeout);
     const checkpoint = async (name, options, validate) => {
       const before = await observe(); validateScenarioObservation(before, { team, ...options }); validate?.(before.state);
-      const bundle = await capture({ page, revision, browserVersion, mapId: CATALOG_BARRACKS_MAP,
-        checkpoint: name, outputDirectory });
+      const bundle = await capture({ page, mapId: CATALOG_BARRACKS_MAP, checkpoint: name });
+      assert.equal(bundle.manifest.source.revision, source.revision, 'shared capture must bind the source');
+      assert.equal(bundle.manifest.scene.mapId, CATALOG_BARRACKS_MAP, 'shared capture must bind the applied map');
+      assert.equal(bundle.manifest.scene.checkpoint, name, 'shared capture must retain its checkpoint');
+      assert.equal(bundle.directory, path.join(outputDirectory, name), 'shared capture must use the owned checkpoint directory');
       const after = await observe(); validateScenarioObservation(after, { team, ...options }); validate?.(after.state);
       assert.ok(after.state.frame >= before.state.frame && after.state.renderedAt >= before.state.renderedAt, 'capture frame observations cannot rewind');
       const evidence = { checkpoint: name, image: bundle.manifest.image, before, after,
@@ -279,7 +301,7 @@ export async function runCatalogBarracksScenario({ page, pack, revision, browser
     Object.defineProperty(report, 'cause', { value: error });
     report.issues.push({ stage, code: error instanceof assert.AssertionError ? 'contract-failed' : 'execution-failed',
       // Retain causes locally through the caller; artifact messages never echo CDP/session payloads.
-      message: error instanceof assert.AssertionError ? error.message.split('\n')[0] : `Scenario failed during ${stage}` });
+      message: `Scenario failed during ${stage}` });
   }
   if (typeof outputDirectory === 'string' && path.isAbsolute(outputDirectory)) {
     await mkdir(outputDirectory, { recursive: true });
