@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "testedHead": "5f4c9aaada06e7138330c02840bfc8847d31c4d2",
+  "integratedMain": "966dc0a597eb15162b751522d111c7ae854de22f",
+  "node": "v24.19.0",
+  "serverSha256": "2c011d465b07b4f75437a2c34bdabed37cdb6f1bd1a7a8f70492c9af5b3761f8",
+  "focusedChecks": {
+    "passed": 102,
+    "failed": 0,
+    "command": "node --test scripts/unit-movement.test.mjs scripts/crowd-forward-progress.test.mjs scripts/pathing-replay.test.mjs scripts/move-planning-slices.test.mjs scripts/move-planning-tick.test.mjs scripts/move-planning-tick-error.test.mjs scripts/pathing-arrival.test.mjs scripts/dynamic-wall-pathing.test.mjs scripts/palisade-gate.test.mjs scripts/sheep-herding-authority.test.mjs scripts/ci-sharding.test.mjs"
+  },
+  "types": "browser and node checks passed",
+  "syntaxAndDiff": "passed",
+  "documentation": {
+    "markdownFiles": 536,
+    "localLinks": 3618,
+    "passed": true
+  },
+  "plannerAndOuterTickBodiesUnchangedFromQualifiedSource": [
+    "scheduleNextMovePlanning",
+    "serviceMovePlanningForTick",
+    "processMovePlanningSlice",
+    "applyPlannedMoveAssignment",
+    "completeMovePlanningJob",
+    "pendingMoveAssignmentsByUnit",
+    "runSimulationTick"
+  ],
+  "innerSimulateTickUnchangedFromIntegratedMain": true,
+  "comparisonTracesMatchQualifiedSource": [
+    {
+      "turnsPerTick": 0,
+      "group": 996,
+      "kind": "large-single-choke",
+      "team": 0,
+      "repeatCount": 2,
+      "traceSha256": "f887f56f2188a6c9a32550e530fa6e46f2a4606da497bc4d3e04d7bb86fca517",
+      "arrivalTick": 1214,
+      "firstRouteTick": 0,
+      "lastRouteTick": 0,
+      "illegalSteps": 0,
+      "disconnectedGoals": 0
+    },
+    {
+      "turnsPerTick": 0,
+      "group": 996,
+      "kind": "large-single-choke",
+      "team": 1,
+      "repeatCount": 2,
+      "traceSha256": "79ea1cd190065f70aae5aeff1e6279ec3f6ce1147b5a77d5238c20c3d7df91e8",
+      "arrivalTick": 1259,
+      "firstRouteTick": 0,
+      "lastRouteTick": 0,
+      "illegalSteps": 0,
+      "disconnectedGoals": 0
+    },
+    {
+      "turnsPerTick": 0,
+      "group": 64,
+      "kind": "s-bend",
+      "team": 0,
+      "repeatCount": 2,
+      "traceSha256": "25f2d293efab110307b34eeb12ee41cc4ff671fd0b36e752d105518b2a1c6a4c",
+      "arrivalTick": 711,
+      "firstRouteTick": 0,
+      "lastRouteTick": 0,
+      "illegalSteps": 0,
+      "disconnectedGoals": 0
+    },
+    {
+      "turnsPerTick": 1,
+      "group": 996,
+      "kind": "large-single-choke",
+      "team": 0,
+      "repeatCount": 2,
+      "traceSha256": "75aeb09f22142c96402a25d1f18e5b217225006404935604491bc4b2f090a5cb",
+      "arrivalTick": 1355,
+      "firstRouteTick": 1,
+      "lastRouteTick": 144,
+      "illegalSteps": 0,
+      "disconnectedGoals": 0
+    },
+    {
+      "turnsPerTick": 1,
+      "group": 996,
+      "kind": "large-single-choke",
+      "team": 1,
+      "repeatCount": 2,
+      "traceSha256": "24a9f210ed27933b41ec75bccaf48774a004b38e3e80e314313a9448323af622",
+      "arrivalTick": 1389,
+      "firstRouteTick": 1,
+      "lastRouteTick": 145,
+      "illegalSteps": 0,
+      "disconnectedGoals": 0
+    },
+    {
+      "turnsPerTick": 1,
+      "group": 64,
+      "kind": "s-bend",
+      "team": 0,
+      "repeatCount": 2,
+      "traceSha256": "46df4b3178b462eb8cf4d972ab29c4e84c6d6bb450e6cc3f671315b3e15f5d46",
+      "arrivalTick": 725,
+      "firstRouteTick": 1,
+      "lastRouteTick": 8,
+      "illegalSteps": 0,
+      "disconnectedGoals": 0
+    },
+    {
+      "turnsPerTick": 4,
+      "group": 996,
+      "kind": "large-single-choke",
+      "team": 0,
+      "repeatCount": 2,
+      "traceSha256": "c10a4d79cc6e8f1b85daf2c766a1121b015169a5158cc19b0c59556c71680121",
+      "arrivalTick": 1243,
+      "firstRouteTick": 1,
+      "lastRouteTick": 36,
+      "illegalSteps": 0,
+      "disconnectedGoals": 0
+    },
+    {
+      "turnsPerTick": 4,
+      "group": 996,
+      "kind": "large-single-choke",
+      "team": 1,
+      "repeatCount": 2,
+      "traceSha256": "3f4ff876c363eeb9e14a5b1c7f9a621b0b36833150500ddf8451e80443d174b3",
+      "arrivalTick": 1274,
+      "firstRouteTick": 1,
+      "lastRouteTick": 37,
+      "illegalSteps": 0,
+      "disconnectedGoals": 0
+    },
+    {
+      "turnsPerTick": 4,
+      "group": 64,
+      "kind": "s-bend",
+      "team": 0,
+      "repeatCount": 2,
+      "traceSha256": "8b4fb46e67eebeff1657e9b88ab00838fa30fd9808e5e1edbf51aebca09e23e6",
+      "arrivalTick": 732,
+      "firstRouteTick": 1,
+      "lastRouteTick": 2,
+      "illegalSteps": 0,
+      "disconnectedGoals": 0
+    },
+    {
+      "turnsPerTick": 8,
+      "group": 996,
+      "kind": "large-single-choke",
+      "team": 0,
+      "repeatCount": 2,
+      "traceSha256": "c680581b91baddc2d13524510a80484b7b2fc13a4c9e229e74d743d6a59e07cd",
+      "arrivalTick": 1219,
+      "firstRouteTick": 1,
+      "lastRouteTick": 18,
+      "illegalSteps": 0,
+      "disconnectedGoals": 0
+    },
+    {
+      "turnsPerTick": 8,
+      "group": 996,
+      "kind": "large-single-choke",
+      "team": 1,
+      "repeatCount": 2,
+      "traceSha256": "6f44c98aaaa52c83563c912947cc8909fd5359d450b5137cd634393c052dff54",
+      "arrivalTick": 1263,
+      "firstRouteTick": 1,
+      "lastRouteTick": 19,
+      "illegalSteps": 0,
+      "disconnectedGoals": 0
+    },
+    {
+      "turnsPerTick": 8,
+      "group": 64,
+      "kind": "s-bend",
+      "team": 0,
+      "repeatCount": 2,
+      "traceSha256": "25f2d293efab110307b34eeb12ee41cc4ff671fd0b36e752d105518b2a1c6a4c",
+      "arrivalTick": 711,
+      "firstRouteTick": 1,
+      "lastRouteTick": 1,
+      "illegalSteps": 0,
+      "disconnectedGoals": 0
+    }
+  ],
+  "defaultPhaseProbeTracesMatchOriginal": true,
+  "default16Matches64cc391": [
+    {
+      "ticks": 623,
+      "arrived": 16,
+      "traceSha256": "4a4f13f468eb4a21e4302e90c82b102698950adf4882d1b9407af33664c29a3f",
+      "initialRouteSha256": "2af80ac5c20cfc29e3908f5a0f8a11f5443d01d3a6e2b80f52643ad65438acae"
+    },
+    {
+      "ticks": 623,
+      "arrived": 16,
+      "traceSha256": "4a4f13f468eb4a21e4302e90c82b102698950adf4882d1b9407af33664c29a3f",
+      "initialRouteSha256": "2af80ac5c20cfc29e3908f5a0f8a11f5443d01d3a6e2b80f52643ad65438acae"
+    }
+  ],
+  "scriptSha256": {
+    "scripts/pathing-replay-fixture.mjs": "fb0f34be1fa709e27a1687e9c672f9ed5873be0db13549c3b9869b8d3b898c60",
+    "scripts/move-planning-budget-replay.mjs": "b114c48d83d98e024d59bbd6d7dd3a1df4c1210e7143fe476dcc9e6d10a60413",
+    "scripts/large-pathing-native-scenario.mjs": "d0907a4af5582382ad4500d85e69bd78e392493aaf25dd631eaf31458cd20ddc",
+    "scripts/move-planning-tick.test.mjs": "4516e66316c19b5a959bac9ce2bbdb4deb73034461bade9bdd7ee348b1fe50a7",
+    "scripts/move-planning-tick-error.test.mjs": "5646f291546e2d80b08380c0ef3f610f347f082ff8d709cfff99fb7e9c7b3f31",
+    "scripts/pathing-arrival.test.mjs": "bb7c4c4bce47aa87942b68ef88eef347ceb43c4d358b9d254bb8cd5fead18f61"
+  },
+  "limits": [
+    "measurement source319d70bf and source-qualified original records retained separately",
+    "integration replays verify traces; their host costs do not replace the qualified comparison",
+    "default0 retained; no renderer or deployed gameplay acceptance"
+  ]
+}

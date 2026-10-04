@@ -1,0 +1,142 @@
+{
+  "heading": "south-east",
+  "mirror": false,
+  "frame1Locked": false,
+  "reason": "work loop starts crouched; upright lock would cause a snap",
+  "rootStatus": "manually registered planted-boot sole; projected root still needs game review",
+  "scaleStatus": "shared 0.38 scale estimated against shipped head/forearm anatomy; no per-frame height fit",
+  "keys": [
+    {
+      "frame": 0,
+      "sourceBounds": [
+        134,
+        249,
+        414,
+        615
+      ],
+      "sourceRoot": [
+        218,
+        610
+      ],
+      "scale": 0.38,
+      "canvas": [
+        512,
+        512
+      ],
+      "groundPivot": [
+        256,
+        480
+      ],
+      "offset": [
+        224,
+        343
+      ],
+      "alphaBounds": [
+        224,
+        343,
+        330,
+        482
+      ],
+      "durationMs": 350
+    },
+    {
+      "frame": 1,
+      "sourceBounds": [
+        638,
+        256,
+        1101,
+        627
+      ],
+      "sourceRoot": [
+        724,
+        610
+      ],
+      "scale": 0.38,
+      "canvas": [
+        512,
+        512
+      ],
+      "groundPivot": [
+        256,
+        480
+      ],
+      "offset": [
+        223,
+        345
+      ],
+      "alphaBounds": [
+        223,
+        345,
+        399,
+        486
+      ],
+      "durationMs": 300
+    },
+    {
+      "frame": 2,
+      "sourceBounds": [
+        1215,
+        252,
+        1585,
+        615
+      ],
+      "sourceRoot": [
+        1300,
+        610
+      ],
+      "scale": 0.38,
+      "canvas": [
+        512,
+        512
+      ],
+      "groundPivot": [
+        256,
+        480
+      ],
+      "offset": [
+        224,
+        344
+      ],
+      "alphaBounds": [
+        224,
+        344,
+        365,
+        482
+      ],
+      "durationMs": 350
+    },
+    {
+      "frame": 3,
+      "sourceBounds": [
+        1733,
+        247,
+        2069,
+        615
+      ],
+      "sourceRoot": [
+        1820,
+        610
+      ],
+      "scale": 0.38,
+      "canvas": [
+        512,
+        512
+      ],
+      "groundPivot": [
+        256,
+        480
+      ],
+      "offset": [
+        223,
+        342
+      ],
+      "alphaBounds": [
+        223,
+        342,
+        351,
+        482
+      ],
+      "durationMs": 300
+    }
+  ]
+}

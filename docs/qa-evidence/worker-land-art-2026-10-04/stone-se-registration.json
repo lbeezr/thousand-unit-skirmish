@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "action": "gather-stone",
+  "worldDirection": "south-east",
+  "screenDirection": "right",
+  "source": "docs/art-direction/human-roster-v1/generated/worker-stone-eight-v1/raw.png",
+  "sourceSha256": "7639f85c8055ac6ae90539886482a4a74d565e6d633930c39c0d71484af28257",
+  "extractionSha256": "d9faa19e5fc607421389ff4c1d20db89fa4c98cc37248d3d80d183a183dc42f0",
+  "sharedScale": 1.2677595628415301,
+  "columnRootsX": [
+    156,
+    412,
+    668,
+    924
+  ],
+  "rowBaselinesY": [
+    779
+  ],
+  "groundPivotPx": {
+    "x": 160,
+    "y": 244
+  },
+  "durationMs": 840,
+  "registrationStatus": "source-pixel reviewed; native ground/turn acceptance open",
+  "frames": [
+    {
+      "id": "gather-stone-south-east-0",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-stone-eight-v1/extracted/12.png",
+      "sourceSha256": "b965493b5ceeb0506528630750eb643a0aeac25b1475e690219a6ed96199d52a",
+      "sourceBounds": [
+        93,
+        595,
+        222,
+        778
+      ],
+      "offsetPx": [
+        80,
+        11
+      ],
+      "alphaBoundsPx": {
+        "x": 80,
+        "y": 11,
+        "width": 163,
+        "height": 231
+      },
+      "rgbaSha256": "ef3eef2f00dcb3f437c4fc87e6a9c839b83f839eb8326f217e7f37cc0d9fdb5a"
+    },
+    {
+      "id": "gather-stone-south-east-1",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-stone-eight-v1/extracted/13.png",
+      "sourceSha256": "23e6452dbd3932c7866e00290b9eead28a215ab41e46333dac76961d7b73cd43",
+      "sourceBounds": [
+        337,
+        591,
+        445,
+        779
+      ],
+      "offsetPx": [
+        65,
+        6
+      ],
+      "alphaBoundsPx": {
+        "x": 65,
+        "y": 6,
+        "width": 137,
+        "height": 238
+      },
+      "rgbaSha256": "281672385f1f66d8bc29e19d6eb61ef9cb25073447f48d9d369c79304e2f5e44"
+    },
+    {
+      "id": "gather-stone-south-east-2",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-stone-eight-v1/extracted/14.png",
+      "sourceSha256": "3ddda3783b9192a8e81fd81b0358b026e11a26c39bc0fe2d4d12757b920fd825",
+      "sourceBounds": [
+        587,
+        622,
+        763,
+        777
+      ],
+      "offsetPx": [
+        57,
+        45
+      ],
+      "alphaBoundsPx": {
+        "x": 57,
+        "y": 45,
+        "width": 223,
+        "height": 196
+      },
+      "rgbaSha256": "28d04e91469cd931cbe943b646560f5f65e9992809b96fdddaab538de05017c6"
+    },
+    {
+      "id": "gather-stone-south-east-3",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-stone-eight-v1/extracted/15.png",
+      "sourceSha256": "5206d0aa4885447e0b2112a4f31926489d4dcc2301eafcfeeafa146509d51d61",
+      "sourceBounds": [
+        841,
+        594,
+        967,
+        778
+      ],
+      "offsetPx": [
+        55,
+        9
+      ],
+      "alphaBoundsPx": {
+        "x": 55,
+        "y": 10,
+        "width": 160,
+        "height": 232
+      },
+      "rgbaSha256": "45bc91bdda9c0ebbe4d6e898d7e0da784958ab6cf850746f4bae66abff54bc53"
+    }
+  ]
+}

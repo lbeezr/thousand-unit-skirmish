@@ -1,3 +1,4 @@
+import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -8,7 +9,7 @@ const functions = source.slice(source.indexOf('function workerDropoffCandidates(
 for (const team of [0, 1]) test(`drop-off choice measures reachable routes and preserves cargo for seat ${team}`, () => {
   const unit = { team, x: 0, z: 0, cargo: 10, cargoType: 'wood' };
   const building = (id, owner, complete, goals) => ({ id, team: owner, complete, type: 'storehouse', x: id, z: 0, footprint: goals });
-  const context = vm.createContext({ BUILDING_DEFINITIONS, navigationRevision: 4,
+  const context = vm.createContext({ ...economyServerBindings(), BUILDING_DEFINITIONS, navigationRevision: 4,
     spawnByTeam: [{ x: 1, z: 0 }, { x: 1, z: 0 }],
     buildings: [building(2, team, true, [2]), building(3, team, true, [3]),
       building(4, 1 - team, true, [4]), building(5, team, false, [5]), building(6, team, true, [6])],
@@ -18,7 +19,7 @@ for (const team of [0, 1]) test(`drop-off choice measures reachable routes and p
     pathFromAttackFlow: (_, field) => Array(field.goal === 1 ? 20 : field.goal === 2 ? 10 : 4).fill(field.goal),
   });
   context.allMatchBuildings = () => context.buildings;
-  vm.runInContext(functions, context);
+  vm.runInContext(economyServerFunctions + functions, context);
   context.routeWorkerToDropoff(unit);
   assert.equal(unit.dropoffBuildingId, 3, 'a shorter reachable route wins over a closer building across a long detour');
   assert.equal(unit.path.length, 4); assert.equal(unit.cargo, 10);

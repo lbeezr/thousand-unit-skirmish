@@ -57,14 +57,36 @@ records the implementation sequence and current limits.
 ## Stationary army orders
 
 Stop (`S`) abandons a unit's current task, attack, path planning and queued route.
-It leaves the unit idle until another order; it preserves carried resources and
+It leaves military in No Attack until another stance choice and workers idle
+until another order; it preserves carried resources and
 leaves shared construction in place. Hold Position (`H`) interrupts the same work,
-then attacks visible enemy units already within its weapon range without chasing.
+then sets military Stand Ground and attacks visible enemy units already within
+its weapon range without chasing. Worker Hold retains the same range-only defense.
 It does not automatically attack structures. Both commands apply to workers and
 military units, are available in the Orders/context controls, and persist through
 reconnect/checkpoint recovery. A new move, gather, build, repair, or attack order
 replaces Hold; a rematch clears it. Held workers are excluded from idle-worker
 selection.
+
+Direct military Attack prioritizes the clicked visible target. When that target
+dies, becomes hidden or becomes unreachable, an unqueued order continues against
+nearby visible enemy units according to its saved stance and bounded path
+planning. Aggressive uses attack-move's 4.8-cell acquisition radius and 8-cell
+pursuit leash. A queued order takes precedence
+after target loss. Workers finish a focused Attack without starting this local
+continuation. Stop, Hold Position and a replacement Move still interrupt combat.
+New military defaults to Aggressive and defends locally while idle. Ordinary Move
+and every queued waypoint retain priority; stance resumes on final arrival.
+Aggressive acquisition uses a fixed idle anchor across successive kills. Defensive
+acquires within three cells or weapon range, travels at most three cells from its
+anchor and returns after combat. Stand Ground acquires only within weapon range
+and never chases, including an explicit out-of-range target. No Attack suppresses
+automatic acquisition but permits focused Attack, finishing passively. Stances
+apply only to military; Workers and unarmed units retain their current rules.
+Stance choices, anchors and return intent persist through checkpoint/reconnect;
+rematch starts fresh defaults. [Stance command/HUD contract](military-stances.md)
+and [reproduction and acceptance](qa-army-attack-continuation-2026-10-03.md)
+record the command boundaries and verification limits.
 
 Patrol (`P`) targets ground and repeatedly travels between each selected unit's
 current cell and its assigned formation destination. It engages visible enemies
@@ -90,20 +112,46 @@ persistently ordered workers are excluded from idle-worker selection.
 4. Contest objectives and react to the opposing plan and scenario events.
 5. Reach a clear result, then rematch or try another authored scenario.
 
-[Bellweather · Millrace](maps.md) is the default regional two-seat scenario.
+Ordinary two-seat play starts Tiny Terraced Vale in economy Skirmish; reviewed
+Small Threefold Basin, Medium Riven Escarpment and Large Crownroads are human map choices.
+[Bellweather · Millrace](maps.md) remains a historical authored regional scenario.
 [Fortified Crossing](../maps/fortified-crossing.json) supplies a small-opening
 custom skirmish with construction, research and crossing rewards.
 [Forked Vale](forked-vale-scenario.md) remains a laboratory scenario.
 Larger maps test travel, resource regions, forest clearing, and elevation.
 Match length and economy pacing must come from observed play.
 
+The objective strip names **Elimination** for Skirmish and **Objective Control**
+for marked victory-post maps. Skirmish uses recovery-aware defeat;
+workers and paid land queues preserve survival, so Town Center destruction
+alone is insufficient. Distinct Objective Control maps retain their fast authored
+capture/hold/deadline rules. The [mode contract](match-mode-contract.md) and
+[victory audit](victory-modes-audit-2026-10-03.md) record the exact rules and
+legacy recovery. Fresh PvE supports only Tiny Skirmish. Quick original
+custom-inspired modes test the core separately; [Bannerfall](bannerfall-mode.md)
+is a bounded human/Practice reinforcement prototype. Fantasy-world territorial
+play remains later work requiring a representative regional proof.
+
 Resource stocks and worker cargo display whole units rounded down; costs and
 positive shortfalls round up. Affordability uses exact authoritative values, so
 a display never rounds insufficient stock up to the purchase price.
 
+Food/wood remains the playable economy. The next single-mineral recommendation
+is an explicit optional `stone-defense-v1` profile: finite `stone`, 200 stock per
+seat and 50 Stone added to new Watchtower construction. Ordinary matches and
+legacy paid work retain current food/wood prices. The [Stone contract](stone-defense-contract-proposal.md)
+defines provisional tuning and required typed payment/save work; the profile,
+bank and harvest loop are not implemented.
+
 ## Implemented scope
 
 - Azure and Ember seats, invite rooms, spectators, reconnects, and checkpoints.
+- Ordinary root entry opens the [main menu](game-entry.md), with deliberate fresh
+  game/room creation, join, validated Resume, isolated Map Studio and settings.
+- New PvP invite rooms have host map/army configuration, both-seat readiness,
+  explicit launch and rematch/recovery through the [pregame lobby](room-lobby.md).
+  Connected seats can exchange bounded plain-text pregame chat; history is
+  ephemeral and spectators read only.
 - Workers, Infantry, Archers, Spearmen, Scouts, Riders and Siege Engines; food/wood
   gathering, construction, queues, rally points, population reservations and bounded research.
 - Box/Line/Column destinations, direct attacks, attack move, queued waypoints,
@@ -128,6 +176,23 @@ mirrored armies will always draw; spatial tie-breaking can still matter. See
 [the scheduling regression and limits](qa-attack-flow-scheduling-2026-09-27.md).
 
 ## Quality floor
+
+With no living friendly selection, Quick commands retains access to Commands,
+Production, Army and Idle workers while the selection command body is hidden.
+Selecting units or an owned building restores contextual commands; closing a
+detail drawer retains selection and returns focus to an available command.
+Resources, population, minimap and independent urgent feedback stay outside
+that visibility switch. See the [contextual HUD contract](contextual-hud-validation.md).
+
+Left-click or drag on the tactical map navigates the camera. Right-click moves
+only the living selected units owned by the player; Shift plus right-click
+queues a destination. These are ground movement orders, including in unexplored
+areas, with terrain and routes resolved by the authoritative server. A minimap
+order preserves selection and camera position and reveals no hidden targets.
+Tap Space to center the living owned selection or selected owned building in
+the HUD-safe battlefield area. Centering occurs on release so Space plus drag
+continues to pan; releasing after a drag leaves that viewpoint in place. Buttons,
+text controls, menus and dialogs retain their keyboard behavior.
 
 - A first glance identifies the team, objective, route, and selection. The QA
   protocol measures this with a newcomer and a two-minute observation window.
@@ -193,7 +258,10 @@ units and paid queues both consume capacity. A completed House adds eight
 capacity for 75 wood; unfinished Houses add none. Destroying a House lowers
 capacity without deleting units or canceling paid queues. Further training is
 blocked until deaths or replacement capacity free enough space. Existing paid
-queues still complete. The HUD explains used, queued and available capacity.
+queues still complete. The header shows the player's authoritative used + queued
+population / capacity while command details are closed; Build & train expands
+those labels and explains a full capacity block. Spectators see join guidance
+instead of either team's population. See the [header validation contract](population-header-validation.md).
 
 Large-army fixtures start with at least their opening population capacity,
 clamped to the separate 1,000-unit-per-seat safety ceiling. Population is a
@@ -209,6 +277,83 @@ accept nothing. If the chosen drop-off is destroyed or navigation changes,
 the Worker replans and retains its cargo. With no reachable drop-off it waits
 with the cargo rather than banking it remotely. Storehouses provide no units or
 population. Their current House-shaped procedural presentation is a placeholder.
+
+Return cargo delivers the existing load of each selected carrying Worker without
+resuming its former gather target. Shift Move or Attack Move can queue behind the
+delivery; those legs begin after the cargo is deposited once. Stop and Hold cancel
+both delivery and the queued legs while preserving the carried load.
+
+Mill is the food-only alternative: 75 wood, 15 seconds of Worker construction,
+1,000 HP and a 3 × 3 footprint. These are provisional tunable values: its lower
+price, shorter build time and lower durability trade away Storehouse's wood
+drop-off. It accepts any existing food cargo through the same friendly completed
+drop-off routing; wood still needs a Storehouse or Town Center. It produces no
+units or population and does not generate or multiply food. Mill currently uses
+the existing procedural House appearance as an explicit placeholder until its
+own art is authored. It uses the same paid repair and cancellation rules.
+
+The [controlled depot study](qa-mill-depot-economy-2026-10-03.md) records simulated
+food-trip savings and Storehouse's additional wood service, with no human matches
+or tuning change. Construction time and food/wood prices remain separate costs.
+The [Mill art brief](frontier-mill-art-brief.md) retains its food-only land role.
+
+Farm is one finite paid planting: provisional 60 wood, 15 accumulated
+Worker-seconds, 600 HP and a 3 × 3 footprint. Completion creates 200 food stock
+once; only owned Workers harvest it at the ordinary rate and carry capacity,
+then deposit at Mill, Storehouse or Town Center. It grants no passive income,
+drop-off or population. An exhausted plot clears without refund; fresh planting
+costs another 60 wood and creates a new source ID. Unfinished cancellation uses
+the ordinary proportional refund and supplies no crop. Destruction discards
+remaining stock while preserving carried food; repair never regrows stock.
+Recovery retains progress, stock and cargo. The [Farm contract](farm-finite-planting.md)
+defines the explicit procedural House placeholder and current AI harvest limits.
+These values are tunable prototype choices, with no human balance acceptance.
+
+Dock is a shoreline foundation: provisional 100 wood, 20 accumulated
+Worker-seconds, 1,200 HP and a 3 × 3 dry level-zero land footprint. Placement
+requires an adjacent clear 3 × 3 authored-water berth and an outward water
+route step, while preserving ordinary land access and active routes. It uses
+the existing building lifecycle and an explicit procedural House placeholder.
+It produces an unarmed **Skiff (placeholder)** for provisional 75 wood, 10 seconds
+and one population: 120 HP and 2.4 cells/second. Select up to 16 Skiffs to Move or Stop
+within authored level-zero water; hull occupancy can pause routes and production.
+Shift water targets, including minimap right-clicks, queue up to eight pending
+destinations per boat. [Water queues](skiff-water-waypoints.md) preserve cargo,
+individual goals and recovery; Stop clears only the controlled boats' queues.
+Shift Move during fishing [waits for one current cargo delivery](skiff-fishing-next-move.md),
+then leaves any remaining stock; during Return cargo it waits for that delivery.
+Depleted or unavailable source approaches return partial food first, while missing
+Dock access preserves cargo and queued intent. Stop/Hold clear only the selected
+boats' queues while keeping their cargo.
+Skiffs gather the same finite shore-fish food as land Workers from a reachable
+water approach: provisional 10 food capacity and 1 food per second. A completed
+owned Dock accepts their cargo at its water berth; land Worker drop-offs retain
+their existing rules. Stop retains cargo, Return cargo delivers once, and ordinary
+fishing resumes after delivery until depletion. Dock has no rally, population
+or resource bonus. Skiffs carry no passengers or combat capability and cannot
+alone keep an elimination match open.
+[The Dock contract](dock-shoreline-foundation.md) defines placement;
+[Skiff movement](skiff-water-movement.md) defines paid movement and recovery;
+[Skiff fishing](skiff-fishing.md) defines finite food delivery;
+[selected groups](skiff-selected-groups.md) preserve each controlled boat's cargo
+and destination, using distinct fish approaches and owned Dock berths.
+Insufficient reachable space rejects a group before changing its orders.
+
+A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulated
+Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;
+existing friendly segments are reused without charge. Workers construct new
+segments in a persisted sequence, interrupted by another player order. Both teams
+obey the same ordinary blocking rules. The normal Palisade menu previews and
+places an atomic drag line, with Shift selecting its elbow and arrows/Enter
+supporting keyboard endpoints. Invalid lines and aggregate cost are visible
+before submission. Finished wall art remains separate work. See the
+[paid palisade contract](palisade-runtime.md). No stone currency is introduced.
+
+A one-cell [Palisade Gate](palisade-gates.md) reuses that provisional profile.
+Only its owner operates the explicit open/closed control: a closed gate blocks
+both teams and an open gate lets both teams pass. Closing rejects occupied
+cells and cuts to existing entity/active-route access. Open gates still reserve
+their building footprint. Gate state and movement behavior survive checkpoints.
 
 ## Cancellation and repair
 
@@ -252,6 +397,17 @@ so a lethal counterattack still lands in the same tick. Existing role timings,
 ranges and damage are preserved; Spearman's threefold mounted modifier becomes
 player-visible when the mounted roster ships.
 
+A direct unit attack ends when its target dies, leaves friendly visibility, or
+has no reachable firing position; queued ground orders can then continue. Attack
+Move resumes its ground route when an engagement ends. A visible enemy boat
+retains its real position for weapon range and reachable shore approaches. This
+does not add weapons or combat orders to the unarmed Skiff.
+
+When an enemy moves during an existing pursuit, the attacker finishes its current
+legal path step before following the refreshed route. Blocked or cliff-crossing
+steps are discarded. A new attack replaces the previous route immediately;
+target death, fog loss and explicit Stop/Hold still end or interrupt pursuit.
+
 ### Mounted foundation roster (2026-09-29)
 
 The Frontier Stable offers a fragile, fast Scout with eleven-cell sight and a
@@ -287,7 +443,7 @@ no splash or friendly-fire exception. Workshop/engine geometry is placeholder
 presentation, and match-level costs/terrain/composition balance remain provisional.
 ### Human graphics first pass
 
-The normal game uses the Vaelora Human Worker, Infantry, Spearman and Archer sprite roster at the approved Human size/detail, plus initial Scout, Rider and Siege Engine cutouts. Mounted size and siege footprint remain provisional until live review. The latter three have distinct static idle, movement, attack and defeat poses reused across headings. First-pass action coverage takes priority over correct animation: missing headings temporarily reuse the nearest authored action sequence. Directional fidelity, smooth loops and team sash masks remain polish work. Explicit legacy preview flags still select their respective art lanes. `humanRosterPreview=0` restores the older default cast preview.
+The normal game uses the Vaelora Human Worker, Infantry, Spearman and Archer sprite roster at the approved Human size/detail, plus initial Scout, Rider and Siege Engine cutouts. Mounted size and siege footprint remain provisional until live review. The latter three have distinct static idle, movement, attack and defeat poses reused across headings. Human Worker walking and gathering preserve their exact facing, holding the authored idle view where directional action art is missing. Shore fishing has a distinct four-pose Human south-east hand-net loop; other headings retain exact food/gather/idle fallbacks. Other first-pass actions temporarily reuse the nearest authored action sequence. Stationary gatherers turn toward their authoritative resource target. Missing directional animation, smooth loops and team sash masks remain art work; Boughward's initial static poses still repeat across headings. Explicit legacy preview flags still select their respective art lanes. `humanRosterPreview=0` restores the older default cast preview.
 
 ## Playable regional interpretation
 

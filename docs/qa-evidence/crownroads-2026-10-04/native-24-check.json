@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "36f6f9a949de208aeb77612f59600acaa1f33fd3",
+  "mapId": "veyrholds-crownroads",
+  "mapSHA256": "0b62a9f967ef42c967eb9121e07395b75549d52d4a73dd16eaf29aebf19e3727",
+  "measuredScriptSHA256": "e81b683e975bfa7807410c1a834694d4af3f6664abd545c2abb64b90a1506fd4",
+  "loads": [
+    {
+      "armySize": 24,
+      "envelope": {
+        "sampledWindows": 66,
+        "tickP95PeakMs": 4.231,
+        "tickMaxMs": 4.739,
+        "startLagP95PeakMs": 2.768,
+        "startLagMaxMs": 23.12,
+        "maximumPlanningSliceMs": 4.174,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "capacityClaim": false
+}

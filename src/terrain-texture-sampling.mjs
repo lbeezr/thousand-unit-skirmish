@@ -4,9 +4,39 @@ const FUNCTIONS = /* glsl */`
 #ifdef USE_MAP
 uniform float vaeloraTerrainSeed;
 uniform float vaeloraFreeRotation;
+#ifdef VAELORA_GROUND_ATLAS
+uniform vec4 vaeloraMapRect;
+#endif
 #ifdef VAELORA_GROUND_VARIANT
 uniform sampler2D vaeloraVariantMap;
 #endif
+#ifdef VAELORA_VARIANT_ATLAS
+uniform vec4 vaeloraVariantRect;
+#endif
+#if defined(VAELORA_GROUND_ATLAS) || defined(VAELORA_VARIANT_ATLAS)
+vec4 vaeloraAtlasSample(sampler2D terrainMap, vec2 uv, vec2 dx, vec2 dy, vec4 rect) {
+  vec2 phase = mod(uv, 2.0);
+  vec2 flip = step(vec2(1.0), phase);
+  vec2 mirrored = mix(phase, 2.0 - phase, flip);
+  // Fold each actual sample, after stochastic rotation/offset. Interpolating
+  // folded vertex UVs would stretch a paint across repeat boundaries.
+  vec2 gradientSign = 1.0 - 2.0 * flip;
+  vec2 atlasDx = dx * rect.zw, atlasDy = dy * rect.zw;
+  // Preserve gradient direction/aspect while bounding the filter footprint at
+  // mip 5 (32 base texels), safely inside the 64-texel mirrored gutters.
+  float footprint = max(length(atlasDx * 1920.0), length(atlasDy * 1920.0));
+  float mipCap = min(1.0, 32.0 / max(footprint, 0.0001));
+  return textureGrad(terrainMap, rect.xy + mirrored * rect.zw,
+    atlasDx * gradientSign * mipCap, atlasDy * gradientSign * mipCap);
+}
+#endif
+vec4 vaeloraMapSample(sampler2D terrainMap, vec2 uv, vec2 dx, vec2 dy) {
+#ifdef VAELORA_GROUND_ATLAS
+  return vaeloraAtlasSample(terrainMap, uv, dx, dy, vaeloraMapRect);
+#else
+  return textureGrad(terrainMap, uv, dx, dy);
+#endif
+}
 vec2 vaeloraHash(vec2 p) {
   p += vaeloraTerrainSeed;
   return fract(sin(vec2(dot(p, vec2(127.1, 311.7)),
@@ -21,11 +51,16 @@ vec4 vaeloraPatch(sampler2D terrainMap, vec2 uv, vec2 anchor, vec2 dx, vec2 dy) 
   // One source per lattice anchor; adjacent anchors blend continuously using
   // the existing three weights. Each branch samples one source per patch.
   if (vaeloraHash(anchor + vec2(43.0, 19.0)).y > 0.5) {
+#ifdef VAELORA_VARIANT_ATLAS
+    return vaeloraAtlasSample(vaeloraVariantMap, rotation * uv + random * 7.0,
+      rotation * dx, rotation * dy, vaeloraVariantRect);
+#else
     return textureGrad(vaeloraVariantMap, rotation * uv + random * 7.0,
       rotation * dx, rotation * dy);
+#endif
   }
 #endif
-  return textureGrad(terrainMap, rotation * uv + random * 7.0,
+  return vaeloraMapSample(terrainMap, rotation * uv + random * 7.0,
     rotation * dx, rotation * dy);
 }
 vec4 vaeloraGround(sampler2D terrainMap, vec2 uv, vec2 dx, vec2 dy) {
@@ -61,7 +96,12 @@ vec4 vaeloraGround(sampler2D terrainMap, vec2 uv, vec2 dx, vec2 dy) {
 `;
 
 export function applyTerrainTextureSampling(material, seed = 0, enabled = true, freeRotation = false, variantTexture = null) {
-  if (!enabled) return material;
+  const mapRect = material.map?.userData.paintedMaterialAtlasUvRect;
+  const variantRect = enabled && variantTexture?.userData.paintedMaterialAtlasUvRect;
+  if (!enabled && !mapRect) return material;
+  if (mapRect) material.defines = { ...material.defines, VAELORA_GROUND_ATLAS: 1 };
+  if (variantRect) material.defines = { ...material.defines, VAELORA_VARIANT_ATLAS: 1 };
+  if (!enabled) variantTexture = null;
   if (variantTexture) {
     material.defines = { ...material.defines, VAELORA_GROUND_VARIANT: 1 };
     material.userData.groundVariantTexture = variantTexture;
@@ -69,6 +109,10 @@ export function applyTerrainTextureSampling(material, seed = 0, enabled = true, 
   material.onBeforeCompile = (shader) => {
     shader.uniforms.vaeloraTerrainSeed = { value: (seed % 997) / 17 };
     shader.uniforms.vaeloraFreeRotation = { value: freeRotation ? 1 : 0 };
+    const glRect = rect => [rect.min.u, 1 - rect.max.v,
+      rect.max.u - rect.min.u, rect.max.v - rect.min.v];
+    if (mapRect) shader.uniforms.vaeloraMapRect = { value: glRect(mapRect) };
+    if (variantRect) shader.uniforms.vaeloraVariantRect = { value: glRect(variantRect) };
     if (variantTexture) shader.uniforms.vaeloraVariantMap = { value: variantTexture };
     shader.fragmentShader = FUNCTIONS + shader.fragmentShader;
     shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', /* glsl */`
@@ -82,7 +126,7 @@ export function applyTerrainTextureSampling(material, seed = 0, enabled = true, 
         if (vaeloraPaintAlpha < 0.001) discard;
       #endif
       #ifdef USE_MAP
-        diffuseColor *= vaeloraGround(map, vMapUv, vaeloraDx, vaeloraDy);
+        diffuseColor *= ${enabled ? 'vaeloraGround' : 'vaeloraMapSample'}(map, vMapUv, vaeloraDx, vaeloraDy);
       #endif
     `);
     shader.fragmentShader = shader.fragmentShader.replace('#include <alphamap_fragment>', `
@@ -91,6 +135,6 @@ export function applyTerrainTextureSampling(material, seed = 0, enabled = true, 
       #endif
     `);
   };
-  material.customProgramCacheKey = () => variantTexture ? 'vaelora-stochastic-ground-v4-variant' : 'vaelora-stochastic-ground-v3';
+  material.customProgramCacheKey = () => `vaelora-ground-v5:${enabled}:${freeRotation}:${Boolean(variantTexture)}:${Boolean(mapRect)}:${Boolean(variantRect)}`;
   return material;
 }

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "review": "Admit only first complete action-heading slice: three East axe keys and faithful attack reuse",
+  "bearing": "Actual down-right front three-quarter, not right-side SE; all three complete tools/boots preserved",
+  "admittedSourceKeys": [
+    0,
+    1,
+    2
+  ],
+  "unadmittedRetainedSourceKeys": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "articulation": [
+    "compact axe windup",
+    "down-right strike",
+    "mid-waist recovery"
+  ],
+  "registration": "shared232/307; fixed roots384/784/1184 baseline349; no per-key scale/recenter",
+  "unfinished": [
+    "native body/root/contact/target observation",
+    "loop smoothness",
+    "remaining action groups/default coverage"
+  ],
+  "authorization": "standing built-in public-seed edit; no external paid job/private pixels"
+}

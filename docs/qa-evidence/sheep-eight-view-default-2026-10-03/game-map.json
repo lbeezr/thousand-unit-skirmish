@@ -1,0 +1,126 @@
+{
+  "id": "sheep-eight-view-game-proof",
+  "name": "SHEEP EIGHT VIEW GAME PROOF",
+  "summary": "Eight approved static nose poses in the normal game renderer; authored stock is a disposable QA fixture.",
+  "width": 64,
+  "height": 64,
+  "terrainSeed": 881,
+  "fogOfWar": true,
+  "startingArmySize": 8,
+  "startingResources": {
+    "food": 0,
+    "wood": 0
+  },
+  "spawnPoints": [
+    {
+      "team": 0,
+      "x": -20,
+      "z": 0
+    },
+    {
+      "team": 1,
+      "x": 20,
+      "z": 0
+    }
+  ],
+  "resourceNodes": [
+    {
+      "id": "visible-sheep",
+      "type": "food",
+      "x": -15,
+      "z": 6,
+      "stock": 3.5,
+      "wildlifeSpecies": "bellweather-sheep"
+    },
+    {
+      "id": "hidden-sheep",
+      "type": "food",
+      "x": 0,
+      "z": 14,
+      "stock": 100,
+      "wildlifeSpecies": "bellweather-sheep"
+    },
+    {
+      "id": "ordinary-berries",
+      "type": "food",
+      "x": 15,
+      "z": 6,
+      "stock": 100
+    },
+    {
+      "id": "north-companion",
+      "type": "food",
+      "x": -26,
+      "z": -6,
+      "stock": 100,
+      "wildlifeSpecies": "bellweather-sheep",
+      "wildlifeNoseYawDegrees": 0
+    },
+    {
+      "id": "nose-045",
+      "type": "food",
+      "x": -22,
+      "z": -6,
+      "stock": 100,
+      "wildlifeSpecies": "bellweather-sheep",
+      "wildlifeNoseYawDegrees": 45
+    },
+    {
+      "id": "east-pose",
+      "type": "food",
+      "x": -18,
+      "z": -6,
+      "stock": 100,
+      "wildlifeSpecies": "bellweather-sheep",
+      "wildlifeNoseYawDegrees": 90
+    },
+    {
+      "id": "nose-135",
+      "type": "food",
+      "x": -14,
+      "z": -6,
+      "stock": 100,
+      "wildlifeSpecies": "bellweather-sheep",
+      "wildlifeNoseYawDegrees": 135
+    },
+    {
+      "id": "nose-180",
+      "type": "food",
+      "x": -26,
+      "z": -3,
+      "stock": 100,
+      "wildlifeSpecies": "bellweather-sheep",
+      "wildlifeNoseYawDegrees": 180
+    },
+    {
+      "id": "nose-225",
+      "type": "food",
+      "x": -22,
+      "z": -3,
+      "stock": 100,
+      "wildlifeSpecies": "bellweather-sheep",
+      "wildlifeNoseYawDegrees": 225
+    },
+    {
+      "id": "nose-270",
+      "type": "food",
+      "x": -18,
+      "z": -3,
+      "stock": 100,
+      "wildlifeSpecies": "bellweather-sheep",
+      "wildlifeNoseYawDegrees": 270
+    },
+    {
+      "id": "nose-315",
+      "type": "food",
+      "x": -14,
+      "z": -3,
+      "stock": 100,
+      "wildlifeSpecies": "bellweather-sheep",
+      "wildlifeNoseYawDegrees": 315
+    }
+  ],
+  "obstacles": [],
+  "triggers": [],
+  "scenarioEvents": []
+}

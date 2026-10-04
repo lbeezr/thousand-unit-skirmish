@@ -8,6 +8,10 @@ manifest establishes packaging integrity, not renderer adoption or visual approv
 
 Normative schema: [sprite-atlas-pack-v1.schema.json](../schemas/sprite-atlas-pack-v1.schema.json).
 
+Generated action strips enter this format through the
+[strip adoption contract](sprite-strip-adoption-contract.md), preserving declared
+scale, ground anchors, seed color/mask identity, direction and timing.
+
 ## Validate, preview, and report
 
 ```sh
@@ -84,6 +88,38 @@ Validate exact source/runtime files, inspect pivots at ground contact, and compa
 all authored states/directions at game zoom. Record unsupported views, missing
 runtime encodes, unreviewed pivots, and source-only compositions. Pack-specific
 previews and validators do not establish in-game appearance or performance.
+
+## Current unit-loader binding subset
+
+The schema above is general. The shipped [unit consumer](../src/unit-sprite-runtime.mjs)
+uses this narrower adapter; a schema-valid new pack is not automatically selected.
+These are existing bindings, not new art requirements or a schema migration.
+Animation integration task `01a103d4` owns bounded adapter extensions when an art
+owner reports a concrete mismatch. Preserve supplied pixels/registration and
+complete usable action/headings before cosmetic polish.
+
+| Binding | Current unit consumer |
+| --- | --- |
+| Role and default path | Human server `worker` maps to asset ID **`human`**, `assets/units/cast-human-sprite-v3/`. Human Infantry uses `infantry` / `infantry-sprite-v3`; Spearman `spearman` / `spearman-sprite-v1`; Archer `archer` / `archer-sprite-v2`. Boughward IDs are `boughward-{kind}` in their v1 directories. The matching asset must have `kind: unit`. |
+| Version adoption | `packVersion` describes the manifest. Directory versions and role defaults are separately enumerated in the consumer and [main](../src/main.js). A new directory/version needs explicit selector/default/HTTP/release admission; it cannot replace a current role by changing `packVersion` alone. Keep existing source/provenance. |
+| Page and layer | One selected page supplies the role's frames and aligned mask; the loader chooses the first frame's fallback page, otherwise the first page. One actor layer is drawn, otherwise fallback rectangles. General multi-page/split-layer metadata does not implement extra unit draws. Coordinate such an extension before exporting a required action solely on another page/layer. |
+| Runtime files | The selected page needs both `runtimeFileId` color and `maskFileId` records; the unit loader currently requires the mask even though the general schema permits an optional one. Filenames resolve relative to that role's directory. Masks use the identical color registration and dimensions. |
+| Clip lookup | One clip per `stateId\|directionId`, with explicit ordered `frameId` / `durationMs` and `loop`. Headings are `north`, `north-east`, `east`, `south-east`, `south`, `south-west`, `west`, `north-west`. Labels represent world yaw; copied SE keys do not supply the other views. |
+| Existing states | `idle`, `walk`, `attack`, `defeat`; Worker `build`, `repair`, `gather-wood`, `gather-food`, `gather-fish`, and `gather-stone`. Generic `gather` is a declared fallback, not proof of resource-specific work. Carry/Return and Hold/Patrol/Follow reuse existing states/cues. |
+| Stone binding | A compatible positive `gather-stone` receipt selects the exact `gather-stone` heading when authored, otherwise the same heading's idle. This applies even in approximate-action previews; generic gather/wood and neighboring Stone views are not substitutes. Current Human v3 has four SE and three NW keys; Boughward has no Stone clip. Later exact-heading clips in the admitted default pack use this binding without another state-selector change. |
+| Timing | Walk/work loop; defeat clamps to its last key; fresh attack events use their receipt timestamp and deduplicate. Role/state event lifetime currently uses the longest **authored** clip, excluding `idle-` frame placeholders. Preserve reviewed loop flags and state durations. Shorter looping attack headings can replay within a longer state lifetime: differing heading durations require selected-clip lifetime review or aligned durations, rather than an unnoticed clock reset. |
+| Registration and scale | Canvas-local ground pivots and crop offsets drive placement; alpha bounds do not replace the root. Current `worldPerPixel = asset.heightWorld / max(frame.alphaBoundsPx.height \|\| frame.canvasPx.height)` across the pack. Check that adding a taller prop/frame preserves the accepted pixel-to-world scale for existing actions. Do not independently resize each key to its changing alpha box. |
+| Facing and precedence | Fixed camera `[0.78, 1.12, 0.78]`; zero yaw +Z, increasing toward +X, rounded to eight headings. Defeat → walk → fresh attack → confirmed Worker work → idle. Gathering has actual row-15 bearing; build/repair bearing remains an agreed producer extension, not a distance guess. |
+
+Use the accepted role pack as the registration reference and validate actual
+frame IDs/rectangles against this adapter. `validate-sprite-atlas`, preview and
+handoff report check exported files; the actual-frame runtime tests and
+[functional game recipe](qa-worker-performing-action-consumer-2026-10-04.md#ordinary-game-capture-recipe)
+check binding/playback, selected/unselected, interruption/resume, root/contact,
+fog/LOD and generation reset. HTTP/release and an identified containing game
+build remain separate proof. Report a mismatch with the role/pack revision,
+action, heading, exact frame/clip IDs and expected versus observed selection so
+the integration owner can change the smallest affected boundary.
 
 ## Minimal manifest example
 

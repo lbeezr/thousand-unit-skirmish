@@ -113,6 +113,11 @@ stretched human rig.
 
 ### Frame, scale and layer contract
 
+For generated 2D action strips, use the
+[strip adoption contract](sprite-strip-adoption-contract.md). It records the
+reviewed Game Studio 0.1.2 helper limits and the fishing lane's anchored transform,
+shared-scale, color/mask seed-lock and timed-loop acceptance requirements.
+
 Capture standalone transparent frames before packing. Preflight every sampled
 pose, heading, weapon tip and carried object against the camera frame; enlarge
 the common capture envelope if any touches an edge. Keep horizontal root travel

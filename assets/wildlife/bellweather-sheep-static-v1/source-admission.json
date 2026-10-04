@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "sourceBundleSha256": "5dbe4d4e7516126d3aaa2aa4f84fbd494f39674636962547d632a1afc957d881",
+  "producerManifestSha256": "608b64f52b66de931e5cfad795bea34addb8f0981b80b34267362f9ac3260a1c",
+  "sourceViews": "Eight previews/sheep-yaw-000..315.png original bytes; hashes in source-records.json",
+  "producerContract": "source/capture-contract.json; camera, normalization, measurements, nose convention and views match the downloaded producer manifest",
+  "publicationApproval": {
+    "scope": "Eight approved Sheep PNG views and required runtime manifest in public lbeezr/thousand-unit-skirmish; full 3D source excluded",
+    "userResponse": "Yes, everything is approved. Just keep everything rolling."
+  },
+  "consumerInspection": {
+    "allEightViewsSeen": true,
+    "completeSilhouettes": true,
+    "visibleFloorOrBakedShadow": false,
+    "noseBodyHeadingOffsetDegrees": 42.03499984741211,
+    "walkingOrGrazingAnimation": false
+  },
+  "sourceModelIncluded": false,
+  "paidProviderCalls": 0,
+  "gameScreenshotAcceptance": "pending; Linux browser sandbox unavailable; no bypass used"
+}

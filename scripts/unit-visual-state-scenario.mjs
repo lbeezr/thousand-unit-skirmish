@@ -37,22 +37,30 @@ assert.equal(unitCargoVisualState('worker', 100, false, 4, 'food'), 'none',
 assert.equal(unitActionPoseAllowed(0, 1234), false,
   'defeated units must not show action poses during their defeat animation');
 
-assert.equal(unitWorkerActionPose('worker', true, 'gathering', 'wood', false), 'chopping',
+assert.equal(unitWorkerActionPose('worker', true, 'gathering', 'gather-wood', false), 'chopping',
   'wood gatherers use the broad chopping cue');
-assert.equal(unitWorkerActionPose('worker', true, 'gathering', 'food', false), 'berry-gathering',
+assert.equal(unitWorkerActionPose('worker', true, 'gathering', 'gather-food', false), 'berry-gathering',
   'food gatherers use the shorter berry-picking cue');
-assert.equal(unitWorkerActionPose('worker', true, 'gathering', null, false), 'gathering',
-  'gathering without a known resource uses a neutral cue');
-assert.equal(unitWorkerActionPose('worker', true, 'building', 'wood', false), 'construction',
-  'building keeps the construction cue regardless of carried cargo');
-assert.equal(unitWorkerActionPose('worker', true, 'repairing', null, false), 'construction', 'repair reuses the declared construction action cue');
-assert.equal(unitWorkerActionPose('worker', true, 'returning', 'food', false), 'none',
+assert.equal(unitWorkerActionPose('worker', true, 'gathering', null, false), 'none',
+  'assigned gathering without confirmed activity has no work pose');
+assert.equal(unitWorkerActionPose('worker', true, 'gathering', 'gather-stone', false), 'gathering',
+  'confirmed Stone preserves the existing neutral procedural cue, with no dedicated sprite art');
+assert.equal(unitWorkerActionPose('worker', true, 'building', 'build', false), 'construction',
+  'positive construction keeps its existing hammer cue');
+assert.equal(unitWorkerActionPose('worker', true, 'repairing', 'repair', false), 'construction', 'repair reuses the declared construction action cue');
+for (const task of ['building', 'repairing']) {
+  assert.equal(unitWorkerActionPose('worker', true, task, null, false), 'none',
+    `${task} waiting has no procedural work pose`);
+}
+assert.equal(unitWorkerActionPose('worker', true, 'building', 'repair', false), 'none',
+  'incompatible receipt has no procedural work pose');
+assert.equal(unitWorkerActionPose('worker', true, 'returning', 'gather-food', false), 'none',
   'workers returning to base do not swing');
-assert.equal(unitWorkerActionPose('worker', true, 'gathering', 'wood', true), 'none',
+assert.equal(unitWorkerActionPose('worker', true, 'gathering', 'gather-wood', true), 'none',
   'workers moving to a resource do not swing');
-assert.equal(unitWorkerActionPose('worker', false, 'gathering', 'wood', false), 'none',
+assert.equal(unitWorkerActionPose('worker', false, 'gathering', 'gather-wood', false), 'none',
   'fog-hidden workers do not expose an action pose');
-assert.equal(unitWorkerActionPose('infantry', true, 'gathering', 'wood', false), 'none',
+assert.equal(unitWorkerActionPose('infantry', true, 'gathering', 'gather-wood', false), 'none',
   'non-workers do not inherit worker action poses');
 
 process.stdout.write('Unit visual-state scenario passed: defeat priority, fog safety, and worker action mapping.\n');

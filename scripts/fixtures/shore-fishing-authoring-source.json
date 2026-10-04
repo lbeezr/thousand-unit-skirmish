@@ -1,0 +1,34 @@
+{
+  "id": "shore-fishing",
+  "name": "SHORE FISHING",
+  "summary": "Build a shoreline Dock and train a Skiff from finite local wood; gather fish food by land or water.",
+  "width": 40,
+  "height": 32,
+  "terrainSeed": 9300703,
+  "terrainBase": "meadow",
+  "fogOfWar": true,
+  "startingArmySize": 8,
+  "startingResources": { "food": 0, "wood": 0 },
+  "spawnPoints": [
+    { "team": 0, "x": -12.5, "z": 0.5 },
+    { "team": 1, "x": 12.5, "z": 0.5 }
+  ],
+  "resourceNodes": [
+    { "id": "azure-food", "type": "food", "x": -7.5, "z": 5.5, "stock": 60 },
+    { "id": "ember-food", "type": "food", "x": 7.5, "z": 5.5, "stock": 60 },
+    { "id": "azure-wood", "type": "wood", "x": -7.5, "z": -5.5, "stock": 175 },
+    { "id": "ember-wood", "type": "wood", "x": 7.5, "z": -5.5, "stock": 175 }
+  ],
+  "obstacles": [
+    { "column": 10, "row": 22, "width": 4, "height": 4, "material": "water" },
+    { "column": 26, "row": 22, "width": 4, "height": 4, "material": "water" }
+  ],
+  "triggers": [],
+  "scenarioEvents": [],
+  "audio": {
+    "packId": "vaelora-siltmouths",
+    "profileId": "landscape",
+    "version": "v2",
+    "sha256": "1d64164f3d97048f3e68ef2b094d04359281da7ddafed86cbeee628b83ce8c44"
+  }
+}

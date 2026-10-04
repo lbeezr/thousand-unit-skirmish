@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "scope": "Approved-runtime coverage: eight-view Sheep, Human Worker SE fishing, eight Frontier Complete families, eight painted ground materials with six authored mips, three generic oak depletion states with six authored mips. Concepts, unapproved candidates and other runtime families are outside this guard.",
+  "records": [
+    {
+      "id": "frontier-oak-depletion-atlas-v1",
+      "owner": "Terrain art integration owner",
+      "probe": "oak-depletion",
+      "manifest": "assets/environment/frontier-oak-depletion-atlas-v1/manifest.json"
+    },
+    {
+      "id": "frontier-painted-material-atlas-v1",
+      "owner": "Painted ground atlas adoption owner",
+      "probe": "painted-ground",
+      "manifest": "assets/environment/frontier-painted-material-atlas-v1/manifest.json"
+    },
+    {
+      "id": "bellweather-sheep",
+      "owner": "Sheep renderer owner",
+      "probe": "sheep",
+      "manifest": "assets/wildlife/bellweather-sheep-static-v1/sprite-atlas-pack-v1.json",
+      "binding": "assets/wildlife/bellweather-sheep-static-v1/static-preview-binding.json"
+    },
+    {
+      "id": "human-worker-fishing-SE",
+      "owner": "Worker art/renderer owner",
+      "probe": "human-worker-fishing",
+      "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json"
+    },
+    {
+      "id": "frontier-town-center",
+      "owner": "Active Frontier renderer owner",
+      "probe": "frontier-building",
+      "building": "town-center",
+      "manifest": "assets/buildings/frontier-civilization-scale-pilot-v1/town-center-complete-renderer.json"
+    },
+    {
+      "id": "frontier-house",
+      "owner": "Active Frontier renderer owner",
+      "probe": "frontier-building",
+      "building": "house",
+      "manifest": "assets/buildings/frontier-civilization-scale-pilot-v1/house-complete-renderer.json"
+    },
+    {
+      "id": "frontier-storehouse",
+      "owner": "Active Frontier renderer owner",
+      "probe": "frontier-building",
+      "building": "storehouse",
+      "manifest": "assets/buildings/frontier-civilization-models-v1/storehouse-complete-renderer.json"
+    },
+    {
+      "id": "frontier-stable",
+      "owner": "Active Frontier renderer owner",
+      "probe": "frontier-building",
+      "building": "stable",
+      "manifest": "assets/buildings/frontier-civilization-models-v1/stable-complete-renderer.json"
+    },
+    {
+      "id": "frontier-workshop",
+      "owner": "Active Frontier renderer owner",
+      "probe": "frontier-building",
+      "building": "workshop",
+      "manifest": "assets/buildings/frontier-civilization-models-v1/workshop-complete-renderer.json"
+    },
+    {
+      "id": "frontier-watchtower",
+      "owner": "Active Frontier renderer owner",
+      "probe": "frontier-building",
+      "building": "watchtower",
+      "manifest": "assets/buildings/frontier-civilization-models-v1/watchtower-complete-renderer.json"
+    },
+    {
+      "id": "frontier-barracks",
+      "owner": "Active Frontier building workstream",
+      "probe": "frontier-building",
+      "building": "barracks",
+      "manifest": "assets/buildings/frontier-civilization-military-models-v1/barracks-complete-renderer.json"
+    },
+    {
+      "id": "frontier-archery-range",
+      "owner": "Active Frontier building workstream",
+      "probe": "frontier-building",
+      "building": "archery-range",
+      "manifest": "assets/buildings/frontier-civilization-military-models-v1/archery-range-complete-renderer.json"
+    }
+  ]
+}

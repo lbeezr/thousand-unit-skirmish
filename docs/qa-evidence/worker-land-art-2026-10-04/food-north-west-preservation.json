@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "d42a8ba33861350f68c36b76fe04f1df5729e3cb",
+  "originalFrames": 131,
+  "originalClips": 54,
+  "originalFrameMetadataSha256": "fa64c5d09dda0c5fb8ac226d74fc63612688f181568d08c27bc034a3a2437081",
+  "originalClipMetadataSha256": "39e6a0f34d133a2ccf4f6acbcfd4da341cc5ca5f224eb4d8a23e547cc0d7f7fb",
+  "originalFrameRgbaSha256": "24984340342628fc97d0859a8e5834b56b706eb4ad8a8256b3b8b4463c2fc254",
+  "originalTeamMaskSha256": "d740bcc5711c84da12c15abbbbd2bfa51113a1369a9214d2fb39ec73d6815fb0",
+  "originalDimensionsPx": {
+    "width": 2560,
+    "height": 4096
+  },
+  "worldUnitsPerPixel": 0.0052421832906788795
+}

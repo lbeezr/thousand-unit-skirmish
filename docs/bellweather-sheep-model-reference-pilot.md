@@ -9,6 +9,12 @@ model. The parent-designated paid-call worker owns balance/estimate evidence and
 all provider submissions. This worker prepares inputs only. Walking remains a
 later decision.
 
+**Historical scope, 4 October 2026:** this is the retained 2 October preparation
+and producer capture record. Its generation cap describes that earlier bounded
+authorization; it creates no current provider spending or private-source
+publication authority. The [current Sheep delivery guide](wildlife-bellweather-sheep.md)
+owns the later approved static runtime pack and pending private action exports.
+
 ## Single-subject input recommendation
 
 Use the lower-left front-three-quarter Sheep in the preserved

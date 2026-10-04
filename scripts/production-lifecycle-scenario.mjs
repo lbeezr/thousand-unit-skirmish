@@ -130,6 +130,8 @@ try {
   const doomed = createFixture();
   // A deployed schema-10 save has counts but no product IDs. Recover its queues before combat.
   doomed.schemaVersion = 10;
+  delete doomed.matchModeId; delete doomed.matchModeVersion;
+  delete doomed.economyProfileId; delete doomed.state.teamStone;
   for (const b of doomed.state.buildings) {
     delete b.productionQueue;
     b.hp = 1; b.trainingRemaining = 1 / 60;
@@ -142,7 +144,7 @@ try {
   await start();
   const destroyed = await checkpointWith(checkpointPath, (s) => s.mapDefinition.id === map.id
     && s.state.tickNumber >= doomed.state.tickNumber + 30 && s.state.buildings.length === 0);
-  assert.equal(destroyed.schemaVersion, 19, 'legacy production checkpoint migrates');
+  assert.equal(destroyed.schemaVersion, 29, 'legacy production checkpoint migrates');
   assert.equal(destroyed.state.units.length, doomed.state.units.length, 'destruction before completion produces no ghost units');
   assert.deepEqual(destroyed.state.teamFood, doomed.state.teamFood, 'lost queues are not charged or refunded again');
   assert.deepEqual(destroyed.state.teamWood, doomed.state.teamWood);
@@ -163,8 +165,10 @@ try {
     for (const worker of workers) worker.buildingTargetId = null;
     Object.assign(workers[0], { x: b.x - 2, z: b.z, hp: 1, buildingTargetId: b.id, path: [], pathIndex: 0 });
     const attacker = abandoned.state.units.find((u) => u.team === 1 - b.team && u.kind === 'infantry');
+    // Relocation represents a focused attack, not a return to its old idle anchor.
     Object.assign(attacker, { x: b.x - 2.5, z: b.z, path: [], pathIndex: 0,
-      attackTargetId: workers[0].id, attackBuildingTargetId: -1, attackCooldown: 0, movePlanningPending: false });
+      attackTargetId: workers[0].id, attackBuildingTargetId: -1, attackCooldown: 0, movePlanningPending: false,
+      attackMove: false, stanceCombat: false, stanceReturning: false });
   }
   await writeFile(checkpointPath, JSON.stringify(abandoned));
   await start();
@@ -190,6 +194,11 @@ try {
   // from opponents and production exits; this tests capacity, not spawn blocking.
   const capped = createFixture();
   capped.state.currentArmySize = 2000; // Explicit stress fixture, separate from the gameplay population economy.
+  // Explicit structure attacks must finish passively, without killing capacity-test units.
+  for (const unit of capped.state.units) if (unit.kind !== 'worker') {
+    Object.assign(unit, { combatStance: 'noAttack', stanceCombat: false, stanceReturning: false,
+      attackMove: false, attackTargetId: -1, attackBuildingTargetId: -1, path: [], pathIndex: 0 });
+  }
   for (const team of [0, 1]) {
     const template = capped.state.units.find((u) => u.team === team && u.kind === 'infantry');
     let count = capped.state.units.filter((u) => u.team === team && u.hp > 0).length;
@@ -197,7 +206,8 @@ try {
       const unit = structuredClone(template);
       Object.assign(unit, { id: capped.state.units.length, generation: 1,
         x: (team === 0 ? -1 : 1) * (24 + (count % 7)), z: -28 + Math.floor(count / 7) % 45,
-        path: [], pathIndex: 0, attackTargetId: -1, attackBuildingTargetId: -1 });
+        path: [], pathIndex: 0, attackTargetId: -1, attackBuildingTargetId: -1,
+        combatStance: 'noAttack', stanceCombat: false, stanceReturning: false, attackMove: false });
       capped.state.unitGenerationCounters[unit.id] = 1;
       capped.state.units.push(unit);
       count++;

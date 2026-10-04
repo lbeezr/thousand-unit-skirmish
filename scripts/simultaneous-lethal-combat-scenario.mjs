@@ -1,5 +1,6 @@
-import { combatDamage } from '../src/combat-rules.mjs';
+import { combatDamage, canCombatTarget, hasGameplayCapability } from '../src/combat-rules.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { initializeCombatStance } from '../src/combat-stance.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -13,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SERVER_PATH = path.join(ROOT, 'server.mjs');
 const TIMEOUT_MS = 45_000;
+let scenario = 'initial fixture publication';
 
 async function freePort() {
   const server = createServer();
@@ -47,7 +49,11 @@ function connect(port) {
     return new Promise((resolve, reject) => {
       const waiter = { predicate, resolve, timer: setTimeout(() => {
         waiters.splice(waiters.indexOf(waiter), 1);
-        reject(new Error('Timed out waiting for server message'));
+        reject(new Error(`Timed out during ${scenario}: ${JSON.stringify({
+          mapId: latest?.mapId, winner: latest?.winner,
+          fighters: latest?.units?.filter(row => row[0] === 0 || row[0] === 4),
+          serverLog: logs.slice(-3000),
+        })}`));
       }, TIMEOUT_MS) };
       waiters.push(waiter);
     });
@@ -68,6 +74,7 @@ const clients = [];
 async function start() {
   child = spawn(process.execPath, [SERVER_PATH], { cwd: ROOT, env: { ...process.env,
     PORT: String(port), RTS_HOST: '127.0.0.1', RTS_MATCH_STATE_PATH: checkpointPath,
+    RTS_MAP: 'maps/open-field.json',
     RTS_CUSTOM_MAP_DIRECTORY: path.join(temp, 'maps') }, stdio: ['ignore', 'pipe', 'pipe'] });
   child.stdout.on('data', x => logs += x); child.stderr.on('data', x => logs += x);
   const deadline = Date.now() + TIMEOUT_MS;
@@ -97,9 +104,12 @@ try {
   for (let slot = 0; slot < 4; slot++) assert.equal(initial.state.units[slot].attackCooldown,
     initial.state.units[slot+4].attackCooldown, 'opening cadence must match by team slot');
   const results = [];
-  for (const [kind, damage] of Object.entries(UNIT_DEFINITIONS).map(([kind, definition]) => [kind, combatDamage(definition, definition)])) {
+  for (const [kind, damage] of Object.entries(UNIT_DEFINITIONS).filter(([, definition]) =>
+    hasGameplayCapability(definition, 'attack') && canCombatTarget(definition, definition))
+    .map(([kind, definition]) => [kind, combatDamage(definition, definition)])) {
     for (const lowerIdTeam of [0, 1]) {
       for (const strikes of [1, 3, 'staggered']) {
+        scenario = `${kind}, lower-ID team ${lowerIdTeam}, strikes ${strikes}`;
         const fixture = structuredClone(initial);
         fixture.state.seatSessions = [];
         fixture.state.scenarioClockStarted = true;
@@ -111,14 +121,17 @@ try {
             attackTargetId: enemyId, attackCooldown: strikes === 1 || strikes === 'staggered' && id === 0 ? 0 : .4,
             repathTimer: 0, lastAttackCell: -1, lastAttackTick: -1,
           });
+          initializeCombatStance(fixture.state.units[id], UNIT_DEFINITIONS[kind]);
         }
         await writeFile(checkpointPath, JSON.stringify(fixture));
         await start();
+        assert.equal(clients[0].latest.mapId, 'lethal-fairness', `${scenario}: restore the combat fixture`);
         const hits = new Map();
         const collect = state => {
           for (const row of state?.units || []) {
             if (row[0] !== 0 && row[0] !== 4) continue;
-            if (row[11] >= 0) {
+            // Worker receipt rows use null for an absent attack tick.
+            if (Number.isInteger(row[11]) && row[11] >= 0) {
               if (!hits.has(row[0])) hits.set(row[0], new Set());
               hits.get(row[0]).add(row[11]);
             }
@@ -156,6 +169,7 @@ try {
   }
   for (const [strong, weak] of [['spearman', 'rider'], ['rider', 'worker'], ['worker', 'scout'], ['rider', 'siege-engine']]) {
     for (const strongTeam of [0, 1]) {
+      scenario = `${strong} against ${weak}, strong team ${strongTeam}`;
       const fixture = structuredClone(initial);
       fixture.state.seatSessions = []; fixture.state.scenarioClockStarted = true;
       for (const unit of fixture.state.units) unit.hp = 0;
@@ -163,8 +177,10 @@ try {
         Object.assign(fixture.state.units[id], { team, kind, x: id === 0 ? -.5 : .5, z: .5,
           hp: UNIT_DEFINITIONS[kind].combat.maxHp, attackTargetId: enemyId, attackCooldown: .4,
           repathTimer: 0, lastAttackCell: -1, lastAttackTick: -1 });
+        initializeCombatStance(fixture.state.units[id], UNIT_DEFINITIONS[kind]);
       }
       await writeFile(checkpointPath, JSON.stringify(fixture)); await start();
+      assert.equal(clients[0].latest.mapId, 'lethal-fairness', `${scenario}: restore the combat fixture`);
       if (clients[0].latest.winner < 0) await clients[0].wait(m => m.type === 'state' && m.winner >= 0);
       await stop();
       const result = JSON.parse(await readFile(checkpointPath, 'utf8'));

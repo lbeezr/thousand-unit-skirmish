@@ -1,0 +1,184 @@
+{
+  "head": "9b28054298ecd2100af506f665865b7cc8ea2560",
+  "sourceSha256": "bf78f947dc21fd514a15562fc0c13f6ffba09f608041962bea001deebd408508",
+  "team": 0,
+  "controlKind": "parked",
+  "map": {
+    "id": "pathing-large-single-choke-996-seat-0",
+    "name": "PATHING BASELINE",
+    "width": 128,
+    "height": 128,
+    "terrainSeed": 881,
+    "fogOfWar": false,
+    "spawnPoints": [
+      {
+        "team": 0,
+        "x": -36,
+        "z": 0
+      },
+      {
+        "team": 1,
+        "x": 36,
+        "z": 44
+      }
+    ],
+    "startingArmySize": 2000,
+    "startingResources": {
+      "food": 500,
+      "wood": 500
+    },
+    "resourceNodes": [],
+    "triggers": [],
+    "scenarioEvents": [],
+    "obstacles": [
+      {
+        "id": "north-wall",
+        "column": 64,
+        "row": 0,
+        "width": 1,
+        "height": 64,
+        "material": "stone"
+      },
+      {
+        "id": "south-wall",
+        "column": 64,
+        "row": 65,
+        "width": 1,
+        "height": 63,
+        "material": "stone"
+      }
+    ]
+  },
+  "roster": 2000,
+  "selected": 996,
+  "arrived": 996,
+  "midTick": 180,
+  "arrivalTicks": 1230,
+  "orders": [
+    {
+      "tick": 51,
+      "type": "move",
+      "selected": 996,
+      "x": 16.5,
+      "z": 0.5,
+      "notice": "MOVE ORDER \u00b7 996 UNITS"
+    },
+    {
+      "tick": 1262,
+      "type": "stop",
+      "selected": 8,
+      "x": null,
+      "z": null,
+      "notice": "STOP ORDER \u00b7 8 UNITS"
+    },
+    {
+      "tick": 1263,
+      "type": "move",
+      "selected": 8,
+      "x": 28.5,
+      "z": 8.5,
+      "notice": "MOVE ORDER \u00b7 8 UNITS"
+    },
+    {
+      "tick": 1263,
+      "type": "move",
+      "selected": 24,
+      "x": 24.5,
+      "z": 0.5,
+      "notice": "MOVE ORDER \u00b7 8 UNITS"
+    }
+  ],
+  "activeRouteRestart": true,
+  "stopPreserved": 8,
+  "replacementPreserved": 8,
+  "idleRestart": true,
+  "replacementResults": [
+    {
+      "id": 12,
+      "goal": 9179,
+      "revision": 3
+    },
+    {
+      "id": 13,
+      "goal": 9180,
+      "revision": 3
+    },
+    {
+      "id": 14,
+      "goal": 9181,
+      "revision": 3
+    },
+    {
+      "id": 15,
+      "goal": 9307,
+      "revision": 3
+    },
+    {
+      "id": 16,
+      "goal": 9308,
+      "revision": 3
+    },
+    {
+      "id": 17,
+      "goal": 9309,
+      "revision": 3
+    },
+    {
+      "id": 18,
+      "goal": 9435,
+      "revision": 3
+    },
+    {
+      "id": 19,
+      "goal": 9436,
+      "revision": 3
+    }
+  ],
+  "initialPlanning": [
+    {
+      "orderId": 1,
+      "team": 0,
+      "mode": "shared-start",
+      "unitCount": 996,
+      "searchCount": 917,
+      "expandedCells": 467516,
+      "planningSliceCount": 146,
+      "maxPlanningSliceWorkItems": 8,
+      "maxPlanningSliceExpandedCells": 5059,
+      "nonEmptyPaths": 996,
+      "routeFailures": 0
+    }
+  ],
+  "overlappingPlanning": [
+    {
+      "orderId": 3,
+      "team": 0,
+      "mode": "shared-start",
+      "unitCount": 8,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 3,
+      "maxPlanningSliceWorkItems": 8,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 8,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 2,
+      "team": 0,
+      "mode": "shared-start",
+      "unitCount": 8,
+      "searchCount": 1,
+      "expandedCells": 62,
+      "planningSliceCount": 5,
+      "maxPlanningSliceWorkItems": 8,
+      "maxPlanningSliceExpandedCells": 62,
+      "nonEmptyPaths": 8,
+      "routeFailures": 0
+    }
+  ],
+  "limits": [
+    "actual asynchronous two-seat loopback server; natural roster and ordinary commands, no actor injection",
+    "no renderer, deployment, comparable hardware speedup or supported capacity claim"
+  ]
+}

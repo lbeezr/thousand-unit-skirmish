@@ -1,4 +1,12 @@
+import { PALISADE_TUNING_PROPOSAL, palisadeDraftDefinition } from './palisade-profile.mjs';
+import { FARM_TUNING_PROPOSAL as FARM } from './farm-harvest.mjs';
+
 // Shared gameplay data. Presentation IDs identify profiles, never collision or combat rules.
+const supportedUnitCapabilities = new Set(['move', 'attack', 'attack-structures', 'gather', 'build', 'repair']);
+const supportedResources = new Set(['food', 'wood']);
+const buildingCombatFields = new Set(['mode', 'attackClass', 'targetTags', 'tagMultipliers', 'range', 'damage', 'period']);
+const unitCombatFields = new Set([...buildingCombatFields, 'maxHp', 'moveSpeed', 'structureDamage']);
+
 export function validateGameplayDefinitions(definitions) {
   if (!definitions || definitions.version !== 1) throw new Error('Unsupported gameplay definition version');
   for (const key of ['repairHpPerSecond', 'fullRepairWoodFraction', 'minimumRepairWood']) {
@@ -6,6 +14,7 @@ export function validateGameplayDefinitions(definitions) {
   }
   const { attackClasses, tags, capabilities, minimumDamage } = definitions.combatRules || {};
   for (const [name, values] of Object.entries({ attackClasses, tags, capabilities })) if (!Array.isArray(values) || !values.length || new Set(values).size !== values.length || values.some((value) => typeof value !== 'string' || !/^[a-z][a-z0-9-]*$/.test(value))) throw new Error(`Invalid combat rules ${name}`);
+  for (const capability of capabilities) if (!supportedUnitCapabilities.has(capability)) throw new Error(`Unsupported unit capability: ${capability}`);
   if (!Number.isFinite(minimumDamage) || minimumDamage <= 0) throw new Error('Invalid minimum damage');
   const wireIds = new Set();
   const upgradeKeys = new Set();
@@ -15,7 +24,11 @@ export function validateGameplayDefinitions(definitions) {
     for (const [id, entry] of Object.entries(entries)) {
       if (!entry || typeof entry !== 'object' || Array.isArray(entry) || !/^[a-z][a-z0-9-]*$/.test(id) || entry.id !== id) throw new Error(`Invalid ${category} ID: ${id}`);
       if (!entry.label || (category !== 'technologies' && !entry.presentation)) throw new Error(`Missing identity: ${id}`);
-      for (const resource of ['food', 'wood']) {
+      if (!entry.cost || typeof entry.cost !== 'object' || Array.isArray(entry.cost)) throw new Error(`Invalid cost object: ${id}`);
+      for (const resource of Object.keys(entry.cost)) {
+        if (!supportedResources.has(resource)) throw new Error(`Unsupported cost resource ${resource}: ${id}`);
+      }
+      for (const resource of supportedResources) {
         if (!Number.isFinite(entry.cost?.[resource]) || entry.cost[resource] < 0) throw new Error(`Invalid ${resource} cost: ${id}`);
       }
       for (const key of category === 'units' ? ['trainSeconds', 'population']
@@ -24,34 +37,66 @@ export function validateGameplayDefinitions(definitions) {
       }
       if (category !== 'technologies') {
         if (!Array.isArray(entry.tags) || !entry.tags.length || new Set(entry.tags).size !== entry.tags.length || entry.tags.some((tag) => !tags.includes(tag))) throw new Error(`Invalid combat tags: ${id}`);
+        if (category === 'units' && entry.tags.includes('structure')) throw new Error(`Units cannot have the structure tag: ${id}`);
+        if (category === 'buildings' && !entry.tags.includes('structure')) throw new Error(`Buildings require the structure tag: ${id}`);
         if (!entry.armor || typeof entry.armor !== 'object' || Array.isArray(entry.armor) || Object.entries(entry.armor).some(([key, value]) => !attackClasses.includes(key) || !Number.isFinite(value) || value < 0)) throw new Error(`Invalid armor: ${id}`);
         if (category === 'units' && (!Array.isArray(entry.capabilities) || new Set(entry.capabilities).size !== entry.capabilities.length || entry.capabilities.some((value) => !capabilities.includes(value)))) throw new Error(`Invalid capabilities: ${id}`);
-        if (entry.combat) {
+        if (category === 'units' || entry.combat !== undefined) {
+          if (!entry.combat || typeof entry.combat !== 'object' || Array.isArray(entry.combat)) throw new Error(`Invalid ${category === 'units' ? 'unit' : 'building'} combat: ${id}`);
+          const supportedFields = category === 'units' ? unitCombatFields : buildingCombatFields;
+          for (const key of Object.keys(entry.combat)) if (!supportedFields.has(key)) throw new Error(`Unsupported combat field ${key}: ${id}`);
           if (!attackClasses.includes(entry.combat.attackClass) || !['melee', 'ranged'].includes(entry.combat.mode)) throw new Error(`Invalid attack class or mode: ${id}`);
-          if (!Array.isArray(entry.combat.targetTags) || !entry.combat.targetTags.length || new Set(entry.combat.targetTags).size !== entry.combat.targetTags.length || entry.combat.targetTags.some((tag) => !tags.includes(tag))) throw new Error(`Invalid target tags: ${id}`);
+          if (!Array.isArray(entry.combat.targetTags) || (!entry.combat.targetTags.length && !(category === 'units' && entry.movementDomain === 'water')) || new Set(entry.combat.targetTags).size !== entry.combat.targetTags.length || entry.combat.targetTags.some((tag) => !tags.includes(tag))) throw new Error(`Invalid target tags: ${id}`);
           if (!entry.combat.tagMultipliers || typeof entry.combat.tagMultipliers !== 'object' || Array.isArray(entry.combat.tagMultipliers) || Object.entries(entry.combat.tagMultipliers).some(([tag, value]) => !tags.includes(tag) || !Number.isFinite(value) || value <= 0)) throw new Error(`Invalid tag multiplier: ${id}`);
         }
       }
       if (category === 'units') {
+        if (entry.movementDomain !== undefined && !['land', 'water'].includes(entry.movementDomain)) throw new Error(`Unsupported movement domain: ${id}`);
+        if (entry.movementDomain === 'water' && (!entry.capabilities.includes('move') || entry.capabilities.some(capability => !['move', 'gather'].includes(capability)))) throw new Error(`Unsupported water capabilities: ${id}`);
+        if (entry.fishing !== undefined || (entry.movementDomain === 'water' && entry.capabilities.includes('gather'))) {
+          if (entry.movementDomain !== 'water' || !entry.capabilities.includes('gather') || !entry.fishing
+            || typeof entry.fishing !== 'object' || Array.isArray(entry.fishing)
+            || Object.keys(entry.fishing).some(key => !['gatherRate', 'carryCapacity'].includes(key))
+            || !Number.isFinite(entry.fishing.gatherRate) || entry.fishing.gatherRate <= 0 || entry.fishing.gatherRate > 10
+            || !Number.isFinite(entry.fishing.carryCapacity) || entry.fishing.carryCapacity <= 0 || entry.fishing.carryCapacity > 10) throw new Error(`Invalid water fishing: ${id}`);
+        }
         if (!Number.isInteger(entry.wireId) || entry.wireId < 0 || entry.wireId > 255 || wireIds.has(entry.wireId)) throw new Error(`Invalid or duplicate unit wire ID: ${id}`);
         wireIds.add(entry.wireId);
         if (entry.sight !== undefined && (!Number.isInteger(entry.sight) || entry.sight < 1 || entry.sight > 16)) throw new Error(`Invalid unit sight: ${id}`);
         if (!Number.isInteger(entry.population)) throw new Error(`Invalid population: ${id}`);
         if (entry.combat?.range > 16) throw new Error(`Invalid combat range: ${id}`);
         for (const key of ['maxHp', 'moveSpeed', 'range', 'damage', 'period', 'structureDamage']) {
-          if (!Number.isFinite(entry.combat?.[key]) || entry.combat[key] <= 0) throw new Error(`Invalid combat ${key}: ${id}`);
+          const unarmedZero = entry.movementDomain === 'water' && ['range', 'damage', 'structureDamage'].includes(key);
+          if (!Number.isFinite(entry.combat?.[key]) || (unarmedZero ? entry.combat[key] !== 0 : entry.combat[key] <= 0)) throw new Error(`Invalid combat ${key}: ${id}`);
         }
+        if (entry.movementDomain === 'water' && entry.combat.targetTags.length) throw new Error(`Unarmed water units cannot target: ${id}`);
+        if (!entry.capabilities.includes('move')) throw new Error(`Missing move capability: ${id}`);
+        if (entry.combat.targetTags.includes('structure') && !entry.capabilities.includes('attack-structures')) throw new Error(`Structure targets require attack-structures capability: ${id}`);
       }
       if (category === 'buildings') {
+        if (entry.capabilities !== undefined) throw new Error(`Unsupported building capabilities: ${id}`);
         if (entry.combat !== undefined) {
-          if (!entry.combat || typeof entry.combat !== 'object' || Array.isArray(entry.combat)) throw new Error(`Invalid building combat: ${id}`);
+          if (entry.combat.targetTags.includes('structure')) throw new Error(`Unsupported building structure targets: ${id}`);
           if (entry.combat.range > 16) throw new Error(`Invalid building combat range: ${id}`);
           for (const key of ['range', 'damage', 'period']) if (!Number.isFinite(entry.combat[key]) || entry.combat[key] <= 0) throw new Error(`Invalid building combat ${key}: ${id}`);
         }
         if (entry.sight !== undefined && (!Number.isInteger(entry.sight) || entry.sight < 1 || entry.sight > 16)) throw new Error(`Invalid building sight: ${id}`);
         if (entry.populationCapacity !== undefined && (!Number.isInteger(entry.populationCapacity) || entry.populationCapacity < 0)) throw new Error(`Invalid population capacity: ${id}`);
-        if (entry.dropoff !== undefined && (!Array.isArray(entry.dropoff) || !entry.dropoff.length || new Set(entry.dropoff).size !== entry.dropoff.length || entry.dropoff.some((resource) => !['food', 'wood'].includes(resource)))) throw new Error(`Invalid dropoff resources: ${id}`);
+        if (entry.dropoff !== undefined && (!Array.isArray(entry.dropoff) || !entry.dropoff.length || new Set(entry.dropoff).size !== entry.dropoff.length || entry.dropoff.some((resource) => !supportedResources.has(resource)))) throw new Error(`Invalid dropoff resources: ${id}`);
+        if (id === 'farm' && entry.harvest === undefined) throw new Error('Farm requires finite harvest rules');
+        if (entry.harvest !== undefined && (id !== 'farm' || !entry.harvest
+          || entry.harvest.type !== 'food' || entry.harvest.access !== 'owner'
+          || !Number.isFinite(entry.harvest.stock) || entry.harvest.stock <= 0
+          || Object.keys(entry.harvest).some(key => !['type', 'access', 'stock'].includes(key)))) {
+          throw new Error(`Unsupported finite harvest source: ${id}`);
+        }
         if (!Number.isInteger(entry.footprint) || entry.footprint % 2 !== 1 || entry.footprint > 9) throw new Error(`Invalid footprint: ${id}`);
+        if (entry.placement !== undefined && (!entry.placement || typeof entry.placement !== 'object'
+          || Array.isArray(entry.placement) || entry.placement.kind !== 'shoreline'
+          || entry.placement.waterClearanceCells !== 1 || entry.footprint !== 3
+          || Object.keys(entry.placement).some(key => !['kind', 'waterClearanceCells'].includes(key)))) {
+          throw new Error(`Unsupported building placement: ${id}`);
+        }
         if (!Array.isArray(entry.products) || new Set(entry.products).size !== entry.products.length) throw new Error(`Invalid or duplicate products: ${id}`);
         for (const product of entry.products) {
           if (!Object.hasOwn(definitions.units, product)) throw new Error(`Unknown product ${product}: ${id}`);
@@ -70,6 +115,12 @@ export function validateGameplayDefinitions(definitions) {
       for (const required of entry.requires || []) {
         if (!Object.hasOwn(definitions.technologies, required)) throw new Error(`Unknown prerequisite ${required}: ${id}`);
       }
+    }
+  }
+  for (const [id, unit] of Object.entries(definitions.units)) {
+    if (unit.capabilities.includes('attack-structures')
+      && !Object.values(definitions.buildings).some(building => building.tags.some(tag => unit.combat.targetTags.includes(tag)))) {
+      throw new Error(`Structure attack capability has no eligible building targets: ${id}`);
     }
   }
   const graph = new Map();
@@ -92,10 +143,15 @@ export function validateGameplayDefinitions(definitions) {
       if (!Array.isArray(roster) || new Set(roster).size !== roster.length) throw new Error(`Invalid or duplicate faction ${category}: ${id}`);
       for (const contentId of roster) if (!Object.hasOwn(definitions[category], contentId)) throw new Error(`Unknown faction ${category} ${contentId}: ${id}`);
     }
+    const producedUnits = new Set();
     for (const buildingId of faction.buildings) {
       const building = definitions.buildings[buildingId];
-      for (const kind of building.products) if (!faction.units.includes(kind)) throw new Error(`Faction ${id} producer ${buildingId} requires unit ${kind}`);
+      for (const kind of building.products) {
+        if (!faction.units.includes(kind)) throw new Error(`Faction ${id} producer ${buildingId} requires unit ${kind}`);
+        producedUnits.add(kind);
+      }
     }
+    for (const kind of faction.units) if (!producedUnits.has(kind)) throw new Error(`Faction ${id} unit ${kind} requires a producer in its building roster`);
     for (const technologyId of faction.technologies) if (!faction.buildings.includes(definitions.technologies[technologyId].building)) throw new Error(`Faction ${id} technology ${technologyId} requires its research building`);
     for (const category of ['units', 'buildings', 'technologies']) {
       for (const contentId of faction[category]) for (const required of definitions[category][contentId].requires || []) {
@@ -116,9 +172,11 @@ function freezeTree(value) {
 export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
   version: 1,
   defaultFaction: 'frontier',
-  combatRules: { attackClasses: ['melee', 'pierce', 'siege'], tags: ['ground', 'worker', 'infantry', 'spearman', 'archer', 'mounted', 'scout', 'siege', 'structure', 'defense'], capabilities: ['move', 'attack', 'attack-structures', 'gather', 'build', 'repair'], minimumDamage: 0.5 },
+  combatRules: { attackClasses: ['melee', 'pierce', 'siege'], tags: ['ground', 'water', 'worker', 'infantry', 'spearman', 'archer', 'mounted', 'scout', 'siege', 'structure', 'defense'], capabilities: ['move', 'attack', 'attack-structures', 'gather', 'build', 'repair'], minimumDamage: 0.5 },
   baseLifecycle: { repairHpPerSecond: 40, fullRepairWoodFraction: 0.3, minimumRepairWood: 10 },
   units: {
+    // Provisional unarmed fishing boat. Runtime geometry remains a placeholder.
+    skiff: { id: 'skiff', wireId: 7, label: 'Skiff (placeholder)', movementDomain: 'water', tags: ['ground', 'water'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'gather'], fishing: { gatherRate: 1, carryCapacity: 10 }, cost: { food: 0, wood: 75 }, trainSeconds: 10, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: [], tagMultipliers: {}, maxHp: 120, moveSpeed: 2.4, range: 0, damage: 0, period: 1, structureDamage: 0 }, presentation: 'unit.skiff' },
     worker: { id: 'worker', wireId: 0, label: 'Worker', tags: ['ground', 'worker'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'gather', 'build', 'repair'], cost: { food: 50, wood: 0 }, trainSeconds: 25, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: ['ground'], tagMultipliers: {}, maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 4, period: 0.85, structureDamage: 1 }, presentation: 'unit.worker' },
     infantry: { id: 'infantry', wireId: 1, label: 'Infantry', tags: ['ground', 'infantry'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'attack-structures'], cost: { food: 50, wood: 0 }, trainSeconds: 12, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: ['ground', 'structure'], tagMultipliers: {}, maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 10, period: 0.85, structureDamage: 1.5 }, presentation: 'unit.infantry' },
     spearman: { id: 'spearman', wireId: 3, label: 'Spearman', tags: ['ground', 'spearman'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'attack-structures'], cost: { food: 60, wood: 20 }, trainSeconds: 12, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: ['ground', 'structure'], tagMultipliers: { mounted: 3 }, maxHp: 110, moveSpeed: 2.6, range: 1.4, damage: 8, period: 0.85, structureDamage: 1.2 }, presentation: 'unit.spearman' },
@@ -128,16 +186,25 @@ export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
     'siege-engine': { id: 'siege-engine', wireId: 6, label: 'Siege Engine', tags: ['ground', 'siege'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'attack-structures'], requires: ['siege-engineering'], cost: { food: 80, wood: 160 }, trainSeconds: 30, population: 3, combat: { mode: 'ranged', attackClass: 'siege', targetTags: ['ground', 'structure'], tagMultipliers: { defense: 2 }, maxHp: 90, moveSpeed: 1.8, range: 8, damage: 6, period: 2.5, structureDamage: 24 }, presentation: 'unit.siege-engine' },
   },
   buildings: {
+    'palisade-wall': palisadeDraftDefinition(PALISADE_TUNING_PROPOSAL),
+    'palisade-gate': { ...palisadeDraftDefinition(PALISADE_TUNING_PROPOSAL), id: 'palisade-gate', label: 'Palisade Gate' },
     workshop: { id: 'workshop', label: 'Workshop', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, requires: ['military-tier-2'], cost: { food: 0, wood: 250 }, buildSeconds: 30, footprint: 3, maxHp: 1600, products: ['siege-engine'], presentation: 'building.workshop' },
     stable: { id: 'stable', label: 'Stable', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 200 }, buildSeconds: 25, footprint: 3, maxHp: 1600, products: ['scout', 'rider'], presentation: 'building.stable' },
     watchtower: { id: 'watchtower', label: 'Watchtower', tags: ['structure', 'defense'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 50, wood: 150 }, buildSeconds: 35, footprint: 3, maxHp: 1200, products: [], sight: 10, combat: { mode: 'ranged', attackClass: 'pierce', targetTags: ['ground'], tagMultipliers: {}, range: 7, damage: 8, period: 1.25 }, presentation: 'building.watchtower' },
     'town-center': { id: 'town-center', label: 'Town Center', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 100, wood: 400 }, buildSeconds: 60, footprint: 5, maxHp: 2400, products: ['worker'], populationCapacity: 5, dropoff: ['food', 'wood'], presentation: 'building.town-center' },
     storehouse: { id: 'storehouse', label: 'Storehouse', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 100 }, buildSeconds: 20, footprint: 3, maxHp: 1200, products: [], dropoff: ['food', 'wood'], presentation: 'building.storehouse' },
+    // Provisional food-site investment: cheaper/faster and less durable than Storehouse.
+    mill: { id: 'mill', label: 'Mill', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 75 }, buildSeconds: 15, footprint: 3, maxHp: 1000, products: [], dropoff: ['food'], presentation: 'building.mill' },
+    farm: { id: 'farm', label: 'Farm', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: FARM.wood }, buildSeconds: FARM.buildSeconds, footprint: FARM.footprint, maxHp: FARM.maxHp, products: [], harvest: { type: 'food', stock: FARM.foodStock, access: 'owner' }, presentation: 'building.farm' },
+    // Provisional shoreline producer; no pier collision, cargo or final Dock art.
+    dock: { id: 'dock', label: 'Dock', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 100 }, buildSeconds: 20, footprint: 3, placement: { kind: 'shoreline', waterClearanceCells: 1 }, maxHp: 1200, products: ['skiff'], presentation: 'building.dock' },
+
     house: { id: 'house', label: 'House', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 75 }, buildSeconds: 15, footprint: 3, maxHp: 800, products: [], populationCapacity: 8, presentation: 'building.house' },
     barracks: { id: 'barracks', label: 'Barracks', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 175 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['infantry', 'spearman'], presentation: 'building.barracks' },
     'archery-range': { id: 'archery-range', label: 'Archery Range', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 150 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['archer'], presentation: 'building.archery-range' },
   },
-  factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman', 'scout', 'rider', 'siege-engine'], buildings: ['house', 'barracks', 'archery-range', 'storehouse', 'town-center', 'watchtower', 'stable', 'workshop'], technologies: ['infantry-attack', 'archer-attack', 'military-tier-2', 'military-armor', 'mounted-attack', 'siege-engineering'] } },
+  factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman', 'scout', 'rider', 'siege-engine', 'skiff'], buildings: ['palisade-wall', 'palisade-gate', 'house', 'barracks', 'archery-range', 'storehouse', 'mill', 'farm', 'dock', 'town-center', 'watchtower', 'stable', 'workshop'], technologies: ['infantry-attack', 'archer-attack', 'military-tier-2', 'military-armor', 'mounted-attack', 'siege-engineering'] } },
+
   technologies: {
     'siege-engineering': { id: 'siege-engineering', label: 'SIEGE ENGINEERING', building: 'workshop', upgradeKey: 'siegeEngineering', requires: ['military-tier-2'], effects: [], cost: { food: 150, wood: 150 }, durationSeconds: 30 },
     'military-tier-2': { id: 'military-tier-2', label: 'MILITARY TIER II', building: 'town-center', upgradeKey: 'militaryTier2', effects: [], cost: { food: 200, wood: 150 }, durationSeconds: 35 },

@@ -1,0 +1,1455 @@
+{
+  "sourceRevision": "006a70d8c42abb782673e3231ea855e30e2d5916",
+  "sourceDirty": false,
+  "sourceContentSha256": "bac2df1a7b264efe97467041a6b962a44979ce877e0e23238a9ff58829b8e27a",
+  "nodeVersion": "v24.19.0",
+  "evidenceType": "native-authoritative-commands",
+  "injectedState": false,
+  "humanMatches": 0,
+  "cases": [
+    {
+      "mapPath": "maps/stone-defense-field.json",
+      "mapId": "stone-defense-field",
+      "dimensions": [
+        64,
+        64
+      ],
+      "economyProfileId": "stone-defense-v1",
+      "records": [
+        {
+          "stage": "authored-start",
+          "tick": 30,
+          "banks": {
+            "food": [
+              300,
+              300
+            ],
+            "wood": [
+              600,
+              600
+            ],
+            "stone": [
+              0,
+              0
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 0,
+              "wood": 0,
+              "stone": 0
+            },
+            {
+              "food": 0,
+              "wood": 0,
+              "stone": 0
+            }
+          ],
+          "buildings": [],
+          "cargo": []
+        },
+        {
+          "stage": "unpaid-tower-rejected",
+          "tick": 30,
+          "banks": {
+            "food": [
+              300,
+              300
+            ],
+            "wood": [
+              600,
+              600
+            ],
+            "stone": [
+              0,
+              0
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 0,
+              "wood": 0,
+              "stone": 0
+            },
+            {
+              "food": 0,
+              "wood": 0,
+              "stone": 0
+            }
+          ],
+          "buildings": [],
+          "cargo": []
+        },
+        {
+          "stage": "paid-farm-complete",
+          "tick": 330,
+          "banks": {
+            "food": [
+              300,
+              300
+            ],
+            "wood": [
+              540,
+              540
+            ],
+            "stone": [
+              0,
+              0
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 0,
+              "wood": 60,
+              "stone": 0
+            },
+            {
+              "food": 0,
+              "wood": 60,
+              "stone": 0
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            }
+          ],
+          "cargo": []
+        },
+        {
+          "stage": "paid-food-only-mill",
+          "tick": 480,
+          "banks": {
+            "food": [
+              300,
+              300
+            ],
+            "wood": [
+              465,
+              465
+            ],
+            "stone": [
+              0,
+              0
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 0,
+              "wood": 135,
+              "stone": 0
+            },
+            {
+              "food": 0,
+              "wood": 135,
+              "stone": 0
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": []
+        },
+        {
+          "stage": "natural-stone-banked",
+          "tick": 1620,
+          "banks": {
+            "food": [
+              300,
+              300
+            ],
+            "wood": [
+              465,
+              465
+            ],
+            "stone": [
+              67.00000000000108,
+              67.0000000000011
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 0,
+              "wood": 135,
+              "stone": 0
+            },
+            {
+              "food": 0,
+              "wood": 135,
+              "stone": 0
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": []
+        },
+        {
+          "stage": "paid-farm-tower-coexist",
+          "tick": 2130,
+          "banks": {
+            "food": [
+              250,
+              250
+            ],
+            "wood": [
+              315,
+              315
+            ],
+            "stone": [
+              17.00000000000108,
+              17.000000000001094
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 285,
+              "stone": 50
+            },
+            {
+              "food": 50,
+              "wood": 285,
+              "stone": 50
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 5,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 6,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": []
+        },
+        {
+          "stage": "partly-built-farm-frozen",
+          "tick": 2280,
+          "banks": {
+            "food": [
+              250,
+              250
+            ],
+            "wood": [
+              255,
+              255
+            ],
+            "stone": [
+              17.00000000000108,
+              17.000000000001094
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 345,
+              "stone": 50
+            },
+            {
+              "food": 50,
+              "wood": 345,
+              "stone": 50
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 5,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 6,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 7,
+              "team": 0,
+              "type": "farm",
+              "complete": false,
+              "progress": 0.0044444444444444444,
+              "harvestStock": 0
+            },
+            {
+              "id": 8,
+              "team": 1,
+              "type": "farm",
+              "complete": false,
+              "progress": 0.0044444444444444444,
+              "harvestStock": 0
+            }
+          ],
+          "cargo": []
+        },
+        {
+          "stage": "no-crop-proportional-refund",
+          "tick": 2310,
+          "banks": {
+            "food": [
+              250,
+              250
+            ],
+            "wood": [
+              314.733333,
+              314.733333
+            ],
+            "stone": [
+              17.00000000000108,
+              17.000000000001094
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            },
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 5,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 6,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": []
+        },
+        {
+          "stage": "real-stone-cargo-before",
+          "tick": 2671,
+          "banks": {
+            "food": [
+              250,
+              250
+            ],
+            "wood": [
+              314.733333,
+              314.733333
+            ],
+            "stone": [
+              17.00000000000108,
+              17.000000000001094
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            },
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 5,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 6,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": [
+            {
+              "id": 0,
+              "team": 0,
+              "generation": 4263675617,
+              "cargo": 1.0333333333333332,
+              "cargoType": "stone",
+              "gatherNodeId": null,
+              "gatherPhase": "",
+              "dropoffBuildingId": 1000000000
+            },
+            {
+              "id": 12,
+              "team": 1,
+              "generation": 4263675617,
+              "cargo": 0.9999999999999999,
+              "cargoType": "stone",
+              "gatherNodeId": null,
+              "gatherPhase": "",
+              "dropoffBuildingId": 1000000001
+            }
+          ]
+        },
+        {
+          "stage": "real-stone-cargo-after",
+          "tick": 2700,
+          "banks": {
+            "food": [
+              250,
+              250
+            ],
+            "wood": [
+              314.733333,
+              314.733333
+            ],
+            "stone": [
+              17.00000000000108,
+              17.000000000001094
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            },
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 5,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 6,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": [
+            {
+              "id": 0,
+              "team": 0,
+              "generation": 4263675617,
+              "cargo": 1.0333333333333332,
+              "cargoType": "stone",
+              "gatherNodeId": null,
+              "gatherPhase": "",
+              "dropoffBuildingId": 1000000000
+            },
+            {
+              "id": 12,
+              "team": 1,
+              "generation": 4263675617,
+              "cargo": 0.9999999999999999,
+              "cargoType": "stone",
+              "gatherNodeId": null,
+              "gatherPhase": "",
+              "dropoffBuildingId": 1000000001
+            }
+          ]
+        },
+        {
+          "stage": "farm-order-preserves-stone-return",
+          "tick": 2730,
+          "banks": {
+            "food": [
+              250,
+              250
+            ],
+            "wood": [
+              314.733333,
+              314.733333
+            ],
+            "stone": [
+              17.00000000000108,
+              17.000000000001094
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            },
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 5,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 6,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": [
+            {
+              "id": 0,
+              "team": 0,
+              "generation": 4263675617,
+              "cargo": 1.0333333333333332,
+              "cargoType": "stone",
+              "gatherNodeId": "farm:1",
+              "gatherPhase": "to-base",
+              "dropoffBuildingId": 1000000000
+            },
+            {
+              "id": 12,
+              "team": 1,
+              "generation": 4263675617,
+              "cargo": 0.9999999999999999,
+              "cargoType": "stone",
+              "gatherNodeId": "farm:2",
+              "gatherPhase": "to-base",
+              "dropoffBuildingId": 1000000001
+            }
+          ]
+        },
+        {
+          "stage": "stone-delivered-before-farm-food",
+          "tick": 3000,
+          "banks": {
+            "food": [
+              250,
+              250
+            ],
+            "wood": [
+              314.733333,
+              314.733333
+            ],
+            "stone": [
+              18.03333333333441,
+              18.000000000001094
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            },
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 199.20000000000005
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 199.20000000000005
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 5,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 6,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": [
+            {
+              "id": 0,
+              "team": 0,
+              "generation": 4263675617,
+              "cargo": 0.7999999999999999,
+              "cargoType": "food",
+              "gatherNodeId": null,
+              "gatherPhase": "",
+              "dropoffBuildingId": 1000000000
+            },
+            {
+              "id": 12,
+              "team": 1,
+              "generation": 4263675617,
+              "cargo": 0.7999999999999999,
+              "cargoType": "food",
+              "gatherNodeId": null,
+              "gatherPhase": "",
+              "dropoffBuildingId": 1000000001
+            }
+          ]
+        },
+        {
+          "stage": "farm-food-delivered-to-mill-once",
+          "tick": 3030,
+          "banks": {
+            "food": [
+              250.8,
+              250.8
+            ],
+            "wood": [
+              314.733333,
+              314.733333
+            ],
+            "stone": [
+              18.03333333333441,
+              18.000000000001094
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            },
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 199.20000000000005
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 199.20000000000005
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 5,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 6,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": []
+        },
+        {
+          "stage": "mixed-paid-idle-before",
+          "tick": 3031,
+          "banks": {
+            "food": [
+              250.8,
+              250.8
+            ],
+            "wood": [
+              314.733333,
+              314.733333
+            ],
+            "stone": [
+              18.03333333333441,
+              18.000000000001094
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            },
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 199.20000000000005
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 199.20000000000005
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 5,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 6,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": []
+        },
+        {
+          "stage": "mixed-paid-idle-after",
+          "tick": 3060,
+          "banks": {
+            "food": [
+              250.8,
+              250.8
+            ],
+            "wood": [
+              314.733333,
+              314.733333
+            ],
+            "stone": [
+              18.03333333333441,
+              18.000000000001094
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            },
+            {
+              "food": 50,
+              "wood": 285.266667,
+              "stone": 50
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 199.20000000000005
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 199.20000000000005
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "mill",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 5,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 6,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": []
+        }
+      ]
+    },
+    {
+      "mapPath": "maps/bellweather-millrace.json",
+      "mapId": "bellweather-millrace",
+      "dimensions": [
+        80,
+        72
+      ],
+      "economyProfileId": "food-wood-v1",
+      "records": [
+        {
+          "stage": "authored-start",
+          "tick": 30,
+          "banks": {
+            "food": [
+              150,
+              150
+            ],
+            "wood": [
+              250,
+              250
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 0,
+              "wood": 0,
+              "stone": 0
+            },
+            {
+              "food": 0,
+              "wood": 0,
+              "stone": 0
+            }
+          ],
+          "buildings": [],
+          "cargo": []
+        },
+        {
+          "stage": "paid-farm-complete",
+          "tick": 360,
+          "banks": {
+            "food": [
+              150,
+              150
+            ],
+            "wood": [
+              190,
+              190
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 0,
+              "wood": 60,
+              "stone": 0
+            },
+            {
+              "food": 0,
+              "wood": 60,
+              "stone": 0
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            }
+          ],
+          "cargo": []
+        },
+        {
+          "stage": "paid-farm-tower-coexist",
+          "tick": 1020,
+          "banks": {
+            "food": [
+              100,
+              100
+            ],
+            "wood": [
+              40,
+              40
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 210,
+              "stone": 0
+            },
+            {
+              "food": 50,
+              "wood": 210,
+              "stone": 0
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": []
+        },
+        {
+          "stage": "baseline-before",
+          "tick": 1021,
+          "banks": {
+            "food": [
+              100,
+              100
+            ],
+            "wood": [
+              40,
+              40
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 210,
+              "stone": 0
+            },
+            {
+              "food": 50,
+              "wood": 210,
+              "stone": 0
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": []
+        },
+        {
+          "stage": "baseline-after",
+          "tick": 1050,
+          "banks": {
+            "food": [
+              100,
+              100
+            ],
+            "wood": [
+              40,
+              40
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 210,
+              "stone": 0
+            },
+            {
+              "food": 50,
+              "wood": 210,
+              "stone": 0
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": []
+        },
+        {
+          "stage": "baseline-cold-recovery",
+          "tick": 1050,
+          "banks": {
+            "food": [
+              100,
+              100
+            ],
+            "wood": [
+              40,
+              40
+            ]
+          },
+          "netPaid": [
+            {
+              "food": 50,
+              "wood": 210,
+              "stone": 0
+            },
+            {
+              "food": 50,
+              "wood": 210,
+              "stone": 0
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "team": 0,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 2,
+              "team": 1,
+              "type": "farm",
+              "complete": true,
+              "progress": 1,
+              "harvestStock": 200
+            },
+            {
+              "id": 3,
+              "team": 0,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            },
+            {
+              "id": 4,
+              "team": 1,
+              "type": "watchtower",
+              "complete": true,
+              "progress": 1
+            }
+          ],
+          "cargo": []
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Shipped 64x64 Stone laboratory and 80x72 Millrace are dated regression maps, not the developing 160x160 gameplay floor.",
+    "No rendering, deployed revision, contested balance or human acceptance is inferred."
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "scope": "worker fishing presentation + private SE four-key pilot",
+  "focusedTests": {
+    "passed": 46,
+    "command": "node --test scripts/worker-fishing-presentation.test.mjs scripts/villager-facing.test.mjs scripts/unit-sprite-clock.test.mjs scripts/shore-fishing.test.mjs scripts/shore-fishing-placeholder.test.mjs scripts/shore-fishing-placement.test.mjs scripts/audio-worker-snapshot.test.mjs"
+  },
+  "privatePilotTests": {
+    "passed": 7,
+    "gpu": false,
+    "textureLoading": "stub",
+    "manifestSHA256": "e6e9aeb08cac9c7c2e0f6f6196fbfa92b58446d074e11636ab62d2b0f40f62a2"
+  },
+  "atlasValidator": "passed",
+  "importTraversal": {
+    "passed": true,
+    "modules": 74
+  },
+  "shoreFishingRecoveryScenario": "passed; 22.5/3.5 food, legacy schema20, cargo/depletion/restart/rematch, invalid identity",
+  "labAuthoringScenario": {
+    "passed": true,
+    "foodPerSeat": [
+      60,
+      60
+    ],
+    "totalFood": 120,
+    "untouchedWood": 200,
+    "fishingWorkerObservationsBySeat": [
+      600,
+      601
+    ],
+    "movement": "land only",
+    "cargoDepletionRecovery": true,
+    "rematch": true
+  },
+  "independentReview": {
+    "agent": "fishing_review",
+    "findings": [],
+    "focusedTestsPassed": 44,
+    "privatePilotManifestUsed": true,
+    "liveAuthoringScenario": "passed",
+    "postRebaseFindings": [],
+    "additionalIntegrationTestsPassed": 28
+  },
+  "browserPreflight": {
+    "status": "unsupported",
+    "issues": [
+      "sandbox-unavailable",
+      "storage-unavailable"
+    ],
+    "screenshots": 0,
+    "securityOverrides": false
+  },
+  "publicPixelsAdded": 0,
+  "authoredFishingDirections": [
+    "south-east"
+  ],
+  "smoothLoopAcceptance": false,
+  "creativeAcceptance": false,
+  "wiki": "docs/lore/art-evolution.md",
+  "privateLibrary": "Deliverable identities and original receipts retained in the private handoff",
+  "initialCheckedBaseRevision": "ff1c168",
+  "integrationBaseRevision": "f8f4980",
+  "postRebaseCheckedCodeRevision": "e551c76797f2c644c7ac206c29c39a9b2fad9f0b",
+  "postRebaseFocusedTestsPassed": 46,
+  "postRebasePrivatePilotTestsPassed": 7,
+  "latestIntegration": {
+    "baseRevision": "8c9a29fb732254b9940ff338f74cbc605cbd9fc5",
+    "checkedCodeRevision": "fde738f139d335aa1832586519fbba2742eaad40",
+    "focusedTestsPassed": 46,
+    "importTraversalModules": 78,
+    "conflicts": "one additive server allowlist conflict; both resource-brush-controls and worker-fishing-presentation retained",
+    "docsLinks": "passed"
+  }
+}

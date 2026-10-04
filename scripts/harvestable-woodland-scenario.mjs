@@ -29,6 +29,7 @@ async function startServer(port, customMapDirectory, matchStatePath) {
       ...process.env,
       PORT: String(port),
       RTS_HOST: '127.0.0.1',
+      RTS_MAP: 'maps/open-field.json',
       RTS_CUSTOM_MAP_DIRECTORY: customMapDirectory,
       RTS_MATCH_STATE_PATH: matchStatePath,
     },

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "5f8fd2c4761d55db174a50484e2408d6c720bc35",
+  "originalFrames": 202,
+  "originalClips": 73,
+  "originalFrameMetadataSha256": "3efd3e5dafdfc578ca8d624ae3f7ea4ca84df3b65b2d94dd30c28654e1843022",
+  "originalClipMetadataSha256": "1bc1da91cee0b06a7821da4ca30eae6bd3a3f39349270747971a9bbeab84c910",
+  "originalFrameRgbaSha256": "e810bfef2ff3d98fc4d769c5476e4b7927f5b8c35a89ec000bf138e0b0f1fa2b",
+  "originalRgbaSha256": "d8de9492240e5069390ada08618b5c903b12123ec5888a61949b75ae9cfb42d8",
+  "originalDimensionsPx": {
+    "width": 4608,
+    "height": 4096
+  },
+  "originalTeamMaskSha256": "0887452ba949d7721a450753d86433de0e532bdeecbdcf5c5f5f23e482c33feb",
+  "originalTeamMaskPixelsSha256": "0f6412c73e8eb08468224093bb7c01793f5ce5b8011be10f62a534d7b2fb1aa7",
+  "worldUnitsPerPixel": 0.0052421832906788795,
+  "originalReplacedClips": [
+    {
+      "stateId": "build",
+      "directionId": "south-west",
+      "loop": true,
+      "sequence": [
+        {
+          "frameId": "idle-south-west-0",
+          "durationMs": 1000
+        }
+      ]
+    },
+    {
+      "stateId": "attack",
+      "directionId": "south-west",
+      "loop": true,
+      "sequence": [
+        {
+          "frameId": "idle-south-west-0",
+          "durationMs": 1000
+        }
+      ]
+    },
+    {
+      "stateId": "defeat",
+      "directionId": "south-west",
+      "loop": false,
+      "sequence": [
+        {
+          "frameId": "idle-south-west-0",
+          "durationMs": 1000
+        }
+      ]
+    }
+  ]
+}

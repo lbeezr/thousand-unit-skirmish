@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "types": [],
+    "lib": ["ES2022"]
+  },
+  "files": [
+    "src/forest-age-composition.mjs",
+    "src/forest-habitat.mjs",
+    "src/forest-composition.mjs",
+    "src/resource-visual-state.mjs",
+    "src/terrain-blend.mjs",
+    "scripts/type-contracts/canopy-valid.mjs",
+    "scripts/type-contracts/forest-valid.mjs",
+    "scripts/type-contracts/resource-valid.mjs",
+    "scripts/type-contracts/terrain-valid.mjs"
+  ]
+}

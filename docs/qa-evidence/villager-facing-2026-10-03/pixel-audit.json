@@ -1,0 +1,1961 @@
+{
+  "technique": "Pillow RGBA decode; exact manifest rectangle hashes, no horizontal flip. Contact sheet is CPU source-pixel composition, not a GPU screenshot.",
+  "packs": [
+    {
+      "directory": "cast-human-sprite-v3",
+      "runtimeFile": "cast-atlas-runtime.png",
+      "runtimeSha256": "ab4f7dff1db93bfa640ce55eaaad6d32c96fb5719d4ca10691bf77ca93a9e36c",
+      "dimensions": [
+        2048,
+        2048
+      ],
+      "clips": [
+        {
+          "state": "idle",
+          "worldDirection": "north",
+          "frameIds": [
+            "idle-north-0"
+          ],
+          "decodedRgbaSha256": [
+            "a447b9978bfb1b6013ee9eda5d149ade327a7c8aabf92e98d47bac0556212e1d"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "north-east",
+          "frameIds": [
+            "idle-north-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "ce291fe61b29037c9a3d7da17ef85e4d2b66314d4e5e49611677c65e1ee917b9"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "east",
+          "frameIds": [
+            "idle-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "4987cfd3401a958f5ed59c6d5534904b115e4511ecef465f02035067a1bb089d"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "south-east",
+          "frameIds": [
+            "idle-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "082166c88bc95c21fb4647caca040d9bc1513d5854af16fbbf18b7bdd6ecae42"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "south",
+          "frameIds": [
+            "idle-south-0"
+          ],
+          "decodedRgbaSha256": [
+            "14e45720a9b7356076a5767fb8601851ce49ef209319bf8a134a289e1e06d0ce"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "south-west",
+          "frameIds": [
+            "idle-south-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "3d98f6c26c3f260d6515aed12cee09a8598f05899aade4cef10596e0c7c713ba"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "west",
+          "frameIds": [
+            "idle-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "4564b7c8c8c4d34a54eeb4bd349709c32e17760ac2e070495a264c28c49ff655"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "north-west",
+          "frameIds": [
+            "idle-north-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "f45e81ff8c4daaf5f5c0b4c8c8f11b36b1f563bff1babda2aad9d8d159276ccb"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "north",
+          "frameIds": [
+            "idle-north-0"
+          ],
+          "decodedRgbaSha256": [
+            "a447b9978bfb1b6013ee9eda5d149ade327a7c8aabf92e98d47bac0556212e1d"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "north-east",
+          "frameIds": [
+            "walk-north-east-0",
+            "walk-north-east-1",
+            "walk-north-east-2",
+            "walk-north-east-3",
+            "walk-north-east-4",
+            "walk-north-east-5",
+            "walk-north-east-6",
+            "walk-north-east-7"
+          ],
+          "decodedRgbaSha256": [
+            "4d139acee7bd85fd8113bb47c4db6828efb9865bb831f997cd7ebbd7f7c4d52d",
+            "a711befa3adac7e0006d165351996d164cd7ad35dbb383a1e5b81076768ddf8b",
+            "02c82903d1febe2a245a021eb452be8bd87a4108b8f5a940f08dad979dcf74fc",
+            "1b72f694cf033d893fd625c33cedc7afc1f6f93b1ab6ea03e35c14ae272906a7",
+            "c754903c00f6ca2770a5567e85ae735a52fbae60ae5c11f185a5cf2546a7c06f",
+            "4034a07aa00a556a2502734e5fae2c8d41b60b78043ce15bd4d4b104d0639ca8",
+            "14355318eabc4ea7f650e4104014169540c6f5bf9ef4790d032006d5d1ba196c",
+            "edcd8c459521b54282ab46cc1a86adc82b299c47de08c0d1aa244224dab34eae"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 800
+        },
+        {
+          "state": "walk",
+          "worldDirection": "east",
+          "frameIds": [
+            "idle-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "4987cfd3401a958f5ed59c6d5534904b115e4511ecef465f02035067a1bb089d"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "south-east",
+          "frameIds": [
+            "walk-south-east-0",
+            "walk-south-east-1",
+            "walk-south-east-2",
+            "walk-south-east-3",
+            "walk-south-east-4",
+            "walk-south-east-5",
+            "walk-south-east-6",
+            "walk-south-east-7"
+          ],
+          "decodedRgbaSha256": [
+            "4576f049c675966a0f9f9a0a0efac2e2a37ee1d79ecbafa616a24d7c1fe79218",
+            "4ebe887059e57ae8eb66a46876a723aa4e060370130af79570679af8b0a05423",
+            "6ebd91a92f5fadd5de0d01a1d4967c3be1ddafde11c10e135cff15df94483283",
+            "2a2c8cd4d64c1f1cc744a4ccf247077f5970cdd3758d489665870d61e38c90f2",
+            "e6c5f38aafedbbc6ff4325431856be652e76d794089e2b937718971678dbf28e",
+            "c23e947d368066702adee6a053c163ce1b3ffbbef0916f9e3c1cecec98ace1b3",
+            "ba50b59c0fa9517c93dba79304da4003486959dbaebe90e43a04183d8184c1ac",
+            "41ba612d7c318de6ffb718e9bc6cfd6e909c2f03fcc2d25f7fb014a6bbb62e9d"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 800
+        },
+        {
+          "state": "walk",
+          "worldDirection": "south",
+          "frameIds": [
+            "idle-south-0"
+          ],
+          "decodedRgbaSha256": [
+            "14e45720a9b7356076a5767fb8601851ce49ef209319bf8a134a289e1e06d0ce"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "south-west",
+          "frameIds": [
+            "walk-south-west-0",
+            "walk-south-west-1",
+            "walk-south-west-2",
+            "walk-south-west-3",
+            "walk-south-west-4",
+            "walk-south-west-5",
+            "walk-south-west-6",
+            "walk-south-west-7"
+          ],
+          "decodedRgbaSha256": [
+            "151c632482ee217ec3040bf1b398f1a187c4a85ea81adb3ce6e9f4443c2035b2",
+            "a622e1d1901e289a3e4b670caaab07d072f835e9f873650067d0efa385061e9e",
+            "ba084cfc7876859d6edd43101036f8658e6fd9bf0f81a4e089f06e884455843f",
+            "e8b2adeab6dc0cf3f5d8d17fd310c78c5e5ba7f160fd8139383bc566ddf80c67",
+            "c6ccaec0a580a6823e7ef080ecaa149e639c023cf9eaf9599dad743767c9d978",
+            "85802e954ce2af2f1d71df0555cbdc2a1a532d164d2f89fc6dd68d2d0f891a2e",
+            "79fc17cc067a7dc0a758588965d22dfad1c10183310553d5e6a5362e8e0c48ec",
+            "6ab073ce44838ae22650e9c64a304f9cfaf2efd252dab40978a1895a5facf860"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 800
+        },
+        {
+          "state": "walk",
+          "worldDirection": "west",
+          "frameIds": [
+            "idle-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "4564b7c8c8c4d34a54eeb4bd349709c32e17760ac2e070495a264c28c49ff655"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "north-west",
+          "frameIds": [
+            "idle-north-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "f45e81ff8c4daaf5f5c0b4c8c8f11b36b1f563bff1babda2aad9d8d159276ccb"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "north",
+          "frameIds": [
+            "idle-north-0"
+          ],
+          "decodedRgbaSha256": [
+            "a447b9978bfb1b6013ee9eda5d149ade327a7c8aabf92e98d47bac0556212e1d"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "north-east",
+          "frameIds": [
+            "idle-north-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "ce291fe61b29037c9a3d7da17ef85e4d2b66314d4e5e49611677c65e1ee917b9"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "east",
+          "frameIds": [
+            "idle-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "4987cfd3401a958f5ed59c6d5534904b115e4511ecef465f02035067a1bb089d"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "south-east",
+          "frameIds": [
+            "gather-food-south-east-0",
+            "gather-food-south-east-1",
+            "gather-food-south-east-2",
+            "gather-food-south-east-3",
+            "gather-food-south-east-4",
+            "gather-food-south-east-5",
+            "gather-food-south-east-6",
+            "gather-food-south-east-7"
+          ],
+          "decodedRgbaSha256": [
+            "a17eb1b5bbcd9f128ad7061602298894eb56f46c4a0b5eceb20a9cb8575f399f",
+            "9c5fe985c19af2fff7e86c7719b14f0b3a4b531fcd5da96a7c2ad5e60270bdc1",
+            "f8aeec76ac13135ce7da9b0a7a2e65a076960b5c116960997544f1d8b1bfb373",
+            "22da291cb978e9f3b490e000049abfc4a121429fd07469dee0d22c67644dcb8a",
+            "a100118b2345a170b15b86f44df8cc6a16afd6a5f02088f40e15fb32d08ff039",
+            "d8cc420f4ad1eaf1b79941c380261f84be33f29d66f4903a848b86728c9b737e",
+            "ac95e0a712752a68fd8d3abf51e590e1743719dfcd433119998f72b629b8743e",
+            "56ba5e6001206f9dd245e3582898de0b71587fc8acc4843f4c0b58b72fe2e220"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 840
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "south",
+          "frameIds": [
+            "idle-south-0"
+          ],
+          "decodedRgbaSha256": [
+            "14e45720a9b7356076a5767fb8601851ce49ef209319bf8a134a289e1e06d0ce"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "south-west",
+          "frameIds": [
+            "idle-south-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "3d98f6c26c3f260d6515aed12cee09a8598f05899aade4cef10596e0c7c713ba"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "west",
+          "frameIds": [
+            "idle-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "4564b7c8c8c4d34a54eeb4bd349709c32e17760ac2e070495a264c28c49ff655"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "north-west",
+          "frameIds": [
+            "idle-north-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "f45e81ff8c4daaf5f5c0b4c8c8f11b36b1f563bff1babda2aad9d8d159276ccb"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        }
+      ]
+    },
+    {
+      "directory": "boughward-worker-sprite-v1",
+      "runtimeFile": "boughward-worker-atlas-runtime.png",
+      "runtimeSha256": "e5ab37c3b46487a912f186ca867165f85630e7b7c86f7063b6a9ae121ce39b5c",
+      "dimensions": [
+        2048,
+        512
+      ],
+      "clips": [
+        {
+          "state": "idle",
+          "worldDirection": "north",
+          "frameIds": [
+            "idle-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "f37ac6e25a4a706ef99572e8962c3806dd0ab08379c8a1a98e855ec9a53b6e13"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "north-east",
+          "frameIds": [
+            "idle-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "f37ac6e25a4a706ef99572e8962c3806dd0ab08379c8a1a98e855ec9a53b6e13"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "east",
+          "frameIds": [
+            "idle-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "f37ac6e25a4a706ef99572e8962c3806dd0ab08379c8a1a98e855ec9a53b6e13"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "south-east",
+          "frameIds": [
+            "idle-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "f37ac6e25a4a706ef99572e8962c3806dd0ab08379c8a1a98e855ec9a53b6e13"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "south",
+          "frameIds": [
+            "idle-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "f37ac6e25a4a706ef99572e8962c3806dd0ab08379c8a1a98e855ec9a53b6e13"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "south-west",
+          "frameIds": [
+            "idle-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "f37ac6e25a4a706ef99572e8962c3806dd0ab08379c8a1a98e855ec9a53b6e13"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "west",
+          "frameIds": [
+            "idle-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "f37ac6e25a4a706ef99572e8962c3806dd0ab08379c8a1a98e855ec9a53b6e13"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "north-west",
+          "frameIds": [
+            "idle-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "f37ac6e25a4a706ef99572e8962c3806dd0ab08379c8a1a98e855ec9a53b6e13"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "north",
+          "frameIds": [
+            "walk-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "3806e1e27395f4cc7c1bba73985dc1a4b25fc569693269f2d50b3e686d028454"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "north-east",
+          "frameIds": [
+            "walk-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "3806e1e27395f4cc7c1bba73985dc1a4b25fc569693269f2d50b3e686d028454"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "east",
+          "frameIds": [
+            "walk-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "3806e1e27395f4cc7c1bba73985dc1a4b25fc569693269f2d50b3e686d028454"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "south-east",
+          "frameIds": [
+            "walk-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "3806e1e27395f4cc7c1bba73985dc1a4b25fc569693269f2d50b3e686d028454"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "south",
+          "frameIds": [
+            "walk-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "3806e1e27395f4cc7c1bba73985dc1a4b25fc569693269f2d50b3e686d028454"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "south-west",
+          "frameIds": [
+            "walk-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "3806e1e27395f4cc7c1bba73985dc1a4b25fc569693269f2d50b3e686d028454"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "west",
+          "frameIds": [
+            "walk-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "3806e1e27395f4cc7c1bba73985dc1a4b25fc569693269f2d50b3e686d028454"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "north-west",
+          "frameIds": [
+            "walk-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "3806e1e27395f4cc7c1bba73985dc1a4b25fc569693269f2d50b3e686d028454"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "north",
+          "frameIds": [
+            "gather-food-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "2c095026d7caf784d8e8e36d98b60e7eea0db1db3e44d205597fa603279623b3"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "north-east",
+          "frameIds": [
+            "gather-food-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "2c095026d7caf784d8e8e36d98b60e7eea0db1db3e44d205597fa603279623b3"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "east",
+          "frameIds": [
+            "gather-food-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "2c095026d7caf784d8e8e36d98b60e7eea0db1db3e44d205597fa603279623b3"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "south-east",
+          "frameIds": [
+            "gather-food-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "2c095026d7caf784d8e8e36d98b60e7eea0db1db3e44d205597fa603279623b3"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "south",
+          "frameIds": [
+            "gather-food-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "2c095026d7caf784d8e8e36d98b60e7eea0db1db3e44d205597fa603279623b3"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "south-west",
+          "frameIds": [
+            "gather-food-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "2c095026d7caf784d8e8e36d98b60e7eea0db1db3e44d205597fa603279623b3"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "west",
+          "frameIds": [
+            "gather-food-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "2c095026d7caf784d8e8e36d98b60e7eea0db1db3e44d205597fa603279623b3"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "north-west",
+          "frameIds": [
+            "gather-food-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "2c095026d7caf784d8e8e36d98b60e7eea0db1db3e44d205597fa603279623b3"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        }
+      ]
+    },
+    {
+      "directory": "cast-human-sprite-v1",
+      "runtimeFile": "cast-atlas-runtime.png",
+      "runtimeSha256": "f53832c98649b486997f54881bdeabb4775c6be597b51613463ac369edd4d4ce",
+      "dimensions": [
+        2560,
+        2720
+      ],
+      "clips": [
+        {
+          "state": "idle",
+          "worldDirection": "north",
+          "frameIds": [
+            "idle-north-0"
+          ],
+          "decodedRgbaSha256": [
+            "50558b55022729bc52612eb08a1acfde753cc34446563f3f1e59d8525ce7494e"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "north-east",
+          "frameIds": [
+            "idle-north-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "1ac71927ae37ff421aa066cb3a245f969f38c88e84ac0f4a4dfb7bc4975b0058"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "east",
+          "frameIds": [
+            "idle-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "0a24b82c71ed154848140d33d03dabf82e86ea831fb3879fa3d21139b67d72ab"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "south-east",
+          "frameIds": [
+            "idle-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "b5d5fa5d8008dd83216d1632a316c4df4bedfe8a08f91d48be26e83e89b5d72c"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "south",
+          "frameIds": [
+            "idle-south-0"
+          ],
+          "decodedRgbaSha256": [
+            "c4be692a759af59fbed26189171dedc8989668399cf07a4d80b1c9325528624a"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "south-west",
+          "frameIds": [
+            "idle-south-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "b5ba3214699c16162836825501794bff2f636f6c380a630dec967df8d9748d18"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "west",
+          "frameIds": [
+            "idle-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "e6e23bd5b0a268fc47b85f8d3fc970e1201c4a7d5634eb5f84f7d3b821b2a919"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "north-west",
+          "frameIds": [
+            "idle-north-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "80d04fcee2f513c4aaeb5c497d96358870ca95853dcbdd61d19147ba5eb42d3f"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "north",
+          "frameIds": [
+            "walk-north-0",
+            "walk-north-1",
+            "walk-north-2",
+            "walk-north-3",
+            "walk-north-4",
+            "walk-north-5",
+            "walk-north-6",
+            "walk-north-7"
+          ],
+          "decodedRgbaSha256": [
+            "ef67dc5d99d9fe57ec1c6bef7d63c5c8eae271ad73f41a3fd5e91a461f7a0441",
+            "0f45726e2133a6fff853e49add71750aa1a8988d67604d0515fcd8dd672ece17",
+            "24867a902cab7c6cca1cc33a5ed4e82bd59ff938af304a41ba6db147ed4eee91",
+            "572555e63febe86e4df8282273e4842c900419379896f0368bcd9cd81002de42",
+            "b7c59d359653ca292f5384aaa44f05158cf2876a04ecfcc2b97464e1a3cefe25",
+            "a0ec2a1b9d38402009b74e1fe7de71590e16afe33e356900b514b92b3a5d74b0",
+            "78caf13e225a0d5904fd10e8f7c129424bf20353209a9cc0730686c830b5a304",
+            "d329e60e62e00ede473adb3ed8ff1d2904a08d67e4a60fa6dcac01d088c4fa0b"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "north-east",
+          "frameIds": [
+            "walk-north-east-0",
+            "walk-north-east-1",
+            "walk-north-east-2",
+            "walk-north-east-3",
+            "walk-north-east-4",
+            "walk-north-east-5",
+            "walk-north-east-6",
+            "walk-north-east-7"
+          ],
+          "decodedRgbaSha256": [
+            "216f46867a3254b419bd689fca466e5a48da335ee05ee22034eded9b493bea1b",
+            "5bfe0b36471a1323348b2335a4c5c5e2008df62ab577081ff2aa47580e8d11b7",
+            "9864705f7f7e70129ac33f962c03578572c7c4c8156e772b5860ba445dbe7583",
+            "118b837967304e3436b42e492834cefd616ba67b3f9b0d38840b6b14f15ec36f",
+            "139e33ce6f6afc6628683840f696341a487778a0dbe4f0c03edfbd551eae2b63",
+            "e7e5510979b53bbff829502bce50a383898f82f2e8f482602b1025061fba6f0f",
+            "0dc640d4c29f41127056faa43911fb6f0cd29c8f6cbdeb37753aa4f359196670",
+            "45c85041602512ee937aa085581a54397ef2cb942ed33d10aafa33de45913c37"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "east",
+          "frameIds": [
+            "walk-east-0",
+            "walk-east-1",
+            "walk-east-2",
+            "walk-east-3",
+            "walk-east-4",
+            "walk-east-5",
+            "walk-east-6",
+            "walk-east-7"
+          ],
+          "decodedRgbaSha256": [
+            "f93213b1bd7f6b0072a194f0bf0c1b60698caa6e81d4b268f41f3e3d316a6010",
+            "70a2e43cb28e4ec1995d729df9100892bed6674f05b2ca929873b3a244174ad4",
+            "a0b211f8a721a002d42f337d5fe57f90680bbdd6fff9149a96327adb3d472962",
+            "d50018e911c96e801c9495e50eb1884980a09a2eb5b0d7afa3153decd05cc2b9",
+            "29d3926ad537acdf42e9d3200148802afd9a44ddbd876a530532dc720f2ad277",
+            "0db19d8559084d39bdb467667d1c6d7b9563138df4be3c453614dc4fba847823",
+            "4b00902eadb620e07fc4bdbfc544d85ba3a4aa24abd2ba0f94b882309821043d",
+            "c136e7ce112bba5e42aa7835f0551640212d76a967aafb31e07afa5825933ca9"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "south-east",
+          "frameIds": [
+            "walk-south-east-0",
+            "walk-south-east-1",
+            "walk-south-east-2",
+            "walk-south-east-3",
+            "walk-south-east-4",
+            "walk-south-east-5",
+            "walk-south-east-6",
+            "walk-south-east-7"
+          ],
+          "decodedRgbaSha256": [
+            "0599d7c35e3f7dc702f388f208a7f3e0c5ec2a707ff479cb1f90542fe1ffa5da",
+            "3ac1beffb72506e4952de73980de448fccdfdbb23584477c9142fdab86ce2171",
+            "1f8c90fa2905679b4afa80b8c102dc66ebead4110c239075ca2c235bc5de41c2",
+            "07b0401d873ac5b10463216ffb90c7818517b6f728e1fc108f9b2f62d9aa8f4f",
+            "68b163534ba63730618489246daed74bbda568a4c4f17f2a388f4b2075c0ada8",
+            "fce70eb94fbf1b081e9d2effd44fd8ab1361380330cca810df80bc19b0564715",
+            "e1ac43aec01649c512008372e7df7c1a11bfa2fc371af30d74e65fcc5421dff4",
+            "9700b6acd95a67c1c7b42618383c4af223491b7b6c12c9705895eca4492e158a"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "south",
+          "frameIds": [
+            "walk-south-0",
+            "walk-south-1",
+            "walk-south-2",
+            "walk-south-3",
+            "walk-south-4",
+            "walk-south-5",
+            "walk-south-6",
+            "walk-south-7"
+          ],
+          "decodedRgbaSha256": [
+            "9df83c4ea9dd19bff9ebcf2bd4135ae7c254aa19f0659a3f3d7ef7d87526540d",
+            "aeae6354f3750d73d8dfd753d0654e173edd6582ce9a740ae9c6d8f74a9bbba7",
+            "208129787178a7909be84dc541f97c880b3ff1ecdf1c6e161a5a0257e5813622",
+            "566ef0423e2e576950ea8caa922db0417e19287c3ad3eebfd6c9ef2488298e4b",
+            "0404cbd67a450a71956fcb8929d44b8995432d0443b33d04d4723bbcf6c3e01d",
+            "97b1c2f9ee73daeb9e110024a11370bff157216cf68989b077ce150643e08631",
+            "7767a452da7c50923998fdaefaa4f2f11c5af67d34d0ee4a22c55c415a4c9243",
+            "81d76f791442f80e480fbdffcd75999ff983f2c4574cac99d8288306ce213044"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "south-west",
+          "frameIds": [
+            "walk-south-west-0",
+            "walk-south-west-1",
+            "walk-south-west-2",
+            "walk-south-west-3",
+            "walk-south-west-4",
+            "walk-south-west-5",
+            "walk-south-west-6",
+            "walk-south-west-7"
+          ],
+          "decodedRgbaSha256": [
+            "92a56f40df2454bec8dc0eaac26fbd8fe4ef4ccdf9788021c4ed729f08c1a737",
+            "4cab57df6e7e33d865bf4bfaa59d29e52b7c4a40d5cbea7446bf8fcdbd4a119c",
+            "d1530623a68d45b49691599a36c780084be62db23beaafa5f798e1064d21a689",
+            "9ac927dbfbbe98d3e147847f51a8291a4950bea04887bb778403422c0ef28535",
+            "3ba60d5ad7beb94516b55bdf090cafc6dba85a2f22050f896b2cdf888d96aba8",
+            "7d08c5dc21a93a977a020c1a8c49d293712f75edfac34b6f452eb1231c3fa120",
+            "bd1cd1a4bc0fb20e796522f8232da0ce3e5dcd7c5adc606cfad07941c8c659a5",
+            "d54e35c1a19cc95aaab9220b876dfb3f693bf5042497fb2be19991403fa10057"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "west",
+          "frameIds": [
+            "walk-west-0",
+            "walk-west-1",
+            "walk-west-2",
+            "walk-west-3",
+            "walk-west-4",
+            "walk-west-5",
+            "walk-west-6",
+            "walk-west-7"
+          ],
+          "decodedRgbaSha256": [
+            "a20c2fa7e3e0c53c3556c3873fb3632e444ac6a8724b2373ff59782744e5ff50",
+            "598d9f43d9fadd69ebf390bcc6ff03341f081a4bd9c09c351b585b0a91f87eb8",
+            "7a916707b68eec609411b76878141da109f8fd6d05c79e51b0dd6febc5cb70e0",
+            "55a60a59682c873be0a302549c1c1a05859ff1a83e8e0575c906840a94b95d7a",
+            "cd8c23b2eb3fa0e2d3e4d1989b3948aaccc77b9fea108519ef464ca0d222e2c0",
+            "c8b08902a11595c4e911b65df798374328536d6e949ac61c4052d3c76f1ca211",
+            "c86727a75aacdc4bff53d933edebf5a8fbbfc88fa15ed670a591056efa08a1b7",
+            "73373da7fc04e4c14c077535844963fc4f9666b2e50cb2478be33629da8bff53"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "north-west",
+          "frameIds": [
+            "walk-north-west-0",
+            "walk-north-west-1",
+            "walk-north-west-2",
+            "walk-north-west-3",
+            "walk-north-west-4",
+            "walk-north-west-5",
+            "walk-north-west-6",
+            "walk-north-west-7"
+          ],
+          "decodedRgbaSha256": [
+            "1583a604c7d820c741ff3278442a222646302fe6011701bbd29a8fdc72fa9336",
+            "18a247c7b6eb917bc795009353c9c47c6c6185c27e92ac6301300b78e4be5095",
+            "86057a1e781ce66822b190174d707051669d66eba38d6188f713f0245b71aaf2",
+            "17fc18c6c7c89ce8e2cc222c7b1da99cce743a399ea28e09814cbbc4539c127e",
+            "d0e8becdd1ec4be0284890002ff5f18dba03ae5a488bcfdccb81d8ee63aea983",
+            "87419dc17518d55995df9130d72c2fdc74d9bc1f316a6d3e8508dd3cb610a6ac",
+            "21c45fdec23aafc14c329249d547df5e9674ae9844d6322cac87194fb724a097",
+            "bebf21f31bf52b200b6daff6d2a59cac9f050f26b3d2341914c52b1a5106bb08"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "north",
+          "frameIds": [
+            "attack-north-0",
+            "attack-north-1",
+            "attack-north-2",
+            "attack-north-3",
+            "attack-north-4",
+            "attack-north-5",
+            "attack-north-6",
+            "attack-north-7",
+            "attack-north-8",
+            "attack-north-9",
+            "attack-north-10",
+            "attack-north-11",
+            "attack-north-12",
+            "attack-north-13",
+            "attack-north-14",
+            "attack-north-15"
+          ],
+          "decodedRgbaSha256": [
+            "2f44d4f1019e3a1365a02d34b55ada44d9b3e2db088d5b05cc77358d7fc42024",
+            "e3e788f15c1449a7ff278091b4467dab75e8239d780cb059f955934781dea2bd",
+            "40b948e0ff992cf04436bfb04d8c9a4ccbc111bf3beff81a32f6ebe8f15b9c04",
+            "06061a333699ba95e6b6e13dfb8924aae45ffef6861cdd6a375a67284a3b5396",
+            "bc3a8746fe592b99f36399eba6a0b1d6ba322f6abd15fef6706c4383a42f1653",
+            "3fc657b69fb11ef4073ac4ea6a7b5bf9ee9614f441c51dfd523bb7b82093e9a6",
+            "7b7c8d751b8be7c8502a6b7fad4cb412c7bd8f631eea89e69f729721a9958051",
+            "a8df98e5eb6149428740b1ec615572d0b450a6f63cf99f3f6c1cad77793d28bd",
+            "0afd62af1aabaf7426a920d230a9c377706902a33d11805f0ac4b9bde1707977",
+            "0023603d081972c62a040c15dd0b63531aca6526871b27655b9eff68ec23f369",
+            "5ecd6a12ae9d73738eef39c58e17f20a05e26f7831d73027b1dc1f45d4e70433",
+            "33d46edf2614d8f0956c20a6fafff12bff0d2f2945d224ef87ca48c8f16fada5",
+            "7c3313ee9d94dabb68ae5a9ba41ac3106a2611ade4dac14cbc6726d55447dcf4",
+            "d9db668372c3b42bdd7049a27a1a0ec54a4fdd42cd3ff9ae6e1a6198a522a8c5",
+            "913a4b75afe532f57232b7ab733b4eeb8b5c83c54162f8755de3f2d73feeba81",
+            "67e93fa15bc5da0682ff41c6fc98ed69b480cfecb668a96114bcf45ebb1979f6"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 2833
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "north-east",
+          "frameIds": [
+            "attack-north-east-0",
+            "attack-north-east-1",
+            "attack-north-east-2",
+            "attack-north-east-3",
+            "attack-north-east-4",
+            "attack-north-east-5",
+            "attack-north-east-6",
+            "attack-north-east-7",
+            "attack-north-east-8",
+            "attack-north-east-9",
+            "attack-north-east-10",
+            "attack-north-east-11",
+            "attack-north-east-12",
+            "attack-north-east-13",
+            "attack-north-east-14",
+            "attack-north-east-15"
+          ],
+          "decodedRgbaSha256": [
+            "e964232a73db1c2954695a308a611c677c972c77ead341b5e67ad73aa1f8d66b",
+            "d2a205e609f2a3bdd0aa3665c645036967961c8aef7fce6ee1ebf5694ce032e6",
+            "9b4b3ea7d851933a8a3191c219b5029889471df73e37602ac7a0576dda0ab217",
+            "c80bf7c1a160c159309b7380f274a8e52661b7419d8e73637b86a57f3c87f054",
+            "39fc2920aedfb7fedb039ff99cbe3367918a58ba0b562104d9c85f566bd63fff",
+            "1a2078ee57d8a81c6279d69e434b1a303b406a17be5aa61092002d1c0ad501b1",
+            "c5af8d1236c82eb0c50ab79f51ca70b588d63cfba6568b174ae74e4bb9bd83b4",
+            "ee59a1d1c365093842142e64ed4c1b41cb89b0395ce44e6849e7dc378f19ce25",
+            "2b7a7ae339b0726cf23934a2ce721525aa7f21762c74eb9b725353ab8a895246",
+            "b874878d71ed45b099e017833a2fad234969fd34c95af8ec976a34bdca5040a7",
+            "fbc00dd9ff447a17fb892b57d650c710d2aa12496f25a26892f58cf65de1093e",
+            "ca77a2e9698305ad114c09bb25ad6f947f48c9771cbd9dd418f6eccb2658472c",
+            "2a275ea7320770f6fd1c22859840604ca09ece3f3d7b9c80277b35d68380ce92",
+            "bf10e3cf196537ec556535eb00c20d2ba9f0b0b7858245a1af1a6c3c1096a002",
+            "6a8c56e54ab8acef09fe42de931808063f0d638863c4c17b840e2dbac91696f1",
+            "1c0a7df60c0e9f2e801bb5ae9778b71dd381c340b37fbedc26def63244053402"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 2833
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "east",
+          "frameIds": [
+            "attack-east-0",
+            "attack-east-1",
+            "attack-east-2",
+            "attack-east-3",
+            "attack-east-4",
+            "attack-east-5",
+            "attack-east-6",
+            "attack-east-7",
+            "attack-east-8",
+            "attack-east-9",
+            "attack-east-10",
+            "attack-east-11",
+            "attack-east-12",
+            "attack-east-13",
+            "attack-east-14",
+            "attack-east-15"
+          ],
+          "decodedRgbaSha256": [
+            "5ed89dadfca9acd1c368214338e2ddfee64429fec639a0283fc1cce3549b5371",
+            "91f3dd77de880560b220c016cd672b4aad4fb8a3c385399fb59e33e2ab5c8e10",
+            "ac5402fb98d4e39f309279ef3fe21af33077ac573c45f6e1eb0a60eada59c9b4",
+            "d92a96ea7a70b0ae30b75be6f8f1800c1237a480f72c7474cdecae4fdc545e7f",
+            "bb0387afb97363add4b7e56a0f25b22c299ba994de5612c2d6dfb9f2e9ed949d",
+            "d4d711bdb82011223c55879f5374fc2450f1e8bdf4ffd6de53fdd4bdcc4cf522",
+            "a8c9938f2fffe686dfdcec3be3d9382bf82ec72128e6c110ea13ccf660efab81",
+            "c3fcbd00caef4f39257924c675c383f17f03d5cca6d9bb3e0df4305b8752ae10",
+            "093dcf355175c777916619a9f79bfe11ad34b627a05fd51a07ae4823b5f59ce6",
+            "35370e3ef88d3086215fdd1a36cbc600ffa9083f5bfe9568d28332a9bc0b8d2a",
+            "b84fbcb76025671086059d70cb536cd102897c5540c50196fffc435503d60ec2",
+            "3ed10d8decc3f9580b9c1c9264f2240f78f36f2ffc638e06288a0d373d88175b",
+            "1cf8b23084facce7db9b2605de5e54b914b0ba9f109b9af9936c10e21da4fe0d",
+            "91322ec01eb93650e63a8ac19708d6f5f302a212ad8f8e6bc2ac522edaeda10d",
+            "4cf6c789bc650b1c45253f10d2eae27c9251679871ee26e2cb8b6ccb9e0b9297",
+            "e008f9ec05dee831551d62b405f467bc5a008d69211e2e604b9e070c9078c7f2"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 2833
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "south-east",
+          "frameIds": [
+            "attack-south-east-0",
+            "attack-south-east-1",
+            "attack-south-east-2",
+            "attack-south-east-3",
+            "attack-south-east-4",
+            "attack-south-east-5",
+            "attack-south-east-6",
+            "attack-south-east-7",
+            "attack-south-east-8",
+            "attack-south-east-9",
+            "attack-south-east-10",
+            "attack-south-east-11",
+            "attack-south-east-12",
+            "attack-south-east-13",
+            "attack-south-east-14",
+            "attack-south-east-15"
+          ],
+          "decodedRgbaSha256": [
+            "28da0cf68fea32cb251be72436b02b75074fdcf25d92e814240ad1cdf396d49f",
+            "5ad21d8bd355ff91aef65e484710adde6b10bfff3ab03c7b44cd416dc314b8be",
+            "98bc34a8ef077b674b3cb77c0a68e76a4132ef6e679207de30ccafd2f23ad9ef",
+            "18f773c974551efaa081c6df140dba5dcce640bb734992dce7ee6307a4063d8a",
+            "53c89456170ce8e18376830f1d3ae5e7d45c86883cbe34b2040419c624f0e45c",
+            "5772a4f02f8586e4061ed5a827f964fd4558076c45a32892ea11eece59bdbd64",
+            "f8ca20d0ffb58e5af5bca7e698f1965da572f13803444173dbb364b7917105fe",
+            "78a9a5afc10f480a99466d3f1a5c129aa8fde4666541f61791d7c1941d3b1b73",
+            "bdafd0eaadbc1675c090f657d5ab11a37ff12567704300f41e857a946282b585",
+            "7e63776ce9030bc7d4bef86e2de170f7c91eab83215f2030a567a058dd196a3d",
+            "88eaa53a223f2b495e8c9530c8f58b7c6dd540c0f39b6a8f8ef57194fde46aba",
+            "5f675825e6cfb01f02ac38dc4fff47c75e0acdd03e3fdcf6da0a9fd109b01c46",
+            "a9e50dfe26df32ac6fb9b2f8e04399021855526aa06fe6594f24ea21d5ec7178",
+            "0aa0c65c37a5fbf044ed09a4f5474c2a8c8be94e045483c11eed34002e32fc10",
+            "9cad4926114481ed05ea724023e5c4eafe97a5c7baa592b1a443486c74dd99d2",
+            "c80bdc0ca07a02e1355ca0d91a43e7a99b3e36ed75642ac3ca06a4002dfb45a5"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 2833
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "south",
+          "frameIds": [
+            "attack-south-0",
+            "attack-south-1",
+            "attack-south-2",
+            "attack-south-3",
+            "attack-south-4",
+            "attack-south-5",
+            "attack-south-6",
+            "attack-south-7",
+            "attack-south-8",
+            "attack-south-9",
+            "attack-south-10",
+            "attack-south-11",
+            "attack-south-12",
+            "attack-south-13",
+            "attack-south-14",
+            "attack-south-15"
+          ],
+          "decodedRgbaSha256": [
+            "ef05bdd9e586c4b17a241e1f372f431a2c4931c3b99dd1c3a6602138c12c58f4",
+            "185a6dc8e9a270894b5a29343f1b110282a87eebda4ef201e2ca338f46766da1",
+            "c098d4cb38d38f53b4a8b2939242e1e44d46e8d85416a489c886fc3bab61355f",
+            "5f09392f61d37c5f25a483b0b9b55393058b9b31f7bd96e25669f7ff21a99248",
+            "acc155233c32523f7a714a18eab4e279eba6c7d8e3da5bf73130840cdd55384f",
+            "1c6730da01dc6741ca64efe6d7389553e3a97fa81e6d5665c3b3fbfe832a6d91",
+            "0f14565c61fd7f6bf9a73e4e5a635dd443dc94506898a969598b7ce35c05e81a",
+            "6097280ba2ab6142b54f707a0b09bec28a32583054e42c85e8a143a66bb935f1",
+            "6c41600bd60858009f1f6082ea80b413116473586b43fc0d80a5222eb7e8d9b5",
+            "ec3c5b1071233ec159aa7859a4d429e2970fce27f695b9fe6da3d33ba057b91c",
+            "2f31188fde0940a06065697fb8062dbff185c38c09cb09c4f9efc22f3df5b1ce",
+            "1c1fa128d59626ff1c21b042748d779fb3e9efef9c0f5538eaa91cd672bb41f3",
+            "2cf83b0ea81f44848306c72f06f992e746146734ef5f5e1ce74e97372d540906",
+            "8501121efbbe904a8a8657aa82901ea5802677b580189ae62cc86811b1c7dad0",
+            "865e224da43e7d121058339ec251a1d0e1a4f5085ef78ff870f7bd45d75bdce7",
+            "bf9bdcb45d19be3232617b92f4c9e936b5fb94ba748e0e4dc81c55ca12c7843f"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 2833
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "south-west",
+          "frameIds": [
+            "attack-south-west-0",
+            "attack-south-west-1",
+            "attack-south-west-2",
+            "attack-south-west-3",
+            "attack-south-west-4",
+            "attack-south-west-5",
+            "attack-south-west-6",
+            "attack-south-west-7",
+            "attack-south-west-8",
+            "attack-south-west-9",
+            "attack-south-west-10",
+            "attack-south-west-11",
+            "attack-south-west-12",
+            "attack-south-west-13",
+            "attack-south-west-14",
+            "attack-south-west-15"
+          ],
+          "decodedRgbaSha256": [
+            "f68d3b96367d23f19ac2be3735060187395ade9dc71d8eee2c9322bd5de1eb9d",
+            "2667340ca3dc50af8600cd69b2f251f77fc1f533bd558fcd85078e180a876703",
+            "0e36c7cd12f9e53e7391d8812ce3597012eb5eef4f38fb076dc2b299b9c82140",
+            "42dd58106119496aeb11398fbf079911345fc4d4558e1b20a437d5e519d73b9e",
+            "b56bcef1a4c1260d1b2fa31c7b2d33285fba3dde6b4e24693cbcf39014f2250e",
+            "644e1e215907893e66b8600763e3ca0720c19288305d5ab6ac0d243c193bf4cb",
+            "4fb268e3ed00159f769d51f86bb40aeb4708f0cb1236c839dab4533585e59438",
+            "70c641b23a3ee5944e391ae60eb00fbd0d6393f9e0a84b4d6dfd6ce23de9c5a8",
+            "800f9e5bfd582251d710c2f0453ae027c630dde09cf28fd313bdb974827770f8",
+            "21376026227f47d914ad3bdabcd3ffa4853d730e9d9dcfd08557e0dd3b5ee7c1",
+            "685bdd6ef44e61db930846420ce99015e062e20bcf11246a3af04ed32e609d64",
+            "86a3c371dbd1c046f8f27f38f543eeaf1acbe4a51c81713b1672898073894068",
+            "ec010b45b180708ff0d487f616a8fc31e8087a415fe923315c82df14e6c35d30",
+            "c4993c53e3d5dc34665507385e43049d731394bbbe1f2ba716663e4b30616d03",
+            "c6ecbff2ba356b26733a9a8b1af2bcbe4761e4505ffb607c66d378bdb8d1f462",
+            "8da7e44789a874ccd5bbd9829036ff64cadd79be379aebaf74e4102d4239d856"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 2833
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "west",
+          "frameIds": [
+            "attack-west-0",
+            "attack-west-1",
+            "attack-west-2",
+            "attack-west-3",
+            "attack-west-4",
+            "attack-west-5",
+            "attack-west-6",
+            "attack-west-7",
+            "attack-west-8",
+            "attack-west-9",
+            "attack-west-10",
+            "attack-west-11",
+            "attack-west-12",
+            "attack-west-13",
+            "attack-west-14",
+            "attack-west-15"
+          ],
+          "decodedRgbaSha256": [
+            "1b63f8e6d913d4f3f39db3d13ddefe8a3dea2f280e5a50bbd3d61f311c1fb6ae",
+            "2196011cc61d75a6441ef2e9ebbe443a4bddca73133784c66c9bc0e28eadd6e3",
+            "a188ab0462c98ee2795955675483df0466d653b1e6e9c9539978184f5cb1ae1d",
+            "9b331489a36412a4840757c1a05d73d6896691316b39a9e16f5a3fdeaa2e2bf7",
+            "fd643f6c743aa9c0b568697f8993f09013754969d582612046067fb4d8b76984",
+            "8ddd624e0d2465e8ec2d24c5d5e6d8f2c10061507b4834ea751eb7e0e2555c59",
+            "892062e0e4e0f8d995b33306ebae9418204a7d78bbeffa684cea311808c68f60",
+            "b4502711f21eb68d4df41ae125bd98eea501ee0738b0cd55340f62fc6c7251ca",
+            "7c67fe4ba1358a60d6b476068ea4e17b33ac3c2c03963dec26afbdcdc0f7212c",
+            "6a5e970c4000a6a916c9fa337b83d8b5bf4a4d4d3d918c60c9928e9556dd9c4f",
+            "57fb3e7bb1df523e3e8ae679734a3a05f8af6a978aaa71ba6710f3927e4c1f62",
+            "25d642fe4923c1c2f213ded84d2b4e742ebd5a3a14ac351e3f5da74efbcbea4f",
+            "4554514cb60a79dd56c8d74585639f32e6cfa356867447b914dd36da28a35cb4",
+            "20609d9bfae4ae3dd2672f67c9f28f4520ecf388522065db24a3cb3ced9e930e",
+            "5ebbc58ac8f8f282e245b16dd670963389d43378720998974e9ce37bdb67144d",
+            "8e50b93991879d5eec382942c7b30208f66c2f7451da3fef3acc8c9236537ea5"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 2833
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "north-west",
+          "frameIds": [
+            "attack-north-west-0",
+            "attack-north-west-1",
+            "attack-north-west-2",
+            "attack-north-west-3",
+            "attack-north-west-4",
+            "attack-north-west-5",
+            "attack-north-west-6",
+            "attack-north-west-7",
+            "attack-north-west-8",
+            "attack-north-west-9",
+            "attack-north-west-10",
+            "attack-north-west-11",
+            "attack-north-west-12",
+            "attack-north-west-13",
+            "attack-north-west-14",
+            "attack-north-west-15"
+          ],
+          "decodedRgbaSha256": [
+            "3c553e4c7a866c71b3447ba9e56cb7cf3877d1f56f047ad3e9173afc2d423aff",
+            "378176fbec5c4b3b1d8ca1984f5e5c4c47b58fd79b3ca6c690e07f73b4400321",
+            "8cb8aa966fba3c97566a768c60724ad1441fe7fb8f95f84c1c5ee60327c86da0",
+            "9df01202ea3e0c2137ee107d34bf5ba862f01de4a21155296a3c9158b145f335",
+            "d9be84923e000805728a14116bc285110083de129c61ab41fe18926267e0e32c",
+            "08d2f13e8c35f9ff3ed8a41e1f0385cfeb717baede17e99704de3ec69281928c",
+            "75bf91e0f4a9c25b1e3f802b32f115137eb49dd849af6f86e7e81228800b47ae",
+            "ccaa5a6ffcd7886c702f417539677fc55cb493860b466b8b022c72a21d0c4d75",
+            "ecdda4d22f04216c440c91502c8cea9db2590b5370a70d18aa096ad313832eb0",
+            "0e711b2406613c3a3712d2879c173a876a5b6da0ebf1564abded17c49ceeeba9",
+            "ab0b1fd8dadaf586ca0339ed8b241a04898216f6907e30c62db155b6cce6fb6c",
+            "eab6b295a918ef93880260420a4f7e9d1a95b3daef87fa5da600151999d28510",
+            "42320145e29e84b696c703e1e2d0aabd6d0f4373f84b08dc498016e97ec3d6cf",
+            "0f29e6df8d243153b345baf66a80ca9b762764535ce65d60aa74bf10dd414274",
+            "28d646a8a034d839c38d422255ea9b37869e8bf869f53864d0601aa17570fba3",
+            "6679191e6bf4458c830853705e6f937fc95ca7faa15c17c8ea6029f3b3e2ec64"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 2833
+        }
+      ]
+    },
+    {
+      "directory": "worker-sprite-v3",
+      "runtimeFile": "worker-atlas-runtime.png",
+      "runtimeSha256": "b01836d83429d120dd3e3490969783f5f498943a0d0cbe7976035702bb2abf7a",
+      "dimensions": [
+        2048,
+        2176
+      ],
+      "clips": [
+        {
+          "state": "idle",
+          "worldDirection": "north",
+          "frameIds": [
+            "idle-north-0"
+          ],
+          "decodedRgbaSha256": [
+            "8187bb1bdf9a9e747dacdf295e36e7f261480ef4f085543a7ac08ab761e940c9"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "north-east",
+          "frameIds": [
+            "idle-north-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "dc6a4216dba4796c5277450cba24fe6b7e2a8405fabf997e3bc0dc9e046f3b04"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "east",
+          "frameIds": [
+            "idle-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "a897ca6150d21ed88368932025030803d8f622d1707b3cf812f1be7cd12a026e"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "south-east",
+          "frameIds": [
+            "idle-south-east-0"
+          ],
+          "decodedRgbaSha256": [
+            "bd68762fb475ab05d0db3c1243a1d6e36e4712737e01a90606c6eb94b0e55e37"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "south",
+          "frameIds": [
+            "idle-south-0"
+          ],
+          "decodedRgbaSha256": [
+            "6571b2c9a12386e4755385b2a5fdc7198c6f91a5469e59ccb99844069081a92f"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "south-west",
+          "frameIds": [
+            "idle-south-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "4fb10be5450e26fbb360a087dd26cc4059633fe5fdd1565354a56282c0c8240b"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "west",
+          "frameIds": [
+            "idle-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "efec9a59534aac435d9ec915c58a9d733108420b5c831f02ada03c28ce26df48"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "idle",
+          "worldDirection": "north-west",
+          "frameIds": [
+            "idle-north-west-0"
+          ],
+          "decodedRgbaSha256": [
+            "23fd26df190611a6742598b8febf0743cb80eeadb7ae052d721da5730265c728"
+          ],
+          "uniquePixelFrames": 1,
+          "totalDurationMs": 1000
+        },
+        {
+          "state": "walk",
+          "worldDirection": "north",
+          "frameIds": [
+            "walk-north-0",
+            "walk-north-1",
+            "walk-north-2",
+            "walk-north-3",
+            "walk-north-4",
+            "walk-north-5",
+            "walk-north-6",
+            "walk-north-7"
+          ],
+          "decodedRgbaSha256": [
+            "8187bb1bdf9a9e747dacdf295e36e7f261480ef4f085543a7ac08ab761e940c9",
+            "8143835db76da95c7de73b658d63620e65f0c8b4e409cfa9436ddbb07bc223f3",
+            "a770667928a4defc353549c12a35552d07d9a16b2f9ca8c6682ba15ee70ffc4e",
+            "c40cd15fbbd5c2941bc26b0ccc496cc1fbff8e31840e4708a045ab7855bd36df",
+            "e7007be3f0de430cc06b4378568c3445dd44b1fb93614579a54b5fb2ab82ca0c",
+            "6a282ff983177360991a1e18326de8abdc33493c982d14d5fe040420a1f1dc65",
+            "ae6e37ef3aff3d0af973a1c8daacb5d5231f83e448fd2dc20c374df3a56182a0",
+            "fb1025e0e14d42d1c42c3c8a310ab28d116452b7dd92466a6e1f71c8b67531a1"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "north-east",
+          "frameIds": [
+            "walk-north-east-0",
+            "walk-north-east-1",
+            "walk-north-east-2",
+            "walk-north-east-3",
+            "walk-north-east-4",
+            "walk-north-east-5",
+            "walk-north-east-6",
+            "walk-north-east-7"
+          ],
+          "decodedRgbaSha256": [
+            "dc6a4216dba4796c5277450cba24fe6b7e2a8405fabf997e3bc0dc9e046f3b04",
+            "16dc54afa936cc4849767c1ec9f299accf96455e1a32adba100c4e2338b4c6cd",
+            "5d5dcab808b9fc2db12d78a7e6cc57c02255b968e480a2fae5ea2876b8be7501",
+            "f91b44be0d46d1a48505bd1d648942dd8bf387c7390c3f6c5cc4fab23cf6ccfa",
+            "8cd43f1024b3e6c72827f81b2aed766eb0fd2d27cb3367929a26c26394258a02",
+            "7bce99ee81556c4fdcdebe9b71de770eb68b7813d00cf56d9c36cfaa74de70c9",
+            "f04e2d2f9680c35b74e9d45ba76444474ed94cf8323133e5c9ea0c5a78a8c6fc",
+            "a9cf40bd61f7973d9708230bbb177fdd2a294b02e4a7782da90569706a6560c4"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "east",
+          "frameIds": [
+            "walk-east-0",
+            "walk-east-1",
+            "walk-east-2",
+            "walk-east-3",
+            "walk-east-4",
+            "walk-east-5",
+            "walk-east-6",
+            "walk-east-7"
+          ],
+          "decodedRgbaSha256": [
+            "a897ca6150d21ed88368932025030803d8f622d1707b3cf812f1be7cd12a026e",
+            "621a59f436086a043448bf3b75b06b364a57cd3bfaff62d8096b5fc3d8373f31",
+            "bef5318d0c37a5630a888f2d24cc85576d39f69ddb577941241cc2199294067b",
+            "649cf2adcf77cd180c40e5abf91a4abf1f708c49980ddd946ad1c3bba27933cc",
+            "f824c71c1d0ac31e18ad908308d1effd9bfdb2fef7684b6559f755d65bf41461",
+            "7110b7ec2cd67d2a7240965d738414ac43c3b17c9dc15a2f7051470e65b2b5a0",
+            "372524209766c8f58a89628c69ecf2cdceff0a28d8e8f74c952ad27b35d40221",
+            "ed46ba93865a9770b84fc4994207f8c01ed5b8afb0f79d3193283fc004784a1d"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "south-east",
+          "frameIds": [
+            "walk-south-east-0",
+            "walk-south-east-1",
+            "walk-south-east-2",
+            "walk-south-east-3",
+            "walk-south-east-4",
+            "walk-south-east-5",
+            "walk-south-east-6",
+            "walk-south-east-7"
+          ],
+          "decodedRgbaSha256": [
+            "bd68762fb475ab05d0db3c1243a1d6e36e4712737e01a90606c6eb94b0e55e37",
+            "56fd8ed936c250a05ba50c57c09586a9c2b8cb5fcb53290bd3fae6a89f0e80b5",
+            "1facf634224ca4abb9422623c925f226ccd495b78e997efec51af78c38176537",
+            "e0a1a3d81cedacb08b8b27ae58d68a4b4206e2ee883ba4d5ed09565d3978df1e",
+            "20608dc6d533f6f40a83db333fd6273a8496cc175a5305c785465c0b6f02cc09",
+            "c3d46eb5eb353011b8e88c8658795a541011ffa72c85500b9b1a3db5b8a0c6d6",
+            "39048ae5012fbc575f35ee8be9f793d45f776df16fc6df696dadc8cb6ff6f866",
+            "ce991ceea125b865e4f6640ae458dc6e88b79281f6e8656319389a6c8432999c"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "south",
+          "frameIds": [
+            "walk-south-0",
+            "walk-south-1",
+            "walk-south-2",
+            "walk-south-3",
+            "walk-south-4",
+            "walk-south-5",
+            "walk-south-6",
+            "walk-south-7"
+          ],
+          "decodedRgbaSha256": [
+            "6571b2c9a12386e4755385b2a5fdc7198c6f91a5469e59ccb99844069081a92f",
+            "27ca27f7f5bbb5fef707f17bc2cdf5c0924ee5d92db6f149cccd27bf9c3901a9",
+            "e392d423d98493b4155e846f0a3806d08cd755684316df459c00ae0ad453b589",
+            "689d5ff8da1f44fdf9ebb7b3d605ad19c88068d4980cd560a92290c049befabc",
+            "c8f424d106fc4a2635286b3b0b8dd738e80b1f322f39f415327c0aacb75de4cc",
+            "f4cd92dbd42fda5ffe3474ba11ced26cbcfd28cd9894552712d7c9f580f8d65a",
+            "f9496def7110e1b18a3d818680521a53217f76c3e8d7c76dcb5513c1c1d56dc3",
+            "311576a5fa80cbb322405ff5676ab3277a5ddbd605439f601253c20b0dda3c75"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "south-west",
+          "frameIds": [
+            "walk-south-west-0",
+            "walk-south-west-1",
+            "walk-south-west-2",
+            "walk-south-west-3",
+            "walk-south-west-4",
+            "walk-south-west-5",
+            "walk-south-west-6",
+            "walk-south-west-7"
+          ],
+          "decodedRgbaSha256": [
+            "4fb10be5450e26fbb360a087dd26cc4059633fe5fdd1565354a56282c0c8240b",
+            "a9129dd2b58140e266b3cf8c2b427e3d35625892e150d0c4311d1e75a19d0cb1",
+            "a94a3f3f22b5bbb696a7dffd500b725e54bc933caaacb8a789d26522e491c819",
+            "06cb200c7661a5e6df7d8c6ae7b0e13e66f42563833e4d4d68213bbf00ee8494",
+            "e95616ac5d7c5d5d4ed1fe2fbe61a2193b0c1895747adbc90dd43cff936ba62a",
+            "0e2ae3749119d678fa211930ce97aae750fec6e05c19bad271b9c88f70df6d89",
+            "f9477c1eb8a1d9f964f3d775ecd47d5014f4217bb5ab89ad9c3aea621608ef29",
+            "63bbd3d48c4f753ae6323f1d46adcf5acf4c29537170d88da0c5837379b1786f"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "west",
+          "frameIds": [
+            "walk-west-0",
+            "walk-west-1",
+            "walk-west-2",
+            "walk-west-3",
+            "walk-west-4",
+            "walk-west-5",
+            "walk-west-6",
+            "walk-west-7"
+          ],
+          "decodedRgbaSha256": [
+            "efec9a59534aac435d9ec915c58a9d733108420b5c831f02ada03c28ce26df48",
+            "21b6423f7220cbb6f96dc300de9b2a9f24ce8b71aec70869b2ba4de4ba25733d",
+            "ff3d0ff889895e5971c57a6dfdf04b2ea13b41a7491c4bb459ffc7778bddffd3",
+            "577a3f9ec921e0bd4c9ce5cbc8c02f6a1f205c1fd2f8689010fdfbda484e93db",
+            "ae36be3ba684d256b1df57062a5cb48304861e4627550d02f06de809c9b6e55d",
+            "f593b240ad907de8a04c71ab31a7fb850cacbf3164410f097334d530835562e4",
+            "fa70d33ea99d4856a7d865e4fe76c0ef95bc96ca3dea2dc0af14fdde5464cd65",
+            "57e7ac098cb8c261b7af20c7c1d5ace24359c65401eb3fd96786a28750391d0a"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "walk",
+          "worldDirection": "north-west",
+          "frameIds": [
+            "walk-north-west-0",
+            "walk-north-west-1",
+            "walk-north-west-2",
+            "walk-north-west-3",
+            "walk-north-west-4",
+            "walk-north-west-5",
+            "walk-north-west-6",
+            "walk-north-west-7"
+          ],
+          "decodedRgbaSha256": [
+            "23fd26df190611a6742598b8febf0743cb80eeadb7ae052d721da5730265c728",
+            "ad1a772c56d96a7fc16680225fcb08e91092beb0cf7edad452163305f9906e90",
+            "082e52fb4928049a684d181be806c738982a4f685bb163922911a1f19f6e7349",
+            "20e2b52e1f38bb5a653572a4f2435a6b96c958afaed2e1b5ac66ea5c121973d4",
+            "f88589a6a0f55baa47b793fa5f222734b7b79f9b9c7254fabea21372d0a9b10d",
+            "daac30b78d16bf0ccd9299776701e113be92b996c4b9f1eb96c8289101feeae8",
+            "22fed43040e30201ee1a9d1bdaf2e9f0663a8f4c55d8d53eb612452510c9246c",
+            "202b5d67bda90af8cafd8ba4a5cdc46c514a3338192136293949eaddfb6c173a"
+          ],
+          "uniquePixelFrames": 8,
+          "totalDurationMs": 1067
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "north",
+          "frameIds": [
+            "attack-north-0",
+            "attack-north-1",
+            "attack-north-2",
+            "attack-north-3",
+            "attack-north-4",
+            "attack-north-5",
+            "attack-north-6",
+            "attack-north-7",
+            "attack-north-8",
+            "attack-north-9",
+            "attack-north-10",
+            "attack-north-11",
+            "attack-north-12",
+            "attack-north-13",
+            "attack-north-14",
+            "attack-north-15"
+          ],
+          "decodedRgbaSha256": [
+            "7b8b9cee28958e8d60ad5001e6c867ec529846cd777ebdf204bed5fae579fc9b",
+            "0f9be03e79743d227b68395ecdf7f1e6cae8e6764b936fe6e1f68449ccaf3107",
+            "f021376ef3e1a861ed81b336760dea2f4c0c9fa0bbf3f15e9a9afb7dbfd6c388",
+            "dc9ed84f3dfa69e394595e5ae2d97343be99e82023944833f928fcaca545c609",
+            "994437516301e6e10806c8cc0c11a5bd6aef709d4a30e5b19b38d61f8f768c5e",
+            "60746276d8543291596e50516fa42df077a6a9348153e14ed1f41ae8ee813075",
+            "985dd25447e2ba9b8c0fbf9e320215e9ad677753236936148c6e32d0f2af1698",
+            "78bf3cf387fc0579f5511c12f65a216c9c9e37bd6df9de14df38a83849e78d08",
+            "92013199e905b14fa586fdf90c9f74894260ab7b7c29574e3e48a2e17717cff1",
+            "4ba0414306a8773389c909053e2cdf8d18f166af7c6bb0fb7aac230cba880ba4",
+            "b2a92cdcdb9771d59d24b1ba60048c9e505e173d06864f696f909268aafac446",
+            "2ccd43e6cf666a8d541ee896f0bdd11ced339d533c65e2762fce3060836159fe",
+            "170e450379a3540e47b6f7ec5931c54771bd37fdcc3297b1be8d6dffada0df96",
+            "50c6c58efc196f0273af87e63640234f55b9cbb024c40cf500da885f638e63ee",
+            "eb10d22878c19a3a72033798fa8fc38465763d4acf43d046382b460708f71556",
+            "9352d9d7dfc8a1640a9871275ea0753f1adfdf3d7799930ab3ce3ca35aa2e849"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 900
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "north-east",
+          "frameIds": [
+            "attack-north-east-0",
+            "attack-north-east-1",
+            "attack-north-east-2",
+            "attack-north-east-3",
+            "attack-north-east-4",
+            "attack-north-east-5",
+            "attack-north-east-6",
+            "attack-north-east-7",
+            "attack-north-east-8",
+            "attack-north-east-9",
+            "attack-north-east-10",
+            "attack-north-east-11",
+            "attack-north-east-12",
+            "attack-north-east-13",
+            "attack-north-east-14",
+            "attack-north-east-15"
+          ],
+          "decodedRgbaSha256": [
+            "e0c06f3619d0218c6e678500aa46aa0f55e4b4504a20406efdd5ae39b3418fa4",
+            "c07366c3651a3d8a931737af4a5e3bdfe0d5f79d11d433f8d5d5b44eb8e06807",
+            "b1d5fb6d4b438e0bab3e7f25a39eb3fae18d17ca1367b63e1282bfd28c99de98",
+            "730bdc37ede68e2235561c4bb95814d04ee8a67189660fc882768c219fa8be7b",
+            "866975afb7d1deb844c9e4340d6e34ef01cf8dc20a5882fc1c6de78208b9a5ab",
+            "5af197fbdafbf33182e78a69f7593c908343a23c2588e9d296730f38ac3f32cf",
+            "c667fa5ca38f758738d01ac736621a32f393848650b4b496a362484b07c28c5b",
+            "559de29236d935d6651df0f38f0604ab323ab0c0cf6d28e0a3675583e21fe8ca",
+            "c048f403821cddb71cc2e1e6ea80dd4e2b36b7e3b7f71d299b7532f764c52a17",
+            "8375402278494ccec32aed0b91cb39c4eca4defe4d451fbd619ef5da8e601ad7",
+            "8f97004efd8d1a80eb52375195cb8c1dbb49ee7beb43ccbfa237f6654797039e",
+            "81a77ca9273f61ddceb7e2cf4494fb751e873f430336758ad7d0aa2f73e8a84f",
+            "a9fbfd6bfe563041cdfc1fe60d1673dcb4eb86bc9e5253e0029fc84723b0fab6",
+            "0155e0c7f62fb47e8fb40b6d22f1cb14c3a3ea0b32ffd8bb29a55276fded23e5",
+            "379fba23d80ef148726650838a207d7fc76a14d0ba9af423128e17ccb8b7cdd1",
+            "fe751ab359138e814b668939b4dfaa1558258a40ecd9e623b63355c28c81926c"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 900
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "east",
+          "frameIds": [
+            "attack-east-0",
+            "attack-east-1",
+            "attack-east-2",
+            "attack-east-3",
+            "attack-east-4",
+            "attack-east-5",
+            "attack-east-6",
+            "attack-east-7",
+            "attack-east-8",
+            "attack-east-9",
+            "attack-east-10",
+            "attack-east-11",
+            "attack-east-12",
+            "attack-east-13",
+            "attack-east-14",
+            "attack-east-15"
+          ],
+          "decodedRgbaSha256": [
+            "dedb86111b17de2fae87a5cf2e180bb25921d1c257f4eeff20d3250d055f1d90",
+            "6a128cbb2ec80395446e033bfc034c5770ea1a3a43e23205683e24799de95764",
+            "fb4935d16de5f1bad3c95aacb8366a36b75109feac42239656f4d5b7244e0dd5",
+            "39cadec743f6e28bcdef6e008da223b6832ebbe69770d981a32ea5a3661ac3a2",
+            "fd5d69def41ecbafad554296b49b7d1cf0c3b86071723193f902e66a9e44cc00",
+            "4e4be876f6f9472450a97c828a80a75597862bfa9ac3f9942ef0eb600eb1d313",
+            "679f7a170134cd7a8fbcfb7d4e53790d4da2eb03c0c77b09bdf9a8dc484279ef",
+            "7d5bccb5f1019f4792815efaf13874add01496c49fd4003c22c51a56da492a77",
+            "6edbc5d6828b638970101be685af03a939a95f7637694ffde7b4b88a9b196046",
+            "ba3f5e41022266976e98329a5bd27c11a644bd19b58b0ab940c44296705d3e5a",
+            "545d73c9e8d2ef633d10543c06b2e46a8db9df56909b5ed5495e9bb1a8f5d155",
+            "ac172600fb41f8fe789bfd64d705b5e3b518bfc5552c42327d236c571e2e1c01",
+            "163dd9b70d831f2ce3d8053489f3fb0e6d059b94d58fdcea47f15e6c9f9136f3",
+            "29b4406b3f584cd5fb3818563f3fdef0c2ba26a1692eef0e30d7eacd4aed27ab",
+            "b3e5aa7816677651d9f319ca04a3eb47a35486c92d125076a356a12b3fd0d617",
+            "2f4fc13ded0ee0903e9e2797569a99dea6698ebe2b2fbbe08b7c51fb85ff0bce"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 900
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "south-east",
+          "frameIds": [
+            "attack-south-east-0",
+            "attack-south-east-1",
+            "attack-south-east-2",
+            "attack-south-east-3",
+            "attack-south-east-4",
+            "attack-south-east-5",
+            "attack-south-east-6",
+            "attack-south-east-7",
+            "attack-south-east-8",
+            "attack-south-east-9",
+            "attack-south-east-10",
+            "attack-south-east-11",
+            "attack-south-east-12",
+            "attack-south-east-13",
+            "attack-south-east-14",
+            "attack-south-east-15"
+          ],
+          "decodedRgbaSha256": [
+            "73b60d183599cb5c4a4c55192239549833246a7ab4457a10937d0b89be1cd032",
+            "0afadbb0b822169f6d542a8f87d301619157decf73cae940668708d86fb7e0ec",
+            "47358f9ef6e0ae821653b05e2c54796c11d9e43b836769db9f409914e8314d17",
+            "aac7c952566af787129808a96d9e61fe8cc43e63625c4dece7bb6f0dedbd23df",
+            "e6c69e8dacf5338841d86c740c9d8ff1c08cd6acbb5a3fcb0a18727f47510cc0",
+            "b64bf4c2ace33760d9db6d04f7b36e6b3f1548540ccbb1aee5c076306879b024",
+            "58ce03c9990b9707a156c284504e7037883510cab1a116d06503aaef27fb417d",
+            "975f85ea0aad56860c22e5811e97b9ed8f0f6e4a87aaa3be520d04ce969885b1",
+            "8d58c7388927f2a3aca6597b3f3635eeb72ceea0f544bbf81adf753332706dc6",
+            "dc33da2930ea266d186beb83408b9ca4f35ee58abe9c555507ef6c9f72864890",
+            "77eae2ecf12f1f144ae73c9ddfa68cc3794a1ec4cc7375a668ad5e228d509167",
+            "68f0623410dc52d6ce9a5a99d74c7c63433cfa02f559a2df2d93dd9a0ed01ce4",
+            "1cb7e3050a337f5eb9aedeee3f84b27439a7768f2bdee89996958b69043931b2",
+            "b761e43631440a30ff46657c259c78df5a249ee18baf82b7d7dd8272e523fe7b",
+            "ba21088e1fc8877dc8822ae0b7b466b4f449b1148aef02315511c5a4ea0f7377",
+            "80ee61a838efc0a55faa86d92e960aef13f0cc72edda59d409bc64e396d9c04d"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 900
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "south",
+          "frameIds": [
+            "attack-south-0",
+            "attack-south-1",
+            "attack-south-2",
+            "attack-south-3",
+            "attack-south-4",
+            "attack-south-5",
+            "attack-south-6",
+            "attack-south-7",
+            "attack-south-8",
+            "attack-south-9",
+            "attack-south-10",
+            "attack-south-11",
+            "attack-south-12",
+            "attack-south-13",
+            "attack-south-14",
+            "attack-south-15"
+          ],
+          "decodedRgbaSha256": [
+            "bf1288ff5b91fae14986cb3888d4d33130e29630c6cf691e7fc4928bbe986d43",
+            "5682e816d8f801fc739ca1610eb16c145d3c37de15e24286418bb4292d12bda9",
+            "08bcaa916e5c52894a4671da9a5edcef05639deb70eb1892a48eba36e655b463",
+            "992b600a50c8114685721c7547042368014c959df947180db9e0e0b4673cd7c8",
+            "65db0f314d75f0f9213e31f2f6e1aab4dca5865a0c94c1181ceac1d35116c99e",
+            "35219f008f6bbf860a09cd8e8451b430f79d45cb44432d46aa99861ced778b41",
+            "83a314c79246573283cf5ee86aa22bb4f261e54019fd088ccd7271b6960d748c",
+            "bd9078e31f4e2b9b36f4c449e613fad383bb16f809e838277314d4fc7bd7ccd3",
+            "be99bae8f9755b1e1ae0627439c4b1e9d23f8565dfa6fecbc9342ca4f70b80b7",
+            "0400bc2e11091c04db6b18908194dffe924b856dd5cd8e7dfc6bebcabbfcd67c",
+            "4f5259136059413c36e9d8e1b66c0dede930880ec8dd8cb5783023426377e904",
+            "7c53541ac2be4b4e6f36a7e8c539fe63dff2248f21e4bf568636450d490b1cbc",
+            "03ad86185a69f349ae38d076fcf3eb74d582010e1e2e4163c84dcc8cf203c518",
+            "a7aae2c950c75e8812ceb780f5cafd677a1e85ee0065f9117878f305e6e3ab20",
+            "63b994624e775158b33cb252ee48682cd1ce5c049604ef75ba0a6c1a5b2b1e2c",
+            "a19e3d5234692ecbca1c79a634710b64d08fcc1379be5dd4473607ed4f05a44d"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 900
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "south-west",
+          "frameIds": [
+            "attack-south-west-0",
+            "attack-south-west-1",
+            "attack-south-west-2",
+            "attack-south-west-3",
+            "attack-south-west-4",
+            "attack-south-west-5",
+            "attack-south-west-6",
+            "attack-south-west-7",
+            "attack-south-west-8",
+            "attack-south-west-9",
+            "attack-south-west-10",
+            "attack-south-west-11",
+            "attack-south-west-12",
+            "attack-south-west-13",
+            "attack-south-west-14",
+            "attack-south-west-15"
+          ],
+          "decodedRgbaSha256": [
+            "f931604fd5be5d1da0a95abc0af0581192f52f55d25d85c93119e0657a147c0b",
+            "b9d7a4e1c7308f30d542f8e8d83f94a5e509b6d8ae5ea4e238569d3c0c405582",
+            "61d0eca96c3aed073ab3a82b2f8a29b582e07d4f582b81f733293bc12659ad71",
+            "2c97d0ce556ea0e343f7e3c096f1fa9bcbb02ac9bb3a0d280388539456b6fc1a",
+            "59a719753767f8f4c9deda7027c0af812cf276eb74daebede350332b9ddac345",
+            "48dba54cf7f177b8781f31259e16037ac75498a82ead81e540afca81fde73abb",
+            "982a626d63faafd8bb480f20b030194ea5eb698a792891f1e818970d7db8e941",
+            "d042a1a3cd1a750a8fb7c20695f44a5a6e6c3f822d2eb364cd6c03bf21be8b46",
+            "4a5dcd4d7dce1e8371b8fa4b14ac57876f730415e15dbf9282919348f981dd12",
+            "627004edad360f6854e4bbf82cf2b26ca74e50a97912bba37a7a2e182ad23352",
+            "c7b6a969c8c606e15418b60201b275e4aa80b2526686567da3eb3c09837cb696",
+            "9c741595eba58a2296e930db74e194cbcdc2a5c082196413153741636db772b1",
+            "e750c2147fcdc97d4d44390d2fb7a1a8437a5c63a770b1f53bbd92612e5a88a3",
+            "2a6df61a4bb4804e1c52059b7017607a1428997ddf1c8d4eb04f870ffdaf01de",
+            "c108a0580421b7f1cec81cf27f6450619c8fcb39efad036d4ad10c8ac4a762c0",
+            "b9cc3796bd4fe4c6a1b623edebf54dc2225df034923e1ba68189c3d392f6458b"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 900
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "west",
+          "frameIds": [
+            "attack-west-0",
+            "attack-west-1",
+            "attack-west-2",
+            "attack-west-3",
+            "attack-west-4",
+            "attack-west-5",
+            "attack-west-6",
+            "attack-west-7",
+            "attack-west-8",
+            "attack-west-9",
+            "attack-west-10",
+            "attack-west-11",
+            "attack-west-12",
+            "attack-west-13",
+            "attack-west-14",
+            "attack-west-15"
+          ],
+          "decodedRgbaSha256": [
+            "938852a6e3bcc1eb3d7642d581c3a6e158440cd46e468d78e0dcae18cbc9e9d4",
+            "3e4cd42230e6c1b051f43e6074f3cb9a8054363b9fb74247720d96c59350cf82",
+            "f0a6ad5ab5b1ca0c53f9f8ba42b775417502bf8660a92597e96a96d67f42d96a",
+            "246230e2eb677c245bfdd57a6b2b10d70b164c9e697228e6bdba4244866f1faa",
+            "a5d35aefbc13a9a58eb71461b32e4ba70c9c244911433b4d3134908f62513fb6",
+            "d98598cc0ab966f6d4c7ff70a3f5d1f9221f6133bcf8ebd9f72c5207138d6b1a",
+            "c3627bb7a7f033e62f138242daf4f11e83a837eade68faf8d27b479d2a029f0b",
+            "2adf3f5fdc98fea1bbc4cfc966a27acebdeb806c6ae6af065f14ecb0b0386093",
+            "c6a0e0ff83f16fcfdf3ec0c47f8432534307772c5a776b17361426de4b0cd053",
+            "e796c42ef4b41aa0fc0f3e7cc27eb7b892d745345443caedaa17fcb26074a024",
+            "a322f2df08e1794f0eb7598e0c410e1e45c495b85dd9c49fbab02b90e14f70cf",
+            "d1d06ec081f74faa74ee4970af2a69f4e4c09e79028e4438cc5b1ae83fd47429",
+            "b819ea21c9394e0dece9374869b199c3bafdaf926f02cd6b06db838347723d74",
+            "e2de6998fa9b3949947c33081c32b9c993392874028340756d5cc36f0a839740",
+            "37b325a8d973a181b6c792c99fef0b2b01656708152ad8cec5ce0cda63e5a2f4",
+            "67922ab805e879b496dd4317a742eb51d21eaa87469553f62c4336209f15eedf"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 900
+        },
+        {
+          "state": "gather-food",
+          "worldDirection": "north-west",
+          "frameIds": [
+            "attack-north-west-0",
+            "attack-north-west-1",
+            "attack-north-west-2",
+            "attack-north-west-3",
+            "attack-north-west-4",
+            "attack-north-west-5",
+            "attack-north-west-6",
+            "attack-north-west-7",
+            "attack-north-west-8",
+            "attack-north-west-9",
+            "attack-north-west-10",
+            "attack-north-west-11",
+            "attack-north-west-12",
+            "attack-north-west-13",
+            "attack-north-west-14",
+            "attack-north-west-15"
+          ],
+          "decodedRgbaSha256": [
+            "9399e2be6c9475f0395a71735859023baa610e673cb347acc22fa661a365f1fe",
+            "93d42d0b38785a60eca801e7f35b9f6c8df54423e7fc9eed9a76e9b994afd271",
+            "dbe30778c16715fcc1989a01f61013ddb25cb4bb8c3862c4420413a150374b3a",
+            "9f7c8f308096bde5878bd424db39fa44ba80012f8a79d5cc266c95f50d3272c1",
+            "12b10f03a739d0c82241c2646a0a261850f0b9a97f0ff573d762dce00befbb1b",
+            "2bf83fba03b0cddefcddc3665f0397fd5434bc2b59af5fd66b8d3a751fce717b",
+            "5541b5d089fce1b34e38fb036e58a375adfe4f5c7d258e0952bc8e0b1ece85bd",
+            "a12eeda14b96830b875749cbbbfb3e49ea159ac7c559ea7ec32597527f011928",
+            "a25b742145bb1fb4bd584ff5642453db330d30dee9db80b7acacf7a82d0bc1fe",
+            "de850d45093ccc7094cf448240a24bbb95b307d6592db4511c738e12d87079db",
+            "8b7553c9778c599ec7551935a8acb70de3b1500097d9d4dbe6157570eeb6ee55",
+            "f5d17bf1a107b5caec174dca02504bdf864eb50aea092bbebfcbac55a8f094a4",
+            "76680faf6312bf18d2bceffa61ce4d5384f3ae24aff3762f7f656b160c3bf9b3",
+            "f2fb8bdd923177a7a50fee592bcb65a02faf57ac123ae227222b61f69732e633",
+            "2ea7960ebda977c41128ccee4f162d24027a1930f13ea6dd156ccc2cb2bd9827",
+            "f406433944db04b7386804697fc6fa875b52bc0229be8490a5776b76c900fdbb"
+          ],
+          "uniquePixelFrames": 16,
+          "totalDurationMs": 900
+        }
+      ]
+    }
+  ]
+}

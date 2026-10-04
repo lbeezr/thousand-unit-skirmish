@@ -56,6 +56,45 @@ ordinary PRs use checks proportionate to their changes under
 
 ## Known findings and historical evidence
 
+### Fortified 2,000-unit construction clearance — 3 October 2026
+
+The reported rendered ceiling is reproducible with native clients on `7f9c8fd`:
+after 120 seconds and 3,601 simulation ticks, 7 Azure and 4 Ember soldiers still
+occupy the future Barracks sites. Every one has completed a route with its goal
+inside that footprint. The initial large destination box overlaps the sites;
+late arrivals refill them after the runner's single evacuation. A bounded harness
+helper redirects newly observed occupants once per generation until the paid
+build is accepted, including an arrival between observation and placement.
+The [investigation](qa-fortified-clearance-2026-10-03.md) records the baseline,
+1,000-unit control, corrected both-seat native construction and limits. Navigation
+rules are unchanged. Full rendered 2,000-unit capacity remains unproven.
+
+### Crowd separation and terrain boundaries — 3 October 2026
+
+Fork main `90ad320` planned legal elevation routes but checked only destination
+walkability when applying crowd separation. A deterministic fixture running the
+real server movement blocks pushed a soldier and a stationary gatherer across a
+level-0/level-2 cliff, and cut an open diagonal destination past a blocked corner.
+Actual movement now checks crossed terrain boundaries, retaining legal route
+fallback and dynamic waypoint repair. The [dated record](qa-unit-pathing-2026-10-03.md)
+separates these failing fixtures from live route/recovery regression checks and
+the small choke test. The historical 2,000-unit construction crowding limit
+remains open; this change does not establish a larger supported capacity.
+
+### Villager walk and gathering facing — 3 October 2026
+
+Fork main `fdd9173` used animated-direction approximation that turned a
+screen-left Human Worker walk to front-facing art and every berry-gather heading
+to the sole right-facing clip. Exact Human walk/gather selection now retains
+authored idle facings when directional action art is absent. A new optional
+authoritative work heading turns stationary gatherers toward their resource,
+preserving movement/attack precedence, fog/ownership and default timing. The
+[dated evidence](qa-evidence/villager-facing-2026-10-03/README.md) includes actual
+decoded atlas pixels, all-eight-heading camera/UV/matrix checks, arrival/path/jitter
+regressions and both-seat private snapshots. Boughward's identical static headings
+remain an art limitation. Cloud browser startup failed its sandbox preflight;
+GPU and deployed appearance are unobserved.
+
 ### Grounded settlement sites — 30 September 2026
 
 Source `83645bed` plus settlement-ground changes: Bellweather Millrace and

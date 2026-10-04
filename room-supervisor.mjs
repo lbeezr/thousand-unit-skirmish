@@ -7,6 +7,9 @@ import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/p
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
+import { practiceEntryCatalog } from './src/practice-entry-catalog.mjs';
+import { NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from './src/match-modes.mjs';
+import { ORDINARY_MAP_MIN_SIDE, MAP_SIZE_TIERS } from './src/map-size-policy.mjs';
 import {
   buildRoomWorkerEnvironment,
   completeRoomLaunchOptions,
@@ -14,6 +17,7 @@ import {
   normalizeRoomMetadata,
   roomIndexDocument,
   roomResponseMetadata,
+  freshRoomLaunchOptions,
 } from './src/room-launch-options.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -42,6 +46,18 @@ const WORKER_STOP_TIMEOUT_MS = 7_000;
 const MAX_ROOM_OPTIONS_BYTES = 4096;
 const INDEX_SAVE_INTERVAL_MS = 20_000;
 const ROOM_SWEEP_INTERVAL_MS = 60_000;
+const practiceSetup = (async () => {
+  const maps = path.join(ROOT, 'maps');
+  const file = path.resolve(ROOT, `maps/${NORMAL_MATCH_MAP_ID}.json`);
+  if (!file.startsWith(`${maps}${path.sep}`)) return null;
+  // The existing default worker validates this same canonical startup file.
+  try {
+    const presets = await Promise.all((await readdir(maps)).filter(name => name.endsWith('.json'))
+      .map(async name => JSON.parse(await readFile(path.join(maps, name), 'utf8'))));
+    return practiceEntryCatalog(JSON.parse(await readFile(file, 'utf8')), presets);
+  }
+  catch { return null; }
+})();
 
 if (RAILWAY_DEPLOYMENT && !VOLUME_MOUNT_PATH) {
   throw new Error('Attach a Railway volume before starting the match service.');
@@ -80,7 +96,7 @@ let indexSaveQueue = Promise.resolve();
 
 function makeRoom(id, values = {}) {
   const directory = path.join(ROOM_DIRECTORY, id);
-  const roomMetadata = normalizeRoomMetadata({ mapId: values.mapId });
+  const roomMetadata = normalizeRoomMetadata(values);
   return {
     id,
     directory,
@@ -90,6 +106,9 @@ function makeRoom(id, values = {}) {
     lastActiveAt: Number.isFinite(values.lastActiveAt) ? values.lastActiveAt : Date.now(),
     launchOptions: completeRoomLaunchOptions(values.launchOptions),
     mapId: roomMetadata?.mapId ?? null,
+    ...(roomMetadata?.matchModeId ? {
+      matchModeId: roomMetadata.matchModeId, matchModeVersion: roomMetadata.matchModeVersion,
+    } : {}),
     lastIndexWriteAt: 0,
     activeConnections: 0,
     pendingConnections: 0,
@@ -233,7 +252,7 @@ async function readRoomLaunchOptions(request) {
     throw error;
   }
   const body = Buffer.concat(chunks).toString('utf8').trim();
-  if (!body) return completeRoomLaunchOptions();
+  if (!body) return freshRoomLaunchOptions();
   let value;
   try { value = JSON.parse(body); }
   catch {
@@ -241,7 +260,7 @@ async function readRoomLaunchOptions(request) {
     error.statusCode = 400;
     throw error;
   }
-  try { return completeRoomLaunchOptions(value); }
+  try { return freshRoomLaunchOptions(value); }
   catch (cause) {
     const error = new Error(String(cause.message || cause));
     error.statusCode = 400;
@@ -287,10 +306,10 @@ function logWorkerOutput(label, stream, isError = false) {
   });
 }
 
-function startWorker(customMapDirectory, matchStatePath, label, launchOptions = { mode: 'pvp' }) {
+function startWorker(customMapDirectory, matchStatePath, label, launchOptions = { mode: 'pvp', ...NORMAL_HUMAN_MATCH_MODE }, onRoomMetadata, savedMetadata = null) {
   return new Promise((resolve, reject) => {
     const { RTS_ACCESS_PASSWORD: _accessPassword, ...parentEnvironment } = process.env;
-    const workerEnvironment = buildRoomWorkerEnvironment(parentEnvironment, launchOptions);
+    const workerEnvironment = buildRoomWorkerEnvironment(parentEnvironment, launchOptions, savedMetadata);
     const child = spawn(process.execPath, [WORKER_PATH], {
       cwd: ROOT,
       env: {
@@ -309,6 +328,7 @@ function startWorker(customMapDirectory, matchStatePath, label, launchOptions = 
     logWorkerOutput(label, child.stderr, true);
 
     let settled = false;
+    let worker = null;
     const timeout = setTimeout(() => fail(new Error(`${label} did not become ready in time.`)), WORKER_START_TIMEOUT_MS);
     const fail = (error) => {
       if (settled) return;
@@ -318,11 +338,20 @@ function startWorker(customMapDirectory, matchStatePath, label, launchOptions = 
       reject(error);
     };
     child.on('message', (message) => {
+      if (worker && message?.type === 'roomMetadata') {
+        const roomMetadata = normalizeRoomMetadata(message.roomMetadata);
+        if (roomMetadata) {
+          worker.roomMetadata = roomMetadata;
+          onRoomMetadata?.(roomMetadata, worker);
+        }
+        return;
+      }
       if (settled || message?.type !== 'ready' || !Number.isInteger(message.port) || message.port < 1) return;
       settled = true;
       clearTimeout(timeout);
       const roomMetadata = normalizeRoomMetadata(message.roomMetadata);
-      resolve({ child, port: message.port, ...(roomMetadata ? { roomMetadata } : {}) });
+      worker = { child, port: message.port, ...(roomMetadata ? { roomMetadata } : {}) };
+      resolve(worker);
     });
     child.once('error', fail);
     child.once('exit', (code, signal) => {
@@ -332,19 +361,37 @@ function startWorker(customMapDirectory, matchStatePath, label, launchOptions = 
   });
 }
 
+function updateRoomMetadata(room, roomMetadata) {
+  if (!roomMetadata || (room.mapId === roomMetadata.mapId && room.matchModeId === roomMetadata.matchModeId
+    && room.matchModeVersion === roomMetadata.matchModeVersion)) return;
+  room.mapId = roomMetadata.mapId;
+  delete room.matchModeId;
+  delete room.matchModeVersion;
+  if (roomMetadata.matchModeId) {
+    room.matchModeId = roomMetadata.matchModeId;
+    room.matchModeVersion = roomMetadata.matchModeVersion;
+  }
+  void persistRoomIndex().catch((error) => console.error('Could not save room index:', error));
+}
+
 async function ensureRoomWorker(room) {
   if (room.worker?.child.exitCode === null) return room.worker;
   if (room.starting) return room.starting;
   room.starting = (async () => {
     await mkdir(room.customMapDirectory, { recursive: true });
+    // Index metadata is a historical startup fallback when a checkpoint is absent.
+    // Custom-map geometry still requires its checkpoint; never invent a shipped file.
+    const savedMetadata = room.mapId && await stat(path.join(ROOT, 'maps', `${room.mapId}.json`))
+      .then(value => value.isFile()).catch(() => false) ? normalizeRoomMetadata(room) : null;
     const worker = await startWorker(
       room.customMapDirectory, room.matchStatePath, `room ${room.id.slice(0, 8)}`, room.launchOptions,
+      (roomMetadata, worker) => {
+        if (room.worker === worker) updateRoomMetadata(room, roomMetadata);
+      },
+      savedMetadata,
     );
     room.worker = worker;
-    if (worker.roomMetadata?.mapId && room.mapId !== worker.roomMetadata.mapId) {
-      room.mapId = worker.roomMetadata.mapId;
-      void persistRoomIndex().catch((error) => console.error('Could not save room index:', error));
-    }
+    updateRoomMetadata(room, worker.roomMetadata);
     worker.child.once('exit', () => {
       if (room.worker !== worker) return;
       room.worker = null;
@@ -364,7 +411,8 @@ async function ensureDefaultWorker() {
   defaultWorkerStarting = (async () => {
     await mkdir(DEFAULT_MAP_DIRECTORY, { recursive: true });
     const worker = await startWorker(
-      DEFAULT_MAP_DIRECTORY, DEFAULT_MATCH_STATE_PATH, 'default room', { mode: 'pvp' },
+      DEFAULT_MAP_DIRECTORY, DEFAULT_MATCH_STATE_PATH, 'default room',
+      process.env.RTS_MAP ? { mode: 'pvp' } : { mode: 'pvp', ...NORMAL_HUMAN_MATCH_MODE },
     );
     defaultWorker = worker;
     worker.child.once('exit', (code, signal) => {
@@ -524,7 +572,24 @@ async function handleRequest(request, response) {
   if (!hasAccess(request)) { requireAccess(response); return; }
 
   if (url.pathname === '/api/rooms/status' && request.method === 'GET') {
-    sendJson(response, 200, { enabled: true, roomCount: rooms.size, roomLimit: MAX_ROOMS });
+    sendJson(response, 200, { enabled: true, roomCount: rooms.size, roomLimit: MAX_ROOMS, practiceSetup: await practiceSetup,
+      ordinarySetup: { minimumSide: ORDINARY_MAP_MIN_SIDE, defaultMapId: NORMAL_MATCH_MAP_ID,
+        ...NORMAL_HUMAN_MATCH_MODE, mapSizeTiers: MAP_SIZE_TIERS,
+        pve: { available: true, mapId: NORMAL_MATCH_MAP_ID,
+          supportedMapIds: [NORMAL_MATCH_MAP_ID], ...NORMAL_HUMAN_MATCH_MODE } } });
+    return;
+  }
+
+  if (url.pathname === '/api/session' && request.method === 'GET' && url.searchParams.has('room')) {
+    const id = url.searchParams.get('room');
+    const room = ROOM_ID_PATTERN.test(id || '') ? rooms.get(id) : null;
+    if (!room || roomExpired(room)) { sendJson(response, 404, { valid: false }); return; }
+    room.pendingConnections++;
+    try {
+      const worker = await ensureRoomWorker(room);
+      proxyHttp(request, response, worker);
+    } catch { sendJson(response, 503, { valid: false }); }
+    finally { room.pendingConnections--; }
     return;
   }
 

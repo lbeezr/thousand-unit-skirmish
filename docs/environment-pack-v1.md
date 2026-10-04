@@ -357,6 +357,21 @@ pairwise transition tiles are not needed for basic material mixing.
 The [cliff package](../assets/environment/frontier-cliff-pilot-v1/README.md)
 contains the model, eight color/depth views, scripts, and provenance. It is an
 isolated review page; normal battlefield terrain does not use that pilot.
+Parent selected this source's low-ridge role on 3 October 2026. Current tall
+cliff/cap defaults remain. [Low-ridge constraints](../assets/environment/frontier-cliff-pilot-v1/README.md#low-ridge-placement-constraints)
+require existing blocked stone placement, actual height/footprint/ground/view
+registration and join/end/depth/readability proof before any normal binding.
+
+## Generic oak depletion atlas · 3 October 2026
+
+Generic oak worked/low/depleted states now use the existing source cutouts in a
+[three-state runtime atlas](../assets/environment/frontier-oak-depletion-atlas-v1/README.md).
+Full Meshy/directional oak, legacy full, regional wood and berries retain their
+current art. Six hash-verified authored mips preserve alpha, inherited root/scale
+and mip-5 sampling; failures restore individual state images. Successful loading
+skips the three duplicate state downloads. Cost is 1.19 MB plus JSON and 27.54 MiB
+decoded RGBA; [identified deployment and ordinary-game acceptance](qa-oak-depletion-atlas-adoption.md)
+remain open with terrain integration.
 
 ## Bellweather maple lifecycle · 30 September 2026
 

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "7238c84a1bc2a8f3b6198f68640c583b19e63c61",
+  "sourceDirty": false,
+  "digest": "sha256:7ad4039d26eafc06220e725b733707c2ec7066f52bf3eaf287d3707790be1b49",
+  "fileCount": 1178,
+  "runtimeFiles": [
+    {
+      "path": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+      "included": true,
+      "sha256": "0da9b0b7f1b2fb4bedd3d4712781a3016612b90c8435ba07e87ee2be3df26b08"
+    },
+    {
+      "path": "assets/units/cast-human-sprite-v3/cast-atlas-runtime.png",
+      "included": true,
+      "sha256": "e7bc76196002bae2183b8eaf791e1d850623367c0438253ae5cb025f7c53a7c1"
+    },
+    {
+      "path": "assets/units/cast-human-sprite-v3/team-accent-mask.png",
+      "included": true,
+      "sha256": "d740bcc5711c84da12c15abbbbd2bfa51113a1369a9214d2fb39ec73d6815fb0"
+    }
+  ],
+  "focusedTests": 123,
+  "admissionByteIdempotence": "passed",
+  "packedHttpScenario": "passed; guarded BasicAuthHTTP/WebSocket and actual default atlas hashes",
+  "productiveReceiptScenario": "passed;28 real WebSocket producer/client CPU observations; no GPU/deployed claim",
+  "defaultStoneBinding": "merged PR263 integrated; exact authored headings and missing idle",
+  "nativeGpuAcceptance": "open; local sandbox-unavailable; parent Railway/Mac delivery route"
+}

@@ -1,0 +1,169 @@
+{
+  "scope": "current-wire-authoritative-progress-probe",
+  "sourceRevision": "5e4d54c92ef2da6632028f35f77995c67d4bdf1d",
+  "checks": [
+    {
+      "name": "arrival",
+      "productive": true,
+      "cargoDelta": 0.06666666666666667,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "gathering",
+      "audioExecution": "food",
+      "currentSpriteState": "gather"
+    },
+    {
+      "name": "blocked-approach",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "gathering",
+      "audioExecution": null,
+      "currentSpriteState": "gather"
+    },
+    {
+      "name": "queued-task",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "gathering",
+      "audioExecution": null,
+      "currentSpriteState": "gather"
+    },
+    {
+      "name": "retained-gather-phase-out-of-reach",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "gathering",
+      "audioExecution": "food",
+      "currentSpriteState": "gather"
+    },
+    {
+      "name": "resource-depleted",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "returning",
+      "audioExecution": null,
+      "currentSpriteState": "idle"
+    },
+    {
+      "name": "capacity-full",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "returning",
+      "audioExecution": null,
+      "currentSpriteState": "idle"
+    },
+    {
+      "name": "simulated-target-clear",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "idle",
+      "audioExecution": null,
+      "currentSpriteState": "idle"
+    },
+    {
+      "name": "simulated-target-reassignment-arrival",
+      "productive": true,
+      "cargoDelta": 0.06666666666666667,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "gathering",
+      "audioExecution": "food",
+      "currentSpriteState": "gather"
+    },
+    {
+      "name": "build-arrival",
+      "productive": true,
+      "cargoDelta": 0,
+      "progressDelta": 0.0022222222222222222,
+      "hpDelta": 0,
+      "task": "building",
+      "audioExecution": null,
+      "currentSpriteState": "build"
+    },
+    {
+      "name": "build-wait",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "building",
+      "audioExecution": null,
+      "currentSpriteState": "build"
+    },
+    {
+      "name": "repair-arrival",
+      "productive": true,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 1.3333333333333286,
+      "task": "repairing",
+      "audioExecution": "repair",
+      "currentSpriteState": "repair"
+    },
+    {
+      "name": "repair-out-of-reach",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "repairing",
+      "audioExecution": null,
+      "currentSpriteState": "repair"
+    },
+    {
+      "name": "repair-no-wood",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "repairing",
+      "audioExecution": null,
+      "currentSpriteState": "repair"
+    }
+  ],
+  "constructionAmbiguity": {
+    "rowsAndProgressIdentical": true,
+    "performers": [
+      0,
+      1
+    ]
+  },
+  "repairExhaustionBroadcast": [
+    {
+      "tick": 4,
+      "hpDelta": 0,
+      "task": "repairing",
+      "dirty": false
+    },
+    {
+      "tick": 5,
+      "hpDelta": 0,
+      "task": "repairing",
+      "dirty": false
+    },
+    {
+      "tick": 6,
+      "hpDelta": 0,
+      "task": "repairing",
+      "dirty": false
+    }
+  ],
+  "gap": "Row 9 describes intent; row 14 lacks construction and can report gather outside reach. No per-Worker positive-progress receipt exists.",
+  "limits": [
+    "actual server functions exercised in a deterministic VM; no network, GPU or deployed claim",
+    "target clear/reassignment is simulated; actual Stop commands, order-revision invalidation and routes are not exercised",
+    "dated diagnostic; not registered as a permanent CI assertion of incorrect presentation"
+  ]
+}

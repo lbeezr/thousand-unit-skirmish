@@ -1,0 +1,272 @@
+{
+  "methods": {
+    "record": "methods",
+    "schemaVersion": 1,
+    "sourceCommit": "4f9a9ae975ab849a4f1f9b5a1cc3375c1992b778",
+    "sourceInputSha256": {
+      "scripts/map-scale-audit.mjs": "3a551ad5c06ff0ae4271059e9324ef93c8b856c390cf4725d6c8337d9e434e3b",
+      "server.mjs": "35e33dbb45fce3eda75305bff2a25ab6770e34d093ad16656f23940bcc336af2",
+      "simulation-scheduler.mjs": "aa1c0c4709eb1ce01c77b05374687eb869d273c1f753e8b1831ad4cfe073f22d",
+      "src/map-utils.mjs": "e8ed0f7626b309c2543758815c9d2dfd72d693904ade3e1687d421958b9309e3",
+      "src/elevation.mjs": "6c2df497780c9b00bac86fbc7ece5937efdf27cd70a36248e57ad32d9d928fce",
+      "src/town-center-spawn.mjs": "b5a1c9ec1b6ae221518f6cf1abaa14903c757c8dbb49ea70f5ac6d198d9b086c",
+      "src/gameplay-definitions.mjs": "61e1fc9aa85ad3d8672a3f3971f6692e136513b91e8bf0741f70882c9717d1ca",
+      "src/farm-harvest.mjs": "acb8f95ba9e2bc87d05704138a4456f430745171c216ef41fbd115a88e17cfc7",
+      "src/palisade-profile.mjs": "76066571828f6eadf40869eb5150b74d2908a21e580db26d990656ccf1abc1c0",
+      "src/pve-match.mjs": "cc881d5053e92bf28fc2e7fcb263abc981f02572adc88594ed7962b0f0e826de",
+      "src/match-modes.mjs": "84d0e4838f1fd6479485bf4bbc05e9e8f0e839c6b72e2cbef4acecb111c29d53",
+      "src/terrain-height.mjs": "ea2fd45af26db2a50542251a69c8057238cbfa5bc76e2e3b50cf061196fd3887",
+      "maps/bannerfall-arena.json": "8ae471dd62deb740ddaeecf9a399ac129090bdcb075b707df7ce473ac3d3d163",
+      "maps/bellweather-common.json": "bf882e3fe50d9cc4c42ffe0333eb56bed935a8af38f5df0b7143717de519ec43",
+      "maps/bellweather-millrace.json": "c650fdbb81da54ed9ae4836869a570cab0151226e13dd93a098a971adc4dc8c9",
+      "maps/cinder-ridge.json": "8be6ceb131066847e379f3ab94e8c3468143844d072178c66ba8868dcd31efcc",
+      "maps/dense-clash.json": "700716c2a6f6527a60a914ed55583f30cdbcd928f55898003cdb7e94287e909a",
+      "maps/ellionar-channel-gardens.json": "22d0347d91940e1da8d0c459643f9d8dfa7f82a909da8aca0a369435707a80b1",
+      "maps/forked-vale.json": "8e0105cbf0b6dcda04781f6798fbcff92ade2421b6247f49eeaa8b4c6ac23c4a",
+      "maps/fortified-crossing.json": "11f3f8f5a054d6bed5b3ff4577dc548b1a63626f19effe035e6f53c1989b3d11",
+      "maps/frontier-160.json": "070154de2b89d838037635cea9b312b43d232018149fbde751ac6f2b21b478e4",
+      "maps/frontier-materials.json": "ed1bda3202cf20e43e18541fe2bbd369e6f9d7c41d87af0c64de6bfff983eaf6",
+      "maps/highland-grove.json": "e30193e2a3862ca41b24e5e971bfb5e6a5df8dbca8eb4518f08c4b610d4991f1",
+      "maps/meshy-resource-review.json": "f8f87a1c80a469fbd738ee28fd680555c94014826fea21983a8751f8fc098635",
+      "maps/open-field.json": "4a9b1dadac4f41ec9fd39fa6c88a6e8c06ecd43070a18fc77071b13fa22ee426",
+      "maps/pale-meridian-observation-road.json": "c639c97e9dd561230c974954b097fd58f3508d6418eeb973e22da95e34a4f419",
+      "maps/ru-lora-fringe-path.json": "6029920c3703b37f43f64c2807abce2027da091fd39e2a9468b51381e4449b93",
+      "maps/ru-lora-salt-hollows.json": "597ca6ba9706e2936bdcd38faccc1c778c86480c72fa314e4bd7ca4e612e0e3c",
+      "maps/sereward-cistern-road.json": "5a33ffcd22518921d0c399144a0816e1ce94cb93e75b8a53fe097e6fc7843a77",
+      "maps/shore-fishing.json": "9d577f95faaafb659da8e1395ebe34a46ed64e26bab8fe10a09eab839facdefc",
+      "maps/siltmouths-confluence-grounds.json": "12a9b2a71763fde866a02211cc235b38a6574095fab0040ee8582f99bd20acdc",
+      "maps/siltmouths-reed-crossings.json": "de31ac141ed5ad925a9de99b719dc36887bcd1e2175045ea2c877d3f32651983",
+      "maps/sombral-mere-shore-gardens.json": "0ccd76ae8e747a881b275e1daf8da128e6a77f9ee21f658fbf63da794314dae9",
+      "maps/stone-defense-field.json": "9ef3eb554c463757abdbbe278ce61b970022c6b09f95213aa819e00919686f35",
+      "maps/stone-pass.json": "f69bcb0c2c68021dfd4ecc56e9606505f2b0f5179c4ef6848befacae8b3cab2a",
+      "maps/three-crowns.json": "576af0ca3f55819f7afec7490a40140bb88b5f16a70d64a16872858767179b7f",
+      "maps/underbough-rootways.json": "1f87b7c7c16dbd6d78b1083815bea023bbf75b0e992d784bf8f202b1625e8ac0",
+      "maps/vesperra-pale-clearings.json": "e35a6cbe4c90fbac94517051d98ddcf53e262de00e502f196df36d961c0de0a1",
+      "maps/veyrholds-slate-saddle.json": "be513107f5377eb7b1471a77e7586f68347c185906ad2e8fa6daf28dc4635611",
+      "maps/veyrholds-terraced-vale.json": "1d91efb4f377f5c382f5a18e31e30d70efae17fb7434f133b878a2802c309dbd",
+      "maps/veyrholds-threefold-basin.json": "6d9769ce30a1da374ffa41660dd99a804fd078a6f706113ddce40e1785e3ba0b",
+      "maps/woodland-expanse.json": "d30f6cebbae427b8489c73262f9609db7bed8a199bedae14c90679dbc0868053"
+    },
+    "constants": {
+      "defaultMapId": "veyrholds-terraced-vale",
+      "ticksPerSecond": 30,
+      "maxBuildings": 128,
+      "forestWoodPerCell": 6,
+      "defaultArmySize": 1000
+    },
+    "buildingFootprintSideCells": {
+      "palisade-wall": 1,
+      "palisade-gate": 1,
+      "workshop": 3,
+      "stable": 3,
+      "watchtower": 3,
+      "town-center": 5,
+      "storehouse": 3,
+      "mill": 3,
+      "farm": 3,
+      "dock": 3,
+      "house": 3,
+      "barracks": 3,
+      "archery-range": 3
+    },
+    "unitMoveSpeedWorldUnitsPerGameSecond": {
+      "worker": 2.6,
+      "infantry": 2.6,
+      "scout": 4.5
+    },
+    "timing": {
+      "nominalGameSecondsPerWallSecond": 1,
+      "observedGameSecondsPerWallSecond": null,
+      "note": "30 fixed steps/s; overload skips wall-time slots without catching up simulation. Nominal times require sustained tick cadence; no observed match timing is claimed."
+    },
+    "methods": {
+      "route": "Initial static cardinal graph including both home TC footprints. Min elevation-cost routes use shared costs; equal-cost tie choices may differ from server A*. Travel = route world length / specific unit speed; cost is not speed.",
+      "buildability": "Static eligible ground excludes obstacles, home TCs, ordinary resources, objectives. Legal footprint centers allow mixed ground levels as current server does. Flat centers are a separate authoring recommendation. Units, money, prerequisites, access and route-cut rejection are omitted.",
+      "city": "Greedy geometry only; 30-building template, flat pads, 1-cell free circulation rings, within 20 cells of own spawn and nearer own seat. Fit is a constructive static example, not maximum capacity or paid runtime acceptance.",
+      "routes": "Midpoint 7x7 removal tests local detour resilience, not independent flank routes. Center-column runs measure open crossing widths, not global min-cut or guaranteed army throughput.",
+      "resources": "Ordinary finite stock separated from 6 wood per initial forest cell (potential after progressive cutting). Type-specific clusters use transitive Chebyshev distance <=4; route distance to markers ignores interaction radius.",
+      "comparison": "Never equate grid counts between engines. Compare travel at declared clock rates, map dimensions divided by gameplay building sides, usable area per seat, expansion count/access and route breadth."
+    }
+  },
+  "map": {
+    "file": "maps/siltmouths-confluence-grounds.json",
+    "id": "siltmouths-confluence-grounds",
+    "name": "Siltmouths \u00b7 Confluence Grounds",
+    "pool": "regional",
+    "purpose": "admitted-test-arena",
+    "defaultPvp": false,
+    "seededPve": false,
+    "ordinaryPve": false,
+    "geometry": {
+      "columns": 160,
+      "rows": 160,
+      "cellSideWorldUnits": 1,
+      "worldWidth": 160,
+      "worldHeight": 160,
+      "area": 25600,
+      "terrainWalkableCells": 16786,
+      "initialWalkableCells": 16754,
+      "initialWalkableFraction": 0.654,
+      "reachableCellsBySeat": [
+        16754,
+        16754
+      ],
+      "obstacleCellsByMaterial": {
+        "water": 4218,
+        "forest": 4596
+      },
+      "elevationCellCounts": [
+        8938,
+        12694,
+        3968
+      ],
+      "mapSidesInConstructedTownCenterSides": [
+        32,
+        32
+      ]
+    },
+    "travel": {
+      "endpoint": "spawn-cell center to opposing spawn-cell center; initial home TC occupancy included",
+      "euclideanSpawnWorldDistance": 117,
+      "shortestGeometricWorldLength": 135,
+      "minimumElevationCostRoute": {
+        "worldLength": 135,
+        "weightedCost": 13515,
+        "nominalTravelSeconds": {
+          "worker": 51.923,
+          "infantry": 51.923,
+          "scout": 30
+        }
+      },
+      "midpointSevenCellSquareDetour": {
+        "worldLength": 143,
+        "weightedCost": 14315,
+        "nominalTravelSeconds": {
+          "worker": 55,
+          "infantry": 55,
+          "scout": 31.778
+        }
+      },
+      "allForestClearedRoute": {
+        "worldLength": 131,
+        "weightedCost": 13115,
+        "nominalTravelSeconds": {
+          "worker": 50.385,
+          "infantry": 50.385,
+          "scout": 29.111
+        }
+      },
+      "centerColumnCrossings": [
+        {
+          "row": 0,
+          "width": 10
+        },
+        {
+          "row": 59,
+          "width": 15
+        },
+        {
+          "row": 92,
+          "width": 13
+        },
+        {
+          "row": 144,
+          "width": 16
+        }
+      ],
+      "baseSeparationInConstructedTownCenterSides": 27,
+      "objectives": []
+    },
+    "buildingSpace": {
+      "eligibleGroundCells": 16728,
+      "eligibleGroundFraction": 0.653,
+      "centersByFootprint": {
+        "3": {
+          "legalCenters": 14232,
+          "flatPadCenters": 13188,
+          "legalCenterFraction": 0.556
+        },
+        "5": {
+          "legalCenters": 11754,
+          "flatPadCenters": 9934,
+          "legalCenterFraction": 0.459
+        }
+      },
+      "initialHomeTownCenterFootprintCellsBySeat": [
+        16,
+        16
+      ],
+      "cityTemplate": {
+        "buildings": 30,
+        "types": [
+          "town-center",
+          "barracks",
+          "barracks",
+          "archery-range",
+          "stable",
+          "workshop",
+          "storehouse",
+          "mill",
+          "house",
+          "house",
+          "house",
+          "house",
+          "house",
+          "house",
+          "house",
+          "house",
+          "house",
+          "house",
+          "house",
+          "house",
+          "farm",
+          "farm",
+          "farm",
+          "farm",
+          "farm",
+          "farm",
+          "farm",
+          "farm",
+          "watchtower",
+          "watchtower"
+        ],
+        "homeSquareRadiusCells": 20,
+        "circulationRingCells": 1,
+        "staticGreedyFlatPadFitsBySeat": [
+          {
+            "team": 0,
+            "placedBuildings": 30,
+            "completeTemplate": true,
+            "addedHousePopulation": 96
+          },
+          {
+            "team": 1,
+            "placedBuildings": 30,
+            "completeTemplate": true,
+            "addedHousePopulation": 96
+          }
+        ],
+        "runtimeAddedBuildingLimitSharedBothSeats": 128
+      }
+    },
+    "economy": {
+      "startingArmyTotalUnits": 24,
+      "startingResourcesPerSeat": {
+        "food": 150,
+        "wood": 250,
+        "stone": 0
+      },
+      "ordinaryNodeStockTotals": {
+        "food": 3420,
+        "wood": 3300,
+        "stone": 600
+      },
+      "forestCells": 4596,
+      "initialForestWoodPotential": 27576,
+      "timedVictory": null,
+      "supplyEvents": [],
+      "geometricResourceClusterCount": 18
+    },
+    "record": "map"
+  }
+}

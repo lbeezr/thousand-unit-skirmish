@@ -1,0 +1,41 @@
+✔ five explicit tiers begin at 160; XL is a proposal beyond the current engine limit (1.488279ms)
+✔ ordinary selection requires both axes and excludes small or oversized rectangles (0.483344ms)
+✔ current legacy maps retain honest display without becoming new choices or mutating saves (0.40564ms)
+✔ actual running host controls retain fixed Bannerfall size after identity and player updates, and ordinary host authority returns (60.633838ms)
+✔ host chooses a complete identity once and waits for authoritative mode acceptance (17.895734ms)
+✔ acknowledgement and explicit rejection recover focus after native disabled-control blur (17.410637ms)
+✔ settling requests respects another control and closed or hidden panels (24.720334ms)
+✔ disconnect and lost host authority cancel pending intent without retrying (13.235861ms)
+✔ AI accepts only the verified Tiny Skirmish map even with an inconsistent supplied catalog (18.796575ms)
+✔ runtime-withheld choices cannot be advertised from the local registry alone (4.580596ms)
+✔ Lab and legacy rules remain honest and readonly without a runtime catalog (3.863948ms)
+✔ Objective Control explains the real authored hold and deadline without changing the map (0.475102ms)
+✔ guests, reconnecting players and unsupported versions cannot send mode choices (16.223864ms)
+✔ unrelated projections preserve option nodes and focus; failed sends do not apply rules (4.520407ms)
+✔ canonical metadata cannot opt another mode into Bannerfall UI rules (2.811693ms)
+✔ reviewed Small supports human Skirmish with its exact authored geometry and bonus rules (2.648622ms)
+✔ reviewed Medium supports ordinary human Skirmish and retains exact224 geometry, economy and fog (3.713996ms)
+✔ legacy omission preserves authored identity independently of opponent setup (0.211302ms)
+✔ partial, unknown and malformed mode identities reject without coercion (0.357498ms)
+✔ registry exposes the agreed policy and honest AI support as immutable descriptors (0.262318ms)
+✔ Bannerfall advertises its fixed human arena without changing implicit authored defaults (0.328085ms)
+✔ Bannerfall rejects other maps and unsupported AI instead of substituting a selection (0.402304ms)
+✔ Bannerfall projection fixes the opening and removes economy/objectives without mutating canonical metadata (0.543753ms)
+✔ accepted Tiny supports human and AI Skirmish without changing authored economy or objectives (3.663672ms)
+✔ bellweather-millrace: authored and Objective Control preserve exact map content in independent clones (1.384886ms)
+✔ bellweather-millrace: Skirmish removes every capture victory while preserving rewards and economy (1.142678ms)
+✔ underbough-rootways: authored and Objective Control preserve exact map content in independent clones (2.891321ms)
+✔ underbough-rootways: Skirmish removes every capture victory while preserving rewards and economy (1.78041ms)
+✔ legacy elimination-plus-deadline maps retain their hybrid rules (0.229879ms)
+✔ map compatibility does not silently change unsupported selections (0.319071ms)
+✔ historical Skirmish maps reject PvE while retaining human Practice and historical authored AI (0.212664ms)
+✔ invalid opponent/Practice context rejects rather than hiding catalog errors (0.242388ms)
+✔ catalog includes hidden authored and only compatible, supported selectable modes (0.144163ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 477.303383

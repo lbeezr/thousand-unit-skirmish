@@ -1,0 +1,20 @@
+{
+  "sourceRevision": "ec1a86698accd2eec9cbd403e752dc357a000f9a",
+  "frameId": "walk-east-0",
+  "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+  "seedSha256": "b2b92a316c4ceace8bf6f0ab0cc277989da2113171cb95bfb98f4745e18d5ad4",
+  "referenceSha256": "f82100aa9be4b3328746b8777e2e00c037033e903097e84ce32d23ee0caa8a66",
+  "direction": "east",
+  "screenDirection": "down-right/front three-quarter",
+  "referenceCanvasPx": {
+    "width": 1536,
+    "height": 1024
+  },
+  "referenceBodyHeight": 232,
+  "referenceBaselinesY": [
+    316,
+    654,
+    992
+  ],
+  "retainedSourceAssessment": "Actual decoded legacy/public candidates inspected in land QA; only current-character SE action strips exist. This uses actual retained East walk pixels as bearing/identity seed, not a SE relabel."
+}

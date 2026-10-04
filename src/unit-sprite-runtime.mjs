@@ -1,4 +1,6 @@
 import { groundHeight } from './terrain-height.mjs';
+import { SHORE_FISH_VARIANT } from './shore-fishing.mjs';
+import { workerWorkAction, workerWorkResource } from './worker-work-presentation.mjs';
 const UNIT_ROLES = Object.freeze(['worker', 'infantry', 'archer']);
 const CAST_ROLES = Object.freeze(['human', 'orc', 'elf', 'troll']);
 const DIRECTIONS = Object.freeze([
@@ -8,11 +10,27 @@ const SPRITE_ROOT = '/assets/units';
 const SPRITE_GROUND_LIFT = 0.018;
 
 export function spriteActionClip(clipByKey, state, direction, cargoType, role, approximateDirections = false) {
+  // Dedicated mining art must keep the actual world heading. Missing Stone
+  // views use that heading's idle, never generic wood or a nearby pick view.
+  if (state === 'gather-stone') {
+    return clipByKey.get(`gather-stone|${direction}`) || clipByKey.get(`idle|${direction}`);
+  }
+  // Fishing is cosmetic work identity, never a new cargo or gather rule. Use
+  // only an actually authored heading; missing art retains its exact-facing
+  // food/gather/idle fallback, including in approximate legacy previews.
+  if (state === 'gather-fish') {
+    return clipByKey.get(`gather-fish|${direction}`)
+      || clipByKey.get(`gather-food|${direction}`)
+      || clipByKey.get(`gather|${direction}`)
+      || clipByKey.get(`idle|${direction}`);
+  }
   const gatherState = state === 'gather' && ['food', 'wood'].includes(cargoType)
       ? `gather-${cargoType}` : state;
-  // First-pass roster: reuse the nearest authored action instead of idle holds.
-  // Keep this opt-in so other art lanes retain their exact-direction behavior.
-  if (approximateDirections && state !== 'idle') {
+  // Human walking/gathering has incomplete direction coverage. Keep its exact
+  // facing (including authored idle holds) rather than turn away from the order.
+  // Other first-pass roster actions retain their opt-in approximation.
+  const exactWorkerFacing = role === 'human' && ['walk', 'gather'].includes(state);
+  if (approximateDirections && state !== 'idle' && !exactWorkerFacing) {
     const states = [gatherState, state, ...(state === 'repair' ? ['build'] : [])];
     for (const action of new Set(states)) {
       const authored = DIRECTIONS.map((heading, index) => ({
@@ -92,7 +110,7 @@ function frameRectFor(frame, pageId, layerId) {
   return null;
 }
 
-function normalizedDirection(angle) {
+export function normalizedDirection(angle) {
   const circle = Math.PI * 2;
   const normalized = ((angle % circle) + circle) % circle;
   return DIRECTIONS[Math.round(normalized / (Math.PI / 4)) % DIRECTIONS.length];
@@ -115,17 +133,23 @@ export function activeState(unit, now, attackDurationMs = 900) {
   if (unit.walking) return 'walk';
   if (unit.attackStartedAt > 0 && now - unit.attackStartedAt < attackDurationMs) return 'attack';
   if (unit.kind === 'worker') {
-    if (unit.task === 'repairing') return 'repair';
-    if (unit.task === 'building') return 'build';
-    if (unit.task === 'gathering') return 'gather';
+    const work = workerWorkAction(unit);
+    if (work === 'repair') return 'repair';
+    if (work === 'build') return 'build';
+    if (work === 'gather-food') return unit.workResourceVariant === SHORE_FISH_VARIANT
+      ? 'gather-fish' : 'gather';
+    if (work === 'gather-wood') return 'gather';
+    if (work === 'gather-stone') return 'gather-stone';
     return 'idle';
   }
   return unit.attackStartedAt > 0 && now - unit.attackStartedAt < attackDurationMs ? 'attack' : 'idle';
 }
 
 export function spriteAnimationTime(unit, state, now) {
-  if (unit.spriteClockState !== state || !Number.isFinite(unit.spriteClockStartedAt)) {
+  const action = ['gather', 'gather-fish'].includes(state) ? workerWorkAction(unit) : state;
+  if (unit.spriteClockState !== state || unit.spriteClockAction !== action || !Number.isFinite(unit.spriteClockStartedAt)) {
     unit.spriteClockState = state;
+    unit.spriteClockAction = action;
     unit.spriteClockStartedAt = now;
   }
   if (state === 'attack') return Math.max(0, now - unit.attackStartedAt);
@@ -192,7 +216,17 @@ function loadRolePack(THREE, loader, role, version) {
     const frameById = new Map(asset.frames.map((frame) => [frame.id, frame]));
     const clipByKey = new Map(asset.clips.map((clip) => [`${clip.stateId}|${clip.directionId}`, clip]));
     const durationByState = new Map();
-    for (const clip of asset.clips) durationByState.set(clip.stateId, Math.max(durationByState.get(clip.stateId) || 0, spriteClipDuration(clip)));
+    const authoredDurationByState = new Map();
+    for (const clip of asset.clips) {
+      const duration = spriteClipDuration(clip);
+      durationByState.set(clip.stateId, Math.max(durationByState.get(clip.stateId) || 0, duration));
+      // Idle placeholders for missing headings must not prolong an authored
+      // attack/death. A looping attack would otherwise replay its opening keys.
+      if (clip.sequence.some(({ frameId }) => !frameId.startsWith('idle-'))) {
+        authoredDurationByState.set(clip.stateId, Math.max(authoredDurationByState.get(clip.stateId) || 0, duration));
+      }
+    }
+    for (const [state, duration] of authoredDurationByState) durationByState.set(state, duration);
     const layerId = asset.layers?.find((layer) => layer.drawLayer === 'actor')?.id || 'actor';
     const maxAlphaHeight = Math.max(1, ...asset.frames.map((frame) => frame.alphaBoundsPx?.height || frame.canvasPx.height));
     return {
@@ -216,6 +250,7 @@ export function castRoleForUnit(unit) {
 export function createUnitSpriteRuntime({
   THREE, scene, capacity, teamHex, cameraQuaternion, roles = UNIT_ROLES, roleSpriteVersions = {},
   castPreview = false, humanAppearancePreview = false, approximateActionDirections = false, teamCivilizations = null,
+  fishingContact = null,
 }) {
   const loader = new THREE.TextureLoader();
   const pendingCounts = [0, 0];
@@ -230,17 +265,20 @@ export function createUnitSpriteRuntime({
 
   function setCount(team, count) {
     pendingCounts[team] = count;
+    fishingContact?.setCount(team, count);
     for (const batch of batchesByTeam[team].values()) batch.mesh.count = count;
   }
 
   function setVisible(nextVisible) {
     visible = Boolean(nextVisible);
+    fishingContact?.setVisible(visible && ready);
     for (const teamBatches of batchesByTeam) {
       for (const batch of teamBatches.values()) batch.mesh.visible = visible && ready;
     }
   }
 
   function markTeamDirty(team) {
+    fishingContact?.markTeamDirty(team);
     for (const batch of batchesByTeam[team].values()) {
       batch.mesh.instanceMatrix.needsUpdate = true;
       batch.rectAttribute.needsUpdate = true;
@@ -259,6 +297,7 @@ export function createUnitSpriteRuntime({
   }
 
   function update(unit, now, visibleScale) {
+    fishingContact?.hide(unit);
     if (!ready) return;
     const role = roleForUnit(unit);
     const selectedPack = rolePacks.get(role);
@@ -266,7 +305,8 @@ export function createUnitSpriteRuntime({
     if (!selectedPack || !teamBatches) return;
     const state = activeState(unit, now, durationMs(role, 'attack') || 900);
     const direction = normalizedDirection(unit.angle || 0);
-    const clip = spriteActionClip(selectedPack.clipByKey, state, direction, unit.cargoType, role, approximateActionDirections);
+    const resource = unit.kind === 'worker' ? workerWorkResource(unit) : unit.cargoType;
+    const clip = spriteActionClip(selectedPack.clipByKey, state, direction, resource, role, approximateActionDirections);
     const frameId = clipFrame(clip, spriteAnimationTime(unit, state, now));
     const frame = selectedPack.frameById.get(frameId);
     const crop = frame && frameRectFor(frame, selectedPack.page.id, selectedPack.layerId);
@@ -315,6 +355,7 @@ export function createUnitSpriteRuntime({
     dummy.scale.set(rect.width * scale, rect.height * scale, 1);
     dummy.updateMatrix();
     currentBatch.mesh.setMatrixAt(unit.slot, dummy.matrix);
+    fishingContact?.update(unit, { role, state, frame, crop, matrix: dummy.matrix });
   }
 
   const zeroMatrix = new THREE.Matrix4().makeScale(0, 0, 0);

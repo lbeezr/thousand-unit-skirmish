@@ -1,0 +1,25 @@
+{
+  "sourceRevision": "e14fbd4dcf03138c7aee2463b2a7b7d086565b95",
+  "evidenceType": "fresh-current-source-protocol-smoke",
+  "rootDomEntry": false,
+  "injectedState": false,
+  "mapId": "siltmouths-confluence-grounds",
+  "dimensions": [
+    160,
+    160
+  ],
+  "launchOptions": {
+    "mode": "pvp",
+    "practice": true,
+    "matchModeId": "authored",
+    "matchModeVersion": 1
+  },
+  "packedFogBytesPerSeat": 6400,
+  "recoveredFromCheckpoint": true,
+  "stockAndBankPersistence": true,
+  "oneHumanPracticeMove": true,
+  "limits": [
+    "Initial-stock cold recovery smoke; full paid recovery is the separate source38174fc5 receipt.",
+    "No deployed/rendered/counterflow/capacity acceptance."
+  ]
+}

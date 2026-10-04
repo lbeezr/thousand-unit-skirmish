@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { selectPveMapId } from '../src/pve-match.mjs';
+import { NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from '../src/match-modes.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TIMEOUT_MS = 30_000;
@@ -197,6 +198,13 @@ const port = await freePort();
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), 'rts-pve-room-launch-'));
 const roomDataDirectory = path.join(tempRoot, 'room-data');
 const customMapDirectory = path.join(tempRoot, 'default-maps');
+const legacyRoomId = 'L'.repeat(32);
+await mkdir(roomDataDirectory, { recursive: true });
+await mkdir(path.join(roomDataDirectory, 'rooms', legacyRoomId), { recursive: true });
+await writeFile(path.join(roomDataDirectory, 'rooms.json'), JSON.stringify({ version: 3, rooms: [{
+  id: legacyRoomId, createdAt: Date.now(), lastActiveAt: Date.now(),
+  launchOptions: { mode: 'pve', mapSeed: MAP_SEED, policySeed: POLICY_SEED }, mapId: MAP_ID,
+}] }));
 const supervisor = startSupervisor(port, roomDataDirectory, customMapDirectory);
 const clients = [];
 let roomId = null;
@@ -212,13 +220,26 @@ try {
     body: JSON.stringify({ mode: 'pve', mapSeed: MAP_SEED, policySeed: POLICY_SEED }),
     cache: 'no-store',
   });
-  assert.equal(createdResponse.status, 201, 'the supervisor should create a seeded PvE room');
-  const created = await createdResponse.json();
+  assert.equal(createdResponse.status, 201, 'fresh ordinary AI selects the accepted 160-cell Skirmish preset');
+  const fresh = await createdResponse.json();
+  assert.deepEqual(fresh.launchOptions, { mode: 'pve', ...NORMAL_HUMAN_MATCH_MODE,
+    mapSeed: MAP_SEED, policySeed: POLICY_SEED });
+  const freshHuman = createClient(port, fresh.roomId); clients.push(freshHuman);
+  const freshWelcome = await freshHuman.waitForMessage(message => message.type === 'welcome');
+  assert.equal(freshWelcome.map.id, NORMAL_MATCH_MAP_ID);
+  assert.deepEqual([freshWelcome.map.width, freshWelcome.map.height], [160, 160]);
+  assert.equal(freshWelcome.state.matchModeId, 'skirmish');
+  assert.equal(freshWelcome.state.matchModeVersion, 1);
+  assert.equal(freshWelcome.state.connected, 2);
+  const freshMetadata = await waitForRoomMetadata(port, fresh.roomId);
+  assert.deepEqual(freshMetadata.roomMetadata, { mapId: NORMAL_MATCH_MAP_ID, ...NORMAL_HUMAN_MATCH_MODE });
+  await closeClient(freshHuman);
+  const created = await (await fetch(`http://127.0.0.1:${port}/api/rooms/${legacyRoomId}`)).json();
   roomId = created.roomId;
   assert.match(roomId, /^[A-Za-z0-9_-]{32}$/);
   assert.deepEqual(created.launchOptions, {
     mode: 'pve', mapSeed: MAP_SEED, policySeed: POLICY_SEED,
-  }, 'creation returns complete PvE launch options');
+  }, 'an existing room retains complete historical PvE launch options');
 
   const human = createClient(port, roomId);
   clients.push(human);
@@ -239,7 +260,7 @@ try {
   assert.deepEqual(room.launchOptions, created.launchOptions,
     'the room API retains the exact PvE seeds used to start the worker');
   assert.equal(room.mapId, MAP_ID);
-  assert.deepEqual(room.roomMetadata, { mapId: MAP_ID },
+  assert.deepEqual(room.roomMetadata, { mapId: MAP_ID, matchModeId: 'authored', matchModeVersion: 1 },
     'worker readiness publishes the selected map through room metadata');
   const persistedRoom = await waitForPersistedRoom(roomDataDirectory, roomId);
   assert.deepEqual(persistedRoom.launchOptions, created.launchOptions);
@@ -274,6 +295,8 @@ try {
     mapSeed: MAP_SEED,
     policySeed: POLICY_SEED,
     teamOneReservedFor: 'deterministic-opponent',
+    freshOrdinaryAiMapId: NORMAL_MATCH_MAP_ID, freshOrdinaryAiIdentity: 'skirmish@1',
+    legacySeededRoomStillPlayable: true,
     rematchMapAndSeedsPreserved: true,
     newWorkerGenerationGathered: true,
   }));

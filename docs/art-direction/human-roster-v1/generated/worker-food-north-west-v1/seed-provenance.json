@@ -1,0 +1,26 @@
+{
+  "sourceRevision": "d42a8ba33861350f68c36b76fe04f1df5729e3cb",
+  "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+  "frameId": "idle-north-west-0",
+  "sourceRectPx": {
+    "x": 1100,
+    "y": 284,
+    "width": 146,
+    "height": 232
+  },
+  "sourceGroundPivotPx": {
+    "x": 73,
+    "y": 232
+  },
+  "seedSha256": "d44d6be19716f418103e402059f1965b5cd2ee0f97e118a3233cae4536a200ff",
+  "referenceSha256": "89e13db6603ac9ed8d48c51d08b639a3a6cfb8e2c1739d5a034f9ebde1a16893",
+  "referenceCanvasPx": {
+    "width": 1536,
+    "height": 1024
+  },
+  "slots": {
+    "columns": 3,
+    "rows": 1
+  },
+  "priorIteration": null
+}

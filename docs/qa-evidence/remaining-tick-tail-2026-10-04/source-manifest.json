@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "probeExecutionHead": "5bd2391431cffd00fde3e26301e19dec0cc4a146",
+  "serverSha256": "269ba44cda8dc64434af811d06dbcd5ae81f9a1bb2bbf56ac8907c0687af409c",
+  "historicalProbeSha256": "eeab5bdaa7e0487db096d4ba01797c9b444ae0519ff8831cec56cd1cdcb59441",
+  "unitDefinitionsSha256": "61e1fc9aa85ad3d8672a3f3971f6692e136513b91e8bf0741f70882c9717d1ca",
+  "scope": "One local candidate-body expression replacement in a read-only VM experiment; no production edit.",
+  "caseOrder": [
+    [
+      "baseline",
+      1
+    ],
+    [
+      "candidate",
+      1
+    ],
+    [
+      "candidate",
+      2
+    ],
+    [
+      "baseline",
+      2
+    ],
+    [
+      "baseline",
+      3
+    ],
+    [
+      "candidate",
+      3
+    ]
+  ],
+  "candidateExpression": "separationX === 0 && separationZ === 0 ? 0 : Math.hypot(separationX, separationZ)",
+  "inspectedCurrentMain": "cba504cc",
+  "runtimeServerUnchanged": true,
+  "qualifications": [
+    "No command start/stop timestamps or elapsed-time target recorded; fresh processes execute serially in the listed order.",
+    "Historical probe uses absolute workspace import/output paths. Replay requires its frozen source or explicit path adjustment.",
+    "Node v24.19.0/Linux on a shared cloud worker; fixed fixture counts, not admitted host-capacity evidence."
+  ],
+  "previousSummarySha256": "366aa3838d74217657f50a433a32115a03dee61f336386e01d0a6406674155c9"
+}

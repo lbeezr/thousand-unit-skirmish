@@ -538,6 +538,7 @@ try {
   child = null;
   const legacyCheckpoint = JSON.parse(await readFile(checkpointPath, 'utf8'));
   legacyCheckpoint.schemaVersion = 6;
+  delete legacyCheckpoint.economyProfileId; delete legacyCheckpoint.state.teamStone;
   delete legacyCheckpoint.state.teamUpgrades;
   delete legacyCheckpoint.state.teamResearch;
   await writeFile(checkpointPath, `${JSON.stringify(legacyCheckpoint)}\n`, 'utf8');

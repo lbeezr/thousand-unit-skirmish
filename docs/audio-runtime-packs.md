@@ -8,6 +8,45 @@ Bindings resolve from a role, action, and resource (for example `unit.worker.gat
 
 The match decodes local Blobs on demand, limiting each composition to 24 MiB of decoded PCM, keeping a 24 MiB decoded-source cache, and allowing at most eight simultaneous sampled cues. A source over 16 MiB, unsupported codec, invalid trim, or decode failure is reported in the sound panel and falls back to synthesis. Music compositions use the shared Web Audio timeline player; map switches stop prior playback. The master, effects, voice, music, and ambience controls are saved under `tus-audio-v1`. Existing settings migrate with voice at 100% and music from the previous ambience level, with a previously disabled ambience setting keeping music muted.
 
+Profile music waits for a running audio context. Hiding the page, muting music or
+the master, setting master volume to zero, switching maps and disposing audio
+cancel both pending player-module loads and source decodes. Returning to an
+audible visible page starts one fresh loop; overlapping activation callbacks
+share the current load. Check: `node --test scripts/audio-music-lifecycle.test.mjs`.
+This uses a simulated Web Audio context and proves scheduling/cancellation,
+not browser listening, loop quality or human recognition.
+
+Sampled selection/command cues also cancel pending successful or failed decodes
+across hide/return, master mute/zero volume and mute/restore of their own effects,
+voice or ambience bus. Cancellation suppresses stale samples, synthesized error
+fallback and profile captions; muting another bus preserves eligible cues.
+Active samples on the interrupted bus stop rather than resume on return. Fresh
+interactions use the existing binding/speech cooldowns and schedule once.
+Disposal immediately stops samples and synthesized cues/previews, invalidates
+pending work and rejects later playback calls while context closure is pending.
+Check: `node --test scripts/audio-cue-lifecycle.test.mjs` uses deferred decoder and
+close promises plus a fake cooldown clock; it is scheduling evidence, not listening.
+
+Concurrent consumers of one source in the current pack share its Blob read and
+decode. Each cue keeps its own playback eligibility: muting voice can cancel a
+selection while an effects cue still uses the same result. Failed decodes release
+all pending consumers and allow a fresh retry. Map replacement and disposal clear
+the cache and invalidate pending results; an old same-ID decode cannot clear or
+populate the replacement pack's job. Cache hits refresh LRU order. Decoded PCM is
+charged once per retained source within the existing 24 MiB cache bound; active
+playback may still hold a buffer after cache eviction, so this is not a total
+Web Audio memory ceiling.
+
+On 2026-10-03, the deferred runtime fixture with three eligible same-source cues
+measured three Blob reads and three decodes before sharing, then one of each
+afterward. All three sample nodes receive the same decoded object, charged once
+at 400 bytes in the fixture. Checks:
+`node --test scripts/audio-decoded-cache.test.mjs scripts/audio-shared-decode.test.mjs`
+cover concurrent consumers, reference release, failure/retry, LRU eviction,
+24 MiB boundaries, independent bus cancellation and late pack/disposal completion.
+These simulated contexts measure duplicate work and scheduling, not listening
+quality or timing speedups. Existing recordings and provenance are unchanged.
+
 Focused checks: `node scripts/audio-runtime-scenario.mjs`, `node scripts/audio-runtime-playback-scenario.mjs`, `node scripts/audio-composition-player-scenario.mjs`, `node scripts/audio-policy-scenario.mjs`, and `node scripts/map-persistence-scenario.mjs`. The persistence check needs permission to bind a local loopback port.
 
 ## Unit lifecycle bindings
@@ -31,6 +70,18 @@ Check: `node scripts/audio-lifecycle-scenario.mjs`.
 Stop and Hold Position orders use `unit.<kind>.stop` and `unit.<kind>.hold`,
 then `cue.stop`/`cue.hold`, with synthesized stationary confirmation fallback.
 
+Queue acknowledgements use registered unit labels, including Spearman, Scout,
+Rider and Siege Engine. All registered local technology completions use
+`research-complete` rather than the production-complete cue; opponent research
+stays silent. The existing player notice delivery and cue cooldowns are retained.
+Palisade lines use the existing build cue once after `WALL BUILD ORDER` applies
+to their issued token; planning, failures, repeated notices and later segment
+work stay silent.
+Check: `node --test scripts/audio-roster-notices.test.mjs` plus the roster-options
+and progression scenarios. The [coverage and reuse audit](qa-audio-coverage-2026-10-03.md)
+records current map scores, fishing/wildlife/building routes and the next bounded
+mix auditions from existing sources.
+
 ## Shipped delivery and execution feedback
 
 Map Studio offers the `rts-feedback-test` / `worker-actions` v1 profile as supplied
@@ -52,7 +103,8 @@ invalidate pending decodes. Continuous playback comes from fresh observed snapsh
 so there is no unattended timer or per-worker looping node.
 
 The sound panel's inspector exposes profile bindings, source availability, load
-status, active samples/voices/work, decoded bytes and the last 24 decisions. Decisions
+status, active samples/voices/work, retained decoded bytes/sources, pending shared
+sources/consumers and the last 24 decisions. Decisions
 identify binding/speech cooldowns, muted or locked playback, voice/sample limits,
 decode failures and synthesized fallback.
 
@@ -62,3 +114,48 @@ Checks: `node --test scripts/audio-shipped-loader.test.mjs scripts/audio-executi
 empty browser contexts: each fetches verified content, decodes all three distinct
 work bindings and stops them without importing a pack. It proves browser playback
 scheduling, not a human listening or discoverability session.
+
+## Ordinary Shore Fishing profile
+
+The normal `shore-fishing` map now references the existing public
+`vaelora-siltmouths` / `landscape` v2 profile and its registered manifest hash.
+It loads the Siltmouths score and reed-wind **terrain** bed automatically for
+both seats; no local Audio Studio import or preview flag is needed. Worker
+selection, food orders and other unbound gameplay cues retain synthesis.
+The earlier private water comparison used `siltmouths-contrast`, which is not
+in this shipped profile. Contrast water and regional signatures remain unbound.
+
+This is a provisional aesthetic assignment, not listening acceptance. Existing
+mute, visibility, map-switch and disposal cancellation stays in control.
+[Adoption evidence and remaining delivery/listening work](qa-shore-audio-profile-2026-10-03.md)
+are owned by the audio lane. Check:
+`node scripts/audio-shore-profile-scenario.mjs` (real ordinary-map messages and
+HTTP bytes; modeled scheduling, not browser hearing).
+
+## Next bounded audio slice
+
+Run the [short Mac listening session](audio-design.md#short-mac-listening-session)
+on the recent music/cue fixes, then choose one reproduced audible issue or one
+specific existing-track mix change. Settings persistence/migration/storage-failure
+fixtures passed without a runtime defect; the key and defaults are retained.
+Prioritize a concrete doubled entrance, stale acknowledgement, loop seam or cue
+masking observation, with commit and mix recorded. Use existing originals and
+preserve their provenance; no new generation is needed for this listening slice.
+
+## Ranked audio backlog
+
+Audio owner retains these outcomes. A blocked listening dependency pauses only
+that action; independently reproduced runtime defects can ship in small PRs.
+Source inclusion, scheduling checks and measured levels never close listening.
+This queue uses the current guide rather than a second audio roadmap.
+
+| Rank / status | Bounded next action | Write boundary / dependency | Acceptance |
+| --- | --- | --- | --- |
+| 1 — source delivered; native acceptance blocked | Finish ordinary Shore Fishing profile delivery and cue/mute/loop listening. | [Shore receipt](qa-shore-audio-profile-2026-10-03.md#staging-source-follow-up) only until a specific defect is observed. Needs an authorized native browser/output and authenticated exact-build HTTP path; neither is exposed to this cloud lane. Railway delivery owner supports exact source identification. | Settled source containing PR151; matching manifest/original bytes; actual recorded observations of activation, saved mute/mix, clear food cues, one returning loop, tab/map return and loop boundary. |
+| 2 — reproduced; cancellation implemented in this slice | Stop old synthesized acknowledgements and preview notes across mute/return. | `src/audio.mjs`, `scripts/audio-synthesis-lifecycle.test.mjs`, existing audio CI registration and owning guides; no shared gameplay/message interface or new assets. Independent of hearing for the reproduced node-lifecycle fix; native runtime acceptance remains retained. | [Cancellation proof](qa-audio-synthesis-cancellation-2026-10-03.md): old nodes/graph/budgets released, independent buses preserved, one fresh cue and unchanged voice cap; clean package, identified containing deployment, ordinary-game interruption observation. |
+| 3 — conditional; await rank 1 observation | Resolve one heard Shore cue-masking or loop-seam issue, if the session reports one. | Existing public Siltmouths profile gain/fade/trim in a new version + hash-bound catalog/map reference only when justified; coordinate any shared runtime hook before editing it. Needs a timestamp, mix and offending cue/seam from actual hearing. | Repeat the same ordinary action and hear the specific problem corrected; preserve original masters/provenance, settings/mute lifecycle and clear orders. No numerical loudness result substitutes for acceptance. |
+| 4 — audition-only; dependent on accepted baseline | Audition one existing regional water contrast or signature against the current feedback before deciding on a separate binding. | Public catalog sources only; a small profile/version binding if accepted. Signature uses the existing affected-team event and deduplication gate, with no hidden-state observer. Needs baseline listening and explicit choice of replacement or layer. | Hear one useful distinction without masked commands or duplicate accents, then verify scoped binding/release/deployed ordinary use. Retain or reject the candidate explicitly; no generation or automatic wholesale adoption. |
+
+If rank 2 has shipped and native execution remains unavailable, stop dependent
+mix/binding changes and report that recovery need. Reopen implementation only
+for a concrete observed/reproduced defect or accepted existing-source choice.

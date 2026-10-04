@@ -1,0 +1,11 @@
+{
+  "sourceRevision": "e21a7b23a560c257b3320816005337d86895fe17",
+  "frameId": "walk-south-0",
+  "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+  "seedSha256": "94be9164c2f5cb52aa9f16b1b82460c412b9b7b7c74243a4ebf49bc9c54c99b0",
+  "referenceSha256": "df6887d2065101b94bca1a91fb1f09f1a80cbfeaea426622c99912082f74262b",
+  "direction": "south",
+  "screenDirection": "up-right back-three-quarter",
+  "tool": "built-in ImageGen under standing bounded public-seed authorization",
+  "retainedSourceAssessment": "Inspected actual legacy assets first; existing public South walk supplies exact backpack-facing bearing/identity. No other-facing relabel or private pixels."
+}

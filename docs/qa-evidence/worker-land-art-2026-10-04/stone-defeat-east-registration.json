@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "worldDirection": "east",
+  "screenDirection": "down-right front-three-quarter",
+  "sharedScale": 0.5433255269320844,
+  "columnRootsX": [
+    256,
+    768,
+    1280
+  ],
+  "source": "docs/art-direction/human-roster-v1/generated/worker-east-stone-defeat-v1/raw.png",
+  "sourceSha256": "18b2bf7927ca05e819c738fa40df4c96bb9820d2e757d6b907e22bbcf6e1604e",
+  "contactNote": "Live work uses row ground baselines; fallen poses use reviewed source contact lines, not bounding-box recentering. Runtime pivots remain fixed per clip; native contact/relative body scale open.",
+  "groups": [
+    {
+      "state": "gather-stone",
+      "alias": null,
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 320,
+        "height": 320
+      },
+      "groundPivotPx": {
+        "x": 160,
+        "y": 308
+      },
+      "frames": [
+        {
+          "id": "gather-stone-east-0",
+          "sourceIndex": 0,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-east-stone-defeat-v1/extracted/00.png",
+          "sourceSha256": "b830bae04266614abc5e4d11e697b8d440d592b1297020142420095ef9478406",
+          "sourceBounds": [
+            110,
+            28,
+            381,
+            503
+          ],
+          "sourceGroundRootPx": [
+            256,
+            519
+          ],
+          "offsetPx": [
+            81,
+            41
+          ],
+          "alphaBoundsPx": {
+            "x": 81,
+            "y": 41,
+            "width": 147,
+            "height": 258
+          },
+          "rgbaSha256": "01618405e6e440466999afef1345a06f8980d88da45db708f66e9bf1d16174b9"
+        },
+        {
+          "id": "gather-stone-east-1",
+          "sourceIndex": 1,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-east-stone-defeat-v1/extracted/01.png",
+          "sourceSha256": "77cc6e5f74c02edd4ca1e96d1e2f991be36fb4de694de64a6ca8c742d6b33c63",
+          "sourceBounds": [
+            639,
+            150,
+            1007,
+            519
+          ],
+          "sourceGroundRootPx": [
+            768,
+            519
+          ],
+          "offsetPx": [
+            90,
+            108
+          ],
+          "alphaBoundsPx": {
+            "x": 90,
+            "y": 108,
+            "width": 200,
+            "height": 200
+          },
+          "rgbaSha256": "1d80a305ac65faf1261dd7c892673f946f41fe66236adaede18a264798f04544"
+        },
+        {
+          "id": "gather-stone-east-2",
+          "sourceIndex": 2,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-east-stone-defeat-v1/extracted/02.png",
+          "sourceSha256": "f585785f38ae6d6ad1f173705b1090321d087137d2e74b1e200850306ff0975e",
+          "sourceBounds": [
+            1145,
+            79,
+            1445,
+            506
+          ],
+          "sourceGroundRootPx": [
+            1280,
+            519
+          ],
+          "offsetPx": [
+            87,
+            69
+          ],
+          "alphaBoundsPx": {
+            "x": 87,
+            "y": 69,
+            "width": 163,
+            "height": 232
+          },
+          "rgbaSha256": "714efd9644925c965bb9eb3ceb4764d7006dfc84d3475f1273a8fa8ae6bb4bf2"
+        }
+      ]
+    },
+    {
+      "state": "defeat",
+      "alias": null,
+      "loop": false,
+      "durationMs": 840,
+      "canvasPx": {
+        "width": 512,
+        "height": 256
+      },
+      "groundPivotPx": {
+        "x": 256,
+        "y": 244
+      },
+      "frames": [
+        {
+          "id": "defeat-east-0",
+          "sourceIndex": 3,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-east-stone-defeat-v1/extracted/03.png",
+          "sourceSha256": "9c08f31ce875970dac82fc4f2297a612374e2466a9265748924bad552ec6e239",
+          "sourceBounds": [
+            126,
+            627,
+            443,
+            916
+          ],
+          "sourceGroundRootPx": [
+            256,
+            916
+          ],
+          "offsetPx": [
+            185,
+            87
+          ],
+          "alphaBoundsPx": {
+            "x": 185,
+            "y": 87,
+            "width": 172,
+            "height": 157
+          },
+          "rgbaSha256": "299770bcb8bab6120cb3caf7d09589bbe12a441ac78a7838a94b6d32825d1f2a"
+        },
+        {
+          "id": "defeat-east-1",
+          "sourceIndex": 4,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-east-stone-defeat-v1/extracted/04.png",
+          "sourceSha256": "9794e935c997fdc45d46e11d82ffaec4701665a4eb3f483dd0e1e6f28556e9a5",
+          "sourceBounds": [
+            596,
+            686,
+            989,
+            927
+          ],
+          "sourceGroundRootPx": [
+            768,
+            927
+          ],
+          "offsetPx": [
+            163,
+            113
+          ],
+          "alphaBoundsPx": {
+            "x": 163,
+            "y": 113,
+            "width": 214,
+            "height": 131
+          },
+          "rgbaSha256": "09586e44d233fb0d9779d3bce3dc901bebebfe7d0f779b92ff4e1d6b5eea2580"
+        },
+        {
+          "id": "defeat-east-2",
+          "sourceIndex": 5,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-east-stone-defeat-v1/extracted/05.png",
+          "sourceSha256": "57416388f96af9975223b9ae0a67249d61aaaedc080477ccc9685b2b88cb69c2",
+          "sourceBounds": [
+            1039,
+            748,
+            1520,
+            961
+          ],
+          "sourceGroundRootPx": [
+            1280,
+            961
+          ],
+          "offsetPx": [
+            125,
+            128
+          ],
+          "alphaBoundsPx": {
+            "x": 125,
+            "y": 128,
+            "width": 261,
+            "height": 116
+          },
+          "rgbaSha256": "ae340ef13a12101b35946264c70aea7402068358464eeddf5c17ec55e7467807"
+        }
+      ]
+    }
+  ]
+}

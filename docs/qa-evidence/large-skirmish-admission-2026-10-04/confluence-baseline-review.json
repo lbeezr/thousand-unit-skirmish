@@ -1,0 +1,181 @@
+{
+  "requestedBaseline": "1d380b0ae7acca140a6f4289837aa145fc50f34e",
+  "supplementalAuditHead": "ca298a6beacc9c28f3e5a72bda516f95ac232e19",
+  "node": "v24.19.0",
+  "command": "node scripts/vaelora-map-layout-scenario.mjs --check-only",
+  "rawOutput": "/tmp/tus-large-confluence-baseline.txt",
+  "exitCode": 1,
+  "assertion": {
+    "line": 21,
+    "expression": "resourceNodes.some(n => n.type === type && Math.hypot(n.x-spawn.x,n.z-spawn.z) <= 9)",
+    "firstFailure": "siltmouths-confluence-grounds.json: visible home food for seat 0"
+  },
+  "sourceHashes": {
+    "scripts/vaelora-map-layout-scenario.mjs": "880add51987f793b4bced76646d41eef817de0f919344b55fa1072c8f415d8a3",
+    "maps/siltmouths-confluence-grounds.json": "12a9b2a71763fde866a02211cc235b38a6574095fab0040ee8582f99bd20acdc",
+    "scripts/generate-confluence-grounds.mjs": "1be6ef05a0226bda0e92c418f239f25ed46b961336753ce32bea06b63d860e94",
+    "scripts/confluence-grounds.test.mjs": "56d266e31896f9ba8c4aba88d4c448e1dc29c5a714f507946542ed89389d2025",
+    "src/map-utils.mjs": "e8ed0f7626b309c2543758815c9d2dfd72d693904ade3e1687d421958b9309e3",
+    "src/town-center-spawn.mjs": "b5a1c9ec1b6ae221518f6cf1abaa14903c757c8dbb49ea70f5ac6d198d9b086c"
+  },
+  "mapCount": 17,
+  "allNonHomeAssertionsPass": true,
+  "homeFailures": [
+    {
+      "mapId": "siltmouths-confluence-grounds",
+      "seat": 0,
+      "resource": {
+        "id": "s0-sheep-0",
+        "x": -49.5,
+        "z": 3.5,
+        "type": "food",
+        "wildlifeSpecies": "bellweather-sheep",
+        "distance": 9.486832980505138,
+        "passes": false
+      }
+    },
+    {
+      "mapId": "siltmouths-confluence-grounds",
+      "seat": 0,
+      "resource": {
+        "id": "s0-timber",
+        "x": -50.5,
+        "z": -9.5,
+        "type": "wood",
+        "distance": 12.806248474865697,
+        "passes": false
+      }
+    },
+    {
+      "mapId": "siltmouths-confluence-grounds",
+      "seat": 1,
+      "resource": {
+        "id": "s1-sheep-0",
+        "x": 49.5,
+        "z": 3.5,
+        "type": "food",
+        "wildlifeSpecies": "bellweather-sheep",
+        "distance": 9.486832980505138,
+        "passes": false
+      }
+    },
+    {
+      "mapId": "siltmouths-confluence-grounds",
+      "seat": 1,
+      "resource": {
+        "id": "s1-timber",
+        "x": 50.5,
+        "z": -9.5,
+        "type": "wood",
+        "distance": 12.806248474865697,
+        "passes": false
+      }
+    }
+  ],
+  "crownroads": {
+    "file": "veyrholds-crownroads.json",
+    "mapId": "veyrholds-crownroads",
+    "sha256": "0b62a9f967ef42c967eb9121e07395b75549d52d4a73dd16eaf29aebf19e3727",
+    "home": [
+      {
+        "seat": 0,
+        "spawn": {
+          "team": 0,
+          "x": -100.5,
+          "z": 0.5
+        },
+        "resources": [
+          {
+            "id": "s0-home-food",
+            "x": -94.5,
+            "z": 6.5,
+            "type": "food",
+            "distance": 8.485281374238571,
+            "passes": true
+          },
+          {
+            "id": "s0-home-wood",
+            "x": -94.5,
+            "z": -5.5,
+            "type": "wood",
+            "distance": 8.485281374238571,
+            "passes": true
+          }
+        ]
+      },
+      {
+        "seat": 1,
+        "spawn": {
+          "team": 1,
+          "x": 100.5,
+          "z": 0.5
+        },
+        "resources": [
+          {
+            "id": "s1-home-food",
+            "x": 94.5,
+            "z": 6.5,
+            "type": "food",
+            "distance": 8.485281374238571,
+            "passes": true
+          },
+          {
+            "id": "s1-home-wood",
+            "x": 94.5,
+            "z": -5.5,
+            "type": "wood",
+            "distance": 8.485281374238571,
+            "passes": true
+          }
+        ]
+      }
+    ]
+  },
+  "focusedTests": {
+    "command": "node --test scripts/confluence-grounds.test.mjs",
+    "passed": 5,
+    "failed": 0
+  },
+  "proposal": {
+    "status": "in-memory evaluation only; no canonical or generator edits",
+    "generatorResources": [
+      {
+        "id": "berries",
+        "from": [
+          29,
+          86
+        ],
+        "to": [
+          28,
+          85
+        ],
+        "mirror": true
+      },
+      {
+        "id": "timber",
+        "from": [
+          29,
+          70
+        ],
+        "to": [
+          27,
+          74
+        ],
+        "mirror": true
+      }
+    ],
+    "foodDistance": 8.602325267042627,
+    "woodDistance": 8.485281374238571,
+    "reachableFromBothSeats": true,
+    "stockTotals": {
+      "food": 3420,
+      "wood": 3300,
+      "stone": 600
+    },
+    "staticGreedyCityBuildings": [
+      30,
+      30
+    ],
+    "requires": "Map owner review, regenerate canonical map, retain original <=9 assertion, deterministic/focused/native refresh; save/checkpoint identity preserved by existing canonical save rules."
+  }
+}

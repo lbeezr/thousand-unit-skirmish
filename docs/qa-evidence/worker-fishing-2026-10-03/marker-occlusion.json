@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "scope": "shore-fish marker occlusion source correction",
+  "baseRevision": "121b8eee96f53e3f85fedc9c5f3b5ec39e8e2f5e",
+  "privateEvidence": "Capture references and exact metadata retained in the private handoff",
+  "observedDefect": "Amber ring stroke crosses the hands and net; ring order 2 follows sprite order 1.1",
+  "correction": {
+    "shoreFishRingOrder": 1,
+    "workerSpriteOrder": 1.1,
+    "otherResourceRingOrder": 2,
+    "actorPixelsChanged": false,
+    "positionPickingStockFogChanged": false
+  },
+  "checks": {
+    "markerAndActualThreeSortTests": 2,
+    "fishingPresentationTests": 7,
+    "shoreFishingContractTests": 7,
+    "placementTests": 7,
+    "independentFocusedReviewTests": 30,
+    "independentReview": "no actionable findings",
+    "syntaxAndWhitespace": "passed"
+  },
+  "afterFixGpuCapture": "pending Mac rerun",
+  "rootLoopArtAcceptance": "open",
+  "newGeneratedArtPublicPixels": 0,
+  "publicationAuthorityForCandidatePixels": "still required"
+}

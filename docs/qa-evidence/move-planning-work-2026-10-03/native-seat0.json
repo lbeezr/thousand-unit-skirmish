@@ -1,0 +1,196 @@
+{
+  "head": "2be3cf03b605d194feda0f07efd50145e36a0977",
+  "sourceSha256": "8da27f1aa21612266acac78e602a0736ba26639f2ece3b1d3a630a88da018a15",
+  "team": 0,
+  "map": {
+    "id": "pathing-large-single-choke-996-seat-0",
+    "name": "PATHING BASELINE",
+    "width": 128,
+    "height": 128,
+    "terrainSeed": 881,
+    "fogOfWar": false,
+    "spawnPoints": [
+      {
+        "team": 0,
+        "x": -36,
+        "z": 0
+      },
+      {
+        "team": 1,
+        "x": 36,
+        "z": 44
+      }
+    ],
+    "startingArmySize": 2000,
+    "startingResources": {
+      "food": 500,
+      "wood": 500
+    },
+    "resourceNodes": [],
+    "triggers": [],
+    "scenarioEvents": [],
+    "obstacles": [
+      {
+        "id": "north-wall",
+        "column": 64,
+        "row": 0,
+        "width": 1,
+        "height": 64,
+        "material": "stone"
+      },
+      {
+        "id": "south-wall",
+        "column": 64,
+        "row": 65,
+        "width": 1,
+        "height": 63,
+        "material": "stone"
+      }
+    ]
+  },
+  "roster": 2000,
+  "selected": 996,
+  "arrived": 996,
+  "midTick": 180,
+  "arrivalTicks": 2040,
+  "orders": [
+    {
+      "tick": 42,
+      "type": "move",
+      "selected": 996,
+      "x": 16.5,
+      "z": 0.5,
+      "notice": "MOVE ORDER \u00b7 996 UNITS"
+    },
+    {
+      "tick": 2052,
+      "type": "stop",
+      "selected": 8,
+      "x": null,
+      "z": null,
+      "notice": "STOP ORDER \u00b7 8 UNITS"
+    },
+    {
+      "tick": 2052,
+      "type": "move",
+      "selected": 8,
+      "x": 44.5,
+      "z": -28.5,
+      "notice": "MOVE ORDER \u00b7 8 UNITS"
+    },
+    {
+      "tick": 2052,
+      "type": "move",
+      "selected": 24,
+      "x": 44.5,
+      "z": -24.5,
+      "notice": "MOVE ORDER \u00b7 8 UNITS"
+    }
+  ],
+  "activeRouteRestart": true,
+  "stopPreserved": 8,
+  "replacementPreserved": 8,
+  "idleRestart": true,
+  "replacementResults": [
+    {
+      "id": 12,
+      "goal": 4459,
+      "revision": 3
+    },
+    {
+      "id": 13,
+      "goal": 4460,
+      "revision": 3
+    },
+    {
+      "id": 14,
+      "goal": 4461,
+      "revision": 3
+    },
+    {
+      "id": 15,
+      "goal": 4587,
+      "revision": 3
+    },
+    {
+      "id": 16,
+      "goal": 4588,
+      "revision": 3
+    },
+    {
+      "id": 17,
+      "goal": 4589,
+      "revision": 3
+    },
+    {
+      "id": 18,
+      "goal": 4715,
+      "revision": 3
+    },
+    {
+      "id": 19,
+      "goal": 4716,
+      "revision": 3
+    }
+  ],
+  "initialPlanning": [
+    {
+      "orderId": 1,
+      "team": 0,
+      "mode": "shared-start",
+      "unitCount": 996,
+      "searchCount": 917,
+      "expandedCells": 467516,
+      "planningSliceCount": 146,
+      "maxPlanningSliceWorkItems": 8,
+      "maxPlanningSliceExpandedCells": 5059,
+      "nonEmptyPaths": 996,
+      "routeFailures": 0
+    }
+  ],
+  "overlappingPlanning": [
+    {
+      "orderId": 2,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 1,
+      "expandedCells": 60,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 60,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 4,
+      "team": 0,
+      "mode": "shared-start",
+      "unitCount": 8,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 3,
+      "maxPlanningSliceWorkItems": 8,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 8,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 3,
+      "team": 0,
+      "mode": "shared-start",
+      "unitCount": 8,
+      "searchCount": 1,
+      "expandedCells": 574,
+      "planningSliceCount": 5,
+      "maxPlanningSliceWorkItems": 8,
+      "maxPlanningSliceExpandedCells": 574,
+      "nonEmptyPaths": 8,
+      "routeFailures": 0
+    }
+  ],
+  "limits": [
+    "actual asynchronous two-seat loopback server; natural roster and ordinary commands, no actor injection",
+    "no renderer, deployment, comparable hardware speedup or supported capacity claim"
+  ]
+}
