@@ -84,6 +84,7 @@ test('actual checkpoint capture copies private motion before deferred serializat
   const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
   const capture = source.slice(source.indexOf('function captureMatchCheckpoint('), source.indexOf('function assertSnapshot('));
   const node = createResourceNodeState(definition);
+  let visionChecks = 0;
   const defaults = { MATCH_CHECKPOINT_SCHEMA_VERSION: 25, MATCH_RULES_VERSION: 6,
     sessions: new Map(), resourceNodeStates: new Map([[node.id, node]]), units: [], buildings: [],
     teamUpgrades: [{}, {}], teamResearch: [null, null], workerProduction: [{}, {}], homeTownCenters: [{}, {}],
@@ -91,13 +92,15 @@ test('actual checkpoint capture copies private motion before deferred serializat
     visibleCellsByTeam: [[], []], exploredCellsByTeam: [[], []], forestStockEntries: () => [], mapDefinition: map,
     authoredMapDefinition: map, matchMode: { matchModeId: 'authored', matchModeVersion: 1 },
     matchMapHash: () => 'map', matchEconomyProfileId: () => 'profile', economyRulesetRevision: () => 'rules',
-    privateProductionView: () => ({}), pregame: null };
+    privateProductionView: () => ({}), pregame: null,
+    ensureVisionMasks: () => { visionChecks++; } };
   Object.assign(defaults, { Buffer, unitGenerationCounters: [], teamFood: [0, 0], teamWood: [0, 0], teamStone: [0, 0],
     DEFAULT_FACTION_ID: 'default', matchId: 'room', tickNumber: 10, currentArmySize: 0, nextBuildingId: 1,
     forestEpoch: 0, matchElapsedSeconds: 0, scenarioClockStarted: true, matchWinner: -1,
     matchWinnerTriggerId: null, matchWinnerReason: '', nextPlayerId: 1, navigationRevision: 0, nextMoveOrderId: 1 });
   const context = vm.createContext(defaults); vm.runInContext(capture, context);
   const saved = context.captureMatchCheckpoint(1, 1000), savedNode = saved.state.resourceNodes[0];
+  assert.equal(visionChecks, 1, 'checkpoint capture refreshes vision before copying private state');
   node.x += .01; node.wildlifeMotion.waitTicks--;
   assert.notEqual(savedNode.x, node.x); assert.notEqual(savedNode.wildlifeMotion.waitTicks, node.wildlifeMotion.waitTicks);
 });
