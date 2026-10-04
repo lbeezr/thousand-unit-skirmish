@@ -103,9 +103,9 @@ for (const team of [0, 1]) for (const selected of [false, true]) {
       f.apply([row(data)], { now: 1850 });
       assert.equal(unit.spriteClockStartedAt, 1000, 'continuous productive receipts do not reset');
       unit.angle = unit.targetAngle = Math.PI / 4; f.frame(1860, 0.01);
-      assert.equal(f.frameId(0), 'idle-north-east-0', 'missing heading stays facing north-east');
+      assert.equal(f.frameId(0), 'gather-stone-north-east-0', 'new exact authored NE heading preserves work time');
       unit.angle = unit.targetAngle = data.workHeading; f.frame(1870, 0.01);
-      assert.equal(unit.spriteClockStartedAt, 1000, 'a heading fallback does not reset work time');
+      assert.equal(unit.spriteClockStartedAt, 1000, 'an authored heading change does not reset work time');
       f.clearObservations();
       const version = f.mesh(0).geometry.getAttribute('instanceAtlasRect').version;
       f.apply([row({ ...data, performingAction: null })], { now: 1900 });
