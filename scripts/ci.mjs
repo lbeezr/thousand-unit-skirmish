@@ -77,6 +77,7 @@ run(['--test', 'scripts/stone-map-profile.test.mjs'], 'Typed Stone layout and ma
 run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush preview and editor transactions');
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
 run(['scripts/check-docs.mjs'], 'Documentation links');
+run(['--test', 'scripts/tiny-match-pacing.test.mjs'], 'Paid Tiny pacing measurement and non-completion labels');
 run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default bindings and release dependencies');
 run(['--test', 'scripts/asset-readability.test.mjs'], 'Read-only asset catalog consuming the existing production sidecar');
 run(['--test', 'scripts/building-orientation.test.mjs', 'scripts/building-placement-preview.test.mjs', 'scripts/building-rotation-controls.test.mjs', 'scripts/building-orientation-client.test.mjs'], 'Manual building orientation, final-art ghost and input contracts');
