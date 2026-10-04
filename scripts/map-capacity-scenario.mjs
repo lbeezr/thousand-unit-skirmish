@@ -139,6 +139,11 @@ async function runLoad(count) {
       const waits = clients.map(c => c.wait(row => row.type === 'state' && row.armySize === count));
       clients[0].send({ type: 'selectArmySize', count }); await Promise.all(waits);
     }
+    // mapChange reaches each peer independently, and a coalesced prior-map
+    // snapshot can still be in transit after the boundary probe. Establish a
+    // fresh selected-map state for both peers before validating fog or units.
+    await Promise.all(clients.map(c => c.wait(row => row.type === 'state'
+      && row.mapId === map.id && row.armySize === count)));
     for (const c of clients) {
       assert.equal(c.current.armySize, count); assert.equal(own(c.current, c.team).length, count / 2);
       assert.equal(Buffer.from(c.current.visibility.data, 'base64').length, Math.ceil(map.width * map.height / 4));
