@@ -48,7 +48,8 @@ export function renderMatchRecap(document, state, team) {
   for (const key of ['duration', 'resources', 'survivors', 'posts', 'missing']) {
     const element = document.querySelector(`#match-recap-${key}`);
     if (!element) continue;
-    element.textContent = recap?.[key] ?? '';
+    const next = recap?.[key] ?? '';
+    if (element.textContent !== next) element.textContent = next;
     element.hidden = !element.textContent;
   }
 }

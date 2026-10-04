@@ -93,7 +93,7 @@ function fixture(team) {
     markUnitInstanceMatricesDirty:noop,flushUnitCargoPackColor:noop,
     clearControlGroups(){ for (const group of context.controlGroups) group.clear(); },
     syncSelectionMesh:noop,updateSelectionUI:noop,updateCommandUI:noop,updateControlGroupUI:noop,updateBuildPlacementHint:noop,
-    updateFogFromState:noop,applyForestState:noop,updateObjectives:noop,updateVictoryHoldCard:noop,
+    updateFogFromState:noop,applyForestState:noop,updateObjectives:noop,updateVictoryHoldCard:noop,reconcileBuildings:() => 0,
     updateScenarioEventCards(_events,elapsed){context.latestMatchElapsedSeconds = elapsed;},
     updateEconomyUI:noop,updateEnvironmentStateCaptureSnapshot:noop,revalidateControlGroups:noop,
     setConnection:noop,setMapCatalog:noop,loadMapAudio:noop,updateRoomUI:noop,showToast:noop,scheduleReconnect:noop,
@@ -659,9 +659,12 @@ test('shipped recap uses native collapsed details and text-only rendering, then 
   assert.equal(root.hidden, true); assert.equal(root.open, false);
   renderMatchRecap(document, recapSnapshot(0), 0);
   assert.equal(root.hidden, false); assert.equal(root.open, false);
+  const resourceText = document.querySelector('#match-recap-resources').firstChild;
   root.open = true;
   renderMatchRecap(document, recapSnapshot(0), 0);
   assert.equal(root.open, true);
+  assert.equal(document.querySelector('#match-recap-resources').firstChild, resourceText,
+    'unchanged snapshots must not replace text in the live result region');
   renderMatchRecap(document, { winner: 0, food: ['<img src=x onerror=alert(1)>'] }, 0);
   assert.equal(root.querySelector('img'), null);
   assert.match(document.querySelector('#match-recap-resources').textContent, /unavailable Food/);
