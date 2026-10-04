@@ -1,0 +1,729 @@
+{
+  "schemaVersion": 1,
+  "scope": "planning-callback-phase-diagnosis",
+  "inspectedHead": "aa6621411c710fddd0620c615091e533cba3222a",
+  "sourceSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+  "node": "v24.19.0",
+  "acceptedStateFields": [
+    "id",
+    "x",
+    "z",
+    "orderRevision",
+    "moveGoalCell",
+    "pathIndex",
+    "path",
+    "movePlanningPending"
+  ],
+  "generationNormalization": "fresh fixtures randomize generation tokens; each command uses current tokens, omitted from the compared movement-state hash",
+  "records": [
+    {
+      "schedule": "before-first-tick",
+      "repeat": 0,
+      "sourceSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+      "acceptedAtTick": 0,
+      "acceptedStateHash": "8ccb8e81bcf02e8304cabb19f20bb0454d01f4c7e6410651e46b6a8eeb03266e",
+      "command": {
+        "type": "move",
+        "ids": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "unitGenerations": [
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471,
+          3896073471
+        ],
+        "x": 16.5,
+        "z": 0.5,
+        "clientOrderToken": 1
+      },
+      "events": [
+        {
+          "stage": "command-returned",
+          "tick": 0,
+          "committed": 0,
+          "moved": 0
+        },
+        {
+          "stage": "callbacks-drained",
+          "tick": 0,
+          "committed": 16,
+          "moved": 0
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 1,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 2,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 3,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 4,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 5,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 6,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 7,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 8,
+          "committed": 16,
+          "moved": 16
+        }
+      ],
+      "firstMovedTick": 1,
+      "finalStateHash": "0ac8eaa61c09629c9d686c6f9b0a08c223701b5bfe0c3bb4deb85c1ab0b6f117",
+      "planningSliceCount": 4,
+      "operationCounts": {
+        "searches": 11,
+        "expandedCells": 753
+      }
+    },
+    {
+      "schedule": "before-first-tick",
+      "repeat": 1,
+      "sourceSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+      "acceptedAtTick": 0,
+      "acceptedStateHash": "8ccb8e81bcf02e8304cabb19f20bb0454d01f4c7e6410651e46b6a8eeb03266e",
+      "command": {
+        "type": "move",
+        "ids": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "unitGenerations": [
+          331451617,
+          331451617,
+          331451617,
+          331451617,
+          331451617,
+          331451617,
+          331451617,
+          331451617,
+          331451617,
+          331451617,
+          331451617,
+          331451617,
+          331451617,
+          331451617,
+          331451617,
+          331451617
+        ],
+        "x": 16.5,
+        "z": 0.5,
+        "clientOrderToken": 1
+      },
+      "events": [
+        {
+          "stage": "command-returned",
+          "tick": 0,
+          "committed": 0,
+          "moved": 0
+        },
+        {
+          "stage": "callbacks-drained",
+          "tick": 0,
+          "committed": 16,
+          "moved": 0
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 1,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 2,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 3,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 4,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 5,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 6,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 7,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 8,
+          "committed": 16,
+          "moved": 16
+        }
+      ],
+      "firstMovedTick": 1,
+      "finalStateHash": "0ac8eaa61c09629c9d686c6f9b0a08c223701b5bfe0c3bb4deb85c1ab0b6f117",
+      "planningSliceCount": 4,
+      "operationCounts": {
+        "searches": 11,
+        "expandedCells": 753
+      }
+    },
+    {
+      "schedule": "after-third-tick",
+      "repeat": 0,
+      "sourceSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+      "acceptedAtTick": 0,
+      "acceptedStateHash": "8ccb8e81bcf02e8304cabb19f20bb0454d01f4c7e6410651e46b6a8eeb03266e",
+      "command": {
+        "type": "move",
+        "ids": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "unitGenerations": [
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684,
+          4141795684
+        ],
+        "x": 16.5,
+        "z": 0.5,
+        "clientOrderToken": 1
+      },
+      "events": [
+        {
+          "stage": "command-returned",
+          "tick": 0,
+          "committed": 0,
+          "moved": 0
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 1,
+          "committed": 0,
+          "moved": 0
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 2,
+          "committed": 0,
+          "moved": 0
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 3,
+          "committed": 0,
+          "moved": 0
+        },
+        {
+          "stage": "callbacks-drained",
+          "tick": 3,
+          "committed": 16,
+          "moved": 0
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 4,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 5,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 6,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 7,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 8,
+          "committed": 16,
+          "moved": 16
+        }
+      ],
+      "firstMovedTick": 4,
+      "finalStateHash": "fb8d3e6df23e8da12e10db2e41ed54b0ba1cfcfbb4787450510b6e7306fd68a8",
+      "planningSliceCount": 4,
+      "operationCounts": {
+        "searches": 11,
+        "expandedCells": 753
+      }
+    },
+    {
+      "schedule": "after-third-tick",
+      "repeat": 1,
+      "sourceSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+      "acceptedAtTick": 0,
+      "acceptedStateHash": "8ccb8e81bcf02e8304cabb19f20bb0454d01f4c7e6410651e46b6a8eeb03266e",
+      "command": {
+        "type": "move",
+        "ids": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "unitGenerations": [
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689,
+          3447020689
+        ],
+        "x": 16.5,
+        "z": 0.5,
+        "clientOrderToken": 1
+      },
+      "events": [
+        {
+          "stage": "command-returned",
+          "tick": 0,
+          "committed": 0,
+          "moved": 0
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 1,
+          "committed": 0,
+          "moved": 0
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 2,
+          "committed": 0,
+          "moved": 0
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 3,
+          "committed": 0,
+          "moved": 0
+        },
+        {
+          "stage": "callbacks-drained",
+          "tick": 3,
+          "committed": 16,
+          "moved": 0
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 4,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 5,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 6,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 7,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 8,
+          "committed": 16,
+          "moved": 16
+        }
+      ],
+      "firstMovedTick": 4,
+      "finalStateHash": "fb8d3e6df23e8da12e10db2e41ed54b0ba1cfcfbb4787450510b6e7306fd68a8",
+      "planningSliceCount": 4,
+      "operationCounts": {
+        "searches": 11,
+        "expandedCells": 753
+      }
+    },
+    {
+      "schedule": "one-turn-per-tick",
+      "repeat": 0,
+      "sourceSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+      "acceptedAtTick": 0,
+      "acceptedStateHash": "8ccb8e81bcf02e8304cabb19f20bb0454d01f4c7e6410651e46b6a8eeb03266e",
+      "command": {
+        "type": "move",
+        "ids": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "unitGenerations": [
+          598633619,
+          598633619,
+          598633619,
+          598633619,
+          598633619,
+          598633619,
+          598633619,
+          598633619,
+          598633619,
+          598633619,
+          598633619,
+          598633619,
+          598633619,
+          598633619,
+          598633619,
+          598633619
+        ],
+        "x": 16.5,
+        "z": 0.5,
+        "clientOrderToken": 1
+      },
+      "events": [
+        {
+          "stage": "command-returned",
+          "tick": 0,
+          "committed": 0,
+          "moved": 0
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 1,
+          "committed": 8,
+          "moved": 8
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 2,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 3,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 4,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 5,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 6,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 7,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 8,
+          "committed": 16,
+          "moved": 16
+        }
+      ],
+      "firstMovedTick": 1,
+      "finalStateHash": "26de74de0486964b31dda1c2afb682f2cb7dacb911952666b6aa0bf61a2adf66",
+      "planningSliceCount": 4,
+      "operationCounts": {
+        "searches": 11,
+        "expandedCells": 753
+      }
+    },
+    {
+      "schedule": "one-turn-per-tick",
+      "repeat": 1,
+      "sourceSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+      "acceptedAtTick": 0,
+      "acceptedStateHash": "8ccb8e81bcf02e8304cabb19f20bb0454d01f4c7e6410651e46b6a8eeb03266e",
+      "command": {
+        "type": "move",
+        "ids": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "unitGenerations": [
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940,
+          1334121940
+        ],
+        "x": 16.5,
+        "z": 0.5,
+        "clientOrderToken": 1
+      },
+      "events": [
+        {
+          "stage": "command-returned",
+          "tick": 0,
+          "committed": 0,
+          "moved": 0
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 1,
+          "committed": 8,
+          "moved": 8
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 2,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 3,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 4,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 5,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 6,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 7,
+          "committed": 16,
+          "moved": 16
+        },
+        {
+          "stage": "tick-completed",
+          "tick": 8,
+          "committed": 16,
+          "moved": 16
+        }
+      ],
+      "firstMovedTick": 1,
+      "finalStateHash": "26de74de0486964b31dda1c2afb682f2cb7dacb911952666b6aa0bf61a2adf66",
+      "planningSliceCount": 4,
+      "operationCounts": {
+        "searches": 11,
+        "expandedCells": 753
+      }
+    }
+  ],
+  "cancellation": {
+    "acceptedAtTick": 0,
+    "callbacksAppliedAtTick": 0,
+    "units": 16,
+    "stoppedStatePreserved": true,
+    "notice": "ORDER SUPERSEDED · 0 UNITS"
+  },
+  "limits": [
+    "actual server function bodies; test adapter controls callback opportunities",
+    "command entry uses existing assignment functions, not the socket or PvE intake",
+    "one-turn-per-tick is a scheduling experiment, not an implemented runtime policy",
+    "no renderer, deployment health, device capacity or latency recommendation"
+  ]
+}
