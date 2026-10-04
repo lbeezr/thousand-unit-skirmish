@@ -112,6 +112,29 @@ for (const team of [0, 1]) for (const recoverAt of ['none', 'pending', 'active',
   });
 }
 
+for (const team of [0, 1]) for (const interruption of ['stop', 'cancelConstruction', 'queuedMove']) {
+  test(`seat ${team}: ${interruption} supersedes pending construction without stale work or a second payment`, async () => {
+    await constructionJourney(team, async ({ r, id, siteId, command, step, paidWood }) => {
+      if (interruption === 'queuedMove') command('move', { x: -3.5, z: -3.5, queue: true });
+      else command(interruption, { buildingId: siteId });
+      r.drain();
+      assert.equal(r.units[id].buildingTargetId, null);
+      assert.equal(r.units[id].workIntent, null);
+      for (let tick = 0; tick < 10; tick++) step();
+      const saved = r.checkpoint(); assert.ok(r.validate(structuredClone(saved))); r.restore(structuredClone(saved));
+      for (let tick = 0; tick < 60; tick++) step();
+      const site = r.buildings.find(b => b.id === siteId);
+      if (interruption === 'cancelConstruction') {
+        assert.equal(site, undefined); assert.equal(r.wood[team], 1000, 'unused paid site refunds exactly once');
+      } else {
+        assert.equal(site.progress, 0); assert.equal(r.wood[team], paidWood, 'interruption retains its paid footprint');
+      }
+      assert.equal(r.units[id].buildingTargetId, null);
+      assert.equal(r.units[id].workIntent, null, 'cold recovery does not silently reacquire superseded work');
+    });
+  });
+}
+
 test('fixed construction area follows all paid footprints plus two world units, clipped to map', () => {
   assert.deepEqual(constructionWorkArea([wall(1, .5), wall(2, 2.5, 1.5)], map),
     { minX: -2, maxX: 5, minZ: -2, maxZ: 4 });
