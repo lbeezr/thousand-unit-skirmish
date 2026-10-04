@@ -201,8 +201,8 @@ contract controls, bounded failed-route reproduction, warm continuation and
 malformed-checkpoint recovery. Its exact checks and limits are retained in that
 report. The full CPU suite was not executed or claimed.
 
-Current-main integration retains those runtime/helper/test/scenario bytes and
-adds the construction helper to the simulation import domain. The 39 guard/lane
+Integration at `e14940f7` retains those runtime/helper/test/scenario bytes and
+adds the construction helper to the simulation import domain. Its 39 guard/lane
 tests pass. Registration checks after integrating main `cade7c8b` show 1,133
 full entries partitioned into 950 fast and 183 simulation entries, with each full entry present exactly once
 across three shards. The eleven-case continuation driver is admitted once as a
