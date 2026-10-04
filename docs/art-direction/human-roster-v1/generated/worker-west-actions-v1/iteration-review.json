@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "rawSha256": "8eeb034f41b2f8f6214d3c5c02c7365a3c97c01b3e720de2affb585ac8ec4b2e",
+  "acceptedSourceIndexes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "sourceReview": "Fifteen complete exact up-left back-three-quarter poses: axe3, empty-hand food3, rectangular blunt hammer3, pointed pick3, buckling/bracing/prone defeat3. Backpack remains visible; readable tool strokes point toward the forward left edge, no frontal torso turn. Defeat terminal lies head up-left/boots down-right.",
+  "scale": "one271/310 throughout; standing anatomy roughly225\u2013232px versus232px walk; max271 remains below old272",
+  "root": "fixed columns178/536/852; contacts305/593/890/1216; fallen1493/1501/1484. Wood/hammer/pick320x296/root180,284 keeps whole long stroke; food256x256/root128,244; death512x256/root256,244. Loader matrix compensates asymmetric root.",
+  "polish": "simple motion and slight foot/loop contact differences; native default-game acceptance open",
+  "nativeStatus": "offline previews/CPU only"
+}
