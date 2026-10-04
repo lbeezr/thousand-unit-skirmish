@@ -96,6 +96,8 @@ test('existing snapshot and asset diagnostics opt in without changing normal men
   const main = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
   const snapshot = main.slice(main.indexOf('function updateEnvironmentStateCaptureSnapshot('), main.indexOf('\nfunction applyWaypointQueueCounts('));
   const assetCallback = main.slice(main.indexOf('resourceStateAssetsReady.then((status) => {'), main.indexOf('\nfunction buildFogOverlay('));
+  const placementStart = main.lastIndexOf("  if (roomPageUrl.searchParams.get('rendererCapture')");
+  const placementSnapshot = main.slice(placementStart, main.indexOf('\n  renderer.render(scene, camera);', placementStart));
   for (const [flag, query, enabled] of [[undefined, '', false], [false, '', false], [true, '', true],
     ['true', '', false], [undefined, '?rendererCapture=environment-state', true]]) {
     let callback;
@@ -105,11 +107,16 @@ test('existing snapshot and asset diagnostics opt in without changing normal men
       localTeam: 0, mapDefinition: {}, resourceNodeVisuals: new Map(), mapObjects: [],
       constructionGroundMeshes: new Map(), RESOURCE_STATE_ASSET_STATUS: 'fixture',
       sendCommand: () => true,
+      buildingPlacementPreview: { sprite: null }, buildPlacementActive: false, buildPlacementPending: false,
+      buildPlacementType: 'house', buildPlacementOrientation: 0,
+      placementGhost: { visible: false, position: { toArray: () => [0, 0, 0] } },
+      ui: {}, latestBuildings: [], buildingVisuals: new Map(),
     });
-    vm.runInContext(`${snapshot}\n${assetCallback}\nupdateEnvironmentStateCaptureSnapshot({mapId:'veyrholds-terraced-vale', units:[]})`, context);
+    vm.runInContext(`${snapshot}\n${assetCallback}\n${placementSnapshot}\nupdateEnvironmentStateCaptureSnapshot({mapId:'veyrholds-terraced-vale', units:[]})`, context);
     callback({ ready: false });
     assert.equal(Boolean(window.__rtsEnvironmentStateSnapshot), enabled);
     assert.equal(Boolean(window.__rtsEnvironmentAssetStatus), enabled);
+    assert.equal(Boolean(window.__rtsBuildingPlacementSnapshot), enabled);
     if (enabled) assert.equal(window.__rtsEnvironmentStateSnapshot.mapId, 'veyrholds-terraced-vale');
     if (!query) assert.equal(isGameEntry(context.roomPageUrl), false);
   }

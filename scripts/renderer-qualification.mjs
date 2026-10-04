@@ -306,7 +306,7 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
     }
     if (buildingPlacement) {
       stage = 'building-placement';
-      report.buildingPlacement = await captureBuildingOrientation(page, evidenceDirectory);
+      report.buildingPlacement = await captureBuildingOrientation(page, evidenceDirectory, { onStage: value => { stage = value; } });
     }
   } catch (error) {
     report.status = 'failed';

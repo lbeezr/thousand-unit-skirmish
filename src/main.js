@@ -10696,7 +10696,7 @@ function animate(now) {
     visual.fallbackRoot.rotation.y = visual.fallbackRoot.parent?.userData.buildingOrientationRoot
       ? 0 : buildingOrientationAngle(visual.lifecycleInput?.orientation ?? 0);
   }
-  if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state') {
+  if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state' || window.__rtsCaptureDiagnostics === true) {
     const sprite = buildingPlacementPreview.sprite;
     const art = object => object ? { visible: object.visible, key: object.userData.capturedBuildingArt?.requestKey,
       scale: object.scale.toArray(), center: object.center.toArray(), position: object.position.toArray() } : null;

@@ -79,7 +79,7 @@ training costs and cold recovery.
 The [cloud preflight](qa-evidence/building-orientation-2026-10-04/cloud-preflight.json)
 records clean baseline source, one normal sandbox launch, `sandbox-unavailable`
 and `storage-unavailable`, zero readbacks, screenshots or game frames. No sandbox
-bypass was attempted. The existing qualified #323 Actions workflow now runs
+bypass was attempted. The [first qualified cloud run](qa-evidence/building-orientation-2026-10-04/qualified-first-run.json) passed sandboxed WebGL2 and captured two live movement frames, but failed before any building image: the placement snapshot omitted the shared strict diagnostic flag used across normal room navigation. The capture adapter now observes that flag with the same opt-in contract as existing diagnostics. This failed run establishes no building appearance acceptance. The existing qualified #323 Actions workflow now runs
 `renderer-qualification.mjs PACK_JSON EVIDENCE --buildings`: clean pack/digest,
 locked dependencies, normal HUD selection/build, native input, real paid House,
 three retained actual WebGL screenshots and preview/final source-transform parity.

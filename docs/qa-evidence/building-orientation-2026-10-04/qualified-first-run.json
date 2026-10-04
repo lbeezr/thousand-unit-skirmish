@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "scope": "qualified-cloud-renderer-building-orientation",
+  "workflowRun": "https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37221357747",
+  "source": {
+    "revision": "7bf9a0f63a39c8e16ea6f9bd9f1fb3a5d7392bf3",
+    "dirty": false
+  },
+  "release": {
+    "sourceRevision": "7bf9a0f63a39c8e16ea6f9bd9f1fb3a5d7392bf3",
+    "digest": "sha256:f94387ddf8a350be4fe0e16b84eec76eb0b38d4e99d71b9cce9fd119b2d4f646",
+    "files": 1211
+  },
+  "status": "failed",
+  "sandbox": "enabled",
+  "capability": "passed-WebGL2",
+  "movementFrames": 2,
+  "buildingFrames": 0,
+  "issues": [
+    {
+      "stage": "building-placement",
+      "code": "execution-failed",
+      "systemCode": null,
+      "errorType": "Error",
+      "message": "Qualification failed during building-placement"
+    }
+  ],
+  "finding": "Placement snapshot missed the shared strict diagnostic flag used across normal room navigation; fixed without enabling diagnostics in normal sessions.",
+  "humanBuildingAppearanceReview": "unavailable"
+}

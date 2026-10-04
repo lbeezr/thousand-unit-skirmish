@@ -21,7 +21,7 @@ export function validatePlacementMatch(ghost, rotated, placed) {
   for (const field of ['key', 'scale', 'center', 'position']) assert.deepEqual(placed.art[field], rotated.art[field], `final ${field} matches preview`);
 }
 
-export async function captureBuildingOrientation(page, evidenceDirectory) {
+export async function captureBuildingOrientation(page, evidenceDirectory, { onStage = () => {} } = {}) {
   const click = async selector => {
     const point = await page.cdp.evaluate(`(() => { const el = document.querySelector(${JSON.stringify(selector)});
       if (!el || el.disabled) return null; el.scrollIntoView({block:'nearest'}); const r=el.getBoundingClientRect();
@@ -29,14 +29,17 @@ export async function captureBuildingOrientation(page, evidenceDirectory) {
     assert.ok(point, `normal HUD control is visible and enabled: ${selector}`);
     for (const type of ['mousePressed', 'mouseReleased']) await page.cdp.call('Input.dispatchMouseEvent', { type, ...point, button: 'left', clickCount: 1 });
   };
+  onStage('building-map');
   const map = { id: 'rendered-building-orientation', name: 'Rendered building orientation', width: 64, height: 64,
     terrainSeed: 19, fogOfWar: false, startingArmySize: 24, startingResources: { food: 1000, wood: 1000 },
     spawnPoints: [{ team: 0, x: -20, z: 0 }, { team: 1, x: 20, z: 0 }], obstacles: [], resourceNodes: [], triggers: [], scenarioEvents: [] };
   assert.equal(await page.cdp.evaluate(`window.__rtsEnvironmentCaptureCommand(${JSON.stringify({ type: 'publishMap', map })})`), true);
   await page.wait(`window.__rtsEnvironmentStateSnapshot?.mapId === '${map.id}'`, 'applied building audit map');
+  onStage('building-hud');
   if (await page.cdp.evaluate('document.querySelector("#command-deck").hidden')) await click('#dock-toggle');
   await click('#dock-tab-economy'); await click('#select-workers'); await click('#build-house');
   const rect = await page.cdp.evaluate('(() => { const r=document.querySelector("#viewport canvas").getBoundingClientRect(); return {x:r.x,y:r.y,width:r.width,height:r.height}; })()');
+  onStage('building-ghost');
   let pointer, ghost;
   for (const [fx, fy] of [[.5,.5],[.55,.45],[.45,.55],[.6,.4],[.4,.6]]) {
     pointer = { x: rect.x + rect.width * fx, y: rect.y + rect.height * fy };
@@ -57,13 +60,18 @@ export async function captureBuildingOrientation(page, evidenceDirectory) {
     await writeFile(path.join(evidenceDirectory, `${name}-canvas.png`), canvas);
     captures.push({ name, number: frame.number, time: frame.time, pngSha256: hash(png), canvasSha256: hash(canvas) });
   };
+  onStage('building-default-frame');
   await capture('building-ghost-default');
+  onStage('building-rotate');
   await page.cdp.call('Input.dispatchKeyEvent', { type: 'keyDown', key: '[', code: 'BracketLeft' });
   await page.cdp.call('Input.dispatchKeyEvent', { type: 'keyUp', key: '[', code: 'BracketLeft' });
   const rotated = await page.wait('window.__rtsBuildingPlacementSnapshot?.orientation === 1 && window.__rtsBuildingPlacementSnapshot.art?.visible && window.__rtsBuildingPlacementSnapshot', 'rotated final asset ghost');
   await capture('building-ghost-rotated');
+  onStage('building-submit');
   for (const type of ['mousePressed', 'mouseReleased']) await page.cdp.call('Input.dispatchMouseEvent', { type, ...pointer, button: 'left', clickCount: 1 });
+  onStage('building-complete');
   const placed = await page.wait(`window.__rtsBuildingPlacementSnapshot?.buildings.find(b => b.type === 'house' && b.complete && b.x === ${rotated.position[0]} && b.z === ${rotated.position[2]} && b.art?.visible)`, 'paid completed building at chosen site', 60000);
+  onStage('building-parity');
   validatePlacementMatch(ghost, rotated, placed);
   await capture('building-paid-complete');
   assert.notEqual(captures[0].canvasSha256, captures[1].canvasSha256, 'rendered ghost must visibly rotate');
