@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
-import { createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent, ordinaryMoveBodyRadius } from '../src/unit-movement.mjs';
+import { createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent, activeLandMovementBodyRadius } from '../src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
 
 const source=readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
@@ -25,7 +25,7 @@ function fixture({clockStep=0,expandedPerSearch=50,count=24}={}) {
     pendingMoveStartBroadcasts:new Set(),movePlanningServiceTick:null,performance:{now:()=>{clock+=clockStep;return clock;}},
     nearestOpenCell:c=>c,worldToCell:()=>1,
     MAP_WIDTH:96,MAP_HALF_X:0,MAP_HALF_Z:0,WALK_SPEED:4.5,STEP_SECONDS:1/30,elevationLevelByCell:new Uint8Array(96*96),
-    isWalkable:()=>true,canTraverseFlatUnitSegment,createUnitRouteResult,unitRoutePathCost,unitRouteResultIsCurrent,ordinaryMoveBodyRadius,cellToWorld:c=>({x:c%96+.5,z:Math.floor(c/96)+.5}),
+    isWalkable:()=>true,canTraverseFlatUnitSegment,createUnitRouteResult,unitRoutePathCost,unitRouteResultIsCurrent,activeLandMovementBodyRadius,cellToWorld:c=>({x:c%96+.5,z:Math.floor(c/96)+.5}),
     findPathAStar(start,destination,diagnostics){
       searches.push(destination);diagnostics.searchCount++;diagnostics.expandedCells+=expandedPerSearch;
       return [destination];

@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SCOUT_PORTRAITS, SPEARMAN_PORTRAITS, BARRACKS_PORTRAIT, FARM_PORTRAIT, FARM_PORTRAITS, farmSelectionPortrait } from '../src/selection-portrait.mjs';
+import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SCOUT_PORTRAITS, RIDER_PORTRAITS, SPEARMAN_PORTRAITS, BARRACKS_PORTRAIT, FARM_PORTRAIT, FARM_PORTRAITS, farmSelectionPortrait } from '../src/selection-portrait.mjs';
 import { buildingSpriteUrl } from '../src/building-sprites.mjs';
 import { moduleImports } from './module-imports.mjs';
 import { BROWSER_ENTRYPOINTS } from './check-runtime-imports.mjs';
@@ -90,10 +90,12 @@ for (const [role, source, sha256] of [
   ['boughward-archer', 'docs/art-direction/boughward-roster-v1/extracted/archer/00.png', 'acac85ca7b45351663820ca69e8994aca8c74910915aa7d0fb164c7f9c6ce635'],
   ['scout', 'docs/art-direction/human-mounted-v1/extracted/scout/00.png', '048ee6564eac7798e11ecd7e1d59cdbe6b0ad01a9bf39b30d41ccef1428d10c5'],
   ['boughward-scout', 'docs/art-direction/boughward-roster-v1/extracted/scout/00.png', '024fded2661ed621fc045f3882e5b646ae15ccf4af2842c4d0043c0b95e0b079'],
+  ['rider', 'docs/art-direction/human-mounted-v1/extracted/rider/00.png', '1e8f9cbecbcdbbb6e918bd195822c782dcd86815aa8f7d971d4a0b6d18b85d1a'],
+  ['boughward-rider', 'docs/art-direction/boughward-roster-v1/extracted/rider/00.png', '5ee0db0d065ab004b15fb2846dd2c7a90ca2d0ed32d952a256dd58938c32a535'],
   ['spearman', 'docs/art-direction/human-roster-v1/extracted/spearman/idle/02.png', 'a1ec9294586ed22bfad9e27d1fa1fd5432bd2d4723d5532e7d0a9b188eae010e'],
   ['boughward-spearman', 'docs/art-direction/boughward-roster-v1/extracted/spearman/00.png', 'f31d37ddc28bec1aa5dc7dfd17eaa20f9ea5a9f2abc776ba8e9c248a9559cc8d'],
 ]) {
-  const portrait = WORKER_PORTRAITS[role] || INFANTRY_PORTRAITS[role] || ARCHER_PORTRAITS[role] || SCOUT_PORTRAITS[role] || SPEARMAN_PORTRAITS[role], resource = portrait.asset.slice(1);
+  const portrait = WORKER_PORTRAITS[role] || INFANTRY_PORTRAITS[role] || ARCHER_PORTRAITS[role] || SCOUT_PORTRAITS[role] || RIDER_PORTRAITS[role] || SPEARMAN_PORTRAITS[role], resource = portrait.asset.slice(1);
   assert.ok(allowedUi.has(resource), `portrait must be served: ${resource}`);
   const image = readFileSync(path.join(root, resource));
   assert.equal(createHash('sha256').update(image).digest('hex'), sha256, 'portrait reuses inspected source bytes');
