@@ -1,7 +1,23 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {ScenarioEditHistory,regionGestureZone} from '../src/scenario-authoring.mjs';
+import {ScenarioEditHistory,regionGestureZone} from '../src/authoring/scenario-authoring.mjs';
+import * as scenarioAuthoring from '../src/authoring/scenario-authoring.mjs';
+import * as legacyScenarioAuthoring from '../src/scenario-authoring.mjs';
+import * as mapResize from '../src/authoring/map-resize.mjs';
+import * as legacyMapResize from '../src/map-resize.mjs';
 import {validCompletionTrigger,completionTeam} from '../src/scenario-regions.mjs';
+test('compatibility paths preserve exactly the existing named export bindings',()=>{
+ for (const [canonical,legacy,keys] of [
+  [scenarioAuthoring,legacyScenarioAuthoring,['ScenarioEditHistory','regionGestureZone']],
+  [mapResize,legacyMapResize,['resizeWorldMarkers']],
+ ]) {
+  assert.deepEqual(Object.keys(canonical).sort(),keys.sort());
+  assert.deepEqual(Object.keys(legacy).sort(),keys.sort());
+  for (const key of keys) assert.equal(legacy[key],canonical[key],key);
+ }
+ const h=new legacyScenarioAuthoring.ScenarioEditHistory();
+ assert.ok(h instanceof scenarioAuthoring.ScenarioEditHistory);
+});
 test('bounded history branches and clones state',()=>{
  const h=new ScenarioEditHistory(2);h.record({x:0});h.record({x:1});h.record({x:2});h.record({x:3});
  assert.deepEqual(h.undo(),{x:2});assert.deepEqual(h.undo(),{x:1});assert.equal(h.undo(),null);

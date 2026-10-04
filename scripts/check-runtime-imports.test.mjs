@@ -118,6 +118,19 @@ test('server host closure rejects package-free UI, renderer state and editor mod
   }
 });
 
+test('canonical authoring leaves retain the editor boundary through compatibility paths', () => {
+  for (const name of ['scenario-authoring', 'map-resize']) {
+    const canonical = `src/authoring/${name}.mjs`;
+    const files = { [canonical]: '', [`src/${name}.mjs`]: `export { value } from './authoring/${name}.mjs';` };
+    for (const entry of [canonical, `src/${name}.mjs`]) {
+      assert.throws(() => check({ ...files, 'server.mjs': `import './${entry}';` },
+        { serverEntrypoints: ['server.mjs'] }), /server host reaches authoring domain/);
+      assert.throws(() => check({ ...files,
+        'src/formation-assignment.mjs': `import '../${entry}';` }), /simulation domain cannot reach authoring domain/);
+    }
+  }
+});
+
 test('domain membership rejects duplicate ownership and supports exact canonical migration paths', () => {
   assert.throws(() => check({}, { runtimeDomains: { rules: ['src/a.mjs'], world: ['src/a.mjs'] } }),
     /duplicate runtime domain membership: src\/a.mjs/);
