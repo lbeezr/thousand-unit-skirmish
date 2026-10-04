@@ -1,8 +1,10 @@
 # Uncoached match playtest
 
-[Core tranche](core-playtest-tranche.md) · [Existing external protocol](qa-vertical-slice.md#lightweight-external-playtest-protocol) · [Endings/recap owner record](match-endings-and-recaps.md)
+[Core tranche](core-playtest-tranche.md) · [Existing first-play tasks](novice-first-play.md) · [Existing external protocol](qa-vertical-slice.md#lightweight-external-playtest-protocol) · [Endings/recap owner record](match-endings-and-recaps.md)
 
 Owner: endings/recap lane. This updates the repeatable session recipe for current Tiny Skirmish; the older Forked Vale recipe remains historical/contextual. **Prepared, not run.** Human comprehension requires actual authorized newcomers. Automated agents, a scripted native pair and DOM fixtures cannot provide it. Do not recruit/contact anyone or publish recordings/session data without separate user authorization.
+
+The HUD owner retains the existing first-play task protocol and two-pair acceptance target. This companion adds a natural-choice observation of building decisions, failed orders and postgame understanding; it reuses its ordinary root-menu entry, two-minute blocked-step rule, 30-minute bound and evidence separation. Record whether a session uses task prompts or natural observation, since prescribing an Infantry producer cannot measure an unprompted building choice. Seat-swapped repetition is learned use, not another newcomer sample.
 
 ## One repeatable session
 

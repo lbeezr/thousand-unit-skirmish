@@ -13,6 +13,9 @@ import * as THREE from 'three';
 import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
 import { readWorkerPerformingAction } from '../src/worker-work-presentation.mjs';
 import { fixedMatchArmySize } from '../src/match-mode-controls.mjs';
+import { matchRecap, renderMatchRecap } from '../src/client/hud/match-recap.mjs';
+import { JSDOM } from 'jsdom';
+import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const declaration = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`\nfunction ${next}(`));
@@ -20,6 +23,14 @@ const socketSource = source.slice(source.indexOf('function connectSocket('), sou
 const map = { id: 'forked-vale', fogOfWar: true, obstacles: [], triggers: [], scenarioEvents: [],
   spawnPoints: [{team: 0, x: -18, z: 0}, {team: 1, x: 18, z: 0}] };
 const row = (id, team, generation = 1) => [id, team, team ? 18 : -18, 0, 100, 'worker', 0, null, generation, 'idle', 0];
+function recapSnapshot(team) {
+  const state = snapshot(team, { winner: team, elapsed: 2393.4 });
+  return { ...state, matchModeId: 'skirmish', matchModeVersion: 1,
+    alive: team === 0 ? [12, null] : [null, 12],
+    food: team === 0 ? [180.7, null] : [null, 180.7],
+    wood: team === 0 ? [10.25, null] : [null, 10.25],
+    objectives: [{ id: 'bonus-a', owner: team }, { id: 'bonus-b', owner: -1 }] };
+}
 function snapshot(team, { winner = -1, elapsed = 0, trained = false, generation = 1 } = {}) {
   return { type: 'state', tick: Math.round(elapsed * 10), mapId: map.id, armySize: 24, matchElapsedSeconds: elapsed, winner,
     winnerReason: winner < 0 ? null : 'elimination', fogOfWar: true, connected: 2,
@@ -34,7 +45,7 @@ function fixture(team) {
   const elements = new Map();
   const counts = [0, 0];
   const element = (id) => {
-    if (!elements.has(id)) elements.set(id, { textContent: '', hidden: false, dataset: {}, classList: {toggle(){}}, setAttribute(){} });
+    if (!elements.has(id)) elements.set(id, { textContent: '', hidden: id === '#match-recap', open: false, dataset: {}, classList: {toggle(){}}, setAttribute(){} });
     return elements.get(id);
   };
   class WebSocket {
@@ -54,8 +65,8 @@ function fixture(team) {
     close() {}
   }
   const noop = () => {};
-  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS, fixedMatchArmySize,
-    applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS, fixedMatchArmySize, renderMatchRecap,
+    applyLobby() {}, applyWaypointQueueCounts() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
     document: {visibilityState:'visible',querySelector:element,querySelectorAll:() => []}, window: {clearTimeout:noop},
@@ -522,3 +533,186 @@ for (const team of [0, 1]) test(`seat ${team}: real tuple decoding preserves Sto
   f.connections[0].message(mismatched);
   assert.equal(f.context.units[team * 12].cargo, 4.25, 'mismatched snapshot cannot update typed cargo');
 });
+
+for (const team of [0, 1]) {
+  test(`seat ${team}: terminal DTO recap uses own final bank and survivors, never enemy totals or casualties`, () => {
+    const state = recapSnapshot(team);
+    state.food[1 - team] = 98765; state.wood[1 - team] = 87654;
+    state.units[0][5] = 'infantry';
+    state.units.push([999, 1 - team, 0, 0, 100, 'worker']);
+    state.units.push([998, team, 0, 0, 0, 'worker']);
+    const original = structuredClone(state);
+    const recap = matchRecap(state, team);
+    assert.equal(recap.duration, 'Duration 39:53');
+    assert.equal(recap.resources, 'Your remaining resources: 180 Food · 10 Wood');
+    assert.equal(recap.survivors, 'Your surviving units: 11 Workers · 1 other unit');
+    assert.equal(recap.posts, 'Posts held: 1 of 2 · bonuses only');
+    assert.match(recap.missing, /Unavailable.*income, spending, losses and earlier turning points/);
+    assert.doesNotMatch(JSON.stringify(recap), /98765|87654|999|998/);
+    assert.deepEqual(state, original, 'recap must not mutate the authoritative DTO');
+  });
+
+  test(`seat ${team}: actual snapshot, cold terminal welcome and rematch preserve/clear recap`, () => {
+    const f = fixture(team), terminal = recapSnapshot(team);
+    f.connections[0].message(terminal);
+    assert.equal(f.element('#match-recap').hidden, false);
+    assert.equal(f.element('#match-recap').open, false);
+    assert.equal(f.element('#match-recap-duration').textContent, 'Duration 39:53');
+    assert.equal(f.element('#match-recap-resources').textContent, 'Your remaining resources: 180 Food · 10 Wood');
+    f.element('#match-recap').open = true;
+    f.connections[0].message(terminal);
+    assert.equal(f.element('#match-recap').open, true, 'same-result snapshots preserve the player opening the recap');
+    f.welcome(f.connect(), terminal);
+    assert.equal(f.element('#match-recap-duration').textContent, 'Duration 39:53');
+    const cold = fixture(team);
+    cold.welcome(cold.connections[0], terminal);
+    assert.equal(cold.element('#match-recap-resources').textContent, f.element('#match-recap-resources').textContent);
+    const old = f.connections.at(-1), current = f.connect();
+    f.welcome(current, snapshot(team, { generation: 2 }));
+    assert.equal(f.element('#match-recap').hidden, true);
+    assert.equal(f.element('#match-recap').open, false);
+    assert.equal(f.element('#match-recap-resources').textContent, '');
+    old.message(terminal);
+    assert.equal(f.element('#match-recap').hidden, true, 'old socket cannot reintroduce a recap');
+  });
+
+  test(`seat ${team}: existing Bannerfall simultaneous stronghold draw survives actual state/reconnect hooks`, () => {
+    const f = fixture(team), state = { ...recapSnapshot(team), winner: 2,
+      matchModeId: 'bannerfall', matchModeVersion: 1, winnerReason: 'stronghold-destruction' };
+    f.connections[0].message(state);
+    assert.equal(f.context.matchWinner, 2);
+    assert.equal(f.context.matchResult.hidden, false);
+    assert.equal(f.element('#match-result-title').textContent, 'DRAW');
+    assert.equal(f.element('#match-result-detail').textContent, 'BOTH ORIGINAL TOWN CENTERS DESTROYED ON THE SAME COMBAT TICK');
+    assert.equal(f.element('#match-recap-posts').textContent, 'Posts held: 1 of 2');
+    f.welcome(f.connect(), state);
+    assert.equal(f.context.matchWinner, 2);
+    assert.equal(f.element('#match-result-title').textContent, 'DRAW');
+    assert.equal(f.element('#match-recap').hidden, false);
+    f.connections.at(-1).message({ ...state, winnerReason: 'unrecognized-draw' });
+    assert.equal(f.context.matchWinner, -1);
+    assert.equal(f.element('#match-recap').hidden, true);
+  });
+
+  test(`seat ${team}: victory notification waits for a terminal DTO before showing recap facts`, () => {
+    const f = fixture(team);
+    f.connections[0].message(snapshot(team));
+    f.connections[0].message({ type: 'victory', team, reason: 'elimination' });
+    assert.equal(f.context.matchWinner, team);
+    assert.equal(f.element('#match-recap').hidden, true);
+    f.connections[0].message(recapSnapshot(team));
+    assert.equal(f.element('#match-recap').hidden, false);
+    assert.match(f.element('#match-result-detail').textContent, /RECOVERABLE LAND PRODUCTION/);
+  });
+}
+
+test('terminal recap missing fields are unavailable; recorded zeroes are real zeroes', () => {
+  const missing = matchRecap({ winner: 0 }, 0);
+  assert.equal(missing.duration, 'Duration unavailable');
+  assert.equal(missing.resources, 'Your remaining resources: unavailable Food · unavailable Wood');
+  assert.equal(missing.survivors, 'Your surviving units: unavailable');
+  assert.equal(missing.posts, 'Posts held: unavailable');
+  const zero = matchRecap({ winner: 0, matchElapsedSeconds: 0, food: [0], wood: [0],
+    stone: [0], alive: [0], units: [], objectives: [] }, 0);
+  assert.equal(zero.duration, 'Duration 0:00');
+  assert.equal(zero.resources, 'Your remaining resources: 0 Food · 0 Wood · 0 Stone');
+  assert.equal(zero.survivors, 'Your surviving units: 0 Workers · 0 other units');
+  assert.equal(zero.posts, 'Posts held: 0 of 0');
+  for (const value of [null, -1, Infinity, NaN, '12']) {
+    const invalid = matchRecap({ winner: 0, matchElapsedSeconds: value, food: [value], wood: [value], stone: [value] }, 0);
+    assert.equal(invalid.duration, 'Duration unavailable');
+    assert.equal(invalid.resources, 'Your remaining resources: unavailable Food · unavailable Wood · unavailable Stone');
+  }
+});
+
+test('recap never infers missing survivor breakdown or lifetime losses from reused slots', () => {
+  const state = recapSnapshot(0);
+  state.alive[0] = 13;
+  assert.equal(matchRecap(state, 0).survivors, 'Your surviving units: unavailable');
+  state.alive[0] = 12; delete state.units[0][5];
+  assert.equal(matchRecap(state, 0).survivors, 'Your surviving units: unavailable');
+  state.units[0][5] = 'worker'; state.units[0][8] = 900;
+  assert.equal(matchRecap(state, 0).survivors, 'Your surviving units: 12 Workers · 0 other units');
+  assert.match(matchRecap(state, 0).missing, /losses/);
+  state.objectives[0].owner = null;
+  assert.equal(matchRecap(state, 0).posts, 'Posts held: unavailable');
+});
+
+test('spectator recap cannot consume any private counters or unit/post rows', () => {
+  const state = { winner: 0, matchElapsedSeconds: 30 };
+  for (const key of ['food', 'wood', 'stone', 'alive', 'units', 'objectives']) {
+    Object.defineProperty(state, key, { get() { throw new Error(`private ${key} read`); } });
+  }
+  const recap = matchRecap(state, null);
+  assert.equal(recap.duration, 'Duration 0:30');
+  assert.equal(recap.resources + recap.survivors + recap.posts, '');
+  assert.equal(matchRecap(null, 0), null);
+  assert.equal(matchRecap({ winner: -1 }, 0), null);
+  assert.equal(matchRecap({ winner: 2, winnerReason: 'unknown' }, 0), null);
+});
+
+test('shipped recap uses native collapsed details and text-only rendering, then clears on reset', () => {
+  const document = new JSDOM(readFileSync(new URL('../index.html', import.meta.url), 'utf8')).window.document;
+  const root = document.querySelector('#match-recap');
+  assert.equal(root.tagName, 'DETAILS');
+  assert.equal(root.querySelector('summary').textContent, 'Match recap');
+  assert.equal(root.hidden, true); assert.equal(root.open, false);
+  renderMatchRecap(document, recapSnapshot(0), 0);
+  assert.equal(root.hidden, false); assert.equal(root.open, false);
+  root.open = true;
+  renderMatchRecap(document, recapSnapshot(0), 0);
+  assert.equal(root.open, true);
+  renderMatchRecap(document, { winner: 0, food: ['<img src=x onerror=alert(1)>'] }, 0);
+  assert.equal(root.querySelector('img'), null);
+  assert.match(document.querySelector('#match-recap-resources').textContent, /unavailable Food/);
+  renderMatchRecap(document, null, 0);
+  assert.equal(root.hidden, true); assert.equal(root.open, false);
+  for (const p of root.querySelectorAll('p')) assert.equal(p.textContent, '');
+});
+
+test('real server terminal DTOs and checkpoint cold restore supply identical per-seat recaps', async () => {
+  // A bounded authored deadline fixture, not a shortened Skirmish completion
+  // test or an ordinary human session. Production simulation/DTO bodies remain
+  // unchanged; the existing adapter replaces only process I/O/scheduling.
+  const definition = { id: 'recap-deadline-fixture', name: 'Recap deadline fixture',
+    width: 160, height: 160, terrainSeed: 19, fogOfWar: true, startingArmySize: 24,
+    startingResources: { food: 150, wood: 250 },
+    spawnPoints: [{ team: 0, x: -28, z: 0 }, { team: 1, x: 28, z: 0 }],
+    obstacles: [], resourceNodes: [], scenarioEvents: [],
+    triggers: [{ id: 'deadline-post', name: 'Deadline post', type: 'capture-zone',
+      zone: { column: 78, row: 78, width: 4, height: 4 }, requiredUnits: 5,
+      captureSeconds: 9, foodReward: 0, woodReward: 0, unitCount: 0,
+      unitKind: 'infantry', victory: false }],
+    timedVictory: { objectiveId: 'deadline-post', afterSeconds: 1 } };
+  const fixture = await createPveHeadlessFixture(definition);
+  let cold;
+  try {
+    const start = fixture.replay.checkpoint(); start.state.scenarioClockStarted = true;
+    fixture.replay.restore(start);
+    for (let tick = 0; tick < 35; tick++) fixture.replay.step();
+    const final = fixture.replay.checkpoint();
+    assert.equal(final.state.matchWinner, 2);
+    assert.equal(final.state.matchWinnerReason, 'timed-control');
+    cold = await createPveHeadlessFixture(definition);
+    cold.replay.restore(final);
+    for (const team of [0, 1]) {
+      const state = fixture.replay.observe(team), restored = cold.replay.observe(team);
+      assert.equal(state.food[1 - team], null);
+      assert.equal(state.alive[1 - team], null);
+      const recap = matchRecap(state, team);
+      assert.equal(recap.resources, 'Your remaining resources: 150 Food · 250 Wood');
+      assert.equal(recap.survivors, 'Your surviving units: 4 Workers · 8 other units');
+      assert.equal(recap.posts, 'Posts held: 0 of 1');
+      assert.deepEqual(matchRecap(restored, team), recap, 'cold restore must retain every displayed fact');
+      const f = fixtureClientForRecap(team, state);
+      assert.equal(f.element('#match-recap-resources').textContent, recap.resources);
+      assert.equal(f.element('#match-recap-survivors').textContent, recap.survivors);
+    }
+  } finally { await cold?.dispose(); await fixture.dispose(); }
+});
+
+function fixtureClientForRecap(team, state) {
+  const f = fixture(team);
+  f.connections[0].message({ ...state, mapId: map.id });
+  return f;
+}
