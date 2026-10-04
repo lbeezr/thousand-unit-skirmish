@@ -64,7 +64,7 @@ The [retained originally executed scenario](qa-evidence/palisade-continuation-20
 matches the recorded SHA256 `828029cafe617845e532b686580e03ac2d827a8832f67a8adddf6b3e4d9a6e0e`.
 It is a historical source artifact: to replay it, copy it into `scripts/` so
 its relative fixture import resolves, and use the recorded source revision.
-The current prepared scenario has subsequently strengthened acceptance; each
+The maintained scenario has subsequently strengthened acceptance; each
 new report computes its own scenario/server hashes and identifies an alternate
 server entrypoint separately from the checkout revision.
 
@@ -82,17 +82,17 @@ All seven cases preserve match identity under checkpoint schema 29, retain
 unselected Workers' unrelated Gather jobs, preserve remaining building IDs,
 and avoid further construction debit. Foreign cancellation rejects; repeated
 cancellation refunds nothing; cancelled sites do not reappear after recovery.
-The four explicit replacement cases pass the current regression floor. The
+The four explicit replacement cases passed that revision's regression floor. The
 three natural continuation cases are **reproduced failures**, not acceptance.
 
-`scripts/palisade-continuation-scenario.mjs --observe --case=complete` records
-the present failure without waiting for impossible completion. The analogous
+At the baseline revision, `scripts/palisade-continuation-scenario.mjs --observe --case=complete`
+recorded the failure without waiting for impossible completion. The analogous
 cases are `cancel-gate` and `cancel-pending-wall`. Without `--observe`, these
-three cases require natural completion/resumption and are expected to fail
-until the construction implementation lands. `--case=stop`, `move`, `gather`
-and `manual-replacement` require explicit replacement priority now. The script
-is prepared on the construction branch, not yet admitted to CI or claimed as a
-passing continuation implementation.
+three cases required natural completion/resumption and failed before the
+construction implementation. `--case=stop`, `move`, `gather` and
+`manual-replacement` required explicit replacement priority. At that preparation
+revision the script was not yet admitted to CI. The accepted candidate below
+now passes eleven cases and registers their default positive execution in CI.
 Independent preparation review caught vacuous completion and missing builder
 attribution. The current acceptance predicates require every expected paid
 ID, type and team to survive recovery and settlement; House completion requires
@@ -100,7 +100,7 @@ the two actually assigned House IDs. Final passing continuation must capture
 each original builder actively progressing a remembered wall. Every observed
 checkpoint also checks all unselected Workers' original Gather/idle assignments,
 rather than checking only two Gather Workers after completion. The natural
-continuation assertions remain pending the agreed runtime foundation/fix.
+continuation assertions were pending the runtime fix at that revision.
 The [strengthened replacement controls](qa-evidence/palisade-continuation-2026-10-04/strengthened-controls.json)
 pass all four both-seat cases with the same server bytes: expected site IDs and
 all six unselected Worker jobs survive every inspected checkpoint/recovery;
@@ -127,7 +127,7 @@ which replays from `scripts/` like the original baseline artifact. The evidence
 marks that provenance explicitly rather than assigning the amended driver to
 the older gameplay checkout.
 
-## Continuation boundary and unfinished acceptance
+## Canonical construction continuation
 
 The parent's intermediate direction removed waiting for a generic framework;
 fresh main then merged economy's canonical `workIntent` boundary through PR #283
@@ -162,12 +162,56 @@ targets never reacquired, exhausted budgets carried to a different site, and a
 found approach erased the budget before its later route failed. Regression tests
 execute the actual updater and route finalizer; all three are corrected in the
 candidate. Every automatic attempt now consumes the budget before planning.
-The final eleven-case native/release proof and final exact-head review are in
-progress. Retained baselines above describe their exact earlier bytes. No idle-worker
+Retained baselines above describe their exact earlier bytes. No idle-worker
 recruitment, global job search, combat or Patrol rewrite belongs in this fix.
 
-Walls/gates owner retains source/release integration and the next continuation
-slice. Parent schedules native wall/gate acceptance after a containing identified
+## Accepted source and remaining delivery
+
+The [accepted candidate record](qa-evidence/palisade-continuation-2026-10-04/accepted-candidate.json)
+captures the complete eleven-case run at clean source
+`71fbe617ef596341a5ecf1683d5b514b7e6211c8`. Server SHA256 is
+`6fed0168bf6d6705b6f36091a934eaa025bb980165b630a4bbc7cf99f6269d2a`;
+scenario SHA256 is `10ca8acec72aa6c970625c2386835ff0ef154b98caf470b267d5645ebc737665`.
+The seeded 64×64 map uses terrain seed 19, 20 army units, 300 starting Wood and
+no fog. Commands use the actual WebSocket/server boundary on both seats.
+Checkpoint steps and progress are captured; accepted-command ticks are not
+exposed by server notices and are not inferred.
+
+All seven natural cases pass: cold completion, warm completion without restart,
+legacy Wall migration, malformed-checkpoint controls, unassigned neighboring
+sites, Gate cancellation and pending-Wall cancellation. Each requires every
+surviving paid ID/type/team and observes both original builders actively
+progressing their remembered Walls before completion. Fixed areas and all six
+unselected Worker jobs remain intact. Excluded separately paid neighbors stay
+unfinished; no additional paid IDs or debits appear. Six malformed constructor
+checkpoints quarantine, preserve their rejected bytes and then allow recovery
+from the valid record. The four accepted replacement cases also pass: Stop,
+Move, Gather and a distant House leave old Palisade progress unchanged through
+cold recovery; both actually assigned Houses complete. Refunds occur once and
+cancelled sites remain absent.
+
+The source passes 131 focused contract tests, both type boundaries, import and
+documentation checks, plus the existing native Wood continuation, paid Wall,
+Gate safety/recovery and targeted-resume floors. Its clean release contains
+1,187 files with digest
+`sha256:bed326466e62987873e4b8add43bbd090d3ed50b4701b89fe0f1636acd717991`;
+the guarded packed-release scenario passes. The [independent runtime review](qa-evidence/palisade-continuation-2026-10-04/runtime-review.md)
+approves this exact source, independently runs 65 focused tests, 17 caller and
+contract controls, bounded failed-route reproduction, warm continuation and
+malformed-checkpoint recovery. Its exact checks and limits are retained in that
+report. The full CPU suite was not executed or claimed.
+
+Current-main integration retains those runtime/helper/test/scenario bytes and
+adds the construction helper to the simulation import domain. The 39 guard/lane
+tests pass. Registration checks show 1,125 full entries partitioned into 943
+fast and 182 simulation entries, with each full entry present exactly once
+across three shards. The eleven-case continuation driver is admitted once as a
+positive simulation executable; registration is distinct from suite execution.
+Final integration review, clean integrated release and fresh-main verification
+are tracked in [PR #290](https://github.com/lbeezr/thousand-unit-skirmish/pull/290).
+
+Walls/gates owner retains source/release integration and any observed follow-up.
+Parent schedules native wall/gate acceptance after a containing identified
 deployment. The animation Mac task `01a106da-40ec` currently owns its browser;
 this investigation does not operate it. No deployment, new artwork, Chromium
 sandbox bypass or GPU/user acceptance is claimed.
