@@ -15,7 +15,7 @@ const pack = JSON.parse(readFileSync(new URL('../assets/units/cast-human-sprite-
 const worker = team => ({ id: team, team, slot: 0, kind: 'worker', hp: 100,
   serverX: -10.5, serverZ: 10.5, renderX: -10.5, renderZ: 10.5,
   workHeading: 3 * Math.PI / 4, angle: 3 * Math.PI / 4,
-  workResourceVariant: 'shore-fish', task: 'gathering', cargoType: 'food', cargo: 0 });
+  workResourceVariant: 'shore-fish', task: 'gathering', performingAction: 'gather-food', cargoType: 'food', cargo: 0 });
 
 test('rope begins on a visible net pixel in the approved reach key', () => {
   const image = decodeRgba8(readFileSync(new URL('../docs/art-direction/human-roster-v1/fishing-SE-v1/fishing-SE-01.png', import.meta.url)));
@@ -28,7 +28,7 @@ test('water contact uses actual canonical target and current server bearing, wit
   assert.deepEqual(fishingWaterContact(unit, map), fishingVisualSites(map)[0].water);
   assert.deepEqual(unit, before);
   for (const change of [{ hp: 0 }, { kind: 'infantry' }, { workHeading: null },
-    { workHeading: Math.PI / 2 }, { workResourceVariant: null }, { serverX: -18 }]) {
+    { workHeading: Math.PI / 2 }, { workResourceVariant: null }, { performingAction: null }, { serverX: -18 }]) {
     assert.equal(fishingWaterContact({ ...unit, ...change }, map), null);
   }
   assert.deepEqual(fishingWaterContact(unit, structuredClone(map)), fishingWaterContact(unit, map));
@@ -80,7 +80,7 @@ test('actual four-key runtime contacts water only in reach and clears for Stop, 
       runtime.update(unit, 2300, .94); assert.equal(rope.visible, false, 'wrap retains crouch root');
       const wrapped = new THREE.Matrix4(); actor.getMatrixAt(0, wrapped);
       assert.deepEqual(wrapped.elements, first.elements, 'contact cannot move the actor root at wrap');
-      for (const change of [{ workResourceVariant: null, task: 'idle' }, { walking: true },
+      for (const change of [{ performingAction: null }, { workResourceVariant: null, task: 'idle' }, { walking: true },
         { attackStartedAt: 2600 }, { hp: 0, defeatStartedAt: 2600 }, { kind: 'infantry' },
         { angle: Math.PI / 2 }]) {
         const active = worker(team);
