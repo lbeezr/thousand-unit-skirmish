@@ -106,7 +106,7 @@ The server accepts `herd {nodeId,x,z,resourceEpoch,clientOrderToken}` and
 existing snapshot `forestEpoch`; stale commands reject. The owner must currently
 see an alive positive-food Sheep and the exact destination must be visible,
 in bounds and legal land before any navigation lookup. Existing cardinal land
-navigation supplies the route at0.6 world units/second. No extra food, sight,
+navigation supplies the route at 0.6 world units/second. No extra food, sight,
 army unit, population or currency is created. Current position/heading/activity
 remain the public pose contract; route and grazing anchor stay private.
 
@@ -116,8 +116,8 @@ anchor, preventing travel back to the authored point. Carcasses freeze there.
 Current positive food reserves its actual cell for construction, gate occupancy,
 production and rally; depleted food releases it. New obstructions stop an
 intersecting herd route before a save, with feedback only while the owner sees
-the Sheep. Checkpoint schema27 deep-copies the anchor, route object and path;
-exact schema26 saves gain no travel intent and preserve claims/food/motion.
+the Sheep. Checkpoint schema 27 deep-copies the anchor, route object and path;
+exact schema 26 saves gain no travel intent and preserve claims/food/motion.
 Live old saves retain their authored grazing anchor; frozen saves use their
 actual pose. Invalid current shapes, land cells, routes or lifecycle reject.
 
@@ -195,14 +195,14 @@ verified delivery; useful small PRs ship independently.
    ID. Snapshot/checkpoint `wildlifeTeam: null|0|1`; ownership grants no food,
    movement, sight or population. Preserve existing shared Gather rights in this
    first ownership slice. Public team contract is the real collar input; no
-   invented Claim click. Merged2e6bca931c4ce05cce6ba1b0e6342a25bbb9aa02;
-   reviewed627554d90662612b1e470b7f734d478e331ebace,1593 unit checks passed.
+   invented Claim click. Merged 2e6bca931c4ce05cce6ba1b0e6342a25bbb9aa02;
+   reviewed 627554d90662612b1e470b7f734d478e331ebace, 1593 unit checks passed.
    Next: staging and ordinary-game claim/collar acceptance with the active art owner. Write scope: pure claims, tick/state recovery,
    both-seat fog/tie/blocked/claim-reclaim tests. Art task
    `01a101a8-fba6-7323-a40c-27efd0112007` consumes the real team field for collars.
 3. **Controllable herding**. Server commands, bounded owner-only existing land
-   navigation, live food reservations and schema27 recovery are implemented in
-   `codex/sheep-herding-authority-v1`. Next: independent authority review/merge,
+   navigation, live food reservations and schema 27 recovery are implemented in
+   [PR205](https://github.com/lbeezr/thousand-unit-skirmish/pull/205). Next: independent authority review/merge,
    agree ordinary string-ID selection/order binding with the UI owner, then
    finish cross-cell renderer/minimap/build-preview and AI disclosure. Preserve
    the same food node ID/stock through motion, Gather, depletion and recovery.

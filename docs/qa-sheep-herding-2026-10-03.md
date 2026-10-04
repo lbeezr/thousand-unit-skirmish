@@ -9,7 +9,7 @@ Existing finite food nodes accept owner-only `herd` and `stopWildlife` commands
 with current resource/forest epoch and order acknowledgement. Source and exact
 unsnapped destination require current sight and legal bounded land. Existing
 cardinal navigation, terrain/elevation/corner checks and swept actor occupancy
-control0.6-unit/second travel. No new pathfinder, army entity, sight, food,
+control 0.6-unit/second travel. No new pathfinder, army entity, sight, food,
 population, reproduction or currency is added.
 
 Stop, accepted shared Gather, recapture, harvest and depletion cancel at actual
@@ -17,7 +17,7 @@ position. A persisted local anchor prevents return to authored position after
 arrival/cancellation. Shared food rights remain unchanged. Current positive
 food reserves current construction/spawn/rally/gate cells; exact zero releases
 them, while unknown runtime stock remains conservatively reserved.
-Schema27 deep-copies private anchor/herd/path. Compatible schema26 live motion
+Schema 27 deep-copies private anchor/herd/path. Compatible schema 26 live motion
 retains its authored anchor and frozen motion retains current pose, without
 changing claims, stock, cargo or banks. Malformed current fields reject.
 
@@ -28,6 +28,17 @@ speed/turn budgets, cancellation, food immutability and checkpoint shape.
 Actual server replay and real two-seat WebSocket scenarios prove commands and
 recovery; their final results and reviewed commit are recorded in the focused
 PR. Existing default motion/claims/food regression paths remain required.
+
+At source `efa8001ed94bb61c31be2b099801068e2c0f1f82` (server SHA256
+`9865f37ce1f2aba9d4a8ae8ba77d3eed5f66ecfe0dc7ff6528efe44d7d4faa07`),
+the production-body authority replay passes all nine cases, including an
+occupied open gate, exact continuation after deep-copy recovery, hidden-source
+and retired-epoch rejection, both-seat shared Gather cancellation and strict
+schema 26 migration. The real WebSocket scenario passes three recoveries,
+natural claims, multi-cell travel, Stop/recapture/Gather cancellation and paid
+construction on the vacated cell. All 8.5 harvested food is returned once;
+the hidden 100-food Sheep remains untouched. These are authority checks;
+they do not assert ordinary client controls or rendered appearance.
 
 ## Remaining player outcome
 

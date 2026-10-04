@@ -182,6 +182,8 @@ run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue aut
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');
 run(['--test', 'scripts/wildlife-motion.test.mjs'], 'Bounded deterministic Sheep motion');
 run(['--test', 'scripts/wildlife-claims.test.mjs'], 'Automatic Sheep claim ownership and legality');
+run(['--test', 'scripts/wildlife-herding.test.mjs', 'scripts/sheep-herding-authority.test.mjs'], 'Owner-only Sheep Herd authority, live food occupancy and checkpoint recovery');
+run(['scripts/sheep-herding-scenario.mjs'], 'Both-seat Sheep Herd, shared harvest, construction and recovery');
 run(['scripts/sheep-claims-scenario.mjs'], 'Both-seat automatic Sheep claims and recovery');
 run(['scripts/sheep-motion-scenario.mjs'], 'Default both-seat Sheep motion and recovery');
 run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');
