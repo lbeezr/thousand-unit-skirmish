@@ -15,14 +15,14 @@ function forestMask(m) {
 async function order(r,team,command,pattern=/GATHER ORDER/) {
   const notices=await r.order(team,command);r.drain();assert.ok(notices.some(n=>pattern.test(n.message)),JSON.stringify(notices));
 }
-function conserved(s,m) {
+function conserved(s,m,initialWood=0) {
   const drawn=s.forestStocks.reduce((n,[,stock])=>n+6-stock,0);
   const credited=s.teamWood.reduce((n,bank)=>n+bank-m.startingResources.wood,0);
   const cargo=s.units.filter(u=>u.cargoType==='wood').reduce((n,u)=>n+u.cargo,0);
-  assert.ok(Math.abs(drawn-credited-cargo)<1e-3,'forest stock = both banks + typed cargo');
+  assert.ok(Math.abs(drawn+initialWood-credited-cargo)<1e-3,'forest stock = both banks + typed cargo');
 }
-function advance(r,m,predicate,label,limit=6000) {
-  for(let t=0;t<limit;t++) {const s=stateOf(r); if(t%30===0)conserved(s,m);if(predicate(s))return s;r.step();}
+function advance(r,m,predicate,label,limit=6000,initialWood=0) {
+  for(let t=0;t<limit;t++) {const s=stateOf(r); if(t%30===0)conserved(s,m,initialWood);if(predicate(s))return s;r.step();}
   assert.fail(`Timed out ${label}: ${JSON.stringify(stateOf(r).units.filter(u=>u.workIntent).map(u=>({id:u.id,phase:u.gatherPhase,target:u.gatherForestCell,cargo:u.cargo,x:u.x,z:u.z,path:u.path})))}`);
 }
 const groupMap = () => ({ id:'forest-group-jobs',name:'Forest group jobs',width:64,height:64,
@@ -192,8 +192,8 @@ for(const cargoType of ['wood','food']) test(`forest group preserves ${cargoType
   await order(r,0,{type:'gather',ids:[0],forestCell:32*64+24});assert.equal(stateOf(r).units[0].gatherPhase,'to-base');
   const cp=r.checkpoint(),intent=structuredClone(cp.state.units[0].workIntent);r.restore(cp);
   assert.deepEqual(stateOf(r).units[0].workIntent,intent);
-  advance(r,{...m,startingResources:{...m.startingResources,wood:cargoType==='wood'?initial/2:0}},s=>s.units[0].cargoType==='wood'&&s.units[0].cargo>0,'resume after carried cargo',2000);
-  const done=advance(r,{...m,startingResources:{...m.startingResources,wood:cargoType==='wood'?initial/2:0}},s=>s.units[0].gatherPhase===''&&s.units[0].cargo===0,'finite group completes',2000);
+  advance(r,m,s=>s.units[0].cargoType==='wood'&&s.units[0].cargo>0,'resume after carried cargo',2000,cargoType==='wood'?initial:0);
+  const done=advance(r,m,s=>s.units[0].gatherPhase===''&&s.units[0].cargo===0,'finite group completes',2000,cargoType==='wood'?initial:0);
   assert.ok(Math.abs(done.teamWood[0]-(6+(cargoType==='wood'?initial:0)))<1e-5);
   assert.equal(done.teamFood[0],cargoType==='food'?initial:0);assert.equal(done.units[0].workIntent,null);
  }finally{await f.dispose();}
