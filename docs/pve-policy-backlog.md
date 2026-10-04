@@ -12,7 +12,10 @@ for verified Terraced Vale Tiny Skirmish only. The mode owner retains that
 small admission/capability slice; browser/served acceptance is required for
 completion but must not block exposing the normal option used to obtain it.
 Other maps and ordinary human defaults remain outside this availability change.
-The AI lane owns [real process/reconnect/rematch acceptance](qa-pve-tiny-process-recovery-2026-10-04.md).
+Mode-owner [PR250](https://github.com/lbeezr/thousand-unit-skirmish/pull/250)
+integrates that map-specific admission. The AI lane's
+[real process/reconnect/rematch acceptance](qa-pve-tiny-process-recovery-2026-10-04.md)
+now passes through normal PvE creation; rendered/served completion remains open.
 
 ## Ranked backlog
 
@@ -121,8 +124,9 @@ The canonical identity/checkpoint bridge, actual Tiny full-match repeats and
 both-seat cold army/producer recovery are integrated and source-qualified.
 Canonical map/hash guards remain intact. The next receiving case uses normal
 HTTP/WebSocket room creation and real supervisor processes, with unchanged
-saved checkpoints. Its human control passes; actual Tiny PvE admission and that
-profile's execution remain with the receiving owners. Coordinated delivery and
+saved checkpoints. Its human control and actual Tiny PvE profile both pass:
+paid foundation, paid queue and reset epoch survive three real process restarts,
+and the native AI gathers after reset/restart. Coordinated delivery and
 actual served/browser verification still determine completion. The development
 option needed to obtain those observations is authorized now. Default choice
 and map-limited capability stay with the mode owner.
