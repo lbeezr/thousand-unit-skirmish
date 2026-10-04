@@ -7,18 +7,18 @@ configureForestGapReplay();
 test('pending empty repair is not zero distance; publication refreshes the progress reference', () => {
   const r = { point: cell => ({ x: cell, z: 0 }) };
   const u = { x: 0, z: 0, path: [20], pathIndex: 0, moveGoalCell: 20, orderRevision: 1, movePlanningPending: false };
-  const p = { routeKey: JSON.stringify([20, [20]]), orderRevision: 1, bestRemainingDistance: 20, lastProgress: 0, repairs: 0 };
+  const p = { routeKey: JSON.stringify([20, [20]]), orderRevision: 1, bestRemainingDistance: 20, lastProgress: 0, publishedRouteChanges: 0 };
   Object.assign(u, { path: [], movePlanningPending: true, orderRevision: 2 });
   assert.equal(observeForestRouteProgress(r, u, p, 30), false);
   assert.equal(p.bestRemainingDistance, 20); assert.equal(p.lastProgress, 0, 'pending wait remains observable');
   Object.assign(u, { path: [10, 20], movePlanningPending: false });
   observeForestRouteProgress(r, u, p, 31);
-  assert.equal(p.lastProgress, 31); assert.equal(p.bestRemainingDistance, 20); assert.equal(p.repairs, 1);
+  assert.equal(p.lastProgress, 31); assert.equal(p.bestRemainingDistance, 20); assert.equal(p.publishedRouteChanges, 1);
   u.x = 1;
   assert.equal(observeForestRouteProgress(r, u, p, 32), true); assert.equal(p.lastProgress, 32);
   u.path = [5, 20];
   observeForestRouteProgress(r, u, p, 33);
-  assert.equal(p.repairs, 2, 'same-revision waypoint repairs also refresh the published reference');
+  assert.equal(p.publishedRouteChanges, 2, 'same-revision waypoint repairs also refresh the published reference');
 });
 test('authored gaps retain flat rectangular geometry, bypasses and explicit wood differences', async () => {
   for (const gap of FOREST_GAPS) {
@@ -78,6 +78,7 @@ for (const team of [0, 1]) test(`seat${team}: normal plug harvesting opens navig
   complete(result.after, 16); assert.equal(result.after.planned.gapRoutes, 16);
   assert.ok(result.after.planned.meanLength < result.before.meanLength);
   assert.equal(result.harvest.bankedWood, 6); assert.equal(result.harvest.revisionBefore, 0); assert.equal(result.harvest.revisionAfter, 1);
+  assert.equal(result.harvest.restoredBankedWood, 6); assert.equal(result.harvest.restoredZeroCargo, true);
   assert.equal(result.harvest.exactLoadedContinuation, true); assert.ok(result.harvest.loadedCargo > 0);
   assert.deepEqual(result.harvest.clearedCells, [1567]);
 });
