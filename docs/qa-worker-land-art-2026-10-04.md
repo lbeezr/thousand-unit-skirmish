@@ -747,3 +747,10 @@ Authored27/64; **37 art cells remain**: E2(Stone/Defeat) plus N/NE/S/SW/W each7.
 Ranked next: complete East dedicated pick/terminal defeat, then the five remaining
 actual headings. Continue useful default slices; polish follows breadth. Keep
 identified deployed/native acceptance separate, with receiving owners above.
+
+
+All131 focused tests pass; byte-idempotent admission, atlas/docs/whitespace and
+actual packaged guarded HTTP/WebSocket/hash checks pass. [Clean East hammer release](qa-evidence/worker-land-art-2026-10-04/hammer-east-clean-release.json)
+measures `fa34b9d8d19efd85dc95db191196446aae210c51`, `sourceDirty:false`, 1178 files,
+`sha256:00602d6d95e91436ff5258e6fb0f55f5723bd79891654a051393a8498bb66ec0`. Receipt commits remain separate from measured code.
+Exact containing deployment/native acceptance remains open.
