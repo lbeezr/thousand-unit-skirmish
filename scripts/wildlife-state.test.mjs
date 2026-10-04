@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { cancelWildlifeHerd } from '../src/wildlife-herding.mjs';
 import { isShoreFish } from '../src/shore-fishing.mjs';
+import { createGatherWorkIntent, isAreaGatherResource } from '../src/work-intent.mjs';
 import {
   activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted,
   validWildlifeNodeDefinition, validWildlifeNodeState,
@@ -81,7 +82,8 @@ for (const team of [0, 1]) test(`seat ${team} validates its Workers and visibili
     unit(2, team, 0, true), unit(3, team, 100, false), unit(4, team, 100, true, 1)];
   const notices = [], routes = [];
   let visible = true;
-  const context = vm.createContext({ cancelWildlifeHerd, isShoreFish, farmBuildingId: () => null, harvestNodeById: id => context.resourceNodeStates.get(id), resourceNodeStates: new Map([[node.id, node]]),
+  const context = vm.createContext({ cancelWildlifeHerd, isShoreFish, createGatherWorkIntent, isAreaGatherResource,
+    farmBuildingId: () => null, harvestNodeById: id => context.resourceNodeStates.get(id), resourceNodeStates: new Map([[node.id, node]]),
     spawnByTeam: [{ x: 0, z: 0 }, { x: 0, z: 0 }], walkableComponents: [0, 1],
     WORKER_CARRY_CAPACITY: 10, dirty: false,
     worldToCell: x => x, nearestOpenCell: cell => cell, cellVisibleToTeam: () => visible,
@@ -102,11 +104,13 @@ for (const team of [0, 1]) test(`seat ${team} validates its Workers and visibili
   visible = true;
   context.assignGather({ team }, { ids: [0, 1, 2, 3, 4], nodeId: node.id });
   assert.deepEqual(routes, [[0, 'to-node']]);
+  assert.equal(workers[0].workIntent, null, 'wildlife Food remains a source-only job');
   assert.equal(node.wildlifeState, 'alive', 'a distant accepted order does not dispatch wildlife');
   assert.equal(node.stock, 100);
   activateWildlifeHarvest(node);
   context.assignGather({ team: 1 - team }, { ids: [1], nodeId: node.id });
   assert.deepEqual(routes[1], [1, 'to-node'], 'opponent can gather the same carcass');
+  assert.equal(workers[1].workIntent, null, 'carcass Food does not install an area intent');
   node.stock = 0; markWildlifeDepleted(node);
   context.assignGather({ team }, { ids: [0], nodeId: node.id });
   assert.match(notices.pop(), /RESOURCE NODE EMPTY/);
