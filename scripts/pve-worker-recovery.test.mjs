@@ -7,6 +7,7 @@ import { productionAction } from '../src/production-actions.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { replayZeroWorkerRecovery } from './pve-zero-worker-case.mjs';
 import './pve-wood-discovery.test.mjs';
+import './pve-contested-wood.test.mjs';
 
 process.env.RTS_MAP = 'maps/open-field.json';
 process.env.RTS_GAME_MODE = 'pvp';
