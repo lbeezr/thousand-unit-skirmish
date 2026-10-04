@@ -1,0 +1,71 @@
+{
+  "source": "docs/art-direction/human-roster-v1/generated/worker-east-stone-defeat-v1/raw.png",
+  "frames": [
+    {
+      "frame": 0,
+      "sourceBounds": [
+        110,
+        28,
+        381,
+        503
+      ],
+      "opaquePixels": 63482,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 1,
+      "sourceBounds": [
+        639,
+        150,
+        1007,
+        519
+      ],
+      "opaquePixels": 63657,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 2,
+      "sourceBounds": [
+        1145,
+        79,
+        1445,
+        506
+      ],
+      "opaquePixels": 65870,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 3,
+      "sourceBounds": [
+        126,
+        627,
+        443,
+        916
+      ],
+      "opaquePixels": 51721,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 4,
+      "sourceBounds": [
+        596,
+        686,
+        989,
+        927
+      ],
+      "opaquePixels": 50681,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 5,
+      "sourceBounds": [
+        1039,
+        748,
+        1520,
+        961
+      ],
+      "opaquePixels": 54445,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packVersion": "0.27.0",
+  "packVersion": "0.28.0",
   "scope": "Human Worker land art; excludes fishing; default source/package evidence, not deployed/native proof",
   "actions": [
     {
@@ -100,15 +100,15 @@
     },
     {
       "action": "defeat",
-      "authoredHeadingCount": 2,
+      "authoredHeadingCount": 3,
       "authoredHeadings": [
+        "east",
         "south-east",
         "north-west"
       ],
       "missingHeadings": [
         "north",
         "north-east",
-        "east",
         "south",
         "south-west",
         "west"
@@ -116,28 +116,28 @@
     },
     {
       "action": "gather-stone",
-      "authoredHeadingCount": 2,
+      "authoredHeadingCount": 3,
       "authoredHeadings": [
+        "east",
         "south-east",
         "north-west"
       ],
       "missingHeadings": [
         "north",
         "north-east",
-        "east",
         "south",
         "south-west",
         "west"
       ]
     }
   ],
-  "authoredCells": 27,
+  "authoredCells": 29,
   "totalCells": 64,
-  "remainingCells": 37,
+  "remainingCells": 35,
   "byHeading": {
     "north": 1,
     "north-east": 1,
-    "east": 6,
+    "east": 8,
     "south-east": 8,
     "south": 1,
     "south-west": 1,
@@ -145,6 +145,6 @@
     "north-west": 8
   },
   "carryReturn": "all8 walks reused with existing cargo cue; no independent pose count",
-  "defaultStoneConsumer": "enabled by merged PR263 / animation01a103d4: positive receipts select exact authored SE/NW clips; six missing headings retain their own idle",
+  "defaultStoneConsumer": "enabled by merged PR263 / animation01a103d4: positive receipts select exact authored SE/NW/E clips; five missing headings retain their own idle",
   "nativeDeployment": "open; identified containing parent Railway/Mac route required"
 }

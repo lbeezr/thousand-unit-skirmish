@@ -30,7 +30,7 @@ test('NW attack faithfully reuses the actual public NW axe pixels with its own o
     '../docs/qa-evidence/worker-land-art-2026-10-04/wood-east-preservation.json', import.meta.url)));
   const hammer = JSON.parse(readFileSync(new URL(
     '../docs/qa-evidence/worker-land-art-2026-10-04/hammer-east-preservation.json', import.meta.url)));
-  for (const clip of [...family.originalReplacedClips, ...east.originalReplacedClips, ...hammer.originalReplacedClips]) {
+  for (const clip of [...family.originalReplacedClips, ...east.originalReplacedClips, ...hammer.originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/stone-defeat-east-preservation.json', import.meta.url))).originalReplacedClips]) {
     const replaced = originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId);
     originalClips[replaced] = clip;
   }
