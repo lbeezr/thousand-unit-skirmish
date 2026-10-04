@@ -2,7 +2,7 @@ import { BASE_ELEVATION_PATH_COST, canTraverseElevation, elevationPathCost } fro
 import { visitGridSegmentCells } from './unit-path-line.mjs';
 
 // Static land circles, in tiles/world units. Adopters are explicit: ordinary
-// single-unit Move/queued points first; interaction and group policies follow.
+// single-unit Move/queued points and Worker economy; other domains follow.
 // These are authored collision sizes, not sprite bounds or soft-separation size.
 export const LAND_CLEARANCE_PROFILE = Object.freeze({ id: 'land-static-circle-v1',
   radiusByKind: Object.freeze({ worker: .18, infantry: .22, spearman: .22, archer: .22,
@@ -142,6 +142,21 @@ export function createClearanceMoveGoalPoint(unit, requestedX, requestedZ, cell,
 }
 export function ordinaryMoveBodyRadius(unit) {
   return activeMoveGoalPoint(unit) ? LAND_CLEARANCE_PROFILE.radiusByKind[unit.kind] ?? 0 : 0;
+}
+
+// Economy routes and productive separation share the Worker footprint. Derive
+// this policy from the existing live intent; no new checkpoint/activation flag.
+// Node-free explicit Return remains active through its to-base phase.
+export function workerEconomyBodyRadius(unit) {
+  return unit.kind === 'worker' && unit.hp > 0 && unit.movementDomain !== 'water'
+    && !unit.holdingPosition && !unit.attackMove && !unit.stanceCombat && !unit.stanceReturning
+    && !unit.persistentOrder && !(unit.attackTargetId >= 0) && !(unit.attackBuildingTargetId >= 0)
+    && unit.buildingTargetId == null && ['to-node', 'to-base', 'gathering'].includes(unit.gatherPhase)
+    && (unit.gatherNodeId != null || unit.gatherForestCell >= 0 || (unit.gatherPhase === 'to-base' && unit.cargo > 0))
+    ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0;
+}
+export function activeLandMovementBodyRadius(unit) {
+  return ordinaryMoveBodyRadius(unit) || workerEconomyBodyRadius(unit);
 }
 
 export function activeMoveGoalPoint(unit) {

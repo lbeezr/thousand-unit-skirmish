@@ -31,8 +31,9 @@ export function workerFlowRouteBindings() {
   return { ...unitMovement, shortcutFlatUnitPath, canTraverseFlatUnitSegment,
     movePlanningEpoch: 0, navigationRevision: 0, WORKER_INTERACTION_RANGE: 1.5,
     distanceToBuildingEdge: () => Infinity,
-    cellToWorld: cell => ({ x: cell % 16 + .5, z: Math.floor(cell / 16) + .5 }),
-    MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 0, MAP_HALF_Z: 0,
-    elevationLevelByCell: new Uint8Array(256), isWalkable: () => true,
+    cellToWorld: cell => ({ x: cell % 16 - 8 + .5, z: Math.floor(cell / 16) - 8 + .5 }),
+    worldToCell: (x, z) => Math.floor(z + 8) * 16 + Math.floor(x + 8),
+    MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8,
+    elevationLevelByCell: new Uint8Array(256), isWalkable: cell => cell >= 0 && cell < 256,
     WALK_SPEED: 4, STEP_SECONDS: 1 / 30 };
 }
