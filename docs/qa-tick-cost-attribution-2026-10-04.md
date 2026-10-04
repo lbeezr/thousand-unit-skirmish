@@ -174,8 +174,15 @@ Five focused observer tests pass: production bodies unchanged, exact private
 compressed/plain frame bytes, visibility cache invalidation classification,
 and a real queued tick served during asynchronous stop that remains outside
 the returned row window. Independent read review at `2aba1ccf` clears the
-capture-boundary and byte-qualification findings. Derived evidence is separately
-reviewed before integration.
+capture-boundary and byte-qualification findings. Final independent review at
+`3cdd0768` reproduces all six archived reports, summary/hashes, allocation and
+CPU category weights, boundary/counter partitions and documentary numbers with
+no remaining findings. Its eight focused checks and docs/syntax checks pass.
+Author validation at that head passes 70 observer/framing/deflate/private
+production/fog-checkpoint/forest/reinforcement checks, browser/Node checked
+boundaries, docs, syntax and import architecture. The merge of current main
+`f8237601` is clean; production `server.mjs` and `src` match that main exactly.
+The historical native measurements retain their earlier source identities.
 
 The proposed next experiment is limited to `snapshotUnits`' base-row literal
 in `server.mjs:1922`: put its existing `task` and focus-count fields directly
