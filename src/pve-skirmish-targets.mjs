@@ -2,7 +2,8 @@ import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS } from './gameplay-definitions.m
 import { mapSizeIdentity } from './map-size-policy.mjs';
 
 export const PVE_SKIRMISH_LIMITS = Object.freeze({ retryTicks: 300, maxRetryTicks: 1800,
-  searchTicks: 1800, maxSearchTicks: 5400, searchCandidates: 64, recentCombatTicks: 120 });
+  searchTicks: 1800, maxSearchTicks: 5400, searchCandidates: 64, recentCombatTicks: 120,
+  contactMemoryTicks: 300, contactArrivalDistance: 2 });
 const identity = unit => `${unit.id}:${unit.generation}`;
 const landUnit = kind => UNIT_DEFINITIONS[kind] && UNIT_DEFINITIONS[kind].movementDomain !== 'water';
 const fighting = (unit, tick) => unit.focusedCount > 0 || (unit.lastAttack
@@ -37,6 +38,7 @@ export function selectSkirmishTarget(observation, soldiers) {
 export function createSkirmishTargetPolicy(seed = 0) {
   const orders = new Map();
   let search = null, cursor = seed >>> 0, rotation = (seed >>> 0) % 8, coverageRemaining = 0;
+  let contact = null, context = null, previousTick = null;
   const directions = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
 
   function searchTarget(observation, soldiers) {
@@ -123,15 +125,32 @@ export function createSkirmishTargetPolicy(seed = 0) {
 
   return {
     next(observation, availableSoldiers) {
+      const currentContext = `${observation.team}:${observation.map?.id}:${observation.map?.width}:${observation.map?.height}`;
+      if (context !== currentContext || previousTick !== null && observation.tick < previousTick) contact = null;
+      context = currentContext; previousTick = observation.tick;
       const soldiers = availableSoldiers.filter(unit => unit.team === observation.team && unit.hp > 0
         && unit.kind !== 'worker' && landUnit(unit.kind)
         && UNIT_DEFINITIONS[unit.kind].capabilities.includes('attack')).sort((a, b) => a.id - b.id);
       const live = new Set(soldiers.map(identity));
       for (const key of orders.keys()) if (!live.has(key)) orders.delete(key);
-      if (!soldiers.length) { search = null; return []; }
+      if (!soldiers.length) { search = null; contact = null; return []; }
       const visible = selectSkirmishTarget(observation, soldiers);
-      if (visible) search = null;
-      const target = visible || searchTarget(observation, soldiers);
+      const tiny = Number.isInteger(observation.map?.width) && observation.map.width > 0
+        && Number.isInteger(observation.map?.height) && observation.map.height > 0
+        && mapSizeIdentity(observation.map).sizeTierId === 'tiny';
+      if (visible) {
+        search = null;
+        // Remember one public point, never a hidden enemy identity or movement.
+        contact = tiny && visible.type === 'attack' ? { x: visible.x, z: visible.z,
+          tick: observation.tick, cohort: new Set(soldiers.map(identity)) } : null;
+      }
+      const original = contact ? soldiers.filter(unit => contact.cohort.has(identity(unit))) : [];
+      if (contact && (!tiny || observation.tick - contact.tick >= PVE_SKIRMISH_LIMITS.contactMemoryTicks
+        || !original.length || !visible && original.some(unit => Math.hypot(unit.x - contact.x, unit.z - contact.z)
+          <= PVE_SKIRMISH_LIMITS.contactArrivalDistance))) contact = null;
+      const remembered = contact && !visible ? { key: `contact:${contact.tick}:${contact.x}:${contact.z}`,
+        type: 'attackMove', x: contact.x, z: contact.z } : null;
+      const target = visible || remembered || searchTarget(observation, soldiers);
       if (!target) { orders.clear(); return []; }
       const issued = [];
       for (const unit of soldiers) {
