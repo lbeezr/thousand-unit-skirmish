@@ -242,11 +242,11 @@ test('production input → HTTP/WS authoritative two-seat natural claim, Herd mo
     await client.state(state=>state.resourceNodes.some(row=>row.id===source.id&&row.wildlifeTeam===team),'ordinary Worker naturally claims Sheep');
     // Friendly-unit picking intentionally wins a crowded click. Move the real
     // claimant away before clicking Sheep; an unattended claim must persist.
-    await client.command({type:'move',ids:[worker[0]],unitGenerations:[worker[8]],x:source.x+(team===0?-4:4),z:source.z,
+    await client.command({type:'move',ids:[worker[0]],unitGenerations:[worker[8]],x:source.x+(team===0?-6:6),z:source.z,
       clientOrderToken:910+team},/^MOVE ORDER/);
     await client.state(state=>{
       const unit=state.units.find(row=>row[0]===worker[0]),sheep=state.resourceNodes.find(row=>row.id===source.id);
-      return unit&&sheep&&sheep.wildlifeTeam===team&&Math.hypot(unit[2]-sheep.x,unit[3]-sheep.z)>2;
+      return unit&&sheep&&sheep.wildlifeTeam===team&&Math.hypot(unit[2]-sheep.x,unit[3]-sheep.z)>5;
     },'claim persists after ordinary Worker departure and Sheep can be picked');
   }));
   const claimed=await server.checkpoint(saved=>saved.mapDefinition.id===map.id
