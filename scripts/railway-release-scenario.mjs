@@ -129,6 +129,24 @@ try {
     assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
       `exact client admission must deny: ${filename}`);
   }
+  // Both compatibility and canonical HUD entries must retain exact packed bytes.
+  for (const helper of ['resource-format', 'population-readout', 'objective-summary']) {
+    for (const filename of [`src/${helper}.mjs`, `src/client/hud/${helper}.mjs`]) {
+      const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
+      assert.equal(response.status, 200, filename);
+      assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
+      assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+      assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+      assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(path.join(root, filename)), filename);
+    }
+  }
+  for (const filename of ['src/client/hud/', 'src/client/hud/unknown.mjs',
+    'src/client/hud/resource-format.mjs/extra', 'src/client//hud/resource-format.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
+        404, `HUD admission remains exact (${method}): ${filename}`);
+    }
+  }
   for (const filename of ['%73rc/main.js', 'src%2Fmain.js']) {
     assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 200,
       `existing decoded-path admission: ${filename}`);
