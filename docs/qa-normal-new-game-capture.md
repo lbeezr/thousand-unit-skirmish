@@ -40,6 +40,7 @@ Retained evidence: `novice.json`, `menu.png`, `normal-game.png`,
 and its first failed stage before the shared runner cleans up. Reports contain
 whitelisted state and categories; raw protocol messages, seat tokens, room codes,
 URL queries, headers and arbitrary error text are excluded.
+Rejected origin/build/fresh-page preconditions produce no page evidence reads or captures.
 
 ## Checks and current acceptance
 

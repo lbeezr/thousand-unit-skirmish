@@ -18,9 +18,9 @@ const welcome = { type: 'welcome', player: { team: 0, sessionToken: 'private-sea
 const command = { type: 'move', ids: [4], unitGenerations: [2], x: -57.5, z: 7.5, clientOrderToken: 1 };
 const ui = { selected: 1, context: 'workers', contextVisible: true,
   feedback: { visible: true, state: 'applied', text: 'MOVE ORDER · 1 UNITS' } };
-function png() {
+function png(number = 0) {
   const bytes = Buffer.alloc(12000); Buffer.from('89504e470d0a1a0a', 'hex').copy(bytes);
-  bytes.write('IHDR', 12); bytes.writeUInt32BE(1280, 16); bytes.writeUInt32BE(720, 20); return bytes;
+  bytes.write('IHDR', 12); bytes.writeUInt32BE(1280, 16); bytes.writeUInt32BE(720, 20); bytes[100] = number; return bytes;
 }
 
 test('native messages reduce to owned living Worker identity without private payloads', () => {
@@ -153,6 +153,100 @@ test('actual adapter preserves the first failure and bounded capture before retu
       assert.doesNotMatch(await readFile(path.join(directory, 'novice.json'), 'utf8'), /private/);
       if (captureFails) assert.deepEqual(report.failureCapture, { available: false });
       else assert.ok((await readFile(path.join(directory, 'failure.png'))).equals(png()));
+    } finally { await rm(directory, { recursive: true, force: true }); }
+  }
+});
+
+test('rejected origin/build/nonfresh-page preconditions cannot read or capture unrelated page evidence', async () => {
+  for (const mode of ['origin', 'release', 'identity', 'nonfresh']) {
+    const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-novice-precondition-')), calls = [];
+    const page = { errors: [], cdp: {
+      on() {}, call: async method => { calls.push(method); throw Error('Unrelated page must not be touched'); },
+      evaluate: async expression => { calls.push(expression); assert.equal(expression, 'location.href'); return 'http://127.0.0.1:4321/private-room'; },
+    } };
+    const health = { ok: true, buildIdentity: { status: 'identified', origin: 'packed-manifest',
+      sourceRevision: mode === 'identity' ? 'c'.repeat(40) : revision, sourceDirty: false, digest } };
+    try {
+      const report = await runNoviceScenario({ origin: mode === 'origin' ? 'https://remote.invalid/private' : 'http://127.0.0.1:4321',
+        page, release: { sourceRevision: mode === 'release' ? 'private-source' : revision, digest },
+        evidenceDirectory: directory, fetchImpl: async () => new Response(JSON.stringify(health)) });
+      assert.equal(report.status, 'failed'); assert.equal(report.issues.length, 1);
+      assert.equal(report.issues[0].stage, mode === 'nonfresh' ? 'fresh-page' : 'identity');
+      assert.deepEqual(report.failureCapture, { available: false }); assert.deepEqual(report.final, { available: false });
+      assert.deepEqual(calls, mode === 'nonfresh' ? ['location.href'] : []);
+      assert.doesNotMatch(await readFile(path.join(directory, 'novice.json'), 'utf8'), /private-source|private-room/);
+    } finally { await rm(directory, { recursive: true, force: true }); }
+  }
+});
+
+// Adapted from independent review's CPU positive/late-fault orchestration probe.
+// Synthetic PNG headers and injected boundaries establish no rendering claim.
+function orchestrationPage(lateFault) {
+  let stage = 'blank', number = 10, screens = 0, moving = 0, postMovementReads = 0;
+  const listeners = new Map();
+  const view = () => ({ entry: stage === 'menu' ? 'menu' : 'game', ready: stage !== 'menu', canvas: stage !== 'menu',
+    menu: { visible: stage === 'menu', enabled: stage === 'menu' },
+    selected: ['selection', 'applied', 'movement'].includes(stage) ? 1 : 0,
+    context: 'workers', contextVisible: true, feedback: ui.feedback,
+    diagnosticEntry: false, roomEntry: stage !== 'menu', mode: 'pve', mapSeed: 4, policySeed: 5,
+    latest: { tick: 12 + moving, mapId: state.mapId, matchModeId: 'skirmish', matchModeVersion: 1, armySize: 24,
+      workers: [worker, ...[5, 6, 7].map(id => ({ ...worker, id }))] },
+    map: { id: state.mapId, width: 160, height: 160 }, team: 0,
+    sent: ['applied', 'movement'].includes(stage) ? [command] : [],
+    frameNumber: number, time: 1000, stateAt: 900, errors: [], droppedErrors: 0, droppedCommands: 0 });
+  return { errors: [], wait: async (_expression, description) => {
+    if (description === 'ordinary New Game menu') stage = 'menu';
+    else if (description === 'normal AI match and live Workers') stage = 'game';
+    else if (description === 'one Worker selected by real pointer') stage = 'selection';
+    else if (description === 'visible applied native Move') stage = 'applied';
+    else if (description === 'authoritative Worker displacement') { stage = 'movement'; moving++; }
+    return true;
+  }, cdp: { on: (name, listener) => listeners.set(name, listener),
+    call: async name => name === 'Page.captureScreenshot' ? { data: png(++screens).toString('base64') } : {},
+    evaluate: async expression => {
+      if (expression === 'location.href') return 'about:blank';
+      if (expression.includes('readNoviceUi')) {
+        const result = view();
+        if (stage === 'movement' && ++postMovementReads === 2) {
+          if (lateFault === 'network') listeners.get('Network.loadingFailed')({ canceled: false });
+          if (lateFault === 'probe') result.errors.push({ kind: 'console-error' });
+          if (lateFault === 'read') throw Error('private-final-read-token');
+        }
+        return result;
+      }
+      if (expression.includes('projectNoviceTargets')) return {
+        candidates: [{ worker, point: { x: 200, y: 200 } }],
+        destination: { x: -57.5, z: 7.5 }, destinationPoint: { x: 220, y: 220 },
+      };
+      if (expression.includes('getBoundingClientRect')) return { x: 100, y: 100 };
+      if (expression.includes('__rtsNovice.request')) return {
+        number: ++number, time: 1000 + moving * 200, tick: 12 + moving, observedAt: 900 + moving * 100, stateAgeMs: 10,
+        worker: { ...worker, z: worker.z + moving, task: 'moving' }, version: 'WebGL 2.0', contextLost: false, glError: 0,
+        pixels: Array.from({ length: 192 }, (_, index) => index), canvasWidth: 1280, canvasHeight: 720,
+        canvasPng: png(moving).toString('base64'),
+      };
+      return true;
+    },
+  } };
+}
+
+test('actual positive orchestration rejects final-read network/probe faults and unavailable final evidence', async () => {
+  for (const lateFault of [null, 'network', 'probe', 'read']) {
+    const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-novice-finalization-'));
+    try {
+      const report = await runNoviceScenario({ origin: 'http://127.0.0.1:4321', page: orchestrationPage(lateFault),
+        release: { sourceRevision: revision, digest }, evidenceDirectory: directory,
+        fetchImpl: async () => Response.json({ ok: true, buildIdentity: {
+          status: 'identified', origin: 'packed-manifest', sourceRevision: revision, sourceDirty: false, digest } }) });
+      assert.equal(report.status, lateFault ? 'failed' : 'passed'); assert.equal(report.frames.length, 2);
+      const saved = JSON.parse(await readFile(path.join(directory, 'novice.json'), 'utf8'));
+      assert.equal(saved.status, report.status); assert.doesNotMatch(JSON.stringify(saved), /private-final/);
+      if (lateFault) {
+        assert.equal(report.issues[0].stage, 'evidence');
+        assert.equal(report.issues[0].code, lateFault === 'read' ? 'final-observation-unavailable' : 'browser-errors');
+        assert.equal(report.failureCapture.png, 'failure.png');
+        assert.ok((await readFile(path.join(directory, 'failure.png'))).length > 10000);
+      } else assert.deepEqual(report.issues, []);
     } finally { await rm(directory, { recursive: true, force: true }); }
   }
 });

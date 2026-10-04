@@ -207,7 +207,7 @@ export async function runNoviceScenario({ origin, page, release, evidenceDirecto
     release: { sourceRevision: isSourceRevision(release?.sourceRevision) ? release.sourceRevision : null,
       digest: isReleaseDigest(release?.digest) ? release.digest : null },
     viewport: { width: 1280, height: 720, dpr: 1 }, identity: null, steps: [], frames: [], issues: [], browserEvents: [] };
-  let stage = 'identity';
+  let stage = 'identity', navigationOwned = false;
   const read = () => page.cdp.evaluate(`(${readNoviceUi.toString()})()`);
   const capture = async name => {
     const result = await page.cdp.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
@@ -231,6 +231,7 @@ export async function runNoviceScenario({ origin, page, release, evidenceDirecto
     report.identity = await checkServedBuildIdentity(origin, report.release, { fetchImpl });
     assert.equal(report.identity.ok, true, 'served build must match the clean packed source and digest');
     assert.equal(report.identity.served?.sourceDirty, false, 'served pack must be clean');
+    stage = 'fresh-page';
     assert.equal(await page.cdp.evaluate('location.href'), 'about:blank', 'adapter requires a fresh blank page');
     page.cdp.on('Network.responseReceived', event => {
       const status = event.response?.status;
@@ -241,7 +242,8 @@ export async function runNoviceScenario({ origin, page, release, evidenceDirecto
     });
     page.cdp.on('Network.loadingFailed', () => recordEvent({ kind: 'network-failure' }));
     await page.cdp.call('Page.addScriptToEvaluateOnNewDocument', { source: noviceBeforeScript });
-    stage = 'menu'; await page.cdp.call('Page.navigate', { url: `${origin}/` });
+    stage = 'menu'; navigationOwned = true;
+    await page.cdp.call('Page.navigate', { url: `${origin}/` });
     await page.wait(`document.documentElement.dataset.entry==='menu'&&!document.querySelector('#menu-new-game').disabled`, 'ordinary New Game menu');
     const menu = await read();
     assert.equal(menu.menu.visible, true, 'New Game must be visible'); assert.equal(menu.menu.enabled, true, 'New Game must be enabled');
@@ -305,9 +307,26 @@ export async function runNoviceScenario({ origin, page, release, evidenceDirecto
   } catch (error) {
     report.issues.push({ stage, code: error instanceof assert.AssertionError ? 'contract-failed' : 'execution-failed',
       systemCode: ['ENOENT', 'EACCES', 'EPERM', 'ENOSPC', 'ECONNREFUSED', 'ETIMEDOUT'].includes(error.code) ? error.code : null });
-    try { report.failureCapture = await capture('failure.png'); } catch { report.failureCapture = { available: false }; }
   } finally {
-    try { report.final = await read(); } catch { report.final = { available: false }; }
+    if (navigationOwned) {
+      try { report.final = await read(); } catch {
+        report.final = { available: false }; report.status = 'failed';
+        report.issues.push({ stage: 'evidence', code: 'final-observation-unavailable' });
+      }
+      // CDP events can arrive during the final awaited read, after the earlier
+      // movement check. Retain those failures before serializing the result.
+      if ((report.final.errors?.length ?? 0) + (report.final.droppedErrors ?? 0) + (report.final.droppedCommands ?? 0)
+        + report.browserEvents.length + (report.droppedBrowserEvents ?? 0) + page.errors.length > 0) {
+        report.status = 'failed'; report.issues.push({ stage: 'evidence', code: 'browser-errors' });
+      }
+    } else report.final = { available: false };
+    if (report.status === 'failed') {
+      // A rejected origin/build/nonfresh page belongs to no adapter navigation.
+      // Do not read or screenshot that unrelated page.
+      if (navigationOwned) try { report.failureCapture = await capture('failure.png'); }
+      catch { report.failureCapture = { available: false }; }
+      else report.failureCapture = { available: false };
+    }
     // The read function returns only whitelisted state and known UI categories.
     await writeFile(path.join(evidenceDirectory, 'novice.json'), `${JSON.stringify(report, null, 2)}\n`);
   }
