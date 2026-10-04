@@ -3,9 +3,40 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 import { mountPveEntry } from '../src/pve-entry.mjs';
+import vm from 'node:vm';
+import { createMatchModeControls, fixedMatchArmySize } from '../src/match-mode-controls.mjs';
+import { matchModeCatalog, effectiveMapForMatchMode } from '../src/match-modes.mjs';
 
 const json = (value, status = 200) => new Response(JSON.stringify(value), { status });
 const turn = () => new Promise(resolve => setImmediate(resolve));
+
+test('late AI entry lookups preserve actual main Bannerfall size controls, including a stale PvE URL', async () => {
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
+  const hook = source.match(/function updateMatchArmySizeControls\(\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(hook);
+  const map = JSON.parse(readFileSync(new URL('../maps/bannerfall-arena.json', import.meta.url)));
+  const identity = { matchModeId: 'bannerfall', matchModeVersion: 1 };
+  for (const stalePveUrl of [false, true]) {
+    const dom = new JSDOM(html, { url: `https://game.test/?room=${'R'.repeat(32)}${stalePveUrl ? '&mode=pve&mapSeed=1&policySeed=2' : ''}` });
+    const doc = dom.window.document, pending = new Map(), buttons = [...doc.querySelectorAll('.size-options button')];
+    doc.querySelector('#reset-army').disabled = false;
+    createMatchModeControls({ root: doc.querySelector('#match-mode-view'), id: 'active-match-mode', onChange: () => false })
+      .update({ identity, map: effectiveMapForMatchMode(map, identity), catalog: matchModeCatalog(map), online: true, editable: false });
+    const context = vm.createContext({ document: doc, fixedMatchArmySize, activeMatchMode: identity, isHost: true,
+      updateLobbyHostControls() {} });
+    vm.runInContext(hook, context); context.updateMatchArmySizeControls();
+    assert.ok(buttons.every(button => button.disabled));
+    mountPveEntry({ win: dom.window, fetchImpl: url => new Promise(resolve => pending.set(url, resolve)) });
+    pending.get('/api/rooms/status')(json({ enabled: true, ordinarySetup: { pve: { available: true } } }));
+    await turn(); assert.ok(buttons.every(button => button.disabled), 'late service status cannot enable fixed sizes');
+    pending.get(`/api/rooms/${'R'.repeat(32)}`)(json({ launchOptions: { mode: 'pvp', practice: true, ...identity } }));
+    await turn();
+    assert.ok(buttons.every(button => button.disabled && /16 total units/.test(button.title)),
+      'confirmed Practice identity retains the fixed opening without a later identity change');
+    assert.equal(doc.querySelector('#pve-start').hidden, false); dom.window.close();
+  }
+});
 
 test('fresh AI controls use published capability without changing an existing legacy AI run', async () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');

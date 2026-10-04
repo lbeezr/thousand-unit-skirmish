@@ -125,6 +125,7 @@ export function mountPveEntry({ win = window, fetchImpl = (...args) => (win.fetc
   const location = new URL(win.location.href);
   let roomsEnabled = false;
   let capability = pveEntryCapability(null), creating = false;
+  let roomMode = null;
   let currentOptions = launchOptionsFrom({
     mode: location.searchParams.get('mode'),
     mapSeed: location.searchParams.get('mapSeed'),
@@ -136,6 +137,7 @@ export function mountPveEntry({ win = window, fetchImpl = (...args) => (win.fetc
     feedback.dataset.error = String(error);
   };
   const setMode = (options) => {
+    const wasPve = Boolean(currentOptions);
     currentOptions = options;
     const isPve = Boolean(options);
     start.hidden = !roomsEnabled || isPve;
@@ -161,13 +163,22 @@ export function mountPveEntry({ win = window, fetchImpl = (...args) => (win.fetc
         button.disabled = true;
         button.title = 'Play vs AI uses the map’s authored starting army.';
       }
-    } else {
+    } else if (wasPve && roomMode) {
       const resetButton = document.querySelector('#reset-army');
       if (resetButton) {
+        // Only undo our own earlier PvE restriction. Ordinary asynchronous
+        // lookups must preserve the main client's host and fixed-mode controls.
+        let mode = roomMode;
+        const displayed = document.querySelector('#active-match-mode')?.value?.split('@');
+        try {
+          if (displayed?.length === 2 && displayed[0]) mode = matchModeDefinition({
+            matchModeId: displayed[0], matchModeVersion: Number(displayed[1]),
+          });
+        } catch { /* Keep the known room capability. */ }
         for (const button of document.querySelectorAll('.size-options button')) {
-          button.disabled = resetButton.disabled;
-          button.title = resetButton.disabled
-            ? 'Only the room host can change match size' : 'Change match size for both players';
+          button.disabled = resetButton.disabled || Boolean(mode.fixedArmySize);
+          button.title = mode.fixedArmySize ? `This mode fixes the opening army at ${mode.fixedArmySize} total units.`
+            : resetButton.disabled ? 'Only the room host can change match size' : 'Change match size for both players';
         }
       }
     }
@@ -247,6 +258,9 @@ export function mountPveEntry({ win = window, fetchImpl = (...args) => (win.fetc
     fetchImpl(`/api/rooms/${encodeURIComponent(location.searchParams.get('room'))}`, { cache: 'no-store' })
       .then((response) => response.ok ? response.json() : null)
       .then((room) => {
+        if (room) try {
+          roomMode = matchModeDefinition(room.matchModeId ? room : room.launchOptions || {});
+        } catch { roomMode = null; }
         const fromRoom = launchOptionsFrom(room);
         if (fromRoom) {
           setMode(fromRoom);
