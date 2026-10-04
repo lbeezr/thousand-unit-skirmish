@@ -35,8 +35,8 @@ feedback. A notice alone is not a complete state-result API; reconcile subsequen
 authoritative snapshots.
 
 Forest cells use `row * map.width + column`; they are not resource-node IDs.
-The PvE v1 observation below does not expose the forest stock table, so adding
-forest strategy requires an explicit observation change.
+PvE v1 projects currently visible living trees separately as `forestCells`.
+The global changed-stock table and hidden/remembered forest are not forwarded.
 
 ## Terrain boundaries during movement
 
@@ -60,7 +60,7 @@ Exact top-level fields:
 
 ```text
 schemaVersion, team, tick, map, fogOfWar, visibility, resources, population,
-units, buildings, workerProduction, research, resourceNodes, objectives
+units, buildings, workerProduction, research, resourceNodes, forestCells, objectives
 ```
 
 | Field | Boundary |
@@ -73,10 +73,12 @@ units, buildings, workerProduction, research, resourceNodes, objectives
 | `resources` | Own food/wood only. |
 | `workerProduction`, `research` | Own-team projection only. |
 | `resourceNodes` | Currently visible state IDs/type/stock, with coordinates looked up only for those IDs and visibility rechecked. |
+| `forestCells` | Current-visible authored addresses only: `{cell,x,z,stock}`. Peer-filtered changed stock overrides the native initial six Wood. Cleared, hidden and remembered cells are omitted; missing legacy stock table yields no forest work. |
 | `objectives` | Public ID, zone, owner, victory, and prerequisite-owner fields; visible-unit counts and conditionally visible progress. |
 
 The integer policy seed is separate configuration, not a DTO field or team selector.
-The adapter may inspect static resource `{id,x,z}` only for visible IDs and
+The adapter may inspect static resource `{id,x,z}` only for visible IDs,
+authored forest addresses only for current-sight stock projection, and
 objective `{id,zone}` for public locations/visibility checks. It never forwards
 the raw map, welcome, map-change, catalog, checkpoint, or spectator/global payload.
 
@@ -84,6 +86,12 @@ Exclude opponent economy/research/production, hidden entities/resources, session
 tokens, connection/roster totals, spawns, raw terrain, trigger rewards/conditions,
 scenario prose/events, match clock, `scenarioClockStarted`, and winner. The v1
 DTO also omits global victory-hold state even though the human HUD can show it.
+
+The deterministic policy preserves ordinary Wood-node preference, then uses
+currently disclosed forest as a Wood fallback through the existing `forestCell`
+Gather packet. Its load balancing, idle-Worker rule and retry interval are
+unchanged. Older DTOs without `forestCells` retain node-only behavior. The local
+model-proposal interface remains node-only and cannot treat tree cells as IDs.
 
 ## Objective visibility
 
