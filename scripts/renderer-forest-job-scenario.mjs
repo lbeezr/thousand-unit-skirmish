@@ -87,7 +87,7 @@ export function observeRenderedForestWorkers() {
   const rect = renderer.domElement.getBoundingClientRect();
   probe.render = { frame: renderer.info.render.frame, team: localTeam,
     workers: units.filter(unit => unit?.hp > 0 && unit.team === localTeam && unit.kind === 'worker').map(unit => {
-      const projected = new THREE.Vector3(unit.renderX, groundHeight(unit.renderX, unit.renderZ) + 1.25, unit.renderZ).project(camera);
+      const projected = new THREE.Vector3(unit.renderX, groundHeight(unit.renderX, unit.renderZ) + .65, unit.renderZ).project(camera);
       return { id: unit.id, selected: selected.has(unit.id), inView: Math.abs(projected.x) < .9
         && Math.abs(projected.y) < .8 && Math.abs(projected.z) < 1,
       x: rect.left + (projected.x + 1) * rect.width / 2, y: rect.top + (1 - projected.y) * rect.height / 2 };
@@ -122,6 +122,7 @@ export function planForestApproach(map, worker) {
 }
 
 async function click(page, selector) {
+  await page.cdp.call('Page.bringToFront');
   await page.wait(`document.querySelector(${JSON.stringify(selector)}) && !document.querySelector(${JSON.stringify(selector)}).disabled`, 'ordinary enabled control', 15000);
   await page.cdp.evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);
 }
@@ -137,6 +138,7 @@ async function command(page, value) {
 }
 
 async function selectWorkers(page, ids) {
+  await page.cdp.call('Page.bringToFront');
   for (let index = 0; index < ids.length; index++) {
     const worker = await page.wait(`window.__forestJobCapture.render?.workers.find(w=>w.id===${ids[index]}&&w.inView)`, 'rendered selectable Worker', 10000);
     assert.equal(await page.cdp.evaluate(`document.elementFromPoint(${worker.x},${worker.y})===document.querySelector('#viewport canvas')`), true,

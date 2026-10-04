@@ -103,7 +103,7 @@ test('post-render observation reads selected owned actors without changing the r
     project() { return this; }
   }
   const context = vm.createContext({ window: { __forestJobCapture: {} }, localTeam: 0, units: actors,
-    selected: new Set([10]), groundHeight: () => -1.25, camera: Object.freeze({}), THREE: { Vector3: Vector },
+    selected: new Set([10]), groundHeight: () => -.65, camera: Object.freeze({}), THREE: { Vector3: Vector },
     renderer: { info: { render: { frame: 99 } }, domElement: { getBoundingClientRect: () => ({ left: 0, top: 0, width: 1280, height: 720 }) } } });
   assert.equal(vm.runInContext(`(${adapter.observeRenderedForestWorkers.toString()})()`, context), false, 'breakpoint must not pause');
   const output = JSON.parse(JSON.stringify(context.window.__forestJobCapture.render));
