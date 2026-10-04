@@ -49,7 +49,8 @@
         "frameId": "idle-south-east-0",
         "rgbaSha256": "9f2197fd73abf6f8fe53b86bafd5f2060e8e65eb1e2389de176e728cd69bef57"
       }
-    ]
+    ],
+    "registeredFramesSha256": "99855c4234be473cc93172d3b9109d62414d11debb91c179bd349720447dec70"
   },
   "provenance": {
     "version": "retained-source-v1",
@@ -112,7 +113,7 @@
         1000
       ],
       "durationMs": 1000,
-      "playbackFPS": 1.0,
+      "playbackFPS": 1,
       "sourceFPS": null,
       "notes": "Retained explicit 2D key timing; no sampled rig FPS is known."
     },
@@ -129,7 +130,7 @@
         100
       ],
       "durationMs": 800,
-      "playbackFPS": 10.0,
+      "playbackFPS": 10,
       "sourceFPS": null,
       "notes": "Retained explicit 2D key timing; no sampled rig FPS is known."
     },
@@ -171,7 +172,7 @@
   "calibration": {
     "worldPerPixel": 0.005242183290678879,
     "bodyBaselineWorld": 1.2161865234375,
-    "registrationSha256": "c6ce005707aae31b78ca10318a14f969dac1ddc4b23fc1837b23c19548a1aa7d",
+    "registrationSha256": "403b00e980025ebab498215579c6a775f2526cf559cb8cab650f24d344f967ed",
     "pivotStatus": "unreviewed-estimate",
     "cameraStatus": "prompt-only",
     "cameraRecipe": null,

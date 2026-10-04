@@ -82,10 +82,10 @@ export function analyzeUnitArtCoverage(asset,cells,states=coreStates){
   return{rows,errors,missingCells:rows.filter(r=>r.status!=='authored').map(r=>r.key)};
 }
 
-export async function validateUnitArtProduction({root=repoRoot,contractPath=pilot,contract=null,requireComplete=false}={}){
+async function auditUnitArtProduction({root=repoRoot,contractPath=pilot,contract=null,requireComplete=false}={}){
   contract??=JSON.parse(readFileSync(repoFile(root,contractPath)));
   const sections=['identity','provenance','publication','calibration','integration','renderAcceptance','timing'];
-  if(!contract||sections.some(key=>!contract[key]||typeof contract[key]!=='object')||!['requiredStates','requiredDirections','missingSourceCells'].every(key=>Array.isArray(contract[key]))||!['sources','anchors'].every(key=>Array.isArray(contract.identity[key]))||!Array.isArray(contract.renderAcceptance.evidence))return{errors:['production contract requires identity/provenance/publication/calibration/integration/timing/render sections and matrix/source/evidence arrays'],missingCells:[],scope:'source-contract'};
+  if(!contract||sections.some(key=>!contract[key]||typeof contract[key]!=='object')||!['requiredStates','requiredDirections','missingSourceCells'].every(key=>Array.isArray(contract[key]))||!['sources','anchors','approvedRuntimeFiles'].every(key=>Array.isArray(contract.identity[key])&&contract.identity[key].length)||!Array.isArray(contract.renderAcceptance.evidence))return{errors:['production contract requires identity/provenance/publication/calibration/integration/timing/render sections, nonempty source/anchor/runtime arrays and matrix/evidence arrays'],missingCells:[],scope:'source-contract'};
   const errors=[],canonical=await validateSpriteAtlas(repoFile(root,contract.manifest));
   if(canonical.errors.length)return{errors:canonical.errors,missingCells:[],scope:'source-contract'};
   const pack=canonical.manifest,asset=pack.assets.find(a=>a.id===contract.assetId),page=pack.pages[0];
@@ -115,6 +115,8 @@ export async function validateUnitArtProduction({root=repoRoot,contractPath=pilo
   const image=decodeRgba8(readFileSync(path.join(path.dirname(repoFile(root,contract.manifest)),runtimeFile.path)));
   const cells=decodeRegisteredUnitFrames(asset,page,image);
   for(const anchor of contract.identity.anchors)if(cells[anchor.frameId]?.rgba!==anchor.rgbaSha256)errors.push(`established identity anchor changed: ${anchor.frameId}`);
+  const pixels=asset.frames.map(f=>({id:f.id,...cells[f.id]}));
+  if(sha(JSON.stringify(pixels))!==contract.identity.registeredFramesSha256)errors.push('registered source pixels changed; crop relocation must preserve complete poses');
   const coverage=analyzeUnitArtCoverage(asset,cells,contract.requiredStates);errors.push(...coverage.errors);
   if(!equal([...coverage.missingCells].sort(),[...contract.missingSourceCells].sort()))errors.push('declared missing source cells differ from decoded action coverage');
   if((requireComplete||contract.sourceComplete)&&coverage.missingCells.length)errors.push(`source completion cannot be claimed: ${coverage.missingCells.length} action/heading cells missing`);
@@ -126,9 +128,14 @@ export async function validateUnitArtProduction({root=repoRoot,contractPath=pilo
   }
   const worldPerPixel=asset.heightWorld/Math.max(...asset.frames.map(f=>f.alphaBoundsPx?.height||f.canvasPx.height));
   if(!Number.isFinite(contract.calibration.worldPerPixel)||Math.abs(worldPerPixel-contract.calibration.worldPerPixel)>1e-12)errors.push('world-per-pixel calibration changed; do not fit equipment or individual poses');
-  const registration=asset.frames.map(f=>({id:f.id,pivot:f.groundPivotPx,canvas:f.canvasPx,crops:f.frameRectsPx.map(r=>({layer:r.layerId,offset:r.offsetPx??{x:0,y:0}}))}));
+  const registration=asset.frames.map(f=>({id:f.id,pivot:f.groundPivotPx,canvas:f.canvasPx,crops:f.frameRectsPx.map(r=>({layer:r.layerId,offset:r.offsetPx??{x:0,y:0},size:{width:r.rectPx.width,height:r.rectPx.height}}))}));
   if(sha(JSON.stringify(registration))!==contract.calibration.registrationSha256)errors.push('registered pivots/canvas/offsets changed');
-  if(contract.calibration.cameraStatus==='verified'&&!contract.calibration.cameraRecipe)errors.push('verified camera requires an exact retained recipe');
+  if(!['prompt-only','unknown','verified'].includes(contract.calibration.cameraStatus))errors.push('camera status must be prompt-only, unknown or verified');
+  if(contract.calibration.cameraStatus==='verified'){
+    const recipe=contract.calibration.cameraRecipe;
+    if(!recipe?.path||!recipe.sha256)errors.push('verified camera requires an exact retained recipe with path/hash');
+    else if(sha(readFileSync(repoFile(root,recipe.path)))!==recipe.sha256)errors.push('retained camera recipe hash changed');
+  }
   if(contract.calibration.pivotStatus==='reviewed'&&asset.frames.some(f=>f.groundPivotStatus!=='reviewed'))errors.push('pivot acceptance cannot exceed actual frame review');
   const versions=normalRoster(readFileSync(path.join(root,'src/main.js'),'utf8')).unitSpritePreviewVersions;
   if(versions[contract.assetId]!==contract.integration.runtimeVersion)errors.push('ordinary roster does not bind the declared identity/version');
@@ -137,11 +144,19 @@ export async function validateUnitArtProduction({root=repoRoot,contractPath=pilo
   if(contract.renderAcceptance.status==='accepted'){
     for(const kind of contract.renderAcceptance.requiredScenes){
       const evidence=contract.renderAcceptance.evidence.find(e=>e.kind===kind);
-      if(!evidence||!evidence.normalEntry||!evidence.webgl2||!evidence.backend||!/^[a-f0-9]{40}$/.test(evidence.sourceRevision)||evidence.servedRevision!==evidence.sourceRevision||evidence.runtimeVersion!==contract.integration.runtimeVersion)errors.push(`identified ordinary-game render evidence missing: ${kind}`);
+      if(!evidence||evidence.normalEntry!==true||evidence.webgl2!==true||!['Chromium/CDP','Firefox','Safari/WebKit','native-WebGL2'].includes(evidence.backend)||!/^[a-f0-9]{40}$/.test(evidence.sourceRevision)||evidence.servedRevision!==evidence.sourceRevision||evidence.runtimeVersion!==contract.integration.runtimeVersion)errors.push(`identified ordinary-game render evidence missing: ${kind}`);
       else if(sha(readFileSync(repoFile(root,evidence.path)))!==evidence.sha256)errors.push(`render evidence hash changed: ${kind}`);
     }
   }
   return{scope:'source-identity-matrix-timing-calibration-and-binding',assetId:asset.id,manifest:contract.manifest,packVersion:pack.packVersion,identity:{status:contract.identity.status,style:contract.identity.style,rebuildPolicy:contract.identity.rebuildPolicy},provenance:contract.provenance,publication:contract.publication,integration:contract.integration,errors,requiredCells:coverage.rows.length,authoredCells:coverage.rows.length-coverage.missingCells.length,missingCells:coverage.missingCells,worldPerPixel,normalBinding:versions[contract.assetId],renderAcceptance:contract.renderAcceptance.status,rows:coverage.rows.map(({hashes,...row})=>row)};
+}
+
+// A catalog must receive an invalid audit result rather than crash on a stale
+// path or malformed sidecar. An empty missingCells list with errors is unknown
+// coverage, never a completion result.
+export async function validateUnitArtProduction(options={}){
+  try{return await auditUnitArtProduction(options);}
+  catch(error){return{scope:'source-contract',errors:[`production contract could not be audited: ${error.message}`],missingCells:[]};}
 }
 
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){

@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import * as THREE from 'three';
 import { decodeRgba8, assertFrameUnclipped } from './sprite-pixel-bounds.mjs';
 import { createUnitSpriteRuntime, spriteActionClip, spriteClipDuration, spriteGroundDepthBias } from '../src/unit-sprite-runtime.mjs';
@@ -176,4 +179,51 @@ test('production failure controls reject identity replacement, unreviewed calibr
     const report = await validateUnitArtProduction({contract});
     assert.match(report.errors.join('\n'), expected);
   }
+});
+
+test('render receipt controls require literal booleans and a recognized browser/native backend', async () => {
+  for (const invalid of [{normalEntry:'false'}, {webgl2:'false'}, {backend:'cpu'}, {backend:'mock'}]) {
+    const contract = structuredClone(production);
+    contract.renderAcceptance.status = 'accepted';
+    contract.renderAcceptance.evidence = contract.renderAcceptance.requiredScenes.map(kind => ({
+      kind, normalEntry:true, webgl2:true, backend:'Chromium/CDP',
+      sourceRevision:'a'.repeat(40), servedRevision:'a'.repeat(40), runtimeVersion:'v3',
+      path:contract.identity.sources[0].path, sha256:contract.identity.sources[0].sha256, ...invalid,
+    }));
+    const report = await validateUnitArtProduction({contract});
+    assert.match(report.errors.join('\n'), /identified ordinary-game render evidence missing/);
+  }
+});
+
+test('catalog import returns errors for missing sources and malformed pinned-file records', async () => {
+  const missing = structuredClone(production);
+  missing.identity.sources[0].path = 'docs/art-direction/human-roster-v1/source/nonexistent.png';
+  const missingReport = await validateUnitArtProduction({contract:missing});
+  assert.match(missingReport.errors.join('\n'), /could not be audited.*ENOENT/);
+  const malformed = structuredClone(production);
+  malformed.identity.approvedRuntimeFiles = {};
+  const malformedReport = await validateUnitArtProduction({contract:malformed});
+  assert.match(malformedReport.errors.join('\n'), /nonempty source\/anchor\/runtime arrays/);
+  const unpinned = structuredClone(production); unpinned.identity.anchors = [];
+  assert.ok((await validateUnitArtProduction({contract:unpinned})).errors.length);
+});
+
+test('a canonically valid shortened attack crop cannot silently remove retained visible source pixels', async () => {
+  const root = mkdtempSync(path.join(tmpdir(),'infantry-crop-contract-'));
+  const repository = fileURLToPath(new URL('..',import.meta.url));
+  try {
+    const files = [...production.identity.sources.map(s=>s.path), production.manifest, 'src/main.js',
+      ...establishedPack.files.map(f=>path.posix.join(path.posix.dirname(production.manifest),f.path))];
+    for (const file of files) {
+      const target = path.join(root,file); mkdirSync(path.dirname(target),{recursive:true});
+      cpSync(path.join(repository,file),target);
+    }
+    const shortened = structuredClone(establishedPack);
+    const crop = shortened.assets[0].frames.find(f=>f.id==='attack-south-east-3');
+    crop.frameRectsPx[0].rectPx.width -= 20;
+    writeFileSync(path.join(root,production.manifest),JSON.stringify(shortened));
+    const report = await validateUnitArtProduction({root,contract:production});
+    assert.match(report.errors.join('\n'), /registered pivots\/canvas\/offsets changed/);
+    assert.match(report.errors.join('\n'), /registered source pixels changed/);
+  } finally { rmSync(root,{recursive:true,force:true}); }
 });

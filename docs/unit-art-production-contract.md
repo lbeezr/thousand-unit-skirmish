@@ -34,12 +34,16 @@ status alongside decoded coverage, timing errors, normal binding and pending
 render acceptance. Catalog code can import `validateUnitArtProduction` for this
 pilot. The decoder currently admits one actor page; extend that explicitly for a
 different layout. This offline check is not part of rendering or room simulation.
+Invalid/missing inputs return audit `errors`; an empty missing-cell list on an
+invalid report means unknown coverage and must never be shown as completion.
 
 ## Identity and permissions
 
 Mutable game descriptions are independent of approved art inputs. Description or
 prompt edits do not invalidate approved artwork or trigger generation. The pilot
-pins all four source PNGs, runtime atlas/mask bytes and two registered idle anchors.
+pins all four source PNGs, runtime atlas/mask bytes, two registered idle anchors
+and a fingerprint of every registered pose. Crop size/offset changes are checked;
+relocating an atlas crop cannot silently cut a weapon or replace motion pixels.
 Changing these requires an explicit retained art revision and review; never update
 the pinned hashes automatically during a rebuild. Keep old source iterations.
 
@@ -92,8 +96,9 @@ terminal defeat, selection/fog and strategic LOD. Retain frame/root overlays and
 quarter-speed playback as diagnostic aids; judge readability at actual game size.
 
 An accepted record needs both `normal-zoom` and `crowded-scene` evidence entries,
-each with a repository-relative hashed artifact, `normalEntry`, `webgl2`, actual
-`backend`, matching 40-character `sourceRevision`/`servedRevision`, and the bound
+each with a repository-relative hashed artifact, literal `normalEntry: true` and
+`webgl2: true`, `backend` (`Chromium/CDP`, `Firefox`, `Safari/WebKit` or
+`native-WebGL2`), matching 40-character `sourceRevision`/`servedRevision`, and the bound
 `runtimeVersion`. The validator checks receipt shape/hash, not GPU execution or
 artistic quality. The owner must establish those through actual identified game
 captures, including the clean release/deployment receipt. CPU passing cannot
