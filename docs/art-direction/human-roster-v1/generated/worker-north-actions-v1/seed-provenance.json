@@ -1,0 +1,11 @@
+{
+  "sourceRevision": "62c9d01843c994420d0ce34aec70a7f67068faed",
+  "frameId": "walk-north-0",
+  "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+  "seedSha256": "699df0ead7a475e464e1067c5f8042d82402c6b66b9a4e35fd2b92f0210cd96c",
+  "referenceSha256": "e1177c64691a0eea733f6eedf25408ca41e6ad72c0c3ae551ef10ff90d45d0a0",
+  "direction": "north",
+  "screenDirection": "down-left/front three-quarter",
+  "tool": "built-in ImageGen under standing bounded public-seed authorization",
+  "retainedSourceAssessment": "Actual legacy/private mismatches and current public SE assets were inspected before production; actual current public North walk supplies identity/bearing, not a relabel or mirror."
+}

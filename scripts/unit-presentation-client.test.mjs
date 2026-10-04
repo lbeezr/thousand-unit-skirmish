@@ -102,8 +102,8 @@ for (const team of [0, 1]) for (const selected of [false, true]) {
       }
       f.apply([row(data)], { now: 1850 });
       assert.equal(unit.spriteClockStartedAt, 1000, 'continuous productive receipts do not reset');
-      unit.angle = unit.targetAngle = 0; f.frame(1860, 0.01);
-      assert.equal(f.frameId(0), 'idle-north-0', 'missing heading stays facing north');
+      unit.angle = unit.targetAngle = Math.PI / 4; f.frame(1860, 0.01);
+      assert.equal(f.frameId(0), 'idle-north-east-0', 'missing heading stays facing north-east');
       unit.angle = unit.targetAngle = data.workHeading; f.frame(1870, 0.01);
       assert.equal(unit.spriteClockStartedAt, 1000, 'a heading fallback does not reset work time');
       f.clearObservations();
