@@ -4,6 +4,7 @@ import { createSkirmishTargetPolicy, selectSkirmishTarget, PVE_SKIRMISH_LIMITS a
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
 import { replayRememberedSearch } from './pve-remembered-search-case.mjs';
 import { replayProgressSearch } from './pve-progress-search-case.mjs';
+import { createContactMemoryCase, replayContactMemory } from './pve-contact-memory-case.mjs';
 
 const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
 for (const cold of [false, true]) test(`real Medium progressing route: ${cold ? 'cold restart during extension' : 'warm policy'} retains discovery past sixty seconds`, async () => {
@@ -370,3 +371,80 @@ for (const memory of [0, 1]) for (const [width, height] of [[80, 64], [80, 88], 
     assert.equal(cells.size, count, 'cursor cannot become trapped in a short stride cycle');
   });
 }
+
+const actor=(team,id,extra={})=>({team,id,generation:1,kind:'infantry',hp:100,x:-20,z:0,focusedCount:0,lastAttack:null,...extra});
+function state(team=0,side=160){return {team,tick:0,fogOfWar:true,map:{id:'contact-case',width:side,height:side},
+ visibility:{columns:side,rows:side,data:Buffer.alloc(side*side/4).toString('base64')},
+ units:{friendly:[actor(team,0),actor(team,1)],visibleEnemies:[actor(1-team,90,{x:0,z:0})]},
+ buildings:{friendly:[],visibleEnemies:[]}};}
+const point=command=>[command.x,command.z];
+const hide=o=>{o.units.visibleEnemies=[];o.tick=30;};
+
+for(const team of [0,1]){
+ test(`Tiny seat ${team}: lost contact uses one public coordinate and expires despite movement/reinforcement`,()=>{
+  const o=state(team),policy=createSkirmishTargetPolicy(0);assert.equal(policy.next(o,o.units.friendly)[0].targetId,90);
+  hide(o);const remembered=policy.next(o,o.units.friendly)[0];assert.equal(remembered.type,'attackMove');assert.deepEqual(point(remembered),[0,0]);
+  assert(!('targetId'in remembered)&&!('targetGeneration'in remembered));assert.deepEqual(policy.next(o,o.units.friendly),[]);
+  o.tick=limits.contactMemoryTicks-1;o.units.friendly[0].x++;o.units.friendly.push(actor(team,44,{x:0,z:0}));
+  const join=policy.next(o,o.units.friendly)[0];assert.deepEqual(join.ids,[44]);assert.deepEqual(point(join),[0,0],'reinforcement cannot fake an original visit');
+  o.tick=limits.contactMemoryTicks;const released=policy.next(o,o.units.friendly)[0];assert.notDeepEqual(point(released),[0,0],'motion and joining do not extend disclosure expiry');
+ });
+ test(`Tiny seat ${team}: original arrival, complete loss and reused generations release contact`,()=>{
+  for(const cause of ['arrival','loss','reuse','empty']){
+   const o=state(team),policy=createSkirmishTargetPolicy(0);policy.next(o,o.units.friendly);hide(o);policy.next(o,o.units.friendly);o.tick++;
+   if(cause==='arrival')o.units.friendly[0].x=1.9;
+   if(cause==='loss')o.units.friendly=o.units.friendly.map(u=>({...u,hp:0})).concat(actor(team,44));
+   if(cause==='reuse')o.units.friendly.forEach(u=>u.generation++);
+   if(cause==='empty'){assert.deepEqual(policy.next(o,[]),[]);o.tick++;}
+   const released=policy.next(o,o.units.friendly)[0];assert.ok(released,cause);assert.notDeepEqual(point(released),[0,0],cause);
+  }
+ });
+ test(`Tiny seat ${team}: visible recovery/identity reacquisition outranks coordinate memory`,()=>{
+  const o=state(team),policy=createSkirmishTargetPolicy(0);policy.next(o,o.units.friendly);hide(o);policy.next(o,o.units.friendly);
+  o.tick++;o.buildings.visibleEnemies=[{team:1-team,id:700,type:'town-center',hp:1000,complete:true,x:10,z:10}];
+  assert.equal(policy.next(o,o.units.friendly)[0].buildingId,700);
+  o.tick++;o.buildings.visibleEnemies=[];o.units.visibleEnemies=[actor(1-team,90,{generation:2,x:25,z:0})];
+  const current=policy.next(o,o.units.friendly)[0];assert.equal(current.targetId,90);assert.equal(current.targetGeneration,2);
+  o.tick++;o.units.visibleEnemies=[];assert.deepEqual(point(policy.next(o,o.units.friendly)[0]),[25,0]);
+ });
+ test(`Tiny seat ${team}: rewind, map/seat change and fresh policy cannot inherit unseen contact`,()=>{
+  for(const change of ['rewind','map','seat','fresh']){
+   const o=state(team);let policy=createSkirmishTargetPolicy(0);policy.next(o,o.units.friendly);hide(o);policy.next(o,o.units.friendly);o.tick++;
+   if(change==='rewind')o.tick=0;
+   if(change==='map')o.map.id='other-map';
+   if(change==='seat'){o.team=1-team;o.units.friendly.forEach(u=>u.team=1-team);}
+   if(change==='fresh')policy=createSkirmishTargetPolicy(0);
+   assert.notDeepEqual(point(policy.next(o,o.units.friendly)[0]),[0,0],change);
+  }
+ });
+ for(const side of [80,192,224,256])test(`side ${side} seat ${team}: contact memory does not change other tiers`,()=>{
+  const o=state(team,side),policy=createSkirmishTargetPolicy(0);policy.next(o,o.units.friendly);hide(o);
+  assert.notDeepEqual(point(policy.next(o,o.units.friendly)[0]),[0,0]);
+ });
+}
+
+test('Tiny contact history remains invariant under hidden enemy movement, generation and banks',()=>{
+ const map={id:'contact-case',width:160,height:160,resourceNodes:[],triggers:[]},mask=Buffer.alloc(6400),cell=80*160+80;
+ mask[cell>>2]|=2<<((cell&3)*2);
+ const raw={type:'state',tick:0,fogOfWar:true,visibility:{columns:160,rows:160,data:mask.toString('base64')},food:[150,150],wood:[250,250],
+  units:[[0,0,-20,0,100,'infantry',0,'',1],[90,1,0,0,100,'worker',0,'',1]],buildings:[],objectives:[]};
+ const a=createSkirmishTargetPolicy(0),b=createSkirmishTargetPolicy(0);
+ for(const tick of [0,30,60,299,300,600]){
+  raw.tick=tick;if(tick>0)raw.visibility.data=Buffer.alloc(6400,0x55).toString('base64');
+  const changed=structuredClone(raw);if(tick>0){changed.units[1][2]=50;changed.units[1][3]=-30;changed.units[1][8]=99;changed.food[1]=99999;changed.wood[1]=0;}
+  const first=toOpponentObservation(raw,0,map),second=toOpponentObservation(changed,0,map);assert.deepEqual(second,first);
+  assert.deepEqual(b.next(second,second.units.friendly),a.next(first,first.units.friendly));
+ }
+});
+
+test('current native Tiny contact inspection is useful, bounded and forgotten by cold recovery',async()=>{
+ const data=await createContactMemoryCase(),baseline=await replayContactMemory(data,{disclosed:false});
+ const candidate=await replayContactMemory(data),cold=await replayContactMemory(data,{cold:true});
+ assert.equal(baseline.metrics.firstWithin2,null,'no disclosed history follows normal global search');
+ assert(candidate.metrics.firstWithin2!==null);assert(candidate.metrics.nearest<baseline.metrics.nearest);
+ assert(candidate.metrics.firstGlobal<=data.priming.tick+limits.contactMemoryTicks,'arrival/expiry returns to global search');
+ const memory=candidate.trace[0];assert.equal(memory.command.type,'attackMove');assert.deepEqual(point(memory.command),[data.contact.x,data.contact.z]);
+ assert.equal(cold.stages.restart,data.tick+30);assert.notDeepEqual(point(cold.trace.find(t=>t.tick===cold.stages.restart).command),[data.contact.x,data.contact.z]);
+ for(const result of [baseline,candidate,cold]){assert.equal(result.metrics.rejected,0);assert.equal(result.final.state.matchWinner,-1);assert.equal(result.final.state.units.find(u=>u.id===data.enemyId).hp,100);}
+ assert.deepEqual(await replayContactMemory(data),candidate,'complete controlled result repeats exactly');
+});
