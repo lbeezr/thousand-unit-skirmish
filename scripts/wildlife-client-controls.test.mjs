@@ -259,6 +259,9 @@ test('production input → HTTP/WS authoritative two-seat natural claim, Herd mo
     const bridge=event=>f.receive(JSON.parse(event.data));client.socket.addEventListener('message',bridge);
     t.after(()=>client.socket.removeEventListener('message',bridge));
     f.welcome(client.latest,map,team);
+    // Inspect the animal at a normal local zoom. At a whole-160-map overview,
+    // nearby friendly units correctly win the existing pixel-sized pick radius.
+    f.w.camera.zoom=3;f.w.camera.updateProjectionMatrix();
     const source=client.latest.resourceNodes.find(row=>row.id===map.resourceNodes[team].id);
     assert.ok(source);assert.equal(f.w.latestWildlifeView.rows.has(map.resourceNodes[1-team].id),false,'real seat fog hides remote Sheep');
     f.click(source);selected(f,source.id);const target={x:source.x+(team===0?2:-2),z:source.z};
