@@ -151,6 +151,7 @@ run(['scripts/millrace-sheep-scenario.mjs'], 'Historical Millrace Sheep visibili
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
 run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites');
 run(['--test', 'scripts/frontier-economy-art.test.mjs'], 'Frontier economy lifecycle and depletion capture integrity');
+run(['--test', 'scripts/captured-building-picking.test.mjs'], 'Visible building pixels and hidden fallback picking');
 run(['--test', 'scripts/frontier-building-default.test.mjs'], 'Normal finished Frontier building art, fallback and shared depth');
 run(['scripts/frontier-building-acceptance-map-scenario.mjs'], 'Ordinary building acceptance map admission and legal pads');
 run(['--test', 'scripts/building-occlusion-fixture.test.mjs'], 'Building occlusion QA controls, HTTP assets and timing evidence');

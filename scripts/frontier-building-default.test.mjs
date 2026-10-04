@@ -34,7 +34,8 @@ test('normal factories use all eleven authored families and truthful per-state f
   };
   globalThis.Image = class { width = 1024; height = 1024; decode() { return Promise.resolve(); } };
   globalThis.document = {
-    createElement() { return { getContext() { return { drawImage() {}, fillRect() {} }; } }; },
+    createElement() { return { getContext() { return { drawImage() {}, fillRect() {},
+      getImageData(x, y, width, height) { const data = new Uint8ClampedArray(width * height * 4); for (let i = 3; i < data.length; i += 4) data[i] = 255; return { data }; } }; } }; },
     createElementNS() {
       const listeners = new Map();
       let imageSource;
