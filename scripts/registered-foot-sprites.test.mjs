@@ -3,17 +3,17 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
-import { normalRoster } from './audit-asset-adoption.mjs';
 import { decodeRgba8, assertFrameUnclipped } from './sprite-pixel-bounds.mjs';
 import { createUnitSpriteRuntime, spriteActionClip, spriteClipDuration, spriteGroundDepthBias } from '../src/unit-sprite-runtime.mjs';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url));
 const directions = ['north','north-east','east','south-east','south','south-west','west','north-west'];
-const roster = normalRoster(read('src/main.js').toString());
+// Held legacy-art packet is validated explicitly, independently of normal roster identity.
+const candidateVersions = {infantry:'v4'};
 const roles = ['infantry'];
 
 for (const role of roles) {
-  const directory = `assets/units/${role}-sprite-${roster.unitSpritePreviewVersions[role]}`;
+  const directory = `assets/units/${role}-sprite-${candidateVersions[role]}`;
   const pack = JSON.parse(read(`${directory}/sprite-atlas-pack-v1.json`));
   const asset = pack.assets[0], page = pack.pages[0];
   const image = decodeRgba8(read(`${directory}/${role}-atlas-runtime.png`));
@@ -74,7 +74,7 @@ for (const role of roles) {
       const scene = new THREE.Scene();
       const runtime = createUnitSpriteRuntime({THREE:{...THREE,TextureLoader},scene,capacity:1,
         teamHex:[0x5aa7d7,0xe67a5e],cameraQuaternion:new THREE.Quaternion(),roles:[role],
-        roleSpriteVersions:{[role]:roster.unitSpritePreviewVersions[role]},approximateActionDirections:true});
+        roleSpriteVersions:{[role]:candidateVersions[role]},approximateActionDirections:true});
       assert.equal(await runtime.ready,true); runtime.setCount(0,1);runtime.setCount(1,1);runtime.setVisible(true);
       const assertUv = (unit,frameId) => {
         const frame = asset.frames.find(f=>f.id===frameId); const r = frame.frameRectsPx[0].rectPx;

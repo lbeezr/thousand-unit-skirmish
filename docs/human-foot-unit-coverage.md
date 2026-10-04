@@ -4,7 +4,36 @@
 
 Owner: delegated Human foot-unit art lane; animation-state integration owner `01a103d4` retains state clocks and protocol. Worker/fishing/Sheep/Coastal and combat/stances are separate lanes. The user's task authorizes public reuse, default wiring and packaging without paid generation or private-source publication.
 
-## Infantry slice — 4 October 2026
+## Current identity restoration and adoption hold — 4 October 2026
+
+PR228 merged at `b6a926c45db1ff5c8be9099ef8ae3704f73b6159` before the latest
+visual-direction hold. The user rejected the character substitution: registered
+Infantry v4 uses an older gold costume and round shield, Archer v3 changes the
+established open face/cape to a hooded character, and Spearman v2 replaces the
+painted Human with coarse rectangular geometry. Treating identity as a polish
+tradeoff was a scope mistake. PR230 and PR241 remain unmerged drafts; all art,
+originals and iterations are retained.
+
+Normal Infantry returns to `infantry-sprite-v3`, alongside the established
+`archer-sprite-v2` and `spearman-sprite-v1`. The approved Human Worker appearance
+and [role production references](art-direction/human-roster-v1/README.md) define
+cream/sage/olive/brown craft clothing, expressive faces and painterly silhouettes.
+Infantry retains a short spear/six-sided shield, Spearman a long two-handed spear,
+and Archer bow/quiver. The Human body baseline remains 1.2161865234375 world units.
+
+The correction changes only the ordinary Infantry version and makes the retained
+v4 registration/playback suite select its experiment explicitly. V4 assets,
+bounds/crop/root/clip tooling, supported-version admission, HTTP and release
+files remain. No state/facing selector, clock/protocol, Worker, combat/stance or
+unrelated main behavior is reverted. Source-only selector diagnosis remains
+owned by Mac task `01a106da-40ec`; this slice does not overlap its selector edits.
+
+The established character family still lacks walk/attack/defeat for
+N/NE/E/S/SW/W/NW: **21 cells per role, 63 total**. Different-identity source keys
+do not close that goal. All 63 original deployed/native cells remain unverified.
+Restoring the default is a source correction, not a live bug or appearance claim.
+
+## Historical Infantry source slice — 4 October 2026
 
 Source inspected at main `9351320d68b3b9c949166b7d5991973004b7553d`, including all three Infantry packs, both Archer packs and the only Spearman pack. The Meshy Infantry v2 bake has 264 real directional poses but lacks weapons/shield. The painted Infantry v1 retains readable equipment and distinct physical views; its old floor-grid registration is unusable because feet/weapons cross cell borders. The v3 SE keys work but cannot face the other seven headings.
 
@@ -26,13 +55,20 @@ Checks: canonical manifest/file-hash validation; 48 decoded full-pose bounds wit
 
 ## Ranked retained backlog
 
-1. **Infantry delivery/acceptance:** obtain independent review of the exact candidate head, merge through repository rules, pack a clean source release, identify the containing staging revision, then run the ordinary recipe below. Art owner retains this outcome; parent-owned Railway/Mac routes support identified delivery/capture.
-2. **Archer ready reuse slice:** recover all 48 public v1 actors (the old grid cuts feet badly), use the same physical-view registration, test two-key walk/draw/release and readable terminal defeat, wire a separate bounded PR. No dependency on Infantry deployment; reuse the reviewed registration contract.
-3. **Spearman source gap:** current public pack has only eight idle views and SE walk/attack/defeat. No equivalent directional legacy action source exists. Retain those real keys and 21 missing cells. Next useful input is seven headings of readable short walk/thrust/defeat sequences, supplied with public rights or explicitly authorized local authoring. Do not relabel its SE clip or borrow Infantry's round-shield costume as Spearman coverage. No paid rigging/new-generation charges or private-source pixels are authorized.
-4. **Polish after function:** smoother loops, more defeat intermediates, costume/finish and team-mask refinement. Do not delay usable direction coverage for this work.
+1. **Restore identity through delivery:** check/review/merge the narrow Infantry default correction, pack an exact clean release, identify the containing served revision and verify normal paid Infantry use. Art owner retains acceptance with parent Railway/Mac support; a source merge does not close native appearance.
+2. **Functional state/facing diagnosis:** Mac task `01a106da-40ec` traces live Worker sliding and Spearman facing. Parent reports one true SE Spearman walk plus seven idle clips and approximate selection routing walks to SE. Correct selectors while preserving the established characters; selection alone does not fill missing art. State/protocol owner remains `01a103d4`.
+3. **Identity-preserving heading pilot:** choose one role's own existing Human directional seed; retain its face, clothing, proportions, equipment and handedness while supplying contact/low/passing/high, attack and terminal-fall keys. Compare the pilot to that role before any broad production/adoption. Keep genuine views, fixed camera/root/body scale, crop offsets and deterministic action/direction/frame names. No new paid generation or private-source work; do not adopt held candidates as final art.
+4. **Extend usable coverage, then polish:** repeat validated headings and report the exact remaining cells. Inspect support-foot contact, stride distance against velocity, frame-index/anchor overlays, single-step and quarter-speed playback, starts/Stops/turns/blocked movement and ordinary/strategic zoom. Rough motion is acceptable; character replacement and wrong facing are not.
+
+Motion references stay separate from character references. The [official walk
+key-pose tutorial](https://create.roblox.com/docs/tutorials/use-case-tutorials/animation/create-an-animation)
+supplies contact/low/passing/high relationships, and the [Flare author's export
+workflow](https://flarerpg.org/2015/06/07/20150607/) separates Actions, eight views,
+deterministic names and engine testing. Apply these lessons to the established
+Human; no reference pixels, models or code are imported.
 
 ## Ordinary-game acceptance
 
-At a named served source/release SHA, enter Millrace or Terraced Vale through Create Room and normal map selection, without art query flags. Use both seats and normal paid Barracks Infantry production. For Human Infantry capture idle, move/Stop/resume, attack/fresh attack and lethal defeat along N/NE/E/SE/S/SW/W/NW. Verify the actual direction's keys advance, wind-up/strike ends at 850 ms, a new event restarts, terminal corpse clamps and fades, and selection clearing/fog/strategic LOD do not freeze state. Inspect planted roots and spear/shield readability at ordinary zoom; verify the gold-tunic costume and sash tint on the containing build. Include enemy views through disclosed fog. Save chronological clips with SHA, map, seat, action, heading and selected/unselected status.
+At a named served source/release SHA, enter Millrace or Terraced Vale through Create Room and normal map selection, without art query flags. Use both seats and normal paid Barracks Infantry production. For Human Infantry capture idle, move/Stop/resume, attack/fresh attack and lethal defeat along N/NE/E/SE/S/SW/W/NW. Record whether the actual heading has motion or an explicit retained fallback; do not count idle or SE reuse as new directional coverage. Verify event restart, terminal corpse behavior and selection/fog/strategic LOD. Inspect the established cream/sage character, short spear/six-sided shield, planted roots and team cue at ordinary zoom. Include enemy views through disclosed fog. Save chronological clips with SHA, map, seat, action, heading and selected/unselected status.
 
 A release/hash/CPU pass is a milestone. Review, deployed identity and actual in-game function remain incomplete until recorded here; there is no cosmetic approval gate.
