@@ -52,7 +52,8 @@ The matched comparison restores each baseline's untouched original checkpoint:
 the 3,600-second ongoing match becomes a 2,705-second Ember elimination, and the
 2,236-second Ember result becomes a 1,564-second Azure result. Each candidate
 exactly repeats every order, notice, checkpoint and reset; command counts are
-681/548 and no command-rejection assertion fails. This retains the native
+680/547 and no command-rejection assertion fails. The raw comparison's larger
+681/548 totals count trace entries, including one restart marker each. This retains the native
 600-second checkpoint/fresh-policy continuation whenever a game reaches it.
 
 The normal PvE process case passes on the same candidate, with real paid
