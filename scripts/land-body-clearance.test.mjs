@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFile } from 'node:fs/promises';
+import { gunzipSync } from 'node:zlib';
 import { LAND_BODY_STUDY, pointSegmentDistanceSquared, segmentRectangleDistanceSquared,
   sweptStaticBodyContacts, sweptBodyPairMargin } from './land-body-clearance.mjs';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
@@ -113,4 +115,13 @@ test('study retains finite-deadline unfinished actors instead of labeling pendin
   const run = await runLandBodyCase(LAND_BODY_CASES[2], { maxTicks: 1 });
   assert.equal(run.arrived, 0); assert.equal(run.ticks, 1);
   assert.ok(run.actors.every(u => u.arrivalTick === null && u.pathIndex < u.pathLength));
+});
+
+test('Food Tools content migration preserves retained pre-technology body input identity and complete geometry', async () => {
+  const record = JSON.parse(gunzipSync(await readFile(new URL('../docs/qa-evidence/ordinary-move-static-clearance-2026-10-04/substeps.json.gz', import.meta.url)))).records[0];
+  const run = await runLandBodyCase(LAND_BODY_CASES[0], { initialCheckpoint: record.initialCheckpoint });
+  const { sourceSha256: priorSource, ...prior } = record.runs[0];
+  const { sourceSha256: currentSource, ...current } = run;
+  assert.notEqual(currentSource, priorSource, 'the new content migration is a different exact production source');
+  assert.deepEqual(current, prior, 'supplied checkpoint hash, generations, commands, serial trace and all contacts remain exact');
 });

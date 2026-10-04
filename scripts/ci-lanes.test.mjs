@@ -38,6 +38,19 @@ test('each CPU lane and the full registry shard without omissions or duplicate j
   }
 });
 
+test('land body clearance tests execute once in full and fast CPU lanes', () => {
+  const filename = 'scripts/land-body-clearance.test.mjs';
+  const executing = lane => selected([`--lane=${lane}`]).selected
+    .filter(check => check.args[0] !== '--check' && check.args.includes(filename));
+  for (const lane of ['full', 'fast']) {
+    const entries = executing(lane);
+    assert.equal(entries.length, 1, lane);
+    assert.equal(entries[0].args[0], '--test', lane);
+    assert.equal(entries[0].args.filter(arg => arg === filename).length, 1, lane);
+  }
+  assert.equal(executing('simulation').length, 0);
+});
+
 test('unknown, repeated, malformed, and unsupported shard options fail', () => {
   for (const args of [
     ['--lane=unknown'], ['--lane='], ['--lane=fast', '--lane=fast'],

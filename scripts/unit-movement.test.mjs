@@ -3,13 +3,38 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
-import { canTraverseUnitStep, createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent } from '../src/unit-movement.mjs';
+import { canTraverseUnitStep, createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent,
+  ordinaryMoveBodyRadius, canTraverseStaticBodySegment, createClearanceMoveGoalPoint } from '../src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from '../src/unit-obstacle-detour.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { farmHarvestNode, farmBuildingId } from '../src/farm-harvest.mjs';
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+
+test('static circle sweeps reject a legal center grazing a tile, allow tangency and fail closed before malformed-grid queries', () => {
+  const open = c => c !== 35;
+  assert.equal(canTraverseStaticBodySegment({ x: .08, z: .12 }, { x: .001, z: .001 }, .22, 8, 8, open), false);
+  assert.equal(canTraverseStaticBodySegment({ x: .22, z: .4 }, { x: .22, z: .6 }, .22, 8, 8, open), true);
+  for (const [radius, w, h] of [[NaN, 8, 8], [-1, 8, 8], [.51, 8, 8], [.22, 0, 8], [.22, 8, 1.1]])
+    assert.equal(canTraverseStaticBodySegment({ x: 0, z: 0 }, { x: .1, z: .1 }, radius, w, h,
+      () => { throw new Error('malformed bounds must not query occupancy'); }), false);
+});
+test('an old overlapping pose may only escape monotonically in a bounded substep without introducing another penetration', () => {
+  const a = { x: .05, z: .5 }, open = c => c !== 35;
+  assert.equal(canTraverseStaticBodySegment(a, { x: .12, z: .5 }, .22, 8, 8, open), false);
+  assert.equal(canTraverseStaticBodySegment(a, { x: .12, z: .5 }, .22, 8, 8, open, { allowEscape: true }), true);
+  for (const b of [{ x: .01, z: .5 }, { x: .05, z: .6 }, { x: .4, z: .5 }])
+    assert.equal(canTraverseStaticBodySegment(a, b, .22, 8, 8, open, { allowEscape: true }), false);
+  assert.equal(canTraverseStaticBodySegment({ x: .4, z: .5 }, { x: .6, z: .5 }, .5, 8, 8,
+    c => c !== 35 && c !== 37, { allowEscape: true }), false);
+});
+test('long planned320 rectangular sweeps query the route neighborhood instead of its bounding rectangle', () => {
+  let queries = 0;
+  assert.equal(canTraverseStaticBodySegment({ x: -159.5, z: -127.5 }, { x: 159.5, z: 127.5 }, .35,
+    320, 256, () => { queries++; return true; }), true);
+  assert.ok(queries < 16000 && queries < 320 * 256, `bounded route-neighborhood queries: ${queries}`);
+});
 
 test('route results preserve a selected multi-goal tail and weighted original cost', () => {
   const unit={generation:2,orderRevision:3}, levels=new Uint8Array(16);
@@ -71,7 +96,8 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     spatialBucketTeamNext:teamNext,spatialBucketOfUnit:bucketOf,
     spatialBucketColumn:x=>Math.max(0,Math.min(bucketColumns-1,Math.floor((x+half)/bucketSize))),
     spatialBucketRow:z=>Math.max(0,Math.min(bucketColumns-1,Math.floor((z+half)/bucketSize))),
-    elevationLevelByCell:levels,canTraverseUnitStep,canTraverseFlatUnitSegment,findStationaryWorkerDetour,SEPARATION_DIAGNOSTICS_ENABLED:false,
+    elevationLevelByCell:levels,canTraverseUnitStep,ordinaryMoveBodyRadius,canTraverseStaticBodySegment,createClearanceMoveGoalPoint,
+    canTraverseFlatUnitSegment,findStationaryWorkerDetour,SEPARATION_DIAGNOSTICS_ENABLED:false,
     tickNumber:1,dirty:false,worldToCell:cell,cellToWorld:point,isWalkable:walkable,
     resourceNodeStates:new Map([['berries',{x,z:-1,hp:1}]]),buildingsById:new Map(),farmHarvestNode,farmBuildingId,
     enqueueRouteRepairs:list=>repairs.push(...list),spreadInteractingUnits(){},advanceQueuedWaypoints(){},updateWildlifeMotion(){}});

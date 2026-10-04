@@ -1,3 +1,5 @@
+import { pointSegmentDistanceSquared, segmentRectangleDistanceSquared } from '../src/unit-movement.mjs';
+export { pointSegmentDistanceSquared, segmentRectangleDistanceSquared };
 // Diagnostic hypotheses only: no runtime imports or production radius adoption.
 // World units equal tiles. Each circle is centered on the authoritative x/z.
 // These authored sizes are not inferred from sprite bounds or soft separation.
@@ -9,34 +11,6 @@ const MAX_STUDY_STEP = .25; // Current largest production land step is .15.
 const finitePoint = p => p && Number.isFinite(p.x) && Number.isFinite(p.z);
 function validateSegment(a, b) {
   if (!finitePoint(a) || !finitePoint(b)) throw new TypeError('finite movement segment required');
-}
-export function pointSegmentDistanceSquared(p, a, b) {
-  validateSegment(a, b);
-  if (!finitePoint(p)) throw new TypeError('finite body position required');
-  const dx = b.x - a.x, dz = b.z - a.z, length = dx * dx + dz * dz;
-  const t = length ? Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.z - a.z) * dz) / length)) : 0;
-  return (p.x - a.x - t * dx) ** 2 + (p.z - a.z - t * dz) ** 2;
-}
-export function segmentRectangleDistanceSquared(a, b, rectangle) {
-  validateSegment(a, b);
-  const { minX, minZ, maxX, maxZ } = rectangle;
-  if (![minX, minZ, maxX, maxZ].every(Number.isFinite) || minX > maxX || minZ > maxZ)
-    throw new TypeError('finite ordered rectangle required');
-  // Closed-rectangle segment intersection (including tangencies).
-  let enter = 0, exit = 1;
-  for (const [start, delta, low, high] of [[a.x, b.x - a.x, minX, maxX], [a.z, b.z - a.z, minZ, maxZ]]) {
-    if (delta === 0) { if (start < low || start > high) { enter = Infinity; break; } }
-    else {
-      const t1 = (low - start) / delta, t2 = (high - start) / delta;
-      enter = Math.max(enter, Math.min(t1, t2)); exit = Math.min(exit, Math.max(t1, t2));
-    }
-  }
-  if (enter <= exit) return 0;
-  const pointRectangle = p => Math.max(minX - p.x, 0, p.x - maxX) ** 2
-    + Math.max(minZ - p.z, 0, p.z - maxZ) ** 2;
-  return Math.min(pointRectangle(a), pointRectangle(b),
-    ...[[minX, minZ], [minX, maxZ], [maxX, minZ], [maxX, maxZ]]
-      .map(([x, z]) => pointSegmentDistanceSquared({ x, z }, a, b)));
 }
 export function sweptStaticBodyContacts(a, b, radius, width, height, isWalkable) {
   validateSegment(a, b);
