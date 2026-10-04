@@ -1,6 +1,5 @@
 // Fixed-tick AI regression adapter. Authoritative command, snapshot, simulation
-// and checkpoint function bodies remain intact. I/O scheduling and the transport
-// instance nonce are fixed for CPU replay; real process/epoch recovery is separate.
+// and checkpoint function bodies remain intact; only I/O scheduling is replaced.
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -35,7 +34,10 @@ export async function createPveHeadlessFixture(map, identity = {}) {
     let source = original.replace(/from '(\.\/?[^']+)'/g,
       (_, name) => `from '${pathToFileURL(path.resolve(root, name)).href}'`);
     source = replaceExactly(source, 'const ROOT = path.dirname(fileURLToPath(import.meta.url));', `const ROOT = ${JSON.stringify(root)};`);
-    source = replaceExactly(source, "const SERVER_INSTANCE_ID = randomBytes(16).toString('base64url');", "const SERVER_INSTANCE_ID = 'pve-headless-replay';");
+    // Replay controls process identity as an input, rather than stripping packet
+    // fields during equality checks. Native restart uses the unchanged entropy.
+    source = replaceExactly(source, "const SERVER_INSTANCE_ID = randomBytes(16).toString('base64url');",
+      `const SERVER_INSTANCE_ID = ${JSON.stringify(identity.serverInstanceId ?? 'headless-replay-instance')};`);
     source = replaceExactly(source, 'setImmediate(() => processMovePlanningSlice(job));', 'replayPlanningCallbacks.push(() => processMovePlanningSlice(job));');
     source = replaceExactly(source, 'scheduleSimulationTick();', '/* fixed-tick AI driver */', 2);
     source = replaceExactly(source, "process.on('SIGTERM', () => shutdown('SIGTERM'));", '');

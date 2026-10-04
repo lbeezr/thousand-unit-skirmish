@@ -28,6 +28,7 @@ import { unfinishedRefund, buildingRepairStep } from './src/base-lifecycle.mjs';
 import { productionAction } from './src/production-actions.mjs';
 import { teamPopulation } from './src/population.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION, DEFAULT_FACTION_ID, UNIT_WIRE_IDS, missingGameplayPrerequisites } from './src/gameplay-definitions.mjs';
+import { validBuildingOrientation, orderedBuildingExitCells, legalBuildingExitCells, nearbyBuildingExitCell } from './src/building-orientation.mjs';
 import { validateMapAudioReference } from './src/audio-event-profile.mjs';
 import { createServer } from 'node:http';
 import { createHash, randomBytes } from 'node:crypto';
@@ -72,7 +73,8 @@ import { activeWallBuildOrder } from './src/wall-build-order.mjs';
 import { constructionWorkArea, constructionAssignment, unfinishedConstructionSites, validConstructionWorkArea } from './src/construction-work-intent.mjs';
 import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition } from './src/palisade-gate.mjs';
 import { palisadeConnections } from './src/palisade-profile.mjs';
-import { canTraverseUnitStep } from './src/unit-movement.mjs';
+import { canTraverseUnitStep, createUnitRouteResult, unitRoutePathCost,
+  unitRouteResultIsCurrent } from './src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
@@ -2746,7 +2748,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
       attackers: buildingAttackers.get(center.id) || 0,
     })),
     buildings: viewBuildings.map((building) => ({
-      id: building.id, team: building.team, type: building.type,
+      id: building.id, team: building.team, type: building.type, orientation: building.orientation ?? 0,
       ...(building.type === 'farm' ? { harvestStock: building.harvestStock,
         harvestCapacity: BUILDING_DEFINITIONS.farm.harvest.stock } : {}),
       ...(building.type === 'palisade-gate' ? { gateOpen: building.gateOpen } : {}),
@@ -3107,7 +3109,8 @@ function validateMatchCheckpoint(snapshot) {
     const rules = buildingRulesFor(building?.type);
     assertSnapshot(building && integerIn(building.id, 1, Number.MAX_SAFE_INTEGER)
       && !buildingIds.has(building.id) && integerIn(building.team, 0, 1)
-      && rules && validGateState(building) && finite(building.x) && finite(building.z)
+      && rules && validGateState(building) && validBuildingOrientation(building.type, building.orientation, BUILDING_DEFINITIONS)
+      && finite(building.x) && finite(building.z)
       && integerIn(building.rallyCell, -1, cellCount - 1)
       && Array.isArray(building.footprint) && building.footprint.length > 0
       && building.footprint.every((cell) => integerIn(cell, 0, cellCount - 1))
@@ -4060,10 +4063,14 @@ function serviceMovePlanningForTick(stepTick) {
 
 function applyPlannedMoveAssignment(job, assignment) {
   const { unit, revision } = assignment;
-  if (unit.orderRevision !== revision || units[unit.id] !== unit || unit.hp <= 0) return false;
+  const result = assignment.routeResult;
+  if (!result || result.status === 'deferred' || unit.orderRevision !== revision
+    || units[unit.id] !== unit || unit.hp <= 0
+    || job.epoch !== movePlanningEpoch
+    || !unitRouteResultIsCurrent(result, unit, movePlanningEpoch, navigationRevision)) return false;
   const destination = nearestOpenCell(assignment.destination);
-  const path = assignment.path || [];
-  const alreadyInDestinationCell = path.length === 0
+  const path = result.path;
+  const alreadyInDestinationCell = result.originalPathLength === 0
     && nearestOpenCell(worldToCell(unit.x, unit.z)) === destination;
   const start = worldToCell(unit.x, unit.z);
   const goal = cellToWorld(destination);
@@ -4086,7 +4093,9 @@ function applyPlannedMoveAssignment(job, assignment) {
   job.firstAppliedTick ??= committedTick;
   job.lastAppliedTick = committedTick;
   assignment.routeOutcome = {
-    nonEmptyPath: path.length > 0,
+    status: result.status, selectedGoalCell: result.selectedGoalCell,
+    originalPathLength: result.originalPathLength, originalCost: result.originalCost,
+    nonEmptyPath: result.originalPathLength > 0,
     alreadyInDestinationCell,
     routeFailure: path.length === 0 && !alreadyInDestinationCell,
   };
@@ -4127,6 +4136,8 @@ function completeMovePlanningJob(job) {
   let nonEmptyPaths = 0;
   let alreadyInDestinationCell = 0;
   let routeFailures = 0;
+  const routeStatuses = { ready: 0, arrived: 0, unreachable: 0 };
+  let originalRouteCost = 0, originalRouteWaypoints = 0;
   for (const assignment of job.assignments) {
     const { unit, revision } = assignment;
     if (!assignment.applied || unit.orderRevision !== revision
@@ -4135,6 +4146,9 @@ function completeMovePlanningJob(job) {
     if (assignment.routeOutcome.nonEmptyPath) nonEmptyPaths++;
     if (assignment.routeOutcome.alreadyInDestinationCell) alreadyInDestinationCell++;
     if (assignment.routeOutcome.routeFailure) routeFailures++;
+    routeStatuses[assignment.routeOutcome.status]++;
+    originalRouteCost += assignment.routeOutcome.originalCost ?? 0;
+    originalRouteWaypoints += assignment.routeOutcome.originalPathLength;
   }
   const finalizationMs = performance.now() - finalizationStartedAt;
   job.finalizationMs = finalizationMs;
@@ -4147,7 +4161,7 @@ function completeMovePlanningJob(job) {
       orderId: job.orderId, team: job.player.team, mode: job.mode,
       unitCount: appliedCount, uniqueStartCells: job.groups.length,
       uniqueDestinationCells: job.reservedDestinations.size, nonEmptyPaths,
-      alreadyInDestinationCell, routeFailures,
+      alreadyInDestinationCell, routeFailures, routeStatuses, originalRouteCost, originalRouteWaypoints,
       searchCount: job.diagnostics.searchCount, expandedCells: job.diagnostics.expandedCells,
       discoveredCells: job.diagnostics.discoveredCells, elapsedMs,
       planningWorkMs: Number(job.planningWorkMs.toFixed(3)),
@@ -4292,10 +4306,19 @@ function processMovePlanningSlice(job) {
         unit.orderRevision === revision && units[unit.id] === unit && unit.hp > 0
       ));
       if (activeAssignments.length > 0) {
-        const path = findPathAStar(nearestOpenCell(currentGroup.startCell), destination, job.diagnostics);
+        const startCell = nearestOpenCell(currentGroup.startCell);
+        const path = findPathAStar(startCell, destination, job.diagnostics);
+        if (path == null) { currentGroup.nextGoal--; break; }
+        const goal = cellToWorld(destination);
+        const originalCost = unitRoutePathCost(startCell, path, MAP_WIDTH, elevationLevelByCell);
         for (const assignment of activeAssignments) {
           assignment.path = path;
           assignment.plannedNavigationRevision = navigationRevision;
+          assignment.routeResult = createUnitRouteResult({ unit: assignment.unit, revision: assignment.revision,
+            epoch: job.epoch, navigationRevision, startCell, path,
+            startIsGoal: nearestOpenCell(worldToCell(assignment.unit.x, assignment.unit.z)) === destination,
+            arrived: Math.hypot(assignment.unit.x - goal.x, assignment.unit.z - goal.z) < 0.02,
+            originalCost });
           applyPlannedMoveAssignment(job, assignment);
         }
       }
@@ -4381,6 +4404,20 @@ function workerFlowPath(unit, path) {
     MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS);
 }
 
+function applyWorkerFlowRoute(unit, startCell, field, path, arrived) {
+  const result = createUnitRouteResult({ unit, epoch: movePlanningEpoch, navigationRevision,
+    startCell, path, startIsGoal: Boolean(field && (field.goals?.has(startCell) ?? field.goal === startCell)), arrived,
+    originalCost: unitRoutePathCost(startCell, path, MAP_WIDTH, elevationLevelByCell) });
+  if (!unitRouteResultIsCurrent(result, unit, movePlanningEpoch, navigationRevision)
+    || result.status === 'deferred') return result;
+  // Score and describe the original route before the resource-owned reduction.
+  result.path = workerFlowPath(unit, result.path);
+  unit.moveGoalCell = result.selectedGoalCell;
+  unit.path = result.path;
+  unit.pathIndex = 0;
+  return result;
+}
+
 function routeWorkerToDropoff(unit) {
   const start = nearestOpenCell(worldToCell(unit.x, unit.z));
   const component = walkableComponents[start];
@@ -4395,10 +4432,8 @@ function routeWorkerToDropoff(unit) {
   }
   unit.dropoffBuildingId = best?.candidate.id ?? null;
   unit.dropoffNavigationRevision = navigationRevision;
-  unit.moveGoalCell = best?.field.goal ?? -1;
-  // Score the original flow routes above; shorten only the selected leg.
-  unit.path = best ? workerFlowPath(unit, best.path) : [];
-  unit.pathIndex = 0;
+  return applyWorkerFlowRoute(unit, start, best?.field, best?.path ?? [],
+    Boolean(best && distanceToBuildingEdge(unit, best.candidate) <= WORKER_INTERACTION_RANGE));
 }
 
 function workerAtDropoff(unit) {
@@ -4425,23 +4460,21 @@ function routeWorker(unit, phase, node) {
   unit.orderRevision++;
   unit.movePlanningPending = false;
   unit.gatherPhase = phase;
-  if (phase === 'to-base') { routeWorkerToDropoff(unit); return; }
+  if (phase === 'to-base') return routeWorkerToDropoff(unit);
   if (node.sourceBuildingId !== undefined) {
     const start = nearestOpenCell(worldToCell(unit.x, unit.z));
     const component = walkableComponents[start];
     const building = buildingsById.get(node.sourceBuildingId);
     const goals = buildingAccessCells(building.footprint).filter(cell => walkableComponents[cell] === component);
     const field = goals.length ? getAttackFlowFieldForGoals(goals, `farm:${building.id}:${component}`) : null;
-    unit.moveGoalCell = field?.goal ?? -1;
-    unit.path = field ? workerFlowPath(unit, pathFromAttackFlow(start, field)) : [];
-    unit.pathIndex = 0;
-    return;
+    return applyWorkerFlowRoute(unit, start, field, field ? pathFromAttackFlow(start, field) : [],
+      distanceToBuildingEdge(unit, building) <= WORKER_INTERACTION_RANGE);
   }
   const target = node;
-  unit.moveGoalCell = worldToCell(target.x, target.z);
   const field = getAttackFlowField(worldToCell(target.x, target.z));
-  unit.path = field ? workerFlowPath(unit, pathFromAttackFlow(worldToCell(unit.x, unit.z), field)) : [];
-  unit.pathIndex = 0;
+  const start = worldToCell(unit.x, unit.z);
+  return applyWorkerFlowRoute(unit, start, field, field ? pathFromAttackFlow(start, field) : [],
+    Math.hypot(unit.x - target.x, unit.z - target.z) <= WORKER_INTERACTION_RANGE);
 }
 
 function forestOpenAccessCells(cell) {
@@ -4474,11 +4507,11 @@ function routeForestWorker(unit, phase, cell) {
       .filter((goal) => walkableComponents[goal] === componentId);
     if (goals.length > 0) field = getAttackFlowFieldForGoals(goals, `forest:${cell}:${componentId}`);
   } else {
-    routeWorkerToDropoff(unit); return;
+    return routeWorkerToDropoff(unit);
   }
-  unit.moveGoalCell = field?.goal ?? -1;
-  unit.path = field ? workerFlowPath(unit, pathFromAttackFlow(worldToCell(unit.x, unit.z), field)) : [];
-  unit.pathIndex = 0;
+  const start = worldToCell(unit.x, unit.z), target = cellToWorld(cell);
+  return applyWorkerFlowRoute(unit, start, field, field ? pathFromAttackFlow(start, field) : [],
+    Math.hypot(unit.x - target.x, unit.z - target.z) <= WORKER_INTERACTION_RANGE);
 }
 
 function assignForestGather(player, command) {
@@ -5870,6 +5903,9 @@ function buildBuilding(player, command) {
     resumeBuildingConstruction(player, command);
     return;
   }
+  if (!validBuildingOrientation(command.buildingType, command.orientation, BUILDING_DEFINITIONS)) {
+    rejectBuild(player, 'INVALID BUILDING ORIENTATION', command); return;
+  }
   if (command.buildingType === 'palisade-wall') {
     const x = Number(command.x), z = Number(command.z);
     if (!Number.isFinite(x) || !Number.isFinite(z) || Math.abs(x) >= MAP_HALF_X || Math.abs(z) >= MAP_HALF_Z) {
@@ -5939,7 +5975,7 @@ function buildBuilding(player, command) {
   const center = cellToWorld(centerCell);
   const id = nextBuildingId;
   const building = {
-    id, team: player.team, type: command.buildingType, x: center.x, z: center.z,
+    id, team: player.team, type: command.buildingType, x: center.x, z: center.z, orientation: command.orientation ?? 0,
     footprint, hp: BUILDING_DEFINITIONS[command.buildingType].maxHp, progress: 0, complete: false, queue: 0, productionQueue: [], trainingRemaining: 0,
     productionBlocked: false, rallyCell: -1,
     ...(command.buildingType === 'farm' ? { harvestStock: 0 } : {}),
@@ -6081,7 +6117,9 @@ function findProductionSpawnCell(building) {
       { reservedCells: waterUnitRuntime.reservations(units) }).accessAt(worldToCell(building.x, building.z));
     return berth.valid ? berth.spawnCell : -1;
   }
-  const accessCells = buildingAccessCells(building.footprint);
+  const legalExits = legalBuildingExitCells(building.footprint, buildingAccessCells(building.footprint), MAP_WIDTH,
+    (inside, outside) => canTraverseElevation(elevationLevelByCell, inside, outside));
+  const accessCells = orderedBuildingExitCells(building, legalExits, MAP_WIDTH, MAP_HEIGHT);
   if (accessCells.length === 0) return -1;
   const teamSpawn = spawnByTeam[building.team];
   const componentId = teamSpawn
@@ -6090,11 +6128,13 @@ function findProductionSpawnCell(building) {
   const occupied = new Set();
   for (const unit of units) if (unit.hp > 0) occupied.add(worldToCell(unit.x, unit.z));
   for (const node of reservedResourceNodes()) occupied.add(worldToCell(node.x, node.z));
+  // Prefer a free legal threshold before searching farther around the building.
   for (const cell of accessCells) {
-    const spawnCell = findAvailableCellNear(cell, componentId, occupied, 4);
-    if (spawnCell >= 0) return spawnCell;
+    if (walkableComponents[cell] === componentId && !occupied.has(cell)) return cell;
   }
-  return -1;
+  return nearbyBuildingExitCell(accessCells.filter(cell => walkableComponents[cell] === componentId), occupied, MAP_WIDTH,
+    (from, to) => to >= 0 && to < CELL_COUNT && walkableComponents[to] === componentId
+      && canTraverseUnitStep(from, to, MAP_WIDTH, elevationLevelByCell, isWalkable));
 }
 
 function trainArcher(player, command) {

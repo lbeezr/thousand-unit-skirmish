@@ -6,7 +6,7 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { selectionContext } from '../src/selection-context.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from '../src/combat-stance-ui.mjs';
-import { updateSelectionPortrait, workerRoleFacts, WORKER_PORTRAITS } from '../src/selection-portrait.mjs';
+import { updateSelectionPortrait, farmSelectionFacts, workerRoleFacts, WORKER_PORTRAITS } from '../src/selection-portrait.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
 import { setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from '../src/hud-layout.mjs';
@@ -47,9 +47,10 @@ function fixture(team = 0) {
   w.ui = {};
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
   Object.assign(w, { ...economyClientBindings(), ...wildlifeClientBindings(),
-    selectionContext, updateSelectionPortrait, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
+    selectionContext, updateSelectionPortrait, farmSelectionFacts, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
     applyUnitStances, updateCombatStanceControls, bindCombatStanceControls, socket: { readyState: 1 },
     castPreview: true, humanRosterPreview: true, roomPageUrl: new URL('http://localhost/'),
+    matchMedia: () => ({ matches: false }),
     unitSpriteRuntime: { roleForUnit: unit => unit.team === 0 ? 'human' : 'boughward-worker' },
     researchAction, researchOptions, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip,
     formatResourceStock, formatResourceRequirement,
@@ -146,7 +147,7 @@ for (const team of [0, 1]) test(`seat ${team}: utility selection describes its a
   }
   const farm = { id: 50, team, type: 'farm', complete: true, progress: 1, hp: 600, maxHp: 600, harvestStock: 0 };
   f.select([], farm); f.w.updateCommandUI();
-  assert.match(f.w.ui.selectedBuildingProduction.textContent, /exhausted.*new Farm/);
+  assert.match(f.w.ui.selectedBuildingProduction.textContent, /0 \/ 200 food remaining.*Exhausted/);
   assert.match(f.w.ui.commandHint.textContent, /Clear exhausted Farm.*build a new Farm/);
   const gate = { id: 50, team, type: 'palisade-gate', complete: true, progress: 1, hp: 300, maxHp: 300, gateOpen: true };
   f.select([], gate); assert.match(f.w.ui.selectedBuildingProduction.textContent, /Gate open.*both teams/);
@@ -504,6 +505,55 @@ test('clearing a Worker while notes are open hides stale identity and restores v
   f.escape();
   assert.equal(f.w.commandDock.hidden, true);
   assert.equal(f.d.activeElement, f.w.dockToggle);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: Farm identity opens accurate compact details and preserves selection audio`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const button = f.bar.querySelector('[data-selection-portrait]');
+  const farm = { id: 10, team, type: 'farm', complete: true, hp: 600, maxHp: 600,
+    harvestStock: 173.5, progress: 1, productionQueue: [] };
+  const events = [];
+  f.w.audio.playEvent = event => events.push(event);
+  f.w.eval(fn('selectBuilding', 'pickFriendly'));
+  f.w.latestBuildings = [farm]; f.w.selectBuilding(farm);
+  assert.deepEqual(JSON.parse(JSON.stringify(events)), [{ cue: 'select', buildingType: 'farm' }]);
+  assert.equal(button.hidden, false);
+  assert.match(button.getAttribute('aria-label'), /Farm · Food plot.*open structure details/);
+  assert.equal(button.querySelector('img').getAttribute('src'), '/assets/ui/icons/food.svg');
+  assert.equal(button.dataset.codexEntry, 'building.farm');
+  assert.equal(f.w.commandDock.hidden, true, 'selection keeps details dismissible');
+  f.click(button);
+  assert.equal(f.w.commandDock.dataset.activePanel, 'selection');
+  const art = f.d.querySelector('[data-building-art]');
+  assert.equal(art.hidden, false);
+  assert.match(art.textContent, /Food symbol.*illustration unavailable.*temporary House model/);
+  const study = art.querySelector('a');
+  assert.match(study.href, /4b626295510f761b0307aefe4c78c67c79eeabf5.*farm-reference-v1\.png$/);
+  assert.equal(study.target, '_blank'); assert.match(study.rel, /noopener/);
+  assert.match(f.d.querySelector('[data-building-description]').textContent, /planted food plot.*200 food.*deliver.*Mill, Storehouse or Town Center/);
+  assert.match(f.d.querySelector('[data-building-instruction]').textContent, /Select Workers.*right-click.*harvest/);
+  assert.match(f.w.ui.selectedBuildingProduction.textContent, /173 \/ 200 food remaining/);
+  assert.equal(f.w.ui.selectedBuildingState.textContent, 'READY');
+  f.escape(); assert.equal(f.d.activeElement, button);
+  farm.harvestStock = 0; f.select([], farm);
+  assert.equal(f.w.ui.selectedBuildingState.textContent, 'EXHAUSTED');
+  assert.match(f.w.ui.selectedBuildingProduction.textContent, /0 \/ 200.*Exhausted/);
+  assert.match(f.d.querySelector('[data-building-instruction]').textContent, /Clear exhausted Farm.*new Farm.*No regrowth/);
+  farm.complete = false; farm.progress = .4; f.select([], farm);
+  assert.equal(f.w.ui.selectedBuildingState.textContent, 'BUILDING · 40%');
+  assert.match(f.d.querySelector('[data-building-instruction]').textContent, /finish construction/);
+  assert.doesNotMatch(f.w.ui.selectedBuildingProduction.textContent, /remaining|Exhausted/);
+  f.w.matchMedia = () => ({ matches: true }); farm.complete = true; farm.harvestStock = 100; f.select([], farm);
+  assert.match(f.d.querySelector('[data-building-instruction]').textContent, /choose Gather \/ move.*tap this Farm.*harvest/);
+  f.click(button); study.focus(); f.w.updateSelectionUI();
+  assert.equal(f.d.activeElement, study, 'live stock updates preserve the source-study link and focus');
+  farm.team = 1 - team; f.select([], farm);
+  assert.equal(button.hidden, true); assert.equal(art.hidden, true);
+  assert.equal(f.w.ui.selectedBuildingCard.hidden, true, 'enemy stock and assignment instructions stay hidden');
+  assert.equal(f.d.activeElement, f.d.querySelector('#dock-tab-selection'), 'hidden Farm link restores visible panel focus');
+  farm.team = team; farm.hp = 0; f.select([], farm); assert.equal(button.hidden, true);
+  f.select([team * 2]); assert.equal(art.hidden, true);
+  assert.equal(f.d.querySelector('[data-building-description]').hidden, true);
 });
 
 for (const team of [0, 1]) test(`seat ${team}: Barracks portrait matches lifecycle/team art and opens existing structure details`, t => {

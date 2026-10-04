@@ -97,7 +97,7 @@ for (const team of [0, 1]) test(`Return cargo uses Mill for food and rejects woo
     creditResourceBalance, flushPendingForestClears() {},
   });
   vm.runInContext(economyServerFunctions + ['commandUnitAt', 'commandUnits', 'clearAttackMoveOrder',
-    'workerDropoffCandidates', 'workerFlowPath', 'routeWorkerToDropoff', 'workerAtDropoff', 'assignReturnCargo',
+    'workerDropoffCandidates', 'workerFlowPath', 'applyWorkerFlowRoute', 'routeWorkerToDropoff', 'workerAtDropoff', 'assignReturnCargo',
     'stopGathering', 'ensureGatherWorkIntent', 'updateWorkerEconomy'].map(serverFunction).join('\n'), context);
   const order = () => context.assignReturnCargo({ team }, { type: 'returnCargo', ids: [0], unitGenerations: [3] });
   order();

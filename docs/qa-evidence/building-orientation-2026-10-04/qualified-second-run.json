@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "scope": "qualified-cloud-renderer-building-orientation",
+  "workflowRun": "https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37222291319",
+  "source": {
+    "revision": "8f4c3c7cae4c98dd6a3db99a0a7a79b9b1db1945",
+    "dirty": false
+  },
+  "release": {
+    "sourceRevision": "8f4c3c7cae4c98dd6a3db99a0a7a79b9b1db1945",
+    "digest": "sha256:a35bf831fbeb1df420923812419abe02b75cc98ea53e81e3191b283d24f036b4",
+    "files": 1211
+  },
+  "status": "failed",
+  "sandbox": "enabled",
+  "capability": "passed-WebGL2",
+  "movementFrames": 2,
+  "buildingFrames": 0,
+  "issues": [
+    {
+      "stage": "building-map",
+      "code": "execution-failed",
+      "systemCode": null,
+      "errorType": "Error",
+      "message": "Qualification failed during building-map"
+    }
+  ],
+  "finding": "The building-map stage attempted to publish a 64-square lab map into an ordinary room. Existing admission requires at least 160 square; capture now uses 160 square without overriding admission.",
+  "humanBuildingAppearanceReview": "unavailable"
+}

@@ -158,7 +158,8 @@ for(const team of [0,1])test(`seat ${team}: forest access keeps the actual selec
     const u=r.units.find(u=>u.team===team&&u.kind==='worker');
     Object.assign(u,{x:25.27,z:24.19});r.step();const cell=91*160+93,target=cell+1;
     command(r,u,{type:'gather',forestCell:cell});
-    assert.equal(u.path.length,1);assert.notEqual(u.path.at(-1),u.moveGoalCell,'flow reaches a different member of the goal set');
+    assert.equal(u.path.length,1);assert.equal(u.path.at(-1),u.moveGoalCell,'recorded goal follows the selected multi-goal tail');
+    assert.notEqual(u.moveGoalCell,90*160+93,'selected endpoint differs from the first forest access goal');
     const endpoint=u.path.at(-1),intent=structuredClone(u.workIntent);
     trackLeg(r,u,()=>u.gatherPhase==='gathering');
     assert.equal(u.gatherForestCell,target,'closest reachable group tree is the execution target');assert.deepEqual(u.workIntent,intent);
@@ -185,7 +186,7 @@ for(const team of [0,1])test(`seat ${team}: paid Farm perimeter routing preserve
     const farm=r.buildings.find(b=>b.type==='farm'&&b.complete),wood=r.wood[team];
     Object.assign(u,{x:25.27,z:24.19});r.step();
     command(r,u,{type:'gather',nodeId:`farm:${farm.id}`});
-    assert.equal(u.path.length,1);assert.notEqual(u.path.at(-1),u.moveGoalCell,'selected perimeter endpoint is preserved');
+    assert.equal(u.path.length,1);assert.equal(u.path.at(-1),u.moveGoalCell,'selected perimeter endpoint is recorded');
     trackLeg(r,u,()=>u.gatherPhase==='gathering');
     until(r,()=>r.food[team]===110,'real paid Farm harvest and deposit');
     assert.equal(r.wood[team],wood,'routing never changes the paid build cost');

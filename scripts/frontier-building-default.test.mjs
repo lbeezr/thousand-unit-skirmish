@@ -6,6 +6,7 @@ import vm from 'node:vm';
 import * as THREE from 'three';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { buildingPresentation } from '../src/gameplay-presentation.mjs';
+import { buildingOrientationAngle } from '../src/building-orientation.mjs';
 import { battlefieldCursor } from '../src/battlefield-cursor.mjs';
 import { attachBuildingSprite, buildingSpriteUrl } from '../src/building-sprites.mjs';
 import { barracksModelVisualState, buildingFinishedDetailsVisible } from '../src/building-visual-state.mjs';
@@ -58,15 +59,16 @@ test('normal factories use all eight Complete families and truthful per-state fa
   const context = vm.createContext({ ...wildlifeClientBindings(), THREE, scene, capturedBuildingVisuals, TEAM_HEX, BUILDING_DEFINITIONS, buildingPresentation,
     camera, renderer, raycaster: new THREE.Raycaster(), pointerNdc: new THREE.Vector2(),
     latestBuildings: [], buildingVisuals: new Map(), localTeam: 0, selectedBuildingId: null,
-    selectedIds: () => selectedIds, units: { worker: { kind: 'worker' }, military: { kind: 'infantry' } },
+    selectedIds: () => selectedIds, selectedWaterUnits: () => null,
+    units: { worker: { kind: 'worker' }, military: { kind: 'infantry' } },
     battlefieldCursor, pan: null, spaceDown: false, drag: null, movedPointer: false,
-    matchWinner: -1, buildPlacementActive: false, ui: {}, attackMoveMode: false,
+    matchWinner: -1, buildPlacementActive: false, ui: {}, attackMoveMode: false, persistentTargetMode: null,
     tapOrderArmed: false, cursorShift: false, cursorPointer: null,
     pickAt: (x, y, predicate, options) => { assert.equal(options.advance, false); return { unit: null }; },
     pickResourceNodeAt: () => null, pickForestCellAt: () => null, pickHarvestableTreeAt: () => null,
     dummy: new THREE.Object3D(), attachBuildingSprite, barracksModelVisualState, buildingFinishedDetailsVisible,
     frontierBuildingManifestUrl, frontierBuildingsPreview: null, createCapturedBuildingSprite,
-    groundHeight: () => 1.6, updateBuildingHealthIndicator() {}, updateBuildingProductionCue() {},
+    buildingOrientationAngle, groundHeight: () => 1.6, updateBuildingHealthIndicator() {}, updateBuildingProductionCue() {},
     createBuildingHealthIndicator: () => ({ group: new THREE.Group() }),
     createBuildingCombatFeedback: () => ({ targetRing: new THREE.Group(), impactFlash: new THREE.Group() }),
     createBuildingRallyMarker: () => new THREE.Group(),
@@ -83,6 +85,8 @@ test('normal factories use all eight Complete families and truthful per-state fa
     for (const entry of capturedBuildingVisuals) {
       updateCapturedBuildingSprite(entry.sprite, camera, entry.lifecycleInput);
       entry.fallbackRoot.visible = !entry.sprite.visible;
+      entry.fallbackRoot.rotation.y = entry.fallbackRoot.parent?.userData.buildingOrientationRoot
+        ? 0 : buildingOrientationAngle(entry.lifecycleInput?.orientation ?? 0);
     }
   };
   const settle = async predicate => {
@@ -213,6 +217,12 @@ test('normal factories use all eight Complete families and truthful per-state fa
     for (const type of families) assert.ok(fetched.some(url => url.includes(type + '-complete-view-01.png')));
     const houseTexture = textures.get('house'); let releases = 0;
     houseTexture.addEventListener('dispose', () => releases++);
+    const town = visuals.find(visual => visual.frontierCaptureEntry.lifecycleInput.type === 'town-center');
+    town.frontierCaptureEntry.lifecycleInput = { ...town.frontierCaptureEntry.lifecycleInput, orientation: 1, complete: false, progress: 0.1 };
+    town.captureEntry.lifecycleInput = town.frontierCaptureEntry.lifecycleInput;
+    step();
+    assert.equal(town.frontierCaptureEntry.fallbackRoot.rotation.y, Math.PI / 2);
+    assert.equal(town.captureEntry.fallbackRoot.rotation.y, 0, 'nested procedural Town Center rotates exactly once');
     const houses = visuals.filter(visual => visual.frontierCaptureEntry.sprite.userData.capturedBuildingArt.manifest.asset === 'house');
     disposeCapturedBuildingSprite(houses[0].frontierCaptureEntry.sprite);
     assert.equal(releases, 0, 'one owner cannot dispose another building\'s shared frame');

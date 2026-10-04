@@ -128,7 +128,11 @@ export async function replayContestedWood(team, { loop = null, opening = null, c
           const { cost, accepted } = await order(team, command, true);
           if (!accepted) continue;
           if (woodGather) {
-            for (const id of command.ids) assignedWood.add(`${id}:${observation.units.friendly.find(u=>u.id===id).generation}`);
+            for (const id of command.ids) {
+              const worker=observation.units.friendly.find(u=>u.id===id);
+              assert.equal(worker.cargo,0,'a new Wood-job witness starts with empty cargo');
+              assignedWood.add(key(worker));
+            }
             stages.woodGather ??= observation.tick;
           }
           if (gather) {

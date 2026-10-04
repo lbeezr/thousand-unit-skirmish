@@ -30,6 +30,9 @@ fallback destination; existing soldiers keep their orders.
   checked again for each attempt.
 - Construction and gathering commands never assign the same worker in one
   decision. Ordinary gather-first opening and tactical fairness remain intact.
+- Home housing uses an empty-cargo idle Worker or a gatherer within 12 units of
+  the observed home position. A distant gatherer with zero cargo can still be
+  traveling toward its first harvest; housing must let that journey deliver.
 
 The costs mirror the authoritative `BUILDING_RULES` in `server.mjs`; tests of
 actual construction and training protect this boundary. The server remains the

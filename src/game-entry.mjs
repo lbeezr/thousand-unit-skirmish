@@ -1,3 +1,4 @@
+import { buildingRotationSettings, mountBuildingRotationSettings } from './building-rotation-controls.mjs';
 import { createPveRoomUrl, mountPveEntry, pveEntryCapability } from './pve-entry.mjs';
 import { createNavigationSettings } from './navigation-settings.mjs';
 import { readAudioSettings } from './audio.mjs';
@@ -10,6 +11,7 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
     mountPveEntry();
   } } = {}) {
   const doc = win.document;
+  mountBuildingRotationSettings(doc, buildingRotationSettings);
   if (isGameEntry(win.location.href)) {
     doc.documentElement.dataset.entry = 'game';
     await loadGame();

@@ -20,12 +20,16 @@ for (const team of [0, 1]) test(`drop-off choice measures reachable routes and p
   });
   context.allMatchBuildings = () => context.buildings;
   vm.runInContext(economyServerFunctions + functions, context);
-  context.routeWorkerToDropoff(unit);
+  const route = context.routeWorkerToDropoff(unit);
   assert.equal(unit.dropoffBuildingId, 3, 'a shorter reachable route wins over a closer building across a long detour');
   assert.equal(unit.path.length, 1, 'only the chosen route is reduced after comparing original lengths'); assert.equal(unit.cargo, 10);
   assert.equal(unit.dropoffNavigationRevision, 4);
+  assert.equal(route.status, 'ready'); assert.equal(route.selectedGoalCell, unit.path.at(-1));
+  assert.equal(unit.moveGoalCell, route.selectedGoalCell); assert.equal(route.originalPathLength, 4);
+  assert.equal(route.originalCost, 300, 'original grid cost remains after the chosen route is reduced');
   context.walkableComponents.fill(1, 1);
-  context.routeWorkerToDropoff(unit);
+  const failed = context.routeWorkerToDropoff(unit);
+  assert.equal(failed.status, 'unreachable'); assert.equal(failed.originalCost, null);
   assert.equal(unit.moveGoalCell, -1, 'no reachable drop-off waits without depositing');
   assert.equal(unit.cargo, 10);
 });

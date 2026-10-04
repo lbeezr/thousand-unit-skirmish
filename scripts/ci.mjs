@@ -79,6 +79,8 @@ run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush edit
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default bindings and release dependencies');
 run(['--test', 'scripts/asset-readability.test.mjs'], 'Read-only asset catalog consuming the existing production sidecar');
+run(['--test', 'scripts/building-orientation.test.mjs', 'scripts/building-placement-preview.test.mjs', 'scripts/building-rotation-controls.test.mjs', 'scripts/building-orientation-client.test.mjs'], 'Manual building orientation, final-art ghost and input contracts');
+run(['scripts/building-orientation-scenario.mjs'], 'Paid building orientation authority, exits and cold recovery');
 run(['--test', 'scripts/catalog-barracks-scenario.test.mjs'], 'Catalog and paid Barracks adapter contracts (CPU observations)');
 run(['--test', 'scripts/oak-depletion-atlas-runtime.test.mjs'], 'Generic oak depletion atlas loading, fallback and registration');
 run(['--test', 'scripts/interactive-runtime-image.test.mjs'], 'Verified interactive image hash, dimensions and disposal');
@@ -161,7 +163,7 @@ run(['--test', 'scripts/renderer-capability.test.mjs'], 'WebGL2 capability repor
 run(['--test', 'scripts/browser-state-recovery.test.mjs', 'scripts/browser-resume-client.test.mjs', 'scripts/renderer-browser-resume-scenario.test.mjs'], 'Browser resume freshness, bounded presentation and input cleanup');
 run(['scripts/browser-state-refresh-scenario.mjs'], 'Native privacy-preserving full state refresh and reconnect');
 run(['--test', 'scripts/worker-work-cycle-capture.test.mjs', 'scripts/renderer-worker-route-scenario.test.mjs', 'scripts/renderer-worker-route-joint.test.mjs'], 'Packed and ordinary Worker route adapter contracts (CPU mocks)');
-run(['--test', 'scripts/renderer-qualification.test.mjs', 'scripts/renderer-feature-capture.test.mjs', 'scripts/renderer-capture-context.test.mjs', 'scripts/renderer-qualification-novice.test.mjs'], 'Packed-game renderer qualification contracts (CPU mocks)');
+run(['--test', 'scripts/renderer-qualification.test.mjs', 'scripts/renderer-feature-capture.test.mjs', 'scripts/renderer-capture-context.test.mjs', 'scripts/renderer-qualification-novice.test.mjs', 'scripts/renderer-qualification-building-orientation.test.mjs'], 'Packed-game renderer qualification contracts (CPU mocks)');
 run(['--test', 'scripts/temporary-resources.test.mjs'], 'Owned temporary resource cleanup');
 run(['--test', 'scripts/mature-settlement-scenario.test.mjs'], 'Paid settlement fixture ledger and layout');
 run(['scripts/mature-settlement-scenario.mjs'], 'Paid settlement construction, composition and recovery');

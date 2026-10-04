@@ -13,9 +13,11 @@ function fixture() {
   const w = dom.window, canvas = w.document.querySelector('canvas'), points = [], orders = [];
   canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: 100, height: 100 });
   canvas.setPointerCapture = () => {};
+  canvas.hasPointerCapture = () => false;
   const noop = () => {};
   Object.assign(w, {
-    ...wildlifeClientBindings(),
+    ...wildlifeClientBindings(), capturedCanvasPointerId: null, minimapPointerId: null,
+    selectionBox: w.document.createElement('div'),
     renderer: { domElement: canvas }, mapDefinition: {}, mapFitActive: true,
     matchMenu: { hidden: true }, helpPanel: { hidden: true }, scenarioBriefPanel: { hidden: true },
     appShell: null, localTeam: 0, selectedBuildingId: null, latestBuildings: [], selected: new Set([1, 2, 3, 4]),
@@ -37,6 +39,7 @@ function fixture() {
   });
   w.eval([
     wildlifeClientFunctionSource(source),
+    between('function captureBattlefieldPointer(', '\nlet spaceDown ='),
     between('function selectedIds()', 'function issueStationaryOrder('),
     between('function centerCameraOnSelection()', 'function centerCameraOnHomeBase('),
     between('function keyboardTargetIsEditing(', 'function clearHeldCameraKeys('),

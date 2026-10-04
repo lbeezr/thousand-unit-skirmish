@@ -9,6 +9,9 @@ forest [PR341](https://github.com/lbeezr/thousand-unit-skirmish/pull/341), Worke
 routes [PR330](https://github.com/lbeezr/thousand-unit-skirmish/pull/330) and
 browser resume [PR361](https://github.com/lbeezr/thousand-unit-skirmish/pull/361).
 Exact reviewed/merged source and check exits belong to this PR's receipt.
+The final candidate integrates main `20580007`, including building orientation
+and the distant-harvester housing guard from PR347, and universal route results
+plus the shared replay identity input from PR362. Those remain their owners' changes.
 
 ## Diagnosis and chosen scope
 
@@ -83,9 +86,10 @@ small rounded-stock residue.
 
 PR361 adds a random per-process `serverInstanceId` to peer snapshots. Exact CPU
 replay/fresh-fixture comparisons consequently failed solely in that transport
-field. AI's [headless adapter](../scripts/pve-headless-fixture.mjs) fixes that
-one nonce to `pve-headless-replay`, alongside its existing I/O scheduling
-adaptation. Production server randomness and browser reset/epoch semantics are
+field. The movement owner's merged PR362 already supplies an explicit identity
+input in the [headless adapter](../scripts/pve-headless-fixture.mjs), defaulting
+to `headless-replay-instance`. This slice consumes that hook and drops its
+duplicate constant patch. Production server randomness and browser reset/epoch semantics are
 unchanged; command, simulation, snapshot and checkpoint function bodies remain
 intact. This fixture does not qualify real process-instance/browser recovery.
 The failing comparison log is retained; complete corrected results are compared
@@ -98,8 +102,8 @@ Concrete consumer boundaries are recorded with
 and [browser resume](https://github.com/lbeezr/thousand-unit-skirmish/pull/361#issuecomment-5983162536).
 Forest `01a1072a`, Resource `01a101f7-5683` and universal movement `01a107ba`
 retain job selection/continuation, final approach, route tails, depot scoring,
-clearance and shared execution. This slice writes AI scenarios, the CPU fixture
-transport hook and its owning plan/evidence only. The new cases are imported by
+clearance and shared execution. This slice writes AI scenarios, consumes the CPU
+fixture identity hook and updates its owning plan/evidence only. The new cases are imported by
 the existing registered Worker-recovery check; central CI is unchanged.
 
 ## Remaining qualification

@@ -7,6 +7,8 @@ import { isShoreFish } from '../src/shore-fishing.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import * as THREE from 'three';
 import { constructionTargetingFixture } from './construction-targeting-fixture.mjs';
+import { farmSelectionFacts } from '../src/selection-portrait.mjs';
+import { battlefieldCursor } from '../src/battlefield-cursor.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
 const main = readFileSync(process.env.FARM_CLIENT_SOURCE || new URL('../src/main.js', import.meta.url), 'utf8');
 function fn(name) {
@@ -72,6 +74,80 @@ for (const team of [0, 1]) test(`seat ${team} harvests the Farm body through the
   assert.equal(f.context.pickResourceNodeAt(body.x, body.y), null, 'enemy Farm cannot supply food');
   farm.team = team; f.buildingVisuals.get(farm.id).group.visible = false;
   assert.equal(f.context.pickResourceNodeAt(body.x, body.y, { visibleOnly: true }), null, 'hidden body cannot be targeted');
+});
+
+for (const team of [0, 1]) test(`seat ${team} Farm hover names only visible food and the available Worker action`, () => {
+  const farm = { id: 10, team, type: 'farm', x: 0, z: 0, hp: 600, complete: true, harvestStock: 125 };
+  const f = constructionTargetingFixture({ team, buildings: [farm], selection: [0],
+    units: [{ id: 0, team, kind: 'worker', hp: 100, generation: 1 }] });
+  f.buildingVisuals.get(farm.id).group.add(new THREE.Mesh(new THREE.BoxGeometry(3, 2, 3), new THREE.MeshBasicMaterial()));
+  const body = f.screenAt(1.2, 0);
+  Object.assign(f.context, { farmSelectionFacts, battlefieldCursor, farmHarvestNode, isShoreFish,
+    mapDefinition: { resourceNodes: [], fogOfWar: false }, screenPoint: new THREE.Vector3(), groundHeight: () => 0,
+    selectedWildlife: () => null, pan: null, spaceDown: false, drag: null, movedPointer: false,
+    cursorPointer: { x: body.x + 10, y: body.y + 20 }, cursorShift: false, tapOrderArmed: false,
+    ui: {}, buildingSupportsRally: () => false,
+    setBattlefieldCursor: mode => { f.context.cursorMode = mode; } });
+  vm.runInContext([fn('pickResourceNodeAt'), fn('syncBattlefieldCursor')].join('\n'), f.context);
+  f.context.syncBattlefieldCursor(); assert.equal(f.context.cursorMode, 'gather');
+  assert.match(f.context.renderer.domElement.title, /Food plot.*125 \/ 200.*Select Workers.*right-click.*harvest/);
+  farm.harvestStock = 0; f.context.syncBattlefieldCursor();
+  assert.equal(f.context.cursorMode, 'unavailable');
+  assert.match(f.context.renderer.domElement.title, /0 \/ 200.*Exhausted.*Clear exhausted Farm/);
+  f.context.pickHarvestableTreeAt = () => ({ forestCell: 42 }); f.context.syncBattlefieldCursor();
+  assert.equal(f.context.cursorMode, 'gather-wood', 'existing visible tree target keeps context-order priority');
+  assert.equal(f.context.renderer.domElement.title, '');
+  f.context.pickHarvestableTreeAt = () => null;
+  farm.complete = false; f.context.syncBattlefieldCursor();
+  assert.equal(f.context.cursorMode, 'build-valid');
+  assert.match(f.context.renderer.domElement.title, /under construction.*no food available yet.*finish construction/);
+  farm.complete = true; farm.team = 1 - team; f.context.syncBattlefieldCursor();
+  assert.equal(f.context.cursorMode, 'unavailable');
+  assert.equal(f.context.renderer.domElement.title, 'Enemy Farm · Your Workers cannot harvest this plot.');
+  assert.doesNotMatch(f.context.renderer.domElement.title, /remaining|200|125/);
+  farm.team = team; farm.harvestStock = 125; f.selected.clear(); f.context.syncBattlefieldCursor();
+  assert.equal(f.context.cursorMode, 'select'); assert.match(f.context.renderer.domElement.title, /Select Workers/);
+  f.buildingVisuals.get(farm.id).group.visible = false; f.context.syncBattlefieldCursor();
+  assert.equal(f.context.renderer.domElement.title, '', 'hidden and unrelated targets clear stale Farm help');
+});
+
+for (const team of [0, 1]) test(`seat ${team} unfinished Farm hover mirrors actual serialized construction and movement modes`, () => {
+  for (const [mode, flags, cursor, type] of [
+    ['context', {}, 'build-valid', 'build'],
+    ['armed context', { tapOrderArmed: true }, 'build-valid', 'build'],
+    ['queued Move', { cursorShift: true }, 'move-queued', 'move'],
+    ['explicit Move', { persistentTargetMode: 'move' }, 'move', 'move'],
+    ['Patrol', { persistentTargetMode: 'patrol' }, 'move', 'patrol'],
+    ['Follow without leader', { persistentTargetMode: 'follow' }, 'unavailable', undefined],
+    ['attack-move', { attackMoveMode: true }, 'attack-move', 'attackMove'],
+  ]) {
+    const farm = { id: 10, team, type: 'farm', x: 0, z: 0, hp: 300, complete: false, harvestStock: 0 };
+    const f = constructionTargetingFixture({ team, buildings: [farm], selection: [0, 1],
+      units: [{ id: 0, team, kind: 'worker', hp: 100, generation: 5 },
+        { id: 1, team, kind: 'infantry', hp: 100, generation: 6 }],
+      ...(process.env.FARM_CLIENT_SOURCE ? { sourcePath: process.env.FARM_CLIENT_SOURCE } : {}) });
+    f.buildingVisuals.get(farm.id).group.add(new THREE.Mesh(new THREE.BoxGeometry(3, 2, 3), new THREE.MeshBasicMaterial()));
+    const body = f.screenAt(1.2, 0);
+    Object.assign(f.context, { farmSelectionFacts, battlefieldCursor, farmHarvestNode, isShoreFish,
+      mapDefinition: { resourceNodes: [], fogOfWar: false }, screenPoint: new THREE.Vector3(), groundHeight: () => 0,
+      selectedWildlife: () => null, pan: null, spaceDown: false, drag: null, movedPointer: false,
+      cursorPointer: { x: body.x + 10, y: body.y + 20 }, cursorShift: false, tapOrderArmed: false,
+      ui: { formationSelect: { value: 'box' } }, buildingSupportsRally: () => false,
+      moveMarker: { position: { set() {} }, material: { color: { setHex() {} } }, scale: { setScalar() {} } },
+      moveMarkerAge: 0, setBattlefieldCursor: value => { f.context.cursorMode = value; }, ...flags });
+    vm.runInContext([fn('pickResourceNodeAt'), fn('syncBattlefieldCursor'), fn('issueMove')].join('\n'), f.context);
+    f.context.syncBattlefieldCursor(); assert.equal(f.context.cursorMode, cursor, mode);
+    const title = f.context.renderer.domElement.title;
+    if (type === 'build') assert.match(title, /finish construction/, mode);
+    else assert.doesNotMatch(title, /finish construction|harvest\./, mode);
+    f.clickAt(1.2, 0, Boolean(flags.cursorShift));
+    assert.equal(f.payloads[0]?.type, type, `${mode}: hover must match the actual dispatched command`);
+    if (type) {
+      assert.deepEqual(f.payloads[0].ids, type === 'build' ? [0] : [0, 1]);
+      assert.deepEqual(f.payloads[0].unitGenerations, type === 'build' ? [5] : [5, 6]);
+    }
+    if (flags.cursorShift) assert.equal(f.payloads[0].queue, true);
+  }
 });
 
 for (const team of [0, 1]) test(`deterministic seat ${team} observes and harvests owned Farms without stealing`, () => {

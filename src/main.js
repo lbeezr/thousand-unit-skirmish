@@ -26,7 +26,7 @@ import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from './hud-layout.mjs';
 import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
-import { updateSelectionPortrait } from './selection-portrait.mjs';
+import { updateSelectionPortrait, farmSelectionFacts } from './selection-portrait.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
 import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel, fixedMatchArmySize } from './match-mode-controls.mjs';
@@ -40,6 +40,9 @@ import { farmHarvestNode } from './farm-harvest.mjs';
 import { isPalisade } from './palisade-gate.mjs';
 import { attachBuildingSprite } from './building-sprites.mjs';
 import { frontierBuildingManifestUrl } from './frontier-building-preview.mjs';
+import { buildingCanRotate, buildingOrientationAngle, turnBuildingOrientation } from './building-orientation.mjs';
+import { createBuildingPlacementPreview } from './building-placement-preview.mjs';
+import { buildingRotationSettings, buildingRotationKeyDirection, mountBuildingRotationControls } from './building-rotation-controls.mjs';
 import {
   createCapturedBuildingSprite, disposeCapturedBuildingSprite,
   updateCapturedBuildingSprite,
@@ -710,7 +713,10 @@ let lastUnitPickState = null;
 let moveMarkerAge = 0;
 let buildPlacementActive = false;
 let buildPlacementType = 'archery-range';
+let buildPlacementOrientation = 0;
 let buildPlacementPending = false;
+let pendingBuildingPlacement = null;
+let lastBuildingPlacementPointer = null;
 let pendingBuildOrderToken = null;
 let pendingBuildBaseline = new Set();
 const wallPlacementGesture = new WallPlacementGesture();
@@ -1380,6 +1386,7 @@ function createGameplayBuildingVisual(building) {
     const feedback = new Set([visual.outline, visual.productionLamp, visual.rallyMarker,
       visual.healthIndicator?.group, visual.combatFeedback?.targetRing, visual.combatFeedback?.impactFlash]);
     const fallbackRoot = new THREE.Group();
+    fallbackRoot.userData.buildingOrientationRoot = true;
     for (const child of [...visual.group.children]) {
       if (!feedback.has(child) && !child.userData.buildingTeamStandard) fallbackRoot.add(child);
     }
@@ -3359,37 +3366,21 @@ function animateArrowEffects(now) {
   if (impactCount) arrowImpactMesh.instanceMatrix.needsUpdate = true;
 }
 
-const placementGhost = new THREE.Group();
-const placementGhostMaterials = [
-  new THREE.MeshBasicMaterial({ color: 0x9cdb8a, transparent: true, opacity: 0.25, depthWrite: false }),
-  new THREE.MeshBasicMaterial({ color: 0x9cdb8a, transparent: true, opacity: 0.52, depthWrite: false }),
-];
-const ghostFootprint = new THREE.Mesh(new THREE.PlaneGeometry(ARCHERY_RANGE_SIZE, ARCHERY_RANGE_SIZE), placementGhostMaterials[0]);
-ghostFootprint.rotation.x = -Math.PI / 2;
-ghostFootprint.position.y = 0.025;
-placementGhost.add(ghostFootprint);
-const ghostFoundation = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.18, 2.8), placementGhostMaterials[1]);
-ghostFoundation.position.y = 0.13;
-placementGhost.add(ghostFoundation);
-const ghostRoof = new THREE.Mesh(new THREE.BoxGeometry(3.38, 0.13, 2.6), placementGhostMaterials[1]);
-ghostRoof.rotation.x = -0.12;
-ghostRoof.position.y = 1.3;
-placementGhost.add(ghostRoof);
-const ghostBarracksWalls = new THREE.Mesh(new THREE.BoxGeometry(2.35, 0.72, 2.35), placementGhostMaterials[1]);
-ghostBarracksWalls.position.y = 0.52;
-ghostBarracksWalls.visible = false;
-placementGhost.add(ghostBarracksWalls);
-const ghostBarracksRoofPanels = [-1, 1].map((side) => {
-  const panel = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.16, 3.12), placementGhostMaterials[1]);
-  panel.position.set(side * 0.72, 1.02, 0);
-  panel.rotation.z = -side * 0.42;
-  panel.visible = false;
-  placementGhost.add(panel);
-  return panel;
-});
-placementGhost.visible = false;
-placementGhost.renderOrder = 4;
+const buildingPlacementPreview = createBuildingPlacementPreview();
+const placementGhost = buildingPlacementPreview.group;
+placementGhost.userData.preview = buildingPlacementPreview;
 scene.add(placementGhost);
+
+mountBuildingRotationControls(document, buildingRotationSettings, rotateBuildPlacement);
+window.addEventListener('keydown', event => {
+  const direction = buildingRotationKeyDirection(event, buildingRotationSettings.get(), {
+    active: buildPlacementActive && buildingCanRotate(buildPlacementType, BUILDING_DEFINITIONS),
+    pending: buildPlacementPending, editing: keyboardTargetIsEditing(event),
+    dialogOpen: Boolean(document.querySelector('dialog[open]')),
+  });
+  if (direction) { event.preventDefault(); rotateBuildPlacement(direction); }
+});
+
 const wallPlacementGhost = createWallPlacementGhost();
 scene.add(wallPlacementGhost.group);
 
@@ -3790,6 +3781,7 @@ function updateSelectionUI({ refreshEconomy = true } = {}) {
     const training = Math.round(Math.max(0, Math.min(1, Number(selectedBuilding.trainingProgress) || 0)) * 100);
     ui.selectedBuildingName.textContent = selectedBuilding.home ? 'TOWN CENTER · HOME' : `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`;
     ui.selectedBuildingState.textContent = selectedBuilding.attackers > 0 ? 'UNDER ATTACK'
+      : selectedBuilding.complete && rule.harvest && selectedBuilding.harvestStock <= 0 ? 'EXHAUSTED'
       : selectedBuilding.complete ? 'READY' : `BUILDING · ${construction}%`;
     ui.selectedBuildingCard.dataset.danger = healthRatio <= 0.25 || selectedBuilding.attackers > 0 ? 'high'
       : healthRatio <= 0.55 ? 'medium' : 'none';
@@ -3802,9 +3794,7 @@ function updateSelectionUI({ refreshEconomy = true } = {}) {
       : selectedBuilding.productionBlocked ? 'Production blocked · clear the spawn area.'
         : queued > 0 ? `${queued.toLocaleString()} ${troop} queued · ${training}% training`
           : troop ? `Ready to train ${troop}.`
-            : rule.harvest ? selectedBuilding.harvestStock > 0
-              ? `Food plot · ${formatResourceStock(selectedBuilding.harvestStock)} / ${rule.harvest.stock} food remaining.`
-              : 'Food plot exhausted · clear it, then build a new Farm.'
+            : rule.harvest ? farmSelectionFacts(selectedBuilding).stock
             : rule.dropoff?.length ? `Drop-off: ${profileDropoffResources(selectedBuilding.type, mapDefinition?.economyProfileId).join(' and ')}.`
             : rule.combat ? `Defends against visible enemies · ${rule.combat.range}-cell range.`
             : selectedBuilding.type === 'palisade-gate' ? selectedBuilding.gateOpen
@@ -4464,9 +4454,7 @@ function updateCommandUI() {
     : utilityBuilding ? BUILDING_DEFINITIONS[selectedBuilding.type].combat
       ? `Defends visible enemies within ${BUILDING_DEFINITIONS[selectedBuilding.type].combat.range} cells · ${BUILDING_DEFINITIONS[selectedBuilding.type].sight} sight.`
       : BUILDING_DEFINITIONS[selectedBuilding.type].harvest
-        ? selectedBuilding.harvestStock > 0
-          ? `Finite food plot · Select Workers and right-click this Farm to harvest. Build another Farm with Workers to plant more.`
-          : 'Food plot exhausted · Clear exhausted Farm, then select Workers and build a new Farm. No regrowth.'
+        ? farmSelectionFacts(selectedBuilding, coarsePointer).instruction
       : BUILDING_DEFINITIONS[selectedBuilding.type].dropoff
         ? `Workers deposit ${profileDropoffResources(selectedBuilding.type, mapDefinition?.economyProfileId).join(' and ')} here when complete.`
         : selectedBuilding.type === 'palisade-gate'
@@ -4808,7 +4796,7 @@ function updateEnvironmentStateCaptureSnapshot(state) {
     };
   });
   const buildings = (Array.isArray(state.buildings) ? state.buildings : []).map((building) => ({
-    id: building.id, team: building.team, type: building.type,
+    id: building.id, team: building.team, type: building.type, orientation: building.orientation ?? 0,
     x: building.x, z: building.z, progress: building.progress, complete: building.complete,
     groundStage: constructionGroundStage(building.progress, building.complete),
   }));
@@ -8312,7 +8300,10 @@ function updateBuildPlacementGhost(clientX, clientY) {
     syncBattlefieldCursor(); return;
   }
   wallPlacementGhost.group.visible = false;
-  const placement = buildPlacementAt(clientX, clientY);
+  if (wallPointerCell(clientX, clientY)) lastBuildingPlacementPointer = { x: clientX, y: clientY };
+  const pointer = document.activeElement?.matches('[data-building-rotate]') ? lastBuildingPlacementPointer : { x: clientX, y: clientY };
+  const placement = buildPlacementPending ? pendingBuildingPlacement
+    : pointer && wallPointerCell(pointer.x, pointer.y) ? buildPlacementAt(pointer.x, pointer.y) : null;
   placementGhost.visible = Boolean(placement);
   if (ui.placementStatus) {
     const message = placement
@@ -8323,15 +8314,11 @@ function updateBuildPlacementGhost(clientX, clientY) {
     if (ui.placementStatus.dataset.state !== state) ui.placementStatus.dataset.state = state;
   }
   syncBattlefieldCursor();
-  if (!placement) return;
-  placementGhost.position.set(placement.x, groundHeight(placement.x,placement.z), placement.z);
-  placementGhost.scale.set(buildingFootprint(buildPlacementType) / 3, 1, buildingFootprint(buildPlacementType) / 3);
-  const tint = placement.valid ? 0x9cdb8a : 0xe7836d;
-  for (const material of placementGhostMaterials) material.color.setHex(tint);
-  const isBarracks = buildPlacementType === 'barracks';
-  ghostRoof.visible = !isBarracks;
-  ghostBarracksWalls.visible = isBarracks;
-  for (const panel of ghostBarracksRoofPanels) panel.visible = isBarracks;
+  buildingPlacementPreview.update({ type: buildPlacementType, size: buildingFootprint(buildPlacementType),
+    orientation: buildPlacementOrientation, teamColor: TEAM_HEX[localTeam], camera, placement,
+    height: placement ? groundHeight(placement.x, placement.z) : 0, mode: frontierBuildingsPreview });
+  for (const button of document.querySelectorAll('[data-building-rotate]')) button.disabled = buildPlacementPending;
+
 }
 
 function updateBuildPlacementHint() {
@@ -8345,6 +8332,10 @@ function updateBuildPlacementHint() {
   const activeLabel = buildingLabel(buildPlacementType);
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   const wall = buildPlacementActive && buildPlacementType === 'palisade-wall';
+  for (const button of document.querySelectorAll('[data-building-rotate]')) {
+    button.hidden = !buildPlacementActive || !buildingCanRotate(buildPlacementType, BUILDING_DEFINITIONS);
+    button.disabled = buildPlacementPending;
+  }
   if (ui.fieldHintPrimaryKey) ui.fieldHintPrimaryKey.textContent = wall ? 'DRAG / ENTER' : coarsePointer ? 'TAP' : 'LMB';
   if (ui.fieldHintAction) ui.fieldHintAction.textContent = buildPlacementActive ? `PLACE ${activeLabel}`
     : tapOrderArmed ? 'ISSUE ORDER' : coarsePointer ? 'SELECT UNITS' : 'DRAG TO SELECT';
@@ -8376,6 +8367,7 @@ function setBattlefieldCursor(mode) {
 }
 
 function syncBattlefieldCursor() {
+  renderer.domElement.title = '';
   const ids = selectedIds();
   const ownedBuilding = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
   const state = {
@@ -8399,21 +8391,39 @@ function syncBattlefieldCursor() {
       && !state.building && !state.selectedBuilding) {
     const rect = renderer.domElement.getBoundingClientRect();
     const x = cursorPointer.x - rect.left, y = cursorPointer.y - rect.top;
+    const hoveredBuilding = pickBuildingAt(x, y, building => building.hp > 0);
+    const farm = hoveredBuilding?.type === 'farm' ? hoveredBuilding : null;
+    const farmFacts = farm?.team === localTeam ? farmSelectionFacts(farm) : null;
+    let farmHint = farmFacts ? `${farmFacts.stock} ${farmFacts.instruction}`
+      : farm ? 'Enemy Farm · Your Workers cannot harvest this plot.' : '';
     if (ids.length) {
+      state.farmTargetMode = farm ? persistentTargetMode : null;
+      if (farm && persistentTargetMode === 'follow') {
+        const leader = pickAt(x, y, unit => unit.team === localTeam, { advance: false }).unit;
+        state.farmFollowTarget = Boolean(leader && ids.some(id => id !== leader.id));
+      }
       state.enemy = Boolean(pickAt(x, y, (unit) => unit.team !== localTeam, { advance: false }).unit);
       if (!state.enemy) state.enemyBuilding = Boolean(pickBuildingAt(x, y, (building) => building.team !== localTeam));
       if (!state.enemy && !state.enemyBuilding) {
+        state.farmConstruction = Boolean(!cursorShift && !attackMoveMode && !persistentTargetMode
+          && !selectedWaterUnits() && state.workers && farm?.team === localTeam && !farm.complete);
         const tree = pickHarvestableTreeAt(x, y);
+        state.exhaustedFarm = Boolean(!tree && farm?.team === localTeam && farm.complete && farm.harvestStock <= 0);
+        if (tree && !state.farmConstruction) farmHint = '';
         state.resource = tree?.node?.type || pickResourceNodeAt(x, y, { visibleOnly: true })?.type;
         state.forest = tree?.forestCell !== undefined;
         if (!state.resource && !state.forest) state.forest = pickForestCellAt(x, y) !== null;
       }
+      if (farmFacts && ((!farm.complete && !state.farmConstruction)
+        || ['patrol', 'follow'].includes(persistentTargetMode))) farmHint = farmFacts.stock;
+      if (state.enemy || (state.enemyBuilding && farm?.team === localTeam)) farmHint = '';
     }
     if (cursorShift) {
       const friendly = pickAt(x, y, (unit) => unit.team === localTeam, { advance: false }).unit;
       state.friendly = Boolean(friendly);
       state.alreadySelected = Boolean(friendly && selected.has(friendly.id));
     }
+    renderer.domElement.title = farmHint;
   }
   setBattlefieldCursor(battlefieldCursor(state));
 }
@@ -8423,8 +8433,11 @@ function cancelBuildPlacement(announce = true) {
   buildPlacementActive = false;
   buildPlacementPending = false;
   pendingBuildOrderToken = null;
+  pendingBuildingPlacement = null;
+  lastBuildingPlacementPointer = null;
   pendingBuildBaseline = new Set();
   placementGhost.visible = false;
+  placementGhost.userData?.preview?.reset();
   resetWallPlacement();
   updateBuildPlacementHint();
   if (typeof closeDockDetails === 'function') closeDockDetails({ restoreFocus: false });
@@ -8453,9 +8466,13 @@ function beginBuildPlacement(type) {
   persistentTargetMode = null;
   updateCommandUI();
   buildPlacementType = type;
+  buildPlacementOrientation = 0;
+  pendingBuildingPlacement = null;
+  lastBuildingPlacementPointer = null;
   buildPlacementActive = true;
   buildPlacementPending = false;
   placementGhost.visible = false;
+  placementGhost.userData?.preview?.reset();
   resetWallPlacement();
   pendingBuildOrderToken = null;
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
@@ -8475,7 +8492,8 @@ function beginBuildPlacement(type) {
 function submitBuildPlacement(clientX, clientY, wallPoints = null) {
   if (!buildPlacementActive || buildPlacementPending) return;
   const wall = buildPlacementType === 'palisade-wall';
-  const placement = wall ? wallPlacementAt(wallPoints) : buildPlacementAt(clientX, clientY);
+  const placement = wall ? wallPlacementAt(wallPoints)
+    : wallPointerCell(clientX, clientY) ? buildPlacementAt(clientX, clientY) : null;
   if (!placement) { showToast('MOVE THE POINTER OVER THE BATTLEFIELD'); return; }
   if (!placement.valid) {
     showToast(`${buildingLabel(buildPlacementType)} SITE BLOCKED · ${placement.blockedReason}`);
@@ -8486,12 +8504,13 @@ function submitBuildPlacement(clientX, clientY, wallPoints = null) {
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
   const command = wall ? { type: 'buildWall', ids, points: wallPoints,
     axisOrder: cursorShift ? 'row-first' : 'column-first' } : {
-    type: 'build', buildingType: buildPlacementType, ids, x: placement.x, z: placement.z,
+    type: 'build', buildingType: buildPlacementType, ids, x: placement.x, z: placement.z, orientation: buildPlacementOrientation,
   };
   const buildOrderToken = sendTrackedOrder(command, 'BUILD', ids.length, 'WORKERS');
   if (buildOrderToken !== null) {
     pendingBuildOrderToken = buildOrderToken;
     buildPlacementPending = true;
+    if (!wall) pendingBuildingPlacement = placement;
     resetWallPlacement();
     if (wall) pendingWallPreview = placement;
     updateEconomyUI();
@@ -9534,6 +9553,13 @@ function selectionCenterShortcutAllowed(event) {
     && !keyboardTargetIsEditing(event) && !ui.mapStudio.open && !document.querySelector('dialog[open]')
     && !(event.target instanceof Element && event.target.closest('button, a[href], summary, [role="button"]'));
 }
+
+function rotateBuildPlacement(direction) {
+  if (!buildPlacementActive || buildPlacementPending || !buildingCanRotate(buildPlacementType, BUILDING_DEFINITIONS)) return;
+  buildPlacementOrientation = turnBuildingOrientation(buildPlacementOrientation, direction);
+  updateBuildPlacementGhost(cursorPointer?.x, cursorPointer?.y);
+}
+
 
 window.addEventListener('keydown', (event) => {
   lastFriendlyUnitClick = null;
@@ -10618,6 +10644,7 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
           buildPlacementPending = false;
           pendingBuildOrderToken = null;
           pendingWallPreview = null;
+          pendingBuildingPlacement = null;
           updateEconomyUI();
         }
         if (feedback.showToast && canPresentLiveFeedback()) showToast(notice, 2200);
@@ -10911,6 +10938,22 @@ function animate(now) {
   for (const visual of capturedBuildingVisuals) {
     updateCapturedBuildingSprite(visual.sprite, camera, visual.lifecycleInput);
     visual.fallbackRoot.visible = !visual.sprite.visible;
+    visual.fallbackRoot.rotation.y = visual.fallbackRoot.parent?.userData.buildingOrientationRoot
+      ? 0 : buildingOrientationAngle(visual.lifecycleInput?.orientation ?? 0);
+  }
+  if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state' || window.__rtsCaptureDiagnostics === true) {
+    const sprite = buildingPlacementPreview.sprite;
+    const art = object => object ? { visible: object.visible, key: object.userData.capturedBuildingArt?.requestKey,
+      scale: object.scale.toArray(), center: object.center.toArray(), position: object.position.toArray() } : null;
+    window.__rtsBuildingPlacementSnapshot = { active: buildPlacementActive, pending: buildPlacementPending,
+      type: buildPlacementType, orientation: buildPlacementOrientation, visible: placementGhost.visible,
+      position: placementGhost.position.toArray(), art: art(sprite),
+      valid: ui.placementStatus?.dataset.state === 'clear',
+      buildings: latestBuildings.filter(building => building.team === localTeam).map(building => ({
+        id: building.id, type: building.type, orientation: building.orientation ?? 0, x: building.x, z: building.z,
+        complete: building.complete, art: art(buildingVisuals.get(building.id)?.frontierCaptureEntry?.sprite),
+      })),
+    };
   }
   renderer.render(scene, camera);
   updateSiteCompositionCaptureSnapshot();

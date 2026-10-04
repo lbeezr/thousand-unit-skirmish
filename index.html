@@ -65,6 +65,8 @@
       <h2 id="menu-settings-title">Settings</h2>
       <label>Camera speed<input id="menu-camera-speed" type="range" min="50" max="200" step="10"></label>
       <label><input id="menu-edge-scroll" type="checkbox"> Edge scroll</label>
+      <label>Rotate building left key<input data-building-rotation-key="left" type="text" maxlength="2" autocomplete="off" spellcheck="false" value="["></label>
+      <label>Rotate building right key<input data-building-rotation-key="right" type="text" maxlength="2" autocomplete="off" spellcheck="false" value="]"></label>
       <label><input id="menu-audio-enabled" type="checkbox"> Enable audio</label>
       <label>Overall volume<input id="menu-audio-volume" type="range" min="0" max="100"></label>
       <button type="button" data-close>Done</button>
@@ -140,7 +142,7 @@
           </section>
           <button id="minimap-reopen" class="minimap-reopen" type="button" hidden>Map</button>
           <div id="selection-box" class="selection-box" aria-hidden="true"></div>
-          <div class="field-hint"><button id="guidance-toggle" type="button" aria-expanded="true">Hide hints</button><span id="field-hint-primary-key" class="hint-key">LMB</span> <span id="field-hint-action">DRAG TO SELECT</span> <span class="hint-divider">·</span> <span id="field-hint-secondary-key" class="hint-key">RMB</span> <span id="field-hint-secondary">MOVE / ATTACK</span><span id="placement-status" class="placement-status" aria-live="off" hidden></span></div>
+          <div class="field-hint"><button id="guidance-toggle" type="button" aria-expanded="true">Hide hints</button><span id="field-hint-primary-key" class="hint-key">LMB</span> <span id="field-hint-action">DRAG TO SELECT</span> <span class="hint-divider">·</span> <span id="field-hint-secondary-key" class="hint-key">RMB</span> <span id="field-hint-secondary">MOVE / ATTACK</span><span id="placement-status" class="placement-status" aria-live="off" hidden></span><button data-building-rotate="left" type="button" hidden>Rotate left · [</button><button data-building-rotate="right" type="button" hidden>Rotate right · ]</button></div>
           <div id="field-order-feedback" class="field-order-feedback" data-state="ready" role="status" aria-live="off" hidden></div>
           <div id="toast" class="toast" role="status" aria-live="polite"></div>
           <div id="audio-caption" class="audio-caption" role="status" aria-live="off" hidden></div>
@@ -202,9 +204,12 @@
             <div class="section-label"><span>SELECTION</span><span class="selection-pip"></span></div>
             <div id="building-selection-card" class="building-selection-card" role="group" aria-label="Selected building" hidden>
               <div class="building-selection-heading"><strong id="selected-building-name">BARRACKS</strong><span id="selected-building-state">READY</span></div>
+              <figure class="building-selection-art" data-building-art hidden><img alt="" width="40" height="40"><figcaption><span data-building-art-label></span> <a href="https://github.com/lbeezr/thousand-unit-skirmish/blob/4b626295510f761b0307aefe4c78c67c79eeabf5/docs/art-direction/frontier-economy-meshy-v1/farm-reference-v1.png" target="_blank" rel="noopener noreferrer">View Farm design study (opens in a new tab)</a></figcaption></figure>
+              <p class="building-selection-description" data-building-description hidden></p>
               <div class="building-health-row"><span>STRUCTURE HEALTH</span><strong id="selected-building-health">—</strong></div>
               <div id="selected-building-health-bar" class="building-health-bar" role="progressbar" aria-label="Building health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i></i></div>
               <p id="selected-building-production" class="building-selection-production"></p>
+              <p class="building-selection-instruction" data-building-instruction hidden></p>
               <div class="building-selection-actions">
                 <button type="button" data-open-dock-tab="command">Open orders <span>↗</span></button>
                 <button type="button" data-open-dock-tab="economy">Build &amp; train <span>↗</span></button>
