@@ -10,9 +10,10 @@ const directory = new URL('../assets/units/cast-human-sprite-v3/', import.meta.u
 const pack = JSON.parse(readFileSync(new URL('sprite-atlas-pack-v1.json', directory)));
 const asset = pack.assets[0], page = pack.pages[0];
 const clipMap = new Map(asset.clips.map(c => [`${c.stateId}|${c.directionId}`, c]));
-test('North admission preserves the preceding 92 frame records/pixels and team mask', () => {
+for (const preservationHeading of ['north', 'south']) {
+test(`${preservationHeading} admission preserves preceding frame records/pixels and team mask`, () => {
   const preservation = JSON.parse(readFileSync(new URL(
-    '../docs/qa-evidence/worker-land-art-2026-10-04/north-walk-preservation.json', import.meta.url)));
+    `../docs/qa-evidence/worker-land-art-2026-10-04/${preservationHeading}-walk-preservation.json`, import.meta.url)));
   const originals = asset.frames.slice(0, preservation.originalFrames);
   const hash = bytes => createHash('sha256').update(bytes).digest('hex');
   assert.equal(hash(JSON.stringify(originals)), preservation.originalFrameMetadataSha256);
@@ -29,7 +30,9 @@ test('North admission preserves the preceding 92 frame records/pixels and team m
   assert.equal(framesHash.digest('hex'), preservation.originalFrameRgbaSha256);
 });
 
-for (const direction of ['east', 'north']) {
+}
+
+for (const direction of ['east', 'north', 'south']) {
 const label = direction[0].toUpperCase() + direction.slice(1);
 const registration = JSON.parse(readFileSync(new URL(
   `../docs/qa-evidence/worker-land-art-2026-10-04/${direction}-walk-registration.json`, import.meta.url)));
@@ -60,7 +63,7 @@ test(`${label} keys contain eight distinct complete same-scale poses above one g
   // Adding a taller frame would rescale every old frame through the existing loader.
   assert.equal(Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), 272);
   assert.equal(asset.heightWorld, 1.4258738550646552);
-  for (const heading of ['south', 'west', 'north-west']) {
+  for (const heading of ['west', 'north-west']) {
     assert.equal(spriteActionClip(clipMap, 'walk', heading, null, 'human', true)
       .sequence[0].frameId, `idle-${heading}-0`, 'Remaining gaps are explicit idle holds');
   }
@@ -98,12 +101,12 @@ test(`default Human ${label} walk advances, loops, turns, Stops/resumes and retu
   };
   for (const team of [0, 1]) for (const selected of [false, true]) {
     const unit = { id: team, team, slot: 0, kind: 'worker', hp: 100, selected,
-      task: 'moving', walking: true, angle: direction === 'east' ? Math.PI / 2 : 0, renderX: 0, renderZ: 0,
+      task: 'moving', walking: true, angle: direction === 'east' ? Math.PI / 2 : direction === 'south' ? Math.PI : 0, renderX: 0, renderZ: 0,
       attackStartedAt: 0, defeatStartedAt: 0, cargo: 0, cargoType: null, performingAction: null };
     for (let i = 0; i <= 8; i++) expect(unit, 1000 + i * 100, `walk-${direction}-${i % 8}`);
     unit.angle = Math.PI / 4;
     expect(unit, 1900, 'walk-north-east-1');
-    unit.angle = direction === 'east' ? Math.PI / 2 : 0;
+    unit.angle = direction === 'east' ? Math.PI / 2 : direction === 'south' ? Math.PI : 0;
     expect(unit, 2000, `walk-${direction}-2`); // Heading changes preserve elapsed phase.
     unit.walking = false; unit.task = 'idle';
     expect(unit, 2100, `idle-${direction}-0`);
