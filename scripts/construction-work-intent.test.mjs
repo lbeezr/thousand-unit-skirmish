@@ -4,6 +4,8 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { isPalisade } from '../src/palisade-gate.mjs';
+import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { activeWorkIntent, createConstructionWorkIntent, clearWorkIntent } from '../src/work-intent.mjs';
 import { constructionWorkArea, constructionAssignment, unfinishedConstructionSites, validConstructionWorkArea } from '../src/construction-work-intent.mjs';
 
 const map = { width: 64, height: 64 };
@@ -93,28 +95,63 @@ test('checkpoint bounds reject malformed, nonfinite, inverted, outside or site-e
     { ...area, minX: 1 }]) assert.equal(validConstructionWorkArea(invalid, map, sites), false);
 });
 
-test('actual construction sequence bounds unreachable retries, invalidates stale routes and resumes after topology changes', () => {
+function sequenceFixture(sites = [wall(1, .5, .5, { footprint: [5] })]) {
   const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
   const intentSource = server.slice(server.indexOf('function palisadeConstructionIntent('), server.indexOf('function preparePalisadeBuilderAssignments('));
   const sequenceSource = server.slice(server.indexOf('const palisadeConstructionRetries ='), server.indexOf('function updateBuildingAndProduction('));
-  const site = wall(1, .5, .5, { footprint: [5] }), order = { ids: [1], generation: 7, revision: 12 };
+  const distanceSource = server.slice(server.indexOf('function distanceToBuildingEdge('), server.indexOf('function destroyBuilding('));
+  const applySource = server.slice(server.indexOf('function applyPlannedMoveAssignment('), server.indexOf('function takeMoveStartBroadcastRequest('));
+  const order = { ids: sites.map(site => site.id), generation: 7, revision: 12 };
   const unit = { id: 0, team: 0, generation: 7, hp: 100, orderRevision: 12, wallBuildOrder: order,
-    buildingTargetId: null, path: [3, 4], pathIndex: 0, movePlanningPending: true, moveGoalCell: 4 };
+    workIntent: createConstructionWorkIntent(7, order.ids, constructionWorkArea(sites, map)),
+    buildingTargetId: null, path: [3, 4], pathIndex: 0, movePlanningPending: true, moveGoalCell: 4, x: -10.5, z: .5 };
   let searches = 0, reachable = false;
-  const c = vm.createContext({ units: [unit], activeWallBuildOrder, constructionWorkArea, unfinishedConstructionSites,
-    isPalisade, buildingsById: lookup([site]), mapDefinition: map, navigationRevision: 1, tickNumber: 0, TICK_RATE: 30,
+  const c = vm.createContext({ units: [unit], activeWallBuildOrder, activeWorkIntent, clearWorkIntent,
+    constructionWorkArea, unfinishedConstructionSites, BUILDING_DEFINITIONS, BUILDER_INTERACTION_RANGE: 1.4,
+    isPalisade, buildingsById: lookup(sites), mapDefinition: map, navigationRevision: 1, tickNumber: 0, TICK_RATE: 30,
+    nearestOpenCell: cell => cell, worldToCell: () => 3, MAP_WIDTH: 64, movePlanningServiceTick: null, dirty: false,
     buildingAccessCells: () => [4], findBuildingAttackApproachCell: () => { searches++; return reachable ? { goal: 4 } : null; },
     cellToWorld: () => ({ x: .5, z: -.5 }), assignFormationMove: (_player, command, target) => {
-      assert.deepEqual(Array.from(command.ids), [unit.id]); unit.orderRevision++; unit.buildingTargetId = target;
+      assert.deepEqual(Array.from(command.ids), [unit.id]); unit.orderRevision++; unit.buildingTargetId = target; unit.movePlanningPending = true;
     } });
-  vm.runInContext(intentSource + sequenceSource, c);
+  vm.runInContext(intentSource + sequenceSource + distanceSource + applySource, c);
+  return { c, unit, order, sites, get searches() { return searches; }, set reachable(value) { reachable = value; } };
+}
+
+test('actual construction sequence bounds unreachable retries, invalidates stale routes and resumes after topology changes', () => {
+  const f = sequenceFixture(), { c, unit, order, sites: [site] } = f;
   for (let tick = 0; tick <= 300; tick++) { c.tickNumber = tick; c.updateWallBuildOrders(); }
-  assert.equal(searches, 3, 'three attempts, at most once per second, then wait for topology change');
+  assert.equal(f.searches, 3, 'three attempts, at most once per second, then wait for topology change');
   assert.equal(activeWallBuildOrder(unit), order); assert.deepEqual(order.ids, [1]);
-  assert.deepEqual(order.area, constructionWorkArea([site], map), 'legacy missing bounds initialize from remembered paid identity');
+  assert.deepEqual(unit.workIntent.area, constructionWorkArea([site], map));
   assert.equal(unit.path.length, 0); assert.equal(unit.movePlanningPending, false); assert.equal(unit.moveGoalCell, -1);
-  c.navigationRevision++; c.updateWallBuildOrders(); assert.equal(searches, 4);
-  reachable = true; c.navigationRevision++; c.updateWallBuildOrders();
-  assert.equal(searches, 5); assert.equal(unit.buildingTargetId, site.id); assert.equal(activeWallBuildOrder(unit), order);
+  c.navigationRevision++; c.updateWallBuildOrders(); assert.equal(f.searches, 4);
+  f.reachable = true; c.navigationRevision++; c.updateWallBuildOrders();
+  assert.equal(f.searches, 5); assert.equal(unit.buildingTargetId, site.id); assert.equal(activeWallBuildOrder(unit), order);
   site.complete = true; c.updateWallBuildOrders(); assert.equal(unit.wallBuildOrder, null);
+  assert.equal(unit.workIntent, null);
+});
+
+test('actual failed route retains a target, then construction reacquires it without replacing active routes or in-range work', () => {
+  const f = sequenceFixture(), { c, unit } = f;
+  const assignment = { unit, revision: unit.orderRevision, destination: 4, path: [], buildingTargetId: 1 };
+  c.applyPlannedMoveAssignment({ preserveAssignmentBuildingTarget: true }, assignment);
+  assert.equal(assignment.routeOutcome.routeFailure, true); assert.equal(unit.buildingTargetId, 1);
+  f.reachable = true; c.updateWallBuildOrders(); assert.equal(f.searches, 1);
+  for (let tick = 1; tick < 90; tick++) { c.tickNumber = tick; c.updateWallBuildOrders(); }
+  assert.equal(f.searches, 1, 'pending route stays active');
+  unit.movePlanningPending = false; unit.path = [4]; unit.pathIndex = 0; c.updateWallBuildOrders();
+  assert.equal(f.searches, 1, 'nonempty active route stays active');
+  unit.pathIndex = 1; unit.x = .5; c.updateWallBuildOrders(); assert.equal(f.searches, 1, 'in-range builder keeps working');
+});
+
+test('a newly remembered target gets its own retry budget after another builder completes the blocked head', () => {
+  const f = sequenceFixture([wall(1, .5, .5, { footprint: [5] }), wall(2, 1.5, .5, { footprint: [6] })]);
+  const { c, unit } = f, area = structuredClone(unit.workIntent.area);
+  for (let tick = 0; tick <= 100; tick++) { c.tickNumber = tick; c.updateWallBuildOrders(); }
+  assert.equal(f.searches, 3);
+  f.sites[0].complete = true; f.reachable = true; c.updateWallBuildOrders();
+  assert.equal(f.searches, 4, 'new site can be reached without an unrelated topology change');
+  assert.equal(unit.buildingTargetId, 2); assert.deepEqual(unit.workIntent.siteIds, [2]);
+  assert.deepEqual(unit.workIntent.area, area); assert.equal(c.navigationRevision, 1);
 });

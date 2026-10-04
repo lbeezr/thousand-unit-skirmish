@@ -68,7 +68,7 @@ The [reported interruption and targeted-resume checks](qa-palisade-construction-
 separate retained deployed behavior, the client correction and the server continuation checks.
 
 Every admitted Worker receives an independent canonical row-major list of new
-building IDs, tied to its unit generation and order revision, with fixed initial
+building IDs in generation-bound `workIntent`, independent of route order revision, with fixed initial
 footprint bounds plus two world units clipped to the map. An explicitly assigned
 adjoining Gate within that area takes first priority, keeping the remaining paid
 wall IDs. Adjacency uses remembered IDs only. Completing or cancelling the Gate
@@ -82,7 +82,8 @@ segment-completion window. A rejected full waypoint queue retains the work. Deat
 resume it. Interrupted construction stays paid and unfinished until resumed or
 cancelled through ordinary building controls. An unreachable remembered site
 retains the sequence and invalidates its old route. Retry is at most once per
-second, three attempts per navigation revision; a topology change permits a new
+second, three attempts per remembered target and navigation revision; a topology change or the next
+remembered target permits a new
 bounded attempt. Fixed area bounds never drift.
 
 Removing a current or pending segment prunes it from all active sequences;
@@ -91,12 +92,14 @@ occupancy/components have been rebuilt. Existing cancellation refunds only the
 unbuilt fraction once, combat destruction gives no refund, and construction
 completion does not heal damaged HP. Repair uses the existing policy.
 
-The optional `wallBuildOrder` lives in the unit checkpoint record, with copied
-ID arrays/area rectangles and full validation of bounds, unique IDs, generation/revision,
-owned Palisade wall/Gate types, area enclosure and current target. A null target
-is legal while the remembered sequence awaits reacquisition. Existing sequences
-without area bounds derive them from their remembered paid sites; records without
-a sequence restore none. No schema
+The shared `workIntent` constructor variant copies ID arrays/area rectangles and
+validates bounds, unique historical IDs, generation, owned sites and area enclosure.
+`wallBuildOrder` remains execution/legacy compatibility: copied Palisade wall/Gate
+IDs, generation/revision and current target. A null target is legal while remembered
+construction awaits reacquisition. Records missing `workIntent` derive it from
+their valid remembered paid sequence or owned unfinished non-repair target; records
+with neither restore none. Construction bounds use footprint edges plus two world
+units, with no charge or nearby-site inference. No schema
 number change is needed for this additive field; lobby phase migrations retain
 their schema authority. Only the exact pre-palisade ruleset
 `v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab`

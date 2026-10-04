@@ -71,7 +71,7 @@ try {
     if (mode === 'legacy-wall') {
       await fixture.stop();
       const legacy = JSON.parse(await readFile(fixture.checkpointPath, 'utf8'));
-      for (const unit of legacy.state.units) if (unit.wallBuildOrder) delete unit.wallBuildOrder.area;
+      for (const unit of legacy.state.units) delete unit.workIntent;
       await writeFile(fixture.checkpointPath, JSON.stringify(legacy)); await reconnect();
       assert.ok(clients.every(c => c.welcome.recoveredFromCheckpoint && c.welcome.player.resumed));
       working = await ledger(); assert.equal(working.matchId, legacy.matchId);
@@ -105,7 +105,9 @@ try {
     if (!observe) for (const team of [0, 1]) {
       const order = assigned.state.units[builders[team].id].wallBuildOrder;
       assert.deepEqual(order.ids, [gates[team].id, ...wallIds[team]]);
-      assert.deepEqual(order.area, sourceAreas[team]); assert.equal(order.generation, builders[team].generation);
+      const intent = assigned.state.units[builders[team].id].workIntent;
+      assert.deepEqual(intent.siteIds, order.ids); assert.deepEqual(intent.area, sourceAreas[team]);
+      assert.equal(intent.generation, builders[team].generation);
     }
     const cancelled = [];
     if (mode.startsWith('cancel-')) {
@@ -155,7 +157,7 @@ try {
       await fixture.stop();
       const valid = JSON.parse(await readFile(fixture.checkpointPath, 'utf8'));
       for (const [label, mutate] of [
-        ['foreign-gate', order => { order.ids[0] = gates[1].id; }],
+        ['foreign-gate', order => { order.siteIds[0] = gates[1].id; }],
         ['stale-generation', order => { order.generation++; }],
         ['outside-area', order => { order.area.minX = -33; }],
         ['site-outside-area', order => { order.area.maxX = order.area.minX; }],
@@ -163,7 +165,7 @@ try {
         ['unknown-area-field', order => { order.area.extra = 1; }],
       ]) {
         const invalid = structuredClone(valid);
-        mutate(invalid.state.units[builders[0].id].wallBuildOrder);
+        mutate(invalid.state.units[builders[0].id].workIntent);
         const rejectedBefore = new Set((await readdir(fixture.directory)).filter(name => name.startsWith('match.json.rejected-')));
         const bytes = JSON.stringify(invalid); await writeFile(fixture.checkpointPath, bytes); await reconnect();
         assert.ok(clients.every(c => !c.welcome.recoveredFromCheckpoint));
@@ -184,8 +186,12 @@ try {
     assert.deepEqual(recovered.state.teamWood, paidWood);
     assertSites(recovered, expectedSites);
     if (!observe) for (const team of [0, 1]) {
-      const order = recovered.state.units[builders[team].id].wallBuildOrder;
-      if (replacement) assert.equal(order, null, 'accepted explicit replacement cancels the remembered sequence');
+      const order = recovered.state.units[builders[team].id].workIntent;
+      if (replacement) {
+        assert.equal(recovered.state.units[builders[team].id].wallBuildOrder, null);
+        if (mode !== 'manual-replacement') assert.equal(order, null, 'accepted explicit replacement cancels construction');
+        else assert.deepEqual(order.siteIds, [houseIds[team]], 'manual House replaces the old construction intent');
+      }
       else assert.deepEqual(order.area, sourceAreas[team], 'cold recovery keeps the original fixed source area');
     }
     let settled, resuming = null;
@@ -207,7 +213,8 @@ try {
       assertSites(resuming, expectedSites);
       settled = await ledger(s => sitesComplete(s, remainingPalisadeIds));
       const completedAt = settled.state.tickNumber;
-      settled = await ledger(s => s.state.tickNumber > completedAt && builders.every(u => s.state.units[u.id].wallBuildOrder === null));
+      settled = await ledger(s => s.state.tickNumber > completedAt && builders.every(u => s.state.units[u.id].wallBuildOrder === null
+        && s.state.units[u.id].workIntent === null));
     }
     assertSites(settled, expectedSites);
     assert.deepEqual(settled.state.teamWood, paidWood, 'continuation/recovery does not pay again');

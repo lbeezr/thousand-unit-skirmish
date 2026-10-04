@@ -2801,8 +2801,7 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
       pregame: pregame?.checkpoint() ?? null,
     units: units.map((unit) => ({
       ...unit,
-      wallBuildOrder: activeWallBuildOrder(unit) ? { ...unit.wallBuildOrder, ids: [...unit.wallBuildOrder.ids],
-        ...(unit.wallBuildOrder.area ? { area: { ...unit.wallBuildOrder.area } } : {}) } : null,
+      wallBuildOrder: activeWallBuildOrder(unit) ? { ...unit.wallBuildOrder, ids: [...unit.wallBuildOrder.ids] } : null,
       persistentOrder: unit.persistentOrder ? { ...unit.persistentOrder } : null,
       workIntent: unit.workIntent ? structuredClone(unit.workIntent) : null,
       path: [...unit.path],
@@ -2957,7 +2956,6 @@ function validateMatchCheckpoint(snapshot) {
       && Array.isArray(wallOrder.ids) && wallOrder.ids.length > 0 && wallOrder.ids.length <= MAX_BUILDINGS
       && new Set(wallOrder.ids).size === wallOrder.ids.length
       && wallOrder.ids.every(id => integerIn(id, 1, HOME_TOWN_CENTER_ID_BASE - 1))
-      && (wallOrder.area === undefined || validConstructionWorkArea(wallOrder.area, definition))
     ), `invalid wall build order ${index}`);
     const persistent = unit.persistentOrder;
     assertSnapshot(persistent === undefined || persistent === null || (
@@ -3280,13 +3278,15 @@ function validateMatchCheckpoint(snapshot) {
         && checkpointForestMask[forestCell] === 1,
       'unit references an invalid forest target');
     }
+    if (unit.workIntent?.kind === 'construction') {
+      assertSnapshot(validConstructionWorkArea(unit.workIntent.area, definition,
+        unit.workIntent.siteIds.map(id => state.buildings.find(building => building.id === id)).filter(Boolean)),
+      'construction sites leave their fixed area');
+    }
     if (unit.wallBuildOrder) {
       assertSnapshot(unit.wallBuildOrder.ids.every(id => state.buildings.some(building =>
         building.id === id && isPalisade(building.type) && building.team === unit.team)),
       'wall build order references unavailable segments');
-      assertSnapshot(unit.wallBuildOrder.area === undefined || validConstructionWorkArea(unit.wallBuildOrder.area,
-        definition, unit.wallBuildOrder.ids.map(id => state.buildings.find(building => building.id === id))),
-      'wall build order sites leave their fixed area');
       assertSnapshot(unit.buildingTargetId === unit.wallBuildOrder.ids[0] || unit.buildingTargetId === null,
       'wall build order target does not match its sequence');
     }
@@ -3356,13 +3356,7 @@ function restoredWorkIntent(unit, state) {
   const ids = unit.wallBuildOrder?.ids ?? (current ? [current.id] : []);
   const sites = state.buildings.filter(building => ids.includes(building.id) && building.team === unit.team);
   if (!sites.length) return null;
-  const points = sites.flatMap(building => building.footprint.map(cellToWorld));
-  return createConstructionWorkIntent(unit.generation, [...ids], {
-    minX: Math.max(-MAP_HALF_X, Math.min(...points.map(point => point.x)) - 2),
-    maxX: Math.min(MAP_HALF_X, Math.max(...points.map(point => point.x)) + 2),
-    minZ: Math.max(-MAP_HALF_Z, Math.min(...points.map(point => point.z)) - 2),
-    maxZ: Math.min(MAP_HALF_Z, Math.max(...points.map(point => point.z)) + 2),
-  });
+  return createConstructionWorkIntent(unit.generation, [...ids], constructionWorkArea(sites, mapDefinition));
 }
 
 function restoreMatchCheckpoint(snapshot) {
@@ -3403,8 +3397,7 @@ function restoreMatchCheckpoint(snapshot) {
   for (const record of state.units) {
     units.push({
       ...record,
-      wallBuildOrder: record.wallBuildOrder ? { ...record.wallBuildOrder, ids: [...record.wallBuildOrder.ids],
-        ...(record.wallBuildOrder.area ? { area: { ...record.wallBuildOrder.area } } : {}) } : null,
+      wallBuildOrder: record.wallBuildOrder ? { ...record.wallBuildOrder, ids: [...record.wallBuildOrder.ids] } : null,
       holdingPosition: record.holdingPosition ?? false,
       persistentOrder: record.persistentOrder ? { ...record.persistentOrder } : null,
       gatherForestCell: record.gatherForestCell ?? -1,
@@ -5554,17 +5547,13 @@ function rejectBuild(player, reason, command) {
 }
 
 function palisadeConstructionIntent(unit) {
-  const order = activeWallBuildOrder(unit);
-  if (!order) return null;
-  const sites = order.ids.map(id => buildingsById.get(id)).filter(site => site && site.team === unit.team && isPalisade(site.type));
-  if (!sites.length) return null;
-  return { kind: 'construction', siteIds: order.ids, area: order.area ?? constructionWorkArea(sites, mapDefinition) };
+  const intent = activeWorkIntent(unit);
+  return intent?.kind === 'construction' ? intent : null;
 }
 
 function preparePalisadeBuilderAssignments(builders, sites) {
   return builders.map(unit => ({ unit, revision: unit.orderRevision,
-    assignment: sites.every(site => isPalisade(site.type))
-      ? constructionAssignment(palisadeConstructionIntent(unit), sites, unit.team, buildingsById, mapDefinition) : null }));
+    assignment: constructionAssignment(palisadeConstructionIntent(unit), sites, unit.team, buildingsById, mapDefinition) }));
 }
 
 function finishPalisadeBuilderAssignments(assignments, targetId) {
@@ -5572,8 +5561,9 @@ function finishPalisadeBuilderAssignments(assignments, targetId) {
     // Internal routes are admitted synchronously; rejected/unassigned Workers
     // keep their previous sequence. Only the explicitly assigned builders join.
     if (unit.orderRevision === revision || unit.buildingTargetId !== targetId) continue;
-    unit.wallBuildOrder = assignment ? { ids: assignment.siteIds, area: assignment.area,
-      generation: unit.generation, revision: unit.orderRevision } : null;
+    unit.workIntent = createConstructionWorkIntent(unit.generation, assignment.siteIds, assignment.area);
+    unit.wallBuildOrder = assignment.siteIds.every(id => isPalisade(buildingsById.get(id)?.type))
+      ? { ids: [...assignment.siteIds], generation: unit.generation, revision: unit.orderRevision } : null;
     palisadeConstructionRetries.delete(unit);
   }
 }
@@ -6096,23 +6086,38 @@ function routeProducedUnitToBuildingRally(unit, building) {
 const palisadeConstructionRetries = new WeakMap();
 function updateWallBuildOrders() {
   for (const unit of units) {
-    const order = activeWallBuildOrder(unit);
-    if (!order) { unit.wallBuildOrder = null; continue; }
     const intent = palisadeConstructionIntent(unit);
-    order.ids = unfinishedConstructionSites(intent, unit.team, buildingsById).map(site => site.id);
-    if (!order.ids.length) { unit.wallBuildOrder = null; continue; }
-    order.area ??= intent.area; // Legacy paid wall sequences gain bounds without new sites or payment.
-    if (unit.buildingTargetId === order.ids[0]) continue;
+    if (!intent) {
+      unit.wallBuildOrder = null;
+      if (unit.workIntent?.kind === 'construction') clearWorkIntent(unit);
+      continue;
+    }
+    const sites = unfinishedConstructionSites(intent, unit.team, buildingsById);
+    if (sites.length !== intent.siteIds.length) { intent.siteIds = sites.map(site => site.id); dirty = true; }
+    if (!sites.length) {
+      clearWorkIntent(unit); unit.wallBuildOrder = null; palisadeConstructionRetries.delete(unit); dirty = true;
+      continue;
+    }
+    const order = sites.every(site => isPalisade(site.type)) ? activeWallBuildOrder(unit)
+      ?? { ids: [], generation: unit.generation, revision: unit.orderRevision } : null;
+    unit.wallBuildOrder = order;
+    if (order && (order.ids.length !== intent.siteIds.length || order.ids.some((id, i) => id !== intent.siteIds[i]))) {
+      order.ids = [...intent.siteIds];
+    }
+    const building = sites[0];
+    if (unit.buildingTargetId === building.id && (unit.movePlanningPending || unit.pathIndex < unit.path.length
+      || distanceToBuildingEdge(unit, building) <= BUILDER_INTERACTION_RANGE)) continue;
     const retry = palisadeConstructionRetries.get(unit);
-    if (retry?.navigationRevision === navigationRevision && (retry.attempts >= 3 || tickNumber < retry.nextTick)) continue;
-    const building = buildingsById.get(order.ids[0]);
+    const sameRetryTarget = retry?.navigationRevision === navigationRevision && retry.siteId === building.id;
+    if (sameRetryTarget && (retry.attempts >= 3 || tickNumber < retry.nextTick)) continue;
     const approach = findBuildingAttackApproachCell(unit, buildingAccessCells(building.footprint));
     if (!approach) {
       unit.buildingTargetId = null;
-      unit.orderRevision++; order.revision = unit.orderRevision;
+      unit.orderRevision++; if (order) order.revision = unit.orderRevision;
       unit.path = []; unit.pathIndex = 0; unit.movePlanningPending = false; unit.moveGoalCell = -1;
-      palisadeConstructionRetries.set(unit, { navigationRevision,
-        nextTick: tickNumber + TICK_RATE, attempts: retry?.navigationRevision === navigationRevision ? retry.attempts + 1 : 1 });
+      palisadeConstructionRetries.set(unit, { navigationRevision, siteId: building.id,
+        nextTick: tickNumber + TICK_RATE, attempts: sameRetryTarget ? retry.attempts + 1 : 1 });
+      dirty = true;
       continue;
     }
     palisadeConstructionRetries.delete(unit);
@@ -6120,7 +6125,7 @@ function updateWallBuildOrders() {
     assignFormationMove({ team: unit.team, sendJson() {} }, {
       type: 'move', ids: [unit.id], unitGenerations: [unit.generation], x: point.x, z: point.z,
     }, building.id, 'WALL BUILD SEQUENCE');
-    order.revision = unit.orderRevision;
+    if (order) order.revision = unit.orderRevision;
   }
 }
 

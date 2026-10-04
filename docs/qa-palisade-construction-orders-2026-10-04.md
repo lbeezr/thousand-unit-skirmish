@@ -107,7 +107,7 @@ all six unselected Worker jobs survive every inspected checkpoint/recovery;
 Stop has no route/queue, Move retains its goal, Gather retains its accepted node,
 and both actually assigned distant Houses complete without resuming old work.
 
-The prepared scenario now has nine cases. Two [fresh-main observations](qa-evidence/palisade-continuation-2026-10-04/warm-and-exclusion.json)
+Preparation added two cases, bringing it to nine at that revision. Those [fresh-main observations](qa-evidence/palisade-continuation-2026-10-04/warm-and-exclusion.json)
 use server bytes from main `53a47ee3`, with gameplay checkout
 `f6e1b6826070a4089e6437c4a19d62b3aa04240a` and server SHA256
 `5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6`.
@@ -129,18 +129,18 @@ the older gameplay checkout.
 
 ## Continuation boundary and unfinished acceptance
 
-The earlier shared-union proposal and exact v1 variant remain historical design
-evidence. The parent's later direction removes waiting for a generic framework
-and permits disjoint construction using existing intent fields. The [concrete
-compatibility response](https://github.com/lbeezr/thousand-unit-skirmish/pull/283#issuecomment-5980554820)
-leaves economy (`01a101f7-5683`) owning `gatherWorkArea`, Wood targeting and its
-serialization. Wood automatic retarget must remain dormant during an active
-construction target/sequence. Walls owns the existing `wallBuildOrder` extension:
-copied fixed area bounds, remembered paid wall/Gate IDs, generation/revision,
-construction assignment, pruning, bounded reacquisition and its checkpoint checks.
-Internal builder routes finish by carrying that sequence to the accepted route
-revision; existing navigation route repair already preserves it. No generic
-Gather cancellation, formation routing or movement helper is edited.
+The parent's intermediate direction removed waiting for a generic framework;
+fresh main then merged economy's canonical `workIntent` boundary through PR #283
+at `8200ec6c`. The [actual merged-contract response](https://github.com/lbeezr/thousand-unit-skirmish/pull/283#issuecomment-5980759209)
+supersedes the provisional `gatherWorkArea` proposal. Walls consumes that existing
+generation-bound constructor variant and leaves accepted external-order hooks,
+Gather targeting/cancellation and shared capture/restore unchanged. Construction
+alone corrects legacy construction-area derivation to footprint edges plus two
+world units. `wallBuildOrder` retains its execution/compatibility role, with owned
+Gate IDs and targetless pending reacquisition permitted by its own validation.
+Internal routes preserve durable intent; navigation route repair already carries
+the compatibility sequence to its new revision. No generic formation routing or
+movement helper is edited.
 
 `src/construction-work-intent.mjs` supplies the fixed footprint bounds plus two
 world units, filters remembered owned unfinished IDs and prepends an explicitly
@@ -149,10 +149,13 @@ IDs only; an unassigned neighbor cannot extend the job. The server captures prio
 construction before an accepted route and installs its sequence only for actually
 assigned original builders. Unrelated House/resume orders replace it. A blocked
 site preserves its IDs and clears stale route execution, then retries at most
-once per second, three times per navigation revision. A topology change permits
-another bounded attempt. Checkpoints clone/validate area rectangles and permit
-owned Gates and targetless pending reacquisition; legacy sequences derive missing
-bounds only from their remembered paid sites.
+once per second, three times per target/navigation revision. A topology change or
+a new remembered target permits another bounded attempt. An idle out-of-range
+builder with a failed current-target route reacquires it; active/pending routes
+and in-range building continue. Checkpoints retain the canonical copied/validated
+area rectangles and permit owned Gates in compatibility sequences and targetless
+pending reacquisition. Legacy construction bounds derive only from remembered
+paid sites or the existing unfinished target.
 
 Runtime review and the complete candidate native/release proof are in progress;
 the first cold Gate completion case passes on the candidate, while retained

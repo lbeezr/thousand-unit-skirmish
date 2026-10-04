@@ -11,6 +11,7 @@ import { createGateTimbers, updateGateTimbers } from '../src/palisade-gate-visua
 import { previewWallPlacement } from '../src/wall-placement.mjs';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { constructionWorkArea, constructionAssignment } from '../src/construction-work-intent.mjs';
+import { activeWorkIntent, createConstructionWorkIntent } from '../src/work-intent.mjs';
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const client = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
@@ -240,7 +241,7 @@ test('actual wall admission permits approaches through open gate topology while 
   activeMoveRoutesRemainConnected:()=>true,
   BUILDING_DEFINITIONS:{'palisade-wall':{cost:{food:0,wood:15},buildSeconds:5,maxHp:300,footprint:1}},teamFood:[0,0],teamWood:[250,250],
   navigationRevision:1,dirty:false,attackFlowFields:new Map(),replanPathsBlockedBy(){},assignFormationMove(){},
-  activeWallBuildOrder,constructionWorkArea,constructionAssignment,palisadeConstructionRetries:new WeakMap(),
+  activeWallBuildOrder,activeWorkIntent,createConstructionWorkIntent,constructionWorkArea,constructionAssignment,palisadeConstructionRetries:new WeakMap(),
   sendOrderNotice:(_,__,notice)=>notices.push(notice),rejectBuild:(_,reason)=>notices.push('BUILD REJECTED · '+reason),
  });
  c.buildingBlocked[30]=gateOpen?0:1;
