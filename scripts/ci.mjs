@@ -239,6 +239,7 @@ run(['--test', 'scripts/economy-checkpoint.test.mjs', 'scripts/economy-server.te
 run(['--test', 'scripts/economy-client.test.mjs'], 'Typed economy client profile, cargo and affordability');
 run(['--test', 'scripts/economy-recovery-native.test.mjs'], 'Native economy profile identity and exact rejected recovery preservation');
 run(['scripts/farm-scenario.mjs', '--fog'], 'Both-seat paid Farm planting, finite depletion and recovery');
+run(['scripts/farm-stone-paid-scenario.mjs'], 'Shipped paid Farm/Watchtower, natural Stone handoff and cold recovery');
 run(['--test', 'scripts/depot-economy-analysis.test.mjs', 'scripts/depot-source-snapshot.test.mjs'], 'Depot measurement placements, accounting, payback math and source provenance');
 run(['scripts/depot-economy-scenario.mjs', '--smoke'], 'Paid depot measurement smoke and both-seat conservation');
 run(['--test', 'scripts/roster-building-ui.test.mjs'], 'Registry building options');
