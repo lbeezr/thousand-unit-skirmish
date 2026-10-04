@@ -162,3 +162,16 @@ The existing cream/sage rider, short sword and chestnut horse; Boughward goblin,
 [Human direction](../../../docs/art-direction/human-mounted-v1/README.md), [Boughward direction](../../../docs/art-direction/boughward-roster-v1/README.md) and both documented [Human](../../../docs/art-direction/human-mounted-v1/extracted/scout/extraction.json)/[Boughward](../../../docs/art-direction/boughward-roster-v1/extracted/scout/extraction.json) extractions retain selected initial appearances and current default associations. Runtime manifests remain `runtime-candidate`: this reuse does not accept motion, heading fidelity, anatomy/root calibration or native HUD recognition.
 
 Original and private actual-size color/grayscale comparisons were independently inspected. At 52px, mount family and equipment survive. At 20px, similar Human mounted silhouettes lose detail; complete written role names, both costs and availability reasons remain primary. No generation, source-pixel edit, private publication or held/rejected art is introduced. Native compact appearance/keyboard and containing hosted delivery remain separately open in the [capture recipe](../../../docs/hud-art-integration.md#ordinary-game-capture-recipe-and-remaining-evidence).
+
+## Rider reuse — 4 October 2026
+
+The existing steel-capped rider, upright spear, shield and horse; Boughward orc, long spear, shield and tusked boar remain intact in the unchanged 52px Selection and decorative 20px product slots. Whole-image containment preserves rider and mount instead of inventing a bust portrait. Both PNGs are byte-identical copies of the inspected established idle originals.
+
+| Runtime source | Inspected original | Dimensions | SHA-256 |
+| --- | --- | --- | --- |
+| [Human Rider](human-rider-source.png) | [Isolated idle](../../../docs/art-direction/human-mounted-v1/extracted/rider/00.png) | 467 × 523 | `1e8f9cbecbcdbbb6e918bd195822c782dcd86815aa8f7d971d4a0b6d18b85d1a` |
+| [Boughward Rider](boughward-rider-source.png) | [Isolated idle](../../../docs/art-direction/boughward-roster-v1/extracted/rider/00.png) | 552 × 618 | `5ee0db0d065ab004b15fb2846dd2c7a90ca2d0ed32d952a256dd58938c32a535` |
+
+[Human direction](../../../docs/art-direction/human-mounted-v1/README.md), [Boughward direction](../../../docs/art-direction/boughward-roster-v1/README.md) and both documented [Human](../../../docs/art-direction/human-mounted-v1/extracted/rider/extraction.json)/[Boughward](../../../docs/art-direction/boughward-roster-v1/extracted/rider/extraction.json) extractions retain selected initial appearances and current default associations. Runtime manifests remain `runtime-candidate`: this reuse does not accept motion, heading fidelity, anatomy/root calibration or native HUD recognition.
+
+Original and private actual-size color/grayscale comparisons were independently inspected. At 52px, mount family and equipment survive. At 20px, similar Human mounted silhouettes lose detail; complete written role names, both costs and availability reasons remain primary. No generation, source-pixel edit, private publication or held/rejected art is introduced. Native compact appearance/keyboard and containing hosted delivery remain separately open in the [capture recipe](../../../docs/hud-art-integration.md#ordinary-game-capture-recipe-and-remaining-evidence).
