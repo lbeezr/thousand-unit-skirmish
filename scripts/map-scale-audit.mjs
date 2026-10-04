@@ -205,6 +205,7 @@ export function auditMap(map, constants) {
   const reachableCells = trees.map(tree => count(tree.distance.map(d => Number.isFinite(d) ? 1 : 0)));
   return { id: map.id, name: map.name, pool: map.region || map.audio?.packId?.startsWith('vaelora-') ? 'regional' : 'lab',
     purpose: ['shore-fishing', 'meshy-resource-review'].includes(map.id) ? 'micro-fixture'
+      : map.id === 'siltmouths-confluence-grounds' ? 'admitted-test-arena'
       : map.region ? 'regional-skirmish' : 'lab',
     defaultPvp: map.id === constants.defaultMapId, seededPve: PVE_MAP_IDS.includes(map.id),
     geometry: { columns: w, rows: h, cellSideWorldUnits: 1, worldWidth: w, worldHeight: h, area: size,
