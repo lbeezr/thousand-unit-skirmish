@@ -105,16 +105,20 @@ Move, explicit Move, Patrol/Follow, attack-move and water selection retain their
 earlier behavior. Only an eligible selected Worker receives finish-construction
 help; a movement mode never advertises an impending Build command.
 
-Visual backing: the existing [Food symbol](../assets/ui/icons/food.svg),
-approved [Worker portrait treatment](../assets/ui/portraits/PROVENANCE.md) and
-selected [Farm production reference](art-direction/frontier-economy-meshy-v1/farm-reference-v1.png)
-support the compact identity and planted-plot description. The new
-[Farm reference/model record](art-direction/frontier-economy-meshy-v1/README.md)
-is a preserved production study, not approved selection artwork or a shipped
-crop model. The card labels the existing Food symbol, identifies the temporary
-House model, and links the exact public design study in a new tab. It publishes
-no private source, copies no art and adds no HTTP admission. Building01a0fcf5
-retains approved Farm illustration/runtime art; that distinct asset is a gap.
+Visual backing: the admitted default [Frontier Farm lifecycle captures](../assets/buildings/frontier-economy-models-v1/README.md)
+now supply the existing 52px portrait and 40px inline illustration. A fixed
+view-01 CSS viewport preserves the planted field, construction scaffold or bare
+exhausted soil; registered damage variants remain distinct. [Exact hashes and
+framing](../assets/ui/portraits/PROVENANCE.md#farm-runtime-reuse--4-october-2026)
+record original pixels inspected at both compact sizes in color/grayscale.
+Authoritative completion controls food availability: unfinished plots never use
+productive or exhausted art, even at 100% progress. Unknown state or image errors
+retain the labelled [Food symbol](../assets/ui/icons/food.svg) and written facts.
+The existing public [Farm design study](art-direction/frontier-economy-meshy-v1/farm-reference-v1.png)
+link stays in its stable node; it remains a production reference. No new image,
+private source or HTTP admission is published. The [world-art QA](qa-frontier-economy-art-2026-10-04.md)
+establishes the default battlefield family; actual compact HUD framing,
+keyboard behavior and identified containing delivery remain separate acceptance.
 
 Small flow storyboard: click your plot → compact Food plot/stock identity;
 open its portrait → current health, description, source-study link and Worker

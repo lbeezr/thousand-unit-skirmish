@@ -228,6 +228,9 @@ h2 { font-size: 16px; font-weight: 700; }
 .building-selection-art { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
 .building-selection-art[hidden], .building-selection-description[hidden], .building-selection-instruction[hidden] { display: none; }
 .building-selection-art img { flex: 0 0 40px; }
+.farm-selection-art-frame { display: block; position: relative; flex: 0 0 40px; width: 40px; height: 40px; overflow: hidden; }
+.farm-selection-art-frame[hidden] { display: none; }
+.farm-selection-art-frame img { position: absolute; max-width: none; height: auto; }
 .building-selection-art figcaption { color: #a8b49e; font: 500 10px/1.45 'DM Mono', monospace; }
 .building-selection-description, .building-selection-instruction { margin: 10px 0 0; color: #c8d7bb; font: 500 11px/1.5 'Manrope', sans-serif; }
 .building-selection-actions { display: none; gap: 7px; margin-top: 12px; }
