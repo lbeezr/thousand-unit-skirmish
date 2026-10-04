@@ -11,6 +11,7 @@ import * as THREE from 'three';
 import { createUnitSpriteRuntime, normalizedDirection, spriteActionClip } from '../src/unit-sprite-runtime.mjs';
 import { workerWorkAction } from '../src/worker-work-presentation.mjs';
 import { shouldUpdateUnitTransformForFrame } from '../src/unit-lod-state.mjs';
+import { decodeAnimationCells } from './unit-animation-cells.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const outputArg = process.argv.slice(2).find(a => a.startsWith('--output='));
@@ -34,7 +35,7 @@ const directions = ['north', 'north-east', 'east', 'south-east', 'south', 'south
 const directories = { human: 'cast-human-sprite-v3', spearman: 'spearman-sprite-v1' };
 const packs = Object.fromEntries(Object.entries(directories).map(([role, dir]) =>
   [role, JSON.parse(readFileSync(path.join(root, 'assets/units', dir, 'sprite-atlas-pack-v1.json')))]));
-const pixels = JSON.parse(execFileSync('python3', [path.join(root, 'scripts/unit-animation-cells.py')], { encoding: 'utf8' }));
+const pixels = decodeAnimationCells(root, packs, directories);
 const report = { schemaVersion: 1, scope: 'CPU-client-displacement-selector-clock-UV-and-source-pixels',
   sourceRevision: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
   sourceDirty: execFileSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).trim() !== '',
@@ -99,13 +100,14 @@ try {
         const start = unit.spriteClockStartedAt;
         if (continuingClock !== null) assert.equal(start, continuingClock, 'changing movement bearing preserves clock');
         const clip = spriteActionClip(clips, 'walk', requestedHeading, null, role, true);
+        const exactHeadingFrames = new Set(clip.sequence.map(item => item.frameId));
         assert.equal(clip.directionId, requestedHeading, 'selector must retain displacement heading');
         for (let n = 0; n < 10; n++) row.samples.push(step(dx, dz));
         const settled = row.samples.slice(5);
         for (const sample of settled) {
           assert.equal(sample.direction, requestedHeading, 'eased unit heading must converge to displacement');
           assert.equal(sample.velocityHeading, requestedHeading, 'actual client velocity must match requested bearing');
-          assert.ok(sample.frameIds.every(id => id.includes(`-${requestedHeading}-`)), 'UV cell must face actual bearing');
+          assert.ok(sample.frameIds.every(id => exactHeadingFrames.has(id)), 'UV cell must face actual bearing');
           let boundary = 0;
           const period = clip.sequence.reduce((sum, item) => sum + item.durationMs, 0);
           const phase = (sample.now - start) % period;
