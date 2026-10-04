@@ -38,6 +38,18 @@ ordinary. [Small evidence](qa-threefold-basin-2026-10-04.md) separates static,
 paid/native and capacity receipts from deployed/browser acceptance. Small's
 Skirmish registry admission merged in [PR242](https://github.com/lbeezr/thousand-unit-skirmish/pull/242).
 
+## Riven Escarpment Medium candidate
+
+**Veyrholds · Riven Escarpment** is a 224×224 Medium source candidate. Twin
+escarpments surround a low rift, with two broad low passes and two raised routes;
+reachable ridge ramps, flat home campuses and three expansion pockets per seat
+use existing elevation. Its 207-unit route takes 79.6 nominal Worker seconds.
+[Medium measurements and acceptance](qa-riven-escarpment-2026-10-04.md) separate
+geometry, bounded native diagnostics and rendered testing. It has Authored
+elimination fallback; Skirmish/PvE admission remains separate. The
+[elevation assessment](map-elevation-capabilities.md) describes current height,
+pathing and geometry limits for dramatic maps.
+
 ## Confluence Grounds admitted testing arena
 
 **Siltmouths · Confluence Grounds** is a new 160 × 160 multi-purpose Practice

@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "nativeSource": "3750ef0911e751f8148f3bb4aa49b422fc7a86a4",
+  "nativeSourceDirty": false,
+  "mapId": "veyrholds-riven-escarpment",
+  "mapSHA256": "42824ee5b4a4f9ef63df3961c2737ca37d3f71a61937d55860dec830ec38d2eb",
+  "nativePassed": true,
+  "coldRecovery": true,
+  "peakServerRssBytes": 111190016,
+  "capturedBudgetEnvelope": {
+    "sampledWindows": 66,
+    "tickP95PeakMs": 4.232,
+    "tickMaxMs": 4.494,
+    "startLagP95PeakMs": 2.548,
+    "startLagMaxMs": 8.292,
+    "maximumPlanningSliceMs": 2.754,
+    "initialTickWindowsWithoutLag": 0,
+    "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+    "passed": true
+  },
+  "host": {
+    "platform": "linux",
+    "arch": "x64",
+    "cpus": 5,
+    "cpuModel": "AMD EPYC 7763 64-Core Processor",
+    "memoryBytes": 18882699264,
+    "loadBefore": [
+      0.04,
+      0.05,
+      0.02
+    ],
+    "isolated": false,
+    "loadAfter": [
+      0.21,
+      0.09,
+      0.03
+    ]
+  },
+  "workload": {
+    "loads": [
+      24
+    ],
+    "wavesPerLoad": 3,
+    "minimumWallSecondsPerWave": 10,
+    "minimumGameTicksAfterAcceptance": 300,
+    "fog": true,
+    "opening": "4 Workers per seat plus Infantry; existing selectArmySize diagnostics above 24",
+    "memoryStopBytes": 536870912,
+    "capacityClaim": false,
+    "fullArmyArrival": false,
+    "paidEconomy": false,
+    "browser": false,
+    "hosted": false,
+    "clockMethod": "checkpoint game seconds divided by checkpoint capture savedAt wall timestamps within each wave",
+    "noticeMethod": "clientOrderToken final notice receipt; first observed movement from an authoritative stopped checkpoint baseline, neither is exact server application"
+  },
+  "waves": [
+    {
+      "targetRegion": "north-pass",
+      "targetZ": -24.5,
+      "finalNoticeReceiptMs": [
+        3.645,
+        4.002
+      ],
+      "firstObservedMovementReceiptMs": [
+        92.593,
+        92.898
+      ],
+      "observedGameTicksAfterAcceptance": 300,
+      "movedBySeat": [
+        12,
+        12
+      ],
+      "clock": {
+        "gameSeconds": 10.999999999999968,
+        "wallSeconds": 11.001,
+        "factor": 0.9999090991727996
+      },
+      "skippedSlotDelta": 0,
+      "routeFailures": [
+        0,
+        0
+      ],
+      "checkpointBytes": 275778
+    },
+    {
+      "targetRegion": "high-flank",
+      "targetZ": -79.5,
+      "finalNoticeReceiptMs": [
+        4.238,
+        5.527
+      ],
+      "firstObservedMovementReceiptMs": [
+        129.592,
+        129.913
+      ],
+      "observedGameTicksAfterAcceptance": 300,
+      "movedBySeat": [
+        12,
+        12
+      ],
+      "clock": {
+        "gameSeconds": 11.000000000000378,
+        "wallSeconds": 11.002,
+        "factor": 0.999818214870058
+      },
+      "skippedSlotDelta": 0,
+      "routeFailures": [
+        0,
+        0
+      ],
+      "checkpointBytes": 278637
+    },
+    {
+      "targetRegion": "causeway",
+      "targetZ": 73.5,
+      "finalNoticeReceiptMs": [
+        37.418,
+        40.333
+      ],
+      "firstObservedMovementReceiptMs": [
+        56.606,
+        57.178
+      ],
+      "observedGameTicksAfterAcceptance": 300,
+      "movedBySeat": [
+        12,
+        12
+      ],
+      "clock": {
+        "gameSeconds": 11.000000000000135,
+        "wallSeconds": 11.001,
+        "factor": 0.9999090991728148
+      },
+      "skippedSlotDelta": 0,
+      "routeFailures": [
+        0,
+        0
+      ],
+      "checkpointBytes": 288451
+    }
+  ],
+  "diagnostics": [
+    {
+      "file": "diagnostic-brief-schema.json.gz",
+      "status": "failed before gameplay; initial authored brief exceeded 120 characters; corrected in 3750ef09"
+    },
+    {
+      "file": "diagnostic-dependency-dirty.json.gz",
+      "status": "passed with sourceDirty:true from an untracked dependency symlink; retained as diagnostic, not clean acceptance"
+    }
+  ],
+  "limits": [
+    "Three short 24-unit order windows on a shared host; no hardware comparison.",
+    "No full-army arrival, actual crossing-use, paid city/combat, browser, deployed or supported-capacity claim.",
+    "Static and public protocol source identities remain separate from the native diagnostic."
+  ],
+  "nativeStoredEnvelope": {
+    "sampledWindows": 65,
+    "tickP95PeakMs": 2.31,
+    "tickMaxMs": 4.494,
+    "startLagP95PeakMs": 1.573,
+    "startLagMaxMs": 8.292,
+    "maximumPlanningSliceMs": 2.754,
+    "initialTickWindowsWithoutLag": 0,
+    "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+    "passed": true
+  },
+  "envelopeDerivation": {
+    "method": "capturedBudgetEnvelope(all retained samples, every wave plan)",
+    "source": "scripts/map-capacity-report-check.mjs",
+    "sourceSHA256": "d1df685f4e0f3f7a5a11d7bb977a8499c1a9ac1db7a7a1d173758fda9e968cd2",
+    "note": "Raw native report preserved; its stored 65-window envelope preceded the cold sample. This summary includes all 66 windows."
+  }
+}
