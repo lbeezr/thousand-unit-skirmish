@@ -203,6 +203,16 @@ export async function runForestPlug(team, { maxTicks = 1800, initialCheckpoint =
     const initialTarget = worker.gatherForestCell;
     assert.equal(initialTarget, 23 * 64 + (team ? 32 : 30));
     const expectedCuts = [initialTarget, plugCell].sort((a, b) => a - b);
+    function conservedStock(replay, actor) {
+      const stock = replay.checkpoint().state.forestStocks;
+      // Checkpoints store changed forest cells; omitted authored cells retain six.
+      const drawn = stock.reduce((sum, [, value]) => sum + 6 - value, 0);
+      assert.ok(Math.abs(replay.wood[team] - woodBefore + actor.cargo - drawn) < .0001,
+        'every drawn Wood is banked or carried through loaded recovery');
+      assert.ok(stock.every(([cell, value]) => value === 6 || expectedCuts.includes(cell)),
+        'stock outside the selected frontier and plug remains unchanged');
+      return stock;
+    }
     for (let tick = 0; tick < maxTicks && worker.cargo < 2; tick++) r.step();
     assert.ok(worker.cargo >= 2 && worker.cargo < 6, 'a genuinely loaded Worker checkpoint precedes depletion');
     const loaded = r.checkpoint(); r.validate(loaded);
@@ -210,6 +220,7 @@ export async function runForestPlug(team, { maxTicks = 1800, initialCheckpoint =
     const rr = restored.replay, restoredWorker = rr.units.find(u => u.id === worker.id);
     assert.equal(restoredWorker.generation, worker.generation); assert.equal(restoredWorker.cargo, worker.cargo);
     assert.deepEqual(rr.wood, r.wood, 'loaded recovery preserves both banks');
+    conservedStock(r, worker); conservedStock(rr, restoredWorker);
     const loadedCargo = worker.cargo, loadedTick = r.tick;
     const trace = createHash('sha256');
     for (let tick = 0; tick < maxTicks && !r.isWalkable(plugCell); tick++) {
@@ -217,10 +228,12 @@ export async function runForestPlug(team, { maxTicks = 1800, initialCheckpoint =
       assert.deepEqual(rr.checkpoint().state.units, r.checkpoint().state.units, 'loaded checkpoint continuation retains authority without remapping');
       assert.deepEqual(rr.checkpoint().state.forestStocks, r.checkpoint().state.forestStocks);
       assert.deepEqual(rr.wood, r.wood, 'restored harvesting cannot change banked Wood');
+      conservedStock(r, worker); conservedStock(rr, restoredWorker);
       trace.update(JSON.stringify(r.checkpoint().state.units) + '\n');
     }
     assert.ok(r.isWalkable(plugCell) && rr.isWalkable(plugCell), 'normal harvest clears the plug');
     assert.ok(r.navigationRevision > revisionBefore); assert.equal(rr.navigationRevision, r.navigationRevision);
+    const woodAtPlugClear = r.wood[team], cargoAtPlugClear = worker.cargo;
     for (const [replay, actor] of [[r, worker], [rr, restoredWorker]]) {
       order(replay, team, [actor], 'stop'); order(replay, team, [actor], 'returnCargo');
     }
@@ -228,13 +241,16 @@ export async function runForestPlug(team, { maxTicks = 1800, initialCheckpoint =
       r.step(); rr.step();
       assert.deepEqual(rr.checkpoint().state.units, r.checkpoint().state.units);
       assert.deepEqual(rr.wood, r.wood, 'both restored and original deliveries bank the same Wood');
+      conservedStock(r, worker); conservedStock(rr, restoredWorker);
     }
     assert.equal(worker.cargo, 0); assert.equal(restoredWorker.cargo, 0);
     for (const replay of [r, rr]) assert.ok(Math.abs(replay.wood[team] - woodBefore - expectedCuts.length * 6) < .0001);
-    const stock = r.checkpoint().state.forestStocks;
-    assert.deepEqual(stock.filter(([, value]) => value < 6).map(([cell]) => cell), expectedCuts,
-      'only the selected frontier and plug finance the deposit');
-    assert.ok(expectedCuts.every(cell => new Map(stock).get(cell) === 0), 'both cells are fully depleted');
+    for (const [replay, actor] of [[r, worker], [rr, restoredWorker]]) {
+      const stock = conservedStock(replay, actor);
+      assert.deepEqual(stock.filter(([, value]) => value < 6).map(([cell]) => cell), expectedCuts,
+        'only the selected frontier and plug finance either deposit');
+      assert.ok(expectedCuts.every(cell => new Map(stock).get(cell) === 0), 'both cells are fully depleted');
+    }
     order(r, team, actors, 'move', { x: team ? -12.5 : 12.5, z: .5, formation: 'box' });
     const crossing = measureCrossing(r, actors, spec, map, maxTicks);
     assert.deepEqual(r.units.map(u => u.hp), health, 'combat cannot confound plug harvesting or crossing');
@@ -243,6 +259,7 @@ export async function runForestPlug(team, { maxTicks = 1800, initialCheckpoint =
       beforeRoutes, before: summarizeRoutes(beforeRoutes), after: crossing,
       harvest: { gatherCommand, plugCell, initialTarget, loadedTick, loadedCargo: rounded(loadedCargo), restart: 'fresh fixed-tick adapter; checkpoint validator/restore',
         exactLoadedContinuation: true, continuationTraceSha256: trace.digest('hex'), revisionBefore, revisionAfter: r.navigationRevision,
+        conservedThroughDepletion: true, woodAtPlugClear, cargoAtPlugClear: rounded(cargoAtPlugClear),
         woodBefore, woodAfter: r.wood[team], bankedWood: rounded(r.wood[team] - woodBefore),
         restoredWoodAfter: rr.wood[team], restoredBankedWood: rounded(rr.wood[team] - woodBefore),
         restoredZeroCargo: restoredWorker.cargo === 0, clearedCells: expectedCuts } };
