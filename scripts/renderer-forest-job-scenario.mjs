@@ -1,6 +1,9 @@
 // Owned ordinary work-loop adapter; the shared runner owns browser/server/files.
 import assert from 'node:assert/strict';
+import { writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import { forestGatherGroups } from '../src/forest-gather-group.mjs';
+import { validateCaptureContext } from './renderer-capture-context.mjs';
 
 export const id = 'forest-jobs';
 export const contextVersion = 1;
@@ -146,6 +149,7 @@ async function selectWorkers(page, ids) {
 
 /** @param {import('./renderer-capture-context.mjs').CaptureContext} context */
 export async function run(context) {
+  validateCaptureContext(context);
   const pages = [context.page, await context.openPage()];
   const bootstrap = `(${installProbe.toString()})(${projectForestJobState.toString()},${observeForestJobCycle.toString()})`;
   for (const page of pages) await page.cdp.call('Page.addScriptToEvaluateOnNewDocument', { source: bootstrap });
@@ -180,11 +184,17 @@ export async function run(context) {
     await page.cdp.call('Debugger.setBreakpointByUrl', { url: `${context.origin}/src/main.js`, lineNumber: observationLine,
       condition: `(${observeRenderedForestWorkers.toString()})()` });
   }
+  const observations = [];
   const capture = async (team, checkpoint) => {
     const page = pages[team];
     await click(page, '#camera-center-selection');
     await page.wait(`${JSON.stringify(ids[team])}.every(id=>window.__forestJobCapture.render?.workers.some(w=>w.id===id&&w.selected&&w.inView))`, 'selected Workers inside actual rendered frame', 10000);
-    return context.capture({ page, mapId: MAP_ID, checkpoint });
+    const receipt = await context.capture({ page, mapId: MAP_ID, checkpoint });
+    const observation = await page.cdp.evaluate(`(() => {const probe=window.__forestJobCapture;return {
+      tick:probe.latest.tick,wood:probe.latest.wood,frame:probe.render.frame,
+      workers:probe.latest.workers.filter(w=>${JSON.stringify(ids[team])}.includes(w.id))};})()`);
+    observations.push({ team, checkpoint, ...observation });
+    return receipt;
   };
   for (let team = 0; team < 2; team++) {
     assert.equal(ids[team].length, 2);
@@ -226,5 +236,9 @@ export async function run(context) {
     await capture(team, `seat-${team}-repeated-forest-cycles`);
   }));
   checks.sort((a, b) => a.id.localeCompare(b.id));
+  observations.sort((a, b) => a.team - b.team || a.tick - b.tick);
+  await writeFile(path.join(context.evidenceDirectory, 'forest-job-observations.json'), JSON.stringify({
+    schemaVersion: 1, source: context.source, mapId: MAP_ID, mode: 'human-pvp-skirmish',
+    selectedPerSeat: 2, observations, checks }, null, 2), { flag: 'wx' });
   return { status: checks.every(check => check.passed) ? 'passed' : 'failed', checks };
 }

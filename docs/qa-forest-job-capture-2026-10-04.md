@@ -29,7 +29,10 @@ it writes diagnostic storage and never mutates game state. Privacy checks
 reject foreign Worker disclosure near these separated forests, opposite-seat
 bank disclosure or current forest-stock changes outside current vision.
 The shared runner binds all screenshots to its exact clean source SHA/release
-digest and limits this case to three minutes. The feature probe is bounded to
+digest and limits this case to three minutes. The PR346 artifact-directory
+contract retains `forest-job-observations.json` beside the screenshot receipts:
+each phase records advancing frame/tick, own selected Workers and credited bank,
+without copying private masks or raw messages. The feature probe is bounded to
 2,400 observations per seat and does not retain raw histories.
 
 These inputs are native gameplay orders through the existing diagnostic client
