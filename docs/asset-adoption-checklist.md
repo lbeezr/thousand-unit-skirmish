@@ -55,11 +55,16 @@ Mac QA machine was reported offline at the latest routing check.
 ## Buildings, wildlife, fishing and HUD
 
 Human foot-unit coverage is retained in the [owned workstream](human-foot-unit-coverage.md).
-The Infantry v4 default candidate reuses 48 complete public poses for all eight
-idle/walk/attack/defeat headings, with zero new poses. Default binding/HTTP/release
-are author-owned checks; independent review, containing deployment and ordinary
-in-game observation remain incomplete. Parent Railway/Mac routes support those
-steps, and the art owner retains acceptance. No paid or private-source work.
+PR228 merged Infantry v4 at `b6a926c45db1ff5c8be9099ef8ae3704f73b6159` before the
+user's visual-direction hold. Its public-source registration, 48 reused poses,
+provenance and runtime admission remain preserved, but the gold costume/round
+shield is not the established Human identity. The corrective default restores
+Infantry v3; Archer v3 PR230 and blocky Spearman v2 PR241 remain unmerged drafts.
+The established Infantry v3/Archer v2/Spearman v1 family retains 63 genuine
+action-heading source gaps, and all 63 deployed/native cells remain unverified.
+Art owner retains identity-preserving production; Mac task `01a106da-40ec` traces
+live state/facing separately, with parent Railway/environment support. No new
+generation, deletion, private-source publication or deployment is claimed.
 
 Package paths are under `assets/` unless linked otherwise. Release inclusion
 comes from an actual clean `release:pack` at follow-up `1757064`: 1,113 files,
