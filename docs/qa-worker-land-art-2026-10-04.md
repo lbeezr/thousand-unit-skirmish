@@ -371,7 +371,7 @@ open at this checkpoint; no runtime/economy/clock helper changed.
 
 
 [Clean NW wood release](qa-evidence/worker-land-art-2026-10-04/wood-north-west-clean-release.json)
-records exact clean code `02ae8c55e68b82fa396d14541615a27c2c5d1b1c`,1175files and
+records exact clean code `02ae8c55e68b82fa396d14541615a27c2c5d1b1c`,1176 files and
 `sha256:0d2a0acc4286e1f610ccb1997afd3284b762496001a3e4648144137cefe5477e`.
 The subsequent receipt/document checkpoint does not pretend to be the measured
 source; all runtime files are included in the existing default packaging path.
