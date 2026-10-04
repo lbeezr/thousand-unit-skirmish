@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, BARRACKS_PORTRAIT, FARM_PORTRAIT, FARM_PORTRAITS, farmSelectionPortrait } from '../src/selection-portrait.mjs';
+import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SPEARMAN_PORTRAITS, BARRACKS_PORTRAIT, FARM_PORTRAIT, FARM_PORTRAITS, farmSelectionPortrait } from '../src/selection-portrait.mjs';
 import { buildingSpriteUrl } from '../src/building-sprites.mjs';
 import { moduleImports } from './module-imports.mjs';
 import { BROWSER_ENTRYPOINTS } from './check-runtime-imports.mjs';
@@ -88,16 +88,22 @@ for (const [role, source, sha256] of [
   ['boughward-infantry', 'docs/art-direction/boughward-roster-v1/extracted/infantry/00.png', '17f6ff8f66274a00c1206301b00a8e298ffc7692ec307975c77300e2a62cb33c'],
   ['archer', 'docs/art-direction/human-roster-v1/source/archer-idle-facings.png', '29c3b3a59b3391797f34c6c29c05dc664c9bc9551e94abf56c0b132e9a159520'],
   ['boughward-archer', 'docs/art-direction/boughward-roster-v1/extracted/archer/00.png', 'acac85ca7b45351663820ca69e8994aca8c74910915aa7d0fb164c7f9c6ce635'],
+  ['spearman', 'docs/art-direction/human-roster-v1/extracted/spearman/idle/02.png', 'a1ec9294586ed22bfad9e27d1fa1fd5432bd2d4723d5532e7d0a9b188eae010e'],
+  ['boughward-spearman', 'docs/art-direction/boughward-roster-v1/extracted/spearman/00.png', 'f31d37ddc28bec1aa5dc7dfd17eaa20f9ea5a9f2abc776ba8e9c248a9559cc8d'],
 ]) {
-  const portrait = WORKER_PORTRAITS[role] || INFANTRY_PORTRAITS[role] || ARCHER_PORTRAITS[role], resource = portrait.asset.slice(1);
+  const portrait = WORKER_PORTRAITS[role] || INFANTRY_PORTRAITS[role] || ARCHER_PORTRAITS[role] || SPEARMAN_PORTRAITS[role], resource = portrait.asset.slice(1);
   assert.ok(allowedUi.has(resource), `portrait must be served: ${resource}`);
   const image = readFileSync(path.join(root, resource));
   assert.equal(createHash('sha256').update(image).digest('hex'), sha256, 'portrait reuses inspected source bytes');
   assert.deepEqual(image, readFileSync(path.join(root, source)), 'no new image or atlas face enlargement');
   assert.equal(image.readUInt32BE(16), portrait.sourceWidth);
-  assert.ok(portrait.cropX >= 0 && portrait.cropY >= 0 && portrait.cropSize > 0);
-  assert.ok(portrait.cropX + portrait.cropSize <= portrait.sourceWidth);
-  assert.ok(portrait.cropY + portrait.cropSize <= image.readUInt32BE(20));
+  if (portrait.contain) {
+    assert.equal(image.readUInt32BE(20), portrait.sourceHeight, 'whole-image equipment framing uses exact dimensions');
+  } else {
+    assert.ok(portrait.cropX >= 0 && portrait.cropY >= 0 && portrait.cropSize > 0);
+    assert.ok(portrait.cropX + portrait.cropSize <= portrait.sourceWidth);
+    assert.ok(portrait.cropY + portrait.cropSize <= image.readUInt32BE(20));
+  }
 }
 const barracksRoot = 'assets/buildings/barracks-sprite-test-v1';
 const farmRoot = 'assets/buildings/frontier-economy-models-v1';

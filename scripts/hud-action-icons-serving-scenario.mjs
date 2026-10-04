@@ -70,6 +70,8 @@ try {
     ['boughward-infantry-source.png', '17f6ff8f66274a00c1206301b00a8e298ffc7692ec307975c77300e2a62cb33c'],
     ['human-archer-source.png', '29c3b3a59b3391797f34c6c29c05dc664c9bc9551e94abf56c0b132e9a159520'],
     ['boughward-archer-source.png', 'acac85ca7b45351663820ca69e8994aca8c74910915aa7d0fb164c7f9c6ce635'],
+    ['human-spearman-source.png', 'a1ec9294586ed22bfad9e27d1fa1fd5432bd2d4723d5532e7d0a9b188eae010e'],
+    ['boughward-spearman-source.png', 'f31d37ddc28bec1aa5dc7dfd17eaa20f9ea5a9f2abc776ba8e9c248a9559cc8d'],
   ]) {
     for (const method of ['GET', 'HEAD']) {
       const response = await fetch(`${base}/assets/ui/portraits/${file}`, { method });

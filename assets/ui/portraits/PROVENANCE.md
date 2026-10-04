@@ -116,3 +116,36 @@ stock and Worker instructions remain authoritative. [The ordinary paid capture
 recipe](../../../docs/hud-art-integration.md#ordinary-game-capture-recipe-and-remaining-evidence)
 retains identified containing delivery, native crop/contrast/keyboard inspection
 and human recognition as unfinished. No native screenshot is claimed by CPU studies.
+
+## Spearman reuse — 4 October 2026
+
+These byte-identical isolated idle figures reuse the established Human Spearman
+v1 and Boughward roster. Both hands, the long spear shaft/tip and clothing remain
+inside the existing 52px Selection and decorative 20px product frames using
+whole-image `object-fit: contain`. A square upper-body comparison cut the Human
+spear butt or Boughward spear point; it was rejected. Stable image nodes clear
+contain styles when returning to existing cropped Worker/building portraits.
+
+| Runtime source | Inspected original | Dimensions | SHA-256 |
+| --- | --- | --- | --- |
+| [Human Spearman](human-spearman-source.png) | [Isolated idle 02](../../../docs/art-direction/human-roster-v1/extracted/spearman/idle/02.png) | 337 × 433 | `a1ec9294586ed22bfad9e27d1fa1fd5432bd2d4723d5532e7d0a9b188eae010e` |
+| [Boughward Spearman](boughward-spearman-source.png) | [Isolated idle 00](../../../docs/art-direction/boughward-roster-v1/extracted/spearman/00.png) | 702 × 525 | `f31d37ddc28bec1aa5dc7dfd17eaa20f9ea5a9f2abc776ba8e9c248a9559cc8d` |
+
+The [Human appearance-only review](../../../docs/art-direction/human-roster-v1/review.json),
+[retained identity](../../../docs/human-foot-unit-coverage.md) and
+[connected-figure extraction](../../../docs/art-direction/human-roster-v1/extracted/spearman/idle/extraction.json)
+support the cream/sage painted figure and two-handed spear. This excludes held
+Spearman v2 PR241 and rejected PR25/230 sources. The
+[Boughward direction](../../../docs/art-direction/boughward-roster-v1/README.md)
+and [extraction](../../../docs/art-direction/boughward-roster-v1/extracted/spearman/extraction.json)
+retain the green orc/burgundy clothing and existing static pose.
+
+Original pixels and private actual-size 52px/20px color/grayscale comparisons
+were inspected independently. The whole long-weapon silhouette remains readable
+at 52px; face/hand detail diminishes at 20px. Full names, both resource costs,
+availability reasons and role facts remain written, including registered 3×
+damage versus mounted targets. Delivery adds 436,514 bytes across two public
+originals without generation or image editing. Source approval and CPU/DOM/HTTP
+checks do not establish accepted motion, native compact appearance or human
+recognition; the [ordinary paid capture recipe](../../../docs/hud-art-integration.md#ordinary-game-capture-recipe-and-remaining-evidence)
+retains that unfinished verification.

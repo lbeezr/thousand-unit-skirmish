@@ -42,7 +42,20 @@ export const ARCHER_PORTRAITS = Object.freeze({
   }),
 });
 
-const UNIT_PORTRAITS = Object.freeze({ ...WORKER_PORTRAITS, ...INFANTRY_PORTRAITS, ...ARCHER_PORTRAITS });
+export const SPEARMAN_PORTRAITS = Object.freeze({
+  spearman: Object.freeze({
+    entryId: 'unit.spearman', appearanceFamily: 'Human',
+    asset: '/assets/ui/portraits/human-spearman-source.png',
+    sourceWidth: 337, sourceHeight: 433, contain: true,
+  }),
+  'boughward-spearman': Object.freeze({
+    entryId: 'unit.spearman', appearanceFamily: 'Boughward',
+    asset: '/assets/ui/portraits/boughward-spearman-source.png',
+    sourceWidth: 702, sourceHeight: 525, contain: true,
+  }),
+});
+
+const UNIT_PORTRAITS = Object.freeze({ ...WORKER_PORTRAITS, ...INFANTRY_PORTRAITS, ...ARCHER_PORTRAITS, ...SPEARMAN_PORTRAITS });
 
 function unitPortrait(kind, appearanceRole) {
   const portrait = UNIT_PORTRAITS[appearanceRole];
@@ -62,9 +75,13 @@ function updatePortraitFrame(frame, portrait) {
     delete frame.dataset.failedAsset;
     image.setAttribute('src', portrait.asset);
   }
-  image.style.width = `${portrait.sourceWidth / portrait.cropSize * 100}%`;
-  image.style.left = `${-portrait.cropX / portrait.cropSize * 100}%`;
-  image.style.top = `${-portrait.cropY / portrait.cropSize * 100}%`;
+  // Long equipment stays intact inside the same slot; other portraits retain
+  // their inspected viewport. Clear each mode when stable nodes change roles.
+  image.style.width = portrait.contain ? '100%' : `${portrait.sourceWidth / portrait.cropSize * 100}%`;
+  image.style.height = portrait.contain ? '100%' : 'auto';
+  image.style.objectFit = portrait.contain ? 'contain' : '';
+  image.style.left = portrait.contain ? '0px' : `${-portrait.cropX / portrait.cropSize * 100}%`;
+  image.style.top = portrait.contain ? '0px' : `${-portrait.cropY / portrait.cropSize * 100}%`;
   frame.hidden = frame.dataset.failedAsset === portrait.asset;
 }
 
@@ -193,7 +210,7 @@ export function workerRoleFacts(unit, definition = UNIT_DEFINITIONS.worker, buil
       return label[0].toUpperCase() + label.slice(1);
     }).join(' · '),
     movement: `Base move: ${combat.moveSpeed} cells/s`,
-    attack: `Base attack: ${combat.damage} ${combat.attackClass} vs ${targets.join(' / ')} · ${combat.period}s interval · ${combat.range} cells range${separateStructureDamage ? ` · ${combat.structureDamage} damage vs structures` : ''}`,
+    attack: `Base attack: ${combat.damage} ${combat.attackClass} vs ${targets.join(' / ')} · ${combat.period}s interval · ${combat.range} cells range${separateStructureDamage ? ` · ${combat.structureDamage} damage vs structures` : ''}${Object.entries(combat.tagMultipliers || {}).map(([tag, multiplier]) => ` · ${multiplier}× damage vs ${tag}`).join('')}`,
     training: `${producers.map(building => building.label).join(' / ') || 'No producer'} · ${cost} · ${definition.trainSeconds}s · ${definition.population} population`,
   };
 }

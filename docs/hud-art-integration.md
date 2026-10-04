@@ -1,10 +1,10 @@
 # Selection identity and future field notes
 
-One selected living friendly Worker, Infantry or Archer has a compact portrait, name and live HP.
+One selected living friendly Worker, Infantry, Archer or Spearman has a compact portrait, name and live HP.
 The portrait opens the existing dismissible Selection drawer with practical role
 notes: registered abilities, live HP, base movement/attack stats and training
-producer, cost, duration and population. Infantry/Archer notes retain the separate
-structure-damage value. The same 52px slot retains the legacy Barracks lifecycle
+producer, cost, duration and population. Military notes retain separate
+structure damage and registered target multipliers. The same 52px slot retains the legacy Barracks lifecycle
 thumbnail and the Farm's admitted lifecycle illustration; both open existing
 structure details. Matching the newer default captured Barracks identity remains
 incomplete. Multiple units retain their composition summary. Unsupported
@@ -17,7 +17,7 @@ in existing labelled controls at 20 px. The Command drawer's duplicate tactical
 controls use the same files. Formation remains hidden for building details;
 Return cargo retains its distinct text, tooltip and carrying-Worker/Skiff behavior.
 
-Worker/Infantry/Archer training controls reuse the same sources as decorative 20px
+Worker/Infantry/Archer/Spearman training controls reuse the same sources as decorative 20px
 thumbnails. Product names, costs, availability reasons and commands remain on
 the existing buttons. The source image/label nodes survive live updates; an
 image error hides only the decorative frame. Legacy/model previews retain text.
@@ -68,7 +68,7 @@ drawer and restrained panel treatment remain. Worker → Infantry replaces every
 role fact and the notes group's accessible name; no Worker abilities or Town
 Center training persist. The general sourced world note remains optional.
 
-Existing public Spearman and mounted/siege illustrations are inventoried below;
+Existing public mounted/siege illustrations are inventoried below;
 their portrait/training deliveries and deliberate framing remain missing.
 Skiff and barriers have no matching approved HUD illustration. The newer
 Mill/Dock battlefield captures are separate from missing matching HUD
@@ -107,6 +107,19 @@ The stable design-study link, dismissible details, focus recovery, select audio,
 clear/replant actions and FoodTools research are unchanged. CPU source inspection
 and DOM/HTTP tests do not establish actual native HUD appearance acceptance.
 
+## Approved Spearman reuse — 4 October 2026
+
+The established painted Human Spearman v1 and Boughward isolated idle figures
+now supply the single-friendly-Spearman portrait and both dynamic Barracks
+training surfaces by default. [Source hashes and selection reasons](../assets/ui/portraits/PROVENANCE.md#spearman-reuse--4-october-2026)
+pin whole-image contain framing inside the unchanged 52px/20px slots; upper-body
+crops cut long equipment. Both hands and the spear remain intact. Full names,
+live HP, costs, guarded commands, dismissible notes and visible focus retain
+their existing behavior. Spearman notes replace Archer facts and include the
+registered 3× mounted-damage multiplier, separate structure damage and Barracks
+training. Failed/unsupported art retains written controls and notes. Returning
+to Worker or Farm clears contain styles on stable image nodes.
+
 ### Current selection and training bindings — 4 October 2026
 
 This is the current inventory; the 3 October audit below is dated source history.
@@ -115,9 +128,9 @@ This is the current inventory; the 3 October audit below is dated source history
 | --- | --- | --- |
 | Worker | Human/Boughward approved illustrations in 52px Selection and 20px training | Native framing/recognition open |
 | Infantry | Restored Human v3/Boughward illustrations; default integration [PR375](https://github.com/lbeezr/thousand-unit-skirmish/pull/375) | Containing staging `b07df557` reported successful by parent; ordinary-game acceptance open |
-| Archer | Established Human v2/Boughward idle copies in the same compact surfaces | Clean package/identified delivery and native framing/recognition remain separate evidence |
-| Farm | Existing Frontier lifecycle view-01 in 52px Selection and 40px inline figure; explicit Food symbol on failure/unknown state | World family accepted on staging `b07df557`; containing HUD delivery and actual compact native acceptance remain open |
-| Spearman | Text; approved idle sources available | Deliberate portrait framing/delivery missing |
+| Archer | Established Human v2/Boughward idle copies in the same compact surfaces; [PR387](https://github.com/lbeezr/thousand-unit-skirmish/pull/387) | Included in containing staging `34e22bed`; native framing/recognition open |
+| Farm | Existing Frontier lifecycle view-01 in 52px Selection and 40px inline figure; explicit Food symbol on failure/unknown state; [PR391](https://github.com/lbeezr/thousand-unit-skirmish/pull/391) | Parent independently confirmed Railway `e50337e8` SUCCESS at 22:31, exact `34e22bed`; actual compact visual/keyboard acceptance open |
+| Spearman | Established Human v1/Boughward idle figures contained in existing Selection and both training slots | Clean package/containing identified delivery and native framing/recognition remain separate evidence |
 | Scout / Rider | Text; approved mounted sources available | Portrait framing/delivery must preserve wolf/boar or horse identity |
 | Siege Engine | Text; approved equipment sources available | Deliberate equipment framing/delivery missing |
 | Skiff | Text | Matching approved HUD illustration missing |
@@ -169,6 +182,13 @@ login. The HUD owner retains pixel inspection and the unfinished outcome.
    Tab/source-link focus, Escape/close and clear/replant/FoodTools controls.
    Native missing-image fallback needs a bounded request failure, not stock or
    economy injection. The known cloud sandbox block is not retried or bypassed.
+6. In the paid completed Barracks, train a Spearman for 60 food / 20 wood.
+   Capture both labelled 20px controls and the selected 52px figure on each
+   effective family. Inspect the full two-handed spear, alpha edges, contrast
+   and clipping beside the full name and live HP. Check the 3× mounted fact,
+   separate structure damage, low-wood guarded activation, optional notes/link
+   focus and Escape. Repeat Archer → Spearman → Worker/Farm → group/empty to
+   verify framing resets and focus recovery at wide and narrow viewports.
 
 Static original/52px/20px CPU source pixels were inspected in color and grayscale.
 DOM tests cover effective appearance, both seats, stable nodes, truthful facts,
