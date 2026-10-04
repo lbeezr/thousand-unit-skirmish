@@ -1,5 +1,5 @@
 import { GAMEPLAY_DEFINITIONS } from './gameplay-definitions.mjs';
-import { missingTechnologyPrerequisites, technologyRequirementReason, foodWoodShortfallReason } from './gameplay-action-rules.mjs';
+import { missingTechnologyPrerequisites, technologyRequirementReason, foodWoodShortfallReason } from './rules/gameplay-action-rules.mjs';
 
 /** Derive a legal production choice without spending or querying private world geometry. */
 export function productionAction(building, kind, state, definitions = GAMEPLAY_DEFINITIONS) {

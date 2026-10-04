@@ -48,6 +48,7 @@ import {
   TERRAIN_MATERIALS, updateConstructionGroundInstances, updateLandVegetationOccupation,
   RESOURCE_STATE_ASSETS_AVAILABLE, RESOURCE_STATE_ASSET_STATUS, resourceStateAssetsReady,
 } from './environment-art.mjs';
+import { createEnvironmentInstancePicker } from './environment-instance-picking.mjs';
 import {
   RESOURCE_VISUAL_STAGES, resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages,
 } from './resource-visual-state.mjs';
@@ -501,6 +502,7 @@ scene.add(sun);
 
 const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const raycaster = new THREE.Raycaster();
+const pickEnvironmentInstance = createEnvironmentInstancePicker();
 const pointerNdc = new THREE.Vector2();
 const groundHit = new THREE.Vector3();
 const screenPoint = new THREE.Vector3();
@@ -2146,7 +2148,7 @@ resourceStateAssetsReady.then((status) => {
     refreshResourceStateFallbackTransforms();
     refreshForestStumpTransforms();
   }
-  if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state') {
+  if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state' || window.__rtsCaptureDiagnostics === true) {
     window.__rtsEnvironmentAssetStatus = status;
     window.__rtsEnvironmentCaptureCommand = (command) => sendCommand(command);
   }
@@ -4748,7 +4750,7 @@ function applyState(state, initial = false) {
 }
 
 function updateEnvironmentStateCaptureSnapshot(state) {
-  if (roomPageUrl.searchParams.get('rendererCapture') !== 'environment-state') return;
+  if (roomPageUrl.searchParams.get('rendererCapture') !== 'environment-state' && window.__rtsCaptureDiagnostics !== true) return;
   const resourceNodes = (Array.isArray(state.resourceNodes) ? state.resourceNodes : []).map((node) => {
     const definitionNode = mapDefinition?.resourceNodes?.find((row) => row.id === node.id);
     const visual = resourceNodeVisuals.get(node.id);
@@ -7424,6 +7426,7 @@ function pickResourceNodeAt(x, y, { visibleOnly = false, ownedWildlifeOnly = fal
     ...latestBuildings.filter(building => building.team === localTeam).map(farmHarvestNode).filter(Boolean)]) {
     const disclosed = authored.wildlifeSpecies === undefined ? null : latestWildlifeView?.rows.get(authored.id);
     const node = disclosed ? { ...authored, ...disclosed } : authored;
+    if (node.type === 'wood' && (latestResourceStocks.get(node.id) ?? node.stock) <= 0) continue;
     if (ownedWildlifeOnly && selectOwnedWildlife(latestWildlifeView, node.id) === null) continue;
     if (node.wildlifeSpecies !== undefined && (!disclosed || disclosed.stock <= 0
       || !wildlifePointVisible(disclosed) || !wildlifeRenderer.isAvailable(node.id))) continue;
@@ -7472,6 +7475,32 @@ function pickForestCellAt(x, y) {
     }
   }
   return nearestCell;
+}
+
+function pickHarvestableTreeAt(x, y) {
+  if (localTeam === null) return null;
+  const rect = renderer.domElement.getBoundingClientRect();
+  pointerNdc.set((x / rect.width) * 2 - 1, -(y / rect.height) * 2 + 1);
+  camera.updateMatrixWorld(true);
+  raycaster.setFromCamera(pointerNdc, camera);
+  function* candidates() {
+    // Forest cells and authored wood nodes are separate existing stock pools.
+    // Decorative understory/land vegetation never enters this candidate list.
+    for (const [cell, slot] of forestTreeSlots) {
+      const stock = latestForestStocks.get(cell) ?? 6;
+      if (!(stock > 0) || (mapDefinition?.fogOfWar && latestFogCells?.[cell] !== 2)) continue;
+      const mesh = slot.stateMeshes?.[resourceVisualStage(stock, 6)] || slot.mesh;
+      yield { forestCell: cell, mesh, index: slot.index };
+    }
+    for (const node of mapDefinition?.resourceNodes || []) {
+      if (node.type !== 'wood' || !((latestResourceStocks.get(node.id) ?? node.stock) > 0)) continue;
+      const cell = Math.floor(node.z + MAP_HEIGHT / 2) * MAP_WIDTH + Math.floor(node.x + MAP_WIDTH / 2);
+      if (mapDefinition.fogOfWar && latestFogCells?.[cell] !== 2) continue;
+      const mesh = woodTreeMeshes.get(woodTreeNodeStages.get(node.id));
+      for (const slot of woodTreeNodeSlots.get(node.id) || []) yield { node, mesh, index: slot.index };
+    }
+  }
+  return pickEnvironmentInstance(raycaster, candidates());
 }
 
 function pickBuildingAt(x, y, predicate = (building) => building.team === localTeam) {
@@ -7986,6 +8015,9 @@ function issueContextOrder(clientX, clientY, queueWaypoint = false) {
       ? pickBuildingAt(x, y, building => building.team === localTeam
         && Object.hasOwn(BUILDING_DEFINITIONS, building.type) && building.complete !== true) : null;
     if (construction) { resumeConstructionAt(construction, false); return; }
+    const tree = pickHarvestableTreeAt(x, y);
+    if (tree?.node) { issueGather(tree.node); return; }
+    if (tree?.forestCell !== undefined) { issueForestGather(tree.forestCell); return; }
     const node = pickResourceNodeAt(x, y);
     if (node) issueGather(node);
     else {
@@ -8216,8 +8248,10 @@ function syncBattlefieldCursor() {
       state.enemy = Boolean(pickAt(x, y, (unit) => unit.team !== localTeam, { advance: false }).unit);
       if (!state.enemy) state.enemyBuilding = Boolean(pickBuildingAt(x, y, (building) => building.team !== localTeam));
       if (!state.enemy && !state.enemyBuilding) {
-        state.resource = pickResourceNodeAt(x, y, { visibleOnly: true })?.type;
-        if (!state.resource) state.forest = pickForestCellAt(x, y) !== null;
+        const tree = pickHarvestableTreeAt(x, y);
+        state.resource = tree?.node?.type || pickResourceNodeAt(x, y, { visibleOnly: true })?.type;
+        state.forest = tree?.forestCell !== undefined;
+        if (!state.resource && !state.forest) state.forest = pickForestCellAt(x, y) !== null;
       }
     }
     if (cursorShift) {
