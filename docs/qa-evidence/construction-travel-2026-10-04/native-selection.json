@@ -1,0 +1,112 @@
+{
+  "head": "44c3cc83abed45703294763657a0e0e5ed6cfd01",
+  "clientSha256": "83d931c49a231d7d03c65046269bb77cecf223fae6cbc17021098d60d41468cc",
+  "observe": false,
+  "events": [
+    {
+      "team": 0,
+      "selectedBefore": [
+        0
+      ],
+      "selectedAfter": [
+        0
+      ],
+      "payload": {
+        "type": "build",
+        "buildingType": "house",
+        "ids": [
+          0
+        ],
+        "x": -18.5,
+        "z": 10.5,
+        "orientation": 0,
+        "clientOrderToken": 1,
+        "unitGenerations": [
+          1966051446
+        ]
+      },
+      "assigned": [
+        0
+      ],
+      "gatherAfter": [
+        "azure-berries",
+        "azure-timber"
+      ],
+      "queuedAfter": [
+        {
+          "destination": 1223,
+          "attackMove": false,
+          "point": {
+            "version": 2,
+            "generation": 1966051446,
+            "revision": 1,
+            "requestedX": -24.5,
+            "requestedZ": -12.5,
+            "cell": 1223,
+            "x": -24.5,
+            "z": -12.5,
+            "clearanceProfile": "land-static-circle-v1",
+            "arrivalPolicy": "exact"
+          }
+        }
+      ]
+    },
+    {
+      "team": 1,
+      "selectedBefore": [
+        8
+      ],
+      "selectedAfter": [
+        8
+      ],
+      "payload": {
+        "type": "build",
+        "buildingType": "house",
+        "ids": [
+          8
+        ],
+        "x": 18.5,
+        "z": 10.5,
+        "orientation": 0,
+        "clientOrderToken": 1,
+        "unitGenerations": [
+          1966051446
+        ]
+      },
+      "assigned": [
+        8
+      ],
+      "gatherAfter": [
+        "ember-berries",
+        "ember-timber"
+      ],
+      "queuedAfter": [
+        {
+          "destination": 1272,
+          "attackMove": false,
+          "point": {
+            "version": 2,
+            "generation": 1966051446,
+            "revision": 1,
+            "requestedX": 24.5,
+            "requestedZ": -12.5,
+            "cell": 1272,
+            "x": 24.5,
+            "z": -12.5,
+            "clearanceProfile": "land-static-circle-v1",
+            "arrivalPolicy": "exact"
+          }
+        }
+      ]
+    }
+  ],
+  "bothSeatSelectedOnly": true,
+  "cooperativeAndNearestResume": true,
+  "unselectedGatherAndQueuedMovePreserved": true,
+  "foreignStaleAndEmptyRejected": true,
+  "workerAssignmentsRecoverAndComplete": true,
+  "limits": [
+    "actual client functions in VM with rendering/picking supplied; native authoritative server, no Chrome capture",
+    "current fork source; user production/staging session and deployment not verified"
+  ]
+}
