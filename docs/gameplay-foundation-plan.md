@@ -600,3 +600,9 @@ provider status. Native commands and DOM checks do not claim ordinary pixels,
 listening or unassisted use. B1 retains qualified normal Tiny entry, selected
 Mill research and paid Farm/depot observations at the identified release. Next
 progression decision follows that observation; no further economy tech is staged.
+
+Implementation and scoped evidence are retained in
+[PR #377](https://github.com/lbeezr/thousand-unit-skirmish/pull/377). Its current
+review, default release and deployment status are recorded separately there;
+the proposed HUD/movement boundaries above are not a claim of direct owner
+agreement or ordinary-game rendered acceptance.
