@@ -4,9 +4,11 @@ import { gunzipSync } from 'node:zlib';
 import { createSkirmishTargetPolicy } from '../src/pve-skirmish-targets.mjs';
 import { toOpponentObservation } from '../src/pve-opponent.mjs';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
+import { economyRulesetRevision } from '../src/economy-profile.mjs';
+import { migrateFoodToolsCheckpoint, PRE_FOOD_TOOLS_RULESETS } from '../src/server/worker-food-tools.mjs';
 
-// Unedited checkpoints from the retained normal Medium game, not authored
-// casualty or fog states. Seeds exercise remembered-to-unknown candidate order.
+// Retained normal Medium checkpoints use the production startup migration on a
+// clone. Seeds exercise remembered-to-unknown candidate order without edited fog/casualties.
 export async function replayRememberedSearch(team, factory = createSkirmishTargetPolicy) {
   const data = JSON.parse(gunzipSync(await readFile(new URL(`fixtures/pve-medium-search/seat-${team}.json.gz`, import.meta.url))));
   const map = JSON.parse(await readFile(new URL('../maps/veyrholds-riven-escarpment.json', import.meta.url)));
@@ -26,7 +28,16 @@ export async function replayRememberedSearch(team, factory = createSkirmishTarge
     trace.push({ tick: r.observe(team).tick, command, notices });
   };
   try {
-    r.restore(data.checkpoint);
+    const initial = data.checkpoint;
+    assert.equal(initial.rulesetRevision, PRE_FOOD_TOOLS_RULESETS[initial.economyProfileId]);
+    assert.throws(() => r.restore(initial), /economy profile or gameplay ruleset revision mismatch/,
+      'strict restore still rejects the historical content pin before startup migration');
+    const migrated = migrateFoodToolsCheckpoint(structuredClone(initial));
+    const expected = structuredClone(initial);
+    expected.rulesetRevision = economyRulesetRevision(initial.economyProfileId);
+    expected.state.teamUpgrades = initial.state.teamUpgrades.map(upgrades => ({ ...upgrades, foodTools: false }));
+    assert.deepEqual(migrated, expected, 'production migration changes only the content pin and unpurchased Food Tools flags');
+    r.restore(migrated);
     assert.equal(r.observe(team).tick, data.checkpointTick);
     let policy = factory(data.seed);
     const opening = view(), first = policy.next(opening, cohort(opening))[0];
