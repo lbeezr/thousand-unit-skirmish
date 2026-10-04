@@ -105,6 +105,15 @@ walkable elevation; sprite height never substitutes for those rules.
 
 ## Asset roles
 
+Raised scree maps now reuse approved painted scree on their real vertical terrain
+faces. World-distance UVs keep texel density and corner phases stable; narrow
+opaque upper/lower palette bands soften the joins. The original wall tessellation
+and all top geometry/terrain rules remain; painted faces align with the existing
+base-surface offset. Other bases retain the plain face material. This is distinct
+from camera-facing cliff sprites and the low-ridge pilot. [Cost, checks and open
+ordinary-game appearance acceptance](qa-painted-terrace-faces.md) are owned by
+terrain integration with the parent staging/Mac coordinator.
+
 | Family | Files / role |
 | --- | --- |
 | Living ground | `meadow`, `short-grass`, `long-grass`: quiet field through coarse growth. |

@@ -81,6 +81,13 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null, 
         && /const painted = paintedGrounds\?\.texture\(name\);\s*if \(painted\) return painted;/.test(environment)
         && PAINTED_MATERIAL_NAMES.every(name => descriptor.rects.has(groundTextureName(name, {}, false, '')));
       dependencies.push(...descriptor.mipFiles);
+      if (record.screeCliffFaces) {
+        assert.ok(graph.has('src/terrain-cliff-faces.mjs'), 'normal scree cliff renderer must be reachable');
+        assert.match(environment, /const cliffFaces = createTerrainCliffFaces\(definition, \{ base,\s*texture: base === 'scree' \? groundTexture\('scree', definition\) : null/,
+          'approved scree cliff faces must consume the normal painted texture');
+        assert.match(environment, /if \(cliffFaces\) meshes\.push\(cliffFaces\)/,
+          'normal ground surfaces must render the approved scree cliff faces');
+      }
     } else if (record.probe === 'oak-depletion') {
       module = 'src/oak-depletion-atlas-runtime.mjs';
       assert.equal(relativeUrl(OAK_DEPLETION_ATLAS_MANIFEST), record.manifest);
