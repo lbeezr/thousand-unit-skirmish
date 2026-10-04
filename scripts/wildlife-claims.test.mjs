@@ -5,6 +5,7 @@ import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { createResourceNodeState, validWildlifeNodeState, validWildlifeTeam } from '../src/wildlife-state.mjs';
 import { validWildlifeMotion, sameWildlifeCell, wildlifeCell } from '../src/wildlife-motion.mjs';
 import { validResourceVariantState } from '../src/shore-fishing.mjs';
+import { validWildlifeHerdState } from '../src/wildlife-herding.mjs';
 import assert from 'node:assert/strict';
 import { resolveWildlifeClaim, stepWildlifeClaims, SHEEP_CLAIM_RADIUS, clearWildlifeClaimSegment, migrateWildlifeClaimsCheckpoint } from '../src/wildlife-claims.mjs';
 
@@ -252,6 +253,7 @@ test('actual current checkpoint validation requires a real team and disallows la
   function validate(node, definition = authored) {
     const context = vm.createContext({ definition: {width:8,height:8,resourceNodes:[definition]},state:{resourceNodes:[node]},
       finite:Number.isFinite,validWildlifeNodeState,validWildlifeTeam,validWildlifeMotion,sameWildlifeCell,validResourceVariantState,
+      validWildlifeHerdState,checkpointWildlifeWalkable:()=>true,checkpointWildlifeTraverse:()=>true,
       assertSnapshot: (condition,message)=>{assert.ok(condition,message);} });
     vm.runInContext(source,context);
   }

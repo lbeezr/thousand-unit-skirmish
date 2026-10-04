@@ -56,7 +56,8 @@ resource enum, bank, cargo kind, neutral-node schema or ore cost. Map authoring
 continues to own authored node admission; a subsequent Stone slice needs typed
 bank/debit/refund work before any node type is admitted.
 
-The existing checkpoint schema remains 22. Current content pins require valid
+Farm was introduced at checkpoint schema 22; later wildlife and mode migrations
+retain the same crop fields in the current shared checkpoint schema. Current content pins require valid
 Farm stock, construction state and owned harvest references. The exact preceding
 Skiff pin migrates Farm-free paid work, including Gate/Dock/Skiff rows, without changing
 banks, crop sources or unit identity. The older Dock pin retains its existing
@@ -91,3 +92,9 @@ and host reset. Banks, crop stock and cargo are never injected. Destruction uses
 declared HP/position fixtures with existing initial Infantry. Numerical budget
 checks tolerate accumulated floating-point noise; depleted crop stock is exactly
 zero. Automated checks do not establish native visual quality or human balance.
+
+The [natural mixed-profile proof](qa-farm-stone-paid-2026-10-04.md) adds paid
+Farm/Watchtower coexistence on shipped maps and a retained Stone load ordered
+onto an owned Farm. Stone is delivered before food gathering; Mill remains
+food-only. Its untouched cold saves and proportional refunds preserve the
+existing ledger without inventing a resource exchange rate.

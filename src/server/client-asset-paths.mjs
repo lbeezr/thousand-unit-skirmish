@@ -1,13 +1,15 @@
 // Exact public client paths; add explicit entries rather than admitting folders.
 export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/frontier-building-preview.mjs',
-  'src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/wildlife-motion.mjs', 'src/sheep-static-preview.mjs',
+  'src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/wildlife-motion.mjs', 'src/wildlife-herding.mjs', 'src/sheep-static-preview.mjs',
   'environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs',
   'water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs',
   'src/water-study-fish-binding.mjs',
   'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
   'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
   'src/room-lobby-ui.mjs', 'src/room-lobby-chat-ui.mjs', 'src/room-lobby.css',
+  'src/room-presence.mjs', 'src/match-mode-controls.mjs',
+  'src/practice-entry-controls.mjs',
   'src/game-entry.mjs', 'src/game-entry-session.mjs', 'src/game-menu.css',
   'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
   'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',

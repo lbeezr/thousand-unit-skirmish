@@ -150,9 +150,9 @@ run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor state
 run(['--test', 'scripts/hud-action-icons.test.mjs'], 'Default HUD action glyphs and semantics');
 run(['scripts/hud-action-icons-serving-scenario.mjs'], 'Default HUD action glyph HTTP bytes');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
-run(['--test', 'scripts/match-modes.test.mjs'], 'Versioned match mode policies and map compatibility');
+run(['--test', 'scripts/match-modes.test.mjs', 'scripts/match-mode-controls.test.mjs'], 'Versioned match modes and supported UI choices');
+run(['--test', 'scripts/game-entry.test.mjs', 'scripts/game-navigation.test.mjs', 'scripts/room-presence.test.mjs', 'scripts/practice-entry.test.mjs'], 'Explicit main menu, mode-aware Practice, session entry and room presence');
 run(['--test', 'scripts/match-mode-checkpoint.test.mjs'], 'Match mode checkpoint identity and legacy preservation');
-run(['--test', 'scripts/game-entry.test.mjs', 'scripts/game-navigation.test.mjs'], 'Explicit main menu and session entry');
 run(['scripts/game-menu-scenario.mjs'], 'Fresh menu matches and protected resume authority');
 run(['--test', 'scripts/room-pregame.test.mjs', 'scripts/room-lobby-ui.test.mjs'], 'Pregame authority and lobby controls');
 run(['--test', 'scripts/room-lobby-chat.test.mjs', 'scripts/room-lobby-chat-ui.test.mjs'], 'Bounded pregame room chat');
@@ -184,11 +184,14 @@ run(['--test', 'scripts/pve-home-defense.test.mjs'], 'PvE visible economic raids
 run(['--test', 'scripts/pve-regroup.test.mjs'], 'PvE bounded regroup after wipeout, paid recovery and restart replay');
 run(['--test', 'scripts/pve-skirmish-targets.test.mjs', 'scripts/pve-skirmish-replay.test.mjs'], 'Explicit Skirmish AI targets, fog fairness and paid producer restart replay');
 run(['--test', 'scripts/pve-mode-adapter.test.mjs', 'scripts/pve-skirmish-checkpoint.test.mjs'], 'Authoritative AI mode activation and canonical Skirmish recovery');
+run(['--test', 'scripts/pve-skirmish-loss.test.mjs'], 'Canonical both-seat Skirmish paid army and producer loss recovery');
 run(['--test', 'scripts/pve-objective-rotation.test.mjs'], 'PvE public objective rotation after paid obstruction and checkpoint replay');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');
 run(['--test', 'scripts/wildlife-motion.test.mjs'], 'Bounded deterministic Sheep motion');
 run(['--test', 'scripts/wildlife-claims.test.mjs'], 'Automatic Sheep claim ownership and legality');
+run(['--test', 'scripts/wildlife-herding.test.mjs', 'scripts/sheep-herding-authority.test.mjs'], 'Owner-only Sheep Herd authority, live food occupancy and checkpoint recovery');
+run(['scripts/sheep-herding-scenario.mjs'], 'Both-seat Sheep Herd, shared harvest, construction and recovery');
 run(['scripts/sheep-claims-scenario.mjs'], 'Both-seat automatic Sheep claims and recovery');
 run(['scripts/sheep-motion-scenario.mjs'], 'Default both-seat Sheep motion and recovery');
 run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');
@@ -242,6 +245,7 @@ run(['--test', 'scripts/economy-checkpoint.test.mjs', 'scripts/economy-server.te
 run(['--test', 'scripts/economy-client.test.mjs'], 'Typed economy client profile, cargo and affordability');
 run(['--test', 'scripts/economy-recovery-native.test.mjs'], 'Native economy profile identity and exact rejected recovery preservation');
 run(['scripts/farm-scenario.mjs', '--fog'], 'Both-seat paid Farm planting, finite depletion and recovery');
+run(['scripts/farm-stone-paid-scenario.mjs'], 'Shipped paid Farm/Watchtower, natural Stone handoff and cold recovery');
 run(['--test', 'scripts/depot-economy-analysis.test.mjs', 'scripts/depot-source-snapshot.test.mjs'], 'Depot measurement placements, accounting, payback math and source provenance');
 run(['scripts/depot-economy-scenario.mjs', '--smoke'], 'Paid depot measurement smoke and both-seat conservation');
 run(['--test', 'scripts/roster-building-ui.test.mjs'], 'Registry building options');

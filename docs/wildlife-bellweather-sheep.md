@@ -92,15 +92,48 @@ with exact distance ties settled by lower stable unit ID. Without a contender,
 the last owner remains. Claim changes apply only while alive: carcass/depleted
 labels stay frozen and shared Gather rights remain unchanged.
 
-Visible rows and checkpoint schema **26** carry `wildlifeTeam: null | 0 | 1`
-(neutral, Azure, Ember). The label grants no sight, population or movement rights
-in this slice. Exact schema25 saves initialize neutral labels without altering
+Visible rows and checkpoint schema **27** carry `wildlifeTeam: null | 0 | 1`
+(neutral, Azure, Ember). Claims grant no sight or population. Only the owner
+may issue the separate Herd/Stop authority commands below. Exact schema25 saves initialize neutral labels without altering
 position, private motion, stock, cargo or banks; older compatible migrations
 chain through motion24 and stance25. Current saves validate/restore actual ownership. Authoring
 rejects runtime team labels; rematch resets them to neutral. The public field
 is the actual collar input for art task `01a101a8-fba6-7323-a40c-27efd0112007`;
-no collar asset or herd selection/order binding is invented here.
+collar art and ordinary Herd selection/order binding remain dependent work.
 [Claim/recovery evidence](qa-sheep-claims-2026-10-03.md) records the owned follow-ups.
+
+### Owner-only Herd authority — client entry pending
+
+The server accepts `herd {nodeId,x,z,resourceEpoch,clientOrderToken}` and
+`stopWildlife {nodeId,resourceEpoch,clientOrderToken}`. Resource epoch is the
+existing snapshot `forestEpoch`; stale commands reject. The owner must currently
+see an alive positive-food Sheep and the exact destination must be visible,
+in bounds and legal land before any navigation lookup. Existing cardinal land
+navigation supplies the route at 0.6 world units/second. No extra food, sight,
+army unit, population or currency is created. Current position/heading/activity
+remain the public pose contract; route and grazing anchor stay private.
+
+Stop, accepted shared Worker Gather, recapture, harvest and depletion cancel
+travel at the actual position. Arrival/cancellation stores a new local grazing
+anchor, preventing travel back to the authored point. Carcasses freeze there.
+Current positive food reserves its actual cell for construction, gate occupancy,
+production and rally; depleted food releases it. New obstructions stop an
+intersecting herd route before a save, with feedback only while the owner sees
+the Sheep. Checkpoint schema 28 deep-copies the anchor, route object and path;
+exact schema 27 saves gain no travel intent and preserve claims/food/motion.
+Live old saves retain their authored grazing anchor; frozen saves use their
+actual pose. Invalid current shapes, land cells, routes or lifecycle reject.
+
+**Ordinary game entry is incomplete.** The active HUD owner owns the separate
+string-ID selection/order binding proposed below; see the
+[HUD controls backlog](hud-controls-backlog.md). Renderer/client cross-cell
+pose admission, minimap fog, build/wall previews and disclosed-resource AI
+locations must use actual visible positions before default Herd controls ship.
+The existing authored-radius renderer guard is intentionally still present;
+this authority slice does not claim moved-Sheep client appearance. Wildlife
+worker retains this interface/in-game outcome and requires that concrete
+agreement before overlapping client changes. Deployment/native appearance also
+remain owned follow-ups; see [Herd evidence](qa-sheep-herding-2026-10-03.md).
 
 Stop after depletion preserves a Worker's final cargo. Select that Worker and
 choose **Return cargo** to deliver it to a reachable completed owned food drop-off,
@@ -162,18 +195,22 @@ verified delivery; useful small PRs ship independently.
    Sheep, radius1.4 world units and a clear legal land segment (no walls/water/
    impassable elevation). Existing owner's nearby eligible presence retains it;
    otherwise nearest eligible unit claims/recaptures, exact ties by stable unit
-   ID. Snapshot/checkpoint schema26 `wildlifeTeam: null|0|1`; ownership grants no food,
+   ID. Snapshot/checkpoint `wildlifeTeam: null|0|1`; ownership grants no food,
    movement, sight or population. Preserve existing shared Gather rights in this
    first ownership slice. Public team contract is the real collar input; no
-   invented Claim click. Next: independent review, guarded merge, staging and
-   ordinary-game claim/collar acceptance with the active art owner. Write scope: pure claims, tick/state recovery,
+   invented Claim click. Merged 2e6bca931c4ce05cce6ba1b0e6342a25bbb9aa02;
+   reviewed 627554d90662612b1e470b7f734d478e331ebace, 1593 unit checks passed.
+   Next: staging and ordinary-game claim/collar acceptance with the active art owner. Write scope: pure claims, tick/state recovery,
    both-seat fog/tie/blocked/claim-reclaim tests. Art task
    `01a101a8-fba6-7323-a40c-27efd0112007` consumes the real team field for collars.
-3. **Controllable herding**. After ownership, agree ordinary selection/order
-   binding with the UI owner, implement a bounded owner-only path to legal land
-   using existing navigation, and preserve the same food node ID/stock through
-   motion, Gather, depletion and recovery. This needs explicit moving-node fog,
-   construction and gather-route checks before relaxing the meadow-cell bound.
+3. **Controllable herding**. Server commands, bounded owner-only existing land
+   navigation, live food reservations and schema 28 recovery are implemented in
+   [PR205](https://github.com/lbeezr/thousand-unit-skirmish/pull/205). Next: independent authority review/merge,
+   agree ordinary string-ID selection/order binding with the UI owner, then
+   finish cross-cell renderer/minimap/build-preview and AI disclosure. Preserve
+   the same food node ID/stock through motion, Gather, depletion and recovery.
+   Authority checks use actual moving positions; ordinary client entry remains
+   incomplete until that interface agreement and binding are complete.
    Acceptance: both seats issue real herd orders, blocked/foreign/fog-invalid
    orders reject, interruption/restart does not teleport food or revive carcasses.
 4. **Art acceptance of activity/carcass/collar**. Consume verified admitted art
