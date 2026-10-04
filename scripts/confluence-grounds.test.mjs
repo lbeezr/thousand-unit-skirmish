@@ -82,6 +82,9 @@ test('mirrored resource stock and neutral Sheep are useful near both openings wi
     assert.equal(node.x, -twin.x); assert.equal(node.z, twin.z); assert.equal(node.stock, twin.stock);
   }
   for (const team of [0, 1]) {
+    for (const type of ['food', 'wood']) assert.ok(map.resourceNodes.some(node => node.type === type
+      && Math.hypot(node.x - map.spawnPoints[team].x, node.z - map.spawnPoints[team].z) <= 9),
+    `visible home ${type} for seat ${team}`);
     const sheep = map.resourceNodes.filter(n => n.id.startsWith(`s${team}-sheep-`)); assert.equal(sheep.length, 3);
     assert.ok(sheep.every(n => n.wildlifeSpecies === 'bellweather-sheep' && n.wildlifeTeam === undefined));
     assert.ok(sheep.every(n => Math.hypot(n.x - map.spawnPoints[team].x, n.z - map.spawnPoints[team].z) < 13));

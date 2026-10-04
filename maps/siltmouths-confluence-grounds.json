@@ -1807,14 +1807,14 @@
     {
       "id": "s0-berries",
       "x": -50.5,
-      "z": 6.5,
+      "z": 4.5,
       "type": "food",
       "stock": 240
     },
     {
       "id": "s0-timber",
       "x": -50.5,
-      "z": -9.5,
+      "z": -3.5,
       "type": "wood",
       "stock": 500
     },
@@ -1895,14 +1895,14 @@
     {
       "id": "s1-berries",
       "x": 50.5,
-      "z": 6.5,
+      "z": 4.5,
       "type": "food",
       "stock": 240
     },
     {
       "id": "s1-timber",
       "x": 50.5,
-      "z": -9.5,
+      "z": -3.5,
       "type": "wood",
       "stock": 500
     },

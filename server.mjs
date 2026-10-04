@@ -12,6 +12,7 @@ import { migrateWildlifeMotionCheckpoint, sameWildlifeCell, wildlifeCell, wildli
 import { migrateWildlifeHeadingCheckpoint } from './src/wildlife-heading.mjs';
 import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
 import { migrateTerracedValeSheepCheckpoint } from './src/terraced-vale-sheep.mjs';
+import { isHistoricalConfluenceDefinition } from './src/confluence-opening-compat.mjs';
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
 import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
@@ -1881,6 +1882,16 @@ function resetArmy(count = currentArmySize) {
   dirty = true;
 }
 
+// Only an explicit host reset replaces this recognized saved layout. Army-size
+// changes and ongoing same-ID selection must not adopt new canonical positions.
+function resetExplicitMatchWorld() {
+  const shipped = mapCatalog.get(authoredMapDefinition.id);
+  const mapChanged = isHistoricalConfluenceDefinition(authoredMapDefinition, shipped, matchMapHash);
+  if (mapChanged) activateMap(shipped);
+  resetArmy(currentArmySize);
+  return mapChanged;
+}
+
 function compatibleWorkerPerformingAction(unit, receipt) {
   if (receipt.action.startsWith('gather-')) {
     if (unit.gatherPhase !== 'gathering') return false;
@@ -3331,7 +3342,9 @@ function restoreMatchCheckpoint(snapshot) {
         || migrateTerracedValeSheepCheckpoint(snapshot, shippedDefinition, matchMapHash))) {
       ({ definition, state, explored, savedMatchMode } = validateMatchCheckpoint(snapshot));
     }
-    assertSnapshot(matchMapHash(shippedDefinition) === snapshot.mapHash, 'shipped map changed since checkpoint');
+    assertSnapshot(matchMapHash(shippedDefinition) === snapshot.mapHash
+      || isHistoricalConfluenceDefinition(definition, shippedDefinition, matchMapHash),
+    'shipped map changed since checkpoint');
   } else {
     mapCatalog.set(definition.id, definition);
     runtimeMapIds.add(definition.id);
@@ -6955,8 +6968,11 @@ async function handleCommand(player, command) {
             ? new Map([...mapCatalog].filter(([id, map]) => id === pregame.mapId || mapSizeIdentity(map).ordinarySelectable))
             : mapCatalog;
           if (pregame.configure(player, command, choices)) {
+            const catalogDefinition = mapCatalog.get(pregame.mapId);
+            const retainedDefinition = isHistoricalConfluenceDefinition(authoredMapDefinition, catalogDefinition, matchMapHash)
+              ? authoredMapDefinition : catalogDefinition;
             matchMode = normalizeMatchMode(pregame);
-            activateMap(mapCatalog.get(pregame.mapId));
+            activateMap(retainedDefinition);
             resetArmy(pregame.armySize);
             broadcastMapChange();
           }
@@ -6985,9 +7001,10 @@ async function handleCommand(player, command) {
       }
       // Duplicate resets in a waiting lobby do not change revisions or rebuild units.
       if (pregame.phase === 'running') {
-        resetArmy(currentArmySize);
+        const mapChanged = resetExplicitMatchWorld();
         returnToPregame();
-        broadcastState();
+        if (mapChanged) broadcastMapChange();
+        else broadcastState();
         void queueMatchCheckpoint();
       }
       return;
@@ -7061,9 +7078,10 @@ async function handleCommand(player, command) {
       sendOrderNotice(player, command, 'RESET REJECTED · ONLY THE HOST CAN RESET THE MATCH');
       return;
     }
-    resetArmy(currentArmySize);
+    const mapChanged = resetExplicitMatchWorld();
     broadcast({ type: 'notice', message: 'BATTLEFIELD RESET' });
-    broadcastState();
+    if (mapChanged) broadcastMapChange();
+    else broadcastState();
   }
 }
 
