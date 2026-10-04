@@ -4824,6 +4824,32 @@ function updateEnvironmentStateCaptureSnapshot(state) {
   };
 }
 
+// Read-only evidence for the owned composition capture; no scene mutation or
+// alternate art path. Snapshot after the real frame, including async fallback.
+function updateSiteCompositionCaptureSnapshot() {
+  if (!window.__rtsEnvironmentStateSnapshot) return;
+  const projected = point => {
+    const p = point.clone().project(camera);
+    return { x: (p.x + 1) * viewport.clientWidth / 2, y: (1 - p.y) * viewport.clientHeight / 2 };
+  };
+  window.__rtsSiteCompositionSnapshot = {
+    mapId: window.__rtsEnvironmentStateSnapshot.mapId,
+    unitSpritesReady: unitSpriteReady && unitSpritePreviewActive,
+    buildings: latestBuildings.map(building => {
+      const visual = buildingVisuals.get(building.id), entry = visual?.frontierCaptureEntry || visual?.captureEntry;
+      return { id: building.id, type: building.type, team: building.team,
+        x: building.x, z: building.z, progress: building.progress, complete: building.complete,
+        hp: building.hp, maxHp: building.maxHp, connections: building.connections || [],
+        groundY: visual?.group.position.y, screen: visual ? projected(visual.group.position) : null,
+        capturedVisible: entry?.sprite.visible === true, fallbackVisible: entry?.fallbackRoot.visible === true };
+    }),
+    workers: units.filter(unit => unit?.kind === 'worker' && unit.visible !== false).map(unit => ({
+      id: unit.id, team: unit.team, task: unit.task, action: workerWorkAction(unit),
+      x: unit.renderX, z: unit.renderZ, groundY: groundHeight(unit.renderX, unit.renderZ),
+    })),
+  };
+}
+
 function applyWaypointQueueCounts(rows = []) {
   const counts = new Map(rows.filter((entry) => Array.isArray(entry)
     && Number.isInteger(entry[0]) && Number.isInteger(entry[1]) && entry[1] > 0));
@@ -10683,6 +10709,7 @@ function animate(now) {
     visual.fallbackRoot.visible = !visual.sprite.visible;
   }
   renderer.render(scene, camera);
+  updateSiteCompositionCaptureSnapshot();
   if (assetReadability) {
     assetReadability.update(now);
     window.__rtsAssetReadabilitySnapshot = assetReadability.snapshot;

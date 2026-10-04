@@ -21,6 +21,15 @@ CPU factory contracts exercise loaded and unloaded textures, ordering relative
 to real actor/captured building constants, elevated contact, capacity refusal
 and empty membership. They do not establish rendered appearance.
 
+The treatment preserves the existing [earthwork source](../assets/environment/frontier-interactive-v1/construction-earthwork.png),
+[foundation source](../assets/environment/frontier-interactive-v1/construction-foundation.png)
+and their [runtime/provenance manifest](../assets/environment/frontier-interactive-v1/manifest.json).
+Existing [Worker production backing](human-foot-unit-coverage.md) and
+[Watchtower capture](../assets/buildings/frontier-civilization-models-v1/captures/watchtower-complete-view-01.png)
+remain unchanged. The selected correction puts that approved detail beneath its
+actors and samples the original soil core along connected wall cells; no new
+art is generated. Before/after pixels remain a separate required comparison.
+
 ## Layer audit
 
 | Content | Current order / pass | Depth and alpha convention |
@@ -100,3 +109,45 @@ duplicates, terrain step, exact triangle coverage, overflow, stable buffers,
 real renderer reconciliation and completion/removal. These are topology and
 composition contracts, not a GPU visual pass. The adapter still needs the
 CI-owned registration and exact baseline/candidate captures described above.
+
+## Prepared owned regression adapter
+
+`scripts/renderer-site-composition-scenario.mjs` exports `site-composition`,
+`contextVersion=1` and `run(context)` for the merged shared capture contract.
+It enters `/` → Practice with Authored Rules, joins the same disposable room
+with a second real seat, then publishes an explicitly declared 64×64 authored
+regression map. It uses default loaded assets and normal socket Build/BuildWall,
+CancelConstruction and Move. This is a construction regression, not ordinary
+New Game/menu usability or deployment acceptance.
+
+Four workers per seat naturally build Watchtower, House, an eight-cell L and
+its adjacent Gate. Fourteen checkpoints cover earthwork, productive foundation,
+cancelled middle gap, completed captured buildings/cleared ground, and real
+foreground/rear Worker approaches for both seats. A second declared raised map
+with fog covers owned TownCenter and naturally completed House terrain contact.
+The terrain rectangles do not overlap; the level-1 rim provides legal access
+to level 2. The House position avoids the real offset TownCenter footprint.
+
+Each shared screenshot retains only disclosed scene/render projections and
+exact source/release identity. A read-only opt-in snapshot records actual
+rendered-frame captured/fallback visibility, screen coordinates, terrain contact
+and live Worker action. The adapter returns **blocked** until actual retained
+PNGs receive visual inspection; image receipts and state metadata never pass
+the dark-square, occlusion or raised/fog checks. CPU orchestration tests validate
+that boundary and propagate screenshot failures without producing pixels.
+
+`node scripts/site-composition-scene-scenario.mjs REPORT.json` exercises the same
+declared maps through the public Practice room service and authoritative server.
+It checks the real 22-site paid ledger, productive wall progress, both real
+cancelled gaps, natural completion of 20 surviving sites, real front/rear Move
+arrival and naturally completed raised House. It is scene preparation with
+zero rendered frames and no DOM/deployed acceptance. The initial overlapping
+elevation draft was rejected; a later raised House draft intersected the offset
+TownCenter and was also rejected. Both fixture errors were corrected without
+changing admission, economy, maps or simulation rules.
+
+CI owner `01a10378` retains the explicit registry/manual selector admission;
+the shared registry currently has no `site-composition` case. Independent review
+is still required by the contributor planning guide before these author-owned
+merges. The rendering owner retains exact baseline/candidate PNG inspection,
+dark-square diagnosis, clean packaging and identified staging verification.
