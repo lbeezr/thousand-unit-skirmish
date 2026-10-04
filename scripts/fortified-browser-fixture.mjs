@@ -1,4 +1,5 @@
 // Isolated owner-run Chrome contexts for the combined browser proof. No user profile.
+import {validateBackgroundPolicy} from './browser-background-policy.mjs';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {mkdtemp,readFile,rm,stat} from 'node:fs/promises';
@@ -21,12 +22,17 @@ class Cdp {
   async evaluate(expression){const response=await this.call('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(response.exceptionDetails)throw new Error(response.exceptionDetails.exception?.description??response.exceptionDetails.text);return response.result?.value;}
   close(){this.socket.close();}
 }
-export async function createFortifiedBrowser() {
+export function backgroundPolicyArguments(policy) {
+  validateBackgroundPolicy(policy);
+  return policy === 'default' ? [] : ['--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows', '--disable-renderer-backgrounding'];
+}
+export async function createFortifiedBrowser({backgroundPolicy='unthrottled'}={}) {
+  const backgroundArguments=backgroundPolicyArguments(backgroundPolicy);
   const candidates=[process.env.CHROME_PATH,...(process.platform==='darwin'?['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome','/Applications/Chromium.app/Contents/MacOS/Chromium']:['/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'])].filter(Boolean);
   let executable;for(const candidate of candidates){try{await stat(candidate);executable=candidate;break;}catch{}}
   if(!executable)throw new Error('Chrome unavailable; set CHROME_PATH');
   const profile=await mkdtemp(path.join(os.tmpdir(),'rts-fortified-browser-'));
-  const child=spawn(executable,['--headless=new','--no-first-run','--no-default-browser-check','--disable-background-timer-throttling','--disable-backgrounding-occluded-windows','--disable-renderer-backgrounding','--autoplay-policy=no-user-gesture-required','--remote-debugging-address=127.0.0.1','--remote-debugging-port=0',`--user-data-dir=${profile}`,'about:blank'],{stdio:['ignore','ignore','pipe']});
+  const child=spawn(executable,['--headless=new','--no-first-run','--no-default-browser-check',...backgroundArguments,'--autoplay-policy=no-user-gesture-required','--remote-debugging-address=127.0.0.1','--remote-debugging-port=0',`--user-data-dir=${profile}`,'about:blank'],{stdio:['ignore','ignore','pipe']});
   let logs='',manager=null,launchError=null;const pages=new Set();
   child.on('error',error=>{launchError=error;});
   child.stderr.on('data',chunk=>{logs=(logs+chunk).slice(-8000);});
@@ -41,7 +47,7 @@ export async function createFortifiedBrowser() {
     while(Date.now()<deadline){if(launchError)throw launchError;if(child.exitCode!==null||child.signalCode!==null)throw new Error(`Chrome exited: ${logs}`);try{port=Number((await readFile(path.join(profile,'DevToolsActivePort'),'utf8')).split('\n')[0]);break;}catch{}await sleep(100);}
     if(!port)throw new Error(`Chrome startup timeout: ${logs}`);
     const version=await(await fetch(`http://127.0.0.1:${port}/json/version`)).json();manager=new Cdp(version.webSocketDebuggerUrl);await manager.open;
-    return {version:await manager.call('Browser.getVersion'),dispose,
+    return {version:await manager.call('Browser.getVersion'),backgroundPolicy,dispose,
       async page(url,{beforeScript=null,headers=null}={}){
         const {browserContextId}=await manager.call('Target.createBrowserContext');
         const {targetId}=await manager.call('Target.createTarget',{url:'about:blank',browserContextId});

@@ -160,7 +160,7 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
   await mkdir(evidenceDirectory, { recursive: true });
   const report = { schemaVersion: 1, scope: buildingPlacement ? 'local-packed-game-movement-and-building-placement' : 'local-packed-game-movement', status: 'failed', sandbox: 'enabled',
     uid: process.getuid?.() ?? null, source: null, release: null, runtimeDependencies: [], frames: [], assets: [],
-    browserEvents: [], droppedBrowserEvents: 0, unexpectedBrowserEvent: false, issues: [],
+    browserEvents: [], droppedBrowserEvents: 0, unexpectedBrowserEvent: false, backgroundPolicy: null, issues: [],
     cleanup: { maxAttempts: 3, attempts: 0, errors: [] } };
   let stage = 'release', browser, page, server, temporary;
   const pages = [], acquiringPages = new Set();
@@ -227,7 +227,11 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
         'served entry must match packed runtime bytes');
       (vendor ? report.runtimeDependencies[0].files : report.assets).push({ path: file, sha256: hash });
     }
-    stage = 'browser'; browser = withProfileCleanup(await createFortifiedBrowser(), report.cleanup); report.browser = browser.version;
+    stage = 'browser';
+    const backgroundPolicy = captureCase?.id === 'browser-resume' ? 'default' : 'unthrottled';
+    browser = withProfileCleanup(await createFortifiedBrowser({ backgroundPolicy }), report.cleanup); report.browser = browser.version;
+    report.backgroundPolicy = browser.backgroundPolicy;
+    assert.equal(browser.backgroundPolicy, backgroundPolicy, 'browser background policy must match the capture case');
     const openPage = () => {
       const allowed = pagesOpen, count = ++pageCount;
       const acquisition = (async () => {
@@ -265,7 +269,7 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
     page = await openPage();
     if (captureCase) {
       stage = 'scenario';
-      const status = await captureCase.run({ page, openPage, origin, pack, browserVersion: browser.version });
+      const status = await captureCase.run({ page, openPage, origin, pack, browserVersion: browser.version, backgroundPolicy: browser.backgroundPolicy });
       assert.ok(['passed', 'failed', 'blocked'].includes(status), 'capture adapter must report a known status');
       report.status = status;
     } else {

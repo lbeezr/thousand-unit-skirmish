@@ -154,6 +154,31 @@ test('prepared forest, site and tree adapters satisfy the actual version1 loader
   assert.deepEqual(loaded.adapters.map(adapter => [adapter.id, adapter.contextVersion]),
     [['forest-jobs', 1], ['site-composition', 1], ['tree-targeting', 1]]);
 });
+test('actual browser-resume adapter blocks an absent or bypassed provider policy before navigation', async () => {
+  const loaded = await loadCaptureCases('browser-resume');
+  assert.deepEqual(loaded.issues, []);
+  assert.equal(loaded.adapters[0].contextVersion, 1);
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'resume-policy-test-'));
+  try {
+    for (const backgroundPolicy of [undefined, 'unthrottled']) {
+      const report = await runFeatureBatch('/pack', directory, 'browser-resume', {
+        load: async () => loaded,
+        qualify: async (_, __, { captureCase }) => ({ status: await captureCase.run({ ...runtime(), backgroundPolicy,
+          page: { ...page(), cdp: { ...page().cdp, call: async () => assert.fail('no navigation with bypassed policy') } } }) }),
+      });
+      assert.equal(report.status, 'blocked');
+      assert.deepEqual(report.cases[0].result.checks, [{ id: 'normal-browser-background-policy-required', passed: false }]);
+    }
+    let received;
+    await runFeatureBatch('/pack', directory, 'browser-resume', {
+      load: async () => ({ issues: [], adapters: [{ id: 'browser-resume', run: async context => {
+        received = context; return { status: 'blocked', checks: [{ id: 'cpu-only', passed: false }] };
+      } }] }),
+      qualify: async (_, __, { captureCase }) => ({ status: await captureCase.run({ ...runtime(), backgroundPolicy: 'default' }) }),
+    });
+    assert.equal(received.backgroundPolicy, 'default'); assert.equal(Object.isFrozen(received), true);
+  } finally { await rm(directory, { recursive: true, force: true }); }
+});
 test('ordinary workflow is manual, source-pinned, globally serialized, read-only and validates cases before preflight', async () => {
   const workflow = await readFile(new URL('../.github/workflows/ordinary-game-capture.yml', import.meta.url), 'utf8');
   assert.match(workflow, /workflow_dispatch:/); assert.doesNotMatch(workflow, /pull_request:|push:/);

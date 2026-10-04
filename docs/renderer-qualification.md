@@ -89,11 +89,22 @@ explicit registry and batch report. Feature owners own only these adapter files:
 | `forest-jobs` | Forest jobs owner | `scripts/renderer-forest-job-scenario.mjs` |
 | `site-composition` | Site composition owner | `scripts/renderer-site-composition-scenario.mjs` |
 | `tree-targeting` | Tree targeting owner | `scripts/renderer-tree-targeting-scenario.mjs` |
+| `browser-resume` | Browser lifecycle owner | `scripts/renderer-browser-resume-scenario.mjs` |
 
 The workflow has a thirty-minute outer bound for the expanded registry; each
 case retains its three-minute deadline. Registration and CPU import/contracts
 do not establish ordinary-game, appearance or deployed acceptance. Dispatch
 and sign-in remain paused under the current access decision.
+
+`browser-resume` uses the browser's default background policy, with every
+background-throttling bypass omitted. The launcher reports its actual policy;
+qualification rejects a mismatch before page acquisition and forwards that
+policy through the immutable v1 context. Other captures retain the existing
+unthrottled policy. Legacy v1 contexts may omit the policy, but the lifecycle
+adapter then blocks before navigation. Import/CPU checks do not prove real
+visibility, freeze, network recovery or PNG appearance; the lifecycle owner
+retains those checks at an identified release, using actual trusted browser
+events. Unexpected browser/network failures still fail qualification.
 
 Each file exports its exact registered `id`, `contextVersion = 1`, and
 `async run(context)`. Importing it must not start a server, browser or workload.
