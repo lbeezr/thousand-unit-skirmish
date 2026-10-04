@@ -1,6 +1,6 @@
 import { loadShippedAudio } from './audio-shipped-loader.mjs';
 import { createProfileDecisionGate, resolveEventBinding } from './audio-event-profile.mjs';
-import { createDecodedAudioCache } from './audio-decoded-cache.mjs';
+import { createDecodedAudioCache } from './client/audio/audio-decoded-cache.mjs';
 // Web Audio synthesis remains the fallback when an authored local pack is unavailable.
 const STORAGE_KEY = 'tus-audio-v1';
 const DEFAULT_SETTINGS = Object.freeze({

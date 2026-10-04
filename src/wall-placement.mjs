@@ -1,6 +1,6 @@
 import { isPalisade } from './palisade-gate.mjs';
 import { planWallLine } from './wall-line-planner.mjs';
-import { formatResourceRequirement } from './resource-format.mjs';
+import { formatResourceRequirement } from './client/hud/resource-format.mjs';
 
 export function wallCellAt(point, width, height) {
   return point ? { column: Math.floor(point.x + width / 2), row: Math.floor(point.z + height / 2) } : null;
