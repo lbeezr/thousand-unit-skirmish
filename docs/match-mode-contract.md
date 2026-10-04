@@ -20,7 +20,7 @@ the newest default. Registry descriptors expose `id`, `version`, `label`,
 | --- | --- | --- |
 | `authored@1` | Any validated authored map; hidden legacy identity | Exact authored capture, hold, deadline or elimination combination. Existing capture-post AI remains the current behavior. |
 | `objective-control@1` | Validated maps with at least one marked victory post | Exact authored rules and timers. `aiStrategyId: capture-posts`; existing curated PvE map restrictions still apply. |
-| `skirmish@1` | `veyrholds-terraced-vale`; historical Millrace/Rootways remain compatible for recovery and explicit fixtures | `victoryPolicy: recovery-elimination`, `aiStrategyId: base-elimination`. Human PvP and explicit solo Practice supported. `pveSupported: false` until mode-specific AI acceptance. |
+| `skirmish@1` | Tiny `veyrholds-terraced-vale` and reviewed Small `veyrholds-threefold-basin`; historical Millrace/Rootways remain compatible for recovery and explicit fixtures | `victoryPolicy: recovery-elimination`, `aiStrategyId: base-elimination`. Human PvP and explicit solo Practice supported. `pveSupported: false` until mode-specific AI acceptance. |
 
 The hidden identity preserves elimination-only Lab maps and unusual legacy
 hybrids without calling them Objective Control. New selectors offer compatible

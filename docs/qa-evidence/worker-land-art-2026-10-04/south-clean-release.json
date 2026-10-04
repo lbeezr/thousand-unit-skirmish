@@ -1,0 +1,21 @@
+{
+  "sourceRevision": "186fdec778832bd79fa299c5879b7d51aabeaaf6",
+  "sourceDirty": false,
+  "digest": "sha256:707ad98940dfede9163ef9ccc918ee6a90064fd84521ef46300926352e18952d",
+  "runtimeFiles": [
+    {
+      "path": "assets/units/cast-human-sprite-v3/cast-atlas-runtime.png",
+      "sha256": "b0e461f481121899e677e1a57c32998bdfb4454cae0a9d8bd234182eebedc4e6"
+    },
+    {
+      "path": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+      "sha256": "f80e3b69143f35c18fb140636a11fbac067ebfb95f11ef0fe2e3957c3f5eab1b"
+    },
+    {
+      "path": "assets/units/cast-human-sprite-v3/team-accent-mask.png",
+      "sha256": "074b247161d7a4a1839f7d6dad87816a9ccf73b24acf29d75a7cd4629815cfb3"
+    }
+  ],
+  "totalFiles": 1173,
+  "scope": "Clean local Docker COPY package; not deployment or native appearance"
+}

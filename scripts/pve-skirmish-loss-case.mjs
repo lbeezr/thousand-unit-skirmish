@@ -4,11 +4,15 @@ import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pv
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
 // Human-controlled legal loss prelude, then the unmodified configured policy.
 // No checkpoint edits, grants, injected units/positions or hidden policy inputs.
-export async function replayPaidSkirmishLoss(id, team, initial = null) {
+export async function replayPaidSkirmishLoss(id, team, initial = null, options = {}) {
  const enemy = 1 - team;
  const map = JSON.parse(await readFile(new URL(`../maps/${id}.json`, import.meta.url)));
  const identity = { matchModeId: 'skirmish', matchModeVersion: 1 };
- const fixture=await createPveHeadlessFixture(map,identity),r=fixture.replay,trace=[],stages={};
+ // Explicit native authored elimination can exercise the configured policy
+ // while a new canonical map's native Skirmish admission remains pending.
+ const nativeIdentity=options.nativeIdentity ?? identity;
+ let fixture=await createPveHeadlessFixture(map,nativeIdentity),r=fixture.replay;
+ const trace=[],stages={};
  const view=seat=>toOpponentObservation(r.observe(seat),seat,map);
  const commandFor=(units,type,extra={})=>({type,ids:units.map(u=>u.id),unitGenerations:units.map(u=>u.generation),...extra});
  const order=async(seat,command)=>{
@@ -18,6 +22,8 @@ export async function replayPaidSkirmishLoss(id, team, initial = null) {
  };
  try {
   if(initial)r.restore(initial);else initial=r.checkpoint();
+  assert.equal(initial.matchModeId,nativeIdentity.matchModeId);
+  assert.equal(initial.matchModeVersion,nativeIdentity.matchModeVersion);
   const guards=view(enemy).units.friendly.filter(u=>u.hp>0&&u.kind==='infantry');
   await order(enemy,commandFor(guards,'holdPosition'));
   const openingPolicy=createDeterministicPolicy(20260925,identity);openingPolicy.next(view(team));
@@ -75,9 +81,18 @@ export async function replayPaidSkirmishLoss(id, team, initial = null) {
    if(i%30===0) {
     const observation=view(team),foundation=observation.buildings.friendly.find(b=>b.type==='barracks'&&!b.complete);
     if(foundation&&!restarted) {
-     r.drain();const before=r.observe(team),checkpoint=r.checkpoint();r.restore(checkpoint);
-     assertRecoveredWorkerObservation(r.observe(team),before);
-     policy=createDeterministicPolicy(20260925,r.observe(team));restarted=true;stages.restart=r.observe(team).tick;
+     // Welcome/checkpoint reads now derive current sight between broadcasts.
+     // Keep this paid foundation at its actual observation tick on cold restore.
+     stages.foundationObservation=observation.tick;
+     r.drain();const before=[r.observe(0),r.observe(1)],checkpoint=r.checkpoint();
+     const recovered=await createPveHeadlessFixture(map,nativeIdentity);
+     try {
+      recovered.replay.restore(checkpoint);
+      for(const seat of [0,1])assertRecoveredWorkerObservation(recovered.replay.observe(seat),before[seat]);
+     } catch(error) { await recovered.dispose();throw error; }
+     await fixture.dispose();fixture=recovered;r=fixture.replay;
+     policy=createDeterministicPolicy(20260925,identity);restarted=true;stages.restart=r.observe(team).tick;
+     assert.equal(stages.restart,stages.foundationObservation,'cold foundation restore does not advance the observation tick');
      trace.push({tick:stages.restart,restart:true});
     }
     for(const command of policy.next(view(team))) {

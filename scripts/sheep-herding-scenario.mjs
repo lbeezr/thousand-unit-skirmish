@@ -45,7 +45,7 @@ const sheepOrder = (team, type, nodeId, value = {}, pattern = type === 'herd' ? 
   command(team, { type, nodeId, resourceEpoch: clients[team].latest.forestEpoch, ...value }, pattern);
 
 function conserved(saved) {
-  assert.equal(saved.schemaVersion, 28);
+  assert.equal(saved.schemaVersion, 29);
   assert.deepEqual(saved.state.resourceNodes.map(node => node.id).sort(), map.resourceNodes.map(node => node.id).sort());
   for (const resource of ['food', 'wood']) {
     const initial = map.startingResources[resource] * 2
@@ -336,7 +336,7 @@ try {
   clients.forEach(client => publicRows(client.latest));
   assert.ok(maxRenderedDisplacement > 2, 'the live client represents travel beyond the authored graze radius');
   assert.equal(await sourceHash(), serverSha256, 'reported source hash identifies the actual server tested');
-  console.log(JSON.stringify({ scenario: 'owned Sheep authoritative herding', map: map.id, schema: 28, speed: HERD_SPEED,
+  console.log(JSON.stringify({ scenario: 'owned Sheep authoritative herding', map: map.id, schema: 29, speed: HERD_SPEED,
     bothSeatNaturalClaimAndMulticellHerd: true, foreignHiddenStaleBlockedInvalidRejected: true,
     stopAnchorsActualPose: true, midRoutePathPoseRecovery: true, recaptureCancelsAtActualPose: true,
     privateRoutesAndHiddenRowsAbsent: true, vacatedCellPaidConstruction: true, liveAndCarcassSitesProtected: true,

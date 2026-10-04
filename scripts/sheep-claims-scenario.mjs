@@ -17,7 +17,7 @@ let orderToken = 100;
 const command = (client, value, pattern) => client.command({ ...value, clientOrderToken: orderToken++ }, pattern);
 
 function conserved(saved, total) {
-  assert.equal(saved.schemaVersion, 28);
+  assert.equal(saved.schemaVersion, 29);
   const stock = saved.state.resourceNodes.filter(node => node.type === 'food').reduce((sum, node) => sum + node.stock, 0);
   const bank = saved.state.teamFood.reduce((sum, food) => sum + food, 0);
   const cargo = saved.state.units.filter(unit => unit.cargoType === 'food').reduce((sum, unit) => sum + unit.cargo, 0);
