@@ -23,7 +23,7 @@ Skiff owner; art, rendering and map rules remain with their respective lanes.
 | --- | --- | --- | --- |
 | 1 · complete | Clock-independent service work merged in [PR #193](https://github.com/lbeezr/thousand-unit-skirmish/pull/193), `331df72`; [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#integration-and-remaining-evidence) pass. | Planning constants, queue-slice helper and diagnostics only. | 209 postmerge checks; nine route pairs preserve hashes; native large routes and recovery. Atomic-search overshoot remains explicit. |
 | 2 · complete | The parked-formation stall reproduces with a one/two-tick older Move. Bounded repulsion merged in [PR #209](https://github.com/lbeezr/thousand-unit-skirmish/pull/209), `64cc391`; independent review and [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#4-october-postmerge-acceptance) pass. | Only `getMoveVector`'s final force combination and focused tests/tools. Combat-owner targeting/stances remain untouched. | 235 postmerge checks; all eight headings on both seats; four large parked cases twice; nine terrain route pairs; native parked controls and active/idle restarts at the exact merge source. |
-| 3 · pending dependency | Move completed path results into an agreed authoritative tick phase if the current asynchronous application contract needs correction. Inspect accepted-tick/result generations before proposing changes. | Shared command/tick pipeline with combat owner. | Same accepted command log gives the same committed outcomes; replacement/Stop cancels old results; FIFO/fair queue service and recovery remain correct. Do not equate fixed slice budgets with a completed tick-pipeline redesign. |
+| 3 · proposal ready | A [source-qualified phase probe and exact allocation proposal](movement-tick-phase-proposal.md) demonstrate callback-dependent route publication. Next: allocate the planner functions and one pre-`simulateTick` call, then compare fixed turns per tick before choosing a shipping work limit. | Movement planner plus the single outer-tick hook; inner combat/Worker/wildlife/mode bodies stay with their owners. The subsequent gameplay-command envelope contract is specified separately. | Commands assigned to the same ticks produce the same committed outcomes; Stop/replacement, FIFO/fair service and recovery remain correct. Planner-only integration does not complete the all-command pipeline. |
 | 4 · pending capture | Complete the corrected rendered 2,000-unit workload through paid economy, combat and restart. | Existing browser workload; identified sandboxed WebGL2/runtime and device/network profile. | Actual rendered run, authoritative goals/positions, paid work and recovery. Native/tool-only checks cannot close the render/deployed acceptance gap. |
 
 ## Baseline inspection and resolved findings
@@ -61,24 +61,29 @@ ownership/generation checks; coalesce compatible work only with topology and
 movement compatibility; test dense chokepoints separately from distributed armies.
 No engine port or third-party source copying is proposed.
 
-The `game-dev` CLI is currently unavailable. Sealed hardware-comparison goals
-remain unavailable until the documented tool/evidence path is restored. Current
-correctness and operation counts use the repository's real-body/native adapters;
-they do not assert comparable CPU/GPU speedup or supported player capacity.
+The `game-dev` CLI is unavailable, but the existing real-body/native and browser
+harnesses suffice for the proposed bounded comparisons. Record source, workload,
+runtime/device profile and limitations with those tools. Correctness and operation
+counts do not assert comparable CPU/GPU speedup or supported player capacity.
 
 ## Next available work and dependencies
 
 The inspected route matrix has no remaining stranded order at `64cc391`. Do not
-select another steering rewrite from timing noise. The next read-only tick-phase
-investigation should record accepted command ticks and planned-result commit ticks,
-then propose a bounded interface if correction is needed. A proposed shared boundary
-is to queue generation/navigation-tagged path results and commit them before
-`simulateTick`; command intake, Stop/replacement invalidation, applied notices and
-checkpoint recovery need an agreed phase with the combat owner before shared edits.
-This is a proposed interface, not implemented or accepted behavior.
+select another steering rewrite from timing noise. At `aa662141`, identical natural
+Move state accepted at tick 0 begins movement at tick 1 or tick 4 depending on
+callback service. The [proposal](movement-tick-phase-proposal.md) names the exact
+planner functions, outer-tick hook, generation/topology guards, FIFO and recovery
+rules, and the subsequent mode/AI/transport/Worker/wildlife command contract.
+Buffering asynchronous results alone would not make their readiness reproducible.
+The next experiment services fixed planning work at the tick boundary; its work
+limit must be measured because one current queue turn per tick would substantially
+delay a 996-unit order. No shared production edit is included in the proposal.
 
-The full rendered 2,000-unit workload remains blocked by the actual Linux browser
-sandbox/profile-storage failure. Resume with a provider runtime supporting that
-sandbox, or a parent-coordinated capture environment. Comparable performance goals
-also require the unavailable `game-dev` evidence path. Native progress tests do not
-close either dependency, and no deployed revision is asserted here.
+The full rendered 2,000-unit workload remains owned by movement. Read-only Railway
+state confirms staging successfully deployed `64cc391` (both #193 and #209), but
+HTTP health and in-game use could not be verified here. A private TMP/XDG retry
+resolved storage and still failed the Linux browser sandbox. The concrete capture
+resource and source-qualified local/staging recipes are in the
+[proposal's acceptance record](movement-tick-phase-proposal.md#deployed-and-rendered-acceptance-retained).
+The existing harness is sufficient once that runtime is available. Native progress
+tests and platform deployment status do not close the rendered acceptance gap.
