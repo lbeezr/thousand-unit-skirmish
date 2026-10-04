@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { GATHER_WORK_AREA_RADIUS, woodWorkArea, nearbyWoodSources } from '../src/gather-work-area.mjs';
+import { GATHER_WORK_AREA_RADIUS, woodWorkArea, nearbyWoodSources, gatherWorkArea, nearbyGatherSources } from '../src/gather-work-area.mjs';
 
 const anchor = woodWorkArea({ x: -11.5, z: 0.5 });
 const source = (id, x, stock = 6, type = 'wood') => ({ id, type, x, z: 0.5, stock });
@@ -28,4 +28,14 @@ test('candidate order is nearest first, deterministic on ties, without mutating 
   const before = structuredClone(sources);
   assert.deepEqual(nearbyWoodSources(anchor, anchor, sources).map(s => s.id), ['a', 'b', 'z']);
   assert.deepEqual(sources, before);
+});
+test('Stone selection is an explicit exact-type fixed area; Wood helpers and Food remain separate', () => {
+  const stone = gatherWorkArea(anchor, 'stone');
+  const sources = [source('near-stone', -10.5, 6, 'stone'), source('edge-stone', -3.5, 6, 'stone'),
+    source('far-stone', -3.499, 6, 'stone'), source('empty-stone', -11, 0, 'stone'),
+    source('near-wood', -11), source('near-food', -11, 6, 'food')];
+  assert.deepEqual(nearbyGatherSources(stone, anchor, sources).map(s => s.id), ['near-stone', 'edge-stone']);
+  assert.deepEqual(nearbyWoodSources(stone, anchor, sources), []);
+  assert.equal(gatherWorkArea(anchor, 'food'), null);
+  assert.deepEqual(nearbyGatherSources({ ...anchor, type: 'food' }, anchor, sources), []);
 });

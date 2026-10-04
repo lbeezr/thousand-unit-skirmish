@@ -1,8 +1,12 @@
 // Durable player work, separate from transient targets/routes/orderRevision.
+import { STONE_ECONOMY_PROFILE_ID } from './economy-profile.mjs';
 export const WORK_INTENT_VERSION = 1;
 
-export function createGatherWorkIntent(generation, source) {
-  return { version: 1, kind: 'gather', generation, resource: 'wood', anchor: { x: source.x, z: source.z } };
+export const isAreaGatherResource = resource => resource === 'wood' || resource === 'stone';
+
+export function createGatherWorkIntent(generation, source, resource = 'wood') {
+  if (!isAreaGatherResource(resource)) throw new Error('Unsupported gather area resource');
+  return { version: 1, kind: 'gather', generation, resource, anchor: { x: source.x, z: source.z } };
 }
 
 export function createConstructionWorkIntent(generation, siteIds, area) {
@@ -34,7 +38,9 @@ export function validWorkIntent(intent, unit, map, { buildings = [], nextBuildin
     || !Number.isSafeInteger(intent.generation) || intent.generation < 1
     || intent.generation !== unit.generation) return false;
   if (intent.kind === 'gather') return keys(intent, ['version', 'kind', 'generation', 'resource', 'anchor'])
-    && intent.resource === 'wood' && keys(intent.anchor, ['x', 'z']) && onMap(intent.anchor, map);
+    && isAreaGatherResource(intent.resource)
+    && (intent.resource !== 'stone' || map.economyProfileId === STONE_ECONOMY_PROFILE_ID)
+    && keys(intent.anchor, ['x', 'z']) && onMap(intent.anchor, map);
   if (intent.kind !== 'construction' || !keys(intent, ['version', 'kind', 'generation', 'siteIds', 'area'])) return false;
   const area = intent.area;
   if (!keys(area, ['minX', 'maxX', 'minZ', 'maxZ']) || !Object.values(area).every(Number.isFinite)
