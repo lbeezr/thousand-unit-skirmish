@@ -5,14 +5,14 @@
     {
       "name": "gather approach waits",
       "team": 0,
-      "tick": 3,
+      "tick": 6,
       "food": 300,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 0,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "gathering",
           "action": null,
           "cargo": 0
@@ -22,14 +22,14 @@
     {
       "name": "node harvest",
       "team": 0,
-      "tick": 144,
+      "tick": 147,
       "food": 300,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 0,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "gathering",
           "action": "gather-food",
           "cargo": 0.07
@@ -39,14 +39,14 @@
     {
       "name": "Stone approach waits",
       "team": 0,
-      "tick": 237,
+      "tick": 240,
       "food": 300.1666666666667,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 0,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "gathering",
           "action": null,
           "cargo": 0
@@ -56,14 +56,14 @@
     {
       "name": "Stone harvest",
       "team": 0,
-      "tick": 393,
+      "tick": 396,
       "food": 300.1666666666667,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 0,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "gathering",
           "action": "gather-stone",
           "cargo": 0.07
@@ -73,14 +73,14 @@
     {
       "name": "Stone Stop clears",
       "team": 0,
-      "tick": 396,
+      "tick": 399,
       "food": 300.1666666666667,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 0,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0.07
@@ -90,14 +90,14 @@
     {
       "name": "Stone resumed grant",
       "team": 0,
-      "tick": 399,
+      "tick": 402,
       "food": 300.1666666666667,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 0,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "gathering",
           "action": "gather-stone",
           "cargo": 0.17
@@ -107,28 +107,28 @@
     {
       "name": "paid Farm approach waits",
       "team": 0,
-      "tick": 403,
+      "tick": 406,
       "food": 300.1666666666667,
       "wood": 540,
       "stone": 0,
       "workers": [
         {
           "id": 1,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "building",
           "action": null,
           "cargo": 0
         },
         {
           "id": 2,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "building",
           "action": null,
           "cargo": 0
         },
         {
           "id": 3,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "building",
           "action": null,
           "cargo": 0
@@ -138,28 +138,28 @@
     {
       "name": "build progress",
       "team": 0,
-      "tick": 516,
+      "tick": 519,
       "food": 300.1666666666667,
       "wood": 540,
       "stone": 0,
       "workers": [
         {
           "id": 1,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "building",
           "action": "build",
           "cargo": 0
         },
         {
           "id": 2,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "building",
           "action": null,
           "cargo": 0
         },
         {
           "id": 3,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "building",
           "action": null,
           "cargo": 0
@@ -169,28 +169,28 @@
     {
       "name": "Farm complete clears",
       "team": 0,
-      "tick": 690,
+      "tick": 693,
       "food": 300.1666666666667,
       "wood": 540,
       "stone": 0,
       "workers": [
         {
           "id": 1,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 2,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 3,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0
@@ -200,14 +200,14 @@
     {
       "name": "Farm harvest",
       "team": 0,
-      "tick": 693,
+      "tick": 696,
       "food": 300.1666666666667,
       "wood": 540,
       "stone": 0,
       "workers": [
         {
           "id": 1,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "gathering",
           "action": "gather-food",
           "cargo": 0.1
@@ -217,14 +217,14 @@
     {
       "name": "gather approach waits",
       "team": 1,
-      "tick": 699,
+      "tick": 702,
       "food": 300,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 12,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "gathering",
           "action": null,
           "cargo": 0
@@ -234,14 +234,14 @@
     {
       "name": "node harvest",
       "team": 1,
-      "tick": 810,
+      "tick": 813,
       "food": 300,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 12,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "gathering",
           "action": "gather-food",
           "cargo": 0.1
@@ -251,14 +251,14 @@
     {
       "name": "Stone approach waits",
       "team": 1,
-      "tick": 903,
+      "tick": 906,
       "food": 300.2,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 12,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "gathering",
           "action": null,
           "cargo": 0
@@ -268,14 +268,14 @@
     {
       "name": "Stone harvest",
       "team": 1,
-      "tick": 1059,
+      "tick": 1062,
       "food": 300.2,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 12,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "gathering",
           "action": "gather-stone",
           "cargo": 0.07
@@ -285,14 +285,14 @@
     {
       "name": "Stone Stop clears",
       "team": 1,
-      "tick": 1062,
+      "tick": 1065,
       "food": 300.2,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 12,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0.07
@@ -302,14 +302,14 @@
     {
       "name": "Stone resumed grant",
       "team": 1,
-      "tick": 1065,
+      "tick": 1068,
       "food": 300.2,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 12,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "gathering",
           "action": "gather-stone",
           "cargo": 0.17
@@ -319,28 +319,28 @@
     {
       "name": "paid Farm approach waits",
       "team": 1,
-      "tick": 1069,
+      "tick": 1072,
       "food": 300.2,
       "wood": 540,
       "stone": 0,
       "workers": [
         {
           "id": 13,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "building",
           "action": null,
           "cargo": 0
         },
         {
           "id": 14,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "building",
           "action": null,
           "cargo": 0
         },
         {
           "id": 15,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "building",
           "action": null,
           "cargo": 0
@@ -350,28 +350,28 @@
     {
       "name": "build progress",
       "team": 1,
-      "tick": 1188,
+      "tick": 1191,
       "food": 300.2,
       "wood": 540,
       "stone": 0,
       "workers": [
         {
           "id": 13,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "building",
           "action": "build",
           "cargo": 0
         },
         {
           "id": 14,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "building",
           "action": null,
           "cargo": 0
         },
         {
           "id": 15,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "building",
           "action": null,
           "cargo": 0
@@ -381,28 +381,28 @@
     {
       "name": "Farm complete clears",
       "team": 1,
-      "tick": 1359,
+      "tick": 1362,
       "food": 300.2,
       "wood": 540,
       "stone": 0,
       "workers": [
         {
           "id": 13,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 14,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 15,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0
@@ -412,14 +412,14 @@
     {
       "name": "Farm harvest",
       "team": 1,
-      "tick": 1362,
+      "tick": 1365,
       "food": 300.2,
       "wood": 540,
       "stone": 0,
       "workers": [
         {
           "id": 13,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "gathering",
           "action": "gather-food",
           "cargo": 0.1
@@ -429,35 +429,35 @@
     {
       "name": "idle recovery",
       "team": 0,
-      "tick": 1366,
+      "tick": 1368,
       "food": 300.1666666666667,
       "wood": 540,
       "stone": 0,
       "workers": [
         {
           "id": 0,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0.17
         },
         {
           "id": 1,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0.1
         },
         {
           "id": 2,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 3,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0
@@ -467,35 +467,35 @@
     {
       "name": "idle recovery",
       "team": 1,
-      "tick": 1367,
+      "tick": 1368,
       "food": 300.2,
       "wood": 540,
       "stone": 0,
       "workers": [
         {
           "id": 12,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0.17
         },
         {
           "id": 13,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0.1
         },
         {
           "id": 14,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 15,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "idle",
           "action": null,
           "cargo": 0
@@ -505,14 +505,14 @@
     {
       "name": "fixture positive repair",
       "team": 0,
-      "tick": 1371,
+      "tick": 1374,
       "food": 300.1666666666667,
-      "wood": 0.27999999999999997,
+      "wood": 0.24,
       "stone": 0,
       "workers": [
         {
           "id": 1,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "repairing",
           "action": "repair",
           "cargo": 0.1
@@ -522,14 +522,14 @@
     {
       "name": "fixture no wood clear delivered without another order",
       "team": 0,
-      "tick": 1380,
+      "tick": 1383,
       "food": 300.1666666666667,
       "wood": 0,
       "stone": 0,
       "workers": [
         {
           "id": 1,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "repairing",
           "action": null,
           "cargo": 0.1
@@ -539,14 +539,14 @@
     {
       "name": "fixture positive repair",
       "team": 1,
-      "tick": 1383,
+      "tick": 1386,
       "food": 300.2,
       "wood": 0.24,
       "stone": 0,
       "workers": [
         {
           "id": 13,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "repairing",
           "action": "repair",
           "cargo": 0.1
@@ -556,14 +556,14 @@
     {
       "name": "fixture no wood clear delivered without another order",
       "team": 1,
-      "tick": 1392,
+      "tick": 1395,
       "food": 300.2,
       "wood": 0,
       "stone": 0,
       "workers": [
         {
           "id": 13,
-          "generation": 4047798703,
+          "generation": 2437779494,
           "task": "repairing",
           "action": null,
           "cargo": 0.1
@@ -573,35 +573,35 @@
     {
       "name": "rematch generation clears",
       "team": 0,
-      "tick": 1392,
+      "tick": 1395,
       "food": 300,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 0,
-          "generation": 4047798704,
+          "generation": 2437779495,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 1,
-          "generation": 4047798704,
+          "generation": 2437779495,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 2,
-          "generation": 4047798704,
+          "generation": 2437779495,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 3,
-          "generation": 4047798704,
+          "generation": 2437779495,
           "task": "idle",
           "action": null,
           "cargo": 0
@@ -611,35 +611,35 @@
     {
       "name": "rematch generation clears",
       "team": 1,
-      "tick": 1392,
+      "tick": 1395,
       "food": 300,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 12,
-          "generation": 4047798704,
+          "generation": 2437779495,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 13,
-          "generation": 4047798704,
+          "generation": 2437779495,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 14,
-          "generation": 4047798704,
+          "generation": 2437779495,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 15,
-          "generation": 4047798704,
+          "generation": 2437779495,
           "task": "idle",
           "action": null,
           "cargo": 0
@@ -651,7 +651,7 @@
     {
       "name": "gather approach waits",
       "team": 0,
-      "tick": 3,
+      "tick": 6,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -667,7 +667,7 @@
     {
       "name": "node harvest",
       "team": 0,
-      "tick": 144,
+      "tick": 147,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -683,7 +683,7 @@
     {
       "name": "Stone approach waits",
       "team": 0,
-      "tick": 237,
+      "tick": 240,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -699,7 +699,7 @@
     {
       "name": "Stone harvest",
       "team": 0,
-      "tick": 393,
+      "tick": 396,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -715,7 +715,7 @@
     {
       "name": "Stone Stop clears",
       "team": 0,
-      "tick": 396,
+      "tick": 399,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -731,7 +731,7 @@
     {
       "name": "Stone resumed grant",
       "team": 0,
-      "tick": 399,
+      "tick": 402,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -747,7 +747,7 @@
     {
       "name": "paid Farm approach waits",
       "team": 0,
-      "tick": 403,
+      "tick": 406,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -779,7 +779,7 @@
     {
       "name": "build progress",
       "team": 0,
-      "tick": 516,
+      "tick": 519,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -811,7 +811,7 @@
     {
       "name": "Farm complete clears",
       "team": 0,
-      "tick": 690,
+      "tick": 693,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -843,7 +843,7 @@
     {
       "name": "Farm harvest",
       "team": 0,
-      "tick": 693,
+      "tick": 696,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -859,7 +859,7 @@
     {
       "name": "gather approach waits",
       "team": 1,
-      "tick": 699,
+      "tick": 702,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -875,7 +875,7 @@
     {
       "name": "node harvest",
       "team": 1,
-      "tick": 810,
+      "tick": 813,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -891,7 +891,7 @@
     {
       "name": "Stone approach waits",
       "team": 1,
-      "tick": 903,
+      "tick": 906,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -907,7 +907,7 @@
     {
       "name": "Stone harvest",
       "team": 1,
-      "tick": 1059,
+      "tick": 1062,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -923,7 +923,7 @@
     {
       "name": "Stone Stop clears",
       "team": 1,
-      "tick": 1062,
+      "tick": 1065,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -939,7 +939,7 @@
     {
       "name": "Stone resumed grant",
       "team": 1,
-      "tick": 1065,
+      "tick": 1068,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -955,7 +955,7 @@
     {
       "name": "paid Farm approach waits",
       "team": 1,
-      "tick": 1069,
+      "tick": 1072,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -987,7 +987,7 @@
     {
       "name": "build progress",
       "team": 1,
-      "tick": 1188,
+      "tick": 1191,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -1019,7 +1019,7 @@
     {
       "name": "Farm complete clears",
       "team": 1,
-      "tick": 1359,
+      "tick": 1362,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -1051,7 +1051,7 @@
     {
       "name": "Farm harvest",
       "team": 1,
-      "tick": 1362,
+      "tick": 1365,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -1067,7 +1067,7 @@
     {
       "name": "idle recovery",
       "team": 0,
-      "tick": 1366,
+      "tick": 1368,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -1107,7 +1107,7 @@
     {
       "name": "idle recovery",
       "team": 1,
-      "tick": 1367,
+      "tick": 1368,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -1147,7 +1147,7 @@
     {
       "name": "fixture positive repair",
       "team": 0,
-      "tick": 1371,
+      "tick": 1374,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -1163,7 +1163,7 @@
     {
       "name": "fixture no wood clear delivered without another order",
       "team": 0,
-      "tick": 1380,
+      "tick": 1383,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -1179,7 +1179,7 @@
     {
       "name": "fixture positive repair",
       "team": 1,
-      "tick": 1383,
+      "tick": 1386,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -1195,7 +1195,7 @@
     {
       "name": "fixture no wood clear delivered without another order",
       "team": 1,
-      "tick": 1392,
+      "tick": 1395,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -1211,7 +1211,7 @@
     {
       "name": "rematch generation clears",
       "team": 0,
-      "tick": 1392,
+      "tick": 1395,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -1251,7 +1251,7 @@
     {
       "name": "rematch generation clears",
       "team": 1,
-      "tick": 1392,
+      "tick": 1395,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -1292,5 +1292,7 @@
   "limits": [
     "real WebSocket rows through actual CPU client receipt/scheduling and shipped atlas buffers; no browser/GPU/deployed appearance claim",
     "exhausted repair uses explicitly seeded damaged Farms and nine repair steps of wood"
-  ]
+  ],
+  "sourceRevision": "d725093be64dc8426fa2ac48a94ea3563bc87266",
+  "workerPackVersion": "0.24.0"
 }

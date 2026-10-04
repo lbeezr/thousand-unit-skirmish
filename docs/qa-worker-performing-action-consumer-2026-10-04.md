@@ -139,7 +139,7 @@ without modifying its server logic. The native scenario adds ordinary Stone
 commands on shipped Stone Defense Field for both seats, with untouched packet
 receipts through CPU client buffers. [Packet/frame evidence](qa-evidence/worker-stone-binding-2026-10-04/native-client.json)
 retains the existing640ms held-packet interpolation limitation; it does not prove
-continuous networking or game pixels. The focused57 checks and43 adjacent
+continuous networking or game pixels. The focused57 checks and51 adjacent
 art/fishing/facing checks pass; type/import/atlas and packedHTTP/hash checks pass.
 
 The supported [browser attempt](qa-evidence/worker-stone-binding-2026-10-04/browser-preflight.json)
