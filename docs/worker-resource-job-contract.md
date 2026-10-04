@@ -105,6 +105,17 @@ The last two bounds come from authoritative state/MAX_BUILDINGS, not client inpu
 
 ## Checkpoint boundary
 
+Worker resource travel consumes shared flow fields, then reduces only a clear,
+uniform-level leg from the Worker's actual fractional position to the original
+path's final cell. The actual endpoint may differ from the field's first goal
+for Farm, forest or drop-off access. Compare drop-off candidates using original
+flow path lengths before reducing the winning leg. Obstructed/nonflat routes,
+interaction radii, targets, work intent and cargo retain their existing rules.
+`pathFromAttackFlow` stays cardinal for other consumers, including Sheep Herd.
+The [Worker route QA](qa-worker-flat-flow-routes-2026-10-04.md) owns this bounded
+correction; forest target/job selection and universal movement are separate
+owner-led slices.
+
 The optional v1 unit field is additive to existing schema 29/rules 6. Economy
 owns capture cloning, validation, restore/migration and cancellation hooks.
 Validate exact version/kind/keys, matching generation, finite bounded anchor/area,
