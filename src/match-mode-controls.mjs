@@ -1,8 +1,13 @@
 import { matchModeDefinition, assertMatchModeCompatibility } from './match-modes.mjs';
 import { mapVictoryRule } from './objective-summary.mjs';
+import { BANNERFALL_RULES } from './bannerfall-rules.mjs';
 
 const key = value => `${value.id}@${value.version}`;
 const identityFor = value => ({ matchModeId: value.id, matchModeVersion: value.version });
+
+export function fixedMatchArmySize(identity) {
+  try { return matchModeDefinition(identity).fixedArmySize ?? null; } catch { return null; }
+}
 
 // The caller supplies the runtime's allowed catalog and current map, when
 // available. Presentation never projects a new simulation map or chooses AI.
@@ -24,13 +29,16 @@ export function matchModePresentation({ identity = {}, catalog, map, canonicalMa
     const allowed = choices.has(key(active));
     if (!allowed) choices.set(key(active), active);
     const elimination = active.victoryPolicy === 'recovery-elimination';
+    const bannerfall = active.id === 'bannerfall';
     return {
       active, choices: [...choices.values()],
       editable: allowed && choices.size > 1,
-      summary: elimination
+      summary: bannerfall
+        ? `Free waves arrive every ${BANNERFALL_RULES.waveSeconds} seconds. ${BANNERFALL_RULES.evolutionKills} enemy troop kills unlock Rider reinforcements. Destroy the opposing original Town Center to win.`
+        : elimination
         ? 'Defeat the opposing land force and its remaining ways to recover. Capture posts grant bonuses; holding them or reaching the map deadline does not win.'
         : 'This map’s authored victory rules apply. Review the win condition before readying.',
-      rule: elimination
+      rule: bannerfall ? mapVictoryRule({ bannerfall: BANNERFALL_RULES }).description : elimination
         ? 'Workers and paid land-unit queues keep a team alive, as does a completed producer that can afford and legally spawn a land unit. Skiffs alone do not. Losing a Town Center alone is not defeat.'
         : map ? mapVictoryRule(map).description : 'Capture, hold, deadline or elimination rules remain those of the authored map.',
       error: Array.isArray(catalog) && !allowed ? 'Current mode is unavailable for these settings. Review the map and mode before readying.' : '',

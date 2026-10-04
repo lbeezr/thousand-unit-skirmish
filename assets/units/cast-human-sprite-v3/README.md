@@ -83,3 +83,13 @@ scale remain exact. Existing default productive food selector consumes NW;
 six other missing food headings retain exact idle. NW fishing uses its established
 same-heading food fallback; no dedicated fishing artwork is supplied. Source/
 default CPU playback checked; actual deployment/native and47 art cells remain.
+
+
+Version0.23.0 reuses the public actual NW wood axe windup/strike/recovery for
+**NW attack**, with a separate3x280ms/840ms one-shot clip. The old frame IDs
+stay unchanged, with no new pixels/allocation/world-scale change. Rebuild with
+`python3 scripts/admit-worker-attack-north-west.py`; all prior clip metadata
+is preserved except this explicit idle-placeholder replacement. Existing
+Human attack lifetime, terminal clamp and event restart are checked on both
+seats. Six other attack headings remain approximate/missing. Exact native/
+deployed game acceptance and46 remaining art cells stay in the land checkpoint.

@@ -1,0 +1,90 @@
+{
+  "sourceRevision": "38174fc50bcda8d2cba119ff14e2d80034ce3b8a",
+  "sourceDirty": false,
+  "sourceContentSha256": "fcf43627584924004b2e886cffe45ac109304419d0b757cfcdf6bd9a37c0b862",
+  "startedAt": "2026-10-04T02:51:08.576Z",
+  "completedAt": "2026-10-04T02:58:37.100Z",
+  "gameSecondsToColdSave": 436.0333333334654,
+  "wallReceiptSecondsToColdSave": 436.085958152,
+  "observedEconomicRunGamePerWall": 0.9998793246662708,
+  "clockMethod": "difference of authoritative checkpoint game clocks and local receipt wall clocks from authored-start to cold-save; excludes boot, restart/reset phases; not a tick-performance benchmark",
+  "passedStages": [
+    "ordinary-practice-authored-start",
+    "unfunded-tower-rejected",
+    "natural-local-wood-banked",
+    "natural-local-stone-banked",
+    "paid-farm-complete",
+    "paid-mill-complete",
+    "paid-watchtower-complete",
+    "paid-dock-complete",
+    "paid-skiffs-trained",
+    "nearby-neutral-sheep-harvested",
+    "finite-farm-and-shared-worker-skiff-fish",
+    "farm-food-delivered-to-nearby-mill",
+    "both-paid-watchtowers-fire",
+    "stopped-fish-cargo-before-owned-dock-delivery",
+    "finite-fish-food-delivered-to-owned-dock-once",
+    "skiff-0-sequential-cross-bay-arrival",
+    "skiff-1-sequential-cross-bay-arrival",
+    "cold-checkpoint-before",
+    "cold-checkpoint-after",
+    "authored-reset-restores-finite-opening",
+    "one-human-practice-clock-and-move"
+  ],
+  "paidPerSeatBeforeReset": [
+    {
+      "food": 50,
+      "wood": 460,
+      "stone": 50
+    },
+    {
+      "food": 50,
+      "wood": 460,
+      "stone": 50
+    }
+  ],
+  "coldSavedBanks": {
+    "food": [
+      172.76666666666668,
+      173.03333333333333
+    ],
+    "wood": [
+      70,
+      71.79999999999995
+    ],
+    "stone": [
+      17.00000000000108,
+      17.00000000000108
+    ]
+  },
+  "deliveries": [
+    {
+      "team": 0,
+      "skiffId": 24,
+      "dockId": 7,
+      "cargo": 1.6000000000000016,
+      "bankBefore": 171.16666666666669,
+      "deliveredAt": {
+        "x": -48.5,
+        "z": 26.5
+      },
+      "bankAfter": 172.76666666666668
+    },
+    {
+      "team": 1,
+      "skiffId": 25,
+      "dockId": 8,
+      "cargo": 1.6000000000000016,
+      "bankBefore": 171.43333333333334,
+      "deliveredAt": {
+        "x": 48.5,
+        "z": 26.5
+      },
+      "bankAfter": 173.03333333333333
+    }
+  ],
+  "fullPrivateCheckpointPublished": false,
+  "humanMatches": 0,
+  "sequentialBoatCrossings": true,
+  "concurrentCounterflowAcceptance": false
+}

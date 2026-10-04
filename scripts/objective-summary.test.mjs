@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mapVictoryRule, objectiveSummary, rememberNotice } from '../src/objective-summary.mjs';
+import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from '../src/objective-summary.mjs';
 import { readFileSync } from 'node:fs';
 import { effectiveMapForMatchMode } from '../src/match-modes.mjs';
 const map = { victoryMode: 'all', victoryHoldSeconds: 30, triggers: [
@@ -72,6 +72,8 @@ const bannerfall = effectiveMapForMatchMode(
   JSON.parse(readFileSync(new URL('../maps/bannerfall-arena.json', import.meta.url))),
   { matchModeId: 'bannerfall', matchModeVersion: 1 });
 test('Bannerfall explains designated strongholds, bounded waves and kill evolution without capture or elimination instructions', () => {
+  assert.match(mapScenarioSummary(bannerfall), /original Town Center.*enemy stronghold.*Free waves.*kills unlock Riders/);
+  assert.doesNotMatch(mapScenarioSummary(bannerfall), /capture|objective/i);
   const rule = mapVictoryRule(bannerfall);
   assert.equal(rule.label, 'Bannerfall');
   assert.match(rule.description, /Destroy the enemy original Town Center to win/);
