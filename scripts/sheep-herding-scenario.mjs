@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import * as THREE from 'three';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
+import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
 
 // Source-only authority proof: real compact-map publication, Workers, orders,
 // paid construction and restarts. No saved stock, bank or position is patched.
@@ -22,6 +24,11 @@ Object.assign(map, { id: 'sheep-herding-proof', name: 'SHEEP HERDING PROOF', sum
 const fixture = await createFortifiedFixture({ mapPath: null, timeoutMs: 45_000 });
 const sourceHash = async () => createHash('sha256').update(await readFile(new URL('../server.mjs', import.meta.url))).digest('hex');
 const serverSha256 = await sourceHash();
+const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera();
+const renderer = createNeutralWildlifeRenderer({ THREE, scene, groundHeight: () => 0,
+  loadArt: () => Promise.reject(new Error('explicit CPU fallback')) });
+renderer.reset(map.resourceNodes, map);
+let maxRenderedDisplacement = 0;
 const EPSILON = 1e-6, SNAPSHOT_EPSILON = .002, HERD_SPEED = .6;
 const ids = [0, 1].map(team => `herd-sheep-${team}`);
 const goals = [{ x: -2.5, z: 4.5 }, { x: 2.5, z: 4.5 }];
@@ -66,6 +73,17 @@ function untouched(saved) {
   }
 }
 function publicRows(state) {
+  renderer.reconcile(state.resourceNodes, () => true); renderer.update(camera);
+  for (const definition of map.resourceNodes) {
+    const row = state.resourceNodes.find(node => node.id === definition.id);
+    const available = Boolean(row && row.stock > 0);
+    assert.equal(renderer.isAvailable(definition.id), available, 'actual server disclosure drives client availability');
+    if (available) {
+      const group = scene.children.find(item => item.userData.wildlifeNodeId === definition.id);
+      assert.deepEqual(group.position.toArray(), [row.x, 0, row.z], 'relocated authority poses are admitted by the production renderer');
+      maxRenderedDisplacement = Math.max(maxRenderedDisplacement, distance(row, definition));
+    }
+  }
   assert.ok(!state.resourceNodes.some(node => node.id === 'hidden-sheep'), 'hidden Sheep remain absent without ownership sight');
   for (const node of state.resourceNodes.filter(node => node.wildlifeSpecies !== undefined)) {
     assert.ok([null, 0, 1].includes(node.wildlifeTeam));
@@ -316,6 +334,7 @@ try {
   const lost = structuredClone(exhausted.saved); unitIn(lost, gatherers[0][0]).cargo = 0;
   assert.throws(() => conserved(lost), /food equals/);
   clients.forEach(client => publicRows(client.latest));
+  assert.ok(maxRenderedDisplacement > 2, 'the live client represents travel beyond the authored graze radius');
   assert.equal(await sourceHash(), serverSha256, 'reported source hash identifies the actual server tested');
   console.log(JSON.stringify({ scenario: 'owned Sheep authoritative herding', map: map.id, schema: 28, speed: HERD_SPEED,
     bothSeatNaturalClaimAndMulticellHerd: true, foreignHiddenStaleBlockedInvalidRejected: true,
@@ -324,7 +343,7 @@ try {
     retainedOwnershipWithoutSightAndHiddenOwnerOrdersRejected: true,
     opposingGatherImmediatelyCancelsHerd: true, partialAndDepletedCargoRecovery: true,
     sharedGatherAndFoodReturnConserved: true, lostCargoAndDuplicateCreditControls: true,
-    maxObservedSpeed,
+    maxObservedSpeed, maxRenderedDisplacement, relocatedCpuRendererAdmission: true,
     ticks: { moving: moving.state.tickNumber, stopped: stopped.state.tickNumber,
       midRouteSaved: midRoute.saved.state.tickNumber, midRouteRecovered: midRoute.recovered.state.tickNumber,
       arrived: arrived.state.tickNumber, ownedHidden: hiddenOwned.state.tickNumber,
@@ -333,7 +352,7 @@ try {
       delivered: delivered.state.tickNumber },
     foodBanks: delivered.state.teamFood, woodBanks: delivered.state.teamWood,
     serverSha256,
-    limits: ['authority/WebSocket proof; ordinary client selection and rendered/hosted appearance are not asserted'] }));
+    limits: ['authority/WebSocket and CPU renderer proof; ordinary selection, WebGL/native and hosted appearance are not asserted'] }));
 } catch (error) {
   try {
     const last = JSON.parse(await readFile(fixture.checkpointPath, 'utf8'));
@@ -343,4 +362,4 @@ try {
         hp: unit.hp, cargo: unit.cargo, gatherNodeId: unit.gatherNodeId, gatherPhase: unit.gatherPhase })) }));
   } catch {}
   throw error;
-} finally { await fixture.dispose(); }
+} finally { renderer.dispose(); await fixture.dispose(); }
