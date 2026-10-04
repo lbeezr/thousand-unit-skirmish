@@ -79,7 +79,8 @@ are destinations for future small, cohesive moves, not a rename plan:
 | `src/server/transport/`, persistence and orchestration | `networking/websocket-frame`, `networking/websocket-deflate-offer`; `server/pve-model-proposal`, `server/client-asset-paths`, `room-launch-options`; root `origin-policy`, `simulation-scheduler`; peer/checkpoint/static-serving sections in `server` and lifecycle/routing sections in `room-supervisor` | Node Buffer framing, negotiation, socket queues, origin/access policy, persistence and worker/scheduler adapters. Pure negotiation still belongs to server transport, not the public gameplay protocol. Hosts wire these to simulation; simulation never imports them. Root process entrypoints and existing startup commands stay stable. No broader HTTP admission or security-policy change. |
 | Tests, scenarios and tools | Existing `scripts/*.test.mjs`, `*-fixture.mjs`, `*-scenario.mjs`, native/browser runners, author/build/validate/release tools | One-way consumers of runtime. Group by purpose/domain as described below, preserve current commands while migrating, and keep telemetry/evidence outside executable fixtures. No general `utils/` or `shared/` drawer and no all-domain barrel. |
 
-These directions guide extraction. The first executable safeguard is narrower:
+These directions guide extraction. The executable import safeguards begin with
+package and runtime reachability:
 runtime imports must resolve to exact relative runtime modules, Node builtins
 or the mapped `three` package. All `src` modules stay within `src`; only the
 declared Node adapters may import Node builtins. The existing server-only
@@ -93,6 +94,31 @@ and its document's package policy together. This checks import edges, not browse
 callbacks, runtime asset fetches or gameplay semantics. It also scans unreferenced
 `src` modules and nested folders, so new files cannot evade the cycle check.
 
+The first domain ratchet declares the responsibilities of every current runtime
+module in `RUNTIME_DOMAINS`/`RUNTIME_DOMAIN_HOSTS`, without moving those files.
+New runtime files must receive reviewed membership; stale or duplicate entries
+fail the existing checks. Rules may reach rules; world may also reach world;
+simulation and portable disclosed projections may additionally reach each other;
+AI may consume those domains and its own policy helpers. Every protected module
+is checked even when no host imports it. Static, re-export and literal lazy paths
+are followed transitively, so a middle helper cannot hide a backwards edge or
+Node/Three dependency. Server host closures reject known UI, editor and rendering
+dependencies; browser closures reject all declared private server files, including
+the package-free client manifest and deflate negotiation helper.
+
+Current memberships reflect current responsibilities: `wildlife-client-state`
+is a portable disclosed reader, `worker-fishing-presentation` a portable projection,
+and the Worker receipt journal belongs to simulation. `camera-controls` is
+currently pure camera/projection math consumed by rendering, not a DOM input
+adapter. `audio-event-profile` explicitly retains its mixed map/playback role;
+server hosts may use its validator, but lower domains cannot acquire that profile.
+Candidate PR2 removes the mixed responsibility by extracting only that validator.
+These classifications do not prove absence of DOM/storage globals, injected
+callbacks, hidden-state misuse or lifetime errors; those still need owner review
+and consumer contracts. The existing audit JSON keys and empty cycle ledger stay
+stable. Packed local HTTP checks require all declared private host/transport files
+and compatibility entries to exist while authenticated GET and HEAD return 404.
+
 Acceptance is safer parallel ownership, not folder count or reduced line count.
 A shared-rule owner can change a helper's internals and focused contracts while
 the world owner changes topology and the presentation owner consumes disclosed
@@ -101,8 +127,10 @@ Those changes need no edits to `main.js` or `server.mjs`; host edits belong to
 actual orchestration/interface changes. The source graph protects this first
 boundary by refusing imports back into hosts, tools, browser boot or Three from
 authoritative rule closures. Check consumer regressions before claiming a stable
-interface. The original guard slice registered its two checks in CI; the
-4 October organization-plan update changes documentation only.
+interface. The original guard slice registered its two checks in CI. The
+4 October plan was integrated in [PR291](https://github.com/lbeezr/thousand-unit-skirmish/pull/291);
+the subsequent domain ratchet in [PR294](https://github.com/lbeezr/thousand-unit-skirmish/pull/294)
+uses the existing checks, with no package/CI change.
 
 For future combat extractions, keep durable player orders/queues, stance policy,
 transient engagement, movement execution and disclosed visual events as distinct
@@ -223,9 +251,10 @@ does not mean it is easy to change.
 The 31-module shared closure includes audio reference validation, wildlife
 disclosure, Worker action receipts and terrain material metadata. Thus filenames
 such as `*-client-state` and `audio-*` are not sufficient classifiers.
-The import guard checks explicit Node adapters and Three/package reachability;
+The import guard checks domain direction, explicit private/Node adapters and
+Three/package reachability;
 it does **not** detect DOM/storage globals in an otherwise package-free module,
-state sharing through callbacks, or hidden-data misuse. Domain guards and
+state sharing through callbacks, or hidden-data misuse. Owner review and
 behavioral contracts must cover those additional boundaries.
 
 There are 665 tracked files under `scripts/`, 649 directly in that folder:
@@ -312,7 +341,7 @@ PR8 waits for the asset/renderer owner's agreed lifetime interface.
 
 | PR / owner and dependency | Exact candidate source scope and resulting boundary | Focused acceptance beyond the common checks below |
 | --- | --- | --- |
-| 1 — architecture/import owner; plan review first | `scripts/check-runtime-imports.mjs`, `scripts/check-runtime-imports.test.mjs`, existing `scripts/fixtures/runtime-import-baseline.json` (empty cycles unchanged), and boundary fixtures added by that owner. Classify existing pure, authoritative, client/editor, presentation and private-adapter files; reject backwards edges by explicit responsibility even before moving them. | Existing parser/cycle/package/HTML contracts plus negative simulation→client/editor/presentation and browser→private-adapter cases. A pure disclosed-row helper used by AI remains intentionally shared. No new package/CI pipeline, wildcard exception or cycle-baseline reset. Existing graph still passes. |
+| 1 — architecture/import owner; plan reviewed in PR291 | [PR294](https://github.com/lbeezr/thousand-unit-skirmish/pull/294): `scripts/check-runtime-imports.mjs`, `scripts/check-runtime-imports.test.mjs` and the existing `scripts/railway-release-scenario.mjs` private-path assertions; `scripts/fixtures/runtime-import-baseline.json` stays unchanged and empty. Explicit current responsibility memberships reject backwards edges before files move. The PR records exact-head review, checks and integration. | Import/served regressions: 41/41 pass; actual source allowlist: 118 modules; unchanged 175-module/319-edge/zero-cycle graph. Negative simulation→client/editor/presentation, rules/world direction, transitive host-package and browser→private-module cases pass. Pure disclosed helpers used by AI/server remain intentionally shared; new files need a classification. Clean pack and actual packed HTTP private GET/HEAD denial pass. No new package/CI pipeline, wildcard exception or cycle-baseline reset. |
 | 2 — world/metadata owner after PR1 and audio-owner agreement | Extract only `validateMapAudioReference` from `src/audio-event-profile.mjs` into proposed `src/world/map-audio-reference.mjs`; retain its named re-export at the old path. Leave random binding choice/cooldown behavior in the audio module. Its shared reference validation can no longer acquire Web Audio/storage dependencies. | Existing audio runtime/map-persistence/shipped-serving scenarios and new exact old/new validator parity for accepted/rejected references, optional version/hash pair, returned keys and error text. Existing host imports can stay stable. No source audio bytes, map reference or playback change. |
 | 3 — shared-rule/extraction owner after PR1 | `src/gameplay-action-rules.mjs` and `src/base-lifecycle.mjs` → proposed `src/rules/` counterparts; explicit named compatibility entries retain the old API. Update only relative dependencies of the canonical copies. The cohesive action/refund calculations remain portable and independent of UI/hosts. | `scripts/gameplay-action-rules.test.mjs`, `scripts/base-lifecycle.test.mjs`, production/research action tests and `scripts/base-lifecycle-scenario.mjs`. Preserve rejection reason order, epsilon, refund/repair rounding, immutable inputs, payment and cold recovery; preserve existing comparison evidence. |
 | 4 — movement owner after PR1 and current path work | `src/formation-assignment.mjs` → proposed `src/simulation/movement/formation-assignment.mjs`, named old-path forwarding entry. No changes to `unit-path-line`, planner budgets, force combination, command queues or server host imports. Establish the authoritative formation-helper home without moving active path/order implementations. | `scripts/formation-assignment-scenario.mjs`, pathing replay and fortified-site-clearance tests; compare ordered IDs/slot pairing/ties for the same inputs and retain no input mutation. Existing real terrain/paid-construction controls remain meaningful. |
@@ -348,9 +377,11 @@ Private candidates retain socket/command/recovery smoke; their helper's focused
 tests do not replace a real consumer check. Run required repository checks under
 the testing owner's current strategy; this plan does not change that registry.
 
-The first concrete action is review/parent coordination of PR1's existing guard
-scope; select PR2 or the first unconflicted leaf only after that prerequisite.
-This documentation audit launches no migration, local browser, Mac workload,
+The reviewed plan is integrated, with PR1's guard/check milestone recorded in
+PR294. The next concrete action after that PR's reviewed integration is
+audio/world-owner coordination for PR2's metadata validator (or the first
+unconflicted leaf). No runtime migration
+has begun. This source/tooling work launches no local browser, Mac workload,
 remote deployment, provider request or security-setting change.
 
 ### Tests, fixtures, scenarios and performance tools
