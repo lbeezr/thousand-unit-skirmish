@@ -9016,6 +9016,7 @@ const server = createServer(async (request, response) => {
     ].includes(relative);
   });
   const publicFrontierCompleteAsset = /^assets\/buildings\/(?:frontier-civilization-scale-pilot-v1\/(?:(?:town-center|house)-complete-renderer\.json|captures\/(?:town-center|house)-complete-view-0[0-7]\.png)|frontier-civilization-models-v1\/(?:(?:storehouse|stable|workshop|watchtower)-complete-renderer\.json|captures\/(?:storehouse|stable|workshop|watchtower)-complete-view-0[0-7]\.png)|frontier-civilization-military-models-v1\/(?:(?:barracks|archery-range)-complete-renderer\.json|captures\/(?:barracks|archery-range)-complete-view-0[0-7]\.png))$/.test(relative);
+  const publicFrontierEconomyAsset = /^assets\/buildings\/frontier-economy-models-v1\/(?:(?:mill|farm|dock)-complete-renderer\.json|runtime\/(?:mill|dock)-(?:foundation|frame|complete|damaged|critical)-view-0[0-7]\.png|runtime\/farm-(?:foundation|frame|complete|damaged|critical|exhausted|exhausted-damaged|exhausted-critical)-view-0[0-7]\.png)$/.test(relative);
   const publicWildlifeAsset = [
     'assets/wildlife/bellweather-sheep-static-v1/static-preview-binding.json',
     'assets/wildlife/bellweather-sheep-static-v1/sprite-atlas-pack-v1.json',
@@ -9032,7 +9033,7 @@ const server = createServer(async (request, response) => {
     || /^assets\/audio\/vaelora-pilot-v1\/sources\/tus_ui_(?:wood-token|iron-latch|muted-pluck|horn-note)_01_v001\.mp3$/.test(relative);
   if (!publicZoneAudioAsset && !publicClientAsset && !publicEnvironmentModule && !publicPaintedMaterialAtlasAsset && !publicOakDepletionAtlasAsset && !publicEnvironmentAsset && !publicEnvironmentAtlasMetadata && !publicUiAsset
     && !publicDirectionalResourceAtlas && !publicMeshyResourceAsset && !publicPodvineViewAsset && !publicInteractiveEnvironmentAsset && !publicEnvironmentPilotAsset && !publicBuildingSpriteAsset && !publicMapAsset
-    && !publicFrontierCompleteAsset && !publicUnitSpriteAsset && !publicWildlifeAsset && !publicBuildingLifecycleManifest && !publicBuildingLifecycleRuntimeAsset) {
+    && !publicFrontierCompleteAsset && !publicFrontierEconomyAsset && !publicUnitSpriteAsset && !publicWildlifeAsset && !publicBuildingLifecycleManifest && !publicBuildingLifecycleRuntimeAsset) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     response.end('Not found');
     return;

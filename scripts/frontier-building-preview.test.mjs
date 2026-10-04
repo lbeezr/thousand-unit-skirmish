@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { frontierBuildingPreviewUrl, frontierBuildingManifestUrl } from '../src/frontier-building-preview.mjs';
 
-const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower', 'barracks', 'archery-range'];
+const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower', 'barracks', 'archery-range', 'mill', 'farm', 'dock'];
 
-test('ordinary match URLs bind all eight finished families without a preview flag', () => {
+test('ordinary match URLs bind all eleven authored families without a preview flag', () => {
   for (const mode of [undefined, null, '']) {
     for (const type of families) assert.equal(frontierBuildingManifestUrl(type, mode), frontierBuildingPreviewUrl(type, '1'));
-    for (const type of ['mill', 'farm', 'dock', 'constructor']) {
+    for (const type of ['palisade', 'palisade-gate', 'constructor']) {
       assert.equal(frontierBuildingManifestUrl(type, mode), null);
     }
   }

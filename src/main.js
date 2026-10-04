@@ -26,7 +26,7 @@ import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from './hud-layout.mjs';
 import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from './client/hud/objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
-import { updateSelectionPortrait, farmSelectionFacts } from './selection-portrait.mjs';
+import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts } from './selection-portrait.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
 import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel, fixedMatchArmySize } from './match-mode-controls.mjs';
@@ -3873,6 +3873,12 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
     ? unitSpriteRuntime.roleForUnit(portraitUnit) : null;
   updateSelectionPortrait(document, context, portraitUnit, portraitRole);
+  for (const [kind, button] of [['worker', ui.trainWorker], ['infantry', ui.trainInfantry]]) {
+    const role = localTeam !== null && castPreview
+      && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
+      ? unitSpriteRuntime.roleForUnit({ kind, team: localTeam }) : null;
+    updateProductionPortrait(button, kind, role);
+  }
   bar.dataset.context = context.kind;
   if (bar.hidden !== (context.kind === 'none')) bar.hidden = context.kind === 'none';
   if (quickAccess.hidden !== !bar.hidden) quickAccess.hidden = !bar.hidden;
@@ -4797,16 +4803,38 @@ function updateEnvironmentStateCaptureSnapshot(state) {
       }),
     };
   });
-  const buildings = (Array.isArray(state.buildings) ? state.buildings : []).map((building) => ({
-    id: building.id, team: building.team, type: building.type, orientation: building.orientation ?? 0,
-    x: building.x, z: building.z, progress: building.progress, complete: building.complete,
-    groundStage: constructionGroundStage(building.progress, building.complete),
-  }));
+  const buildings = (Array.isArray(state.buildings) ? state.buildings : []).map((building) => {
+    const visual = buildingVisuals.get(building.id), sprite = visual?.frontierCaptureEntry?.sprite;
+    const art = sprite?.userData.capturedBuildingArt;
+    const key = art?.requestKey?.split(':');
+    const entry = key?.[0] === 'complete' ? art?.manifest?.completeState
+      : art?.manifest?.states?.find(row => row.state === key?.[0]);
+    const view = entry?.views?.find(row => row.index === Number(key?.[1]));
+    const screen = new THREE.Vector3(building.x, groundHeight(building.x, building.z), building.z).project(camera);
+    const rect = renderer.domElement.getBoundingClientRect();
+    return {
+      id: building.id, team: building.team, type: building.type, orientation: building.orientation ?? 0,
+      x: building.x, z: building.z, progress: building.progress, complete: building.complete,
+      hp: building.hp, maxHp: building.maxHp, harvestStock: building.harvestStock,
+      groundStage: constructionGroundStage(building.progress, building.complete),
+      screen: {x: rect.left + (screen.x + 1) * rect.width / 2, y: rect.top + (1 - screen.y) * rect.height / 2},
+      capture: art ? {visible: Boolean(visual.group.visible && sprite.visible && sprite.material.map),
+        state: key?.[0] ?? null, viewIndex: Number(key?.[1]),
+        manifestPath: new URL(art.manifestUrl).pathname,
+        framePath: view ? new URL(view.path, art.manifestUrl).pathname : null,
+        sha256: view?.sha256 ?? null, decoded: Boolean(sprite.visible && art.currentFrame && sprite.material.map),
+        fallbackVisible: visual.frontierCaptureEntry.fallbackRoot.visible,
+        depthMatches: sprite.material.map === art.bodyDepth.material.map,
+        standardVisible: visual.group.children.some(child => child.userData.buildingTeamStandard && child.visible)} : null,
+    };
+  });
   const workerRows = (Array.isArray(state.units) ? state.units : []).filter((row) => row?.[5] === 'worker')
     .map((row) => ({ id: row[0], team: row[1], x: row[2], z: row[3], task: row[9] || 'idle' }));
   window.__rtsEnvironmentStateSnapshot = {
     mapId: state.mapId,
     team: localTeam,
+    bank: {food: state.food?.[localTeam], wood: state.wood?.[localTeam]},
+    cameraZoom: camera.zoom,
     fogOfWar: state.fogOfWar === true,
     visibility: state.visibility || null,
     assetStatus: RESOURCE_STATE_ASSET_STATUS,
@@ -4911,7 +4939,11 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
     const authoritativeReason = authoritative && !authoritative.available ? authoritative.reason : '';
     const unavailable = Boolean(reason || populationReason || authoritativeReason);
     setHudActionAvailability(button, unavailable, contextual);
-    button.textContent = `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`;
+    const role = localTeam !== null && castPreview
+      && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
+      ? unitSpriteRuntime.roleForUnit({ kind: definition.id, team: localTeam }) : null;
+    updateProductionPortrait(button, definition.id, role,
+      `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`);
   }
   container.hidden = products.length === 0;
 }

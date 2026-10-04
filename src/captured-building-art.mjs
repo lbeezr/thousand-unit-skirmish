@@ -99,14 +99,18 @@ function lifecycleStateName(input, manifest) {
 
   const maxHp = Number(input?.maxHp);
   const hp = Number(input?.hp);
+  const harvest = mapping.harvest;
+  const exhausted = Number.isFinite(input?.harvestStock) && input.harvestStock <= 0;
+  const resolved = state => exhausted && harvest?.exhaustedStates?.[state]
+    && manifest.stateOrder.includes(harvest.exhaustedStates[state]) ? harvest.exhaustedStates[state] : state;
   if (Number.isFinite(maxHp) && maxHp > 0 && Number.isFinite(hp)) {
     const ratio = THREE.MathUtils.clamp(hp / maxHp, 0, 1);
     const criticalLimit = Number(mapping.health?.criticalAtOrBelow) || 0.3;
     const damagedLimit = Number(mapping.health?.damagedAtOrBelow) || 0.6;
-    if (ratio <= criticalLimit) return 'critical';
-    if (ratio <= damagedLimit) return 'damaged';
+    if (ratio <= criticalLimit) return resolved('critical');
+    if (ratio <= damagedLimit) return resolved('damaged');
   }
-  return 'complete';
+  return resolved('complete');
 }
 
 function findState(manifest, name) {

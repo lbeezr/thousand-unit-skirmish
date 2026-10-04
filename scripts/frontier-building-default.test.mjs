@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { buildingPresentation } from '../src/gameplay-presentation.mjs';
 import { buildingOrientationAngle } from '../src/building-orientation.mjs';
+import { farmSelectionFacts } from '../src/selection-portrait.mjs';
 import { battlefieldCursor } from '../src/battlefield-cursor.mjs';
 import { attachBuildingSprite, buildingSpriteUrl } from '../src/building-sprites.mjs';
 import { barracksModelVisualState, buildingFinishedDetailsVisible } from '../src/building-visual-state.mjs';
@@ -16,7 +17,7 @@ import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife
 
 // Real renderer factories and verified public file bytes, with DOM decode mocked.
 // This is a source/binding/lifecycle test; it does not execute WebGL or certify pixels.
-test('normal factories use all eight Complete families and truthful per-state fallbacks for both teams', async () => {
+test('normal factories use all eleven authored families and truthful per-state fallbacks for both teams', async () => {
   const previous = { fetch: globalThis.fetch, Image: globalThis.Image, document: globalThis.document, warn: console.warn };
   const main = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
   const functionSource = name => {
@@ -61,7 +62,7 @@ test('normal factories use all eight Complete families and truthful per-state fa
     latestBuildings: [], buildingVisuals: new Map(), localTeam: 0, selectedBuildingId: null,
     selectedIds: () => selectedIds, selectedWaterUnits: () => null,
     units: { worker: { kind: 'worker' }, military: { kind: 'infantry' } },
-    battlefieldCursor, pan: null, spaceDown: false, drag: null, movedPointer: false,
+    battlefieldCursor, farmSelectionFacts, pan: null, spaceDown: false, drag: null, movedPointer: false,
     matchWinner: -1, buildPlacementActive: false, ui: {}, attackMoveMode: false, persistentTargetMode: null,
     tapOrderArmed: false, cursorShift: false, cursorPointer: null,
     pickAt: (x, y, predicate, options) => { assert.equal(options.advance, false); return { unit: null }; },
@@ -93,15 +94,16 @@ test('normal factories use all eight Complete families and truthful per-state fa
     for (let i = 0; i < 300; i++) { step(); if (predicate()) return; await new Promise(resolve => setTimeout(resolve, 1)); }
     assert.fail('Captured frame failed to settle');
   };
-  const visuals = [], textures = new Map(), teamShapes = new Map();
+  const visuals = [], teamShapes = new Map();
   try {
     assert.equal(BUILDING_DEFINITIONS['town-center'].footprint, 5);
-    const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower', 'barracks', 'archery-range'];
+    const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower', 'barracks', 'archery-range', 'mill', 'farm', 'dock'];
     for (const type of families.slice(1)) assert.equal(BUILDING_DEFINITIONS[type].footprint, 3);
     const update = { 'town-center': context.updateTownCenterVisual, house: context.updateHouseVisual,
       storehouse: context.updateHouseVisual, stable: context.updateBarracksVisual,
       workshop: context.updateArcheryRangeVisual, watchtower: context.updateWatchtowerVisual,
-      barracks: context.updateBarracksVisual, 'archery-range': context.updateArcheryRangeVisual };
+      barracks: context.updateBarracksVisual, 'archery-range': context.updateArcheryRangeVisual,
+      mill: context.updateHouseVisual, farm: context.updateHouseVisual, dock: context.updateHouseVisual };
     for (const team of [0, 1]) for (const type of families) {
       const building = { id: type + '-' + team, type, team, x: team ? -50 : 50, z: 0, home: type === 'town-center', complete: true, progress: 1, hp: 100, maxHp: 100 };
       const visual = context.createGameplayBuildingVisual(building); visuals.push(visual);
@@ -114,8 +116,11 @@ test('normal factories use all eight Complete families and truthful per-state fa
       assert.ok(Math.abs(entry.sprite.center.y - (1 - 647.1527325565025 / 1024)) < 1e-12);
       assert.equal(visual.group.position.y, 1.6); assert.equal(entry.sprite.position.y, .035);
       assert.equal(entry.fallbackRoot.visible, false);
-      if (textures.has(type)) assert.equal(entry.sprite.material.map, textures.get(type), 'unmasked frame texture is shared across teams and instances');
-      else textures.set(type, entry.sprite.material.map);
+      const peer = visuals.find(other => other !== visual && other.frontierCaptureEntry?.sprite.userData.capturedBuildingArt.manifest?.asset === type);
+      if (peer) {
+        await settle(() => peer.frontierCaptureEntry.sprite.visible);
+        assert.equal(entry.sprite.material.map, peer.frontierCaptureEntry.sprite.material.map, 'current unmasked frame texture is shared across live teams/instances after camera changes');
+      }
       assert.ok(visual.group.children.some(child => child.userData.buildingTeamStandard && child.visible), type + ': team standard stays outside the hidden fallback');
       let flag;
       visual.group.traverse(child => { if (child.isMesh && child.material.vertexColors) flag = child; });
@@ -157,8 +162,15 @@ test('normal factories use all eight Complete families and truthful per-state fa
         entry.lifecycleInput = { ...building, ...state };
         update[type](visual, entry.lifecycleInput);
         step();
-        assert.equal(entry.sprite.visible, false, 'missing Foundation/Frame/Damaged/Critical cannot show Complete');
-        assert.equal(entry.fallbackRoot.visible, true);
+        if (['mill', 'farm', 'dock'].includes(type)) {
+          await settle(() => entry.sprite.visible);
+          const expected = state.complete === false ? state.progress <= .275 ? 'foundation' : 'frame' : state.hp <= 30 ? 'critical' : 'damaged';
+          assert.ok(entry.sprite.userData.capturedBuildingArt.requestKey.startsWith(expected + ':'), 'authored lifecycle follows the live building');
+          assert.equal(entry.fallbackRoot.visible, false);
+        } else {
+          assert.equal(entry.sprite.visible, false, 'missing Foundation/Frame/Damaged/Critical cannot show Complete');
+          assert.equal(entry.fallbackRoot.visible, true);
+        }
         if (['barracks', 'archery-range'].includes(type)) {
           const expected = buildingSpriteUrl(entry.lifecycleInput);
           await settle(() => {
@@ -181,6 +193,32 @@ test('normal factories use all eight Complete families and truthful per-state fa
           const expected = state.complete === false ? state.progress <= .275 ? 'foundation' : 'frame' : state.hp > 30 ? 'damaged' : 'critical';
           assert.ok(visual.captureEntry.sprite.userData.capturedBuildingArt.requestKey.startsWith(expected + ':'), 'older authored lifecycle fallback selects the real state');
         }
+      }
+      if (type === 'farm') {
+        for (const [hp, expected] of [[100, 'exhausted'], [60, 'exhausted-damaged'], [30, 'exhausted-critical'], [61, 'exhausted']]) {
+          entry.lifecycleInput = {...building, hp, harvestStock: 0};
+          update[type](visual, entry.lifecycleInput); await settle(() => entry.sprite.visible);
+          assert.ok(entry.sprite.userData.capturedBuildingArt.requestKey.startsWith(expected + ':'), 'exhaustion remains independent of health and repair');
+        }
+        entry.lifecycleInput = {...building, complete: false, progress: .5, harvestStock: 0};
+        update[type](visual, entry.lifecycleInput); await settle(() => entry.sprite.visible);
+        assert.ok(entry.sprite.userData.capturedBuildingArt.requestKey.startsWith('frame:'), 'unplanted construction is never exhausted');
+        for (const harvestStock of [200, 1, undefined, NaN]) {
+          entry.lifecycleInput = {...building, harvestStock};
+          update[type](visual, entry.lifecycleInput); await settle(() => entry.sprite.visible);
+          assert.ok(entry.sprite.userData.capturedBuildingArt.requestKey.startsWith('complete:'), 'productive or unknown stock does not imply exhaustion');
+        }
+      }
+      if (['mill', 'farm', 'dock'].includes(type)) {
+        entry.lifecycleInput = building;
+        for (let index = 0; index < 8; index++) {
+          const az = index * Math.PI / 4;
+          camera.position.set(building.x + Math.sin(az) * 80, 113.6, Math.cos(az) * 80);
+          camera.lookAt(building.x, 1.6, 0); camera.updateMatrixWorld();
+          await settle(() => entry.sprite.visible);
+          assert.ok(entry.sprite.userData.capturedBuildingArt.requestKey.startsWith('complete:' + index + ':'), 'each actual camera direction loads a registered view');
+        }
+        camera.position.set(building.x + 80, 113.6, 80); camera.lookAt(building.x, 1.6, 0); camera.updateMatrixWorld();
       }
       const repairedAboveBoundary = { ...building, hp: 61 };
       entry.lifecycleInput = repairedAboveBoundary; update[type](visual, repairedAboveBoundary);
@@ -205,7 +243,7 @@ test('normal factories use all eight Complete families and truthful per-state fa
       selectedIds = []; context.syncBattlefieldCursor(); assert.equal(renderer.domElement.dataset.cursorMode, 'select');
       context.localTeam = team; context.selectedBuildingId = building.id;
       context.syncBattlefieldCursor(); assert.equal(renderer.domElement.dataset.cursorMode,
-        BUILDING_DEFINITIONS[type].products.length ? 'rally' : 'unavailable');
+        type !== 'dock' && BUILDING_DEFINITIONS[type].products.length ? 'rally' : 'unavailable');
       context.selectedBuildingId = null; selectedIds = ['military']; context.syncBattlefieldCursor();
       assert.equal(renderer.domElement.dataset.cursorMode, 'move', 'hovering a friendly building adds no new highlight/order mode');
       assert.equal(visual.outline.material.color.getHex(), TEAM_HEX[team], 'hover preserves deselected team outline');
@@ -215,8 +253,6 @@ test('normal factories use all eight Complete families and truthful per-state fa
       visual.group.visible = true;
     }
     for (const type of families) assert.ok(fetched.some(url => url.includes(type + '-complete-view-01.png')));
-    const houseTexture = textures.get('house'); let releases = 0;
-    houseTexture.addEventListener('dispose', () => releases++);
     const town = visuals.find(visual => visual.frontierCaptureEntry.lifecycleInput.type === 'town-center');
     town.frontierCaptureEntry.lifecycleInput = { ...town.frontierCaptureEntry.lifecycleInput, orientation: 1, complete: false, progress: 0.1 };
     town.captureEntry.lifecycleInput = town.frontierCaptureEntry.lifecycleInput;
@@ -224,6 +260,10 @@ test('normal factories use all eight Complete families and truthful per-state fa
     assert.equal(town.frontierCaptureEntry.fallbackRoot.rotation.y, Math.PI / 2);
     assert.equal(town.captureEntry.fallbackRoot.rotation.y, 0, 'nested procedural Town Center rotates exactly once');
     const houses = visuals.filter(visual => visual.frontierCaptureEntry.sprite.userData.capturedBuildingArt.manifest.asset === 'house');
+    await settle(() => houses.every(visual => visual.frontierCaptureEntry.sprite.visible));
+    const houseTexture = houses[0].frontierCaptureEntry.sprite.material.map; let releases = 0;
+    assert.equal(houseTexture, houses[1].frontierCaptureEntry.sprite.material.map);
+    houseTexture.addEventListener('dispose', () => releases++);
     disposeCapturedBuildingSprite(houses[0].frontierCaptureEntry.sprite);
     assert.equal(releases, 0, 'one owner cannot dispose another building\'s shared frame');
     disposeCapturedBuildingSprite(houses[1].frontierCaptureEntry.sprite);

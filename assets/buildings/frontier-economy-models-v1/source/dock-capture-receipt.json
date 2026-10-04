@@ -1,0 +1,1290 @@
+{
+  "asset": "dock",
+  "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+  "scriptSHA256": "aebdf46cb49caf935eeb8d0f7fcf6a3b257129e7524b86379f574e082801736f",
+  "blenderVersion": "5.2.2 LTS",
+  "stateRecipe": "explicit 3D face cuts and authored matched oak frame; unchanged Complete source",
+  "spend": 0,
+  "records": [
+    {
+      "asset": "dock",
+      "state": "foundation",
+      "viewIndex": 0,
+      "file": "captures/runtime-v1/dock-foundation-view-00.png",
+      "sha256": "176aae3b21874887580b71e9a871beb1813782d0c6c5d82a4eac33e249bc16ff",
+      "bytes": 679583,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 0,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.1531982421875
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "foundation",
+      "viewIndex": 1,
+      "file": "captures/runtime-v1/dock-foundation-view-01.png",
+      "sha256": "3676be69c4d3f4293a0541c625258c375bb08d5acde5ff165f26540bf3f2210d",
+      "bytes": 715924,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 45,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0001220703125,
+          647.1530151367188
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "foundation",
+      "viewIndex": 2,
+      "file": "captures/runtime-v1/dock-foundation-view-02.png",
+      "sha256": "f8af6292af7026387dea89bb5c603d00fd867e4e98880325660dc9e3add95e70",
+      "bytes": 685570,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 90,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "foundation",
+      "viewIndex": 3,
+      "file": "captures/runtime-v1/dock-foundation-view-03.png",
+      "sha256": "05641420ec489056daf9e25c75bb2842c05a8d080a4f4f08f6803ad4206509bd",
+      "bytes": 720148,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 135,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.9998779296875,
+          647.1530456542969
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "foundation",
+      "viewIndex": 4,
+      "file": "captures/runtime-v1/dock-foundation-view-04.png",
+      "sha256": "62de260aa26ab33d36f4e482a5329a83a5f3ff0eaf8e4ceaf585408f70e921d1",
+      "bytes": 687065,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 180,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.99993896484375,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "foundation",
+      "viewIndex": 5,
+      "file": "captures/runtime-v1/dock-foundation-view-05.png",
+      "sha256": "92282c32abc9c4d69e547ae7977ebbf7a80169e27f25cf19ab5f5202e4182cd4",
+      "bytes": 719497,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 225,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0001220703125,
+          647.1530456542969
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "foundation",
+      "viewIndex": 6,
+      "file": "captures/runtime-v1/dock-foundation-view-06.png",
+      "sha256": "df82126f20d6681be3672129d2667292e9e70edf3ca9bdc91428fde396719780",
+      "bytes": 685458,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 270,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "foundation",
+      "viewIndex": 7,
+      "file": "captures/runtime-v1/dock-foundation-view-07.png",
+      "sha256": "a18334d0b0506b1d394bce5fe221fd91ef582e517cfda0cb34d02139e5dc83de",
+      "bytes": 711327,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 315,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.9998474121094,
+          647.1530151367188
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "frame",
+      "viewIndex": 0,
+      "file": "captures/runtime-v1/dock-frame-view-00.png",
+      "sha256": "9906bb0d1b912b68d0eaa1e36c6365a7269db6b7dfad38d61162fec68c55e714",
+      "bytes": 685688,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 0,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.1531982421875
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "frame",
+      "viewIndex": 1,
+      "file": "captures/runtime-v1/dock-frame-view-01.png",
+      "sha256": "e323cdc0d370a03f39b731d2aa99198004f4828477b0a43d7448628c95dc0596",
+      "bytes": 721076,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 45,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0001220703125,
+          647.1530151367188
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "frame",
+      "viewIndex": 2,
+      "file": "captures/runtime-v1/dock-frame-view-02.png",
+      "sha256": "b0c0ef166bacf88256aa1a3160539698b39709d573f0a1f9a461f391743803cb",
+      "bytes": 686314,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 90,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "frame",
+      "viewIndex": 3,
+      "file": "captures/runtime-v1/dock-frame-view-03.png",
+      "sha256": "507930bd1af6f65c358a58a5e63b451ecb39be4779abf9daad8ba76771cc5ec2",
+      "bytes": 718162,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 135,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.9998779296875,
+          647.1530456542969
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "frame",
+      "viewIndex": 4,
+      "file": "captures/runtime-v1/dock-frame-view-04.png",
+      "sha256": "e32328518f78b08ac1d7913dbcc0aa2af2bc95be12378231436b62de1bf964e5",
+      "bytes": 682178,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 180,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.99993896484375,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "frame",
+      "viewIndex": 5,
+      "file": "captures/runtime-v1/dock-frame-view-05.png",
+      "sha256": "0f3f181673f10c79437485f2384480eef33bfa68eab0d1eb7445926b48f5f223",
+      "bytes": 717390,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 225,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0001220703125,
+          647.1530456542969
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "frame",
+      "viewIndex": 6,
+      "file": "captures/runtime-v1/dock-frame-view-06.png",
+      "sha256": "225a005cd801cf11dec9a75679d470d0ac7f608fbb3ac226b3d75af0dfbbff93",
+      "bytes": 686598,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 270,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "frame",
+      "viewIndex": 7,
+      "file": "captures/runtime-v1/dock-frame-view-07.png",
+      "sha256": "f102e54146d7509027b44ef966632e97147476853859da377c702e2601cd857e",
+      "bytes": 718498,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 315,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.9998474121094,
+          647.1530151367188
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "complete",
+      "viewIndex": 0,
+      "file": "captures/runtime-v1/dock-complete-view-00.png",
+      "sha256": "369db0118ce6d5527b5f8fa09705b634e9911d755d579aff728c8150854343f0",
+      "bytes": 700790,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 0,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.1531982421875
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "complete",
+      "viewIndex": 1,
+      "file": "captures/runtime-v1/dock-complete-view-01.png",
+      "sha256": "8c9f77f64ef75a2d63101f7791f564dd34788e335cfb5b1203c9e0cb73680ae5",
+      "bytes": 731744,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 45,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0001220703125,
+          647.1530151367188
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "complete",
+      "viewIndex": 2,
+      "file": "captures/runtime-v1/dock-complete-view-02.png",
+      "sha256": "eb1d5c6847440740edce30d8621505bcdba3df6c4d3e82e4449a200e7b41bb67",
+      "bytes": 687615,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 90,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "complete",
+      "viewIndex": 3,
+      "file": "captures/runtime-v1/dock-complete-view-03.png",
+      "sha256": "d6447fb3e3ef3d2d24d5b7a0769056aab7ddee2414af356a47c980e7d5a9cdd0",
+      "bytes": 721857,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 135,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.9998779296875,
+          647.1530456542969
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "complete",
+      "viewIndex": 4,
+      "file": "captures/runtime-v1/dock-complete-view-04.png",
+      "sha256": "de3ab6ea10f522f5545ba018f2e18c571b81e31555f53c32db64da8b3eaad640",
+      "bytes": 684374,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 180,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.99993896484375,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "complete",
+      "viewIndex": 5,
+      "file": "captures/runtime-v1/dock-complete-view-05.png",
+      "sha256": "a9771414fdc867f10d9ea500cac34b98ae3b413e73393225019c5144ed5d16ae",
+      "bytes": 726750,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 225,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0001220703125,
+          647.1530456542969
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "complete",
+      "viewIndex": 6,
+      "file": "captures/runtime-v1/dock-complete-view-06.png",
+      "sha256": "0a78b1cbd980079b51946aba47751af8b068d98653c0246ec15c2156fdbfc0b2",
+      "bytes": 703420,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 270,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "complete",
+      "viewIndex": 7,
+      "file": "captures/runtime-v1/dock-complete-view-07.png",
+      "sha256": "727102b3377d8f63c91b0346d36e066abbf18a12d4cb5443540e86e473df28a4",
+      "bytes": 735734,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 315,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.9998474121094,
+          647.1530151367188
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "damaged",
+      "viewIndex": 0,
+      "file": "captures/runtime-v1/dock-damaged-view-00.png",
+      "sha256": "fbfbf8cd3886ffc1316cb158cf9e384bbcb22ffe4adf946d8041e4c7f11c3d24",
+      "bytes": 700890,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 0,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.1531982421875
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "damaged",
+      "viewIndex": 1,
+      "file": "captures/runtime-v1/dock-damaged-view-01.png",
+      "sha256": "fb9c78f944d5076b17aed9b890c2c699e7ce878ae524bf6ba6f6ca04f50301b3",
+      "bytes": 730671,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 45,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0001220703125,
+          647.1530151367188
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "damaged",
+      "viewIndex": 2,
+      "file": "captures/runtime-v1/dock-damaged-view-02.png",
+      "sha256": "15f5f1fb9a3bae568df16626da3179dda79fd78e77182998efc4bc9b1a434173",
+      "bytes": 689194,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 90,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "damaged",
+      "viewIndex": 3,
+      "file": "captures/runtime-v1/dock-damaged-view-03.png",
+      "sha256": "bfdcdace080f1d4f4a79861d481cfdb8f5f5fb2eb0727438af809313b5fce06d",
+      "bytes": 722833,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 135,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.9998779296875,
+          647.1530456542969
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "damaged",
+      "viewIndex": 4,
+      "file": "captures/runtime-v1/dock-damaged-view-04.png",
+      "sha256": "983ffe386efd1eddf9f1b701881970a6adf13d9049872ecc46d5f81e9e7d4529",
+      "bytes": 689266,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 180,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.99993896484375,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "damaged",
+      "viewIndex": 5,
+      "file": "captures/runtime-v1/dock-damaged-view-05.png",
+      "sha256": "46e65722d36e97e5ed3ed17d6a61ff12faf07aff2c3ede82cf84fcec9a1bbdaf",
+      "bytes": 723521,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 225,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0001220703125,
+          647.1530456542969
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "damaged",
+      "viewIndex": 6,
+      "file": "captures/runtime-v1/dock-damaged-view-06.png",
+      "sha256": "6100d77cc2d3e0ba4294828904e44c5f007f6147261b8adf8ad91e6af7c8442b",
+      "bytes": 695185,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 270,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "damaged",
+      "viewIndex": 7,
+      "file": "captures/runtime-v1/dock-damaged-view-07.png",
+      "sha256": "2fcd90f45893aa8e515523ff8d157260eb704b7e7b8846a473cedbfe45108665",
+      "bytes": 727848,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 315,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.9998474121094,
+          647.1530151367188
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "critical",
+      "viewIndex": 0,
+      "file": "captures/runtime-v1/dock-critical-view-00.png",
+      "sha256": "999764726df54716681424823f732783ac8188f3146d40441a3a259358d13c27",
+      "bytes": 695128,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 0,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.1531982421875
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "critical",
+      "viewIndex": 1,
+      "file": "captures/runtime-v1/dock-critical-view-01.png",
+      "sha256": "a82c50ce869c450bfcca067a522d88f0f99eccbf8a85ff4905e684956ab6f49d",
+      "bytes": 729035,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 45,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0001220703125,
+          647.1530151367188
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "critical",
+      "viewIndex": 2,
+      "file": "captures/runtime-v1/dock-critical-view-02.png",
+      "sha256": "f0bb685e895e1e22b4d484e9e22ef7903b1277175a7c0a238d0cff0a50f1fd89",
+      "bytes": 692563,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 90,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "critical",
+      "viewIndex": 3,
+      "file": "captures/runtime-v1/dock-critical-view-03.png",
+      "sha256": "db6dfe427092acce762dfef7715c12134a77f14fe85045ea71325fced6d13b8b",
+      "bytes": 726425,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 135,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.9998779296875,
+          647.1530456542969
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "critical",
+      "viewIndex": 4,
+      "file": "captures/runtime-v1/dock-critical-view-04.png",
+      "sha256": "e55e5756d1f2c433bf98911cd342b58a80e409d5ea44b2be096fad3f8bcc4530",
+      "bytes": 691777,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 180,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.99993896484375,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "critical",
+      "viewIndex": 5,
+      "file": "captures/runtime-v1/dock-critical-view-05.png",
+      "sha256": "ff9c74ec1204d3f1ca289bb941815731c3727507020e95227c0cf68fe709f0cc",
+      "bytes": 724653,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 225,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0001220703125,
+          647.1530456542969
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "critical",
+      "viewIndex": 6,
+      "file": "captures/runtime-v1/dock-critical-view-06.png",
+      "sha256": "f810cf9b5a84a99da6df01ba4e684ba38130caea7e9ae56bf894326348cd6865",
+      "bytes": 688914,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 270,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512.0,
+          647.15283203125
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    },
+    {
+      "asset": "dock",
+      "state": "critical",
+      "viewIndex": 7,
+      "file": "captures/runtime-v1/dock-critical-view-07.png",
+      "sha256": "a31094448b7ccbae5e8616e457ba8697d1f1b452bc6d306cc37b0052d456420b",
+      "bytes": 721545,
+      "sourceSHA256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "uniformScale": 1.4769918646324747,
+      "measuredNativeBaseWidth": 1.895745038986206,
+      "targetBaseWidthWorldUnits": 2.8,
+      "groundNativeZ": -0.4780620038509369,
+      "yawDegrees": 0.0,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 315,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          511.9998474121094,
+          647.1530151367188
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 16,
+      "blendSHA256": "f9c4166b76e4fd27bd186735d7c4c644b841c9083f7ab54cd07f90da4078dd74"
+    }
+  ]
+}

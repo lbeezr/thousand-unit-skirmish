@@ -43,11 +43,11 @@ export const BUILDING_PRESENTATION_PROFILES = Object.freeze({
   'building.watchtower': Object.freeze({ backend: 'procedural', role: 'watchtower' }),
   'building.town-center': Object.freeze({ backend: 'procedural', role: 'town-center' }),
   'building.storehouse': Object.freeze({ backend: 'procedural', role: 'house' }),
-  // Reuse the existing procedural House until a Mill asset is authored.
+  // House geometry remains the fallback beneath the authored Mill lifecycle.
   'building.mill': Object.freeze({ backend: 'procedural', role: 'house' }),
-  // Clearly labeled Farm prototype; this is an existing House placeholder.
+  // House geometry remains the fallback beneath the authored Farm lifecycle/exhaustion.
   'building.farm': Object.freeze({ backend: 'procedural', role: 'house' }),
-  // Dock land foundation placeholder; no pier or finished Dock artwork is claimed.
+  // House geometry remains the fallback beneath the authored Dock lifecycle.
   'building.dock': Object.freeze({ backend: 'procedural', role: 'house' }),
   'building.house': Object.freeze({ backend: 'procedural', role: 'house' }),
   'building.barracks': Object.freeze({ backend: 'procedural', role: 'barracks' }),

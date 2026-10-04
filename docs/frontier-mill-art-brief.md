@@ -4,9 +4,7 @@
 
 Mill is implemented as a **food-only drop-off**, not a food generator or a Farm.
 Workers carry existing food to it. It produces no units or population and grants
-no gathering bonus. The current `building.mill` presentation explicitly reuses
-the procedural House; this brief requests a distinct useful art slice using
-existing owned sources or procedural authoring. It does not authorize a new paid
+no gathering bonus. The default Mill now uses [registered authored lifecycle captures](../assets/buildings/frontier-economy-models-v1/README.md); procedural House remains its loading/failure fallback. This brief defines that distinct silhouette. It does not authorize a new paid
 model or provider call.
 
 **4 October source update:** the user's later request explicitly authorizes

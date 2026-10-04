@@ -2,6 +2,7 @@ import {readFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 
 const STATES = ['foundation', 'frame', 'complete', 'damaged', 'critical'];
+const EXHAUSTED = ['exhausted', 'exhausted-damaged', 'exhausted-critical'];
 const digest = value => typeof value === 'string' && /^[a-f0-9]{64}$/i.test(value);
 const pair = value => Array.isArray(value) && value.length === 2;
 const requireContract = (condition, message) => { if (!condition) throw new Error(message); };
@@ -18,7 +19,14 @@ export function validateBuildingLifecycle(manifest, {requireLifecycle = false, r
   requireContract(Array.isArray(azimuths) && azimuths.length > 0 && azimuths.every(n => Number.isFinite(n) && n >= 0 && n < 360)
     && new Set(azimuths).size === azimuths.length, 'Invalid or duplicate camera directions');
   const order = manifest.stateOrder;
-  requireContract(Array.isArray(order) && order.includes('complete') && order.every(state => STATES.includes(state))
+  const harvest = manifest.stateMapping?.harvest;
+  if (harvest !== undefined) requireContract(manifest.asset === 'farm'
+    && harvest.exhaustedStates?.complete === 'exhausted'
+    && harvest.exhaustedStates?.damaged === 'exhausted-damaged'
+    && harvest.exhaustedStates?.critical === 'exhausted-critical'
+    && EXHAUSTED.every(state => order?.includes(state)), 'Invalid Farm harvest-state mapping');
+  const allowedStates = harvest ? [...STATES, ...EXHAUSTED] : STATES;
+  requireContract(Array.isArray(order) && order.includes('complete') && order.every(state => allowedStates.includes(state))
     && new Set(order).size === order.length, 'Invalid or duplicate lifecycle declarations');
   if (requireLifecycle) requireContract(STATES.every(state => order.includes(state)),
     `Missing lifecycle states: ${STATES.filter(state => !order.includes(state)).join(', ')}`);

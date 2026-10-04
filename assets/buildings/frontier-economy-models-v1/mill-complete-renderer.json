@@ -1,0 +1,364 @@
+{
+  "schema": "thousand-unit-skirmish.building-lifecycle-reference.v1",
+  "asset": "mill",
+  "status": "default registered lifecycle captures; live team standards",
+  "camera": {
+    "projection": "orthographic",
+    "framePixels": [
+      1024,
+      1024
+    ],
+    "pixelsPerWorldUnit": 128,
+    "elevationDegrees": 46,
+    "azimuthDegrees": [
+      0,
+      45,
+      90,
+      135,
+      180,
+      225,
+      270,
+      315
+    ],
+    "anchorPixelFromTopLeft": [
+      512,
+      647.1527325565025
+    ],
+    "background": "transparent"
+  },
+  "stateOrder": [
+    "foundation",
+    "frame",
+    "complete",
+    "damaged",
+    "critical"
+  ],
+  "completeState": {
+    "state": "complete",
+    "views": [
+      {
+        "index": 0,
+        "azimuthDegrees": 0,
+        "path": "runtime/mill-complete-view-00.png",
+        "sha256": "dbf54929f45a5115306c797ea83fe8c1a7a2d5263fae417d0125e9ab632e44c0",
+        "bytes": 736106
+      },
+      {
+        "index": 1,
+        "azimuthDegrees": 45,
+        "path": "runtime/mill-complete-view-01.png",
+        "sha256": "a31c034a6d611452db69b5f62769b20eac8871d32272c06c8824b49c46570ee6",
+        "bytes": 749403
+      },
+      {
+        "index": 2,
+        "azimuthDegrees": 90,
+        "path": "runtime/mill-complete-view-02.png",
+        "sha256": "ee934dcf3c7ea5b4f125882cd291ebdd4f0a6f77444f47388ec76fded31e6407",
+        "bytes": 710390
+      },
+      {
+        "index": 3,
+        "azimuthDegrees": 135,
+        "path": "runtime/mill-complete-view-03.png",
+        "sha256": "3b3906e10f404e758d35466a728cec1a86f048e376062aa7c6aef08437bc06ba",
+        "bytes": 713418
+      },
+      {
+        "index": 4,
+        "azimuthDegrees": 180,
+        "path": "runtime/mill-complete-view-04.png",
+        "sha256": "858d84a5ec9ea8b6294a74e1934c16731765f7dc19cedfddd277353ccb02cf9a",
+        "bytes": 730081
+      },
+      {
+        "index": 5,
+        "azimuthDegrees": 225,
+        "path": "runtime/mill-complete-view-05.png",
+        "sha256": "692bec5128c693af6b02b4ca2df7783094683502d939a758de3aa3f0a5803313",
+        "bytes": 767129
+      },
+      {
+        "index": 6,
+        "azimuthDegrees": 270,
+        "path": "runtime/mill-complete-view-06.png",
+        "sha256": "22802d766ae3e3b9a08420833f93309527d45982a0f652a8d155220db371ad61",
+        "bytes": 716191
+      },
+      {
+        "index": 7,
+        "azimuthDegrees": 315,
+        "path": "runtime/mill-complete-view-07.png",
+        "sha256": "49ae3e6693635065bb31e25a0be25c6d708ca2f9a093b0300a8bbd985e6653ee",
+        "bytes": 755772
+      }
+    ]
+  },
+  "states": [
+    {
+      "state": "foundation",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/mill-foundation-view-00.png",
+          "sha256": "1ef30d2b9e1def51217fd47abd1bf24942daf1cabe61fb3fbc7feffe4bc4526a",
+          "bytes": 645829
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/mill-foundation-view-01.png",
+          "sha256": "fc542e36bc70bd1b68fa21bddadc0a307fcd5ec3f3a75b6d6e6b6676182ab0f9",
+          "bytes": 654400
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/mill-foundation-view-02.png",
+          "sha256": "e333e9f447dcfda63389f82a3151ca1fc8d13108a9aa253573677da1877c7768",
+          "bytes": 643515
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/mill-foundation-view-03.png",
+          "sha256": "862311d4ea6e2a4355b354d170fb0da513d1a5c0dd1e6bfce0cf68ff2c2203c0",
+          "bytes": 663213
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/mill-foundation-view-04.png",
+          "sha256": "66d948dafb370d39f48bb982ae91df3b446c3d3f9646043cdba74eb5808bf688",
+          "bytes": 643865
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/mill-foundation-view-05.png",
+          "sha256": "ad6b09d3f6fd912d172c086afae26d5f8848079e9f6cdc0d2d4b023f0c30c1c5",
+          "bytes": 652604
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/mill-foundation-view-06.png",
+          "sha256": "993e9b3783f620dd2be38df44f4cad4c3bd5c41caad6c9ced7014a7b1dd4c3b9",
+          "bytes": 643419
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/mill-foundation-view-07.png",
+          "sha256": "235cb06e93dee499ae917c8f8344c15d27a443d4821369bf2a0a279d9f3aa96f",
+          "bytes": 664904
+        }
+      ]
+    },
+    {
+      "state": "frame",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/mill-frame-view-00.png",
+          "sha256": "e969c4e01f5f6e98ee5537a11d3882b4927d465576fd931cf4c8e5d4eca022da",
+          "bytes": 660380
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/mill-frame-view-01.png",
+          "sha256": "f3bea4e1e9289ba4b0daaf8b6fac3edc237e0f38063c71b0a9f2931720b321c6",
+          "bytes": 700277
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/mill-frame-view-02.png",
+          "sha256": "090359a279deeeb6831e92bd7f412638f4bb89f7e5593786c0cc2c4b9a3981f2",
+          "bytes": 659762
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/mill-frame-view-03.png",
+          "sha256": "b2eddd5a7f2d6debe361f5e222c9f5258d560f6155efba86395cf49d19b58191",
+          "bytes": 676108
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/mill-frame-view-04.png",
+          "sha256": "a0de1b23945dda35b8d0423b52f70fb0d17a1811bdbc4fdc96f7d1c4f6262e33",
+          "bytes": 649022
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/mill-frame-view-05.png",
+          "sha256": "c3b97cb7ef670d47597558d7c426d623466889835694aabb2354c14237a9bdfe",
+          "bytes": 679487
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/mill-frame-view-06.png",
+          "sha256": "a7264e5de0409d7e1838afe099c5af768b9563947554b94f0893ab3dee681df5",
+          "bytes": 649138
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/mill-frame-view-07.png",
+          "sha256": "b9ddafc1e666ae60aff1508d8d1f6340a37102cb2509a3d2e69454418d6c1036",
+          "bytes": 689594
+        }
+      ]
+    },
+    {
+      "state": "damaged",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/mill-damaged-view-00.png",
+          "sha256": "57f6c97ed25cd316100e9cf1726db3768533a5708e80b7396b8669f09a0d2327",
+          "bytes": 732715
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/mill-damaged-view-01.png",
+          "sha256": "c15eafecbf5d2bccb33b2611e784a9923e41ddda5915c9f7bd48012d1954fa7a",
+          "bytes": 746717
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/mill-damaged-view-02.png",
+          "sha256": "0ed1a131f05377072d7c454dd070445337ea8ae24894c3598cd5019d94cfad24",
+          "bytes": 708482
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/mill-damaged-view-03.png",
+          "sha256": "5d93c07bed9e8811776495ca55ba1b95cba5d38be8c74f67ab50be0e2e4d7c75",
+          "bytes": 712494
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/mill-damaged-view-04.png",
+          "sha256": "89063fe45810468096ae2e77cc2d516053eb5dfe9b28ef6647f01c5ac623a492",
+          "bytes": 728520
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/mill-damaged-view-05.png",
+          "sha256": "8a692da665a69d273a9b3a0ad8f7f23bcb5659f456fd4ae6c9623c99d46a8765",
+          "bytes": 765511
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/mill-damaged-view-06.png",
+          "sha256": "d43db9f2117b1348a9514756086afd27f08666213a6a0cb4f7d94fdc87c175d2",
+          "bytes": 713577
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/mill-damaged-view-07.png",
+          "sha256": "4540dc5c661884afcfe31b3848e98245af2f7cf119e1dc52c5928a7f5e7d53d3",
+          "bytes": 752546
+        }
+      ]
+    },
+    {
+      "state": "critical",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/mill-critical-view-00.png",
+          "sha256": "4c6eab55f92056078f3508d3a8b8306c2cd0a9b6f1e3ea8e1eb81018dcb3893b",
+          "bytes": 669049
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/mill-critical-view-01.png",
+          "sha256": "4d17072c1090912dadd3f6841a636f159a3efc4c3ce51356ecafd785ccb6a539",
+          "bytes": 684464
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/mill-critical-view-02.png",
+          "sha256": "23a7df57155f9aed0dc9653cc0f5340a39692d7cb99fa7919c3a8941b14e5234",
+          "bytes": 663219
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/mill-critical-view-03.png",
+          "sha256": "af6af4d7d352dca5ed280005db09422d038a8fc1608f578865b89a717b81a402",
+          "bytes": 683760
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/mill-critical-view-04.png",
+          "sha256": "12e437685b8b404289cc1e8210c93322402faedfce1019fd961b68c59e54d51a",
+          "bytes": 670310
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/mill-critical-view-05.png",
+          "sha256": "598cdfd678a66f0253b89a58e144638c45ec49ed9bb055c4e7e7997daedc3fbd",
+          "bytes": 691707
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/mill-critical-view-06.png",
+          "sha256": "eef2b8d5be8547c67f2696c55b46732bdd49bd5cec1d144d9478b06a0875e45d",
+          "bytes": 665218
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/mill-critical-view-07.png",
+          "sha256": "2f86abdc7d885e2ee81eec141c45a01c70dbe194cbdae72bfc1a7a54c9605a6c",
+          "bytes": 695325
+        }
+      ]
+    }
+  ],
+  "stateMapping": {
+    "construction": {
+      "foundationAtOrBelow": 0.275
+    },
+    "health": {
+      "damagedAtOrBelow": 0.6,
+      "criticalAtOrBelow": 0.3
+    }
+  },
+  "source": {
+    "taskId": "01a107cb-427e-712c-b142-1d661883e5f7",
+    "sha256": "0c9eed4604ac59ae3c26d95ffa3f1b05be7cbfe722c21bc27143f69d053713d0",
+    "recipeSHA256": "0826513df673ea9095328a3ea6ceed2a0adbffbf309bddaf8b8a89af93425176",
+    "recipePath": "source/capture_economy.py",
+    "reference": "../../../docs/art-direction/frontier-economy-meshy-v1/README.md"
+  },
+  "limitations": [
+    "Static captures; Mill sails do not animate",
+    "Damage geometry is an initial cut-based treatment",
+    "Ownership uses live team-colored and shaped standards outside the captured artwork"
+  ]
+}

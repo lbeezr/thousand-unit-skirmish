@@ -1,0 +1,105 @@
+{
+  "executedSource": "3c7fb668525a4a7311f497b5b99a58845686f3b2",
+  "engineBaseline": "70c0ef50f893ebca90b45e3089be744f3a974537",
+  "opponentSource": "41e30deb3aac6b4533231514943a6b65ad3068ab",
+  "seeds": [
+    20260925,
+    0
+  ],
+  "resultSHA256": "f2dd8deae27b54fb7fa6febfcb5851b80ac7020d59caa88bb0ff44f043d7d39b",
+  "scope": "No game rerun. Retained source record and read-only filtered-observation probes. Samples are30s and player views exist on command ticks only; no invented private-watch reconstruction.",
+  "scout": {
+    "id": 50,
+    "generation": 1942171717,
+    "hp": 12,
+    "x": 27.5,
+    "z": -3.5,
+    "lastMoveTick": 86739,
+    "pathIndex": 1,
+    "moveGoalCell": 12267
+  },
+  "scoutPathLength": 1,
+  "scoutCommandCount": 53,
+  "firstScoutCommand": 27810,
+  "lastScoutCommand": 86640,
+  "sampledArrivalTick": 87300,
+  "lastRecordedEnemyDisclosure": 84120,
+  "actualTargetedAttackTick": 83970,
+  "localProbeCount": 16,
+  "nearbyProbeFogCodes": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "finalSubjectFogCellCounts": [
+    12321,
+    12838,
+    441,
+    0
+  ],
+  "finalOpponentFogCellCounts": [
+    5842,
+    17518,
+    2240,
+    0
+  ],
+  "gridAlignedSearchDestinations": 147,
+  "distinctGridAlignedSearchDestinations": 147,
+  "afterLastRecordedDisclosureDestinations": 43,
+  "chosenGoalCountIsNotPhysicalCoverage": true,
+  "actualLastNativeEnemyMilitaryMoveTicks": {
+    "17": 108000,
+    "19": 108000,
+    "20": 108000,
+    "23": 108000,
+    "24": 108000,
+    "30": 108000,
+    "46": 108000,
+    "55": 108000,
+    "67": 108000,
+    "69": 108000,
+    "70": 107997
+  },
+  "controlReceipt": "diagnosis-controls.json",
+  "bugEstablished": false,
+  "policyChanged": false,
+  "deadlineChanged": false,
+  "MediumAdmissionChanged": false,
+  "PR372Comparison": {
+    "source": "24144f6b70dff6a2e00dfa4bec176ededa20a3c4",
+    "mapSHA256": "2e352328e0b6795c04a11505672d17971231cc2e7ad34a858ff6418423d5d1f6",
+    "seeds": [
+      0,
+      20260925
+    ],
+    "decompressedRawSHA256": "d99b1d07fb12a29edc0cbd7a1eae347d8f0e6125376039a2cf1b19432cc51ee6",
+    "worker": {
+      "id": 101,
+      "generation": 528718585,
+      "hp": 100,
+      "x": 13.519620400216182,
+      "z": 10.5,
+      "gatherPhase": "to-node",
+      "pathIndex": 79,
+      "moveGoalCell": 18020,
+      "lastMoveTick": 108000
+    },
+    "pathLength": 108,
+    "scope": "Separate newer-engine/current-policy mirror; terminal metadata only, not a cause diagnosis or qualified-opponent result.",
+    "coordinationComment": "https://github.com/lbeezr/thousand-unit-skirmish/pull/372#issuecomment-5984125400"
+  },
+  "priorSealedArchiveSHA256": "0702cd88220388362051df9c307c73e9c5fa75f4e2f3b49f47c31e318c6001e8"
+}
