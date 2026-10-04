@@ -31,7 +31,8 @@ with its separate owner and consumes the merged intent boundary.
 Next owned slice: reproduce and audit Food/Stone exhaustion, typed manual
 replacement, cargo, recovery and reachability. Current automatic area policy is
 Wood-only. No Food/Stone balance, radius, source-mixing or construction change is
-implied by that audit.
+implied by that audit. [Current audit and the next typed policy decision](qa-food-stone-continuation-audit-2026-10-04.md)
+record source-only depletion separately from healthy manual/cargo behavior.
 
 ## Ranked next actions
 
