@@ -4,6 +4,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { JSDOM } from 'jsdom';
 import { roomPresence } from '../src/room-presence.mjs';
+import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 
 test('solo Practice is live with one player while ordinary two-seat rooms still wait', () => {
   assert.deepEqual(roomPresence({ connected: 1, practice: true }), {
@@ -30,7 +31,7 @@ test('the actual room presentation applies Practice and recovery labels without 
   const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
   const dom = new JSDOM('<p id="players"></p><div><span id="network"></span><i id="dot"></i></div><p id="match"></p>');
   const doc = dom.window.document;
-  const context = vm.createContext({ connectedPlayers: 0, waitingForResume: false, soloPracticeActive: true, roomPresence,
+  const context = vm.createContext({ ...browserRecoveryBindings(), connectedPlayers: 0, waitingForResume: false, soloPracticeActive: true, roomPresence,
     ui: { playersOnline: doc.querySelector('#players'), networkStatus: doc.querySelector('#network'),
       connectionDot: doc.querySelector('#dot'), matchStatus: doc.querySelector('#match') } });
   vm.runInContext(source.slice(source.indexOf('function updateRoomUI('), source.indexOf('\nfunction setConnection(')), context);

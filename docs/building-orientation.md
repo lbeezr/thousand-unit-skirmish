@@ -84,17 +84,14 @@ bypass was attempted. The [first qualified cloud run](qa-evidence/building-orien
 locked dependencies, normal HUD selection/build, native input, real paid House,
 three retained actual WebGL screenshots and preview/final source-transform parity.
 The diagnostic flag only observes the renderer; no building-art override or
-fabricated simulation object is used. Human review of those exact-build images
-is still required; changing full-canvas hashes alone cannot prove the ghost
-because workers also move. House on flat ground establishes only that bounded
+fabricated simulation object is used. The [exact-build qualified report](qa-evidence/building-orientation-2026-10-04/qualification.json) passed at `2a4d070f7d85c5da5563bb10422c8185641a0729`, clean release `sha256:ae5a497edf612fbe23771928420abcab1098fd7cdff771823fbf37e93705149c` (1,213 files). Both the implementation owner and independent evidence review inspected the original [default ghost](qa-evidence/building-orientation-2026-10-04/building-ghost-default.png), [rotated ghost](qa-evidence/building-orientation-2026-10-04/building-ghost-rotated.png) and [paid completed House](qa-evidence/building-orientation-2026-10-04/building-paid-complete.png). The [bounded appearance review](qa-evidence/building-orientation-2026-10-04/appearance-review.json) accepts visible facing change, translucent preview and final image/site/scale/anchor parity. The HUD records the ordinary 75-Wood debit and eight capacity gain. House on flat ground establishes only that bounded
 case. Other-family, raised-ground and occlusion acceptance remain open.
 
 Headless exact-replay observations exclude the per-process `serverInstanceId`
 transport nonce introduced by browser recovery; complete gameplay payloads remain
 compared. Actual process/browser recovery tests retain that identity contract.
 
-The orientation owner retains rendered acceptance on the exact packed source and
-identified staging build. Layering owner `01a107d0-baaf-73f1-b097-4d31db1ae026`
+Exact rendered source acceptance above is retained separately from identified staging delivery. The orientation owner retains staging identity verification. Final broad fast testing found a Tiny completion failure at `pve-tiny-search-case.mjs:73` for seeds `20260925,0`. Independent isolated testing reproduces it on unmodified main `5669ad8dfa4bf49f0a6945cd70d412f35b518e66`, before this increment; the unchanged 3,600-second limit fails. No green full fast lane or full CPU suite is claimed. Browser/navigation/camera VM bindings discovered by that run were repaired with the shared recovery adapter and actual capture function. Layering owner `01a107d0-baaf-73f1-b097-4d31db1ae026`
 retains the dark building square, occlusion and palisade earth fixes. Shared
 captured-art hunks here are only orientation-relative frame choice and the
 preview opacity/depth/picking option; normal depth correction is unchanged.

@@ -4,11 +4,12 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { roomEntryUrl, AUTHENTICATION_MESSAGE } from '../src/game-entry-session.mjs';
 import { createPveRoomUrl } from '../src/pve-entry.mjs';
+import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 test('leaving/back navigation closes once, cancels reconnect and restores the existing connection path', () => {
   const listeners = new Map(), closed = [], cleared = [], connections = [];
-  const context = vm.createContext({ pageLeaving: false, connectionAttempt: 0, reconnectTimer: 7,
+  const context = vm.createContext({ ...browserRecoveryBindings(), AbortSignal, pageLeaving: false, connectionAttempt: 0, reconnectTimer: 7,
     socket: { close(...args) { closed.push(args); } }, connect() { connections.push(true); },
     window: { clearTimeout(value) { cleared.push(value); }, addEventListener(type, callback) { listeners.set(type, callback); } } });
   const block = source.slice(source.indexOf('function releasePageConnection()'), source.indexOf('\nresize();', source.indexOf('function releasePageConnection()')));
@@ -24,7 +25,7 @@ test('leaving/back navigation closes once, cancels reconnect and restores the ex
 test('resumed game invites and room changes do not carry strict Resume or Studio into another admission', async () => {
   const room = 'R'.repeat(32), next = 'N'.repeat(32), navigations = [], invites = [];
   const current = `https://game.test/?room=${room}&resume=1&studio=1&mode=pve&mapSeed=7#old`;
-  const context = vm.createContext({ URL, roomEntryUrl, ROOM_ID: room, ROOM_ID_PATTERN: /^[A-Za-z0-9_-]{32}$/,
+  const context = vm.createContext({ ...browserRecoveryBindings(), AbortSignal, URL, roomEntryUrl, ROOM_ID: room, ROOM_ID_PATTERN: /^[A-Za-z0-9_-]{32}$/,
     ui: { roomCreate: { disabled: false }, roomDialogError: { textContent: '' } }, showToast() {},
     fetch: async () => ({ ok: true, json: async () => ({ roomId: next }) }),
     navigator: { clipboard: { async writeText(value) { invites.push(value); } } },
@@ -41,7 +42,7 @@ test('resumed game invites and room changes do not carry strict Resume or Studio
 
 for (const resume of [false, true]) test(`a delayed ${resume ? 'Resume' : 'room'} lookup cannot admit a stale page after back restoration`, async () => {
   const pending = [], admitted = [], retries = [], listeners = new Map();
-  const context = vm.createContext({ pageLeaving: false, connectionAttempt: 0, reconnectTimer: null,
+  const context = vm.createContext({ ...browserRecoveryBindings(), AbortSignal, pageLeaving: false, connectionAttempt: 0, reconnectTimer: null,
     localTeam: null, HAS_ROOM_PARAMETER: !resume, ROOM_ID: 'R'.repeat(32), ROOM_ID_PATTERN: /^[A-Za-z0-9_-]{32}$/,
     RESUME_REQUESTED: resume, entrySessionConfirmed: false, ROOM_SESSION_STORAGE_KEY: 'saved',
     sessionStorage: { getItem: () => 'T'.repeat(43) }, socket: null, URL,
@@ -68,7 +69,7 @@ for (const resume of [false, true]) test(`a delayed ${resume ? 'Resume' : 'room'
 for (const entry of ['invite', 'resume']) test(`${entry} auth interruption pauses admission without claiming expiry or creating another room`, async () => {
   const statuses = [], toasts = [], admitted = [], retries = [];
   let interrupted = true;
-  const context = vm.createContext({ pageLeaving: false, connectionAttempt: 0, localTeam: null,
+  const context = vm.createContext({ ...browserRecoveryBindings(), AbortSignal, pageLeaving: false, connectionAttempt: 0, localTeam: null,
     HAS_ROOM_PARAMETER: entry === 'invite', ROOM_ID: 'R'.repeat(32), ROOM_ID_PATTERN: /^[A-Za-z0-9_-]{32}$/,
     RESUME_REQUESTED: entry === 'resume', entrySessionConfirmed: false, ROOM_SESSION_STORAGE_KEY: 'saved',
     sessionStorage: { getItem: () => 'T'.repeat(43) }, URL, AUTHENTICATION_MESSAGE,
@@ -88,7 +89,7 @@ for (const entry of ['invite', 'resume']) test(`${entry} auth interruption pause
 test('invalid/missing direct invitations and stale Resume stop before admission without a fresh-game fallback', async () => {
   for (const target of ['invalid', 'missing', 'stale']) {
     const statuses = [], admitted = [], retries = [], requests = [];
-    const context = vm.createContext({ pageLeaving: false, connectionAttempt: 0, localTeam: null,
+    const context = vm.createContext({ ...browserRecoveryBindings(), AbortSignal, pageLeaving: false, connectionAttempt: 0, localTeam: null,
       HAS_ROOM_PARAMETER: target !== 'stale', ROOM_ID: target === 'invalid' ? 'bad' : 'R'.repeat(32),
       ROOM_ID_PATTERN: /^[A-Za-z0-9_-]{32}$/, RESUME_REQUESTED: target === 'stale', entrySessionConfirmed: false,
       ROOM_SESSION_STORAGE_KEY: 'saved', sessionStorage: { getItem: () => 'T'.repeat(43) }, URL,
