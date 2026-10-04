@@ -36,6 +36,7 @@ export const NODE_ONLY_MODULES = [
 // may disable coverage but still traverse every edge. This is not a DOM/global audit.
 export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   rules: [
+    'rules/base-lifecycle', 'rules/gameplay-action-rules',
     'bannerfall-rules', 'base-lifecycle', 'combat-rules', 'economy-ledger',
     'economy-profile', 'farm-harvest', 'gameplay-action-rules', 'gameplay-definitions',
     'match-modes', 'palisade-gate', 'palisade-profile', 'population',
@@ -84,6 +85,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   ],
   client: [
     'client/hud/resource-format', 'client/hud/population-readout', 'client/hud/objective-summary',
+    'client/audio/audio-decoded-cache', 'client/audio/audio-shipped-response',
     'audio', 'audio-assets', 'audio-composer', 'audio-composition',
     'audio-composition-player', 'audio-decoded-cache', 'audio-library-store',
     'audio-library-ui', 'audio-policy', 'audio-recognition-check',

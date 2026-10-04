@@ -4,6 +4,7 @@ import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pv
 import { woodJobMap, woodJobTarget, woodDraw } from './resource-job-fixture.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { inWoodWorkArea, woodWorkArea } from '../src/gather-work-area.mjs';
+import { createGatherWorkIntent } from '../src/work-intent.mjs';
 
 const stateOf = replay => replay.checkpoint().state;
 const workerOf = replay => stateOf(replay).units[0];
@@ -81,7 +82,8 @@ test('accepted queued Move/Stop/Return/manual replacement win; rejected and fore
     assert.equal(workerOf(replay).workIntent, null); conserved(stateOf(replay), map);
     await order(replay, { type: 'gather', nodeId: 'near-food' }, /GATHER ORDER/);
     until(replay, s => s.units[0].cargoType === 'food' && s.units[0].cargo > 0, 'manual food replaces Wood');
-    assert.equal(workerOf(replay).workIntent, null);
+    assert.deepEqual(workerOf(replay).workIntent, createGatherWorkIntent(workerOf(replay).generation,
+      map.resourceNodes.find(node => node.id === 'near-food'), 'food'), 'manual plain Food replaces Wood with its own class and anchor');
     await order(replay, { type: 'stop' }, /STOP ORDER/);
     const foodStock = stateOf(replay).resourceNodes.find(n => n.id === 'near-food').stock;
     await order(replay, { type: 'gather', nodeId: 'next-tree' }, /GATHER ORDER/);

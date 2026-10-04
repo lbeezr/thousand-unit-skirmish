@@ -77,7 +77,7 @@ run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default
 run(['--test', 'scripts/oak-depletion-atlas-runtime.test.mjs'], 'Generic oak depletion atlas loading, fallback and registration');
 run(['--test', 'scripts/terrain-cliff-faces.test.mjs'], 'Painted scree cliff faces preserve terrain, UV joins and fallback');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-synthesis-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
-run(['--experimental-test-coverage', '--test-coverage-include=src/audio-shipped-response.mjs',
+run(['--experimental-test-coverage', '--test-coverage-include=src/client/audio/audio-shipped-response.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
   '--test', 'scripts/audio-shipped-response.test.mjs'], 'Shipped audio response coverage floor (100%)');
 run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio import provenance');
@@ -107,6 +107,7 @@ run(['--test', 'scripts/gather-work-area.test.mjs', 'scripts/work-intent.test.mj
 run(['--test', 'scripts/food-stone-continuation.test.mjs'],
   'Typed Food/Stone finite jobs, replacement, recovery and rejected reachability');
 run(['--test', 'scripts/stone-job-continuation.test.mjs'], 'Fixed-area Stone continuation, manual/queued priority and finite conservation');
+run(['--test', 'scripts/food-job-continuation.test.mjs'], 'Plain neutral Food continuation, source-class isolation, selected-worker scope and cold recovery');
 run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 'Worker work receipt commands, client frames, exhausted repair delivery and recovery');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');
@@ -212,6 +213,7 @@ run(['--test', 'scripts/pve-farm-policy.test.mjs'], 'PvE finite paid Farm starva
 run(['--test', 'scripts/pve-home-defense.test.mjs'], 'PvE visible economic raids, bounded defense and objective recovery replay');
 run(['--test', 'scripts/pve-regroup.test.mjs'], 'PvE bounded regroup after wipeout, paid recovery and restart replay');
 run(['--test', 'scripts/pve-skirmish-targets.test.mjs', 'scripts/pve-skirmish-replay.test.mjs'], 'Explicit Skirmish AI targets, fog fairness and paid producer restart replay');
+run(['--test', 'scripts/pve-target-continuation.test.mjs'], 'PvE capability qualification: paid second-target continuation and incapable controls');
 run(['--test', 'scripts/pve-mode-adapter.test.mjs', 'scripts/pve-skirmish-checkpoint.test.mjs'], 'Authoritative AI mode activation and canonical Skirmish recovery');
 run(['--test', 'scripts/fog-checkpoint-boundary.test.mjs', 'scripts/fog-checkpoint-forest.test.mjs', 'scripts/fog-checkpoint-reinforcement.test.mjs'], 'Full fog checkpoint parity across movement, geometry and scenario births');
 run(['--test', 'scripts/pve-wildlife-disclosure.test.mjs'], 'Opponent actual-cell wildlife resource disclosure');
@@ -255,7 +257,7 @@ run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation
 run(['--test', 'scripts/base-lifecycle-ui.test.mjs'], 'Contextual cancellation and repair controls');
 run(['--test', 'scripts/research-ui.test.mjs'], 'Registered research choices');
 run(['--test', 'scripts/research-actions.test.mjs'], 'Shared technology availability');
-run(['--experimental-test-coverage', '--test-coverage-include=src/gameplay-action-rules.mjs',
+run(['--experimental-test-coverage', '--test-coverage-include=src/rules/gameplay-action-rules.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
   '--test', 'scripts/gameplay-action-rules.test.mjs'], 'Production/research shared-rule coverage floor (100%)');
 run(['--test', 'scripts/siege-ai.test.mjs'], 'Bounded siege acquisition and assault');
@@ -417,7 +419,7 @@ const scenarios = [
   ['scripts/environment-plant-pack-scenario.mjs', 'Regional plant contract rejection cases'],
   ['scripts/harvestable-woodland-scenario.mjs', 'Harvestable woodland gameplay'],
   ['scripts/resource-job-continuation-scenario.mjs', 'Native wood depletion, continuation and cold recovery'],
-  ['scripts/food-stone-continuation-scenario.mjs', 'Native both-seat Stone continuation, source-only Food and typed cold recovery'],
+  ['scripts/food-stone-continuation-scenario.mjs', 'Native both-seat plain Food/Stone continuation and typed cold recovery'],
   ['scripts/worker-cargo-return-scenario.mjs', 'Highland Grove forest route repair and deposits'],
   ['scripts/worker-cargo-return-scenario.mjs', 'Frontier Reach forest route repair and deposits', 'frontier-160'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],

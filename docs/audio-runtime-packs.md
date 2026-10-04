@@ -49,6 +49,26 @@ quality or timing speedups. Existing recordings and provenance are unchanged.
 
 Focused checks: `node scripts/audio-runtime-scenario.mjs`, `node scripts/audio-runtime-playback-scenario.mjs`, `node scripts/audio-composition-player-scenario.mjs`, `node scripts/audio-policy-scenario.mjs`, and `node scripts/map-persistence-scenario.mjs`. The persistence check needs permission to bind a local loopback port.
 
+## Client audio helper paths
+
+[PR322](https://github.com/lbeezr/thousand-unit-skirmish/pull/322) establishes the
+decoded-source cache implementation in
+`src/client/audio/audio-decoded-cache.mjs`; the bounded shipped-byte reader lives
+in `src/client/audio/audio-shipped-response.mjs`. Both preserve their earlier
+implementation bytes and remain dependency-free client leaves. The old flat
+paths forward the same single named exports, so `audio.mjs` and the shipped
+loader retain their current imports. Matching cache/reader tests exercise the
+canonical implementations and assert legacy binding identity; the existing
+100% reader coverage includes the canonical path.
+
+The [architecture migration checkpoint](architecture.md#migration-checkpoints-and-retained-compatibility)
+owns later caller migration and shim retirement. The audio boundary owner retains
+both shims until tracked and supported external consumers, exact public HTTP
+entries, an identified containing release and page reload safety are accounted
+for. This source organization milestone preserves cache accounting, reader
+failure/cancellation and playback behavior; existing listening acceptance stays
+with the audio runtime owner.
+
 ## Unit lifecycle bindings
 
 Supported lifecycle keys are `unit.<kind>.ready`, `unit.<kind>.death` and

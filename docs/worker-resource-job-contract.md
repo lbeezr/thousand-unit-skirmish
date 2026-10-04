@@ -1,7 +1,7 @@
 # Shared Worker work intent v1 — economy-owned boundary
 
 Economy/content owns the shared checkpoint union and external cancellation,
-plus bounded Wood and Stone continuation. The construction implementation owner consumes the
+plus bounded Wood, Stone and plain neutral land Food continuation. The construction implementation owner consumes the
 construction variant and owns site targeting, adjacent-Gate priority and natural
 reacquisition. Architecture edits no runtime. Ordinary deployed gameplay belongs
 to the cloud testing owner. This source slice starts no browser; staged release
@@ -33,6 +33,8 @@ with the release delivery and cloud testing owners.
 ```js
 workIntent: null
   | { version: 1, kind: 'gather', generation, resource: 'wood' | 'stone', anchor: { x, z } }
+  | { version: 1, kind: 'gather', generation, resource: 'food',
+      sourceKind: 'neutral-land-food', anchor: { x, z } }
   | { version: 1, kind: 'construction', generation, siteIds: [id, ...],
       area: { minX, maxX, minZ, maxZ } }
 ```
@@ -43,7 +45,7 @@ repair, cargo delivery, target change and orderRevision increments preserve the
 durable intent. Only living matching generations execute it; new/recycled units
 start with null. No intent or source stock enters the public unit-row protocol.
 
-Gather anchors the original accepted Wood or Stone source. Stone requires the
+Gather anchors the original accepted Wood, Stone or plain neutral land Food source. Stone requires the
 explicit `stone-defense-v1` map profile; a baseline Stone intent is rejected.
 The fixed rule radius is eight
 world units, never an editable checkpoint radius. Eligible replacement sources
@@ -51,11 +53,18 @@ are live visible reachable nodes of the exact intended resource inside that
 original circle; only Wood also scans forest cells. Partial compatible cargo can continue filling; full or incompatible cargo returns to
 an eligible owned drop-off. Empty/inaccessible areas return remaining cargo once
 and finish without expanding the anchor or repeating failed searches.
-Food, owned Farms, wildlife and fishing retain their existing source rules. An
-automatic Stone job cannot take them, Wood or another ore. A newly accepted
-manual source assignment creates its own typed anchor.
-The separate [Food source proposal](food-source-continuation-proposal.md) is
-pending a gameplay decision and does not extend this published union.
+Food requires the exact durable `sourceKind: 'neutral-land-food'`. Its source
+must be an ordinary neutral Food node without Farm adapter/team, wildlife or
+resource-variant metadata. `isPlainNeutralFoodSource` is the single classifier;
+candidate filtering and checkpoint source consistency use it. Neither Food
+cargo nor a temporary target determines the durable class. Farms, all wildlife
+states and land/Skiff fishing retain source-only jobs; a manual assignment to
+any of them clears the area intent. Stone cannot take Food, Wood or another
+ore; Food never scans forests or takes Wood/Stone. A newly accepted manual
+plain-Food assignment creates its own class and original anchor.
+The [adopted Food decision](food-source-continuation-proposal.md) and
+[Food continuation QA](qa-plain-food-job-continuation-2026-10-04.md) retain the
+bounded implementation and its separate delivery/acceptance status.
 
 Construction remembers only explicitly assigned paid owned site IDs, in priority
 order. Area is the initial sites' footprint bounding rectangle plus two world
@@ -90,6 +99,8 @@ Shared helpers exported now: createGatherWorkIntent(generation, source, resource
 createConstructionWorkIntent(generation, siteIds, area), clearWorkIntent(unit),
 clearGatherWorkIntent(unit), activeWorkIntent(unit), and
 validWorkIntent(intent, unit, map, {buildings, nextBuildingId, maxSites}).
+Food construction rejects sources outside `isPlainNeutralFoodSource`; the
+classifier and `PLAIN_FOOD_SOURCE_KIND` are exported with the shared helpers.
 The last two bounds come from authoritative state/MAX_BUILDINGS, not client input.
 
 ## Checkpoint boundary
@@ -99,7 +110,9 @@ owns capture cloning, validation, restore/migration and cancellation hooks.
 Validate exact version/kind/keys, matching generation, finite bounded anchor/area,
 distinct bounded historical IDs, and ownership of any still-existing sites.
 An explicit gather intent must match its referenced finite node/Farm resource;
-a forest execution target requires Wood. Null/missing legacy and source-free
+Food additionally requires a plain neutral node, rejecting Farm/wildlife/fish
+targets even though they carry Food. A forest execution target requires Wood.
+Null/missing legacy and source-free
 records remain admissible. Carried cargo may differ during a legitimate manual
 handoff and is not compared against intent type.
 Completed/missing historical site IDs below nextBuildingId remain legal so a
@@ -112,6 +125,8 @@ an older discarded wall job from every nearby unfinished structure. Preserve
 existing cargo, target/path state, bank, paid progress and generations.
 Active legacy Stone uses its current finite node as the anchor; no discarded
 older area is inferred. Legacy Food/Farm/wildlife/fishing does not acquire an area.
+Food area intent is installed only by a newly accepted plain-node assignment;
+legacy missing/null Food intent remains source-only after each economy tick.
 
 The independent-shape/area tests and full-authority resource-job replays cover
 external commands, internal deposit, queued precedence, cold restore, area

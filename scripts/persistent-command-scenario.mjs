@@ -154,10 +154,12 @@ function unitById(state, id) {
 }
 
 function formationMoveCommand(client, ids, generations, point, { type = 'move', queue = false, token }) {
-  send(client, {
+  const command = {
     type, ids, unitGenerations: generations, x: point.x, z: point.z,
     formation: 'box', ...(queue ? { queue: true } : {}), clientOrderToken: token,
-  });
+  };
+  send(client, command);
+  return JSON.parse(JSON.stringify(command));
 }
 
 async function waitForCheckpoint(checkpointPath, predicate, timeoutMs = 12_000) {
@@ -199,9 +201,11 @@ try {
   const ids = [4, 129];
   stage = 'patrol outbound and return';
   const starts = clients.map((client, team) => unitById(client.state.latest, ids[team]));
+  const acceptedPatrolCommands = [];
   for (let team = 0; team < 2; team++) {
     const client = clients[team], id = ids[team], row = starts[team];
-    formationMoveCommand(client, [id], [row[8]], { x: row[2] + (team ? -6 : 6), z: row[3] }, { type: 'patrol', token: 1 });
+    acceptedPatrolCommands[team] = formationMoveCommand(client, [id], [row[8]],
+      { x: row[2] + (team ? -6 : 6), z: row[3] }, { type: 'patrol', token: 1 });
     await waitForNotice(client, 'PATROL ORDER', 1);
   }
   await Promise.all(clients.map((client, team) => client.waitForState(state =>
@@ -300,6 +304,74 @@ try {
   await azure.waitForState(state => !state.buildings.some(building => building.id === construction.id)
     && state.persistentOrders.some(row => row[0] === ids[0] && row[2] === 'active'));
   await azure.waitForState(state => unitById(state, ids[0])[2] > -9.5);
+  stage = 'accepted packet replay after rematch process restart';
+  const replayGenerations = clients.map((client, team) => unitById(client.state.latest, ids[team])[8]);
+  send(azure, { type: 'reset' });
+  await Promise.all(clients.map((client, team) => client.waitForState(state =>
+    unitById(state, ids[team])?.[8] !== replayGenerations[team])));
+  for (let team = 0; team < 2; team++) {
+    const row = unitById(clients[team].state.latest, ids[team]);
+    // Park through the ordinary command so autonomous stance scanning cannot
+    // change the replay actors while real simulation ticks continue.
+    send(clients[team], { type: 'stop', ids: [row[0]], unitGenerations: [row[8]], clientOrderToken: 49 });
+    await waitForNotice(clients[team], 'STOP ORDER', 49);
+  }
+  const previousPid = child.pid;
+  const playerIds = clients.map(client => client.welcome.player.id);
+  for (const client of clients) await closeClient(client);
+  await stopServer(child);
+  const rematch = JSON.parse(await readFile(checkpointPath, 'utf8'));
+  child = await startServer(port, checkpointPath, customMapDirectory);
+  assert.notEqual(child.pid, previousPid, 'recovery starts a new OS server process');
+  azure = await connectClient(port, tokens[0]); ember = await connectClient(port, tokens[1]); clients = [azure, ember];
+  for (let team = 0; team < 2; team++) {
+    const welcome = clients[team].welcome, actor = rematch.state.units[ids[team]];
+    assert.ok(welcome.recoveredFromCheckpoint && welcome.player.resumed);
+    assert.equal(welcome.matchId, rematch.matchId);
+    assert.equal(welcome.player.id, playerIds[team]);
+    assert.equal(welcome.player.team, team);
+    assert.equal(welcome.map.id, definition.id);
+    assert.equal(unitById(welcome.state, actor.id)[8], actor.generation);
+    assert.notEqual(actor.generation, acceptedPatrolCommands[team].unitGenerations[0]);
+    assert.equal(rematch.state.unitGenerationCounters[actor.id], actor.generation);
+    assert.equal(welcome.state.food[1 - team], null);
+    assert.equal(welcome.state.wood[1 - team], null);
+    assert.equal(welcome.state.population[1 - team], null);
+    assert.deepEqual(welcome.state.persistentOrders, [], 'reset intent remains absent in resumed fog views');
+    send(clients[team], acceptedPatrolCommands[team]);
+    const rejected = await waitForNotice(clients[team], 'MOVE REJECTED · NO VALID UNITS', 1);
+    assert.equal(rejected.message, 'MOVE REJECTED · NO VALID UNITS');
+    // A recovered generation still cannot confer the other seat's authority.
+    send(clients[team], { ...acceptedPatrolCommands[1 - team],
+      unitGenerations: [rematch.state.units[ids[1 - team]].generation], clientOrderToken: 50 });
+    await waitForNotice(clients[team], 'MOVE REJECTED · NO VALID UNITS', 50);
+  }
+  const receiptTick = Math.max(...clients.map(client => client.state.latest.tick));
+  const afterReceipts = await Promise.all(clients.map(client => client.waitForState(state => state.tick > receiptTick)));
+  const persistedReceiptTick = Math.max(...afterReceipts.map(state => state.tick));
+  const rejectedCheckpoint = await waitForCheckpoint(checkpointPath, snapshot => snapshot.state.tickNumber >= persistedReceiptTick);
+  for (const id of ids) assert.deepEqual(rejectedCheckpoint.state.units[id], rematch.state.units[id],
+    'native stale/foreign packet rejection preserves the complete idle actor, including pose, route and revision');
+  const replayRecords = [];
+  for (let team = 0; team < 2; team++) {
+    const actor = rematch.state.units[ids[team]], client = clients[team];
+    // Sensitivity control: the same destination must work for the recovered actor.
+    send(client, { ...acceptedPatrolCommands[team], unitGenerations: [actor.generation], clientOrderToken: 51 });
+    await waitForNotice(client, 'PATROL ORDER', 51);
+    const moved = await client.waitForState(state => Math.hypot(unitById(state, actor.id)[2] - actor.x,
+      unitById(state, actor.id)[3] - actor.z) > 2);
+    assert.ok(moved.persistentOrders.some(row => row[0] === actor.id && row[1] === 'patrol'));
+    assert.equal(unitById(moved, actor.id)[8], actor.generation);
+    assert.equal(moved.population[1 - team], null);
+    assert.ok(moved.persistentOrders.every(row => unitById(moved, row[0])?.[1] === team), 'enemy intent stays private');
+    send(client, { type: 'stop', ids: [actor.id], unitGenerations: [actor.generation], clientOrderToken: 52 });
+    await waitForNotice(client, 'STOP ORDER', 52);
+    replayRecords.push({ team, staleAcceptedPacketRejected: true, foreignRecoveredPacketRejected: true,
+      unchangedCheckpointActor: true, recoveredGenerationMoves: true, privateOpponentState: true });
+  }
+  console.log(JSON.stringify({ stage, actualProcessRestart: true, checkpointSchemaVersion: rematch.schemaVersion,
+    checkpointTick: rematch.state.tickNumber, results: replayRecords,
+    limits: ['Native accepted-packet generation/seat replay only; no impaired transport, full-suite, pixels or deployment acceptance.'] }));
   console.log('Persistent commands passed: both-seat patrol return, friendly generation validation, mixed-speed Scout following, Patrol/Follow restart, leader death, Hold, reset, combat acquisition, resumed patrol and live endpoint obstruction/removal.');
 } catch (error) { throw new Error(`${stage}: ${error.message}\n${serverLogs}\n${JSON.stringify(clients.map(client => client.messages.filter(message => message.type === 'notice').slice(-8)))}`, { cause: error }); }
 finally { for (const client of clients) await closeClient(client); await stopServer(child); await rm(dataDirectory, { recursive: true, force: true }); }

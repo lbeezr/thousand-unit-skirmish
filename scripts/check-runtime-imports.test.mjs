@@ -76,9 +76,11 @@ test('HUD canonical helpers and compatibility entries stay outside authoritative
       [canonical]: 'export const label = 1;',
       [legacy]: `export { label } from './client/hud/${helper}.mjs';`,
     };
-    for (const root of ['src/gameplay-action-rules.mjs', 'src/map-utils.mjs', 'src/formation-assignment.mjs']) {
+    for (const root of ['src/gameplay-action-rules.mjs', 'src/rules/gameplay-action-rules.mjs',
+      'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs', 'src/map-utils.mjs', 'src/formation-assignment.mjs']) {
       for (const target of [canonical, legacy]) {
-        assert.throws(() => check({ ...helpers, [root]: `import './${target.slice(4)}';` }),
+        const relative = path.posix.relative(path.posix.dirname(root), target);
+        assert.throws(() => check({ ...helpers, [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
           /(?:rules|world|simulation) domain cannot reach client domain/, `${root} -> ${target}`);
       }
     }
@@ -96,6 +98,42 @@ test('HUD projections remain dependency-free leaves with one explicit compatibil
     assert.deepEqual(moduleImports(await readFile(new URL(`../${canonical}`, import.meta.url), 'utf8'), canonical), [], canonical);
     assert.deepEqual(moduleImports(await readFile(new URL(`../${legacy}`, import.meta.url), 'utf8'), legacy),
       [`./client/hud/${helper}.mjs`], legacy);
+  }
+});
+
+test('canonical audio leaves and compatibility paths stay outside authority and server hosts', () => {
+  for (const [helper, binding] of [['audio-decoded-cache', 'createDecodedAudioCache'],
+    ['audio-shipped-response', 'readBoundedAudioResponse']]) {
+    const canonical = `src/client/audio/${helper}.mjs`;
+    const legacy = `src/${helper}.mjs`;
+    const helpers = {
+      [canonical]: `export const ${binding} = () => {};`,
+      [legacy]: `export { ${binding} } from './client/audio/${helper}.mjs';`,
+    };
+    for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/rules/base-lifecycle.mjs',
+      'src/map-utils.mjs', 'src/simulation/movement/formation-assignment.mjs', 'src/pve-regroup.mjs']) {
+      for (const target of [canonical, legacy]) {
+        const relative = path.posix.relative(path.posix.dirname(root), target);
+        assert.throws(() => check({ ...helpers, [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
+          /(?:rules|world|simulation|ai) domain cannot reach client domain/, `${root} -> ${target}`);
+      }
+    }
+    for (const host of ['server.mjs', 'room-supervisor.mjs']) {
+      for (const target of [canonical, legacy]) {
+        assert.throws(() => check({ ...helpers, [host]: `import './${target}';` },
+          { serverEntrypoints: [host] }), /server host reaches client domain/, `${host} -> ${target}`);
+      }
+    }
+  }
+});
+
+test('canonical audio implementations remain dependency-free behind explicit legacy edges', async () => {
+  for (const helper of ['audio-decoded-cache', 'audio-shipped-response']) {
+    const canonical = `src/client/audio/${helper}.mjs`;
+    const legacy = `src/${helper}.mjs`;
+    assert.deepEqual(moduleImports(await readFile(new URL(`../${canonical}`, import.meta.url), 'utf8'), canonical), [], canonical);
+    assert.deepEqual(moduleImports(await readFile(new URL(`../${legacy}`, import.meta.url), 'utf8'), legacy),
+      [`./client/audio/${helper}.mjs`], legacy);
   }
 });
 

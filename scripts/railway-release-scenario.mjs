@@ -151,6 +151,35 @@ try {
     assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
       `exact client admission must deny: ${filename}`);
   }
+  for (const filename of ['src/gameplay-action-rules.mjs', 'src/rules/gameplay-action-rules.mjs']) {
+    const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
+    assert.equal(response.status, 200, filename);
+    assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
+    assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+    assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+    assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),
+      createHash('sha256').update(await readFile(path.join(sourceRoot, filename))).digest('hex'), filename);
+  }
+  // Preserve exact shipped audio bytes at both the canonical and legacy paths.
+  for (const helper of ['audio-decoded-cache', 'audio-shipped-response']) {
+    for (const filename of [`src/${helper}.mjs`, `src/client/audio/${helper}.mjs`]) {
+      const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
+      assert.equal(response.status, 200, filename);
+      assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
+      assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+      assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+      const bytes = Buffer.from(await response.arrayBuffer());
+      assert.deepEqual(bytes, await readFile(path.join(root, filename)), filename);
+      assert.deepEqual(bytes, await readFile(path.join(sourceRoot, filename)), filename);
+    }
+  }
+  for (const filename of ['src/client/audio/', 'src/client/audio/unknown.mjs',
+    'src/client/audio/audio-decoded-cache.mjs/extra', 'src/client//audio/audio-shipped-response.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
+        404, `audio admission remains exact (${method}): ${filename}`);
+    }
+  }
   // Both old browser imports and canonical authoring paths must survive packing
   // with the source bytes and the same exact-path GET/HEAD policy.
   for (const filename of ['src/scenario-authoring.mjs', 'src/map-resize.mjs',
@@ -347,10 +376,11 @@ try {
         `${entry.path} must match its manifest hash`);
     }
   }
-  // Private host/transport and formation files must be packaged for Node consumers while exact
+  // Private host/transport and server-consumed helpers must be packaged while exact
   // HTTP admission denies both methods, including pure negotiation and shims.
   const privateModules = [...RUNTIME_DOMAINS.server,
     'src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs',
+    'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs',
     ...Object.entries(RUNTIME_DOMAIN_HOSTS).filter(([, domain]) => domain === 'server').map(([filename]) => filename)];
   for (const filename of privateModules) {
     assert.ok((await stat(path.join(root, filename))).isFile(), `packed private runtime module: ${filename}`);

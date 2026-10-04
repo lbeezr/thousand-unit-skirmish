@@ -17,12 +17,22 @@ cancellation guidance. Only the hint preference persists.
 
 ```sh
 node --test scripts/objective-summary.test.mjs
+node --test --test-name-pattern='Objectives dismisses' scripts/contextual-hud.test.mjs
 node scripts/objective-fog-visibility-scenario.mjs
 ```
 
 In a browser, check the compact instruction, open/close behavior, scrollable
 long content, Escape focus return, and Hide/Show hints. Verify that public
 ownership does not expose hidden capture progress.
+
+The contextual DOM regression binds the shipped Objectives open/close listeners
+and real close/summary functions on both seats. Escape/Close restore opener
+focus and retain Worker selection; closed hold/deadline feedback continues to
+advance without issuing commands. The fixture uses disclosed Millrace objective
+state, not the ordinary default Skirmish rule. Renderer, network and geometry
+are stubbed, so this proves DOM/event behavior only. The
+[novice protocol](novice-first-play.md) retains qualified cloud visuals and
+actual human first-play comprehension as separate next acceptance steps.
 
 The original 26 September check from `227526c` recorded a 1280 × 720 local UI
 pass using borrowed runtime assets. That was UI evidence, not full art validation.

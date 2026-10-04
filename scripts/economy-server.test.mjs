@@ -5,6 +5,8 @@ import { readFileSync } from 'node:fs';
 import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
 import { BUILDING_DEFINITIONS, missingGameplayPrerequisites } from '../src/gameplay-definitions.mjs';
 import { STONE_ECONOMY_PROFILE_ID as STONE, DEFAULT_ECONOMY_PROFILE_ID as BASE } from '../src/economy-profile.mjs';
+import { constructionAssignment, constructionWorkArea } from '../src/construction-work-intent.mjs';
+import { isPalisade } from '../src/palisade-gate.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 function fn(name) {
@@ -12,10 +14,12 @@ function fn(name) {
   assert.ok(start >= 0 && end > start); return source.slice(start, end);
 }
 // Real paid-command bodies; geometry is a simple reachable, vacant test site.
-function fixture(team, profile = STONE) {
+function fixture(team, profile = STONE, { acceptAssignment = true } = {}) {
   const notices = [], worker = { id: 0, team, kind: 'worker', hp: 35, x: -4.5, z: 0.5,
+    generation: 1, orderRevision: 0, buildingTargetId: null, workIntent: null, wallBuildOrder: null,
     cargo: 0, cargoType: null, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '' };
   const context = vm.createContext({ ...economyServerBindings(profile), BUILDING_DEFINITIONS,
+    constructionAssignment, constructionWorkArea, isPalisade, palisadeConstructionRetries: new WeakMap(),
     teamFood: [300.25, 300.25], teamWood: [600.125, 600.125], teamStone: [50, 50],
     teamUpgrades: [{}, {}], units: [worker], buildings: [], buildingsById: new Map(),
     MAX_BUILDINGS: 128, MAP_WIDTH: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8, CELL_COUNT: 256,
@@ -29,17 +33,48 @@ function fixture(team, profile = STONE) {
     rebuildWalkableComponents() {}, captureBuildingConnectivity() {},
     canPlaceBuildingWithoutDisconnectingEntities: () => true, activeMoveRoutesRemainConnected: () => true,
     nextBuildingId: 1, navigationRevision: 0, visionCoverageBySourceCell: [], attackFlowFields: new Map(),
-    replanPathsBlockedBy() {}, assignFormationMove() {}, dirty: false,
+    replanPathsBlockedBy() {}, dirty: false,
+    // Model only synchronous route admission; construction helpers use real server bodies.
+    assignFormationMove(_, __, targetId) {
+      if (!acceptAssignment) return;
+      worker.orderRevision++; worker.buildingTargetId = targetId;
+    },
     sendOrderNotice: (_, __, message) => notices.push(message), rejectBuild: (_, message) => notices.push(message),
-    mapDefinition: { economyProfileId: profile, triggers: [] },
+    mapDefinition: { width: 16, height: 16, economyProfileId: profile, triggers: [] },
     destroyBuilding(building) { context.buildingsById.delete(building.id); context.buildings.splice(context.buildings.indexOf(building), 1); },
   });
-  vm.runInContext(economyServerFunctions + fn('buildBuilding') + fn('cancelConstruction'), context);
+  vm.runInContext(economyServerFunctions + ['palisadeConstructionIntent', 'preparePalisadeBuilderAssignments',
+    'finishPalisadeBuilderAssignments', 'buildBuilding', 'cancelConstruction'].map(fn).join('\n'), context);
   const build = type => context.buildBuilding({ team }, { ids: [0], buildingType: type, x: 0.5, z: 3.5 });
   return { context, notices, worker, build };
 }
 
 for (const team of [0, 1]) {
+  test(`seat ${team}: paid construction installs a generation-bound intent for the accepted builder`, () => {
+    const { context: c, worker, build } = fixture(team);
+    c.palisadeConstructionRetries.set(worker, { attempts: 3 });
+    build('watchtower');
+    assert.equal(worker.orderRevision, 1); assert.equal(worker.buildingTargetId, 1);
+    assert.deepEqual(worker.workIntent, { version: 1, kind: 'construction', generation: 1,
+      siteIds: [1], area: { minX: -3, maxX: 4, minZ: 0, maxZ: 7 } });
+    assert.equal(c.validWorkIntent(worker.workIntent, worker, c.mapDefinition,
+      { buildings: c.buildings, nextBuildingId: c.nextBuildingId }), true);
+    assert.equal(worker.wallBuildOrder, null);
+    assert.equal(c.palisadeConstructionRetries.has(worker), false);
+    assert.deepEqual([c.teamFood[team], c.teamWood[team], c.teamStone[team]], [250.25, 450.125, 0]);
+  });
+  test(`seat ${team}: an unassigned builder keeps its prior intent after paid site admission`, () => {
+    const { context: c, worker, build } = fixture(team, STONE, { acceptAssignment: false });
+    const previous = c.createGatherWorkIntent(worker.generation, worker);
+    const retry = { attempts: 3 };
+    worker.workIntent = previous; c.palisadeConstructionRetries.set(worker, retry);
+    build('watchtower');
+    assert.equal(c.buildings.length, 1); assert.equal(c.nextBuildingId, 2);
+    assert.equal(worker.orderRevision, 0); assert.equal(worker.buildingTargetId, null);
+    assert.equal(worker.workIntent, previous); assert.equal(worker.wallBuildOrder, null);
+    assert.equal(c.palisadeConstructionRetries.get(worker), retry);
+    assert.deepEqual([c.teamFood[team], c.teamWood[team], c.teamStone[team]], [250.25, 450.125, 0]);
+  });
   test(`seat ${team}: fractional Stone shortfall leaves every bank, ID and site unchanged`, () => {
     const { context: c, build, notices } = fixture(team); c.teamStone[team] = 49.9999;
     const banks = [c.teamFood.slice(), c.teamWood.slice(), c.teamStone.slice()];
