@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
-import { canTraverseUnitStep } from '../src/unit-movement.mjs';
+import { activeMoveGoalPoint, canTraverseUnitStep } from '../src/unit-movement.mjs';
 import { CAMERA_VIEW_DIRECTION } from '../src/camera-controls.mjs';
 
 process.env.RTS_MAP = 'maps/open-field.json';
@@ -31,7 +31,8 @@ try {
       r.step(); // Rebuild the real spatial buckets after test-only placement.
       const notices = r.order(0, { type: 'move', ids: [u.id], unitGenerations: [u.generation], ...spec.click });
       r.drain(); assert.ok(notices.some(n => n.message.startsWith('MOVE ORDER')));
-      const goal = r.point(u.moveGoalCell), path = u.path.slice(), points = [{x:u.x,z:u.z}], headings = new Set();
+      const selectedGoal = activeMoveGoalPoint(u)??r.point(u.moveGoalCell);
+      const goal = {x:selectedGoal.x,z:selectedGoal.z}, path = u.path.slice(), points = [{x:u.x,z:u.z}], headings = new Set();
       const straight = Math.hypot(goal.x-u.x,goal.z-u.z);
       let distance = 0, invalidSteps = 0, maxDeviation = 0;
       for (let tick = 0; tick < 1200 && u.pathIndex < u.path.length; tick++) {
@@ -65,6 +66,6 @@ const report = {head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).
   serverSha256:fixture.sourceSha256,pathLineSha256,
   node:process.version,camera:CAMERA_VIEW_DIRECTION,records,
   limits:['real authoritative command/planner/tick bodies with fixed callback drain; no browser pixels or wall-clock capacity claim',
-    'one isolated land Infantry; cell-center destination quantization measured separately; crowd/terrain checked by focused suites']};
+    'one isolated land Infantry; requested-to-arrival projection measured separately; crowd/terrain checked by focused suites']};
 if(process.argv[2])await writeFile(process.argv[2],JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify(records.map(({name,runs:[r]})=>({name,ratio:r.ratio,maxDeviation:r.maxDeviation,headings:r.headings,pathLength:r.path.length,ticks:r.ticks})),null,2));
