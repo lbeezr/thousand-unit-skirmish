@@ -1,0 +1,16 @@
+{
+  "toolOutput": "/workspace/generated_images/exec-95fc29c5-fec4-4fa8-ac49-3832c6c9d3ac.png",
+  "iteration": 1,
+  "alphaRange": [
+    0,
+    254
+  ],
+  "status": "admitted functional first pass; native acceptance open",
+  "worldDirection": "south",
+  "screenDirection": "up-right",
+  "identity": "Approved public idle-south-0 back-view seed: green vest, cream sleeves/sash, brown hair, backpack/bedroll and right-hand axe retained.",
+  "motion": "Eight actual advancing leg/arm/tool poses; loop seam and source drift remain polish items.",
+  "registration": "One shared 232/455 scale, column roots [224,608,992,1376], layout baselines [489,979], local pivot [128,244]. No per-frame scaling/centering or heading relabeling.",
+  "sourceReview": "All eight whole silhouettes source-edge clear; key sheet inspected at128/48 px; visible correct back/up-right bearing and articulated gait.",
+  "publication": "User approved bounded first-pass image tools based on public default Worker seed; no private source or paid external provider/rigging job. Every raw/edit/seed/extracted iteration retained."
+}

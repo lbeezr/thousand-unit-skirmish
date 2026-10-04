@@ -102,14 +102,14 @@ current-roster keys can also be admitted with the same manifest contract.
 
 | Rank | Next useful slice and bounded writes | Concrete dependency / acceptance |
 | --- | --- | --- |
-| 1 | Retain East/North walk through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
-| 2 | Fill remaining walk **S/W/NW** one actual heading at a time. Source, atlas/manifests, one registration record per slice. | Use public approved idle seeds and bounded first-pass approved image/Blender tools where retained articulated keys are absent. Assessed public legacy bodies do not preserve the current identity. Carry/Return reuse each completed walk with the existing cargo cue. |
+| 1 | Retain East/North/South walk through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
+| 2 | Fill remaining walk **W/NW** one actual heading at a time. Source, atlas/manifests, one registration record per slice. | Use public approved idle seeds and bounded first-pass approved image/Blender tools where retained articulated keys are absent. Assessed public legacy bodies do not preserve the current identity. Carry/Return reuse each completed walk with the existing cargo cue. |
 | 3 | Fill wood/food/build/repair/attack/defeat's seven absent headings: **42 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
 | 4 | Eight readable dedicated Stone-work headings. | Current assets contain no pick/mining sequence. Animation owner also needs the actual Stone state/resource selector enabled after artwork exists; current default intentionally returns idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
-There are now 5 of 8 walk headings, eight distinct idle headings, SE land-action
-motion and no Stone motion. **53 land-action/heading cells remain** (3+42+8).
+There are now 6 of 8 walk headings, eight distinct idle headings, SE land-action
+motion and no Stone motion. **52 land-action/heading cells remain** (2+42+8).
 Fishing's seven missing headings are excluded and retained by its separate owner.
 The animation-owner ID is outside this executor's live collaboration tree; the
 manifest contract and retained dependencies are recorded here for parent routing.
@@ -176,3 +176,45 @@ That revision predates East/North; neither slice is claimed delivered. The paren
 delivery route must supply a containing build; its Mac capture route retains
 native root/turn/cargo acceptance. This is an actual identified delivery gap,
 separate from the sandbox-unavailable browser capture gap.
+
+## Third usable slice: South walk first pass
+
+[South v1](art-direction/human-roster-v1/generated/worker-walk-south-v1/README.md)
+retains the public default `idle-south-0` seed, exact prompt/reference, raw and
+eight whole extracted silhouettes. Correct South facing is world -Z,
+screen-up-right/back view; backpack/bedroll and right-hand axe match the seed.
+Eight actual leg/arm/tool poses are a usable rough gait; loop seam and source
+drift stay polish items. No private pixels or paid external provider/rigging job.
+
+Default v0.17.0 supplies `walk|south`, eight 100 ms looping keys, spare row y=3072.
+[Admission](../scripts/admit-worker-south-walk.py) uses one scale 232/455, fixed
+source column roots [224,608,992,1376], row baselines [489,979] and local pivot
+[128,244]. All 100 pre-South frame records/pixels and every other clip, team mask,
+2048×4096 dimensions and whole-pack pixel-to-world scale remain intact. Carry/Return
+uses the existing moving walk/cargo path. No state/economy/shared-clock changes.
+
+[Registration](qa-evidence/worker-land-art-2026-10-04/south-walk-registration.json),
+[ordinary/strategic keys](qa-evidence/worker-land-art-2026-10-04/south-walk-keys.png)
+and [800 ms loop](qa-evidence/worker-land-art-2026-10-04/south-walk-loop.webp)
+are source-pixel evidence. Native recipe: world -Z/South → SW (screen-up) → South,
+Stop/resume and cargo Return→idle, both Human seats selected/unselected at ordinary
+and strategic zoom. Parent delivery/Mac route must identify a containing build and
+record actual root/action acceptance. The sandbox capture gap remains unchanged.
+
+North [PR236](https://github.com/lbeezr/thousand-unit-skirmish/pull/236) merged at
+`ddf7b55fdb1020e9de291124161f6b5e4326eec6` after [independent agent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/236#pullrequestreview-5403793245)
+of exact head `11c974961d138c9db92c3678a225b65473599b4b`. All 63 reviewer-focused
+checks and packed HTTP/hash scenario passed; native/deployed acceptance stays open.
+
+[South preservation](qa-evidence/worker-land-art-2026-10-04/south-walk-preservation.json)
+records all 100 preceding frame records/pixels, other clips, mask and idempotent
+admission against that merged North baseline. Actual Three checks cover all three
+admitted walks, including S→NE→S continuous phase, loops, Stop/resume and cargo
+Return on either Human seat selected/unselected. Fishing metadata permits only
+verified admitted East/North/South sequences while freezing its original keys.
+
+South all 85 focused pixel/runtime/receipt/clock/heading/fishing/sharding checks,
+atlas/docs/whitespace and packed HTTP/hash scenario pass.
+[Clean South release](qa-evidence/worker-land-art-2026-10-04/south-clean-release.json)
+records source `186fdec778832bd79fa299c5879b7d51aabeaaf6`, 1173 files and
+`sha256:707ad98940dfede9163ef9ccc918ee6a90064fd84521ef46300926352e18952d`. Deployment/native acceptance remains open.
