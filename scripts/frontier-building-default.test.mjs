@@ -64,7 +64,7 @@ test('normal factories use all eight Complete families and truthful per-state fa
     matchWinner: -1, buildPlacementActive: false, ui: {}, attackMoveMode: false,
     tapOrderArmed: false, cursorShift: false, cursorPointer: null,
     pickAt: (x, y, predicate, options) => { assert.equal(options.advance, false); return { unit: null }; },
-    pickResourceNodeAt: () => null, pickForestCellAt: () => null,
+    pickResourceNodeAt: () => null, pickForestCellAt: () => null, pickHarvestableTreeAt: () => null,
     dummy: new THREE.Object3D(), attachBuildingSprite, barracksModelVisualState, buildingFinishedDetailsVisible,
     frontierBuildingManifestUrl, frontierBuildingsPreview: null, createCapturedBuildingSprite,
     buildingOrientationAngle, groundHeight: () => 1.6, updateBuildingHealthIndicator() {}, updateBuildingProductionCue() {},

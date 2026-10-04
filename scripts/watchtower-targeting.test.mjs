@@ -1,5 +1,6 @@
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { canCombatTarget } from '../src/combat-rules.mjs';
+import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
 import { exploredForestFringe } from '../src/forest-fringe.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -40,7 +41,7 @@ test('tower sight expands a previously processed source and honors terrain occlu
     VISION_RADIUS_CELLS: 8, HIGH_GROUND_VISION_BONUS_CELLS: 1, VISION_EYE_HEIGHT: 1,
     processedVisionSourcesByTeam: [new Uint8Array(cells), new Uint8Array(cells)],
     visibleCellsByTeam: [new Uint8Array(cells), new Uint8Array(cells)], exploredCellsByTeam: [new Uint8Array(cells), new Uint8Array(cells)],
-    visionCoverageBySourceCell: new Array(cells), elevationLevelByCell: new Uint8Array(cells),
+    visionCoverageBySourceCell: new VisionCoverageCache({ width, height: width }), elevationLevelByCell: new Uint8Array(cells),
     visionBlockers: new Uint8Array(cells), visionBlockHeights: new Float32Array(cells), buildingBlocked: new Uint8Array(cells),
     forestCellMask: new Uint8Array(cells), exploredForestFringe,
   });
@@ -52,6 +53,6 @@ test('tower sight expands a previously processed source and honors terrain occlu
   context.markVisionFrom(0, 0.5, 0.5, 10); assert.equal(context.visibleCellsByTeam[0][distant], 1);
   assert.equal(context.visibleCellsByTeam[0][16 * width + 27], 0, 'ten-cell sight does not expose farther cells');
   context.visionBlockers[16 * width + 21] = 1; context.visionBlockHeights[16 * width + 21] = 2;
-  context.visionCoverageBySourceCell = new Array(cells);
+  context.visionCoverageBySourceCell = new VisionCoverageCache({ width, height: width });
   context.markVisionFrom(1, 0.5, 0.5, 10); assert.equal(context.visibleCellsByTeam[1][distant], 0, 'opaque terrain blocks tower vision');
 });

@@ -1,10 +1,12 @@
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
+import { mapSizeIdentity } from './map-size-policy.mjs';
 
 /** One fragile scout explores a bounded frontier using only its filtered observation. */
 export function createReconnaissancePolicy(seed) {
   let order = null;
   const failedPoints = [];
   let rotation = (seed >>> 0) % 8;
+  let cursor = seed >>> 0;
   const directions = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
   return {
     next(observation) {
@@ -68,6 +70,28 @@ export function createReconnaissancePolicy(seed) {
         }
         candidates.sort((a, b) => a.score - b.score);
         point = candidates[0]?.point;
+        const tier = mapSizeIdentity({ width, height }).sizeTierId;
+        // A remembered local ring can strand a reserved Scout indefinitely.
+        // Preserve Tiny's qualified policy; larger-map diagnosis gets a bounded
+        // distant frontier fallback using disclosed fog, never hidden resources.
+        if (!point && tier !== 'tiny' && tier !== 'internal') {
+          const columns = Math.ceil(width / 8), rows = Math.ceil(height / 8), count = columns * rows;
+          const gcd = (a, b) => { while (b) [a, b] = [b, a % b]; return a; };
+          let stride = columns + 1;
+          while (stride < count && gcd(stride, count) !== 1) stride++;
+          if (stride >= count) stride = 1;
+          let nearest = Infinity;
+          for (let index = 0; index < Math.min(count, 64); index++) {
+            const cell = cursor % count; cursor = (cell + stride) % count;
+            const candidate = clamp({ x: cell % columns * 8 + 4 - width / 2,
+              z: Math.floor(cell / columns) * 8 + 4 - height / 2 });
+            if (explored(candidate) || Math.hypot(candidate.x - scout.x, candidate.z - scout.z) < 2
+              || failedPoints.some(failed => Math.hypot(candidate.x - failed.x, candidate.z - failed.z) < 1)
+              || enemies.some(enemy => Math.hypot(candidate.x - enemy.x, candidate.z - enemy.z) < 9)) continue;
+            const travel = (candidate.x - scout.x) ** 2 + (candidate.z - scout.z) ** 2;
+            if (travel < nearest) { point = candidate; nearest = travel; }
+          }
+        }
         rotation = (rotation + 1) % 8;
       }
       if (!point) { order = null; return { ids: [scout.id], commands: [] }; }
