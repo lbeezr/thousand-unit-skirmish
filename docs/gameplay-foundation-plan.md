@@ -385,6 +385,11 @@ coverage, not another asset catalog or planning queue. Source establishes curren
 behavior; dated receipts establish only their named revisions. Ordinary rendered
 and novice acceptance remain open unless a receipt explicitly establishes them.
 
+The authorized progression restart adds one seventh technology, Food Tools, at
+Mill. The dated six-technology inspection remains historical; the current Mill
+row and [bounded slice](#food-tools-progression-slice--4-october-2026) describe this
+new design and its implementation rather than claiming an old wiring defect.
+
 **Farm answer:** Farm is itself one owned finite harvest plot. Its definition
 has `products: []` and `harvest: {type: 'food', stock: 200, access: 'owner'}`.
 It is neither a farmhouse producer nor an unimplemented plot factory. Selected
@@ -410,8 +415,10 @@ These corrections change targeting/feedback, not tuning or progression.
 
 `F/W/S` mean food/wood/Stone. Building times are accumulated Worker-seconds;
 unit/research times are simulation seconds. Product entries give price, time and
-population. Values are provisional. Ordinary builds need selected living owned
-reachable Workers, a clear level connected site, affordability and room below
+population. Values are provisional. Food rates below are base rates; completed
+Food Tools multiplies only land Worker food gathering by 1.2, preserving finite
+supply and delivery. Ordinary builds need selected living owned reachable
+Workers, a clear level connected site, affordability and room below
 the 128-building limit. Workshop is the only technology-gated building. Every
 building shares unfinished cancellation/refund and completed paid repair; shared
 queue/research lifecycle is traced below. `A` means one of the eight default
@@ -424,7 +431,7 @@ refer to the existing [test command guide](testing.md) and CPU registry.
 | Town Center — economy hub / expansion | 100F + 400W; 60s; 5 × 5 expansion. Authored home retains existing bounds and compatibility queue. | Worker 50F, 25s, 1 pop; Military Tier II 200F + 150W, 35s. Rally; +5 capacity; F/W drop-off (+S in Stone profile). Tier unlocks Workshop, armor and mounted forging. | Select owned center → contextual Train / research; reachable land rally. Population, depot, units and research recover; other viable forces/producers can survive home loss. | No new age tree required. No missing action handler found. Training card omits secondary functions; proposed B2 addresses role summaries. | A; registry/actions/server/main. `town-center-scenario`, `worker-production-spawn-scenario`, `expansion-ai-runtime-scenario`, `progression-scenario`; [integrated F1–F3 proof](#2026-09-30--f1f3-integrated-completion). Fresh normal-entry expansion/unassisted proof pending. |
 | House — population | 75W; 15s; 3 × 3 | +8 completed capacity. No units/research. | Select → capacity role. Completion adds cap; destruction reduces it without deleting living units. | No missing production design: training controls intentionally absent. No capacity wiring gap found. | A; registry/population/server/main. `population-scenario`, contextual HUD tests, integrated F2 and paid settlement. Ordinary population-block/recovery observation pending. |
 | Storehouse — mixed depot | 100W; 20s; 3 × 3 | F/W drop-off (+S in Stone profile). No units, research or gather bonus. | Workers choose reachable completed friendly depot; selected card lists accepted resources; loss replans carried cargo. | Economy upgrades are future design, not disconnected buttons. No depot handler gap found. | A; registry/profile/routing/server. `storehouse-routing.test`, `storehouse-scenario`, economy tests; [depot study](qa-mill-depot-economy-2026-10-03.md). Ordinary travel-choice proof pending; routes remain Resource-owned. |
-| Mill — food depot | 75W; 15s; 3 × 3 | Food-only drop-off. No passive supply, plots, units or research. | Workers return food automatically; selected Mill describes food-only function. Wood/Stone need another compatible depot. | Plot producer/economy research absent design; no omitted registered action. | P (House); registry/profile/server/main. `mill-contract.test`, `mill-scenario`; [paid Mill QA](qa-mill-food-dropoff-2026-10-03.md). Native deposits/recovery pass; distinct art/novice recognition pending separately. |
+| Mill — food depot / food research | 75W; 15s; 3 × 3 | Food-only drop-off. Completed owned Mill offers Food Tools: 100F + 75W, 25s, ×1.2 land Worker food gathering. No military tier prerequisite, passive supply, plots or units. | Workers return food automatically; research cost/effect and active/completed state appear on selected Mill. Wood/Stone need another compatible depot. Completion affects current/new Workers; flags/work recover. | Food Tools is the new bounded economy design adopted at restart; broader depot/economy upgrades remain proposals. | P (House); registry/profile/server/main. `mill-contract.test`, `mill-scenario`, `food-tools.test`, `food-tools-scenario` (both profiles); [historical paid Mill QA](qa-mill-food-dropoff-2026-10-03.md). Current native/default/deployment and rendered acceptance are recorded separately in the slice PR. |
 | Farm — finite food plot | 60W; 15s; 3 × 3 | One 200-food pool; owned Workers Gather at 1 food/Worker-second, carry 10. Clear exhausted plot, then fresh paid Build Farm. No products/research/drop-off. | Select shows stock/exhaustion; Worker right-click/touch sends Gather `farm:<id>`. `harvestStock` persists once; crop destruction preserves cargo. | Farmhouse/child plots, growth/regrowth/upgrades absent design. Body target and +0 card are reproduced wiring/feedback defects corrected here. | P (House); registry/farm-harvest/server/main. `farm-harvest.test`, `farm-client.test`, `farm-scenario --fog`, `pve-farm-policy.test`; [native Farm QA](qa-finite-farm-2026-10-03.md). New body targeting proves Three CPU ray + actual command serialization, not pixels. Ordinary cycle remains B1. |
 | Barracks — melee producer | 175W; 20s; 3 × 3 | Infantry 50F, 12s, 1 pop; Spearman 60F + 20W, 12s, 1 pop. Infantry Forging 100F + 75W, 25s, ×1.2 Infantry damage. Tier II enables Military Armor 100F + 100W, 25s, +1 melee/+1 pierce armor to military tags. Rally/cancel. | Completed owned selection → exact product/research prices/refusals; ordered paid queue spawns units. Forging excludes Spearman; armor includes it. | No registered producer handler gap found. Blacksmith not required for existing forging. Spearman weapon research undecided design. | A; registry/production/research/combat/server/main. `roster-options-scenario`, `production-lifecycle-scenario`, `research-scenario`, `progression-scenario`; integrated F1–F3. Fresh mixed-product ordinary proof remains B1. |
 | Archery Range — ranged producer | 150W; 20s; 3 × 3 | Archer 25F + 45W, 7s, 1 pop; Archer Fletching 125F + 125W, 25s, ×1.2 Archer damage. Rally/cancel. | Select → Train Archer/research with authoritative refusals; blocked exit preserves paid queue. | No registered wiring gap found. Earlier selected-Range concerns remain in [HUD backlog](hud-controls-backlog.md); require exact state/button evidence for another fix. | A; registry/production/research/combat/server/main. `roster-options-scenario`, `research-scenario`, contextual HUD; historical deployed observations exist, current rendered interaction remains B1/HUD. |
@@ -441,7 +448,8 @@ Definitions: [gameplay registry](../src/gameplay-definitions.mjs),
 [production availability](../src/production-actions.mjs),
 [research availability](../src/research-actions.mjs),
 [profile prices/drop-offs](../src/economy-profile.mjs). No Market, Blacksmith,
-farmhouse, temple, economy technology or building level-up is registered.
+farmhouse, temple or building level-up is registered. Mill Food Tools is the
+single new economy technology.
 Artwork/lore/reference names grant no gameplay function.
 
 Visible actions: [client](../src/main.js) `updateRosterBuildingOptions` and
@@ -484,7 +492,7 @@ progress/effects; rematch rebuilds authored initial state. The
 without adding authored map nodes. HUD/filtered AI consume owned options and
 sources; enemy queues/research stay private.
 
-All six technologies are consumed: Infantry/Archer/mounted damage and military
+All six military technologies are consumed: Infantry/Archer/mounted damage and military
 armor resolve team flags for current/new units; Tier II gates Workshop/armor/
 mounted research; engineering gates Siege Engine. Empty Tier/Engineering effect
 arrays create real unlocks. Completion feedback was inaccurate, not missing stat
@@ -508,7 +516,8 @@ owned by Building01a0fcf5, rather than duplicating its catalog.
 Workers → gather F/W → buy Worker/House → choose Mill versus Storehouse for trips
 → plant one Farm when nearby finite food is inconvenient/exhausted. Choose
 Barracks, Range or Stable for the first army and role-relevant forging. Scout/
-Rider already work in tier one. Research Tier II at Town Center, then choose
+Rider already work in tier one. Food Tools at an owned Mill is an optional
+100F / 75W food-labor investment competing with the first army. Research Tier II at Town Center, then choose
 armor, mounted forging or Workshop → engineering → siege for visible defenses.
 Tower/walls/manual Gate and shoreline Dock are optional map-dependent branches.
 Do not add prerequisite gates to open buildings to force this teaching sequence.
@@ -538,3 +547,62 @@ by `sandbox-unavailable` and `storage-unavailable`: zero game frames/screenshots
 PR323's qualified hosted path is separate capability, not a current Farm capture.
 Deployment identity/digest and ordinary rendered acceptance remain separate B1
 evidence; a merge does not establish them.
+
+### Food Tools progression slice — 4 October 2026
+
+The user authorized restarting progression. The thirteen-building audit found
+the six military technologies wired; Mill was a food depot with no economy
+research. One completed-Mill purchase creates a real economic choice without a
+new building, Blacksmith, age tree or second Farm system. Food Tools costs
+100 food / 75 wood and 25 seconds; its only effect is ×1.2 productive land Worker
+food gathering. A Farm still supplies 200 food, carry stays 10 and bank credit
+still requires delivery. Wood, Stone, boats, travel and combat stay at their
+prior rates. This tuning is provisional, not a measured balance conclusion.
+
+Owner: Action/production retains review, exact source/pack, default integration,
+staging identity and playable acceptance. Shared boundary with HUD art owner
+01a101f7-35be: the existing selected-building/contextual research controls consume
+`food-tools` from the registry and show its price, 25s and bounded effect; stable
+focus, locks, progress and completion use existing controls. No HTML/CSS, HUD
+skin, manifest, new art or audio binding is required. Movement owner
+01a107ba retains routes, formations, arrival and fractional intent; this slice
+changes only the productive food grant in `updateWorkerEconomy`. There is no
+movement API or placement/orientation change. The existing resource-work intent,
+source identities and carrying contract remain the coordination boundary.
+
+Backing: the existing [compact HUD contract](hud-controls-backlog.md),
+[Food symbol](../assets/ui/icons/food.svg) and
+[Mill reference](art-direction/frontier-economy-meshy-v1/mill-reference-v1.png)
+support existing treatment and food identity; the reference is production input,
+not newly approved runtime art. State storyboard: paid Mill completion → select
+Mill → inspect cost/time/effect → Research → one paid team project with progress
+→ completed effect for current/new Workers. Short funds, wrong owner/producer,
+unfinished Mill, another active project and duplicate completion refuse purchase.
+Cancel refunds the unfinished fraction; destruction loses active work; rematch
+clears completion. Enemy research remains private.
+
+Default integration uses existing registry-derived client buttons, server
+validation/debit/research lifecycle and flags. The exact immediately preceding
+Food/Wood and Stone content pins migrate with Food Tools false; paid stock,
+cargo, banks and work are preserved. Current/unknown pins cannot use migration
+to invent completion. Earlier explicitly supported legacy migrations initialize
+the same false flag after their existing content decision. No save is replayed
+as a free purchase. Existing packaging includes the authoritative helper and
+modified registry/client; no new static asset admission or service is needed.
+
+Acceptance: both-seat actual DOM selection and command checks; actual authority
+price/ownership/unfinished/duplicate refusals; paid Mill/Farm placement; exact
+prior-content recovery in both economy profiles; active cold recovery and
+proportional cancellation; actual 1.2 versus 1.0 productive grants; current/new
+Workers; finite stock/cargo/deposit conservation; completed recovery and reset.
+The slice PR records exact source, scoped checks, clean release, default and
+provider status. Native commands and DOM checks do not claim ordinary pixels,
+listening or unassisted use. B1 retains qualified normal Tiny entry, selected
+Mill research and paid Farm/depot observations at the identified release. Next
+progression decision follows that observation; no further economy tech is staged.
+
+Implementation and scoped evidence are retained in
+[PR #377](https://github.com/lbeezr/thousand-unit-skirmish/pull/377). Its current
+review, default release and deployment status are recorded separately there;
+the proposed HUD/movement boundaries above are not a claim of direct owner
+agreement or ordinary-game rendered acceptance.

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { workerFoodGatherMultiplier } from '../src/server/worker-food-tools.mjs';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { createWorkerPerformingActions } from '../src/worker-performing-action.mjs';
@@ -37,6 +38,7 @@ function fixture() {
     mapDefinition: { fogOfWar: true }, STATE_EVERY_TICKS: 3,
     WORKER_INTERACTION_RANGE: 1.4, BUILDER_INTERACTION_RANGE: 1.4,
     WORKER_CARRY_CAPACITY: 10, GATHER_RATE: 2, STEP_SECONDS: 1 / 30,
+    workerFoodGatherMultiplier, teamUpgrades: [{}, {}],
     forestCellMask: [1], forestWoodRemaining: [10],
     forestStockChangedCells: new Set(), pendingForestClears: new Set(),
     cellToWorld: () => ({ x: 0, z: 0 }), worldToCell: () => 0,
