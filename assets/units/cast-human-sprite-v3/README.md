@@ -106,3 +106,14 @@ all clips except explicit NW build/defeat idle replacements remain exact.
 Default build/repair/defeat CPU playback is checked; Stone default state still
 needs animation-owner adoption. All seven land actions now have SE+NW art;
 42 direction/action cells and identified native/deployed acceptance remain.
+
+
+Version0.25.0 adds **East wood/attack** with three actual down-right front
+three-quarter axe keys. Wood loops720ms; attack uses the same pixels as its own
+840ms one-shot. [Source/provenance](../../../docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/README.md)
+retains all nine source candidates; only the first three are admitted/countable.
+Rebuild with `python3 scripts/admit-worker-wood-east.py`. Three empty reserved
+strip cells fit with no dimension/mask/world-scale change.143 preceding frames
+remain exact, with only the declared East attack idle replacement. Default CPU
+wood/attack playback is checked.40 action-heading cells and exact containing
+native/deployed acceptance remain open; Stone state remains animation-owned.

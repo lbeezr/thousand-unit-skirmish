@@ -104,12 +104,12 @@ current-roster keys can also be admitted with the same manifest contract.
 | --- | --- | --- |
 | 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
 | 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
-| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **36 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
-| 4 | Six remaining readable dedicated Stone-work headings and SE/NW selector adoption. | SE and NW now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. Animation owner also needs the actual Stone state/resource selector enabled after artwork exists; current default intentionally returns idle. No economy edits. |
+| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **34 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
+| 4 | Six remaining readable dedicated Stone-work headings; retain PR263 default selector adoption. | SE and NW now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. PR263 now enables exact authored Stone state/resource selection from productive receipts; missing headings retain their own idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
 There are now 8 of 8 walk headings, eight distinct idle headings, SE+NW land-action
-motion and SE+NW Stone artwork awaiting default selector adoption. **42 land-action/heading cells remain** (36+6).
+motion and default SE+NW Stone binding from PR263, with exact native/deployment acceptance open. **40 land-action/heading cells remain** (34+6).
 Fishing's seven missing headings are excluded and retained by its separate owner.
 The animation-owner ID is outside this executor's live collaboration tree; the
 manifest contract and retained dependencies are recorded here for parent routing.
@@ -566,3 +566,81 @@ measures source `151d60e1653ad6092c6f582db41d85e763bde384` with `sourceDirty:fal
 Worker runtime hashes pass at that source. After current main integration,
 21 affected client/CI checks also pass. The later receipt commit is distinct
 from this measured code revision. No deployment/native acceptance is claimed.
+
+
+## East axe work and attack — v0.25.0
+
+PR261 is reviewed/merged at `ec1a86698accd2eec9cbd403e752dc357a000f9a`
+([independent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/261#pullrequestreview-5404156319)).
+The next bounded action-heading slice uses actual public `walk-east-0` pixels,
+whose body faces down-right/front three-quarter. Existing current-roster work
+strips are SE/right-facing, so they cannot be relabelled East. One [retained nine-key iteration](art-direction/human-roster-v1/generated/worker-east-actions-v1/README.md)
+has three whole axe windup/strike/recovery keys. Only0..2 are admitted now; food
+and hammer candidates remain retained/unadmitted, excluded from all counts.
+
+[Admission](../scripts/admit-worker-wood-east.py) uses one232/307 scale, fixed
+source column roots[384,784,1184], shared baseline349, canvas256x320/pivot[128,308].
+The largest axe envelope250px stays below old272px max. Three blank rectangles
+(2304,1920),(2304,2240),(2048,3456) fit the existing2560x4096 strip, preserving
+all prior reserved cells and the frozen fishing-era ROI. [Preservation](qa-evidence/worker-land-art-2026-10-04/wood-east-preservation.json)
+protects143 frame records/RGBA, exact mask and57 clips except explicit East attack
+idle replacement; [registration](qa-evidence/worker-land-art-2026-10-04/wood-east-registration.json)
+retains every source/hash/offset. Pack0.25.0 has146frames/58clips: wood3x240ms720ms
+loop, same actual East axe pixels for independently timed attack3x280ms840ms
+one-shot. No new allocation, world scale, runtime state/clock/economy or fishing
+changes. Imperfect timing/body/ground drift remain native polish questions.
+
+[Default CPU checks](../scripts/worker-east-axe-art.test.mjs) cover both seats
+selected/unselected: positive work gating/full loop, E→missingNE exact idle→E
+without phase restart, Stop/resume, loaded Return→bank idle, attack start/advance/
+terminal clamp/exit/resume work and new-event restart. Actual UVs and matrix scale
+are checked. Five missing wood headings retain exact idle; foodEast stillidle.
+Six source food/hammer candidates are not default art. Historical protections
+restore only declared clip replacements, without changing original pixel checks.
+
+Native recipe on a containing ordinary Human map: approach wood from screen-
+upper-left so actual action faces East/down-right, observe full chop/Stop/resume,
+turn/relocate and cargo Return/deposit; attack a down-right target and observe
+axe strike, terminal/restart, walk/work interruption. Compare against SE/right
+and NW/left, both seats selected/unselected at ordinary/strategic zoom. Record
+exact source/release/deployment/map. Parent Railway/Mac route remains the assigned
+receiver; local sandbox-unavailable has supplied no actual game capture. Stone
+default binding now comes from merged PR263 / animation01a103d4; exact Stone
+native/deployed acceptance remains open.
+
+Current authored coverage from [the action-by-heading count](qa-evidence/worker-land-art-2026-10-04/land-action-coverage.json):
+
+| Action | Authored headings | Count / remaining |
+| --- | --- | --- |
+| Walk (Carry/Return reuse) | N,NE,E,SE,S,SW,W,NW | 8/8;0 |
+| Wood | E,SE,NW | 3/8;5 |
+| Food | SE,NW | 2/8;6 |
+| Build | SE,NW | 2/8;6 |
+| Repair | SE,NW | 2/8;6 |
+| Attack | E,SE,NW | 3/8;5 |
+| Defeat | SE,NW | 2/8;6 |
+| Stone (default binding from PR263) | SE,NW | 2/8;6 |
+
+Authored24/64; **40 art cells remain**. Per heading: SE/NW8/8, E3/8;
+N/NE/S/SW/W each1/8. Ranked next: default admit complete retained East food,
+then same-heading hammer build/repair; supply East Stone/defeat; continue the
+other five headings. Deployment/native and target-bearing integration stay open,
+with the concrete receiving owners above; no cosmetic perfection hold.
+
+
+While this slice was in progress, animation-owner [PR263](https://github.com/lbeezr/thousand-unit-skirmish/pull/263)
+merged at `0934be78`. Its main changes are integrated: dedicated exact Stone
+selection, compatible positive receipts and both-seat NW loop/Stop/resume tests.
+All earlier gap receipts remain historical. The art-owner branch makes no new
+state/clock/economy edits; runtime changes here originate from merged main.
+
+
+After integrating current main/PR263, all123 focused checks pass, alongside
+byte-idempotent admission, atlas/docs/whitespace. [Clean East axe release](qa-evidence/worker-land-art-2026-10-04/wood-east-clean-release.json)
+measures `7238c84a1bc2a8f3b6198f68640c583b19e63c61`, `sourceDirty:false`, 1178 files and
+`sha256:7ad4039d26eafc06220e725b733707c2ec7066f52bf3eaf287d3707790be1b49`. Real guarded packaged HTTP/WebSocket and runtime hashes pass
+at that source. [Producer/client receipt scenario](qa-evidence/worker-land-art-2026-10-04/wood-east-productive-receipts.json)
+retains28 real WebSocket→actual CPU client observations including productive
+Stone, clear/Stop/resource/depletion/repair/recovery. These are packet/UV checks,
+not native GPU/game captures. Later evidence commits are distinct from measured
+code; exact delivered/native acceptance remains open.
