@@ -56,8 +56,8 @@ candidates from the loose capability inventory.
 The [paid palisade runtime](palisade-runtime.md) adds atomic connected-line
 construction and persisted Worker sequencing with provisional wood-only test
 tuning. The normal drag-line UI adds connected previews, whole-line cost,
-keyboard endpoints and cancellation; [checks and a Mac recipe](qa-palisade-drag-ui-2026-10-03.md)
-distinguish DOM/runtime evidence from pending native usability. Next wall
+keyboard endpoints and cancellation; [checks and a cloud-game recipe](qa-palisade-drag-ui-2026-10-03.md)
+distinguish DOM/runtime evidence from pending rendered usability. Next wall
 outcomes are the independent modular art kit and player observations. The
 [manual gate foundation](palisade-gates.md) now uses explicit owner operation
 and shared open/closed traversal, with conservative occupied/route-cut refusal

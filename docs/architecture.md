@@ -378,11 +378,28 @@ tests do not replace a real consumer check. Run required repository checks under
 the testing owner's current strategy; this plan does not change that registry.
 
 The reviewed plan is integrated, with PR1's guard/check milestone recorded in
-PR294. The next concrete action after that PR's reviewed integration is
-audio/world-owner coordination for PR2's metadata validator (or the first
-unconflicted leaf). No runtime migration
-has begun. This source/tooling work launches no local browser, Mac workload,
-remote deployment, provider request or security-setting change.
+PR294. Step 5's HUD owner moves the three pure text/projection implementations
+byte-for-byte to `src/client/hud/`, retaining explicit named old-path exports.
+The source guard classifies both paths as client responsibilities; negative
+fixtures reject rules/world/simulation/server consumers and keep the canonical
+helpers dependency-free leaves, and packed HTTP checks
+admit only the exact six paths. Existing helper tests exercise canonical exports
+and verify compatibility binding identity; contextual consumers still use shims.
+No layout, selection, accounting, labels or authored objective behavior changes.
+
+The HUD integration owner retains shim retirement. Remaining runtime consumers
+are `main.js` (all three), `selection-portrait.mjs` and `wall-placement.mjs`
+(resource format), and `match-mode-controls.mjs` (objective summary). Tool/test
+consumers include contextual HUD, construction/wildlife fixtures, roster and
+shore-fishing checks, Practice/Bannerfall entry checks and the population browser
+runner. Convert these with their owners in later bounded changes. Remove each
+shim and its exact HTTP/domain entries only after tracked consumers/docs use the
+canonical path, owners confirm no supported external import requires the old API,
+and source/served/packed checks pass without it. Identify the containing release
+and confirm page reload safety with the existing `no-store` policy before removing
+a browser path. Historical QA receipts remain historical, not migration inputs.
+This source/tooling work launches no browser, Mac workload, remote deployment,
+provider request or security-setting change.
 
 ### Tests, fixtures, scenarios and performance tools
 

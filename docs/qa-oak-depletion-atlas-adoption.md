@@ -58,5 +58,7 @@ must remain intact; Underbough Rootways must retain regional wood. Use
 
 Capture map/action/stock/zoom, source SHA, release digest, active deployment id,
 actual observations and screenshots in this PR/note. Terrain integration retains
-acceptance ownership. Parent staging/Mac coordinator is the assigned downstream
-recipient; queued painted-ground QA remains separate and open.
+acceptance ownership. The current cloud testing/CI owner receives renderer
+qualification and capture execution under the [testing strategy](testing-strategy.md#start-here);
+Mac testing was stopped by the user and is not a dependency. Painted-ground QA
+remains separate and open.

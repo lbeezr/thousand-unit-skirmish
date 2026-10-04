@@ -68,6 +68,37 @@ test('unclassified intermediates cannot hide backward static, lazy or re-export 
   }
 });
 
+test('HUD canonical helpers and compatibility entries stay outside authoritative domains and hosts', () => {
+  for (const helper of ['resource-format', 'population-readout', 'objective-summary']) {
+    const canonical = `src/client/hud/${helper}.mjs`;
+    const legacy = `src/${helper}.mjs`;
+    const helpers = {
+      [canonical]: 'export const label = 1;',
+      [legacy]: `export { label } from './client/hud/${helper}.mjs';`,
+    };
+    for (const root of ['src/gameplay-action-rules.mjs', 'src/map-utils.mjs', 'src/formation-assignment.mjs']) {
+      for (const target of [canonical, legacy]) {
+        assert.throws(() => check({ ...helpers, [root]: `import './${target.slice(4)}';` }),
+          /(?:rules|world|simulation) domain cannot reach client domain/, `${root} -> ${target}`);
+      }
+    }
+    for (const target of [canonical, legacy]) {
+      assert.throws(() => check({ ...helpers, 'server.mjs': `import './${target}';` },
+        { serverEntrypoints: ['server.mjs'] }), /server host reaches client domain/, `server.mjs -> ${target}`);
+    }
+  }
+});
+
+test('HUD projections remain dependency-free leaves with one explicit compatibility edge', async () => {
+  for (const helper of ['resource-format', 'population-readout', 'objective-summary']) {
+    const canonical = `src/client/hud/${helper}.mjs`;
+    const legacy = `src/${helper}.mjs`;
+    assert.deepEqual(moduleImports(await readFile(new URL(`../${canonical}`, import.meta.url), 'utf8'), canonical), [], canonical);
+    assert.deepEqual(moduleImports(await readFile(new URL(`../${legacy}`, import.meta.url), 'utf8'), legacy),
+      [`./client/hud/${helper}.mjs`], legacy);
+  }
+});
+
 test('rules and world cannot reach higher policy domains, including through unknown modules', () => {
   assert.throws(() => check({
     'src/gameplay-action-rules.mjs': "import './bridge.mjs';",
@@ -123,12 +154,12 @@ test('domain membership rejects duplicate ownership and supports exact canonical
     /duplicate runtime domain membership: src\/a.mjs/);
   assert.throws(() => check({}, { runtimeDomains: { client: ['server.mjs'] } }),
     /duplicate runtime domain membership: server.mjs/);
-  const files = { 'src/formation-assignment.mjs': "export * from './simulation/movement/formation-assignment.mjs';",
-    'src/simulation/movement/formation-assignment.mjs': "import '../../resource-format.mjs';", 'src/resource-format.mjs': '' };
+  const files = { 'src/formation-assignment.mjs': "export * from './simulation/movement/fixture-formation.mjs';",
+    'src/simulation/movement/fixture-formation.mjs': "import '../../resource-format.mjs';", 'src/resource-format.mjs': '' };
   const options = { runtimeDomains: { ...RUNTIME_DOMAINS, simulation: [...RUNTIME_DOMAINS.simulation,
-    'src/simulation/movement/formation-assignment.mjs'] } };
+    'src/simulation/movement/fixture-formation.mjs'] } };
   assert.throws(() => check(files, options), /simulation domain cannot reach client domain/);
-  assert.doesNotThrow(() => check({ ...files, 'src/simulation/movement/formation-assignment.mjs': '' }, options));
+  assert.doesNotThrow(() => check({ ...files, 'src/simulation/movement/fixture-formation.mjs': '' }, options));
 });
 
 test('repository audits require new modules to have a reviewed responsibility', () => {

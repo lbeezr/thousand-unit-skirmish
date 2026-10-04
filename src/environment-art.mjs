@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { RESOURCE_VISUAL_STAGES, resourceVisualStage } from './resource-visual-state.mjs';
 import { createGroundMistStudy, groundMistEnabled } from './terrain-atmosphere.mjs';
 import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
+import { createTerrainCliffFaces } from './terrain-cliff-faces.mjs';
 import { groundTextureName, loadPaintedMaterialAtlas } from './painted-material-atlas-runtime.mjs';
 import { loadOakDepletionAtlas, oakDepletionStage, applyOakDepletionSampling } from './oak-depletion-atlas-runtime.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from './terrain-blend.mjs';
@@ -15,7 +16,6 @@ import { createShoreBankShade } from './shore-bank-shade.mjs';
 import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from './forest-habitat.mjs';
 import { forestAgeFactors } from './forest-age-composition.mjs';
 import { underboughForestSpecies } from './forest-composition.mjs';
-import { regionalGroundColor } from './regional-ground-kits.mjs';
 import { shorePlantPositions } from './shore-vegetation.mjs';
 import { meadowPlantGroups, drylandPlantGroups, snowPlantGroups, ridgePlantGroups, lunarPlantGroups, marshPlantGroups, junglePlantGroups } from './meadow-vegetation.mjs';
 import { gardenPlantGroups } from './garden-vegetation.mjs';
@@ -482,26 +482,9 @@ export function createGroundSurfaces(definition) {
     const mist = createGroundMistStudy(atmosphereDefinition, fixedTime, meshes[0].geometry);
     if (mist) meshes.push(mist);
   }
-  const field=terrainHeightField(definition);
-  if(field.raised) {
-    const vertices=[];
-    function wall(a,b,c,d) { for(const p of [a,b,c,a,c,d]) vertices.push(...p); }
-    for(let row=0;row<definition.height;row++) for(let col=0;col<definition.width;col++) {
-      const x=col-definition.width/2,z=row-definition.height/2,h=field.corners(col,row);
-      if(col+1<definition.width) {
-        const n=field.corners(col+1,row);
-        if(Math.abs(h[1]-n[0])+Math.abs(h[3]-n[2])>.001) wall([x+1,h[1],z],[x+1,h[3],z+1],[x+1,n[2],z+1],[x+1,n[0],z]);
-      }
-      if(row+1<definition.height) {
-        const n=field.corners(col,row+1);
-        if(Math.abs(h[2]-n[0])+Math.abs(h[3]-n[1])>.001) wall([x,h[2],z+1],[x+1,h[3],z+1],[x+1,n[1],z+1],[x,n[0],z+1]);
-      }
-    }
-    if(vertices.length) {
-      const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geometry.computeVertexNormals();
-      meshes.push(new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:new THREE.Color(regionalGroundColor(definition,base)).multiplyScalar(.65),roughness:1,side:THREE.DoubleSide})));
-    }
-  }
+  const cliffFaces = createTerrainCliffFaces(definition, { base,
+    texture: base === 'scree' ? groundTexture('scree', definition) : null, stochastic, freeRotation });
+  if (cliffFaces) meshes.push(cliffFaces);
   meshes[0].userData.terrainSurface=true;
   return meshes;
 }
