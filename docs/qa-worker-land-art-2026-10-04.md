@@ -304,3 +304,9 @@ checks, atlas/docs/whitespace and packedHTTP/hash pass. This verifies Stone art
 admission, not default Stone action playback. [Actual selector-gap observation](qa-evidence/worker-land-art-2026-10-04/stone-selector-gap.json)
 records the exact idle state/frame and approximate-heading mismatch that the
 animation owner must resolve with the supplied clip.
+
+[Stone pack clean release](qa-evidence/worker-land-art-2026-10-04/stone-clean-release.json)
+records code `b2d8e6702236a1598bb7cbe302b17107de218b07`, 1175 files and
+`sha256:37e05e727ece6d2a3ef78f9037a16cb51ba67120a9c546bd6c368a1a80acb08e`. The existing three runtime files include this clip;
+no directory/defaultadoption flag or new HTTPpath is required. Stone state
+and exactheading policy adoption remain owned by the animation consumer.
