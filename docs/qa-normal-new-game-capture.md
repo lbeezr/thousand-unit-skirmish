@@ -73,12 +73,13 @@ records verify no right-click before the checkpoint or after capture failure,
 and exactly one press/release pair after success. These injected controls
 establish zero actual browser/GPU frames.
 
-As of the 4 October source audit at `bfdbb31e`, `scripts/ci.mjs` still omits
-`scripts/renderer-qualification-novice.test.mjs` from the existing qualification
-CPU group. That registration remains with the cloud testing owner; it is no
-longer an artifact-directory or invocation-interface gap. Normal-entry hosted
-invocation and PNG inspection remain **pending** while CI resolves its dispatch
-access denial. Do not substitute a different dispatch route.
+The existing qualification CPU group includes
+`scripts/renderer-qualification-novice.test.mjs` through merged
+[registration PR357](https://github.com/lbeezr/thousand-unit-skirmish/pull/357).
+The artifact-directory and invocation-interface prerequisites are integrated.
+Normal-entry hosted invocation and PNG inspection remain **pending**; dispatch
+and sign-in are paused under the current access decision. Do not retry sign-in,
+change access or substitute a different dispatch route.
 Inspect every retained PNG at the exact reviewed source/release before claiming
 this interaction passed. Record admitted seeds/map/mode, served identity and
 Worker/command/feedback/displacement evidence. A supplied player-pathing
