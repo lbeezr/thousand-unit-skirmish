@@ -110,7 +110,7 @@ try {
   const initial = await checkpoint(s => s.mapDefinition.id === map.id);
   assert.deepEqual(initial.state.teamFood, [150, 150]); assert.deepEqual(initial.state.teamWood, [250, 250]);
   assert.deepEqual(initial.state.teamStone, [0, 0]); record('ordinary-practice-authored-start', initial);
-  await moveWorkers([31, 68]);
+  await moveWorkers([29, 66]);
   for (const team of [0, 1]) await command(team, { type: 'build', buildingType: 'watchtower', ids: workers[team], ...position(team, layout.plots.watchtower) }, /NEED .*50 STONE/);
   const denied = await checkpoint(); assert.deepEqual(denied.state.buildings, initial.state.buildings);
   assert.deepEqual(denied.state.teamWood, [250, 250]); record('unfunded-tower-rejected', denied);
