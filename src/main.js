@@ -7478,6 +7478,7 @@ function pickBuildingAt(x, y, predicate = (building) => building.team === localT
   pointerNdc.set((x / rect.width) * 2 - 1, -(y / rect.height) * 2 + 1);
   camera.updateMatrixWorld(true);
   raycaster.setFromCamera(pointerNdc, camera);
+  let groundPoint;
   let nearest = null;
   let nearestDistance = Infinity;
   for (const building of latestBuildings) {
@@ -7485,7 +7486,14 @@ function pickBuildingAt(x, y, predicate = (building) => building.team === localT
     const visual = buildingVisuals.get(building.id);
     if (!visual?.group.visible) continue;
     visual.group.updateWorldMatrix(true, true);
-    const hit = raycaster.intersectObject(visual.group, true)[0];
+    let hit = raycaster.intersectObject(visual.group, true)[0];
+    if (!hit && ['palisade-wall', 'palisade-gate'].includes(building.type)) {
+      groundPoint ??= worldAt(x + rect.left, y + rect.top);
+      if (groundPoint && groundPoint.x >= building.x - .5 && groundPoint.x < building.x + .5
+        && groundPoint.z >= building.z - .5 && groundPoint.z < building.z + .5) {
+        hit = { distance: raycaster.ray.origin.distanceTo(groundPoint) };
+      }
+    }
     if (hit && hit.distance < nearestDistance) {
       nearest = building;
       nearestDistance = hit.distance;
@@ -7971,6 +7979,11 @@ function issueContextOrder(clientX, clientY, queueWaypoint = false) {
     : pickBuildingAt(x, y, (building) => building.team !== localTeam);
   if (enemyBuilding) issueAttackBuilding(enemyBuilding);
   else {
+    const construction = !queueWaypoint && !attackMoveMode && persistentTargetMode !== 'move'
+      && selectedWorkerIds().length > 0
+      ? pickBuildingAt(x, y, building => building.team === localTeam
+        && Object.hasOwn(BUILDING_DEFINITIONS, building.type) && building.complete !== true) : null;
+    if (construction) { resumeConstructionAt(construction, false); return; }
     const node = pickResourceNodeAt(x, y);
     if (node) issueGather(node);
     else {
@@ -8381,19 +8394,25 @@ function startSelectedAttackResearch() {
 }
 
 function resumeConstruction() {
+  resumeConstructionAt(constructionForSelectedWorkers(), true);
+}
+
+function resumeConstructionAt(building, focusSite) {
   if (localTeam === null || matchWinner >= 0) return;
   const ids = selectedWorkerIds();
   if (ids.length === 0) { showToast('SELECT WORKERS TO RESUME CONSTRUCTION'); return; }
-  const building = constructionForSelectedWorkers();
-  if (!building) {
+  if (!building || building.team !== localTeam || building.complete === true
+    || !Object.hasOwn(BUILDING_DEFINITIONS, building.type)) {
     showToast('NO UNFINISHED FRIENDLY CONSTRUCTION');
     return;
   }
   if (buildPlacementActive) cancelBuildPlacement(false);
   setAttackMoveMode(false, false);
-  cameraTarget.set(building.x, 0, building.z);
-  setCamera();
-  drawMinimap(performance.now(), true);
+  if (focusSite) {
+    cameraTarget.set(building.x, 0, building.z);
+    setCamera();
+    drawMinimap(performance.now(), true);
+  }
   if (sendTrackedOrder({ type: 'build', buildingId: building.id, ids },
     'RESUME BUILD', ids.length, 'WORKERS')) {
     showToast(`WORKERS SENT TO FINISH ${buildingLabel(building.type)} · ${Math.round((Number(building.progress) || 0) * 100)}%`);
