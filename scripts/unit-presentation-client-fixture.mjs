@@ -9,6 +9,7 @@ import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { economyClientBindings } from './economy-client-fixture.mjs';
 import { createUnitSpriteRuntime } from '../src/unit-sprite-runtime.mjs';
 import { shouldUpdateUnitTransformForFrame } from '../src/unit-lod-state.mjs';
+import { readWorkerPerformingAction, workerWorkAction } from '../src/worker-work-presentation.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 function slice(startText, endText, from = 0) {
@@ -34,12 +35,12 @@ const packs = roles.map((_, index) => JSON.parse(readFileSync(
 export function workerSnapshotRow({ id = 0, team = 0, x = 0, z = 0, hp = 100,
   cargo = 0, cargoType = null, generation = 1, task = 'idle', attackTick = -1,
   attackX = null, attackZ = null, audioExecution = null, workHeading = null,
-  workResourceVariant = null } = {}) {
+  workResourceVariant = null, performingAction = null } = {}) {
   return [id, team, x, z, hp, 'worker', cargo, cargoType, generation, task, 0,
-    attackTick, attackX, attackZ, audioExecution, workHeading, workResourceVariant];
+    attackTick, attackX, attackZ, audioExecution, workHeading, workResourceVariant, performingAction];
 }
 
-export async function createUnitPresentationClientFixture({ localTeam = 0 } = {}) {
+export async function createUnitPresentationClientFixture({ localTeam = 0, maxUnits = 8 } = {}) {
   const scene = new THREE.Scene();
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async url => {
@@ -67,6 +68,7 @@ export async function createUnitPresentationClientFixture({ localTeam = 0 } = {}
   const noop = () => {};
   const elements = new Map();
   const context = vm.createContext({ ...economyClientBindings(), THREE, applyUnitStances, UNIT_DEFINITIONS,
+    readWorkerPerformingAction, workerWorkAction,
     mapDefinition: { id: 'unit-presentation-fixture' }, localTeam, isHost: false,
     activeMatchMode: {}, knownMaps: [], matchModeView: { update: noop }, setMapCatalog: noop,
     document: { querySelector(id) {
@@ -75,7 +77,7 @@ export async function createUnitPresentationClientFixture({ localTeam = 0 } = {}
     } }, performance: { now: () => clock },
     units: [], teamUnits: [[], []], selected: new Set(), controlGroups: [new Set()],
     currentArmySize: 24, matchWinner: -1, latestMatchElapsedSeconds: 0,
-    MAX_UNITS: 8, MAX_PER_TEAM: 4, nextAttackFocusSlot: 0,
+    MAX_UNITS: maxUnits, MAX_PER_TEAM: 4, nextAttackFocusSlot: 0,
     WORKER_TASK_STATES: new Set(['idle', 'moving', 'gathering', 'returning', 'building',
       'repairing', 'attacking', 'holding', 'patrolling', 'following']),
     attackFocusDirty: false, selectionDirty: false,
@@ -111,7 +113,7 @@ export async function createUnitPresentationClientFixture({ localTeam = 0 } = {}
   return { context, runtime, scene, transformCalls, dirtyTeams,
     apply(rows, { initial = false, now = clock, ...state } = {}) {
       clock = now;
-      context.applyState({ mapId: 'unit-presentation-fixture', units: rows, ...state }, initial);
+      context.applyState({ mapId: 'unit-presentation-fixture', workerPerformingActionVersion: 1, units: rows, ...state }, initial);
     },
     frame(now, seconds = (now - clock) / 1000) {
       clock = now;

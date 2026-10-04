@@ -20,7 +20,7 @@ const sites = shoreFishSitePositions(map);
 const worker = (site, team = 0) => ({ id: team, team, slot: 0, hp: 100, kind: 'worker',
   x: site.land.x, z: site.land.z, renderX: site.land.x, renderZ: site.land.z,
   gatherPhase: 'gathering', gatherForestCell: -1, gatherNodeId: site.nodeId,
-  task: 'gathering', cargo: 0, cargoType: 'food', attackStartedAt: 0, walking: false });
+  task: 'gathering', performingAction: 'gather-food', cargo: 0, cargoType: 'food', attackStartedAt: 0, walking: false });
 const main = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const basePack = JSON.parse(readFileSync(new URL('../assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json', import.meta.url)));
@@ -151,7 +151,7 @@ test('fishing owns a cosmetic clock while movement, attack, repair and defeat re
   assert.equal(spriteAnimationTime(unit, activeState(unit, 1300), 1300), 0, 'resumed work starts its loop');
   unit.workResourceVariant = null; assert.equal(activeState(unit, 1400), 'gather');
   assert.equal(spriteAnimationTime(unit, activeState(unit, 1400), 1400), 0, 'berry task cannot inherit fish phase');
-  unit.task = 'repairing'; unit.workResourceVariant = 'shore-fish'; assert.equal(activeState(unit, 1500), 'repair');
+  unit.task = 'repairing'; unit.performingAction = 'repair'; unit.workResourceVariant = 'shore-fish'; assert.equal(activeState(unit, 1500), 'repair');
   unit.hp = 0; unit.defeatStartedAt = 1600; assert.equal(activeState(unit, 1700), 'defeat');
   assert.equal(unit.cargoType, 'food'); assert.equal(unit.cargo, 0, 'frames never award food');
 });
