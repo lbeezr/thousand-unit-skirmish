@@ -2,10 +2,10 @@
 
 [Victory audit](victory-modes-audit-2026-10-03.md) · [Mode backlog](playable-modes-backlog.md) · [Configuration](configuration.md)
 
-Owner: playable-modes workstream. This small source contract is the shared input
-for server, lobby and AI work. Its registry/projection checks do not claim that a
-new mode is already connected to ordinary gameplay. The next runtime slice owns
-that integration and its native/release/ordinary-match acceptance.
+Owner: playable-modes workstream. This is the shared contract for server, lobby
+and AI work. The server supports explicit human Skirmish through room creation
+and host configuration. The lobby selector and base-objective AI have separate
+owners; source/native checks do not establish ordinary rendered or deployed play.
 
 ## Identity and capabilities
 
@@ -43,9 +43,9 @@ Workers and paid land queues preserve survival; a destroyed Town Center is not
 defeat while land units or affordable legal production remain. No resignation,
 inactivity draw, new clock behavior or minimum-duration guarantee is added.
 
-## Runtime boundary for the next slice
+## Runtime protocol
 
-- `POST /rooms` launch options add the pair, for example
+- `POST /api/rooms` launch options add the pair, for example
   `{mode:'pvp', pregame:true, matchModeId:'skirmish', matchModeVersion:1}`.
   Validate capability before creating a room. Worker environment keys are
   `RTS_MATCH_MODE_ID` and `RTS_MATCH_MODE_VERSION`; absent both preserves legacy
@@ -57,8 +57,10 @@ inactivity draw, new clock behavior or minimum-duration guarantee is added.
   the existing revision, clears readiness and rebuilds the waiting setup. Unknown,
   stale, unsupported or incompatible requests leave current settings unchanged.
   Configuration during a running match is rejected.
-- Lobby, welcome/state and map-change payloads carry the effective pair.
-  Mode catalog descriptors let the UI show compatible choices and explain AI
+- Lobby, welcome/state and map-change payloads carry the effective pair. State
+  and lobby also expose the active `matchMode` descriptor; lobby exposes compatible
+  `matchModes`, and each map catalog entry includes its compatible `matchModes`.
+  `/health` includes the pair. Mode catalog descriptors let the UI show compatible choices and explain AI
   limitations. Lobby UI owns rendering/options; it does not rewrite victory
   flags or choose a policy from a label. AI reads the identity and the registry's
   `aiStrategyId`; it must not infer a base objective from a cleared post array.
@@ -71,7 +73,12 @@ inactivity draw, new clock behavior or minimum-duration guarantee is added.
   migration must preserve legacy authored snapshots, including hybrid deadlines,
   elapsed clocks, owners, holds and terminal results. Old snapshots cannot claim
   new mode fields. Unknown versions use the existing checkpoint-retention error
-  path. Restored identity is authoritative over a fresh-room default or its initial
+  path. Schema 27 stores the explicit pair; exact schema-26/rules-6 snapshots
+  without either mode field migrate to `authored@1` after existing content migrations.
+  Earlier schema fixtures must actually omit both fields. Rooms-index version 3
+  separates initial `launchOptions` from effective worker metadata, including
+  post-ready IPC updates after host configuration. Versions 1/2 retain their old
+  shapes and reject claimed mode fields. Restored identity is authoritative over a fresh-room default or its initial
   launch configuration; supervisor metadata must describe the effective identity.
 
 The mode owner retains registry, simulation/checkpoint and native protocol
@@ -95,5 +102,10 @@ Current exports in `src/match-modes.mjs`: `normalizeMatchMode(value)`,
 Compatibility returns an immutable descriptor or throws; projection returns an
 independent clone. Catalog includes hidden authored plus compatible/supported
 choices. `options` contains existing opponent `mode` and explicit `practice`.
-The twelve pure tests and syntax/doc checks pass; the suite is registered in CI.
-This module is not yet used by room launch, server simulation, HUD or AI.
+The registry, room launch, pregame model, effective simulation map and checkpoint
+recovery use this contract. The HTTP allowlist admits the browser-safe registry
+for the lobby consumer. The AI policy factory consumes the effective pair on
+activation/reset; its base-target implementation remains gated by PvE acceptance.
+Checkpoint migration, launch/metadata and native mode
+scenarios are registered in CI. Lobby rendering and mode-aware AI remain separate
+consumer work; PvE Skirmish is rejected and ordinary defaults remain authored.

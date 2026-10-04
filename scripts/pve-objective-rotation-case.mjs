@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
+import { assertRecoveredWorkerObservation, createPveHeadlessFixture } from './pve-headless-fixture.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
 
 export async function replayPaidObstruction(team, { initial = null, policyFactory = createDeterministicPolicy,
@@ -63,7 +63,7 @@ export async function replayPaidObstruction(team, { initial = null, policyFactor
       if (n % 30 === 0) {
         if (restart && n >= 900 && restartedAt === null) {
           r.drain(); const before = r.observe(team), checkpoint = r.checkpoint(); r.restore(checkpoint);
-          assert.deepEqual(r.observe(team), before, 'checkpoint preserves real walls, paths, queues, banks and fog');
+          assertRecoveredWorkerObservation(r.observe(team), before, 'checkpoint preserves real walls, paths, queues, banks and fog');
           policy = policyFactory(20260925); shadow = policyFactory(20260925);
           restartedAt = r.observe(team).tick; trace.push({ tick: restartedAt, restart: true });
         }

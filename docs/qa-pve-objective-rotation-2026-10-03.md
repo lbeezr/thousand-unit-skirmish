@@ -5,6 +5,12 @@
 Owner: Opponent AI. This fix uses ordinary public capture goals on the existing
 authored/Objective Control policy. Skirmish keeps its separate target helper.
 Navigation, building placement, server authority and checkpoint schemas are unchanged.
+Source [PR203](https://github.com/lbeezr/thousand-unit-skirmish/pull/203) merged in
+`89772d6f`: 112 focused checks pass, independent final review reruns eight checks,
+and 38 postmerge checks plus the local release scenario pass. The clean reviewed
+release contains 1,151 files, digest
+`sha256:6667501e0559bde9bb1770c826cf35ba204c85268e83a859ec04b55fd431a212`.
+This proves source inclusion, not deployment or ordinary browser acceptance.
 
 ## Reproduced failure
 
@@ -46,6 +52,9 @@ baseline and candidate is run twice; every command/notice and complete final
 checkpoint matches its repeat. Candidate and baseline initial checkpoints are
 byte-equivalent. All twenty completed enemy walls remain alive, all orders are
 admitted, and enemy stock+cargo+bank+300 wood spending reconcile.
+Current-main fixtures use the shared full-authority restore assertion: only the
+[transient Worker activity display slot](worker-performing-action-contract.md)
+clears on restart; positions, banks, queues, fog and combat state still match.
 
 | Seat | Baseline at cap | Baseline attack-moves | Candidate alternative | Candidate victory | Candidate attack-moves |
 | --- | --- | --- | --- | --- | --- |

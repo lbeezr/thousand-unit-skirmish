@@ -28,7 +28,7 @@ test('native Stone profile exposes no initial grant, rejects unpaid defense and 
   }
   await room.stop();
   const snapshot = JSON.parse(await readFile(room.checkpointPath, 'utf8'));
-  assert.equal(snapshot.schemaVersion, 26); assert.deepEqual(snapshot.state.teamStone, [0, 0]);
+  assert.equal(snapshot.schemaVersion, 27); assert.deepEqual(snapshot.state.teamStone, [0, 0]);
   assert.deepEqual(snapshot.state.teamFood, [300, 300]); assert.deepEqual(snapshot.state.teamWood, [600, 600]);
   assert.equal(snapshot.state.buildings.length, 0); assert.equal(snapshot.state.nextBuildingId, 1);
 

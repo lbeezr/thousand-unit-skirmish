@@ -1,3 +1,5 @@
+import { normalizeMatchMode, assertMatchModeCompatibility } from './match-modes.mjs';
+
 export const LOBBY_ARMY_SIZES = Object.freeze([250, 500, 1000, 2000]);
 
 export function validatePregameCheckpoint(value) {
@@ -13,13 +15,14 @@ export function validatePregameCheckpoint(value) {
 
 /** Uses the worker's existing seat sessions; never allocates identities or seats. */
 export class RoomPregame {
-  constructor(mapId, armySize, checkpoint = { phase: 'lobby', revision: 0 }) {
+  constructor(mapId, armySize, checkpoint = { phase: 'lobby', revision: 0 }, matchMode = {}) {
     const saved = validatePregameCheckpoint(checkpoint);
     if (!saved) throw new TypeError('Pregame phase is required.');
     this.phase = saved.phase;
     this.revision = saved.revision;
     this.mapId = mapId;
     this.armySize = armySize;
+    Object.assign(this, normalizeMatchMode(matchMode));
     this.seats = [];
     this.readyIds = new Set();
   }
@@ -55,12 +58,15 @@ export class RoomPregame {
     this.requireSeat(player, true);
     this.requireRevision(command.revision);
     if (this.phase !== 'lobby') throw new Error('Reset the match to return to the lobby.');
-    if (Object.keys(command).some(key => !['type', 'revision', 'mapId', 'armySize'].includes(key))) {
+    if (Object.keys(command).some(key => !['type', 'revision', 'mapId', 'armySize', 'matchModeId', 'matchModeVersion'].includes(key))) {
       throw new Error('Unknown lobby setting.');
     }
     const mapId = command.mapId ?? this.mapId;
     const map = typeof mapId === 'string' ? mapCatalog.get(mapId) : null;
     if (!map) throw new Error('Choose a map from this room’s catalog.');
+    const matchMode = Object.hasOwn(command, 'matchModeId') || Object.hasOwn(command, 'matchModeVersion')
+      ? normalizeMatchMode(command) : normalizeMatchMode(this);
+    assertMatchModeCompatibility(matchMode, map);
     const mapChanged = mapId !== this.mapId;
     const armySize = command.armySize ?? (mapChanged ? map.startingArmySize ?? 1000 : this.armySize);
     if (Object.hasOwn(command, 'armySize') && !LOBBY_ARMY_SIZES.includes(command.armySize)) {
@@ -69,9 +75,11 @@ export class RoomPregame {
     if (Object.hasOwn(command, 'mapId') && typeof command.mapId !== 'string') {
       throw new Error('Choose a map from this room’s catalog.');
     }
-    if (mapId === this.mapId && armySize === this.armySize) return false;
+    if (mapId === this.mapId && armySize === this.armySize
+      && matchMode.matchModeId === this.matchModeId && matchMode.matchModeVersion === this.matchModeVersion) return false;
     this.mapId = mapId;
     this.armySize = armySize;
+    Object.assign(this, matchMode);
     this.invalidate();
     return true;
   }
@@ -100,10 +108,12 @@ export class RoomPregame {
     return true;
   }
 
-  reset(mapId, armySize) {
+  reset(mapId, armySize, matchMode = this) {
+    const identity = normalizeMatchMode(matchMode);
     this.phase = 'lobby';
     this.mapId = mapId;
     this.armySize = armySize;
+    Object.assign(this, identity);
     this.invalidate();
   }
 
@@ -112,6 +122,7 @@ export class RoomPregame {
   payload() {
     return {
       ...this.checkpoint(), mapId: this.mapId, armySize: this.armySize,
+      ...normalizeMatchMode(this),
       mode: 'pvp', canLaunch: this.canLaunch(),
       seats: this.seats.map(seat => ({ ...seat, ready: this.readyIds.has(seat.id) })),
     };
