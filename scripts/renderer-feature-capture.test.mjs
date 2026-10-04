@@ -5,6 +5,11 @@ import path from 'node:path';
 import test from 'node:test';
 import { CAPTURE_CASES, loadCaptureCases, runFeatureBatch, selectedCases, validateCaseResult } from './renderer-feature-capture.mjs';
 
+const sourceRevision = 'a'.repeat(40), digest = `sha256:${'b'.repeat(64)}`;
+const page = () => ({ cdp: { call: async () => ({}), evaluate: async () => ({}) }, wait: async () => ({}) });
+const runtime = () => ({ page: page(), openPage: async () => page(), origin: 'http://127.0.0.1:4321',
+  pack: { sourceRevision, digest }, browserVersion: { product: 'CPU mock' } });
+
 test('explicit selections cannot dispatch paths, commands, unknown or duplicate cases', () => {
   assert.deepEqual(selectedCases('all'), Object.keys(CAPTURE_CASES));
   for (const id of Object.keys(CAPTURE_CASES)) assert.deepEqual(selectedCases(id), [id]);
@@ -48,7 +53,7 @@ test('sequential batch binds screenshots to one pack and preserves blocked cases
   const revision = 'a'.repeat(40), digest = `sha256:${'b'.repeat(64)}`, sequence = [];
   try {
     const adapters = Object.keys(CAPTURE_CASES).map(id => ({ id, run: async context => {
-      sequence.push(id); assert.deepEqual(context.source, { revision, digest });
+      sequence.push(id); assert.deepEqual(context.source, { revision, digest }); assert.equal(context.version, 1);
       assert.equal(Object.isFrozen(context.source), true);
       await context.capture({ mapId: 'bellweather-millrace', checkpoint: `${id}-departure` });
       return { status: id === 'worker-animations' ? 'blocked' : 'passed', checks: [{ id: 'ordinary-case-evidence', passed: id !== 'worker-animations' }] };
@@ -56,7 +61,7 @@ test('sequential batch binds screenshots to one pack and preserves blocked cases
     const report = await runFeatureBatch('/pack', directory, 'all', { load: async () => ({ adapters, issues: [] }),
       qualify: async (file, output, { captureCase }) => {
         assert.equal(file, '/pack'); assert.equal(path.basename(output), captureCase.id);
-        const status = await captureCase.run({ page: {}, origin: 'http://127.0.0.1:1', pack: { sourceRevision: revision, digest }, browserVersion: { product: 'CPU mock' } });
+        const status = await captureCase.run(runtime());
         return { status, source: { revision, dirty: false }, release: { sourceRevision: revision, digest } };
       }, checkpoint: async context => {
         assert.equal(context.revision, revision);
@@ -89,7 +94,7 @@ test('deadline and swallowed or unawaited screenshot failures remain failures', 
           return { manifest: { source: {}, scene: { mapId: context.mapId }, viewport: {}, image: { file: 'color.png' } } };
         },
         qualify: async (_, __, { captureCase }) => {
-          try { await captureCase.run({ page: {}, pack: { sourceRevision: 'a'.repeat(40), digest: 'digest' } }); }
+          try { await captureCase.run(runtime()); }
           catch (error) { outcome = error; }
           return { status: 'failed' };
         },
@@ -114,8 +119,7 @@ test('completed and timed-out adapters cannot acquire pages or publish later cap
           await context.capture({ mapId: 'ordinary-map', checkpoint: 'departure' });
           return { status: 'passed', checks: [{ id: 'route', passed: true }] };
         } }] }), qualify: async (_, __, { captureCase }) => {
-          try { return { status: await captureCase.run({ page: {}, openPage: async () => { acquisitions++; return {}; },
-            pack: { sourceRevision: 'a'.repeat(40), digest: 'digest' } }) }; }
+          try { return { status: await captureCase.run({ ...runtime(), openPage: async () => { acquisitions++; return page(); } }) }; }
           catch { return { status: 'failed' }; }
         }, checkpoint: async context => {
           captures++; return { manifest: { source: {}, scene: { mapId: context.mapId }, viewport: {}, image: { file: 'color.png' } } };
@@ -127,6 +131,14 @@ test('completed and timed-out adapters cannot acquire pages or publish later cap
       assert.equal(report.status, timeout ? 'failed' : 'passed');
     }
   } finally { await rm(directory, { recursive: true, force: true }); }
+});
+test('owner exports are validated through the actual loader before qualification', async () => {
+  const resourceModule = await import('./worker-work-cycle-capture.mjs');
+  const legacy = await loadCaptureCases('worker-routes', { exists: async () => ({ isFile: () => true }), load: async () => resourceModule });
+  assert.deepEqual(legacy.issues, [{ id: 'worker-routes', code: 'case-invalid' }]);
+  const prepared = await loadCaptureCases('novice-flow', { exists: async () => ({ isFile: () => true }),
+    load: async () => ({ id: 'novice-flow', contextVersion: 1, run: async () => ({ status: 'blocked', checks: [{ id: 'not-rendered', passed: false }] }) }) });
+  assert.equal(prepared.issues.length, 0); assert.equal(prepared.adapters[0].contextVersion, 1);
 });
 test('ordinary workflow is manual, source-pinned, globally serialized, read-only and validates cases before preflight', async () => {
   const workflow = await readFile(new URL('../.github/workflows/ordinary-game-capture.yml', import.meta.url), 'utf8');

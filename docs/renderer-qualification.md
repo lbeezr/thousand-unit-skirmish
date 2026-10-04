@@ -83,8 +83,11 @@ explicit registry and batch report. Feature owners own only these adapter files:
 | `worker-routes` | Resource owner | `scripts/renderer-worker-route-scenario.mjs` |
 | `building-catalog` | Building owner | `scripts/renderer-building-catalog-scenario.mjs` |
 
-Each file exports its exact registered `id` and `async run(context)`. Importing
-it must not start a server, browser or workload. The context provides `page`
+Each file exports its exact registered `id`, `contextVersion = 1`, and
+`async run(context)`. Importing it must not start a server, browser or workload.
+The versioned [context contract](../scripts/renderer-capture-context.mjs) is
+strictly checked with the existing Node checkJs configuration. The immutable
+context provides `version = 1`, `page`
 (initially `about:blank`), `openPage()` for another instrumented isolated page,
 loopback `origin`, immutable `source.revision`/`source.digest`, and
 `capture({page, mapId, checkpoint})`. Navigate with normal menu/room input. The
@@ -146,6 +149,15 @@ actually shares that behavior. The existing
 [`captureCheckpoint()`](../scripts/capture-checkpoint.mjs) consumes an already
 live CDP page and checks applied map/viewport identity; it does not launch a
 browser, verify a pack or validate a gameplay route by itself.
+
+Older standalone owner helpers with `run({browser, pack, evidenceDirectory})`
+or `runNoviceScenario({release, evidenceDirectory})` do not implement version1.
+Their owners may reuse pure observations/assertions in the registered adapters;
+the loader rejects old identities, missing exports and incompatible versions
+before qualification. The registered adapter receives no browser/pack ownership
+and uses `context.capture()` for passing screenshot receipts. Integrate and run
+CPU contract tests against each owner's actual prepared exports on the common
+candidate before dispatching; a stale PR description cannot establish compatibility.
 
 For the reported angled gather/drop-off route versus manual Move, the resource
 owner retains the fix and acceptance. Compare matched starting conditions and

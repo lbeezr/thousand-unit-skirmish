@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { captureCheckpoint } from './capture-checkpoint.mjs';
 import { CaptureCaseTimeoutError, qualifyPackedGame } from './renderer-qualification.mjs';
+import { CAPTURE_CONTEXT_VERSION, validateCaptureAdapter, validateCaptureContext } from './renderer-capture-context.mjs';
 
 export const CAPTURE_CASES = Object.freeze({
   'worker-animations': './renderer-worker-animation-scenario.mjs',
@@ -24,9 +25,8 @@ export async function loadCaptureCases(selection, { exists = lstat, load = url =
       try { assert.equal((await exists(url)).isFile(), true, 'adapter must be an owned regular file'); }
       catch (error) { if (error.code === 'ENOENT') { issues.push({ id, code: 'case-unavailable' }); continue; } throw error; }
       const adapter = await load(url);
-      assert.equal(adapter.id, id, 'adapter must export its registered identity');
-      assert.equal(typeof adapter.run, 'function', 'adapter must export run(context)');
-      adapters.push({ id, run: adapter.run });
+      validateCaptureAdapter(adapter, id);
+      adapters.push({ id, contextVersion: adapter.contextVersion, run: adapter.run });
     } catch (error) {
       // Missing owned cases are expected preparation gaps; broken imports or
       // invalid adapter exports are executable faults, never silently skipped.
@@ -56,7 +56,7 @@ export async function runFeatureBatch(packFile, outputDirectory, selection = 'al
   await mkdir(outputDirectory, { recursive: true });
   assert.ok(Number.isInteger(timeoutMs) && timeoutMs > 0 && timeoutMs <= 180000, 'capture case deadline must stay within three minutes');
   const loaded = await load(selection);
-  const batch = { schemaVersion: 1, scope: 'ordinary-feature-batch', requestedCases: selectedCases(selection),
+  const batch = { schemaVersion: 1, contextVersion: CAPTURE_CONTEXT_VERSION, scope: 'ordinary-feature-batch', requestedCases: selectedCases(selection),
     status: loaded.issues.some(issue => issue.code === 'case-invalid') ? 'failed' : 'blocked',
     issues: loaded.issues, cases: [] };
   // All requested cases must exist before any browser starts. Never substitute
@@ -107,8 +107,10 @@ export async function runFeatureBatch(packFile, outputDirectory, selection = 'al
           try {
             const runAndDrain = async () => {
               let outcome;
-              try { outcome = await adapter.run({ page: context.page, openPage, capture, origin: context.origin,
-                source: Object.freeze({ revision: context.pack.sourceRevision, digest: context.pack.digest }) }); }
+              const ownedContext = Object.freeze({ version: CAPTURE_CONTEXT_VERSION, page: context.page, openPage, capture, origin: context.origin,
+                source: Object.freeze({ revision: context.pack.sourceRevision, digest: context.pack.digest }) });
+              validateCaptureContext(ownedContext);
+              try { outcome = await adapter.run(ownedContext); }
               finally { accepting = false; }
               await Promise.allSettled([...operations]);
               assert.equal(operationFailed, false, 'failed capture operations cannot be hidden by a passing adapter');
@@ -133,7 +135,7 @@ export async function runFeatureBatch(packFile, outputDirectory, selection = 'al
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   if (process.argv[2] === '--check' && process.argv.length === 4) {
     const loaded = await loadCaptureCases(process.argv[3]);
-    console.log(JSON.stringify({ cases: loaded.adapters.map(adapter => adapter.id), issues: loaded.issues }));
+    console.log(JSON.stringify({ contextVersion: CAPTURE_CONTEXT_VERSION, cases: loaded.adapters.map(adapter => adapter.id), issues: loaded.issues }));
     process.exitCode = loaded.issues.length ? 1 : 0;
   } else if (process.argv.length === 5) {
     const result = await runFeatureBatch(process.argv[2], process.argv[3], process.argv[4]);
