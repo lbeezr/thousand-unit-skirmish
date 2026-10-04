@@ -28,10 +28,12 @@ Attack, movement and terminal defeat retain their existing priority and clocks.
 Food/wood selects the corresponding existing frames. Human shore fishing retains
 four SE keys and the reach contact; other headings and Boughward retain the
 declared fallback. A null receipt suppresses the contact even with retained shore
-identity. Stone has no dedicated sprite artwork in either default roster: idle
+identity. At the initial PR216 revision Stone had no dedicated sprite artwork in either default roster: idle
 headings and the already existing neutral procedural cue are the honest fallback.
 Static fantasy poses and missing Human motion/headings remain production gaps,
 listed in the [full inventory/audit](qa-unit-animation-audit-2026-10-03.md).
+The [later Stone binding](#dedicated-stone-default-binding) supersedes that Stone
+fallback only where dedicated exact-heading keys are now supplied.
 
 ## Checks and evidence boundaries
 
@@ -110,3 +112,47 @@ their source delivery, not the new consumer or any ordinary-game appearance.
 
 The precise remaining visual gap is these ordinary-game clips/screenshots at an
 identified producer+consumer revision in a browser with a working sandbox/GPU.
+
+## Dedicated Stone default binding
+
+The land-art owner supplied four210ms `human / gather-stone|south-east` keys in
+PR248, retained in default packv0.23.0 at main `c347a774`. That revision still
+selected idle for productive Stone; using the new state alone also borrowed SE
+for missing headings when approximate actions were enabled. Seven focused checks
+failed before the change. Animation `01a103d4` now selects `gather-stone` only
+from compatible positive receipts and resolves dedicated clips by exact heading,
+otherwise that heading's idle. Boughward has no Stone pixels and keeps idle.
+No manifests, pixels, simulation rules, default directories or HTTP paths change.
+The [art-owner scope agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/248#issuecomment-5976239058)
+leaves northwest production and registration with that owner; later admitted
+Stone headings bind automatically through the same exact lookup.
+
+The actual receipt/frame fixture checks four SE keys and840ms loop, prior-cargo
+independence, both Human seats selected/unselected, repeated-positive clocks,
+heading fallback/return without resets, immediate no-progress dirty clear,
+Stop/resume, resource changes and movement/attack/death precedence. The producer
+checks actual Stone cargo grants, no-progress null rows, resumed grants and Stop
+without modifying its server logic. The native scenario adds ordinary Stone
+commands on shipped Stone Defense Field for both seats, with untouched packet
+receipts through CPU client buffers. [Packet/frame evidence](qa-evidence/worker-stone-binding-2026-10-04/native-client.json)
+retains the existing640ms held-packet interpolation limitation; it does not prove
+continuous networking or game pixels. The focused57 checks and43 adjacent
+art/fishing/facing checks pass; type/import/atlas and packedHTTP/hash checks pass.
+
+The supported [browser attempt](qa-evidence/worker-stone-binding-2026-10-04/browser-preflight.json)
+still reports `sandbox-unavailable`, screenshots0. Containing staging deployment
+and native functional acceptance remain open with animation ownership and parent
+Railway/Mac support. The initial staging receipt above is historical; use a build
+identified as containing this Stone binding, not just PR216 or the art PR.
+
+Through the normal lobby, start Stone Defense Field with default Human Workers.
+Move a Worker onto clear ground northwest of a natural Stone node (lower worldX,
+higher worldZ), then Gather it: actual +X/−Z work bearing is SE, yaw3π/4. At
+ordinary and strategic zoom capture ready/windup/strike/recovery progression,
+ground root and pick contact, selected/unselected on either Human seat. Stop and
+resume; interrupt with movement/attack; switch to food/wood; capture Return/deposit
+and death. Assigned approach/no-progress must not mine. Approach from a different
+bearing and confirm the exact idle fallback where that Stone view is absent;
+Boughward keeps its exact idle. Record buildSHA/map/seat/unit/action/heading beside
+short clips. Rough functional keys pass; missing coverage, wrong facing, frozen
+playback or broken root/contact remain explicit. No GPU clips are claimed here.

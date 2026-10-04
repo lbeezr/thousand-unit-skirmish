@@ -109,6 +109,20 @@ test('gathering chooses resource-specific clips and repair falls back to constru
   assert.equal(spriteActionClip(clips, 'gather', 'north', 'wood', 'human'), idle);
 });
 
+test('Stone chooses only dedicated exact headings even with approximate action previews', async () => {
+  const { spriteActionClip } = await import('../src/unit-sprite-runtime.mjs');
+  for (const role of ['human', 'boughward-worker']) for (const approximate of [false, true]) {
+    const pack = JSON.parse(readFileSync(new URL(`../assets/units/${role === 'human'
+      ? 'cast-human-sprite-v3' : 'boughward-worker-sprite-v1'}/sprite-atlas-pack-v1.json`, import.meta.url)));
+    const clips = new Map(pack.assets[0].clips.map(c => [`${c.stateId}|${c.directionId}`, c]));
+    for (const direction of ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west']) {
+      const clip = spriteActionClip(clips, 'gather-stone', direction, 'stone', role, approximate);
+      assert.equal(clip, clips.get(`gather-stone|${direction}`) || clips.get(`idle|${direction}`));
+      assert.equal(clip.directionId, direction);
+    }
+  }
+});
+
 
 test('approximate roster reuses nearest authored action while exact lanes keep idle holds', async () => {
   const { spriteActionClip } = await import('../src/unit-sprite-runtime.mjs');
