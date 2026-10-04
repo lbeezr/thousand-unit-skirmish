@@ -188,7 +188,8 @@ described completion of those allocated leaves, not a completed repository
 architecture. The 4 October audit below replaces that stopping point with a
 broader staged queue. [Code extraction](code-extraction-backlog.md) still owns
 its narrow completed behavior contracts and retained runtime acceptance;
-[testing](testing.md) owns test/type strategy. Keep these existing records,
+[testing strategy](testing-strategy.md) owns test/type strategy and
+[testing](testing.md) owns the command catalog. Keep these existing records,
 not a second competing extraction/testing roadmap. The
 [planning inventory](README.md#planning-inventory--4-october-2026) identifies
 the other canonical queues and their evidence gaps.
@@ -287,6 +288,10 @@ scope; the domain-owner labels below are assignments to confirm, not claims
 that those workers are currently executing a migration. The user's all-merges
 approval remains applicable; review/coordination does not grant independent
 deployment, spend, security changes or release of an art-direction hold.
+The testing-strategy documentation merged as `70e7c813` during this audit;
+future rendered acceptance uses its supported cloud capability path. Mac
+execution and canceled deployments stay stopped. Local packed checks do not
+restart either operation.
 
 ### First eight migration PR candidates
 
@@ -317,7 +322,8 @@ art default, cache lifetime or error policy may change. Do not approve a move
 by removing an assertion, resetting an expected result or broadly renaming tests.
 A semantic change gets a separate owner-reviewed feature/fix PR.
 
-All runtime candidates retain `npm run architecture:check`,
+All runtime candidates first inspect `node scripts/ci.mjs --list` under the
+current strategy, then retain `npm run architecture:check`,
 `node --test scripts/check-runtime-imports.test.mjs scripts/check-client-imports.test.mjs`,
 `node scripts/client-asset-allowlist-scenario.mjs`, docs/whitespace and the
 relevant existing type projects/coverage contracts. Served candidates add exact
