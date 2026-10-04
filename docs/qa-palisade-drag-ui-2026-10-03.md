@@ -22,13 +22,18 @@ These checks do not establish native input, pixels or unassisted usability.
 
 The owner-run browser preflight reports `sandbox-unavailable` and
 `storage-unavailable` in this cloud environment; zero browser screenshots were
-produced. No browser sandbox bypass was attempted. Native Mac checks below
-remain a follow-up, not an integration hold.
+produced. No browser sandbox bypass was attempted. The current route is cloud
+renderer qualification and the normal-game checks below; the user stopped the
+Mac dependency. This pending rendered proof is not an integration hold.
 
-## Exact Mac QA recipe
+## Cloud qualification and normal-game recipe
 
-1. From the reviewed/main build, run `npm ci` and `npm start` on a Mac with Node
-   24+. Open the URL printed by the supervisor in Chrome. Start **Play vs AI**
+1. In the intended cloud runtime, first pass
+   `node scripts/renderer-capability.mjs --launch` with its normal browser sandbox,
+   then qualify the visual CI lane. Record source, pack and served identity
+   separately; the environment pilot is not ordinary wall acceptance.
+   From the reviewed/main build, run `npm ci` and `npm start` with Node 24+.
+   Open the URL printed by the supervisor in the cloud browser. Start **Play vs AI**
    for the first pass; repeat on Azure and Ember in a two-tab invite room after
    both ready and the host launches. Use the normal game URL without art or
    wall preview parameters. Record the commit, browser version, map and seat.

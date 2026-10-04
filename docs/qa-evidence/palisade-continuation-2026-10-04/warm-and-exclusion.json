@@ -1,0 +1,257 @@
+{
+  "sourceRevision": "f6e1b6826070a4089e6437c4a19d62b3aa04240a",
+  "serverEntrypoint": "server.mjs",
+  "serverIsCheckoutSource": true,
+  "serverSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+  "scenarioSha256": "a1d2dd7dfd170c92b29455dafc102e3ee335f7bb33d0ecc08be405d8c387cf11",
+  "observe": true,
+  "limits": [
+    "native authoritative server and real WebSocket commands/checkpoints; no browser/GPU or deployed acceptance",
+    "observe mode records unresolved continuation and must not be counted as a passing fix"
+  ],
+  "checkoutDirtyAtCapture": true,
+  "driverProvenance": "driver was amended but uncommitted at capture; recorded hash matches committed scenario; gameplay server bytes match sourceRevision",
+  "events": [
+    {
+      "mode": "complete-warm",
+      "observe": true,
+      "continued": false,
+      "cancelled": [],
+      "excludedIds": [],
+      "coldRecovered": false,
+      "wood": [
+        240,
+        240
+      ],
+      "expectedSites": [
+        {
+          "id": 1,
+          "type": "palisade-wall",
+          "team": 0
+        },
+        {
+          "id": 2,
+          "type": "palisade-wall",
+          "team": 0
+        },
+        {
+          "id": 3,
+          "type": "palisade-wall",
+          "team": 0
+        },
+        {
+          "id": 4,
+          "type": "palisade-wall",
+          "team": 1
+        },
+        {
+          "id": 5,
+          "type": "palisade-wall",
+          "team": 1
+        },
+        {
+          "id": 6,
+          "type": "palisade-wall",
+          "team": 1
+        },
+        {
+          "id": 7,
+          "type": "palisade-gate",
+          "team": 0
+        },
+        {
+          "id": 8,
+          "type": "palisade-gate",
+          "team": 1
+        }
+      ],
+      "resumedByOriginalBuilders": null,
+      "unselectedJobCount": 6,
+      "progressBefore": [
+        [
+          1,
+          0.1666666666666666
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.20666666666666653
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "progressAfter": [
+        [
+          1,
+          0.1666666666666666
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.20666666666666653
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "workerTargets": [
+        null,
+        null
+      ],
+      "recoveredSchema": 29,
+      "sameMatch": true
+    },
+    {
+      "mode": "unassigned-site",
+      "observe": true,
+      "continued": false,
+      "cancelled": [],
+      "excludedIds": [
+        7,
+        8
+      ],
+      "coldRecovered": true,
+      "wood": [
+        225,
+        225
+      ],
+      "expectedSites": [
+        {
+          "id": 1,
+          "type": "palisade-wall",
+          "team": 0
+        },
+        {
+          "id": 2,
+          "type": "palisade-wall",
+          "team": 0
+        },
+        {
+          "id": 3,
+          "type": "palisade-wall",
+          "team": 0
+        },
+        {
+          "id": 4,
+          "type": "palisade-wall",
+          "team": 1
+        },
+        {
+          "id": 5,
+          "type": "palisade-wall",
+          "team": 1
+        },
+        {
+          "id": 6,
+          "type": "palisade-wall",
+          "team": 1
+        },
+        {
+          "id": 7,
+          "type": "palisade-wall",
+          "team": 0
+        },
+        {
+          "id": 8,
+          "type": "palisade-wall",
+          "team": 1
+        },
+        {
+          "id": 9,
+          "type": "palisade-gate",
+          "team": 0
+        },
+        {
+          "id": 10,
+          "type": "palisade-gate",
+          "team": 1
+        }
+      ],
+      "resumedByOriginalBuilders": null,
+      "unselectedJobCount": 6,
+      "progressBefore": [
+        [
+          1,
+          0.36666666666666625
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.3999999999999995
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "progressAfter": [
+        [
+          1,
+          0.36666666666666625
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.3999999999999995
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "workerTargets": [
+        null,
+        null
+      ],
+      "recoveredSchema": 29,
+      "sameMatch": true
+    }
+  ]
+}

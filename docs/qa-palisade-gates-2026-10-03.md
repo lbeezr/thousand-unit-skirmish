@@ -2,7 +2,7 @@
 
 The foundation is specified in [the gate contract](palisade-gates.md). Automated
 evidence checks actual server commands and actual client button callbacks.
-Native Mac appearance and usability remain unverified. Provider browser capture
+Cloud rendered appearance and usability remain unverified. Provider browser capture
 has previously failed sandbox/storage preflight; this slice claims no rendered
 screenshots or bypass of that restriction.
 
@@ -70,8 +70,11 @@ Normal browser verification remains blocked. The existing preflight initially
 reported sandbox and storage failures; explicit writable temporary XDG config
 and cache paths removed the storage failure, leaving `sandbox-unavailable`.
 No screenshots were produced and no sandbox flags or permissions were changed.
-The next acceptance step needs a provider-provisioned working Chrome sandbox
-and WebGL2 runtime, or the parent-owned Mac QA session above.
+The current acceptance route uses cloud testing and CI qualification; the user
+stopped the Mac dependency. The next step needs a provider-provisioned working
+Chrome sandbox and WebGL2 runtime: pass the normal-sandbox renderer capability
+probe and visual CI lane, then capture the normal two-seat gate recipe above.
+Renderer readback and the environment pilot remain separate from gate acceptance.
 
 The retained walls/gates owner continues normal placement, connection,
 selection and gate-pathing acceptance. Rank further small fixes only from
