@@ -32,8 +32,13 @@ Planning combines the static shore mask and both seats' current live hull cells.
 It expands at most 4,096 cells per command. Invalid endpoints, disconnected water
 and budget exhaustion reject before replacing an order. Two independent routes
 can converge; the tick checks hull occupancy before moving, pauses safely while
-retaining the route, and resumes when the other boat leaves. No automatic dynamic
-reroute is promised. Adjacent arrivals can receive new routes away from each other.
+retaining the route, and resumes when the other boat leaves. Ordinary Moves that
+remain hull-blocked retry their accepted goal after one second, reserving other
+remaining transit to avoid symmetric head-on replans. Up to 16 retries share a
+16,384-expansion movement-tick budget. No safe bypass means wait with intent
+intact; fishing keeps its own source/berth retry rules. [Confluence counterflow
+checks](qa-skiff-counterflow-2026-10-04.md) establish this bounded behavior,
+not general traffic capacity. Adjacent arrivals can receive routes away from each other.
 
 Select up to 16 Skiffs for Move, using distinct nearby water destinations.
 Shift targets now admit [per-boat water waypoints](skiff-water-waypoints.md),
