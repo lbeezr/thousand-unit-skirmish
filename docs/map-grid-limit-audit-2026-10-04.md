@@ -54,6 +54,12 @@ occupy 438,681,600 bytes (about 418 MiB), before Maps/objects/rays and the rest 
 the room. Terrain occlusion reduces actual coverage; exploring more land grows
 the cache. Widening the type alone does not bound memory adequately.
 
+The [separate visibility design](map-xl-visibility-design.md) proposes 32-bit
+indices, an 8 MiB live payload / 8,192-entry cache with deterministic eviction,
+explicit geometry invalidation and both-seat privacy/recovery tests. It changes
+no runtime code or limits; temporary allocations and total room memory still
+need measurement.
+
 Checkpoint paths are separate from ordinary network snapshots. A conservative
 single-simple-path bound is N−1 indices/unit. At 320, using the maximum 6-digit
 index width gives 716,794 JSON bytes/path and 1,433,588,000 bytes for 2,000 units;
