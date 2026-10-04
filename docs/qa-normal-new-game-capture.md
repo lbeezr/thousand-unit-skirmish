@@ -9,21 +9,25 @@ entry interaction; human novice comprehension remains separate.
 
 ## Adapter and shared runner contract
 
-HUD owns `scripts/renderer-qualification-novice.mjs` and its focused tests. The
+HUD owns registered `scripts/renderer-novice-flow-scenario.mjs`, the native
+`scripts/renderer-qualification-novice.mjs` implementation and focused tests. The
 cloud testing owner retains the existing renderer qualification core, packed
 server/browser lifetime and hosted workflow/dispatch. The adapter creates no
 browser, changes no game command/state and performs no deployment.
 
 The existing runner supplies a fresh `about:blank` page after validating clean
 source, release manifest and digest, locked runtime dependencies and served
-bytes. Call the adapter once inside that browser/server lifetime:
+bytes. Call once inside that browser/server lifetime through `novice-flow`:
 
 ```js
-import { runNoviceScenario } from './renderer-qualification-novice.mjs';
-const result = await runNoviceScenario({ origin, page, release, evidenceDirectory });
-// release = { sourceRevision: fullCleanSourceSHA, digest: cleanPackDigest }
+import { id, run } from './renderer-novice-flow-scenario.mjs';
+const result = await run({ page, origin, source, capture, evidenceDirectory });
+// id = 'novice-flow'
+// source = immutable { revision: fullCleanSourceSHA, digest: cleanPackDigest }
+// capture = the shared source-bound applied-map checkpoint hook
+// evidenceDirectory = the existing runner's owned per-case artifact directory
 // page = the existing CDP page with .cdp.call/.evaluate/.on, .wait and .errors
-// Treat result.status === 'failed' as a failed run; always retain its evidence.
+// Treat result.status === 'failed' as a failed run; retain its evidence/checks.
 // The shared runner still owns cleanup and records any cleanup failure.
 ```
 
@@ -33,6 +37,8 @@ handler create the AI room. It observes Worker ID/generation/team/tick/position,
 uses the real camera and terrain to click the game's pick anchor, and checks
 one native Move plus visible `MOVE ORDER · 1 UNITS` feedback. It preserves two
 advancing rendered page/canvas captures with recent authoritative positions.
+The registered wrapper also records the shared `selected-worker` checkpoint
+before Move, so extra screenshot work cannot delay the short live route.
 
 Retained evidence: `novice.json`, `menu.png`, `normal-game.png`,
 `selected-worker.png`, `move-feedback.png`, `movement-1.png`, `movement-2.png`,
@@ -55,7 +61,8 @@ the supported hosted runner was qualified in
 [run 37215311854](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37215311854).
 That Open Field pilot's diagnostic Move remains a distinct evidence scope.
 
-The adapter's normal-entry hosted invocation and PNG inspection are **pending**.
+The cloud testing owner's [registered runner PR331](https://github.com/lbeezr/thousand-unit-skirmish/pull/331)
+and the adapter's normal-entry hosted invocation/PNG inspection are **pending**.
 Inspect every retained PNG at the exact reviewed source/release before claiming
 this interaction passed. Record admitted seeds/map/mode, served identity and
 Worker/command/feedback/displacement evidence. A supplied player-pathing

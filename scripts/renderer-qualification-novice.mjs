@@ -201,7 +201,7 @@ export function validateNoviceFrames(start, frames) {
  * Install beforeScript before navigation; return failed reports as a nonzero run.
  * The caller owns browser/server cleanup and must retain its cleanup failures.
  */
-export async function runNoviceScenario({ origin, page, release, evidenceDirectory, fetchImpl = fetch }) {
+export async function runNoviceScenario({ origin, page, release, evidenceDirectory, fetchImpl = fetch, onSelected }) {
   await mkdir(evidenceDirectory, { recursive: true });
   const report = { schemaVersion: 1, scope: 'automated-normal-new-game-worker-move', status: 'failed',
     release: { sourceRevision: isSourceRevision(release?.sourceRevision) ? release.sourceRevision : null,
@@ -277,6 +277,9 @@ export async function runNoviceScenario({ origin, page, release, evidenceDirecto
     const selection = await read(); assert.equal(selection.contextVisible, true, 'selected Worker context must be visible');
     assert.equal(selection.sent.length, 0, 'selection must not emit a Move command');
     report.steps.push({ step: 'selection', selected: selection.selected, context: selection.context, worker: selected.worker, ...await capture('selected-worker.png') });
+    // The registered runner also retains its source/applied-map checkpoint here.
+    // Capture before Move, so screenshot work cannot delay the short live route.
+    if (onSelected) await onSelected();
     const start = { number: selection.frameNumber, time: selection.time, tick: selection.latest.tick,
       observedAt: selection.stateAt, worker: selection.latest.workers.find(row => row.id === selected.worker.id) };
     report.start = start;

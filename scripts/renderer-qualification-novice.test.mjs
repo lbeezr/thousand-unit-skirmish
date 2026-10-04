@@ -7,6 +7,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { clickNovicePoint, noviceBeforeScript, readNoviceUi, reduceNoviceCommand,
   reduceNoviceMessage, runNoviceScenario, validateNoviceFrames, validateNoviceOrder } from './renderer-qualification-novice.mjs';
+import { id, run } from './renderer-novice-flow-scenario.mjs';
 
 const revision = 'a'.repeat(40), digest = `sha256:${'b'.repeat(64)}`;
 const worker = { id: 4, team: 0, x: -57.5, z: .5, hp: 35, generation: 2, task: 'moving' };
@@ -249,4 +250,27 @@ test('actual positive orchestration rejects final-read network/probe faults and 
       } else assert.deepEqual(report.issues, []);
     } finally { await rm(directory, { recursive: true, force: true }); }
   }
+});
+
+test('registered case binds source and real selection checkpoint, rejecting missing evidence or hidden capture failure', async () => {
+  assert.equal(id, 'novice-flow');
+  const page = {}, captures = [], context = { page, origin: 'http://127.0.0.1:4321',
+    source: Object.freeze({ revision, digest }), evidenceDirectory: '/owned/novice-flow',
+    capture: async options => captures.push(options) };
+  let executions = 0;
+  const execute = async options => {
+    executions++; assert.equal(options.page, page); assert.equal(options.evidenceDirectory, context.evidenceDirectory);
+    assert.deepEqual(options.release, { sourceRevision: revision, digest });
+    await options.onSelected(); return { status: 'passed', frames: [{}, {}] };
+  };
+  const result = await run(context, { execute });
+  assert.equal(result.status, 'passed'); assert.ok(result.checks.every(check => check.passed));
+  assert.deepEqual(captures, [{ page, mapId: state.mapId, checkpoint: 'selected-worker' }]);
+  for (const change of [{ evidenceDirectory: undefined }, { evidenceDirectory: 'relative' }, { capture: null }]) {
+    await assert.rejects(run({ ...context, ...change }, { execute }));
+  }
+  assert.equal(executions, 1, 'invalid context must stop before adapter execution');
+  const noCapture = await run(context, { execute: async () => ({ status: 'passed', frames: [{}, {}] }) });
+  assert.equal(noCapture.status, 'failed'); assert.equal(noCapture.checks[1].passed, false);
+  await assert.rejects(run({ ...context, capture: async () => { throw Error('private-capture-token'); } }, { execute }));
 });
