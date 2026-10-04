@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
 import { practiceEntryCatalog } from './src/practice-entry-catalog.mjs';
 import { NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from './src/match-modes.mjs';
+import { loadBuildIdentity } from './src/server/build-identity.mjs';
 import { ORDINARY_MAP_MIN_SIDE, MAP_SIZE_TIERS } from './src/map-size-policy.mjs';
 import {
   buildRoomWorkerEnvironment,
@@ -21,6 +22,7 @@ import {
 } from './src/room-launch-options.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
+const BUILD_IDENTITY = await loadBuildIdentity(ROOT);
 const WORKER_PATH = path.join(ROOT, 'server.mjs');
 const HOST = process.env.RTS_HOST || '127.0.0.1';
 const PORT = Number(process.env.PORT || 4173);
@@ -561,6 +563,7 @@ async function handleRequest(request, response) {
     sendJson(response, ok ? 200 : 503, {
       ...(matchHealth || {}),
       ok,
+      buildIdentity: BUILD_IDENTITY,
       roomCount: rooms.size,
       roomLimit: MAX_ROOMS,
       liveRoomProcesses: [...rooms.values()].filter((room) => room.worker?.child.exitCode === null).length,

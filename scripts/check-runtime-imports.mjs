@@ -23,6 +23,7 @@ export const BROWSER_PACKAGE_IMPORTS = {
 export const SERVER_ENTRYPOINTS = ['room-supervisor.mjs', 'server.mjs'];
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
 export const NODE_ONLY_MODULES = [
+  'src/server/build-identity.mjs', // Reads only the private generated release declaration.
   'src/room-launch-options.mjs', // Node crypto-backed launch seeds.
   'src/pve-model-proposal.mjs', // Compatibility entry for the offline Node adapter.
   'src/server/pve-model-proposal.mjs', // Offline Node model-request implementation.
@@ -105,7 +106,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   server: [
     'networking/websocket-deflate-offer', 'networking/websocket-frame',
     'pve-model-proposal', 'room-launch-options', 'room-lobby-chat', 'room-pregame',
-    'server/client-asset-paths', 'server/pve-model-proposal',
+    'server/build-identity', 'server/client-asset-paths', 'server/pve-model-proposal',
   ],
   // Legacy map-validation entry also exports playback policy. Preserve existing
   // host consumers while new lower-domain consumers use the world validator.
