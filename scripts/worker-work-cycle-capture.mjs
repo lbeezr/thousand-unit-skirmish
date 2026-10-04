@@ -19,9 +19,9 @@ export const id = 'worker-work-cycle';
 
 // The received seat snapshot is the only economy source. Never retain its raw
 // envelope, player/session data, socket URL, notices or an opponent's rows/bank.
-export function projectWorkCycleState(message, team, allowedNodeIds) {
+export function projectWorkCycleState(message, team, allowedNodeIds, expectedMapId = 'open-field') {
   const state = message?.state ?? message;
-  if (![0, 1].includes(team) || state?.mapId !== 'open-field' || !Number.isInteger(state.tick)
+  if (![0, 1].includes(team) || state?.mapId !== expectedMapId || !Number.isInteger(state.tick)
     || !Array.isArray(state.units) || !Array.isArray(state.resourceNodes)) return null;
   const finite = value => Number.isFinite(value) ? value : null;
   return { tick: state.tick, team, food: finite(state.food?.[team]),
@@ -298,20 +298,20 @@ export async function run({ browser, origin, evidenceDirectory, pack }) {
     };
     stage = 'manual-reference';
     await command({ type: 'move', ids: [worker.id], x: node.x, z: node.z });
-    await page.wait(`(()=>{const w=${row};return w?.task==='moving'&&Math.hypot(w.x-${worker.x},w.z-${worker.z})>=0.5})()`, 'manual reference displacement');
+    await page.wait(`(()=>{const w=${row};return w?.task==='moving'&&Math.hypot(w.x-(${worker.x}),w.z-(${worker.z}))>=0.5})()`, 'manual reference displacement');
     await capture('manual-approach');
     await command({ type: 'move', ids: [worker.id], x: worker.x, z: worker.z });
-    await page.wait(`(()=>{const w=${row};return w?.task==='idle'&&Math.hypot(w.x-${worker.x},w.z-${worker.z})<0.7})()`, 'manual return to the same starting area');
+    await page.wait(`(()=>{const w=${row};return w?.task==='idle'&&Math.hypot(w.x-(${worker.x}),w.z-(${worker.z}))<0.7})()`, 'manual return to the same starting area');
     report.gatherStart = await page.cdp.evaluate(row);
     stage = 'work-cycle';
     await command({ type: 'gather', ids: [worker.id], nodeId: node.id });
-    await page.wait(`(()=>{const w=${row};return w?.task==='gathering'&&w.cargo===0&&Math.hypot(w.x-${report.gatherStart.x},w.z-${report.gatherStart.z})>=0.5&&Math.hypot(w.x-${node.x},w.z-${node.z})>2})()`, 'real gather approach');
+    await page.wait(`(()=>{const w=${row};return w?.task==='gathering'&&w.cargo===0&&Math.hypot(w.x-(${report.gatherStart.x}),w.z-(${report.gatherStart.z}))>=0.5&&Math.hypot(w.x-(${node.x}),w.z-(${node.z}))>2})()`, 'real gather approach');
     await capture('gather-approach');
     await page.wait(`(()=>{const w=${row};return w?.action==='gather-food'&&w.cargo>=0.5&&w.cargo<10})()`, 'productive finite Food harvest');
     await capture('harvest');
-    await page.wait(`(()=>{const w=${row};return w?.task==='returning'&&w.cargo===10&&Math.hypot(w.x-${node.x},w.z-${node.z})>1.9})()`, 'automatic full-load return', 30000);
+    await page.wait(`(()=>{const w=${row};return w?.task==='returning'&&w.cargo===10&&Math.hypot(w.x-(${node.x}),w.z-(${node.z}))>1.9})()`, 'automatic full-load return', 30000);
     await capture('automatic-return');
-    await page.wait(`(()=>{const s=window.__workerWorkCycle.latest,w=${row};return s.food===${report.initial.food + 10}&&w?.task==='gathering'&&w.cargo===0&&Math.hypot(w.x-${node.x},w.z-${node.z})>2})()`, 'banked Food and automatic work resumption');
+    await page.wait(`(()=>{const s=window.__workerWorkCycle.latest,w=${row};return s.food===${report.initial.food + 10}&&w?.task==='gathering'&&w.cargo===0&&Math.hypot(w.x-(${node.x}),w.z-(${node.z}))>2})()`, 'banked Food and automatic work resumption');
     await capture('deposit-resume');
     await page.wait(`(()=>{const w=${row};return w?.action==='gather-food'&&w.cargo>=0.5&&w.cargo<10})()`, 'productive resumed harvest');
     await capture('resume-harvest');

@@ -165,3 +165,30 @@ test('reusable adapter rejects remote/private origins without acquiring or dispo
     }
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
+
+test('standalone adapter actual distance waits execute at negative and positive world coordinates', () => {
+  const waits = [...run.toString().matchAll(/page\.wait\((`[^`]*`), '([^']+)'/g)]
+    .filter(match => match[1].includes('Math.hypot'));
+  assert.equal(waits.length, 5, 'all actual distance-based phase predicates must be exercised');
+  for (const sign of [-1, 1]) {
+    const start = { x: sign * 8, z: sign * 9 }, node = { x: sign * 2, z: sign * 3 };
+    const cases = new Map([
+      ['manual reference displacement', { ...start, x: start.x + 1, task: 'moving', cargo: 0 }],
+      ['manual return to the same starting area', { ...start, task: 'idle', cargo: 0 }],
+      ['real gather approach', { ...start, x: start.x + 1, task: 'gathering', cargo: 0 }],
+      ['automatic full-load return', { x: node.x + 4, z: node.z, task: 'returning', cargo: 10 }],
+      ['banked Food and automatic work resumption', { x: node.x + 4, z: node.z, task: 'gathering', cargo: 0 }],
+    ]);
+    for (const [_, template, label] of waits) {
+      const expression = vm.runInNewContext(template, {
+        row: 'window.__workerWorkCycle.latest.workers[0]', worker: start, node,
+        report: { gatherStart: start, initial: { food: 150 } },
+      });
+      const actual = cases.get(label); assert.ok(actual, 'actual phase must have a meaningful coordinate fixture');
+      const window = { __workerWorkCycle: { latest: { food: 160, workers: [actual] } } };
+      assert.equal(vm.runInNewContext(expression, { window }), true, `${label}: valid ${sign < 0 ? 'negative' : 'positive'} coordinates`);
+      window.__workerWorkCycle.latest.workers = [{ ...actual, task: 'invalid' }];
+      assert.equal(vm.runInNewContext(expression, { window }), false, `${label}: wrong task cannot pass`);
+    }
+  }
+});
