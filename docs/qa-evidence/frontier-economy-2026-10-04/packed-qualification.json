@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "scope": "ordinary-feature-frontier-economy",
+  "status": "failed",
+  "sandbox": "enabled",
+  "uid": 501,
+  "source": {
+    "revision": "183218e910c4724c8e17f94bc6e31a9111a014c4",
+    "dirty": false
+  },
+  "release": {
+    "sourceRevision": "183218e910c4724c8e17f94bc6e31a9111a014c4",
+    "digest": "sha256:9890df26a4436a12a0395f3c54b4f6d793c4dcc11d130881763ccc904fe90be2",
+    "files": 1362
+  },
+  "runtimeDependencies": [
+    {
+      "name": "three",
+      "version": "0.180.0",
+      "lockSha256": "bb3e172250ea0d91981e270371e9ac293f7b4f378370ae05e86b74ab81fc3499",
+      "files": [
+        {
+          "path": "vendor/three.module.js",
+          "sha256": "c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a"
+        },
+        {
+          "path": "vendor/three.core.js",
+          "sha256": "eb077d2417f61d3e6d9264c317cabc4ea35769ed6b0ab533067292a550784c20"
+        }
+      ]
+    }
+  ],
+  "frames": [],
+  "assets": [
+    {
+      "path": "index.html",
+      "sha256": "67800eba00e3f948db9d365b4e92e29d2de24e09373047b3286b8953d55453e5"
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "e64f2fccef03caa9c01892b0d8dbf0c97bef9b32c2341d59ce29c4c31e9dc22c"
+    }
+  ],
+  "browserEvents": [
+    {
+      "kind": "http-error",
+      "status": 404,
+      "path": "/favicon.ico",
+      "expected": true
+    },
+    {
+      "kind": "request-failed",
+      "path": null,
+      "canceled": true
+    },
+    {
+      "kind": "request-failed",
+      "path": null,
+      "canceled": true
+    },
+    {
+      "kind": "http-error",
+      "status": 404,
+      "path": "/favicon.ico",
+      "expected": true
+    }
+  ],
+  "droppedBrowserEvents": 0,
+  "unexpectedBrowserEvent": true,
+  "backgroundPolicy": "unthrottled",
+  "issues": [
+    {
+      "stage": "browser",
+      "code": "browser-errors"
+    },
+    {
+      "stage": "browser",
+      "code": "browser-errors"
+    },
+    {
+      "stage": "browser",
+      "code": "browser-errors"
+    }
+  ],
+  "cleanup": {
+    "maxAttempts": 3,
+    "attempts": 1,
+    "errors": []
+  },
+  "server": {
+    "entry": "room-supervisor.mjs",
+    "map": null,
+    "logBytes": 209,
+    "listening": true
+  },
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/154.0.8037.93",
+    "revision": "@f89f3a4363808e117c592adedcf9947882ac3b79",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+    "jsVersion": "15.4.80.19"
+  },
+  "boot": {
+    "entry": "game",
+    "ready": true,
+    "canvas": true,
+    "assets": {
+      "state": "ready",
+      "ready": true,
+      "oakDepletionAtlas": true,
+      "loaded": 13
+    }
+  },
+  "pageBoots": [
+    {
+      "entry": null,
+      "ready": false,
+      "canvas": false,
+      "assets": null
+    },
+    {
+      "entry": "game",
+      "ready": true,
+      "canvas": true,
+      "assets": {
+        "state": "ready",
+        "ready": true,
+        "oakDepletionAtlas": true,
+        "loaded": 13
+      }
+    },
+    {
+      "entry": "game",
+      "ready": true,
+      "canvas": true,
+      "assets": {
+        "state": "ready",
+        "ready": true,
+        "oakDepletionAtlas": true,
+        "loaded": 13
+      }
+    }
+  ]
+}
