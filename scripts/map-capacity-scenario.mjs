@@ -33,7 +33,7 @@ const report = { schemaVersion: 1, sourceCommit: execFileSync('git', ['rev-parse
   workload: { loads, wavesPerLoad: 3, secondsPerWave: seconds, fog: true, opening: '4 Workers per seat plus Infantry; existing selectArmySize diagnostics above 24',
     memoryStopBytes: rssStop, capacityClaim: false, fullArmyArrival: false, paidEconomy: false, browser: false, hosted: false,
     clockMethod: 'checkpoint game seconds divided by checkpoint capture savedAt wall timestamps within each wave',
-    noticeMethod: 'clientOrderToken final notice receipt; separate first observed movement receipt, neither is exact server application' }, loads: [] };
+    noticeMethod: 'clientOrderToken final notice receipt; first observed movement from an authoritative stopped checkpoint baseline, neither is exact server application' }, loads: [] };
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const round = value => Number(value.toFixed(3));
 const own = (state, team) => state.units.filter(u => u[1] === team && u[4] > 0);
@@ -119,10 +119,13 @@ async function runLoad(count) {
     assert.equal(response.status, 200); return response.json(); };
   const capture = async () => {
     const data = await health(), rss = await processRss(child.pid);
-    let clock = null;
+    let clock = null, pathStorage = null;
     try { const saved = JSON.parse(await readFile(checkpoint, 'utf8')); clock = { tick: saved.state.tickNumber,
-      gameSeconds: saved.state.matchElapsedSeconds, savedAt: saved.savedAt, sequence: saved.sequence, armySize: saved.state.currentArmySize }; } catch {}
-    const sample = { observedAt: new Date().toISOString(), serverRssBytes: rss, collectorRssBytes: process.memoryUsage().rss, health: data, clock };
+      gameSeconds: saved.state.matchElapsedSeconds, savedAt: saved.savedAt, sequence: saved.sequence, armySize: saved.state.currentArmySize };
+      const paths = saved.state.units.flatMap(u => [u.path, ...(u.attackMoveResumePath ? [u.attackMoveResumePath] : [])]);
+      pathStorage = { totalIndices: paths.reduce((sum, p) => sum + p.length, 0), maxPathIndices: Math.max(0, ...paths.map(p => p.length)) };
+    } catch {}
+    const sample = { observedAt: new Date().toISOString(), serverRssBytes: rss, collectorRssBytes: process.memoryUsage().rss, health: data, clock, pathStorage };
     record.samples.push(sample);
     if (rss !== null) assert.ok(Number.isFinite(rss) && rss <= rssStop, `Server RSS ${rss} exceeds probe stop ${rssStop}`);
     return sample;
@@ -143,7 +146,20 @@ async function runLoad(count) {
     const targets = map.width === 192 ? [['north-pass', -15.5, 24], ['high-flank', -55.5, 12], ['causeway', 56.5, 24]]
       : [['north-pass', -15.5, 24], ['high-flank', -40.5, 12], ['south-pass', 16.5, 24]];
     for (const [name, z, offset] of targets) {
-      const before = await capture(), starts = clients.map(c => structuredClone(c.current));
+      // Stop prior waves and wait for a captured stopped baseline. Otherwise an
+      // old route's movement could be misattributed to the new order's latency.
+      await Promise.all(clients.map(c => order(c, { type: 'stop', ids: own(c.current, c.team).map(u => u[0]) }, 'STOP ORDER')));
+      const stoppedAt = Date.now(), stopDeadline = performance.now() + 5000;
+      let stopped;
+      do {
+        try { const saved = JSON.parse(await readFile(checkpoint, 'utf8'));
+          if (saved.savedAt >= stoppedAt && saved.state.units.every(u => u.path.length === 0)) stopped = saved; } catch {}
+        if (!stopped) await sleep(100);
+      } while (!stopped && performance.now() < stopDeadline);
+      assert.ok(stopped, 'Each wave needs an authoritative post-Stop baseline');
+      const before = await capture();
+      const starts = clients.map(() => ({ tick: stopped.state.tickNumber,
+        units: stopped.state.units.map(u => [u.id, u.team, u.x, u.z, u.hp, u.kind]) }));
       const priorOrder = Math.max(0, ...before.health.movePlanning.map(p => p.orderId)), began = performance.now(), phaseWall = Date.now();
       const movement = clients.map((c, i) => {
         const p = c.wait(row => row.type === 'state' && row.tick > starts[i].tick && moved(starts[i], row, c.team) > 0)
@@ -165,23 +181,27 @@ async function runLoad(count) {
         gameSeconds: lastClock.gameSeconds - firstClock.gameSeconds, wallSeconds: (lastClock.savedAt - firstClock.savedAt) / 1000,
         factor: (lastClock.gameSeconds - firstClock.gameSeconds) / ((lastClock.savedAt - firstClock.savedAt) / 1000) } : null;
       const wave = { targetRegion: name, targetZ: z, finalNoticeReceiptMs: noticeMs, firstObservedMovementReceiptMs: await Promise.all(movement),
+        stoppedBaseline: { tick: stopped.state.tickNumber, savedAt: stopped.savedAt, unitsWithEmptyPaths: stopped.state.units.length },
         exactServerApplicationMs: null, movedBySeat: counts, fullArmyArrival: false, planning: plans, clock,
         tickTiming: after.health.tickTiming, separationWork: after.health.separationWork, checkpoint: after.health.checkpoint,
         transport: { compressedPeers: after.health.transport.compressionPeers,
           wallSeconds: round((performance.now() - began) / 1000),
           jsonPayloadDelta: after.health.transport.jsonPayloadBytesSent - before.health.transport.jsonPayloadBytesSent,
           jsonWireDelta: after.health.transport.jsonWireBytesSent - before.health.transport.jsonWireBytesSent,
+          compressedPayloadDelta: after.health.transport.compressedPayloadBytesSent - before.health.transport.compressedPayloadBytesSent,
+          compressedWireDelta: after.health.transport.compressedWireBytesSent - before.health.transport.compressedWireBytesSent,
           queuedBytes: after.health.transport.queuedBytes, peakQueuedBytes: after.health.transport.peakQueuedBytes,
           coalescedStateSnapshots: after.health.transport.coalescedStateSnapshots },
         skippedSlotDelta: after.health.tickTiming.scheduler.skippedTickSlotsTotal - before.health.tickTiming.scheduler.skippedTickSlotsTotal };
       record.waves.push(wave);
       assert.equal(plans.length, 2); assert.equal(after.health.tickTiming.sampleCount, 300);
-      assert.ok(clients[0].current.tick - starts[0].tick >= 300, 'Each wave must include300 game ticks after submission');
+      assert.ok(clients[0].current.tick - starts[0].tick >= 300, 'Each wave must include 300 game ticks after submission');
       assert.equal(after.health.connected, 2); assert.equal(after.health.checkpoint.failures, 0);
       for (const p of plans) { assert.equal(p.unitCount, count / 2); assert.equal(p.routeFailures, 0);
         assert.equal(p.nonEmptyPaths + p.alreadyInDestinationCell, p.unitCount); }
-      assert.ok(counts.every(n => n >= count / 2 * .95), 'At least95% of both seats must move in each wave window');
+      assert.ok(counts.every(n => n >= count / 2 * .95), 'At least 95% of both seats must move in each wave window');
       assert.ok(after.health.tickTiming.p95Ms <= 1000 / 30 && after.health.tickTiming.maxMs <= 100);
+      assert.ok(after.health.tickTiming.startLagP95Ms <= 1000 / 30 && after.health.tickTiming.startLagMaxMs <= 100);
       console.log(JSON.stringify({ armySize: count, targetRegion: name, movedBySeat: counts, tickP95Ms: after.health.tickTiming.p95Ms, skippedSlotDelta: wave.skippedSlotDelta }));
     }
     const tokens = clients.map(c => c.welcome.player.sessionToken), matchId = clients[0].current.matchId;
