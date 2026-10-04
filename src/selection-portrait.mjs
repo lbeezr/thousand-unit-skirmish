@@ -55,7 +55,18 @@ export const SPEARMAN_PORTRAITS = Object.freeze({
   }),
 });
 
-const UNIT_PORTRAITS = Object.freeze({ ...WORKER_PORTRAITS, ...INFANTRY_PORTRAITS, ...ARCHER_PORTRAITS, ...SPEARMAN_PORTRAITS });
+export const SCOUT_PORTRAITS = Object.freeze({
+  'scout': Object.freeze({
+    entryId: 'unit.scout', appearanceFamily: 'Human',
+    asset: '/assets/ui/portraits/human-scout-source.png', sourceWidth: 429, sourceHeight: 491, contain: true,
+  }),
+  'boughward-scout': Object.freeze({
+    entryId: 'unit.scout', appearanceFamily: 'Boughward',
+    asset: '/assets/ui/portraits/boughward-scout-source.png', sourceWidth: 614, sourceHeight: 520, contain: true,
+  }),
+});
+
+const UNIT_PORTRAITS = Object.freeze({ ...WORKER_PORTRAITS, ...INFANTRY_PORTRAITS, ...ARCHER_PORTRAITS, ...SCOUT_PORTRAITS, ...SPEARMAN_PORTRAITS });
 
 function unitPortrait(kind, appearanceRole) {
   const portrait = UNIT_PORTRAITS[appearanceRole];

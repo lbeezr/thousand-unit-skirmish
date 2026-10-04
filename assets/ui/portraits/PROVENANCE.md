@@ -149,3 +149,16 @@ originals without generation or image editing. Source approval and CPU/DOM/HTTP
 checks do not establish accepted motion, native compact appearance or human
 recognition; the [ordinary paid capture recipe](../../../docs/hud-art-integration.md#ordinary-game-capture-recipe-and-remaining-evidence)
 retains that unfinished verification.
+
+## Scout reuse — 4 October 2026
+
+The existing cream/sage rider, short sword and chestnut horse; Boughward goblin, curved sword and grey wolf remain intact in the unchanged 52px Selection and decorative 20px product slots. Whole-image containment preserves rider and mount instead of inventing a bust portrait. Both PNGs are byte-identical copies of the inspected established idle originals.
+
+| Runtime source | Inspected original | Dimensions | SHA-256 |
+| --- | --- | --- | --- |
+| [Human Scout](human-scout-source.png) | [Isolated idle](../../../docs/art-direction/human-mounted-v1/extracted/scout/00.png) | 429 × 491 | `048ee6564eac7798e11ecd7e1d59cdbe6b0ad01a9bf39b30d41ccef1428d10c5` |
+| [Boughward Scout](boughward-scout-source.png) | [Isolated idle](../../../docs/art-direction/boughward-roster-v1/extracted/scout/00.png) | 614 × 520 | `024fded2661ed621fc045f3882e5b646ae15ccf4af2842c4d0043c0b95e0b079` |
+
+[Human direction](../../../docs/art-direction/human-mounted-v1/README.md), [Boughward direction](../../../docs/art-direction/boughward-roster-v1/README.md) and both documented [Human](../../../docs/art-direction/human-mounted-v1/extracted/scout/extraction.json)/[Boughward](../../../docs/art-direction/boughward-roster-v1/extracted/scout/extraction.json) extractions retain selected initial appearances and current default associations. Runtime manifests remain `runtime-candidate`: this reuse does not accept motion, heading fidelity, anatomy/root calibration or native HUD recognition.
+
+Original and private actual-size color/grayscale comparisons were independently inspected. At 52px, mount family and equipment survive. At 20px, similar Human mounted silhouettes lose detail; complete written role names, both costs and availability reasons remain primary. No generation, source-pixel edit, private publication or held/rejected art is introduced. Native compact appearance/keyboard and containing hosted delivery remain separately open in the [capture recipe](../../../docs/hud-art-integration.md#ordinary-game-capture-recipe-and-remaining-evidence).
