@@ -4,7 +4,16 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
-import { unfinishedRefund, buildingRepairStep } from '../src/base-lifecycle.mjs';
+import * as baseLifecycle from '../src/rules/base-lifecycle.mjs';
+import * as legacyBaseLifecycle from '../src/base-lifecycle.mjs';
+const { unfinishedRefund, buildingRepairStep } = baseLifecycle;
+
+test('canonical base lifecycle retains exactly the two legacy export bindings', () => {
+  const names = ['buildingRepairStep', 'unfinishedRefund'];
+  assert.deepEqual(Object.keys(baseLifecycle), names);
+  assert.deepEqual(Object.keys(legacyBaseLifecycle), names);
+  for (const name of names) assert.equal(baseLifecycle[name], legacyBaseLifecycle[name], name);
+});
 test('unfinished work refunds only its unconsumed fraction and repairs spend only restored HP', () => {
   assert.deepEqual(unfinishedRefund({ food: 60, wood: 20 }, 6, 12), { food: 30, wood: 10 });
   assert.deepEqual(unfinishedRefund({ food: 60, wood: 20 }, 0, 12), { food: 0, wood: 0 });

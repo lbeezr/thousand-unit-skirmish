@@ -36,6 +36,7 @@ export const NODE_ONLY_MODULES = [
 // may disable coverage but still traverse every edge. This is not a DOM/global audit.
 export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   rules: [
+    'rules/base-lifecycle', 'rules/gameplay-action-rules',
     'bannerfall-rules', 'base-lifecycle', 'combat-rules', 'economy-ledger',
     'economy-profile', 'farm-harvest', 'gameplay-action-rules', 'gameplay-definitions',
     'match-modes', 'palisade-gate', 'palisade-profile', 'population',
