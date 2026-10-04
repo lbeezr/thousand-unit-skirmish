@@ -1,6 +1,21 @@
 import { parseUint32Seed } from './pve-match.mjs';
+import { matchModeDefinition } from './match-modes.mjs';
+import { mapChoiceLabel } from './match-mode-controls.mjs';
 
 const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
+
+export function pveEntryCapability(setup, practiceSetup) {
+  const available = setup?.available === true;
+  let description = 'Play vs AI';
+  try {
+    if (!setup?.matchModeId || !Number.isInteger(setup.matchModeVersion)) throw new Error('No mode descriptor');
+    const mode = matchModeDefinition(setup);
+    const map = setup.map || (practiceSetup?.map?.id === setup.mapId ? practiceSetup.map : null);
+    description += ` · ${mode.label}${map ? ` · ${mapChoiceLabel(map)}` : ''}`;
+  } catch { /* An available newer server can still create its supported default. */ }
+  return { available, description, reason: available ? ''
+    : setup?.reason || 'Fresh Play vs AI is unavailable on this server.' };
+}
 
 function launchOptionsFrom(value) {
   const options = value?.launchOptions && typeof value.launchOptions === 'object'
@@ -69,8 +84,10 @@ function addRunStamp(document, mapLabel) {
   return { stamp, map, mapSeed, policySeed };
 }
 
-export function mountPveEntry() {
-  const document = window.document;
+export function mountPveEntry({ win = window, fetchImpl = (...args) => (win.fetch || globalThis.fetch)(...args),
+  navigate = url => win.location.assign(url) } = {}) {
+  const document = win.document;
+  const MutationObserver = win.MutationObserver || globalThis.MutationObserver;
   const actions = document.querySelector('.room-actions');
   const mapLabelContainer = document.querySelector('.map-label');
   if (!actions || !mapLabelContainer || document.querySelector('#pve-start')) return;
@@ -88,9 +105,9 @@ export function mountPveEntry() {
   newMap.id = 'pve-new-map';
   newMap.className = 'room-action room-action-primary';
   newMap.type = 'button';
-  newMap.textContent = 'NEW MAP';
+  newMap.textContent = 'NEW GAME';
   newMap.hidden = true;
-  newMap.title = 'Start a new Play vs AI match with fresh map and policy seeds';
+  newMap.title = 'Start a fresh supported Play vs AI match';
 
   const feedback = document.createElement('span');
   feedback.id = 'pve-entry-status';
@@ -105,8 +122,10 @@ export function mountPveEntry() {
   const run = addRunStamp(document, mapLabelContainer);
   const roomCreate = document.querySelector('#room-create');
   const roomJoin = document.querySelector('#room-join');
-  const location = new URL(window.location.href);
+  const location = new URL(win.location.href);
   let roomsEnabled = false;
+  let capability = pveEntryCapability(null), creating = false;
+  let roomMode = null, roomPregame = false;
   let currentOptions = launchOptionsFrom({
     mode: location.searchParams.get('mode'),
     mapSeed: location.searchParams.get('mapSeed'),
@@ -118,10 +137,14 @@ export function mountPveEntry() {
     feedback.dataset.error = String(error);
   };
   const setMode = (options) => {
+    const wasPve = Boolean(currentOptions);
     currentOptions = options;
     const isPve = Boolean(options);
     start.hidden = !roomsEnabled || isPve;
     newMap.hidden = !roomsEnabled || !isPve;
+    start.disabled = newMap.disabled = creating || !capability.available;
+    start.title = newMap.title = capability.reason || capability.description;
+    if (!creating && !capability.available && roomsEnabled) setStatus(capability.reason);
     run.stamp.hidden = !isPve;
     mapLabelContainer.classList.toggle('pve-run-active', isPve);
     if (isPve) {
@@ -140,13 +163,23 @@ export function mountPveEntry() {
         button.disabled = true;
         button.title = 'Play vs AI uses the map’s authored starting army.';
       }
-    } else {
+    } else if (wasPve && roomMode) {
       const resetButton = document.querySelector('#reset-army');
       if (resetButton) {
+        // Only undo our own earlier PvE restriction. Ordinary asynchronous
+        // lookups must preserve the main client's host and fixed-mode controls.
+        let mode = roomMode;
+        const displayed = document.querySelector('#active-match-mode')?.value?.split('@');
+        try {
+          if (displayed?.length === 2 && displayed[0]) mode = matchModeDefinition({
+            matchModeId: displayed[0], matchModeVersion: Number(displayed[1]),
+          });
+        } catch { /* Keep the known room capability. */ }
         for (const button of document.querySelectorAll('.size-options button')) {
-          button.disabled = resetButton.disabled;
-          button.title = resetButton.disabled
-            ? 'Only the room host can change match size' : 'Change match size for both players';
+          button.disabled = resetButton.disabled || roomPregame || Boolean(mode.fixedArmySize);
+          button.title = mode.fixedArmySize ? `This mode fixes the opening army at ${mode.fixedArmySize} total units.`
+            : roomPregame ? 'Reset to the lobby to choose the opening army.'
+            : resetButton.disabled ? 'Only the room host can change match size' : 'Change match size for both players';
         }
       }
     }
@@ -189,11 +222,12 @@ export function mountPveEntry() {
   updateMapLabel();
 
   async function createNewMatch(button) {
-    if (button.disabled) return;
-    button.disabled = true;
+    if (creating || !roomsEnabled || !capability.available || button.hidden || button.disabled) return;
+    creating = true;
+    setMode(currentOptions);
     setStatus('CREATING FRESH MATCH…');
     try {
-      const response = await fetch('/api/rooms', {
+      const response = await fetchImpl('/api/rooms', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ mode: 'pve' }),
@@ -201,37 +235,45 @@ export function mountPveEntry() {
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || 'Room creation failed.');
-      window.location.assign(createPveRoomUrl(window.location.href, result).href);
+      navigate(createPveRoomUrl(win.location.href, result).href);
     } catch (error) {
       setStatus(String(error?.message || 'ROOM CREATION FAILED').toUpperCase(), true);
-      button.disabled = false;
+      creating = false;
+      setMode(currentOptions);
     }
   }
   start.addEventListener('click', () => createNewMatch(start));
   newMap.addEventListener('click', () => createNewMatch(newMap));
 
-  fetch('/api/rooms/status', { cache: 'no-store' })
+  fetchImpl('/api/rooms/status', { cache: 'no-store' })
     .then((response) => response.ok ? response.json() : null)
     .then((status) => {
       if (status?.enabled !== true) return;
       roomsEnabled = true;
+      capability = pveEntryCapability(status.ordinarySetup?.pve, status.practiceSetup);
       setMode(currentOptions);
     })
     .catch(() => {});
 
   if (location.searchParams.has('room') && ROOM_ID_PATTERN.test(location.searchParams.get('room') || '')) {
-    fetch(`/api/rooms/${encodeURIComponent(location.searchParams.get('room'))}`, { cache: 'no-store' })
+    fetchImpl(`/api/rooms/${encodeURIComponent(location.searchParams.get('room'))}`, { cache: 'no-store' })
       .then((response) => response.ok ? response.json() : null)
       .then((room) => {
+        if (room) {
+          roomPregame = room.launchOptions?.pregame === true;
+          try {
+            roomMode = matchModeDefinition(room.matchModeId ? room : room.launchOptions || {});
+          } catch { roomMode = null; }
+        }
         const fromRoom = launchOptionsFrom(room);
         if (fromRoom) {
           setMode(fromRoom);
           updateMapLabel();
         } else if (room) {
           setMode(null);
-          const cleanUrl = new URL(window.location.href);
+          const cleanUrl = new URL(win.location.href);
           for (const name of ['mode', 'mapSeed', 'policySeed', 'mapId']) cleanUrl.searchParams.delete(name);
-          window.history.replaceState(window.history.state, '', cleanUrl.href);
+          win.history.replaceState(win.history.state, '', cleanUrl.href);
         }
       })
       .catch(() => {});

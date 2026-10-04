@@ -12,6 +12,7 @@ import { createUnitSpriteRuntime } from '../src/unit-sprite-runtime.mjs';
 import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
 import { shouldUpdateUnitTransformForFrame } from '../src/unit-lod-state.mjs';
 import { readWorkerPerformingAction, workerWorkAction } from '../src/worker-work-presentation.mjs';
+import { fixedMatchArmySize } from '../src/match-mode-controls.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 function slice(startText, endText, from = 0) {
@@ -71,10 +72,10 @@ export async function createUnitPresentationClientFixture({ localTeam = 0, maxUn
   const noop = () => {};
   const elements = new Map();
   const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), THREE, applyUnitStances, UNIT_DEFINITIONS,
-    readWorkerPerformingAction, workerWorkAction,
+    readWorkerPerformingAction, workerWorkAction, fixedMatchArmySize, updateLobbyHostControls: noop,
     mapDefinition: { id: 'unit-presentation-fixture' }, localTeam, isHost: false,
     activeMatchMode: {}, knownMaps: [], matchModeView: { update: noop }, setMapCatalog: noop,
-    document: { querySelector(id) {
+    document: { querySelectorAll: () => [], querySelector(id) {
       if (!elements.has(id)) elements.set(id, { hidden: false, textContent: '' });
       return elements.get(id);
     } }, performance: { now: () => clock },
@@ -110,7 +111,8 @@ export async function createUnitPresentationClientFixture({ localTeam = 0, maxUn
     lastIdlePoseStep: -1,
     shouldUpdateUnitTransformForFrame,
   });
-  vm.runInContext(`${wildlifeClientFunctionSource(source)}\n${poseConstants}\n${snapshotSource}\nfunction animateUnitPresentation(now, frameDelta) {\n${frameSource}\n}`, context);
+  const sizeControls = slice('function updateMatchArmySizeControls(', '\nfunction applyLobby(');
+  vm.runInContext(`${wildlifeClientFunctionSource(source)}\n${sizeControls}\n${poseConstants}\n${snapshotSource}\nfunction animateUnitPresentation(now, frameDelta) {\n${frameSource}\n}`, context);
 
   const meshFor = unit => scene.children[roles.indexOf(runtime.roleForUnit(unit)) * 2 + unit.team];
   return { context, runtime, scene, transformCalls, dirtyTeams,

@@ -77,12 +77,15 @@ The existing human lobby reaches this mode by selecting Bannerfall Arena, then
 Bannerfall, then both Ready controls and Launch. An independent real-socket DOM
 probe established that sequence on the earlier schema28 candidate; its pinned
 [receipt](qa-evidence/bannerfall-prototype-2026-10-04/dom-entry-schema28.json)
-is historical evidence. Three entry details remain owned by `01a101c4`: consume
-`fixedArmySize` to disable larger openings, replace the generic authored-mode
-brief, and expose a Bannerfall Practice preset. Current visible Practice offers
-only Tiny-compatible modes; Bannerfall Practice is explicit API entry. The
-optional `practicePresets` provider boundary is recorded in
-[PR200 comment5975530219](https://github.com/lbeezr/thousand-unit-skirmish/pull/200#issuecomment-5975530219).
+is historical evidence. The normal Practice dialog now offers Bannerfall as a
+server-published preset bound to Bannerfall Arena and its exact mode version.
+Lobby and running-match controls consume `fixedArmySize`, showing a fixed
+16-unit opening. The objective brief describes 15-second waves, kill-based Rider
+evolution, and victory by destroying the opposing original Town Center. AI
+remains unsupported for this mode. See [game entry](game-entry.md) and
+[PR254](https://github.com/lbeezr/thousand-unit-skirmish/pull/254) for the current
+menu/lobby source and native DOM/protocol checks; rendered/deployed acceptance
+remains open.
 
 ## Acceptance
 
