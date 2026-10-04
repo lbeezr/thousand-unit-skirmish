@@ -1,0 +1,1352 @@
+{
+  "schemaVersion": 1,
+  "measurementHead": "61156a1c21d56380445c756fdee826db122ae498",
+  "serverSha256": "21ab61c572395ce8730c98ea115fce853de0276d1322ce109d42704432ab03d8",
+  "harnessSha256": "cfa7bba7686985ac8ced51686a67ac650b9e1c5854586222193388c66422d82d",
+  "qualification": {
+    "budgetMs": 33.333333333333336,
+    "rule": "Candidate 4 must pass paid/combat/recovery assertions and have no measured whole outer tick exceed 1000/30 ms in either qualified load.",
+    "candidatePassed": false,
+    "defaultPolicy": 0,
+    "decision": "Retain callback default: candidate 4 at 2,000 units has two complete ticks over budget, with zero planning turns in both.",
+    "limits": "finite sequential shared-host native diagnostics; no isolated hardware or causal policy speedup claim"
+  },
+  "records": [
+    {
+      "policy": 0,
+      "size": 250,
+      "head": "61156a1c21d56380445c756fdee826db122ae498",
+      "sourceSha256": "21ab61c572395ce8730c98ea115fce853de0276d1322ce109d42704432ab03d8",
+      "node": "v24.19.0",
+      "platform": "linux",
+      "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "artifact": "qualified-0-250.json.gz",
+      "sha256": "3b37254b29d59b1807ef4628701df44ac7bacb680f5e6ec7412ad2c326372cf8",
+      "compressedSha256": "2398d1aa938f8e7696166a0813e3fd58f959d55548d5f132862997c6650c11f3",
+      "bytes": 244103,
+      "compressedBytes": 17824,
+      "startTick": 1770,
+      "endTick": 2700,
+      "phases": [
+        {
+          "phase": 0,
+          "firstTick": 1772,
+          "lastTick": 2073
+        },
+        {
+          "phase": 1,
+          "firstTick": 2074,
+          "lastTick": 2373
+        },
+        {
+          "phase": 2,
+          "firstTick": 2374,
+          "lastTick": 2674
+        }
+      ],
+      "casualties": 127,
+      "spent": [
+        {
+          "food": 150,
+          "wood": 325
+        },
+        {
+          "food": 150,
+          "wood": 325
+        }
+      ],
+      "economyProgress": [
+        {
+          "team": 0,
+          "resource": "food",
+          "nodeId": "food-17-39",
+          "harvested": 18.866666666649508,
+          "deposited": 20
+        },
+        {
+          "team": 0,
+          "resource": "wood",
+          "nodeId": "wood-17-25",
+          "harvested": 20.399999999981446,
+          "deposited": 20
+        },
+        {
+          "team": 1,
+          "resource": "food",
+          "nodeId": "food-62-39",
+          "harvested": 20.399999999981446,
+          "deposited": 20
+        },
+        {
+          "team": 1,
+          "resource": "wood",
+          "nodeId": "wood-62-25",
+          "harvested": 21.933333333313385,
+          "deposited": 20
+        }
+      ],
+      "paidLedger": true,
+      "checkpointRecovery": true,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 1.044,
+          "p95": 4.38,
+          "max": 13.418
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 0.477,
+          "p95": 2.073,
+          "max": 7.462
+        },
+        "planningMs": {
+          "count": 0,
+          "p50": null,
+          "p95": null,
+          "max": null
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.549,
+          "max": 1.264
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.009,
+          "max": 2.326
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 2.425,
+          "max": 8.251
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 0.911
+        },
+        "overBudgetTicks": 0,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2496,
+            "durationMs": 13.418,
+            "cpuMs": 20.021,
+            "simulationMs": 5.786,
+            "visionMs": 1.04,
+            "scenarioMs": 0.013,
+            "scenarioEvaluated": true,
+            "broadcastMs": 6.579,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2541,
+            "durationMs": 11.034,
+            "cpuMs": 7.035,
+            "simulationMs": 2.46,
+            "visionMs": 0.316,
+            "scenarioMs": 0.007,
+            "scenarioEvaluated": true,
+            "broadcastMs": 8.251,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2478,
+            "durationMs": 9.057,
+            "cpuMs": 14.952,
+            "simulationMs": 3.22,
+            "visionMs": 0.284,
+            "scenarioMs": 0.007,
+            "scenarioEvaluated": true,
+            "broadcastMs": 5.545,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2559,
+            "durationMs": 8.623,
+            "cpuMs": 8.623,
+            "simulationMs": 1.62,
+            "visionMs": 1.264,
+            "scenarioMs": 0.011,
+            "scenarioEvaluated": true,
+            "broadcastMs": 5.727,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2513,
+            "durationMs": 7.617,
+            "cpuMs": 7.614,
+            "simulationMs": 4.701,
+            "visionMs": 0.21,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 2.706,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2536,
+            "durationMs": 7.463,
+            "cpuMs": 8.408,
+            "simulationMs": 7.462,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2565,
+            "durationMs": 6.734,
+            "cpuMs": 7.322,
+            "simulationMs": 2.073,
+            "visionMs": 0.238,
+            "scenarioMs": 0.007,
+            "scenarioEvaluated": true,
+            "broadcastMs": 4.415,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2280,
+            "durationMs": 6.358,
+            "cpuMs": 6.358,
+            "simulationMs": 1.964,
+            "visionMs": 1.044,
+            "scenarioMs": 0.015,
+            "scenarioEvaluated": true,
+            "broadcastMs": 2.935,
+            "checkpointMs": 0.401
+          },
+          {
+            "tickNumber": 2524,
+            "durationMs": 6.356,
+            "cpuMs": 6.356,
+            "simulationMs": 6.355,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2013,
+            "durationMs": 6.24,
+            "cpuMs": 14.838,
+            "simulationMs": 3.119,
+            "visionMs": 0.359,
+            "scenarioMs": 0.025,
+            "scenarioEvaluated": true,
+            "broadcastMs": 2.736,
+            "checkpointMs": 0.001
+          }
+        ],
+        "totalTickP99Ms": 6.24,
+        "cpuMs": {
+          "p95": 5.077,
+          "max": 20.021
+        },
+        "overBudgetDetails": []
+      },
+      "healthObservations": {
+        "beforeCommands": {
+          "firstSampleTick": 1472,
+          "lastSampleTick": 1771,
+          "startLagP95Ms": 0.89,
+          "startLagMaxMs": 1.668,
+          "scheduler": {
+            "policy": "drop-elapsed-slots",
+            "skippedTickSlotsTotal": 3,
+            "lastOverloadSkippedSlots": 1,
+            "lastOverloadTick": 205
+          }
+        },
+        "afterWitness": {
+          "firstSampleTick": 2401,
+          "lastSampleTick": 2700,
+          "startLagP95Ms": 0.971,
+          "startLagMaxMs": 6.871,
+          "scheduler": {
+            "policy": "drop-elapsed-slots",
+            "skippedTickSlotsTotal": 4,
+            "lastOverloadSkippedSlots": 1,
+            "lastOverloadTick": 2226
+          }
+        }
+      },
+      "limits": [
+        "native two-seat loopback, 160x160 fog map padded from Fortified Crossing; no scripted rewards or actor injection",
+        "whole outer tick includes planning, movement/combat/economy, vision, scenario, broadcast and synchronous checkpoint work",
+        "three at-least-300-tick command phases; actual endpoints/checkpoint tail retained, all unique samples kept",
+        "health lag/scheduler observations name their rolling windows, not exact checkpoint-boundary lag samples",
+        "timers measure but do not choose authoritative planner work; callback-control planning runs outside tick timing",
+        "shared cloud host and diagnostic polling overhead; no renderer, device capacity, timer-quality or causal speedup claim"
+      ]
+    },
+    {
+      "policy": 4,
+      "size": 250,
+      "head": "61156a1c21d56380445c756fdee826db122ae498",
+      "sourceSha256": "21ab61c572395ce8730c98ea115fce853de0276d1322ce109d42704432ab03d8",
+      "node": "v24.19.0",
+      "platform": "linux",
+      "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "artifact": "qualified-4-250.json.gz",
+      "sha256": "84db96b6510495fc418e24b2ac29c46adbf2402cfddae1c019cc9c5a35d218ca",
+      "compressedSha256": "860398759ee45f4f5a3d9e46d7547fed887cd9bac78a0b6892ddbded335de14d",
+      "bytes": 354477,
+      "compressedBytes": 18946,
+      "startTick": 1770,
+      "endTick": 2700,
+      "phases": [
+        {
+          "phase": 0,
+          "firstTick": 1772,
+          "lastTick": 2074
+        },
+        {
+          "phase": 1,
+          "firstTick": 2075,
+          "lastTick": 2377
+        },
+        {
+          "phase": 2,
+          "firstTick": 2378,
+          "lastTick": 2680
+        }
+      ],
+      "casualties": 125,
+      "spent": [
+        {
+          "food": 150,
+          "wood": 325
+        },
+        {
+          "food": 150,
+          "wood": 325
+        }
+      ],
+      "economyProgress": [
+        {
+          "team": 0,
+          "resource": "food",
+          "nodeId": "food-17-39",
+          "harvested": 18.866666666649508,
+          "deposited": 20
+        },
+        {
+          "team": 0,
+          "resource": "wood",
+          "nodeId": "wood-17-25",
+          "harvested": 20.399999999981446,
+          "deposited": 20
+        },
+        {
+          "team": 1,
+          "resource": "food",
+          "nodeId": "food-62-39",
+          "harvested": 20.399999999981446,
+          "deposited": 20
+        },
+        {
+          "team": 1,
+          "resource": "wood",
+          "nodeId": "wood-62-25",
+          "harvested": 21.933333333313385,
+          "deposited": 20
+        }
+      ],
+      "paidLedger": true,
+      "checkpointRecovery": true,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 0.998,
+          "p95": 3.621,
+          "max": 14.099
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 0.466,
+          "p95": 1.766,
+          "max": 14.067
+        },
+        "planningMs": {
+          "count": 28,
+          "p50": 0.183,
+          "p95": 3.156,
+          "max": 6.756
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.495,
+          "max": 1.088
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.009,
+          "max": 0.087
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 1.98,
+          "max": 7.989
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 1.474
+        },
+        "overBudgetTicks": 0,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2632,
+            "durationMs": 14.099,
+            "cpuMs": 18.862,
+            "simulationMs": 14.067,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.032,
+            "checkpointMs": 0,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 1983,
+            "durationMs": 14.034,
+            "cpuMs": 25.686,
+            "simulationMs": 8.349,
+            "visionMs": 0.452,
+            "scenarioMs": 0.064,
+            "scenarioEvaluated": true,
+            "broadcastMs": 5.169,
+            "checkpointMs": 0.001,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2631,
+            "durationMs": 12.865,
+            "cpuMs": 23.294,
+            "simulationMs": 4.688,
+            "visionMs": 0.181,
+            "scenarioMs": 0.006,
+            "scenarioEvaluated": true,
+            "broadcastMs": 7.989,
+            "checkpointMs": 0.001,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 1772,
+            "durationMs": 9.886,
+            "cpuMs": 17.36,
+            "simulationMs": 7.473,
+            "visionMs": 0.663,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 1.75,
+            "checkpointMs": 0.001,
+            "planningMs": 6.756,
+            "planningTurns": 4,
+            "planningWorkItems": 32,
+            "planningExpandedCells": 4635
+          },
+          {
+            "tickNumber": 2019,
+            "durationMs": 9.357,
+            "cpuMs": 13.993,
+            "simulationMs": 5.586,
+            "visionMs": 0.389,
+            "scenarioMs": 0.029,
+            "scenarioEvaluated": true,
+            "broadcastMs": 3.352,
+            "checkpointMs": 0.001,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2046,
+            "durationMs": 7.336,
+            "cpuMs": 8.572,
+            "simulationMs": 1.252,
+            "visionMs": 0.58,
+            "scenarioMs": 0.014,
+            "scenarioEvaluated": true,
+            "broadcastMs": 5.488,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 1773,
+            "durationMs": 6.383,
+            "cpuMs": 15.293,
+            "simulationMs": 4.141,
+            "visionMs": 0.499,
+            "scenarioMs": 0.01,
+            "scenarioEvaluated": true,
+            "broadcastMs": 1.731,
+            "checkpointMs": 0.001,
+            "planningMs": 3.156,
+            "planningTurns": 4,
+            "planningWorkItems": 32,
+            "planningExpandedCells": 4395
+          },
+          {
+            "tickNumber": 2312,
+            "durationMs": 6.071,
+            "cpuMs": 6.071,
+            "simulationMs": 6.07,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2433,
+            "durationMs": 5.983,
+            "cpuMs": 9.504,
+            "simulationMs": 3.566,
+            "visionMs": 0.544,
+            "scenarioMs": 0.005,
+            "scenarioEvaluated": true,
+            "broadcastMs": 1.866,
+            "checkpointMs": 0,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2040,
+            "durationMs": 5.679,
+            "cpuMs": 9.861,
+            "simulationMs": 0.567,
+            "visionMs": 0.533,
+            "scenarioMs": 0.013,
+            "scenarioEvaluated": true,
+            "broadcastMs": 3.964,
+            "checkpointMs": 0.603,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          }
+        ],
+        "totalTickP99Ms": 5.679,
+        "cpuMs": {
+          "p95": 4.483,
+          "max": 25.686
+        },
+        "overBudgetDetails": []
+      },
+      "healthObservations": {
+        "beforeCommands": {
+          "firstSampleTick": 1472,
+          "lastSampleTick": 1771,
+          "startLagP95Ms": 1.06,
+          "startLagMaxMs": 109.218,
+          "scheduler": {
+            "policy": "drop-elapsed-slots",
+            "skippedTickSlotsTotal": 9,
+            "lastOverloadSkippedSlots": 3,
+            "lastOverloadTick": 1522
+          }
+        },
+        "afterWitness": {
+          "firstSampleTick": 2401,
+          "lastSampleTick": 2700,
+          "startLagP95Ms": 0.879,
+          "startLagMaxMs": 1.941,
+          "scheduler": {
+            "policy": "drop-elapsed-slots",
+            "skippedTickSlotsTotal": 9,
+            "lastOverloadSkippedSlots": 3,
+            "lastOverloadTick": 1522
+          }
+        }
+      },
+      "limits": [
+        "native two-seat loopback, 160x160 fog map padded from Fortified Crossing; no scripted rewards or actor injection",
+        "whole outer tick includes planning, movement/combat/economy, vision, scenario, broadcast and synchronous checkpoint work",
+        "three at-least-300-tick command phases; actual endpoints/checkpoint tail retained, all unique samples kept",
+        "health lag/scheduler observations name their rolling windows, not exact checkpoint-boundary lag samples",
+        "timers measure but do not choose authoritative planner work; callback-control planning runs outside tick timing",
+        "shared cloud host and diagnostic polling overhead; no renderer, device capacity, timer-quality or causal speedup claim"
+      ]
+    },
+    {
+      "policy": 0,
+      "size": 2000,
+      "head": "61156a1c21d56380445c756fdee826db122ae498",
+      "sourceSha256": "21ab61c572395ce8730c98ea115fce853de0276d1322ce109d42704432ab03d8",
+      "node": "v24.19.0",
+      "platform": "linux",
+      "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "artifact": "qualified-0-2000.json.gz",
+      "sha256": "58ae56308b1b9cc9488488ffb5039ef8a8a7b244f0e673ada791555bf09978b4",
+      "compressedSha256": "505893d4f19833bc1684464f72806c2b576ec43b24aab1ca2fdd50e91ad50768",
+      "bytes": 246347,
+      "compressedBytes": 19882,
+      "startTick": 1770,
+      "endTick": 2700,
+      "phases": [
+        {
+          "phase": 0,
+          "firstTick": 1773,
+          "lastTick": 2074
+        },
+        {
+          "phase": 1,
+          "firstTick": 2075,
+          "lastTick": 2375
+        },
+        {
+          "phase": 2,
+          "firstTick": 2376,
+          "lastTick": 2677
+        }
+      ],
+      "casualties": 546,
+      "spent": [
+        {
+          "food": 150,
+          "wood": 325
+        },
+        {
+          "food": 150,
+          "wood": 325
+        }
+      ],
+      "economyProgress": [
+        {
+          "team": 0,
+          "resource": "food",
+          "nodeId": "food-17-39",
+          "harvested": 18.89999999998281,
+          "deposited": 20
+        },
+        {
+          "team": 0,
+          "resource": "wood",
+          "nodeId": "wood-17-25",
+          "harvested": 20.266666666648234,
+          "deposited": 20
+        },
+        {
+          "team": 1,
+          "resource": "food",
+          "nodeId": "food-62-39",
+          "harvested": 20.399999999981446,
+          "deposited": 20
+        },
+        {
+          "team": 1,
+          "resource": "wood",
+          "nodeId": "wood-62-25",
+          "harvested": 21.899999999980082,
+          "deposited": 20
+        }
+      ],
+      "paidLedger": true,
+      "checkpointRecovery": true,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 5.051,
+          "p95": 16.103,
+          "max": 357.981
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 2.701,
+          "p95": 9.386,
+          "max": 342.766
+        },
+        "planningMs": {
+          "count": 0,
+          "p50": null,
+          "p95": null,
+          "max": null
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.22,
+          "max": 34.45
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.029,
+          "max": 0.355
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 6.853,
+          "max": 34.504
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 5.317
+        },
+        "overBudgetTicks": 9,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2598,
+            "durationMs": 357.981,
+            "cpuMs": 230.577,
+            "simulationMs": 342.766,
+            "visionMs": 2.262,
+            "scenarioMs": 0.04,
+            "scenarioEvaluated": true,
+            "broadcastMs": 12.912,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2613,
+            "durationMs": 81.733,
+            "cpuMs": 100.503,
+            "simulationMs": 51.222,
+            "visionMs": 8.005,
+            "scenarioMs": 0.049,
+            "scenarioEvaluated": true,
+            "broadcastMs": 22.455,
+            "checkpointMs": 0.003
+          },
+          {
+            "tickNumber": 2646,
+            "durationMs": 75.37,
+            "cpuMs": 110.492,
+            "simulationMs": 36.905,
+            "visionMs": 3.932,
+            "scenarioMs": 0.027,
+            "scenarioEvaluated": true,
+            "broadcastMs": 34.504,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 1893,
+            "durationMs": 47.967,
+            "cpuMs": 47.969,
+            "simulationMs": 9.609,
+            "visionMs": 34.45,
+            "scenarioMs": 0.033,
+            "scenarioEvaluated": true,
+            "broadcastMs": 3.875,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2637,
+            "durationMs": 42.901,
+            "cpuMs": 42.947,
+            "simulationMs": 19.923,
+            "visionMs": 5.352,
+            "scenarioMs": 0.043,
+            "scenarioEvaluated": true,
+            "broadcastMs": 17.58,
+            "checkpointMs": 0.002
+          },
+          {
+            "tickNumber": 2610,
+            "durationMs": 38.17,
+            "cpuMs": 49.719,
+            "simulationMs": 17.274,
+            "visionMs": 1.313,
+            "scenarioMs": 0.023,
+            "scenarioEvaluated": true,
+            "broadcastMs": 14.244,
+            "checkpointMs": 5.317
+          },
+          {
+            "tickNumber": 2658,
+            "durationMs": 38.066,
+            "cpuMs": 41.068,
+            "simulationMs": 28.89,
+            "visionMs": 2.156,
+            "scenarioMs": 0.024,
+            "scenarioEvaluated": true,
+            "broadcastMs": 6.994,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2179,
+            "durationMs": 34.119,
+            "cpuMs": 79.69,
+            "simulationMs": 34.118,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2122,
+            "durationMs": 33.514,
+            "cpuMs": 64.019,
+            "simulationMs": 33.513,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2609,
+            "durationMs": 29.976,
+            "cpuMs": 46.908,
+            "simulationMs": 16.971,
+            "visionMs": 3.574,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 9.428,
+            "checkpointMs": 0.003
+          }
+        ],
+        "totalTickP99Ms": 29.976,
+        "cpuMs": {
+          "p95": 18.519,
+          "max": 230.577
+        },
+        "overBudgetDetails": [
+          {
+            "tickNumber": 1893,
+            "durationMs": 47.967,
+            "cpuMs": 47.969,
+            "simulationMs": 9.609,
+            "visionMs": 34.45,
+            "scenarioMs": 0.033,
+            "scenarioEvaluated": true,
+            "broadcastMs": 3.875,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2122,
+            "durationMs": 33.514,
+            "cpuMs": 64.019,
+            "simulationMs": 33.513,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2179,
+            "durationMs": 34.119,
+            "cpuMs": 79.69,
+            "simulationMs": 34.118,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2598,
+            "durationMs": 357.981,
+            "cpuMs": 230.577,
+            "simulationMs": 342.766,
+            "visionMs": 2.262,
+            "scenarioMs": 0.04,
+            "scenarioEvaluated": true,
+            "broadcastMs": 12.912,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2610,
+            "durationMs": 38.17,
+            "cpuMs": 49.719,
+            "simulationMs": 17.274,
+            "visionMs": 1.313,
+            "scenarioMs": 0.023,
+            "scenarioEvaluated": true,
+            "broadcastMs": 14.244,
+            "checkpointMs": 5.317
+          },
+          {
+            "tickNumber": 2613,
+            "durationMs": 81.733,
+            "cpuMs": 100.503,
+            "simulationMs": 51.222,
+            "visionMs": 8.005,
+            "scenarioMs": 0.049,
+            "scenarioEvaluated": true,
+            "broadcastMs": 22.455,
+            "checkpointMs": 0.003
+          },
+          {
+            "tickNumber": 2637,
+            "durationMs": 42.901,
+            "cpuMs": 42.947,
+            "simulationMs": 19.923,
+            "visionMs": 5.352,
+            "scenarioMs": 0.043,
+            "scenarioEvaluated": true,
+            "broadcastMs": 17.58,
+            "checkpointMs": 0.002
+          },
+          {
+            "tickNumber": 2646,
+            "durationMs": 75.37,
+            "cpuMs": 110.492,
+            "simulationMs": 36.905,
+            "visionMs": 3.932,
+            "scenarioMs": 0.027,
+            "scenarioEvaluated": true,
+            "broadcastMs": 34.504,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2658,
+            "durationMs": 38.066,
+            "cpuMs": 41.068,
+            "simulationMs": 28.89,
+            "visionMs": 2.156,
+            "scenarioMs": 0.024,
+            "scenarioEvaluated": true,
+            "broadcastMs": 6.994,
+            "checkpointMs": 0.001
+          }
+        ]
+      },
+      "healthObservations": {
+        "beforeCommands": {
+          "firstSampleTick": 1473,
+          "lastSampleTick": 1772,
+          "startLagP95Ms": 1.068,
+          "startLagMaxMs": 10.115,
+          "scheduler": {
+            "policy": "drop-elapsed-slots",
+            "skippedTickSlotsTotal": 12,
+            "lastOverloadSkippedSlots": 1,
+            "lastOverloadTick": 1083
+          }
+        },
+        "afterWitness": {
+          "firstSampleTick": 2405,
+          "lastSampleTick": 2704,
+          "startLagP95Ms": 3.213,
+          "startLagMaxMs": 349.559,
+          "scheduler": {
+            "policy": "drop-elapsed-slots",
+            "skippedTickSlotsTotal": 38,
+            "lastOverloadSkippedSlots": 1,
+            "lastOverloadTick": 2702
+          }
+        }
+      },
+      "limits": [
+        "native two-seat loopback, 160x160 fog map padded from Fortified Crossing; no scripted rewards or actor injection",
+        "whole outer tick includes planning, movement/combat/economy, vision, scenario, broadcast and synchronous checkpoint work",
+        "three at-least-300-tick command phases; actual endpoints/checkpoint tail retained, all unique samples kept",
+        "health lag/scheduler observations name their rolling windows, not exact checkpoint-boundary lag samples",
+        "timers measure but do not choose authoritative planner work; callback-control planning runs outside tick timing",
+        "shared cloud host and diagnostic polling overhead; no renderer, device capacity, timer-quality or causal speedup claim"
+      ]
+    },
+    {
+      "policy": 4,
+      "size": 2000,
+      "head": "61156a1c21d56380445c756fdee826db122ae498",
+      "sourceSha256": "21ab61c572395ce8730c98ea115fce853de0276d1322ce109d42704432ab03d8",
+      "node": "v24.19.0",
+      "platform": "linux",
+      "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "artifact": "qualified-4-2000.json.gz",
+      "sha256": "19780aa3c34b474db6d75fafa339b8e1828b7b9f9a4843b3cb409cc62ab2340e",
+      "compressedSha256": "973c06b8b8bdf538805448da7ca77e55081ad1b20e9a0341f03202c434290259",
+      "bytes": 355618,
+      "compressedBytes": 21906,
+      "startTick": 1830,
+      "endTick": 2760,
+      "phases": [
+        {
+          "phase": 0,
+          "firstTick": 1833,
+          "lastTick": 2137
+        },
+        {
+          "phase": 1,
+          "firstTick": 2138,
+          "lastTick": 2440
+        },
+        {
+          "phase": 2,
+          "firstTick": 2441,
+          "lastTick": 2744
+        }
+      ],
+      "casualties": 371,
+      "spent": [
+        {
+          "food": 150,
+          "wood": 325
+        },
+        {
+          "food": 150,
+          "wood": 325
+        }
+      ],
+      "economyProgress": [
+        {
+          "team": 0,
+          "resource": "food",
+          "nodeId": "food-17-39",
+          "harvested": 18.89999999998281,
+          "deposited": 20
+        },
+        {
+          "team": 0,
+          "resource": "wood",
+          "nodeId": "wood-17-25",
+          "harvested": 20.23333333331493,
+          "deposited": 20
+        },
+        {
+          "team": 1,
+          "resource": "food",
+          "nodeId": "food-62-39",
+          "harvested": 20.366666666648143,
+          "deposited": 20
+        },
+        {
+          "team": 1,
+          "resource": "wood",
+          "nodeId": "wood-62-25",
+          "harvested": 21.933333333313385,
+          "deposited": 20
+        }
+      ],
+      "paidLedger": true,
+      "checkpointRecovery": true,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 4.755,
+          "p95": 14.458,
+          "max": 40.461
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 2.913,
+          "p95": 7.571,
+          "max": 17.693
+        },
+        "planningMs": {
+          "count": 189,
+          "p50": 0.111,
+          "p95": 0.826,
+          "max": 4.221
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.447,
+          "max": 7.851
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.03,
+          "max": 15.754
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 7.137,
+          "max": 23.104
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 6.165
+        },
+        "overBudgetTicks": 2,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2232,
+            "durationMs": 40.461,
+            "cpuMs": 97.317,
+            "simulationMs": 9.211,
+            "visionMs": 7.851,
+            "scenarioMs": 0.294,
+            "scenarioEvaluated": true,
+            "broadcastMs": 23.104,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2274,
+            "durationMs": 35.26,
+            "cpuMs": 41.525,
+            "simulationMs": 7.826,
+            "visionMs": 2.771,
+            "scenarioMs": 15.754,
+            "scenarioEvaluated": true,
+            "broadcastMs": 8.908,
+            "checkpointMs": 0.001,
+            "planningMs": 0,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2457,
+            "durationMs": 30.846,
+            "cpuMs": 30.847,
+            "simulationMs": 2.537,
+            "visionMs": 5.612,
+            "scenarioMs": 0.022,
+            "scenarioEvaluated": true,
+            "broadcastMs": 22.675,
+            "checkpointMs": 0,
+            "planningMs": 0.462,
+            "planningTurns": 4,
+            "planningWorkItems": 32,
+            "planningExpandedCells": 1432
+          },
+          {
+            "tickNumber": 2331,
+            "durationMs": 27.38,
+            "cpuMs": 27.293,
+            "simulationMs": 14.035,
+            "visionMs": 5.393,
+            "scenarioMs": 0.03,
+            "scenarioEvaluated": true,
+            "broadcastMs": 7.922,
+            "checkpointMs": 0.001,
+            "planningMs": 0.005,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2190,
+            "durationMs": 26.598,
+            "cpuMs": 14.97,
+            "simulationMs": 8.743,
+            "visionMs": 2.632,
+            "scenarioMs": 0.033,
+            "scenarioEvaluated": true,
+            "broadcastMs": 13.464,
+            "checkpointMs": 1.726,
+            "planningMs": 0.107,
+            "planningTurns": 4,
+            "planningWorkItems": 32,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2700,
+            "durationMs": 25.473,
+            "cpuMs": 25.475,
+            "simulationMs": 7.853,
+            "visionMs": 1.656,
+            "scenarioMs": 0.017,
+            "scenarioEvaluated": true,
+            "broadcastMs": 14.374,
+            "checkpointMs": 1.573,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 1944,
+            "durationMs": 25.453,
+            "cpuMs": 23.788,
+            "simulationMs": 4.467,
+            "visionMs": 4.725,
+            "scenarioMs": 0.178,
+            "scenarioEvaluated": true,
+            "broadcastMs": 16.082,
+            "checkpointMs": 0,
+            "planningMs": 0.003,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2334,
+            "durationMs": 24.85,
+            "cpuMs": 26.004,
+            "simulationMs": 8.86,
+            "visionMs": 3.836,
+            "scenarioMs": 0.025,
+            "scenarioEvaluated": true,
+            "broadcastMs": 12.127,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 1950,
+            "durationMs": 24.709,
+            "cpuMs": 13.186,
+            "simulationMs": 3.508,
+            "visionMs": 5.789,
+            "scenarioMs": 0.03,
+            "scenarioEvaluated": true,
+            "broadcastMs": 9.217,
+            "checkpointMs": 6.165,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 1947,
+            "durationMs": 24.146,
+            "cpuMs": 12.935,
+            "simulationMs": 8.981,
+            "visionMs": 6.34,
+            "scenarioMs": 0.039,
+            "scenarioEvaluated": true,
+            "broadcastMs": 8.785,
+            "checkpointMs": 0.001,
+            "planningMs": 0.003,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          }
+        ],
+        "totalTickP99Ms": 24.146,
+        "cpuMs": {
+          "p95": 16.256,
+          "max": 97.317
+        },
+        "overBudgetDetails": [
+          {
+            "tickNumber": 2232,
+            "durationMs": 40.461,
+            "cpuMs": 97.317,
+            "simulationMs": 9.211,
+            "visionMs": 7.851,
+            "scenarioMs": 0.294,
+            "scenarioEvaluated": true,
+            "broadcastMs": 23.104,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2274,
+            "durationMs": 35.26,
+            "cpuMs": 41.525,
+            "simulationMs": 7.826,
+            "visionMs": 2.771,
+            "scenarioMs": 15.754,
+            "scenarioEvaluated": true,
+            "broadcastMs": 8.908,
+            "checkpointMs": 0.001,
+            "planningMs": 0,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          }
+        ]
+      },
+      "healthObservations": {
+        "beforeCommands": {
+          "firstSampleTick": 1533,
+          "lastSampleTick": 1832,
+          "startLagP95Ms": 0.744,
+          "startLagMaxMs": 33.697,
+          "scheduler": {
+            "policy": "drop-elapsed-slots",
+            "skippedTickSlotsTotal": 10,
+            "lastOverloadSkippedSlots": 1,
+            "lastOverloadTick": 1803
+          }
+        },
+        "afterWitness": {
+          "firstSampleTick": 2463,
+          "lastSampleTick": 2762,
+          "startLagP95Ms": 0.981,
+          "startLagMaxMs": 10.905,
+          "scheduler": {
+            "policy": "drop-elapsed-slots",
+            "skippedTickSlotsTotal": 13,
+            "lastOverloadSkippedSlots": 1,
+            "lastOverloadTick": 2274
+          }
+        }
+      },
+      "limits": [
+        "native two-seat loopback, 160x160 fog map padded from Fortified Crossing; no scripted rewards or actor injection",
+        "whole outer tick includes planning, movement/combat/economy, vision, scenario, broadcast and synchronous checkpoint work",
+        "three at-least-300-tick command phases; actual endpoints/checkpoint tail retained, all unique samples kept",
+        "health lag/scheduler observations name their rolling windows, not exact checkpoint-boundary lag samples",
+        "timers measure but do not choose authoritative planner work; callback-control planning runs outside tick timing",
+        "shared cloud host and diagnostic polling overhead; no renderer, device capacity, timer-quality or causal speedup claim"
+      ]
+    }
+  ],
+  "pilots": [
+    {
+      "artifact": "pilot-invalid-map.json.gz",
+      "head": "e14554f5089ff3e34bf426c7f9375927e1321730",
+      "sourceSha256": "2d1ae77d8bbcd5cd03210f527a642d019bf79e40176e3b14214e097d66a6dff2",
+      "qualification": "excluded: invalid null timedVictory, admission wait timed out",
+      "failure": "paid map timeout at tick 603: RTS prototype server listening at http://127.0.0.1:45255 · map fortified-crossing\n",
+      "sha256": "adfa361f313557e5d6f099ea786bcbd363c80fbc399a68b821c14d06a8bea612",
+      "compressedSha256": "147682c16930d00f4809ab9d8dddfdebd94432a5289268af378fbf7b729c26a0"
+    },
+    {
+      "artifact": "pilot-research-token.json.gz",
+      "head": "392188cb81dd45f1356dc48b8bda11c99a747051",
+      "sourceSha256": "2d1ae77d8bbcd5cd03210f527a642d019bf79e40176e3b14214e097d66a6dff2",
+      "qualification": "excluded: legacy token-free research notice was not observed",
+      "failure": "researchUpgrade applied timeout at tick 1761: RTS prototype server listening at http://127.0.0.1:39093 · map fortified-crossing\n",
+      "sha256": "d8cf0f4931715fb4b078f59554cbed62cc05c1c3b64c4742210515dd1d8435b8",
+      "compressedSha256": "a47c1523241999fb92c4e7f1eacc919776dd7ef0faf2bff1977984b4dc635e9a"
+    },
+    {
+      "artifact": "pilot-passing-previous-source.json.gz",
+      "head": "abcdc23ec2c4824ea8d17e98c7322468728b9b3d",
+      "sourceSha256": "2d1ae77d8bbcd5cd03210f527a642d019bf79e40176e3b14214e097d66a6dff2",
+      "qualification": "Excluded: passed at previous main/source; qualified matrix uses 61156a1c.",
+      "failure": null,
+      "sha256": "caf2604f45d03a064ea1b1b8e9045c894ba556e65ef0d26df1884c5d90bef276",
+      "compressedSha256": "9e5bce38f6bb32b969c0e5e58bfc01b2f0a1a9e7d1cb555f6d52ec1663b20813"
+    }
+  ]
+}

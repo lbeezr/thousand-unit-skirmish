@@ -41,7 +41,7 @@ and `src/pve-match.mjs` are authoritative.
 | `RTS_TICK_DIAGNOSTICS=1` | Enable detailed tick diagnostics. |
 | `RTS_SEPARATION_DIAGNOSTICS=1` | Enable neighbor/separation work counters. |
 | `RTS_SHARED_MOVE_PATHS=0` | Disable shared move paths for comparison. Normal runs leave this enabled. |
-| `RTS_MOVE_PLANNING_TURNS_PER_TICK` | Experimental fixed planning turns at the tick boundary: 1, 4 or 8. Absent/0 retains callback scheduling. See the [comparison and limitations](qa-move-planning-tick-budget-2026-10-04.md); ordinary runs leave this unset. |
+| `RTS_MOVE_PLANNING_TURNS_PER_TICK` | Fixed planning reproduction controls at the tick boundary: 1, 4 or 8. Absent/0 retains callback scheduling after four turns failed [paid whole-tick qualification](qa-paid-battle-tick-budget-2026-10-04.md). See the earlier [comparison and limitations](qa-move-planning-tick-budget-2026-10-04.md); ordinary runs leave this unset. |
 | `RTS_GAME_MODE=pve` | Direct-worker deterministic opponent mode. Default is `pvp`. |
 | `RTS_PVE_MAP_SEED`, `RTS_PVE_POLICY_SEED` | Required unsigned 32-bit seeds for direct PvE launch. The normal Play vs AI flow supplies them. |
 | `CHROME_PATH` | Browser executable for supported capture/scenario scripts. |
