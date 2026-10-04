@@ -141,6 +141,9 @@ try {
   const journeys = seats.map(async client => {
     const team = client.team, sign = team ? 1 : -1, workers = own(client.current, team, 'worker').map(row => row[0]);
     const infantry = own(client.current, team, 'infantry').map(row => row[0]);
+    // Keep the economy/travel measurement peaceful using a normal player command.
+    // Aggressive idle actors otherwise attack the opposite seat's returning miners.
+    await order(client, { type: 'setStance', stance: 'noAttack', ids: infantry }, 'STANCE ORDER');
     client.send({ type: 'move', ids: infantry.slice(1), x: sign * 68.5, z: 14.5 });
     const foot = tracked(travel(client, infantry[0], { x: -sign * 57.5, z: -2.5 }, 'infantry'));
     const worker = tracked(travel(client, workers[0], { x: -sign * 57.5, z: 0.5 }, 'worker')
@@ -152,6 +155,7 @@ try {
     await order(client, { type: 'gather', ids: [workers[2]], nodeId: `s${team}-home-wood` }, 'GATHER ORDER');
     await order(client, { type: 'trainUnit', buildingId: stable.id, kind: 'scout' }, 'SCOUT QUEUED');
     const spawned = await client.state(state => own(state, team, 'scout').length === 1);
+    await order(client, { type: 'setStance', stance: 'noAttack', ids: [own(spawned, team, 'scout')[0][0]] }, 'STANCE ORDER');
     const scout = tracked(travel(client, own(spawned, team, 'scout')[0][0], { x: -sign * 57.5, z: 3.5 }, 'scout'));
     const food = await client.state(state => state.tick >= spawned.tick && state.food[team] > 150 - 40);
     report.economy.push({ team, event: 'paid-food-deposit', stock: food.food[team], gameSeconds: food.matchElapsedSeconds });
