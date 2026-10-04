@@ -35,8 +35,9 @@ Small uses its actual base/campus/resource locations without economy injection.
 
 The separate capacity harness starts a fresh disposable two-seat server per
 load, uses existing army-size diagnostics above 24, and sends three target-region
-order waves. Each lasts at least 300 game ticks. It records final-notice receipt,
-first observed movement receipt, own-seat movement, completed routes/failures,
+order waves. Each lasts at least 300 game ticks after a conservative post-acceptance
+checkpoint. It records final-notice receipt,
+first observed movement receipt, own-seat movement, computed paths/route failures,
 tick/start lag/skips, checkpoint clocks/costs, server versus collector RSS,
 compressed payload/wire deltas and same-seat cold recovery. It preserves full
 raw health samples and failures, stops at a configured RSS ceiling and cleans

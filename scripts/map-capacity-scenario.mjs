@@ -30,7 +30,7 @@ const report = { schemaVersion: 1, sourceCommit: execFileSync('git', ['rev-parse
   mapId: map.id, mapSHA256: hash(mapBytes), scriptSHA256: hash(await readFile(fileURLToPath(import.meta.url))),
   startedAt: new Date().toISOString(), host: { platform: process.platform, arch: process.arch, cpus: os.cpus().length,
     cpuModel: os.cpus()[0]?.model, memoryBytes: os.totalmem(), loadBefore: os.loadavg(), isolated: false },
-  workload: { loads, wavesPerLoad: 3, secondsPerWave: seconds, fog: true, opening: '4 Workers per seat plus Infantry; existing selectArmySize diagnostics above 24',
+  workload: { loads, wavesPerLoad: 3, minimumWallSecondsPerWave: seconds, minimumGameTicksAfterAcceptance: 300, fog: true, opening: '4 Workers per seat plus Infantry; existing selectArmySize diagnostics above 24',
     memoryStopBytes: rssStop, capacityClaim: false, fullArmyArrival: false, paidEconomy: false, browser: false, hosted: false,
     clockMethod: 'checkpoint game seconds divided by checkpoint capture savedAt wall timestamps within each wave',
     noticeMethod: 'clientOrderToken final notice receipt; first observed movement from an authoritative stopped checkpoint baseline, neither is exact server application' }, loads: [] };
@@ -167,10 +167,20 @@ async function runLoad(count) {
       });
       const noticeMs = await Promise.all(clients.map(c => order(c, { type: 'move', ids: own(c.current, c.team).map(u => u[0]),
         x: c.team === 0 ? offset : -offset, z, formation: 'box' }, 'MOVE ORDER')));
+      // Final notices have no tick. A later captured checkpoint supplies a
+      // conservative post-acceptance tick, excluding all preparation ticks.
+      const acceptedAt = Date.now(), acceptanceDeadline = performance.now() + 5000;
+      let acceptedWindowStart;
+      do {
+        try { const saved = JSON.parse(await readFile(checkpoint, 'utf8'));
+          if (saved.savedAt >= acceptedAt) acceptedWindowStart = { tick: saved.state.tickNumber, savedAt: saved.savedAt }; } catch {}
+        if (!acceptedWindowStart) await sleep(100);
+      } while (!acceptedWindowStart && performance.now() < acceptanceDeadline);
+      assert.ok(acceptedWindowStart, 'Each wave needs a conservative post-acceptance tick');
       while (performance.now() - began < seconds * 1000) { await sleep(Math.min(1000, seconds * 1000 - (performance.now() - began))); await capture(); }
       // Fill the actual 300-tick sample window even if the scheduler skipped slots.
       let after = await capture(); const deadline = performance.now() + 5000;
-      while ((after.health.tickTiming.sampleCount < 300 || clients[0].current.tick - starts[0].tick < 300) && performance.now() < deadline) {
+      while ((after.health.tickTiming.sampleCount < 300 || clients[0].current.tick - acceptedWindowStart.tick < 300) && performance.now() < deadline) {
         await sleep(100); after = await capture();
       }
       const plans = after.health.movePlanning.filter(p => p.orderId > priorOrder);
@@ -182,6 +192,7 @@ async function runLoad(count) {
         factor: (lastClock.gameSeconds - firstClock.gameSeconds) / ((lastClock.savedAt - firstClock.savedAt) / 1000) } : null;
       const wave = { targetRegion: name, targetZ: z, finalNoticeReceiptMs: noticeMs, firstObservedMovementReceiptMs: await Promise.all(movement),
         stoppedBaseline: { tick: stopped.state.tickNumber, savedAt: stopped.savedAt, unitsWithEmptyPaths: stopped.state.units.length },
+        acceptedWindowStart, observedGameTicksAfterAcceptance: clients[0].current.tick - acceptedWindowStart.tick,
         exactServerApplicationMs: null, movedBySeat: counts, fullArmyArrival: false, planning: plans, clock,
         tickTiming: after.health.tickTiming, separationWork: after.health.separationWork, checkpoint: after.health.checkpoint,
         transport: { compressedPeers: after.health.transport.compressionPeers,
@@ -195,7 +206,7 @@ async function runLoad(count) {
         skippedSlotDelta: after.health.tickTiming.scheduler.skippedTickSlotsTotal - before.health.tickTiming.scheduler.skippedTickSlotsTotal };
       record.waves.push(wave);
       assert.equal(plans.length, 2); assert.equal(after.health.tickTiming.sampleCount, 300);
-      assert.ok(clients[0].current.tick - starts[0].tick >= 300, 'Each wave must include 300 game ticks after submission');
+      assert.ok(clients[0].current.tick - acceptedWindowStart.tick >= 300, 'Each wave must include 300 game ticks after acceptance');
       assert.equal(after.health.connected, 2); assert.equal(after.health.checkpoint.failures, 0);
       for (const p of plans) { assert.equal(p.unitCount, count / 2); assert.equal(p.routeFailures, 0);
         assert.equal(p.nonEmptyPaths + p.alreadyInDestinationCell, p.unitCount); }
