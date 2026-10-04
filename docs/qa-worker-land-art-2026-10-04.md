@@ -423,3 +423,9 @@ attack timing/clamp, then supply build/repair/defeat and further real headings.
 still reports successful old64cc391e, predating every land slice. Parent's
 existing Railway/Mac route remains the identified delivery/native receiving
 owner; local browser fails sandbox-unavailable. No source merge is called delivery.
+
+
+[Clean NW food release](qa-evidence/worker-land-art-2026-10-04/food-north-west-clean-release.json)
+records exact clean code `95dc1d23f234b7cf4695bd9669846d4a1d95a0ca`,1176files,
+`sha256:2e7ac2f7b357ef2d6aceb7a86838d4f014755b55e6d017324394ab3a6e11e059`. All default runtime files are included; subsequent
+receipt/doc checkpoint is distinct from the measured source.
