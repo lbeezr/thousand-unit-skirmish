@@ -34,6 +34,7 @@ import { roomPresence } from './room-presence.mjs';
 import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
 import { mountAssetReadability } from './asset-readability.mjs';
+import { catalogBarracksObservation } from './catalog-barracks-observation.mjs';
 import { farmHarvestNode } from './farm-harvest.mjs';
 import { isPalisade } from './palisade-gate.mjs';
 import { attachBuildingSprite } from './building-sprites.mjs';
@@ -7498,7 +7499,8 @@ function pickForestCellAt(x, y) {
   let nearestDistance = 30 * 30;
   for (const [cell, slot] of forestTreeSlots) {
     if (latestForestStocks.get(cell) === 0) continue;
-    if (mapDefinition?.fogOfWar && latestFogCells?.[cell] !== 2) continue;
+    // Remembered crowns select their authored group; authority picks a live frontier.
+    if (mapDefinition?.fogOfWar && ![1, 2].includes(latestFogCells?.[cell])) continue;
     screenPoint.set(slot.x, groundHeight(slot.x,slot.z)+1.25, slot.z).project(camera);
     if (screenPoint.z < -1 || screenPoint.z > 1) continue;
     const treeX = (screenPoint.x * 0.5 + 0.5) * rect.width;
@@ -7525,7 +7527,8 @@ function pickHarvestableTreeAt(x, y) {
     // Decorative understory/land vegetation never enters this candidate list.
     for (const [cell, slot] of forestTreeSlots) {
       const stock = latestForestStocks.get(cell) ?? 6;
-      if (!(stock > 0) || (mapDefinition?.fogOfWar && latestFogCells?.[cell] !== 2)) continue;
+      // Remembered scenery names the authored group, never a live hidden stock pool.
+      if (!(stock > 0) || (mapDefinition?.fogOfWar && ![1, 2].includes(latestFogCells?.[cell]))) continue;
       const mesh = slot.stateMeshes?.[resourceVisualStage(stock, 6)] || slot.mesh;
       yield { forestCell: cell, mesh, index: slot.index };
     }
@@ -10537,6 +10540,18 @@ const assetReadability = roomPageUrl.searchParams.get('assetReadability') === '1
       focusGroundPointAtScreen({ x: building.x, z: building.z }, rect.left + rect.width * 0.4, rect.top + rect.height * 0.5);
     },
   }) : null;
+// Isolated QA observations over the same ordinary renderer; assets never depend
+// on either review flag. The geometric projection is read-only.
+const catalogBarracksCapture = roomPageUrl.searchParams.get('rendererCapture') === 'environment-state'
+  && roomPageUrl.searchParams.get('assetScenario') === 'catalog-barracks'
+  ? { frame: 0, snapshot: null, project: ({ x, z, height = 0 }) => {
+    if (![x, z, height].every(Number.isFinite)) return null;
+    const rect = renderer.domElement.getBoundingClientRect();
+    const point = new THREE.Vector3(x, groundHeight(x, z) + height, z).project(camera);
+    return { x: rect.left + (point.x * 0.5 + 0.5) * rect.width,
+      y: rect.top + (-point.y * 0.5 + 0.5) * rect.height, depth: point.z };
+  } } : null;
+if (catalogBarracksCapture) window.__rtsCatalogBarracksCapture = catalogBarracksCapture;
 function animate(now) {
   if ((cursorPointer || wallKeyboardCell || wallPlacementGesture.anchor || pendingWallPreview) && now - lastCursorSample >= 100) {
     lastCursorSample = now;
@@ -10687,6 +10702,12 @@ function animate(now) {
     assetReadability.update(now);
     window.__rtsAssetReadabilitySnapshot = assetReadability.snapshot;
   }
+  if (catalogBarracksCapture) catalogBarracksCapture.snapshot = catalogBarracksObservation({
+    frame: ++catalogBarracksCapture.frame, time: now, mapId: mapDefinition?.id, team: localTeam,
+    zoom: camera.zoom, viewport: [innerWidth, innerHeight], dpr: renderer.getPixelRatio(),
+    food: latestFood[localTeam], wood: latestWood[localTeam], selectedIds: selectedIds(), selectedBuildingId,
+    units, buildings: latestBuildings, buildingVisuals, project: catalogBarracksCapture.project,
+  });
   drawMinimap(now);
   fpsFrames++;
   fpsTime += frameDelta;

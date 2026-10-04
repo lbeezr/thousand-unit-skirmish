@@ -16,6 +16,46 @@ The blueprint-derived peoples and faction explorations propose character anatomy
 
 The [first-civilization architecture kit](frontier-civilization-art-style.md) develops a Bellweather-inspired Frontier building family, with [eight illustrated Complete concepts](lore/frontier-architecture.md) for wiki and production use. These are source concepts; runtime views and lifecycle integration proceed separately.
 
+## Visual development backing
+
+Every new or changed player-facing visual outcome must be backed by linked art,
+storyboards or explorations. This includes assets, procedural geometry/shaders,
+map composition, animation, combat/command cues, menus and HUD. Sound and story
+work should link their cue/story explorations and relevant world sources too.
+Use the [4 October gap inventory](art-direction-gaps-2026-10-04.md) to find
+existing backing and unanswered questions; implementation status remains in
+the owning guide and [adoption checklist](asset-adoption-checklist.md).
+
+Before producing or changing the presentation, record in its existing task,
+guide or PR:
+
+- **Intent and backing:** what the player should recognize or feel, its region,
+  culture/role where relevant, and the exact source board, study or exploration.
+  Link actual inspectable artwork or an accessible preserved artifact; prose,
+  file receipts and tests alone are not visual evidence.
+- **Selected treatment:** what is reused or changed, why it fits, and whether
+  the direction is selected, exploratory, rejected or a temporary placeholder.
+  Keep original sources and meaningful alternatives with selection reasons.
+- **Time and state:** for motion or transitions, a small storyboard or annotated
+  sequence showing trigger, key poses/states, contact/root, timing and loop/end.
+  UI flows can use annotated wireframes; materials can use paired visual studies.
+- **Game-scale target and delivery:** camera/scale, normal and strategic zoom,
+  both-team readability and relevant fog/accessibility constraints; consuming
+  runtime, retained owner and intended in-game check.
+
+Scale the backing to the change. A small correction can cite existing approved
+art and an annotated defect comparison; a new family needs identity/silhouette
+exploration, and a new transition needs its sequence. Reusing relevant sources
+does not require new generation or redesign. Rough storyboards and short usable
+sequences are sufficient to support incremental work; breadth before polish
+remains the animation priority. A private source stays within its existing access
+and publication scope, with availability recorded honestly.
+
+A board establishes design intent; actual ordinary-game evidence establishes
+appearance. Keep those claims separate. This adds a production input requirement,
+not a manager approval queue or a full-matrix merge gate. Pure internal refactors
+with no presentation change can record backing as not applicable.
+
 ## Camera, scale, and team identity
 
 | Convention | Rule |
