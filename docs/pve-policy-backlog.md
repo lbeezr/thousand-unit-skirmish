@@ -23,8 +23,12 @@ Current-main priority: Sheep integration PR249 changes the verified Tiny map's
 four food markers. Paid process recovery and both-seat strict cold-foundation
 repeats pass, but the refreshed full-match matrix times out at 3,600 seconds for
 seeds `[20260925, 0]` under both native identities; the opposite assignment
-repeats elimination at 2,236 seconds. The AI lane owns diagnosis and a bounded
-follow-up in policy/scenario modules. Preserve the older map's measurements;
+repeats elimination at 2,236 seconds. The AI lane's
+[bounded search follow-up](qa-pve-sheep-search-2026-10-04.md) gives the existing
+global grid first choice and distributes its cursor across rows. Native
+Skirmish pilots exactly repeat elimination at 2,705/1,564 seconds; full matrix,
+matched checkpoint, cold recovery and independent qualification remain receiving
+checks. Preserve the older map's measurements;
 do not infer new-map full-game readiness from them or from paid process recovery.
 
 | Rank / state | Next outcome and concrete action | Write boundary | Dependency / acceptance |
