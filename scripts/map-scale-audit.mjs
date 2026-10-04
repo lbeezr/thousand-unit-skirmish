@@ -10,7 +10,7 @@ import { canTraverseElevation, elevationPathCost } from '../src/elevation.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { PVE_MAP_IDS } from '../src/pve-match.mjs';
-import { NORMAL_MATCH_MAP_ID } from '../src/match-modes.mjs';
+import { NORMAL_MATCH_MAP_ID, matchModeDefinition } from '../src/match-modes.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const round = n => Number(n.toFixed(3));
@@ -206,8 +206,10 @@ export function auditMap(map, constants) {
   return { id: map.id, name: map.name, pool: map.region || map.audio?.packId?.startsWith('vaelora-') ? 'regional' : 'lab',
     purpose: ['shore-fishing', 'meshy-resource-review'].includes(map.id) ? 'micro-fixture'
       : map.id === 'siltmouths-confluence-grounds' ? 'admitted-test-arena'
+      : map.id === 'bannerfall-arena' ? 'quick-custom-mode'
       : map.region ? 'regional-skirmish' : 'lab',
     defaultPvp: map.id === constants.defaultMapId, seededPve: PVE_MAP_IDS.includes(map.id),
+    ordinaryPve: matchModeDefinition({ matchModeId: 'skirmish', matchModeVersion: 1 }).pveMapIds?.includes(map.id) ?? false,
     geometry: { columns: w, rows: h, cellSideWorldUnits: 1, worldWidth: w, worldHeight: h, area: size,
       terrainWalkableCells: size - count(obstacles), initialWalkableCells: size - count(blocked),
       initialWalkableFraction: round((size - count(blocked)) / size), reachableCellsBySeat: reachableCells,
