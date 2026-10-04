@@ -14,9 +14,10 @@ assert.ok(Number.isInteger(repeats) && repeats >= 1 && repeats <= 2);
 assert.ok(Number.isInteger(maxTicks) && maxTicks >= 300 && maxTicks <= 2700);
 configureForestGapReplay();
 const git = args => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
-const identity = { head: git(['rev-parse', 'HEAD']), sourceDirty: Boolean(git(['status', '--porcelain'])),
+const readIdentity = async () => ({ head: git(['rev-parse', 'HEAD']), sourceDirty: Boolean(git(['status', '--porcelain'])),
   fixtureSha256: createHash('sha256').update(await readFile(new URL('./forest-gap-fixture.mjs', import.meta.url))).digest('hex'),
-  runnerSha256: createHash('sha256').update(await readFile(new URL(import.meta.url))).digest('hex') };
+  runnerSha256: createHash('sha256').update(await readFile(new URL(import.meta.url))).digest('hex') });
+const identity = await readIdentity();
 const cases = selection === 'plug' ? [] : FOREST_GAP_CASES.filter(spec => selection === 'all'
   || (selection === 'small' ? spec.group === 16 && spec.formation === 'box' && spec.gap <= 1 : spec.gap === Number(selection.slice(4))));
 const specs = [...cases, ...(['small', 'all', 'plug'].includes(selection) ? [0, 1].map(team => ({ team, plug: true })) : [])];
@@ -55,11 +56,19 @@ try {
     assert.equal(measured.goalsUnchanged, true); assert.equal(measured.freeExit, true);
     assert.equal(measured.reformedAtAssignedGoals, true);
   }
+  assert.deepEqual(await readIdentity(), identity, 'source identity changed during the bounded run');
+  assert.equal(new Set(records.flatMap(record => record.runs.map(run => run.sourceSha256))).size, 1,
+    'server source changed between scenarios');
   report.outcome = 'passed';
 } catch (error) { report.outcome = 'failed'; report.failure = error.message; throw error; }
 finally {
   if (process.env.FOREST_GAP_RECORD) {
     const bytes = JSON.stringify(report, null, 2) + '\n';
-    await writeFile(process.env.FOREST_GAP_RECORD, process.env.FOREST_GAP_RECORD.endsWith('.gz') ? gzipSync(bytes) : bytes);
+    try {
+      await writeFile(process.env.FOREST_GAP_RECORD, process.env.FOREST_GAP_RECORD.endsWith('.gz') ? gzipSync(bytes) : bytes);
+    } catch (error) {
+      if (report.outcome !== 'failed') throw error;
+      console.error(`Failed to retain forest report: ${error.message}`);
+    }
   }
 }
