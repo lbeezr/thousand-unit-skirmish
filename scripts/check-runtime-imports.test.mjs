@@ -68,6 +68,27 @@ test('unclassified intermediates cannot hide backward static, lazy or re-export 
   }
 });
 
+test('HUD canonical helpers and compatibility entries stay outside authoritative domains and hosts', () => {
+  for (const helper of ['resource-format', 'population-readout', 'objective-summary']) {
+    const canonical = `src/client/hud/${helper}.mjs`;
+    const legacy = `src/${helper}.mjs`;
+    const helpers = {
+      [canonical]: 'export const label = 1;',
+      [legacy]: `export { label } from './client/hud/${helper}.mjs';`,
+    };
+    for (const root of ['src/gameplay-action-rules.mjs', 'src/map-utils.mjs', 'src/formation-assignment.mjs']) {
+      for (const target of [canonical, legacy]) {
+        assert.throws(() => check({ ...helpers, [root]: `import './${target.slice(4)}';` }),
+          /(?:rules|world|simulation) domain cannot reach client domain/, `${root} -> ${target}`);
+      }
+    }
+    for (const target of [canonical, legacy]) {
+      assert.throws(() => check({ ...helpers, 'server.mjs': `import './${target}';` },
+        { serverEntrypoints: ['server.mjs'] }), /server host reaches client domain/, `server.mjs -> ${target}`);
+    }
+  }
+});
+
 test('rules and world cannot reach higher policy domains, including through unknown modules', () => {
   assert.throws(() => check({
     'src/gameplay-action-rules.mjs': "import './bridge.mjs';",
