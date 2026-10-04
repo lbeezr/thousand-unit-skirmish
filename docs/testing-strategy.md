@@ -327,6 +327,12 @@ existing `game-dev` capture. It records the real source SHA and runtime/driver/m
 hashes, seed, Node/machine session, 2,000-unit workload, checkpoint/tick profile,
 unique run identity, requested/observed repetitions, no dedicated warmup, and
 one-second server RSS/host swap/root-cgroup observations.
+Observed Git SHA/dirtiness takes precedence over a separately recorded release
+declaration. The attack diagnostic keeps isolated temporary filenames and a stable
+map ID; only its exact owned untracked fixture is excluded from checkout dirtiness,
+while all map bytes remain hashed. Every resource timestamp, nonnegative value,
+finite memory limit and required environment/workload control is checked before
+matching two runs. Equal missing or `unknown` controls do not qualify.
 RSS values are [kernel-reported estimates](https://man7.org/linux/man-pages/man5/proc_pid_status.5.html).
 Shared [cgroup pressure counters](https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html#memory)
 are observations, not GPU memory or causal attribution; unavailable or unmatched

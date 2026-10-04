@@ -6,7 +6,7 @@ import { mkdir, mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
-import { comparePerformanceReports, observePerformanceResources, performanceIdentity, resourceSnapshot, resourceValidity } from './performance-run-evidence.mjs';
+import { checkpointAttackMap, comparePerformanceReports, observePerformanceResources, performanceIdentity, resourceSnapshot, resourceValidity } from './performance-run-evidence.mjs';
 
 const source = readFileSync(new URL('./performance-scenario.mjs', import.meta.url), 'utf8');
 const watermark = source.match(/const previousMoveOrderId = ([^;]+);/)?.[1];
@@ -75,6 +75,7 @@ test('timing limits apply to both issued and internal jobs without invalid metri
 });
 
 const memorySample = (monotonicMs, overrides = {}) => ({ monotonicMs, serverRssBytes: 90_000_000,
+  serverHighWaterRssBytes: 100_000_000, hostTotalBytes: 2_000_000_000,
   serverAtRootCgroup: true,
   hostAvailableBytes: 1_000_000_000, cgroupCurrentBytes: 300_000_000, cgroupLimitBytes: 2_000_000_000,
   cgroupLimitKind: 'finite', swapInPages: 0, swapOutPages: 0,
@@ -87,12 +88,15 @@ function performanceReport(index = 0) {
     schemaVersion: 1, runId: `run-${index}`, identityUnchanged: true,
     identity: { build: { kind: 'source-checkout', sourceRevision: sourceIds[index], sourceDirty: false,
       runtimeSha256: String(index + 3).repeat(64), driverSha256: 'a'.repeat(64) },
-    map: { id: 'open-field', sha256: 'b'.repeat(64), terrainSeed: 881 } },
-    configuration: { scope: 'native-cpu', workloadMode: 'move', durationSeconds: 10, repeatCount: 1,
+    map: { id: 'open-field', sha256: 'b'.repeat(64), terrainSeed: 881, width: 64, height: 64, fogOfWar: true } },
+    configuration: { scope: 'native-cpu', workloadMode: 'move', durationSeconds: 10, requestedRepeatCount: 1, repeatCount: 1,
+      durationKind: 'requested workload duration; server timing is a rolling 300-tick window',
       requestedUnitCount: 2000, verifiedUnitCount: 2000, formation: 'box', connectedTeams: 2,
-      diagnostics: 'on', planningTurnsPerTick: 0, matchModeId: 'authored', matchModeVersion: 1,
-      checkpointIntervalMs: 1000, tickRate: 30, window: '300 ticks', warmup: 'none', acceptedCommandReplay: 'not-recorded' },
-    environment: { machineSessionSha256: 'c'.repeat(64), node: 'test-runtime', renderer: 'none',
+      diagnostics: 'RTS_TICK_DIAGNOSTICS=1', planningTurnsPerTick: 0, matchModeId: 'authored', matchModeVersion: 1,
+      checkpointIntervalMs: 1000, tickRate: 30, window: 'rolling 300 server ticks after orders',
+      warmup: 'no dedicated warmup; first full window', acceptedCommandReplay: 'not-recorded; map seed and authored workload are controls' },
+    environment: { machineSessionSha256: 'c'.repeat(64), platform: 'linux', architecture: 'x64',
+      node: 'v24.14.0', cpuModel: 'test CPU', logicalCpuCount: 2, nodeOptionsSha256: 'd'.repeat(64), renderer: 'none',
       camera: 'not-applicable', resolution: 'not-applicable', powerState: 'unobserved' },
     resources: { samples, validity: resourceValidity(samples) }, outcome: 'passed', failure: null } };
 }
@@ -127,6 +131,22 @@ test('missing observations and counter resets stay explicit, including a lost mi
   assert.equal(resourceValidity([memorySample(0), middle, memorySample(10_000)]).status, 'not-comparable');
 });
 
+test('every resource timestamp, nonnegative observation and finite limit is required', () => {
+  for (const overrides of [{ monotonicMs: null }, { monotonicMs: -1 }, { monotonicMs: 20_000 },
+    { serverRssBytes: -1 }, { serverHighWaterRssBytes: null }, { hostTotalBytes: -1 },
+    { hostAvailableBytes: -1 }, { cgroupCurrentBytes: -1 }, { cgroupLimitBytes: null },
+    { cgroupLimitBytes: -1 }, { cgroupLimitKind: 'unlimited', cgroupLimitBytes: 1 },
+    { swapInPages: -1 }, { swapOutPages: 1.5 }, { cgroupEvents: { high: -1, max: 27, oom: 0, oom_kill: 0 } }]) {
+    const result = resourceValidity([memorySample(0), memorySample(5000, overrides), memorySample(10_000)]);
+    assert.notEqual(result.status, 'observed-without-disruption', JSON.stringify(overrides));
+  }
+  assert.equal(resourceValidity([memorySample(0), memorySample(0)]).status, 'unknown');
+  assert.equal(resourceValidity([null, null]).status, 'unknown');
+  assert.equal(resourceValidity([memorySample(0, { cgroupLimitBytes: null }), memorySample(10_000, { cgroupLimitBytes: null })]).status, 'unknown');
+  assert.equal(resourceValidity([0, 10_000].map(time => memorySample(time, { cgroupLimitKind: 'unlimited', cgroupLimitBytes: null }))).status,
+    'observed-without-disruption');
+});
+
 test('comparison recomputes resource validity and retains failures instead of hiding them behind a budget pass', () => {
   const failed = performanceReport(1);
   failed.measurementEvidence.resources.samples[1].cgroupEvents.oom_kill = 1;
@@ -144,6 +164,7 @@ test('build, workload, seed, warmup, instrumentation and machine mismatches refu
   for (const change of [
     item => { item.identity.build.sourceRevision = 'wrong'; }, item => { item.identity.build.sourceDirty = true; },
     item => { item.identity.build.driverSha256 = 'd'.repeat(64); }, item => { item.identityUnchanged = false; },
+    item => { item.identity.build.declaredRelease = { sourceRevision: sourceIds[0], sourceDirty: false }; },
     item => { item.identity.map.terrainSeed++; }, item => { item.identity.map.sha256 = 'e'.repeat(64); },
     item => { item.configuration.verifiedUnitCount = 1999; }, item => { item.configuration.warmup = 'five seconds'; },
     item => { item.environment.machineSessionSha256 = 'f'.repeat(64); },
@@ -167,6 +188,32 @@ test('software rendering and incomplete windows cannot be admitted as native or 
   assert.ok(comparePerformanceReports(performanceReport(), candidate, sourceIds).reasons.includes('mismatched:timing-budgets'));
 });
 
+test('equal missing or invalid environment and workload values cannot qualify as controls', () => {
+  for (const [section, field, value] of [
+    ...['node', 'platform', 'architecture', 'cpuModel', 'logicalCpuCount', 'nodeOptionsSha256'].map(field => ['environment', field, undefined]),
+    ...['node', 'platform', 'architecture', 'cpuModel', 'nodeOptionsSha256'].map(field => ['environment', field, 'unknown']),
+    ['environment', 'logicalCpuCount', -1], ['environment', 'camera', 'unknown'], ['environment', 'resolution', 'unknown'],
+    ...['durationSeconds', 'requestedRepeatCount', 'repeatCount', 'checkpointIntervalMs', 'tickRate', 'matchModeVersion', 'planningTurnsPerTick']
+      .map(field => ['configuration', field, -1]),
+    ['configuration', 'durationSeconds', 121], ['configuration', 'requestedRepeatCount', 6],
+    ['configuration', 'planningTurnsPerTick', 2], ['configuration', 'matchModeVersion', 2],
+    ...['diagnostics', 'window', 'warmup', 'acceptedCommandReplay', 'matchModeId', 'durationKind']
+      .map(field => ['configuration', field, 'unknown']),
+  ]) {
+    const reports = [performanceReport(), performanceReport(1)];
+    for (const report of reports) report.measurementEvidence[section][field] = value;
+    assert.equal(comparePerformanceReports(...reports, sourceIds).status, 'not-comparable', `${section}.${field}=${value}`);
+  }
+  for (const field of ['id', 'width', 'height', 'fogOfWar']) {
+    const reports = [performanceReport(), performanceReport(1)];
+    for (const report of reports) delete report.measurementEvidence.identity.map[field];
+    assert.equal(comparePerformanceReports(...reports, sourceIds).status, 'not-comparable', `map.${field}`);
+  }
+  const idle = [performanceReport(), performanceReport(1)];
+  for (const report of idle) Object.assign(report.measurementEvidence.configuration, { workloadMode: 'idle', requestedRepeatCount: 3 });
+  assert.equal(comparePerformanceReports(...idle, sourceIds).status, 'comparable-diagnostics', 'idle verifies one window rather than fabricating requested repetitions');
+});
+
 test('identity records actual source/map bytes and declared artifact identity instead of a workload label', async () => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-performance-identity-'));
   try {
@@ -185,6 +232,60 @@ test('identity records actual source/map bytes and declared artifact identity in
     assert.notEqual(changed.build.runtimeSha256, original.build.runtimeSha256);
     assert.equal(changed.build.driverSha256, original.build.driverSha256);
     assert.equal(changed.map.sha256, original.map.sha256);
+    const git = args => {
+      const result = spawnSync('git', args, { cwd: directory, encoding: 'utf8' });
+      assert.equal(result.status, 0, result.stderr); return result.stdout.trim();
+    };
+    git(['init', '-q']); git(['add', '.']);
+    git(['-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-qm', 'fixture']);
+    const checkoutSha = git(['rev-parse', 'HEAD']);
+    const clean = await performanceIdentity(directory, 'maps/map.json');
+    assert.equal(clean.build.kind, 'source-checkout'); assert.equal(clean.build.sourceRevision, checkoutSha);
+    assert.equal(clean.build.sourceDirty, false); assert.equal(clean.build.declaredRelease.sourceRevision, sourceIds[0]);
+    await writeFile(path.join(directory, 'server.mjs'), 'export const source = 2;');
+    const dirty = await performanceIdentity(directory, 'maps/map.json');
+    assert.equal(dirty.build.sourceDirty, true, 'a stale clean declaration cannot override observed dirtiness');
+    assert.equal(dirty.build.sourceRevision, checkoutSha);
+  } finally { await rm(directory, { recursive: true, force: true }); }
+});
+
+test('independent attack fixtures have stable raw map identity and exclude only the owned untracked map', async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-performance-attack-'));
+  const helper = new URL('./performance-run-evidence.mjs', import.meta.url).href;
+  const openField = { id: 'open-field', terrainSeed: 881, width: 64, height: 64, terrain: [1, 2], victoryHoldSeconds: 30 };
+  try {
+    await Promise.all(['src', 'maps', 'scripts'].map(name => mkdir(path.join(directory, name))));
+    await Promise.all(['server.mjs', 'package-lock.json', 'src/leaf.mjs', 'scripts/checkpoint-performance-scenario.mjs',
+      'scripts/performance-scenario.mjs', 'scripts/performance-run-evidence.mjs'].map(name => writeFile(path.join(directory, name), '{}')));
+    const git = args => {
+      const result = spawnSync('git', args, { cwd: directory, encoding: 'utf8' });
+      assert.equal(result.status, 0, result.stderr);
+    };
+    git(['init', '-q']); git(['add', '.']); git(['-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-qm', 'fixture']);
+    const script = `import { writeFile, rm } from 'node:fs/promises';
+      import { checkpointAttackMap, performanceIdentity } from ${JSON.stringify(helper)};
+      const root = process.argv[1], map = 'maps/.perf-checkpoint-' + process.pid + '.json';
+      await writeFile(root + '/' + map, JSON.stringify(checkpointAttackMap(${JSON.stringify(openField)})));
+      try { console.log(JSON.stringify({ pid: process.pid, identity: await performanceIdentity(root, map, { ownedTemporaryMapPath: map }) })); }
+      finally { await rm(root + '/' + map); }`;
+    const runs = [0, 1].map(() => {
+      const result = spawnSync(process.execPath, ['--input-type=module', '-e', script, directory], { encoding: 'utf8' });
+      assert.equal(result.status, 0, result.stderr); return JSON.parse(result.stdout);
+    });
+    assert.notEqual(runs[0].pid, runs[1].pid);
+    assert.deepEqual(runs[0].identity, runs[1].identity);
+    assert.equal(runs[0].identity.build.sourceDirty, false);
+    const map = `maps/.perf-checkpoint-${process.pid}.json`, options = { ownedTemporaryMapPath: map };
+    await writeFile(path.join(directory, map), JSON.stringify(checkpointAttackMap(openField)));
+    await writeFile(path.join(directory, 'other-untracked'), 'unrelated');
+    assert.equal((await performanceIdentity(directory, map, options)).build.sourceDirty, true);
+    await rm(path.join(directory, 'other-untracked'));
+    git(['add', map]); git(['-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-qm', 'tracked map']);
+    await writeFile(path.join(directory, map), JSON.stringify({ ...checkpointAttackMap(openField), terrainSeed: 882 }));
+    assert.equal((await performanceIdentity(directory, map, options)).build.sourceDirty, true, 'tracked map edits are never excluded');
+    assert.equal((await performanceIdentity(directory, map, options)).map.terrainSeed, 882, 'gameplay fields are not normalized out');
+    assert.deepEqual(checkpointAttackMap(openField).terrain, openField.terrain);
+    assert.equal(checkpointAttackMap(openField).victoryHoldSeconds, 30);
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
 

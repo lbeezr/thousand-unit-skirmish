@@ -8,7 +8,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { observePerformanceResources, performanceEnvironment, performanceIdentity } from './performance-run-evidence.mjs';
+import { checkpointAttackMap, observePerformanceResources, performanceEnvironment, performanceIdentity } from './performance-run-evidence.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SERVER_ENTRY = path.join(ROOT, 'server.mjs');
@@ -103,37 +103,9 @@ async function exitChild(child, timeoutMs = 5000) {
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), 'rts-checkpoint-performance-'));
 let mapRelativePath = 'maps/open-field.json';
 let tempMapPath = null;
-if (workloadMode === 'attack-move') {
-  const mapFilename = `.perf-checkpoint-${process.pid}.json`;
-  tempMapPath = path.join(ROOT, 'maps', mapFilename);
-  const openField = JSON.parse(await readFile(path.join(ROOT, 'maps/open-field.json'), 'utf8'));
-  await writeFile(tempMapPath, JSON.stringify({
-    ...openField,
-    id: `perf-checkpoint-${process.pid}`,
-    name: 'PERF CHECKPOINT BATTLE',
-    summary: '64 × 64 · OPEN COMBAT TEST · NO FOG',
-    spawnPoints: [{ team: 0, x: -16, z: 0 }, { team: 1, x: 16, z: 0 }],
-    fogOfWar: false,
-    resourceNodes: [],
-    obstacles: [],
-    triggers: [],
-    scenarioEvents: [],
-  }, null, 2));
-  mapRelativePath = `maps/${mapFilename}`;
-}
-const port = await reservePort();
+let port, identity, environment, server;
 const checkpointPath = path.join(tempRoot, 'match-state.json');
-const identity = await performanceIdentity(ROOT, mapRelativePath);
-const environment = await performanceEnvironment();
-const server = startChild('checkpointed server', [SERVER_ENTRY], {
-  ...process.env,
-  PORT: String(port),
-  RTS_HOST: '127.0.0.1',
-  RTS_MAP: mapRelativePath,
-  RTS_CUSTOM_MAP_DIRECTORY: path.join(tempRoot, 'custom-maps'),
-  RTS_MATCH_STATE_PATH: checkpointPath,
-  RTS_TICK_DIAGNOSTICS: '1',
-});
+const identityOptions = () => ({ ownedTemporaryMapPath: tempMapPath ? mapRelativePath : null });
 let load = null;
 const clients = [];
 let stopResources = null;
@@ -146,7 +118,7 @@ const runId = randomUUID();
 async function finishEvidence(outcome) {
   if (measurementEvidence) return measurementEvidence;
   const resources = stopResources ? await stopResources() : { samples: [], validity: { status: 'unknown', reasons: ['measurement-not-started'] } };
-  const finalIdentity = await performanceIdentity(ROOT, mapRelativePath);
+  const finalIdentity = await performanceIdentity(ROOT, mapRelativePath, identityOptions());
   measurementEvidence = { schemaVersion: 1, runId, identity, environment,
     identityUnchanged: JSON.stringify(identity) === JSON.stringify(finalIdentity),
     configuration: { scope: 'native-cpu', workloadMode, durationSeconds,
@@ -163,6 +135,22 @@ async function finishEvidence(outcome) {
   return measurementEvidence;
 }
 try {
+  if (workloadMode === 'attack-move') {
+    const mapFilename = `.perf-checkpoint-${process.pid}.json`;
+    const ownedMapPath = path.join(ROOT, 'maps', mapFilename);
+    const openField = JSON.parse(await readFile(path.join(ROOT, 'maps/open-field.json'), 'utf8'));
+    await writeFile(ownedMapPath, JSON.stringify(checkpointAttackMap(openField), null, 2), { flag: 'wx' });
+    tempMapPath = ownedMapPath;
+    mapRelativePath = `maps/${mapFilename}`;
+  }
+  port = await reservePort();
+  identity = await performanceIdentity(ROOT, mapRelativePath, identityOptions());
+  environment = await performanceEnvironment();
+  server = startChild('checkpointed server', [SERVER_ENTRY], {
+    ...process.env, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_MAP: mapRelativePath,
+    RTS_CUSTOM_MAP_DIRECTORY: path.join(tempRoot, 'custom-maps'), RTS_MATCH_STATE_PATH: checkpointPath,
+    RTS_TICK_DIAGNOSTICS: '1',
+  });
   initialHealth = await waitForHealth(port, server);
   assert.equal(initialHealth.checkpoint?.enabled, true, 'worker should have checkpointing enabled');
   stopResources = await observePerformanceResources(server.pid);
@@ -315,7 +303,7 @@ try {
     await once(load, 'exit');
   }
   await Promise.all(clients.map(closeSocket));
-  await exitChild(server);
+  if (server) await exitChild(server);
   if (tempMapPath) await rm(tempMapPath, { force: true });
   await rm(tempRoot, { recursive: true, force: true });
 }
