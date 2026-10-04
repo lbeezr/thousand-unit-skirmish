@@ -24,7 +24,9 @@ const contract = { tickRate: constant('TICK_RATE'), gatherRate: constant('GATHER
 const near = (a, b, message) => assert.ok(Math.abs(a - b) < 1e-5, `${message}: ${a} versus ${b}`);
 
 export async function measureFarmFoodPair(farmTeam, { workerCount = 3, windowSeconds = 60 } = {}) {
-  assert.ok([0, 1].includes(farmTeam) && [1, 3].includes(workerCount) && windowSeconds >= 20 && windowSeconds <= 180);
+  // Keep the declared opening windows before Millrace's timed supply rewards.
+  assert.ok([0, 1].includes(farmTeam) && [1, 3].includes(workerCount) && [20, 60].includes(windowSeconds),
+    'paired opening supports only 20-second smoke or 60-second measurements');
   const room = await createFortifiedFixture({ mapPath, timeoutMs: 90_000 });
   const frames = [[], []], observers = [];
   let clients, token = 1;
