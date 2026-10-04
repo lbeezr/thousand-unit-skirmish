@@ -2152,6 +2152,13 @@ resourceStateAssetsReady.then((status) => {
   if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state' || window.__rtsCaptureDiagnostics === true) {
     window.__rtsEnvironmentAssetStatus = status;
     window.__rtsEnvironmentCaptureCommand = (command) => sendCommand(command);
+    window.__rtsTreeTargetCapture = Object.freeze({ snapshot: treeTargetCaptureSnapshot,
+      pick: (x, y) => {
+        const rect = renderer.domElement.getBoundingClientRect();
+        const target = pickHarvestableTreeAt(x - rect.left, y - rect.top);
+        return target?.node ? { nodeId: target.node.id }
+          : target?.forestCell !== undefined ? { forestCell: target.forestCell } : null;
+      } });
   }
 });
 
@@ -7508,7 +7515,10 @@ function pickHarvestableTreeAt(x, y) {
   pointerNdc.set((x / rect.width) * 2 - 1, -(y / rect.height) * 2 + 1);
   camera.updateMatrixWorld(true);
   raycaster.setFromCamera(pointerNdc, camera);
-  function* candidates() {
+  return pickEnvironmentInstance(raycaster, harvestableTreeCandidates());
+}
+
+function* harvestableTreeCandidates() {
     // Forest cells and authored wood nodes are separate existing stock pools.
     // Decorative understory/land vegetation never enters this candidate list.
     for (const [cell, slot] of forestTreeSlots) {
@@ -7516,17 +7526,74 @@ function pickHarvestableTreeAt(x, y) {
       // Remembered scenery names the authored group, never a live hidden stock pool.
       if (!(stock > 0) || (mapDefinition?.fogOfWar && ![1, 2].includes(latestFogCells?.[cell]))) continue;
       const mesh = slot.stateMeshes?.[resourceVisualStage(stock, 6)] || slot.mesh;
-      yield { forestCell: cell, mesh, index: slot.index };
+      yield { forestCell: cell, mesh, index: slot.index, stock, x: slot.x, z: slot.z, family: slot.family };
     }
     for (const node of mapDefinition?.resourceNodes || []) {
       if (node.type !== 'wood' || !((latestResourceStocks.get(node.id) ?? node.stock) > 0)) continue;
       const cell = Math.floor(node.z + MAP_HEIGHT / 2) * MAP_WIDTH + Math.floor(node.x + MAP_WIDTH / 2);
       if (mapDefinition.fogOfWar && latestFogCells?.[cell] !== 2) continue;
       const mesh = woodTreeMeshes.get(woodTreeNodeStages.get(node.id));
-      for (const slot of woodTreeNodeSlots.get(node.id) || []) yield { node, mesh, index: slot.index };
+      for (const slot of woodTreeNodeSlots.get(node.id) || []) yield { node, mesh, index: slot.index,
+        stock: latestResourceStocks.get(node.id) ?? node.stock, x: slot.x, z: slot.z };
     }
+}
+
+// Read-only diagnostics for the shared ordinary capture adapter. It observes
+// the existing instances/seat stocks, without drawing or issuing an order.
+function treeTargetCaptureSnapshot() {
+  const rect = renderer.domElement.getBoundingClientRect();
+  camera.updateMatrixWorld(true);
+  const point = new THREE.Vector3(), matrix = new THREE.Matrix4();
+  const screen = (x, y, z) => {
+    point.set(x, y, z).project(camera);
+    return { x: rect.left + (point.x + 1) * rect.width / 2,
+      y: rect.top + (1 - point.y) * rect.height / 2, depth: point.z };
+  };
+  const describe = candidate => {
+    const { mesh, index } = candidate;
+    if (!mesh || !mesh.visible || index >= mesh.count) return null;
+    mesh.updateWorldMatrix(true, false); mesh.getMatrixAt(index, matrix); matrix.premultiply(mesh.matrixWorld);
+    if (matrix.determinant() === 0) return null;
+    const position = mesh.geometry.attributes.position;
+    let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity;
+    for (let vertex = 0; vertex < position.count; vertex++) {
+      point.fromBufferAttribute(position, vertex).applyMatrix4(matrix).project(camera);
+      if (Math.abs(point.z) > 1) return null;
+      const x = rect.left + (point.x + 1) * rect.width / 2, y = rect.top + (1 - point.y) * rect.height / 2;
+      left = Math.min(left, x); right = Math.max(right, x); top = Math.min(top, y); bottom = Math.max(bottom, y);
+    }
+    if (right < rect.left || left > rect.left + rect.width || bottom < rect.top || top > rect.top + rect.height) return null;
+    return { ...(candidate.node ? { nodeId: candidate.node.id } : { forestCell: candidate.forestCell }),
+      ...(candidate.stock === undefined ? {} : { stock: candidate.stock }),
+      family: candidate.family || null, bounds: { left, top, right, bottom },
+      root: screen(candidate.x, groundHeight(candidate.x, candidate.z) + 1.25, candidate.z) };
+  };
+  // Captures of current stock use currently disclosed art. The ordinary
+  // picker can separately name remembered authored forest groups.
+  const targets = [...harvestableTreeCandidates()].filter(candidate => candidate.node
+    || !mapDefinition?.fogOfWar || latestFogCells?.[candidate.forestCell] === 2).map(describe).filter(Boolean)
+    .sort((a, b) => Math.hypot(a.root.x - rect.left - rect.width / 2, a.root.y - rect.top - rect.height / 2)
+      - Math.hypot(b.root.x - rect.left - rect.width / 2, b.root.y - rect.top - rect.height / 2)).slice(0, 24);
+  const rejected = [];
+  const rejectionCounts = { hidden: 0, depleted: 0 };
+  for (const [cell, slot] of forestTreeSlots) {
+    const stock = latestForestStocks.get(cell) ?? 6;
+    const reason = mapDefinition?.fogOfWar && ![1, 2].includes(latestFogCells?.[cell]) ? 'hidden'
+      : (!mapDefinition?.fogOfWar || latestFogCells?.[cell] === 2) && stock <= 0 ? 'depleted' : null;
+    if (!reason || rejectionCounts[reason] >= 12) continue;
+    let target = describe({ forestCell: cell, mesh: slot.stateMeshes?.[resourceVisualStage(stock, 6)] || slot.mesh,
+      index: slot.index, x: slot.x, z: slot.z, ...(reason === 'depleted' ? { stock } : {}) });
+    const stump = reason === 'depleted' ? forestStumpSlots.get(cell) : null;
+    if (!target && stump?.visible && forestStumpMesh) target = describe({ forestCell: cell,
+      mesh: forestStumpMesh, index: stump.index, x: stump.x, z: stump.z, stock });
+    if (target) { rejected.push({ ...target, reason }); rejectionCounts[reason]++; }
+    if (rejectionCounts.hidden >= 12 && rejectionCounts.depleted >= 12) break;
   }
-  return pickEnvironmentInstance(raycaster, candidates());
+  return { mapId: mapDefinition?.id, epoch: latestForestEpoch, forestSlots: forestTreeSlots.size, zoom: camera.zoom,
+    viewport: { left: rect.left, top: rect.top, width: rect.width, height: rect.height }, targets, rejected,
+    workers: units.filter(unit => unit?.team === localTeam && unit.kind === 'worker' && unit.hp > 0).slice(0, 4)
+      .map(unit => ({ id: unit.id, worldX: unit.renderX, worldZ: unit.renderZ, selected: selected.has(unit.id),
+        ...screen(unit.renderX, groundHeight(unit.renderX, unit.renderZ) + .65, unit.renderZ) })) };
 }
 
 function pickBuildingAt(x, y, predicate = (building) => building.team === localTeam) {

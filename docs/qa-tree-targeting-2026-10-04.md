@@ -26,14 +26,25 @@ and directional views change presentation, not their IDs. Regional understory
 is attached to its host forest cell and clears with that cell. Canonical ridge
 grass and suncrest, other land vegetation, rocks and broken trunks are decorative;
 they have no separate wood stock. Depleted slots can retain stump artwork while
-their received stock is zero. Fog-hidden cells retain last-known stock and are
-excluded from visible-art picking.
+their received stock is zero. Unexplored forest is excluded from picking.
+Remembered forest scenery can name its public authored forest group; that does
+not disclose hidden current stock. The server chooses a live visible frontier.
 
 Six authored wood nodes use their existing `nodeId` and a separate stock pool.
 Forest wood remains 18,972 (3,162×6); authored node wood remains 7,950. No amounts,
 map bytes, art pixels, server jobs or economy rules change in this fix.
 
 ## Demonstrated discrepancy and default fix
+
+Visual development backing reuses the committed
+[highpine lifecycle page](../assets/environment/frontier-v1/veyrholds-lifecycle-atlas.png),
+[oak view](../assets/environment/frontier-meshy-fixed-camera-v3/oak/references/frames/color/view-00.png),
+[silver birch](../assets/environment/frontier-v1/silver-birch.png),
+[field maple](../assets/environment/frontier-v1/field-maple.png) and
+[hazel thicket](../assets/environment/frontier-v1/hazel-thicket.png).
+The bounded comparison is the same opaque crown texel against the former
+30-pixel trunk circle and the existing instance geometry at closest zoom.
+No new visual treatment is produced. Capture plumbing has N/A creative backing.
 
 The former forest picker scans a fixed 30-pixel circle at the trunk plus1.25
 world units. The new CPU regression decodes actual committed RGBA source pixels,
@@ -57,7 +68,7 @@ decoded images are read on each click. Alpha bytes are cached by image identity,
 without adding image requests or GPU textures. Level-zero alpha models ordinary
 magnified art; distant mip coverage still requires visual acceptance.
 
-Eight focused picker tests cover all five canonical families and normal
+Nine focused picker tests cover all five canonical families and normal
 context-click→Gather serialization, alpha overlaps/gaps, all current atlas
 attribute forms, generic stock-atlas map transforms, parent/mirror transforms,
 inactive/hidden/clipped instances, stock/fog negatives, image replacement,
@@ -74,20 +85,46 @@ node --test scripts/environment-instance-picking.test.mjs
 
 The qualified hosted backend in [PR323](https://github.com/lbeezr/thousand-unit-skirmish/pull/323)
 is proven; no repeated capability probe or Mac path is needed. The ordinary
-adapter interface is being integrated by the CI/capture owner in
-[PR331](https://github.com/lbeezr/thousand-unit-skirmish/pull/331). Terrain owns a
-bounded Terraced Vale tree case using that runner and its existing checkpoint
-helper. Its exact registered entry is a concrete shared dependency: the initial
-registry covers animation, novice flow, Worker routes and buildings, not trees.
-Do not substitute the old forced Open Field pilot for this case.
+version1 adapter interface from merged
+[PR331](https://github.com/lbeezr/thousand-unit-skirmish/pull/331) is reused by
+[`renderer-tree-targeting-scenario.mjs`](../scripts/renderer-tree-targeting-scenario.mjs),
+exporting `tree-targeting`, `contextVersion=1` and `run(context)` without a
+launcher or import-time work. Terrain owns this bounded Terraced Vale case.
+CI owns its shared registry/dispatch entry, requested on PR331; the initial
+registry covers animation, novice flow, Worker routes and buildings. No tree
+GPU run has occurred and the absent tree entry is not a passed capture.
 
-Enter through the normal menu, create a Terraced Vale Tiny room, select one
-Worker and click an opaque upper crown at ordinary and closest zoom. Capture
-the same default rendered frame, actual issued Gather identity and received
-forest/node stock. Check a decorative plant, fog-hidden cell and depleted tree;
-they must not manufacture a wood target. Repeat after a legitimate rematch or
-map rebuild and inspect lifecycle/root/depth registration. Preserve the
-forest-mass/frontier behavior owned by the server forest task `01a1072a`.
+The adapter enters through Create Room and the visible host lobby map control,
+connects a second ordinary seat, readies both players and launches Skirmish.
+It selects an own-seat Worker with pointer input and clicks a real home wood
+node. The canonical opening has no currently visible forest cells: the adapter
+issues a native Move to an open ground neighbor of public authored forest
+geometry and waits for actual movement and received visibility. It then clicks
+opaque forest pixels at ordinary zoom. It zooms through wheel input and
+clicks a crown beyond the old circle, records the actual native Gather send and
+applied-order acknowledgement, waits for legitimate harvested depletion,
+checks unexplored/depleted exclusions, then uses Reset battlefield, readies and
+launches the two-seat lobby again. It approaches the previously depleted
+identity, requires its full six wood and a new forest epoch, and clicks that
+same restored identity. Empty/partially restored target lists cannot pass.
+Source-bound before/issued/negative/reset PNGs
+receive small sanitized `tree-target.json` receipts. Stock, units, clips and
+map state are never injected. A bounded read-only diagnostic describes existing
+instances/seat stock and has no independent draw or command consumer. Hidden
+current stock and opponent Worker rows are omitted. Remembered last-known
+forest stock is omitted from current-stock capture targets while ordinary
+authored-group picking is preserved. Six CPU adapter contracts cover
+version/import, send privacy/bounds, independent-instance matching, open-ground
+selection and the real canonical authority Move/Gather sequence. The fixed-tick
+authority case reaches a visible frontier and depletes a real cell inside the
+adapter deadlines; it does not execute the browser lobby or render pixels.
+
+Inspect those actual images for root/depth/zoom/depletion, and click a visible
+decorative plant separately; it must not manufacture wood. Decorative exclusion
+is proven at source/CPU level but is not yet a separate image checkpoint in the
+bounded adapter. Preserve the forest-mass/frontier behavior owned by server
+forest task `01a1072a`. Missing negative targets return blocked checks; a phase
+timeout/error fails and cannot become an ordinary-game pass.
 
 Record tested source, clean release digest and deployed source separately in
 the owning PR. Source/CPU/package checks do not close ordinary pixels or staging
