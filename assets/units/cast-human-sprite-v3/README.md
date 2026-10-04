@@ -60,3 +60,15 @@ still returns idle: animation owner01a103d4 must adopt this state with exact
 missing-heading idle fallback. This is packed art, not a claim of Stone gameplay
 playback. All eight walks remain default functional; native/deployment acceptance
 is open and49 other land-action/heading cells remain.
+
+
+Version0.21.0 adds three actual **NW wood** compact axe windup/strike/recovery
+keys,240ms each. [Both source iterations](../../../docs/art-direction/human-roster-v1/generated/worker-wood-north-west-v2/README.md)
+are preserved; rejected overhead v1 is not runtime art. Rebuild with
+`python3 scripts/admit-worker-wood-north-west.py`. Shared scale/pivot retains
+world units per pixel; all128 old records/pixels and53 clips remain exact.
+A right-side strip grows the single color/mask page2048→2560 wide, height4096
+unchanged, with a zero mask extension. Existing default productive wood selector
+uses this exact heading. Six other missing wood headings retain exact idle.
+See the land checkpoint for preservation/default CPU playback; identified
+native/deployed function remains open with48 remaining art cells.

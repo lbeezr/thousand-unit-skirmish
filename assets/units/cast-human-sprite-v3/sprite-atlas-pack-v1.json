@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "packId": "cast-human-sprite",
-  "packVersion": "0.20.0",
+  "packVersion": "0.21.0",
   "maturity": "runtime-candidate",
   "provenance": {
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
     "source": "Vaelora Human roster role and action sheets",
     "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging",
-    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four-key hand-net fishing pilot for the actual south-east heading, approved for public/default integration. Original four pose pixels preserved. Seven fishing headings remain unproduced; root/loop polish remains tracked in docs/worker-fishing-animation.md. East walk reuses eight retained current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. South walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North-West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. Stone SE walk reuses four dedicated pick-windup/strike/recovery keys; default selector adoption owned by animation owner; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage."
+    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four-key hand-net fishing pilot for the actual south-east heading, approved for public/default integration. Original four pose pixels preserved. Seven fishing headings remain unproduced; root/loop polish remains tracked in docs/worker-fishing-animation.md. East walk reuses eight retained current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. South walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North-West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. Stone SE walk reuses four dedicated pick-windup/strike/recovery keys; default selector adoption owned by animation owner; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW wood work adds three compact axe windup/strike/recovery keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage."
   },
   "files": [
     {
@@ -16,10 +16,10 @@
       "usage": "source",
       "format": "png",
       "dimensionsPx": {
-        "width": 2048,
+        "width": 2560,
         "height": 4096
       },
-      "sha256": "dd135521c4ed6802dc78635826af4ec8664c64fa601f8da1a47a96e1d0bab038"
+      "sha256": "f9f2f82e9c349bf00b4daeeffaf111697c251b26fdeee7baf291256774b13e64"
     },
     {
       "id": "cast-human-atlas-runtime",
@@ -27,10 +27,10 @@
       "usage": "runtime",
       "format": "png",
       "dimensionsPx": {
-        "width": 2048,
+        "width": 2560,
         "height": 4096
       },
-      "sha256": "dd135521c4ed6802dc78635826af4ec8664c64fa601f8da1a47a96e1d0bab038"
+      "sha256": "f9f2f82e9c349bf00b4daeeffaf111697c251b26fdeee7baf291256774b13e64"
     },
     {
       "id": "cast-human-team-mask",
@@ -38,10 +38,10 @@
       "usage": "team-mask",
       "format": "png",
       "dimensionsPx": {
-        "width": 2048,
+        "width": 2560,
         "height": 4096
       },
-      "sha256": "074b247161d7a4a1839f7d6dad87816a9ccf73b24acf29d75a7cd4629815cfb3"
+      "sha256": "d740bcc5711c84da12c15abbbbd2bfa51113a1369a9214d2fb39ec73d6815fb0"
     }
   ],
   "pages": [
@@ -51,7 +51,7 @@
       "runtimeFileId": "cast-human-atlas-runtime",
       "maskFileId": "cast-human-team-mask",
       "dimensionsPx": {
-        "width": 2048,
+        "width": 2560,
         "height": 4096
       },
       "colorSpace": "srgb",
@@ -5627,6 +5627,135 @@
             }
           ],
           "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-wood-north-west-0",
+          "groundPivotPx": {
+            "x": 160,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 95,
+            "y": 37,
+            "width": 129,
+            "height": 271
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 2048,
+              "y": 0,
+              "width": 320,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 2048,
+                "y": 0,
+                "width": 320,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-wood-north-west-1",
+          "groundPivotPx": {
+            "x": 160,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 26,
+            "y": 78,
+            "width": 202,
+            "height": 230
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 2048,
+              "y": 320,
+              "width": 320,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 2048,
+                "y": 320,
+                "width": 320,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-wood-north-west-2",
+          "groundPivotPx": {
+            "x": 160,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 62,
+            "y": 81,
+            "width": 161,
+            "height": 227
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 2048,
+              "y": 640,
+              "width": 320,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 2048,
+                "y": 640,
+                "width": 320,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
         }
       ],
       "clips": [
@@ -6626,6 +6755,25 @@
             {
               "frameId": "gather-stone-south-east-3",
               "durationMs": 210
+            }
+          ]
+        },
+        {
+          "stateId": "gather-wood",
+          "directionId": "north-west",
+          "loop": true,
+          "sequence": [
+            {
+              "frameId": "gather-wood-north-west-0",
+              "durationMs": 240
+            },
+            {
+              "frameId": "gather-wood-north-west-1",
+              "durationMs": 240
+            },
+            {
+              "frameId": "gather-wood-north-west-2",
+              "durationMs": 240
             }
           ]
         }
