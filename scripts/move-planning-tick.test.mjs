@@ -91,4 +91,26 @@ for(const turns of [1,4,8]) {
       assert.deepEqual(r.units.filter(u=>u.team===0&&u.kind==='infantry').map(u=>u.moveGoalCell),goals);
     } finally {await dispose();}
   });
+  test(`${turns} turns: Stop after a serviced turn preserves the stationary actor`,async()=>{
+    const {r,army,dispose}=await fixture(turns);
+    try {
+      move(r,army);r.step();
+      const stopped=army.slice(0,8);
+      r.order(0,{type:'stop',ids:stopped.map(u=>u.id)});
+      const before=JSON.stringify(state(stopped));
+      for(let i=0;i<20;i++)r.step();
+      assert.equal(JSON.stringify(state(stopped)),before);
+    } finally {await dispose();}
+  });
+  test(`${turns} turns: queued route turns finish at their own preserved goals`,async()=>{
+    const {r,army,dispose}=await fixture(turns);
+    try {
+      move(r,army);
+      const notices=r.order(0,{type:'move',queue:true,ids:army.map(u=>u.id),x:20.5,z:-8.5});
+      assert.ok(notices.some(n=>n.message==='WAYPOINT QUEUED · 64 UNITS'));
+      const goals=army.map(u=>u.queuedWaypoints[0].destination);
+      for(let i=0;i<1800&&!army.every((u,j)=>u.moveGoalCell===goals[j]&&arrived(r,u));i++)r.step();
+      assert.ok(army.every((u,j)=>u.moveGoalCell===goals[j]&&arrived(r,u)&&u.queuedWaypoints.length===0));
+    } finally {await dispose();}
+  });
 }
