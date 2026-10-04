@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { checkRendererCapability, runRendererCapability } from './renderer-capability.mjs';
 
 const getSource = () => ({ revision: '1'.repeat(40), dirty: false });
-const goodGraphics = { available: true, renderer: { unmaskedName: 'ANGLE (SwiftShader)' },
+const goodGraphics = { available: true, renderer: { version: 'WebGL 2.0 (test)', unmaskedName: 'ANGLE (SwiftShader)' },
   contextLost: false, glError: 0, samples: [[17, 33, 65, 255], [91, 123, 177, 255]] };
 function fixture(graphics = goodGraphics, { errors = [], consoleError = false, cleanupError = false } = {}) {
   let attempts = 0, disposed = 0;
@@ -25,6 +25,7 @@ test('ready requires two distinct exact WebGL readbacks, source/backend metadata
 });
 test('missing WebGL, frozen readback, GL/context/console errors and cleanup all block', async () => {
   for (const [graphics, options] of [[{ available: false }, {}], [{ ...goodGraphics, samples: [goodGraphics.samples[0], goodGraphics.samples[0]] }, {}],
+    [{ ...goodGraphics, renderer: { version: 'WebGL 1.0' } }, {}],
     [{ ...goodGraphics, glError: 1282 }, {}], [{ ...goodGraphics, contextLost: true }, {}],
     [goodGraphics, { errors: ['exception'] }], [goodGraphics, { consoleError: true }], [goodGraphics, { cleanupError: true }]]) {
     const f = fixture(graphics, options), result = await checkRendererCapability({ openBrowser: f.openBrowser, getSource });

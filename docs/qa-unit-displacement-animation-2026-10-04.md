@@ -16,7 +16,7 @@ server path generation, paid production and Stop-command handling are separate.
 
 The two approved manifests are Worker v0.33 (`cast-human-sprite-v3`) and
 Spearman v0.3 (`spearman-sprite-v1`). Runtime PNG hashes are verified against
-their manifests; Pillow decodes their actual actor cells. Pixel hashes anchor
+their manifests; the existing Node RGBA decoder reads their actual actor cells. Pixel hashes anchor
 the ground pivot and clear RGB under transparent pixels, preventing atlas
 offsets or invisible bytes from faking advancement. Named walk keys aliasing
 identical visible cells fail. Exact pixel differences establish source change,
@@ -35,7 +35,7 @@ injects identical fingerprints into the comparison; it does not alter PNGs.
 The positive run exits 0 with `passed-with-art-gaps`; each negative run exits 1.
 Syntax, architecture and checked-JavaScript/Node boundaries also pass.
 
-Run from the repository with Node dependencies and Python/Pillow installed:
+Run from the repository with the locked Node dependencies installed:
 
 ```sh
 node scripts/unit-displacement-animation-scenario.mjs --output=/tmp/unit-animation-proof
@@ -46,7 +46,7 @@ node scripts/unit-displacement-animation-scenario.mjs --output=/tmp/unit-animati
 
 Each run writes `checks.json` with source revision/dirty flag, pack/PNG hashes,
 per-case UV/frame/heading/displacement samples, missing art and failures. This
-is an owner-run diagnostic; it does not add Python/Pillow to standard Node CI.
+is an owner-run diagnostic and requires no browser, Python or new dependency.
 The extraction fails if the committed client loop/constants move, rather than
 silently testing a copied implementation. Texture loading uses a CPU stub.
 

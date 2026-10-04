@@ -26,7 +26,7 @@ function baseReport(source) {
 function probeWebGL() {
   const canvas = document.createElement('canvas');
   canvas.width = 32; canvas.height = 32; document.body.append(canvas);
-  const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+  const gl = canvas.getContext('webgl2');
   if (!gl) return { available: false };
   const debug = gl.getExtension('WEBGL_debug_renderer_info');
   const renderer = { version: gl.getParameter(gl.VERSION), vendor: gl.getParameter(gl.VENDOR),
@@ -56,6 +56,7 @@ export async function checkRendererCapability({ openBrowser = createFortifiedBro
       });
       const graphics = await page.cdp.evaluate(`(${probeWebGL.toString()})()`);
       assert.equal(graphics?.available, true, 'WebGL context is unavailable');
+      assert.match(graphics.renderer?.version ?? '', /^WebGL 2\.0/, 'WebGL2 is required by the production renderer');
       result.renderer = graphics.renderer;
       const name = graphics.renderer.unmaskedName;
       result.softwareRenderer = name ? /swiftshader|llvmpipe|lavapipe|softpipe|software|basic render/i.test(name) : null;
