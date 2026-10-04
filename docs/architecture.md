@@ -110,9 +110,11 @@ Current memberships reflect current responsibilities: `wildlife-client-state`
 is a portable disclosed reader, `worker-fishing-presentation` a portable projection,
 and the Worker receipt journal belongs to simulation. `camera-controls` is
 currently pure camera/projection math consumed by rendering, not a DOM input
-adapter. `audio-event-profile` explicitly retains its mixed map/playback role;
-server hosts may use its validator, but lower domains cannot acquire that profile.
-Candidate PR2 removes the mixed responsibility by extracting only that validator.
+adapter. [PR298](https://github.com/lbeezr/thousand-unit-skirmish/pull/298) separates
+`validateMapAudioReference` into the portable `world/map-audio-reference` leaf.
+`audio-event-profile` retains playback policy and the named compatibility export;
+existing hosts keep that import, while new lower-domain consumers use the world
+validator. Lower domains cannot acquire the playback profile.
 These classifications do not prove absence of DOM/storage globals, injected
 callbacks, hidden-state misuse or lifetime errors; those still need owner review
 and consumer contracts. The existing audit JSON keys and empty cycle ledger stay
@@ -350,6 +352,22 @@ PR8 waits for the asset/renderer owner's agreed lifetime interface.
 | 7 — map-authoring owner after PR1 | `src/scenario-authoring.mjs`, `src/map-resize.mjs` → proposed `src/authoring/` counterparts with named forwarding entries. Bounded edit history/gestures and authored-marker resizing get their own home. `map-studio-viewport` stays for a later slice: no direct viewport contract was found in scripts. No map validators, gameplay defaults, resource brush schema or `main.js` editor-loop rewrite. | `scripts/scenario-authoring.test.mjs`, `scripts/map-persistence-scenario.mjs`, `scripts/map-studio-draft-scenario.mjs` and `scripts/game-menu-scenario.mjs`. Preserve undo/redo bounds, gesture clipping and resized marker identities/coordinates; JSON output and publish/reopen behavior remain identical. |
 | 8 — environment/asset-loading owner after PR1–2 and renderer agreement | Extract only `fetchVerifiedRuntimeImage` from `src/environment-art.mjs` into proposed `src/presentation/assets/interactive-runtime-image.mjs`. Pass the existing root/loader dependencies explicitly; keep manifest selection, material registries, resource-state status, `resourceStateAssetsReady`, oak fallback and batch mutation in the old module. | Focused hash/dimension/failure/disposal contract using the actual exported helper; existing resource visual, oak depletion, environment asset and packed release scenarios. Same request paths/cache options, SHA acceptance, texture filters/dimensions/error text and exactly-once failed-texture disposal. No new source assets, default art, quality decision or capture claim. |
 
+### Migration checkpoints and retained compatibility
+
+| Slice | Canonical boundary / current consumers | Retirement owner and criteria |
+| --- | --- | --- |
+| Map audio reference, [PR298](https://github.com/lbeezr/thousand-unit-skirmish/pull/298) | `src/world/map-audio-reference.mjs` contains the byte-identical validator and has no imports. The named export in `src/audio-event-profile.mjs` preserves binding identity; `server.mjs`, `src/main.js`, `src/audio-shipped-loader.mjs` and validator fixtures keep their old paths. Playback choice/cooldown code is unchanged. Canonical and legacy paths are exact HTTP entries. Initial extraction graph at `4fcf4f42`: 176 runtime modules, 320 edges, 119 browser / 76 server / 32 shared, zero cycles. Subsequent PR295 adds an independent renderer leaf; the PR records refreshed counts. | Audio/world boundary owner retains the compatibility export. Migrate known validator consumers through their owners, check tracked and external/release consumers, then prove canonical source and an identified served/packed release before removing only the named forwarding export. The playback module itself remains. No removal is scheduled in this slice. |
+
+The next rules relocation first needs CI owner `01a10378` to coordinate the
+one-line registration change in `scripts/ci.mjs`: replace
+`--test-coverage-include=src/gameplay-action-rules.mjs` with
+`--test-coverage-include=src/rules/gameplay-action-rules.mjs`. Keep the test command
+and all three 100% line/branch/function floors unchanged; prove the canonical
+implementation is covered. A forwarding entry must not replace implementation coverage.
+Retarget the matching canonical-path expectation in `scripts/ci-lanes.test.mjs`
+without changing its coverage-floor or lane-partition assertions. Both shared CI
+files remain outside this architecture worker's write scope.
+
 For each candidate, review a rename-aware diff and export list. A shim-only path
 move must keep the canonical implementation byte-identical apart from import
 specifiers; an extraction must compare the old function with the new export on
@@ -378,11 +396,33 @@ tests do not replace a real consumer check. Run required repository checks under
 the testing owner's current strategy; this plan does not change that registry.
 
 The reviewed plan is integrated, with PR1's guard/check milestone recorded in
-PR294. The next concrete action after that PR's reviewed integration is
-audio/world-owner coordination for PR2's metadata validator (or the first
-unconflicted leaf). No runtime migration
-has begun. This source/tooling work launches no local browser, Mac workload,
-remote deployment, provider request or security-setting change.
+PR294; PR298 records the first canonical metadata boundary with stable host
+imports. The next pure-rule relocation waits for canonical coverage registration
+to be coordinated. Formation and authoring moves remain with their existing
+owners, and caller migration stays a coordinated follow-up.
+
+Step 5's HUD owner moves the three pure text/projection implementations
+byte-for-byte to `src/client/hud/`, retaining explicit named old-path exports.
+The source guard classifies both paths as client responsibilities; negative
+fixtures reject rules/world/simulation/server consumers and keep the canonical
+helpers dependency-free leaves, and packed HTTP checks
+admit only the exact six paths. Existing helper tests exercise canonical exports
+and verify compatibility binding identity; contextual consumers still use shims.
+No layout, selection, accounting, labels or authored objective behavior changes.
+
+The HUD integration owner retains shim retirement. Remaining runtime consumers
+are `main.js` (all three), `selection-portrait.mjs` and `wall-placement.mjs`
+(resource format), and `match-mode-controls.mjs` (objective summary). Tool/test
+consumers include contextual HUD, construction/wildlife fixtures, roster and
+shore-fishing checks, Practice/Bannerfall entry checks and the population browser
+runner. Convert these with their owners in later bounded changes. Remove each
+shim and its exact HTTP/domain entries only after tracked consumers/docs use the
+canonical path, owners confirm no supported external import requires the old API,
+and source/served/packed checks pass without it. Identify the containing release
+and confirm page reload safety with the existing `no-store` policy before removing
+a browser path. Historical QA receipts remain historical, not migration inputs.
+This source/tooling work launches no browser, Mac workload, remote deployment,
+provider request or security-setting change.
 
 ### Tests, fixtures, scenarios and performance tools
 

@@ -1,5 +1,6 @@
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { canCombatTarget } from '../src/combat-rules.mjs';
+import { exploredForestFringe } from '../src/forest-fringe.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -41,6 +42,7 @@ test('tower sight expands a previously processed source and honors terrain occlu
     visibleCellsByTeam: [new Uint8Array(cells), new Uint8Array(cells)], exploredCellsByTeam: [new Uint8Array(cells), new Uint8Array(cells)],
     visionCoverageBySourceCell: new Array(cells), elevationLevelByCell: new Uint8Array(cells),
     visionBlockers: new Uint8Array(cells), visionBlockHeights: new Float32Array(cells), buildingBlocked: new Uint8Array(cells),
+    forestCellMask: new Uint8Array(cells), exploredForestFringe,
   });
   vm.runInContext(source.slice(source.indexOf('function buildVisionRays('), source.indexOf('const VISION_RAYS ='))
     + 'const VISION_RAYS = buildVisionRays(8); const HIGH_GROUND_VISION_RAYS = buildVisionRays(9);'
