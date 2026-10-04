@@ -12,7 +12,11 @@ Forest shapes should create choices about shortcuts, route width, and settlement
 
 - Forest rectangles expand to a cell mask. Each forest cell starts with six wood.
 - The cell address is `row * width + column`, separate from ordinary resource IDs.
-- `gather` accepts `forestCell`; the worker approaches an adjacent accessible cell.
+- `gather` accepts a `forestCell` group anchor; the worker chooses a visible
+  reachable tree in the same authored forest and approaches an adjacent accessible
+  cell. [Group jobs and delivery/recovery](worker-resource-job-contract.md) define
+  the bounded rule; [current QA](qa-forest-group-jobs-2026-10-04.md) retains
+  the separate rendered acceptance.
 - Changed stock is sent as `forestStocks`, with `forestEpoch` for state changes.
   Fog filtering withholds unseen changes.
 - Construction preserves a reachable harvesting side for active forest orders.

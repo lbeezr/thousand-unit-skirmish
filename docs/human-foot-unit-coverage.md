@@ -75,6 +75,12 @@ Human; no reference pixels, models or code are imported.
 
 ## Ordinary-game acceptance
 
-At a named served source/release SHA, enter Millrace or Terraced Vale through Create Room and normal map selection, without art query flags. Use both seats and normal paid Barracks Infantry production. For Human Infantry capture idle, move/Stop/resume, attack/fresh attack and lethal defeat along N/NE/E/SE/S/SW/W/NW. Record whether the actual heading has motion or an explicit retained fallback; do not count idle or SE reuse as new directional coverage. Verify event restart, terminal corpse behavior and selection/fog/strategic LOD. Inspect the established cream/sage character, short spear/six-sided shield, planted roots and team cue at ordinary zoom. Include enemy views through disclosed fog. Save chronological clips with SHA, map, seat, action, heading and selected/unselected status.
+At a named served source/release SHA, enter Terraced Vale or another currently selectable ordinary map through Create Room and normal map selection, without art query flags. Historical Millrace is below the current ordinary map floor. Use both seats and normal paid Barracks Infantry production. For Human Infantry capture idle, move/Stop/resume, attack/fresh attack and lethal defeat along N/NE/E/SE/S/SW/W/NW. Record whether the actual heading has motion or an explicit retained fallback; do not count idle or SE reuse as new directional coverage. Verify event restart, terminal corpse behavior and selection/fog/strategic LOD. Inspect the established cream/sage character, short spear/six-sided shield, planted roots and team cue at ordinary zoom. Include enemy views through disclosed fog. Save chronological clips with SHA, map, seat, action, heading and selected/unselected status.
 
 A release/hash/CPU pass is a milestone. Review, deployed identity and actual in-game function remain incomplete until recorded here; there is no cosmetic approval gate.
+
+The [bounded Worker/Spearman ordinary capture adapter](qa-worker-spearman-animation-capture-2026-10-04.md)
+owns the next rendered gait/work/Stop acceptance through CI's shared hosted transport.
+It changes0 art frames. Worker source gait is8/8; Spearman source gait is1/8 with
+N/NE/E/S/SW/W/NW explicitly incomplete. The63 military action-heading gaps and
+all identified-build ordinary/deployed acceptance remain open.

@@ -120,6 +120,7 @@ cells. Buildings, units, terrain and route checks continue to apply.
 | Build Barracks | 175 wood | Workers construct a valid level 3 × 3 site. |
 | Build Archery Range | 150 wood | Workers construct a valid level 3 × 3 site. |
 | Build Mill | 75 wood | 15 seconds; completed friendly food-only drop-off, 1,000 HP and a 3 × 3 site. Provisional balance values. |
+| Build Farm (one finite food plot) | 60 wood | 15 accumulated Worker-seconds; creates 200 food to harvest on its 3 × 3 site. |
 | Train Infantry at Barracks | 50 food | 12 seconds. |
 | Train Archer at Range | 25 food + 45 wood | 7 seconds. |
 | Infantry Forging | 100 food + 75 wood | 25 seconds at a completed Barracks. |
@@ -139,6 +140,16 @@ procedural placeholder; select it to see its Mill name and food-only function.
 Return cargo uses the same routing: stopped food can return to Mill, while stopped
 wood needs a compatible Storehouse or Town Center. If only Mills are reachable,
 returning wood is rejected and the Worker keeps its cargo.
+
+Farm is the food plot itself. With Workers selected, choose Build Farm and place
+a clear site. After construction, select Workers and right-click the Farm (or
+use Gather / move and tap it) to harvest; they carry food to Mill, Storehouse or
+Town Center. Selecting the Farm shows remaining food and clears Worker selection.
+It cannot create other plots. To plant more, select Workers and build another
+Farm. At zero food, select the old plot, use **Clear exhausted Farm · no refund**,
+then build a fresh paid Farm. Repair does not refill it; crops do not regrow.
+The [building coverage](gameplay-foundation-plan.md#canonical-building-action-coverage--4-october-2026)
+lists all current production and research choices.
 
 ## Camera, HUD, and sound
 

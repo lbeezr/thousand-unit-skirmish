@@ -244,7 +244,14 @@ test('canonical actual crown pixels issue existing forest/node Gather IDs and re
       latestForestStocks.set(cell, 0);
       assert.equal(context.pickHarvestableTreeAt(x, y), null, 'depleted canopy cannot recreate stock');
       latestForestStocks.delete(cell); context.mapDefinition.fogOfWar = true; context.latestFogCells[cell] = 1;
-      assert.equal(context.pickHarvestableTreeAt(x, y), null, 'remembered forest cannot expose current art target');
+      assert.equal(context.pickHarvestableTreeAt(x, y)?.forestCell, cell, 'remembered crown selects its authored forest group');
+      context.issueContextOrder(x + 11, y + 23);
+      assert.deepEqual(commands.at(-1), { type: 'gather', ids: ['worker-1'], forestCell: cell });
+      context.latestFogCells[cell] = 0;
+      assert.equal(context.pickHarvestableTreeAt(x, y), null, 'unexplored crown is not selectable');
+      context.localTeam = null; context.latestFogCells[cell] = 2;
+      assert.equal(context.pickHarvestableTreeAt(x, y), null, 'spectator cannot select a forest job');
+      context.localTeam = 0;
       context.latestFogCells[cell] = 2; context.mapDefinition.fogOfWar = false;
       // A rematch/map rebuild uses the new identity; cached alpha must not retain old IDs.
       context.forestTreeSlots = new Map([[cell + 1, slot]]);
@@ -264,6 +271,14 @@ test('canonical actual crown pixels issue existing forest/node Gather IDs and re
     assert.ok(nodeHit, 'actual regional wood node pixels');
     context.issueContextOrder(nodeHit.x + 11, nodeHit.y + 23);
     assert.deepEqual(commands.at(-1), { type: 'gather', ids: ['worker-1'], nodeId: node.id });
+    const nodeCell = Math.floor(node.z + 80) * 160 + Math.floor(node.x + 80);
+    context.mapDefinition.fogOfWar = true;
+    for (const disclosure of [0, 1]) {
+      context.latestFogCells[nodeCell] = disclosure;
+      assert.equal(context.pickHarvestableTreeAt(nodeHit.x, nodeHit.y), null, 'ordinary wood node still requires current visibility');
+    }
+    context.latestFogCells[nodeCell] = 2;
+    assert.equal(context.pickHarvestableTreeAt(nodeHit.x, nodeHit.y)?.node, node);
     latestResourceStocks.set(node.id, 0); assert.equal(context.pickHarvestableTreeAt(nodeHit.x, nodeHit.y), null);
     assert.equal(JSON.stringify(definition), originalMap, 'picking cannot change authored stock or resources');
     assert.equal(cells.size * 6, 18972);

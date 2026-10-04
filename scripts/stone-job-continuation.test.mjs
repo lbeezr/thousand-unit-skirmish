@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 import { foodStoneJobMap, auditWorkerId, typedDraw } from './food-stone-job-fixture.mjs';
-import { activeWorkIntent, createGatherWorkIntent } from '../src/work-intent.mjs';
+import { FOREST_GATHER_SOURCE_KIND, activeWorkIntent, createGatherWorkIntent } from '../src/work-intent.mjs';
 import { GATHER_WORK_AREA_RADIUS, gatherWorkArea, inGatherWorkArea, nearbyGatherSources } from '../src/gather-work-area.mjs';
 
 const stateOf = replay => replay.checkpoint().state;
@@ -67,7 +67,7 @@ test('an explicit Stone intent cannot restore a Wood forest target', async () =>
     const before = stateOf(replay), bad = replay.checkpoint();
     assert.equal(bad.state.units[0].workIntent.resource, 'wood');
     bad.state.units[0].workIntent.resource = 'stone';
-    assert.throws(() => replay.restore(bad), /invalid forest target/);
+    assert.throws(() => replay.restore(bad), /invalid forest target|invalid unit work state/);
     assert.deepEqual(stateOf(replay), before);
   } finally { await fixture.dispose(); }
 });
@@ -201,7 +201,7 @@ for (const obstruction of ['component', 'no-field', 'no-path']) test(`Stone cont
   const unit = { hp: 50, generation: 2, x: 0, z: 0, team: 0, cargo: 6, cargoType: 'stone', queuedWaypoints: [],
     workIntent: createGatherWorkIntent(2, { x: 0, z: 0 }, 'stone'), gatherNodeId: 'empty', gatherForestCell: -1 };
   const candidate = { id: 'next', type: 'stone', x: 1, z: 0, stock: 6 }, before = structuredClone(unit);
-  const context = vm.createContext({ activeWorkIntent, gatherWorkArea, nearbyGatherSources, GATHER_WORK_AREA_RADIUS,
+  const context = vm.createContext({ FOREST_GATHER_SOURCE_KIND, activeWorkIntent, gatherWorkArea, nearbyGatherSources, GATHER_WORK_AREA_RADIUS,
     WORKER_CARRY_CAPACITY: 10, nearestOpenCell: c => c, worldToCell: x => x,
     walkableComponents: obstruction === 'component' ? [0, 1] : [0, 0],
     resourceNodeStates: new Map([[candidate.id, candidate]]), MAP_WIDTH: 160, MAP_HEIGHT: 160,

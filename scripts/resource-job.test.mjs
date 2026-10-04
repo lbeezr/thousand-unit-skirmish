@@ -1,3 +1,6 @@
+import './forest-group-native-cases.mjs';
+import './forest-group-job-cases.mjs';
+import './forest-job-approach-cases.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
