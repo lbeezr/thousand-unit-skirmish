@@ -114,7 +114,12 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
   const source = inputs['server.mjs'], map = JSON.parse(inputs['scripts/fixtures/xl-far-marches.json']);
   const identity = await performanceIdentity(ROOT, 'scripts/fixtures/xl-far-marches.json');
   const grid = await runGridCostAudit();
-  const geometry = auditMap(map, { forestWoodPerCell: 6, defaultArmySize: 24, maxBuildings: 128 });
+  const constants = {
+    forestWoodPerCell: sourceNumber(source, /const FOREST_WOOD_PER_CELL = (\d+);/),
+    defaultArmySize: sourceNumber(source, /const DEFAULT_STARTING_ARMY_SIZE = (\d+);/),
+    maxBuildings: sourceNumber(source, /const MAX_BUILDINGS = (\d+);/),
+  };
+  const geometry = auditMap(map, constants);
   // Execute the exact checkpoint leaf to distinguish its validation envelope
   // from the smaller simple-route bound used by the cost projection.
   const validPath = runInNewContext(`(${extractFunction(source, 'validCellPath')})`);
@@ -171,6 +176,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
       declaredRelease: identity.build.declaredRelease,
       scope: 'PR325 identity helper hashes server, package-lock and all src JS modules; no performance workload is executed' },
     gridCostProvenance: { schemaVersion: grid.schemaVersion, sourceInputSha256: grid.sourceInputSha256 },
+    constants,
     candidate: { file: 'scripts/fixtures/xl-far-marches.json', sha256: sha(inputs['scripts/fixtures/xl-far-marches.json']),
       canonicalRuntimeMap: false, identity: mapSizeIdentity(map), geometry,
       expansionSitesPerSeat: XL_LAYOUT.sites.length, flatHomeSide: 2 * XL_LAYOUT.homeRadius + 1,
