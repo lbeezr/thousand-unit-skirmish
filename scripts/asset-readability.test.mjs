@@ -2,8 +2,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
+import { createContext, runInContext } from 'node:vm';
+import { parse } from 'acorn';
 import { JSDOM } from 'jsdom';
 import { productionReadabilityStatus, buildingReadabilityStatus, mountAssetReadability } from '../src/asset-readability.mjs';
+import { createCameraArrowKeys } from '../src/navigation-settings.mjs';
 
 const root = new URL('../', import.meta.url);
 const read = path => readFile(new URL(path, root));
@@ -34,6 +37,8 @@ test('changed approved runtime metadata and private or unsupported sidecar scope
   assert.throws(() => productionReadabilityStatus(privateContract, footManifest, 'v3'), /existing public/);
   const wrongPath = structuredClone(contract); wrongPath.identity.approvedRuntimeFiles[0].path = 'private/pose.png';
   assert.throws(() => productionReadabilityStatus(wrongPath, footManifest, 'v3'), /approved runtime pins/);
+  const wrongAsset = structuredClone(footManifest); wrongAsset.assets[0].id = 'another-role';
+  assert.throws(() => productionReadabilityStatus(contract, wrongAsset, 'v3'), /asset is missing/);
 });
 
 test('runtime observations preserve source coverage and cannot claim readability or accept a different live manifest', () => {
@@ -42,14 +47,29 @@ test('runtime observations preserve source coverage and cannot claim readability
   assert.equal(status.views, 8); assert.equal(status.defaultBinding, true);
   assert.equal(status.states.filter(row => row.authored).length, 1);
   assert.equal(status.readability, 'unverified');
-  const different = structuredClone(manifests[0]); different.completeState.views[0].sha256 = 'b'.repeat(64);
-  assert.equal(buildingReadabilityStatus({ record: town, manifest: manifests[0], observedManifest: `/${town.manifest}`,
-    observedManifestData: different, spriteVisible: true }).defaultBinding, false);
+  for (const change of [
+    data => { data.completeState.views[0].sha256 = 'b'.repeat(64); },
+    data => { data.camera.pixelsPerWorldUnit = 256; },
+    data => { data.camera.anchorPixelFromTopLeft = [0, 0]; },
+    data => { data.camera.framePixels = [512, 512]; },
+    data => { data.camera.azimuthDegrees.reverse(); },
+    data => { data.completeState.views[0].index = 7; },
+    data => { data.completeState.views[0].teamMaskPath = 'different-mask.png'; },
+    data => { data.stateOrder.push('damaged'); },
+    data => { data.stateMapping = { health: { damagedAtOrBelow: 0.9 } }; },
+  ]) {
+    const different = structuredClone(manifests[0]); change(different);
+    assert.equal(buildingReadabilityStatus({ manifest: manifests[0], observedManifest: `/${town.manifest}`,
+      observedManifestData: different, spriteVisible: true }).defaultBinding, false);
+  }
+  const description = structuredClone(manifests[0]); description.status = 'Changed copy'; description.limitations = [];
+  assert.equal(buildingReadabilityStatus({ manifest: manifests[0], observedManifest: `/${town.manifest}`,
+    observedManifestData: description }).defaultBinding, true);
   assert.equal(buildingReadabilityStatus({ record: town, manifest: manifests[0], observedManifest: `/${town.manifest}` }).defaultBinding, false);
 });
 
 async function fixture({ changeResponse, manifest = manifests[0] } = {}) {
-  const dom = new JSDOM(await read('index.html'));
+  const dom = new JSDOM(await read('index.html'), { pretendToBeVisual: true });
   const focusCalls = [], document = dom.window.document;
   const observation = { point: { x: 3, z: 5 }, manifestPath: `/${town.manifest}`, manifest,
     spriteVisible: true, footRuntimeVersion: 'v3', mapId: 'fixture', zoom: 0.91, width: 1280, height: 720, dpr: 1 };
@@ -87,6 +107,45 @@ test('catalog consumes existing normal controls, preserves live state, and only 
     buttons[1].dispatchEvent(new f.dom.window.KeyboardEvent('keydown', { key: 'p', bubbles: true }));
     assert.equal(gameplayKey, false);
     buttons[0].click(); assert.equal(f.document.querySelector('#asset-readability'), null);
+  } finally { f.review.dispose(); f.dom.window.close(); }
+});
+
+test('releasing keys on the catalog clears actual main held-key state without a selection-center command', async () => {
+  const f = await fixture();
+  try {
+    const source = (await read('src/main.js')).toString();
+    const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module' });
+    const handler = (event, includes) => {
+      const node = ast.body.find(node => node.type === 'ExpressionStatement'
+        && node.expression.type === 'CallExpression'
+        && source.slice(node.expression.callee.start, node.expression.callee.end) === 'window.addEventListener'
+        && node.expression.arguments[0]?.value === event
+        && source.slice(node.start, node.end).includes(includes));
+      assert.ok(node, `Actual main ${event} handler remains available`);
+      return source.slice(node.start, node.end);
+    };
+    const allowed = ast.body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'selectionCenterShortcutAllowed');
+    assert.ok(allowed);
+    const heldCameraKeys = createCameraArrowKeys(); heldCameraKeys.press('ArrowRight');
+    const context = createContext({ window: f.dom.window, document: f.document, Element: f.dom.window.Element,
+      heldCameraKeys, cursorShift: false, spaceDown: true, spaceCenterPending: true,
+      syncBattlefieldCursor() {}, keyboardTargetIsEditing: () => false,
+      mapDefinition: {}, ui: { mapStudio: { open: false } },
+      drag: null, pan: null, buildPlacementActive: false, tapOrderArmed: false,
+      selectedWildlife: () => true, centerCalls: 0, centerCameraOnSelection() { context.centerCalls++; } });
+    runInContext(source.slice(allowed.start, allowed.end), context);
+    runInContext(handler('keydown', 'cursorShift = true'), context);
+    runInContext(handler('keyup', 'heldCameraKeys.release'), context);
+    const button = f.document.querySelectorAll('#asset-readability button')[1]; button.focus();
+    f.dom.window.dispatchEvent(new f.dom.window.KeyboardEvent('keydown', { key: 'Shift', bubbles: true }));
+    assert.equal(context.cursorShift, true);
+    for (const [key, code] of [['Shift', 'ShiftLeft'], ['ArrowRight', 'ArrowRight'], [' ', 'Space']]) {
+      button.dispatchEvent(new f.dom.window.KeyboardEvent('keyup', { key, code, bubbles: true, cancelable: true }));
+    }
+    assert.equal(context.cursorShift, false);
+    assert.deepEqual(heldCameraKeys.pressed, []);
+    assert.equal(context.spaceDown, false); assert.equal(context.spaceCenterPending, false);
+    assert.equal(context.centerCalls, 0, 'actual main shortcut guard excludes panel buttons');
   } finally { f.review.dispose(); f.dom.window.close(); }
 });
 

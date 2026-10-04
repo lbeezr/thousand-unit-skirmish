@@ -15,6 +15,9 @@ export function productionReadabilityStatus(contract, manifest, runtimeVersion) 
     || contract.manifest !== 'assets/units/infantry-sprite-v3/sprite-atlas-pack-v1.json') {
     throw new Error('Expected the existing public Infantry production contract');
   }
+  if (!manifest.assets?.some(asset => asset.id === contract.assetId)) {
+    throw new Error('Production sidecar asset is missing from the existing manifest');
+  }
   const base = contract.manifest.slice(0, contract.manifest.lastIndexOf('/') + 1);
   const pins = contract.identity.approvedRuntimeFiles;
   if (!pins?.length || pins.some(pin => !/^assets\/units\/infantry-sprite-v3\/[a-z-]+\.png$/.test(pin.path)
@@ -34,10 +37,25 @@ export function productionReadabilityStatus(contract, manifest, runtimeVersion) 
 
 export function buildingReadabilityStatus({ manifest, observedManifest, observedManifestData, spriteVisible = false } = {}) {
   const available = new Set([manifest?.completeState?.state, ...(manifest?.states || []).map(state => state.state)].filter(Boolean));
-  const files = data => JSON.stringify((data?.completeState?.views || []).map(view => [view.path, view.sha256]));
+  // Compare the camera, lifecycle and image inputs consumed by captured-building-art,
+  // leaving descriptive status/limitations independent from the rendered binding.
+  const renderedContract = data => {
+    const state = value => value && ({ state: value.state, views: value.views?.map(view => ({
+      index: view.index, azimuthDegrees: view.azimuthDegrees, path: view.path, sha256: view.sha256,
+      teamMaskPath: view.teamMaskPath, teamMaskSha256: view.teamMaskSha256,
+    })) });
+    const camera = data?.camera;
+    return JSON.stringify({ schema: data?.schema, asset: data?.asset,
+      camera: camera && { projection: camera.projection, framePixels: camera.framePixels,
+        pixelsPerWorldUnit: camera.pixelsPerWorldUnit, elevationDegrees: camera.elevationDegrees,
+        azimuthDegrees: camera.azimuthDegrees, anchorPixelFromTopLeft: camera.anchorPixelFromTopLeft,
+        background: camera.background },
+      stateOrder: data?.stateOrder, stateMapping: data?.stateMapping,
+      completeState: state(data?.completeState), states: data?.states?.map(state) });
+  };
   return {
     defaultBinding: observedManifest === `/${townManifestPath()}` && Boolean(observedManifestData)
-      && files(manifest) === files(observedManifestData),
+      && renderedContract(manifest) === renderedContract(observedManifestData),
     views: manifest?.completeState?.views?.length || 0,
     states: ['foundation', 'frame', 'complete', 'damaged', 'critical'].map(state => ({ state, authored: available.has(state) })),
     spriteVisible: Boolean(spriteVisible),
@@ -66,7 +84,8 @@ export function mountAssetReadability({ document, getObservation, focus, fetchIm
   };
   let closed = false;
   button('Close review', () => { closed = true; root.remove(); });
-  for (const event of ['pointerdown', 'pointerup', 'click', 'dblclick', 'wheel', 'keydown', 'keyup']) {
+  // Key releases must reach the game's held-key cleanup even after focus moves here.
+  for (const event of ['pointerdown', 'pointerup', 'click', 'dblclick', 'wheel', 'keydown']) {
     root.addEventListener(event, e => e.stopPropagation());
   }
   const town = text('section', '');
@@ -155,7 +174,7 @@ export function mountAssetReadability({ document, getObservation, focus, fetchIm
         production = productionReadabilityStatus(contract, footManifest, observation.footRuntimeVersion);
         footStatus.textContent = `Sidecar declares ${production.declaredAuthoredCells}/${production.requiredCells} source cells; ${production.declaredMissingCells.length} missing. `
           + `Style ${production.style.id} / ${production.style.version}; provenance ${production.provenanceVersion}; ${production.publication}. `
-          + `${production.defaultVersionMatches ? 'Default version matches' : 'Default version differs or not observed'}; rendered acceptance ${production.renderAcceptance}. `
+          + `${production.defaultVersionMatches ? 'Configured version matches' : 'Configured version differs or not observed'}; rendered acceptance ${production.renderAcceptance}. `
           + Object.entries(production.timing).map(([state, spec]) => `${state} ${spec.durationMs} ms`).join(' · ');
       }
       context.textContent = `Map ${observation.mapId || 'not loaded'} · zoom ${Number(observation.zoom).toFixed(2)} · ${observation.width}×${observation.height} CSS px · renderer ratio ${observation.dpr}. Normal runtime observations are not readability acceptance.`;

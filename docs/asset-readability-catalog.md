@@ -44,8 +44,9 @@ own approved source/runtime pins, style/provenance versions, publication scope,
 source coverage and timing. The catalog reads them unchanged; it does not add
 approval fields to the adoption registry, rebuild hashes from descriptions or
 create another schema. It compares the sidecar's existing runtime pins to the
-manifest and served public PNGs, then reports declared source coverage/timing
-and current default version separately from rendered acceptance.
+manifest's matching asset ID and served public PNGs, then reports declared
+source coverage/timing and configured default version separately from rendered
+acceptance.
 
 Infantry retains the sidecar's exact style/provenance/publication fields and
 **11 declared authored cells / 32 required, 21 missing**. PR318's owner retains
@@ -69,9 +70,11 @@ They do not import reference art or adopt automatic generation.
 ## Evidence and next scoped step
 
 CPU contracts check consumption of unchanged sidecar identity under descriptive
-edits, changed hash/private-scope rejection, exact live manifest comparison, retained coverage,
+edits, changed hash/asset-ID/private-scope rejection, live camera/pivot/density,
+lifecycle and image contract comparison, retained coverage,
 real default Follow DOM binding, sample dimensions, camera-only callbacks and
-keyboard isolation. HTTP/hash checks use the real server and clean packed files,
+keyboard isolation and actual main held-key release over panel controls.
+HTTP/hash checks use the real server and clean packed files,
 including rejection of unadmitted docs and private source paths. These checks
 establish contracts and delivery files, not contrast, recognition or pixels.
 
