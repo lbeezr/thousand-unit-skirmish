@@ -65,19 +65,25 @@ explicit Move/Patrol/Follow/Attack Move retain their existing order paths. The
 construction help button still chooses the nearest unfinished friendly site
 to the selected Workers and focuses it; it does not recruit other Workers.
 The [reported interruption and targeted-resume checks](qa-palisade-construction-orders-2026-10-04.md)
-separate retained deployed behavior, this client correction and the pending
-server continuation slice.
+separate retained deployed behavior, the client correction and the server continuation checks.
 
 Every admitted Worker receives an independent canonical row-major list of new
-building IDs, tied to its unit generation and order revision. Workers route and
+building IDs, tied to its unit generation and order revision, with fixed initial
+footprint bounds plus two world units clipped to the map. An explicitly assigned
+adjoining Gate within that area takes first priority, keeping the remaining paid
+wall IDs. Adjacency uses remembered IDs only. Completing or cancelling the Gate
+continues those walls; no unrelated site or unselected Worker joins. Workers route and
 construct through the existing formation/interaction/build-time mechanisms.
 Completion advances to the next unfinished segment; no extra payment occurs.
 Internal route repair carries the sequence to its new revision. A new player
-Move, Gather, Attack, Stop/Hold, Patrol/Follow, repair or construction order
+Move, Gather, Attack, Stop/Hold, Patrol/Follow, repair or unrelated construction order
 invalidates the previous sequence, including a queued Move accepted during a
 segment-completion window. A rejected full waypoint queue retains the work. Death and recycled unit generations cannot
 resume it. Interrupted construction stays paid and unfinished until resumed or
-cancelled through ordinary building controls.
+cancelled through ordinary building controls. An unreachable remembered site
+retains the sequence and invalidates its old route. Retry is at most once per
+second, three attempts per navigation revision; a topology change permits a new
+bounded attempt. Fixed area bounds never drift.
 
 Removing a current or pending segment prunes it from all active sequences;
 current removal clears the old route and routes the remaining work only after
@@ -86,8 +92,11 @@ unbuilt fraction once, combat destruction gives no refund, and construction
 completion does not heal damaged HP. Repair uses the existing policy.
 
 The optional `wallBuildOrder` lives in the unit checkpoint record, with copied
-ID arrays and full validation of bounds, unique IDs, generation/revision,
-ownership/type and current target. Older records restore no sequence. No schema
+ID arrays/area rectangles and full validation of bounds, unique IDs, generation/revision,
+owned Palisade wall/Gate types, area enclosure and current target. A null target
+is legal while the remembered sequence awaits reacquisition. Existing sequences
+without area bounds derive them from their remembered paid sites; records without
+a sequence restore none. No schema
 number change is needed for this additive field; lobby phase migrations retain
 their schema authority. Only the exact pre-palisade ruleset
 `v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab`

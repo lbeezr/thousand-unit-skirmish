@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFile, writeFile, readdir } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
-import { constructionWorkArea } from '../src/construction-work-intent.mjs';
 
-// Real paid construction/recovery cases. --observe records behavior without claiming the known
+// Real paid construction/recovery cases prepared before the shared workIntent
+// foundation. --observe records current behavior without claiming the known
 // continuation defect is fixed. Default mode requires natural continuation.
 const observe = process.argv.includes('--observe');
 const caseArgument = process.argv.find(value => value.startsWith('--case='))?.slice(7);
-const cases = ['complete', 'complete-warm', 'legacy-wall', 'checkpoint-controls', 'unassigned-site', 'cancel-gate', 'cancel-pending-wall', 'stop', 'move', 'gather', 'manual-replacement'];
+const cases = ['complete', 'complete-warm', 'unassigned-site', 'cancel-gate', 'cancel-pending-wall', 'stop', 'move', 'gather', 'manual-replacement'];
 if (caseArgument) assert.ok(cases.includes(caseArgument), 'Unknown continuation case');
 const selectedCases = caseArgument ? [caseArgument] : cases;
 const fixture = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 60000,
@@ -68,15 +68,6 @@ try {
     let working = await ledger(s => s.state.buildings.length === 6 && [0, 1].every(team =>
       s.state.buildings.some(b => b.team === team && b.progress > 0 && !b.complete)));
     const wallIds = [0, 1].map(team => working.state.buildings.filter(b => b.team === team).map(b => b.id));
-    if (mode === 'legacy-wall') {
-      await fixture.stop();
-      const legacy = JSON.parse(await readFile(fixture.checkpointPath, 'utf8'));
-      for (const unit of legacy.state.units) if (unit.wallBuildOrder) delete unit.wallBuildOrder.area;
-      await writeFile(fixture.checkpointPath, JSON.stringify(legacy)); await reconnect();
-      assert.ok(clients.every(c => c.welcome.recoveredFromCheckpoint && c.welcome.player.resumed));
-      working = await ledger(); assert.equal(working.matchId, legacy.matchId);
-      assert.deepEqual(working.state.teamWood, [255, 255]);
-    }
     const excludedIds = [];
     if (mode === 'unassigned-site') {
       // Separate selected Workers pay for neighboring sites, then explicitly
@@ -101,12 +92,6 @@ try {
       s.state.buildings.find(b => b.id === s.state.units[u.id].buildingTargetId)?.type === 'palisade-gate'));
     assert.deepEqual(assigned.state.teamWood, excludedIds.length ? [225, 225] : [240, 240]);
     const gates = [0, 1].map(team => assigned.state.buildings.find(b => b.team === team && b.type === 'palisade-gate'));
-    const sourceAreas = [0, 1].map(team => constructionWorkArea(working.state.buildings.filter(b => wallIds[team].includes(b.id)), map));
-    if (!observe) for (const team of [0, 1]) {
-      const order = assigned.state.units[builders[team].id].wallBuildOrder;
-      assert.deepEqual(order.ids, [gates[team].id, ...wallIds[team]]);
-      assert.deepEqual(order.area, sourceAreas[team]); assert.equal(order.generation, builders[team].generation);
-    }
     const cancelled = [];
     if (mode.startsWith('cancel-')) {
       for (const team of [0, 1]) {
@@ -148,30 +133,6 @@ try {
     const expectedSites = [...assigned.state.buildings.filter(b => !cancelled.includes(b.id)),
       ...beforeRestart.state.buildings.filter(b => houseIds.includes(b.id))].map(({ id, type, team }) => ({ id, type, team }));
     assertSites(beforeRestart, expectedSites);
-    const corruptionControls = [];
-    if (mode === 'checkpoint-controls') {
-      await fixture.stop();
-      const valid = JSON.parse(await readFile(fixture.checkpointPath, 'utf8'));
-      for (const [label, mutate] of [
-        ['foreign-gate', order => { order.ids[0] = gates[1].id; }],
-        ['stale-generation', order => { order.generation++; }],
-        ['outside-area', order => { order.area.minX = -33; }],
-        ['site-outside-area', order => { order.area.maxX = order.area.minX; }],
-        ['nonfinite-area', order => { order.area.minX = null; }],
-        ['unknown-area-field', order => { order.area.extra = 1; }],
-      ]) {
-        const invalid = structuredClone(valid);
-        mutate(invalid.state.units[builders[0].id].wallBuildOrder);
-        const rejectedBefore = new Set((await readdir(fixture.directory)).filter(name => name.startsWith('match.json.rejected-')));
-        const bytes = JSON.stringify(invalid); await writeFile(fixture.checkpointPath, bytes); await reconnect();
-        assert.ok(clients.every(c => !c.welcome.recoveredFromCheckpoint));
-        const rejected = (await readdir(fixture.directory)).find(name => name.startsWith('match.json.rejected-') && !rejectedBefore.has(name));
-        assert.ok(rejected, label); assert.equal(await readFile(`${fixture.directory}/${rejected}`, 'utf8'), bytes);
-        await fixture.stop(); corruptionControls.push(label);
-      }
-      await writeFile(fixture.checkpointPath, JSON.stringify(valid)); await reconnect();
-      assert.ok(clients.every(c => c.welcome.recoveredFromCheckpoint && c.welcome.player.resumed));
-    }
     const coldRecovered = mode !== 'complete-warm';
     if (coldRecovered) {
       await fixture.stop(); await reconnect();
@@ -181,11 +142,6 @@ try {
     assert.equal(recovered.matchId, beforeRestart.matchId);
     assert.deepEqual(recovered.state.teamWood, paidWood);
     assertSites(recovered, expectedSites);
-    if (!observe) for (const team of [0, 1]) {
-      const order = recovered.state.units[builders[team].id].wallBuildOrder;
-      if (replacement) assert.equal(order, null, 'accepted explicit replacement cancels the remembered sequence');
-      else assert.deepEqual(order.area, sourceAreas[team], 'cold recovery keeps the original fixed source area');
-    }
     let settled, resuming = null;
     if (replacement) {
       settled = await ledger(s => s.state.tickNumber >= beforeRestart.state.tickNumber + 90
@@ -204,8 +160,6 @@ try {
       }));
       assertSites(resuming, expectedSites);
       settled = await ledger(s => sitesComplete(s, remainingPalisadeIds));
-      const completedAt = settled.state.tickNumber;
-      settled = await ledger(s => s.state.tickNumber > completedAt && builders.every(u => s.state.units[u.id].wallBuildOrder === null));
     }
     assertSites(settled, expectedSites);
     assert.deepEqual(settled.state.teamWood, paidWood, 'continuation/recovery does not pay again');
@@ -222,7 +176,7 @@ try {
       && settled.state.units[u.id].queuedWaypoints.length === 0 && !settled.state.units[u.id].movePlanningPending));
     const continued = !replacement && [0, 1].every(team => rememberedIds.filter(id => wallIds[team].includes(id)).some(id =>
       settled.state.buildings.find(b => b.id === id)?.progress > beforeRestart.state.buildings.find(b => b.id === id)?.progress));
-    const event = { mode, observe, continued, cancelled, excludedIds, coldRecovered, corruptionControls, sourceAreas, wood: paidWood,
+    const event = { mode, observe, continued, cancelled, excludedIds, coldRecovered, wood: paidWood,
       expectedSites, resumedByOriginalBuilders: resuming ? builders.map(u => ({ id: u.id, target: resuming.state.units[u.id].buildingTargetId })) : null,
       unselectedJobCount: unselectedJobs.length,
       progressBefore: progress(beforeRestart, rememberedIds), progressAfter: progress(settled, rememberedIds),
@@ -238,7 +192,6 @@ try {
     serverIsCheckoutSource: !process.env.PALISADE_CONTINUATION_SERVER,
     serverSha256: createHash('sha256').update(source).digest('hex'),
     scenarioSha256: createHash('sha256').update(scenario).digest('hex'), observe, events,
-    checkoutDirtyAtCapture: execFileSync('git', ['status', '--porcelain', '--untracked-files=no'], { encoding: 'utf8' }).trim().length > 0,
     limits: ['native authoritative server and real WebSocket commands/checkpoints; no browser/GPU or deployed acceptance',
       'observe mode records unresolved continuation and must not be counted as a passing fix'] };
   if (process.env.PALISADE_CONTINUATION_RECORD) await writeFile(process.env.PALISADE_CONTINUATION_RECORD, JSON.stringify(report, null, 2) + '\n');

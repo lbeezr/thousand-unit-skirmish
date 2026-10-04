@@ -1,8 +1,7 @@
 import { BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 import { isPalisade } from './palisade-gate.mjs';
 
-// Construction owns area/site policy; shared factories, generation validation,
-// accepted-order cancellation and checkpoint serialization stay economy-owned.
+// Construction-only policy, also used by the existing paid Palisade sequence.
 export function constructionWorkArea(sites, map) {
   const bounds = sites.map(site => {
     const half = BUILDING_DEFINITIONS[site.type].footprint / 2;
@@ -18,6 +17,14 @@ function insideArea(site, area) {
   const half = (BUILDING_DEFINITIONS[site.type]?.footprint ?? Infinity) / 2;
   return site.x - half >= area.minX && site.x + half <= area.maxX
     && site.z - half >= area.minZ && site.z + half <= area.maxZ;
+}
+
+export function validConstructionWorkArea(area, map, sites = []) {
+  return area !== null && typeof area === 'object'
+    && Object.keys(area).length === 4 && ['minX', 'maxX', 'minZ', 'maxZ'].every(key => Number.isFinite(area[key]))
+    && area.minX >= -map.width / 2 && area.maxX <= map.width / 2 && area.minX <= area.maxX
+    && area.minZ >= -map.height / 2 && area.maxZ <= map.height / 2 && area.minZ <= area.maxZ
+    && sites.every(site => insideArea(site, area));
 }
 
 export function unfinishedConstructionSites(intent, team, buildingsById) {

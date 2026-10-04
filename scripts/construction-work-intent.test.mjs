@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { constructionWorkArea, constructionAssignment, unfinishedConstructionSites } from '../src/construction-work-intent.mjs';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
+import { isPalisade } from '../src/palisade-gate.mjs';
+import { constructionWorkArea, constructionAssignment, unfinishedConstructionSites, validConstructionWorkArea } from '../src/construction-work-intent.mjs';
 
 const map = { width: 64, height: 64 };
 const wall = (id, x, z = .5, overrides = {}) => ({ id, x, z, type: 'palisade-wall', team: 0, hp: 300, complete: false, ...overrides });
@@ -79,4 +83,38 @@ test('gate priority and pruning preserve the source area through successive comp
   const two = constructionAssignment({ ...prior, ...one }, [second], 0, lookup([...sites, { ...first, complete: true }, second]), map);
   assert.deepEqual(two.siteIds, [4, 1, 2]); assert.deepEqual(two.area, prior.area);
   two.area.minX = -32; assert.equal(prior.area.minX, -2, 'each installation gets an independent area copy');
+});
+
+test('checkpoint bounds reject malformed, nonfinite, inverted, outside or site-excluding areas', () => {
+  const sites = [wall(1, .5)], area = constructionWorkArea(sites, map);
+  assert.equal(validConstructionWorkArea(area, map, sites), true);
+  for (const invalid of [null, {}, { ...area, extra: 1 }, { ...area, minX: NaN }, { ...area, maxZ: Infinity },
+    { ...area, minX: -33 }, { ...area, maxZ: 33 }, { ...area, minX: area.maxX + 1 }, { ...area, minZ: area.maxZ + 1 },
+    { ...area, minX: 1 }]) assert.equal(validConstructionWorkArea(invalid, map, sites), false);
+});
+
+test('actual construction sequence bounds unreachable retries, invalidates stale routes and resumes after topology changes', () => {
+  const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+  const intentSource = server.slice(server.indexOf('function palisadeConstructionIntent('), server.indexOf('function preparePalisadeBuilderAssignments('));
+  const sequenceSource = server.slice(server.indexOf('const palisadeConstructionRetries ='), server.indexOf('function updateBuildingAndProduction('));
+  const site = wall(1, .5, .5, { footprint: [5] }), order = { ids: [1], generation: 7, revision: 12 };
+  const unit = { id: 0, team: 0, generation: 7, hp: 100, orderRevision: 12, wallBuildOrder: order,
+    buildingTargetId: null, path: [3, 4], pathIndex: 0, movePlanningPending: true, moveGoalCell: 4 };
+  let searches = 0, reachable = false;
+  const c = vm.createContext({ units: [unit], activeWallBuildOrder, constructionWorkArea, unfinishedConstructionSites,
+    isPalisade, buildingsById: lookup([site]), mapDefinition: map, navigationRevision: 1, tickNumber: 0, TICK_RATE: 30,
+    buildingAccessCells: () => [4], findBuildingAttackApproachCell: () => { searches++; return reachable ? { goal: 4 } : null; },
+    cellToWorld: () => ({ x: .5, z: -.5 }), assignFormationMove: (_player, command, target) => {
+      assert.deepEqual(Array.from(command.ids), [unit.id]); unit.orderRevision++; unit.buildingTargetId = target;
+    } });
+  vm.runInContext(intentSource + sequenceSource, c);
+  for (let tick = 0; tick <= 300; tick++) { c.tickNumber = tick; c.updateWallBuildOrders(); }
+  assert.equal(searches, 3, 'three attempts, at most once per second, then wait for topology change');
+  assert.equal(activeWallBuildOrder(unit), order); assert.deepEqual(order.ids, [1]);
+  assert.deepEqual(order.area, constructionWorkArea([site], map), 'legacy missing bounds initialize from remembered paid identity');
+  assert.equal(unit.path.length, 0); assert.equal(unit.movePlanningPending, false); assert.equal(unit.moveGoalCell, -1);
+  c.navigationRevision++; c.updateWallBuildOrders(); assert.equal(searches, 4);
+  reachable = true; c.navigationRevision++; c.updateWallBuildOrders();
+  assert.equal(searches, 5); assert.equal(unit.buildingTargetId, site.id); assert.equal(activeWallBuildOrder(unit), order);
+  site.complete = true; c.updateWallBuildOrders(); assert.equal(unit.wallBuildOrder, null);
 });

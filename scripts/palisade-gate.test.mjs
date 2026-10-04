@@ -9,6 +9,8 @@ import { BUILDING_DEFINITIONS, GAMEPLAY_RULESET_REVISION } from '../src/gameplay
 import { buildingBlocksMovement, isPalisade, planGateTransition, validGateState } from '../src/palisade-gate.mjs';
 import { createGateTimbers, updateGateTimbers } from '../src/palisade-gate-visual.mjs';
 import { previewWallPlacement } from '../src/wall-placement.mjs';
+import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
+import { constructionWorkArea, constructionAssignment } from '../src/construction-work-intent.mjs';
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const client = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
@@ -232,16 +234,17 @@ test('actual wall admission permits approaches through open gate topology while 
  const c=vm.createContext({Set,Map,TypeError,isPalisade,buildingBlocksMovement,preparePaidWallLine,buildings:[gate],buildingsById:new Map([[1,gate]]),units:[worker],
   MAP_WIDTH:9,MAP_HEIGHT:9,CELL_COUNT:81,MAX_BUILDINGS:128,HOME_TOWN_CENTER_ID_BASE:1000000,nextBuildingId:2,
   blocked:new Uint8Array(81),buildingBlocked:new Uint8Array(81),townCenterBlocked:new Uint8Array(81),elevationLevelByCell:new Uint8Array(81),
-  mapDefinition:{resourceNodes:[],triggers:[]},resourceNodeStates:new Map(),homeTownCenters:[],spawnByTeam:[{x:-3,z:-3},{x:3,z:3}],
+  mapDefinition:{width:9,height:9,resourceNodes:[],triggers:[]},resourceNodeStates:new Map(),homeTownCenters:[],spawnByTeam:[{x:-3,z:-3},{x:3,z:3}],
   worldToCell:(x,z)=>Math.floor(z+4.5)*9+Math.floor(x+4.5),cellIndex:(x,z)=>z*9+x,cellToWorld:cell=>({x:cell%9-4,z:Math.floor(cell/9)-4}),
   nearestOpenCell:cell=>cell,commandUnits:()=>[worker],unitHasCapability:()=>true,canTraverseElevation:()=>true,
   activeMoveRoutesRemainConnected:()=>true,
   BUILDING_DEFINITIONS:{'palisade-wall':{cost:{food:0,wood:15},buildSeconds:5,maxHp:300,footprint:1}},teamFood:[0,0],teamWood:[250,250],
   navigationRevision:1,dirty:false,attackFlowFields:new Map(),replanPathsBlockedBy(){},assignFormationMove(){},
+  activeWallBuildOrder,constructionWorkArea,constructionAssignment,palisadeConstructionRetries:new WeakMap(),
   sendOrderNotice:(_,__,notice)=>notices.push(notice),rejectBuild:(_,reason)=>notices.push('BUILD REJECTED · '+reason),
  });
  c.buildingBlocked[30]=gateOpen?0:1;
- vm.runInContext(reservations + ['isWalkable','rebuildWalkableComponents','buildingAccessCells','captureBuildingConnectivity','canPlaceBuildingWithoutDisconnectingEntities','buildWallLine'].map(fn).join('\n'),c);
+ vm.runInContext(reservations + ['isWalkable','rebuildWalkableComponents','buildingAccessCells','captureBuildingConnectivity','canPlaceBuildingWithoutDisconnectingEntities','palisadeConstructionIntent','preparePalisadeBuilderAssignments','finishPalisadeBuilderAssignments','buildWallLine'].map(fn).join('\n'),c);
  c.rebuildWalkableComponents();
  c.buildWallLine({team:0},{ids:[0],points:[{column:4,row:4}]});
  assert.equal(notices[0], 'PALISADE LINE PLACED · 1 SEGMENTS · 15 WOOD');

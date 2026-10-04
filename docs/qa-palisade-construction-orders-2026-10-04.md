@@ -122,32 +122,42 @@ are reproduced failures. Default mode will additionally require those original
 builders to complete their remembered sites while excluded neighbors stay
 untouched. The executed driver was uncommitted at capture; its recorded SHA256
 `a1d2dd7dfd170c92b29455dafc102e3ee335f7bb33d0ecc08be405d8c387cf11`
-matches the committed `scripts/palisade-continuation-scenario.mjs`. The evidence
+matches the [retained executed scenario](qa-evidence/palisade-continuation-2026-10-04/warm-and-exclusion-scenario.mjs),
+which replays from `scripts/` like the original baseline artifact. The evidence
 marks that provenance explicitly rather than assigning the amended driver to
 the older gameplay checkout.
 
 ## Continuation boundary and unfinished acceptance
 
-The [owning shared-boundary proposal](https://github.com/lbeezr/thousand-unit-skirmish/pull/87#issuecomment-5980032703)
-separates durable Worker intent from execution/path `orderRevision`: internal
-Gather/deposit/reacquire changes that revision and must preserve the current
-work intent. Accepted external replacement orders cancel intent. The parent
-assigned economy (`01a101f7-5683`, tree continuation) primary ownership of the
-minimal shared `workIntent` shape, external-order cancellation and checkpoint
-serialization/validation/migration. Walls owns construction-specific nearby
-resume/reacquisition and its tests after that shared foundation. The [exact v1
-field contract](https://github.com/lbeezr/thousand-unit-skirmish/pull/87#issuecomment-5980213095)
-is agreed; its canonical runtime adoption is still pending. Construction-only
-helpers in `src/construction-work-intent.mjs` derive the fixed footprint bounds
-plus two world units, retain only remembered owned unfinished IDs and prepend
-an explicitly assigned adjoining Gate without expanding the area. Adjacency
-inspects remembered IDs only; an unassigned neighbor cannot extend the job.
-Eight pure helper tests cover both seats, border clipping, immutable ordering,
-completion/destruction pruning and unrelated replacement. These helpers are
-not yet bound to the server and do not claim the continuation fix. No overlapping
-shared-boundary edits occur in this preparation. Routine agreed internal integration needs no new parent
-approval. No idle-worker recruitment, global job search, combat or Patrol
-rewrite belongs in this fix.
+The earlier shared-union proposal and exact v1 variant remain historical design
+evidence. The parent's later direction removes waiting for a generic framework
+and permits disjoint construction using existing intent fields. The [concrete
+compatibility response](https://github.com/lbeezr/thousand-unit-skirmish/pull/283#issuecomment-5980554820)
+leaves economy (`01a101f7-5683`) owning `gatherWorkArea`, Wood targeting and its
+serialization. Wood automatic retarget must remain dormant during an active
+construction target/sequence. Walls owns the existing `wallBuildOrder` extension:
+copied fixed area bounds, remembered paid wall/Gate IDs, generation/revision,
+construction assignment, pruning, bounded reacquisition and its checkpoint checks.
+Internal builder routes finish by carrying that sequence to the accepted route
+revision; existing navigation route repair already preserves it. No generic
+Gather cancellation, formation routing or movement helper is edited.
+
+`src/construction-work-intent.mjs` supplies the fixed footprint bounds plus two
+world units, filters remembered owned unfinished IDs and prepends an explicitly
+assigned adjoining Gate without expanding the area. Adjacency inspects remembered
+IDs only; an unassigned neighbor cannot extend the job. The server captures prior
+construction before an accepted route and installs its sequence only for actually
+assigned original builders. Unrelated House/resume orders replace it. A blocked
+site preserves its IDs and clears stale route execution, then retries at most
+once per second, three times per navigation revision. A topology change permits
+another bounded attempt. Checkpoints clone/validate area rectangles and permit
+owned Gates and targetless pending reacquisition; legacy sequences derive missing
+bounds only from their remembered paid sites.
+
+Runtime review and the complete candidate native/release proof are in progress;
+the first cold Gate completion case passes on the candidate, while retained
+baselines above continue to describe their exact earlier bytes. No idle-worker
+recruitment, global job search, combat or Patrol rewrite belongs in this fix.
 
 Walls/gates owner retains source/release integration and the next continuation
 slice. Parent schedules native wall/gate acceptance after a containing identified
