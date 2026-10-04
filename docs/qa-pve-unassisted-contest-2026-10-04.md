@@ -21,10 +21,10 @@ evidence, not human strength or a guarantee on the new engine.
 Both receive their own current player DTOs only. Public gameplay definitions
 and canonical map bytes must match the qualified source. Terraced Vale Tiny is
 the already admitted PvE map through PR250; native and both policy identities
-are `skirmish@1`. The fixed canonical map was historically authored from terrain
-seed93025; its JSON does not contain a runtime terrain seed. This fixture loads
-the exact map bytes and normal24-unit opening with150Food/250Wood per seat.
-It performs no generated-map selection. Map/source/opening hashes are retained.
+are `skirmish@1`. The fixed canonical map contains `terrainSeed: 93025`.
+This fixture loads those exact map bytes and normal24-unit opening with
+150Food/250Wood per seat. It performs no generated-map selection.
+Map/source/opening hashes are retained.
 
 ## Conditions fixed before execution
 
@@ -85,7 +85,7 @@ pass. Exit0 records a completed experiment, not a successful qualification.
 | Later actual50Food replacement purchase | tick11430 | tick19200 |
 | New Worker / generation / observed birth | 34 /1942171717 /ticks12178–12180 | 41 /1942171717 /ticks19948–19950 |
 | Replacement's accepted disclosed Food Gather | tick12180 | tick19950 |
-| Replacement's living10Food bank deposit | ticks12655–12657; bank90→100 | ticks23662–23664; bank≈80→90 |
+| Replacement's living10Food bank deposit | ticks12655–12657; bank90→100 | ticks23662–23664; bank≈270→280 |
 | Enemy military alive at that deposit | 12 | 1 |
 | Final living units / owned buildings | one12-HP Scout /0 | 16 units /5 |
 
@@ -116,9 +116,10 @@ normalization is applied. Key identities:
 - Opening SHA256: `778e2313c6ccb1ca0315eb1b9dc0acf01fc16e4ec8172a3adfe11de6ec97ff36`.
 - Each persisted result SHA256: `f2dd8deae27b54fb7fa6febfcb5851b80ac7020d59caa88bb0ff44f043d7d39b`.
 
-The independent reviewer found the original per-tick visibility refresh error
-and verified the corrected native cadence/source provenance without another
-game. The shipped helper additionally asserts untouched tick0 input; the actual
+The author identified the original per-tick visibility refresh error; the
+independent reviewer verified it and the corrected native cadence/source
+provenance without another game. The shipped helper additionally asserts
+untouched tick0 input; the actual
 recorded pair already starts at tick0. Final review, focused checks, merged source
 and sealed artifact identities are retained in the owning PR receipt.
 
