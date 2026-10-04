@@ -1075,7 +1075,7 @@ function recordTickStartLag(lagMs) {
   tickStartLagCount = Math.min(TICK_SAMPLE_WINDOW, tickStartLagCount + 1);
 }
 
-function tickTimingPayload() {
+function tickTimingPayload(includeSamples = false) {
   const count = tickDurationCount;
   const base = (tickDurationCursor - count + TICK_SAMPLE_WINDOW) % TICK_SAMPLE_WINDOW;
   let slowestTick = null;
@@ -1114,7 +1114,10 @@ function tickTimingPayload() {
       lastOverloadSkippedSlots,
       lastOverloadTick,
     },
-    ...(tickDiagnosticSamples ? { slowestTick, scenarioTiming: (() => {
+    ...(tickDiagnosticSamples ? {
+      ...(includeSamples ? { samples: Array.from({ length: count }, (_, index) =>
+        tickDiagnosticSamples[(base + index) % TICK_SAMPLE_WINDOW]).filter(Boolean) } : {}),
+      slowestTick, scenarioTiming: (() => {
       const values = Array.from({ length: count }, (_, index) =>
         tickDiagnosticSamples[(base + index) % TICK_SAMPLE_WINDOW])
         .filter(sample => sample?.scenarioEvaluated).map(sample => sample.scenarioMs).sort((a, b) => a - b);
@@ -8344,7 +8347,7 @@ const server = createServer(async (request, response) => {
         lastBytes: lastCheckpointBytes, lastWriteMs: lastCheckpointWriteMs,
         lastCaptureMs: lastCheckpointCaptureMs, lastSerializeMs: lastCheckpointSerializeMs,
       },
-      tickTiming: tickTimingPayload(),
+      tickTiming: tickTimingPayload(url.searchParams.get('tickSamples') === '1'),
       separationWork: separationWorkPayload(),
       movePlanning: movePlanningSamples,
       transport: {
