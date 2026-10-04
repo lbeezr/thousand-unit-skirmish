@@ -10,6 +10,7 @@ start; this index covers maintained guides, contracts, experiments, and evidence
 | What experience are we building, and what is outside scope? | [Game bible](game-bible.md) |
 | What outcome should we pursue next? | [Roadmap](roadmap.md) |
 | What evidence supports a product claim? | [QA plan](qa-vertical-slice.md) |
+| How do we choose tests, qualify cloud rendering and close verification? | [Testing strategy](testing-strategy.md) |
 | How should the game look and read? | [Art direction](art-direction-contract-v1.md) |
 | What are Vaelora’s selected zone maps and ecology keys? | [Art checkpoint](art-direction/vaelora-v1/README.md) |
 | Where do I read and extend Vaelora's lore? | [Lore wiki](lore/README.md): world, regions, peoples, institutions, history and magic |
@@ -47,6 +48,7 @@ the build they name.
 | --- | --- |
 | Understand runtime boundaries and files | [Architecture](architecture.md) |
 | Run focused checks, browser scenarios, or measurements | [Testing](testing.md) |
+| Reuse deterministic test lanes, record evidence and prioritize missing automation | [Testing strategy and execution contract](testing-strategy.md) |
 | Change commands, snapshots, or bot observations | [Gameplay contract](gameplay-command-observation-contract.md) |
 | Understand missing Stone/gold/copper and the next integration contract | [Mineral readiness audit](mineral-economy-readiness.md) |
 | Understand overload behavior | [Simulation timing](simulation-timing.md) |
