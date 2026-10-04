@@ -6,11 +6,11 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
-import { installReadbackProbe, qualifyRendererCapability, validateFrame, validateMotion, validateRelease } from './renderer-qualification.mjs';
+import { installReadbackProbe, qualifyRendererCapability, safeRequestPath, validateFrame, validateMotion, validateRelease } from './renderer-qualification.mjs';
 
 const source = { revision: 'a'.repeat(40), dirty: false };
 const pack = { sourceRevision: source.revision, sourceDirty: false, digest: `sha256:${'b'.repeat(64)}`,
-  files: ['server.mjs', 'src/main.js'] };
+  files: ['room-supervisor.mjs', 'server.mjs', 'src/main.js', 'package-lock.json'] };
 const worker = { id: 0, team: 0, x: -20, z: 0, task: 'moving' };
 const start = { number: 10, time: 100, worker };
 function frame(number = 11) {
@@ -30,6 +30,16 @@ test('release acceptance requires exact clean source, complete entries and a dig
     { files: [] }, { files: [...pack.files, '../private'] }, { files: [...pack.files, '/private'] },
     { files: [...pack.files, 'server.mjs'] }]) assert.throws(() => validateRelease({ ...pack, ...change }, source));
   for (const change of [{ revision: null }, { dirty: true }]) assert.throws(() => validateRelease(pack, { ...source, ...change }));
+});
+
+test('request evidence retains exact local known paths without queries, credentials or arbitrary paths', () => {
+  const origin = 'http://127.0.0.1:4321';
+  assert.equal(safeRequestPath(`${origin}/src/main.js?token=private-token`, origin, pack.files), '/src/main.js');
+  assert.equal(safeRequestPath(`${origin}/vendor/three.module.js`, origin, pack.files), '/vendor/three.module.js');
+  assert.equal(safeRequestPath(`${origin}/favicon.ico`, origin, pack.files), '/favicon.ico');
+  for (const url of ['invalid', 'https://remote.invalid/src/main.js', `${origin}/api/rooms/private-invite`, `${origin}/private-token`]) {
+    assert.equal(safeRequestPath(url, origin, pack.files), null);
+  }
 });
 
 test('frame rejection covers GL/context, blank pixels, wrong image and nonmoving state', () => {
@@ -86,6 +96,9 @@ test('hosted workflow is bounded, read-only, non-root and retains failures', asy
   assert.match(workflow, /if: always\(\)/); assert.match(workflow, /retention-days: 1/);
   assert.doesNotMatch(workflow, /continue-on-error|no-sandbox|sudo|secrets\./);
   assert.ok(workflow.indexOf('renderer-qualification.mjs --preflight') < workflow.indexOf('renderer-qualification.mjs "'));
+  assert.match(workflow, /execFileSync\('npm', \['ci', '--omit=dev', '--no-audit', '--no-fund'\], \{ cwd: pack.directory/);
+  assert.ok(workflow.indexOf('Pack clean source') < workflow.indexOf('Install locked packed runtime dependencies'));
+  assert.ok(workflow.indexOf('Install locked packed runtime dependencies') < workflow.indexOf('Capture live packed-game movement'));
 });
 
 test('preflight retries only owned-profile ENOTEMPTY cleanup, with one browser launch and retained errno', async () => {
@@ -109,9 +122,10 @@ test('preflight retries only owned-profile ENOTEMPTY cleanup, with one browser l
 });
 
 test('actual orchestration retains early network/exception flags, safe OS codes and cleanup on failure', async () => {
-  const files = ['server.mjs', 'src/main.js', 'index.html'], bytes = Buffer.from('packed test bytes');
+  const files = [...pack.files, 'index.html'], bytes = Buffer.from('packed test bytes');
+  const lockBytes = Buffer.from(JSON.stringify({ packages: { 'node_modules/three': { version: '0.180.0' } } }));
   const digest = createHash('sha256');
-  for (const file of [...files].sort()) digest.update(file).update('\0').update(bytes).update('\0');
+  for (const file of [...files].sort()) digest.update(file).update('\0').update(file === 'package-lock.json' ? lockBytes : bytes).update('\0');
   const manifest = { sourceRevision: source.revision, sourceDirty: false, digest: `sha256:${digest.digest('hex')}`, files };
   // Execute the actual orchestration with CPU-only boundaries; never launch a
   // browser/server or mistake these injected bytes for visual qualification.
@@ -120,41 +134,88 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
   code = code.slice(0, code.indexOf('\nif (process.argv[1]'));
   assert.match(code, /const port = await reservePort\(\)/);
   code = code.replace('const port = await reservePort()', 'const port = 4321');
-  for (const mode of ['browser-fault', 'asset-timeout', 'spawn-fault', 'evidence-fault']) {
-    let written, probeReads = 0; const cleanup = [], listeners = new Map();
+  for (const mode of ['browser-fault', 'asset-timeout', 'spawn-fault', 'evidence-fault', 'missing-dependency',
+    'wrong-version', 'vendor-404', 'vendor-hash', 'room-404', 'optional-icon', 'icon-forbidden', 'saturated-icons']) {
+    let written, probeReads = 0, launches = 0; const cleanup = [], listeners = new Map();
     const fault = Object.assign(new Error('private-token-in-error'), { code: mode === 'spawn-fault' ? 'ENOENT' : 'EPERM' });
     const server = { pid: 123, exitCode: null, stdout: { on() {} }, stderr: { on() {} },
       on(event, callback) { if (mode === 'spawn-fault' && event === 'error') callback(fault); } };
-    const page = { errors: ['private-browser-token'], wait: async () => { throw new Error('asset timeout: private-token'); }, cdp: {
+    const iconMode = ['optional-icon', 'icon-forbidden'].includes(mode);
+    const page = { errors: iconMode ? [] : ['private-browser-token'], wait: async () => { throw new Error('asset timeout: private-token'); }, cdp: {
       on: (event, callback) => listeners.set(event, callback),
-      call: async method => { assert.equal(method, 'Page.navigate'); listeners.get('Network.responseReceived')({ response: { status: 503 } }); },
-      evaluate: async () => { probeReads++; cleanup.push('read-flags'); if (mode === 'evidence-fault') throw fault;
+      call: async method => { assert.equal(method, 'Page.navigate');
+        if (mode === 'saturated-icons') for (let i = 0; i < 100; i++) {
+          listeners.get('Network.responseReceived')({ response: { status: 404, url: 'http://127.0.0.1:4321/favicon.ico' } });
+        }
+        listeners.get('Network.responseReceived')({ response: { status: iconMode ? mode === 'optional-icon' ? 404 : 403 : 503,
+          url: `http://127.0.0.1:4321/${iconMode ? 'favicon.ico' : 'src/main.js'}?token=private-token` } });
+        if (!iconMode) {
+          listeners.get('Network.requestWillBeSent')({ requestId: '1', request: { url: 'http://127.0.0.1:4321/src/main.js?token=private-token' } });
+          listeners.get('Network.loadingFailed')({ requestId: '1', canceled: true });
+        }
+      },
+      evaluate: async expression => {
+        if (expression !== 'window.__rtsQualification.errors') return { entry: 'game', boot: 'ready', canvas: true,
+          assets: { ready: false, state: 'load-failed', loaded: 0, reason: 'private-token' }, private: 'private-token' };
+        probeReads++; cleanup.push('read-flags'); if (mode === 'evidence-fault') throw fault;
+        if (iconMode) return [];
         return [{ kind: 'console-error', payload: 'private-token' }, { kind: 'resource-error' }]; },
     } };
-    const context = vm.createContext({ assert, createHash, Buffer, path, os, Date, setTimeout, AbortSignal,
+    const context = vm.createContext({ assert, createHash, Buffer, path, os, Date, setTimeout, AbortSignal, URL,
       process: { getuid: () => 1000, execPath: 'node', env: { PATH: 'safe' } },
       execFileSync: (_, args) => args[0] === 'rev-parse' ? source.revision : '',
       mkdir: async () => {}, mkdtemp: async () => '/owned-temp', rm: async () => { cleanup.push('temp'); },
       readFile: async file => file === '/pack.json' ? JSON.stringify({ directory: '/pack', ...manifest })
-        : file.endsWith('release-manifest.json') ? JSON.stringify(manifest) : bytes,
-      writeFile: async (_, text) => { written = JSON.parse(text); }, spawn: () => server,
-      stopChild: async () => { cleanup.push('server'); },
-      fetch: async () => ({ ok: true, status: 200, json: async () => ({ ok: true }), arrayBuffer: async () => bytes }),
-      createFortifiedBrowser: async () => { if (mode === 'browser-fault') throw fault;
+        : file.endsWith('release-manifest.json') ? JSON.stringify(manifest)
+        : file.endsWith('package-lock.json') ? lockBytes
+        : file.endsWith('node_modules/three/package.json') ? mode === 'missing-dependency'
+          ? Promise.reject(Object.assign(new Error('private-token'), { code: 'ENOENT' }))
+          : JSON.stringify({ name: 'three', version: mode === 'wrong-version' ? '0.179.0' : '0.180.0' }) : bytes,
+      writeFile: async (_, text) => { written = JSON.parse(text); }, spawn: (_, args, options) => {
+        assert.equal(args[0], '/pack/room-supervisor.mjs');
+        assert.equal(options.env.RTS_ROOM_DATA_DIRECTORY, '/owned-temp/rooms');
+        assert.equal(options.env.RTS_ACCESS_PASSWORD, undefined); return server;
+      },
+      stopChild: async (_, options) => { assert.equal(options.graceMs, 9000); cleanup.push('server'); },
+      fetch: async url => ({ ok: true, status: (mode === 'vendor-404' && url.endsWith('/vendor/three.module.js'))
+        || (mode === 'room-404' && url.endsWith('/api/rooms/status')) ? 404 : 200,
+        json: async () => ({ ok: true, enabled: true }),
+        arrayBuffer: async () => mode === 'vendor-hash' && url.endsWith('/vendor/three.module.js') ? Buffer.from('different') : bytes }),
+      createFortifiedBrowser: async () => { launches++; if (mode === 'browser-fault') throw fault;
         return { version: { product: 'CPU mock' }, page: async url => { assert.equal(url, 'about:blank'); return page; },
           dispose: async () => { cleanup.push('browser'); } }; },
     });
     vm.runInContext(code, context);
     const report = JSON.parse(JSON.stringify(await context.qualifyPackedGame('/pack.json', '/evidence')));
     assert.equal(report.status, 'failed'); assert.equal(written.status, 'failed');
-    assert.ok(cleanup.includes('server') && cleanup.includes('temp'));
+    assert.ok(cleanup.includes('server'));
+    if (!['missing-dependency', 'wrong-version'].includes(mode)) assert.ok(cleanup.includes('temp'));
+    if (cleanup.includes('temp')) assert.ok(cleanup.indexOf('server') < cleanup.indexOf('temp'));
     assert.doesNotMatch(JSON.stringify(report), /private-.*token/);
+    if (['missing-dependency', 'wrong-version', 'vendor-404', 'vendor-hash', 'room-404'].includes(mode)) {
+      assert.equal(launches, 0);
+      assert.equal(report.issues[0].stage, ['missing-dependency', 'wrong-version'].includes(mode) ? 'dependencies' : 'server');
+      assert.equal(report.issues[0].code, mode === 'missing-dependency' ? 'execution-failed' : 'contract-failed');
+      continue;
+    }
     if (mode === 'browser-fault' || mode === 'spawn-fault') {
       assert.equal(report.issues[0].code, 'execution-failed');
       assert.equal(report.issues[0].systemCode, mode === 'spawn-fault' ? 'ENOENT' : 'EPERM');
     } else {
       assert.equal(probeReads, 1); assert.ok(cleanup.indexOf('read-flags') < cleanup.indexOf('browser'));
+      assert.equal(report.boot.entry, 'game'); assert.equal(report.boot.assets.state, 'load-failed');
+      if (mode === 'saturated-icons') {
+        assert.equal(report.browserEvents.length, 100); assert.ok(report.browserEvents.every(e => e.expected));
+        assert.equal(report.droppedBrowserEvents, 5); assert.equal(report.unexpectedBrowserEvent, true);
+        assert.ok(report.issues.some(i => i.code === 'browser-errors')); continue;
+      }
+      if (iconMode) {
+        assert.equal(report.browserEvents[0].path, '/favicon.ico');
+        assert.equal(report.browserEvents[0].expected, mode === 'optional-icon');
+        assert.equal(report.issues.some(i => i.code === 'browser-errors'), mode !== 'optional-icon'); continue;
+      }
       assert.ok(report.browserEvents.some(e => e.kind === 'http-error' && e.status === 503));
+      assert.ok(report.browserEvents.some(e => e.kind === 'request-failed' && e.path === '/src/main.js'));
       assert.ok(report.browserEvents.some(e => e.kind === 'exception' && e.count === 1));
       if (mode === 'evidence-fault') assert.ok(report.issues.some(i => i.code === 'browser-evidence-unavailable'));
       else assert.ok(report.browserEvents.some(e => e.kind === 'resource-error'));
