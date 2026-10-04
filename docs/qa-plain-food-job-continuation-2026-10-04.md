@@ -85,7 +85,7 @@ Candidate `13f0529d` passes 226 selected checks, both type boundaries,
 import/documentation/whitespace checks and no-finding independent review with
 51 additional selected checks. Its clean native run freezes 194 inputs and
 recovers Food checkpoint 14→15 and Stone 12→13 with the outcomes above. The
-clean 1,199-file package digest is
+clean 1,197-file package digest is
 `sha256:92e370819e74777e2d924e22c80adadeffae11ce531e2ff80fbb86f5c8e92a7b`;
 all three changed runtime files match source bytes. An initial temporary-disk
 ENOSPC was resolved by preserving the old worker-owned package manifest and
