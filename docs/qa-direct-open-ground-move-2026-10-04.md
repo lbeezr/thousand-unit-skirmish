@@ -100,7 +100,23 @@ cell, retaining generation/revision through restart. The restart is a fresh
 server process, not only an in-memory restore. Syntax, both strict type projects,
 runtime import boundaries, docs and whitespace checks pass.
 
-Final exact source and clean release inclusion are recorded below when complete.
+The baseline server SHA-256 is
+`29753b61a89c966e00349edeaf70c1cbba294bcbbc4f23be2e2a647ecba60416`.
+Candidate records were collected from the working diff on `723bd381`, before
+commit; their server hash
+`5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6`
+and line helper hash
+`9e1d246a57b452c96e7a916665cde63ea3ac9058aca986db04d35f58fce99889`
+match committed source `0f26b8f73ca2642fd4ada5f9328cb61c27766edf` exactly.
+The unchanged runtime includes refreshed main `6d7cb40c` (PR #282's separate
+Palisade construction targeting); integration checks cover that client consumer.
+
+The clean Docker release at that source contains 1,184 files, including the new
+server helper, with digest
+`sha256:df978c0d8e6ad59b8e50aa40411678c1e30147aa000a32b5a3417933cffc4651`.
+Its packaged server starts, answers health and completes a normal seat's
+WebSocket welcome. This is local packaging/runtime proof, not deployment.
+
 Identified hosted deployment
 and actual pixels remain open with the movement owner and the named Mac animation
 task above. No callable outbound cloud-task tool was exposed in this execution
