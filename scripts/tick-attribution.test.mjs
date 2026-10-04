@@ -64,3 +64,18 @@ test('vision observer distinguishes current masks, tick invalidation and geometr
   assert.equal(rows[0].tickInvalidationMisses, 1); assert.equal(rows[0].coverageInvalidationMisses, 1);
   assert.equal(context.visionTick, 1); assert.equal(context.visionCoverage, cache);
 });
+test('stop freezes row capture before asynchronous shutdown can serve another simulation tick', async () => {
+  let observer, tickNumber = 0;
+  const functions = { roomPayload() {}, deflateRawSync() {}, encodeWebSocketFrame() {}, prepareJsonFrame() {},
+    updateVisionMasks() {}, markVisionFrom() {}, captureMatchCheckpoint() {}, ensureVisionMasks() {}, recordTickDuration() {},
+    runSimulationTick() { tickNumber++; observer.wrapped.recordTickDuration(1, { tickNumber }); } };
+  observer = createTickAttribution({ functions, context: () => ({ tickNumber }), visionContext: () => ({}), profiles: false });
+  await observer.start(); observer.wrapped.runSimulationTick();
+  setImmediate(() => observer.wrapped.runSimulationTick());
+  const report = await observer.stop();
+  assert.equal(tickNumber, 2, 'queued tick really ran while stop awaited its notification drain');
+  assert.equal(report.endTick, 1); assert.equal(report.rowWindow.end.tickNumber, 1);
+  assert.deepEqual(report.rows.map(row => row.tickNumber), [1]);
+  assert.ok(report.rowWindow.end.monotonicMs >= report.rowWindow.start.monotonicMs);
+  assert.deepEqual(report.profileWindows, {});
+});
