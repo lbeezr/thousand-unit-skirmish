@@ -63,7 +63,7 @@ async function fixture() {
     dispose: () => rm(directory, { recursive: true, force: true }) };
 }
 
-test('actual registered exports and all four owner imports load without launching work', async () => {
+test('actual registered exports and every owner import load without launching work', async () => {
   assert.equal(id, 'building-catalog'); assert.equal(contextVersion, 1);
   assert.equal(CAPTURE_CASES[id], './renderer-building-catalog-scenario.mjs');
   const loaded = await loadCaptureCases('all');
