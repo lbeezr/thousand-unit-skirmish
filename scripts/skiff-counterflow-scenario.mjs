@@ -103,7 +103,7 @@ try {
     const army = clients[team].latest.units.filter(row => row[1] === team).map(row => row[0]);
     await command(team, { type: 'stop', ids: army }, /STOP ORDER/);
     await command(team, { type: 'setStance', ids: army, stance: 'noAttack' }, /STANCE ORDER/);
-    await command(team, { type: 'build', buildingType: 'dock', ids: workers[team], x: team ? 48.5 : -48.5, z: 23.5 }, /DOCK PLACED/);
+    await command(team, { type: 'build', buildingType: 'dock', ids: workers[team], x: team ? 48.5 : -48.5, z: 23.5 }, /DOCK PLACED|PLANNING BUILD/);
   }
   const docks = await checkpoint(s => s.state.buildings.filter(b => b.type === 'dock' && b.complete).length === 2);
   assert.deepEqual(docks.state.teamWood, [150, 150]);
