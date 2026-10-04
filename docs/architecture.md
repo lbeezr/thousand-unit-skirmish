@@ -356,11 +356,14 @@ PR8 waits for the asset/renderer owner's agreed lifetime interface.
 
 | Slice | Canonical boundary / current consumers | Retirement owner and criteria |
 | --- | --- | --- |
-| Map audio reference, [PR298](https://github.com/lbeezr/thousand-unit-skirmish/pull/298) | `src/world/map-audio-reference.mjs` contains the byte-identical validator and has no imports. The named export in `src/audio-event-profile.mjs` preserves binding identity; `server.mjs`, `src/main.js`, `src/audio-shipped-loader.mjs` and validator fixtures keep their old paths. Playback choice/cooldown code is unchanged. Canonical and legacy paths are exact HTTP entries. Initial slice graph at `a93c8175`: 176 runtime modules, 320 edges, 119 browser / 76 server / 32 shared, zero cycles. Subsequent PR295 adds an independent renderer leaf; the PR records refreshed counts. | Audio/world boundary owner retains the compatibility export. Migrate known validator consumers through their owners, check tracked and external/release consumers, then prove canonical source and an identified served/packed release before removing only the named forwarding export. The playback module itself remains. No removal is scheduled in this slice. |
+| Map audio reference, [PR298](https://github.com/lbeezr/thousand-unit-skirmish/pull/298) | `src/world/map-audio-reference.mjs` contains the byte-identical validator and has no imports. The named export in `src/audio-event-profile.mjs` preserves binding identity; `server.mjs`, `src/main.js`, `src/audio-shipped-loader.mjs` and validator fixtures keep their old paths. Playback choice/cooldown code is unchanged. Canonical and legacy paths are exact HTTP entries. Initial extraction graph at `4fcf4f42`: 176 runtime modules, 320 edges, 119 browser / 76 server / 32 shared, zero cycles. Subsequent PR295 adds an independent renderer leaf; the PR records refreshed counts. | Audio/world boundary owner retains the compatibility export. Migrate known validator consumers through their owners, check tracked and external/release consumers, then prove canonical source and an identified served/packed release before removing only the named forwarding export. The playback module itself remains. No removal is scheduled in this slice. |
 
-The next rules relocation also needs the testing owner's one-line retarget of
-the existing 100% `gameplay-action-rules` coverage registration to the canonical
-implementation. A forwarding entry must not replace implementation coverage.
+The next rules relocation first needs CI owner `01a10378` to coordinate the
+one-line registration change in `scripts/ci.mjs`: replace
+`--test-coverage-include=src/gameplay-action-rules.mjs` with
+`--test-coverage-include=src/rules/gameplay-action-rules.mjs`. Keep the test command
+and all three 100% line/branch/function floors unchanged; prove the canonical
+implementation is covered. A forwarding entry must not replace implementation coverage.
 That shared CI file remains outside this architecture worker's write scope.
 
 For each candidate, review a rename-aware diff and export list. A shim-only path
