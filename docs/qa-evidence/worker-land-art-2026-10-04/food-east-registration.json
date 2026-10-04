@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "action": "gather-food",
+  "worldDirection": "east",
+  "screenDirection": "down-right/front three-quarter",
+  "source": "docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/raw.png",
+  "sourceSha256": "2cdd49efa8b0ab96e8cdf153cb2b1239906f6412f3df7a791dca1415f1b60ed1",
+  "extractionSha256": "1bcf2457132790a2a0f4de6a05827b97ba981803f40d12c077b942240764b942",
+  "sharedScale": 0.755700325732899,
+  "columnRootsX": [
+    384,
+    784,
+    1184
+  ],
+  "rowBaselinesY": [
+    670
+  ],
+  "canvasPx": {
+    "width": 256,
+    "height": 256
+  },
+  "groundPivotPx": {
+    "x": 128,
+    "y": 244
+  },
+  "durationMs": 720,
+  "registrationStatus": "source-pixel reviewed; native ground/turn acceptance open",
+  "frames": [
+    {
+      "id": "gather-food-east-0",
+      "sourceIndex": 3,
+      "source": "docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/extracted/03.png",
+      "sourceSha256": "23ff1564630fc289c5a540d7acf06504bf8ddbf0d0a217c3a63d3b62ca505734",
+      "sourceBounds": [
+        288,
+        399,
+        490,
+        662
+      ],
+      "offsetPx": [
+        55,
+        39
+      ],
+      "alphaBoundsPx": {
+        "x": 55,
+        "y": 39,
+        "width": 153,
+        "height": 199
+      },
+      "rgbaSha256": "d377ae5dd2459e874207b08262596d7ee1d8b1dddaaf87b78697926256c2fda1"
+    },
+    {
+      "id": "gather-food-east-1",
+      "sourceIndex": 4,
+      "source": "docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/extracted/04.png",
+      "sourceSha256": "6f33388776eaab797556c6c6e59ff496efc6481a5609bf8f6257d6750fd5ce96",
+      "sourceBounds": [
+        674,
+        421,
+        861,
+        666
+      ],
+      "offsetPx": [
+        45,
+        56
+      ],
+      "alphaBoundsPx": {
+        "x": 45,
+        "y": 56,
+        "width": 141,
+        "height": 185
+      },
+      "rgbaSha256": "c7fa88b3995b230158fa7e6be4665aff3273c384d69b4836ac41cc8fe7cd1744"
+    },
+    {
+      "id": "gather-food-east-2",
+      "sourceIndex": 5,
+      "source": "docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/extracted/05.png",
+      "sourceSha256": "099478415e829bf86adeff2d83936525cdeabb5c40af41c29b7feeba351961d2",
+      "sourceBounds": [
+        1081,
+        363,
+        1255,
+        670
+      ],
+      "offsetPx": [
+        50,
+        12
+      ],
+      "alphaBoundsPx": {
+        "x": 50,
+        "y": 12,
+        "width": 131,
+        "height": 232
+      },
+      "rgbaSha256": "b38b652278a7c5b3106c8a96700f72e97c6bfb19128a2bf56d2d521d98d246db"
+    }
+  ]
+}

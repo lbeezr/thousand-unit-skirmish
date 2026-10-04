@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packVersion": "0.25.0",
+  "packVersion": "0.26.0",
   "scope": "Human Worker land art; excludes fishing; default source/package evidence, not deployed/native proof",
   "actions": [
     {
@@ -36,15 +36,15 @@
     },
     {
       "action": "gather-food",
-      "authoredHeadingCount": 2,
+      "authoredHeadingCount": 3,
       "authoredHeadings": [
+        "east",
         "south-east",
         "north-west"
       ],
       "missingHeadings": [
         "north",
         "north-east",
-        "east",
         "south",
         "south-west",
         "west"
@@ -131,13 +131,13 @@
       ]
     }
   ],
-  "authoredCells": 24,
+  "authoredCells": 25,
   "totalCells": 64,
-  "remainingCells": 40,
+  "remainingCells": 39,
   "byHeading": {
     "north": 1,
     "north-east": 1,
-    "east": 3,
+    "east": 4,
     "south-east": 8,
     "south": 1,
     "south-west": 1,

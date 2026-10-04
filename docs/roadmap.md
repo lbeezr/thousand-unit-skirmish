@@ -10,9 +10,10 @@ sequence and acceptance criteria. Existing solo/two-seat checks are the regressi
 floor; expansion of gameplay functionality is the next development outcome.
 Art proceeds separately against stable presentation interfaces.
 
-The [victory audit](victory-modes-audit-2026-10-03.md) proposes separate economy
-Skirmish and current fast Objective Control. Agree the mode/restore interface and
-AI base-objective support before changing ordinary defaults. Quick original
+The [victory audit](victory-modes-audit-2026-10-03.md) led to separate economy
+Skirmish and fast Objective Control. Ordinary human entry now starts Tiny
+Skirmish, with reviewed Small and Medium choices; fresh PvE supports only Tiny.
+Identified served and rendered acceptance remain owned. Quick original
 reinforcement/evolution modes and a regional territorial slice are testing
 grounds developed alongside the longer RTS. [Bannerfall](bannerfall-mode.md)
 is the first bounded human/Practice reinforcement prototype; a larger regional
@@ -20,8 +21,8 @@ territorial contract remains later work.
 
 The [playable-modes backlog](playable-modes-backlog.md) owns the ranked small
 deliveries; [the versioned mode contract](match-mode-contract.md) is the shared
-registry, map, lobby and AI boundary. Human Skirmish comes before changing the
-ordinary default; accepted base-objective AI and normal entry remain prerequisites.
+registry, map, lobby and AI boundary. Larger human maps do not inherit Tiny's AI
+admission or establish full battle pacing/capacity acceptance.
 
 Use the [RTS capability inventory](references/feature-coverage-inventory.md) as
 a loose roadmap for further maturity. AoE, openage and Warcraft identify systems
