@@ -1,6 +1,6 @@
-// An explicit Wood/Stone assignment stays near the source the player chose. Current targets may
+// An explicit Wood/Stone/plain-Food assignment stays near the source the player chose. Current targets may
 // change; the original anchor must survive deliveries and temporary work.
-import { isAreaGatherResource } from './work-intent.mjs';
+import { isAreaGatherResource, isPlainNeutralFoodSource } from './work-intent.mjs';
 export const GATHER_WORK_AREA_RADIUS = 8;
 
 export function gatherWorkArea(source, resource) {
@@ -9,6 +9,7 @@ export function gatherWorkArea(source, resource) {
 
 export function inGatherWorkArea(area, source) {
   return isAreaGatherResource(area?.type) && source.type === area.type && Number.isFinite(source.stock) && source.stock > 0
+    && (area.type !== 'food' || isPlainNeutralFoodSource(source))
     && Number.isFinite(source.x) && Number.isFinite(source.z)
     && Math.hypot(source.x - area.x, source.z - area.z) <= GATHER_WORK_AREA_RADIUS;
 }

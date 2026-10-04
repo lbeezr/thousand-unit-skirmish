@@ -1,13 +1,16 @@
 # Food source continuation proposal — 4 October 2026
 
-**Decision pending; no Food gameplay extension is implemented here.** Recommend
-the first extension cover only **plain neutral land Food** assigned to selected
+**First-slice decision adopted.** The authorized implementation covers only
+**plain neutral land Food** assigned to selected
 land Workers. Paid Farms, live/carcass wildlife, shore fishing and Skiffs keep
 their current source-only jobs. This reduces ordinary Food depletion clicks
 without choosing a paid plot, dispatching another Sheep or changing water work.
-Economy/content owns this proposal and any authorized implementation; the
-[published Worker intent](worker-resource-job-contract.md) still permits only
-Wood/Stone gather areas and construction.
+Economy/content owns the implementation and its source/release checks. The
+[published Worker intent](worker-resource-job-contract.md) now adds a Food-only
+`sourceKind: 'neutral-land-food'` while retaining existing Wood/Stone and
+construction record shapes. [Implementation/QA](qa-plain-food-job-continuation-2026-10-04.md)
+tracks source checks separately from staged delivery and actual cloud gameplay.
+The following inventory preserves the inspected pre-extension source.
 
 ## Existing source inventory
 
@@ -74,21 +77,26 @@ asymmetric gameplay rules.
    unavailable drop-off follows existing cargo-preserving behavior; no remote
    deposit is added. No anchor creep, expanding search, hidden-resource wake-up
    or idle-worker recruitment follows a finished job.
-6. **Durable identity, deliberate recovery.** A later reviewed intent variant
-   must persist the Food **source class**, original anchor and matching Worker
+6. **Durable identity, deliberate recovery.** The Food-only intent variant
+   persists the Food **source class**, original anchor and matching Worker
    generation. Cargo type and a temporary target cannot recover that class.
    Keep existing v1 Wood/Stone/construction records valid and reject cross-class
    targets before restore mutates authority. Leave legacy Food/Farm/Sheep/fish
    checkpoints source-only; only a new accepted assignment acquires this policy.
-   Choose the additive wire shape with the shared-intent owner at implementation;
-   widening `isAreaGatherResource` to `food` alone is insufficient.
+   The economy-owned additive variant uses version one, kind Gather and the
+   required `sourceKind: 'neutral-land-food'`; Wood/Stone and construction keep
+   their exact existing shapes. Widening the resource union alone is insufficient.
 
 Current manual visibility and claim rules are inventoried above, not rewritten
 by these candidate-selection rules. A global manual-order visibility change or
 exclusive Sheep harvest ownership would need a separate decision and regression
 scope.
 
-## Proposed contract tests — not current acceptance
+## Design test matrix and acceptance boundary
+
+This matrix records intended coverage. The implementation QA identifies checks
+actually run; the matrix alone establishes neither test completion nor cloud-game
+acceptance.
 
 | Boundary | Required future proof |
 | --- | --- |
@@ -114,15 +122,15 @@ served/deployed identity and actual cloud-game acceptance.
 
 ## Decision and next-content backlog
 
-Choose whether to authorize **plain neutral land Food only** as the first
+The adopted choice is **plain neutral land Food only** as the first
 continuation slice. It removes depletion micro on ordinary Food while Workers
 still stop beside Farm/Sheep/fish stock that the player did not assign. Keeping
 all Food source-only preserves current choices but leaves that ordinary-node
 gap. Mixing all Food reduces more clicks while introducing paid-plot, wildlife,
 visibility and movement decisions; it is a larger policy change.
 
-After that decision, take one slice at a time: implement and prove the selected
-plain-Food contract; separately consider owned-existing-Farm reselection with
+After source integration, retain identified served/rendered Food acceptance and
+take one later content decision at a time: consider owned-existing-Farm reselection with
 **no automatic planting or payment**; consider carcass-only wildlife only after
 an explicit claim/Herd policy decision; let the fishing owner decide any
 site-to-site land/boat continuation using its existing domain and Dock rules.

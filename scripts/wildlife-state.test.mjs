@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { cancelWildlifeHerd } from '../src/wildlife-herding.mjs';
 import { isShoreFish } from '../src/shore-fishing.mjs';
-import { createGatherWorkIntent, isAreaGatherResource } from '../src/work-intent.mjs';
+import { createGatherWorkIntent, isAreaGatherResource, isPlainNeutralFoodSource } from '../src/work-intent.mjs';
 import {
   activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted,
   validWildlifeNodeDefinition, validWildlifeNodeState,
@@ -82,7 +82,7 @@ for (const team of [0, 1]) test(`seat ${team} validates its Workers and visibili
     unit(2, team, 0, true), unit(3, team, 100, false), unit(4, team, 100, true, 1)];
   const notices = [], routes = [];
   let visible = true;
-  const context = vm.createContext({ cancelWildlifeHerd, isShoreFish, createGatherWorkIntent, isAreaGatherResource,
+  const context = vm.createContext({ cancelWildlifeHerd, isShoreFish, createGatherWorkIntent, isAreaGatherResource, isPlainNeutralFoodSource,
     farmBuildingId: () => null, harvestNodeById: id => context.resourceNodeStates.get(id), resourceNodeStates: new Map([[node.id, node]]),
     spawnByTeam: [{ x: 0, z: 0 }, { x: 0, z: 0 }], walkableComponents: [0, 1],
     WORKER_CARRY_CAPACITY: 10, dirty: false,

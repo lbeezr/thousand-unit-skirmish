@@ -63,7 +63,7 @@ import { BANNERFALL_RULES, createBannerfallState, creditBannerfallKill,
 import { headingToTarget } from './src/unit-heading.mjs';
 import { workerFishingPresentation } from './src/worker-fishing-presentation.mjs';
 import { GATHER_WORK_AREA_RADIUS, gatherWorkArea, nearbyGatherSources } from './src/gather-work-area.mjs';
-import { isAreaGatherResource, createGatherWorkIntent, createConstructionWorkIntent, clearWorkIntent, clearGatherWorkIntent, activeWorkIntent, validWorkIntent } from './src/work-intent.mjs';
+import { isAreaGatherResource, isPlainNeutralFoodSource, createGatherWorkIntent, createConstructionWorkIntent, clearWorkIntent, clearGatherWorkIntent, activeWorkIntent, validWorkIntent } from './src/work-intent.mjs';
 import { WORKER_PERFORMING_ACTION_VERSION, createWorkerPerformingActions } from './src/worker-performing-action.mjs';
 import { preparePaidWallLine } from './src/wall-construction-draft.mjs';
 import { activeWallBuildOrder } from './src/wall-build-order.mjs';
@@ -3285,8 +3285,10 @@ function validateMatchCheckpoint(snapshot) {
         || (farm?.type === 'farm' && farm.complete && farm.team === unit.team)) && forestCell === -1,
         'unit references unknown or conflicting gather targets');
       if (unit.workIntent?.kind === 'gather') {
-        const resource = state.resourceNodes.find(node => node.id === unit.gatherNodeId)?.type ?? 'food';
+        const source = state.resourceNodes.find(node => node.id === unit.gatherNodeId);
+        const resource = source?.type ?? 'food';
         assertSnapshot(unit.workIntent.resource === resource, 'gather intent conflicts with resource target');
+        assertSnapshot(resource !== 'food' || isPlainNeutralFoodSource(source), 'Food intent conflicts with source class');
       }
     }
     if (forestCell >= 0) {
@@ -3365,7 +3367,9 @@ function restoredWorkIntent(unit, state) {
   if (unit.kind !== 'worker' || unit.hp <= 0 || unit.movementDomain === 'water') return null;
   if (unit.gatherPhase) {
     if ((unit.gatherForestCell ?? -1) >= 0) return createGatherWorkIntent(unit.generation, cellToWorld(unit.gatherForestCell));
-    const node = state.resourceNodes.find(node => node.id === unit.gatherNodeId && isAreaGatherResource(node.type));
+    // Legacy Food jobs never acquire a new policy from cargo or current target.
+    const node = state.resourceNodes.find(node => node.id === unit.gatherNodeId
+      && node.type !== 'food' && isAreaGatherResource(node.type));
     if (node) return createGatherWorkIntent(unit.generation, node, node.type);
   }
   const current = state.buildings.find(building => building.id === unit.buildingTargetId
@@ -4647,7 +4651,8 @@ function assignGather(player, command) {
     unit.lastAttackCell = -1;
     unit.gatherNodeId = nodeId;
     unit.gatherForestCell = -1;
-    unit.workIntent = isAreaGatherResource(node.type) ? createGatherWorkIntent(unit.generation, node, node.type) : null;
+    unit.workIntent = isAreaGatherResource(node.type) && (node.type !== 'food' || isPlainNeutralFoodSource(node))
+      ? createGatherWorkIntent(unit.generation, node, node.type) : null;
     routeWorker(unit, unit.cargo > 0 && unit.cargoType !== node.type ? 'to-base'
       : unit.cargo >= WORKER_CARRY_CAPACITY ? 'to-base' : 'to-node', node);
   }
@@ -4674,7 +4679,10 @@ function ensureGatherWorkIntent(unit) {
   const source = unit.gatherForestCell >= 0 ? cellToWorld(unit.gatherForestCell)
     : resourceNodeStates.get(unit.gatherNodeId);
   const resource = unit.gatherForestCell >= 0 ? 'wood' : source?.type;
-  if (source && isAreaGatherResource(resource)) unit.workIntent = createGatherWorkIntent(unit.generation, source, resource);
+  // Plain Food intent is installed only by a newly accepted manual assignment.
+  if (source && resource !== 'food' && isAreaGatherResource(resource)) {
+    unit.workIntent = createGatherWorkIntent(unit.generation, source, resource);
+  }
 }
 
 function continueAreaGathering(unit) {

@@ -44,13 +44,18 @@ retains source evidence and acceptance. Identified staging source `839f0737`
 contains this Stone implementation; served runtime-byte verification and actual
 rendered cloud gameplay remain open with the same owner roles. The earlier
 `53a47ee` and `1acaf9a4` observations are historical.
-The [Food source continuation proposal](food-source-continuation-proposal.md)
-inventories current rules and recommends plain neutral land Food only as the
-first possible extension. It changes no gameplay policy: Farms, wildlife and
-land/Skiff fishing remain source-only. The economy/content owner retains the
-decision and future contract tests; fishing, wildlife and construction owners
-retain their existing implementations. No stock/price/radius or construction
-policy is changed by either the Stone slice or this Food design receipt.
+The [adopted Food source decision](food-source-continuation-proposal.md) extends
+only explicitly assigned plain neutral land Food. A Food-only durable source
+class preserves the original eight-unit circle, current visibility/reachability,
+selected-worker scope, typed cargo, external-order priority and cold recovery;
+legacy Food stays source-only. Farms, wildlife and land/Skiff fishing remain
+source-only. [Implementation checks and acceptance](qa-plain-food-job-continuation-2026-10-04.md)
+belong to economy/content through review, normal merge and exact postmerge.
+The release delivery owner retains a containing staged release and served
+identity; the cloud testing owner retains actual ordinary-game Food selection,
+depletion/reselection, deposit, Stop/manual/queued override and reconnect.
+Food deployment/served/rendered acceptance remains open. No stock/price/radius,
+opponent policy, construction or neighboring Food policy is retuned.
 
 ## Ranked next actions
 
