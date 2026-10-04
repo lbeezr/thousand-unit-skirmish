@@ -1,0 +1,2511 @@
+{
+  "schemaVersion": 1,
+  "node": "v24.19.0",
+  "records": [
+    {
+      "head": "319d70bfe259437fa2712be8aaad3e8ee942ad90",
+      "sourceSha256": "f5fce1e78a1fccee11758037a7fc0ae46810065967fa5cb06de3b544649e4904",
+      "team": 0,
+      "controlKind": "parked",
+      "roster": 2000,
+      "selected": 996,
+      "arrived": 996,
+      "midTick": 180,
+      "arrivalTicks": 1230,
+      "activeRouteRestart": true,
+      "stopPreserved": 8,
+      "replacementPreserved": 8,
+      "idleRestart": true,
+      "replacementResults": [
+        {
+          "id": 12,
+          "goal": 9179,
+          "revision": 3
+        },
+        {
+          "id": 13,
+          "goal": 9180,
+          "revision": 3
+        },
+        {
+          "id": 14,
+          "goal": 9181,
+          "revision": 3
+        },
+        {
+          "id": 15,
+          "goal": 9307,
+          "revision": 3
+        },
+        {
+          "id": 16,
+          "goal": 9308,
+          "revision": 3
+        },
+        {
+          "id": 17,
+          "goal": 9309,
+          "revision": 3
+        },
+        {
+          "id": 18,
+          "goal": 9435,
+          "revision": 3
+        },
+        {
+          "id": 19,
+          "goal": 9436,
+          "revision": 3
+        }
+      ],
+      "initialPlanning": [
+        {
+          "orderId": 1,
+          "team": 0,
+          "mode": "shared-start",
+          "unitCount": 996,
+          "uniqueStartCells": 476,
+          "uniqueDestinationCells": 996,
+          "nonEmptyPaths": 996,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 917,
+          "expandedCells": 467516,
+          "discoveredCells": 581680,
+          "elapsedMs": 202.85,
+          "planningWorkMs": 132.969,
+          "maxPlanningSliceMs": 4.088,
+          "queueWaitMs": 0.291,
+          "setupMs": 4.007,
+          "pathPlanningWorkMs": 128.61,
+          "maxPathPlanningSliceMs": 4.088,
+          "finalizationMs": 0.352,
+          "planningSliceCount": 146,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 5059,
+          "createdTick": 31,
+          "firstAppliedTick": 31,
+          "lastAppliedTick": 37,
+          "firstPlanningTick": 31,
+          "serviceTurns": 144,
+          "firstServiceWaitMs": 0.679
+        }
+      ],
+      "overlappingPlanning": [
+        {
+          "orderId": 3,
+          "team": 0,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 8,
+          "uniqueDestinationCells": 8,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 0.728,
+          "planningWorkMs": 0.311,
+          "maxPlanningSliceMs": 0.242,
+          "queueWaitMs": 0.124,
+          "setupMs": 0.063,
+          "pathPlanningWorkMs": 0.242,
+          "maxPathPlanningSliceMs": 0.242,
+          "finalizationMs": 0.006,
+          "planningSliceCount": 3,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1262,
+          "firstAppliedTick": 1262,
+          "lastAppliedTick": 1262,
+          "firstPlanningTick": 1262,
+          "serviceTurns": 1,
+          "firstServiceWaitMs": 0.147
+        },
+        {
+          "orderId": 2,
+          "team": 0,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 24,
+          "uniqueDestinationCells": 24,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 1,
+          "expandedCells": 62,
+          "discoveredCells": 126,
+          "elapsedMs": 4.618,
+          "planningWorkMs": 2.45,
+          "maxPlanningSliceMs": 1.282,
+          "queueWaitMs": 0.245,
+          "setupMs": 1.046,
+          "pathPlanningWorkMs": 1.398,
+          "maxPathPlanningSliceMs": 1.282,
+          "finalizationMs": 0.006,
+          "planningSliceCount": 5,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 62,
+          "createdTick": 1262,
+          "firstAppliedTick": 1262,
+          "lastAppliedTick": 1262,
+          "firstPlanningTick": 1262,
+          "serviceTurns": 3,
+          "firstServiceWaitMs": 0.53
+        }
+      ],
+      "initialTickTiming": {
+        "sampleCount": 38,
+        "windowSeconds": 1.3,
+        "budgetMs": 33.333,
+        "p50Ms": 2.168,
+        "p95Ms": 22.711,
+        "maxMs": 44.342,
+        "startLagP95Ms": 27.218,
+        "startLagMaxMs": 99.877,
+        "scheduler": {
+          "policy": "drop-elapsed-slots",
+          "skippedTickSlotsTotal": 6,
+          "lastOverloadSkippedSlots": 4,
+          "lastOverloadTick": 6
+        },
+        "slowestTick": {
+          "tickNumber": 6,
+          "durationMs": 44.342,
+          "cpuMs": 92.185,
+          "simulationMs": 44.044,
+          "visionMs": 0.015,
+          "scenarioMs": 0.282,
+          "scenarioEvaluated": true,
+          "broadcastMs": 0.001,
+          "checkpointMs": 0.001
+        },
+        "scenarioTiming": {
+          "sampleCount": 12,
+          "p50Ms": 0.075,
+          "p95Ms": 5.953,
+          "maxMs": 5.953
+        }
+      },
+      "planningTurnsPerTick": 0,
+      "limits": [
+        "actual asynchronous two-seat loopback server; natural roster and ordinary commands, no actor injection",
+        "no renderer, deployment, comparable hardware speedup or supported capacity claim"
+      ],
+      "rawReportSha256": "465585aba21cfecc2b17b20bc299f6fb40117f9d0a8a15e899317d42e03c8872",
+      "map": {
+        "id": "pathing-large-single-choke-996-seat-0",
+        "width": 128,
+        "height": 128,
+        "startingArmySize": 2000,
+        "sha256": "441e6eaa57f20a75d481f60f8d81727aea7f6edcacec97879675aa072c6915f8",
+        "generator": "scripts/pathing-baseline-cases.mjs / pathingBaselineMap",
+        "arguments": {
+          "group": 996,
+          "kind": "large-single-choke",
+          "team": 0
+        }
+      },
+      "orders": [
+        {
+          "tick": 36,
+          "notice": "MOVE ORDER · 996 UNITS",
+          "command": {
+            "type": "move",
+            "x": 16.5,
+            "z": 0.5,
+            "clientOrderToken": 1,
+            "selectedUnitCount": 996,
+            "selectedIdsSha256": "49313627e779a394337d25751d638dcbf6a4bfb6f46578c6e24597a1b8a4c426",
+            "unitGenerationCount": 996,
+            "unitGenerationsSha256": "e7e2d4eae191fe1c7c79f898799c2bdb43f5f3f1ffbe0fb354d98da449d78640"
+          }
+        },
+        {
+          "tick": 1245,
+          "notice": "STOP ORDER · 8 UNITS",
+          "command": {
+            "type": "stop",
+            "clientOrderToken": 3,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "ba53a4aa12c9f94924ab277189a5e8f6496c4117e8aa33eba863ac442fbcaf2c",
+            "ids": [
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11
+            ]
+          }
+        },
+        {
+          "tick": 1245,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": 28.5,
+            "z": 8.5,
+            "clientOrderToken": 4,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "836cd3c3b0eb33f3a3969c13bb61b2f2f8c99d318a5cb6ee2b4a5a6c2b336e1b",
+            "ids": [
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19
+            ]
+          }
+        },
+        {
+          "tick": 1245,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": 24.5,
+            "z": 0.5,
+            "clientOrderToken": 2,
+            "selectedUnitCount": 24,
+            "selectedIdsSha256": "1cfd323e6ce1af4a7ab9ccbac4428595140be47264f3f554a446359de0ac79b0",
+            "ids": [
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "head": "319d70bfe259437fa2712be8aaad3e8ee942ad90",
+      "sourceSha256": "f5fce1e78a1fccee11758037a7fc0ae46810065967fa5cb06de3b544649e4904",
+      "team": 1,
+      "controlKind": "parked",
+      "roster": 2000,
+      "selected": 996,
+      "arrived": 996,
+      "midTick": 180,
+      "arrivalTicks": 1290,
+      "activeRouteRestart": true,
+      "stopPreserved": 8,
+      "replacementPreserved": 8,
+      "idleRestart": true,
+      "replacementResults": [
+        {
+          "id": 1012,
+          "goal": 9122,
+          "revision": 3
+        },
+        {
+          "id": 1013,
+          "goal": 9123,
+          "revision": 3
+        },
+        {
+          "id": 1014,
+          "goal": 9124,
+          "revision": 3
+        },
+        {
+          "id": 1015,
+          "goal": 9250,
+          "revision": 3
+        },
+        {
+          "id": 1016,
+          "goal": 9251,
+          "revision": 3
+        },
+        {
+          "id": 1017,
+          "goal": 9252,
+          "revision": 3
+        },
+        {
+          "id": 1018,
+          "goal": 9378,
+          "revision": 3
+        },
+        {
+          "id": 1019,
+          "goal": 9379,
+          "revision": 3
+        }
+      ],
+      "initialPlanning": [
+        {
+          "orderId": 1,
+          "team": 1,
+          "mode": "shared-start",
+          "unitCount": 996,
+          "uniqueStartCells": 476,
+          "uniqueDestinationCells": 996,
+          "nonEmptyPaths": 996,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 976,
+          "expandedCells": 481703,
+          "discoveredCells": 605350,
+          "elapsedMs": 204.189,
+          "planningWorkMs": 137.851,
+          "maxPlanningSliceMs": 4.754,
+          "queueWaitMs": 0.269,
+          "setupMs": 4.237,
+          "pathPlanningWorkMs": 133.21,
+          "maxPathPlanningSliceMs": 4.754,
+          "finalizationMs": 0.403,
+          "planningSliceCount": 147,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 5146,
+          "createdTick": 32,
+          "firstAppliedTick": 32,
+          "lastAppliedTick": 38,
+          "firstPlanningTick": 32,
+          "serviceTurns": 145,
+          "firstServiceWaitMs": 0.567
+        }
+      ],
+      "overlappingPlanning": [
+        {
+          "orderId": 3,
+          "team": 1,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 8,
+          "uniqueDestinationCells": 8,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 0.583,
+          "planningWorkMs": 0.227,
+          "maxPlanningSliceMs": 0.134,
+          "queueWaitMs": 0.129,
+          "setupMs": 0.088,
+          "pathPlanningWorkMs": 0.134,
+          "maxPathPlanningSliceMs": 0.134,
+          "finalizationMs": 0.005,
+          "planningSliceCount": 3,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1321,
+          "firstAppliedTick": 1321,
+          "lastAppliedTick": 1321,
+          "firstPlanningTick": 1321,
+          "serviceTurns": 1,
+          "firstServiceWaitMs": 0.151
+        },
+        {
+          "orderId": 2,
+          "team": 1,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 24,
+          "uniqueDestinationCells": 24,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 25.783,
+          "planningWorkMs": 2.371,
+          "maxPlanningSliceMs": 1.508,
+          "queueWaitMs": 0.221,
+          "setupMs": 1.508,
+          "pathPlanningWorkMs": 0.855,
+          "maxPathPlanningSliceMs": 0.636,
+          "finalizationMs": 0.008,
+          "planningSliceCount": 5,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1320,
+          "firstAppliedTick": 1320,
+          "lastAppliedTick": 1321,
+          "firstPlanningTick": 1320,
+          "serviceTurns": 3,
+          "firstServiceWaitMs": 0.527
+        }
+      ],
+      "initialTickTiming": {
+        "sampleCount": 38,
+        "windowSeconds": 1.3,
+        "budgetMs": 33.333,
+        "p50Ms": 2.162,
+        "p95Ms": 18.563,
+        "maxMs": 28.649,
+        "startLagP95Ms": 1.679,
+        "startLagMaxMs": 33.686,
+        "scheduler": {
+          "policy": "drop-elapsed-slots",
+          "skippedTickSlotsTotal": 1,
+          "lastOverloadSkippedSlots": 1,
+          "lastOverloadTick": 3
+        },
+        "slowestTick": {
+          "tickNumber": 25,
+          "durationMs": 28.649,
+          "cpuMs": 28.638,
+          "simulationMs": 28.648,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.001,
+          "checkpointMs": 0
+        },
+        "scenarioTiming": {
+          "sampleCount": 12,
+          "p50Ms": 0.05,
+          "p95Ms": 1.858,
+          "maxMs": 1.858
+        }
+      },
+      "planningTurnsPerTick": 0,
+      "limits": [
+        "actual asynchronous two-seat loopback server; natural roster and ordinary commands, no actor injection",
+        "no renderer, deployment, comparable hardware speedup or supported capacity claim"
+      ],
+      "rawReportSha256": "28504eec6f9822cb3d9aebb73287b5fd216ffd504dd982df1a83d369914a00e7",
+      "map": {
+        "id": "pathing-large-single-choke-996-seat-1",
+        "width": 128,
+        "height": 128,
+        "startingArmySize": 2000,
+        "sha256": "2fbf33eeed3272217a844466f63941d5e75a490bec21f4a2dd24ce1bbaf9578f",
+        "generator": "scripts/pathing-baseline-cases.mjs / pathingBaselineMap",
+        "arguments": {
+          "group": 996,
+          "kind": "large-single-choke",
+          "team": 1
+        }
+      },
+      "orders": [
+        {
+          "tick": 36,
+          "notice": "MOVE ORDER · 996 UNITS",
+          "command": {
+            "type": "move",
+            "x": -16.5,
+            "z": 0.5,
+            "clientOrderToken": 1,
+            "selectedUnitCount": 996,
+            "selectedIdsSha256": "5ea3e5eb612a85d855a161e1ffb8effb9b132d784217c12916bd45c894b42ec0",
+            "unitGenerationCount": 996,
+            "unitGenerationsSha256": "4795edffdf21a69144505e5ff281ae90aad462d20bc245d178239c72b43010f2"
+          }
+        },
+        {
+          "tick": 1321,
+          "notice": "STOP ORDER · 8 UNITS",
+          "command": {
+            "type": "stop",
+            "clientOrderToken": 3,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "a5c4c2fd7c1b7caaca6bbe21ec1339a5713796ec01245f0677cddb29578d6783",
+            "ids": [
+              1004,
+              1005,
+              1006,
+              1007,
+              1008,
+              1009,
+              1010,
+              1011
+            ]
+          }
+        },
+        {
+          "tick": 1321,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": -28.5,
+            "z": 8.5,
+            "clientOrderToken": 4,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "b884c8e05bfcec856f2061c3bea6a0396c64afbad38dcafbe150bee0a67d2448",
+            "ids": [
+              1012,
+              1013,
+              1014,
+              1015,
+              1016,
+              1017,
+              1018,
+              1019
+            ]
+          }
+        },
+        {
+          "tick": 1321,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": -24.5,
+            "z": 0.5,
+            "clientOrderToken": 2,
+            "selectedUnitCount": 24,
+            "selectedIdsSha256": "9099ae656d12a5c7089c7af7a058b731efc38ffafe1df1aa8a9089511054be0e",
+            "ids": [
+              1004,
+              1005,
+              1006,
+              1007,
+              1008,
+              1009,
+              1010,
+              1011,
+              1012,
+              1013,
+              1014,
+              1015,
+              1016,
+              1017,
+              1018,
+              1019,
+              1020,
+              1021,
+              1022,
+              1023,
+              1024,
+              1025,
+              1026,
+              1027
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "head": "319d70bfe259437fa2712be8aaad3e8ee942ad90",
+      "sourceSha256": "f5fce1e78a1fccee11758037a7fc0ae46810065967fa5cb06de3b544649e4904",
+      "team": 0,
+      "controlKind": "parked",
+      "roster": 2000,
+      "selected": 996,
+      "arrived": 996,
+      "midTick": 180,
+      "arrivalTicks": 1380,
+      "activeRouteRestart": true,
+      "stopPreserved": 8,
+      "replacementPreserved": 8,
+      "idleRestart": true,
+      "replacementResults": [
+        {
+          "id": 12,
+          "goal": 9179,
+          "revision": 3
+        },
+        {
+          "id": 13,
+          "goal": 9180,
+          "revision": 3
+        },
+        {
+          "id": 14,
+          "goal": 9181,
+          "revision": 3
+        },
+        {
+          "id": 15,
+          "goal": 9307,
+          "revision": 3
+        },
+        {
+          "id": 16,
+          "goal": 9308,
+          "revision": 3
+        },
+        {
+          "id": 17,
+          "goal": 9309,
+          "revision": 3
+        },
+        {
+          "id": 18,
+          "goal": 9435,
+          "revision": 3
+        },
+        {
+          "id": 19,
+          "goal": 9436,
+          "revision": 3
+        }
+      ],
+      "initialPlanning": [
+        {
+          "orderId": 1,
+          "team": 0,
+          "mode": "shared-start",
+          "unitCount": 996,
+          "uniqueStartCells": 476,
+          "uniqueDestinationCells": 996,
+          "nonEmptyPaths": 996,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 917,
+          "expandedCells": 467516,
+          "discoveredCells": 581680,
+          "elapsedMs": 4790.316,
+          "planningWorkMs": 134.85,
+          "maxPlanningSliceMs": 6.179,
+          "queueWaitMs": 0.268,
+          "setupMs": 3.497,
+          "pathPlanningWorkMs": 131.072,
+          "maxPathPlanningSliceMs": 6.179,
+          "finalizationMs": 0.28,
+          "planningSliceCount": 146,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 5059,
+          "createdTick": 31,
+          "firstAppliedTick": 32,
+          "lastAppliedTick": 175,
+          "firstPlanningTick": 32,
+          "serviceTurns": 144,
+          "firstServiceWaitMs": 18.748
+        }
+      ],
+      "overlappingPlanning": [
+        {
+          "orderId": 3,
+          "team": 0,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 8,
+          "uniqueDestinationCells": 8,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 50.993,
+          "planningWorkMs": 0.83,
+          "maxPlanningSliceMs": 0.764,
+          "queueWaitMs": 16.713,
+          "setupMs": 0.061,
+          "pathPlanningWorkMs": 0.764,
+          "maxPathPlanningSliceMs": 0.764,
+          "finalizationMs": 0.005,
+          "planningSliceCount": 3,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1412,
+          "firstAppliedTick": 1414,
+          "lastAppliedTick": 1414,
+          "firstPlanningTick": 1414,
+          "serviceTurns": 1,
+          "firstServiceWaitMs": 49.94
+        },
+        {
+          "orderId": 2,
+          "team": 0,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 24,
+          "uniqueDestinationCells": 24,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 119.107,
+          "planningWorkMs": 1.805,
+          "maxPlanningSliceMs": 0.985,
+          "queueWaitMs": 0.238,
+          "setupMs": 0.985,
+          "pathPlanningWorkMs": 0.761,
+          "maxPathPlanningSliceMs": 0.626,
+          "finalizationMs": 0.059,
+          "planningSliceCount": 5,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1412,
+          "firstAppliedTick": 1416,
+          "lastAppliedTick": 1416,
+          "firstPlanningTick": 1413,
+          "serviceTurns": 3,
+          "firstServiceWaitMs": 17.237
+        }
+      ],
+      "initialTickTiming": {
+        "sampleCount": 175,
+        "windowSeconds": 5.8,
+        "budgetMs": 33.333,
+        "p50Ms": 2.496,
+        "p95Ms": 10.949,
+        "maxMs": 30.449,
+        "startLagP95Ms": 1.316,
+        "startLagMaxMs": 13.687,
+        "scheduler": {
+          "policy": "drop-elapsed-slots",
+          "skippedTickSlotsTotal": 0,
+          "lastOverloadSkippedSlots": 0,
+          "lastOverloadTick": null
+        },
+        "slowestTick": {
+          "tickNumber": 1,
+          "durationMs": 30.449,
+          "cpuMs": 37.681,
+          "simulationMs": 30.447,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.001,
+          "checkpointMs": 0.001,
+          "planningMs": 0.058,
+          "planningTurns": 0,
+          "planningWorkItems": 0,
+          "planningExpandedCells": 0
+        },
+        "scenarioTiming": {
+          "sampleCount": 58,
+          "p50Ms": 0.028,
+          "p95Ms": 0.27,
+          "maxMs": 3.011
+        },
+        "planningTiming": {
+          "turnsPerTick": 1,
+          "sampleCount": 144,
+          "p50Ms": 0.966,
+          "p95Ms": 1.689,
+          "maxMs": 6.586,
+          "maxTurns": 1,
+          "maxWorkItems": 8,
+          "maxExpandedCells": 5059
+        }
+      },
+      "planningTurnsPerTick": 1,
+      "limits": [
+        "actual asynchronous two-seat loopback server; natural roster and ordinary commands, no actor injection",
+        "no renderer, deployment, comparable hardware speedup or supported capacity claim"
+      ],
+      "rawReportSha256": "40db4805bbae7d1f99602fcaffb9a09c6871918885c519ad4bf248cacdb51f4a",
+      "map": {
+        "id": "pathing-large-single-choke-996-seat-0",
+        "width": 128,
+        "height": 128,
+        "startingArmySize": 2000,
+        "sha256": "441e6eaa57f20a75d481f60f8d81727aea7f6edcacec97879675aa072c6915f8",
+        "generator": "scripts/pathing-baseline-cases.mjs / pathingBaselineMap",
+        "arguments": {
+          "group": 996,
+          "kind": "large-single-choke",
+          "team": 0
+        }
+      },
+      "orders": [
+        {
+          "tick": 174,
+          "notice": "MOVE ORDER · 996 UNITS",
+          "command": {
+            "type": "move",
+            "x": 16.5,
+            "z": 0.5,
+            "clientOrderToken": 1,
+            "selectedUnitCount": 996,
+            "selectedIdsSha256": "49313627e779a394337d25751d638dcbf6a4bfb6f46578c6e24597a1b8a4c426",
+            "unitGenerationCount": 996,
+            "unitGenerationsSha256": "11ff2c8d0be2805d8f6ce1f54e25e1cc5b243c64f95a6c0050317a43d019a6f1"
+          }
+        },
+        {
+          "tick": 1386,
+          "notice": "STOP ORDER · 8 UNITS",
+          "command": {
+            "type": "stop",
+            "clientOrderToken": 3,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "ba53a4aa12c9f94924ab277189a5e8f6496c4117e8aa33eba863ac442fbcaf2c",
+            "ids": [
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11
+            ]
+          }
+        },
+        {
+          "tick": 1413,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": 28.5,
+            "z": 8.5,
+            "clientOrderToken": 4,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "836cd3c3b0eb33f3a3969c13bb61b2f2f8c99d318a5cb6ee2b4a5a6c2b336e1b",
+            "ids": [
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19
+            ]
+          }
+        },
+        {
+          "tick": 1414,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": 24.5,
+            "z": 0.5,
+            "clientOrderToken": 2,
+            "selectedUnitCount": 24,
+            "selectedIdsSha256": "1cfd323e6ce1af4a7ab9ccbac4428595140be47264f3f554a446359de0ac79b0",
+            "ids": [
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "head": "319d70bfe259437fa2712be8aaad3e8ee942ad90",
+      "sourceSha256": "f5fce1e78a1fccee11758037a7fc0ae46810065967fa5cb06de3b544649e4904",
+      "team": 1,
+      "controlKind": "parked",
+      "roster": 2000,
+      "selected": 996,
+      "arrived": 996,
+      "midTick": 180,
+      "arrivalTicks": 1410,
+      "activeRouteRestart": true,
+      "stopPreserved": 8,
+      "replacementPreserved": 8,
+      "idleRestart": true,
+      "replacementResults": [
+        {
+          "id": 1012,
+          "goal": 9122,
+          "revision": 3
+        },
+        {
+          "id": 1013,
+          "goal": 9123,
+          "revision": 3
+        },
+        {
+          "id": 1014,
+          "goal": 9124,
+          "revision": 3
+        },
+        {
+          "id": 1015,
+          "goal": 9250,
+          "revision": 3
+        },
+        {
+          "id": 1016,
+          "goal": 9251,
+          "revision": 3
+        },
+        {
+          "id": 1017,
+          "goal": 9252,
+          "revision": 3
+        },
+        {
+          "id": 1018,
+          "goal": 9378,
+          "revision": 3
+        },
+        {
+          "id": 1019,
+          "goal": 9379,
+          "revision": 3
+        }
+      ],
+      "initialPlanning": [
+        {
+          "orderId": 1,
+          "team": 1,
+          "mode": "shared-start",
+          "unitCount": 996,
+          "uniqueStartCells": 476,
+          "uniqueDestinationCells": 996,
+          "nonEmptyPaths": 996,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 976,
+          "expandedCells": 481703,
+          "discoveredCells": 605350,
+          "elapsedMs": 4803.202,
+          "planningWorkMs": 131.925,
+          "maxPlanningSliceMs": 4.39,
+          "queueWaitMs": 0.223,
+          "setupMs": 4.025,
+          "pathPlanningWorkMs": 127.501,
+          "maxPathPlanningSliceMs": 4.39,
+          "finalizationMs": 0.399,
+          "planningSliceCount": 147,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 5146,
+          "createdTick": 31,
+          "firstAppliedTick": 32,
+          "lastAppliedTick": 176,
+          "firstPlanningTick": 32,
+          "serviceTurns": 145,
+          "firstServiceWaitMs": 0.641
+        }
+      ],
+      "overlappingPlanning": [
+        {
+          "orderId": 3,
+          "team": 1,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 8,
+          "uniqueDestinationCells": 8,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 49.516,
+          "planningWorkMs": 0.779,
+          "maxPlanningSliceMs": 0.717,
+          "queueWaitMs": 14.553,
+          "setupMs": 0.057,
+          "pathPlanningWorkMs": 0.717,
+          "maxPathPlanningSliceMs": 0.717,
+          "finalizationMs": 0.005,
+          "planningSliceCount": 3,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1442,
+          "firstAppliedTick": 1444,
+          "lastAppliedTick": 1444,
+          "firstPlanningTick": 1444,
+          "serviceTurns": 1,
+          "firstServiceWaitMs": 48.562
+        },
+        {
+          "orderId": 2,
+          "team": 1,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 24,
+          "uniqueDestinationCells": 24,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 116.547,
+          "planningWorkMs": 1.58,
+          "maxPlanningSliceMs": 1.327,
+          "queueWaitMs": 0.212,
+          "setupMs": 1.327,
+          "pathPlanningWorkMs": 0.244,
+          "maxPathPlanningSliceMs": 0.181,
+          "finalizationMs": 0.009,
+          "planningSliceCount": 5,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1442,
+          "firstAppliedTick": 1446,
+          "lastAppliedTick": 1446,
+          "firstPlanningTick": 1443,
+          "serviceTurns": 3,
+          "firstServiceWaitMs": 15.012
+        }
+      ],
+      "initialTickTiming": {
+        "sampleCount": 176,
+        "windowSeconds": 5.9,
+        "budgetMs": 33.333,
+        "p50Ms": 2.435,
+        "p95Ms": 10.112,
+        "maxMs": 22.907,
+        "startLagP95Ms": 0.97,
+        "startLagMaxMs": 30.178,
+        "scheduler": {
+          "policy": "drop-elapsed-slots",
+          "skippedTickSlotsTotal": 1,
+          "lastOverloadSkippedSlots": 1,
+          "lastOverloadTick": 3
+        },
+        "slowestTick": {
+          "tickNumber": 32,
+          "durationMs": 22.907,
+          "cpuMs": 56.462,
+          "simulationMs": 10.478,
+          "visionMs": 0.013,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 12.415,
+          "checkpointMs": 0.001,
+          "planningMs": 4.832,
+          "planningTurns": 1,
+          "planningWorkItems": 5,
+          "planningExpandedCells": 4380
+        },
+        "scenarioTiming": {
+          "sampleCount": 58,
+          "p50Ms": 0.03,
+          "p95Ms": 0.205,
+          "maxMs": 1.231
+        },
+        "planningTiming": {
+          "turnsPerTick": 1,
+          "sampleCount": 145,
+          "p50Ms": 0.971,
+          "p95Ms": 1.462,
+          "maxMs": 4.832,
+          "maxTurns": 1,
+          "maxWorkItems": 8,
+          "maxExpandedCells": 5146
+        }
+      },
+      "planningTurnsPerTick": 1,
+      "limits": [
+        "actual asynchronous two-seat loopback server; natural roster and ordinary commands, no actor injection",
+        "no renderer, deployment, comparable hardware speedup or supported capacity claim"
+      ],
+      "rawReportSha256": "cdf6cefe37de286ce86c4ae0c852d373630ab88184d5057a59e3fd1eb1223257",
+      "map": {
+        "id": "pathing-large-single-choke-996-seat-1",
+        "width": 128,
+        "height": 128,
+        "startingArmySize": 2000,
+        "sha256": "2fbf33eeed3272217a844466f63941d5e75a490bec21f4a2dd24ce1bbaf9578f",
+        "generator": "scripts/pathing-baseline-cases.mjs / pathingBaselineMap",
+        "arguments": {
+          "group": 996,
+          "kind": "large-single-choke",
+          "team": 1
+        }
+      },
+      "orders": [
+        {
+          "tick": 174,
+          "notice": "MOVE ORDER · 996 UNITS",
+          "command": {
+            "type": "move",
+            "x": -16.5,
+            "z": 0.5,
+            "clientOrderToken": 1,
+            "selectedUnitCount": 996,
+            "selectedIdsSha256": "5ea3e5eb612a85d855a161e1ffb8effb9b132d784217c12916bd45c894b42ec0",
+            "unitGenerationCount": 996,
+            "unitGenerationsSha256": "b28dbbe72bc551a82b73c6d5902543197ea1b7a29393fdf8635be3ab408435bc"
+          }
+        },
+        {
+          "tick": 1422,
+          "notice": "STOP ORDER · 8 UNITS",
+          "command": {
+            "type": "stop",
+            "clientOrderToken": 3,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "a5c4c2fd7c1b7caaca6bbe21ec1339a5713796ec01245f0677cddb29578d6783",
+            "ids": [
+              1004,
+              1005,
+              1006,
+              1007,
+              1008,
+              1009,
+              1010,
+              1011
+            ]
+          }
+        },
+        {
+          "tick": 1443,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": -28.5,
+            "z": 8.5,
+            "clientOrderToken": 4,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "b884c8e05bfcec856f2061c3bea6a0396c64afbad38dcafbe150bee0a67d2448",
+            "ids": [
+              1012,
+              1013,
+              1014,
+              1015,
+              1016,
+              1017,
+              1018,
+              1019
+            ]
+          }
+        },
+        {
+          "tick": 1444,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": -24.5,
+            "z": 0.5,
+            "clientOrderToken": 2,
+            "selectedUnitCount": 24,
+            "selectedIdsSha256": "9099ae656d12a5c7089c7af7a058b731efc38ffafe1df1aa8a9089511054be0e",
+            "ids": [
+              1004,
+              1005,
+              1006,
+              1007,
+              1008,
+              1009,
+              1010,
+              1011,
+              1012,
+              1013,
+              1014,
+              1015,
+              1016,
+              1017,
+              1018,
+              1019,
+              1020,
+              1021,
+              1022,
+              1023,
+              1024,
+              1025,
+              1026,
+              1027
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "head": "319d70bfe259437fa2712be8aaad3e8ee942ad90",
+      "sourceSha256": "f5fce1e78a1fccee11758037a7fc0ae46810065967fa5cb06de3b544649e4904",
+      "team": 0,
+      "controlKind": "parked",
+      "roster": 2000,
+      "selected": 996,
+      "arrived": 996,
+      "midTick": 180,
+      "arrivalTicks": 1260,
+      "activeRouteRestart": true,
+      "stopPreserved": 8,
+      "replacementPreserved": 8,
+      "idleRestart": true,
+      "replacementResults": [
+        {
+          "id": 12,
+          "goal": 9179,
+          "revision": 3
+        },
+        {
+          "id": 13,
+          "goal": 9180,
+          "revision": 3
+        },
+        {
+          "id": 14,
+          "goal": 9181,
+          "revision": 3
+        },
+        {
+          "id": 15,
+          "goal": 9307,
+          "revision": 3
+        },
+        {
+          "id": 16,
+          "goal": 9308,
+          "revision": 3
+        },
+        {
+          "id": 17,
+          "goal": 9309,
+          "revision": 3
+        },
+        {
+          "id": 18,
+          "goal": 9435,
+          "revision": 3
+        },
+        {
+          "id": 19,
+          "goal": 9436,
+          "revision": 3
+        }
+      ],
+      "initialPlanning": [
+        {
+          "orderId": 1,
+          "team": 0,
+          "mode": "shared-start",
+          "unitCount": 996,
+          "uniqueStartCells": 476,
+          "uniqueDestinationCells": 996,
+          "nonEmptyPaths": 996,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 917,
+          "expandedCells": 467516,
+          "discoveredCells": 581680,
+          "elapsedMs": 1198.26,
+          "planningWorkMs": 136.648,
+          "maxPlanningSliceMs": 5.059,
+          "queueWaitMs": 0.193,
+          "setupMs": 5.059,
+          "pathPlanningWorkMs": 131.127,
+          "maxPathPlanningSliceMs": 4.791,
+          "finalizationMs": 0.461,
+          "planningSliceCount": 146,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 5059,
+          "createdTick": 32,
+          "firstAppliedTick": 33,
+          "lastAppliedTick": 68,
+          "firstPlanningTick": 33,
+          "serviceTurns": 144,
+          "firstServiceWaitMs": 20.841
+        }
+      ],
+      "overlappingPlanning": [
+        {
+          "orderId": 2,
+          "team": 0,
+          "mode": "shared-start",
+          "unitCount": 24,
+          "uniqueStartCells": 24,
+          "uniqueDestinationCells": 24,
+          "nonEmptyPaths": 24,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 1,
+          "expandedCells": 62,
+          "discoveredCells": 126,
+          "elapsedMs": 4.071,
+          "planningWorkMs": 2.94,
+          "maxPlanningSliceMs": 1.287,
+          "queueWaitMs": 0.244,
+          "setupMs": 1.287,
+          "pathPlanningWorkMs": 1.643,
+          "maxPathPlanningSliceMs": 1.284,
+          "finalizationMs": 0.01,
+          "planningSliceCount": 5,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 62,
+          "createdTick": 1291,
+          "firstAppliedTick": 1292,
+          "lastAppliedTick": 1292,
+          "firstPlanningTick": 1292,
+          "serviceTurns": 3,
+          "firstServiceWaitMs": 0.618
+        },
+        {
+          "orderId": 3,
+          "team": 0,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 8,
+          "uniqueDestinationCells": 8,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 5.497,
+          "planningWorkMs": 0.267,
+          "maxPlanningSliceMs": 0.137,
+          "queueWaitMs": 0.048,
+          "setupMs": 0.123,
+          "pathPlanningWorkMs": 0.137,
+          "maxPathPlanningSliceMs": 0.137,
+          "finalizationMs": 0.007,
+          "planningSliceCount": 3,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1292,
+          "firstAppliedTick": 1293,
+          "lastAppliedTick": 1293,
+          "firstPlanningTick": 1293,
+          "serviceTurns": 1,
+          "firstServiceWaitMs": 5.194
+        }
+      ],
+      "initialTickTiming": {
+        "sampleCount": 68,
+        "windowSeconds": 2.3,
+        "budgetMs": 33.333,
+        "p50Ms": 3.765,
+        "p95Ms": 16.329,
+        "maxMs": 26.674,
+        "startLagP95Ms": 0.98,
+        "startLagMaxMs": 34.298,
+        "scheduler": {
+          "policy": "drop-elapsed-slots",
+          "skippedTickSlotsTotal": 1,
+          "lastOverloadSkippedSlots": 1,
+          "lastOverloadTick": 2
+        },
+        "slowestTick": {
+          "tickNumber": 33,
+          "durationMs": 26.674,
+          "cpuMs": 58.104,
+          "simulationMs": 16.547,
+          "visionMs": 0.013,
+          "scenarioMs": 0.447,
+          "scenarioEvaluated": true,
+          "broadcastMs": 9.666,
+          "checkpointMs": 0.001,
+          "planningMs": 11.002,
+          "planningTurns": 4,
+          "planningWorkItems": 17,
+          "planningExpandedCells": 18604
+        },
+        "scenarioTiming": {
+          "sampleCount": 22,
+          "p50Ms": 0.047,
+          "p95Ms": 0.69,
+          "maxMs": 2.229
+        },
+        "planningTiming": {
+          "turnsPerTick": 4,
+          "sampleCount": 36,
+          "p50Ms": 4.008,
+          "p95Ms": 9.98,
+          "maxMs": 11.002,
+          "maxTurns": 4,
+          "maxWorkItems": 32,
+          "maxExpandedCells": 18768
+        }
+      },
+      "planningTurnsPerTick": 4,
+      "limits": [
+        "actual asynchronous two-seat loopback server; natural roster and ordinary commands, no actor injection",
+        "no renderer, deployment, comparable hardware speedup or supported capacity claim"
+      ],
+      "rawReportSha256": "3d6919af869015d353fdf606d3092dce7389d67c7110a44902f1a32108c8a77f",
+      "map": {
+        "id": "pathing-large-single-choke-996-seat-0",
+        "width": 128,
+        "height": 128,
+        "startingArmySize": 2000,
+        "sha256": "441e6eaa57f20a75d481f60f8d81727aea7f6edcacec97879675aa072c6915f8",
+        "generator": "scripts/pathing-baseline-cases.mjs / pathingBaselineMap",
+        "arguments": {
+          "group": 996,
+          "kind": "large-single-choke",
+          "team": 0
+        }
+      },
+      "orders": [
+        {
+          "tick": 66,
+          "notice": "MOVE ORDER · 996 UNITS",
+          "command": {
+            "type": "move",
+            "x": 16.5,
+            "z": 0.5,
+            "clientOrderToken": 1,
+            "selectedUnitCount": 996,
+            "selectedIdsSha256": "49313627e779a394337d25751d638dcbf6a4bfb6f46578c6e24597a1b8a4c426",
+            "unitGenerationCount": 996,
+            "unitGenerationsSha256": "f92d760f358f5e403fcdc2f67e2483cbd7194c0d56c1d975c6a6e35ceb108b74"
+          }
+        },
+        {
+          "tick": 1275,
+          "notice": "MOVE ORDER · 24 UNITS",
+          "command": {
+            "type": "move",
+            "x": 24.5,
+            "z": 0.5,
+            "clientOrderToken": 2,
+            "selectedUnitCount": 24,
+            "selectedIdsSha256": "1cfd323e6ce1af4a7ab9ccbac4428595140be47264f3f554a446359de0ac79b0",
+            "ids": [
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27
+            ]
+          }
+        },
+        {
+          "tick": 1292,
+          "notice": "STOP ORDER · 8 UNITS",
+          "command": {
+            "type": "stop",
+            "clientOrderToken": 3,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "ba53a4aa12c9f94924ab277189a5e8f6496c4117e8aa33eba863ac442fbcaf2c",
+            "ids": [
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11
+            ]
+          }
+        },
+        {
+          "tick": 1292,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": 28.5,
+            "z": 8.5,
+            "clientOrderToken": 4,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "836cd3c3b0eb33f3a3969c13bb61b2f2f8c99d318a5cb6ee2b4a5a6c2b336e1b",
+            "ids": [
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "head": "319d70bfe259437fa2712be8aaad3e8ee942ad90",
+      "sourceSha256": "f5fce1e78a1fccee11758037a7fc0ae46810065967fa5cb06de3b544649e4904",
+      "team": 1,
+      "controlKind": "parked",
+      "roster": 2000,
+      "selected": 996,
+      "arrived": 996,
+      "midTick": 180,
+      "arrivalTicks": 1290,
+      "activeRouteRestart": true,
+      "stopPreserved": 8,
+      "replacementPreserved": 8,
+      "idleRestart": true,
+      "replacementResults": [
+        {
+          "id": 1012,
+          "goal": 9122,
+          "revision": 3
+        },
+        {
+          "id": 1013,
+          "goal": 9123,
+          "revision": 3
+        },
+        {
+          "id": 1014,
+          "goal": 9124,
+          "revision": 3
+        },
+        {
+          "id": 1015,
+          "goal": 9250,
+          "revision": 3
+        },
+        {
+          "id": 1016,
+          "goal": 9251,
+          "revision": 3
+        },
+        {
+          "id": 1017,
+          "goal": 9252,
+          "revision": 3
+        },
+        {
+          "id": 1018,
+          "goal": 9378,
+          "revision": 3
+        },
+        {
+          "id": 1019,
+          "goal": 9379,
+          "revision": 3
+        }
+      ],
+      "initialPlanning": [
+        {
+          "orderId": 1,
+          "team": 1,
+          "mode": "shared-start",
+          "unitCount": 996,
+          "uniqueStartCells": 476,
+          "uniqueDestinationCells": 996,
+          "nonEmptyPaths": 996,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 976,
+          "expandedCells": 481703,
+          "discoveredCells": 605350,
+          "elapsedMs": 1214.933,
+          "planningWorkMs": 135.696,
+          "maxPlanningSliceMs": 3.762,
+          "queueWaitMs": 0.642,
+          "setupMs": 3.213,
+          "pathPlanningWorkMs": 131.717,
+          "maxPathPlanningSliceMs": 3.762,
+          "finalizationMs": 0.766,
+          "planningSliceCount": 147,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 5146,
+          "createdTick": 31,
+          "firstAppliedTick": 32,
+          "lastAppliedTick": 68,
+          "firstPlanningTick": 32,
+          "serviceTurns": 145,
+          "firstServiceWaitMs": 10.086
+        }
+      ],
+      "overlappingPlanning": [
+        {
+          "orderId": 3,
+          "team": 1,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 8,
+          "uniqueDestinationCells": 8,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 17.152,
+          "planningWorkMs": 0.873,
+          "maxPlanningSliceMs": 0.782,
+          "queueWaitMs": 16.084,
+          "setupMs": 0.086,
+          "pathPlanningWorkMs": 0.782,
+          "maxPathPlanningSliceMs": 0.782,
+          "finalizationMs": 0.005,
+          "planningSliceCount": 3,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1322,
+          "firstAppliedTick": 1323,
+          "lastAppliedTick": 1323,
+          "firstPlanningTick": 1323,
+          "serviceTurns": 1,
+          "firstServiceWaitMs": 16.105
+        },
+        {
+          "orderId": 2,
+          "team": 1,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 24,
+          "uniqueDestinationCells": 24,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 20.436,
+          "planningWorkMs": 1.54,
+          "maxPlanningSliceMs": 1.256,
+          "queueWaitMs": 0.23,
+          "setupMs": 1.256,
+          "pathPlanningWorkMs": 0.275,
+          "maxPathPlanningSliceMs": 0.218,
+          "finalizationMs": 0.009,
+          "planningSliceCount": 5,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1322,
+          "firstAppliedTick": 1323,
+          "lastAppliedTick": 1323,
+          "firstPlanningTick": 1323,
+          "serviceTurns": 3,
+          "firstServiceWaitMs": 17.091
+        }
+      ],
+      "initialTickTiming": {
+        "sampleCount": 68,
+        "windowSeconds": 2.3,
+        "budgetMs": 33.333,
+        "p50Ms": 4.474,
+        "p95Ms": 16.73,
+        "maxMs": 29.191,
+        "startLagP95Ms": 1.171,
+        "startLagMaxMs": 16.266,
+        "scheduler": {
+          "policy": "drop-elapsed-slots",
+          "skippedTickSlotsTotal": 2,
+          "lastOverloadSkippedSlots": 2,
+          "lastOverloadTick": 1
+        },
+        "slowestTick": {
+          "tickNumber": 32,
+          "durationMs": 29.191,
+          "cpuMs": 63.875,
+          "simulationMs": 16.067,
+          "visionMs": 0.012,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 13.111,
+          "checkpointMs": 0.001,
+          "planningMs": 8.536,
+          "planningTurns": 4,
+          "planningWorkItems": 18,
+          "planningExpandedCells": 17621
+        },
+        "scenarioTiming": {
+          "sampleCount": 22,
+          "p50Ms": 0.058,
+          "p95Ms": 0.495,
+          "maxMs": 2.933
+        },
+        "planningTiming": {
+          "turnsPerTick": 4,
+          "sampleCount": 37,
+          "p50Ms": 3.694,
+          "p95Ms": 8.536,
+          "maxMs": 10.196,
+          "maxTurns": 4,
+          "maxWorkItems": 32,
+          "maxExpandedCells": 19316
+        }
+      },
+      "planningTurnsPerTick": 4,
+      "limits": [
+        "actual asynchronous two-seat loopback server; natural roster and ordinary commands, no actor injection",
+        "no renderer, deployment, comparable hardware speedup or supported capacity claim"
+      ],
+      "rawReportSha256": "9f48ed625311b04d9e9e0064e87d0e4e84e08d88b89ce87bbd7e17454bddf2a1",
+      "map": {
+        "id": "pathing-large-single-choke-996-seat-1",
+        "width": 128,
+        "height": 128,
+        "startingArmySize": 2000,
+        "sha256": "2fbf33eeed3272217a844466f63941d5e75a490bec21f4a2dd24ce1bbaf9578f",
+        "generator": "scripts/pathing-baseline-cases.mjs / pathingBaselineMap",
+        "arguments": {
+          "group": 996,
+          "kind": "large-single-choke",
+          "team": 1
+        }
+      },
+      "orders": [
+        {
+          "tick": 66,
+          "notice": "MOVE ORDER · 996 UNITS",
+          "command": {
+            "type": "move",
+            "x": -16.5,
+            "z": 0.5,
+            "clientOrderToken": 1,
+            "selectedUnitCount": 996,
+            "selectedIdsSha256": "5ea3e5eb612a85d855a161e1ffb8effb9b132d784217c12916bd45c894b42ec0",
+            "unitGenerationCount": 996,
+            "unitGenerationsSha256": "4668e466f7da18f6b94a8433bd512507062b51a27a322fd395ff9e58ba40bfc0"
+          }
+        },
+        {
+          "tick": 1305,
+          "notice": "STOP ORDER · 8 UNITS",
+          "command": {
+            "type": "stop",
+            "clientOrderToken": 3,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "a5c4c2fd7c1b7caaca6bbe21ec1339a5713796ec01245f0677cddb29578d6783",
+            "ids": [
+              1004,
+              1005,
+              1006,
+              1007,
+              1008,
+              1009,
+              1010,
+              1011
+            ]
+          }
+        },
+        {
+          "tick": 1305,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": -28.5,
+            "z": 8.5,
+            "clientOrderToken": 4,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "b884c8e05bfcec856f2061c3bea6a0396c64afbad38dcafbe150bee0a67d2448",
+            "ids": [
+              1012,
+              1013,
+              1014,
+              1015,
+              1016,
+              1017,
+              1018,
+              1019
+            ]
+          }
+        },
+        {
+          "tick": 1305,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": -24.5,
+            "z": 0.5,
+            "clientOrderToken": 2,
+            "selectedUnitCount": 24,
+            "selectedIdsSha256": "9099ae656d12a5c7089c7af7a058b731efc38ffafe1df1aa8a9089511054be0e",
+            "ids": [
+              1004,
+              1005,
+              1006,
+              1007,
+              1008,
+              1009,
+              1010,
+              1011,
+              1012,
+              1013,
+              1014,
+              1015,
+              1016,
+              1017,
+              1018,
+              1019,
+              1020,
+              1021,
+              1022,
+              1023,
+              1024,
+              1025,
+              1026,
+              1027
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "head": "319d70bfe259437fa2712be8aaad3e8ee942ad90",
+      "sourceSha256": "f5fce1e78a1fccee11758037a7fc0ae46810065967fa5cb06de3b544649e4904",
+      "team": 0,
+      "controlKind": "parked",
+      "roster": 2000,
+      "selected": 996,
+      "arrived": 996,
+      "midTick": 180,
+      "arrivalTicks": 1230,
+      "activeRouteRestart": true,
+      "stopPreserved": 8,
+      "replacementPreserved": 8,
+      "idleRestart": true,
+      "replacementResults": [
+        {
+          "id": 12,
+          "goal": 9179,
+          "revision": 3
+        },
+        {
+          "id": 13,
+          "goal": 9180,
+          "revision": 3
+        },
+        {
+          "id": 14,
+          "goal": 9181,
+          "revision": 3
+        },
+        {
+          "id": 15,
+          "goal": 9307,
+          "revision": 3
+        },
+        {
+          "id": 16,
+          "goal": 9308,
+          "revision": 3
+        },
+        {
+          "id": 17,
+          "goal": 9309,
+          "revision": 3
+        },
+        {
+          "id": 18,
+          "goal": 9435,
+          "revision": 3
+        },
+        {
+          "id": 19,
+          "goal": 9436,
+          "revision": 3
+        }
+      ],
+      "initialPlanning": [
+        {
+          "orderId": 1,
+          "team": 0,
+          "mode": "shared-start",
+          "unitCount": 996,
+          "uniqueStartCells": 476,
+          "uniqueDestinationCells": 996,
+          "nonEmptyPaths": 996,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 917,
+          "expandedCells": 467516,
+          "discoveredCells": 581680,
+          "elapsedMs": 608.132,
+          "planningWorkMs": 126.148,
+          "maxPlanningSliceMs": 7.513,
+          "queueWaitMs": 0.198,
+          "setupMs": 4.259,
+          "pathPlanningWorkMs": 121.544,
+          "maxPathPlanningSliceMs": 7.513,
+          "finalizationMs": 0.345,
+          "planningSliceCount": 146,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 5059,
+          "createdTick": 31,
+          "firstAppliedTick": 32,
+          "lastAppliedTick": 49,
+          "firstPlanningTick": 32,
+          "serviceTurns": 144,
+          "firstServiceWaitMs": 0.643
+        }
+      ],
+      "overlappingPlanning": [
+        {
+          "orderId": 3,
+          "team": 0,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 8,
+          "uniqueDestinationCells": 8,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 26.651,
+          "planningWorkMs": 0.806,
+          "maxPlanningSliceMs": 0.63,
+          "queueWaitMs": 25.657,
+          "setupMs": 0.171,
+          "pathPlanningWorkMs": 0.63,
+          "maxPathPlanningSliceMs": 0.63,
+          "finalizationMs": 0.004,
+          "planningSliceCount": 3,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1261,
+          "firstAppliedTick": 1262,
+          "lastAppliedTick": 1262,
+          "firstPlanningTick": 1262,
+          "serviceTurns": 1,
+          "firstServiceWaitMs": 25.681
+        },
+        {
+          "orderId": 2,
+          "team": 0,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 24,
+          "uniqueDestinationCells": 24,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 29.037,
+          "planningWorkMs": 1.303,
+          "maxPlanningSliceMs": 1.081,
+          "queueWaitMs": 0.266,
+          "setupMs": 1.081,
+          "pathPlanningWorkMs": 0.216,
+          "maxPathPlanningSliceMs": 0.166,
+          "finalizationMs": 0.006,
+          "planningSliceCount": 5,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1261,
+          "firstAppliedTick": 1262,
+          "lastAppliedTick": 1262,
+          "firstPlanningTick": 1262,
+          "serviceTurns": 3,
+          "firstServiceWaitMs": 26.513
+        }
+      ],
+      "initialTickTiming": {
+        "sampleCount": 49,
+        "windowSeconds": 1.6,
+        "budgetMs": 33.333,
+        "p50Ms": 3.399,
+        "p95Ms": 20.963,
+        "maxMs": 44.034,
+        "startLagP95Ms": 6.564,
+        "startLagMaxMs": 27.992,
+        "scheduler": {
+          "policy": "drop-elapsed-slots",
+          "skippedTickSlotsTotal": 1,
+          "lastOverloadSkippedSlots": 1,
+          "lastOverloadTick": 32
+        },
+        "slowestTick": {
+          "tickNumber": 32,
+          "durationMs": 44.034,
+          "cpuMs": 92.008,
+          "simulationMs": 29.98,
+          "visionMs": 0.014,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 14.039,
+          "checkpointMs": 0.001,
+          "planningMs": 20.819,
+          "planningTurns": 8,
+          "planningWorkItems": 37,
+          "planningExpandedCells": 37372
+        },
+        "scenarioTiming": {
+          "sampleCount": 16,
+          "p50Ms": 0.065,
+          "p95Ms": 2.373,
+          "maxMs": 2.373
+        },
+        "planningTiming": {
+          "turnsPerTick": 8,
+          "sampleCount": 18,
+          "p50Ms": 7.246,
+          "p95Ms": 20.819,
+          "maxMs": 20.819,
+          "maxTurns": 8,
+          "maxWorkItems": 64,
+          "maxExpandedCells": 37372
+        }
+      },
+      "planningTurnsPerTick": 8,
+      "limits": [
+        "actual asynchronous two-seat loopback server; natural roster and ordinary commands, no actor injection",
+        "no renderer, deployment, comparable hardware speedup or supported capacity claim"
+      ],
+      "rawReportSha256": "d1179616e3dd6a54c333ade2953aba5a5d11b98bf84a3c2e4d9310b894c1a875",
+      "map": {
+        "id": "pathing-large-single-choke-996-seat-0",
+        "width": 128,
+        "height": 128,
+        "startingArmySize": 2000,
+        "sha256": "441e6eaa57f20a75d481f60f8d81727aea7f6edcacec97879675aa072c6915f8",
+        "generator": "scripts/pathing-baseline-cases.mjs / pathingBaselineMap",
+        "arguments": {
+          "group": 996,
+          "kind": "large-single-choke",
+          "team": 0
+        }
+      },
+      "orders": [
+        {
+          "tick": 48,
+          "notice": "MOVE ORDER · 996 UNITS",
+          "command": {
+            "type": "move",
+            "x": 16.5,
+            "z": 0.5,
+            "clientOrderToken": 1,
+            "selectedUnitCount": 996,
+            "selectedIdsSha256": "49313627e779a394337d25751d638dcbf6a4bfb6f46578c6e24597a1b8a4c426",
+            "unitGenerationCount": 996,
+            "unitGenerationsSha256": "6d5444192c12cd8f77ad3e7dd27e26f3db25e7c06bbfed1b17dcb2e31cf5d832"
+          }
+        },
+        {
+          "tick": 1251,
+          "notice": "STOP ORDER · 8 UNITS",
+          "command": {
+            "type": "stop",
+            "clientOrderToken": 3,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "ba53a4aa12c9f94924ab277189a5e8f6496c4117e8aa33eba863ac442fbcaf2c",
+            "ids": [
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11
+            ]
+          }
+        },
+        {
+          "tick": 1251,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": 28.5,
+            "z": 8.5,
+            "clientOrderToken": 4,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "836cd3c3b0eb33f3a3969c13bb61b2f2f8c99d318a5cb6ee2b4a5a6c2b336e1b",
+            "ids": [
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19
+            ]
+          }
+        },
+        {
+          "tick": 1251,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": 24.5,
+            "z": 0.5,
+            "clientOrderToken": 2,
+            "selectedUnitCount": 24,
+            "selectedIdsSha256": "1cfd323e6ce1af4a7ab9ccbac4428595140be47264f3f554a446359de0ac79b0",
+            "ids": [
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "head": "319d70bfe259437fa2712be8aaad3e8ee942ad90",
+      "sourceSha256": "f5fce1e78a1fccee11758037a7fc0ae46810065967fa5cb06de3b544649e4904",
+      "team": 1,
+      "controlKind": "parked",
+      "roster": 2000,
+      "selected": 996,
+      "arrived": 996,
+      "midTick": 180,
+      "arrivalTicks": 1290,
+      "activeRouteRestart": true,
+      "stopPreserved": 8,
+      "replacementPreserved": 8,
+      "idleRestart": true,
+      "replacementResults": [
+        {
+          "id": 1012,
+          "goal": 9122,
+          "revision": 3
+        },
+        {
+          "id": 1013,
+          "goal": 9123,
+          "revision": 3
+        },
+        {
+          "id": 1014,
+          "goal": 9124,
+          "revision": 3
+        },
+        {
+          "id": 1015,
+          "goal": 9250,
+          "revision": 3
+        },
+        {
+          "id": 1016,
+          "goal": 9251,
+          "revision": 3
+        },
+        {
+          "id": 1017,
+          "goal": 9252,
+          "revision": 3
+        },
+        {
+          "id": 1018,
+          "goal": 9378,
+          "revision": 3
+        },
+        {
+          "id": 1019,
+          "goal": 9379,
+          "revision": 3
+        }
+      ],
+      "initialPlanning": [
+        {
+          "orderId": 1,
+          "team": 1,
+          "mode": "shared-start",
+          "unitCount": 996,
+          "uniqueStartCells": 476,
+          "uniqueDestinationCells": 996,
+          "nonEmptyPaths": 996,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 976,
+          "expandedCells": 481703,
+          "discoveredCells": 605350,
+          "elapsedMs": 660.566,
+          "planningWorkMs": 135.032,
+          "maxPlanningSliceMs": 4.547,
+          "queueWaitMs": 0.247,
+          "setupMs": 4.302,
+          "pathPlanningWorkMs": 130.313,
+          "maxPathPlanningSliceMs": 4.547,
+          "finalizationMs": 0.417,
+          "planningSliceCount": 147,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 5146,
+          "createdTick": 31,
+          "firstAppliedTick": 32,
+          "lastAppliedTick": 50,
+          "firstPlanningTick": 32,
+          "serviceTurns": 145,
+          "firstServiceWaitMs": 21.929
+        }
+      ],
+      "overlappingPlanning": [
+        {
+          "orderId": 3,
+          "team": 1,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 8,
+          "uniqueDestinationCells": 8,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 22.647,
+          "planningWorkMs": 0.711,
+          "maxPlanningSliceMs": 0.622,
+          "queueWaitMs": 21.741,
+          "setupMs": 0.084,
+          "pathPlanningWorkMs": 0.622,
+          "maxPathPlanningSliceMs": 0.622,
+          "finalizationMs": 0.005,
+          "planningSliceCount": 3,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1322,
+          "firstAppliedTick": 1323,
+          "lastAppliedTick": 1323,
+          "firstPlanningTick": 1323,
+          "serviceTurns": 1,
+          "firstServiceWaitMs": 21.769
+        },
+        {
+          "orderId": 2,
+          "team": 1,
+          "mode": "shared-start",
+          "unitCount": 8,
+          "uniqueStartCells": 24,
+          "uniqueDestinationCells": 24,
+          "nonEmptyPaths": 8,
+          "alreadyInDestinationCell": 0,
+          "routeFailures": 0,
+          "searchCount": 0,
+          "expandedCells": 0,
+          "discoveredCells": 0,
+          "elapsedMs": 25.383,
+          "planningWorkMs": 1.323,
+          "maxPlanningSliceMs": 1.041,
+          "queueWaitMs": 0.346,
+          "setupMs": 1.041,
+          "pathPlanningWorkMs": 0.272,
+          "maxPathPlanningSliceMs": 0.217,
+          "finalizationMs": 0.01,
+          "planningSliceCount": 5,
+          "maxPlanningSliceWorkItems": 8,
+          "maxPlanningSliceExpandedCells": 0,
+          "createdTick": 1322,
+          "firstAppliedTick": 1323,
+          "lastAppliedTick": 1323,
+          "firstPlanningTick": 1323,
+          "serviceTurns": 3,
+          "firstServiceWaitMs": 22.653
+        }
+      ],
+      "initialTickTiming": {
+        "sampleCount": 50,
+        "windowSeconds": 1.7,
+        "budgetMs": 33.333,
+        "p50Ms": 2.226,
+        "p95Ms": 26.576,
+        "maxMs": 34.424,
+        "startLagP95Ms": 1.156,
+        "startLagMaxMs": 32.428,
+        "scheduler": {
+          "policy": "drop-elapsed-slots",
+          "skippedTickSlotsTotal": 1,
+          "lastOverloadSkippedSlots": 1,
+          "lastOverloadTick": 32
+        },
+        "slowestTick": {
+          "tickNumber": 32,
+          "durationMs": 34.424,
+          "cpuMs": 85.377,
+          "simulationMs": 23.319,
+          "visionMs": 0.032,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 11.073,
+          "checkpointMs": 0.001,
+          "planningMs": 15.114,
+          "planningTurns": 8,
+          "planningWorkItems": 34,
+          "planningExpandedCells": 36936
+        },
+        "scenarioTiming": {
+          "sampleCount": 16,
+          "p50Ms": 0.052,
+          "p95Ms": 1.012,
+          "maxMs": 1.012
+        },
+        "planningTiming": {
+          "turnsPerTick": 8,
+          "sampleCount": 19,
+          "p50Ms": 7.827,
+          "p95Ms": 15.114,
+          "maxMs": 15.114,
+          "maxTurns": 8,
+          "maxWorkItems": 64,
+          "maxExpandedCells": 37285
+        }
+      },
+      "planningTurnsPerTick": 8,
+      "limits": [
+        "actual asynchronous two-seat loopback server; natural roster and ordinary commands, no actor injection",
+        "no renderer, deployment, comparable hardware speedup or supported capacity claim"
+      ],
+      "rawReportSha256": "f55e515e7b4124b4ae9631472ebea04fac290a41074617a2dffb812dc82c38e0",
+      "map": {
+        "id": "pathing-large-single-choke-996-seat-1",
+        "width": 128,
+        "height": 128,
+        "startingArmySize": 2000,
+        "sha256": "2fbf33eeed3272217a844466f63941d5e75a490bec21f4a2dd24ce1bbaf9578f",
+        "generator": "scripts/pathing-baseline-cases.mjs / pathingBaselineMap",
+        "arguments": {
+          "group": 996,
+          "kind": "large-single-choke",
+          "team": 1
+        }
+      },
+      "orders": [
+        {
+          "tick": 48,
+          "notice": "MOVE ORDER · 996 UNITS",
+          "command": {
+            "type": "move",
+            "x": -16.5,
+            "z": 0.5,
+            "clientOrderToken": 1,
+            "selectedUnitCount": 996,
+            "selectedIdsSha256": "5ea3e5eb612a85d855a161e1ffb8effb9b132d784217c12916bd45c894b42ec0",
+            "unitGenerationCount": 996,
+            "unitGenerationsSha256": "a853d9549d7383536c5de2a1f8c35cc542f462189b4125766ce2ea1ea0a4a0b2"
+          }
+        },
+        {
+          "tick": 1296,
+          "notice": "STOP ORDER · 8 UNITS",
+          "command": {
+            "type": "stop",
+            "clientOrderToken": 3,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "a5c4c2fd7c1b7caaca6bbe21ec1339a5713796ec01245f0677cddb29578d6783",
+            "ids": [
+              1004,
+              1005,
+              1006,
+              1007,
+              1008,
+              1009,
+              1010,
+              1011
+            ]
+          }
+        },
+        {
+          "tick": 1296,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": -28.5,
+            "z": 8.5,
+            "clientOrderToken": 4,
+            "selectedUnitCount": 8,
+            "selectedIdsSha256": "b884c8e05bfcec856f2061c3bea6a0396c64afbad38dcafbe150bee0a67d2448",
+            "ids": [
+              1012,
+              1013,
+              1014,
+              1015,
+              1016,
+              1017,
+              1018,
+              1019
+            ]
+          }
+        },
+        {
+          "tick": 1296,
+          "notice": "MOVE ORDER · 8 UNITS",
+          "command": {
+            "type": "move",
+            "x": -24.5,
+            "z": 0.5,
+            "clientOrderToken": 2,
+            "selectedUnitCount": 24,
+            "selectedIdsSha256": "9099ae656d12a5c7089c7af7a058b731efc38ffafe1df1aa8a9089511054be0e",
+            "ids": [
+              1004,
+              1005,
+              1006,
+              1007,
+              1008,
+              1009,
+              1010,
+              1011,
+              1012,
+              1013,
+              1014,
+              1015,
+              1016,
+              1017,
+              1018,
+              1019,
+              1020,
+              1021,
+              1022,
+              1023,
+              1024,
+              1025,
+              1026,
+              1027
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "inputSummary": "Full local raw reports retain map and unit-generation arrays. This committed summary preserves map generator/arguments/hash and accepted command selection counts/hashes; fresh generation tokens vary per native run.",
+  "limits": [
+    "serial native loopback observations on shared cloud host; timing windows include startup/map costs",
+    "no renderer, live deployment health, comparable hardware speedup or capacity claim"
+  ]
+}
