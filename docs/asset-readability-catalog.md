@@ -78,8 +78,8 @@ HTTP/hash checks use the real server and clean packed files,
 including rejection of unadmitted docs and private source paths. These checks
 establish contracts and delivery files, not contrast, recognition or pixels.
 
-**Rendered readability remains unverified.** After the CI306 owner qualifies
-the supported packed-game renderer with inspected artifacts, run this view on
+**Rendered readability remains unverified.** Using the qualified packed-game
+renderer with its inspected artifacts, run this view on
 a clean containing release at fixed viewport/DPR/browser zoom. Retain original
 PNG/full-page evidence at both camera zooms, actual map/background, source SHA,
 release digest, browser/backend and the same-frame catalog snapshot. Inspect
@@ -90,3 +90,11 @@ Then remove the debug option and retain the separate
 Neither the catalog nor renderer qualification closes that gameplay outcome.
 Mac testing, paid generation, extra infrastructure and deployment actions are
 outside this slice.
+
+Renderer qualification is now available: [PR323 / run37215311854](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37215311854)
+passed at `52e19ec0180dd1c6f8002984fea6e43af0b6d69c`. Its owner inspected four game
+PNGs, 13 decoded images and actual Worker displacement. The earlier failed run
+remains historical evidence. Qualification does not establish this catalog's
+readability or Barracks acceptance. The next owned implementation is the
+[isolated catalog/paid-Barracks adapter](catalog-barracks-scenario.md), using
+the qualified lifecycle in one coordinated hosted batch.

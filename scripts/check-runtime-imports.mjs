@@ -68,7 +68,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   disclosed: ['wildlife-client-state', 'worker-fishing-presentation', 'worker-work-presentation'],
   presentation: [
     'building-production-cue', 'building-sprites', 'building-visual-state',
-    'camera-controls', 'captured-building-art', 'environment-art', 'asset-readability',
+    'camera-controls', 'captured-building-art', 'environment-art', 'asset-readability', 'catalog-barracks-observation',
     'environment-plant-assets', 'forest-age-composition', 'forest-composition',
     'forest-habitat', 'gameplay-presentation', 'garden-vegetation', 'meadow-vegetation',
     'neutral-wildlife-renderer', 'oak-depletion-atlas-runtime',
