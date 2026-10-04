@@ -364,7 +364,9 @@ one-line registration change in `scripts/ci.mjs`: replace
 `--test-coverage-include=src/rules/gameplay-action-rules.mjs`. Keep the test command
 and all three 100% line/branch/function floors unchanged; prove the canonical
 implementation is covered. A forwarding entry must not replace implementation coverage.
-That shared CI file remains outside this architecture worker's write scope.
+Retarget the matching canonical-path expectation in `scripts/ci-lanes.test.mjs`
+without changing its coverage-floor or lane-partition assertions. Both shared CI
+files remain outside this architecture worker's write scope.
 
 For each candidate, review a rename-aware diff and export list. A shim-only path
 move must keep the canonical implementation byte-identical apart from import
