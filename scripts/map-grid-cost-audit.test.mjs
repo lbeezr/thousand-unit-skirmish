@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { visionIndexWitness, gridCosts, runGridCostAudit } from './map-grid-cost-audit.mjs';
+import './xl-map-boundary-audit.test.mjs';
 
 test('256-cell-side coverage indices survive; 320 cell indices wrap under the historical 16-bit storage contract', () => {
   assert.deepEqual(visionIndexWitness(256), { index: 65535, stored: 65535, wraps: false });
