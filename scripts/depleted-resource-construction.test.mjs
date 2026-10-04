@@ -1,4 +1,5 @@
 import { economyClientBindings } from './economy-client-fixture.mjs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 import { buildingBlocksMovement } from '../src/palisade-gate.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -33,7 +34,7 @@ function authority(node, stock) {
   return context;
 }
 function clientPreview(team, node) {
-  const context = vm.createContext({ ...economyClientBindings(), buildingBlocksMovement, BUILDING_DEFINITIONS, buildPlacementType: 'house',
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), buildingBlocksMovement, BUILDING_DEFINITIONS, buildPlacementType: 'house',
     MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8,
     mapDefinition: { obstacles: [], resourceNodes: [node], triggers: [] }, localTeam: team,
     latestFood: [150, 150], latestWood: [250, 250], latestBuildings: [],
@@ -43,7 +44,7 @@ function clientPreview(team, node) {
     selectedIds: () => [0], units: [{ kind: 'worker' }], teamUnits: [[], []],
     latestForestStocks: new Map(), latestResourceStocks: new Map(),
   });
-  vm.runInContext(preview, context);
+  vm.runInContext(wildlifeClientFunctionSource(client) + preview, context);
   return context;
 }
 

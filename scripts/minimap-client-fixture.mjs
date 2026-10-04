@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 function between(start, end) {
@@ -20,6 +21,7 @@ export function minimapFixture(team = 0) {
   canvas.releasePointerCapture = id => captured.delete(id);
   const noop = () => {};
   Object.assign(w, {
+    ...wildlifeClientBindings(), resourceNodeVisuals: new Map(), latestForestStocks: new Map(), latestBuildings: [],
     minimapCanvas: canvas, minimapPointerId: null,
     MAP_WIDTH: 64, MAP_HEIGHT: 64, MAP_HALF_X: 32, MAP_HALF_Z: 32,
     THREE: { MathUtils: { clamp: (n, min, max) => Math.max(min, Math.min(max, n)) } },
@@ -47,6 +49,7 @@ export function minimapFixture(team = 0) {
     worldAt() { throw Error('Minimap must not raycast the battlefield camera'); },
   });
   w.eval([
+    wildlifeClientFunctionSource(source),
     between('function minimapMapRect(', 'function minimapPoint('),
     between('function worldFromMinimap(', 'function makeInstances('),
     between('function selectedIds()', 'function issueStationaryOrder('),

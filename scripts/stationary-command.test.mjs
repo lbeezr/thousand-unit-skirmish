@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const client = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const stationary = server.slice(server.indexOf('function assignStationaryOrder('), server.indexOf('function assignAttack('));
@@ -34,10 +35,10 @@ for (const type of ['stop', 'holdPosition']) test(`${type} preserves cargo and s
 const issue = client.slice(client.indexOf('function issueStationaryOrder('), client.indexOf('for (const button of document.querySelectorAll', client.indexOf('function issueStationaryOrder(')));
 for (const team of [0, 1]) test(`seat ${team} sends tracked stationary commands without a battlefield target`, () => {
   const commands = []; const modes = [];
-  const context = vm.createContext({ localTeam: team, matchWinner: -1, selectedIds: () => [7, 8],
+  const context = vm.createContext({ ...wildlifeClientBindings(), localTeam: team, matchWinner: -1, selectedIds: () => [7, 8],
     showToast: () => {}, sendTrackedOrder: (command, label, count) => { commands.push({ command, label, count }); return 12; },
     setTapOrderArmed: value => modes.push(value), setAttackMoveMode: value => modes.push(value) });
-  vm.runInContext(issue, context); context.issueStationaryOrder('holdPosition');
+  vm.runInContext(wildlifeClientFunctionSource(client) + issue, context); context.issueStationaryOrder('holdPosition');
   assert.deepEqual(JSON.parse(JSON.stringify(commands)), [{ command: { type: 'holdPosition', ids: [7, 8] }, label: 'HOLD POSITION', count: 2 }]);
   assert.deepEqual(modes, [false, false]);
   context.localTeam = null; context.issueStationaryOrder('stop'); assert.equal(commands.length, 1);
@@ -52,9 +53,9 @@ test('stationary commands have keyboard and touch/context controls', () => {
 test('selection refresh enables stationary controls immediately and clears stale availability', () => {
   const buttons = [{ disabled: true }, { disabled: true }];
   let ids = [];
-  const context = vm.createContext({ localTeam: 0, matchWinner: -1, selectedIds: () => ids,
+  const context = vm.createContext({ ...wildlifeClientBindings(), localTeam: 0, matchWinner: -1, selectedIds: () => ids,
     document: { querySelectorAll: () => buttons } });
-  vm.runInContext(client.slice(client.indexOf('function updateStationaryOrderControls('), client.indexOf('function updateSelectionUI(')), context);
+  vm.runInContext(wildlifeClientFunctionSource(client) + client.slice(client.indexOf('function updateStationaryOrderControls('), client.indexOf('function updateSelectionUI(')), context);
   context.updateStationaryOrderControls(null); assert.ok(buttons.every(button => button.disabled));
   ids = [4, 5]; context.updateStationaryOrderControls(null); assert.ok(buttons.every(button => !button.disabled));
   context.updateStationaryOrderControls({ id: 7 }); assert.ok(buttons.every(button => button.disabled));

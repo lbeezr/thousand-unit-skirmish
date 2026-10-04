@@ -61,6 +61,7 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
   if(realRepairs){
     Object.assign(context,{nearestOpenCell:c=>walkable(c)?c:-1,performance,TICK_RATE:30,
       nextMoveOrderId:1,movePlanningEpoch:0,movePlanningQueue:[],activeMovePlanningJob:null,
+      movePlanningServiceTick:null,
       pendingMoveStartBroadcasts:new Set(),scheduleNextMovePlanning(){}});
     vm.runInContext(server.slice(server.indexOf('function pendingMoveAssignmentsByUnit('),
       server.indexOf('function routesShareWalkableComponent(')),context);

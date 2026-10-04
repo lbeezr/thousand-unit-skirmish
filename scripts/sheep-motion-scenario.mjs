@@ -4,10 +4,10 @@ import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { MILLRACE_SHEEP_IDS } from '../src/millrace-sheep.mjs';
 import { stepWildlifeMotion } from '../src/wildlife-motion.mjs';
 
-// Default-map authoritative regression, owned alongside the motion slice.
+// Explicit historical Millrace authoritative regression, owned with motion.
 // Real seats/orders/restarts; no map publication, stock or position injection.
 // Rendering is checked by its owning scenario, not by this server-state proof.
-const fixture = await createFortifiedFixture({ mapPath: null, timeoutMs: 35_000 });
+const fixture = await createFortifiedFixture({ mapPath: 'maps/bellweather-millrace.json', timeoutMs: 35_000 });
 const EPSILON = 1e-6, SNAPSHOT_EPSILON = 0.002;
 const RADIUS = 0.35, SPEED = 0.18, OCCUPANCY_RADIUS = 0.45;
 const activities = new Set(['idle', 'grazing', 'wandering']);
@@ -246,7 +246,7 @@ try {
   checkSaved(stable, delivered);
   assert.deepEqual(stable.state.teamFood, delivered.state.teamFood, 'restart does not duplicate returned food');
   for (const [team, id] of openingIds.entries()) assert.deepEqual(frozenState(nodeIn(stable, id)), carcasses[team]);
-  console.log(JSON.stringify({ scenario: 'default Millrace bounded Sheep motion', map: map.id,
+  console.log(JSON.stringify({ scenario: 'historical Millrace bounded Sheep motion', map: map.id,
     radius: RADIUS, speed: SPEED, bothSeatVisiblePositionAndActivityVariation: true, hiddenRowsAbsent: true,
     idleFoodAndCargoUnchanged: true, midMotionPositionGoalSequenceWaitRecovery: true,
     pendingGatherPinsSheep: true, realGatherStopReturnCargo: true, interruptedCargoRecovery: true,
