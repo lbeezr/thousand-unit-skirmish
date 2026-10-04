@@ -71,14 +71,20 @@ try {
   }));
   // This proof waits for an ordered reinforcement as well as paid production.
   // An opening wipeout can add one bounded rally after the first troop spawns.
-  const productionDeadline = Date.now() + 120_000;
+  const startedAt = Date.now();
+  const productionDeadline = startedAt + 120_000;
   const deadline = productionDeadline + PVE_REGROUP_LIMITS.maxWaitTicks / 30 * 1000;
   const complete = (run) => run.trained.size > 0 && run.commands.some(({ command }) => command.type === 'attackMove'
     && command.ids.some((id) => run.trained.has(id)));
   while (!runs.every(complete)) {
     assert.ok(Date.now() < productionDeadline || runs.every(run => run.trained.size > 0),
       'both seats must still produce a paid reinforcement within the original 120-second window');
-    assert.ok(Date.now() < deadline, `production timeout: ${JSON.stringify(runs.map(({ team, commands, client }) => ({ team,
+    assert.ok(Date.now() < deadline, `production timeout: ${JSON.stringify(runs.map(({ team, commands, client, trained,
+      firstTrainedTick, firstReinforcementAdvanceTick }) => ({ team, wallElapsedSeconds: (Date.now() - startedAt) / 1000,
+      observedTick: client.state.tick, firstTrainedTick, firstReinforcementAdvanceTick, trained: [...trained],
+      livingMilitary: client.state.units.filter(unit => unit[1] === team && unit[4] > 0 && unit[5] !== 'worker')
+        .map(unit => ({ id: unit[0], generation: unit[8], kind: unit[5], hp: unit[4] })),
+      production: client.state.buildings.filter(building => building.team === team && !building.home),
       commands, notices: client.messages.filter((message) => message.type === 'notice').slice(-8) })))}`);
     for (const run of runs) {
       const state = run.client.state;
