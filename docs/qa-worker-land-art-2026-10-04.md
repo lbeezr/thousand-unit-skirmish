@@ -104,12 +104,12 @@ current-roster keys can also be admitted with the same manifest contract.
 | --- | --- | --- |
 | 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
 | 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
-| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **39 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
-| 4 | Seven remaining readable dedicated Stone-work headings and SE selector adoption. | SE now has dedicated pick poses; the broad eight-view attempt failed strike facing in the other rows. Animation owner also needs the actual Stone state/resource selector enabled after artwork exists; current default intentionally returns idle. No economy edits. |
+| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **36 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
+| 4 | Six remaining readable dedicated Stone-work headings and SE/NW selector adoption. | SE and NW now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. Animation owner also needs the actual Stone state/resource selector enabled after artwork exists; current default intentionally returns idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
-There are now 8 of 8 walk headings, eight distinct idle headings, SE land-action
-motion and SE Stone artwork awaiting default selector adoption. **46 land-action/heading cells remain** (39+7).
+There are now 8 of 8 walk headings, eight distinct idle headings, SE+NW land-action
+motion and SE+NW Stone artwork awaiting default selector adoption. **42 land-action/heading cells remain** (36+6).
 Fishing's seven missing headings are excluded and retained by its separate owner.
 The animation-owner ID is outside this executor's live collaboration tree; the
 manifest contract and retained dependencies are recorded here for parent routing.
@@ -536,7 +536,7 @@ wood/food/build/repair/attack/defeat/Stone. Ranked ongoing backlog:
 
 1. Complete containing deployment/native proof through the assigned parent route
    and bounded Stone state adoption through PR216 as each becomes available.
-2. Continue a single actual heading action family, starting East/right profile:
+2. Continue a single actual heading action family, starting East/down-right front three-quarter:
    inspect retained clips first, then public-seed keys where no faithful public
    action exists. Reuse same-heading axe for attack and hammer for build/repair.
 3. Complete N/NE/S/SW/W families in similarly small reviewed default-pack slices.
