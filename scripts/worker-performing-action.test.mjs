@@ -5,6 +5,8 @@ import vm from 'node:vm';
 import { createWorkerPerformingActions } from '../src/worker-performing-action.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { buildingRepairStep } from '../src/base-lifecycle.mjs';
+import { activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent } from '../src/work-intent.mjs';
+import { woodWorkArea } from '../src/gather-work-area.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 function fn(name) {
@@ -21,12 +23,16 @@ function fixture() {
     hp: 100, x: 0, z: 0, cargo: 0, cargoType: null, gatherPhase: 'to-node',
     gatherNodeId: 'node', gatherForestCell: -1, buildingTargetId: null, repairing: false,
     attackTargetId: -1, attackBuildingTargetId: -1, holdingPosition: false,
-    path: [], pathIndex: 0, movePlanningPending: false, moveGoalCell: -1, queuedWaypoints: [] };
+    workIntent: null, path: [], pathIndex: 0, movePlanningPending: false, moveGoalCell: -1, queuedWaypoints: [] };
   const node = { id: 'node', type: 'food', x: 0, z: 0, stock: 10 };
   const building = { id: 1, type: 'farm', x: 0, z: 0, hp: 100, complete: false, progress: 0 };
   const journal = createWorkerPerformingActions();
   const context = vm.createContext({ units: [unit], tickNumber: 1, dirty: false,
     workerPerformingActions: journal, BUILDING_DEFINITIONS, buildingRepairStep,
+    activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent, woodWorkArea,
+    // This receipt fixture has no reachable replacement area. Full authority
+    // resource-job tests exercise continuation; these check confirmed grants.
+    nearestOpenCell: () => 0, walkableComponents: [-1],
     buildingsById: new Map([[1, building]]), resourceNodeStates: new Map([[node.id, node]]), teamWood: [100, 100],
     mapDefinition: { fogOfWar: true }, STATE_EVERY_TICKS: 3,
     WORKER_INTERACTION_RANGE: 1.4, BUILDER_INTERACTION_RANGE: 1.4,
@@ -46,7 +52,8 @@ function fixture() {
     workerFishingPresentation: () => null,
   });
   vm.runInContext(['compatibleWorkerPerformingAction', 'workerPerformingAction',
-    'snapshotUnits', 'workerTaskStatus', 'stopGathering', 'updateForestWorkerEconomy',
+    'snapshotUnits', 'workerTaskStatus', 'stopGathering', 'ensureGatherWorkIntent',
+    'continueWoodGathering', 'updateForestWorkerEconomy',
     'updateWorkerEconomy'].map(fn).join('\n') + '\n' + construction, context);
   context.flushPendingForestClears = () => {};
   journal.beginStep(context.tickNumber);

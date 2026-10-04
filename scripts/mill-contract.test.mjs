@@ -98,7 +98,7 @@ for (const team of [0, 1]) test(`Return cargo uses Mill for food and rejects woo
   });
   vm.runInContext(economyServerFunctions + ['commandUnitAt', 'commandUnits', 'clearAttackMoveOrder',
     'workerDropoffCandidates', 'routeWorkerToDropoff', 'workerAtDropoff', 'assignReturnCargo',
-    'stopGathering', 'updateWorkerEconomy'].map(serverFunction).join('\n'), context);
+    'stopGathering', 'ensureGatherWorkIntent', 'updateWorkerEconomy'].map(serverFunction).join('\n'), context);
   const order = () => context.assignReturnCargo({ team }, { type: 'returnCargo', ids: [0], unitGenerations: [3] });
   order();
   assert.match(notices.at(-1), /RETURN CARGO ORDER/);

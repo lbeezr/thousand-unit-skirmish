@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { palisadeConnections } from '../src/palisade-profile.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { clearWorkIntent, createConstructionWorkIntent } from '../src/work-intent.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const renderer = source.slice(source.indexOf('function createPalisadeVisual('), source.indexOf('function createArcheryRangeVisual('));
@@ -59,8 +60,8 @@ for (const type of ['move', 'attackMove']) test(`accepted queued ${type} interru
     buildingTargetId: null, wallBuildOrder: { ids: [1, 2], generation: 3, revision: 7 },
     queuedWaypoints: [], persistentOrder: null, gatherNodeId: null, gatherForestCell: -1,
     movePlanningPending: true, path: [8, 9], pathIndex: 0, attackTargetId: -1, attackBuildingTargetId: -1, attackMove: false,
-    x: 0, z: 0 };
-  const context = vm.createContext({ performance, MAP_WIDTH: 16, MAX_QUEUED_WAYPOINTS: 16, dirty: false,
+    x: 0, z: 0, workIntent: createConstructionWorkIntent(3, [1, 2], { minX: 0, maxX: 2, minZ: 0, maxZ: 2 }) };
+  const context = vm.createContext({ clearWorkIntent, performance, MAP_WIDTH: 16, MAX_QUEUED_WAYPOINTS: 16, dirty: false,
     commandUnits: () => [unit], unitHasCapability: () => true, worldToCell: () => 22,
     nearestOpenCell: cell => cell, walkableComponents: new Int32Array(256), buildingsById: new Map(),
     buildFormationSlots: () => ({ slots: [22] }), orderUnitsForFormation: units => units,
@@ -68,11 +69,15 @@ for (const type of ['move', 'attackMove']) test(`accepted queued ${type} interru
   vm.runInContext(movement, context);
   context.assignFormationMove({ team: 0 }, { type, ids: [0], x: 1, z: 1, queue: true });
   assert.equal(unit.wallBuildOrder, null, 'queued player intent must prevent the automatic next-segment Move');
+  assert.equal(unit.workIntent, null, 'accepted external queue clears durable construction intent');
   assert.deepEqual(unit.queuedWaypoints.map(entry => ({ destination: entry.destination, attackMove: entry.attackMove })),
     [{ destination: 22, attackMove: type === 'attackMove' }]);
   assert.equal(unit.orderRevision, 7, 'ordinary queued-move semantics preserve the current route revision');
   const retained = { ids: [1, 2], generation: 3, revision: 7 };
+  const retainedIntent = createConstructionWorkIntent(3, [1, 2], { minX: 0, maxX: 2, minZ: 0, maxZ: 2 });
+  unit.workIntent = retainedIntent;
   unit.wallBuildOrder = retained; unit.queuedWaypoints = Array.from({ length: 16 }, () => ({ destination: 22, attackMove: false }));
   context.assignFormationMove({ team: 0 }, { type, ids: [0], x: 1, z: 1, queue: true });
   assert.equal(unit.wallBuildOrder, retained, 'a rejected full queue must not interrupt the work');
+  assert.equal(unit.workIntent, retainedIntent, 'rejected full queue preserves durable construction intent');
 });
