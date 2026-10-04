@@ -189,6 +189,11 @@ Successful requests stay cached; other URLs remain independent. See the
 
 ## Environment stages and fog
 
+The [forest-edge investigation and candidate](qa-forest-fringe-2026-10-04.md)
+separate permanent terrain discovery from current LOS and live stock disclosure.
+Its one-cell explored-only fringe is a proposed discovery rule, with deployed
+rendered acceptance still open; source and CPU checks do not establish appearance.
+
 For ordinary resource nodes, compute
 `floor(clamp(stock / startingStock, 0, 1) * 100)` from map initial stock and the
 latest visible state. Hidden IDs are omitted deliberately; retain their last-known
