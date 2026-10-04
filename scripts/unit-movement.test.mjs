@@ -4,13 +4,42 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent,
-  ordinaryMoveBodyRadius, canTraverseStaticBodySegment, createClearanceMoveGoalPoint } from '../src/unit-movement.mjs';
-import { canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
+  activeLandMovementBodyRadius, workerEconomyBodyRadius, LAND_CLEARANCE_PROFILE,
+  canTraverseStaticBodySegment, createClearanceMoveGoalPoint } from '../src/unit-movement.mjs';
+import { canTraverseFlatUnitSegment, shortcutFlatUnitPath } from '../src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from '../src/unit-obstacle-detour.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { farmHarvestNode, farmBuildingId } from '../src/farm-harvest.mjs';
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+
+test('Worker economy clearance follows the live job, including node-free Return, and retires on interruption',()=>{
+  const base={kind:'worker',hp:40,generation:9,orderRevision:2,gatherNodeId:'food',gatherForestCell:-1,
+    gatherPhase:'to-node',buildingTargetId:null,attackTargetId:-1,attackBuildingTargetId:-1};
+  for(const gatherPhase of ['to-node','gathering','to-base'])assert.equal(workerEconomyBodyRadius({...base,gatherPhase}),.18);
+  assert.equal(workerEconomyBodyRadius({...base,gatherNodeId:null,gatherPhase:'to-base',cargo:.004}),.18);
+  for(const change of [{kind:'infantry'},{hp:0},{movementDomain:'water'},{gatherPhase:''},{gatherPhase:'unknown'},
+    {gatherNodeId:null},{holdingPosition:true},{attackMove:true},{stanceCombat:true},{stanceReturning:true},
+    {persistentOrder:{type:'follow'}},{attackTargetId:0},{attackBuildingTargetId:0},{buildingTargetId:1}])
+    assert.equal(workerEconomyBodyRadius({...base,...change}),0,JSON.stringify(change));
+  assert.equal(activeLandMovementBodyRadius(base),.18);
+});
+
+test('Worker body-safe reduction and adjacent rejoin preserve the selected raw tail, cost, length and input arrays',()=>{
+  const width=64,height=48,start=1568,raw=[1569,1570,1571,1572],levels=new Uint8Array(width*height);
+  const unit={id:0,kind:'worker',generation:9,orderRevision:2,hp:40,x:.79,z:.95};
+  const context=vm.createContext({LAND_CLEARANCE_PROFILE,MAP_WIDTH:width,MAP_HEIGHT:height,MAP_HALF_X:32,MAP_HALF_Z:24,
+    elevationLevelByCell:levels,isWalkable:c=>c>=0&&c<width*height&&c!==1633,WALK_SPEED:2.6,STEP_SECONDS:1/30,
+    shortcutFlatUnitPath,canTraverseStaticBodySegment,createUnitRouteResult,unitRouteResultIsCurrent,unitRoutePathCost,
+    movePlanningEpoch:3,navigationRevision:4,
+    worldToCell:(x,z)=>Math.floor(z+24)*width+Math.floor(x+32),
+    cellToWorld:c=>({x:c%width-32+.5,z:Math.floor(c/width)-24+.5})});
+  vm.runInContext(server.slice(server.indexOf('function workerFlowPath('),server.indexOf('function routeWorkerToDropoff(')),context);
+  const result=context.applyWorkerFlowRoute(unit,start,{goal:999,goals:new Set([999,1572])},raw,false);
+  assert.equal(result.status,'ready');assert.equal(result.selectedGoalCell,1572);assert.equal(unit.moveGoalCell,1572);
+  assert.equal(result.originalPathLength,4);assert.equal(result.originalCost,unitRoutePathCost(start,raw,width,levels));
+  assert.deepEqual([...result.path],[start,...raw]);assert.deepEqual(raw,[1569,1570,1571,1572]);
+});
 
 test('static circle sweeps reject a legal center grazing a tile, allow tangency and fail closed before malformed-grid queries', () => {
   const open = c => c !== 35;
@@ -87,7 +116,7 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
   for(const [b,ids] of grouped){teamHeads[0][b]=ids[0];teamCounts[0][b]=ids.length;
     for(let i=0;i<ids.length;i++)teamNext[0][ids[i]]=ids[(i+1)%ids.length];}
   const repairs = [];
-  const context = vm.createContext({units,UNIT_DEFINITIONS,activeWallBuildOrder,MAP_WIDTH:width,MAP_HALF_X:half,MAP_HALF_Z:half,
+  const context = vm.createContext({units,UNIT_DEFINITIONS,activeWallBuildOrder,MAP_WIDTH:width,MAP_HEIGHT:width,MAP_HALF_X:half,MAP_HALF_Z:half,
     militaryCombatant: unit => unit.kind !== 'worker', automaticPositionAllowed: () => true,
     STEP_SECONDS:1/30,MIN_SEPARATION:.56,SPATIAL_BUCKET_SIZE:bucketSize,WALK_SPEED:2.6,
     WORKER_INTERACTION_RANGE:1.4,BUILDER_INTERACTION_RANGE:1.4,
@@ -96,7 +125,7 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     spatialBucketTeamNext:teamNext,spatialBucketOfUnit:bucketOf,
     spatialBucketColumn:x=>Math.max(0,Math.min(bucketColumns-1,Math.floor((x+half)/bucketSize))),
     spatialBucketRow:z=>Math.max(0,Math.min(bucketColumns-1,Math.floor((z+half)/bucketSize))),
-    elevationLevelByCell:levels,canTraverseUnitStep,ordinaryMoveBodyRadius,canTraverseStaticBodySegment,createClearanceMoveGoalPoint,
+    elevationLevelByCell:levels,canTraverseUnitStep,activeLandMovementBodyRadius,workerEconomyBodyRadius,LAND_CLEARANCE_PROFILE,canTraverseStaticBodySegment,createClearanceMoveGoalPoint,
     canTraverseFlatUnitSegment,findStationaryWorkerDetour,SEPARATION_DIAGNOSTICS_ENABLED:false,
     tickNumber:1,dirty:false,worldToCell:cell,cellToWorld:point,isWalkable:walkable,
     resourceNodeStates:new Map([['berries',{x,z:-1,hp:1}]]),buildingsById:new Map(),farmHarvestNode,farmBuildingId,

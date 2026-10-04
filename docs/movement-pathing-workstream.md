@@ -60,7 +60,7 @@ land executor, not command admission or whole journeys.
 | Caller / intent | Existing route / execution surface | Policy and evidence still required |
 | --- | --- | --- |
 | Manual Move, queued Move, formation slots | `assignFormationMove`, `advanceQueuedWaypoints`, sliced `findPathAStar` → `applyPlannedMoveAssignment` → `getMoveVector` / `simulateTick` | U3 adds legal fractional points; U4's bounded ordinary single-unit adopter adds explicit static-circle projection/sweeps. Groups keep distinct slots and reachable-component projection; physical group adoption remains open. [Retained Direct Move checks](qa-direct-open-ground-move-2026-10-04.md) document the historical cell-center milestone. |
-| Gather, Farm, shore fish, drop-off, Return, return to work | `routeWorker`, `routeForestWorker`, `routeWorkerToDropoff`, `updateWorkerEconomy`; cached cardinal flow fields → land executor | Select a legal interaction endpoint and preserve cargo/job. Resource owner `01a101f7-5683-70da-8e3b-b87022e5a008` owns the urgent Worker-only direct-route patch. Retain selected `path.at(-1)`, never substitute `field.goal`; drop-off scoring uses original `path.length` before reduction. |
+| Gather, Farm, shore fish, drop-off, Return, return to work | `routeWorker`, `routeForestWorker`, `routeWorkerToDropoff`, `updateWorkerEconomy`; cached cardinal flow fields → land executor | The bounded land-Worker economy adopter shares the static profile through reduction/rejoin, route steps and gathering separation. Interaction ranges, selected `path.at(-1)`, original cost/raw `path.length` scoring and cargo/job remain resource-owned. Dynamic masks and actual journey/recovery/rendered coverage remain explicit below; water adapters keep their policy. |
 | Forest group / region intent | `assignForestGather`, gather-work-area selection, `updateForestWorkerEconomy` → resource routes | Forest owner `01a1072a-4c42-7791-9dab-77b88425a021` owns the returning-forester/interior-click fix. A clicked interior tree names its selected forest group; choose its nearest reachable frontier. Distinguish exhausted, temporarily obstructed and unreachable. No unrelated global fallback or hidden-resource reveal. |
 | Build, repair, palisade sequence, site evacuation | Building access assignment → A* / land executor; construction and wall continuation | Preserve paid site IDs, revision, legal edge range and actual productive-work receipts. Completion of movement does not mean completion of work. |
 | Attack-move and interrupted-route resume | Formation A* plus `prepareAttackMovePaths`, `getUnitAttackPath`, `clearAttackTarget` → land executor | Preserve manual objective, acquisition/stance rules and resume. Normalize only after weapon-range and stance-travel selection. |
@@ -356,9 +356,10 @@ two explicit center controls pass before the fix. The fixed traversal must
 arrive within 30 ticks, keep every actual substep clear and introduce no
 traversal repairs. Pending recovery retains its existing one-time plan rebuild.
 The private study consumes production's exact geometry helpers while retaining
-its separate authored candidate profile and historical evidence. New study
-registration remains the [existing CI-owner handoff](https://github.com/lbeezr/thousand-unit-skirmish/pull/369#issuecomment-5984188895);
-the runtime regressions extend already registered test paths.
+its separate authored candidate profile and historical evidence. Study registration
+is closed by CI-owned [PR388](https://github.com/lbeezr/thousand-unit-skirmish/pull/388)
+at `4f3e5afd`: all fourteen study tests execute once beside unit movement in the
+existing fast/full CPU entry. Runtime regressions extend registered test paths.
 After Food Tools' independent merge, the replay adapter follows the native
 content-migration pipeline for old saves. Validation operates on a copy of
 retained study input. A regression loads the exact pre-technology checkpoint
@@ -529,6 +530,53 @@ sharing/invalidation and the Supreme Commander 2 flow-tile chapter as useful
 follow-up references. Inspect and pin their mutable implementation links before
 using them for a later patch. No licensed implementation is copied. Hierarchy,
 navmesh, ORCA, GPU and neural routing remain evidence-driven options, not prerequisites.
+
+### U4 bounded Worker economy adopter
+
+The resource owner [confirmed the exact interface](https://github.com/lbeezr/thousand-unit-skirmish/pull/330#issuecomment-5985107521)
+after ordinary Move merged at `08e1df1c`. Command-only spawn Move to `(0.79,0.95)`
+beside stone `[1,2]×[1,2]`, then Gather Food at `(4.5,0.5)`, exposes the remaining
+consumer gap: each seat admits thirteen candidate static-contact substeps,
+worst margin −0.10508, while depositing the correct ten Food. The start is
+body-clear. Six registered live/approach-recovery/carrying-recovery journeys
+fail at the first unsafe steering substep before adoption.
+
+Movement owns only `workerFlowPath` / `applyWorkerFlowRoute` geometry,
+the existing land admissions and Worker gathering separation. Economy retains
+selected goals, raw drop-off scoring, jobs/frontiers/visibility, rates/receipts,
+typed cargo/deposit/resumption and forest masks. Cardinal/global flow, Sheep,
+construction reach, weapon range and naval movement stay outside this slice.
+The existing static profile supplies radius 0.18. Live Worker activation derives
+from existing to-node/to-base/gathering intent, including node-free positive-cargo
+Return; interrupted, dead, water, construction and combat states do not activate
+the economy policy. No persisted flag, checkpoint version or entropy change.
+
+The future economy footprint checks route selection even when Return is planned
+on a stopped clone. Body-unsafe flat reduction keeps the existing cardinal path;
+an unsafe fractional first leg rejoins its start center, including adjacent legs.
+The selected raw tail, original route length/cost and candidate scoring stay
+upstream of execution reduction/rejoin. Planner repair, terminal/steering/fallback
+and productive gathering separation use the same static predicate with the
+existing short monotone legacy escape. Interaction ranges stay unchanged.
+
+Both seats require zero new static penetration on every actual observed substep,
+bounded approach/return, exactly one ten-Food credit and fresh productive
+resumption. Untouched saves recover approach and carrying states exactly.
+Food/Wood/Stone partial cargo survives Stop, manual/queued replacement,
+foreign/stale rejection and node-free Return through queued recovery; stock,
+bank and typed cargo conserve. Actual multi-Worker gathering separation must
+move safely and retain positive work receipts. Weighted/nonflat routes, paid
+wall/Farm access and dynamically cut forest controls check physical steps.
+Legacy overlapped poses are explicitly trusted fixtures: only monotone escape
+is accepted, with no new contact, teleport or repair loop. Existing native
+typed/sub-cent delivery scenarios remain separate process witnesses.
+
+This is static land economy adoption, not body-pair avoidance, physical spawn/
+evacuation policy, every interaction domain or universal movement completion.
+Presentation reuses the preserved travel/heading/idle reference; no art/gait or
+velocity treatment changes. Identified release/deployment and actual ordinary-game
+pixels retain movement ownership through the existing capture interface. The
+blocked browser capability and denied hosted dispatch stay paused.
 
 ## Ranked backlog
 
