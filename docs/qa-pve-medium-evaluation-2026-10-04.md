@@ -45,8 +45,8 @@ In both unchanged full games, Azure lost every Worker while retaining a complete
 Town Center with available Worker production. Its final food was approximately
 50 and 85 respectively, with no queued Worker. The policy demanded the 50-food
 Worker price **plus** a 50-food reserve, so an otherwise legal recovery could not
-start. A native manual order from each unchanged legal-loss checkpoint charged
-50 food and produced a Worker successfully.
+start. Native manual orders from the controlled six-Worker-loss checkpoints at
+ticks 4,030 and 4,099 charged 50 food and produced a Worker successfully.
 
 The [production policy](../src/pve-production.mjs) now waives that reserve only
 when no living Workers remain. Once one survives, the normal reserve applies.
