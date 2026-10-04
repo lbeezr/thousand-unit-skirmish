@@ -50,6 +50,16 @@ elimination fallback; Skirmish/PvE admission remains separate. The
 [elevation assessment](map-elevation-capabilities.md) describes current height,
 pathing and geometry limits for dramatic maps.
 
+## Crownroads Large candidate
+
+**Veyrholds · Crownroads** is an authored 256² Large candidate, using two crown
+ridges, a low basin, two broad passes and two raised alternatives. Four distinct
+expansion pockets per seat and flat home campuses use existing elevation. Its
+251-unit static route takes 96.5 nominal Worker seconds. [Large measurements
+and acceptance](qa-crownroads-2026-10-04.md) separate authored geometry, paid
+native play and incomplete rendered/deployed/capacity acceptance. Authored
+elimination applies; Skirmish/PvE admission remains separate.
+
 ## Confluence Grounds admitted testing arena
 
 **Siltmouths · Confluence Grounds** is a new 160 × 160 multi-purpose Practice
