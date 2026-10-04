@@ -9,6 +9,7 @@ start; this index covers maintained guides, contracts, experiments, and evidence
 | --- | --- |
 | What experience are we building, and what is outside scope? | [Game bible](game-bible.md) |
 | What outcome should we pursue next? | [Roadmap](roadmap.md) |
+| How many planning queues exist, and are they advancing? | [Planning inventory](#planning-inventory--4-october-2026) |
 | What evidence supports a product claim? | [QA plan](qa-vertical-slice.md) |
 | How do we choose tests, qualify cloud rendering and close verification? | [Testing strategy](testing-strategy.md) |
 | How should the game look and read? | [Art direction](art-direction-contract-v1.md) |
@@ -106,6 +107,90 @@ the build they name.
 - [Map scale](map-scale-density.md), [living land](living-land-experiment.md), and
   [harvestable woodland](harvestable-woodland-pilot.md): implemented slices and proposed follow-ups.
 - [Model-opponent research](model-controlled-opponent-research.md): default-off fake-provider boundary.
+
+## Planning inventory — 4 October 2026
+
+Runtime/source evidence is pinned to `53a47ee379660f30b65776ea813f3a986d29aa37`;
+the testing-strategy documentation [PR288](https://github.com/lbeezr/thousand-unit-skirmish/pull/288)
+and CPU animation/capability [PR287](https://github.com/lbeezr/thousand-unit-skirmish/pull/287)
+merged during this audit (documentation/tooling refresh `0fc2e9b8`) and are
+included below. The subsequent main refresh `8200ec6c` includes integrated
+wood-job continuation [PR283](https://github.com/lbeezr/thousand-unit-skirmish/pull/283).
+Testing lanes [PR289](https://github.com/lbeezr/thousand-unit-skirmish/pull/289) and
+their strategy refresh [PR292](https://github.com/lbeezr/thousand-unit-skirmish/pull/292)
+are also integrated at main `5aaa1a6e`.
+This bounded inventory has
+**23 canonical planning surfaces: one product roadmap, 16 execution/acceptance
+queues, and six umbrella or production plans**. Count one owning guide per
+continuing workstream or major multi-slice outcome with remaining work, including
+paused/blocked proposals. Do not count its epics, feature contracts, dated QA,
+individual PRs or historical archives again. This is **23 guide surfaces, not 23 independent projects, active workers or
+23 approved unfinished initiatives**. Other feature-specific proposals remain
+reachable from the task index; this count is the explicitly listed portfolio,
+not a filename search for every use of “plan.”
+
+The [roadmap](roadmap.md) is the one product priority source, owned by the
+coordinating parent. Its current direction is dependable RTS matches and one
+complete faction; linked implementation/acceptance queues supply the work.
+Owner names below are the roles recorded in their guides, not verified current
+worker liveness. “Open” means incomplete in that record; a source merge, a tool
+pass and a deployed/human acceptance result are different evidence.
+The [current testing strategy](testing-strategy.md) owns future cloud-render
+qualification. Mac execution was stopped; older Mac handoffs are historical,
+not a current execution dependency. Canceled deployments stay canceled; this
+inventory authorizes no replacement deployment.
+
+| Execution/acceptance queue (16) | Recorded owner | Progress and concrete next step at this audit |
+| --- | --- | --- |
+| [Playable modes](playable-modes-backlog.md) | Mode runtime; entry and delivery owners for their boundaries | Human Tiny/Small/Medium/Large, Tiny-only PvE and Bannerfall source slices have evidence. Identify a containing served build and finish ordinary match acceptance; no broader AI or territorial mode is approved by this inventory. |
+| [Map scale/playability](map-scale-playability-backlog.md) | Map scale owner; mode/entry receivers | Four ordinary tiers and Confluence are authored/admitted; opening compatibility [PR280](https://github.com/lbeezr/thousand-unit-skirmish/pull/280) is merged. Next: representative paid play/capacity proof; XL remains a separate runtime proposal. Some candidate labels in older rows lag the closing aggregate paragraph. |
+| [Movement/pathing](movement-pathing-workstream.md) | Movement owner | Planning/crowd [PR193](https://github.com/lbeezr/thousand-unit-skirmish/pull/193)/[PR209](https://github.com/lbeezr/thousand-unit-skirmish/pull/209), allocation [PR259](https://github.com/lbeezr/thousand-unit-skirmish/pull/259), and direct Move [PR285](https://github.com/lbeezr/thousand-unit-skirmish/pull/285) are merged. **Needs reconciliation:** the queue predates PR285; add that evidence; rendered 2,000-unit acceptance stays open and callback scheduling remains default. |
+| [Combat/stances](combat-backlog.md) | Combat owner; HUD/animation consumers | Four stances and target-continuation corrections are integrated. Next: containing-build normal controls/damage/recovery proof, or a reproduced command failure. Attack appearance remains the animation owner's acceptance; this is not evidence of an unimplemented stance system. |
+| [Opponent AI](pve-policy-backlog.md) | Opponent AI owner; mode receiver | Tiny policy/replay/process evidence and progress-retention [PR281](https://github.com/lbeezr/thousand-unit-skirmish/pull/281) are merged. **Needs reconciliation:** the queue still discusses PR255 integration as pending; refresh it against PR255/281 history. Next: identified served Tiny PvE proof; larger-map AI remains unqualified. |
+| [Economy/content](economy-content-workstream.md) | Economy/content owner | Worker action receipts and paid Farm/Stone measurements shipped. [PR283](https://github.com/lbeezr/thousand-unit-skirmish/pull/283) is merged with bounded wood-job continuation and native recovery/conservation evidence. **Needs reconciliation:** add that integrated contract to the existing ledger; identified served-game acceptance remains with the economy owner. |
+| [Naval gameplay](naval-workstream.md) | Fishing/naval owner; delivery receiver | Paid Skiff movement/fishing/counterflow have source/process evidence including [PR260](https://github.com/lbeezr/thousand-unit-skirmish/pull/260). Next: normal Confluence input, opposing crossings, cargo and recovery on a containing build. Reported proxy/browser failures block that lane's actual play acceptance. |
+| [HUD/controls](hud-controls-backlog.md) | HUD integration owner | Glyphs, keyboard/stance controls and selection-availability corrections have focused evidence. Next: ordinary selection/producer/focus/recovery proof and capture a concrete completed-Range failure if it persists. Dense/subtle/dismissible direction remains; old redesign concepts are held. |
+| [Architecture/organization](architecture.md#continuing-boundary-workstream) | Architecture boundary owner; parent routes overlap | The reviewed eight-candidate plan is integrated in [PR291](https://github.com/lbeezr/thousand-unit-skirmish/pull/291). [PR294](https://github.com/lbeezr/thousand-unit-skirmish/pull/294) records the first explicit domain/import guard and packed private GET/HEAD milestone; see that PR for exact review/integration evidence. Next: coordinate the map-audio validator with its audio/world owners. Four nested modules remain; no runtime migration has started. |
+| [Code extraction](code-extraction-backlog.md) | Code extraction owner | Audio reader/action rules/frame/deflate seams shipped with focused contracts. Retained transport/audio runtime acceptance is open. Broader file migrations belong to Architecture above; do not restart a duplicate extraction program here. |
+| [Error boundaries](code-quality-error-boundaries.md) | Error-handling owner | Capture/audio/validator recovery fixes and exact evidence exist; the source queue reports no further reproduced candidate after PR190. Next: update any integration-tracked status from its PR and finish Audio Studio retry/import observation when browser/build dependencies exist. |
+| [Testing strategy/types](testing-strategy.md), [command catalog](testing.md) | Testing-strategy owner `01a103db-7bbd`; cloud testing/CI/replay/release owners for implementation | Strategy PR288, CPU temporal/capability helpers PR287, lane wiring PR289 and strategy refresh PR292 are merged. Fast/simulation lanes partition the CPU suite; visual/performance lanes have scoped reports and do not imply full-suite acceptance. The WebGL2 probe establishes capability only. Next: supported cloud packed-game atlas/frame acceptance and exact served revision; this remains one testing workstream. |
+| [Asset adoption and terrain backlog](asset-adoption-checklist.md) | Each asset's retained implementation owner | Default building/environment/unit/audio bindings have source/release evidence; several user-build/appearance steps remain open. **Needs reconciliation:** update the dated deployment/Stone/character rows against current source and exact containing receipts. This is the aggregate delivery ledger, not another independent art roadmap. |
+| [Human foot-unit coverage](human-foot-unit-coverage.md) | Human art lane; animation-state receiver | Identity restoration [PR286](https://github.com/lbeezr/thousand-unit-skirmish/pull/286) is merged; different-identity Archer/Spearman PR230/241 remain held drafts. Next: established-character directional pilot and actual motion proof. CPU displacement diagnostic PR287 is merged with fault controls, actual decoded cells and explicit art gaps; it is not a browser result or replacement art. |
+| [Coastal/barrier art](coastal-barrier-art-workstream.md) | Coastal technical-art owner | Private Skiff readiness and barrier reference fit are documented. Skiff publication/default art depends on its existing visual/publication condition; barrier Complete/gate production is separate. Execution/publication remains blocked where that guide says so; this index releases neither hold. |
+| [Runtime audio backlog](audio-runtime-packs.md#ranked-audio-backlog) | Audio owner | Shipped regional references, shared decode and synthesized interruption fixes have source evidence. Next: existing-source listening/mute/loop proof; mix or binding changes follow an actual heard defect/accepted audition. No paid production is scheduled here. |
+
+| Umbrella/production plan (6) | Owner/status and useful next action |
+| --- | --- |
+| [Gameplay foundation F1–F4](gameplay-foundation-plan.md) | Foundation/integration owner: F1–F3 are integrated with explicit completion evidence; F4's interchangeability/variant/scale proof is incomplete. Use the existing rule/presentation owners for a bounded proof; do not reopen completed F1–F3 from older audit rows. |
+| [Core playtest tranche](core-playtest-tranche.md) | Coordinating playtest owner: prepared human-session and scale protocol, with [dated tranche evidence](qa-core-tranche-2026-09-29.md). Next: identified build and unassisted human sessions; no fresh human completion is verified by this audit. |
+| [Maps/resourcing saga: nine epics](maps-resourcing-saga-plan.md) | Historical map/economy and wildlife/art lanes; current active assignments are not established by that proposal. Its 2 October baseline remains historical, while Stone/Farm/wildlife have since advanced in their owning guides. **Needs reconciliation:** assign a reconciliation owner and map accepted epic slices and unresolved decisions onto this proposal; do not execute all nine epics as approved work. |
+| [Regional environment kits](regional-environment-kits.md) | Environment/vegetation owners: substantial Underbough/plant/canopy slices are documented; full roster and whole-kit appearance remain incomplete. Next: one justified missing state/direction or identified whole-kit observation; keep candidates and dated source studies distinct from current defaults. |
+| [Building atlas production](building-atlas-production-plan.md) | Building art owner: calibrated Complete families and the [Barracks/Range pair](frontier-barracks-range-authoring.md) now have default integrations. **Needs reconciliation:** the plan's “remaining six Complete families” next step lags source. Refresh the queue toward identity/clearance/lifecycle and actual-game acceptance; new spend remains separately authorized. |
+| [Lore strategy/wiki](lore-strategy.md) | Lore author: connected reference wiki exists; next is a small unresolved continuity decision and affected entries. Active executor/PR is unknown here. Scene/campaign applications remain optional, and private prose stays outside the repository. |
+
+Two implementation plans are retained as **completed implementation milestones**,
+not counted again above: [Custom skirmish](custom-skirmish-milestone-plan.md)
+([combined evidence](qa-custom-skirmish.md), remaining unassisted/scale proof)
+and [Audio Studio v1](audio-studio-implementation-plan.md#integrated-checkpoint--29-september-2026)
+([evidence](qa-audio-studio-2026-09-29.md), later delivery/retry acceptance owned
+by the runtime-audio/error queues). Preserve their original planning baselines.
+
+**Deferred/reference material** is also separate: voice commands (roadmap;
+no active spike), [model-opponent research](model-controlled-opponent-research.md)
+(default-off fake-provider experiment), [audio kit](audio-kit-plan.md)/
+[zone audio](vaelora-zone-audio-plan.md) creative proposals, speculative full
+territory/XL/campaign/GLB finish work and historical/reference inventories.
+Held art drafts, including [HUD archive PR25](https://github.com/lbeezr/thousand-unit-skirmish/pull/25),
+remain held; an index is not publication approval.
+
+There is active source progress: main's recent merges include AI progress281,
+Palisade continuation282, walk direction284, direct Move285 and identity286.
+However, a few canonical queues still show resolved source items as pending,
+and many rows retain delivery/browser/human dependencies. Update the owning
+queue after its next slice; use this index to find it rather than append another
+status plan. Unknown worker liveness, absent current served receipts and missing
+human observations remain unknown. This audit performs no deployment, Mac run,
+security change, paid generation or automation change.
 
 ## Art and assets
 

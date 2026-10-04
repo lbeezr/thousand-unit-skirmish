@@ -142,19 +142,24 @@ const width = 40;
 const height = 40;
 const targetColumn = 8;
 const targetRow = 20;
+const endColumn = 3;
+const endRow = 27;
 const targetCell = targetRow * width + targetColumn;
 const houseCost = BUILDING_DEFINITIONS.house.cost.wood;
 const map = {
   id: 'woodland-cell-check',
   name: 'Woodland Cell Check',
-  summary: 'Cut one tree, open its cell, and recover the clearing.',
+  summary: 'Exhaust two separate wood areas, open their cells, and recover the clearing.',
   width,
   height,
   startingArmySize: 8,
   startingResources: { wood: houseCost },
   fogOfWar: true,
   spawnPoints: [{ team: 0, x: -14, z: 0 }, { team: 1, x: 14, z: 0 }],
-  obstacles: [{ column: targetColumn, row: 18, width: 1, height: 5, material: 'forest' }],
+  // Separate assignments beyond the fixed eight-unit work radius. Multi-tree
+  // continuation is covered by resource-job.test and the native job scenario.
+  obstacles: [[targetColumn, targetRow], [endColumn, endRow]].map(([column, row]) => ({ column, row,
+    width: 1, height: 1, material: 'forest' })),
   resourceNodes: [],
   triggers: [],
   scenarioEvents: [],
@@ -220,16 +225,23 @@ try {
   assert.equal(forestStock(crossed, targetCell), 0,
     'the traversable forest cell should stay recorded as cleared');
 
-  // Clear the existing rectangle's end cell; a 3x3 House site overlaps only that tree.
-  const endRow = map.obstacles[0].row + map.obstacles[0].height - 1;
-  const endCell = endRow * width + targetColumn;
+  // Manually assign the separate area; a 3x3 House overlaps only its tree.
+  const endCell = endRow * width + endColumn;
+  const approachRow = endRow - 1;
+  const approachToken = 800;
+  send(azure, { type: 'move', ids: [0], x: endColumn - width / 2 + .5,
+    z: approachRow - height / 2 + .5, clientOrderToken: approachToken });
+  await azure.waitForState(state => {
+    const row = workerRow(state, 0);
+    return row && isCell(row, endColumn, approachRow, width, height);
+  }, 'Worker discovers the separate wood area');
   const gatherToken = 801;
   const endGather = azure.waitForMessage((message) => message.type === 'notice'
-    && message.clientOrderToken === gatherToken && message.message?.startsWith('GATHER ORDER'),
+    && message.clientOrderToken === gatherToken && /GATHER ORDER|REJECTED|NOT VISIBLE|UNREACHABLE/.test(message.message),
     'end-cell gather applied');
   send(azure, { type: 'gather', ids: [0], unitGenerations: [workerRow(crossed, 0)[8]],
     forestCell: endCell, clientOrderToken: gatherToken });
-  await endGather;
+  assert.match((await endGather).message, /^GATHER ORDER/);
   const beforeBuild = await azure.waitForState((state) => forestStock(state, endCell) === 0
     && state.wood[0] === houseCost + 12, 'second tree depleted and deposited');
   assert.equal(visibilityAt(beforeBuild, endCell), 2, 'cleared building-site cell is disclosed');
@@ -239,7 +251,7 @@ try {
     && /^(BUILD ORDER|BUILD REJECTED) · /.test(message.message), 'paid House placement');
   send(azure, { type: 'build', buildingType: 'house', ids: [0],
     unitGenerations: [workerRow(beforeBuild, 0)[8]], clientOrderToken: buildToken,
-    x: targetColumn + 1 - width / 2 + 0.5, z: endRow + 1 - height / 2 + 0.5 });
+    x: endColumn + 1 - width / 2 + 0.5, z: endRow + 1 - height / 2 + 0.5 });
   assert.match((await buildReply).message, /^BUILD ORDER · /);
   const built = await azure.waitForState((state) => state.buildings?.some((building) =>
     building.team === 0 && building.type === 'house' && building.complete), 'paid House completion');
