@@ -98,10 +98,26 @@ function remainingDistance(r, u) {
   }
   return distance;
 }
+export function observeForestRouteProgress(r, u, previous, tick) {
+  // Pending repair may temporarily clear waypoints. That is not zero distance
+  // to arrival; refresh the distance reference only when a route is published.
+  const routeKey = JSON.stringify([u.moveGoalCell, u.path]);
+  const remaining = remainingDistance(r, u);
+  const progress = !u.movePlanningPending && remaining < previous.bestRemainingDistance - .05;
+  const publishedChange = !u.movePlanningPending
+    && (routeKey !== previous.routeKey || u.orderRevision !== previous.orderRevision);
+  if (publishedChange || progress) {
+    if (publishedChange) previous.repairs++;
+    previous.routeKey = routeKey; previous.orderRevision = u.orderRevision;
+    previous.bestRemainingDistance = remaining; previous.lastProgress = tick;
+  }
+  return progress;
+}
 function measureCrossing(r, actors, spec, map, maxTicks) {
   const issuedAt = r.tick, goals = actors.map(u => u.moveGoalCell), initialRoutes = route(r, actors, map);
   const state = actors.map(u => ({ id: u.id, previousX: u.x, previousZ: u.z, lastProgress: 0,
     distance: 0, bestRemainingDistance: remainingDistance(r, u), orderRevision: u.orderRevision, repairs: 0,
+    routeKey: JSON.stringify([u.moveGoalCell, u.path]),
     maxNoProgressTicks: 0, queueNoProgressTicks: 0, enteredAt: null, crossedAt: null, crossingRow: null }));
   const trace = createHash('sha256'); let invalidSteps = 0, maxPending = 0;
   for (let tick = 1; tick <= maxTicks; tick++) {
@@ -112,12 +128,7 @@ function measureCrossing(r, actors, spec, map, maxTicks) {
       const p = state[index], cell = r.cell(u.x, u.z), column = cell % map.width;
       if (!canTraverseUnitStep(cells[index], cell, map.width, r.levels, r.isWalkable)) invalidSteps++;
       const distance = Math.hypot(u.x - p.previousX, u.z - p.previousZ); p.distance += distance;
-      const remaining = remainingDistance(r, u);
-      const progress = remaining < p.bestRemainingDistance - .05;
-      if (u.orderRevision !== p.orderRevision || progress) {
-        if (u.orderRevision !== p.orderRevision) p.repairs++;
-        p.orderRevision = u.orderRevision; p.bestRemainingDistance = remaining; p.lastProgress = tick;
-      }
+      const progress = observeForestRouteProgress(r, u, p, tick);
       if (!done(r, u)) {
         const delay = tick - p.lastProgress; p.maxNoProgressTicks = Math.max(p.maxNoProgressTicks, delay);
         if (p.crossedAt === null && !progress) p.queueNoProgressTicks++;
@@ -132,7 +143,7 @@ function measureCrossing(r, actors, spec, map, maxTicks) {
   }
   const stalled = actors.filter(u => !done(r, u)).map(u => ({ id: u.id, x: u.x, z: u.z, goal: u.moveGoalCell,
     pathIndex: u.pathIndex, pathLength: u.path.length, pending: u.movePlanningPending }));
-  const crossings = state.map(({ previousX, previousZ, lastProgress, bestRemainingDistance, orderRevision, ...p }) => ({ ...p, distance: rounded(p.distance) }));
+  const crossings = state.map(({ previousX, previousZ, lastProgress, bestRemainingDistance, orderRevision, routeKey, ...p }) => ({ ...p, distance: rounded(p.distance) }));
   const crossed = crossings.filter(p => p.crossedAt !== null);
   return { issuedAt, ticks: r.tick - issuedAt, traceSha256: trace.digest('hex'), initialRoutes,
     planned: summarizeRoutes(initialRoutes), crossings, invalidSteps, maxPending,
