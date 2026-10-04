@@ -256,3 +256,7 @@ checks the108 preceding frames/decoded pixels, all other clips, mask and byte-id
 rebuild against that merged South baseline. No deployed/native claim is made.
 
 All90 focused checks, atlas/docs/whitespace and packed HTTP/hash scenario pass.
+
+[All-eight-walk clean release](qa-evidence/worker-land-art-2026-10-04/eight-walks-clean-release.json)
+records exact source `d4ba9de1ebcabaadec1a40e65a5cec3cf0c696ff`, 1173 files,
+`sha256:dc2aef04126c74cba565c950bb09923dbf60c3a69857713fba3baf19e2a85bd7` and three runtime file hashes.
