@@ -98,3 +98,9 @@ Farm/Watchtower coexistence on shipped maps and a retained Stone load ordered
 onto an owned Farm. Stone is delivered before food gathering; Mill remains
 food-only. Its untouched cold saves and proportional refunds preserve the
 existing ledger without inventing a resource exchange rate.
+
+The [paired opening measurement](qa-paired-farm-food-2026-10-04.md) compares
+one and three Workers against nearby plain neutral food on shipped Millrace,
+reversing seats and including construction, travel and first deliveries.
+Recorded deposits depend on the selected plots and finite pools; they do not
+settle contested balance or change the provisional planting values.

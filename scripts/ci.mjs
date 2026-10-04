@@ -248,6 +248,7 @@ run(['scripts/farm-scenario.mjs', '--fog'], 'Both-seat paid Farm planting, finit
 run(['scripts/farm-stone-paid-scenario.mjs'], 'Shipped paid Farm/Watchtower, natural Stone handoff and cold recovery');
 run(['--test', 'scripts/depot-economy-analysis.test.mjs', 'scripts/depot-source-snapshot.test.mjs'], 'Depot measurement placements, accounting, payback math and source provenance');
 run(['scripts/depot-economy-scenario.mjs', '--smoke'], 'Paid depot measurement smoke and both-seat conservation');
+run(['scripts/farm-food-measurement.mjs', '--smoke'], 'Paired paid Farm versus neutral food opening and exact returned-cargo accounting');
 run(['--test', 'scripts/roster-building-ui.test.mjs'], 'Registry building options');
 run(['--test', 'scripts/ruleset-revision.test.mjs'], 'Resolved ruleset identity and prerequisites');
 run(['--test', 'scripts/gameplay-definitions.test.mjs'], 'Gameplay definition validation');
