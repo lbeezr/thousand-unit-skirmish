@@ -72,7 +72,7 @@ import { constructionWorkArea, constructionAssignment, unfinishedConstructionSit
 import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition } from './src/palisade-gate.mjs';
 import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep } from './src/unit-movement.mjs';
-import { canTraverseFlatUnitSegment, visitGridSegmentCells } from './src/unit-path-line.mjs';
+import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
 
@@ -4365,6 +4365,11 @@ function workerDropoffCandidates(unit) {
       .map((building) => ({ ...building, goals: buildingAccessCells(building.footprint) }));
 }
 
+function workerFlowPath(unit, path) {
+  return shortcutFlatUnitPath(path, unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z,
+    MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS);
+}
+
 function routeWorkerToDropoff(unit) {
   const start = nearestOpenCell(worldToCell(unit.x, unit.z));
   const component = walkableComponents[start];
@@ -4380,7 +4385,8 @@ function routeWorkerToDropoff(unit) {
   unit.dropoffBuildingId = best?.candidate.id ?? null;
   unit.dropoffNavigationRevision = navigationRevision;
   unit.moveGoalCell = best?.field.goal ?? -1;
-  unit.path = best?.path ?? [];
+  // Score the original flow routes above; shorten only the selected leg.
+  unit.path = best ? workerFlowPath(unit, best.path) : [];
   unit.pathIndex = 0;
 }
 
@@ -4416,14 +4422,14 @@ function routeWorker(unit, phase, node) {
     const goals = buildingAccessCells(building.footprint).filter(cell => walkableComponents[cell] === component);
     const field = goals.length ? getAttackFlowFieldForGoals(goals, `farm:${building.id}:${component}`) : null;
     unit.moveGoalCell = field?.goal ?? -1;
-    unit.path = field ? pathFromAttackFlow(start, field) : [];
+    unit.path = field ? workerFlowPath(unit, pathFromAttackFlow(start, field)) : [];
     unit.pathIndex = 0;
     return;
   }
   const target = node;
   unit.moveGoalCell = worldToCell(target.x, target.z);
   const field = getAttackFlowField(worldToCell(target.x, target.z));
-  unit.path = field ? pathFromAttackFlow(worldToCell(unit.x, unit.z), field) : [];
+  unit.path = field ? workerFlowPath(unit, pathFromAttackFlow(worldToCell(unit.x, unit.z), field)) : [];
   unit.pathIndex = 0;
 }
 
@@ -4460,7 +4466,7 @@ function routeForestWorker(unit, phase, cell) {
     routeWorkerToDropoff(unit); return;
   }
   unit.moveGoalCell = field?.goal ?? -1;
-  unit.path = field ? pathFromAttackFlow(worldToCell(unit.x, unit.z), field) : [];
+  unit.path = field ? workerFlowPath(unit, pathFromAttackFlow(worldToCell(unit.x, unit.z), field)) : [];
   unit.pathIndex = 0;
 }
 
