@@ -17,6 +17,8 @@ const originalMask = readFileSync(new URL(
   '../docs/qa-evidence/worker-land-art-2026-10-04/stone-era-team-mask.png', import.meta.url));
 const attackReuse = JSON.parse(readFileSync(new URL(
   '../docs/qa-evidence/worker-land-art-2026-10-04/attack-north-west-reuse.json', import.meta.url)));
+const nwActions = JSON.parse(readFileSync(new URL(
+  '../docs/qa-evidence/worker-land-art-2026-10-04/north-west-actions-preservation.json', import.meta.url)));
 
 // The old mask is entirely zero. Verify decoded zero pixels after the explicit
 // page extension, while retaining the original encoded file for historical hashes.
@@ -46,14 +48,14 @@ function assertExtendedZeroMask() {
     extension.originalTeamMaskPixelsSha256);
 }
 
-for (const preservationHeading of ['north-walk', 'south-walk', 'west-walks', 'stone-se', 'wood-north-west', 'food-north-west']) {
+for (const preservationHeading of ['north-walk', 'south-walk', 'west-walks', 'stone-se', 'wood-north-west', 'food-north-west', 'north-west-actions']) {
 test(`${preservationHeading} admission preserves preceding frame records/pixels and team mask`, () => {
   const preservation = JSON.parse(readFileSync(new URL(
     `../docs/qa-evidence/worker-land-art-2026-10-04/${preservationHeading}-preservation.json`, import.meta.url)));
   const originals = asset.frames.slice(0, preservation.originalFrames);
   const hash = bytes => createHash('sha256').update(bytes).digest('hex');
   assert.equal(hash(JSON.stringify(originals)), preservation.originalFrameMetadataSha256);
-  assert.equal(hash(preservationHeading === 'food-north-west'
+  assert.equal(hash(['food-north-west', 'north-west-actions'].includes(preservationHeading)
     ? readFileSync(new URL('team-accent-mask.png', directory)) : originalMask),
     preservation.originalTeamMaskSha256);
   assertExtendedZeroMask();
@@ -68,8 +70,16 @@ test(`${preservationHeading} admission preserves preceding frame records/pixels 
   assert.equal(framesHash.digest('hex'), preservation.originalFrameRgbaSha256);
   if (preservation.originalClips) {
     const originalClips = structuredClone(asset.clips.slice(0, preservation.originalClips));
-    const index = originalClips.findIndex(c => c.stateId === 'attack' && c.directionId === 'north-west');
-    originalClips[index] = attackReuse.originalAttackClip;
+    // Historical hashes predate these explicit, separately tested placeholder
+    // replacements. The family receipt already includes the real NW attack.
+    if (preservationHeading !== 'north-west-actions') {
+      const index = originalClips.findIndex(c => c.stateId === 'attack' && c.directionId === 'north-west');
+      originalClips[index] = attackReuse.originalAttackClip;
+    }
+    for (const clip of nwActions.originalReplacedClips) {
+      const index = originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId);
+      if (index >= 0) originalClips[index] = clip;
+    }
     assert.equal(hash(JSON.stringify(originalClips)), preservation.originalClipMetadataSha256);
   }
 });
@@ -194,8 +204,8 @@ test('Stone SE is a complete four-pose dedicated pick clip with its own shared r
     hashes.add(digest);
   }
   assert.equal(hashes.size, 4);
-  assert.deepEqual(asset.clips.filter(c => c.stateId === 'gather-stone').map(c => c.directionId), ['south-east']);
-  for (const heading of ['north', 'north-east', 'east', 'south', 'south-west', 'west', 'north-west']) {
+  assert.deepEqual(asset.clips.filter(c => c.stateId === 'gather-stone').map(c => c.directionId), ['south-east', 'north-west']);
+  for (const heading of ['north', 'north-east', 'east', 'south', 'south-west', 'west']) {
     assert.equal(spriteActionClip(clipMap, 'gather-stone', heading, 'stone', 'human', false)
       .sequence[0].frameId, `idle-${heading}-0`);
   }

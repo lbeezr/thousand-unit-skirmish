@@ -1,0 +1,104 @@
+{
+  "source": "docs/art-direction/human-roster-v1/generated/worker-north-west-actions-v1/raw.png",
+  "frames": [
+    {
+      "frame": 0,
+      "sourceBounds": [
+        181,
+        37,
+        348,
+        341
+      ],
+      "opaquePixels": 29038,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 1,
+      "sourceBounds": [
+        612,
+        96,
+        867,
+        337
+      ],
+      "opaquePixels": 27586,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 2,
+      "sourceBounds": [
+        1177,
+        67,
+        1342,
+        340
+      ],
+      "opaquePixels": 27280,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 3,
+      "sourceBounds": [
+        202,
+        354,
+        353,
+        682
+      ],
+      "opaquePixels": 28488,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 4,
+      "sourceBounds": [
+        615,
+        454,
+        889,
+        683
+      ],
+      "opaquePixels": 28059,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 5,
+      "sourceBounds": [
+        1129,
+        422,
+        1378,
+        684
+      ],
+      "opaquePixels": 28438,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 6,
+      "sourceBounds": [
+        192,
+        745,
+        367,
+        993
+      ],
+      "opaquePixels": 24845,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 7,
+      "sourceBounds": [
+        625,
+        831,
+        921,
+        974
+      ],
+      "opaquePixels": 25214,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 8,
+      "sourceBounds": [
+        1109,
+        862,
+        1454,
+        973
+      ],
+      "opaquePixels": 25714,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    }
+  ]
+}
