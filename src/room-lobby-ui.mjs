@@ -1,5 +1,6 @@
 import { createRoomLobbyChat } from './room-lobby-chat-ui.mjs';
 import { roomEntryUrl } from './game-entry-session.mjs';
+import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel } from './match-mode-controls.mjs';
 
 const TEAMS = ['Azure', 'Ember'];
 const SIZES = [250, 500, 1000, 2000];
@@ -31,6 +32,8 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
   const mapLabel = element('label', 'Map');
   const map = element('select', null, mapLabel);
   map.id = 'lobby-map';
+  const modes = createMatchModeControls({ root: element('section'), id: 'lobby-match-mode',
+    onChange: identity => submit({ type: 'configureLobby', ...identity }) });
   const sizeLabel = element('label', 'Total starting units');
   const size = element('select', null, sizeLabel);
   size.id = 'lobby-army-size';
@@ -56,6 +59,8 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
   let player = null;
   let online = false;
   let pending = false;
+  let pendingCommand = null;
+  let currentMap = null;
   let pendingFocus = null;
   let rejoining = false;
   let rejection = '';
@@ -85,6 +90,7 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
   function render() {
     const visible = lobby?.phase === 'lobby';
     if (!visible) {
+      modes.update({ identity: lobby || {}, online: false, editable: false });
       if (root.open) root.close();
       return;
     }
@@ -97,8 +103,11 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
     }
     map.replaceChildren();
     for (const entry of lobby.maps) {
-      const option = element('option', entry.name, map);
+      let configuration = null;
+      try { configuration = lobbyMapConfiguration(lobby, entry); } catch {}
+      const option = element('option', mapChoiceLabel(entry, configuration), map);
       option.value = entry.id;
+      option.disabled = !configuration;
     }
     map.value = lobby.mapId;
     size.replaceChildren();
@@ -108,17 +117,20 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
       option.value = String(count);
     }
     size.value = String(lobby.armySize);
-    map.disabled = size.disabled = !online || pending || !host;
-    ready.disabled = !online || pending || !own;
+    modes.update({ identity: lobby, catalog: lobby.matchModes, map: currentMap, canonicalMap: null,
+      online, editable: host, pending });
+    const waiting = pending || modes.pending;
+    map.disabled = size.disabled = !online || waiting || !host || !modes.supported;
+    ready.disabled = !online || waiting || !own || !modes.supported;
     ready.textContent = own?.ready ? 'Not ready' : 'Ready';
     launch.hidden = !host;
-    launch.disabled = !online || pending || !host || !lobby.canLaunch;
+    launch.disabled = !online || waiting || !host || !lobby.canLaunch || !modes.supported;
     const joinFocused = doc.activeElement === join;
     join.hidden = !canRejoin();
     join.disabled = join.hidden || pending || rejoining;
     if (joinFocused && join.hidden && root.open) invite.focus({ preventScroll: true });
     status.textContent = !online ? 'Reconnecting. Readiness clears when a player disconnects.'
-      : rejection || (rejoining ? 'Rejoining room…' : pending ? 'Waiting for server…' : seatGuidance(own));
+      : rejection || (rejoining ? 'Rejoining room…' : waiting ? 'Waiting for server…' : seatGuidance(own));
     if (opening) {
       root.showModal();
       (host && !map.disabled ? map : own && !ready.disabled ? ready : !join.disabled ? join : invite).focus({ preventScroll: true });
@@ -126,6 +138,7 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
   }
 
   function restorePendingFocus() {
+    if (pending) return;
     const target = pendingFocus;
     pendingFocus = null;
     // A user who moved to another enabled control while waiting keeps that focus.
@@ -134,14 +147,22 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
   }
 
   function submit(command) {
-    if (!lobby || pending || !online) return;
+    if (!lobby || pending || !online || lobby.phase !== 'lobby') return false;
     rejection = '';
     const focused = root.contains(doc.activeElement) ? doc.activeElement : null;
     pending = send({ ...command, revision: lobby.revision }) === true;
+    pendingCommand = pending ? { ...command, revision: lobby.revision } : null;
     pendingFocus = pending ? focused : null;
     render();
+    return pending;
   }
-  map.addEventListener('change', () => submit({ type: 'configureLobby', mapId: map.value }));
+  map.addEventListener('change', () => {
+    const entry = lobby?.maps.find(value => value.id === map.value);
+    let configuration = null;
+    try { if (entry) configuration = lobbyMapConfiguration(lobby, entry); } catch {}
+    if (configuration) submit({ type: 'configureLobby', ...configuration });
+    else render();
+  });
   size.addEventListener('change', () => submit({ type: 'configureLobby', armySize: Number(size.value) }));
   ready.addEventListener('click', () => {
     const own = lobby?.seats.find(seat => seat.id === player?.id && seat.team === player?.team);
@@ -160,12 +181,18 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
   });
   root.addEventListener('cancel', event => event.preventDefault());
   return {
-    update(next, identity, connected = true) {
+    update(next, identity, connected = true, definition = currentMap) {
+      const own = next?.seats.find(seat => seat.id === identity?.id && seat.team === identity?.team && seat.connected);
+      const readyAccepted = pendingCommand?.type === 'setReady' && own?.ready === pendingCommand.ready;
+      if (player?.id !== identity?.id || player?.team !== identity?.team || !connected || !own
+        || next?.phase !== 'lobby' || next?.revision !== pendingCommand?.revision || readyAccepted) {
+        pending = false; pendingCommand = null;
+      }
       if (player?.id !== identity?.id || next?.phase !== 'lobby' || !connected) rejoining = false;
       lobby = next;
       player = identity;
       online = connected;
-      pending = false;
+      currentMap = definition;
       rejection = '';
       chat.context(lobby, player, online);
       render();
@@ -175,13 +202,15 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
       lobby = next;
       player = identity;
       pending = false;
+      pendingCommand = null;
       rejection = message;
+      modes.reject(message);
       chat.context(lobby, player, online);
       render();
       restorePendingFocus();
     },
     updateChat(messages, ack, reset) { chat.update(messages, ack, reset); },
     rejectChat(message, clientMessageId) { chat.reject(message, clientMessageId); },
-    disconnect() { online = false; pending = false; rejoining = false; chat.context(lobby, player, online); render(); },
+    disconnect() { online = false; pending = false; pendingCommand = null; pendingFocus = null; rejoining = false; chat.context(lobby, player, online); render(); },
   };
 }

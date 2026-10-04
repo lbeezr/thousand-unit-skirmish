@@ -29,6 +29,8 @@ import { selectionContext } from './selection-context.mjs';
 import { updateSelectionPortrait } from './selection-portrait.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
+import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel } from './match-mode-controls.mjs';
+import { roomPresence } from './room-presence.mjs';
 import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
 import { farmHarvestNode } from './farm-harvest.mjs';
@@ -113,11 +115,13 @@ let mapDefinition = null;
 let dockPlacementContext = null;
 let lobbyPlayer = null;
 let latestLobby = null;
+let activeMatchMode = {};
 const roomLobby = createRoomLobby({ root: document.querySelector('#room-lobby'), send: sendCommand, copyInvite: copyRoomInvite });
+const matchModeView = createMatchModeControls({ root: document.querySelector('#match-mode-view'), id: 'active-match-mode', onChange: () => false });
 
 function applyLobby(lobby) {
   latestLobby = lobby || null;
-  roomLobby.update(latestLobby, lobbyPlayer);
+  roomLobby.update(latestLobby, lobbyPlayer, true, mapDefinition);
   if (lobbyPlayer) updateLobbyHostControls();
 }
 
@@ -654,6 +658,7 @@ let editorViewZoom = 1;
 let editorPanDrag = null;
 let socket = null;
 let connectedPlayers = 0;
+let soloPracticeActive = false;
 let waitingForResume = false;
 let selectionDirty = false;
 let latestObjectiveStates = new Map();
@@ -4474,6 +4479,13 @@ function applyState(state, initial = false) {
   }
   if (!state || (mapDefinition && state.mapId && state.mapId !== mapDefinition.id)) return;
   const practiceStatus = document.querySelector('#practice-status');
+  soloPracticeActive = state.practice === true;
+  const identity = { ...(Object.hasOwn(state, 'matchModeId') ? { matchModeId: state.matchModeId } : {}),
+    ...(Object.hasOwn(state, 'matchModeVersion') ? { matchModeVersion: state.matchModeVersion } : {}) };
+  const modeChanged = JSON.stringify(identity) !== JSON.stringify(activeMatchMode);
+  activeMatchMode = identity;
+  matchModeView.update({ identity, map: mapDefinition, canonicalMap: null, online: true, editable: false });
+  if (modeChanged) setMapCatalog(knownMaps, mapDefinition?.id);
   if (practiceStatus) practiceStatus.hidden = state.practice !== true;
   const matchRestarted = (matchWinner >= 0 && state.winner === -1)
     || (Number.isFinite(state.matchElapsedSeconds) && state.matchElapsedSeconds + 1 < latestMatchElapsedSeconds);
@@ -5105,16 +5117,16 @@ function updateEconomyUI(state = {}, initial = false) {
 
 function updateRoomUI(connected) {
   connectedPlayers = connected;
+  const presence = roomPresence({ connected, practice: soloPracticeActive, resumePending: waitingForResume });
   ui.playersOnline.textContent = `${connected} / 2 PLAYERS`;
   ui.networkStatus.parentElement.dataset.urgent = String(waitingForResume);
-  ui.matchStatus.textContent = waitingForResume ? 'WAITING TO REJOIN' : connected >= 2 ? '2 / 2 ONLINE' : `${connected} / 2 ONLINE`;
-  ui.matchStatus.classList.toggle('full', connected >= 2);
-  ui.networkStatus.textContent = waitingForResume
-    ? 'SEAT ACTIVE ELSEWHERE' : connected >= 2 ? 'ROOM LIVE' : 'WAITING FOR PLAYER 2';
+  ui.matchStatus.textContent = presence.match;
+  ui.matchStatus.classList.toggle('full', presence.full);
+  ui.networkStatus.textContent = presence.network;
   ui.connectionDot.classList.remove('offline');
-  ui.connectionDot.classList.toggle('waiting', waitingForResume || connected < 2);
+  ui.connectionDot.classList.toggle('waiting', presence.waiting);
   ui.matchStatus.classList.remove('offline');
-  ui.matchStatus.classList.toggle('waiting', waitingForResume || connected < 2);
+  ui.matchStatus.classList.toggle('waiting', presence.waiting);
 }
 
 function setConnection(status) {
@@ -5166,7 +5178,12 @@ function setMapCatalog(maps, activeMapId) {
   for (const map of knownMaps) {
     const option = document.createElement('option');
     option.value = map.id;
-    option.textContent = map.name;
+    let configuration = null;
+    try { configuration = lobbyMapConfiguration(activeMatchMode, map); } catch {}
+    option.textContent = mapChoiceLabel(map);
+    // Running matches cannot change mode. Only offer maps that preserve it;
+    // lobby map changes use the atomic tuple and explain any authored fallback.
+    option.disabled = !configuration || Boolean(configuration.matchModeId);
     option.title = map.summary;
     ui.mapSelect.append(option);
   }
@@ -10026,10 +10043,10 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
       return;
     }
     if (message.type === 'mapChange') {
-      applyLobby(message.state.lobby);
       void loadMapAudio(message.map.audio);
       mapDefinition = message.map;
       buildMap(mapDefinition);
+      applyLobby(message.state.lobby);
       setMapCatalog(message.maps, mapDefinition.id);
       setArmySize(message.state.armySize);
       cameraTarget.set(0, 0, 0);
