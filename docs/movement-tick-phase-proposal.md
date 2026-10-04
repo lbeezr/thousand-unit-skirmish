@@ -37,6 +37,13 @@ replay repeats twice, arrives at tick 623, and preserves both route and movement
 trace hashes from exact #209 postmerge `64cc391`. Only the optional diagnostic
 controls change callback opportunities; the production server is unchanged.
 
+After refreshing through main `74d6095e`, [integration checks](qa-evidence/movement-tick-phase-2026-10-04/integrated-verification.json)
+pass 66 cases, including the wildlife lane's new command/restore adapter coverage.
+All six phase traces and both default route traces still match their qualified
+earlier records after generation normalization. Other lanes changed server bytes;
+the six inspected planner/outer-tick function bodies remain identical. This
+proposal changes no production code and retains the original source records.
+
 ## Next bounded production experiment
 
 Allocate movement ownership of the planner service and one call immediately
