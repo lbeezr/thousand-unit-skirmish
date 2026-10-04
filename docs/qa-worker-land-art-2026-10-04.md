@@ -212,3 +212,9 @@ admission against that merged North baseline. Actual Three checks cover all thre
 admitted walks, including S→NE→S continuous phase, loops, Stop/resume and cargo
 Return on either Human seat selected/unselected. Fishing metadata permits only
 verified admitted East/North/South sequences while freezing its original keys.
+
+South all 85 focused pixel/runtime/receipt/clock/heading/fishing/sharding checks,
+atlas/docs/whitespace and packed HTTP/hash scenario pass.
+[Clean South release](qa-evidence/worker-land-art-2026-10-04/south-clean-release.json)
+records source `186fdec778832bd79fa299c5879b7d51aabeaaf6`, 1173 files and
+`sha256:707ad98940dfede9163ef9ccc918ee6a90064fd84521ef46300926352e18952d`. Deployment/native acceptance remains open.
