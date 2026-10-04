@@ -104,12 +104,12 @@ current-roster keys can also be admitted with the same manifest contract.
 | --- | --- | --- |
 | 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
 | 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
-| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **33 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
+| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **31 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
 | 4 | Six remaining readable dedicated Stone-work headings; retain PR263 default selector adoption. | SE and NW now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. PR263 now enables exact authored Stone state/resource selection from productive receipts; missing headings retain their own idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
 There are now 8 of 8 walk headings, eight distinct idle headings, SE+NW land-action
-motion and default SE+NW Stone binding from PR263, with exact native/deployment acceptance open. **39 land-action/heading cells remain** (33+6).
+motion and default SE+NW Stone binding from PR263, with exact native/deployment acceptance open. **37 land-action/heading cells remain** (31+6).
 Fishing's seven missing headings are excluded and retained by its separate owner.
 The animation-owner ID is outside this executor's live collaboration tree; the
 manifest contract and retained dependencies are recorded here for parent routing.
@@ -697,3 +697,53 @@ packaged HTTP/WebSocket/hash checks pass. [Clean East food release](qa-evidence/
 measures `c76074d8ca0725a99cf2faecd262ddd5f61dcc6c`, `sourceDirty:false`, 1178 files,
 `sha256:e008e476d4a79beb277150f5124188dfef935ce3574c3c1c1cd1c64c09fdc837`. Later receipt commits are separate from measured code.
 Exact containing deployment/native acceptance remains open.
+
+
+## East hammer build/repair retained-source admission — v0.27.0
+
+PR267 is reviewed/merged at `48735b95b96382cb1311d1a8fd015feeb285f4bc`
+([independent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/267#pullrequestreview-5404317462)).
+The next bounded action-heading slice uses retained source keys6..8: actual
+East/down-right front-three-quarter square-hammer windup/strike/recovery.
+Build/repair faithfully share the same-heading hammer work, each3x240ms720ms
+loop. All9 keys in [the existing East iteration](art-direction/human-roster-v1/generated/worker-east-actions-v1/README.md)
+are now default admitted; raw/extractions/earlier admission reviews stay intact.
+No new generation, private pixels or paid job.
+
+[Admission](../scripts/admit-worker-hammer-east.py) uses common232/307 scale,
+fixed source roots[384,784,1184]/baseline992,256x256 canvas/root[128,244]. Spare
+cells(2304,3456),(2304,3712),(2048,3776) avoid every prior reserved rectangle and
+frozen fishing ROI. No allocation/dimension/mask/world-scale change. Pack0.27.0
+has152frames/60clips: buildEast idle placeholder replaced, repairEast added.
+[Preservation](qa-evidence/worker-land-art-2026-10-04/hammer-east-preservation.json)
+protects149 earlier frames/decoded RGBA, exact mask and59clips except that declared
+build idle hold, retained verbatim. [Registration](qa-evidence/worker-land-art-2026-10-04/hammer-east-registration.json)
+and [key review](qa-evidence/worker-land-art-2026-10-04/hammer-east-keys.png) preserve
+source/hash/offset/body/root evidence. Historical guards restore only explicit
+placeholder replacements; every prior actual pixel and unrelated clip stays
+protected. Offline key sheets are not native game captures.
+
+[Default CPU checks](../scripts/worker-east-hammer-art.test.mjs) cover both seats
+selected/unselected: productive build/repair gate/full loop, clear→idle, Stop/
+resume, movement/attack interrupts and work resumes, build↔repair switch resets
+its clock even when sharing art. Actual UVs/matrix scale, complete distinct keys
+and three genuine authored build/repair headings pass. Art writes no state/clock/
+economy helpers. Target-bearing integration remains animation01a103d4's contract;
+new art alone does not prove that real construction/repair aims at its target.
+
+Native recipe on a containing ordinary Human map: construct and repair a target
+screen-down-right/East of the Worker. Observe hammer windup/strike/recovery,
+correct target aim, Stop/resume, move/attack and return to work. Compare E to SE/
+NW at ordinary/strategic zoom, selected/unselected and both Human seats, root/
+body/tool clearance. Record exact source/release/deployment/map. Parent Railway/
+Mac route remains the capture receiver; local sandbox-unavailable supplied no
+actual game evidence. Latest read-only staging observation still returns source
+`64cc391e6d9c4164dca7bd45696cf3862fe19729`, predating these land-art/Stone slices.
+Containing deployed/native acceptance remains open.
+
+Current [action-by-heading inventory](qa-evidence/worker-land-art-2026-10-04/land-action-coverage.json):
+Walk8/8; Wood/Food/Build/Repair/Attack3/8(E,SE,NW); Defeat/Stone2/8(SE,NW).
+Authored27/64; **37 art cells remain**: E2(Stone/Defeat) plus N/NE/S/SW/W each7.
+Ranked next: complete East dedicated pick/terminal defeat, then the five remaining
+actual headings. Continue useful default slices; polish follows breadth. Keep
+identified deployed/native acceptance separate, with receiving owners above.

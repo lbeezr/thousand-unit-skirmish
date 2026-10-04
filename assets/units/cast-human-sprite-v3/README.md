@@ -128,3 +128,14 @@ resource switch and interruptions checked; five missing food headings keep idle.
 Existing East fishing food fallback remains; no dedicated fishing art supplied.
 39 action-heading gaps and exact native/deployed acceptance stay open. The three
 remaining East hammer candidates are retained for the next reviewed slice.
+
+
+Version0.27.0 admits **East hammer build/repair** from retained keys6..8. Each
+uses the same real hammer sequence,3x240ms720ms loop, same232/307 source scale
+and fixed128/244 root. Rebuild with `python3 scripts/admit-worker-hammer-east.py`.
+Spare strip cells2304/3456,2304/3712,2048/3776 need no page/mask/dimension change;
+149 prior frames/RGBA/59clips remain except declared East build idle replacement.
+Default CPU productive gating, Stop/resume, movement/attack and build↔repair
+reset checked on both seats.37 action-heading gaps and exact deployed/native
+acceptance remain; target-bearing integration stays with the animation owner.
+All nine keys in the East source sheet are admitted, with prior reviews retained.
