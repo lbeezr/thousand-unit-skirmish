@@ -74,7 +74,7 @@ try {
   clients.forEach(assertSkirmish);
   const fresh = await fixture.checkpoint();
   assertIdentity(fresh, 'skirmish');
-  assert.equal(fresh.schemaVersion, 28);
+  assert.equal(fresh.schemaVersion, 29);
   assert.deepEqual(fresh.mapDefinition, authored.mapDefinition);
   assert.equal(fresh.mapHash, authored.mapHash);
   records.push({ name: 'Fresh Skirmish projects client rules and preserves canonical map/checksum', mapHash: fresh.mapHash });
