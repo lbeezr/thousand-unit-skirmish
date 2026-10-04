@@ -1,0 +1,37 @@
+{
+  "passed": [
+    "same-origin room creation and bounded room cap",
+    "WebSocket origin and peer checks survive the room proxy",
+    "resume subprotocol and early WebSocket frame survive upgrade forwarding",
+    "independent seats and resume tokens per room",
+    "state changes remain isolated across match processes",
+    "clean supervisor restart restores the prior match and valid resume seats",
+    "SIGKILL recovery restores match state and both hashed seats after their connected-seat deadlines expired during downtime",
+    "recovered Barracks Infantry and Town Center production complete exactly once on both seats",
+    "checkpoint files contain no bearer tokens and an isolated room keeps advancing",
+    "malformed or incompatible checkpoint safely starts a fresh match",
+    "checkpoint validation rejects queued production that would exceed the population cap",
+    "default worker SIGKILL recovery restores state and session seats without interrupting invite rooms",
+    "corrupt or missing room index preserves invite IDs, checkpoints, custom maps, and reclaimable seats even above a lowered room cap"
+  ],
+  "roomCount": 2,
+  "liveInviteProcesses": 2,
+  "defaultTeam": 0,
+  "inviteTeams": [
+    0,
+    0
+  ],
+  "websocketHardening": [
+    "static-file allowlist",
+    "browser map editor module delivery",
+    "browser unit selector delivery",
+    "browser audio module delivery",
+    "malformed URL handling",
+    "same-origin guard",
+    "native client compatibility",
+    "peer cap",
+    "per-peer message-rate cap",
+    "per-peer control-frame-rate cap",
+    "per-peer pending command queue cap"
+  ]
+}

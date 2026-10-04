@@ -14,10 +14,13 @@ routes, recovery, diagnostic and remaining deployed/browser acceptance.
 
 The user now requires 160 on both axes as the ordinary minimum: **Tiny**, then
 Small/Medium/Large/XL. The [tier policy](map-size-tiers.md) supplies the shared
-catalog contract; mode/entry owners still need to bind fresh defaults and
-selection filtering. The prior smaller files remain internal fixtures and legacy
-save identities. The dated roster below describes their prior ordinary entry;
-this map-only slice has not changed those server defaults.
+catalog contract. Fresh normal two-seat entry now uses Terraced Vale/Skirmish;
+one-human Authored Practice starts on Tiny and retains explicit internal Labs.
+Normal choices require both axes at least160; a current compact restored map
+remains displayed disabled. Existing160 Labs retain their authored rules and
+separate Objective Control compatibility. See [floor acceptance](qa-ordinary-map-floor-2026-10-04.md).
+The prior smaller files remain internal fixtures and legacy save identities.
+The dated roster below describes their prior ordinary entry.
 
 ## Threefold Basin Small candidate
 
@@ -87,8 +90,8 @@ These are layout schematics; the in-game renderer supplies the current regional 
 
 ## Stone defense lab
 
-Choose **Create Room → Map → Lab · STONE DEFENSE FIELD**, invite a second player,
-then both choose **Ready** and the host chooses **Launch match**. The shipped
+Choose **Practice → Authored Rules → Map → Lab · STONE DEFENSE FIELD**.
+This compact internal Lab is separate from the ordinary160-minimum catalog. The shipped
 [Stone Defense Field](../maps/stone-defense-field.json) needs no Map Studio
 import, custom JSON or debug setting. It uses Open Field's ground and food/wood
 layout with 24 starting units, 300 food and 600 wood per seat, fog and zero

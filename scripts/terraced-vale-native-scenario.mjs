@@ -139,8 +139,12 @@ try {
   const seats = [await connectClient(0), await connectClient(1)];
   const entry = seats[0].welcome.maps.find(row => row.id === map.id);
   assert.ok(entry && !entry.name.startsWith('Lab'), 'candidate must appear as a normal regional choice');
-  const changes = seats.map(client => client.wait(row => row.type === 'mapChange' && row.map.id === map.id));
-  seats[0].send({ type: 'selectMap', mapId: map.id }); await Promise.all(changes);
+  if (seats[0].current.mapId !== map.id) {
+    const changes = seats.map(client => client.wait(row => row.type === 'mapChange' && row.map.id === map.id));
+    seats[0].send({ type: 'selectMap', mapId: map.id }); await Promise.all(changes);
+  }
+  assert.equal(seats[0].welcome.matchModeId, 'skirmish');
+  report.ordinaryDefaultMode = 'skirmish@1';
   report.normalCatalogEntry = { id: entry.id, name: entry.name, summary: entry.summary };
   report.initialFog = seats.map(client => ({ team: client.team, bytes: Buffer.from(client.current.visibility.data, 'base64').length,
     enemyVisibleUnits: client.current.units.filter(row => row[1] !== client.team).length }));
@@ -208,8 +212,10 @@ try {
   await closeClients(); await stopServer();
   await startServer(path.join(temporary, 'practice.json'), true);
   const practice = await connectClient(0);
-  const changed = practice.wait(row => row.type === 'mapChange' && row.map.id === map.id);
-  practice.send({ type: 'selectMap', mapId: map.id }); await changed;
+  if (practice.current.mapId !== map.id) {
+    const changed = practice.wait(row => row.type === 'mapChange' && row.map.id === map.id);
+    practice.send({ type: 'selectMap', mapId: map.id }); await changed;
+  }
   const start = practice.current;
   assert.equal(start.practice, true); assert.equal(start.connected, 1);
   const id = own(start, 0, 'worker')[0][0];
