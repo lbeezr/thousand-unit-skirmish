@@ -151,6 +151,32 @@ function economyFixture(team) {
   return f;
 }
 
+for (const team of [0, 1]) test(`seat ${team}: Orders Patrol and Follow require living owned land selection after every refresh`, t => {
+  const f = economyFixture(team), w = f.w; t.after(() => f.dom.window.close());
+  w.eval(fn('setPersistentTargetMode', 'setAttackMoveMode'));
+  w.selectDockTab('command', true);
+  const choices = [...f.d.querySelectorAll('[data-persistent-order]')];
+  const patrol = choices.find(button => button.dataset.persistentOrder === 'patrol' && !button.closest('.contextual-command-bar'));
+  const assertDisabled = disabled => { for (const button of choices) assert.equal(button.disabled, disabled, button.textContent); };
+  assert.equal(patrol.closest('[hidden]'), null, 'the Orders drawer exposes the affected controls');
+  assertDisabled(true);
+  w.updateCommandUI(); w.updateEconomyUI(); assertDisabled(true);
+  const worker = team * 2, military = worker + 1, enemy = (1 - team) * 2;
+  f.select([worker]); assertDisabled(false);
+  patrol.click(); assert.equal(w.persistentTargetMode, 'patrol');
+  f.select(); assertDisabled(true);
+  patrol.click(); assert.equal(w.persistentTargetMode, 'patrol', 'a disabled control cannot toggle the target mode');
+  f.select([military]); assertDisabled(false);
+  w.units[military].hp = 0; w.updateSelectionUI(); assertDisabled(true);
+  f.select([enemy]); assertDisabled(true);
+  w.units[military].hp = 100; f.select([worker, military]); assertDisabled(false);
+  f.select([], { id: 80, team, type: 'barracks', complete: true, productionQueue: [] }); assertDisabled(true);
+  w.units[worker].kind = 'skiff'; f.select([worker]); assertDisabled(true);
+  w.units[worker].kind = 'worker'; f.select([worker]); assertDisabled(false);
+  w.updateEconomyUI(); w.updateCommandUI(); assertDisabled(false);
+  assert.equal(w.sentCommands.length, 0, 'target-mode selection does not issue a battlefield order');
+});
+
 for (const team of [0, 1]) test(`seat ${team}: selection immediately refreshes paid construction without a Move or snapshot`, t => {
   const f = economyFixture(team), w = f.w; t.after(() => f.dom.window.close());
   const builds = [w.ui.buildBarracks, w.ui.buildRange, w.ui.buildHouse,

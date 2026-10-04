@@ -1,4 +1,4 @@
-import { normalizeMatchMode, assertMatchModeCompatibility } from './match-modes.mjs';
+import { normalizeMatchMode, assertMatchModeCompatibility, matchModeDefinition } from './match-modes.mjs';
 
 export const LOBBY_ARMY_SIZES = Object.freeze([250, 500, 1000, 2000]);
 
@@ -21,7 +21,7 @@ export class RoomPregame {
     this.phase = saved.phase;
     this.revision = saved.revision;
     this.mapId = mapId;
-    this.armySize = armySize;
+    this.armySize = matchModeDefinition(matchMode).fixedArmySize ?? armySize;
     Object.assign(this, normalizeMatchMode(matchMode));
     this.seats = [];
     this.readyIds = new Set();
@@ -68,8 +68,12 @@ export class RoomPregame {
       ? normalizeMatchMode(command) : normalizeMatchMode(this);
     assertMatchModeCompatibility(matchMode, map);
     const mapChanged = mapId !== this.mapId;
-    const armySize = command.armySize ?? (mapChanged ? map.startingArmySize ?? 1000 : this.armySize);
-    if (Object.hasOwn(command, 'armySize') && !LOBBY_ARMY_SIZES.includes(command.armySize)) {
+    const fixedArmySize = matchModeDefinition(matchMode).fixedArmySize;
+    const armySize = fixedArmySize ?? command.armySize ?? (mapChanged ? map.startingArmySize ?? 1000 : this.armySize);
+    if (fixedArmySize && Object.hasOwn(command, 'armySize') && command.armySize !== fixedArmySize) {
+      throw new Error('Bannerfall starts with 8 Infantry per side; its opening army is fixed.');
+    }
+    if (!fixedArmySize && Object.hasOwn(command, 'armySize') && !LOBBY_ARMY_SIZES.includes(command.armySize)) {
       throw new Error('Choose 250, 500, 1000 or 2000 total starting units.');
     }
     if (Object.hasOwn(command, 'mapId') && typeof command.mapId !== 'string') {

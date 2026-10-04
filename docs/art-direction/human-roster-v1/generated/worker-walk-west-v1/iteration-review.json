@@ -1,0 +1,16 @@
+{
+  "toolOutput": "/workspace/generated_images/exec-5c068112-c30e-42f5-9595-9ddc69cdfb1c.png",
+  "iteration": 1,
+  "alphaRange": [
+    0,
+    254
+  ],
+  "status": "admitted functional first pass; native acceptance open",
+  "worldDirection": "west",
+  "screenDirection": "up-left",
+  "identity": "Approved public idle-west-0 seed: same green/cream costume, swept hair/backpack/bedroll and held axe. West axe is far-side occluded as in seed.",
+  "motion": "Eight genuine articulated leg/arm poses; first-pass drift and loop seam remain polish items.",
+  "registration": "One shared232/442 scale, roots[192,576,960,1344], row baselines[490, 977], pivot[128,244]. No per-frame centering/scaling, mirror or heading relabel.",
+  "sourceReview": "All eight whole silhouettes source-edge clear; actual seed-facing and motion inspected at128/48px.",
+  "publication": "Approved public default references and built-in image tool; no private source or paid external provider/rigging job. Raw/edit/seed/extracted iterations retained."
+}

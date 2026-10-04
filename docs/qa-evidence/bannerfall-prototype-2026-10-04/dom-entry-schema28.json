@@ -1,0 +1,98 @@
+{
+  "formatVersion": 1,
+  "status": "passed",
+  "reviewKind": "Independent native worker plus existing DOM controls over real sockets",
+  "recordPreparedAt": "2026-10-04T01:50:26Z",
+  "observationTimestamp": null,
+  "observationTimestampNote": "The successful inline probe did not emit a wall-clock timestamp. This receipt retains its observed output and pinned source without inventing one.",
+  "baseCommit": "cbf67d191b6061c31240e9bc5ca46a8e4857bba0",
+  "reviewedCommit": "cc283e5bab31c16f9c2aa9dee6880fd0969ee70a",
+  "reviewedTree": "6be396f6c2ad82cb2c68157fd1dc2208e89c43b5",
+  "checkpointSchemaVersion": 28,
+  "serverSha256": "5ef6f0c163f47380c0b98690529fb8c03c66777cec6a526472b2da7fe8b9b477",
+  "supervisorSha256": "52ffd073ca9384bd3914cc08f60fe265ef5fb5adeb74892b96c11c04268197cb",
+  "sourceHashes": {
+    "server.mjs": "5ef6f0c163f47380c0b98690529fb8c03c66777cec6a526472b2da7fe8b9b477",
+    "room-supervisor.mjs": "52ffd073ca9384bd3914cc08f60fe265ef5fb5adeb74892b96c11c04268197cb",
+    "src/main.js": "98c1f209520d49ea3112609648711729eb92dbc42ad74e3ea847cf6d68b54f88",
+    "src/match-modes.mjs": "c2adb70194fd40601281e79285c4c818505704db62e0992f8ff4449eedb51dd5",
+    "src/objective-summary.mjs": "f9af2a8a84df621be8e3b34fcaaff2fc00eaed17db622659d2e5b759c7f1d472",
+    "src/room-lobby-ui.mjs": "daa783abb72de37c388b7c04f24a0ebe4226d05db41fb6e5ff989303b6519792",
+    "src/match-mode-controls.mjs": "5226f0215ba48507bcf429c6422ca1853e53ab3e6d9139c128626b6cd8efa6bf",
+    "src/practice-entry-controls.mjs": "42f107a000cac9128c609a269e0454688f563a39af04f9ced58ae87953ca9a1a",
+    "src/practice-entry-catalog.mjs": "33d22236db733d8235a104dccf2d45318a65393cfdb826e92ee74a144d3ad4d9",
+    "src/game-entry.mjs": "ba4d2006dd39434a75a46d990f7569d5d1444fe79b4ba5a0d96818c7275ee241",
+    "src/room-launch-options.mjs": "47049c9c0a213d9453ad97f22bbbfdcd5fc7599257ec508b29988529c299e909",
+    "maps/bannerfall-arena.json": "8ae471dd62deb740ddaeecf9a399ac129090bdcb075b707df7ce473ac3d3d163",
+    "scripts/fortified-crossing-fixture.mjs": "dbe9d2ee29da789d7417c7526811cc7c54ad23b9541cac2b23ca4daa513712f2"
+  },
+  "sourceNote": "Runtime hashes were captured during review and subsequently verified against reviewedCommit. Concurrent uncommitted documentation/test edits were outside the runtime assertions.",
+  "environment": {
+    "node": "v24.19.0",
+    "dom": "JSDOM",
+    "transport": "Real disposable supervisor, authoritative workers and WebSocket clients",
+    "renderedBrowser": false
+  },
+  "sequence": [
+    {
+      "action": "POST ordinary Create Room options {mode:'pvp',pregame:true}",
+      "assertion": "201; two separate human seats connect to the fresh room"
+    },
+    {
+      "action": "Select bannerfall-arena using the existing lobby map DOM control",
+      "assertion": "Authoritative lobby acknowledges bannerfall-arena with initial authored@1 fallback"
+    },
+    {
+      "action": "Select bannerfall@1 using the existing lobby victory-mode DOM control",
+      "assertion": "Authoritative lobby acknowledges Bannerfall and armySize16"
+    },
+    {
+      "action": "Click both existing Ready DOM buttons and await each authoritative readiness acknowledgement",
+      "assertion": "Host receives canLaunch:true; Launch DOM button is enabled"
+    },
+    {
+      "action": "Click existing host Launch DOM button",
+      "assertion": "Authoritative lobby becomes running and retains bannerfall@1"
+    },
+    {
+      "action": "Boot the existing main-menu DOM against actual supervisor status",
+      "assertion": "Visible Practice options are exactly authored@1 and skirmish@1; Bannerfall is absent"
+    }
+  ],
+  "fixedOpening": {
+    "descriptorFixedArmySize": 16,
+    "authoritativeLobbyArmySize": 16,
+    "observedArmyControlDisabled": false,
+    "observedArmyOptionValues": [16, 250, 500, 1000, 2000],
+    "observedArmyOptionsAllEnabled": true,
+    "note": "Existing UI does not yet consume fixedArmySize. Server rejection/readiness preservation is covered by focused runtime tests, not by this successful DOM Ready/Launch sequence."
+  },
+  "observedText": {
+    "arenaChoice": "Tiny · 160 × 160 · BANNERFALL ARENA · Authored Rules",
+    "modeBrief": "This map’s authored victory rules apply. Review the win condition before readying.",
+    "detailedRule": "Bannerfall · Destroy the enemy original Town Center to win; losing both on the same combat tick is a draw. Free waves of up to two troops arrive every 15 seconds up to 12 supply per side. Six enemy troop kills unlock Rider reinforcements. Blocked or capped waves are skipped. Other buildings cannot replace the stronghold."
+  },
+  "successfulStdout": [
+    "PASS: ordinary Create Room -> Bannerfall Arena/Authored -> Bannerfall16 -> both DOM Ready -> DOM Launch, through real server.",
+    "CONFIRMED: visible Practice choices are [\"authored@1\",\"skirmish@1\"]"
+  ],
+  "uiLimits": [
+    "Human entry requires two explicit choices: the arena initially activates Authored Rules, then the player chooses Bannerfall.",
+    "Fixed16 is enforced by runtime, but the current size selector still offers unsupported larger openings.",
+    "The generic mode brief describes authored rules; Bannerfall's detailed rule is correct.",
+    "Built-in Practice advertises only Tiny-compatible choices. Explicit Bannerfall Practice API is supported, but its visible preset remains entry-owner work.",
+    "An optional server-advertised practicePresets interface is agreed in PR200 comment5975530219; this receipt does not establish that consumer."
+  ],
+  "acceptanceLimits": [
+    "DOM/protocol entry proof only; no WebGL/browser pixels, identified deployment or served play acceptance.",
+    "No pacing, balance, combat, reinforcement-wave or capacity claim comes from this entry probe.",
+    "This is historical schema28 evidence; schema29 integration needs its own acceptance and must not inherit this receipt's source identity."
+  ],
+  "reproduction": {
+    "scriptPath": "/tmp/tus-banner-dom-entry-review.mjs",
+    "command": "node /tmp/tus-banner-dom-entry-review.mjs /path/to/reviewed-checkout",
+    "scriptStatus": "Saved reconstruction of the successful inline probe; source-hash guarded and syntax-checked, not rerun after saving.",
+    "requirements": "Checkout matching the pinned runtime files with existing dependencies installed. Newer schema29 source intentionally fails the hash guard.",
+    "historicalAttemptNotes": "Two preliminary probes timed out due to review-harness ordering: stale initial lobby state, then clicking Launch before the host received the guest readiness frame. The successful probe uses current lobby state and waits for host canLaunch."
+  }
+}

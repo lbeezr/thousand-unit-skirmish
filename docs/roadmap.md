@@ -13,9 +13,10 @@ Art proceeds separately against stable presentation interfaces.
 The [victory audit](victory-modes-audit-2026-10-03.md) proposes separate economy
 Skirmish and current fast Objective Control. Agree the mode/restore interface and
 AI base-objective support before changing ordinary defaults. Quick original
-reinforcement/evolution modes and a regional territorial slice are later testing
-grounds developed alongside the longer RTS; research will choose their first
-bounded playable contracts.
+reinforcement/evolution modes and a regional territorial slice are testing
+grounds developed alongside the longer RTS. [Bannerfall](bannerfall-mode.md)
+is the first bounded human/Practice reinforcement prototype; a larger regional
+territorial contract remains later work.
 
 The [playable-modes backlog](playable-modes-backlog.md) owns the ranked small
 deliveries; [the versioned mode contract](match-mode-contract.md) is the shared

@@ -37,3 +37,16 @@ y=3072 and a shared fixed root/scale. All 100 previous frames, every other clip,
 mask, dimensions and world scale are preserved. Six walk headings now play;
 W/NW hold idle. Native/deployment acceptance and gait/registration polish stay
 open, with 52 remaining land-action/heading cells in the linked checkpoint.
+
+Versions 0.18/0.19 add eight approved-seed keys each for **West and North-West**,
+completing all eight default walk headings (and moving Carry/Return). Actual West
+back/up-left and NW profile/left views match their public idle seeds; no copied
+facing or mirror. [West sources](../../../docs/art-direction/human-roster-v1/generated/worker-walk-west-v1/README.md)
+and [NW sources](../../../docs/art-direction/human-roster-v1/generated/worker-walk-north-west-v1/README.md)
+retain every raw/seed/prompt/extracted iteration. Rebuild with
+`python3 scripts/admit-worker-west-walk.py` then
+`python3 scripts/admit-worker-north-west-walk.py`.
+Sixteen keys occupy spare rows3328/3584; all108 prior records/pixels, mask,
+other clips, dimensions and world scale are unchanged. This completes walk
+source/default-playback coverage; identified delivery/native appearance and
+50 work/combat/Stone cells remain open.
