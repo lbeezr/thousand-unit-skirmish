@@ -60,6 +60,7 @@ import { BANNERFALL_RULES, createBannerfallState, creditBannerfallKill,
   bannerfallWaveKind, stepBannerfallWaves, validateBannerfallState, bannerfallWinner } from './src/bannerfall-rules.mjs';
 import { headingToTarget } from './src/unit-heading.mjs';
 import { workerFishingPresentation } from './src/worker-fishing-presentation.mjs';
+import { GATHER_WORK_AREA_RADIUS, woodWorkArea, validWoodWorkArea, nearbyWoodSources } from './src/gather-work-area.mjs';
 import { WORKER_PERFORMING_ACTION_VERSION, createWorkerPerformingActions } from './src/worker-performing-action.mjs';
 import { preparePaidWallLine } from './src/wall-construction-draft.mjs';
 import { activeWallBuildOrder } from './src/wall-build-order.mjs';
@@ -1738,7 +1739,7 @@ function makeUnit(id, team, x, z, kind, teamSlot) {
     attackMoveAnchorX: 0, attackMoveAnchorZ: 0,
     attackMoveScanTick: tickNumber + (id % ATTACK_MOVE_SCAN_INTERVAL_TICKS),
     attackMoveBucketScanOffset: id % attackMoveBucketOffsets.length,
-    kind, cargo: 0, cargoType: null, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '', dropoffBuildingId: null, dropoffNavigationRevision: -1,
+    kind, cargo: 0, cargoType: null, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '', gatherWorkArea: null, dropoffBuildingId: null, dropoffNavigationRevision: -1,
     buildingTargetId: null, repairing: false, wallBuildOrder: null, moveGoalCell: -1, queuedWaypoints: [],
   }, UNIT_DEFINITIONS[kind]);
 }
@@ -2976,6 +2977,9 @@ function validateMatchCheckpoint(snapshot) {
       && (unit.dropoffBuildingId === undefined || unit.dropoffBuildingId === null || integerIn(unit.dropoffBuildingId, 1, Number.MAX_SAFE_INTEGER))
       && (unit.dropoffNavigationRevision === undefined || integerIn(unit.dropoffNavigationRevision, -1, Number.MAX_SAFE_INTEGER))
       && ['', 'to-node', 'gathering', 'to-base'].includes(unit.gatherPhase)
+      && validWoodWorkArea(unit.gatherWorkArea, definition)
+      && (unit.gatherWorkArea == null || (unitHasCapability(unit, 'gather') && unit.movementDomain !== 'water'
+        && ((unit.gatherForestCell ?? -1) >= 0 || state.resourceNodes.some(node => node.id === unit.gatherNodeId && node.type === 'wood'))))
       && (unit.repairing === undefined || typeof unit.repairing === 'boolean')
       && (unit.buildingTargetId === null || integerIn(unit.buildingTargetId, 1, Number.MAX_SAFE_INTEGER))
       && integerIn(unit.moveGoalCell, -1, cellCount - 1), `invalid unit work state ${index}`);
@@ -3372,6 +3376,7 @@ function restoreMatchCheckpoint(snapshot) {
       holdingPosition: record.holdingPosition ?? false,
       persistentOrder: record.persistentOrder ? { ...record.persistentOrder } : null,
       gatherForestCell: record.gatherForestCell ?? -1,
+      gatherWorkArea: record.gatherWorkArea ? { ...record.gatherWorkArea } : null,
       path: [...record.path],
       attackMoveResumePath: record.attackMoveResumePath === null ? null : [...record.attackMoveResumePath],
       queuedWaypoints: record.queuedWaypoints.map((waypoint) => ({ ...waypoint })),
@@ -4287,10 +4292,11 @@ function buildMoveFallbackPools(unitComponents, centerColumn, centerRow) {
 }
 
 function cancelGatherOrder(unit) {
-  const changed = unit.gatherNodeId !== null || unit.gatherForestCell >= 0 || unit.gatherPhase !== '';
+  const changed = unit.gatherNodeId !== null || unit.gatherForestCell >= 0 || unit.gatherPhase !== '' || unit.gatherWorkArea != null;
   unit.gatherNodeId = null;
   unit.gatherForestCell = -1;
   unit.gatherPhase = '';
+  unit.gatherWorkArea = null;
   if (changed) dirty = true;
 }
 
@@ -4441,6 +4447,7 @@ function assignForestGather(player, command) {
     unit.lastAttackCell = -1;
     unit.gatherNodeId = null;
     unit.gatherForestCell = cell;
+    unit.gatherWorkArea = woodWorkArea(cellToWorld(cell));
     routeForestWorker(unit, unit.cargo > 0 && unit.cargoType !== 'wood'
       || unit.cargo >= WORKER_CARRY_CAPACITY ? 'to-base' : 'to-node', cell);
   }
@@ -4489,6 +4496,7 @@ function assignReturnCargo(player, command) {
     unit.attackTargetId = -1; unit.attackBuildingTargetId = -1;
     unit.repathTimer = 0; unit.lastAttackCell = -1;
     unit.gatherNodeId = null; unit.gatherForestCell = -1;
+    unit.gatherWorkArea = null;
     unit.gatherPhase = 'to-base';
     for (const key of ['dropoffBuildingId', 'dropoffNavigationRevision', 'moveGoalCell', 'path', 'pathIndex']) {
       unit[key] = route[key];
@@ -4589,6 +4597,7 @@ function assignGather(player, command) {
     unit.lastAttackCell = -1;
     unit.gatherNodeId = nodeId;
     unit.gatherForestCell = -1;
+    unit.gatherWorkArea = node.type === 'wood' ? woodWorkArea(node) : null;
     routeWorker(unit, unit.cargo > 0 && unit.cargoType !== node.type ? 'to-base'
       : unit.cargo >= WORKER_CARRY_CAPACITY ? 'to-base' : 'to-node', node);
   }
@@ -4601,6 +4610,7 @@ function stopGathering(unit) {
   unit.gatherNodeId = null;
   unit.gatherForestCell = -1;
   unit.gatherPhase = '';
+  unit.gatherWorkArea = null;
   unit.path = [];
   unit.pathIndex = 0;
   unit.movePlanningPending = false;
@@ -4609,12 +4619,56 @@ function stopGathering(unit) {
     ? nearestOpenCell(worldToCell(unit.x, unit.z)) : -1;
 }
 
+function ensureWoodWorkArea(unit) {
+  if (unit.gatherWorkArea || !unit.gatherPhase) return;
+  const source = unit.gatherForestCell >= 0 ? cellToWorld(unit.gatherForestCell)
+    : resourceNodeStates.get(unit.gatherNodeId);
+  if (source && (unit.gatherForestCell >= 0 || source.type === 'wood')) unit.gatherWorkArea = woodWorkArea(source);
+}
+
+function continueWoodGathering(unit) {
+  const area = unit.gatherWorkArea;
+  if (!area || unit.queuedWaypoints.length > 0 || unit.cargo >= WORKER_CARRY_CAPACITY
+    || (unit.cargo > 0 && unit.cargoType !== 'wood')) return false;
+  const start = nearestOpenCell(worldToCell(unit.x, unit.z));
+  const component = walkableComponents[start];
+  if (component < 0) return false;
+  const sources = [...resourceNodeStates.values()].filter(node => node.type === 'wood');
+  const anchorCell = worldToCell(area.x, area.z);
+  const column = anchorCell % MAP_WIDTH, row = Math.floor(anchorCell / MAP_WIDTH);
+  for (let z = Math.max(0, row - GATHER_WORK_AREA_RADIUS); z <= Math.min(MAP_HEIGHT - 1, row + GATHER_WORK_AREA_RADIUS); z++) {
+    for (let x = Math.max(0, column - GATHER_WORK_AREA_RADIUS); x <= Math.min(MAP_WIDTH - 1, column + GATHER_WORK_AREA_RADIUS); x++) {
+      const cell = cellIndex(x, z);
+      if (forestCellMask[cell] && forestWoodRemaining[cell] > 0) sources.push({ id: `forest:${cell}`, type: 'wood',
+        ...cellToWorld(cell), stock: forestWoodRemaining[cell], forestCell: cell });
+    }
+  }
+  for (const source of nearbyWoodSources(area, unit, sources)) {
+    const cell = worldToCell(source.x, source.z);
+    if (!cellVisibleToTeam(unit.team, cell)) continue;
+    const goals = (source.forestCell === undefined ? [cell] : forestOpenAccessCells(source.forestCell))
+      .filter(goal => isWalkable(goal) && walkableComponents[goal] === component);
+    if (!goals.length) continue;
+    const field = getAttackFlowFieldForGoals(goals, `wood-job:${source.id}:${component}`);
+    const path = field ? pathFromAttackFlow(start, field) : [];
+    if (!field || (!path.length && !field.goals.has(start))) continue;
+    unit.gatherForestCell = source.forestCell ?? -1;
+    unit.gatherNodeId = source.forestCell === undefined ? source.id : null;
+    if (unit.gatherForestCell >= 0) routeForestWorker(unit, 'to-node', unit.gatherForestCell);
+    else routeWorker(unit, 'to-node', source);
+    dirty = true;
+    return true;
+  }
+  return false;
+}
+
 function updateForestWorkerEconomy(unit) {
   const cell = unit.gatherForestCell;
   const point = cellToWorld(cell);
   const targetDistance = Math.hypot(point.x - unit.x, point.z - unit.z);
 
   const stock = forestWoodRemaining[cell];
+  if (stock <= 0 && ['to-node', 'gathering'].includes(unit.gatherPhase) && continueWoodGathering(unit)) return;
   if (unit.gatherPhase === 'to-node') {
     if ((unit.cargo > 0 && unit.cargoType !== 'wood')
       || unit.cargo >= WORKER_CARRY_CAPACITY || stock <= 0) {
@@ -4649,7 +4703,7 @@ function updateForestWorkerEconomy(unit) {
       if (forestWoodRemaining[cell] === 0) pendingForestClears.add(cell);
       dirty = true;
       if (unit.cargo >= WORKER_CARRY_CAPACITY || forestWoodRemaining[cell] === 0) {
-        routeForestWorker(unit, 'to-base', cell);
+        if (!(forestWoodRemaining[cell] === 0 && continueWoodGathering(unit))) routeForestWorker(unit, 'to-base', cell);
       }
     }
   }
@@ -4660,7 +4714,7 @@ function updateForestWorkerEconomy(unit) {
       dirty = true;
     }
     if (forestWoodRemaining[cell] > 0) routeForestWorker(unit, 'to-node', cell);
-    else stopGathering(unit);
+    else if (!continueWoodGathering(unit)) stopGathering(unit);
   }
 }
 
@@ -4687,6 +4741,7 @@ function flushPendingForestClears() {
 function updateWorkerEconomy() {
   for (const unit of units) {
     if (unit.hp <= 0 || unit.movementDomain === 'water' || !unitHasCapability(unit, 'gather')) continue;
+    ensureWoodWorkArea(unit);
     if (unit.gatherForestCell >= 0) {
       if (!forestCellMask[unit.gatherForestCell]) {
         stopGathering(unit);
@@ -4714,6 +4769,7 @@ function updateWorkerEconomy() {
     const nodeDistance = node.sourceBuildingId !== undefined
       ? distanceToBuildingEdge(unit, buildingsById.get(node.sourceBuildingId))
       : Math.hypot(node.x - unit.x, node.z - unit.z);
+    if (node.stock <= 0 && ['to-node', 'gathering'].includes(unit.gatherPhase) && continueWoodGathering(unit)) continue;
 
     if (unit.gatherPhase === 'to-node') {
       if ((unit.cargo > 0 && unit.cargoType !== node.type)
@@ -4750,7 +4806,9 @@ function updateWorkerEconomy() {
         dirty = true;
         if (emptied) broadcastGameplayNotice(unit.team, node.x, node.z,
           `RESOURCE NODE EMPTY · ${node.id.toUpperCase()}`);
-        if (unit.cargo >= WORKER_CARRY_CAPACITY || emptied) routeWorker(unit, 'to-base', node);
+        if (unit.cargo >= WORKER_CARRY_CAPACITY || emptied) {
+          if (!(emptied && continueWoodGathering(unit))) routeWorker(unit, 'to-base', node);
+        }
       }
     }
 
@@ -4761,7 +4819,7 @@ function updateWorkerEconomy() {
           dirty = true;
         }
         if (node.stock > 0) routeWorker(unit, 'to-node', node);
-        else stopGathering(unit);
+        else if (!continueWoodGathering(unit)) stopGathering(unit);
       }
     }
   }
