@@ -1,5 +1,5 @@
 import { matchModeDefinition, assertMatchModeCompatibility } from './match-modes.mjs';
-import { mapVictoryRule } from './objective-summary.mjs';
+import { mapVictoryRule } from './client/hud/objective-summary.mjs';
 import { BANNERFALL_RULES } from './bannerfall-rules.mjs';
 
 const key = value => `${value.id}@${value.version}`;
