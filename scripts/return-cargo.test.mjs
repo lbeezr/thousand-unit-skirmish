@@ -80,7 +80,7 @@ function authority(team, overrides = {}) {
     creditResourceBalance, flushPendingForestClears() {},
   });
   const names = ['commandUnitAt', 'commandUnits', 'clearAttackMoveOrder',
-    'workerDropoffCandidates', 'workerFlowPath', 'routeWorkerToDropoff', 'workerAtDropoff',
+    'workerDropoffCandidates', 'workerFlowPath', 'applyWorkerFlowRoute', 'routeWorkerToDropoff', 'workerAtDropoff',
     'assignReturnCargo', 'stopGathering', 'ensureGatherWorkIntent', 'updateWorkerEconomy', 'workerTaskStatus'];
   vm.runInContext(economyServerFunctions + names.map(name => fn(server, name)).join('\n'), context);
   const order = extra => context.assignReturnCargo({ team }, {
