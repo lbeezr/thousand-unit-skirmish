@@ -9,7 +9,7 @@ import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 // continuation defect is fixed. Default mode requires natural continuation.
 const observe = process.argv.includes('--observe');
 const caseArgument = process.argv.find(value => value.startsWith('--case='))?.slice(7);
-const cases = ['complete', 'cancel-gate', 'cancel-pending-wall', 'stop', 'move', 'gather', 'manual-replacement'];
+const cases = ['complete', 'complete-warm', 'unassigned-site', 'cancel-gate', 'cancel-pending-wall', 'stop', 'move', 'gather', 'manual-replacement'];
 if (caseArgument) assert.ok(cases.includes(caseArgument), 'Unknown continuation case');
 const selectedCases = caseArgument ? [caseArgument] : cases;
 const fixture = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 60000,
@@ -65,17 +65,32 @@ try {
       await command(team, withWorker(team, { type: 'buildWall',
         points: [{ column: team ? 44 : 20, row: 40 }, { column: team ? 46 : 22, row: 40 }] }), /PALISADE LINE PLACED/);
     }
-    const working = await ledger(s => s.state.buildings.length === 6 && [0, 1].every(team =>
+    let working = await ledger(s => s.state.buildings.length === 6 && [0, 1].every(team =>
       s.state.buildings.some(b => b.team === team && b.progress > 0 && !b.complete)));
+    const wallIds = [0, 1].map(team => working.state.buildings.filter(b => b.team === team).map(b => b.id));
+    const excludedIds = [];
+    if (mode === 'unassigned-site') {
+      // Separate selected Workers pay for neighboring sites, then explicitly
+      // stop. The original line builders must never adopt these IDs.
+      for (const team of [0, 1]) {
+        const worker = teamWorkers[team][2];
+        await command(team, { type: 'buildWall', ids: [worker.id], unitGenerations: [worker.generation],
+          points: [{ column: team ? 45 : 21, row: 41 }] }, /PALISADE LINE PLACED/);
+        await command(team, { type: 'stop', ids: [worker.id], unitGenerations: [worker.generation] }, /STOP ORDER/);
+      }
+      working = await ledger(s => s.state.buildings.length === 8
+        && teamWorkers.every(rows => s.state.units[rows[2].id].buildingTargetId === null));
+      excludedIds.push(...working.state.buildings.filter(b => !wallIds.flat().includes(b.id)).map(b => b.id));
+      assert.equal(excludedIds.length, 2);
+    }
     unselectedJobs = working.state.units.filter(u => u.kind === 'worker' && !builders.some(b => b.id === u.id))
       .map(u => ({ id: u.id, generation: u.generation, gatherNodeId: u.gatherNodeId, gatherForestCell: u.gatherForestCell }));
     assert.ok(working.state.units.filter(u => unselectedJobs.some(job => job.id === u.id)).every(u => u.buildingTargetId === null));
-    const wallIds = [0, 1].map(team => working.state.buildings.filter(b => b.team === team).map(b => b.id));
     for (const team of [0, 1]) await command(team, withWorker(team, { type: 'build', buildingType: 'palisade-gate',
       x: (team ? 47 : 23) - 32 + .5, z: 8.5 }), /PALISADE GATE PLACED/);
-    const assigned = await ledger(s => s.state.buildings.length === 8 && builders.every(u =>
+    const assigned = await ledger(s => s.state.buildings.length === 8 + excludedIds.length && builders.every(u =>
       s.state.buildings.find(b => b.id === s.state.units[u.id].buildingTargetId)?.type === 'palisade-gate'));
-    assert.deepEqual(assigned.state.teamWood, [240, 240]);
+    assert.deepEqual(assigned.state.teamWood, excludedIds.length ? [225, 225] : [240, 240]);
     const gates = [0, 1].map(team => assigned.state.buildings.find(b => b.team === team && b.type === 'palisade-gate'));
     const cancelled = [];
     if (mode.startsWith('cancel-')) {
@@ -108,7 +123,8 @@ try {
       : s.state.units[u.id].buildingTargetId === null));
     const paidWood = [...beforeRestart.state.teamWood];
     const rememberedIds = wallIds.flat().filter(id => !cancelled.includes(id));
-    const remainingPalisadeIds = assigned.state.buildings.map(b => b.id).filter(id => !cancelled.includes(id));
+    const remainingPalisadeIds = assigned.state.buildings.map(b => b.id)
+      .filter(id => !cancelled.includes(id) && !excludedIds.includes(id));
     const houseIds = mode === 'manual-replacement' ? builders.map(u => beforeRestart.state.units[u.id].buildingTargetId) : [];
     if (houseIds.length) {
       assert.equal(new Set(houseIds).size, 2);
@@ -117,8 +133,11 @@ try {
     const expectedSites = [...assigned.state.buildings.filter(b => !cancelled.includes(b.id)),
       ...beforeRestart.state.buildings.filter(b => houseIds.includes(b.id))].map(({ id, type, team }) => ({ id, type, team }));
     assertSites(beforeRestart, expectedSites);
-    await fixture.stop(); await reconnect();
-    assert.ok(clients.every(c => c.welcome.recoveredFromCheckpoint && c.welcome.player.resumed));
+    const coldRecovered = mode !== 'complete-warm';
+    if (coldRecovered) {
+      await fixture.stop(); await reconnect();
+      assert.ok(clients.every(c => c.welcome.recoveredFromCheckpoint && c.welcome.player.resumed));
+    }
     const recovered = await ledger();
     assert.equal(recovered.matchId, beforeRestart.matchId);
     assert.deepEqual(recovered.state.teamWood, paidWood);
@@ -144,7 +163,9 @@ try {
     }
     assertSites(settled, expectedSites);
     assert.deepEqual(settled.state.teamWood, paidWood, 'continuation/recovery does not pay again');
-    assert.equal(settled.state.nextBuildingId, mode === 'manual-replacement' ? 11 : 9);
+    assert.equal(settled.state.nextBuildingId, mode === 'manual-replacement' ? 11 : 9 + excludedIds.length);
+    assert.deepEqual(progress(settled, excludedIds), progress(beforeRestart, excludedIds),
+      'unassigned paid neighbors never join remembered construction');
     assert.ok(cancelled.every(id => !settled.state.buildings.some(b => b.id === id)), 'cancelled sites never return');
     assert.ok(gatherers.every(u => settled.state.units[u.id].buildingTargetId === null
       && settled.state.units[u.id].gatherNodeId === (u.team ? 'ember-food' : 'azure-food')),
@@ -155,7 +176,7 @@ try {
       && settled.state.units[u.id].queuedWaypoints.length === 0 && !settled.state.units[u.id].movePlanningPending));
     const continued = !replacement && [0, 1].every(team => rememberedIds.filter(id => wallIds[team].includes(id)).some(id =>
       settled.state.buildings.find(b => b.id === id)?.progress > beforeRestart.state.buildings.find(b => b.id === id)?.progress));
-    const event = { mode, observe, continued, cancelled, wood: paidWood,
+    const event = { mode, observe, continued, cancelled, excludedIds, coldRecovered, wood: paidWood,
       expectedSites, resumedByOriginalBuilders: resuming ? builders.map(u => ({ id: u.id, target: resuming.state.units[u.id].buildingTargetId })) : null,
       unselectedJobCount: unselectedJobs.length,
       progressBefore: progress(beforeRestart, rememberedIds), progressAfter: progress(settled, rememberedIds),

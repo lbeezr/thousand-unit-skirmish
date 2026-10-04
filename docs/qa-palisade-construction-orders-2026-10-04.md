@@ -51,7 +51,7 @@ unselected Workers retain no construction assignment. Banks stay at 270 wood
 and `nextBuildingId` stays 5 throughout resumption/recovery. Focused surrounding
 selection, placement, contextual HUD and gate checks also pass.
 
-## Construction continuation preparation on merged source
+## Retained construction continuation baseline
 
 After the independently reviewed targeted-resume correction merged in
 `6d7cb40cc7c6bb35721eea956304537697cda103`, seven additional real-command cases
@@ -68,7 +68,7 @@ The current prepared scenario has subsequently strengthened acceptance; each
 new report computes its own scenario/server hashes and identifies an alternate
 server entrypoint separately from the checkout revision.
 
-| Case | Current-source observation after recovery |
+| Case | Observation on retained source 6d7cb40c after recovery |
 | --- | --- |
 | Gate completes | Both builders idle; all remembered wall progress stays unchanged. Wood remains 240 per seat. |
 | Gate is cancelled | Both builders idle; all remembered wall progress stays unchanged. Partial gates refund 14.7 wood once per seat in this capture. |
@@ -106,6 +106,25 @@ pass all four both-seat cases with the same server bytes: expected site IDs and
 all six unselected Worker jobs survive every inspected checkpoint/recovery;
 Stop has no route/queue, Move retains its goal, Gather retains its accepted node,
 and both actually assigned distant Houses complete without resuming old work.
+
+The prepared scenario now has nine cases. Two [fresh-main observations](qa-evidence/palisade-continuation-2026-10-04/warm-and-exclusion.json)
+use server bytes from main `53a47ee3`, with gameplay checkout
+`f6e1b6826070a4089e6437c4a19d62b3aa04240a` and server SHA256
+`5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6`.
+`complete-warm` performs no restart: the Gate completes but both builders idle,
+with remembered progress unchanged and 240 wood per seat. `unassigned-site`
+has separate selected Workers pay for neighboring walls inside the same area,
+then explicitly Stop. After the original builders finish their Gates and cold
+recover, all six unselected Worker jobs and both excluded site IDs remain;
+the excluded walls stay unchanged, banks stay at 225 and no new IDs appear.
+Original builders still idle with their remembered progress unchanged. These
+are reproduced failures. Default mode will additionally require those original
+builders to complete their remembered sites while excluded neighbors stay
+untouched. The executed driver was uncommitted at capture; its recorded SHA256
+`a1d2dd7dfd170c92b29455dafc102e3ee335f7bb33d0ecc08be405d8c387cf11`
+matches the committed `scripts/palisade-continuation-scenario.mjs`. The evidence
+marks that provenance explicitly rather than assigning the amended driver to
+the older gameplay checkout.
 
 ## Continuation boundary and unfinished acceptance
 
