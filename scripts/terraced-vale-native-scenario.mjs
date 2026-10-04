@@ -173,14 +173,14 @@ try {
   report.finalEconomy = await Promise.all(journeys);
   report.combat = await Promise.all(seats.map(async client => {
     const before = client.current;
-    const target = before.buildings.find(row => row.home && row.team !== client.team);
+    const target = before.homeTownCenters.find(row => row.team !== client.team);
     const attacker = own(before, client.team, 'infantry')[0];
     assert.ok(target && attacker, 'the cross-base Infantry must disclose the opposing home TC');
     await order(client, { type: 'attackBuilding', buildingId: target.id, ids: [attacker[0]] }, 'ATTACK BUILDING ORDER');
     const damaged = await client.state(state => state.tick > before.tick
-      && state.buildings.some(row => row.id === target.id && row.hp < target.hp), 30000);
+      && state.homeTownCenters.some(row => row.id === target.id && row.hp < target.hp), 30000);
     const result = { team: client.team, targetId: target.id, beforeHP: target.hp,
-      afterHP: damaged.buildings.find(row => row.id === target.id).hp,
+      afterHP: damaged.homeTownCenters.find(row => row.id === target.id).hp,
       elapsedGameSeconds: (damaged.tick - before.tick) / 30 };
     await order(client, { type: 'stop', ids: [attacker[0]] }, 'STOP ORDER');
     emit('explicit-building-combat', result); return result;
