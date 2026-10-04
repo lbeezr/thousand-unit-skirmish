@@ -24,6 +24,7 @@ function snapshot(team, { winner = -1, elapsed = 0, trained = false, generation 
 function fixture(team) {
   const connections = [];
   const fishUpdates = [];
+  const modeViews = [];
   const elements = new Map();
   const counts = [0, 0];
   const element = (id) => {
@@ -47,6 +48,7 @@ function fixture(team) {
     pageLeaving:false, localTeam:team, cameraSeatTeam:team, isHost:team === 0, socket:null,
     HAS_ROOM_PARAMETER:false, ROOM_SESSION_STORAGE_KEY:'session', waitingForResume:false,
     mapDefinition:map, currentArmySize:24, matchWinner:-1, matchWinnerReason:null,
+    activeMatchMode: {}, knownMaps: [], matchModeView: { update(value) { modeViews.push(value); } },
     latestMatchElapsedSeconds:0, matchResult:element('result'), TEAM_NAMES:['Azure','Ember'],
     buildPlacementActive:false, buildPlacementPending:false, attackMoveMode:false, tapOrderArmed:false,
     units:[],teamUnits:[[],[]],selected:new Set(),controlGroups:[new Set()], MAX_UNITS:2000,MAX_PER_TEAM:1000,WORKERS_PER_TEAM:4,
@@ -77,8 +79,24 @@ function fixture(team) {
   const connect = () => { vm.runInContext('connectSocket()',context); return connections.at(-1); };
   const welcome = (connection,state,definition = map) => connection.message({type:'welcome',map:definition,maps:[],state,
     player:{team,isHost:team === 0,resumed:true}});
-  return {context,connections,connect,welcome,element,counts,fishUpdates};
+  return {context,connections,connect,welcome,element,counts,fishUpdates,modeViews};
 }
+
+test('actual state/reconnect hooks preserve authoritative read-only mode identity and ignore rejected snapshots', () => {
+  const f = fixture(0), identity = { matchModeId: 'skirmish', matchModeVersion: 1 };
+  f.welcome(f.connections[0], { ...snapshot(0), ...identity });
+  assert.equal(f.modeViews.at(-1).identity.matchModeId, 'skirmish');
+  assert.equal(f.modeViews.at(-1).editable, false);
+  f.welcome(f.connect(), { ...snapshot(0), ...identity });
+  assert.equal(f.modeViews.at(-1).identity.matchModeVersion, 1);
+  const count = f.modeViews.length;
+  f.connections.at(-1).message({ ...snapshot(0), matchModeId: 'future', matchModeVersion: 99, rulesetRevision: 'future-rules' });
+  f.connections.at(-1).message({ ...snapshot(0), mapId: 'different-map' });
+  assert.equal(f.modeViews.length, count, 'rejected economy/map states cannot relabel the match');
+  f.welcome(f.connect(), snapshot(0));
+  assert.deepEqual(Object.keys(f.modeViews.at(-1).identity), [], 'legacy reconnect does not inherit a previous Skirmish selection');
+  assert.equal(f.context.units[0].kind, 'worker');
+});
 
 function resourceFixture(team) {
   const f = fixture(team);
