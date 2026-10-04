@@ -75,12 +75,14 @@ callback threshold is checked **between searches** and can be overshot by one
 search. Default planning turns per tick stay 0. The 16-bit Manhattan heuristic
 fits 320 (maximum 63,800); that does not bound search latency.
 
-Checkpoint validation permits up to 102,400 entries separately in each actor's
+If dimension admission alone were widened, the unchanged checkpoint path leaf
+would permit up to 102,400 entries separately in each actor's
 active and attack-move resume path, without adjacency/uniqueness validation or
 an aggregate route budget. One accepted repeated-final-cell array serializes to
 716,801 bytes. Across 2,000 actors and both arrays, the validation envelope is
 **2,867,204,000bytes (about 2.67 GiB)** before unit/map/other state. This is a
-validation upper bound, not an observed legitimate save; the audit allocates
+path-leaf upper bound, not an admitted320 checkpoint or observed legitimate save;
+the audit allocates
 only one witness array. The earlier grid-cost projection uses the smaller
 simple-route `cells−1` bound and excludes resume paths.
 
