@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { normalRoster } from './audit-asset-adoption.mjs';
 import { decodeRgba8, assertFrameUnclipped } from './sprite-pixel-bounds.mjs';
-import { createUnitSpriteRuntime, spriteActionClip, spriteClipDuration } from '../src/unit-sprite-runtime.mjs';
+import { createUnitSpriteRuntime, spriteActionClip, spriteClipDuration, spriteGroundDepthBias } from '../src/unit-sprite-runtime.mjs';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url));
 const directions = ['north','north-east','east','south-east','south','south-west','west','north-west'];
@@ -28,6 +28,25 @@ for (const role of roles) {
     for (const frame of asset.frames) {
       assertFrameUnclipped(image,frame,4);
       assert.deepEqual(frame.groundPivotPx,{x:160,y:308});
+    }
+    const camera=new THREE.PerspectiveCamera();
+    camera.position.set(.78,1.12,.78);camera.lookAt(0,0,0);camera.updateMatrixWorld(true);
+    const right=new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);
+    const up=new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion);
+    const toward=new THREE.Vector3(0,0,1).applyQuaternion(camera.quaternion);
+    const scale=asset.heightWorld/Math.max(...asset.frames.map(f=>f.alphaBoundsPx.height));
+    for(const frame of asset.frames) {
+      const b=frame.alphaBoundsPx,p=frame.groundPivotPx;
+      const bias=spriteGroundDepthBias(b,p,scale,up.y,toward.y);
+      for(const x of [b.x,b.x+b.width]) for(const y of [b.y,b.y+b.height]) {
+        const point=new THREE.Vector3(0,.018,0).addScaledVector(right,(x-p.x)*scale)
+          .addScaledVector(up,(p.y-y)*scale).addScaledVector(toward,bias);
+        for(const bounds of [asset.artBoundsWorld,asset.cullingBoundsWorld]) for(let axis=0;axis<3;axis++) {
+          const value=point.getComponent(axis);
+          assert.ok(value>=bounds.min[axis]-1e-10&&value<=bounds.max[axis]+1e-10,
+            `${frame.id}: rooted/depth-corrected billboard corner lies inside exported bounds`);
+        }
+      }
     }
     for (const state of ['idle','walk','attack','defeat']) {
       const firstPoses = new Set();
