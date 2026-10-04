@@ -121,8 +121,10 @@ They are not controlled CPU comparisons. The eight-turn seat-0 maximum occurs
 on its first Move service tick: 20.819 ms planning, 29.980 ms combined planning
 and simulation, and 14.039 ms broadcast make a 44.034 ms tick. The callback
 seat-0 maximum is instead startup tick 6. The eight-turn seat-1 maximum is
-startup tick 24. Raw slowest-tick attribution is retained rather than labeling
-all maxima as planner cost or hiding these outliers.
+also the first Move service tick 32: 15.114 ms planning, 23.319 ms combined
+planning and simulation, and 11.073 ms broadcast make a 34.424 ms tick.
+Raw slowest-tick attribution is retained rather than labeling all maxima as
+planner cost or hiding these outliers.
 
 **Recommend four turns for the next default-policy decision.** It reduces the
 one-turn last-route delay from about 4.8 seconds to 1.2 seconds while retaining
@@ -148,6 +150,18 @@ sandboxed WebGL2 capture resource remains the next concrete dependency. No
 security flags, new credentials, art generation or explicit deployment are used.
 
 ## Reproduce
+
+[Integration verification](qa-evidence/movement-tick-budget-2026-10-04/verification.json)
+at `5f4c9aaa` incorporates fork main `966dc0a5` without conflicts. All seven
+planner/outer-tick bodies match the qualified measurement source, and the inner
+simulation body matches current main. 102 focused checks, browser/node types,
+syntax and documentation checks pass. All twelve comparison pairs repeat and
+match the qualified movement traces and publication/arrival ticks. The default
+phase probe matches its original traces; default 16-unit replay still reaches all
+goals at tick 623 with the exact #209 route and movement hashes. A previously
+isolated VM test needed the new diagnostic marker binding; that fixture correction
+changes no production behavior. Review's later attribution correction makes both
+eight-turn maxima explicit first-Move service ticks.
 
 ```sh
 MOVE_PLANNING_BUDGET_RECORD=/tmp/budget-replay.json \
