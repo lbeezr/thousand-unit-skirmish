@@ -113,7 +113,7 @@ persistently ordered workers are excluded from idle-worker selection.
 5. Reach a clear result, then rematch or try another authored scenario.
 
 Ordinary two-seat play starts Tiny Terraced Vale in economy Skirmish; reviewed
-Small Threefold Basin and Medium Riven Escarpment are human map choices.
+Small Threefold Basin, Medium Riven Escarpment and Large Crownroads are human map choices.
 [Bellweather · Millrace](maps.md) remains a historical authored regional scenario.
 [Fortified Crossing](../maps/fortified-crossing.json) supplies a small-opening
 custom skirmish with construction, research and crossing rewards.
