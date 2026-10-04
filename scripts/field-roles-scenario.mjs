@@ -1,6 +1,7 @@
 import { createReconnaissancePolicy } from '../src/pve-reconnaissance.mjs';
 import { toOpponentObservation } from '../src/pve-opponent.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { initializeCombatStance } from '../src/combat-stance.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -88,7 +89,7 @@ async function stop() {
     const done = once(child, 'exit'); child.kill('SIGINT'); await done;
   }
 }
-async function start() {
+async function start(expectedCheckpoint = null) {
   child = spawn(process.execPath, [SERVER_PATH], {
     cwd: ROOT, env: { ...process.env, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_GAME_MODE: 'pvp',
       RTS_MAP: 'maps/open-field.json', RTS_MATCH_STATE_PATH: checkpointPath,
@@ -106,6 +107,17 @@ async function start() {
     const client = connect(port); clients.push(client);
     const welcome = await client.wait((m) => m.type === 'welcome');
     assert.equal(welcome.player.team, team);
+    if (expectedCheckpoint) {
+      assert.equal(welcome.recoveredFromCheckpoint, true, 'role fixture must restore rather than fall back to a fresh match');
+      assert.equal(welcome.state.mapId, expectedCheckpoint.mapDefinition.id);
+      assert.equal(welcome.state.armySize, expectedCheckpoint.state.currentArmySize);
+      for (const unit of expectedCheckpoint.state.units.filter(unit => unit.team === team)) {
+        const row = welcome.state.units.find(row => row[0] === unit.id);
+        assert.ok(row, `restored own unit ${unit.id} is present`);
+        assert.equal(row[1], team);
+        assert.equal(row[5], unit.kind);
+      }
+    }
   }
 }
 function exploredCount(state) {
@@ -125,12 +137,14 @@ try {
     const fixture = structuredClone(baseline); fixture.state.seatSessions = [];
     Object.assign(fixture.state.units[scoutId], { kind: 'worker', hp: 100, x: -12.5 * direction, z: .5 });
     Object.assign(fixture.state.units[probeId], { x: -2.5 * direction, z: .5 });
-    await writeFile(checkpointPath, JSON.stringify(fixture)); await start();
+    initializeCombatStance(fixture.state.units[scoutId], UNIT_DEFINITIONS.worker);
+    await writeFile(checkpointPath, JSON.stringify(fixture)); await start(fixture);
     await checkpointWith(checkpointPath, checkpoint => checkpoint.state.tickNumber > fixture.state.tickNumber + 30);
     assert.ok(!clients[team].latest.units.some(u => u[0] === probeId), 'ordinary eight-cell sight cannot see the ten-cell probe');
     await stop(); const scoutFixture = JSON.parse(await readFile(checkpointPath, 'utf8')); scoutFixture.state.seatSessions = [];
     Object.assign(scoutFixture.state.units[scoutId], { kind: 'scout', hp: 60 });
-    await writeFile(checkpointPath, JSON.stringify(scoutFixture)); await start();
+    initializeCombatStance(scoutFixture.state.units[scoutId], UNIT_DEFINITIONS.scout);
+    await writeFile(checkpointPath, JSON.stringify(scoutFixture)); await start(scoutFixture);
     assert.ok(clients[team].latest.units.some(u => u[0] === probeId), 'Scout sight reveals the ten-cell probe on reconnect');
     assert.ok(!clients[1 - team].latest.units.some(u => u[0] === scoutId), 'Scout reveals the probe before the probe reveals it');
     const before = exploredCount(clients[team].latest), policy = createReconnaissancePolicy(42), commands = [];
@@ -162,7 +176,9 @@ try {
     Object.assign(raid.state.units[riderId], { kind: 'rider', hp: 130 });
     Object.assign(raid.state.units[spearId], { kind: 'spearman', hp: 110,
       x: raid.state.units[workerId].x - direction, z: raid.state.units[workerId].z });
-    await writeFile(checkpointPath, JSON.stringify(raid)); await start();
+    initializeCombatStance(raid.state.units[riderId], UNIT_DEFINITIONS.rider);
+    initializeCombatStance(raid.state.units[spearId], UNIT_DEFINITIONS.spearman);
+    await writeFile(checkpointPath, JSON.stringify(raid)); await start(raid);
     const worker = raid.state.units[workerId];
     send(clients[team], { type: 'move', ids: [riderId], x: worker.x - direction * 5.5, z: worker.z });
     await clients[team].wait(m => m.type === 'state' && m.units.some(u => u[0] === workerId)
