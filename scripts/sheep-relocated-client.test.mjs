@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 
 const main = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const start = main.indexOf('  // Resource markers stay legible');
@@ -12,7 +13,7 @@ assert.ok(start >= 0 && end > start);
 const minimapRows = `function paintResourceRows(context, rect) { ${main.slice(start, end)} }`;
 const pickStart = main.indexOf('function pickResourceNodeAt(');
 const picking = main.slice(pickStart, main.indexOf('\nfunction pickForestCellAt(', pickStart));
-const map = { width: 16, height: 16, fogOfWar: true, resourceNodes: [
+const map = { id: 'relocated-client-proof', width: 16, height: 16, fogOfWar: true, resourceNodes: [
   { id: 'relocated-sheep', type: 'food', wildlifeSpecies: 'bellweather-sheep', stock: 100, x: 2.5, z: -3.5 },
 ] };
 const authored = map.resourceNodes[0];
@@ -28,21 +29,21 @@ function fixture(t, team) {
   renderer.reset(map.resourceNodes, map);
   t.after(() => renderer.dispose());
   const fog = new Uint8Array(256), arcs = [];
-  const context = vm.createContext({ localTeam: team, mapDefinition: map, MAP_WIDTH: 16, MAP_HEIGHT: 16,
+  const context = vm.createContext({ ...wildlifeClientBindings(), localTeam: team, mapDefinition: map, MAP_WIDTH: 16, MAP_HEIGHT: 16,
     MAP_HALF_X: 8, MAP_HALF_Z: 8, latestFogCells: fog, wildlifeRenderer: renderer,
     latestResourceStocks: new Map([[authored.id, 100]]), latestBuildings: [], farmHarvestNode: () => null,
     isShoreFish: () => false, resourceNodeVisuals: new Map(), camera, screenPoint: new THREE.Vector3(), groundHeight: () => .15,
     renderer: { domElement: { getBoundingClientRect: () => ({ width: 200, height: 160 }) } },
     minimapPoint: (x, z) => ({ x: (x + 8) * 10, y: (z + 8) * 10 }),
   });
-  vm.runInContext(minimapRows + picking, context);
+  vm.runInContext(wildlifeClientFunctionSource(main) + minimapRows + picking, context);
   const pen = { beginPath() {}, fill() {}, arc(x, y, radius) { arcs.push({ x, y, radius }); } };
   const screen = p => {
     const v = new THREE.Vector3(p.x, .37, p.z).project(camera);
     return [(v.x * .5 + .5) * 200, (-v.y * .5 + .5) * 160];
   };
   function disclose(rows) {
-    renderer.reconcile(rows, p => fog[cell(p)] === 2); renderer.update(camera);
+    context.applyWildlifeState({ mapId: map.id, forestEpoch: 7, resourceNodes: rows }); renderer.update(camera);
   }
   return { renderer, scene, fog, arcs, context, screen, disclose,
     paint() { arcs.length = 0; context.paintResourceRows(pen, {}); } };

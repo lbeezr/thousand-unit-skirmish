@@ -1,4 +1,5 @@
 import { economyClientBindings } from './economy-client-fixture.mjs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -79,7 +80,7 @@ test('foreign Dock/Skiff probes retain ordinary ownership rejections before doma
 
 for (const team of [0, 1]) test(`Dock/Skiff command controls state their usable actions for seat ${team}`, () => {
   const buttons = ['patrol', 'follow'].map(type => ({ dataset: { persistentOrder: type }, classList: { toggle() {} }, setAttribute() {} }));
-  const context = vm.createContext({ ...economyClientBindings(), UNIT_DEFINITIONS, BUILDING_DEFINITIONS, localTeam: team, latestBuildings: [{ id: 7, team, type: 'dock' }],
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), UNIT_DEFINITIONS, BUILDING_DEFINITIONS, localTeam: team, latestBuildings: [{ id: 7, team, type: 'dock' }],
     selectedBuildingId: 7, units: [{ kind: 'skiff' }], selectedIds: () => [0],
     ui: { commandHint: {}, buildingCommandDetails: {}, attackMoveToggle: { classList: { toggle() {} }, setAttribute() {} }, formationSelect: {} },
     persistentTargetMode: null, attackMoveMode: false, tapOrderArmed: false, matchWinner: -1,
@@ -87,7 +88,7 @@ for (const team of [0, 1]) test(`Dock/Skiff command controls state their usable 
     buildingLabel: () => 'Dock', updateStationaryOrderControls() {}, updateBuildingResearchControls() {},
     syncBattlefieldCursor() {}, updateContextualCommands() {},
   });
-  vm.runInContext(extract(client, 'buildingSupportsRally', 'appendUnitFromState'), context);
+  vm.runInContext(wildlifeClientFunctionSource(client) + extract(client, 'buildingSupportsRally', 'appendUnitFromState'), context);
   assert.equal(context.buildingSupportsRally('dock'), false); assert.equal(context.buildingSupportsRally('barracks'), true);
   context.updateCommandUI(); assert.match(context.ui.commandHint.textContent, /Train a Skiff \(placeholder\)/);
   assert.equal(context.ui.buildingCommandDetails.hidden, true);
@@ -100,14 +101,14 @@ for (const team of [0, 1]) test(`Dock/Skiff command controls state their usable 
 test('Skiff right-click admits a shore fish source, otherwise water Move, without combat/follow picking', () => {
   const calls = [], toasts = [];
   let fish = null;
-  const context = vm.createContext({ ...economyClientBindings(), selectedBuildingId: null, selectedWaterUnits: () => true,
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), selectedBuildingId: null, selectedWaterUnits: () => true,
     persistentTargetMode: 'follow', worldAt: () => ({ x: 4.5, z: 6.5 }),
     issueMove: (...args) => calls.push(args),
     issueGather: node => calls.push(node), pickResourceNodeAt: () => fish, showToast: message => toasts.push(message),
     isShoreFish: node => node?.resourceVariant === 'shore-fish',
     renderer: { domElement: { getBoundingClientRect: () => ({ left: 0, top: 0 }) } },
   });
-  vm.runInContext(extract(client, 'issueContextOrder', 'buildPlacementAt'), context);
+  vm.runInContext(wildlifeClientFunctionSource(client) + extract(client, 'issueContextOrder', 'buildPlacementAt'), context);
   context.issueContextOrder(10, 20);
   assert.deepEqual(calls, [[{ x: 4.5, z: 6.5 }, false, true]]);
   fish = { id: 'fish', resourceVariant: 'shore-fish' }; context.issueContextOrder(10, 20);

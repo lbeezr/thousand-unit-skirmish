@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 import { createWaterUnitRuntime, waterUnitOccupiedCells } from '../src/water-unit-runtime.mjs';
 import { createSkiffFishingContext } from '../src/skiff-fishing.mjs';
 import { planSkiffGroupMove, planSkiffGroupFishing, planSkiffGroupReturn, SKIFF_GROUP_ORDER_LIMIT } from '../src/skiff-group-orders.mjs';
@@ -232,14 +233,14 @@ test('actual client group Move, Gather and Return cargo send only the selected b
   const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8'), sent = [];
   const extract = (start, end) => source.slice(source.indexOf(`function ${start}(`), source.indexOf(end, source.indexOf(`function ${start}(`)));
   const units = [0, 1, 2].map(id => ({ id, kind: 'skiff', cargo: id < 2 ? .005 : 0 }));
-  const context = vm.createContext({ units, localTeam: 0, matchWinner: -1, selectedIds: () => [0, 1], selectedWaterUnits: () => true,
+  const context = vm.createContext({ ...wildlifeClientBindings(), units, localTeam: 0, matchWinner: -1, selectedIds: () => [0, 1], selectedWaterUnits: () => true,
     isShoreFish: () => true, showToast: message => { throw new Error(message); },
     sendTrackedOrder: command => { sent.push(JSON.parse(JSON.stringify(command))); return true; },
     persistentTargetMode: null, attackMoveMode: false, ui: { formationSelect: { value: 'box' } },
     moveMarker: { position: { set() {} }, material: { color: { setHex() {} } }, scale: { setScalar() {} } },
     groundHeight: () => 0, setTapOrderArmed() {}, setAttackMoveMode() {}, updateCommandUI() {},
   });
-  vm.runInContext(extract('issueMove', '\nfunction issueBuildingRallyPoint(')
+  vm.runInContext(wildlifeClientFunctionSource(source) + extract('issueMove', '\nfunction issueBuildingRallyPoint(')
     + extract('issueGather', '\nfunction issueForestGather(')
     + extract('issueReturnCargo', "\nfor (const button of document.querySelectorAll('[data-return-cargo]'))"), context);
   context.issueMove({ x: 1, z: 2 }, false, true); context.issueGather({ id: 'fish' }); context.issueReturnCargo();

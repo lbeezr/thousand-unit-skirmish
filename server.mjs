@@ -709,6 +709,8 @@ let visibleCellsByTeam = [new Uint8Array(0), new Uint8Array(0)];
 let exploredCellsByTeam = [new Uint8Array(0), new Uint8Array(0)];
 let processedVisionSourcesByTeam = [new Uint8Array(0), new Uint8Array(0)];
 let visionCoverageBySourceCell = [];
+let visionMasksUpdatedTick = -1;
+let visionMasksUpdatedCoverage = null;
 let pathVisited = new Uint32Array(0);
 let pathPrevious = new Int32Array(0);
 let pathQueue = new Int32Array(0);
@@ -1750,6 +1752,8 @@ function spawnProducedUnit(team, kind, x, z) {
     }
     units[id] = unit;
   }
+  // Scenario rewards can spawn after the ordinary vision update in this tick.
+  visionMasksUpdatedTick = -1;
   dirty = true;
   return unit;
 }
@@ -2041,6 +2045,8 @@ function markVisionFrom(team, x, z, sight = VISION_RADIUS_CELLS) {
 }
 
 function updateVisionMasks() {
+  visionMasksUpdatedTick = tickNumber;
+  visionMasksUpdatedCoverage = visionCoverageBySourceCell;
   visibleCellsByTeam[0].fill(0);
   visibleCellsByTeam[1].fill(0);
   processedVisionSourcesByTeam[0].fill(0);
@@ -2055,6 +2061,11 @@ function updateVisionMasks() {
       markVisionFrom(building.team, source.x, source.z, building.complete ? BUILDING_DEFINITIONS[building.type].sight || VISION_RADIUS_CELLS : VISION_RADIUS_CELLS);
     }
   }
+}
+
+function ensureVisionMasks() {
+  // Geometry changes replace the coverage cache even between simulation ticks.
+  if (visionMasksUpdatedTick !== tickNumber || visionMasksUpdatedCoverage !== visionCoverageBySourceCell) updateVisionMasks();
 }
 
 function cellVisibleToTeam(team, cell) {
@@ -2583,6 +2594,7 @@ function scenarioDiagnosticTrace() {
   });
 }
 function roomPayload(viewTeam = null, includeWaypointCounts = true) {
+  ensureVisionMasks();
   const actualAlive = aliveCounts();
   const productionContexts = [0, 1].map((team) => productionContextForTeam(team, actualAlive));
   const fogView = mapDefinition.fogOfWar && [0, 1].includes(viewTeam);
@@ -2721,6 +2733,7 @@ function matchMapHash(definition) {
 }
 
 function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
+  ensureVisionMasks();
   const savedSessions = [];
   for (const session of sessions.values()) {
     const connected = Boolean(session.peer && !session.peer.closed);
@@ -8633,6 +8646,8 @@ function runSimulationTick() {
   lastSimulationTickStartedAt = tickStartedAt;
   const planningWork = serviceMovePlanningForTick(tickNumber + 1);
   simulateTick();
+  // Forest clears can refresh vision before this step's movement/production.
+  visionMasksUpdatedTick = -1;
   if (workerPerformingActions.finishStep(tickNumber, compatibleWorkerPerformingAction)) dirty = true;
   recordSeparationWorkSample();
   const moveStartBroadcastRequested = takeMoveStartBroadcastRequest();
