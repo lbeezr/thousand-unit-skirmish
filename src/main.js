@@ -7488,7 +7488,8 @@ function pickHarvestableTreeAt(x, y) {
     // Decorative understory/land vegetation never enters this candidate list.
     for (const [cell, slot] of forestTreeSlots) {
       const stock = latestForestStocks.get(cell) ?? 6;
-      if (!(stock > 0) || (mapDefinition?.fogOfWar && latestFogCells?.[cell] !== 2)) continue;
+      // Remembered scenery names the authored group, never a live hidden stock pool.
+      if (!(stock > 0) || (mapDefinition?.fogOfWar && ![1, 2].includes(latestFogCells?.[cell]))) continue;
       const mesh = slot.stateMeshes?.[resourceVisualStage(stock, 6)] || slot.mesh;
       yield { forestCell: cell, mesh, index: slot.index };
     }

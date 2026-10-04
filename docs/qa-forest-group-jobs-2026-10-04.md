@@ -93,8 +93,9 @@ security or map-reveal change is included.
 
 Actual ordinary deployed forest-click/work-cycle pixels remain open. Supported
 cloud startup previously reported sandbox/storage unavailable; an unchanged
-failed launch is not retried or bypassed. The existing hosted renderer owner
-retains supported executor qualification. The forest implementation owner then
-captures both-seat Tiny deep clicks and repeated work at a named containing
-build, checks forest art identity/approaches and reviews the pixels. Source,
+failed launch is not retried or bypassed. Hosted qualification is now proven in
+PR323, and PR331 provides the version1 ordinary-feature capture contract. The
+forest implementation owner prepares a bounded forest-job adapter for that
+existing executor, captures both-seat Tiny deep clicks and repeated work at a
+named containing build, checks forest art identity/approaches and reviews the pixels. Source,
 process, package and hosted general-movement evidence do not close this outcome.
