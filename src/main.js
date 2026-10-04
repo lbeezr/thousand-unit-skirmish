@@ -7,24 +7,24 @@ import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { mountResourceBrushControls } from './resource-brush-controls.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS, validateMapRegion } from './regions.mjs';
-import { regionGestureZone, ScenarioEditHistory } from './scenario-authoring.mjs';
+import { regionGestureZone, ScenarioEditHistory } from './authoring/scenario-authoring.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, validCompletionTrigger } from './scenario-regions.mjs';
 import { regionalGroundColor } from './regional-ground-kits.mjs';
 import { researchOptions, researchAction } from './research-actions.mjs';
 import { unitPresentation, buildingPresentation } from './gameplay-presentation.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './gameplay-definitions.mjs';
 import { createDockPlacementContext } from './dock-placement.mjs';
-import { formatResourceStock, formatResourceRequirement } from './resource-format.mjs';
+import { formatResourceStock, formatResourceRequirement } from './client/hud/resource-format.mjs';
 import { STONE_ECONOMY_PROFILE_ID, resolveEconomyProfileId, economyResources, constructionCostForProfile } from './economy-profile.mjs';
 import { matchesEconomySnapshot, profileDropoffResources, sumTypedCargo } from './economy-client.mjs';
 import { WallPlacementGesture, wallCellAt, previewWallPlacement, wallPlacementFeedback } from './wall-placement.mjs';
 import { createWallPlacementGhost } from './wall-placement-ghost.mjs';
-import { ownedPopulationReadout } from './population-readout.mjs';
+import { ownedPopulationReadout } from './client/hud/population-readout.mjs';
 import { SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
-import { validateMapAudioReference } from './audio-event-profile.mjs';
+import { validateMapAudioReference } from './world/map-audio-reference.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from './hud-layout.mjs';
-import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from './objective-summary.mjs';
+import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from './client/hud/objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts } from './selection-portrait.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
@@ -84,7 +84,7 @@ import {
   validateElevationPatches,
 } from './map-utils.mjs';
 import { townCenterSpawnPosition } from './town-center-spawn.mjs';
-import { resizeWorldMarkers } from './map-resize.mjs';
+import { resizeWorldMarkers } from './authoring/map-resize.mjs';
 import {
   MAX_MAP_STUDIO_ZOOM, MIN_MAP_STUDIO_ZOOM, clampMapStudioZoom,
   mapStudioCanvasSize, mapStudioCellAtPointer,
