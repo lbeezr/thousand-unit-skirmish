@@ -55,7 +55,13 @@ Checks: canonical manifest/file-hash validation; 48 decoded full-pose bounds wit
 
 ## Ranked retained backlog
 
-1. **Restore identity through delivery:** check/review/merge the narrow Infantry default correction, pack an exact clean release, identify the containing served revision and verify normal paid Infantry use. Art owner retains acceptance with parent Railway/Mac support; a source merge does not close native appearance.
+The [approved-unit production contract](unit-art-production-contract.md) now audits
+Infantry v3 against pinned source/runtime identity, real decoded action coverage,
+retained timing and camera/root/scale status. It is the catalog's source-side pilot,
+not a runtime registry. It closes no art cells: **21 Infantry / 63 family cells
+remain missing**, and normal-zoom/crowded rendered acceptance remains pending.
+
+1. **Restore identity through delivery:** PR286 merged the narrow Infantry default correction at `53a47ee379660f30b65776ea813f3a986d29aa37`; its clean release/HTTP checks passed. Identify the containing served revision and verify normal paid Infantry use. Art owner retains acceptance with parent environment support; a source merge does not close native appearance.
 2. **Functional state/facing diagnosis:** Mac task `01a106da-40ec` traces live Worker sliding and Spearman facing. Parent reports one true SE Spearman walk plus seven idle clips and approximate selection routing walks to SE. Correct selectors while preserving the established characters; selection alone does not fill missing art. State/protocol owner remains `01a103d4`.
 3. **Identity-preserving heading pilot:** choose one role's own existing Human directional seed; retain its face, clothing, proportions, equipment and handedness while supplying contact/low/passing/high, attack and terminal-fall keys. Compare the pilot to that role before any broad production/adoption. Keep genuine views, fixed camera/root/body scale, crop offsets and deterministic action/direction/frame names. No new paid generation or private-source work; do not adopt held candidates as final art.
 4. **Extend usable coverage, then polish:** repeat validated headings and report the exact remaining cells. Inspect support-foot contact, stride distance against velocity, frame-index/anchor overlays, single-step and quarter-speed playback, starts/Stops/turns/blocked movement and ordinary/strategic zoom. Rough motion is acceptable; character replacement and wrong facing are not.
