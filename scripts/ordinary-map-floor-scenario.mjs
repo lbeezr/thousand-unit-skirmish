@@ -49,6 +49,7 @@ try {
     ['bannerfall-arena', 160, 160, 'tiny'],
     ['frontier-160', 160, 160, 'tiny'],
     ['siltmouths-confluence-grounds', 160, 160, 'tiny'],
+    ['veyrholds-crownroads', 256, 256, 'large'],
     ['veyrholds-riven-escarpment', 224, 224, 'medium'],
     ['veyrholds-terraced-vale', 160, 160, 'tiny'],
     ['veyrholds-threefold-basin', 192, 192, 'small'],
@@ -64,13 +65,18 @@ try {
   assert.equal(medium.supportedUnitCapacity, null);
   assert.deepEqual(medium.matchModes.map(mode => [mode.id, mode.version]), [['authored', 1], ['skirmish', 1]]);
   assert.equal(medium.matchModes.find(mode => mode.id === 'skirmish').pveSupported, false);
+  const large = root.welcome.maps.find(map => map.id === 'veyrholds-crownroads');
+  assert.equal(large.ordinarySelectable, true);
+  assert.equal(large.supportedUnitCapacity, null);
+  assert.deepEqual(large.matchModes.map(mode => [mode.id, mode.version]), [['authored', 1], ['skirmish', 1]]);
+  assert.equal(large.matchModes.find(mode => mode.id === 'skirmish').pveSupported, false);
   assert.equal(root.latest.scenarioClockStarted, false);
   const confluence = root.welcome.maps.find(map => map.id === 'siltmouths-confluence-grounds');
   assert.equal(confluence.ordinarySelectable, true);
   assert.equal(confluence.supportedUnitCapacity, null);
   assert.deepEqual(confluence.matchModes.map(mode => [mode.id, mode.version]), [['authored', 1]],
     'Confluence offers its admitted authored rules without inventing Skirmish or AI support');
-  records.push({ name: 'Unconfigured root and fresh status use Tiny Skirmish; all seven admitted maps meet the ordinary floor; Medium is human Skirmish only and XL remains unavailable' });
+  records.push({ name: 'Unconfigured root and fresh status use Tiny Skirmish; all eight admitted maps meet the ordinary floor; Medium/Large are human Skirmish only and XL remains unavailable' });
 
   const created = await create({ mode: 'pvp', pregame: true });
   assert.deepEqual(created.launchOptions, { mode: 'pvp', pregame: true, ...NORMAL_HUMAN_MATCH_MODE });

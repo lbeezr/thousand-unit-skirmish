@@ -97,8 +97,11 @@ export function createProductionPolicy(seed) {
       // unit. An available one-population Worker can earn the wood for a House.
       const workerProducer = observation.buildings.friendly.find((building) => building.complete
         && building.queue === 0 && building.productionOptions?.some((option) => option.kind === 'worker' && option.available));
+      // With no living Workers, an unspent reserve cannot earn more food.
+      // Buy the first affordable replacement, then restore the normal reserve.
+      const workerFoodReserve = workers.length === 0 ? 0 : limits.foodReserve;
       if (workers.length < 4 && workerProducer && friendly.length < limits.roster
-        && observation.resources.food >= UNIT_DEFINITIONS.worker.cost.food + limits.foodReserve) {
+        && observation.resources.food >= UNIT_DEFINITIONS.worker.cost.food + workerFoodReserve) {
         postpone(observation.tick);
         return [{ type: 'trainUnit', kind: 'worker', buildingId: workerProducer.id }];
       }
