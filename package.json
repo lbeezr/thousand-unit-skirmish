@@ -9,6 +9,10 @@
   "scripts": {
     "start": "node room-supervisor.mjs",
     "test": "node scripts/ci.mjs",
+    "test:fast": "node scripts/ci.mjs --lane=fast",
+    "test:simulation": "node scripts/ci.mjs --lane=simulation",
+    "test:visual": "node scripts/ci.mjs --lane=visual",
+    "test:performance": "node scripts/ci.mjs --lane=performance",
     "architecture:check": "node scripts/check-runtime-imports.mjs",
     "check:types": "tsc --project tsconfig.check-js.json --pretty false && tsc --project tsconfig.check-node.json --pretty false",
     "build:painted-material-atlas": "python3 scripts/build-painted-material-atlas.py",
