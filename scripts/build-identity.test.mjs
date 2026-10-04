@@ -127,7 +127,7 @@ if (pathname === '/health') return Response.json(${JSON.stringify(health)});
 throw new Error('Identity mismatch must stop later checks');
 };
 `);
-    const result = spawnSync(process.execPath, ['--import', preload, 'scripts/railway-smoke.mjs',
+    const result = spawnSync(process.execPath, ['--import', preload, 'scripts/release/railway-smoke.mjs',
       '--environment', 'staging', '--project', 'fixture', '--expected-source', otherRevision],
     { encoding: 'utf8', timeout: 5000, env: { ...process.env, NODE_OPTIONS: '', PATH: `${root}${path.delimiter}${process.env.PATH}` } });
     assert.equal(result.status, 1, result.stderr);
