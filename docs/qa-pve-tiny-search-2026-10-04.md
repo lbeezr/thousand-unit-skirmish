@@ -150,5 +150,7 @@ explains the fifteen-cell Azure discrepancy as an off-phase cached mask in the
 diagnostic comparison. At the next native snapshot phase, both seat views match;
 the corrected test now restores a fresh fixture and passes paid recovery on both
 Tiny seats without weakening fog equality or changing server restore. Native
-Skirmish admission and ordinary served acceptance remain open. The original
+Skirmish admission subsequently lands through mode-owner PR229; the follow-up
+now records actual native Skirmish full-match/recovery cases. Ordinary served
+acceptance remains open. The original
 failure and sealed Tiny archive above remain historical evidence.

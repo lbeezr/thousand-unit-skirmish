@@ -65,9 +65,17 @@ The case now restores in a **fresh server fixture**, compares both seats with
 the unchanged full-observation helper, then continues with a fresh configured
 policy. The prior in-place fixture is disposed. An explicit test-only native
 identity option allows unchanged canonical authored elimination to exercise
-the configured policy while Tiny's registry admission remains pending; default
+the configured policy in the historical authored-identity reproduction; default
 legacy cases still use actual native Skirmish identity. No map relabeling or
 compatibility guard bypass occurs.
+
+Integration update: mode-owner [PR229](https://github.com/lbeezr/thousand-unit-skirmish/pull/229)
+admits Tiny for native human Skirmish on base `966dc0a5`. The final both-seat
+Tiny foundation tests use **actual native skirmish@1** and the same configured
+policy identity. The historical phase reproduction retains authored identity;
+the cadence helper also preserves authored restore. Fresh ordinary human matches
+now default to Tiny Skirmish, while ordinary AI remains unavailable and
+`pveSupported` remains false.
 
 Seven checks pass: the phase adapter at all three phases, both Tiny seats and
 four legacy map/seat loss cases. Each loss case repeats every order/notice and
@@ -76,8 +84,26 @@ Workers, buy/complete replacement production, recruit and issue an accepted
 five-unit advance. Finite stock+cargo+both banks+spending reconcile; no capture
 grant funds this recovery. The new regression is registered in CI.
 
+Actual native Tiny checkpoints are Azure 14,130 and Ember 13,419, each one
+ordinary tick after the detected foundation. Replacement purchase/completion/
+accepted advance occur at 118/142.03/227.03 seconds for Azure and
+113/138.03/223.03 seconds for Ember after recovery starts. Each spends
+260 food/370 wood, with conservation residual below 3e-10.
+
+After PR229 integration, all four full-match cases pass: both seed assignments
+in native authored@1 and native skirmish@1, always with the explicitly configured
+Skirmish policy. Each exactly repeats every command/notice, checkpoint and native
+reset. Both identities retain Ember elimination at 495/2,676 seconds, zero
+rejections and the unchanged paid opening. The later game restores at 600 seconds;
+native reset after defeat preserves the actual pair and returns the 24-unit
+opening and 150/250 banks. This is still fixed-tick/native-fixture evidence,
+not rendered play or an OS process restart. Thirty-three mode/checkpoint/adapter/
+CI-sharding checks also pass on the integrated base.
+
 ```sh
 node --test scripts/pve-fog-restart.test.mjs scripts/pve-skirmish-loss.test.mjs
+node --test scripts/pve-tiny-search.test.mjs
+node --test scripts/match-modes.test.mjs scripts/match-mode-checkpoint.test.mjs scripts/pve-mode-adapter.test.mjs scripts/pve-skirmish-checkpoint.test.mjs scripts/ci-sharding.test.mjs
 ```
 
 Raw phase proof, the historical checkpoint, repeated new prelude and check output
@@ -89,9 +115,9 @@ evidence of completion, not balanced pacing, fairness, fun or supported capacity
 
 The previously reported fifteen-cell Azure discrepancy is explained and the
 corrected native-phase fresh-fixture recovery gate passes. It does not call for
-a server fog/restore/wildlife fix. Native Tiny Skirmish admission and exact-mode
-acceptance remain with mode owner `01a103cc`; ordinary served/Mac New Game,
+a server fog/restore/wildlife fix for this case. Tiny native admission is now
+integrated through PR229; ordinary served/Mac New Game,
 recovery, fog, defense, rematch/reconnect, process restart and defeat observation
 remain open. No deployment or browser screenshot is claimed. Keep
-`pveSupported: false` until actual admission and applicable ordinary acceptance
+`pveSupported: false` until applicable ordinary acceptance
 are satisfied.

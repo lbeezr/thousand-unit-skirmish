@@ -5,6 +5,7 @@ import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pv
 import { replayPaidSkirmishLoss } from './pve-skirmish-loss-case.mjs';
 
 const authored = { matchModeId: 'authored', matchModeVersion: 1 };
+const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
 const id = 'veyrholds-terraced-vale';
 
 test('native snapshot boundary advances at most two ticks and preserves both seat views across a fresh fixture', async () => {
@@ -31,18 +32,18 @@ test('native snapshot boundary advances at most two ticks and preserves both sea
 
 for (const team of [0, 1]) {
   test(`Tiny seat ${team}: legal foundation recovery at the native snapshot phase strictly replays in a fresh fixture`, async () => {
-    const options = { nativeIdentity: authored };
+    const options = { nativeIdentity: skirmish };
     const first = await replayPaidSkirmishLoss(id, team, null, options);
     const second = await replayPaidSkirmishLoss(id, team, first.initial, options);
     assert.deepEqual(first, second, 'losses, fresh foundation restore, commands, notices and final checkpoint repeat');
     const { stages, conservation, final } = first.result;
     assert.ok(stages.checkpointBoundarySteps >= 0 && stages.checkpointBoundarySteps <= 2);
     assert.equal(stages.restart % 3, 0);
-    assert.equal(final.matchModeId, 'authored', 'actual native identity is recorded honestly');
+    assert.equal(final.matchModeId, 'skirmish', 'Tiny uses the admitted actual native identity');
     assert.equal(final.state.matchWinner, -1);
     assert.equal(final.state.units.filter(unit => unit.team === team && unit.kind === 'worker' && unit.hp > 0).length, 4);
     for (const resource of ['food', 'wood']) assert.ok(Math.abs(conservation[resource].residue) < 1e-5);
-    console.log(JSON.stringify({ team, nativeIdentity: 'authored@1', policyIdentity: 'skirmish@1',
+    console.log(JSON.stringify({ team, nativeIdentity: 'skirmish@1', policyIdentity: 'skirmish@1',
       stages, firstPressure: first.result.firstPressure, conservation }));
   });
 }
