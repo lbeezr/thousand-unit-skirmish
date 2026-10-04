@@ -102,14 +102,14 @@ current-roster keys can also be admitted with the same manifest contract.
 
 | Rank | Next useful slice and bounded writes | Concrete dependency / acceptance |
 | --- | --- | --- |
-| 1 | Retain East/North/South walk through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
-| 2 | Fill remaining walk **W/NW** one actual heading at a time. Source, atlas/manifests, one registration record per slice. | Use public approved idle seeds and bounded first-pass approved image/Blender tools where retained articulated keys are absent. Assessed public legacy bodies do not preserve the current identity. Carry/Return reuse each completed walk with the existing cargo cue. |
+| 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
+| 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
 | 3 | Fill wood/food/build/repair/attack/defeat's seven absent headings: **42 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
 | 4 | Eight readable dedicated Stone-work headings. | Current assets contain no pick/mining sequence. Animation owner also needs the actual Stone state/resource selector enabled after artwork exists; current default intentionally returns idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
-There are now 6 of 8 walk headings, eight distinct idle headings, SE land-action
-motion and no Stone motion. **52 land-action/heading cells remain** (2+42+8).
+There are now 8 of 8 walk headings, eight distinct idle headings, SE land-action
+motion and no Stone motion. **50 land-action/heading cells remain** (42+8).
 Fishing's seven missing headings are excluded and retained by its separate owner.
 The animation-owner ID is outside this executor's live collaboration tree; the
 manifest contract and retained dependencies are recorded here for parent routing.
@@ -218,3 +218,45 @@ atlas/docs/whitespace and packed HTTP/hash scenario pass.
 [Clean South release](qa-evidence/worker-land-art-2026-10-04/south-clean-release.json)
 records source `186fdec778832bd79fa299c5879b7d51aabeaaf6`, 1173 files and
 `sha256:707ad98940dfede9163ef9ccc918ee6a90064fd84521ef46300926352e18952d`. Deployment/native acceptance remains open.
+
+## Fourth usable slice: all walk headings complete
+
+[West source iteration](art-direction/human-roster-v1/generated/worker-walk-west-v1/README.md)
+and [NW source iteration](art-direction/human-roster-v1/generated/worker-walk-north-west-v1/README.md)
+use their actual public default idle seeds, preserved tool prompts/layouts/raws and
+eight whole silhouettes each. West is back/screen-up-left with its axe far-side
+occluded as in the seed; NW is left-facing side profile. These are distinct correct
+camera views and actual articulated poses, with retained first-pass loop/drift
+polish. No private pixels, paid external provider/rigging jobs or facing relabels.
+
+Default v0.19.0 has all eight walks, each eight100ms looping keys. West/NW append
+at y=3328/3584; all108 earlier frame records/pixels, every other clip, mask,
+2048×4096 dimensions and pixel-to-world scale are preserved. Registration is
+one shared scale/root per source (West232/442 roots[192,576,960,1344], baselines
+[490,977]; NW232/427 same roots, baselines[477,975]); local pivot[128,244].
+Carry/Return uses each actual walk and the existing cargo cue.
+
+[West registration](qa-evidence/worker-land-art-2026-10-04/west-walk-registration.json),
+[West keys](qa-evidence/worker-land-art-2026-10-04/west-walk-keys.png),
+[NW registration](qa-evidence/worker-land-art-2026-10-04/north-west-walk-registration.json)
+and [NW keys](qa-evidence/worker-land-art-2026-10-04/north-west-walk-keys.png)
+are source-pixel evidence. Normal default Three playback checks cover the five
+newly admitted headings on both Human seats selected/unselected, full loops,
+heading phase, Stop/resume and cargo Return→idle. Native recipe adds world -X/West
+screen-up-left and yaw-PI/4/NW screen-left, turn through adjacent headings and
+repeat the same ordinary/strategic/cargo checks. Actual appearance remains open
+on an identified containing deployment/native build via the parent route.
+
+South [PR238](https://github.com/lbeezr/thousand-unit-skirmish/pull/238) merged at
+`6ca45a9fcf28381b5d4ee80779fdb92e04e04e7a` after [independent agent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/238#pullrequestreview-5403823198)
+verified exact head `23ad69aa8798e0559a881a761f66405cd1a145c2`; all85 focused
+checks, package/HTTP, source identity/facing/articulation and preservation passed.
+The [W/NW preservation receipt](qa-evidence/worker-land-art-2026-10-04/west-walks-preservation.json)
+checks the108 preceding frames/decoded pixels, all other clips, mask and byte-idempotent
+rebuild against that merged South baseline. No deployed/native claim is made.
+
+All90 focused checks, atlas/docs/whitespace and packed HTTP/hash scenario pass.
+
+[All-eight-walk clean release](qa-evidence/worker-land-art-2026-10-04/eight-walks-clean-release.json)
+records exact source `d4ba9de1ebcabaadec1a40e65a5cec3cf0c696ff`, 1173 files,
+`sha256:dc2aef04126c74cba565c950bb09923dbf60c3a69857713fba3baf19e2a85bd7` and three runtime file hashes.
