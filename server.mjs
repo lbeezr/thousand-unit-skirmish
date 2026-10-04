@@ -73,7 +73,7 @@ import { activeWallBuildOrder } from './src/wall-build-order.mjs';
 import { constructionWorkArea, constructionAssignment, unfinishedConstructionSites, validConstructionWorkArea } from './src/construction-work-intent.mjs';
 import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition } from './src/palisade-gate.mjs';
 import { palisadeConnections } from './src/palisade-profile.mjs';
-import { canTraverseUnitStep, createUnitRouteResult, unitRoutePathCost,
+import { canTraverseUnitStep, createUnitRouteResult, createMoveGoalPoint, activeMoveGoalPoint, validMoveGoalPoint, unitRoutePathCost,
   unitRouteResultIsCurrent } from './src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
@@ -1761,7 +1761,7 @@ function makeUnit(id, team, x, z, kind, teamSlot) {
     attackMoveScanTick: tickNumber + (id % ATTACK_MOVE_SCAN_INTERVAL_TICKS),
     attackMoveBucketScanOffset: id % attackMoveBucketOffsets.length,
     kind, cargo: 0, cargoType: null, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '', workIntent: null, dropoffBuildingId: null, dropoffNavigationRevision: -1,
-    buildingTargetId: null, repairing: false, wallBuildOrder: null, moveGoalCell: -1, queuedWaypoints: [],
+    buildingTargetId: null, repairing: false, wallBuildOrder: null, moveGoalCell: -1, moveGoalPoint: null, queuedWaypoints: [],
   }, UNIT_DEFINITIONS[kind]);
 }
 
@@ -2823,13 +2823,15 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
       pregame: pregame?.checkpoint() ?? null,
     units: units.map((unit) => ({
       ...unit,
+      moveGoalPoint: unit.moveGoalPoint && activeMoveGoalPoint(unit) ? { ...unit.moveGoalPoint } : null,
       wallBuildOrder: activeWallBuildOrder(unit) ? { ...unit.wallBuildOrder, ids: [...unit.wallBuildOrder.ids] } : null,
       persistentOrder: unit.persistentOrder ? { ...unit.persistentOrder } : null,
       workIntent: unit.workIntent ? structuredClone(unit.workIntent) : null,
       path: [...unit.path],
       attackMoveResumePath: unit.attackMoveResumePath === null
         ? null : [...unit.attackMoveResumePath],
-      queuedWaypoints: unit.queuedWaypoints.map((waypoint) => ({ ...waypoint })),
+      queuedWaypoints: unit.queuedWaypoints.map((waypoint) => ({ ...waypoint,
+        ...(waypoint.point ? { point: { ...waypoint.point } } : {}) })),
       })),
       unitGenerationCounters: Array.from(unitGenerationCounters),
       teamFood: [...teamFood],
@@ -2948,7 +2950,11 @@ function validateMatchCheckpoint(snapshot) {
       && integerIn(unit.attackMoveResumePathIndex, 0, unit.attackMoveResumePath?.length ?? 0)
       && Array.isArray(unit.queuedWaypoints) && unit.queuedWaypoints.length <= MAX_QUEUED_WAYPOINTS
       && unit.queuedWaypoints.every((waypoint) => waypoint && integerIn(waypoint.destination, 0, cellCount - 1)
-        && typeof waypoint.attackMove === 'boolean'), `invalid unit route ${index}`);
+        && typeof waypoint.attackMove === 'boolean'
+        && (!waypoint.point || !waypoint.attackMove)
+        && validMoveGoalPoint(waypoint.point, unit, definition.width, definition.height,
+          { destination: waypoint.destination, queued: true }))
+      && validMoveGoalPoint(unit.moveGoalPoint, unit, definition.width, definition.height), `invalid unit route ${index}`);
     if (UNIT_DEFINITIONS[unit.kind].movementDomain === 'water') {
       assertSnapshot(unit.movementDomain === 'water' && typeof unit.waterMoveBlocked === 'boolean'
         && checkpointWaterRuntime.validRoute(unit) && validSkiffWaypoints(checkpointWaterRuntime, unit, MAX_QUEUED_WAYPOINTS)
@@ -3437,6 +3443,7 @@ function restoreMatchCheckpoint(snapshot) {
   for (const record of state.units) {
     units.push({
       ...record,
+      moveGoalPoint: record.moveGoalPoint ? { ...record.moveGoalPoint } : null,
       wallBuildOrder: record.wallBuildOrder ? { ...record.wallBuildOrder, ids: [...record.wallBuildOrder.ids] } : null,
       holdingPosition: record.holdingPosition ?? false,
       persistentOrder: record.persistentOrder ? { ...record.persistentOrder } : null,
@@ -3444,7 +3451,8 @@ function restoreMatchCheckpoint(snapshot) {
       workIntent: restoredWorkIntent(record, state),
       path: [...record.path],
       attackMoveResumePath: record.attackMoveResumePath === null ? null : [...record.attackMoveResumePath],
-      queuedWaypoints: record.queuedWaypoints.map((waypoint) => ({ ...waypoint })),
+      queuedWaypoints: record.queuedWaypoints.map((waypoint) => ({ ...waypoint,
+        ...(waypoint.point ? { point: { ...waypoint.point } } : {}) })),
     });
   }
   unitGenerationCounters.set(state.unitGenerationCounters);
@@ -4069,18 +4077,31 @@ function applyPlannedMoveAssignment(job, assignment) {
     || job.epoch !== movePlanningEpoch
     || !unitRouteResultIsCurrent(result, unit, movePlanningEpoch, navigationRevision)) return false;
   const destination = nearestOpenCell(assignment.destination);
-  const path = result.path;
+  let path = result.path;
   const alreadyInDestinationCell = result.originalPathLength === 0
     && nearestOpenCell(worldToCell(unit.x, unit.z)) === destination;
   const start = worldToCell(unit.x, unit.z);
-  const goal = cellToWorld(destination);
-  const distantSingleWaypoint = path.length === 1
-    && Math.abs(start % MAP_WIDTH - destination % MAP_WIDTH)
-      + Math.abs(Math.floor(start / MAP_WIDTH) - Math.floor(destination / MAP_WIDTH)) > 1;
+  const point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
+  const goal = point || cellToWorld(destination);
+  if (point && path.length > 0) {
+    const center = cellToWorld(destination);
+    const previous = path.length === 1 ? unit : cellToWorld(path.at(-2));
+    // Preserve weighted/corner approaches through the last cell center when a
+    // direct fractional final segment is unsafe. The repeated cell's last leg
+    // is entirely within the selected open cell.
+    if (Math.hypot(point.x - center.x, point.z - center.z) > 0
+      && !canTraverseFlatUnitSegment(previous.x + MAP_HALF_X, previous.z + MAP_HALF_Z,
+        point.x + MAP_HALF_X, point.z + MAP_HALF_Z, MAP_WIDTH, elevationLevelByCell,
+        isWalkable, WALK_SPEED * STEP_SECONDS)) path = [...path, destination];
+  }
+  const firstGoal = path.length === 1 ? goal : cellToWorld(path[0] ?? destination);
+  const distantFirstWaypoint = path.length > 0
+    && Math.abs(start % MAP_WIDTH - path[0] % MAP_WIDTH)
+      + Math.abs(Math.floor(start / MAP_WIDTH) - Math.floor(path[0] / MAP_WIDTH)) > 1;
   // A shared cell-center route can graze an obstacle from one assignee's
   // fractional position. Rejoin its start center before taking the shortcut.
-  unit.path = distantSingleWaypoint && !canTraverseFlatUnitSegment(
-    unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z, goal.x + MAP_HALF_X, goal.z + MAP_HALF_Z,
+  unit.path = distantFirstWaypoint && !canTraverseFlatUnitSegment(
+    unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z, firstGoal.x + MAP_HALF_X, firstGoal.z + MAP_HALF_Z,
     MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS) ? [start, ...path] : path;
   unit.pathIndex = 0;
   unit.movePlanningPending = false;
@@ -4191,6 +4212,7 @@ function completeMovePlanningJob(job) {
 }
 
 function clearAttackMoveOrder(unit) {
+  unit.moveGoalPoint = null;
   automaticTargetRejections.delete(unit);
   unit.stanceCombat = false;
   unit.stanceReturning = false;
@@ -4309,9 +4331,10 @@ function processMovePlanningSlice(job) {
         const startCell = nearestOpenCell(currentGroup.startCell);
         const path = findPathAStar(startCell, destination, job.diagnostics);
         if (path == null) { currentGroup.nextGoal--; break; }
-        const goal = cellToWorld(destination);
+        const centerGoal = cellToWorld(destination);
         const originalCost = unitRoutePathCost(startCell, path, MAP_WIDTH, elevationLevelByCell);
         for (const assignment of activeAssignments) {
+          const goal = assignment.unit.moveGoalPoint && activeMoveGoalPoint(assignment.unit) || centerGoal;
           assignment.path = path;
           assignment.plannedNavigationRevision = navigationRevision;
           assignment.routeResult = createUnitRouteResult({ unit: assignment.unit, revision: assignment.revision,
@@ -4386,6 +4409,7 @@ function buildMoveFallbackPools(unitComponents, centerColumn, centerRow) {
 }
 
 function cancelGatherOrder(unit) {
+  unit.moveGoalPoint = null;
   const changed = unit.gatherNodeId !== null || unit.gatherForestCell >= 0 || unit.gatherPhase !== '';
   unit.gatherNodeId = null;
   unit.gatherForestCell = -1;
@@ -5611,8 +5635,13 @@ function enqueueRouteRepairs(repairs, { mode = 'blocked-route-repair', orderLabe
     }
     if (destination < 0) continue;
     if (unit.kind !== 'worker') goalsByTeam[unit.team].add(destination);
+    const point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
     const wallOrder = activeWallBuildOrder(unit);
     unit.orderRevision++;
+    if (point) {
+      unit.moveGoalCell = destination;
+      unit.moveGoalPoint = createMoveGoalPoint(unit, point.requestedX, point.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT);
+    }
     if (wallOrder) wallOrder.revision = unit.orderRevision;
     unit.movePlanningPending = true;
     unit.attackMoveRouteReady = false;
@@ -6577,6 +6606,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     return;
   }
   const queueWaypoint = command.queue === true && buildingTargetId === null;
+  const precisePoint = command.type === 'move' && buildingTargetId === null && selectedUnits.length === 1;
   const canQueueBehindCurrentRoute = (unit) => unit.queuedWaypoints.length > 0
     || (unit.gatherNodeId === null && unit.gatherForestCell < 0 && unit.buildingTargetId === null
       && (unit.movePlanningPending || unit.pathIndex < unit.path.length
@@ -6626,7 +6656,8 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
       clearWorkIntent(unit);
       unit.wallBuildOrder = null;
       unit.persistentOrder = null;
-      unit.queuedWaypoints.push({ destination, attackMove });
+      unit.queuedWaypoints.push({ destination, attackMove,
+        ...(precisePoint ? { point: createMoveGoalPoint(unit, centerX, centerZ, destination, MAP_WIDTH, MAP_HEIGHT) } : {}) });
       queuedCount++;
       dirty = true;
       return;
@@ -6654,6 +6685,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     unit.attackMoveAnchorZ = unit.z;
     unit.attackMoveScanTick = tickNumber + (unit.id % ATTACK_MOVE_SCAN_INTERVAL_TICKS);
     unit.orderRevision++;
+    unit.moveGoalPoint = precisePoint ? createMoveGoalPoint(unit, centerX, centerZ, destination, MAP_WIDTH, MAP_HEIGHT) : null;
     unit.path = [];
     unit.pathIndex = 0;
     const assignment = { unit, destination, revision: unit.orderRevision, path: [] };
@@ -7113,6 +7145,8 @@ function advanceQueuedWaypoints() {
     const currentCell = nearestOpenCell(worldToCell(unit.x, unit.z));
     const activeGoal = unit.moveGoalCell >= 0 ? nearestOpenCell(unit.moveGoalCell) : -1;
     if (activeGoal < 0 || currentCell !== activeGoal) continue;
+    const point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
+    if (point && Math.hypot(unit.x - point.x, unit.z - point.z) >= .02) continue;
 
     const waypoint = unit.queuedWaypoints.shift();
     let destination = nearestOpenCell(waypoint.destination);
@@ -7159,6 +7193,8 @@ function advanceQueuedWaypoints() {
     unit.lastAttackCell = -1;
     unit.repathTimer = 0;
     unit.moveGoalCell = destination;
+    unit.moveGoalPoint = waypoint.point
+      ? createMoveGoalPoint(unit, waypoint.point.requestedX, waypoint.point.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT) : null;
     const assignment = { unit, destination, revision: unit.orderRevision, path: [] };
     assignments.push(assignment);
     const startCell = nearestOpenCell(worldToCell(unit.x, unit.z));
@@ -7648,7 +7684,9 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   const trackSeparationWork = SEPARATION_DIAGNOSTICS_ENABLED;
   let unitCandidateVisits = 0;
   if (trackSeparationWork) separationTickMoveVectorCalls++;
-  const target = cellToWorld(unit.path[unit.pathIndex]);
+  const point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
+  const target = point && unit.pathIndex === unit.path.length - 1
+    && unit.path[unit.pathIndex] === point.cell ? point : cellToWorld(unit.path[unit.pathIndex]);
   let dx = target.x - unit.x;
   let dz = target.z - unit.z;
   const distance = Math.hypot(dx, dz);

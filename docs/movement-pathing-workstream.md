@@ -42,7 +42,7 @@ land executor, not command admission or whole journeys.
 
 | Caller / intent | Existing route / execution surface | Policy and evidence still required |
 | --- | --- | --- |
-| Manual Move, queued Move, formation slots | `assignFormationMove`, `advanceQueuedWaypoints`, sliced `findPathAStar` → `applyPlannedMoveAssignment` → `getMoveVector` / `simulateTick` | Preserve distinct slots, causal queues and reachable-component projection; exact fractional arrival is a later change. [Direct Move checks](qa-direct-open-ground-move-2026-10-04.md) retain current cell-center semantics. |
+| Manual Move, queued Move, formation slots | `assignFormationMove`, `advanceQueuedWaypoints`, sliced `findPathAStar` → `applyPlannedMoveAssignment` → `getMoveVector` / `simulateTick` | U3 adds exact legal points for one selected land unit's ordinary Move and queued Move. Groups keep distinct slots and reachable-component projection. [Retained Direct Move checks](qa-direct-open-ground-move-2026-10-04.md) document the historical cell-center milestone. |
 | Gather, Farm, shore fish, drop-off, Return, return to work | `routeWorker`, `routeForestWorker`, `routeWorkerToDropoff`, `updateWorkerEconomy`; cached cardinal flow fields → land executor | Select a legal interaction endpoint and preserve cargo/job. Resource owner `01a101f7-5683-70da-8e3b-b87022e5a008` owns the urgent Worker-only direct-route patch. Retain selected `path.at(-1)`, never substitute `field.goal`; drop-off scoring uses original `path.length` before reduction. |
 | Forest group / region intent | `assignForestGather`, gather-work-area selection, `updateForestWorkerEconomy` → resource routes | Forest owner `01a1072a-4c42-7791-9dab-77b88425a021` owns the returning-forester/interior-click fix. A clicked interior tree names its selected forest group; choose its nearest reachable frontier. Distinguish exhausted, temporarily obstructed and unreachable. No unrelated global fallback or hidden-resource reveal. |
 | Build, repair, palisade sequence, site evacuation | Building access assignment → A* / land executor; construction and wall continuation | Preserve paid site IDs, revision, legal edge range and actual productive-work receipts. Completion of movement does not mean completion of work. |
@@ -80,7 +80,7 @@ Changes to another lane's host functions are agreed with that affected owner.
 | Slice / owner | Bounded writes and dependency | Acceptance / next action |
 | --- | --- | --- |
 | U1 · shared movement owner · merged in [PR #332](https://github.com/lbeezr/thousand-unit-skirmish/pull/332) at `062c3603` after independent review | `src/unit-movement.mjs` dimension preconditions, `scripts/unit-movement.test.mjs`, this owning guide. No flow, Worker, map-limit, server-loop or relocation edits. | Malformed grids fail closed before occupancy; 16×17, 160, 256 and planned320 primitive index checks; both-seat cliff/corner rejection across 13 injected land intent policies with intent/queue retained. Exact-head/postmerge source tests and clean release are recorded in the PR. This is a source safety/regression milestone. |
-| U2 · resource / forest owners, then shared adoption | Worker shortcut [PR #330](https://github.com/lbeezr/thousand-unit-skirmish/pull/330) at `6183693c`, forest-group job [PR #341](https://github.com/lbeezr/thousand-unit-skirmish/pull/341) at `ccb2e86a`; shared owner adopts their final endpoints/costs in `src/unit-movement.mjs`, Worker/planner publication and private diagnostics. | Keep original drop-off scoring and resource-owned reduction. Transient results distinguish ready/final approach, actual empty arrival, unreachable and deferred; reject stale actor/generation/order/epoch/nav before publication. Both-seat Worker cycles, forest/Farm selected tails, original cost/length, stale publication and fair deferred turns use existing fixtures. Source adoption is bounded; long mixed journeys and identified-release rendered acceptance remain U7. No global `pathFromAttackFlow` edit. |
+| U2 · shared adoption merged in [PR #362](https://github.com/lbeezr/thousand-unit-skirmish/pull/362) at `20580007` | Worker shortcut [PR #330](https://github.com/lbeezr/thousand-unit-skirmish/pull/330) at `6183693c`, forest-group job [PR #341](https://github.com/lbeezr/thousand-unit-skirmish/pull/341) at `ccb2e86a`; shared owner adopts their final endpoints/costs in `src/unit-movement.mjs`, Worker/planner publication and private diagnostics. | Original drop-off scoring and resource-owned reduction are preserved. Transient results distinguish ready/final approach, actual empty arrival, unreachable and deferred; reject stale actor/generation/order/epoch/nav before publication. Both-seat Worker cycles, forest/Farm selected tails, original cost/length, stale publication and fair deferred turns pass. Exact merged-source 70 checks and clean release/startup evidence are in the PR. Long mixed journeys and identified-release rendered acceptance remain U7. No global `pathFromAttackFlow` edit. |
 | U3 · shared movement owner | `applyPlannedMoveAssignment`, goal/queue fields in `assignFormationMove` / `advanceQueuedWaypoints`, matching land checkpoint validation and existing replay fixtures. Dependency: U2 endpoint/cost contracts; exact checkpoint subsection agreed with recovery owner. | Real commands distinguish empty-success/failure, move within a goal cell, exact fractional final points and obstacle-edge projection; Stop/replacement, stale epoch/nav/actor and queued/active/idle restart. Migrate existing cell-centered historical fixtures honestly. |
 | U4 · movement + construction/combat consumers | Movement owns segment/step/arrival helpers and the land execution subsection; construction owns access/paid continuation; combat owns `getUnitAttackPath`, range truncation and same-cell closure. No target acquisition/damage rewrite. | One clearance policy through direct/weighted/flow routes, building/range approaches, interaction separation and dynamic gates/forests. Both-seat range correctness, no illegal crossings, paid work unaffected; no unconsumed helper. |
 | U5 · movement; naval and wildlife keep adapters | Movement owns bounded avoidance/detour/progress diagnostics. Naval owns `water-unit-runtime`, Skiff consumers; wildlife owns herd/grazing validators/stepping. Dependency: selected goal and compatible clearance. | Opposing choke traffic, parked workers, mixed speeds, stable formation slots/compress/reform, wait/yield fairness and bounded stall escalation. Preserve water hulls/basins and Sheep cardinal/final-point behavior. Each adapter ships independently. |
@@ -113,9 +113,60 @@ with the map/recovery owners before an admission decision; U2 does not raise lim
 The merged forest-gap characterization below remains cell-gap/replay evidence,
 separate from swept physical clearance, ordinary rendered acceptance or capacity.
 
-Visual development backing for this internal publication/diagnostic slice is N/A;
-it does not change presentation treatment. U3 still owns exact fractional manual
-endpoints, and U4–U7 retain their clearance, runtime-state and acceptance gaps.
+Visual development backing for U2's internal publication/diagnostic slice is N/A;
+it does not change presentation treatment. U4–U7 retain their clearance,
+runtime-state and acceptance gaps.
+
+### U3 first vertical slice: ordinary single-unit fractional endpoints
+
+One selected land unit's ordinary Move retains the finite requested coordinates
+separately from its legal arrival point/cell. If the requested cell is selected,
+arrival uses that point within the existing map bounds; a blocked or disconnected
+cell projects to the selected reachable cell center. Group slots, attack-move,
+target/interaction range, Worker flow routes and naval hull policies retain their
+own semantics. AI/scenario/rally callers that issue an ordinary single-unit Move
+consume this same contract; this does not audit every AI decision or relocation.
+
+The optional private `moveGoalPoint` and queued `point` payloads have version 1,
+actor generation and order revision. Checkpoint schema 29 remains compatible with
+old saves lacking these fields, which retain cell-center semantics. Unknown,
+malformed, foreign or incoherent payloads reject. Capture/restore detach both
+objects. Internal repair preserves requested intent while rebinding identity and
+projecting the selected arrival. Stop/replacement invalidates the old point.
+Only this unit/queue checkpoint subsection overlaps recovery; the exact boundary
+is recorded on [the recovery artifact](https://github.com/lbeezr/thousand-unit-skirmish/pull/361#issuecomment-5983336491).
+
+Route publication checks an assignee's fractional start and final segment.
+Unsafe or weighted final approaches retain the last cell center, then finish
+inside that cell; original route cost/length and shared arrays remain intact.
+Entering the destination cell alone cannot dequeue the next ordinary point.
+The existing land step guard still checks actual terrain/corner crossings;
+this slice does not establish swept physical clearance.
+
+The [endpoint correction storyboard](qa-evidence/fractional-move-endpoints-2026-10-04/endpoint-storyboard.svg)
+shows click, safe approach, exact arrival and queue handoff. It reuses the current
+travel/heading/idle treatment explained by the preserved
+[direct-motion study](qa-direct-open-ground-move-2026-10-04.md); no new art,
+animation, velocity curve or heading treatment is selected. The schematic is
+design backing, not gameplay pixels. Normal/strategic zoom, both seats and fog
+remain actual rendered acceptance work with movement owner `01a107ba`, using CI
+owner `01a10378`'s existing capture interface. The previously denied hosted
+dispatch remains paused; no alternate authentication is attempted.
+
+`scripts/fractional-move-endpoints.test.mjs` executes both-seat Worker/Infantry
+commands, same-cell final approach, exact queue handoff, pending/active/idle
+checkpoint recovery, Stop/replacement, paid blocked-goal projection, unsafe
+fractional corners, a weighted raised goal, map-bound clamping and malformed/
+legacy payloads. Its finite journey deadline is 1,800 ticks with zero illegal
+cell steps and unchanged health. Normal defensive idle takes ownership only
+after exact arrival; the completed Move payload may then retire while the unit
+remains at its requested point. Existing direct trajectory records stay
+historical; the runner now measures requested-to-arrival projection and repeats
+each fixed-tick geometry case twice. The native two-seat queued Move fixture
+checks exact fractional arrival after actual process restart against accepted
+command coordinates, including that normal idle transition. These are bounded
+source/CPU witnesses; U3's remaining domain endpoint adoption and U4–U7's whole
+runtime, crowd, clearance, release/deployed identity and rendered matrix stay open.
 
 ### Forest cell-gap characterization — 4 October 2026
 

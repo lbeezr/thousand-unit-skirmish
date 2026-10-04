@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 250" role="img" aria-labelledby="title desc">
+  <title id="title">Ordinary Move endpoint correction storyboard</title>
+  <desc id="desc">Before, entering the goal cell reaches its center and hands off the queue. After, the unit reaches the legal requested point before starting the next queued leg. Weighted or unsafe approaches retain the center before the final leg. This is a design schematic, not rendered gameplay.</desc>
+  <rect width="720" height="250" fill="#f8f5ef"/>
+  <g font-family="sans-serif" font-size="14" fill="#243c45">
+    <text x="24" y="26" font-size="18">Single land unit · ordinary Move / queued Move</text>
+    <text x="24" y="52">Design schematic. Existing travel, heading and idle treatment is reused.</text>
+    <text x="24" y="85">Before: cell-center arrival</text>
+    <text x="374" y="85">Selected: legal requested-point arrival</text>
+    <text x="24" y="226">1 click → 2 safe approach → 3 exact arrival → queued leg</text>
+    <text x="24" y="245" font-size="12">No new animation or timing curve. Unsafe / weighted legs keep the center approach.</text>
+  </g>
+  <g fill="none" stroke="#aab3b0" stroke-width="1">
+    <rect x="150" y="104" width="80" height="80"/><rect x="500" y="104" width="80" height="80"/>
+  </g>
+  <g stroke="#ba5450" stroke-width="2">
+    <path d="m213 111 12 12 m0-12-12 12 m563-6 12 12 m0-12-12 12"/>
+  </g>
+  <g fill="none" stroke="#376e83" stroke-width="3">
+    <path d="M52 168 190 144"/><path d="M402 168 569 117"/>
+    <path d="M190 144 266 104" stroke-dasharray="5 4"/><path d="M569 117 651 101" stroke-dasharray="5 4"/>
+  </g>
+  <g fill="#376e83"><circle cx="52" cy="168" r="6"/><circle cx="402" cy="168" r="6"/></g>
+  <g fill="#d7ae55" stroke="#243c45"><circle cx="190" cy="144" r="6"/><circle cx="569" cy="117" r="6"/></g>
+  <g font-family="sans-serif" font-size="12" fill="#243c45">
+    <text x="146" y="199">center (.5,.5)</text><text x="506" y="199">point (.89,.88)</text>
+    <text x="236" y="142">queue skips point</text><text x="594" y="145">queue after arrival</text>
+  </g>
+</svg>
