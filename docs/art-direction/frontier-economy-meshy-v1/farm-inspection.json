@@ -1,0 +1,15 @@
+{
+  "schema": "frontier-economy-source-inspection.v1",
+  "sourceFile": "/Users/lb/.codex/worktrees/030a/thousand-unit-skirmish/meshy_output/20261004_124233_frontier-farm-v1_01a107cb/farm.glb",
+  "bytes": 245852316,
+  "sha256": "6cc2a5552138f9f9fe2730318a392d2ede7b291b79051ca9442f468704ab26e6",
+  "gltfVersion": "2.0",
+  "meshCount": 1,
+  "primitiveCount": 1,
+  "triangles": 7848278,
+  "materialCount": 1,
+  "imageCount": 3,
+  "embeddedImages": true,
+  "externalUris": [],
+  "note": "Structural inspection only; full geometry/lower-band bounds are recorded by inspect-building-glb.mjs in the accompanying measurement. World scale/pivot, clearance and visual topology still require authoring review."
+}

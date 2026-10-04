@@ -13,6 +13,8 @@ start; this index covers maintained guides, contracts, experiments, and evidence
 | What evidence supports a product claim? | [QA plan](qa-vertical-slice.md) |
 | How do we choose tests, qualify cloud rendering and close verification? | [Testing strategy](testing-strategy.md) |
 | How should the game look and read? | [Art direction](art-direction-contract-v1.md) |
+| Which art/storyboard backing exists, and where are the direction gaps? | [4 October stocktake](art-direction-gaps-2026-10-04.md), [visual development backing](art-direction-contract-v1.md#visual-development-backing) |
+| Where can I compare a civilization's full buildings and village/town/city layouts? | [Frontier and Boughward reference library](art-direction/civilization-settlements-v1/README.md) |
 | What are Vaelora’s selected zone maps and ecology keys? | [Art checkpoint](art-direction/vaelora-v1/README.md) |
 | Where do I read and extend Vaelora's lore? | [Lore wiki](lore/README.md): world, regions, peoples, institutions, history and magic |
 | Where are saved art iterations and preservation gaps? | [Art evolution](lore/art-evolution.md) |
@@ -24,6 +26,7 @@ start; this index covers maintained guides, contracts, experiments, and evidence
 | How do we split work without losing integration ownership? | [Contributor planning](contributor-planning.md), [PR checklist](../.github/pull_request_template.md) |
 | How do contributors coordinate and integrate? | [AGENTS.md](../AGENTS.md) |
 | What does the implementation currently do? | Task guides and contracts, checked against source |
+| What does every building produce, research, unlock or supply, and why doesn't Farm create plots? | [Canonical building action coverage and starter progression](gameplay-foundation-plan.md#canonical-building-action-coverage--4-october-2026) |
 
 Change the owning document when a decision changes, then update affected links
 and summaries. Resolve a disagreement with source for present behavior, the game

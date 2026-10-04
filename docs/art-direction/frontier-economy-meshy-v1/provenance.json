@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-04",
+  "source_revision": "5d081ecf376f2e6e19331713bb5cc764bae75941",
+  "source_dirty": true,
+  "authorization": "User requested identification of missing civilization models and submission to Meshy on 4 October 2026.",
+  "inventory": [
+    {
+      "id": "town-center",
+      "model_status": "produced",
+      "action": "reuse existing scale-pilot source"
+    },
+    {
+      "id": "house",
+      "model_status": "produced",
+      "action": "reuse existing scale-pilot source"
+    },
+    {
+      "id": "storehouse",
+      "model_status": "produced",
+      "action": "reuse existing civilization-models source"
+    },
+    {
+      "id": "stable",
+      "model_status": "produced",
+      "action": "reuse existing civilization-models source"
+    },
+    {
+      "id": "workshop",
+      "model_status": "produced",
+      "action": "reuse existing civilization-models source"
+    },
+    {
+      "id": "watchtower",
+      "model_status": "produced",
+      "action": "reuse existing civilization-models source"
+    },
+    {
+      "id": "barracks",
+      "model_status": "produced locally",
+      "action": "reuse existing military source"
+    },
+    {
+      "id": "archery-range",
+      "model_status": "produced locally",
+      "action": "reuse existing military source"
+    },
+    {
+      "id": "palisade-wall",
+      "model_status": "private authored packet reported",
+      "action": "retain Coastal source/publication/adoption outcome; do not regenerate"
+    },
+    {
+      "id": "palisade-gate",
+      "model_status": "private authored packet reported",
+      "action": "retain Coastal source/publication/adoption outcome; do not regenerate"
+    },
+    {
+      "id": "mill",
+      "model_status": "Meshy source downloaded",
+      "action": "calibrate source and export registered Complete views",
+      "task_id": "01a107cb-427e-712c-b142-1d661883e5f7"
+    },
+    {
+      "id": "farm",
+      "model_status": "Meshy source downloaded",
+      "action": "calibrate source and export registered Complete views",
+      "task_id": "01a107cb-53fe-7134-b790-640f71952e1c"
+    },
+    {
+      "id": "dock",
+      "model_status": "Meshy source downloaded",
+      "action": "calibrate source and export registered Complete views",
+      "task_id": "01a107cb-60f7-7626-857a-570c93910152"
+    }
+  ],
+  "reference_tool": "built-in ImageGen",
+  "input": {
+    "path": "../civilization-settlements-v1/frontier-building-family-v1.png",
+    "sha256": "0a96c3fe4fc67eb87f7eacca1358751cf42065dbcef636ee245ca13dbba269c5",
+    "selection": "Only Mill/Farm/Dock forms/materials selected for candidate source generation."
+  },
+  "provider": "Meshy",
+  "cli_version": "0.4.0",
+  "resource": "image-to-3d",
+  "parameters": {
+    "model_type": "standard",
+    "ultra_mode": false,
+    "should_texture": true,
+    "enable_pbr": true,
+    "texture_resolution": "2k",
+    "remove_lighting": true,
+    "target_formats": [
+      "glb"
+    ]
+  },
+  "estimate": {
+    "source": "meshy make <reference> --dry-run",
+    "per_model": 30,
+    "total": 90,
+    "balance_before": 1970
+  },
+  "jobs": [
+    {
+      "role": "mill",
+      "path": "mill-reference-v1.png",
+      "original_path": "/Users/lb/.codex/generated_images/01a107a5-8aa1-7fd0-81b1-997b4d563e89/exec-03fc28b9-5f65-44a2-a036-43a16ed50a66.png",
+      "sha256": "a46e18060e90fec2442e88daa93448b04a89445f25c21f0b903f5cd931440c8c",
+      "bytes": 2095126,
+      "width": 1254,
+      "height": 1254,
+      "color_type": 6,
+      "task_id": "01a107cb-427e-712c-b142-1d661883e5f7",
+      "resource": "image-to-3d",
+      "project_path": "/Users/lb/.codex/worktrees/030a/thousand-unit-skirmish/meshy_output/20261004_124231_frontier-mill-v1_01a107cb",
+      "operation_id": "frontier-economy-v1-mill-20261004",
+      "status": "SUCCEEDED",
+      "model": {
+        "path": "meshy_output/20261004_124231_frontier-mill-v1_01a107cb/mill.glb",
+        "bytes": 75041060,
+        "sha256": "0c9eed4604ac59ae3c26d95ffa3f1b05be7cbfe722c21bc27143f69d053713d0",
+        "triangles": 2206392,
+        "embedded_images": true,
+        "external_uris": [],
+        "inspection": "mill-inspection.json",
+        "measurement": "mill-measurement.json"
+      },
+      "preview": {
+        "path": "mill-meshy-preview-v1.png",
+        "sha256": "33986200ccab516aa6e28db3974dd6f1bd9fb2e82f43366e599f11bf9cf6ce78",
+        "bytes": 209296,
+        "inspected": true,
+        "review": "Cream tower, sage roof, oak machinery, porch and sacks retained; sails are nearly edge-on in provider thumbnail, so frontal sail shape/topology remains unverified."
+      },
+      "consumed_credits": 30,
+      "provider_face_count": null,
+      "download_warnings": []
+    },
+    {
+      "role": "farm",
+      "path": "farm-reference-v1.png",
+      "original_path": "/Users/lb/.codex/generated_images/01a107a5-8aa1-7fd0-81b1-997b4d563e89/exec-63a8e56e-711d-43de-a9cd-de087ec91d73.png",
+      "sha256": "a100183b64feea7bb501aa07e03bba022986fb6bfc4da804a169a97cf490d59c",
+      "bytes": 2481688,
+      "width": 1536,
+      "height": 1024,
+      "color_type": 6,
+      "task_id": "01a107cb-53fe-7134-b790-640f71952e1c",
+      "resource": "image-to-3d",
+      "project_path": "/Users/lb/.codex/worktrees/030a/thousand-unit-skirmish/meshy_output/20261004_124233_frontier-farm-v1_01a107cb",
+      "operation_id": "frontier-economy-v1-farm-20261004",
+      "status": "SUCCEEDED",
+      "model": {
+        "path": "/Users/lb/.codex/worktrees/030a/thousand-unit-skirmish/meshy_output/20261004_124233_frontier-farm-v1_01a107cb/farm.glb",
+        "bytes": 245852316,
+        "sha256": "6cc2a5552138f9f9fe2730318a392d2ede7b291b79051ca9442f468704ab26e6",
+        "triangles": 7848278,
+        "embedded_images": true,
+        "external_uris": [],
+        "inspection": "farm-inspection.json",
+        "measurement": "farm-measurement.json"
+      },
+      "preview": {
+        "path": "farm-meshy-preview-v1.png",
+        "sha256": "b0ebe11de7faf6291edf9c5b7acd2fbb4047f6c25d68b09452e07e96dfc99f09",
+        "bytes": 171198,
+        "inspected": true,
+        "review": "Golden grain rows, low oak enclosure and small sage-roofed shed retained. Provider thumbnail crops the left fence corner; full coverage and crop exhaustion need registered capture/source authoring."
+      },
+      "consumed_credits": 30,
+      "provider_face_count": null,
+      "download_warnings": []
+    },
+    {
+      "role": "dock",
+      "path": "dock-reference-v1.png",
+      "original_path": "/Users/lb/.codex/generated_images/01a107a5-8aa1-7fd0-81b1-997b4d563e89/exec-843aeba9-f4e3-4b90-b91f-8c8c604f404e.png",
+      "sha256": "5207683463fdd66054755bfc4c693d9993868893ffa5d6649c7474c18a667808",
+      "bytes": 2414745,
+      "width": 1536,
+      "height": 1024,
+      "color_type": 6,
+      "task_id": "01a107cb-60f7-7626-857a-570c93910152",
+      "resource": "image-to-3d",
+      "project_path": "/Users/lb/.codex/worktrees/030a/thousand-unit-skirmish/meshy_output/20261004_124236_frontier-dock-v1_01a107cb",
+      "operation_id": "frontier-economy-v1-dock-20261004",
+      "status": "SUCCEEDED",
+      "model": {
+        "path": "meshy_output/20261004_124236_frontier-dock-v1_01a107cb/dock.glb",
+        "bytes": 62514200,
+        "sha256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+        "triangles": 1767254,
+        "embedded_images": true,
+        "external_uris": [],
+        "inspection": "dock-inspection.json",
+        "measurement": "dock-measurement.json"
+      },
+      "preview": {
+        "path": "dock-meshy-preview-v1.png",
+        "sha256": "76b43f44e6a9fccfb2abd4be6d4b4e7c991010bcce154463591327cade2b3fdc",
+        "bytes": 150222,
+        "inspected": true,
+        "review": "Shore apron, low oak/sage shelter, landing and mooring posts retained; no boat or water baked into asset. Pier overhang/ground pivot require calibrated capture."
+      },
+      "consumed_credits": 30,
+      "provider_face_count": null,
+      "download_warnings": []
+    }
+  ],
+  "runtime_adoption": "not started; source milestone only",
+  "actual_total_credits": 90,
+  "balance_after": 1880,
+  "source_delivery_status": "complete"
+}

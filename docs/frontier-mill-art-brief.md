@@ -9,6 +9,12 @@ the procedural House; this brief requests a distinct useful art slice using
 existing owned sources or procedural authoring. It does not authorize a new paid
 model or provider call.
 
+**4 October source update:** the user's later request explicitly authorizes
+missing Frontier models to be sent to Meshy. The [economy source slice](art-direction/frontier-economy-meshy-v1/README.md)
+records the selected isolated Mill reference, producing task and source-delivery
+limits. That bounded authorization supersedes the earlier no-paid-job scope
+for this Mill model; it does not change its gameplay or capture contract.
+
 ## Identity and placement contract
 
 - Registry ID `mill`, presentation ID `building.mill`, square **3 × 3** occupancy.

@@ -68,7 +68,7 @@ export function buildingReadabilityStatus({ manifest, observedManifest, observed
 export function mountAssetReadability({ document, getObservation, focus, fetchImpl = globalThis.fetch }) {
   const root = document.createElement('aside');
   root.id = 'asset-readability';
-  root.className = 'contextual-command-bar';
+  root.className = 'asset-readability-panel';
   root.setAttribute('aria-label', 'Runtime asset readability review');
   Object.assign(root.style, { position: 'absolute', top: '80px', bottom: 'auto', left: 'auto', right: '16px',
     width: '360px', maxWidth: 'calc(100% - 32px)', maxHeight: 'calc(100% - 110px)', zIndex: '20', overflow: 'auto' });
