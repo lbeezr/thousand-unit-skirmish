@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, BARRACKS_PORTRAIT } from '../src/selection-portrait.mjs';
+import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, BARRACKS_PORTRAIT, FARM_PORTRAIT, FARM_PORTRAITS, farmSelectionPortrait } from '../src/selection-portrait.mjs';
 import { buildingSpriteUrl } from '../src/building-sprites.mjs';
 import { moduleImports } from './module-imports.mjs';
 import { BROWSER_ENTRYPOINTS } from './check-runtime-imports.mjs';
@@ -100,6 +100,26 @@ for (const [role, source, sha256] of [
   assert.ok(portrait.cropY + portrait.cropSize <= image.readUInt32BE(20));
 }
 const barracksRoot = 'assets/buildings/barracks-sprite-test-v1';
+const farmRoot = 'assets/buildings/frontier-economy-models-v1';
+const farmManifest = JSON.parse(readFileSync(path.join(root, farmRoot, 'farm-complete-renderer.json'), 'utf8'));
+assert.deepEqual(Object.keys(FARM_PORTRAITS), farmManifest.stateOrder, 'HUD uses only registered Farm states');
+assert.deepEqual(farmManifest.camera.framePixels, [FARM_PORTRAIT.sourceWidth, FARM_PORTRAIT.sourceWidth]);
+for (const state of [farmManifest.completeState, ...farmManifest.states]) {
+  const portrait = FARM_PORTRAITS[state.state], source = state.views.find(view => view.index === 1);
+  assert.equal(portrait.asset, `/${farmRoot}/${source.path}`, 'fixed illustrative view reuses admitted default bytes');
+  const bytes = readFileSync(path.join(root, farmRoot, source.path));
+  assert.equal(createHash('sha256').update(bytes).digest('hex'), source.sha256);
+  assert.equal(bytes.length, source.bytes);
+  assert.deepEqual([bytes.readUInt32BE(16), bytes.readUInt32BE(20)], farmManifest.camera.framePixels);
+  assert.ok(portrait.cropX >= 0 && portrait.cropY >= 0 && portrait.cropSize > 0);
+  assert.ok(portrait.cropX + portrait.cropSize <= portrait.sourceWidth);
+  assert.ok(portrait.cropY + portrait.cropSize <= portrait.sourceWidth);
+}
+const farmSnapshot = { type: 'farm', complete: true, hp: 600, maxHp: 600, harvestStock: 1 };
+const farmMapping = farmManifest.stateMapping;
+assert.equal(farmSelectionPortrait({ ...farmSnapshot, complete: false, progress: farmMapping.construction.foundationAtOrBelow }).state, 'foundation');
+assert.equal(farmSelectionPortrait({ ...farmSnapshot, hp: farmSnapshot.maxHp * farmMapping.health.damagedAtOrBelow }).state, 'damaged');
+assert.equal(farmSelectionPortrait({ ...farmSnapshot, hp: farmSnapshot.maxHp * farmMapping.health.criticalAtOrBelow, harvestStock: 0 }).state, farmMapping.harvest.exhaustedStates.critical);
 const barracksProvenance = readFileSync(path.join(root, barracksRoot, 'PROVENANCE.md'), 'utf8');
 const barracksHashes = new Map([...barracksProvenance.matchAll(/`runtime\/([^`]+)`\s*\|\s*`([a-f0-9]{64})`/g)]
   .map(([, name, hash]) => [name, hash]));

@@ -5,7 +5,7 @@ The portrait opens the existing dismissible Selection drawer with practical role
 notes: registered abilities, live HP, base movement/attack stats and training
 producer, cost, duration and population. Infantry/Archer notes retain the separate
 structure-damage value. The same 52px slot retains the legacy Barracks lifecycle
-thumbnail and the Farm's explicitly labelled Food symbol; both open existing
+thumbnail and the Farm's admitted lifecycle illustration; both open existing
 structure details. Matching the newer default captured Barracks identity remains
 incomplete. Multiple units retain their composition summary. Unsupported
 buildings, enemy, dead, stale and spectator selections have no portrait.
@@ -71,8 +71,8 @@ Center training persist. The general sourced world note remains optional.
 Existing public Spearman and mounted/siege illustrations are inventoried below;
 their portrait/training deliveries and deliberate framing remain missing.
 Skiff and barriers have no matching approved HUD illustration. The newer
-Farm/Mill/Dock battlefield captures are separate from missing matching HUD
-portraits. Keep existing text/symbol disclosure, with no borrowed role image or
+Mill/Dock battlefield captures are separate from missing matching HUD
+portraits; the Farm reuse below closes its source/framing gap. Keep text/symbol disclosure where needed, with no borrowed role image or
 newly generated/rejected placeholder.
 
 ## Approved Archer reuse — 4 October 2026
@@ -87,7 +87,27 @@ damage/range, separate structure damage and Archery Range training, replacing
 Infantry facts during live selection changes. Failed artwork retains text and
 notes; unsupported effective appearances retain their text-only state.
 
-### Current roster HUD bindings — 4 October 2026
+## Farm runtime reuse — 4 October 2026
+
+The requested Farm illustration now reuses the admitted default Frontier family
+in the existing 52px Selection portrait and 40px inline figure. [Provenance and
+all eight source hashes](../assets/ui/portraits/PROVENANCE.md#farm-runtime-reuse--4-october-2026)
+pin view-01 and the CSS viewport x260/y420/500px. Actual original pixels at both
+sizes retain crop rows/roof, the open construction scaffold and exhausted bare
+soil. The fixed view illustrates building identity; camera rotation and live
+team standards remain battlefield cues. No asset is generated, modified or copied.
+
+Construction uses foundation/frame at the registered 0.275 threshold. Completion
+requires the authoritative flag; productive/exhausted and damage variants follow
+finite stock and the registered 0.6/0.3 health thresholds. Written stock, state,
+health and desktop/touch Worker instructions retain their existing meanings.
+Image errors immediately restore the labelled Food symbol without retrying that
+failed state on every snapshot; unsupported snapshots use the same fallback.
+The stable design-study link, dismissible details, focus recovery, select audio,
+clear/replant actions and FoodTools research are unchanged. CPU source inspection
+and DOM/HTTP tests do not establish actual native HUD appearance acceptance.
+
+### Current selection and training bindings — 4 October 2026
 
 This is the current inventory; the 3 October audit below is dated source history.
 
@@ -96,6 +116,7 @@ This is the current inventory; the 3 October audit below is dated source history
 | Worker | Human/Boughward approved illustrations in 52px Selection and 20px training | Native framing/recognition open |
 | Infantry | Restored Human v3/Boughward illustrations; default integration [PR375](https://github.com/lbeezr/thousand-unit-skirmish/pull/375) | Containing staging `b07df557` reported successful by parent; ordinary-game acceptance open |
 | Archer | Established Human v2/Boughward idle copies in the same compact surfaces | Clean package/identified delivery and native framing/recognition remain separate evidence |
+| Farm | Existing Frontier lifecycle view-01 in 52px Selection and 40px inline figure; explicit Food symbol on failure/unknown state | World family accepted on staging `b07df557`; containing HUD delivery and actual compact native acceptance remain open |
 | Spearman | Text; approved idle sources available | Deliberate portrait framing/delivery missing |
 | Scout / Rider | Text; approved mounted sources available | Portrait framing/delivery must preserve wolf/boar or horse identity |
 | Siege Engine | Text; approved equipment sources available | Deliberate equipment framing/delivery missing |
@@ -103,9 +124,8 @@ This is the current inventory; the 3 October audit below is dated source history
 
 The Archer change touches the existing training-decoration list and portrait
 descriptors; it does not change selected Mill research, Food Tools descriptions,
-availability, commands or focus. The building-action owner retains the Farm
-symbol's stale temporary-House wording after the new captured Farm default,
-and matching economy-building HUD framing. No new building image is adopted here.
+availability, commands or focus. The Farm follow-on removes the stale temporary-
+House claim and reuses existing default art; matching Mill/Dock HUD framing remains.
 
 The building-action owner retains two observed follow-ups: a rotated Barracks
 returns no legacy image URL and the old portrait helper throws on `.replace()`;
@@ -139,6 +159,16 @@ login. The HUD owner retains pixel inspection and the unfinished outcome.
    surfaces plus the 52px selected Archer. Verify ranged/structure attack facts,
    Archery Range training, live HP, Worker → Infantry → Archer → group/empty
    focus/dismissal, low wood/unavailable activation and both effective families.
+5. Through ordinary paid Worker controls, build a Farm and capture its existing
+   52px portrait and 40px Selection illustration during foundation/frame,
+   productive completion, actual finite depletion and paid replanting. Repeat
+   both seats, desktop/touch, damaged/critical states available in normal play,
+   and a narrow viewport. Record the containing served source/digest, viewport/DPR
+   and map. Inspect original PNGs for crop rows/scaffold/bare soil, alpha edges,
+   contrast and clipping beside readable stock/HP/Worker instructions; verify
+   Tab/source-link focus, Escape/close and clear/replant/FoodTools controls.
+   Native missing-image fallback needs a bounded request failure, not stock or
+   economy injection. The known cloud sandbox block is not retried or bypassed.
 
 Static original/52px/20px CPU source pixels were inspected in color and grayscale.
 DOM tests cover effective appearance, both seats, stable nodes, truthful facts,

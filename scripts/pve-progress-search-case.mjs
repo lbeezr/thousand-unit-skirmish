@@ -4,8 +4,10 @@ import { gunzipSync } from 'node:zlib';
 import { createSkirmishTargetPolicy } from '../src/pve-skirmish-targets.mjs';
 import { toOpponentObservation } from '../src/pve-opponent.mjs';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
+import { economyRulesetRevision } from '../src/economy-profile.mjs';
+import { migrateFoodToolsCheckpoint, PRE_FOOD_TOOLS_RULESETS } from '../src/server/worker-food-tools.mjs';
 
-/** Actual unedited Medium routes; isolated seeds select their original unknown goals. */
+/** Retained Medium routes, migrated as at server startup; seeds select their original unknown goals. */
 export async function replayProgressSearch(name, { factory = createSkirmishTargetPolicy, cold = false } = {}) {
   const data = JSON.parse(gunzipSync(await readFile(new URL(`fixtures/pve-progress-search/${name}.json.gz`, import.meta.url))));
   const map = JSON.parse(await readFile(new URL('../maps/veyrholds-riven-escarpment.json', import.meta.url)));
@@ -18,7 +20,16 @@ export async function replayProgressSearch(name, { factory = createSkirmishTarge
   const memory = (bytes, i) => bytes[i >> 2] >> ((i & 3) * 2) & 3;
   let initialMask, disclosed = null, firstChanged = null;
   try {
-    r.restore(data.checkpoint);
+    const initial = data.checkpoint;
+    assert.equal(initial.rulesetRevision, PRE_FOOD_TOOLS_RULESETS[initial.economyProfileId]);
+    assert.throws(() => r.restore(initial), /economy profile or gameplay ruleset revision mismatch/,
+      'strict restore still rejects the historical content pin before startup migration');
+    const migrated = migrateFoodToolsCheckpoint(structuredClone(initial));
+    const expected = structuredClone(initial);
+    expected.rulesetRevision = economyRulesetRevision(initial.economyProfileId);
+    expected.state.teamUpgrades = initial.state.teamUpgrades.map(upgrades => ({ ...upgrades, foodTools: false }));
+    assert.deepEqual(migrated, expected, 'production migration changes only the content pin and unpurchased Food Tools flags');
+    r.restore(migrated);
     assert.equal(r.observe(team).tick, data.tick);
     initialMask = mask(view());
     assert.equal(memory(initialMask, cell), 0);

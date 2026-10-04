@@ -101,12 +101,66 @@ export const BARRACKS_PORTRAIT = Object.freeze({
   cropX: 32, cropY: 64, cropSize: 576,
 });
 
-// Farm has no approved illustration or image-backed runtime model. Keep the
-// existing Food symbol explicit rather than presenting another building's art.
-const FARM_PORTRAIT = Object.freeze({
+// Fixed illustrative view of the admitted default Farm, with its actual state.
+// Camera yaw/team standards remain battlefield cues, not inferred HUD facts.
+export const FARM_PORTRAIT = Object.freeze({
+  entryId: 'building.farm', sourceWidth: 1024,
+  cropX: 260, cropY: 420, cropSize: 500,
+});
+export const FARM_PORTRAITS = Object.freeze(Object.fromEntries([
+  ['foundation', 'Foundation · under construction'], ['frame', 'Frame · under construction'],
+  ['complete', 'Planted food plot'], ['damaged', 'Planted food plot · damaged'],
+  ['critical', 'Planted food plot · critically damaged'], ['exhausted', 'Exhausted food plot'],
+  ['exhausted-damaged', 'Exhausted food plot · damaged'],
+  ['exhausted-critical', 'Exhausted food plot · critically damaged'],
+].map(([state, label]) => [state, Object.freeze({
+  ...FARM_PORTRAIT, state, label: `Farm illustration · ${label}`,
+  asset: `/assets/buildings/frontier-economy-models-v1/runtime/farm-${state}-view-01.png`,
+})])));
+const FARM_SYMBOL = Object.freeze({
   entryId: 'building.farm', asset: '/assets/ui/icons/food.svg',
   sourceWidth: 24, cropX: 0, cropY: 0, cropSize: 24,
 });
+const FARM_SYMBOL_LABEL = 'Food symbol · Farm artwork unavailable.';
+
+export function farmSelectionPortrait(building) {
+  if (building?.type !== 'farm') return null;
+  let state;
+  // The card requires authoritative completion; even 100% progress alone
+  // cannot imply food is available from an unfinished plot.
+  if (building.complete !== true) {
+    if (!Number.isFinite(building.progress)) return null;
+    state = building.progress <= 0.275 ? 'foundation' : 'frame';
+  } else {
+    if (!Number.isFinite(building.harvestStock) || building.harvestStock < 0) return null;
+    if (!Number.isFinite(building.hp) || building.hp <= 0
+      || !Number.isFinite(building.maxHp) || building.maxHp <= 0) return null;
+    const ratio = building.hp / building.maxHp;
+    state = ratio <= 0.3 ? 'critical' : ratio <= 0.6 ? 'damaged' : 'complete';
+    if (building.harvestStock === 0) state = state === 'complete' ? 'exhausted' : `exhausted-${state}`;
+  }
+  return FARM_PORTRAITS[state];
+}
+
+function updateFarmPortraitFrame(frame, portrait, onFallback) {
+  const image = frame.querySelector('img');
+  if (!frame.dataset.farmErrorBound) {
+    updatePortraitFrame(frame, portrait || FARM_SYMBOL);
+    frame.dataset.farmErrorBound = 'true';
+    // The ordinary frame listener hides failed art first. Restore the existing
+    // symbol immediately; retaining the failed Farm URL prevents snapshot retries.
+    image.addEventListener('error', () => {
+      if (image.getAttribute('src') !== frame.dataset.farmAsset) return;
+      frame.dataset.failedFarmAsset = frame.dataset.farmAsset;
+      updatePortraitFrame(frame, FARM_SYMBOL);
+      onFallback?.();
+    });
+  }
+  frame.dataset.farmAsset = portrait?.asset || '';
+  const shown = portrait && frame.dataset.failedFarmAsset !== portrait.asset ? portrait : FARM_SYMBOL;
+  updatePortraitFrame(frame, shown);
+  return shown === portrait;
+}
 
 export function farmSelectionFacts(building, coarsePointer = false) {
   const rule = BUILDING_DEFINITIONS.farm;
@@ -121,7 +175,7 @@ export function farmSelectionFacts(building, coarsePointer = false) {
     instruction: !complete ? `${assign} to finish construction.` : stock > 0
       ? `${assign} to harvest. Build another Farm to plant more.`
       : 'Clear exhausted Farm, then select Workers and build a new Farm. No regrowth.',
-    artLabel: 'Food symbol · Farm illustration unavailable; the battlefield uses a temporary House model.',
+    artLabel: farmSelectionPortrait(building)?.label || FARM_SYMBOL_LABEL,
   };
 }
 
@@ -152,7 +206,8 @@ export function updateSelectionPortrait(root, context, unit, appearanceRole) {
     && unit?.hp > 0 ? unitPortrait(unit.kind, appearanceRole) : null;
   const building = context.kind === 'building' && ['barracks', 'farm'].includes(context.building?.type)
     && context.building.hp > 0 ? context.building : null;
-  const portrait = building?.type === 'farm' ? FARM_PORTRAIT : building
+  const farmPortrait = building?.type === 'farm' ? farmSelectionPortrait(building) : null;
+  const portrait = building?.type === 'farm' ? farmPortrait || FARM_SYMBOL : building
     ? { ...BARRACKS_PORTRAIT, asset: buildingSpriteUrl(building).replace(/^\.\//, '/') } : selectedPortrait;
   const art = root.querySelector('[data-building-art]');
   const description = root.querySelector('[data-building-description]');
@@ -165,9 +220,14 @@ export function updateSelectionPortrait(root, context, unit, appearanceRole) {
   }
   art.hidden = description.hidden = instruction.hidden = !farmFacts;
   if (farmFacts) {
-    const artImage = art.querySelector('img');
-    if (artImage.getAttribute('src') !== portrait.asset) artImage.setAttribute('src', portrait.asset);
-    art.querySelector('[data-building-art-label]').textContent = farmFacts.artLabel;
+    let frame = art.querySelector('.farm-selection-art-frame');
+    if (!frame) {
+      frame = root.createElement('span'); frame.className = 'farm-selection-art-frame';
+      frame.setAttribute('aria-hidden', 'true'); frame.append(art.querySelector('img')); art.prepend(frame);
+    }
+    const artLabel = art.querySelector('[data-building-art-label]');
+    const illustrated = updateFarmPortraitFrame(frame, farmPortrait, () => { artLabel.textContent = FARM_SYMBOL_LABEL; });
+    artLabel.textContent = illustrated ? farmFacts.artLabel : FARM_SYMBOL_LABEL;
     description.textContent = farmFacts.description;
     instruction.textContent = farmFacts.instruction;
   }
@@ -183,7 +243,8 @@ export function updateSelectionPortrait(root, context, unit, appearanceRole) {
   button.hidden = !portrait;
   health.hidden = notes.hidden = !selectedPortrait;
   if (!portrait) return;
-  updatePortraitFrame(button.querySelector('.selection-portrait-art'), portrait);
+  if (farmFacts) updateFarmPortraitFrame(button.querySelector('.selection-portrait-art'), farmPortrait);
+  else updatePortraitFrame(button.querySelector('.selection-portrait-art'), portrait);
   button.dataset.codexEntry = portrait.entryId;
   const label = building ? `${BUILDING_DEFINITIONS[building.type].label}${farmFacts ? ' · Food plot' : ''}`
     : `${UNIT_DEFINITIONS[unit.kind].label} · ${portrait.appearanceFamily}`;
