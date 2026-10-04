@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "testedHead": "b4140aec3530f3599396800eecb936df0c906fcf",
+  "integratedMain": "74d6095e",
+  "serverSha256": "50f5588ad4aa40d781c3fce146605267a41b6f6c1858d7b9736809efe9be2967",
+  "focusedChecks": {
+    "passed": 66,
+    "failed": 0,
+    "additionalSharedAdapterCoverage": "scripts/sheep-herding-authority.test.mjs"
+  },
+  "phaseTracesMatchOriginalAfterGenerationNormalization": true,
+  "schedules": 3,
+  "repeatsPerSchedule": 2,
+  "plannerFunctionsUnchangedFrom64cc391": [
+    "scheduleNextMovePlanning",
+    "processMovePlanningSlice",
+    "applyPlannedMoveAssignment",
+    "completeMovePlanningJob",
+    "pendingMoveAssignmentsByUnit",
+    "runSimulationTick"
+  ],
+  "defaultReplayMatches64cc391": [
+    {
+      "traceSha256": "4a4f13f468eb4a21e4302e90c82b102698950adf4882d1b9407af33664c29a3f",
+      "initialRouteSha256": "2af80ac5c20cfc29e3908f5a0f8a11f5443d01d3a6e2b80f52643ad65438acae",
+      "ticks": 623,
+      "arrived": 16,
+      "invalidSteps": 0,
+      "unreachableGoals": 0
+    },
+    {
+      "traceSha256": "4a4f13f468eb4a21e4302e90c82b102698950adf4882d1b9407af33664c29a3f",
+      "initialRouteSha256": "2af80ac5c20cfc29e3908f5a0f8a11f5443d01d3a6e2b80f52643ad65438acae",
+      "ticks": 623,
+      "arrived": 16,
+      "invalidSteps": 0,
+      "unreachableGoals": 0
+    }
+  ],
+  "scriptSha256": {
+    "scripts/pathing-replay-fixture.mjs": "3a4fc1a61e67c0d95c87b39ab5bde8778d56938bfda44541f3e12b5bc5e9170b",
+    "scripts/move-planning-phase-probe.mjs": "1125c559354125ae373f2c75906ef1313189fb16e691afecc19e756c2507e736"
+  },
+  "limits": [
+    "other lanes changed server bytes; this PR changes no production code",
+    "historical original phase-probe and verification artifacts retain their earlier exact source",
+    "no rendered or staged gameplay acceptance"
+  ]
+}

@@ -4,8 +4,10 @@ Producer owner: economy/content. Consumer, default renderer binding, deployment
 and native appearance owner: animation integration task `01a103d4`.
 The parent routed this boundary from the
 [proposal and dated probe](worker-performing-action-contract-proposal.md).
-This is the producer implementation contract; renderer adoption remains a
-separate owned step. No new work artwork or gameplay rules are admitted.
+This is the agreed producer/consumer contract. The [consumer evidence](qa-worker-performing-action-consumer-2026-10-04.md)
+records version-aware default sprite/procedural/scheduling binding; identified
+deployment and ordinary-game appearance remain owned steps. No new work artwork
+or gameplay rules are admitted.
 
 ## Snapshot contract
 
@@ -80,3 +82,10 @@ appearance acceptance on an identified served and deployed producer+consumer
 revision. No deployment is inferred from source merge. The exact wire addition
 is limited to the one version marker and row 17; combat/stance authority remains
 with its existing owner.
+
+The default consumer validates version/action/task/health, clears reused
+generations and renders positive/null transitions immediately. Work frames use
+the confirmed resource, not previous cargo. Missing/unknown protocol has no work
+fallback. `--client-presentation` adds actual native rows through CPU client
+receipt/scheduling and shipped atlas buffers to the scenario above; controlled
+held-packet checks do not establish GPU or deployed appearance.

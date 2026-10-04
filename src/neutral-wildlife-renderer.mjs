@@ -19,15 +19,29 @@ export const WILDLIFE_RENDER_REGISTRY = Object.freeze({
   }),
 });
 
-export function wildlifePresentation(definition, snapshot, visible) {
+function positionOnMap(point, map) {
+  // Herded nodes can cross authored cells; use the same half-open map bounds as
+  // authoritative cell admission instead of the original local grazing radius.
+  return Number.isSafeInteger(map?.width) && map.width > 0
+    && Number.isSafeInteger(map.height) && map.height > 0
+    && Number.isSafeInteger(map.width * map.height)
+    && Number.isFinite(point?.x) && Number.isFinite(point.z)
+    && point.x >= -map.width / 2 && point.x < map.width / 2
+    && point.z >= -map.height / 2 && point.z < map.height / 2;
+}
+
+export function wildlifePresentation(definition, snapshot, visible, mapDefinition) {
   if (visible !== true || !WILDLIFE_RENDER_REGISTRY[definition?.wildlifeSpecies]
     || typeof definition.id !== 'string' || !definition.id
     || !validWildlifeNodeDefinition(definition) || definition.type !== 'food'
+    || !Number.isFinite(definition.x) || !Number.isFinite(definition.z)
     || !Number.isFinite(definition.stock) || definition.stock <= 0
     || snapshot?.id !== definition.id || snapshot.type !== definition.type
     || !Number.isFinite(snapshot.stock) || snapshot.stock < 0 || snapshot.stock > definition.stock
     || !validWildlifeNodeState(snapshot, definition)
-    || ((snapshot.x !== undefined || snapshot.z !== undefined) && !validWildlifePosition(snapshot, definition))
+    || (mapDefinition === undefined
+      ? ((snapshot.x !== undefined || snapshot.z !== undefined) && !validWildlifePosition(snapshot, definition))
+      : !positionOnMap(snapshot, mapDefinition))
     || (snapshot.wildlifeHeading !== undefined && (!Number.isFinite(snapshot.wildlifeHeading)
       || snapshot.wildlifeHeading < 0 || snapshot.wildlifeHeading >= Math.PI * 2))
     || (snapshot.wildlifeActivity !== undefined && !['idle', 'grazing', 'wandering'].includes(snapshot.wildlifeActivity))) return 'hidden';
@@ -64,7 +78,7 @@ export function createNeutralWildlifeRenderer({
 }) {
   const records = new Map();
   const templateScene = new THREE.Scene();
-  let template = null, artPromise = null, disposed = false;
+  let template = null, artPromise = null, disposed = false, activeMap;
   let artStatus = 'not-requested';
   function removeRecords() {
     for (const record of records.values()) {
@@ -90,9 +104,10 @@ export function createNeutralWildlifeRenderer({
       template = result; artStatus = 'ready';
     }).catch(() => { artStatus = 'fallback'; });
   }
-  function reset(definitions = []) {
+  function reset(definitions = [], mapDefinition) {
     removeRecords();
     if (disposed) return;
+    activeMap = mapDefinition === undefined ? undefined : { width: mapDefinition?.width, height: mapDefinition?.height };
     const counts = new Map();
     for (const definition of definitions) counts.set(definition?.id, (counts.get(definition?.id) || 0) + 1);
     for (const definition of definitions) {
@@ -123,9 +138,10 @@ export function createNeutralWildlifeRenderer({
     }
     for (const [id, record] of records) {
       const row = rows.get(id);
-      const point = row?.x !== undefined || row?.z !== undefined ? row : record.definition;
+      const point = activeMap === undefined && row?.x === undefined && row?.z === undefined ? record.definition : row;
       record.state = duplicate.has(id) ? 'hidden'
-        : wildlifePresentation(record.definition, row, isVisible(point));
+        : wildlifePresentation(record.definition, row, true, activeMap);
+      if (record.state !== 'hidden' && isVisible(point) !== true) record.state = 'hidden';
       record.snapshot = ['alive', 'carcass'].includes(record.state) ? { ...row } : null;
       // Hide immediately on snapshot arrival, before the next render frame.
       const artAvailable = record.state === 'alive' && Boolean(template?.supports(staticPose(record.definition, record.snapshot)));
@@ -141,6 +157,7 @@ export function createNeutralWildlifeRenderer({
     if (disposed) return;
     for (const record of records.values()) {
       const { definition, group } = record;
+      if (!record.snapshot) continue;
       const x = record.snapshot?.x ?? definition.x, z = record.snapshot?.z ?? definition.z;
       const y = groundHeight(x, z);
       if (!Number.isFinite(y)) { group.visible = false; continue; }
