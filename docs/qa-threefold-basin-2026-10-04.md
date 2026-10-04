@@ -99,6 +99,14 @@ preserve these distinct sources. The candidate SHA-256 is
   the packed server selected Small from its normal catalog, returned a 192×192
   map and 9,216-byte private fog, and completed a one-human Practice Worker
   move in 4.033 game seconds. This is local native protocol acceptance.
+- Post-floor integration source `4c0a6d0f0cba1c1d6545359a73c14af18c2499b4`:
+  55 focused tests, 14 regional reachability cases, types/import graph/docs
+  passed. The corrected 24-unit fixture completed all three waves and cold
+  recovery. Packed Authored Practice completed the Small Worker move in 4.067
+  game seconds, with digest
+  `sha256:a30d0c18ec06e9ed3cb6ead51260b62f52cc3975852d88ea9df23ea6d8a3e660`.
+  The separate ordinary Small paid-entry attempt reports the missing Skirmish
+  binding and is retained as blocked evidence, not an accepted paid rerun.
 
 | Total units | Peak server RSS, MiB | Peak save, bytes | Longest final notice, ms | Steady final-window tick p95 peak, ms |
 | ---: | ---: | ---: | ---: | ---: |
@@ -141,6 +149,8 @@ timing out or substituting fixture acceptance. This PR does not edit the
 registry or defaults. The exact
 Small ID and descriptor contract are recorded on
 [PR 200](https://github.com/lbeezr/thousand-unit-skirmish/pull/200#issuecomment-5975173880).
+The post-floor exact registry dependency is recorded in the
+[receiving-owner follow-up](https://github.com/lbeezr/thousand-unit-skirmish/pull/200#issuecomment-5975383352).
 Entry PR 198 retains all 13 authored Practice Labs, so the condition requiring
 160-side replacements to avoid an empty public Lab catalog has not occurred.
 The conditional scenario priorities recorded with that owner are Shore Fishing

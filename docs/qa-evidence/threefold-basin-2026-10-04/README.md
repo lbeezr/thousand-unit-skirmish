@@ -18,6 +18,7 @@ do not relabel the earlier full native/ladder runs as final-source performance.
 | `static-map.json` | Small map plus audit methods/input hashes, source `536f3e2e`; source-reading geometry, not native performance. |
 | `release-identity.json`, `packed-entry.json`, `packed-entry-reproduction.mjs` | Packed source `fafbd7d7`, digest recorded; local normal catalog/private fog/one-human Practice passed. No hosted/browser verification. |
 | `source-input-parity.json` | Exact hashes for four named inputs at the listed native/ladder/packed/later sources. Scope does not include every repository file. |
+| `post-floor-*` | Integration at clean `4c0a6d0f0cba1c1d6545359a73c14af18c2499b4` after floor PR 229: corrected 24-unit fixture waves/recovery and packed Authored Practice passed; normal Small Skirmish paid-entry attempt correctly reports its missing registry binding. Current static/grid audits preserve the new Tiny default/input hashes. |
 
 The full ladder includes one skipped preparation slot in the 2,000-unit run,
 but no wave skipped-slot deltas. Its final cold-recovery sample records the first
@@ -58,3 +59,9 @@ Gzip artifacts decompress to unmodified raw JSON. The manifest hashes stored
 bytes, including compressed files. Server logs omit session tokens. Exact commit
 checkout is required to reproduce a historical script; current reruns create a
 new evidence identity. Hosted deployment and rendered acceptance remain open.
+
+After integrating floor PR 229, 55 focused map/audit/mode/Practice tests, 14
+regional reachability cases, browser/Node type checks, import graph and docs
+passed. A first attempt to run the Practice tests lacked `jsdom`; normal locked
+development dependencies were installed and that check then passed. No test
+result from the missing-dependency attempt is counted as acceptance.
