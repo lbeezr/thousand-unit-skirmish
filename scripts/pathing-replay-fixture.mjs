@@ -1,5 +1,6 @@
 // Test-only entrypoint adapter: production function bodies stay intact. Planning
-// callbacks drain between fixed ticks; timers/listening are disabled in the copy.
+// callbacks drain between fixed ticks by default; candidate service runs in the
+// real tick body. Timers/listening are disabled in the copy.
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -73,7 +74,8 @@ export const replay = {
     return true;
   },
   step({ planningTurns } = {}) {
-    if (planningTurns === undefined) this.drain();
+    if (planningTurns === undefined && MOVE_PLANNING_TURNS_PER_TICK === 0) this.drain();
+    else if (planningTurns === undefined) { /* candidate uses the real tick hook */ }
     else {
       if (!Number.isInteger(planningTurns) || planningTurns < 0 || planningTurns > 10000) {
         throw new Error('Invalid replay planning turn count');
@@ -114,6 +116,9 @@ export const replay = {
   get levels() { return elevationLevelByCell; },
   get components() { return walkableComponents; },
   get planning() { return movePlanningSamples; },
+  get planningJobs() {
+    return [...(activeMovePlanningJob ? [activeMovePlanningJob] : []), ...movePlanningQueue];
+  },
   get diagnostic() { return tickDiagnosticSamples[(tickDurationCursor - 1 + TICK_SAMPLE_WINDOW) % TICK_SAMPLE_WINDOW]; },
   get separation() { return separationWorkPayload(); },
   dispose() { clearInterval(heartbeatTimer); if (pveOpponentTimer) clearInterval(pveOpponentTimer); }

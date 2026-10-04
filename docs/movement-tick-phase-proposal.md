@@ -4,6 +4,12 @@ Proposed 4 October 2026 by the movement owner. This is an allocation and experim
 contract, not an implemented policy or a claim that all commands use the tick
 pipeline. [Backlog](movement-pathing-workstream.md) · [Existing planning proof](qa-move-planning-work-2026-10-03.md).
 
+The parent subsequently allocated the planner helpers and single outer-tick call
+for the [bounded 1/4/8 experiment](qa-move-planning-tick-budget-2026-10-04.md).
+That opt-in implementation preserves default callback scheduling and all inner
+simulation phases. The proposal below remains the original allocation record;
+the broader command pipeline and a default-policy choice remain separate work.
+
 ## The remaining scheduling difference
 
 Inspected main `aa6621411c710fddd0620c615091e533cba3222a`, with `server.mjs`

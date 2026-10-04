@@ -639,6 +639,11 @@ const WORKER_SPAWN_OFFSETS = [
 const MAX_ATTACK_FLOW_FIELDS = 8;
 const MOVE_PLANNING_MAX_WORK_ITEMS_PER_SLICE = 8;
 const MOVE_PLANNING_MAX_EXPANDED_CELLS_PER_SLICE = 4096;
+// Bounded local experiment; ordinary production keeps callback scheduling.
+const MOVE_PLANNING_TURNS_PER_TICK = Number(process.env.RTS_MOVE_PLANNING_TURNS_PER_TICK ?? 0);
+if (![0, 1, 4, 8].includes(MOVE_PLANNING_TURNS_PER_TICK)) {
+  throw new Error('RTS_MOVE_PLANNING_TURNS_PER_TICK must be 0, 1, 4 or 8.');
+}
 const attackMoveBucketRadius = Math.ceil(ATTACK_MOVE_ACQUIRE_RADIUS / SPATIAL_BUCKET_SIZE);
 const attackMoveBucketOffsets = [];
 for (let row = -attackMoveBucketRadius; row <= attackMoveBucketRadius; row++) {
@@ -1033,6 +1038,7 @@ let lastSimulationTickStartedAt = null;
 const movePlanningSamples = [];
 const movePlanningQueue = [];
 let activeMovePlanningJob = null;
+let movePlanningServiceTick = null;
 let movePlanningEpoch = 0;
 let nextMoveOrderId = 1;
 let navigationRevision = 0;
@@ -1113,7 +1119,18 @@ function tickTimingPayload() {
         .filter(sample => sample?.scenarioEvaluated).map(sample => sample.scenarioMs).sort((a, b) => a - b);
       const at = q => values.length ? values[Math.max(0, Math.ceil(values.length * q) - 1)] : null;
       return { sampleCount: values.length, p50Ms: at(.5), p95Ms: at(.95), maxMs: at(1) };
-    })() } : {}),
+    })(), ...(MOVE_PLANNING_TURNS_PER_TICK > 0 ? { planningTiming: (() => {
+      const rows = Array.from({ length: count }, (_, index) =>
+        tickDiagnosticSamples[(base + index) % TICK_SAMPLE_WINDOW])
+        .filter(sample => sample?.planningTurns > 0);
+      const values = rows.map(sample => sample.planningMs).sort((a, b) => a - b);
+      const at = q => values.length ? values[Math.max(0, Math.ceil(values.length * q) - 1)] : null;
+      return { turnsPerTick: MOVE_PLANNING_TURNS_PER_TICK, sampleCount: rows.length,
+        p50Ms: at(.5), p95Ms: at(.95), maxMs: at(1),
+        maxTurns: rows.length ? Math.max(...rows.map(row => row.planningTurns)) : 0,
+        maxWorkItems: rows.length ? Math.max(...rows.map(row => row.planningWorkItems)) : 0,
+        maxExpandedCells: rows.length ? Math.max(...rows.map(row => row.planningExpandedCells)) : 0 };
+    })() } : {}) } : {}),
   };
 }
 
@@ -3872,7 +3889,28 @@ function scheduleNextMovePlanning() {
     job.queueWaitMs = Math.max(0, performance.now() - (job.queueEnteredAt ?? job.startedAt));
     job.planningStarted = true;
   }
-  setImmediate(() => processMovePlanningSlice(job));
+  if (MOVE_PLANNING_TURNS_PER_TICK === 0) setImmediate(() => processMovePlanningSlice(job));
+}
+
+function serviceMovePlanningForTick(stepTick) {
+  if (MOVE_PLANNING_TURNS_PER_TICK === 0) return null;
+  const startedAt = performance.now();
+  const work = { turns: 0, workItems: 0, expandedCells: 0, durationMs: 0 };
+  movePlanningServiceTick = stepTick;
+  try {
+    for (let turn = 0; turn < MOVE_PLANNING_TURNS_PER_TICK; turn++) {
+      scheduleNextMovePlanning();
+      if (!activeMovePlanningJob) break;
+      const result = processMovePlanningSlice(activeMovePlanningJob);
+      work.turns++;
+      work.workItems += result?.workItems ?? 0;
+      work.expandedCells += result?.expandedCells ?? 0;
+    }
+  } finally {
+    movePlanningServiceTick = null;
+  }
+  work.durationMs = performance.now() - startedAt;
+  return work;
 }
 
 function applyPlannedMoveAssignment(job, assignment) {
@@ -3890,6 +3928,9 @@ function applyPlannedMoveAssignment(job, assignment) {
   unit.moveGoalCell = destination;
   if (unit.attackMove) unit.attackMoveRouteReady = true;
   assignment.applied = true;
+  const committedTick = movePlanningServiceTick ?? tickNumber;
+  job.firstAppliedTick ??= committedTick;
+  job.lastAppliedTick = committedTick;
   assignment.routeOutcome = {
     nonEmptyPath: path.length > 0,
     alreadyInDestinationCell,
@@ -3965,6 +4006,10 @@ function completeMovePlanningJob(job) {
       planningSliceCount: job.planningSliceCount,
       maxPlanningSliceWorkItems: job.maxPlanningSliceWorkItems || 0,
       maxPlanningSliceExpandedCells: job.maxPlanningSliceExpandedCells || 0,
+      createdTick: job.createdTick, firstAppliedTick: job.firstAppliedTick,
+      lastAppliedTick: job.lastAppliedTick, firstPlanningTick: job.firstPlanningTick,
+      serviceTurns: job.serviceTurns || 0,
+      firstServiceWaitMs: Number((job.firstServiceWaitMs || 0).toFixed(3)),
     });
   }
   if (!job.silent) {
@@ -4047,6 +4092,8 @@ function clearAttackTarget(unit) {
 }
 
 function processMovePlanningSlice(job) {
+  let workItems = 0;
+  let expandedCellsAtStart;
   try {
     if (activeMovePlanningJob !== job) return;
     if (job.epoch !== movePlanningEpoch) {
@@ -4056,8 +4103,12 @@ function processMovePlanningSlice(job) {
     }
 
     const sliceStartedAt = performance.now();
-    const expandedCellsAtStart = job.diagnostics.expandedCells;
-    let workItems = 0;
+    if (job.firstPlanningTick === undefined) {
+      job.firstServiceWaitMs = Math.max(0, sliceStartedAt - (job.queueEnteredAt ?? job.startedAt));
+    }
+    job.firstPlanningTick ??= movePlanningServiceTick ?? tickNumber;
+    job.serviceTurns = (job.serviceTurns || 0) + 1;
+    expandedCellsAtStart = job.diagnostics.expandedCells;
     // Whole searches remain atomic. An oversized search finishes, then this
     // job yields; clock observations measure work but never select assignments.
     while ((job.currentGoalGroup || job.nextGroup < job.groups.length)
@@ -4113,6 +4164,7 @@ function processMovePlanningSlice(job) {
       movePlanningQueue.push(job);
       scheduleNextMovePlanning();
     }
+    return { workItems, expandedCells: job.diagnostics.expandedCells - expandedCellsAtStart };
   } catch (error) {
     if (activeMovePlanningJob !== job) return;
     activeMovePlanningJob = null;
@@ -4130,6 +4182,8 @@ function processMovePlanningSlice(job) {
         : `${job.orderLabel} FAILED · PLEASE RETRY`);
     } catch {}
     scheduleNextMovePlanning();
+    return { workItems, expandedCells: expandedCellsAtStart === undefined ? 0
+      : job.diagnostics.expandedCells - expandedCellsAtStart };
   }
 }
 
@@ -5248,7 +5302,7 @@ function enqueueRouteRepairs(repairs, { mode = 'blocked-route-repair', orderLabe
   dirty = true;
   const pseudoPlayer = { team: -1, sendJson() {} };
   movePlanningQueue.push({
-    orderId: nextMoveOrderId++, player: pseudoPlayer, epoch: movePlanningEpoch,
+    orderId: nextMoveOrderId++, player: pseudoPlayer, epoch: movePlanningEpoch, createdTick: tickNumber,
     orderLabel, mode, silent: true,
     preserveAssignmentBuildingTarget: true, buildingTargetId: null,
     startedAt: performance.now(), assignments, groups: [...groups.entries()],
@@ -6228,7 +6282,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
       [assignment],
     ]);
   const job = {
-    orderId: nextMoveOrderId++, player, epoch: movePlanningEpoch,
+    orderId: nextMoveOrderId++, player, epoch: movePlanningEpoch, createdTick: tickNumber,
     clientOrderToken: clientOrderToken(command),
     orderLabel: orderLabel || (queueWaypoint ? 'WAYPOINT ORDER'
       : attackMove ? 'ATTACK MOVE ORDER' : 'MOVE ORDER'),
@@ -6721,7 +6775,7 @@ function advanceQueuedWaypoints() {
   if (assignments.length === 0) return;
   const player = { team: -1, sendJson() {} };
   const job = {
-    orderId: nextMoveOrderId++, player, epoch: movePlanningEpoch,
+    orderId: nextMoveOrderId++, player, epoch: movePlanningEpoch, createdTick: tickNumber,
     clientOrderToken: null, orderLabel: 'QUEUED WAYPOINT', mode: 'queued-waypoint', silent: true,
     buildingTargetId: null, startedAt: performance.now(), assignments,
     groups: SHARED_MOVE_PATHS ? [...assignmentsByStart.entries()]
@@ -8579,6 +8633,7 @@ function runSimulationTick() {
     recordTickStartLag(Math.max(0, tickStartedAt - lastSimulationTickStartedAt - (1000 / TICK_RATE)));
   }
   lastSimulationTickStartedAt = tickStartedAt;
+  const planningWork = serviceMovePlanningForTick(tickNumber + 1);
   simulateTick();
   if (workerPerformingActions.finishStep(tickNumber, compatibleWorkerPerformingAction)) dirty = true;
   recordSeparationWorkSample();
@@ -8618,6 +8673,9 @@ function runSimulationTick() {
       scenarioMs: Number(scenarioMs.toFixed(3)), scenarioEvaluated,
       broadcastMs: Number((afterBroadcast - afterVision).toFixed(3)),
       checkpointMs: Number((tickEndedAt - afterBroadcast).toFixed(3)),
+      ...(planningWork ? { planningMs: Number(planningWork.durationMs.toFixed(3)),
+        planningTurns: planningWork.turns, planningWorkItems: planningWork.workItems,
+        planningExpandedCells: planningWork.expandedCells } : {}),
     };
   }
   recordTickDuration(durationMs, diagnostic);
