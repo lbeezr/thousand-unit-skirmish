@@ -3598,6 +3598,12 @@ async function writeMatchCheckpointAtomically(serialized, sequence) {
 
 function migrateMatchCheckpoint(snapshot) {
   const initialRulesetRevision = snapshot?.rulesetRevision;
+  // Content that predates Food Tools cannot claim a paid effect or project.
+  if (initialRulesetRevision !== GAMEPLAY_RULESET_REVISION
+    && ((Array.isArray(snapshot?.state?.teamUpgrades)
+      && snapshot.state.teamUpgrades.some(upgrades => upgrades?.foodTools === true))
+      || (Array.isArray(snapshot?.state?.teamResearch)
+        && snapshot.state.teamResearch.some(research => research?.type === 'food-tools')))) return snapshot;
   // Prior movement-only definitions cannot claim fish cargo or fishing intent.
   const previousMovementPins = ['v1:496509c24775ddfbd289faf9fbcc85dfef7d054d710c665caa9fe192c610ddcd',
     'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'];

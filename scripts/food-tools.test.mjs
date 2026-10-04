@@ -75,3 +75,23 @@ test('unknown/current pins, forged flags and incompatible profiles remain invali
     const s=prior('food-wood-v1');mutate(s);const before=structuredClone(s);migrateFoodToolsCheckpoint(s);assert.deepEqual(s,before);
   }
 });
+test('earlier exact legacy pins add only an unpurchased flag and refuse invented Food Tools', () => {
+  const start=source.indexOf('function migrateMatchCheckpoint('),end=source.indexOf('\nasync function ',start);
+  const context=vm.createContext({GAMEPLAY_RULESET_REVISION,MATCH_CHECKPOINT_SCHEMA_VERSION:29,
+    MATCH_RULES_VERSION:6,emptyTechnologyCompletions});
+  vm.runInContext(source.slice(start,end),context);
+  for(const pin of ['v1:496509c24775ddfbd289faf9fbcc85dfef7d054d710c665caa9fe192c610ddcd',
+    'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54']) {
+    const valid=prior('food-wood-v1');valid.rulesetRevision=pin;valid.state.units[0].persistentOrder=null;
+    if(pin.includes('b82d5b9f')) valid.state.buildings=[];
+    const before=structuredClone(valid.state);context.migrateMatchCheckpoint(valid);
+    assert.equal(valid.rulesetRevision,GAMEPLAY_RULESET_REVISION);
+    for(const flags of valid.state.teamUpgrades){assert.equal(flags.foodTools,false);delete flags.foodTools;}
+    assert.deepEqual(structuredClone(valid.state),before);
+    for(const mutate of [s=>{s.state.teamUpgrades[0].foodTools=true;},
+      s=>{s.state.teamResearch[0]={type:'food-tools',remaining:10};}]) {
+      const invalid=prior('food-wood-v1');invalid.rulesetRevision=pin;mutate(invalid);
+      const retained=structuredClone(invalid);context.migrateMatchCheckpoint(invalid);assert.deepEqual(invalid,retained);
+    }
+  }
+});
