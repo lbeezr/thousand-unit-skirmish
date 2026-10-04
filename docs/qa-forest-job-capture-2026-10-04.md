@@ -48,6 +48,6 @@ node scripts/renderer-feature-capture.mjs PACK_JSON EVIDENCE_DIRECTORY forest-jo
 Only the shared registry/workflow owner adds this named case and dispatches one
 existing hosted run at the common reviewed source. The forest owner does not
 edit runner ownership, sandbox settings, workflow permissions or infrastructure.
-Five CPU adapter contract checks validate exports, truthful deposit observation,
+Seven CPU adapter contract checks validate exports, truthful aggregate deposit observation,
 privacy negatives and bounded canonical public-map planning. These checks do
 not claim browser execution, screenshot inspection or deployed appearance.

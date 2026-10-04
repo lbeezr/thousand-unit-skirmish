@@ -12,12 +12,20 @@ export function projectForestJobState(message, team) {
   if (![0, 1].includes(team) || state?.mapId !== 'veyrholds-terraced-vale'
     || !Number.isInteger(state.tick) || !Array.isArray(state.units)) return null;
   const visibility = state.visibility;
-  const packed = visibility?.data ? Uint8Array.from(atob(visibility.data), c => c.charCodeAt(0)) : null;
-  const disclosed = cell => packed ? packed[cell >> 2] >> ((cell & 3) * 2) & 3 : 2;
+  let packed = null;
+  if (visibility?.columns === 160 && visibility.rows === 160 && typeof visibility.data === 'string') {
+    try {
+      const decoded = Uint8Array.from(atob(visibility.data), c => c.charCodeAt(0));
+      if (decoded.length === 6400 && !decoded.some(byte => [0, 2, 4, 6].some(shift => ((byte >> shift) & 3) === 3))) packed = decoded;
+    } catch { /* Malformed private masks cannot establish disclosure. */ }
+  }
+  const disclosed = cell => packed && Number.isInteger(cell) && cell >= 0 && cell < 25600
+    ? packed[cell >> 2] >> ((cell & 3) * 2) & 3 : -1;
   return { tick: state.tick, team, wood: state.wood?.[team], visibility,
     otherBankPrivate: state.wood?.[1 - team] === null,
     foreignWorkers: state.units.filter(row => row[1] !== team && row[5] === 'worker').length,
-    stocksPrivate: (state.forestStocks || []).every(([cell]) => disclosed(cell) === 2),
+    stocksPrivate: packed !== null && Array.isArray(state.forestStocks)
+      && state.forestStocks.every(([cell]) => disclosed(cell) === 2),
     workers: state.units.filter(row => row[1] === team && row[5] === 'worker' && row[4] > 0)
       .map(row => ({ id: row[0], generation: row[8], x: row[2], z: row[3], cargo: row[6],
         cargoType: row[7], task: row[9], action: row[17] })) };
@@ -26,6 +34,7 @@ export function projectForestJobState(message, team) {
 export function observeForestJobCycle(progress, state) {
   if (!progress || !state) return;
   progress.private &&= state.otherBankPrivate && state.foreignWorkers === 0 && state.stocksPrivate;
+  let deliveredCargo = 0, deliveredWorkers = 0;
   for (const entry of progress.workers) {
     const worker = state.workers.find(row => row.id === entry.id);
     if (!worker || worker.generation !== entry.generation || !Number.isFinite(worker.cargo)
@@ -35,12 +44,14 @@ export function observeForestJobCycle(progress, state) {
     if (worker.action === 'gather-wood' && worker.cargo > 0) entry.harvest = true;
     if (worker.task === 'returning' && worker.cargo > 0) entry.returned = true;
     if (entry.lastCargo > 0 && worker.cargo === 0) {
-      if (!(state.wood > progress.lastWood)) progress.valid = false;
-      entry.deposits++;
+      deliveredCargo += entry.lastCargo; deliveredWorkers++;
+      if (entry.lastCargo >= 9.99) entry.deposits++;
     }
     if (entry.deposits > 0 && worker.action === 'gather-wood' && worker.cargo > 0) entry.resumed = true;
     entry.lastCargo = worker.cargo;
   }
+  // Shared bank credit must cover every cleared load, not merely one Worker.
+  if (deliveredWorkers && !(state.wood - progress.lastWood >= deliveredCargo - .011 * deliveredWorkers)) progress.valid = false;
   progress.lastWood = state.wood;
 }
 
@@ -147,7 +158,11 @@ export async function run(context) {
   assert.equal(new URL(roomUrl).origin, context.origin);
   await pages[1].cdp.call('Page.navigate', { url: roomUrl });
   await pages[1].wait("document.querySelector('#room-lobby')?.open", 'normal second seat', 20000);
-  await click(pages[0], '#lobby-ready'); await click(pages[1], '#lobby-ready');
+  await click(pages[0], '#lobby-ready');
+  await pages[0].wait("document.querySelector('#lobby-ready')?.textContent==='Not ready'", 'acknowledged host readiness', 10000);
+  await pages[1].wait("[...document.querySelectorAll('#room-lobby li')].some(row=>row.textContent.startsWith('Azure (host): Ready'))", 'second seat received host readiness', 10000);
+  await click(pages[1], '#lobby-ready');
+  await pages[1].wait("document.querySelector('#lobby-ready')?.textContent==='Not ready'", 'acknowledged guest readiness', 10000);
   await click(pages[0], '#lobby-launch');
   const initial = await Promise.all(pages.map(page => page.wait("window.__rtsEnvironmentAssetStatus?.ready && window.__forestJobCapture?.latest && !document.querySelector('#room-lobby')?.open && window.__forestJobCapture.latest", 'ordinary Tiny match boot', 30000)));
   assert.deepEqual(initial.map(state => state.team), [0, 1]);

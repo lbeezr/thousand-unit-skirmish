@@ -11,7 +11,7 @@ const row = (cargo = 0, action = null, task = 'gathering', generation = 1) => {
 };
 const message = (units = [row()], wood = [100, null], stocks = [[0, 5]]) => ({
   type: 'state', mapId: 'veyrholds-terraced-vale', tick: 5, units, wood,
-  visibility: { columns: 2, rows: 2, data: Buffer.from([2]).toString('base64') }, forestStocks: stocks,
+  visibility: { columns: 160, rows: 160, data: Buffer.concat([Buffer.from([2]), Buffer.alloc(6399)]).toString('base64') }, forestStocks: stocks,
   player: { token: 'must-not-retain' }, food: [100, 789], notices: ['private metadata'],
 });
 const progress = () => ({ valid: true, private: true, lastWood: 100, workers: [{ id: 10,
@@ -29,6 +29,12 @@ test('seat projection excludes raw/private metadata and flags unauthorized fores
   assert.equal(adapter.projectForestJobState({ ...message(), mapId: 'open-field' }, 0), null);
   assert.equal(adapter.projectForestJobState(message([row()], [100, 999], [[1, 0]]), 0).stocksPrivate, false);
   assert.equal(adapter.projectForestJobState(message([], [100, 999]), 0).otherBankPrivate, false);
+  for (const visibility of [undefined, {}, { columns: 160, rows: 160, data: '' },
+    { columns: 160, rows: 160, data: 'invalid base64' },
+    { columns: 160, rows: 160, data: Buffer.alloc(6400, 255).toString('base64') }]) {
+    assert.equal(adapter.projectForestJobState({ ...message(), visibility }, 0).stocksPrivate, false, 'missing or invalid fog must fail closed');
+  }
+  assert.equal(adapter.projectForestJobState(message([row()], [100, null], [[25600, 0]]), 0).stocksPrivate, false);
 });
 test('productive observation requires real bank credit, typed cargo, return and resumed harvest', () => {
   const job = progress();
@@ -51,6 +57,19 @@ test('lost cargo, replaced Worker, wrong cargo and private-bank disclosure canno
     adapter.observeForestJobCycle(job, adapter.projectForestJobState(message([worker], [100, failure === 'privacy' ? 999 : null]), 0));
     assert.equal(failure === 'privacy' ? job.private : job.valid, false, failure);
   }
+});
+test('simultaneous cleared loads require sufficient aggregate credit, and partial loads cannot prove full cycles', () => {
+  for (const credited of [10, 20]) {
+    const job = progress(); job.workers.push({ ...job.workers[0], id: 11 });
+    const pair = cargo => { const second = row(cargo); second[0] = 11; return [row(cargo), second]; };
+    adapter.observeForestJobCycle(job, adapter.projectForestJobState(message(pair(10)), 0));
+    adapter.observeForestJobCycle(job, adapter.projectForestJobState(message(pair(0), [100 + credited, null]), 0));
+    assert.equal(job.valid, credited === 20, 'one credited load cannot cover two cleared loads');
+  }
+  const partial = progress();
+  adapter.observeForestJobCycle(partial, adapter.projectForestJobState(message([row(6)]), 0));
+  adapter.observeForestJobCycle(partial, adapter.projectForestJobState(message([row()], [106, null]), 0));
+  assert.equal(partial.valid, true); assert.equal(partial.workers[0].deposits, 0);
 });
 test('canonical both-seat plan uses bounded authored open edges without changing map resources', async () => {
   const map = JSON.parse(await readFile(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
