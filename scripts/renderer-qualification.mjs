@@ -150,10 +150,15 @@ async function reservePort() {
 export async function qualifyPackedGame(packFile, evidenceDirectory) {
   await mkdir(evidenceDirectory, { recursive: true });
   const report = { schemaVersion: 1, scope: 'local-packed-game-movement', status: 'failed', sandbox: 'enabled',
-    uid: process.getuid?.() ?? null, source: null, release: null, runtimeDependencies: [], frames: [], assets: [], browserEvents: [], issues: [],
+    uid: process.getuid?.() ?? null, source: null, release: null, runtimeDependencies: [], frames: [], assets: [],
+    browserEvents: [], droppedBrowserEvents: 0, unexpectedBrowserEvent: false, issues: [],
     cleanup: { maxAttempts: 3, attempts: 0, errors: [] } };
   let stage = 'release', browser, page, server, temporary;
-  const recordBrowserEvent = event => { if (report.browserEvents.length < 100) report.browserEvents.push(event); };
+  const recordBrowserEvent = event => {
+    if (event.expected !== true) report.unexpectedBrowserEvent = true;
+    if (report.browserEvents.length < 100) report.browserEvents.push(event);
+    else report.droppedBrowserEvents++;
+  };
   try {
     assert.ok(Number.isInteger(report.uid) && report.uid > 0, 'qualification must run as a non-root user');
     report.source = { revision: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
@@ -288,9 +293,11 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
             ready: state.assets.ready === true, oakDepletionAtlas: state.assets.oak === true,
             loaded: Number.isInteger(state.assets.loaded) && state.assets.loaded >= 0 ? state.assets.loaded : null } : null };
       } catch { report.status = 'failed'; report.issues.push({ stage: 'evidence', code: 'boot-evidence-unavailable' }); }
-      if (report.browserEvents.some(event => event.expected !== true)) { report.status = 'failed'; report.issues.push({ stage: 'browser', code: 'browser-errors' }); }
+      if (report.unexpectedBrowserEvent) { report.status = 'failed'; report.issues.push({ stage: 'browser', code: 'browser-errors' }); }
     }
-    for (const cleanup of [() => browser?.dispose(), () => stopChild(server, { graceMs: 2500 }),
+    // The supervisor gives its one default worker seven seconds to stop; let it
+    // reap that child before the shared helper's fallback kill and data removal.
+    for (const cleanup of [() => browser?.dispose(), () => stopChild(server, { graceMs: 9000 }),
       () => temporary && rm(temporary, { recursive: true, force: true })]) {
       try { await cleanup(); } catch { report.status = 'failed'; report.issues.push({ stage: 'cleanup', code: 'cleanup-failed' }); }
     }

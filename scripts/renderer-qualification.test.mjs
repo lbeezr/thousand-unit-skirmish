@@ -135,7 +135,7 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
   assert.match(code, /const port = await reservePort\(\)/);
   code = code.replace('const port = await reservePort()', 'const port = 4321');
   for (const mode of ['browser-fault', 'asset-timeout', 'spawn-fault', 'evidence-fault', 'missing-dependency',
-    'wrong-version', 'vendor-404', 'vendor-hash', 'room-404', 'optional-icon', 'icon-forbidden']) {
+    'wrong-version', 'vendor-404', 'vendor-hash', 'room-404', 'optional-icon', 'icon-forbidden', 'saturated-icons']) {
     let written, probeReads = 0, launches = 0; const cleanup = [], listeners = new Map();
     const fault = Object.assign(new Error('private-token-in-error'), { code: mode === 'spawn-fault' ? 'ENOENT' : 'EPERM' });
     const server = { pid: 123, exitCode: null, stdout: { on() {} }, stderr: { on() {} },
@@ -144,6 +144,9 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
     const page = { errors: iconMode ? [] : ['private-browser-token'], wait: async () => { throw new Error('asset timeout: private-token'); }, cdp: {
       on: (event, callback) => listeners.set(event, callback),
       call: async method => { assert.equal(method, 'Page.navigate');
+        if (mode === 'saturated-icons') for (let i = 0; i < 100; i++) {
+          listeners.get('Network.responseReceived')({ response: { status: 404, url: 'http://127.0.0.1:4321/favicon.ico' } });
+        }
         listeners.get('Network.responseReceived')({ response: { status: iconMode ? mode === 'optional-icon' ? 404 : 403 : 503,
           url: `http://127.0.0.1:4321/${iconMode ? 'favicon.ico' : 'src/main.js'}?token=private-token` } });
         if (!iconMode) {
@@ -173,7 +176,7 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
         assert.equal(options.env.RTS_ROOM_DATA_DIRECTORY, '/owned-temp/rooms');
         assert.equal(options.env.RTS_ACCESS_PASSWORD, undefined); return server;
       },
-      stopChild: async () => { cleanup.push('server'); },
+      stopChild: async (_, options) => { assert.equal(options.graceMs, 9000); cleanup.push('server'); },
       fetch: async url => ({ ok: true, status: (mode === 'vendor-404' && url.endsWith('/vendor/three.module.js'))
         || (mode === 'room-404' && url.endsWith('/api/rooms/status')) ? 404 : 200,
         json: async () => ({ ok: true, enabled: true }),
@@ -187,6 +190,7 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
     assert.equal(report.status, 'failed'); assert.equal(written.status, 'failed');
     assert.ok(cleanup.includes('server'));
     if (!['missing-dependency', 'wrong-version'].includes(mode)) assert.ok(cleanup.includes('temp'));
+    if (cleanup.includes('temp')) assert.ok(cleanup.indexOf('server') < cleanup.indexOf('temp'));
     assert.doesNotMatch(JSON.stringify(report), /private-.*token/);
     if (['missing-dependency', 'wrong-version', 'vendor-404', 'vendor-hash', 'room-404'].includes(mode)) {
       assert.equal(launches, 0);
@@ -200,6 +204,11 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
     } else {
       assert.equal(probeReads, 1); assert.ok(cleanup.indexOf('read-flags') < cleanup.indexOf('browser'));
       assert.equal(report.boot.entry, 'game'); assert.equal(report.boot.assets.state, 'load-failed');
+      if (mode === 'saturated-icons') {
+        assert.equal(report.browserEvents.length, 100); assert.ok(report.browserEvents.every(e => e.expected));
+        assert.equal(report.droppedBrowserEvents, 5); assert.equal(report.unexpectedBrowserEvent, true);
+        assert.ok(report.issues.some(i => i.code === 'browser-errors')); continue;
+      }
       if (iconMode) {
         assert.equal(report.browserEvents[0].path, '/favicon.ico');
         assert.equal(report.browserEvents[0].expected, mode === 'optional-icon');
