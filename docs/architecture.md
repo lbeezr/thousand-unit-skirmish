@@ -381,7 +381,8 @@ The reviewed plan is integrated, with PR1's guard/check milestone recorded in
 PR294. Step 5's HUD owner moves the three pure text/projection implementations
 byte-for-byte to `src/client/hud/`, retaining explicit named old-path exports.
 The source guard classifies both paths as client responsibilities; negative
-fixtures reject rules/world/simulation/server consumers, and packed HTTP checks
+fixtures reject rules/world/simulation/server consumers and keep the canonical
+helpers dependency-free leaves, and packed HTTP checks
 admit only the exact six paths. Existing helper tests exercise canonical exports
 and verify compatibility binding identity; contextual consumers still use shims.
 No layout, selection, accounting, labels or authored objective behavior changes.

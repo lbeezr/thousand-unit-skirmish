@@ -89,6 +89,16 @@ test('HUD canonical helpers and compatibility entries stay outside authoritative
   }
 });
 
+test('HUD projections remain dependency-free leaves with one explicit compatibility edge', async () => {
+  for (const helper of ['resource-format', 'population-readout', 'objective-summary']) {
+    const canonical = `src/client/hud/${helper}.mjs`;
+    const legacy = `src/${helper}.mjs`;
+    assert.deepEqual(moduleImports(await readFile(new URL(`../${canonical}`, import.meta.url), 'utf8'), canonical), [], canonical);
+    assert.deepEqual(moduleImports(await readFile(new URL(`../${legacy}`, import.meta.url), 'utf8'), legacy),
+      [`./client/hud/${helper}.mjs`], legacy);
+  }
+});
+
 test('rules and world cannot reach higher policy domains, including through unknown modules', () => {
   assert.throws(() => check({
     'src/gameplay-action-rules.mjs': "import './bridge.mjs';",
