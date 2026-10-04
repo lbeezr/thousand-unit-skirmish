@@ -3871,7 +3871,7 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
     ? unitSpriteRuntime.roleForUnit(portraitUnit) : null;
   updateSelectionPortrait(document, context, portraitUnit, portraitRole);
-  for (const [kind, button] of [['worker', ui.trainWorker], ['infantry', ui.trainInfantry]]) {
+  for (const [kind, button] of [['worker', ui.trainWorker], ['infantry', ui.trainInfantry], ['archer', ui.trainArcher]]) {
     const role = localTeam !== null && castPreview
       && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
       ? unitSpriteRuntime.roleForUnit({ kind, team: localTeam }) : null;

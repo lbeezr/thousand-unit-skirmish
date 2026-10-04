@@ -68,6 +68,8 @@ try {
   for (const [file, expectedHash] of [
     ['human-infantry-source.png', '0a94a11f2dffd4b722d3a732aa4d3117283d3fa41c89aac6f03487d7a7930b38'],
     ['boughward-infantry-source.png', '17f6ff8f66274a00c1206301b00a8e298ffc7692ec307975c77300e2a62cb33c'],
+    ['human-archer-source.png', '29c3b3a59b3391797f34c6c29c05dc664c9bc9551e94abf56c0b132e9a159520'],
+    ['boughward-archer-source.png', 'acac85ca7b45351663820ca69e8994aca8c74910915aa7d0fb164c7f9c6ce635'],
   ]) {
     for (const method of ['GET', 'HEAD']) {
       const response = await fetch(`${base}/assets/ui/portraits/${file}`, { method });

@@ -1,9 +1,9 @@
 # Selection identity and future field notes
 
-One selected living friendly Worker or Infantry has a compact portrait, name and live HP.
+One selected living friendly Worker, Infantry or Archer has a compact portrait, name and live HP.
 The portrait opens the existing dismissible Selection drawer with practical role
 notes: registered abilities, live HP, base movement/attack stats and training
-producer, cost, duration and population. Infantry notes retain the separate
+producer, cost, duration and population. Infantry/Archer notes retain the separate
 structure-damage value. The same 52px slot retains the legacy Barracks lifecycle
 thumbnail and the Farm's explicitly labelled Food symbol; both open existing
 structure details. Matching the newer default captured Barracks identity remains
@@ -17,7 +17,7 @@ in existing labelled controls at 20 px. The Command drawer's duplicate tactical
 controls use the same files. Formation remains hidden for building details;
 Return cargo retains its distinct text, tooltip and carrying-Worker/Skiff behavior.
 
-Worker/Infantry training controls reuse the same sources as decorative 20px
+Worker/Infantry/Archer training controls reuse the same sources as decorative 20px
 thumbnails. Product names, costs, availability reasons and commands remain on
 the existing buttons. The source image/label nodes survive live updates; an
 image error hides only the decorative frame. Legacy/model previews retain text.
@@ -68,11 +68,44 @@ drawer and restrained panel treatment remain. Worker → Infantry replaces every
 role fact and the notes group's accessible name; no Worker abilities or Town
 Center training persist. The general sourced world note remains optional.
 
-Existing public Archer/Spearman and mounted/siege illustrations are inventoried
-below; dedicated portrait/training icon deliveries and their deliberate framing
-are still missing. Skiff, Farm, Mill, Dock and barriers have no matching approved
-HUD illustration. Keep their existing text/symbol disclosure, with no borrowed
-role image or newly generated/rejected placeholder.
+Existing public Spearman and mounted/siege illustrations are inventoried below;
+their portrait/training deliveries and deliberate framing remain missing.
+Skiff and barriers have no matching approved HUD illustration. The newer
+Farm/Mill/Dock battlefield captures are separate from missing matching HUD
+portraits. Keep existing text/symbol disclosure, with no borrowed role image or
+newly generated/rejected placeholder.
+
+## Approved Archer reuse — 4 October 2026
+
+The established Human Archer v2 and Boughward idle illustrations now supply the
+single-friendly-Archer portrait and both contextual/drawer training thumbnails
+by default. [Pinned source hashes and framing](../assets/ui/portraits/PROVENANCE.md#archer-reuse--4-october-2026)
+retain open face/cape or green goblin/burgundy scarf, plus bow and quiver. The
+same 52px Selection slot, decorative 20px thumbnails, written names/costs,
+44px targets and dismissible notes remain. Archer notes use registered ranged
+damage/range, separate structure damage and Archery Range training, replacing
+Infantry facts during live selection changes. Failed artwork retains text and
+notes; unsupported effective appearances retain their text-only state.
+
+### Current roster HUD bindings — 4 October 2026
+
+This is the current inventory; the 3 October audit below is dated source history.
+
+| Role | Current HUD binding | Remaining source/acceptance |
+| --- | --- | --- |
+| Worker | Human/Boughward approved illustrations in 52px Selection and 20px training | Native framing/recognition open |
+| Infantry | Restored Human v3/Boughward illustrations; default integration [PR375](https://github.com/lbeezr/thousand-unit-skirmish/pull/375) | Containing staging `b07df557` reported successful by parent; ordinary-game acceptance open |
+| Archer | Established Human v2/Boughward idle copies in the same compact surfaces | Clean package/identified delivery and native framing/recognition remain separate evidence |
+| Spearman | Text; approved idle sources available | Deliberate portrait framing/delivery missing |
+| Scout / Rider | Text; approved mounted sources available | Portrait framing/delivery must preserve wolf/boar or horse identity |
+| Siege Engine | Text; approved equipment sources available | Deliberate equipment framing/delivery missing |
+| Skiff | Text | Matching approved HUD illustration missing |
+
+The Archer change touches the existing training-decoration list and portrait
+descriptors; it does not change selected Mill research, Food Tools descriptions,
+availability, commands or focus. The building-action owner retains the Farm
+symbol's stale temporary-House wording after the new captured Farm default,
+and matching economy-building HUD framing. No new building image is adopted here.
 
 The building-action owner retains two observed follow-ups: a rotated Barracks
 returns no legacy image URL and the old portrait helper throws on `.replace()`;
@@ -101,6 +134,11 @@ login. The HUD owner retains pixel inspection and the unfinished outcome.
    for framing, contrast, clipping, alpha edges and unchanged readable labels.
    Retain color/grayscale comparisons; exact native screenshots establish the
    represented states only, without claiming unassisted role recognition.
+4. Build/finish an Archery Range through the same ordinary paid controls, train
+   an Archer for 25 food / 45 wood, and capture both labelled 20px training
+   surfaces plus the 52px selected Archer. Verify ranged/structure attack facts,
+   Archery Range training, live HP, Worker → Infantry → Archer → group/empty
+   focus/dismissal, low wood/unavailable activation and both effective families.
 
 Static original/52px/20px CPU source pixels were inspected in color and grayscale.
 DOM tests cover effective appearance, both seats, stable nodes, truthful facts,
