@@ -68,7 +68,7 @@ for (const team of [0, 1]) for (const control of ['keyboard', 'button']) for (co
       sendTrackedOrder: command => { commands.push(JSON.parse(JSON.stringify(command))); return true; },
       showToast() {}, updateCommandUI() {}, groundHeight: () => 0,
       worldAt: () => ({ x: 6.5, z: .5 }), pickAt: () => enemyClick ? { unit: enemy } : null,
-      pickBuildingAt: () => null, pickResourceNodeAt: () => null, pickForestCellAt: () => null,
+      pickBuildingAt: () => null, pickResourceNodeAt: () => null, pickForestCellAt: () => null, pickHarvestableTreeAt: () => null,
       keyboardTargetIsEditing: () => false, wallPlacementKeydown: () => false,
       cameraNavigationKeydown: () => false, controlGroupIndexFromKey: () => null });
     vm.runInContext(wildlifeClientFunctionSource(client) + slice('function setAttackMoveMode(', 'function setTapOrderArmed(')

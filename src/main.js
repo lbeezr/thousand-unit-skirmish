@@ -48,6 +48,7 @@ import {
   TERRAIN_MATERIALS, updateConstructionGroundInstances, updateLandVegetationOccupation,
   RESOURCE_STATE_ASSETS_AVAILABLE, RESOURCE_STATE_ASSET_STATUS, resourceStateAssetsReady,
 } from './environment-art.mjs';
+import { createEnvironmentInstancePicker } from './environment-instance-picking.mjs';
 import {
   RESOURCE_VISUAL_STAGES, resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages,
 } from './resource-visual-state.mjs';
@@ -501,6 +502,7 @@ scene.add(sun);
 
 const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const raycaster = new THREE.Raycaster();
+const pickEnvironmentInstance = createEnvironmentInstancePicker();
 const pointerNdc = new THREE.Vector2();
 const groundHit = new THREE.Vector3();
 const screenPoint = new THREE.Vector3();
@@ -2146,7 +2148,7 @@ resourceStateAssetsReady.then((status) => {
     refreshResourceStateFallbackTransforms();
     refreshForestStumpTransforms();
   }
-  if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state') {
+  if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state' || window.__rtsCaptureDiagnostics === true) {
     window.__rtsEnvironmentAssetStatus = status;
     window.__rtsEnvironmentCaptureCommand = (command) => sendCommand(command);
   }
@@ -3760,6 +3762,7 @@ function updateSelectionUI({ refreshEconomy = true } = {}) {
     const construction = Math.round(Math.max(0, Math.min(1, Number(selectedBuilding.progress) || 0)) * 100);
     const queued = getBuildingQueueLength(selectedBuilding);
     const products = BUILDING_DEFINITIONS[selectedBuilding.type]?.products || [];
+    const rule = BUILDING_DEFINITIONS[selectedBuilding.type];
     const troop = selectedBuilding.productionQueue?.length
       ? UNIT_DEFINITIONS[selectedBuilding.productionQueue[0]].label
       : products.map((kind) => UNIT_DEFINITIONS[kind].label).join(' / ');
@@ -3774,10 +3777,19 @@ function updateSelectionUI({ refreshEconomy = true } = {}) {
     ui.selectedBuildingHealthBar.setAttribute('aria-valuemax', String(Math.round(maxHp)));
     ui.selectedBuildingHealthBar.setAttribute('aria-valuenow', String(Math.round(hp)));
     ui.selectedBuildingProduction.textContent = !selectedBuilding.complete
-      ? 'Finish construction to unlock production.'
+      ? 'Finish construction to use this building.'
       : selectedBuilding.productionBlocked ? 'Production blocked · clear the spawn area.'
         : queued > 0 ? `${queued.toLocaleString()} ${troop} queued · ${training}% training`
-          : troop ? `Ready to train ${troop}.` : BUILDING_DEFINITIONS[selectedBuilding.type].dropoff?.length ? `Drop-off: ${profileDropoffResources(selectedBuilding.type, mapDefinition?.economyProfileId).join(' and ')}.` : `Population capacity +${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0}.`;
+          : troop ? `Ready to train ${troop}.`
+            : rule.harvest ? selectedBuilding.harvestStock > 0
+              ? `Food plot · ${formatResourceStock(selectedBuilding.harvestStock)} / ${rule.harvest.stock} food remaining.`
+              : 'Food plot exhausted · clear it, then build a new Farm.'
+            : rule.dropoff?.length ? `Drop-off: ${profileDropoffResources(selectedBuilding.type, mapDefinition?.economyProfileId).join(' and ')}.`
+            : rule.combat ? `Defends against visible enemies · ${rule.combat.range}-cell range.`
+            : selectedBuilding.type === 'palisade-gate' ? selectedBuilding.gateOpen
+              ? 'Gate open · both teams may pass.' : 'Gate closed · blocks both teams.'
+            : selectedBuilding.type === 'palisade-wall' ? 'Blocks land movement · connect segments to make a wall.'
+            : rule.populationCapacity ? `Population capacity +${rule.populationCapacity}.` : 'Building ready.';
   }
   let blue = 0;
   let red = 0;
@@ -4426,12 +4438,19 @@ function updateCommandUI() {
     : persistentTargetMode === 'patrol' ? 'Patrol there and back' : persistentTargetMode === 'follow' ? 'Follow a friendly leader' : attackMoveMode ? 'Advance and engage' : 'Move or attack';
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   const utilityBuilding = selectedBuilding && !BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length;
-  if (ui.commandHint) ui.commandHint.textContent = utilityBuilding ? BUILDING_DEFINITIONS[selectedBuilding.type].combat
+  if (ui.commandHint) ui.commandHint.textContent = utilityBuilding && !selectedBuilding.complete
+    ? 'Select Workers and right-click this building to finish construction.'
+    : utilityBuilding ? BUILDING_DEFINITIONS[selectedBuilding.type].combat
       ? `Defends visible enemies within ${BUILDING_DEFINITIONS[selectedBuilding.type].combat.range} cells · ${BUILDING_DEFINITIONS[selectedBuilding.type].sight} sight.`
       : BUILDING_DEFINITIONS[selectedBuilding.type].harvest
-        ? `Farm placeholder · ${formatResourceStock(selectedBuilding.harvestStock)} / ${BUILDING_DEFINITIONS.farm.harvest.stock} food remaining · Select Workers and right-click to harvest. No regrowth.`
+        ? selectedBuilding.harvestStock > 0
+          ? `Finite food plot · Select Workers and right-click this Farm to harvest. Build another Farm with Workers to plant more.`
+          : 'Food plot exhausted · Clear exhausted Farm, then select Workers and build a new Farm. No regrowth.'
       : BUILDING_DEFINITIONS[selectedBuilding.type].dropoff
         ? `Workers deposit ${profileDropoffResources(selectedBuilding.type, mapDefinition?.economyProfileId).join(' and ')} here when complete.`
+        : selectedBuilding.type === 'palisade-gate'
+          ? 'Open or close this gate below. Open gates admit both teams; occupied or route-cutting closure is refused.'
+        : selectedBuilding.type === 'palisade-wall' ? 'Blocks land movement · connect segments to make a wall.'
         : `Adds ${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0} population capacity when complete.` : tapOrderArmed
     ? selectedBuilding ? 'Tap or click ground to set the rally point'
       : attackMoveMode ? 'Tap or click ground to advance and engage' : 'Tap or click ground, an enemy, or a resource'
@@ -4748,7 +4767,7 @@ function applyState(state, initial = false) {
 }
 
 function updateEnvironmentStateCaptureSnapshot(state) {
-  if (roomPageUrl.searchParams.get('rendererCapture') !== 'environment-state') return;
+  if (roomPageUrl.searchParams.get('rendererCapture') !== 'environment-state' && window.__rtsCaptureDiagnostics !== true) return;
   const resourceNodes = (Array.isArray(state.resourceNodes) ? state.resourceNodes : []).map((node) => {
     const definitionNode = mapDefinition?.resourceNodes?.find((row) => row.id === node.id);
     const visual = resourceNodeVisuals.get(node.id);
@@ -7417,6 +7436,13 @@ function pickAt(x, y, predicate, { advance = true } = {}) {
 
 function pickResourceNodeAt(x, y, { visibleOnly = false, ownedWildlifeOnly = false } = {}) {
   if (localTeam === null || !Array.isArray(mapDefinition?.resourceNodes)) return null;
+  // Farm uses the same visible body as building selection; its base point alone
+  // misses roof/edge clicks and silently turns a harvest order into a Move.
+  if (!ownedWildlifeOnly) {
+    const farm = pickBuildingAt(x, y, building => building.team === localTeam
+      && building.type === 'farm' && building.complete && building.hp > 0);
+    if (farm) return farmHarvestNode(farm);
+  }
   const rect = renderer.domElement.getBoundingClientRect();
   let nearest = null;
   let nearestDistance = 26 * 26;
@@ -7424,6 +7450,7 @@ function pickResourceNodeAt(x, y, { visibleOnly = false, ownedWildlifeOnly = fal
     ...latestBuildings.filter(building => building.team === localTeam).map(farmHarvestNode).filter(Boolean)]) {
     const disclosed = authored.wildlifeSpecies === undefined ? null : latestWildlifeView?.rows.get(authored.id);
     const node = disclosed ? { ...authored, ...disclosed } : authored;
+    if (node.type === 'wood' && (latestResourceStocks.get(node.id) ?? node.stock) <= 0) continue;
     if (ownedWildlifeOnly && selectOwnedWildlife(latestWildlifeView, node.id) === null) continue;
     if (node.wildlifeSpecies !== undefined && (!disclosed || disclosed.stock <= 0
       || !wildlifePointVisible(disclosed) || !wildlifeRenderer.isAvailable(node.id))) continue;
@@ -7471,6 +7498,32 @@ function pickForestCellAt(x, y) {
     }
   }
   return nearestCell;
+}
+
+function pickHarvestableTreeAt(x, y) {
+  if (localTeam === null) return null;
+  const rect = renderer.domElement.getBoundingClientRect();
+  pointerNdc.set((x / rect.width) * 2 - 1, -(y / rect.height) * 2 + 1);
+  camera.updateMatrixWorld(true);
+  raycaster.setFromCamera(pointerNdc, camera);
+  function* candidates() {
+    // Forest cells and authored wood nodes are separate existing stock pools.
+    // Decorative understory/land vegetation never enters this candidate list.
+    for (const [cell, slot] of forestTreeSlots) {
+      const stock = latestForestStocks.get(cell) ?? 6;
+      if (!(stock > 0) || (mapDefinition?.fogOfWar && latestFogCells?.[cell] !== 2)) continue;
+      const mesh = slot.stateMeshes?.[resourceVisualStage(stock, 6)] || slot.mesh;
+      yield { forestCell: cell, mesh, index: slot.index };
+    }
+    for (const node of mapDefinition?.resourceNodes || []) {
+      if (node.type !== 'wood' || !((latestResourceStocks.get(node.id) ?? node.stock) > 0)) continue;
+      const cell = Math.floor(node.z + MAP_HEIGHT / 2) * MAP_WIDTH + Math.floor(node.x + MAP_WIDTH / 2);
+      if (mapDefinition.fogOfWar && latestFogCells?.[cell] !== 2) continue;
+      const mesh = woodTreeMeshes.get(woodTreeNodeStages.get(node.id));
+      for (const slot of woodTreeNodeSlots.get(node.id) || []) yield { node, mesh, index: slot.index };
+    }
+  }
+  return pickEnvironmentInstance(raycaster, candidates());
 }
 
 function pickBuildingAt(x, y, predicate = (building) => building.team === localTeam) {
@@ -7985,6 +8038,9 @@ function issueContextOrder(clientX, clientY, queueWaypoint = false) {
       ? pickBuildingAt(x, y, building => building.team === localTeam
         && Object.hasOwn(BUILDING_DEFINITIONS, building.type) && building.complete !== true) : null;
     if (construction) { resumeConstructionAt(construction, false); return; }
+    const tree = pickHarvestableTreeAt(x, y);
+    if (tree?.node) { issueGather(tree.node); return; }
+    if (tree?.forestCell !== undefined) { issueForestGather(tree.forestCell); return; }
     const node = pickResourceNodeAt(x, y);
     if (node) issueGather(node);
     else {
@@ -8215,8 +8271,10 @@ function syncBattlefieldCursor() {
       state.enemy = Boolean(pickAt(x, y, (unit) => unit.team !== localTeam, { advance: false }).unit);
       if (!state.enemy) state.enemyBuilding = Boolean(pickBuildingAt(x, y, (building) => building.team !== localTeam));
       if (!state.enemy && !state.enemyBuilding) {
-        state.resource = pickResourceNodeAt(x, y, { visibleOnly: true })?.type;
-        if (!state.resource) state.forest = pickForestCellAt(x, y) !== null;
+        const tree = pickHarvestableTreeAt(x, y);
+        state.resource = tree?.node?.type || pickResourceNodeAt(x, y, { visibleOnly: true })?.type;
+        state.forest = tree?.forestCell !== undefined;
+        if (!state.resource && !state.forest) state.forest = pickForestCellAt(x, y) !== null;
       }
     }
     if (cursorShift) {
