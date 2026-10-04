@@ -187,6 +187,7 @@ run(['--test', 'scripts/pve-mode-adapter.test.mjs', 'scripts/pve-skirmish-checkp
 run(['--test', 'scripts/pve-objective-rotation.test.mjs'], 'PvE public objective rotation after paid obstruction and checkpoint replay');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');
+run(['--test', 'scripts/wildlife-import-parity.test.mjs'], 'Actual client and native publisher wildlife metadata parity');
 run(['--test', 'scripts/wildlife-motion.test.mjs'], 'Bounded deterministic Sheep motion');
 run(['--test', 'scripts/wildlife-claims.test.mjs'], 'Automatic Sheep claim ownership and legality');
 run(['--test', 'scripts/wildlife-herding.test.mjs', 'scripts/sheep-herding-authority.test.mjs'], 'Owner-only Sheep Herd authority, live food occupancy and checkpoint recovery');

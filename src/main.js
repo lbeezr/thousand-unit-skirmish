@@ -62,6 +62,7 @@ import {
 } from './unit-visual-state.mjs';
 import { createUnitSpriteRuntime } from './unit-sprite-runtime.mjs';
 import { createNeutralWildlifeRenderer } from './neutral-wildlife-renderer.mjs';
+import { validWildlifeNodeDefinition } from './wildlife-state.mjs';
 import {
   MAX_ELEVATION_PATCHES, buildElevationGrid, capturePrerequisiteIds,
   findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
@@ -6369,7 +6370,7 @@ function validateImportedMap(value) {
       || resourceIds.has(node.id) || !allowedResources.includes(node.type)
       || !Number.isFinite(node.x) || !Number.isFinite(node.z)
       || Math.abs(node.x) >= definition.width / 2 || Math.abs(node.z) >= definition.height / 2
-      || !Number.isFinite(node.stock) || node.stock <= 0) {
+      || !Number.isFinite(node.stock) || node.stock <= 0 || !validWildlifeNodeDefinition(node)) {
       throw new Error('Map has an invalid, duplicate, out-of-bounds or unsupported resource node.');
     }
     resourceIds.add(node.id);
