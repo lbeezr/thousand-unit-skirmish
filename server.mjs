@@ -6286,7 +6286,7 @@ function updateTeamResearch() {
     teamUpgrades[team][rules.upgradeKey] = true;
     teamResearch[team] = null;
     broadcastGameplayNotice(team, building.x, building.z,
-      `${team === 0 ? 'AZURE' : 'EMBER'} ${rules.label} COMPLETE · +20% ATTACK`);
+      `${team === 0 ? 'AZURE' : 'EMBER'} ${rules.label} COMPLETE · UPGRADE ACTIVE`);
   }
 }
 
