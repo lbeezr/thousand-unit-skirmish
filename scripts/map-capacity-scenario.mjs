@@ -16,7 +16,7 @@ for (let i = 2; i < process.argv.length; i += 2) {
   assert.ok(['map', 'loads', 'seconds', 'output', 'rss-stop-mib'].includes(key) && process.argv[i + 1], 'Use --map ID --loads CSV --seconds N --output DIR --rss-stop-mib N.');
   options[key] = process.argv[i + 1];
 }
-assert.ok(['veyrholds-terraced-vale', 'veyrholds-threefold-basin', 'veyrholds-riven-escarpment'].includes(options.map));
+assert.ok(['veyrholds-terraced-vale', 'veyrholds-threefold-basin', 'veyrholds-riven-escarpment', 'veyrholds-crownroads'].includes(options.map));
 const loads = options.loads.split(',').map(Number), seconds = Number(options.seconds), rssStop = Number(options['rss-stop-mib']) * 1024 ** 2;
 assert.ok(loads.length >= 1 && loads.length <= 5 && new Set(loads).size === loads.length && loads.every(n => [24, 250, 500, 1000, 2000].includes(n)));
 assert.ok(Number.isInteger(seconds) && seconds >= 10 && seconds <= 60);
@@ -149,7 +149,8 @@ async function runLoad(count) {
       assert.equal(Buffer.from(c.current.visibility.data, 'base64').length, Math.ceil(map.width * map.height / 4));
       await order(c, { type: 'setStance', ids: own(c.current, c.team).map(u => u[0]), stance: 'noAttack' }, 'STANCE ORDER');
     }
-    const targets = map.id === 'veyrholds-riven-escarpment' ? [['north-pass', -24.5, 18], ['high-flank', -79.5, 18], ['causeway', 73.5, 18]]
+    const targets = map.id === 'veyrholds-crownroads' ? [['north-pass', -34.5, 20], ['high-flank', -96.5, 20], ['causeway', 94.5, 20]]
+      : map.id === 'veyrholds-riven-escarpment' ? [['north-pass', -24.5, 18], ['high-flank', -79.5, 18], ['causeway', 73.5, 18]]
       : map.width === 192 ? [['north-pass', -15.5, 24], ['high-flank', -55.5, 12], ['causeway', 56.5, 24]]
       : [['north-pass', -15.5, 24], ['high-flank', -40.5, 12], ['south-pass', 16.5, 24]];
     for (const [name, z, offset] of targets) {

@@ -45,10 +45,22 @@ escarpments surround a low rift, with two broad low passes and two raised routes
 reachable ridge ramps, flat home campuses and three expansion pockets per seat
 use existing elevation. Its 207-unit route takes 79.6 nominal Worker seconds.
 [Medium measurements and acceptance](qa-riven-escarpment-2026-10-04.md) separate
-geometry, bounded native diagnostics and rendered testing. It has Authored
-elimination fallback; Skirmish/PvE admission remains separate. The
+geometry, bounded native diagnostics and rendered testing. Its ordinary human
+Skirmish admission merged in [PR266](https://github.com/lbeezr/thousand-unit-skirmish/pull/266);
+[admission evidence](qa-medium-skirmish-admission-2026-10-04.md) records paid
+entry/recovery. PvE admission remains separate. The
 [elevation assessment](map-elevation-capabilities.md) describes current height,
 pathing and geometry limits for dramatic maps.
+
+## Crownroads Large candidate
+
+**Veyrholds · Crownroads** is an authored 256² Large candidate, using two crown
+ridges, a low basin, two broad passes and two raised alternatives. Four distinct
+expansion pockets per seat and flat home campuses use existing elevation. Its
+251-unit static route takes 96.5 nominal Worker seconds. [Large measurements
+and acceptance](qa-crownroads-2026-10-04.md) separate authored geometry, paid
+native play and incomplete rendered/deployed/capacity acceptance. Authored
+elimination applies; Skirmish/PvE admission remains separate.
 
 ## Confluence Grounds admitted testing arena
 
