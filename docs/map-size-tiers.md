@@ -23,8 +23,9 @@ AoE/WC3 tiles. Actual arrival requires native route/collision/clock measurement.
 The current validator accepts at most 256 on either axis: **XL 320 is blocked**
 until a separately reviewed grid-limit, memory/path/visibility/transport/browser
 capacity slice passes. [The source-bound XL audit](map-grid-limit-audit-2026-10-04.md)
-also demonstrates wrapped 16-bit vision indices and projects cache/path/render
-costs. Small now has an authored [Threefold Basin candidate](qa-threefold-basin-2026-10-04.md).
+retains the historical 16-bit wrapping witness and projects path/render costs.
+The [bounded 32-bit visibility prerequisite](qa-xl-visibility-runtime-2026-10-04.md) removes that
+index/cache blocker in current runtime; ordinary XL admission and measured capacity remain pending. Small now has an authored [Threefold Basin candidate](qa-threefold-basin-2026-10-04.md).
 Medium now has authored [Riven Escarpment](qa-riven-escarpment-2026-10-04.md),
 admitted for [ordinary human Skirmish](qa-medium-skirmish-admission-2026-10-04.md)
 with a static 207-unit / 79.615-second Worker route. [Large Crownroads](qa-crownroads-2026-10-04.md)

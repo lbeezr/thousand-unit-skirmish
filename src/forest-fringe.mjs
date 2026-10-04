@@ -22,5 +22,5 @@ export function exploredForestFringe(visibleCells, candidates, forestCells, colu
     if (adjacent) fringe.push(cell);
   }
   // This is intentionally one nonrecursive ring around LOS-visible forest.
-  return Uint16Array.from(fringe);
+  return Uint32Array.from(fringe);
 }
