@@ -4,7 +4,9 @@ import { canTraverseElevation } from './elevation.mjs';
 // from a planned cardinal route, so check the crossed boundaries as well as the
 // destination. Both sides of a diagonal must be open to avoid cutting a corner.
 export function canTraverseUnitStep(from, to, width, levels, isWalkable) {
-  if (!Number.isInteger(from) || !Number.isInteger(to)
+  if (!Number.isInteger(width) || width <= 0 || levels.length === 0
+    || levels.length % width !== 0
+    || !Number.isInteger(from) || !Number.isInteger(to)
     || from < 0 || to < 0 || from >= levels.length || to >= levels.length
     || !isWalkable(to) || !canTraverseElevation(levels, from, to)) return false;
   const dx = to % width - from % width;
