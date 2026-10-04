@@ -34,8 +34,9 @@ full shard or prove why it failed.
 
 An observation-only fixed-tick probe uses the existing native fixture with
 `authored@1`, unmodified Millrace, original starting banks/rosters and those same
-seeds. It retains commands, notices, every one-second observation, thirty-second
-checkpoints and final state through 240 simulation seconds. No unit, HP, bank,
+seeds. It retains commands, notices, selected fields from every one-second
+observation (resources, production, population, units, buildings and objectives),
+thirty-second checkpoints and final state through 240 simulation seconds. No unit, HP, bank,
 terrain or fog edits occur. Restoring each retained initial checkpoint into a
 fresh fixture repeats the entire result by strict equality at both sources.
 
