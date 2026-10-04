@@ -1,0 +1,134 @@
+{
+  "recordedDate": "2026-10-04",
+  "pr": 209,
+  "merge": "64cc391e6d9c4164dca7bd45696cf3862fe19729",
+  "serverSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+  "tests": 235,
+  "passed": 235,
+  "types": "browser and Node configs pass",
+  "routeCases": 9,
+  "routeRepeats": 2,
+  "routeTracesEqualPremerge": true,
+  "parkedCases": 4,
+  "parkedRepeats": 2,
+  "parkedTracesEqualPremerge": true,
+  "native": [
+    {
+      "team": 0,
+      "head": "64cc391e6d9c4164dca7bd45696cf3862fe19729",
+      "sourceSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+      "roster": 2000,
+      "selected": 996,
+      "arrived": 996,
+      "controlKind": "parked",
+      "arrivalTicks": 1260,
+      "activeRouteRestart": true,
+      "stopPreserved": 8,
+      "replacementPreserved": 8,
+      "replacementResults": [
+        {
+          "id": 12,
+          "goal": 9179,
+          "revision": 3
+        },
+        {
+          "id": 13,
+          "goal": 9180,
+          "revision": 3
+        },
+        {
+          "id": 14,
+          "goal": 9181,
+          "revision": 3
+        },
+        {
+          "id": 15,
+          "goal": 9307,
+          "revision": 3
+        },
+        {
+          "id": 16,
+          "goal": 9308,
+          "revision": 3
+        },
+        {
+          "id": 17,
+          "goal": 9309,
+          "revision": 3
+        },
+        {
+          "id": 18,
+          "goal": 9435,
+          "revision": 3
+        },
+        {
+          "id": 19,
+          "goal": 9436,
+          "revision": 3
+        }
+      ],
+      "idleRestart": true
+    },
+    {
+      "team": 1,
+      "head": "64cc391e6d9c4164dca7bd45696cf3862fe19729",
+      "sourceSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+      "roster": 2000,
+      "selected": 996,
+      "arrived": 996,
+      "controlKind": "parked",
+      "arrivalTicks": 1290,
+      "activeRouteRestart": true,
+      "stopPreserved": 8,
+      "replacementPreserved": 8,
+      "replacementResults": [
+        {
+          "id": 1012,
+          "goal": 9122,
+          "revision": 3
+        },
+        {
+          "id": 1013,
+          "goal": 9123,
+          "revision": 3
+        },
+        {
+          "id": 1014,
+          "goal": 9124,
+          "revision": 3
+        },
+        {
+          "id": 1015,
+          "goal": 9250,
+          "revision": 3
+        },
+        {
+          "id": 1016,
+          "goal": 9251,
+          "revision": 3
+        },
+        {
+          "id": 1017,
+          "goal": 9252,
+          "revision": 3
+        },
+        {
+          "id": 1018,
+          "goal": 9378,
+          "revision": 3
+        },
+        {
+          "id": 1019,
+          "goal": 9379,
+          "revision": 3
+        }
+      ],
+      "idleRestart": true
+    }
+  ],
+  "limits": [
+    "actual native postmerge source with ordinary commands and restarts; no renderer or deployment verification",
+    "unisolated host; no comparable hardware speedup or supported capacity claim",
+    "shared tick-phase command/result interface remains a coordinated future slice"
+  ]
+}

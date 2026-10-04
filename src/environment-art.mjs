@@ -7,6 +7,7 @@ import { RESOURCE_VISUAL_STAGES, resourceVisualStage } from './resource-visual-s
 import { createGroundMistStudy, groundMistEnabled } from './terrain-atmosphere.mjs';
 import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
 import { groundTextureName, loadPaintedMaterialAtlas } from './painted-material-atlas-runtime.mjs';
+import { loadOakDepletionAtlas, oakDepletionStage, applyOakDepletionSampling } from './oak-depletion-atlas-runtime.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from './terrain-blend.mjs';
 import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
 import { createWaterSurfaceStudy, waterSurfaceOptions } from './water-surface-study.mjs';
@@ -252,7 +253,17 @@ async function loadResourceStateAssets() {
     RESOURCE_STATE_ASSET_STATUS = {
       ...RESOURCE_STATE_ASSET_STATUS, packVersion: manifest.packVersion || null,
     };
+    const oakDepletion = await loadOakDepletionAtlas().catch(error => {
+      console.warn('Oak depletion atlas unavailable; using individual states', error.message);
+      return null;
+    });
+    if (oakDepletion) loadedFiles.push(...oakDepletion.files.map(file => ({
+      path: file.path, sha256: file.sha256, dimensionsPx: file.dimensionsPx,
+    })));
     for (const path of REQUIRED_RESOURCE_STATE_FILES) {
+      const stage = oakDepletionStage(path.replace(/\.webp$/, ''));
+      const atlasTexture = oakDepletion?.texture(stage);
+      if (atlasTexture) { loaded.set(path, atlasTexture); continue; }
       const result = await fetchVerifiedRuntimeImage(path, runtimeByPath.get(path));
       loaded.set(path, result.texture);
       loadedFiles.push({ path, sha256: result.sha256, dimensionsPx: result.dimensions });
@@ -289,6 +300,7 @@ async function loadResourceStateAssets() {
       packId: manifest.packId,
       packVersion: manifest.packVersion,
       loadedFiles,
+      oakDepletionAtlas: Boolean(oakDepletion),
       reason: null,
     };
   } catch (error) {
@@ -529,6 +541,7 @@ function spriteMaterial(name) {
     depthWrite: true,
     toneMapped: false,
   });
+  if (oakDepletionStage(name)) applyOakDepletionSampling(material);
   registerTextureMaterial(spriteMaterials, name, material);
   return material;
 }
