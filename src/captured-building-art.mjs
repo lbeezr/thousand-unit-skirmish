@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { applyBuildingGroundDepth } from './building-sprites.mjs';
+import { imageAlphaPixels } from './environment-instance-picking.mjs';
 
 const DEFAULT_MANIFEST_URL = new URL(
   '../assets/buildings/town-center-lifecycle-meshy-v1/lifecycle-grid.json',
@@ -231,7 +232,21 @@ export function createCapturedBuildingSprite({
   const sprite = new THREE.Sprite(material);
   sprite.visible = false;
   sprite.renderOrder = 0.9;
-  if (preview) sprite.raycast = () => {};
+  sprite.raycast = preview ? () => {} : function(raycaster, intersects) {
+    if (!this.visible || !this.material.map) return;
+    const texture = this.material.map, pixels = imageAlphaPixels(texture.image);
+    // A failed read leaves the existing geometry/ground target available.
+    if (!pixels) return;
+    const hits = [];
+    THREE.Sprite.prototype.raycast.call(this, raycaster, hits);
+    if (texture.matrixAutoUpdate) texture.updateMatrix();
+    for (const hit of hits) {
+      const uv = texture.transformUv(hit.uv.clone());
+      const column = Math.min(pixels.width - 1, Math.max(0, Math.floor(uv.x * pixels.width)));
+      const row = Math.min(pixels.height - 1, Math.max(0, Math.floor(uv.y * pixels.height)));
+      if (pixels.alpha[row * pixels.width + column] / 255 >= this.material.alphaTest) intersects.push(hit);
+    }
+  };
   const bodyDepth = new THREE.Sprite(new THREE.SpriteMaterial({
     transparent: false, alphaTest: 0.9, colorWrite: false,
     depthTest: true, depthWrite: true, toneMapped: false,
