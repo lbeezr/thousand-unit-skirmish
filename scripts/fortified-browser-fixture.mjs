@@ -1,5 +1,5 @@
 // Isolated owner-run Chrome contexts for the combined browser proof. No user profile.
-import assert from 'node:assert/strict';
+import {validateBackgroundPolicy} from './browser-background-policy.mjs';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {mkdtemp,readFile,rm,stat} from 'node:fs/promises';
@@ -23,7 +23,7 @@ class Cdp {
   close(){this.socket.close();}
 }
 export function backgroundPolicyArguments(policy) {
-  assert.ok(['default', 'unthrottled'].includes(policy), 'known browser background policy required');
+  validateBackgroundPolicy(policy);
   return policy === 'default' ? [] : ['--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows', '--disable-renderer-backgrounding'];
 }
 export async function createFortifiedBrowser({backgroundPolicy='unthrottled'}={}) {

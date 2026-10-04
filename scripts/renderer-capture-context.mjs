@@ -1,12 +1,13 @@
 // Versioned boundary shared by independently owned ordinary capture adapters.
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { validateBackgroundPolicy } from './browser-background-policy.mjs';
 
 /** @typedef {{cdp: {call: (method: string, params?: object) => Promise<unknown>,
  * evaluate: (expression: string) => Promise<unknown>},
  * wait: (expression: string, description?: string, timeoutMs?: number) => Promise<unknown>}} CapturePage */
 /** @typedef {{version: 1, page: CapturePage, openPage: () => Promise<CapturePage>, origin: string, evidenceDirectory: string,
- * source: Readonly<{revision: string, digest: string}>, backgroundPolicy?: 'default'|'unthrottled',
+ * source: Readonly<{revision: string, digest: string}>, backgroundPolicy?: import('./browser-background-policy.mjs').BrowserBackgroundPolicy,
  * capture: (options: {page?: CapturePage, mapId: string, checkpoint: string}) => Promise<unknown>}} CaptureContext */
 /** @typedef {{id: string, contextVersion: 1, run: (context: CaptureContext) =>
  * Promise<{status: 'passed'|'failed'|'blocked', checks: {id: string, passed: boolean}[]}>}} CaptureAdapter */
@@ -31,9 +32,7 @@ export function validateCaptureAdapter(value, id) {
 /** @param {unknown} value @returns {CaptureContext} */
 export function validateCaptureContext(value) {
   const context = record(value), page = record(context.page), cdp = record(page.cdp), source = record(context.source);
-  if (context.backgroundPolicy !== undefined) assert.ok(typeof context.backgroundPolicy === 'string'
-    && ['default', 'unthrottled'].includes(context.backgroundPolicy),
-    'capture context requires a known browser background policy');
+  if (context.backgroundPolicy !== undefined) validateBackgroundPolicy(context.backgroundPolicy);
   assert.equal(context.version, CAPTURE_CONTEXT_VERSION, 'capture context version1 is required');
   for (const method of ['call', 'evaluate']) assert.equal(typeof cdp[method], 'function', 'capture context requires an instrumented CDP page');
   assert.equal(typeof page.wait, 'function', 'capture context requires page.wait');
