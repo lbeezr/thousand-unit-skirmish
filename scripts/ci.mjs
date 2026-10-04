@@ -213,6 +213,7 @@ run(['--test', 'scripts/pve-farm-policy.test.mjs'], 'PvE finite paid Farm starva
 run(['--test', 'scripts/pve-home-defense.test.mjs'], 'PvE visible economic raids, bounded defense and objective recovery replay');
 run(['--test', 'scripts/pve-regroup.test.mjs'], 'PvE bounded regroup after wipeout, paid recovery and restart replay');
 run(['--test', 'scripts/pve-skirmish-targets.test.mjs', 'scripts/pve-skirmish-replay.test.mjs'], 'Explicit Skirmish AI targets, fog fairness and paid producer restart replay');
+run(['--test', 'scripts/pve-target-continuation.test.mjs'], 'PvE capability qualification: paid second-target continuation and incapable controls');
 run(['--test', 'scripts/pve-mode-adapter.test.mjs', 'scripts/pve-skirmish-checkpoint.test.mjs'], 'Authoritative AI mode activation and canonical Skirmish recovery');
 run(['--test', 'scripts/fog-checkpoint-boundary.test.mjs', 'scripts/fog-checkpoint-forest.test.mjs', 'scripts/fog-checkpoint-reinforcement.test.mjs'], 'Full fog checkpoint parity across movement, geometry and scenario births');
 run(['--test', 'scripts/pve-wildlife-disclosure.test.mjs'], 'Opponent actual-cell wildlife resource disclosure');
