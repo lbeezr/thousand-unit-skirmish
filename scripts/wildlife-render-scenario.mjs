@@ -8,6 +8,8 @@ import { createStaticSheepRuntime } from '../src/sheep-static-preview.mjs';
 
 // Real worker HTTP/WS paths and Three meshes; PNG decoding is CPU-only, not WebGL evidence.
 const map = JSON.parse(await readFile(new URL('../docs/qa-evidence/sheep-eight-view-default-2026-10-03/game-map.json', import.meta.url)));
+// Preserve dated source poses while using the current ordinary publication floor.
+map.width = 160; map.height = 160;
 const fixture = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 40_000 });
 const OriginalImage = globalThis.Image;
 let renderer;

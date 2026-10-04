@@ -2,20 +2,25 @@
 
 **Status, 3 October 2026:** the original source-based proposal at fork main
 `9990ed3` remains the claim/herd design. A narrower neutral food foundation is now
-implemented below, with [six Sheep on the default Millrace map](qa-millrace-sheep-2026-10-03.md).
+implemented below, with [six Sheep on the historical Millrace map](qa-millrace-sheep-2026-10-03.md).
 It delivers no new generated art or accepted animal stock/gatherer-cap balance.
+
+Current ordinary Tiny entry is Terraced Vale 160 and contains no Sheep. The
+six-animal Millrace regression selects its historical map explicitly; ordinary
+authored Sheep scenarios use the admitted 160×160 publication floor. Native
+acceptance must identify the actual Sheep-bearing map alongside the build.
 
 [Wiki wildlife entry](lore/wildlife.md) · [Art evolution](lore/art-evolution.md)
 
 **3 October art follow-up:** the [approved eight-view static pack](../assets/wildlife/bellweather-sheep-static-v1/README.md)
 now replaces the earlier public-input illustration in the normal game renderer,
-including default Millrace Sheep. All eight original PNGs were materialized,
+including historical Millrace Sheep. All eight original PNGs were materialized,
 visually inspected and preserved with provenance. Alive Sheep select their
 authoritative heading view (initially the authored nose pose); missing/failed art uses the geometric proxy, carcasses
 use the food-cache marker, and depleted/hidden Sheep are suppressed. There is
 no articulated animal animation or full model in runtime; the bounded motion
 slice translates the existing static art. [Current evidence](qa-sheep-eight-view-default-2026-10-03.md)
-records byte/pixel acceptance, simultaneous views, default both-seat game checks,
+records byte/pixel acceptance, simultaneous views, dated Millrace both-seat checks,
 packaging and the pending native ground/scale/occlusion review.
 
 Historical [one-view binding](qa-neutral-wildlife-render-binding-2026-10-03.md),

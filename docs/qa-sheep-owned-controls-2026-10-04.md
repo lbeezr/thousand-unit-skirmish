@@ -32,7 +32,11 @@ real Three CPU renderer positions, building/wall planners and existing army,
 Worker, Farm, Skiff, stance and cargo regression assertions. Exact counts,
 reviewed source, live-server results and packed release belong in the owning PR.
 
-On an identified native build containing this change, run normal Millrace as
+Current ordinary Tiny defaults to Terraced Vale 160, which has no Sheep. The
+normal-input proof publishes an admitted 160×160 Sheep-bearing arena; historical
+Millrace motion/claims proofs select their map explicitly.
+
+On an identified native build containing this change, run a Sheep-bearing map as
 each seat: move a land unit near a visible Sheep to claim it; left-click it;
 read the true-owner/food summary; right-click clear visible land; use Herd then
 tap and the minimap; press S/Stop; send a Worker to Gather foreign/neutral Sheep;
