@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "7afd398242a5a2d84719110c422faf850e1885d3",
+  "mapId": "veyrholds-threefold-basin",
+  "mapSHA256": "6d9769ce30a1da374ffa41660dd99a804fd078a6f706113ddce40e1785e3ba0b",
+  "measuredScriptSHA256": "5d6d2d5b6e21e7c15707ef3f958882facbf161bada0b955f3149ce20e432c499",
+  "loads": [
+    {
+      "armySize": 24,
+      "envelope": {
+        "sampledWindows": 64,
+        "tickP95PeakMs": 3.824,
+        "tickMaxMs": 4.746,
+        "startLagP95PeakMs": 1.357,
+        "startLagMaxMs": 10.913,
+        "maximumPlanningSliceMs": 3.198,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "armySize": 250,
+      "envelope": {
+        "sampledWindows": 61,
+        "tickP95PeakMs": 7.242,
+        "tickMaxMs": 7.242,
+        "startLagP95PeakMs": 2.741,
+        "startLagMaxMs": 5.122,
+        "maximumPlanningSliceMs": 6.736,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "armySize": 500,
+      "envelope": {
+        "sampledWindows": 62,
+        "tickP95PeakMs": 8.351,
+        "tickMaxMs": 8.351,
+        "startLagP95PeakMs": 6.534,
+        "startLagMaxMs": 7.262,
+        "maximumPlanningSliceMs": 2.513,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "armySize": 1000,
+      "envelope": {
+        "sampledWindows": 60,
+        "tickP95PeakMs": 14.05,
+        "tickMaxMs": 14.05,
+        "startLagP95PeakMs": 5.764,
+        "startLagMaxMs": 17.084,
+        "maximumPlanningSliceMs": 4.003,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "armySize": 2000,
+      "envelope": {
+        "sampledWindows": 65,
+        "tickP95PeakMs": 12.548,
+        "tickMaxMs": 15.404,
+        "startLagP95PeakMs": 1.325,
+        "startLagMaxMs": 32.432,
+        "maximumPlanningSliceMs": 9.51,
+        "initialTickWindowsWithoutLag": 1,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "capacityClaim": false
+}

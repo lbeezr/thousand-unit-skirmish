@@ -45,16 +45,18 @@ test('published atlas preserves prior action pixels/metadata and all four approv
   assert.deepEqual((await validateSpriteAtlas(fileURLToPath(manifest))).errors, []);
   const asset = basePack.assets[0];
   assert.equal(sha256(JSON.stringify(asset.frames.slice(0, preservation.originalFrames))), preservation.originalFrameMetadataSha256);
-  // The admitted East walk replaces only its former idle hold. Reconstruct
-  // that historical clip for the frozen fishing-era metadata hash; every
-  // other original clip and all original/fishing pixels remain protected.
+  // Explicitly admitted land walk clips replace their former idle holds.
+  // Reconstruct those historical clips for the frozen fishing-era hash;
+  // all other original metadata and original/fishing pixels remain protected.
   const originalClips = structuredClone(asset.clips.slice(0, preservation.originalClips));
-  const eastWalk = originalClips.find(c => c.stateId === 'walk' && c.directionId === 'east');
-  assert.deepEqual(eastWalk.sequence, Array.from({ length: 8 }, (_, i) =>
-    ({ frameId: `walk-east-${i}`, durationMs: 100 })));
-  eastWalk.sequence = [{ frameId: 'idle-east-0', durationMs: 1000 }];
+  for (const direction of ['east', 'north', 'south']) {
+    const walk = originalClips.find(c => c.stateId === 'walk' && c.directionId === direction);
+    assert.deepEqual(walk.sequence, Array.from({ length: 8 }, (_, i) =>
+      ({ frameId: `walk-${direction}-${i}`, durationMs: 100 })));
+    walk.sequence = [{ frameId: `idle-${direction}-0`, durationMs: 1000 }];
+  }
   assert.equal(sha256(JSON.stringify(originalClips)), preservation.originalClipMetadataSha256);
-  assert.equal(asset.frames.length, preservation.originalFrames + 4 + 8);
+  assert.equal(asset.frames.length, preservation.originalFrames + 4 + 24);
   assert.equal(asset.clips.length, preservation.originalClips + 1);
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), preservation.worldUnitsPerPixel);
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', manifest)));

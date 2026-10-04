@@ -192,12 +192,14 @@ run(['--test', 'scripts/pve-mode-adapter.test.mjs', 'scripts/pve-skirmish-checkp
 run(['--test', 'scripts/fog-checkpoint-boundary.test.mjs', 'scripts/fog-checkpoint-forest.test.mjs', 'scripts/fog-checkpoint-reinforcement.test.mjs'], 'Full fog checkpoint parity across movement, geometry and scenario births');
 run(['--test', 'scripts/pve-wildlife-disclosure.test.mjs'], 'Opponent actual-cell wildlife resource disclosure');
 run(['--test', 'scripts/pve-skirmish-loss.test.mjs'], 'Canonical both-seat Skirmish paid army and producer loss recovery');
-run(['--test', 'scripts/pve-tiny-search.test.mjs'], 'Tiny configured Skirmish policy: canonical authored elimination, fog, paid production and reset');
+run(['--test', 'scripts/pve-tiny-search.test.mjs'], 'Tiny authored and native Skirmish: fog, paid production, exact replay and reset');
+run(['--test', 'scripts/pve-fog-restart.test.mjs'], 'PvE publication control and immediate off-phase fresh-foundation recovery');
 run(['--test', 'scripts/pve-objective-rotation.test.mjs'], 'PvE public objective rotation after paid obstruction and checkpoint replay');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');
 run(['--test', 'scripts/wildlife-import-parity.test.mjs'], 'Actual client and native publisher wildlife metadata parity');
 run(['--test', 'scripts/wildlife-motion.test.mjs'], 'Bounded deterministic Sheep motion');
+run(['--test', 'scripts/wildlife-heading.test.mjs'], 'Canonical Sheep body headings and exact checkpoint conversion');
 run(['--test', 'scripts/wildlife-claims.test.mjs'], 'Automatic Sheep claim ownership and legality');
 run(['--test', 'scripts/wildlife-herding.test.mjs', 'scripts/sheep-herding-authority.test.mjs'], 'Owner-only Sheep Herd authority, live food occupancy and checkpoint recovery');
 run(['scripts/sheep-herding-scenario.mjs'], 'Both-seat Sheep Herd, shared harvest, construction and recovery');
@@ -389,6 +391,7 @@ const scenarios = [
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
   ['scripts/room-pregame-scenario.mjs', 'Pregame two-seat launch and recovery'],
   ['scripts/ordinary-map-floor-scenario.mjs', 'Ordinary Tiny floor, fresh modes and historical/Practice access'],
+  ['scripts/small-skirmish-entry-scenario.mjs', 'Reviewed Small normal human paid entry and recovery'],
   ['scripts/checkpoint-storage-recovery-scenario.mjs', 'Checkpoint storage failure and recovery'],
   ['scripts/room-expiry-scenario.mjs', 'Invite expiry and pending reconnect protection'],
   ['scripts/impaired-connection-scenario.mjs', 'Delayed two-seat transport and interrupted-order recovery'],

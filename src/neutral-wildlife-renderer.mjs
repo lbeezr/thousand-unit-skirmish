@@ -1,10 +1,13 @@
 import { validWildlifeNodeDefinition, validWildlifeNodeState } from './wildlife-state.mjs';
 import { validWildlifePosition } from './wildlife-motion.mjs';
 import { createStaticSheepRuntime } from './sheep-static-preview.mjs';
-import { normalizedDirection } from './unit-sprite-runtime.mjs';
+import { authoredWildlifeBodyHeading, authoredWildlifeNoseHeading,
+  legacyNoseHeadingFromBody, wildlifeDirection } from './wildlife-heading.mjs';
 
 function staticPose(definition, snapshot) {
-  return { stateId: 'idle', directionId: normalizedDirection(snapshot?.wildlifeHeading ?? (definition.wildlifeNoseYawDegrees ?? 0) * Math.PI / 180),
+  const noseHeading = snapshot?.wildlifeHeading === undefined
+    ? authoredWildlifeNoseHeading(definition) : legacyNoseHeadingFromBody(snapshot.wildlifeHeading);
+  return { stateId: 'idle', directionId: wildlifeDirection(noseHeading),
     moving: false, visible: true };
 }
 
@@ -119,7 +122,7 @@ export function createNeutralWildlifeRenderer({
         || !Number.isFinite(definition.stock) || definition.stock <= 0) continue;
       const group = new THREE.Group();
       const fallbacks = fallbackMeshes(THREE);
-      fallbacks.alive.rotation.y = (definition.wildlifeNoseYawDegrees ?? 0) * Math.PI / 180;
+      fallbacks.alive.rotation.y = authoredWildlifeBodyHeading(definition);
       group.add(fallbacks.alive, fallbacks.carcass); group.visible = false;
       group.userData.wildlifeNodeId = definition.id;
       scene.add(group);
@@ -162,7 +165,7 @@ export function createNeutralWildlifeRenderer({
       const y = groundHeight(x, z);
       if (!Number.isFinite(y)) { group.visible = false; continue; }
       group.position.set(x, y, z);
-      record.alive.rotation.y = record.snapshot?.wildlifeHeading ?? (definition.wildlifeNoseYawDegrees ?? 0) * Math.PI / 180;
+      record.alive.rotation.y = record.snapshot?.wildlifeHeading ?? authoredWildlifeBodyHeading(definition);
       if (record.state !== 'alive' || !template) continue;
       const shown = template.update({
         ...staticPose(definition, record.snapshot),

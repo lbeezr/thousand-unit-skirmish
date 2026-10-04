@@ -44,9 +44,10 @@ try {
   assert.equal(root.welcome.map.id, NORMAL_MATCH_MAP_ID);
   assert.deepEqual(mode(root.welcome), NORMAL_HUMAN_MATCH_MODE);
   assert.ok(root.welcome.maps.every(row => row.width >= 160 && row.height >= 160 && row.selectable));
-  assert.equal(root.welcome.maps.length, 3);
+  assert.deepEqual(root.welcome.maps.map(row => row.id).sort(),
+    ['frontier-160', NORMAL_MATCH_MAP_ID, 'veyrholds-threefold-basin', 'woodland-expanse'].sort());
   assert.equal(root.latest.scenarioClockStarted, false);
-  records.push({ name: 'Unconfigured root and fresh status use Tiny Skirmish; only three shipped160 maps are ordinary choices; XL remains unavailable' });
+  records.push({ name: 'Unconfigured root and fresh status use Tiny Skirmish; three real Tiny maps and reviewed Small are ordinary choices; XL remains unavailable' });
 
   const created = await create({ mode: 'pvp', pregame: true });
   assert.deepEqual(created.launchOptions, { mode: 'pvp', pregame: true, ...NORMAL_HUMAN_MATCH_MODE });

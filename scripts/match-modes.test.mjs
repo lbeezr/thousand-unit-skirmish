@@ -18,6 +18,18 @@ function deepFreeze(value) {
   return value;
 }
 
+test('reviewed Small supports human Skirmish with its exact authored geometry and bonus rules', () => {
+  const map = deepFreeze(JSON.parse(readFileSync(new URL('../maps/veyrholds-threefold-basin.json', import.meta.url))));
+  assert.deepEqual([map.width, map.height], [192, 192]);
+  assert.equal(assertMatchModeCompatibility(skirmish, map).id, 'skirmish');
+  assert.equal(assertMatchModeCompatibility(skirmish, map, { practice: true }).id, 'skirmish');
+  assert.throws(() => assertMatchModeCompatibility(skirmish, map, { mode: 'pve' }), /does not support PvE/);
+  assert.deepEqual(effectiveMapForMatchMode(map, skirmish), map);
+  assert.ok(map.triggers.every(trigger => trigger.victory === false));
+  assert.equal(Object.hasOwn(map, 'timedVictory'), false);
+  assert.equal(matchModeDefinition(NORMAL_HUMAN_MATCH_MODE).defaultMapId, NORMAL_MATCH_MAP_ID);
+});
+
 test('legacy omission preserves authored identity independently of opponent setup', () => {
   for (const options of [undefined, {}, { mode: 'pvp' }, { mode: 'pve', practice: false }]) {
     assert.deepEqual(normalizeMatchMode(options), authored);

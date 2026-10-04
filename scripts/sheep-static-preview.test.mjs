@@ -178,7 +178,8 @@ test('normal wildlife renderer keeps simultaneous static directions independent 
     assert.equal(northUv[0], .5 / 1024); assert.equal(eastUv[0], 512.5 / 1024);
     assert.deepEqual(renderer.diagnostics().nodes.map(node => node.mode), ['static-illustration', 'static-illustration', 'sheep-proxy']);
     assert.equal(group('pose-2').children.length, 2, 'absent south art never relabels a north frame');
-    assert.equal(group('pose-2').children[0].rotation.y, Math.PI);
+    assert.equal(group('pose-2').children[0].rotation.y, Math.PI - 42.03499984741211 * Math.PI / 180,
+      'the geometric proxy uses canonical body yaw while admitted still frames retain authored nose views');
     let northDisposals = 0, eastDisposals = 0, materialDisposals = 0, textureDisposals = 0;
     northGeometry.addEventListener('dispose', () => northDisposals++);
     eastGeometry.addEventListener('dispose', () => eastDisposals++);
