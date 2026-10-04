@@ -62,7 +62,7 @@ land executor, not command admission or whole journeys.
 | Manual Move, queued Move, formation slots | `assignFormationMove`, `advanceQueuedWaypoints`, sliced `findPathAStar` → `applyPlannedMoveAssignment` → `getMoveVector` / `simulateTick` | U3 adds legal fractional points; U4's bounded ordinary single-unit adopter adds explicit static-circle projection/sweeps. Groups keep distinct slots and reachable-component projection; physical group adoption remains open. [Retained Direct Move checks](qa-direct-open-ground-move-2026-10-04.md) document the historical cell-center milestone. |
 | Gather, Farm, shore fish, drop-off, Return, return to work | `routeWorker`, `routeForestWorker`, `routeWorkerToDropoff`, `updateWorkerEconomy`; cached cardinal flow fields → land executor | The bounded land-Worker economy adopter shares the static profile through reduction/rejoin, route steps and gathering separation. Interaction ranges, selected `path.at(-1)`, original cost/raw `path.length` scoring and cargo/job remain resource-owned. Dynamic masks and actual journey/recovery/rendered coverage remain explicit below; water adapters keep their policy. |
 | Forest group / region intent | `assignForestGather`, gather-work-area selection, `updateForestWorkerEconomy` → resource routes | Forest owner `01a1072a-4c42-7791-9dab-77b88425a021` owns the returning-forester/interior-click fix. A clicked interior tree names its selected forest group; choose its nearest reachable frontier. Distinguish exhausted, temporarily obstructed and unreachable. No unrelated global fallback or hidden-resource reveal. |
-| Build, repair, palisade sequence, site evacuation | Building access assignment → A* / land executor; construction and wall continuation | Preserve paid site IDs, revision, legal edge range and actual productive-work receipts. Completion of movement does not mean completion of work. |
+| Build, repair, palisade sequence, site evacuation | Building access assignment → A* / land executor; construction and wall continuation | PR399's bounded construction travel adopter consumes the shared static Worker profile through existing planner/publication/land admissions. Preserve paid site IDs, revision, legal edge range and actual productive-work receipts. Stationary construction separation and evacuation remain explicit follow-ups; movement completion does not mean work completion. |
 | Attack-move and interrupted-route resume | Formation A* plus `prepareAttackMovePaths`, `getUnitAttackPath`, `clearAttackTarget` → land executor | Preserve manual objective, acquisition/stance rules and resume. Normalize only after weapon-range and stance-travel selection. |
 | Focused unit/building attack, pursuit, range positioning | `assignAttack`, `assignAttackBuilding`, cached flow / range goals → land executor | Range and target validity are independent of route exhaustion. Moving-target continuity and unreachable firing positions need both-seat journeys. Combat retains targeting/damage ownership. |
 | Patrol, Follow, stance return, production rally | `assignPatrolOrder`, `assignFollowOrder`, `updatePersistentOrders`, `enqueueRouteRepairs`; rally reuses Move | Preserve endpoint cycling, catch-up/leash and manual replacement; test active and pending continuations. |
@@ -73,6 +73,59 @@ land executor, not command admission or whole journeys.
 | Spawn, checkpoint restore, evacuation / relocation | Spawn rules, `restoreMatchCheckpoint`, construction relocation | These are placement/restore policies, not ordinary travel. Validate clearance and identity, record relocation reason, rebuild transient routes without silently changing job intent. |
 
 ### Shared semantics, domain policies
+
+Construction caller adoption owner `01a10933-e913-766b-b5de-3aa5a17c7038`
+reserves `constructionMovementActive` in `src/construction-work-intent.mjs`
+and the construction journey regressions in the existing registered
+`scripts/construction-work-intent.test.mjs`. Its exact shared consumer request is
+[PR395 comment 5985577813](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5985577813):
+core retains the shared planner/executor and `src/unit-movement.mjs`; construction
+owns only the predicate import/fallback inside `activeLandMovementBodyRadius`
+under the core owner's [explicit two-line agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/399#issuecomment-5985597848).
+The implementation is in [PR399](https://github.com/lbeezr/thousand-unit-skirmish/pull/399).
+Worker adopter PR395 is merged at `452d043f` and incorporated conflict-free.
+Existing route results, planner/body checks, fractional first-leg rejoin,
+terminal/steering/fallback admissions and dynamic repairs consume this selector
+by default; no server/planner body edits are allocated. Crowd steering/body
+pairs and XL save validation remain disjoint active owners.
+
+At clean production source `13b13e82efe19d37ef3972907c8335a460fd041d`, real
+Move to `(0.79,0.95)` followed by selected-Worker Build House at `(6.5,0.5)`
+beside stone `[1,2]×[1,2]` admits thirteen unsafe static-circle substeps per
+seat, starting on its first steering step. Each House still completes and
+costs exactly 75 Wood. The [retained baseline](qa-evidence/construction-travel-2026-10-04/baseline.json)
+separates paid/productive correctness from the reproduced clearance failure.
+Eight both-seat live/pending/active/working-recovery journey regressions fail
+at that physical admission before adoption. The two-line consumer makes every
+actual selected construction substep body clear while still completing the
+same paid House with productive receipts at the unchanged 1.4 edge range.
+Two new actual-command paid-footprint/recovery journeys retain the remembered
+site/area and finish safely after navigation changes. The thirty construction
+checks include the thirteen existing controls, live-intent exclusions and six
+both-seat Stop/cancel/queued-replacement cases; 49 adjacent construction/client/
+wall checks also pass. The [native both-seat command/restart witness](qa-evidence/construction-travel-2026-10-04/native-selection.json)
+at `44c3cc83` retains sole selected builders, cooperative/nearest resume,
+unselected Gather/queued orders, foreign/stale rejection and cold recovery to
+completion. The existing native base-lifecycle scenario also passes repair
+costs, interruption/restart, cancellation/refunds and reservations. These
+historical process receipts do not claim a construction clearance fix.
+No shared planner, flow algorithm, attack/Sheep path, production receipt or
+checkpoint schema is rewritten. The intent predicate uses existing live
+Worker build/repair fields, excludes interrupted/economy/combat/water states
+and introduces no saved state. Stationary construction interaction separation
+still uses the economy-only body selector and is **not** qualified by this
+travel/approach slice; site evacuation/legacy overlap and body-pair clearance
+remain explicit further work. Independent exact-head review and author normal
+merge are the current source-integration dependencies.
+
+The [one cloud capability attempt](qa-evidence/construction-travel-2026-10-04/renderer-capability.json)
+is blocked by `sandbox-unavailable` and `storage-unavailable`, with zero game
+frames/screenshots. Construction retains release/deployment and actual rendered
+acceptance; no security bypass, Mac dependency or auth/dispatch retry is part
+of this lane. After construction is independently reviewed and normally
+integrated, sequence weapon-range route adoption, then Patrol/Follow/stance
+continuations under U4/U5 below, agreeing their exact combat-owned functions
+first. Preserve shared attack and Sheep cardinal/final-point consumers.
 
 Adopt these contracts through existing consumers one vertical change at a time.
 Do not install an unused service, parallel state registry or speculative class tree.

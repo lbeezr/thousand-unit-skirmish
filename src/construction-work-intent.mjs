@@ -1,6 +1,16 @@
 import { BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 import { isPalisade } from './palisade-gate.mjs';
 
+// Derive clearance adoption from the existing live build/repair order. The
+// shared movement owner supplies the profile; there is no new persisted flag.
+export function constructionMovementActive(unit) {
+  return unit.kind === 'worker' && unit.hp > 0 && unit.movementDomain !== 'water'
+    && !unit.holdingPosition && !unit.attackMove && !unit.stanceCombat && !unit.stanceReturning
+    && !unit.persistentOrder && !(unit.attackTargetId >= 0) && !(unit.attackBuildingTargetId >= 0)
+    && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0) && !unit.gatherPhase
+    && Number.isSafeInteger(unit.buildingTargetId) && unit.buildingTargetId >= 0;
+}
+
 // Construction-only policy, also used by the existing paid Palisade sequence.
 export function constructionWorkArea(sites, map) {
   const bounds = sites.map(site => {
