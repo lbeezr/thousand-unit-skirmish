@@ -1,4 +1,5 @@
 import test from 'node:test';
+import './renderer-worker-animation-scenario.test.mjs';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
