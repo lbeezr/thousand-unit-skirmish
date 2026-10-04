@@ -63,9 +63,22 @@ the supported hosted runner was qualified in
 That Open Field pilot's diagnostic Move remains a distinct evidence scope.
 
 The [registered runner PR331](https://github.com/lbeezr/thousand-unit-skirmish/pull/331)
-is integrated. Its additive per-case artifact-directory context and CPU test
-registration follow-up, and the normal-entry hosted invocation/PNG inspection,
-are **pending** with the cloud testing owner.
+and [artifact-directory context PR346](https://github.com/lbeezr/thousand-unit-skirmish/pull/346)
+are integrated. The actual shared batch forwards and validates the owned case
+directory; the version1 HUD wrapper consumes it and retains the shared checkpoint.
+The focused CPU integration check drives the real loaded wrapper/native helper
+through that batch with injected process/browser/health/image boundaries. It
+checks exact directory/source mapping, success and capture failure. Direct input
+records verify no right-click before the checkpoint or after capture failure,
+and exactly one press/release pair after success. These injected controls
+establish zero actual browser/GPU frames.
+
+As of the 4 October source audit at `bfdbb31e`, `scripts/ci.mjs` still omits
+`scripts/renderer-qualification-novice.test.mjs` from the existing qualification
+CPU group. That registration remains with the cloud testing owner; it is no
+longer an artifact-directory or invocation-interface gap. Normal-entry hosted
+invocation and PNG inspection remain **pending** while CI resolves its dispatch
+access denial. Do not substitute a different dispatch route.
 Inspect every retained PNG at the exact reviewed source/release before claiming
 this interaction passed. Record admitted seeds/map/mode, served identity and
 Worker/command/feedback/displacement evidence. A supplied player-pathing
