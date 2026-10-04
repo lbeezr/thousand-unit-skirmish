@@ -11,8 +11,8 @@ import { toOpponentObservation } from '../src/pve-opponent.mjs';
 
 const mapId = 'veyrholds-terraced-vale';
 const identity = { matchModeId: 'skirmish', matchModeVersion: 1 };
-// The explicit human control exercises the same normal process protocol while
-// AI admission is being integrated. It is never reported as a PvE result.
+// The explicit human control exercises the same normal process protocol. It is
+// never reported as a PvE result; CI runs the default normal AI profile.
 const launchMode = process.argv[2] ?? 'pve';
 assert.ok(['pve', 'pvp'].includes(launchMode), 'Usage: node scripts/pve-tiny-process-recovery-scenario.mjs [pve|pvp]');
 const launch = { mode: launchMode, ...identity, ...(launchMode === 'pve' ? { mapSeed: 0, policySeed: 20260925 } : {}) };
