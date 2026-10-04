@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { parse } from 'acorn';
 import { JSDOM } from 'jsdom';
 import * as THREE from 'three';
-import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import * as selection from '../src/unit-selection.mjs';
 import * as economyProfile from '../src/economy-profile.mjs';
 import * as economyClient from '../src/economy-client.mjs';
@@ -103,7 +103,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
   }
   const query = selector => w.document.querySelector(selector);
   Object.assign(w, {...browserRecoveryBindings(),...selection,...economyProfile,...economyClient,...audioPolicy,...wildlifeClientBindings(),
-    THREE,UNIT_DEFINITIONS,BUILDING_DEFINITIONS,farmHarvestNode,isShoreFish,applyUnitStances,fixedMatchArmySize,
+    THREE,UNIT_DEFINITIONS,BUILDING_DEFINITIONS,TECHNOLOGY_DEFINITIONS,farmHarvestNode,isShoreFish,applyUnitStances,fixedMatchArmySize,
     rememberNotice,classifyOrderNotice,formatResourceStock,readWorkerPerformingAction,TextEncoder,WebSocket:WireSocket,
     mapDefinition:map,MAP_WIDTH:map.width,MAP_HEIGHT:map.height,MAP_HALF_X:map.width/2,MAP_HALF_Z:map.height/2,
     localTeam:team,cameraSeatTeam:team,isHost:false,matchWinner:-1,matchWinnerReason:null,
@@ -167,7 +167,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
   wildlifeRenderer.reset(map.resourceNodes,map);await wildlifeRenderer.ready();w.wildlifeRenderer=wildlifeRenderer;
   const names=['selectedIds','selectedWorkerIds','selectedWaterUnits','projectUnit','pickAt','pickResourceNodeAt','pickForestCellAt',
     'pickBuildingAt','selectBuilding','pickFriendly','selectInRect','worldAt','mapCellToWorld','getBuildingQueueLength','buildingLabel',
-    'buildingSupportsRally','clearActiveControlGroup','revalidateControlGroups','clearControlGroups','controlGroupKeyLabel',
+    'buildingSupportsRally','buildingSupportsResearch','clearActiveControlGroup','revalidateControlGroups','clearControlGroups','controlGroupKeyLabel',
     'assignControlGroup','recallControlGroup','centerCameraOnControlGroup','syncSelectionMesh',
     'updateStationaryOrderControls','updateSelectionUI','updateCommandUI','syncTargetOrderUI',
     'issueStationaryOrder','issueReturnCargo','setPersistentTargetMode','setAttackMoveMode','setTapOrderArmed',

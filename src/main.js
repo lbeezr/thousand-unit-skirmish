@@ -3930,12 +3930,16 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   if (!building) bar.querySelector('[data-context-reason]').textContent = '';
   bar.querySelector('[data-context-build]').hidden = context.kind !== 'workers';
   const details = bar.querySelector('[data-context-details]');
-  details.hidden = Boolean(wildlife) || context.kind === 'none' || Boolean(building && !BUILDING_DEFINITIONS[building.type]?.products.length);
-  details.querySelector('[data-context-details-label]').textContent = building ? 'Rally / upgrade details' : 'Formation / route';
+  const supportsRally = building && buildingSupportsRally(building.type);
+  const supportsResearch = building && buildingSupportsResearch(building.type);
+  details.hidden = Boolean(wildlife) || context.kind === 'none' || Boolean(building && !supportsRally && !supportsResearch);
+  details.querySelector('[data-context-details-label]').textContent = building
+    ? supportsResearch && !supportsRally ? 'Research details' : 'Rally / upgrade details' : 'Formation / route';
   details.querySelector('[data-context-formation-icon]').hidden = !['workers', 'military', 'mixed', 'boats'].includes(context.kind);
   const research = bar.querySelector('[data-context-research]');
-  research.hidden = !building || !BUILDING_DEFINITIONS[building.type]?.products.length;
-  research.textContent = building ? `${ui.buildingRallyReadout.textContent} · ${ui.buildingResearchReadout.textContent}` : '';
+  research.hidden = !building || (!supportsRally && !supportsResearch);
+  research.textContent = building ? [supportsRally && ui.buildingRallyReadout.textContent,
+    supportsResearch && ui.buildingResearchReadout.textContent].filter(Boolean).join(' · ') : '';
   const groups = bar.querySelector('[data-context-groups]');
   groups.hidden = Boolean(wildlife);
   for (const button of bar.querySelectorAll('[data-context-panel]')) {
@@ -4418,6 +4422,10 @@ function buildingSupportsRally(type) {
   return type !== 'dock' && BUILDING_DEFINITIONS[type]?.products.length > 0;
 }
 
+function buildingSupportsResearch(type) {
+  return Object.values(TECHNOLOGY_DEFINITIONS).some(technology => technology.building === type);
+}
+
 function selectedWaterUnits() {
   return selectedIds().some(id => UNIT_DEFINITIONS[units[id].kind].movementDomain === 'water');
 }
@@ -4488,15 +4496,18 @@ function updateCommandUI() {
     button.disabled = localTeam === null || matchWinner >= 0 || selectedIds().length === 0
       || Boolean(wildlife) || Boolean(selectedBuilding) || selectedWaterUnits();
   }
-  if (ui.buildingCommandDetails) ui.buildingCommandDetails.hidden = !selectedBuilding || !buildingSupportsRally(selectedBuilding.type);
+  const supportsRally = selectedBuilding && buildingSupportsRally(selectedBuilding.type);
+  const supportsResearch = selectedBuilding && buildingSupportsResearch(selectedBuilding.type);
+  if (ui.buildingCommandDetails) ui.buildingCommandDetails.hidden = !supportsRally && !supportsResearch;
   if (ui.buildingRallyReadout) {
+    ui.buildingRallyReadout.parentElement.hidden = !supportsRally;
     if (rallyCell >= 0) {
       const point = mapCellToWorld(rallyCell);
       ui.buildingRallyReadout.textContent = `RALLY · ${point.x.toFixed(1)}, ${point.z.toFixed(1)}`;
     } else ui.buildingRallyReadout.textContent = 'RALLY · NONE';
   }
   if (ui.clearBuildingRally) {
-    ui.clearBuildingRally.hidden = !selectedBuilding || rallyCell < 0;
+    ui.clearBuildingRally.hidden = !supportsRally || rallyCell < 0;
     ui.clearBuildingRally.disabled = localTeam === null || matchWinner >= 0;
   }
   updateBuildingResearchControls(selectedBuilding);

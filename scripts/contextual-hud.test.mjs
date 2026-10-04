@@ -93,6 +93,7 @@ function fixture(team = 0) {
   w.teamUnits = [w.units.filter(u => u.team === 0), w.units.filter(u => u.team === 1)];
   w.eval([
     wildlifeClientFunctionSource(source),
+    fn('buildingSupportsRally', 'selectedWaterUnits'),
     fn('updateStationaryOrderControls', 'updateSelectionUI'),
     fn('updateSelectionUI', 'updateContextualCommands'), fn('updateContextualCommands', 'updateControlGroupUI'),
     fn('updateRosterProductionOptions', 'updateBuildingLifecycleActions'),
@@ -1049,6 +1050,63 @@ for (const team of [0, 1]) test(`seat ${team}: selected Mill exposes paid Food T
   assert.equal(f.d.activeElement, button); button.click(); assert.equal(f.w.sentCommands.length, 1);
   mill.team = 1 - team; f.select([], mill);
   assert.equal(f.bar.querySelector('[data-technology="food-tools"]'), null, 'opponent Mill cannot expose own research');
+});
+
+for (const team of [0, 1]) test(`seat ${team}: Mill research progress is visible through real selection, snapshots and Details`, t => {
+  const f = economyFixture(team), w = f.w; t.after(() => f.dom.window.close());
+  const mill = { id: 41, team, type: 'mill', complete: true, hp: 600, maxHp: 600 };
+  f.select([], mill);
+  const details = f.bar.querySelector('[data-context-details]');
+  const compact = f.bar.querySelector('[data-context-research]');
+  const button = f.bar.querySelector('[data-technology="food-tools"]');
+  assert.equal(details.hidden, false, 'research-only buildings retain the Details entry');
+  assert.equal(details.textContent.trim(), 'Research details');
+  assert.equal(compact.hidden, false);
+  assert.match(compact.textContent, /FOOD TOOLS.*100 FOOD \/ 75 WOOD.*25S/);
+  assert.doesNotMatch(compact.textContent, /RALLY/);
+  f.click(details);
+  assert.equal(w.commandDock.hidden, false);
+  assert.equal(w.ui.buildingCommandDetails.hidden, false);
+  assert.equal(w.ui.buildingResearchReadout.closest('[hidden]'), null, 'drawer progress is genuinely visible');
+  assert.ok(w.ui.buildingRallyReadout.closest('[hidden]'), 'Mill has no rally action');
+  f.escape(); assert.equal(f.d.activeElement, details);
+  button.focus();
+  const research = [{}, {}]; research[team] = { active: { type: 'food-tools', buildingId: mill.id, progress: .6, remaining: 10 } };
+  w.updateEconomyUI({ teamResearch: research });
+  assert.equal(f.d.activeElement, button);
+  assert.match(compact.textContent, /RESEARCHING 60%.*10S/);
+  const cancel = w.ui.buildingLifecycleActions.querySelector('[data-action="cancelResearch"]');
+  f.click(cancel);
+  assert.deepEqual(JSON.parse(JSON.stringify(w.sentCommands.at(-1))), { type: 'cancelResearch', buildingId: mill.id });
+  research[team] = {}; w.updateEconomyUI({ teamResearch: research });
+  assert.equal(w.ui.buildingLifecycleActions.querySelector('[data-action="cancelResearch"]'), null);
+  assert.match(compact.textContent, /FOOD TOOLS.*100 FOOD/);
+  research[team] = { foodTools: true }; w.updateEconomyUI({ teamResearch: research });
+  assert.match(compact.textContent, /FOOD TOOLS.*COMPLETED.*20% faster/);
+  mill.complete = false; f.select([], mill);
+  assert.equal(details.hidden, false, 'unfinished research remains inspectable');
+  assert.equal(button.getAttribute('aria-disabled'), 'true');
+  mill.team = 1 - team; f.select([], mill);
+  assert.equal(details.hidden, true); assert.equal(compact.hidden, true);
+  assert.equal(w.ui.buildingCommandDetails.hidden, true);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: every building exposes only its supported rally/research details`, t => {
+  const f = economyFixture(team), w = f.w; t.after(() => f.dom.window.close());
+  const rallyAndResearch = ['town-center', 'barracks', 'archery-range', 'stable', 'workshop'];
+  for (const type of Object.keys(BUILDING_DEFINITIONS)) {
+    f.select([], { id: 41, team, type, complete: true, hp: 600, maxHp: 600, harvestStock: 200 });
+    const hasRally = rallyAndResearch.includes(type), hasDetails = hasRally || type === 'mill';
+    assert.equal(f.bar.querySelector('[data-context-details]').hidden, !hasDetails, type);
+    assert.equal(f.bar.querySelector('[data-context-research]').hidden, !hasDetails, type);
+    assert.equal(w.ui.buildingCommandDetails.hidden, !hasDetails, type);
+    assert.equal(w.ui.buildingRallyReadout.parentElement.hidden, !hasRally, type);
+    assert.equal(w.ui.clearBuildingRally.hidden, true, `${type}: unset/unsupported rally`);
+    if (hasRally) {
+      assert.equal(f.bar.querySelector('[data-context-details-label]').textContent, 'Rally / upgrade details');
+      assert.match(f.bar.querySelector('[data-context-research]').textContent, /RALLY · NONE.*FOOD/);
+    }
+  }
 });
 
 test('unavailable research prerequisites remain focusable for their explanation', t => {
