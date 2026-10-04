@@ -16,7 +16,7 @@ const registration = JSON.parse(readFileSync(new URL('food-east-registration.jso
 
 test('East food has three complete distinct bare-hand keys at the same scale as its retained axe source', () => {
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
-  assert.deepEqual([image.width, image.height], [3072, 4096]);
+  assert.deepEqual([image.width, image.height], [3584, 4096]);
   const clip = spriteActionClip(clips, 'gather', 'east', 'food', 'human', true);
   assert.equal(clip.stateId, 'gather-food'); assert.equal(clip.directionId, 'east');
   assert.equal(clip.loop, true); assert.equal(spriteClipDuration(clip), 720);
@@ -100,7 +100,7 @@ test('default East food loops on positive work and handles resource switch, Stop
 });
 
 test('five missing food headings retain their own idle in normal and approximate selections', () => {
-  for (const approximate of [false, true]) for (const heading of ['north', 'north-east', 'south', 'south-west', 'west']) {
+  for (const approximate of [false, true]) for (const heading of ['north-east', 'south', 'south-west', 'west']) {
     assert.equal(spriteActionClip(clips, 'gather', heading, 'food', 'human', approximate)
       .sequence[0].frameId, `idle-${heading}-0`);
   }

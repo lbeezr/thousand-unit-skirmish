@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "rawSha256": "014da35b2deedbb39883096ad1ac51536933d06891e90f0d993905d6ad7176d6",
+  "acceptedSourceIndexes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "retainedUnadmittedSourceIndexes": [
+    7
+  ],
+  "reason": "Raw hammer strike7 has an axe-shaped head; retain it for comparison, use clear hammer windup6 and recovery8 as a simple two-pose480ms work loop. No cosmetic finish hold.",
+  "accepted": "Fourteen whole actual down-left front-three-quarter poses: axe3/food3/hammer2/pick3/defeat3. Terminal is prone. Axe work faithfully supplies separate attack one-shot; hammer supplies separate repair loop.",
+  "scale": "one271/325 across all14, max silhouette271\u2264previous272; live standing anatomy roughly204\u2013225px versus232px walk baseline, motion/relative size polish open",
+  "root": "fixed reviewed column roots220/560/864; work contact331/610/910/1229; fallen contact1459/1474/1491; no per-frame box recenter",
+  "nativeStatus": "open; previews and CPU/default contract evidence only"
+}

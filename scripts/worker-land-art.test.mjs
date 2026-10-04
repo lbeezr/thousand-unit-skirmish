@@ -27,6 +27,9 @@ const eastHammer = JSON.parse(readFileSync(new URL(
 const eastFinal = JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/stone-defeat-east-preservation.json', import.meta.url)));
 const hammerMask = readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/hammer-era-team-mask.png', import.meta.url));
 
+const northActions = JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/north-actions-preservation.json', import.meta.url)));
+const eastFinalMask = readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/east-final-era-team-mask.png', import.meta.url));
+
 // The old mask is entirely zero. Verify decoded zero pixels after the explicit
 // page extension, while retaining the original encoded file for historical hashes.
 function assertExtendedZeroMask() {
@@ -42,7 +45,7 @@ function assertExtendedZeroMask() {
   }
   assert.ok(header);
   const width = header.readUInt32BE(0), height = header.readUInt32BE(4);
-  assert.deepEqual([width, height, header[8], header[9], header[12]], [3072, 4096, 8, 0, 0]);
+  assert.deepEqual([width, height, header[8], header[9], header[12]], [3584, 4096, 8, 0, 0]);
   const rows = inflateSync(Buffer.concat(chunks));
   assert.equal(rows.length, height * (width + 1));
   for (let y = 0; y < height; y++) {
@@ -55,14 +58,14 @@ function assertExtendedZeroMask() {
     extension.originalTeamMaskPixelsSha256);
 }
 
-for (const preservationHeading of ['north-walk', 'south-walk', 'west-walks', 'stone-se', 'wood-north-west', 'food-north-west', 'north-west-actions', 'wood-east', 'food-east', 'hammer-east', 'stone-defeat-east']) {
+for (const preservationHeading of ['north-walk', 'south-walk', 'west-walks', 'stone-se', 'wood-north-west', 'food-north-west', 'north-west-actions', 'wood-east', 'food-east', 'hammer-east', 'stone-defeat-east', 'north-actions']) {
 test(`${preservationHeading} admission preserves preceding frame records/pixels and team mask`, () => {
   const preservation = JSON.parse(readFileSync(new URL(
     `../docs/qa-evidence/worker-land-art-2026-10-04/${preservationHeading}-preservation.json`, import.meta.url)));
   const originals = asset.frames.slice(0, preservation.originalFrames);
   const hash = bytes => createHash('sha256').update(bytes).digest('hex');
   assert.equal(hash(JSON.stringify(originals)), preservation.originalFrameMetadataSha256);
-  assert.equal(hash(['food-north-west', 'north-west-actions', 'wood-east', 'food-east', 'hammer-east', 'stone-defeat-east'].includes(preservationHeading)
+  assert.equal(hash(preservationHeading === 'north-actions' ? eastFinalMask : ['food-north-west', 'north-west-actions', 'wood-east', 'food-east', 'hammer-east', 'stone-defeat-east', 'north-actions'].includes(preservationHeading)
     ? hammerMask : originalMask),
     preservation.originalTeamMaskSha256);
   assertExtendedZeroMask();
@@ -79,14 +82,15 @@ test(`${preservationHeading} admission preserves preceding frame records/pixels 
     const originalClips = structuredClone(asset.clips.slice(0, preservation.originalClips));
     // Historical hashes predate these explicit, separately tested placeholder
     // replacements. The family receipt already includes the real NW attack.
-    if (!['north-west-actions', 'wood-east', 'food-east', 'hammer-east', 'stone-defeat-east'].includes(preservationHeading)) {
+    if (!['north-west-actions', 'wood-east', 'food-east', 'hammer-east', 'stone-defeat-east', 'north-actions'].includes(preservationHeading)) {
       const index = originalClips.findIndex(c => c.stateId === 'attack' && c.directionId === 'north-west');
       originalClips[index] = attackReuse.originalAttackClip;
     }
-    const replacements = [...(['wood-east', 'food-east', 'hammer-east', 'stone-defeat-east'].includes(preservationHeading) ? [] : nwActions.originalReplacedClips),
-      ...(['food-east', 'hammer-east', 'stone-defeat-east'].includes(preservationHeading) ? [] : eastAxes.originalReplacedClips),
-      ...(['stone-defeat-east'].includes(preservationHeading) ? [] : eastHammer.originalReplacedClips),
-      ...eastFinal.originalReplacedClips];
+    const replacements = [...(['wood-east', 'food-east', 'hammer-east', 'stone-defeat-east', 'north-actions'].includes(preservationHeading) ? [] : nwActions.originalReplacedClips),
+      ...(['food-east', 'hammer-east', 'stone-defeat-east', 'north-actions'].includes(preservationHeading) ? [] : eastAxes.originalReplacedClips),
+      ...(['stone-defeat-east', 'north-actions'].includes(preservationHeading) ? [] : eastHammer.originalReplacedClips),
+      ...(['north-actions'].includes(preservationHeading) ? [] : eastFinal.originalReplacedClips),
+      ...northActions.originalReplacedClips];
     for (const clip of replacements) {
       const index = originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId);
       if (index >= 0) originalClips[index] = clip;
@@ -215,8 +219,8 @@ test('Stone SE is a complete four-pose dedicated pick clip with its own shared r
     hashes.add(digest);
   }
   assert.equal(hashes.size, 4);
-  assert.deepEqual(asset.clips.filter(c => c.stateId === 'gather-stone').map(c => c.directionId), ['south-east', 'north-west', 'east']);
-  for (const heading of ['north', 'north-east', 'south', 'south-west', 'west']) {
+  assert.deepEqual(asset.clips.filter(c => c.stateId === 'gather-stone').map(c => c.directionId), ['south-east', 'north-west', 'east', 'north']);
+  for (const heading of ['north-east', 'south', 'south-west', 'west']) {
     assert.equal(spriteActionClip(clipMap, 'gather-stone', heading, 'stone', 'human', false)
       .sequence[0].frameId, `idle-${heading}-0`);
   }
@@ -227,7 +231,7 @@ test(`NW ${resource} adds three distinct complete work poses with unchanged worl
   const registration = JSON.parse(readFileSync(new URL(
     `../docs/qa-evidence/worker-land-art-2026-10-04/${resource}-north-west-registration.json`, import.meta.url)));
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
-  assert.deepEqual([image.width, image.height], [3072, 4096]);
+  assert.deepEqual([image.width, image.height], [3584, 4096]);
   const clip = spriteActionClip(clipMap, 'gather', 'north-west', resource, 'human', true);
   assert.equal(clip.stateId, `gather-${resource}`);
   assert.equal(clip.directionId, 'north-west');
@@ -250,7 +254,7 @@ test(`NW ${resource} adds three distinct complete work poses with unchanged worl
   assert.equal(hashes.size, 3);
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)),
     extension.worldUnitsPerPixel);
-  for (const heading of ['north', 'north-east', 'south', 'south-west', 'west']) {
+  for (const heading of ['north-east', 'south', 'south-west', 'west']) {
     if (heading === 'east') continue; // Separately admitted/tested true East wood and food keys.
     assert.equal(spriteActionClip(clipMap, 'gather', heading, resource, 'human', true)
       .sequence[0].frameId, `idle-${heading}-0`, 'One new heading must not turn missing headings');
@@ -295,7 +299,7 @@ test(`default NW ${resource} advances and stops/resumes on productive activity, 
     assert.equal(activeState(unit, 1000), 'gather');
     for (let i = 0; i <= 3; i++) expect(unit, 1000 + i * 240, `gather-${resource}-north-west-${i % 3}`);
     unit.angle = 0;
-    expect(unit, 1740, 'idle-north-0');
+    expect(unit, 1740, `gather-${resource}-north-0`);
     assert.equal(unit.spriteClockStartedAt, 1000);
     unit.angle = -Math.PI / 4;
     expect(unit, 1750, `gather-${resource}-north-west-0`);

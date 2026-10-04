@@ -148,3 +148,15 @@ world scale and unrelated clip stays exact. Existing exact Stone consumer binds
 East by default. Full land actions are now3/8(E/SE/NW), Walk8/8;35 cells remain.
 See [land QA](../../../docs/qa-worker-land-art-2026-10-04.md) for sources/registration,
 release and open identified deployed/native acceptance.
+
+
+v0.29.0 admits fourteen actual North/down-left land poses: wood/food/pick3,
+hammer2 (480ms build/repair loop), defeat3. Wood720ms shares axe art with attack
+840ms one-shot. Defeat holds prone terminal840ms. Raw malformed hammer strike
+and every iteration remain retained; simple motion is accepted for breadth.
+One aligned3584x4096 page/mask preserves every prior3072x4096 RGBA and158 frame
+records, world scale and unrelated clips. All seven land-work/combat actions now
+4/8(N/E/SE/NW), Walk8/8;28 cells remain. Decoded color56MiB + mask14MiB,
++10MiB over v0.28; existing max silhouette272/world scale unchanged.
+See [land QA](../../../docs/qa-worker-land-art-2026-10-04.md) for evidence and
+open identified delivered/native acceptance.
