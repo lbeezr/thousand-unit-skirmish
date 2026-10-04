@@ -42,12 +42,14 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   ],
   world: [
     'dock-placement', 'elevation', 'map-size-policy', 'map-utils', 'regions',
+    'world/map-audio-reference',
     'practice-entry-catalog', 'scenario-regions', 'shore-fishing', 'shore-fishing-placement', 'terrain-materials',
     'town-center-spawn', 'unit-heading', 'water-contours', 'water-route-graph',
   ],
   simulation: [
-    'combat-stance', 'confluence-opening-compat', 'economy-checkpoint',
-    'formation-assignment', 'gather-work-area', 'match-mode-checkpoint',
+    'combat-stance', 'confluence-opening-compat', 'construction-work-intent', 'economy-checkpoint',
+    'forest-fringe', 'formation-assignment', 'gather-work-area', 'match-mode-checkpoint',
+    'simulation/movement/formation-assignment',
     'millrace-sheep', 'skiff-fishing', 'skiff-group-orders', 'skiff-waypoints',
     'snapshot-private-production', 'terraced-vale-sheep', 'unit-movement',
     'unit-obstacle-detour', 'unit-path-line', 'wall-build-order',
@@ -80,6 +82,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'worker-fishing-contact',
   ],
   client: [
+    'client/hud/resource-format', 'client/hud/population-readout', 'client/hud/objective-summary',
     'audio', 'audio-assets', 'audio-composer', 'audio-composition',
     'audio-composition-player', 'audio-decoded-cache', 'audio-library-store',
     'audio-library-ui', 'audio-policy', 'audio-recognition-check',
@@ -104,8 +107,8 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'pve-model-proposal', 'room-launch-options', 'room-lobby-chat', 'room-pregame',
     'server/client-asset-paths', 'server/pve-model-proposal',
   ],
-  // Explicit mixed responsibility, not an open exception list. The server uses
-  // only its map validator; lower domains must wait for candidate PR2's split.
+  // Legacy map-validation entry also exports playback policy. Preserve existing
+  // host consumers while new lower-domain consumers use the world validator.
   audioProfile: ['audio-event-profile'],
 }).map(([domain, names]) => [domain, Object.freeze(names.map(name => `src/${name}.mjs`))])));
 

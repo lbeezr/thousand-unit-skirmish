@@ -80,7 +80,7 @@ No art key awards resources or damage. Build/repair target bearing is still a
 separate producer dependency; row 15 currently describes gathering only.
 
 New unit art should follow the [current unit-loader subset](sprite-atlas-contract-v1.md#current-unit-loader-binding-subset)
-as well as the general schema. Animation integration task `01a103d4` owns any
+as well as the general schema. The animation integration workstream owns any
 required selector/role/timing extension; unit-art owners retain supplied pixels
 and registration. Rough usable action/headings can ship before cosmetic polish.
 
@@ -188,6 +188,11 @@ Successful requests stay cached; other URLs remain independent. See the
 [retry evidence](qa-building-manifest-retries-2026-10-01.md).
 
 ## Environment stages and fog
+
+The [forest-edge investigation and candidate](qa-forest-fringe-2026-10-04.md)
+separate permanent terrain discovery from current LOS and live stock disclosure.
+Its one-cell explored-only fringe is a proposed discovery rule, with deployed
+rendered acceptance still open; source and CPU checks do not establish appearance.
 
 For ordinary resource nodes, compute
 `floor(clamp(stock / startingStock, 0, 1) * 100)` from map initial stock and the

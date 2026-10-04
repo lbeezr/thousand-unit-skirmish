@@ -70,9 +70,10 @@ A direct staging manifest request failed at the execution network's CONNECT
 tunnel with response 403 and no origin HTTP status. No claim about the server's
 asset response follows from that failure. The sandboxed Chromium preflight still
 reports `sandbox-unavailable` with writable XDG directories. Zero game screenshots
-were captured; no sandbox-disabling flags were used. The parent staging/Mac
-coordinator must run the existing ordinary-game/zoom recipe and hash checks in
-the authorized user environment; terrain integration retains acceptance ownership.
+were captured; no sandbox-disabling flags were used. The current cloud testing/CI
+owner receives renderer qualification and the existing ordinary-game/zoom recipe
+and hash checks under the [testing strategy](testing-strategy.md#start-here);
+terrain integration retains acceptance ownership.
 
 ## Contract resolution and receiving owners
 
@@ -137,7 +138,9 @@ navigation obstacles, change sight rules, imply walkable plateaus or stretch thi
 source into tall walls. Current tall cliff/cap defaults remain. Terrain integration
 owns the join/cap/depth/readability work, with no generic parent approval gate.
 
-Parent has queued painted-ground Mac QA after Skiff/combat/Practice; terrain
-integration retains that separate acceptance. Continue justified technical work
-while the executor browser/HTTP failure persists. Berries remains a distinct
-later slice once the oak receiving path has ordinary-game evidence.
+The current cloud testing/CI owner receives painted-ground renderer qualification
+and capture execution; terrain integration retains that separate acceptance.
+Mac testing was stopped by the user and is not a dependency. Retain the recorded
+browser/HTTP blockers and owned acceptance backlog under the linked strategy.
+Berries remains a distinct later slice once the oak receiving path has
+ordinary-game evidence.

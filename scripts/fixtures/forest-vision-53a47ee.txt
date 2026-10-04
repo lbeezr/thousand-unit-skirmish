@@ -1,0 +1,44 @@
+// Frozen authoritative LOS oracle from 53a47ee379660f30b65776ea813f3a986d29aa37.
+function markVisionFrom(team, x, z, sight = VISION_RADIUS_CELLS) {
+  const centerColumn = Math.floor(x + MAP_HALF_X);
+  const centerRow = Math.floor(z + MAP_HALF_Z);
+  const sourceCell = centerRow * MAP_WIDTH + centerColumn;
+  const processedSources = processedVisionSourcesByTeam[team];
+  if (processedSources[sourceCell] >= sight) return;
+  processedSources[sourceCell] = sight;
+  const visible = visibleCellsByTeam[team];
+  const explored = exploredCellsByTeam[team];
+  const sourceCoverages = visionCoverageBySourceCell[sourceCell] ||= new Map();
+  let coverage = sourceCoverages.get(sight);
+  if (!coverage) {
+    const cells = [];
+    const radius = sight + (elevationLevelByCell[sourceCell] > 0 ? HIGH_GROUND_VISION_BONUS_CELLS : 0);
+    if (!visionRaysByRadius.has(radius)) visionRaysByRadius.set(radius, buildVisionRays(radius));
+    const rays = visionRaysByRadius.get(radius);
+    for (const [dx, dz, ray] of rays) {
+      const column = centerColumn + dx;
+      const row = centerRow + dz;
+      if (column < 0 || column >= MAP_WIDTH || row < 0 || row >= MAP_HEIGHT) continue;
+      let sightBlocked = false;
+      for (const [rayX, rayZ] of ray) {
+        const rayColumn = centerColumn + rayX;
+        const rayRow = centerRow + rayZ;
+        const rayCell = rayRow * MAP_WIDTH + rayColumn;
+        if (visionBlockers[rayCell] && visionBlockHeights[rayCell] >= VISION_EYE_HEIGHT
+          || buildingBlocked[rayCell]) {
+          sightBlocked = true;
+          break;
+        }
+      }
+      if (!sightBlocked) cells.push(row * MAP_WIDTH + column);
+    }
+    coverage = Uint16Array.from(cells);
+    sourceCoverages.set(sight, coverage);
+  }
+  for (let index = 0; index < coverage.length; index++) {
+    const cell = coverage[index];
+    visible[cell] = 1;
+    explored[cell] = 1;
+  }
+}
+

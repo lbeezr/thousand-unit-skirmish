@@ -454,10 +454,23 @@ try {
         `a single tick-start lag should stay within ${maxBlockingBudgetMs} ms (saw ${health.tickTiming.startLagMaxMs} ms${tickDiagnostic}; checkpoint serialize ${health.checkpoint?.lastSerializeMs ?? 'unavailable'} ms)`);
       assert.ok(health.transport && Number.isFinite(health.transport.queuedBytes), 'transport queue metrics should be available');
       if (mode === 'move' || mode === 'attack-move' || mode === 'dense-clash') {
-        const plannedOrders = health.movePlanning.filter((sample) => sample.orderId > previousMoveOrderId);
-        assert.equal(plannedOrders.length, 2, 'both team orders should finish route planning');
+        const recentPlanning = health.movePlanning.filter((sample) => sample.orderId > previousMoveOrderId);
+        // Repairs share the completion history but use an internal team (-1).
+        // Count the issued team orders separately; retain all-job safety budgets.
+        const plannedOrders = recentPlanning.filter((sample) => sample.team === 0 || sample.team === 1);
+        const planningSummary = JSON.stringify(recentPlanning.map(({ orderId, team, mode, unitCount }) => ({ orderId, team, mode, unitCount })));
+        assert.equal(plannedOrders.length, 2, `both team orders should finish route planning; completed jobs ${planningSummary}`);
+        assert.deepEqual(plannedOrders.map(sample => sample.team).sort(), [0, 1],
+          'each team should finish exactly one issued order');
         for (const plannedOrder of plannedOrders) {
           assert.equal(plannedOrder.unitCount, 1000, 'each team order should apply to all 1,000 units');
+          assert.ok(['shared-start', 'per-unit'].includes(plannedOrder.mode),
+            'issued orders should use the configured shared-start or per-unit planner');
+        }
+        for (const plannedOrder of recentPlanning) {
+          assert.ok([-1, 0, 1].includes(plannedOrder.team), 'planning jobs should identify a team or internal repair');
+          assert.ok(Number.isInteger(plannedOrder.unitCount) && plannedOrder.unitCount > 0
+            && plannedOrder.unitCount <= health.armySize, 'each completed job should apply to a bounded positive unit count');
           assert.equal(plannedOrder.nonEmptyPaths + plannedOrder.alreadyInDestinationCell,
             plannedOrder.unitCount, 'each unit should receive a route or already occupy its destination cell');
           assert.equal(plannedOrder.routeFailures, 0, 'no unit should be left without a route');
@@ -466,7 +479,7 @@ try {
             ['a path-planning slice', plannedOrder.maxPathPlanningSliceMs],
             ['move-order finalization', plannedOrder.finalizationMs],
           ]) {
-            assert.ok(milliseconds <= maxBlockingBudgetMs,
+            assert.ok(Number.isFinite(milliseconds) && milliseconds >= 0 && milliseconds <= maxBlockingBudgetMs,
               `${stage} should stay within ${maxBlockingBudgetMs} ms (saw ${milliseconds} ms)`);
           }
         }

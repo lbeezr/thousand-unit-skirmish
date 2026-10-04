@@ -1,0 +1,480 @@
+{
+  "date": "2026-10-04",
+  "sourceRevision": "6d7cb40cc7c6bb35721eea956304537697cda103",
+  "serverSha256": "29753b61a89c966e00349edeaf70c1cbba294bcbbc4f23be2e2a647ecba60416",
+  "executedScenarioSha256": "828029cafe617845e532b686580e03ac2d827a8832f67a8adddf6b3e4d9a6e0e",
+  "purpose": "Retained current-source reproduction and explicit-order regression floor; continuation is not fixed.",
+  "events": [
+    {
+      "mode": "complete",
+      "observe": true,
+      "continued": false,
+      "cancelled": [],
+      "wood": [
+        240,
+        240
+      ],
+      "progressBefore": [
+        [
+          1,
+          0.1666666666666666
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.18666666666666656
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "progressAfter": [
+        [
+          1,
+          0.1666666666666666
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.18666666666666656
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "workerTargets": [
+        null,
+        null
+      ],
+      "recoveredSchema": 29,
+      "sameMatch": true
+    },
+    {
+      "mode": "cancel-gate",
+      "observe": true,
+      "continued": false,
+      "cancelled": [
+        7,
+        8
+      ],
+      "wood": [
+        254.7,
+        254.7
+      ],
+      "progressBefore": [
+        [
+          1,
+          0.17333333333333326
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.19333333333333322
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "progressAfter": [
+        [
+          1,
+          0.17333333333333326
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.19333333333333322
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "workerTargets": [
+        null,
+        null
+      ],
+      "recoveredSchema": 29,
+      "sameMatch": true
+    },
+    {
+      "mode": "cancel-pending-wall",
+      "observe": true,
+      "continued": false,
+      "cancelled": [
+        3,
+        6
+      ],
+      "wood": [
+        255,
+        255
+      ],
+      "progressBefore": [
+        [
+          1,
+          0.1666666666666666
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          4,
+          0.1799999999999999
+        ],
+        [
+          5,
+          0
+        ]
+      ],
+      "progressAfter": [
+        [
+          1,
+          0.1666666666666666
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          4,
+          0.1799999999999999
+        ],
+        [
+          5,
+          0
+        ]
+      ],
+      "workerTargets": [
+        null,
+        null
+      ],
+      "recoveredSchema": 29,
+      "sameMatch": true
+    },
+    {
+      "mode": "stop",
+      "observe": false,
+      "continued": false,
+      "cancelled": [],
+      "wood": [
+        240,
+        240
+      ],
+      "progressBefore": [
+        [
+          1,
+          0.1666666666666666
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.18666666666666656
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "progressAfter": [
+        [
+          1,
+          0.1666666666666666
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.18666666666666656
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "workerTargets": [
+        null,
+        null
+      ],
+      "recoveredSchema": 29,
+      "sameMatch": true
+    },
+    {
+      "mode": "move",
+      "observe": false,
+      "continued": false,
+      "cancelled": [],
+      "wood": [
+        240,
+        240
+      ],
+      "progressBefore": [
+        [
+          1,
+          0.15999999999999995
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.1799999999999999
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "progressAfter": [
+        [
+          1,
+          0.15999999999999995
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.1799999999999999
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "workerTargets": [
+        null,
+        null
+      ],
+      "recoveredSchema": 29,
+      "sameMatch": true
+    },
+    {
+      "mode": "gather",
+      "observe": false,
+      "continued": false,
+      "cancelled": [],
+      "wood": [
+        240,
+        240
+      ],
+      "progressBefore": [
+        [
+          1,
+          0.1666666666666666
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.1799999999999999
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "progressAfter": [
+        [
+          1,
+          0.1666666666666666
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.1799999999999999
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "workerTargets": [
+        null,
+        null
+      ],
+      "recoveredSchema": 29,
+      "sameMatch": true
+    },
+    {
+      "mode": "manual-replacement",
+      "observe": false,
+      "continued": false,
+      "cancelled": [],
+      "wood": [
+        165,
+        165
+      ],
+      "progressBefore": [
+        [
+          1,
+          0.15999999999999995
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.1799999999999999
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "progressAfter": [
+        [
+          1,
+          0.15999999999999995
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0.1799999999999999
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "workerTargets": [
+        null,
+        null
+      ],
+      "recoveredSchema": 29,
+      "sameMatch": true
+    }
+  ],
+  "limits": [
+    "native authoritative server and real WebSocket commands/checkpoints; no browser/GPU or deployed acceptance",
+    "observe mode records unresolved continuation and must not be counted as a passing fix"
+  ],
+  "executedScenarioPath": "docs/qa-evidence/palisade-continuation-2026-10-04/baseline-scenario.mjs"
+}

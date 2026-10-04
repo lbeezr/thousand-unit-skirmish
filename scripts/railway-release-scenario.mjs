@@ -141,6 +141,24 @@ try {
     assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),
       createHash('sha256').update(await readFile(path.join(sourceRoot, filename))).digest('hex'), filename);
   }
+  // Both compatibility and canonical HUD entries must retain exact packed bytes.
+  for (const helper of ['resource-format', 'population-readout', 'objective-summary']) {
+    for (const filename of [`src/${helper}.mjs`, `src/client/hud/${helper}.mjs`]) {
+      const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
+      assert.equal(response.status, 200, filename);
+      assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
+      assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+      assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+      assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(path.join(root, filename)), filename);
+    }
+  }
+  for (const filename of ['src/client/hud/', 'src/client/hud/unknown.mjs',
+    'src/client/hud/resource-format.mjs/extra', 'src/client//hud/resource-format.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
+        404, `HUD admission remains exact (${method}): ${filename}`);
+    }
+  }
   for (const filename of ['%73rc/main.js', 'src%2Fmain.js']) {
     assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 200,
       `existing decoded-path admission: ${filename}`);
@@ -308,9 +326,10 @@ try {
         `${entry.path} must match its manifest hash`);
     }
   }
-  // Private host/transport files must be packaged for Node consumers while exact
+  // Private host/transport and formation files must be packaged for Node consumers while exact
   // HTTP admission denies both methods, including pure negotiation and shims.
   const privateModules = [...RUNTIME_DOMAINS.server,
+    'src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs',
     ...Object.entries(RUNTIME_DOMAIN_HOSTS).filter(([, domain]) => domain === 'server').map(([filename]) => filename)];
   for (const filename of privateModules) {
     assert.ok((await stat(path.join(root, filename))).isFile(), `packed private runtime module: ${filename}`);

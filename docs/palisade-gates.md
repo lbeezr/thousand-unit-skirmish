@@ -86,5 +86,5 @@ ruleset migration, disclosed occupancy, and geometry bounds.
 `scripts/paid-gate-scenario.mjs` uses actual paid commands and naturally
 progressing Workers on both seats, closed routing, owner-independent open
 traversal, occupied/last-route closing rejection, token/restart recovery and
-corrupt-checkpoint preservation. See the [native Mac recipe](qa-palisade-gates-2026-10-03.md)
+corrupt-checkpoint preservation. See the [cloud-game recipe](qa-palisade-gates-2026-10-03.md)
 for the unclaimed human usability/appearance check.

@@ -1,5 +1,36 @@
 import assert from 'node:assert/strict';
 import { orderUnitsForFormation } from '../src/formation-assignment.mjs';
+import * as legacyFormation from '../src/formation-assignment.mjs';
+import * as canonicalFormation from '../src/simulation/movement/formation-assignment.mjs';
+
+assert.deepEqual(Object.keys(legacyFormation), ['orderUnitsForFormation']);
+assert.deepEqual(Object.keys(canonicalFormation), Object.keys(legacyFormation));
+assert.equal(canonicalFormation.orderUnitsForFormation, orderUnitsForFormation,
+  'the compatibility path must forward the canonical function binding');
+
+const tiedUnits = Object.freeze([
+  Object.freeze({ id: 3, x: 0, z: 2 }),
+  Object.freeze({ id: 2, x: 0, z: 1 }),
+  Object.freeze({ id: 4, x: 1, z: 0 }),
+  Object.freeze({ id: 1, x: 0, z: 1 }),
+]);
+const tiedLayout = Object.freeze({
+  rows: 2,
+  direction: Object.freeze({ x: 1, z: 0 }),
+  side: Object.freeze({ x: 0, z: 1 }),
+});
+assert.deepEqual(orderUnitsForFormation(tiedUnits, tiedLayout).map(unit => unit.id), [1, 2, 3, 4],
+  'depth, lateral position and stable ID must resolve formation ties');
+assert.deepEqual(orderUnitsForFormation(tiedUnits, { ...tiedLayout, rows: 1 }).map(unit => unit.id), [4, 1, 2, 3],
+  'one-row formations must order laterally before depth');
+assert.deepEqual(orderUnitsForFormation(tiedUnits, null).map(unit => unit.id), [1, 2, 3, 4],
+  'missing layouts must retain the stable-ID fallback');
+assert.deepEqual(tiedUnits.map(unit => unit.id), [3, 2, 4, 1], 'ordering must not mutate its input');
+const singleUnit = Object.freeze([tiedUnits[0]]);
+const singleResult = orderUnitsForFormation(singleUnit, tiedLayout);
+assert.notEqual(singleResult, singleUnit, 'single-unit ordering must return a separate array');
+assert.equal(singleResult[0], singleUnit[0], 'unit objects must retain identity');
+assert.deepEqual(orderUnitsForFormation(null, tiedLayout), []);
 
 function routeCrossings(units, destinations) {
   let count = 0;

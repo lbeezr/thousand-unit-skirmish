@@ -7,6 +7,53 @@ balance, currency or capacity decisions. This document expands the
 [game bible](game-bible.md) owns product intent, [map authoring](map-authoring.md)
 owns implemented formats/tools, and [QA](qa-vertical-slice.md) owns acceptance.
 
+## Current reconciliation — 4 October 2026
+
+Documentation reconciliation owner: the architecture boundary worker, delegated
+by the coordinating parent. Source checked against main `cade7c8b`; implementation
+and acceptance remain with the existing map/scale, economy, wildlife, renderer,
+art and delivery owners linked below. This assigns the reconciliation, not new
+executors for all nine proposed epics.
+
+The **2 October `9990ed3` baseline, its hash/stock calculation, story tables and
+decision register remain historical**. They are not current catalog/default
+claims. In particular, Millrace is now a compact internal/legacy map; ordinary
+human Skirmish has Tiny 160, Small 192, Medium 224 and Large 256, with Tiny the
+default and only accepted fresh ordinary AI choice. [Current tier inventory](map-tier-inventory-2026-10-04.md)
+records source-qualified geometry, finite budgets, route/entry evidence and
+remaining acceptance. [Confluence's correction](qa-confluence-opening-2026-10-04.md)
+preserves old paid worlds through exact compatibility while fresh/reset games
+use corrected openings. Map authoring stops at Large in that owning queue;
+XL and the territorial world retain separate decisions and owners.
+
+| Proposed epic | Integrated slices / owning evidence | Remaining acceptance or decision |
+| --- | --- | --- |
+| 1 — contracts, diagnostics, seeds | Shared resource/profile rules, versioned source audits and seeded layouts exist. [Tier inventory](map-tier-inventory-2026-10-04.md) separates stock, banks, forest potential, geometry and capacity. [Paid Farm/Stone](qa-farm-stone-paid-2026-10-04.md) and [paired Farm/food measurements](qa-paired-farm-food-2026-10-04.md) supply concrete conservation/throughput slices. | Map/economy owners retain broader frontage/path-cost and matched allocation experiments. One/three-worker opening measurements do not complete every proposed one/three/six-worker diagnostic or establish balance. |
+| 2 — constrained placement/fair starts | [Millrace seeded clusters](map-authoring.md#resources-and-forests), protected campuses/expansions on the four tiers and finite forest/depletion rules are implemented. [PR283](https://github.com/lbeezr/thousand-unit-skirmish/pull/283) adds bounded Wood continuation and cold recovery; [PR293](https://github.com/lbeezr/thousand-unit-skirmish/pull/293) records unchanged Food/Stone depletion behavior. | Map/scale and economy owners retain paid both-seat trip/frontage/congestion and human pacing proof. Equal stock/static reachability is not equal delivered income; Wood policy is not extended to Food/Stone by this reconciliation. |
+| 3 — editor/presets/budget preview | [Map authoring](map-authoring.md) has seeded resource-patch preview/apply/cancel, bounded resource-only history, live-ground admission, JSON/save/load and scenario history. Wildlife import/publication parity is integrated in [PR221](https://github.com/lbeezr/thousand-unit-skirmish/pull/221). | Authoring owner retains terrain gesture history, higher-level Grove/Orchard presets, combined access/budget diagnosis and uncoached author observation. Resource-only undo is not complete terrain/resource history. |
+| 4 — wildlife lifecycle | [Sheep workstream](wildlife-bellweather-sheep.md) records merged motion PR165, automatic claims PR194 and Herd/Stop PR205, with finite food, fog, snapshot/checkpoint/recovery/reset contracts. [Millrace Sheep receipt](qa-millrace-sheep-2026-10-03.md) preserves its dated source/default context; the current ordinary Tiny map also contains Sheep; Small/Medium/Large do not. | Wildlife/art/delivery owners retain actual normal-game motion/ground/occlusion acceptance at a containing release. Hunt/hostile/decorative roles, breeding and decay remain separate proposals. Static art/CPU/native proofs do not close the whole lifecycle/art milestone. |
+| 5 — economy expansion experiment | The explicit [Stone profile](stone-runtime-interface.md) integrates typed bank/cargo/node/payment/refund/repair/recovery and a 50-Stone Watchtower debit; [finite Farm](farm-finite-planting.md) uses paid Wood and conserved Food. The compact Stone lab remains an explicit internal Practice choice. | Economy/opponent owners retain Stone gather/spend policy and human balance decisions. Ordinary food/wood remains the baseline. Metal, gold/copper, new producers and general currency adoption are unapproved future decisions; historical D1/D4 are not rewritten as current policy. |
+| 6 — mature settlement | Existing [paid mature-settlement harness](../scripts/mature-settlement-scenario.mjs) exercises current producers/research, paid construction, mixed army and recovery/reset. Tier source audits prove static city-fit examples with registry footprints. | Gameplay/map owners retain representative mature matches and congestion on the ordinary tiers. A static 30-building fit is not a paid city or capacity guarantee. No Castle/Blacksmith or new initialization schema is introduced. |
+| 7 — readability/density | Renderer/environment guides and [asset adoption](asset-adoption-checklist.md) record default state bindings, LOD/resource contracts and retained calibration. Terrain faces PR295 is a source/rendering slice; the forest discovery proposal PR297 remains a draft. | Renderer/delivery owners retain supported-cloud packed-game frames and ordinary/strategic control/occlusion recognition. Capability, atlas or process checks are separate from pixels; a draft fog-rule change is not accepted behavior. |
+| 8 — biome kits/art history | [Regional kits](regional-environment-kits.md), tracked source/iteration history and the asset ledger document Bellweather/Underbough and other admitted plant/ground/state slices. | Retained asset owners own missing species/state coverage and actual whole-kit acceptance. No new generation/spend, publication release or full-roster completion follows from this inventory. |
+| 9 — regressions/scale/accessibility | Seeded/native conservation, interruption/recovery and tier entry proofs exist. [Testing strategy](testing-strategy.md) now has scoped CPU lanes and explicit graphics capability versus game-render boundaries. | Map/scale, delivery and playtest owners retain identified human sessions, controls/recognition and comparable combined simulation/browser/network workloads. No supported 2,000-unit capacity or fresh rendered-game pass is established here. |
+
+**Milestone status:** M-E1 has integrated resource/layout and paid measurement
+slices; its combined coherent ecosystem/match proof remains incomplete. M-E2
+has resource authoring and Sheep command/recovery slices; combined uncoached
+author/player acceptance remains incomplete. M-E3 has paid harness and kit/state
+slices; an identified polished mature game and combined readability/performance
+proof remain incomplete. M-E4 has contrasting regional source/integration work;
+whole-kit repeatability and acceptance remain with the asset owners. Preserve
+the original milestone definitions below; none is reopened as a blanket project.
+
+The next useful action is the map/scale queue's containing-build human pacing
+and paid crossing observation, with exact source/release/served identity; an
+actual observed defect then selects its owning runtime or art slice. Unassigned
+future epic execution is routed by the coordinating parent only when such a
+bounded outcome is selected. Mac testing and canceled deployments remain
+stopped; this reconciliation schedules neither replacement execution nor spend.
+
 ## Player outcome and ambition
 
 Make a landscape that players can read, exploit, defend, reshape and author.
