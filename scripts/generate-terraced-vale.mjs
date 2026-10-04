@@ -1,6 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { compressGroundLevels } from '../src/terrain-authoring.mjs';
+import { seedTerracedValeSheep } from '../src/terraced-vale-sheep.mjs';
 
 export async function generateTerracedVale() {
   const width = 160, height = 160;
@@ -66,7 +67,7 @@ export async function generateTerracedVale() {
     terrainPatches: rectangles(ground, 'material'), elevationPatches: compressGroundLevels(levels, width, height),
     spawnPoints: [{ team: 0, x: -57.5, z: 0.5 }, { team: 1, x: 57.5, z: 0.5 }],
     startingArmySize: 24, startingResources: { food: 150, wood: 250 },
-    obstacles: rectangles(forest, 'material').map(rect => ({ ...rect, material: 'forest' })), resourceNodes,
+    obstacles: rectangles(forest, 'material').map(rect => ({ ...rect, material: 'forest' })), resourceNodes: seedTerracedValeSheep(resourceNodes),
     triggers: [
       { id: 'north-pass', name: 'North Pass', type: 'capture-zone',
         zone: { column: 75, row: 59, width: 10, height: 10 },

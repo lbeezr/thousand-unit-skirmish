@@ -7821,7 +7821,8 @@
       "x": -51.5,
       "z": 6.5,
       "type": "food",
-      "stock": 650
+      "stock": 650,
+      "wildlifeSpecies": "bellweather-sheep"
     },
     {
       "id": "s0-home-wood",
@@ -7835,7 +7836,8 @@
       "x": -43.5,
       "z": -21.5,
       "type": "food",
-      "stock": 1000
+      "stock": 1000,
+      "wildlifeSpecies": "bellweather-sheep"
     },
     {
       "id": "s0-terrace-wood",
@@ -7863,7 +7865,8 @@
       "x": 51.5,
       "z": 6.5,
       "type": "food",
-      "stock": 650
+      "stock": 650,
+      "wildlifeSpecies": "bellweather-sheep"
     },
     {
       "id": "s1-home-wood",
@@ -7877,7 +7880,8 @@
       "x": 43.5,
       "z": -21.5,
       "type": "food",
-      "stock": 1000
+      "stock": 1000,
+      "wildlifeSpecies": "bellweather-sheep"
     },
     {
       "id": "s1-terrace-wood",
