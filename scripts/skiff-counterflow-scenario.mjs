@@ -57,7 +57,10 @@ function record(stage, s) {
       queued: u.queuedWaypoints, cargo: u.cargo, phase: u.gatherPhase }; }) ?? [] };
   records.push(row); console.log(JSON.stringify(row));
 }
-const command = (team, value, expression) => clients[team].command({ ...value, clientOrderToken: order++ }, expression);
+async function command(team, value, expression) {
+  const notice = await clients[team].command({ ...value, clientOrderToken: order++ }, /./);
+  assert.match(notice.message, expression); return notice;
+}
 const move = (team, x, z, queue = false) => command(team, { type: 'move', ids: [ids[team]], x, z, queue }, /SKIFF WATER ROUTE|WAYPOINT QUEUED/);
 const arrived = (s, team, x, z) => !boat(s, team).path.length && Math.hypot(boat(s, team).x - x, boat(s, team).z - z) < 1e-7;
 async function reconnect(saved) {
@@ -123,8 +126,10 @@ try {
   record('reciprocal-collision-cold-checkpoint', blocked); await reconnect(blocked);
   const crossed = await checkpoint(s => [0, 1].every(team => arrived(s, team, team ? -44.5 : 44.5, 49.5)));
   record('both-original-goals-and-pending-moves-completed-after-recovery', crossed);
-  for (const team of [0, 1]) await move(team, team ? 42.5 : -42.5, 48.5);
-  await move(0, -44.5, 49.5, true); await meeting(48.5);
+  // Return destinations sit below the active crossing row, so neither parks
+  // on the other's retained transit; ordinary admission stays unchanged.
+  for (const team of [0, 1]) await move(team, team ? 42.5 : -42.5, 50.5);
+  await move(0, -44.5, 51.5, true); await meeting(49.5);
   await command(0, { type: 'stop', ids: [ids[0]] }, /STOP ORDER/);
   const stopped = await checkpoint(s => !boat(s, 0).path.length && !boat(s, 0).queuedWaypoints.length);
   const stoppedBoat = boat(stopped, 0);
@@ -132,7 +137,7 @@ try {
   near(boat(held, 0).x, stoppedBoat.x); near(boat(held, 0).z, stoppedBoat.z);
   assert.equal(boat(held, 0).moveGoalCell, -1); record('selected-stop-keeps-boat-idle-and-clears-pending-intent', held);
   await move(0, -42.5, 52.5);
-  const replaced = await checkpoint(s => arrived(s, 0, -42.5, 52.5) && arrived(s, 1, 42.5, 48.5));
+  const replaced = await checkpoint(s => arrived(s, 0, -42.5, 52.5) && arrived(s, 1, 42.5, 50.5));
   record('replacement-goal-and-other-seat-arrival', replaced);
   for (const team of [0, 1]) await command(team, { type: 'gather', ids: [ids[team]], nodeId: `s${team}-shore-fish` }, /SKIFF/);
   await checkpoint(s => [0, 1].every(team => boat(s, team).cargo > 1 && boat(s, team).cargo < 8));
