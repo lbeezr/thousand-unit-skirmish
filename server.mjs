@@ -19,6 +19,7 @@ import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
 import { forestGatherGroups, visibleForestCandidates } from './src/forest-gather-group.mjs';
 import { exploredForestFringe } from './src/forest-fringe.mjs';
 import { VisionCoverageCache } from './src/server/vision-coverage-cache.mjs';
+import { preflightXlCheckpointRoutes } from './src/server/checkpoint-route-budget.mjs';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
 import { creditResourceBalance } from './src/economy-ledger.mjs';
@@ -2796,6 +2797,8 @@ function matchMapHash(definition) {
 }
 
 function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
+  preflightXlCheckpointRoutes(authoredMapDefinition, { units, resourceNodes: resourceNodeStates },
+    { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES });
   ensureVisionMasks();
   const savedSessions = [];
   for (const session of sessions.values()) {
@@ -2887,6 +2890,8 @@ function validCellPath(value, cellCount) {
 
 function validateMatchCheckpoint(snapshot) {
   assertSnapshot(snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot), 'expected an object');
+  preflightXlCheckpointRoutes(snapshot.mapDefinition, snapshot.state,
+    { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES });
   assertSnapshot(snapshot.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION, 'unsupported schema version');
   validateEconomyCheckpoint(snapshot);
   assertSnapshot(snapshot.factionId === DEFAULT_FACTION_ID, 'unsupported faction');

@@ -75,7 +75,7 @@ callback threshold is checked **between searches** and can be overshot by one
 search. Default planning turns per tick stay 0. The 16-bit Manhattan heuristic
 fits 320 (maximum 63,800); that does not bound search latency.
 
-If dimension admission alone were widened, the unchanged checkpoint path leaf
+The historical PR345 checkpoint path leaf, considered without an XL aggregate guard,
 would permit up to 102,400 entries separately in each actor's
 active and attack-move resume path, without adjacency/uniqueness validation or
 an aggregate route budget. One accepted repeated-final-cell array serializes to
@@ -86,7 +86,7 @@ the audit allocates
 only one witness array. The earlier grid-cost projection uses the smaller
 simple-route `cells−1` bound and excludes resume paths.
 
-Capture clones both paths, then `JSON.stringify` serializes the entire snapshot.
+Capture clones both paths and any wildlife herd path, then `JSON.stringify` serializes the entire snapshot.
 The writer atomically writes/fsyncs/renames; recovery reads the whole UTF-8 file
 then parses it. Neither side has an explicit checkpoint byte envelope in the
 audited source. Public snapshots exclude these paths. 320 fog alone is 25,600
@@ -103,15 +103,67 @@ separate temporary membership is409,600bytes at320. JS group cell lists,
 other temporary buffers and runtime/GC overhead remain excluded; this is not
 a measured RSS budget. The original66bytes/cell table remains historical.
 
+## XL-only checkpoint route preflight
+
+The first save/allocation slice adds a private
+[route preflight](../src/server/checkpoint-route-budget.mjs) before capture's
+vision refresh/path cloning and before full restore validation's map/grid
+allocations. The existing restore path validates before mutating the live world.
+It applies only when at least one axis exceeds256 and both axes are at most320;
+all ≤256 saves keep their existing validator, accepted route envelope and error
+ordering. Invalid or out-of-scope dimensions still use the map validator.
+Checkpoint schema29, persisted fields, path endpoints, goal/intent and every
+movement/planner/publication function remain unchanged. Art backing: N/A for
+this internal validation milestone.
+
+The explicit budget is **1,048,576 cell indices** across all active actor,
+attack-move-resume and wildlife herd paths. Each array keeps the existing
+`cellCount` length bound. Existing limits of2,000 actors and128 resource nodes
+bound metadata to4,128 path references. The first pass counts lengths and
+rejects oversized state before reading any cells; the second visits at most
+1,048,576 entries, rejecting noninteger/out-of-range indices, nulls and sparse
+holes. The guard neither copies nor truncates route payloads. Full water,
+wildlife, goal and other state validators still apply after preflight.
+
+At a conservative eight bytes per JS array slot, the accepted route payload
+is at most8MiB **per copy**, plus bounded array/reference overhead. It is not
+a whole-process RSS bound: live routes, coalesced/in-flight snapshots, JSON,
+other checkpoint state, parser allocations and GC remain separate. A synthetic
+1,000-actor witness with active and resumed467-cell flank routes and128×64 herd
+entries totals942,192, within the quota; repeated indices establish retention
+accounting, not legitimate journey or supported-capacity evidence.
+
+The existing [machine audit](../scripts/xl-map-boundary-audit.mjs) now executes
+the full accepted aggregate, its copying payload and a rejected over-budget
+witness whose index getters prove zero payload reads. It retains source/module
+hashes, records exact counts/bounds and diagnostic Node memory/timing samples,
+and labels them as a single-process allocation witness without GC normalization
+or a comparable-performance claim. Tests execute the unchanged capture body
+and real restore boundary, prove pre-allocation rejection and unchanged both-seat
+worlds, keep the ordinary320 dimension rejection, and round-trip a formerly
+accepted256 save containing more route entries than the XL quota. The focused
+contract is included in the existing registered checkpoint CPU test lane.
+
 ## Next integrated slice and retained gates
 
-Before editing shared path publication/retention, resolve the concrete
-[movement-owner decision](https://github.com/lbeezr/thousand-unit-skirmish/pull/332#issuecomment-5982283468):
+The [current parallel-lane contract](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5985510449)
+allocates checkpoint validation/allocation to the map owner and leaves active
+Worker/planner/executor/publication work with movement. The
+[exact save-slice interface](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5985575410)
+records this guard and the remaining shared dependency. Before editing shared
+path publication/retention, preserve the concrete movement contract:
 preserve ≤256 route/goal/checkpoint behavior and choose an explicit XL-only
-route/search/save envelope, with a clear command outcome and no truncation or
+live route/search envelope, with a clear command outcome and no truncation or
 lost durable goal. A finite `cellCount` alone is not a memory/latency budget.
 Avoid a second global smoothing/flow/planning service alongside U2–U7. The
 map-size owner retains this integrated outcome and the other admission sites.
+Checkpoint file reads still allocate the whole UTF-8 file before JSON parsing;
+neither the entire persisted state nor those allocations has a byte envelope.
+Adding a global read cap could reject older valid saves and is not this slice.
+An over-budget XL capture fails through existing checkpoint failure handling
+and preserves the last good file; it does not halt accepted gameplay. Therefore
+live publication must establish a bounded outcome that preserves durable intent
+before ordinary XL admission. This prerequisite alone does not complete XL.
 
 Then change all relevant 320 dimension consumers together, keeping wall command
 waypoints 256 and other non-geometric quotas unchanged. Admit one canonical

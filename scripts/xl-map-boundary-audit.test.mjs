@@ -108,6 +108,14 @@ test('source-bound route/save/wire envelope distinguishes finite validation from
   assert.equal(report.routes.callbackExpandedCellsThresholdBetweenSearches, 4096);
   assert.equal(report.routes.aggregateRouteRetentionBudget, null);
   assert.equal(report.checkpoint.explicitByteEnvelope, null);
+  const preflight = report.checkpoint.xlRoutePreflight;
+  assert.equal(preflight.maxRouteEntries, 1048576);
+  assert.equal(preflight.maxAuxiliaryPathReferences, 4128);
+  assert.equal(preflight.oneCopySlotPayloadBytesUpper, 8388608);
+  assert.equal(preflight.acceptedBoundary.validatedEntries, 1048576);
+  assert.equal(preflight.oversizedRejectedBeforeIndexReads.indexReads, 0);
+  assert.equal(preflight.remaining.ordinary320Admission, 'closed');
+  assert.equal(preflight.remaining.fileReadAndJsonParseByteEnvelope, 'pending');
   assert.equal(report.transport.inboundFrameBytes, 1000000);
   assert.equal(report.transport.outboundQueuedAndFrameBytes, 4194304);
   assert.equal(report.transport.packedFogBytesPerSeat, 25600);
