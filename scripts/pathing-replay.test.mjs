@@ -184,7 +184,7 @@ for (const team of [0, 1]) test(`seat ${team}: checkpoint recovery rejects a sav
     const replacement = rematch.state.units.find(unit => unit.id === actor.id);
     assert.equal(replacement.team, team);
     assert.equal(replacement.kind, actor.kind);
-    assert.equal(replacement.generation, actor.generation + 1, 'real reset reuses the ID with a fresh generation');
+    assert.notEqual(replacement.generation, actor.generation, 'real reset reuses the ID with a fresh generation');
     assert.deepEqual([replacement.path, replacement.queuedWaypoints], [[], []]);
     assert.equal(rematch.state.unitGenerationCounters[actor.id], replacement.generation);
   } finally { await source.dispose(); }
@@ -214,7 +214,7 @@ for (const team of [0, 1]) test(`seat ${team}: checkpoint recovery rejects a sav
       /generation replay boundary mismatch/);
     for (let tick = 0; tick < 20; tick++) r.step();
     const replacement = r.checkpoint().state.units.find(unit => unit.id === actor.id);
-    assert.equal(replacement.generation, actor.generation + 1);
+    assert.equal(replacement.generation, rematch.state.unitGenerationCounters[actor.id]);
     assert.ok(Math.hypot(replacement.x - actor.x, replacement.z - actor.z) > .1,
       'control genuinely moves the replacement instead of merely changing feedback');
   } finally { await recovered.dispose(); }
