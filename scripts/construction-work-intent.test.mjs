@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
-import { createUnitRouteResult, unitRouteResultIsCurrent } from '../src/unit-movement.mjs';
+import { createUnitRouteResult } from '../src/unit-movement.mjs';
+import { workerFlowRouteBindings } from './economy-server-fixture.mjs';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { isPalisade } from '../src/palisade-gate.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
@@ -103,14 +104,15 @@ function sequenceFixture(sites = [wall(1, .5, .5, { footprint: [5] })]) {
   const distanceSource = server.slice(server.indexOf('function distanceToBuildingEdge('), server.indexOf('function destroyBuilding('));
   const applySource = server.slice(server.indexOf('function applyPlannedMoveAssignment('), server.indexOf('function takeMoveStartBroadcastRequest('));
   const order = { ids: sites.map(site => site.id), generation: 7, revision: 12 };
-  const unit = { id: 0, team: 0, generation: 7, hp: 100, orderRevision: 12, wallBuildOrder: order,
+  const unit = { id: 0, team: 0, kind: 'worker', generation: 7, hp: 100, orderRevision: 12, wallBuildOrder: order,
     workIntent: createConstructionWorkIntent(7, order.ids, constructionWorkArea(sites, map)),
     buildingTargetId: null, path: [3, 4], pathIndex: 0, movePlanningPending: true, moveGoalCell: 4, x: -10.5, z: .5 };
   let searches = 0, reachable = false;
-  const c = vm.createContext({ createUnitRouteResult, unitRouteResultIsCurrent, movePlanningEpoch: 0, units: [unit], activeWallBuildOrder, activeWorkIntent, clearWorkIntent,
+  const c = vm.createContext({ ...workerFlowRouteBindings(), units: [unit], activeWallBuildOrder, activeWorkIntent, clearWorkIntent,
     constructionWorkArea, unfinishedConstructionSites, BUILDING_DEFINITIONS, BUILDER_INTERACTION_RANGE: 1.4,
     isPalisade, buildingsById: lookup(sites), mapDefinition: map, navigationRevision: 1, tickNumber: 0, TICK_RATE: 30,
-    nearestOpenCell: cell => cell, worldToCell: () => 3, MAP_WIDTH: 64, movePlanningServiceTick: null, dirty: false,
+    nearestOpenCell: cell => cell, worldToCell: () => 3, MAP_WIDTH: 64, MAP_HEIGHT: 64, MAP_HALF_X: 32, MAP_HALF_Z: 32,
+    elevationLevelByCell: new Uint8Array(64 * 64), movePlanningServiceTick: null, dirty: false,
     buildingAccessCells: () => [4], findBuildingAttackApproachCell: () => { searches++; return reachable ? { goal: 4 } : null; },
     cellToWorld: () => ({ x: .5, z: -.5 }), assignFormationMove: (_player, command, target) => {
       assert.deepEqual(Array.from(command.ids), [unit.id]); unit.orderRevision++; unit.buildingTargetId = target; unit.movePlanningPending = true;
