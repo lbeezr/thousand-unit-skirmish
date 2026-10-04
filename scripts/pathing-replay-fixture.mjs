@@ -29,6 +29,9 @@ export async function createPathingReplayFixture(map) {
 const replayPlanningCallbacks = [];
 export const replay = {
   prepare(map) {
+    // Custom trusted replay maps exercise their authored simulation rules;
+    // ordinary default Skirmish admission is covered by the launch fixtures.
+    matchMode = normalizeMatchMode({ matchModeId: 'authored', matchModeVersion: 1 });
     activateMap(validateMapDefinition(map, 'pathing replay'));
     tickNumber = 0; navigationRevision = 0; nextMoveOrderId = 1;
     resetArmy(map.startingArmySize);

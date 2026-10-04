@@ -3,7 +3,7 @@
 The wildlife worker owns this technical conversion and recovery slice. Original
 candidate `60c928066faca119e40d9353536f5a87bcb962da` used fork main `9351320d`.
 The refreshed candidate incorporates owned controls
-`d7613cfd15bc887888016b40389cdefe04d80663` and ordinary-map-floor main
+`bc4101fc06d47a7af8d19ba32f0759ee8385a54f` and ordinary-map-floor main
 `966dc0a597eb15162b751522d111c7ae854de22f`; its exact reviewed head belongs in
 the PR receipt. No new animal frames, private source or action loader are admitted.
 
@@ -47,6 +47,14 @@ Authored Rules without `RTS_MAP`, then publishes a 160×160 Sheep arena; the
 legacy Millrace regression selects its historical map explicitly. Current
 Sheep acceptance identifies those map paths rather than claiming Sheep in the
 ordinary default opening.
+
+Trusted fixed-tick replay fixtures explicitly select real Authored Rules via
+`normalizeMatchMode({matchModeId:'authored',matchModeVersion:1})` before loading
+their custom maps. This preserves the existing fixture contract after ordinary
+defaults changed to Skirmish; no production mode rule changes and no custom-map
+Skirmish capability is claimed. The final normal-input fixture also moves the
+claimant away and uses local zoom 3 before clicking Sheep, preserving legitimate
+friendly-unit screen-pick priority at the 160-map overview scale.
 
 Schema28→29 changes every saved Sheep heading and the schema only. Exact
 comparisons retain actual positions, sequence, goals, waits, activities, Herd
