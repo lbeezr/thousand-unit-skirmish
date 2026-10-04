@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "scope": "Approved-runtime coverage: eight-view Sheep, Human Worker SE fishing, eight Frontier Complete families, eight painted ground materials with six authored mips, three generic oak depletion states with six authored mips. Concepts, unapproved candidates and other runtime families are outside this guard.",
+  "scope": "Approved-runtime coverage: eight-view Sheep, Human Worker SE fishing, eight Frontier Complete families, eight painted ground materials with six authored mips and the scree terrace-face consumer, three generic oak depletion states with six authored mips. Concepts, unapproved candidates and other runtime families are outside this guard.",
   "records": [
     {
       "id": "frontier-oak-depletion-atlas-v1",
@@ -12,6 +12,7 @@
       "id": "frontier-painted-material-atlas-v1",
       "owner": "Painted ground atlas adoption owner",
       "probe": "painted-ground",
+      "screeCliffFaces": true,
       "manifest": "assets/environment/frontier-painted-material-atlas-v1/manifest.json"
     },
     {
