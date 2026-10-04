@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "packVersion": "0.24.0",
-  "scope": "Human Worker land art; excludes fishing; source/default package evidence, not deployed/native proof",
+  "packVersion": "0.25.0",
+  "scope": "Human Worker land art; excludes fishing; default source/package evidence, not deployed/native proof",
   "actions": [
     {
       "action": "walk",
@@ -20,15 +20,15 @@
     },
     {
       "action": "gather-wood",
-      "authoredHeadingCount": 2,
+      "authoredHeadingCount": 3,
       "authoredHeadings": [
+        "east",
         "south-east",
         "north-west"
       ],
       "missingHeadings": [
         "north",
         "north-east",
-        "east",
         "south",
         "south-west",
         "west"
@@ -84,15 +84,15 @@
     },
     {
       "action": "attack",
-      "authoredHeadingCount": 2,
+      "authoredHeadingCount": 3,
       "authoredHeadings": [
+        "east",
         "south-east",
         "north-west"
       ],
       "missingHeadings": [
         "north",
         "north-east",
-        "east",
         "south",
         "south-west",
         "west"
@@ -131,13 +131,13 @@
       ]
     }
   ],
-  "authoredCells": 22,
+  "authoredCells": 24,
   "totalCells": 64,
-  "remainingCells": 42,
+  "remainingCells": 40,
   "byHeading": {
     "north": 1,
     "north-east": 1,
-    "east": 1,
+    "east": 3,
     "south-east": 8,
     "south": 1,
     "south-west": 1,
