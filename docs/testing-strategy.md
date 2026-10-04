@@ -57,7 +57,9 @@ hosted-runner purchase or weakened checks is authorized by this document.
 
 ## Existing checks and lanes
 
-Inventory verified at `0fc2e9b8` on 4 October 2026. The [CI registry](../scripts/ci.mjs)
+Inventory verified at `dea845b3` on 4 October 2026: 1,120 registered checks =
+939 fast + 181 simulation, preserving all 1,115 preceding-main checks. These
+registration counts do not claim a successful execution. The [CI registry](../scripts/ci.mjs)
 and [workflow](../.github/workflows/ci.yml) are authoritative for current execution.
 `npm test` runs the registered CPU contracts and native scenarios. GitHub uses
 Node 24, three shards (`npm test -- --shard=1/3`, `2/3`, `3/3`) and packs the release
@@ -118,6 +120,14 @@ attempt predates the new WebGL2 prerequisite; neither record is execution eviden
 for the merged wiring revision. Renderer availability remains with the cloud
 testing owner; the code-quality owner retains the route-completion diagnostic.
 Lane wiring does not make either workload pass or change its assertions.
+
+Full-suite success is also unverified. The recorded CPU shard 2 at `d8f10423`
+failed the stale Practice launch-identity expectation in
+[`shore-fishing-adoption-scenario.mjs`](../scripts/shore-fishing-adoption-scenario.mjs);
+the other shard results were incomplete in that record. The code-quality owner
+retains result collection and that fixture repair. Focused contracts, type/guard
+checks and release packing pass in the wiring evidence; they are separate from
+full-suite or rendered acceptance.
 
 ## Critical regression contracts
 
