@@ -26,8 +26,8 @@ through actual pointer input, and the ordinary Center Selection camera control
 keeps both inside each captured frame. A non-pausing CDP observation immediately
 after the actual render reads only the module's own actor/camera projection;
 it writes diagnostic storage and never mutates game state. Privacy checks
-reject foreign Worker disclosure near these separated forests, opposite-seat
-bank disclosure or current forest-stock changes outside current vision.
+reject foreign unit disclosure near these separated forests, opposite-seat
+Food/Wood/Stone bank disclosure or current forest-stock changes outside current vision.
 The shared runner binds all screenshots to its exact clean source SHA/release
 digest and limits this case to three minutes. The PR346 artifact-directory
 contract retains `forest-job-observations.json` beside the screenshot receipts:

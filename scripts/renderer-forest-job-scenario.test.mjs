@@ -12,7 +12,7 @@ const row = (cargo = 0, action = null, task = 'gathering', generation = 1) => {
 const message = (units = [row()], wood = [100, null], stocks = [[0, 5]]) => ({
   type: 'state', mapId: 'veyrholds-terraced-vale', tick: 5, units, wood,
   visibility: { columns: 160, rows: 160, data: Buffer.concat([Buffer.from([2]), Buffer.alloc(6399)]).toString('base64') }, forestStocks: stocks,
-  player: { token: 'must-not-retain' }, food: [100, 789], notices: ['private metadata'],
+  player: { token: 'must-not-retain' }, food: [100, null], notices: ['private metadata'],
 });
 const progress = () => ({ valid: true, private: true, lastWood: 100, workers: [{ id: 10,
   generation: 1, lastCargo: 0, deposits: 0, harvest: false, returned: false, resumed: false }] });
@@ -22,13 +22,23 @@ test('owned adapter imports without a workload and declares the actual version1 
 });
 test('seat projection excludes raw/private metadata and flags unauthorized forest disclosure', () => {
   const state = adapter.projectForestJobState(message(), 0);
-  assert.deepEqual(Object.keys(state).sort(), ['tick', 'team', 'wood', 'visibility', 'otherBankPrivate', 'foreignWorkers', 'stocksPrivate', 'workers'].sort());
+  assert.deepEqual(Object.keys(state).sort(), ['tick', 'team', 'wood', 'visibility', 'otherBankPrivate', 'foreignUnits', 'stocksPrivate', 'workers'].sort());
   assert.equal(state.otherBankPrivate, true); assert.equal(state.stocksPrivate, true);
   assert.equal(JSON.stringify(state).includes('must-not-retain'), false);
   assert.equal(adapter.projectForestJobState(message(), null), null);
   assert.equal(adapter.projectForestJobState({ ...message(), mapId: 'open-field' }, 0), null);
   assert.equal(adapter.projectForestJobState(message([row()], [100, 999], [[1, 0]]), 0).stocksPrivate, false);
   assert.equal(adapter.projectForestJobState(message([], [100, 999]), 0).otherBankPrivate, false);
+  for (const bank of ['food', 'stone']) {
+    const leaked = adapter.projectForestJobState({ ...message(), [bank]: [100, 999] }, 0);
+    assert.equal(leaked.otherBankPrivate, false, `${bank} bank must remain private`);
+    assert.equal(JSON.stringify(leaked).includes('999'), false, 'leaked balance is never retained');
+  }
+  const enemy = row(); enemy[1] = 1; enemy[5] = 'infantry';
+  const leaked = adapter.projectForestJobState(message([row(), enemy]), 0);
+  const job = progress(); adapter.observeForestJobCycle(job, leaked);
+  assert.equal(job.private, false, 'hidden foreign military units cannot pass');
+  assert.equal(leaked.workers.length, 1, 'foreign actor coordinates are not retained');
   for (const visibility of [undefined, {}, { columns: 160, rows: 160, data: '' },
     { columns: 160, rows: 160, data: 'invalid base64' },
     { columns: 160, rows: 160, data: Buffer.alloc(6400, 255).toString('base64') }]) {

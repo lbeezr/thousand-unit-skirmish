@@ -25,8 +25,9 @@ export function projectForestJobState(message, team) {
   const disclosed = cell => packed && Number.isInteger(cell) && cell >= 0 && cell < 25600
     ? packed[cell >> 2] >> ((cell & 3) * 2) & 3 : -1;
   return { tick: state.tick, team, wood: state.wood?.[team], visibility,
-    otherBankPrivate: state.wood?.[1 - team] === null,
-    foreignWorkers: state.units.filter(row => row[1] !== team && row[5] === 'worker').length,
+    otherBankPrivate: state.wood?.[1 - team] === null && state.food?.[1 - team] === null
+      && (state.stone === undefined || state.stone?.[1 - team] === null),
+    foreignUnits: state.units.filter(row => row[1] !== team).length,
     stocksPrivate: packed !== null && Array.isArray(state.forestStocks)
       && state.forestStocks.every(([cell]) => disclosed(cell) === 2),
     workers: state.units.filter(row => row[1] === team && row[5] === 'worker' && row[4] > 0)
@@ -36,7 +37,7 @@ export function projectForestJobState(message, team) {
 
 export function observeForestJobCycle(progress, state) {
   if (!progress || !state) return;
-  progress.private &&= state.otherBankPrivate && state.foreignWorkers === 0 && state.stocksPrivate;
+  progress.private &&= state.otherBankPrivate && state.foreignUnits === 0 && state.stocksPrivate;
   let deliveredCargo = 0, deliveredWorkers = 0;
   for (const entry of progress.workers) {
     const worker = state.workers.find(row => row.id === entry.id);
