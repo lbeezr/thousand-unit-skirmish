@@ -51,17 +51,56 @@ unselected Workers retain no construction assignment. Banks stay at 270 wood
 and `nextBuildingId` stays 5 throughout resumption/recovery. Focused surrounding
 selection, placement, contextual HUD and gate checks also pass.
 
+## Construction continuation preparation on merged source
+
+After the independently reviewed targeted-resume correction merged in
+`6d7cb40cc7c6bb35721eea956304537697cda103`, seven additional real-command cases
+check paid three-wall lines redirected to adjoining gates on both seats. Every
+case starts an unrelated food Gather job with an unselected Worker, records
+the paid ledger, and cold-restarts the actual server with the original seat
+tokens. [Retained baseline events](qa-evidence/palisade-continuation-2026-10-04/baseline.json)
+record the exact server/scenario hashes, progress, targets, refunds and schema.
+
+| Case | Current-source observation after recovery |
+| --- | --- |
+| Gate completes | Both builders idle; all remembered wall progress stays unchanged. Wood remains 240 per seat. |
+| Gate is cancelled | Both builders idle; all remembered wall progress stays unchanged. Partial gates refund 14.7 wood once per seat in this capture. |
+| Pending wall is cancelled during gate work | Gate completes, then both builders idle; the other two walls per seat stay unfinished. The untouched cancelled cell refunds exactly 15 wood once. |
+| Explicit Stop | All paid Palisade progress stays unchanged through recovery. |
+| Explicit Move | Move replaces construction; paid Palisade progress stays unchanged through recovery. |
+| Explicit Gather | Gather replaces construction; paid Palisade progress stays unchanged through recovery. |
+| Unrelated manual House | The distant paid House naturally completes; old wall/gate work stays unchanged through recovery. |
+
+All seven cases preserve match identity under checkpoint schema 29, retain
+unselected Workers' unrelated Gather jobs, preserve remaining building IDs,
+and avoid further construction debit. Foreign cancellation rejects; repeated
+cancellation refunds nothing; cancelled sites do not reappear after recovery.
+The four explicit replacement cases pass the current regression floor. The
+three natural continuation cases are **reproduced failures**, not acceptance.
+
+`scripts/palisade-continuation-scenario.mjs --observe --case=complete` records
+the present failure without waiting for impossible completion. The analogous
+cases are `cancel-gate` and `cancel-pending-wall`. Without `--observe`, these
+three cases require natural completion/resumption and are expected to fail
+until the construction implementation lands. `--case=stop`, `move`, `gather`
+and `manual-replacement` require explicit replacement priority now. The script
+is prepared on the construction branch, not yet admitted to CI or claimed as a
+passing continuation implementation.
+
 ## Continuation boundary and unfinished acceptance
 
-The [owning workstream decision](https://github.com/lbeezr/thousand-unit-skirmish/pull/87#issuecomment-5979931148)
-proposes keeping only the assigned builder's remembered paid wall sequence when
-redirected to an adjacent gate. Explicit Move/Stop/Gather/Attack/repair or an
-unrelated manual replacement must invalidate continuation; internal route
-repair preserves the generation/order revision. No idle-worker recruitment,
-global job search, combat or Patrol rewrite belongs in this fix. The economy
-owner (`01a101f7-5683`, tree continuation) owns the shared task boundary; server
-continuation edits require that agreement. This first slice changes client
-targeting only, not the reproduced server interruption.
+The [owning shared-boundary proposal](https://github.com/lbeezr/thousand-unit-skirmish/pull/87#issuecomment-5980032703)
+separates durable Worker intent from execution/path `orderRevision`: internal
+Gather/deposit/reacquire changes that revision and must preserve the current
+work intent. Accepted external replacement orders cancel intent. The parent
+assigned economy (`01a101f7-5683`, tree continuation) primary ownership of the
+minimal shared `workIntent` shape, external-order cancellation and checkpoint
+serialization/validation/migration. Walls owns construction-specific nearby
+resume/reacquisition and its tests after that shared foundation. The exact field
+contract and foundation are pending; no overlapping shared-boundary edits occur
+in this preparation. Routine agreed internal integration needs no new parent
+approval. No idle-worker recruitment, global job search, combat or Patrol
+rewrite belongs in this fix.
 
 Walls/gates owner retains source/release integration and the next continuation
 slice. Parent schedules native wall/gate acceptance after a containing identified
