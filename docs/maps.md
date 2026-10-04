@@ -15,7 +15,8 @@ routes, recovery, diagnostic and remaining deployed/browser acceptance.
 The user now requires 160 on both axes as the ordinary minimum: **Tiny**, then
 Small/Medium/Large/XL. The [tier policy](map-size-tiers.md) supplies the shared
 catalog contract. Fresh normal two-seat entry now uses Terraced Vale/Skirmish;
-one-human Authored Practice starts on Tiny and retains explicit internal Labs.
+one-human Authored Practice starts on Tiny. The ordinary Practice catalog must
+also meet the floor; compact Labs remain internal fixtures and legacy identities.
 Normal choices require both axes at least160; a current compact restored map
 remains displayed disabled. Existing160 Labs retain their authored rules and
 separate Objective Control compatibility. See [floor acceptance](qa-ordinary-map-floor-2026-10-04.md).
@@ -29,7 +30,26 @@ two valley passes, a raised southern causeway and a high northern flank.
 It adds three expansion pockets per seat and preserves short home access.
 The 157-unit base route targets 60.4 Worker seconds; opening units/banks remain
 ordinary. [Small evidence](qa-threefold-basin-2026-10-04.md) separates static,
-paid/native and capacity receipts from pending Skirmish/deployed/browser adoption.
+paid/native and capacity receipts from deployed/browser acceptance. Small's
+Skirmish registry admission merged in [PR242](https://github.com/lbeezr/thousand-unit-skirmish/pull/242).
+
+## Confluence Grounds admitted testing arena
+
+**Siltmouths · Confluence Grounds** is a new 160 × 160 multi-purpose Practice
+arena. Connected fishing bays and legal level-0 Dock banks exercise paid Skiffs
+and shore Workers; flat campuses exercise Farm, Mill, Stone and Watchtower;
+three neutral Sheep are authored near each start. Two broad fords and two rim
+routes connect the land halves. It uses 24 opening units, 150 food/250 wood per
+seat, zero starting Stone, finite resources and the existing `stone-defense-v1`
+prices. The 135-unit static base route takes 51.9 Worker seconds.
+See [the map and acceptance record](qa-confluence-grounds-2026-10-04.md).
+
+This arena replaces ordinary testing needs served by compact examples. It does
+not delete or rename those canonical files. The mode owner retains the separate
+catalog/selection/publication change that hides compact fixtures from ordinary
+Practice; authored save restoration remains supported. This map has Authored
+rules and elimination fallback; it has no Skirmish/PvE admission or unit-capacity
+claim.
 
 ## Vaelora default roster — 30 September 2026
 
@@ -90,8 +110,9 @@ These are layout schematics; the in-game renderer supplies the current regional 
 
 ## Stone defense lab
 
-Choose **Practice → Authored Rules → Map → Lab · STONE DEFENSE FIELD**.
-This compact internal Lab is separate from the ordinary160-minimum catalog. The shipped
+The dated compact regression uses **Lab · STONE DEFENSE FIELD** through an explicit
+internal fixture. Ordinary Practice uses an admitted arena such as Confluence Grounds.
+The shipped
 [Stone Defense Field](../maps/stone-defense-field.json) needs no Map Studio
 import, custom JSON or debug setting. It uses Open Field's ground and food/wood
 layout with 24 starting units, 300 food and 600 wood per seat, fog and zero
