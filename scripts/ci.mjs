@@ -390,6 +390,7 @@ const scenarios = [
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
   ['scripts/room-pregame-scenario.mjs', 'Pregame two-seat launch and recovery'],
   ['scripts/ordinary-map-floor-scenario.mjs', 'Ordinary Tiny floor, fresh modes and historical/Practice access'],
+  ['scripts/small-skirmish-entry-scenario.mjs', 'Reviewed Small normal human paid entry and recovery'],
   ['scripts/checkpoint-storage-recovery-scenario.mjs', 'Checkpoint storage failure and recovery'],
   ['scripts/room-expiry-scenario.mjs', 'Invite expiry and pending reconnect protection'],
   ['scripts/impaired-connection-scenario.mjs', 'Delayed two-seat transport and interrupted-order recovery'],

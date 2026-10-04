@@ -13,7 +13,8 @@ const definitions = Object.freeze([
     victoryPolicy: 'recovery-elimination', aiStrategyId: 'base-elimination',
     pveSupported: false, selectable: true, defaultMapId: NORMAL_MATCH_MAP_ID }),
 ]);
-const skirmishMapIds = new Set(['bellweather-millrace', 'underbough-rootways', NORMAL_MATCH_MAP_ID]);
+const skirmishMapIds = new Set(['bellweather-millrace', 'underbough-rootways', NORMAL_MATCH_MAP_ID,
+  'veyrholds-threefold-basin']);
 
 /** Missing fields preserve legacy authored rules; explicit invalid fields reject. */
 export function normalizeMatchMode(value = {}) {
