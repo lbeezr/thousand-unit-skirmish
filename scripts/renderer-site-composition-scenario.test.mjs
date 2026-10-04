@@ -61,7 +61,7 @@ test('even successful screenshot acquisition/state metadata cannot pass uninspec
   const directory = await mkdtemp(path.join(os.tmpdir(), 'site-adapter-test-'));
   try {
     const p = pages(), captures = [];
-    const result = await run({ version: 1, page: p.first, openPage: async () => p.second, origin: 'http://127.0.0.1:4321',
+    const result = await run({ version: 1, evidenceDirectory: directory, page: p.first, openPage: async () => p.second, origin: 'http://127.0.0.1:4321',
       source: Object.freeze({ revision: 'a'.repeat(40), digest: `sha256:${'b'.repeat(64)}` }),
       capture: async ({ checkpoint, mapId }) => {
         assert.ok(mapId.startsWith(regressionMap.id)); assert.ok(!captures.includes(checkpoint)); captures.push(checkpoint);
@@ -76,10 +76,13 @@ test('even successful screenshot acquisition/state metadata cannot pass uninspec
 });
 test('capture failures propagate and remote/missing-source contexts fail before game work', async () => {
   const source = Object.freeze({ revision: 'a'.repeat(40), digest: `sha256:${'b'.repeat(64)}` });
-  for (const context of [{ origin: 'https://example.invalid', source }, { origin: 'http://127.0.0.1:4321', source: { ...source, revision: 'unknown' } }]) {
+  const p = pages(), fault = new Error('capture failed');
+  const base = { version: 1, evidenceDirectory: '/tmp/site-failure-no-captures', page: p.first,
+    openPage: async () => p.second, origin: 'http://127.0.0.1:4321', source,
+    capture: async () => { throw fault; } };
+  for (const context of [{ ...base, origin: 'https://example.invalid' }, { ...base, source: Object.freeze({ ...source, revision: 'unknown' }) }]) {
     await assert.rejects(run(context));
   }
-  const p = pages(), fault = new Error('capture failed');
-  await assert.rejects(run({ version: 1, page: p.first, openPage: async () => p.second, origin: 'http://127.0.0.1:4321', source,
-    capture: async () => { throw fault; } }), error => error === fault);
+  assert.equal(p.commands.length, 0, 'invalid contexts never issue a gameplay command');
+  await assert.rejects(run(base), error => error === fault);
 });
