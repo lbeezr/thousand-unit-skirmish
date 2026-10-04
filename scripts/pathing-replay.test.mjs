@@ -94,6 +94,19 @@ test('a footprint across the only choke is rejected without changing movement go
 // full command handler and the unchanged checkpoint validator through the PvE
 // fixture, with AI/listening/timers disabled and an explicit authored mode.
 const replayIdentity = { matchModeId: 'authored', matchModeVersion: 1 };
+
+test('headless process identity is a packet input without changing recovered authority', async () => {
+  const first = await createPveHeadlessFixture(commandReplayMap(), { ...replayIdentity, serverInstanceId: 'replay-first' });
+  const second = await createPveHeadlessFixture(commandReplayMap(), { ...replayIdentity, serverInstanceId: 'replay-second' });
+  try {
+    const saved = first.replay.checkpoint(); second.replay.restore(structuredClone(saved));
+    assert.deepEqual(second.replay.checkpoint(), saved);
+    for (const team of [0, 1]) {
+      assert.equal(first.replay.observe(team).serverInstanceId, 'replay-first');
+      assert.equal(second.replay.observe(team).serverInstanceId, 'replay-second');
+    }
+  } finally { await first.dispose(); await second.dispose(); }
+});
 function commandReplayMap() {
   return { ...pathingBaselineMap({ group: 4 }), id: 'accepted-command-replay',
     fogOfWar: true, obstacles: [],

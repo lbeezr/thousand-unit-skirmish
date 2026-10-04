@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
+import { createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent } from '../src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
 
 const source=readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
@@ -24,7 +25,7 @@ function fixture({clockStep=0,expandedPerSearch=50,count=24}={}) {
     pendingMoveStartBroadcasts:new Set(),movePlanningServiceTick:null,performance:{now:()=>{clock+=clockStep;return clock;}},
     nearestOpenCell:c=>c,worldToCell:()=>1,
     MAP_WIDTH:96,MAP_HALF_X:0,MAP_HALF_Z:0,WALK_SPEED:4.5,STEP_SECONDS:1/30,elevationLevelByCell:new Uint8Array(96*96),
-    isWalkable:()=>true,canTraverseFlatUnitSegment,cellToWorld:c=>({x:c%96+.5,z:Math.floor(c/96)+.5}),
+    isWalkable:()=>true,canTraverseFlatUnitSegment,createUnitRouteResult,unitRoutePathCost,unitRouteResultIsCurrent,cellToWorld:c=>({x:c%96+.5,z:Math.floor(c/96)+.5}),
     findPathAStar(start,destination,diagnostics){
       searches.push(destination);diagnostics.searchCount++;diagnostics.expandedCells+=expandedPerSearch;
       return [destination];
@@ -93,4 +94,42 @@ test('stale empty start groups consume bounded turns even without a route search
   f.slice();assert.equal(f.job.nextGroup,16);
   f.slice();assert.equal(f.context.activeMovePlanningJob,null);
   assert.deepEqual(f.notices,['ORDER SUPERSEDED · 0 UNITS']);
+});
+
+test('publication rejects stale actor, generation, order, epoch and navigation results without mutation',()=>{
+  for(const stale of ['actor','generation','order','epoch','navigation']) {
+    const f=fixture({count:1}),unit=f.units[0],assignment=f.job.assignments[0];
+    assignment.routeResult=createUnitRouteResult({unit,epoch:0,navigationRevision:1,startCell:1,path:[100]});
+    unit.path=[777];
+    if(stale==='actor')f.units[0]={...unit};
+    if(stale==='generation')unit.generation=2;
+    if(stale==='order')unit.orderRevision++;
+    if(stale==='epoch')f.context.movePlanningEpoch++;
+    if(stale==='navigation')f.context.navigationRevision++;
+    assert.equal(f.context.applyPlannedMoveAssignment(f.job,assignment),false,stale);
+    assert.deepEqual(unit.path,[777]);assert.equal(unit.movePlanningPending,true);assert.equal(assignment.applied,undefined);
+  }
+});
+
+test('deferred search yields intact, serves a waiting order and resumes without claiming arrival or failure',()=>{
+  const f=fixture({count:1}),search=f.context.findPathAStar;
+  f.context.findPathAStar=()=>null;
+  const second={...f.job,orderId:2,groups:[],assignments:[],reservedDestinations:new Set(),diagnostics:{searchCount:0,expandedCells:0,discoveredCells:0}};
+  f.context.movePlanningQueue.push(second);f.slice();
+  assert.equal(f.units[0].movePlanningPending,true);assert.equal(f.job.assignments[0].applied,undefined);
+  assert.equal(f.context.activeMovePlanningJob,second);assert.equal(f.job.currentGoalGroup.nextGoal,0);
+  f.context.findPathAStar=search;f.slice();f.slice();
+  assert.equal(f.units[0].moveGoalCell,100);assert.equal(f.samples.at(-1).routeFailures,0);
+});
+
+test('a same-cell empty plan finishes its center approach before reporting actual arrival',()=>{
+  for(const arrived of [false,true]) {
+    const f=fixture({count:1}),unit=f.units[0],a=f.job.assignments[0];
+    a.destination=1;f.context.findPathAStar=()=>[];
+    if(arrived)Object.assign(unit,{x:1.5,z:.5});
+    f.slice();
+    assert.equal(a.routeOutcome.status,arrived?'arrived':'ready');
+    assert.deepEqual(Array.from(unit.path),arrived?[]:[1]);
+    assert.equal(a.routeOutcome.alreadyInDestinationCell,true);assert.equal(a.routeOutcome.routeFailure,false);
+  }
 });

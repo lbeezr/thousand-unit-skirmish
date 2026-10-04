@@ -79,13 +79,43 @@ Changes to another lane's host functions are agreed with that affected owner.
 
 | Slice / owner | Bounded writes and dependency | Acceptance / next action |
 | --- | --- | --- |
-| U1 · shared movement owner · implemented in [PR #332](https://github.com/lbeezr/thousand-unit-skirmish/pull/332), review open | `src/unit-movement.mjs` dimension preconditions, `scripts/unit-movement.test.mjs`, this owning guide. No flow, Worker, map-limit, server-loop or relocation edits. | Malformed grids fail closed before occupancy; 16×17, 160, 256 and planned320 primitive index checks; both-seat cliff/corner rejection across 13 injected land intent policies with intent/queue retained. Exact-head tests/release and the unavailable native review executor are recorded in the PR. This is a source safety/regression milestone. |
-| U2 · resource / forest owners, then shared adoption | Resource owner: Worker route functions only; forest owner: selected group/job reacquisition only. Shared owner subsequently adopts their endpoint/cost outcomes in the existing route publication/diagnostic boundary. | Long gather→deposit→return soak, interior-tree/group frontier, multiple drop-offs/Farm/shore goals, depleted/blocked target, both seats and checkpoint; compare original scoring and selected tail. Their urgent fixes ship independently. No global `pathFromAttackFlow` edit. |
+| U1 · shared movement owner · merged in [PR #332](https://github.com/lbeezr/thousand-unit-skirmish/pull/332) at `062c3603` after independent review | `src/unit-movement.mjs` dimension preconditions, `scripts/unit-movement.test.mjs`, this owning guide. No flow, Worker, map-limit, server-loop or relocation edits. | Malformed grids fail closed before occupancy; 16×17, 160, 256 and planned320 primitive index checks; both-seat cliff/corner rejection across 13 injected land intent policies with intent/queue retained. Exact-head/postmerge source tests and clean release are recorded in the PR. This is a source safety/regression milestone. |
+| U2 · resource / forest owners, then shared adoption | Worker shortcut [PR #330](https://github.com/lbeezr/thousand-unit-skirmish/pull/330) at `6183693c`, forest-group job [PR #341](https://github.com/lbeezr/thousand-unit-skirmish/pull/341) at `ccb2e86a`; shared owner adopts their final endpoints/costs in `src/unit-movement.mjs`, Worker/planner publication and private diagnostics. | Keep original drop-off scoring and resource-owned reduction. Transient results distinguish ready/final approach, actual empty arrival, unreachable and deferred; reject stale actor/generation/order/epoch/nav before publication. Both-seat Worker cycles, forest/Farm selected tails, original cost/length, stale publication and fair deferred turns use existing fixtures. Source adoption is bounded; long mixed journeys and identified-release rendered acceptance remain U7. No global `pathFromAttackFlow` edit. |
 | U3 · shared movement owner | `applyPlannedMoveAssignment`, goal/queue fields in `assignFormationMove` / `advanceQueuedWaypoints`, matching land checkpoint validation and existing replay fixtures. Dependency: U2 endpoint/cost contracts; exact checkpoint subsection agreed with recovery owner. | Real commands distinguish empty-success/failure, move within a goal cell, exact fractional final points and obstacle-edge projection; Stop/replacement, stale epoch/nav/actor and queued/active/idle restart. Migrate existing cell-centered historical fixtures honestly. |
 | U4 · movement + construction/combat consumers | Movement owns segment/step/arrival helpers and the land execution subsection; construction owns access/paid continuation; combat owns `getUnitAttackPath`, range truncation and same-cell closure. No target acquisition/damage rewrite. | One clearance policy through direct/weighted/flow routes, building/range approaches, interaction separation and dynamic gates/forests. Both-seat range correctness, no illegal crossings, paid work unaffected; no unconsumed helper. |
 | U5 · movement; naval and wildlife keep adapters | Movement owns bounded avoidance/detour/progress diagnostics. Naval owns `water-unit-runtime`, Skiff consumers; wildlife owns herd/grazing validators/stepping. Dependency: selected goal and compatible clearance. | Opposing choke traffic, parked workers, mixed speeds, stable formation slots/compress/reform, wait/yield fairness and bounded stall escalation. Preserve water hulls/basins and Sheep cardinal/final-point behavior. Each adapter ships independently. |
 | U6 · movement + transport/mode/AI/recovery | Use the existing [all-command phase contract](movement-tick-phase-proposal.md#required-cross-owner-decision): named dispatcher, planner hook, AI decision ticks and checkpoint sections only. | Fixed intake sequence/eligibility and aggregate navigation budget, pending jobs/cache reuse across callers, clock/callback perturbation replay and durable recovery. Retain four-turn failure until new complete tick evidence qualifies a shipping policy. |
 | U7 · movement acceptance; benchmark/map/capture owners supply their existing interfaces | Benchmark `01a101bc-9d2a-733a-916f-104264e9102c` owns report validity; map `01a103e8-8bfd-7013-8fee-94450f88501b` owns XL admission/index support; CI `01a10378` owns capture interfaces; organization `01a10711` owns relocations. Movement writes scenarios/acceptance only. | Full caller journey matrix, native/replay and actual ordinary-game rendered sequences at identified source/release. Keep 320 tests experimental until map admission lands. No duplicate report format, map-limit patch, renderer interface or path-only move. |
+
+U2's `createUnitRouteResult` is a publication result, not a parallel live movement
+state machine. `ready` means an executable route exists; an empty raw route in an
+allowed goal cell becomes a center approach unless the caller's physical arrival
+predicate already holds. `arrived` requires both membership and that predicate;
+`unreachable` carries no selected endpoint/cost; `deferred` preserves pending
+intent and yields its planner turn. The result retains raw length and weighted
+grid cost before Worker reduction. Existing validated flat direct A* waypoints
+report equivalent cardinal Manhattan cost, separately from physical distance.
+Results live on planner assignments or Worker stack frames: no unit/checkpoint
+field, schema migration, private target reveal or persisted actor reference.
+Worker `moveGoalCell` follows the selected raw tail, including multi-goal access;
+interaction arrival still belongs to the existing economy policy. Planner samples
+include publication status counts and original cost/waypoint totals while retaining
+the historical cell-membership and failure counters.
+
+The [XL audit](map-grid-limit-audit-2026-10-04.md) in
+[PR #356](https://github.com/lbeezr/thousand-unit-skirmish/pull/356) records proposed320
+Far Marches (89.9% walkable, four crossings, representative route287), possible
+102,400-cell atomic searches and a prospective 2.67GiB validation envelope.
+**Ordinary XL remains disabled.** Today's eight-item/4,096-expansion turn budget
+permits atomic overshoot and does not cap one320 search or checkpoint validation.
+U6 must establish bounded search/resume and save-validation allocation contracts
+with the map/recovery owners before an admission decision; U2 does not raise limits.
+The merged forest-gap characterization below remains cell-gap/replay evidence,
+separate from swept physical clearance, ordinary rendered acceptance or capacity.
+
+Visual development backing for this internal publication/diagnostic slice is N/A;
+it does not change presentation treatment. U3 still owns exact fractional manual
+endpoints, and U4–U7 retain their clearance, runtime-state and acceptance gaps.
 
 ### Forest cell-gap characterization — 4 October 2026
 

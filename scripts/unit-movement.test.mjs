@@ -3,13 +3,37 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
-import { canTraverseUnitStep } from '../src/unit-movement.mjs';
+import { canTraverseUnitStep, createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent } from '../src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from '../src/unit-obstacle-detour.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { farmHarvestNode, farmBuildingId } from '../src/farm-harvest.mjs';
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+
+test('route results preserve a selected multi-goal tail and weighted original cost', () => {
+  const unit={generation:2,orderRevision:3}, levels=new Uint8Array(16);
+  levels[1]=1;levels[2]=1;
+  const path=[1,2,6], cost=unitRoutePathCost(0,path,4,levels);
+  const result=createUnitRouteResult({unit,epoch:4,navigationRevision:5,startCell:0,path,originalCost:cost});
+  assert.equal(result.selectedGoalCell,6);assert.equal(result.originalPathLength,3);
+  assert.equal(result.originalCost,315);assert.equal(result.status,'ready');
+  assert.equal(unitRoutePathCost(0,[15],4,new Uint8Array(16)),600,'flat direct representation retains cardinal graph cost');
+  result.path=[6];assert.equal(result.originalPathLength,3);assert.equal(result.originalCost,315);
+  assert.deepEqual(path,[1,2,6],'normalization cannot mutate the original field path');
+});
+
+test('empty routes distinguish physical arrival, final approach, failure and deferred work', () => {
+  const common={unit:{orderRevision:1},epoch:0,navigationRevision:1,startCell:7,originalCost:0};
+  const arrived=createUnitRouteResult({...common,path:[],startIsGoal:true,arrived:true});
+  assert.equal(arrived.status,'arrived');assert.deepEqual(arrived.path,[]);assert.equal(arrived.selectedGoalCell,7);
+  const approach=createUnitRouteResult({...common,path:[],startIsGoal:true,arrived:false});
+  assert.equal(approach.status,'ready');assert.deepEqual(approach.path,[7]);assert.equal(approach.originalPathLength,0);
+  const failure=createUnitRouteResult({...common,path:[]});
+  assert.equal(failure.status,'unreachable');assert.equal(failure.selectedGoalCell,-1);assert.equal(failure.originalCost,null);
+  const deferred=createUnitRouteResult({...common,path:null,startIsGoal:true,arrived:true});
+  assert.equal(deferred.status,'deferred');assert.equal(deferred.selectedGoalCell,-1);assert.equal(deferred.originalPathLength,null);
+});
 const width = 8, half = width / 2, bucketSize = 1.2, bucketColumns = 7;
 const cell = (x,z) => Math.floor(z+half)*width+Math.floor(x+half);
 const point = c => ({x:c%width-half+.5,z:Math.floor(c/width)-half+.5});
@@ -61,7 +85,7 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
   vm.runInContext(`function moveOneTick(){${movement}}`,context);
   if(realRepairs){
     Object.assign(context,{nearestOpenCell:c=>walkable(c)?c:-1,performance,TICK_RATE:30,
-      nextMoveOrderId:1,movePlanningEpoch:0,movePlanningQueue:[],activeMovePlanningJob:null,
+      createUnitRouteResult,unitRouteResultIsCurrent,navigationRevision:0,nextMoveOrderId:1,movePlanningEpoch:0,movePlanningQueue:[],activeMovePlanningJob:null,
       movePlanningServiceTick:null,
       pendingMoveStartBroadcasts:new Set(),scheduleNextMovePlanning(){}});
     vm.runInContext(server.slice(server.indexOf('function pendingMoveAssignmentsByUnit('),
@@ -192,7 +216,8 @@ test('legal crowd deflection repairs once, preserves the queued route and rejoin
     assert.equal(f.context.movePlanningQueue.length,1,'pending repair is not requeued each tick');
     const job=f.context.movePlanningQueue[0];const assignment=job.assignments[0];
     assert.equal(assignment.destination,28);
-    assignment.path=[27,28]; // Known legal cardinal return, delivered through real assignment application.
+    assignment.path=[27,28];
+    assignment.routeResult=createUnitRouteResult({unit:f.mover,revision:assignment.revision,epoch:0,navigationRevision:0,startCell:26,path:assignment.path}); // Known legal cardinal return, delivered through real assignment application.
     assert.equal(f.context.applyPlannedMoveAssignment(job,assignment),true);
     assert.equal(f.mover.attackMoveRouteReady,true);assert.equal(f.mover.movePlanningPending,false);
     for(let tick=0;tick<100&&f.mover.pathIndex<f.mover.path.length;tick++)f.move();

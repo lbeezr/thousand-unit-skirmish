@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { createUnitRouteResult, unitRouteResultIsCurrent } from '../src/unit-movement.mjs';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { isPalisade } from '../src/palisade-gate.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
@@ -106,7 +107,7 @@ function sequenceFixture(sites = [wall(1, .5, .5, { footprint: [5] })]) {
     workIntent: createConstructionWorkIntent(7, order.ids, constructionWorkArea(sites, map)),
     buildingTargetId: null, path: [3, 4], pathIndex: 0, movePlanningPending: true, moveGoalCell: 4, x: -10.5, z: .5 };
   let searches = 0, reachable = false;
-  const c = vm.createContext({ units: [unit], activeWallBuildOrder, activeWorkIntent, clearWorkIntent,
+  const c = vm.createContext({ createUnitRouteResult, unitRouteResultIsCurrent, movePlanningEpoch: 0, units: [unit], activeWallBuildOrder, activeWorkIntent, clearWorkIntent,
     constructionWorkArea, unfinishedConstructionSites, BUILDING_DEFINITIONS, BUILDER_INTERACTION_RANGE: 1.4,
     isPalisade, buildingsById: lookup(sites), mapDefinition: map, navigationRevision: 1, tickNumber: 0, TICK_RATE: 30,
     nearestOpenCell: cell => cell, worldToCell: () => 3, MAP_WIDTH: 64, movePlanningServiceTick: null, dirty: false,
@@ -135,7 +136,8 @@ test('actual construction sequence bounds unreachable retries, invalidates stale
 test('actual failed route retains a target, then construction reacquires it without replacing active routes or in-range work', () => {
   const f = sequenceFixture(), { c, unit } = f;
   const assignment = { unit, revision: unit.orderRevision, destination: 4, path: [], buildingTargetId: 1 };
-  c.applyPlannedMoveAssignment({ preserveAssignmentBuildingTarget: true }, assignment);
+  assignment.routeResult = createUnitRouteResult({ unit, revision: assignment.revision, epoch: 0, navigationRevision: c.navigationRevision, startCell: 3, path: [] });
+  c.applyPlannedMoveAssignment({ epoch: 0, preserveAssignmentBuildingTarget: true }, assignment);
   assert.equal(assignment.routeOutcome.routeFailure, true); assert.equal(unit.buildingTargetId, 1);
   f.reachable = true; c.updateWallBuildOrders(); assert.equal(f.searches, 1);
   for (let tick = 1; tick < 90; tick++) { c.tickNumber = tick; c.updateWallBuildOrders(); }
@@ -163,7 +165,8 @@ test('repeated actual empty route failures consume the bounded budget even when 
     c.tickNumber = tick; c.updateWallBuildOrders();
     if (unit.movePlanningPending) {
       const assignment = { unit, revision: unit.orderRevision, destination: 4, path: [], buildingTargetId: 1 };
-      c.applyPlannedMoveAssignment({ preserveAssignmentBuildingTarget: true }, assignment);
+      assignment.routeResult = createUnitRouteResult({ unit, revision: assignment.revision, epoch: 0, navigationRevision: c.navigationRevision, startCell: 3, path: [] });
+      c.applyPlannedMoveAssignment({ epoch: 0, preserveAssignmentBuildingTarget: true }, assignment);
       assert.equal(assignment.routeOutcome.routeFailure, true);
     }
   }

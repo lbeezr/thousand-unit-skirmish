@@ -21,7 +21,9 @@ for (const team of [0, 1]) for (const [bearing, dx, dz] of [
     const notices = await r.order(team, { type: 'gather', ids: [id], forestCell: cell }); r.drain();
     assert.ok(notices.some(n => /^GATHER ORDER/.test(n.message)), JSON.stringify(notices));
     const initial = r.checkpoint().state.units[id];
-    assert.equal(initial.path.length, 0, 'current grid cell is already a flow goal');
+    const accessCell = Math.floor(initial.z + 32) * 64 + Math.floor(initial.x + 32);
+    assert.deepEqual(initial.path, [accessCell], 'goal-cell membership publishes a real final center approach');
+    assert.equal(initial.moveGoalCell, accessCell, 'the selected access cell is recorded coherently');
     assert.ok(Math.hypot(initial.x - .5, initial.z - .5) > 1.5, 'actual position is outside range');
     for (let tick = 0; tick < 60; tick++) r.step();
     const state = r.checkpoint().state, worker = state.units[id];
