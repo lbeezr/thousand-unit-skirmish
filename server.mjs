@@ -73,7 +73,8 @@ import { activeWallBuildOrder } from './src/wall-build-order.mjs';
 import { constructionWorkArea, constructionAssignment, unfinishedConstructionSites, validConstructionWorkArea } from './src/construction-work-intent.mjs';
 import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition } from './src/palisade-gate.mjs';
 import { palisadeConnections } from './src/palisade-profile.mjs';
-import { canTraverseUnitStep, createUnitRouteResult, createMoveGoalPoint, activeMoveGoalPoint, validMoveGoalPoint, unitRoutePathCost,
+import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoint, activeMoveGoalPoint, validMoveGoalPoint, unitRoutePathCost,
+  ordinaryMoveBodyRadius, canTraverseStaticBodySegment,
   unitRouteResultIsCurrent } from './src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
@@ -1493,11 +1494,13 @@ function findDirectManhattanPath(start, goal) {
   return null;
 }
 
-function findPathAStar(start, goal, diagnostics = null) {
+function findPathAStar(start, goal, diagnostics = null, clearanceRadius = 0) {
   if (start === goal) return [];
   if (canTraverseFlatUnitSegment(start % MAP_WIDTH + 0.5, Math.floor(start / MAP_WIDTH) + 0.5,
     goal % MAP_WIDTH + 0.5, Math.floor(goal / MAP_WIDTH) + 0.5,
-    MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS)) return [goal];
+    MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS)
+    && (!clearanceRadius || canTraverseStaticBodySegment(cellToWorld(start), cellToWorld(goal),
+      clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable))) return [goal];
   const directPath = findDirectManhattanPath(start, goal);
   if (directPath !== null) return directPath;
   const searchId = beginPathSearch();
@@ -4081,7 +4084,13 @@ function applyPlannedMoveAssignment(job, assignment) {
   const alreadyInDestinationCell = result.originalPathLength === 0
     && nearestOpenCell(worldToCell(unit.x, unit.z)) === destination;
   const start = worldToCell(unit.x, unit.z);
-  const point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
+  let point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
+  if (point) {
+    point = createClearanceMoveGoalPoint(unit, point.requestedX, point.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable);
+    unit.moveGoalPoint = point;
+    unit.moveGoalCell = destination;
+  }
+  const radius = ordinaryMoveBodyRadius(unit);
   const goal = point || cellToWorld(destination);
   if (point && path.length > 0) {
     const center = cellToWorld(destination);
@@ -4090,9 +4099,10 @@ function applyPlannedMoveAssignment(job, assignment) {
     // direct fractional final segment is unsafe. The repeated cell's last leg
     // is entirely within the selected open cell.
     if (Math.hypot(point.x - center.x, point.z - center.z) > 0
-      && !canTraverseFlatUnitSegment(previous.x + MAP_HALF_X, previous.z + MAP_HALF_Z,
+      && (!canTraverseFlatUnitSegment(previous.x + MAP_HALF_X, previous.z + MAP_HALF_Z,
         point.x + MAP_HALF_X, point.z + MAP_HALF_Z, MAP_WIDTH, elevationLevelByCell,
-        isWalkable, WALK_SPEED * STEP_SECONDS)) path = [...path, destination];
+        isWalkable, WALK_SPEED * STEP_SECONDS)
+        || !canTraverseStaticBodySegment(previous, point, radius, MAP_WIDTH, MAP_HEIGHT, isWalkable))) path = [...path, destination];
   }
   const firstGoal = path.length === 1 ? goal : cellToWorld(path[0] ?? destination);
   const distantFirstWaypoint = path.length > 0
@@ -4100,9 +4110,10 @@ function applyPlannedMoveAssignment(job, assignment) {
       + Math.abs(Math.floor(start / MAP_WIDTH) - Math.floor(path[0] / MAP_WIDTH)) > 1;
   // A shared cell-center route can graze an obstacle from one assignee's
   // fractional position. Rejoin its start center before taking the shortcut.
-  unit.path = distantFirstWaypoint && !canTraverseFlatUnitSegment(
+  unit.path = distantFirstWaypoint && (!canTraverseFlatUnitSegment(
     unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z, firstGoal.x + MAP_HALF_X, firstGoal.z + MAP_HALF_Z,
-    MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS) ? [start, ...path] : path;
+    MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS)
+    || (radius && !canTraverseStaticBodySegment(unit, firstGoal, radius, MAP_WIDTH, MAP_HEIGHT, isWalkable))) ? [start, ...path] : path;
   unit.pathIndex = 0;
   unit.movePlanningPending = false;
   unit.buildingTargetId = job.preserveAssignmentBuildingTarget
@@ -4329,11 +4340,18 @@ function processMovePlanningSlice(job) {
       ));
       if (activeAssignments.length > 0) {
         const startCell = nearestOpenCell(currentGroup.startCell);
-        const path = findPathAStar(startCell, destination, job.diagnostics);
+        const clearanceRadius = Math.max(...activeAssignments.map(({ unit }) => ordinaryMoveBodyRadius(unit)));
+        const path = findPathAStar(startCell, destination, job.diagnostics, clearanceRadius);
         if (path == null) { currentGroup.nextGoal--; break; }
         const centerGoal = cellToWorld(destination);
         const originalCost = unitRoutePathCost(startCell, path, MAP_WIDTH, elevationLevelByCell);
         for (const assignment of activeAssignments) {
+          const livePoint = assignment.unit.moveGoalPoint && activeMoveGoalPoint(assignment.unit);
+          if (livePoint) {
+            assignment.unit.moveGoalPoint = createClearanceMoveGoalPoint(assignment.unit,
+              livePoint.requestedX, livePoint.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable);
+            assignment.unit.moveGoalCell = destination;
+          }
           const goal = assignment.unit.moveGoalPoint && activeMoveGoalPoint(assignment.unit) || centerGoal;
           assignment.path = path;
           assignment.plannedNavigationRevision = navigationRevision;
@@ -5640,7 +5658,7 @@ function enqueueRouteRepairs(repairs, { mode = 'blocked-route-repair', orderLabe
     unit.orderRevision++;
     if (point) {
       unit.moveGoalCell = destination;
-      unit.moveGoalPoint = createMoveGoalPoint(unit, point.requestedX, point.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT);
+      unit.moveGoalPoint = createClearanceMoveGoalPoint(unit, point.requestedX, point.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable);
     }
     if (wallOrder) wallOrder.revision = unit.orderRevision;
     unit.movePlanningPending = true;
@@ -6657,7 +6675,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
       unit.wallBuildOrder = null;
       unit.persistentOrder = null;
       unit.queuedWaypoints.push({ destination, attackMove,
-        ...(precisePoint ? { point: createMoveGoalPoint(unit, centerX, centerZ, destination, MAP_WIDTH, MAP_HEIGHT) } : {}) });
+        ...(precisePoint ? { point: createClearanceMoveGoalPoint(unit, centerX, centerZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable) } : {}) });
       queuedCount++;
       dirty = true;
       return;
@@ -6685,7 +6703,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     unit.attackMoveAnchorZ = unit.z;
     unit.attackMoveScanTick = tickNumber + (unit.id % ATTACK_MOVE_SCAN_INTERVAL_TICKS);
     unit.orderRevision++;
-    unit.moveGoalPoint = precisePoint ? createMoveGoalPoint(unit, centerX, centerZ, destination, MAP_WIDTH, MAP_HEIGHT) : null;
+    unit.moveGoalPoint = precisePoint ? createClearanceMoveGoalPoint(unit, centerX, centerZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable) : null;
     unit.path = [];
     unit.pathIndex = 0;
     const assignment = { unit, destination, revision: unit.orderRevision, path: [] };
@@ -7194,7 +7212,7 @@ function advanceQueuedWaypoints() {
     unit.repathTimer = 0;
     unit.moveGoalCell = destination;
     unit.moveGoalPoint = waypoint.point
-      ? createMoveGoalPoint(unit, waypoint.point.requestedX, waypoint.point.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT) : null;
+      ? createClearanceMoveGoalPoint(unit, waypoint.point.requestedX, waypoint.point.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable) : null;
     const assignment = { unit, destination, revision: unit.orderRevision, path: [] };
     assignments.push(assignment);
     const startCell = nearestOpenCell(worldToCell(unit.x, unit.z));
@@ -8297,6 +8315,7 @@ function simulateTick() {
     }
     if (unit.holdingPosition || unit.pathIndex >= unit.path.length) continue;
     let remainingStep = UNIT_DEFINITIONS[unit.kind].combat.moveSpeed * STEP_SECONDS;
+    const clearanceRadius = ordinaryMoveBodyRadius(unit);
     let allowLocalDetour = true;
     while (remainingStep > 0 && unit.pathIndex < unit.path.length) {
       const move = getMoveVector(unit, remainingStep, allowLocalDetour);
@@ -8312,7 +8331,9 @@ function simulateTick() {
       // snap must obey the same corner/elevation guard as every other step.
       if (!isWalkable(worldToCell(move.target.x, move.target.z))
         || (move.reachedWaypoint && !canTraverseUnitStep(worldToCell(unit.x, unit.z),
-          worldToCell(move.target.x, move.target.z), MAP_WIDTH, elevationLevelByCell, isWalkable))) {
+          worldToCell(move.target.x, move.target.z), MAP_WIDTH, elevationLevelByCell, isWalkable))
+        || (move.reachedWaypoint && clearanceRadius && !canTraverseStaticBodySegment(unit, move.target,
+          clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {
         if (unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0) {
           unit.path = [];
           unit.pathIndex = 0;
@@ -8348,7 +8369,9 @@ function simulateTick() {
         else { rejectAutomaticTarget(unit, units[unit.attackTargetId]); clearAttackTarget(unit); }
         break;
       }
-      if (canTraverseUnitStep(currentCell, nextCell, MAP_WIDTH, elevationLevelByCell, isWalkable)) {
+      if (canTraverseUnitStep(currentCell, nextCell, MAP_WIDTH, elevationLevelByCell, isWalkable)
+        && (!clearanceRadius || canTraverseStaticBodySegment(unit, { x: nextX, z: nextZ },
+          clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {
         unit.x = nextX;
         unit.z = nextZ;
       } else {
@@ -8358,7 +8381,9 @@ function simulateTick() {
         const fallbackX = unit.x + (targetX / length) * move.stepDistance;
         const fallbackZ = unit.z + (targetZ / length) * move.stepDistance;
         if (canTraverseUnitStep(currentCell, worldToCell(fallbackX, fallbackZ),
-          MAP_WIDTH, elevationLevelByCell, isWalkable) && automaticPositionAllowed(unit, fallbackX, fallbackZ)) {
+          MAP_WIDTH, elevationLevelByCell, isWalkable) && automaticPositionAllowed(unit, fallbackX, fallbackZ)
+          && (!clearanceRadius || canTraverseStaticBodySegment(unit, { x: fallbackX, z: fallbackZ },
+            clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {
           unit.x = fallbackX;
           unit.z = fallbackZ;
         } else {
