@@ -3,6 +3,7 @@ import * as economyProfile from '../src/economy-profile.mjs';
 import { creditResourceBalance } from '../src/economy-ledger.mjs';
 import * as workIntent from '../src/work-intent.mjs';
 import { shortcutFlatUnitPath } from '../src/unit-path-line.mjs';
+import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 export const economyServerFunctions = source.slice(source.indexOf('function matchEconomyProfileId('),
@@ -10,6 +11,16 @@ export const economyServerFunctions = source.slice(source.indexOf('function matc
 export function economyServerBindings(profileId = economyProfile.DEFAULT_ECONOMY_PROFILE_ID) {
   return { ...economyProfile, ...workIntent, creditResourceBalance, teamStone: [0, 0], automaticTargetRejections: new WeakMap(),
     mapDefinition: { economyProfileId: profileId } };
+}
+
+// Geometry-mutating extracted authority bodies use the real private cache and
+// production invalidation, rather than silently retaining stale seat coverage.
+const visionStart = source.indexOf('function invalidateVisionCoverage(');
+const visionEnd = source.indexOf('\nfunction activateMap(', visionStart);
+if (visionStart < 0 || visionEnd <= visionStart) throw new Error('Missing production vision invalidation function');
+export const visionServerFunctions = source.slice(visionStart, visionEnd);
+export function visionServerBindings() {
+  return { VisionCoverageCache, visionCoverageGeneration: 0, visionCoverageBySourceCell: null };
 }
 
 // Geometry for isolated route/deposit policy fixtures. Use the real segment

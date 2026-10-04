@@ -9,6 +9,7 @@ import { createUnitSpriteRuntime } from '../src/unit-sprite-runtime.mjs';
 import { isShoreFish } from '../src/shore-fishing.mjs';
 import { WATER_LEVEL } from '../src/water-surface-geometry.mjs';
 import { decodeRgba8 } from './sprite-pixel-bounds.mjs';
+import { resourcePickingBindings, resourcePickingFunctionSource } from './resource-picking-fixture-bindings.mjs';
 
 const map = JSON.parse(readFileSync(new URL('../maps/shore-fishing.json', import.meta.url)));
 const pack = JSON.parse(readFileSync(new URL('../assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json', import.meta.url)));
@@ -110,17 +111,38 @@ test('bank ring and water glyph pick the same land resource, retaining current f
   const camera = new THREE.OrthographicCamera(-7, 7, 4.375, -4.375, .1, 100);
   camera.position.set(-2.7, 11.2, 17.3); camera.lookAt(-10.5, 0, 9.5); camera.updateMatrixWorld(true);
   const fog = new Uint8Array(map.width * map.height).fill(2);
-  const context = vm.createContext({ THREE, isShoreFish, localTeam: 0, mapDefinition: map,
+  const context = vm.createContext({ ...resourcePickingBindings(), THREE, isShoreFish, localTeam: 0, mapDefinition: map,
     MAP_WIDTH: map.width, MAP_HEIGHT: map.height, camera, screenPoint: new THREE.Vector3(),
     resourceNodeVisuals: new Map([[node.id, { fishingWater: water }]]), latestBuildings: [], latestResourceStocks: new Map(),
-    latestFogCells: fog, farmHarvestNode: () => null, wildlifeRenderer: { isAvailable: () => true },
+    latestFogCells: fog, wildlifeRenderer: { isAvailable: () => true },
     groundHeight: () => 0, renderer: { domElement: { getBoundingClientRect: () => ({ width: 1280, height: 800 }) } },
   });
-  vm.runInContext(main.slice(main.indexOf('function pickResourceNodeAt('), main.indexOf('function pickForestCellAt(')), context);
+  vm.runInContext(resourcePickingFunctionSource(main), context);
   const screen = point => { const p = new THREE.Vector3(point.x, .22, point.z).project(camera); return [(p.x*.5+.5)*1280,(-p.y*.5+.5)*800]; };
   assert.equal(context.pickResourceNodeAt(...screen(node)), node);
   assert.equal(context.pickResourceNodeAt(...screen(water)), node);
   fog[water.row * map.width + water.column] = 0;
   assert.equal(context.pickResourceNodeAt(...screen(water), { visibleOnly: true }), null);
   assert.equal(context.pickResourceNodeAt(...screen(node), { visibleOnly: true }), node);
+  // A real body hit outside the point radius must exercise the new Farm branch.
+  const farm = { id: 77, type: 'farm', team: 0, complete: true, hp: 600,
+    x: node.x + 4, z: node.z, harvestStock: 200 };
+  const geometry = new THREE.BoxGeometry(3, 2, 3), material = new THREE.MeshBasicMaterial();
+  const group = new THREE.Group(); group.position.set(farm.x, 1, farm.z);
+  group.add(new THREE.Mesh(geometry, material));
+  context.latestBuildings.push(farm); context.buildingVisuals.set(farm.id, { group });
+  try {
+    const point = new THREE.Vector3(farm.x + 1.2, 1, farm.z).project(camera);
+    const body = [(point.x * .5 + .5) * 1280, (-point.y * .5 + .5) * 800];
+    assert.ok(Math.hypot(body[0] - screen(farm)[0], body[1] - screen(farm)[1]) > 26);
+    assert.equal(context.pickResourceNodeAt(...body).id, 'farm:77');
+    farm.harvestStock = 0;
+    assert.equal(context.pickResourceNodeAt(...body).stock, 0, 'authority retains the exhausted stock refusal');
+    farm.team = 1; assert.equal(context.pickResourceNodeAt(...body), null);
+    farm.team = 0; farm.complete = false; assert.equal(context.pickResourceNodeAt(...body), null);
+    farm.complete = true; group.visible = false;
+    assert.equal(context.pickResourceNodeAt(...body, { visibleOnly: true }), null);
+    group.visible = true;
+    assert.equal(context.pickResourceNodeAt(...body, { ownedWildlifeOnly: true }), null);
+  } finally { geometry.dispose(); material.dispose(); }
 });
