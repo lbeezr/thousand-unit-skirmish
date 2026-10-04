@@ -55,6 +55,7 @@ export function normalizeRoomLaunchOptions(value) {
   }
   const matchMode = explicitMatchMode(value);
   if (mode === 'pve' && !matchModeDefinition(matchMode).pveSupported) {
+    if (matchMode.matchModeId === 'bannerfall') throw new TypeError('Bannerfall supports human matches and Practice; its AI is not implemented.');
     throw new TypeError('Skirmish does not support PvE until its base-elimination AI is accepted.');
   }
   const hasMapSeed = Object.hasOwn(value, 'mapSeed');

@@ -96,6 +96,7 @@ export async function createFortifiedFixture({ mapPath = 'maps/fortified-crossin
     throw new Error(`Checkpoint timeout: ${logs}`);
   }
   return { port, directory, checkpointPath, start, stop, connect, checkpoint,
+    get logs() { return logs; },
     async health() { return (await fetch(`http://127.0.0.1:${port}/health`)).json(); },
     async dispose() { await stop(); await rm(directory, { recursive: true, force: true }); } };
 }
