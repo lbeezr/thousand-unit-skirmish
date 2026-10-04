@@ -108,5 +108,29 @@
       "artifact": "default-phase.json.gz",
       "sha256": "45f1701f6f213960e985f115d0bc6d1da01095950d1958db59d660be43a9cac2"
     }
-  ]
+  ],
+  "integration": {
+    "testedHead": "fef8bbc91defcc387b2f81033ab62e590ca7e26f",
+    "integratedMain": "384ac60cb56f372d6e6cfa75a187b0e1eeb5e548",
+    "serverSha256": "35e33dbb45fce3eda75305bff2a25ab6770e34d093ad16656f23940bcc336af2",
+    "focusedTests": 52,
+    "failed": 0,
+    "bannerfallRulesIncluded": true,
+    "types": true,
+    "docs": true,
+    "whitespace": true,
+    "planningAndOuterTickBodiesMatchQualifiedSource": [
+      "scheduleNextMovePlanning",
+      "serviceMovePlanningForTick",
+      "applyPlannedMoveAssignment",
+      "completeMovePlanningJob",
+      "processMovePlanningSlice",
+      "takeMoveStartBroadcastRequest",
+      "runSimulationTick"
+    ],
+    "innerSimulationMatchesCurrentMain": true,
+    "diagnosticPayloadBodyMatchesQualifiedSource": true,
+    "fixtureConflictResolution": "Preserve main logs getter together with the optional tickSamples health argument.",
+    "limitation": "Integrated main adds Bannerfall branches to inner simulation; prior native timings remain attributed to61156a1c, not this later source."
+  }
 }

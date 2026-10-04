@@ -125,6 +125,14 @@ retains three matching pairs and Stop cancellation. These checks use the same
 records identities and artifact hashes. Replay cost observations are not used
 to override the failed native whole-tick qualification.
 
+Integration against fork main `384ac60c` resolves the shared fixture conflict by
+keeping both its new `logs` getter and the optional raw-sample health argument.
+52 focused tests (including Bannerfall rules), both checked boundaries and docs
+pass at `fef8bbc9`. Seven planner/outer-tick bodies and the diagnostic payload
+body match the qualified source; inner `simulateTick` matches current main.
+Current main adds Bannerfall guards to that inner body, so the historical native
+timings remain attributed to `61156a1c`, not the later integration source.
+
 Independent read-only review at `abcdc23e` and `61156a1c` resolves both original
 measurement findings: both seats/resources must keep depositing, and casualty/
 economy witnesses must align with the exact captured end tick. The legacy
