@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mapVictoryRule, objectiveSummary, rememberNotice } from '../src/objective-summary.mjs';
 import { readFileSync } from 'node:fs';
+import { effectiveMapForMatchMode } from '../src/match-modes.mjs';
 const map = { victoryMode: 'all', victoryHoldSeconds: 30, triggers: [
   { id: 'gate', name: 'North gate', requiredUnits: 2 },
   { id: 'keep', name: 'Keep', requiredUnits: 3, requiresAll: ['gate'], victory: true },
@@ -66,6 +67,36 @@ test('a non-victory deadline coexists with elimination and remains an explicit r
   assert.equal(rule.label, 'Elimination + Deadline');
   assert.match(rule.description, /no living land units/);
   assert.match(rule.description, /At 1:30, the current owner of Supply wins; unclaimed is a draw/);
+});
+const bannerfall = effectiveMapForMatchMode(
+  JSON.parse(readFileSync(new URL('../maps/bannerfall-arena.json', import.meta.url))),
+  { matchModeId: 'bannerfall', matchModeVersion: 1 });
+test('Bannerfall explains designated strongholds, bounded waves and kill evolution without capture or elimination instructions', () => {
+  const rule = mapVictoryRule(bannerfall);
+  assert.equal(rule.label, 'Bannerfall');
+  assert.match(rule.description, /Destroy the enemy original Town Center to win/);
+  assert.match(rule.description, /both on the same combat tick is a draw/);
+  assert.match(rule.description, /waves of up to two troops.*every 15 seconds.*12 supply per side/i);
+  assert.match(rule.description, /Six enemy troop kills unlock Rider reinforcements/);
+  assert.match(rule.description, /Blocked or capped waves are skipped/);
+  assert.match(rule.description, /Other buildings cannot replace the stronghold/);
+  assert.doesNotMatch(rule.description, /capture|eliminat|deadline/i);
+  for (const team of [0, 1]) {
+    for (const started of [false, true]) {
+      const summary = objectiveSummary(bannerfall, [], { team, started, elapsed: 901,
+        hold: { activeTeams: [true, true], progressSeconds: [10, 10] } });
+      assert.match(summary.action, /^Bannerfall · Destroy the enemy original Town Center/);
+      assert.match(summary.action, /Waves 15s.*Riders at 6 kills/);
+      assert.doesNotMatch(summary.action, /capture|eliminat|deadline/i);
+      assert.equal(summary.urgent, '', 'an inherited hold/deadline cannot promise a Bannerfall capture win');
+    }
+  }
+});
+test('Bannerfall terminal text replaces ongoing reinforcement instructions', () => {
+  for (const [winner, action] of [[0, 'Azure wins'], [1, 'Ember wins'], [2, 'Match drawn']]) {
+    assert.deepEqual(objectiveSummary(bannerfall, [], { team: 0, winner, started: true, elapsed: 30 }),
+      { action, urgent: '' });
+  }
 });
 test('recent repeated feedback is grouped without discarding different rejections', () => {
   let history = rememberNotice([], 'NEED WOOD', 0);

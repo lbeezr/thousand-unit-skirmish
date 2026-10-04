@@ -68,6 +68,59 @@ test('room index v3 persists complete options and migrates v1 rooms to PvP defau
 const authored = { matchModeId: 'authored', matchModeVersion: 1 };
 const objective = { matchModeId: 'objective-control', matchModeVersion: 1 };
 const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
+const bannerfall = { matchModeId: 'bannerfall', matchModeVersion: 1 };
+
+test('Bannerfall human and Practice launches carry only explicit mode identity and preserve ordinary defaults', () => {
+  const inherited = { KEEP_ME: 'yes', RTS_GAME_MODE: 'pve', RTS_PVE_MAP_SEED: '3', RTS_PVE_POLICY_SEED: '4',
+    RTS_MATCH_MODE_ID: 'skirmish', RTS_MATCH_MODE_VERSION: '99', RTS_SOLO_PRACTICE: '1', RTS_PREGAME: '1' };
+  const before = { ...inherited };
+  for (const [options, expected] of [
+    [{ mode: 'pvp', pregame: true, ...bannerfall }, { KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp', RTS_PREGAME: '1',
+      RTS_MATCH_MODE_ID: 'bannerfall', RTS_MATCH_MODE_VERSION: '1', RTS_MAP: 'maps/bannerfall-arena.json' }],
+    [{ mode: 'pvp', practice: true, ...bannerfall }, { KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp', RTS_SOLO_PRACTICE: '1',
+      RTS_MATCH_MODE_ID: 'bannerfall', RTS_MATCH_MODE_VERSION: '1', RTS_MAP: 'maps/bannerfall-arena.json' }],
+    [{ mode: 'pvp', ...bannerfall }, { KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp',
+      RTS_MATCH_MODE_ID: 'bannerfall', RTS_MATCH_MODE_VERSION: '1', RTS_MAP: 'maps/bannerfall-arena.json' }],
+  ]) {
+    assert.deepEqual(normalizeRoomLaunchOptions(options), options);
+    assert.deepEqual(completeRoomLaunchOptions(options), options);
+    assert.deepEqual(buildRoomWorkerEnvironment(inherited, options), expected);
+    const room = { id: roomId, createdAt: 1, lastActiveAt: 2, launchOptions: options,
+      mapId: 'bannerfall-arena', ...bannerfall };
+    const index = roomIndexDocument([room]);
+    assert.deepEqual(normalizeRoomIndex(index), index);
+    assert.deepEqual(roomResponseMetadata(room), { launchOptions: options, mapId: 'bannerfall-arena',
+      ...bannerfall, roomMetadata: { mapId: 'bannerfall-arena', ...bannerfall } });
+  }
+  assert.deepEqual(inherited, before);
+  assert.deepEqual(normalizeRoomLaunchOptions(), { mode: 'pvp' });
+  assert.deepEqual(buildRoomWorkerEnvironment(inherited, {}), {
+    KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp', RTS_MAP: 'maps/bellweather-millrace.json',
+  });
+  assert.throws(() => normalizeRoomLaunchOptions({ pregame: true, practice: true, ...bannerfall }), /Practice starts/);
+});
+
+test('Bannerfall rejects AI before seed generation with its own capability explanation', () => {
+  let generated = 0;
+  for (const options of [{ mode: 'pve', ...bannerfall }, { mode: 'pve', mapSeed: 3, policySeed: 4, ...bannerfall }]) {
+    assert.throws(() => completeRoomLaunchOptions(options, () => generated++), error =>
+      /Bannerfall supports human matches and Practice; its AI is not implemented/.test(error.message)
+        && !/Skirmish|base-elimination/.test(error.message));
+    assert.throws(() => buildRoomWorkerEnvironment({}, options), /Bannerfall.*AI is not implemented/);
+  }
+  assert.equal(generated, 0);
+  assert.throws(() => normalizeRoomLaunchOptions({ matchModeId: 'bannerfall' }), /requires both/);
+  assert.throws(() => normalizeRoomLaunchOptions({ ...bannerfall, matchModeVersion: 2 }), /Unsupported matchModeVersion/);
+});
+
+test('Bannerfall room preset overrides an inherited map while ordinary rooms retain it', () => {
+  const inherited = { RTS_MAP: 'maps/bellweather-millrace.json' };
+  assert.equal(buildRoomWorkerEnvironment(inherited, { mode: 'pvp', ...bannerfall }).RTS_MAP,
+    'maps/bannerfall-arena.json');
+  assert.equal(buildRoomWorkerEnvironment(inherited, { mode: 'pvp' }).RTS_MAP,
+    'maps/bellweather-millrace.json');
+  assert.deepEqual(inherited, { RTS_MAP: 'maps/bellweather-millrace.json' });
+});
 
 test('explicit paired match modes preserve human launch settings and reject invalid identities', () => {
   for (const identity of [authored, objective, skirmish]) {

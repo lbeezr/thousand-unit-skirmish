@@ -21,6 +21,7 @@ the newest default. Registry descriptors expose `id`, `version`, `label`,
 | `authored@1` | Any validated authored map; hidden legacy identity | Exact authored capture, hold, deadline or elimination combination. Existing capture-post AI remains the current behavior. |
 | `objective-control@1` | Validated maps with at least one marked victory post | Exact authored rules and timers. `aiStrategyId: capture-posts`; existing curated PvE map restrictions still apply. |
 | `skirmish@1` | Tiny `veyrholds-terraced-vale` and reviewed Small `veyrholds-threefold-basin`; historical Millrace/Rootways remain compatible for recovery and explicit fixtures | `victoryPolicy: recovery-elimination`, `aiStrategyId: base-elimination`. Human PvP and explicit solo Practice supported. `pveSupported: false` until mode-specific AI acceptance. |
+| `bannerfall@1` | Shipped `bannerfall-arena` | Original reinforcement prototype: `victoryPolicy: designated-stronghold`, `aiStrategyId: unsupported`, `pveSupported:false`. Human PvP/Practice only; `defaultMapId` chooses its arena and `fixedArmySize:16` keeps the eight-Infantry opening. [Exact rules](bannerfall-mode.md). |
 
 The hidden identity preserves elimination-only Lab maps and unusual legacy
 hybrids without calling them Objective Control. New selectors offer compatible
@@ -122,6 +123,8 @@ Current exports in `src/match-modes.mjs`: `normalizeMatchMode(value)`,
 Compatibility returns an immutable descriptor or throws; projection returns an
 independent clone. Catalog includes hidden authored plus compatible/supported
 choices. `options` contains existing opponent `mode` and explicit `practice`.
+Mode-specific descriptors may expose `defaultMapId` and `fixedArmySize`; consumers
+must honor fixed openings rather than offering incompatible Lab army sizes.
 The registry, room launch, pregame model, effective simulation map and checkpoint
 recovery use this contract. The HTTP allowlist admits the browser-safe registry
 for the lobby consumer. The AI policy factory consumes the effective pair on

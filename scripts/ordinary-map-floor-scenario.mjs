@@ -45,15 +45,17 @@ try {
   assert.deepEqual(mode(root.welcome), NORMAL_HUMAN_MATCH_MODE);
   assert.ok(root.welcome.maps.every(row => row.width >= 160 && row.height >= 160 && row.selectable));
   assert.deepEqual(root.welcome.maps.map(row => row.id).sort(),
-    ['frontier-160', NORMAL_MATCH_MAP_ID, 'veyrholds-threefold-basin', 'woodland-expanse'].sort());
+    ['bannerfall-arena', 'frontier-160', NORMAL_MATCH_MAP_ID, 'veyrholds-threefold-basin', 'woodland-expanse'].sort());
   assert.equal(root.latest.scenarioClockStarted, false);
-  records.push({ name: 'Unconfigured root and fresh status use Tiny Skirmish; three real Tiny maps and reviewed Small are ordinary choices; XL remains unavailable' });
+  records.push({ name: 'Unconfigured root and fresh status use Tiny Skirmish; only actual Tiny/Bannerfall/Small maps are ordinary choices; XL remains unavailable' });
 
   const created = await create({ mode: 'pvp', pregame: true });
   assert.deepEqual(created.launchOptions, { mode: 'pvp', pregame: true, ...NORMAL_HUMAN_MATCH_MODE });
   const host = await fixture.connect(0, null, created.roomId), guest = await fixture.connect(1, null, created.roomId);
   assert.equal(host.welcome.map.id, NORMAL_MATCH_MAP_ID);
   await ready(host); await ready(guest);
+  await host.wait(row => row.type === 'lobby' && row.lobby.canLaunch
+    && row.lobby.seats.filter(seat => seat.connected).every(seat => seat.ready), 'host sees both ready seats');
   const before = structuredClone(lobby(host));
   for (const command of [{ type: 'configureLobby', revision: before.revision, mapId: 'bellweather-millrace', ...authored },
     { type: 'configureLobby', revision: before.revision, mapId: 'stone-defense-field', ...authored }]) {

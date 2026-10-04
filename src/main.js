@@ -4341,7 +4341,8 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
     if (reason === 'timed-control') {
       const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
       detail = `${objectiveName.toUpperCase()} UNCLAIMED AT DEADLINE`;
-    } else if (reason === 'capture-hold') detail = 'BOTH TEAMS COMPLETED THE VICTORY HOLD';
+    } else if (reason === 'stronghold-destruction') detail = 'BOTH ORIGINAL TOWN CENTERS DESTROYED ON THE SAME COMBAT TICK';
+    else if (reason === 'capture-hold') detail = 'BOTH TEAMS COMPLETED THE VICTORY HOLD';
     else detail = 'BOTH ARMIES ELIMINATED';
   } else {
     const teamName = TEAM_NAMES[matchWinner].toUpperCase();
@@ -4349,6 +4350,7 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
     outcome = localTeam === null ? `${teamName} WINS` : localTeam === matchWinner ? 'VICTORY' : 'DEFEAT';
     if (reason === 'elimination') detail = localTeam === matchWinner ? 'ENEMY ELIMINATED'
       : localTeam === null ? `${teamName} WINS · ENEMY ELIMINATED` : 'YOUR ARMY ELIMINATED';
+    else if (reason === 'stronghold-destruction') detail = `${teamName} WINS · ENEMY ORIGINAL TOWN CENTER DESTROYED`;
     else if (reason === 'timed-control') {
       const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
       detail = `${teamName} CONTROLLED ${objectiveName.toUpperCase()} AT DEADLINE`;
@@ -4436,7 +4438,8 @@ function updateCommandUI() {
   for (const button of document.querySelectorAll('[data-persistent-order]')) {
     button.classList.toggle('active', button.dataset.persistentOrder === persistentTargetMode);
     button.setAttribute('aria-pressed', String(button.dataset.persistentOrder === persistentTargetMode));
-    button.disabled = localTeam === null || matchWinner >= 0 || Boolean(wildlife) || Boolean(selectedBuilding) || selectedWaterUnits();
+    button.disabled = localTeam === null || matchWinner >= 0 || selectedIds().length === 0
+      || Boolean(wildlife) || Boolean(selectedBuilding) || selectedWaterUnits();
   }
   if (ui.buildingCommandDetails) ui.buildingCommandDetails.hidden = !selectedBuilding || !buildingSupportsRally(selectedBuilding.type);
   if (ui.buildingRallyReadout) {

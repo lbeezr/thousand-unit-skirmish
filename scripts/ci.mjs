@@ -157,6 +157,7 @@ run(['scripts/hud-action-icons-serving-scenario.mjs'], 'Default HUD action glyph
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
 run(['--test', 'scripts/match-modes.test.mjs', 'scripts/match-mode-controls.test.mjs'], 'Versioned match modes and supported UI choices');
 run(['--test', 'scripts/game-entry.test.mjs', 'scripts/game-navigation.test.mjs', 'scripts/room-presence.test.mjs', 'scripts/practice-entry.test.mjs'], 'Explicit main menu, mode-aware Practice, session entry and room presence');
+run(['--test', 'scripts/bannerfall-rules.test.mjs'], 'Bounded Bannerfall waves, evolution and stronghold rules');
 run(['--test', 'scripts/match-mode-checkpoint.test.mjs'], 'Match mode checkpoint identity and legacy preservation');
 run(['scripts/game-menu-scenario.mjs'], 'Fresh menu matches and protected resume authority');
 run(['--test', 'scripts/room-pregame.test.mjs', 'scripts/room-lobby-ui.test.mjs'], 'Pregame authority and lobby controls');
@@ -310,6 +311,8 @@ const scenarios = [
   ['scripts/elimination-scenario.mjs', 'Terminal elimination and reconnect'],
   ['scripts/victory-elimination-native-scenario.mjs', 'Existing elimination recovery and clock boundaries'],
   ['scripts/match-mode-native-scenario.mjs', 'Skirmish rewards, defeat and versioned recovery'],
+  ['scripts/bannerfall-native-scenario.mjs', 'Bannerfall human waves, evolution, strongholds and recovery'],
+  ['scripts/bannerfall-room-entry-scenario.mjs', 'Bannerfall real human/Practice room entry and fixed settings'],
   ['scripts/persistent-command-scenario.mjs', 'Patrol and Follow authority/recovery'],
   ['scripts/stationary-command-scenario.mjs', 'Stop and hold authority/recovery'],
   ['scripts/queued-waypoint-scenario.mjs', 'Queued waypoint checkpoint recovery'],
