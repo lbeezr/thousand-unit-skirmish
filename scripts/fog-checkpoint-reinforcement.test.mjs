@@ -32,7 +32,7 @@ test('same-tick capture reinforcements retain both seats\' authoritative fog thr
     }
     assert.deepEqual(saved.mapDefinition, initial.mapDefinition);
     assert.equal(saved.mapHash, initial.mapHash);
-    assert.deepEqual([saved.schemaVersion, saved.rulesVersion], [28, 6]);
+    assert.deepEqual([saved.schemaVersion, saved.rulesVersion], [initial.schemaVersion, initial.rulesVersion]);
     assert.deepEqual([saved.matchModeId, saved.matchModeVersion], ['authored', 1]);
     assert.equal(saved.state.matchWinner, -1, 'bonus captures do not change the defeat contract');
     replay.restore(saved);
