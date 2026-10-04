@@ -1,6 +1,7 @@
 import { createPveRoomUrl, mountPveEntry } from './pve-entry.mjs';
 import { createNavigationSettings } from './navigation-settings.mjs';
 import { readAudioSettings } from './audio.mjs';
+import { createPracticeEntryControls } from './practice-entry-controls.mjs';
 import { savedRoomSession, sessionStatusUrl, roomEntryUrl, inviteRoomId, isGameEntry, ROOM_ID_PATTERN, requireEntryAuthentication } from './game-entry-session.mjs';
 
 export async function bootGameEntry({ win = window, fetchImpl = (...args) => win.fetch(...args),
@@ -19,6 +20,8 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
   const status = root.querySelector('#game-menu-status');
   const resume = root.querySelector('#menu-resume');
   const creationButtons = [...root.querySelectorAll('[data-create-game]')];
+  const practiceControls = createPracticeEntryControls({ root: root.querySelector('#practice-mode-setup'), onChange: controls });
+  let practiceSetup = null;
   const join = root.querySelector('#menu-join');
   const joinDialog = doc.querySelector('#menu-join-dialog');
   const settingsDialog = doc.querySelector('#menu-settings-dialog');
@@ -29,6 +32,11 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
   let navigation = createNavigationSettings(localStorage);
   function controls() {
     for (const button of [...creationButtons, join]) button.disabled = busy || !enabled;
+    practiceControls.update(practiceSetup, enabled, busy);
+    root.querySelector('#menu-practice').disabled ||= !practiceControls.supported;
+    root.querySelector('#menu-practice span').textContent = practiceControls.selectedLabel
+      ? `${practiceControls.selectedLabel} · compatible maps · one player, no AI commander`
+      : 'All maps, including labs · one player, no AI commander';
     resume.disabled = busy || !candidate;
     resume.hidden = !candidate;
   }
@@ -53,7 +61,9 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
     try {
       const response = await fetchImpl('/api/rooms/status', { cache: 'no-store' });
       requireEntryAuthentication(response);
-      nextEnabled = response.ok && (await response.json()).enabled === true;
+      const service = response.ok ? await response.json() : null;
+      nextEnabled = service?.enabled === true;
+      if (revision === checkRevision) practiceSetup = service?.practiceSetup || null;
     } catch (error) {
       if (error.status === 401) { authenticationRequired = true; failure = error.message; }
     }
@@ -71,12 +81,13 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
     }
   }
   async function create(mode) {
-    if (busy || !enabled) return;
+    if (busy || !enabled || (mode === 'practice' && !practiceControls.supported)) return;
     const intent = ++intentRevision;
+    const focused = root.contains(doc.activeElement) ? doc.activeElement : null;
     busy = true; controls(); message('Creating a fresh room…');
     try {
       const options = mode === 'pve' ? { mode: 'pve' } : { mode: 'pvp',
-        ...(mode === 'pvp' ? { pregame: true } : {}), ...(mode === 'practice' ? { practice: true } : {}) };
+        ...(mode === 'pvp' ? { pregame: true } : {}), ...(mode === 'practice' ? { practice: true, ...practiceControls.launchOptions } : {}) };
       const response = await fetchImpl('/api/rooms', { method: 'POST',
         headers: { 'content-type': 'application/json' }, body: JSON.stringify(options), cache: 'no-store' });
       requireEntryAuthentication(response);
@@ -86,7 +97,11 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
       const target = mode === 'pve' ? createPveRoomUrl(new URL('/', win.location.href).href, result)
         : roomEntryUrl(win.location.href, result.roomId, { studio: mode === 'studio' });
       navigate(target.href);
-    } catch (error) { if (intent === intentRevision) { busy = false; controls(); message(String(error?.message || 'Room creation failed.')); } }
+    } catch (error) { if (intent === intentRevision) {
+      busy = false; controls(); message(String(error?.message || 'Room creation failed.'));
+      if (focused && !focused.disabled && !doc.querySelector('dialog[open]')
+        && [doc.body, root, focused].includes(doc.activeElement)) focused.focus({ preventScroll: true });
+    } }
   }
   for (const button of creationButtons) button.addEventListener('click', () => void create(button.dataset.createGame));
   resume.addEventListener('click', async () => {

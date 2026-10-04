@@ -27,6 +27,11 @@ html[data-entry="menu"] body { height: auto; min-height: 100dvh; overflow: auto;
 .game-menu-tools button, .game-menu-dialog button { padding: 12px 18px; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); color: var(--ink); cursor: pointer; }
 #game-menu-status { min-height: 2.5em; margin: 0; font-size: 13px; line-height: 1.5; color: var(--lime); overflow-wrap: anywhere; }
 .game-menu-footer { grid-column: 1 / -1; margin: 0; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.5; }
+#practice-mode-setup { padding: 12px 18px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted); background: var(--panel); font-size: 13px; line-height: 1.5; }
+#practice-mode-setup[hidden] { display: none; }
+#practice-mode-setup summary { color: var(--ink); cursor: pointer; }
+#practice-mode-setup select { display: block; box-sizing: border-box; width: 100%; min-height: 40px; padding: 8px; margin-top: 6px; color: var(--ink); background: var(--panel-soft); border: 1px solid var(--line); border-radius: 4px; font: inherit; }
+#practice-mode-setup :is(select, summary):focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
 .game-menu-dialog { width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 28px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); }
 .game-menu-dialog::backdrop { background: #080e0ccc; }
 .game-menu-dialog label { display: block; margin: 20px 0; font-size: 14px; }

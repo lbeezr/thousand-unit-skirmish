@@ -44,6 +44,11 @@
       <section class="game-menu-actions" aria-label="Main menu">
         <button id="menu-new-game" data-create-game="pve" type="button" disabled><strong>New Game</strong><span>Play vs AI · seeded Millrace or Rootways</span></button>
         <button id="menu-practice" data-create-game="practice" type="button" disabled><strong>Practice</strong><span>All maps, including labs · one player, no AI commander</span></button>
+        <details id="practice-mode-setup" hidden><summary>Practice rules</summary>
+          <p data-map></p><label>Victory mode<select id="practice-match-mode" aria-describedby="practice-mode-rule"></select></label>
+          <p id="practice-mode-rule" data-rule></p>
+          <p>Authored Rules keeps lab map access. During play, map choices keep the selected rules; return to Main Menu to choose another mode.</p>
+        </details>
         <button id="menu-create-room" data-create-game="pvp" type="button" disabled><strong>Create Room</strong><span>Invite a friend · Frontier 1v1 pregame lobby</span></button>
         <button id="menu-join" type="button" disabled><strong>Join Room</strong><span>Use a room code or invite link</span></button>
         <button id="menu-resume" type="button" hidden><strong>Resume</strong><span>Return to your saved player session</span></button>
@@ -362,6 +367,7 @@
             </div>
             <div class="size-note">Evenly split between two teams</div>
             <div class="map-picker"><label for="map-select">BATTLEFIELD</label><select id="map-select" aria-label="Battlefield map"><option>Loading maps…</option></select></div>
+            <section id="match-mode-view" aria-label="Active victory rules"></section>
             <button id="map-studio-open" class="map-studio-open" type="button" disabled>MAP STUDIO <span>↗</span></button>
             <a class="map-studio-open" href="./audio-studio.html" target="_blank" rel="noopener">AUDIO STUDIO <span>↗</span></a>
             <a class="map-studio-open building-map-open" href="./building-map.html" target="_blank" rel="noopener">BUILDING VARIANT ATLAS <span>↗</span></a>
