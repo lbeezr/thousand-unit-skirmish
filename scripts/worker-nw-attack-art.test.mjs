@@ -26,7 +26,9 @@ test('NW attack faithfully reuses the actual public NW axe pixels with its own o
   originalClips[index] = receipt.originalAttackClip;
   const family = JSON.parse(readFileSync(new URL(
     '../docs/qa-evidence/worker-land-art-2026-10-04/north-west-actions-preservation.json', import.meta.url)));
-  for (const clip of family.originalReplacedClips) {
+  const east = JSON.parse(readFileSync(new URL(
+    '../docs/qa-evidence/worker-land-art-2026-10-04/wood-east-preservation.json', import.meta.url)));
+  for (const clip of [...family.originalReplacedClips, ...east.originalReplacedClips]) {
     const replaced = originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId);
     originalClips[replaced] = clip;
   }
@@ -41,7 +43,7 @@ test('NW attack faithfully reuses the actual public NW axe pixels with its own o
   assert.equal(pixelHash.digest('hex'), receipt.originalFrameRgbaSha256);
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), receipt.worldUnitsPerPixel);
   assert.deepEqual(asset.clips.filter(c => c.stateId === 'attack' &&
-    c.sequence.some(k => !k.frameId.startsWith('idle-'))).map(c => c.directionId), ['north-west', 'south-east']);
+    c.sequence.some(k => !k.frameId.startsWith('idle-'))).map(c => c.directionId), ['east', 'north-west', 'south-east']);
 });
 
 test('default NW attack starts, advances, clamps and exits on the authored lifetime for either Human seat', async () => {
