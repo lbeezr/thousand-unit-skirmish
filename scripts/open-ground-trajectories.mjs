@@ -58,9 +58,11 @@ try {
     records.push({...spec,runs});
   }
 } finally {await fixture.dispose();}
+let pathLineSha256 = null;
+try { pathLineSha256 = createHash('sha256').update(await readFile(new URL('../src/unit-path-line.mjs',import.meta.url))).digest('hex'); }
+catch(error) { if(error.code !== 'ENOENT')throw error; } // The retained baseline predates this helper.
 const report = {head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
-  serverSha256:fixture.sourceSha256,
-  pathLineSha256:createHash('sha256').update(await readFile(new URL('../src/unit-path-line.mjs',import.meta.url))).digest('hex'),
+  serverSha256:fixture.sourceSha256,pathLineSha256,
   node:process.version,camera:CAMERA_VIEW_DIRECTION,records,
   limits:['real authoritative command/planner/tick bodies with fixed callback drain; no browser pixels or wall-clock capacity claim',
     'one isolated land Infantry; cell-center destination quantization measured separately; crowd/terrain checked by focused suites']};
