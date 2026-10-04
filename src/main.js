@@ -31,6 +31,7 @@ import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls 
 import { createRoomLobby } from './room-lobby-ui.mjs';
 import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel, fixedMatchArmySize } from './match-mode-controls.mjs';
 import { roomPresence } from './room-presence.mjs';
+import { BrowserStateRecovery } from './browser-state-recovery.mjs';
 import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
 import { mountAssetReadability } from './asset-readability.mjs';
@@ -722,6 +723,8 @@ let reconnectTimer = null;
 let reconnectDelayMs = 500;
 let pageLeaving = false;
 let connectionAttempt = 0;
+let socketStartedAt = 0;
+const browserStateRecovery = new BrowserStateRecovery({ visible: document.visibilityState === 'visible' });
 const SESSION_STORAGE_KEY = 'thousand-unit-skirmish-session';
 const ROOM_SESSION_STORAGE_KEY = `${SESSION_STORAGE_KEY}:${ROOM_ID || 'default'}`;
 const ROOM_INSTANCE_STORAGE_KEY = `${SESSION_STORAGE_KEY}:instance:${location.host}:${ROOM_ID || 'default'}`;
@@ -4559,7 +4562,7 @@ function appendUnitFromState(row, animateSpawn = false) {
   return unit;
 }
 
-function applyState(state, initial = false) {
+function applyState(state, initial = false, resuming = false) {
   const tracePanel = document.querySelector('#studio-scenario-diagnostics');
   tracePanel.hidden = !isHost || !Array.isArray(state?.scenarioTrace);
   if (!tracePanel.hidden) document.querySelector('#studio-scenario-trace').textContent = state.scenarioTrace.map(row =>
@@ -4581,7 +4584,7 @@ function applyState(state, initial = false) {
   if (practiceStatus) practiceStatus.hidden = state.practice !== true;
   const matchRestarted = (matchWinner >= 0 && state.winner === -1)
     || (Number.isFinite(state.matchElapsedSeconds) && state.matchElapsedSeconds + 1 < latestMatchElapsedSeconds);
-  const audioReset = initial || (state.armySize && state.armySize !== currentArmySize) || matchRestarted;
+  const audioReset = initial || resuming || (state.armySize && state.armySize !== currentArmySize) || matchRestarted;
   // A same-size rematch drops trained units too. Rebuild render slots and local
   // selection before applying its authoritative roster, including on reconnect.
   if (state.armySize && (state.armySize !== currentArmySize || matchRestarted)) setArmySize(state.armySize);
@@ -4598,7 +4601,7 @@ function applyState(state, initial = false) {
       targetedBy = 0, attackTick = -1, attackX = null, attackZ = null,
       audioExecution = null, workHeading = null, workResourceVariant = null, performingAction = null] = row;
     const existingUnit = units[id];
-    const unit = existingUnit || appendUnitFromState(row, !initial);
+    const unit = existingUnit || appendUnitFromState(row, !initial && !resuming);
     if (!unit || unit.team !== team) continue;
     const generationChanged = Boolean(existingUnit && unit.generation !== generation);
     const wasVisible = unit.visible !== false;
@@ -4637,6 +4640,10 @@ function applyState(state, initial = false) {
     }
     unit.serverX = x;
     unit.serverZ = z;
+    if (resuming) {
+      unit.damageFlashUntil = unit.attackStartedAt = unit.hitStartedAt = unit.spawnStartedAt = unit.defeatStartedAt = 0;
+      unit.walking = false;
+    }
     unit.workHeading = Number.isFinite(workHeading) ? workHeading : null;
     // Clear on every snapshot, including legacy rows, travel, Stop and recovery.
     unit.workResourceVariant = kind === 'worker' && taskStatus === 'gathering'
@@ -4665,12 +4672,12 @@ function applyState(state, initial = false) {
     }
     if (unit.hp !== hp) {
       cargoVisualMayChange = true;
-      const tookDamage = hp < unit.hp && hp > 0;
+      const tookDamage = !audioReset && hp < unit.hp && hp > 0;
       if (!audioReset && hp < unit.hp && unit.team === localTeam) {
         friendlyDamage++;
         if (selected.has(id)) selectedDamage++;
       }
-      const defeated = unit.hp > 0 && hp <= 0;
+      const defeated = !audioReset && unit.hp > 0 && hp <= 0;
       const damageAt = performance.now();
       unit.hp = hp;
       unit.damageFlashUntil = tookDamage ? damageAt + 220 : 0;
@@ -4683,7 +4690,7 @@ function applyState(state, initial = false) {
     }
     if (Number.isInteger(attackTick) && attackTick >= 0 && attackTick !== unit.lastPlayedAttackTick) {
       unit.lastPlayedAttackTick = attackTick;
-      if (!initial && unit.hp > 0 && unit.visible !== false) {
+      if (!audioReset && unit.hp > 0 && unit.visible !== false) {
         const now = performance.now();
         unit.attackStartedAt = now;
         if (Number.isFinite(attackX) && Number.isFinite(attackZ)) {
@@ -4702,7 +4709,7 @@ function applyState(state, initial = false) {
       updateUnitTransform(unit);
       changed = true;
     }
-    if (initial || !wasVisible) {
+    if (initial || resuming || !wasVisible) {
       unit.renderX = x;
       unit.renderZ = z;
       updateUnitTransform(unit);
@@ -5202,6 +5209,15 @@ function updateRoomUI(connected) {
   ui.connectionDot.classList.toggle('waiting', presence.waiting);
   ui.matchStatus.classList.remove('offline');
   ui.matchStatus.classList.toggle('waiting', presence.waiting);
+  showBrowserRecoveryStatus();
+}
+
+function showBrowserRecoveryStatus() {
+  const status = browserStateRecovery.status(performance.now());
+  if (!status || !socket || socket.readyState !== WebSocket.OPEN) return;
+  ui.networkStatus.textContent = status;
+  ui.networkStatus.parentElement.dataset.urgent = String(status !== 'BACKGROUND');
+  ui.connectionDot.classList.add('waiting');
 }
 
 function setConnection(status) {
@@ -7382,11 +7398,17 @@ function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
     audio.play('send');
     return token;
   }
-  finishOrderStatus(token, 'ORDER NOT SENT · CONNECTION OFFLINE', 'failed');
+  finishOrderStatus(token, browserStateRecovery.recovering
+    || browserStateRecovery.status(performance.now()) === 'SERVER NOT ADVANCING'
+    ? 'ORDER NOT SENT · WAITING FOR CURRENT SERVER STATE' : 'ORDER NOT SENT · CONNECTION OFFLINE', 'failed');
   return null;
 }
 
 function sendCommand(command) {
+  if (browserStateRecovery.recovering || browserStateRecovery.status(performance.now()) === 'SERVER NOT ADVANCING') {
+    showToast('WAITING FOR CURRENT SERVER STATE · ORDER NOT SENT');
+    return false;
+  }
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     showToast('SERVER CONNECTION IS OFFLINE');
     audio.playEvent({ cue: 'reject' });
@@ -8553,6 +8575,11 @@ let cursorShift = false;
 let lastCursorSample = 0;
 let drag = null;
 let pan = null;
+let capturedCanvasPointerId = null;
+function captureBattlefieldPointer(pointerId) {
+  capturedCanvasPointerId = pointerId;
+  renderer.domElement.setPointerCapture(pointerId);
+}
 let spaceDown = false;
 let spaceCenterPending = false;
 let movedPointer = false;
@@ -8634,7 +8661,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
     mapFitActive = false;
     pan = { x: event.clientX, y: event.clientY };
     syncBattlefieldCursor();
-    renderer.domElement.setPointerCapture(event.pointerId);
+    captureBattlefieldPointer(event.pointerId);
     event.preventDefault();
     return;
   }
@@ -8648,7 +8675,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
       cursorPointer = { x: event.clientX, y: event.clientY }; cursorShift = event.shiftKey;
       if (wallPlacementGesture.begin(event.pointerId, wallPointerCell(event.clientX, event.clientY))) {
         renderer.domElement.focus({ preventScroll: true });
-        renderer.domElement.setPointerCapture(event.pointerId);
+        captureBattlefieldPointer(event.pointerId);
         updateBuildPlacementGhost(event.clientX, event.clientY);
       }
     } else submitBuildPlacement(event.clientX, event.clientY);
@@ -8657,14 +8684,14 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
   if (tapOrderArmed) {
     event.preventDefault();
     tapOrderPointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
-    renderer.domElement.setPointerCapture(event.pointerId);
+    captureBattlefieldPointer(event.pointerId);
     return;
   }
   renderer.domElement.focus({ preventScroll: true });
   drag = { startX: x, startY: y, currentX: x, currentY: y, additive: event.shiftKey };
   movedPointer = false;
   syncBattlefieldCursor();
-  renderer.domElement.setPointerCapture(event.pointerId);
+  captureBattlefieldPointer(event.pointerId);
   selectionBox.style.display = 'block';
   selectionBox.dataset.mode = 'window';
   selectionBox.style.left = `${x}px`;
@@ -8725,6 +8752,7 @@ renderer.domElement.addEventListener('pointermove', (event) => {
 });
 
 function finishPointer(event) {
+  if (capturedCanvasPointerId === event.pointerId) capturedCanvasPointerId = null;
   if (wallPlacementGesture.owner === event.pointerId) {
     cursorShift = event.shiftKey;
     const points = wallPlacementGesture.finish(event.pointerId, wallPointerCell(event.clientX, event.clientY), event.type === 'pointerup' && event.button === 0);
@@ -9559,7 +9587,7 @@ window.addEventListener('keyup', (event) => {
     }
   }
 });
-window.addEventListener('blur', () => {
+function clearSuspendedInput() {
   resetWallPlacement(buildPlacementPending);
   cursorPointer = null;
   cursorShift = false;
@@ -9568,20 +9596,66 @@ window.addEventListener('blur', () => {
   spaceCenterPending = false;
   clearHeldCameraKeys();
   pan = null;
+  drag = null;
+  selectionBox.style.display = 'none';
+  selectionBox.removeAttribute('data-mode');
+  tapOrderPointer = null;
+  const capturedPointer = capturedCanvasPointerId;
+  capturedCanvasPointerId = null;
+  if (capturedPointer !== null && renderer.domElement.hasPointerCapture(capturedPointer)) {
+    renderer.domElement.releasePointerCapture(capturedPointer);
+  }
+  if (minimapPointerId !== null && minimapCanvas.hasPointerCapture(minimapPointerId)) {
+    minimapCanvas.releasePointerCapture(minimapPointerId);
+  }
+  minimapPointerId = null;
   edgeScrollPointer = null;
   syncBattlefieldCursor();
   lastControlGroupRecall = null;
   lastFriendlyUnitClick = null;
   lastUnitPickState = null;
-});
+}
+window.addEventListener('blur', clearSuspendedInput);
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') {
-    resetWallPlacement(buildPlacementPending);
-    spaceDown = false;
-    spaceCenterPending = false;
-    edgeScrollPointer = null;
-    clearHeldCameraKeys();
+    clearSuspendedInput();
+    browserStateRecovery.suspend();
+  } else {
+    resumeBrowserPresentation();
   }
+});
+document.addEventListener('freeze', () => { clearSuspendedInput(); browserStateRecovery.suspend(); });
+document.addEventListener('resume', () => {
+  if (document.visibilityState === 'visible') resumeBrowserPresentation();
+});
+
+function resumeBrowserPresentation() {
+  clearSuspendedInput();
+  browserStateRecovery.resume(performance.now());
+  if (!socket && !pageLeaving && reconnectTimer === null) scheduleReconnect(0, false);
+  serviceBrowserRecovery();
+}
+
+function serviceBrowserRecovery() {
+  if (pageLeaving || !socket || document.visibilityState !== 'visible') return;
+  if (!browserStateRecovery.epoch && performance.now() - socketStartedAt >= 10000) {
+    if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) socket.close(4002, 'Welcome timed out');
+    return;
+  }
+  if (socket.readyState !== WebSocket.OPEN) return;
+  const action = browserStateRecovery.poll(performance.now());
+  if (action?.type === 'reconnect') {
+    setConnection('CONNECTION UNRESPONSIVE · RECONNECTING');
+    // Do not replace the socket until its close event releases the old seat.
+    socket.close(4002, 'State refresh timed out');
+  } else if (action) socket.send(JSON.stringify(action));
+  showBrowserRecoveryStatus();
+}
+function canPresentLiveFeedback() {
+  return document.visibilityState === 'visible' && !browserStateRecovery.recovering;
+}
+window.addEventListener('online', () => {
+  if (document.visibilityState === 'visible') resumeBrowserPresentation();
 });
 document.addEventListener('focusin', (event) => {
   if (!selectionCenterShortcutAllowed(event)) spaceCenterPending = false;
@@ -10255,7 +10329,7 @@ async function connect() {
       return;
     }
     try {
-      const response = await fetch(`/api/rooms/${encodeURIComponent(ROOM_ID)}`, { cache: 'no-store' });
+      const response = await fetch(`/api/rooms/${encodeURIComponent(ROOM_ID)}`, { cache: 'no-store', signal: AbortSignal.timeout(10000) });
       if (pageLeaving || attempt !== connectionAttempt) return;
       if (response.status === 401) {
         setConnection('SIGN-IN REQUIRED'); showToast(AUTHENTICATION_MESSAGE.toUpperCase(), 6000); return;
@@ -10276,7 +10350,7 @@ async function connect() {
     try {
       const token = sessionStorage.getItem(ROOM_SESSION_STORAGE_KEY);
       const response = await fetch(`/api/session${HAS_ROOM_PARAMETER ? `?room=${encodeURIComponent(ROOM_ID)}` : ''}`, {
-        headers: { 'x-rts-resume-token': token || '' }, cache: 'no-store',
+        headers: { 'x-rts-resume-token': token || '' }, cache: 'no-store', signal: AbortSignal.timeout(10000),
       });
       if (pageLeaving || attempt !== connectionAttempt) return;
       if (response.status === 401) {
@@ -10315,6 +10389,7 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
   if (savedToken) websocketProtocols.push(`rts-resume.${savedToken}`);
   const connection = new WebSocket(url, websocketProtocols);
   socket = connection;
+  socketStartedAt = performance.now();
   connection.addEventListener('open', () => {
     if (localTeam === null) ui.networkStatus.textContent = 'CONNECTED · SYNCING';
   });
@@ -10376,6 +10451,11 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
       }
       if (mapChanged || message.state.armySize !== currentArmySize) setArmySize(message.state.armySize);
       applyState(message.state, true);
+      browserStateRecovery.visible = document.visibilityState === 'visible';
+      browserStateRecovery.reset(message.state, performance.now());
+      browserStateRecovery.pending = null; // welcome was applied above
+      browserStateRecovery.snap = false;
+      if (document.visibilityState !== 'visible') browserStateRecovery.suspend();
       if (joinedSeat) {
         mapFitActive = false;
         zoom = Math.max(cameraMinZoom, defaultCameraZoom);
@@ -10423,9 +10503,14 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
       cameraTarget.set(0, 0, 0);
       resize();
       applyState(message.state, true);
+      browserStateRecovery.visible = document.visibilityState === 'visible';
+      browserStateRecovery.reset(message.state, performance.now());
+      browserStateRecovery.pending = null;
+      browserStateRecovery.snap = false;
+      if (document.visibilityState !== 'visible') browserStateRecovery.suspend();
       return;
     }
-    if (message.type === 'state') { applyLobby(message.lobby); applyState(message); return; }
+    if (message.type === 'state' || message.type === 'stateRefresh') { browserStateRecovery.receive(message, performance.now()); return; }
     if (message.type === 'lobby') { applyLobby(message.lobby); return; }
     if (message.type === 'lobbyChat') { roomLobby.updateChat(message.messages, message.ack); return; }
     if (message.type === 'lobbyChatRejected') { roomLobby.rejectChat(message.message, message.clientMessageId); return; }
@@ -10436,22 +10521,25 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
       return;
     }
     if (message.type === 'waypointQueueCounts') {
-      applyWaypointQueueCounts(message.rows);
+      browserStateRecovery.receiveWaypointCounts(message.rows);
       return;
     }
     if (message.type === 'room') { updateRoomUI(message.connected); return; }
     if (message.type === 'trigger') {
+      if (!canPresentLiveFeedback()) return;
       audio.playEvent({ cue: localTeam !== null && message.team !== localTeam ? 'objective-lost' : 'objective' });
       showToast(message.message, 2400);
       return;
     }
     if (message.type === 'scenarioEvent') {
+      if (!canPresentLiveFeedback()) return;
       const cue = cueForScenarioEvent(message, { localTeam });
       if (cue) audio.playEvent({ cue });
       showToast(message.message, 3600);
       return;
     }
     if (message.type === 'victory') {
+      if (!canPresentLiveFeedback()) return;
       updateMatchResult(message.team, message.triggerId, message.reason);
       showToast(message.message, 3200);
       return;
@@ -10478,10 +10566,10 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
         pendingBuildOrderToken,
       });
       const appliedAudio = orderAudioGate.observe(noticeToken, notice);
-      if (appliedAudio) audio.playEvent(appliedAudio);
+      if (appliedAudio && canPresentLiveFeedback()) audio.playEvent(appliedAudio);
       if (feedback.applyOrderStatus) applyOrderNotice(noticeToken, notice);
       if (feedback.completePendingBuild) cancelBuildPlacement(false);
-      if (feedback.showToast) {
+      if (feedback.showToast && canPresentLiveFeedback()) {
         const cue = cueForNotice(notice, { localTeam, tokenized: noticeToken !== null });
         if (cue && !notice.endsWith(' READY')) audio.playEvent({ cue });
       }
@@ -10492,10 +10580,10 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
           pendingWallPreview = null;
           updateEconomyUI();
         }
-        if (feedback.showToast) showToast(notice, 2200);
+        if (feedback.showToast && canPresentLiveFeedback()) showToast(notice, 2200);
         return;
       }
-      if (!feedback.showToast) return;
+      if (!feedback.showToast || !canPresentLiveFeedback()) return;
       if (notice.startsWith('ARCHER TRAINING REJECTED ·')
         || notice.startsWith('WORKER TRAINING REJECTED ·')) {
         updateEconomyUI();
@@ -10517,6 +10605,7 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
   connection.addEventListener('close', () => {
     if (socket !== connection) return;
     socket = null;
+    browserStateRecovery.disconnect();
     waterStudyFishBinding?.clear();
     roomLobby.disconnect();
     audio.stopWork(); orderAudioGate.reset();
@@ -10549,6 +10638,7 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
 function releasePageConnection() {
   if (pageLeaving) return;
   pageLeaving = true;
+  browserStateRecovery.disconnect();
   connectionAttempt++;
   if (reconnectTimer !== null) window.clearTimeout(reconnectTimer);
   reconnectTimer = null;
@@ -10565,6 +10655,26 @@ updateControlGroupUI();
 window.addEventListener('resize', resize);
 connect();
 window.markPrototypeReady();
+
+// Read-only observations for the shared source-bound cloud capture. No world,
+// clock, focus or visibility mutation is exposed through this diagnostic.
+if (window.__rtsCaptureDiagnostics === true) {
+  window.__rtsBrowserRecoverySnapshot = () => {
+    const worker = units.find(unit => unit?.kind === 'worker' && unit.team === localTeam);
+    const rect = renderer.domElement.getBoundingClientRect();
+    const point = worker ? projectUnit(worker, rect) : null;
+    return { visibility: document.visibilityState, focused: document.hasFocus(), discarded: document.wasDiscarded === true,
+      tick: browserStateRecovery.tick, applied: browserStateRecovery.applied, coalesced: browserStateRecovery.coalesced,
+      pendingCount: browserStateRecovery.pending ? 1 : 0, recovering: browserStateRecovery.recovering,
+      refreshPending: Boolean(browserStateRecovery.request), status: browserStateRecovery.status(performance.now()),
+      socketState: socket?.readyState ?? WebSocket.CLOSED,
+      selected: [...selected], camera: { x: cameraTarget.x, z: cameraTarget.z, zoom },
+      worker: worker ? { id: worker.id, serverX: worker.serverX, serverZ: worker.serverZ,
+        renderX: worker.renderX, renderZ: worker.renderZ, walking: worker.walking,
+        task: worker.task, screen: { x: rect.left + point.x, y: rect.top + point.y },
+        clockStartedAt: worker.spriteClockStartedAt ?? null } : null };
+  };
+}
 
 let previousTime = performance.now();
 let fpsFrames = 0;
@@ -10606,12 +10716,24 @@ const catalogBarracksCapture = roomPageUrl.searchParams.get('rendererCapture') =
   } } : null;
 if (catalogBarracksCapture) window.__rtsCatalogBarracksCapture = catalogBarracksCapture;
 function animate(now) {
+  requestAnimationFrame(animate);
+  if (document.visibilityState !== 'visible') return;
+  const wasRecovering = browserStateRecovery.recovering;
+  const update = browserStateRecovery.frame(now);
+  if (!wasRecovering && browserStateRecovery.recovering) clearSuspendedInput();
+  if (update) {
+    applyLobby(update.state.lobby);
+    applyState(update.state, false, update.snap);
+    if (update.snap) previousTime = now;
+  }
+  const waypointCounts = browserStateRecovery.takeWaypointCounts();
+  if (waypointCounts !== null) applyWaypointQueueCounts(waypointCounts);
+  serviceBrowserRecovery();
   if ((cursorPointer || wallKeyboardCell || wallPlacementGesture.anchor || pendingWallPreview) && now - lastCursorSample >= 100) {
     lastCursorSample = now;
     if (buildPlacementActive) updateBuildPlacementGhost(cursorPointer?.x, cursorPointer?.y);
     else syncBattlefieldCursor();
   }
-  requestAnimationFrame(animate);
   moveKeyboardCamera(now);
   syncUnitDetailLevel();
   renderScenarioEventCountdown(now);

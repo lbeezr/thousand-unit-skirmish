@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
+import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 import { WallPlacementGesture } from '../src/wall-placement.mjs';
 import { classifyOrderNotice } from '../src/order-feedback.mjs';
 
@@ -27,6 +28,7 @@ function fixture({ pending = true, state = 'pending' } = {}) {
     emit(type, data) { this.events.get(type)?.(data); }
   }
   const context = vm.createContext({
+    ...browserRecoveryBindings(), document: { visibilityState: 'visible' },
     wallPlacementGesture: new WallPlacementGesture(), wallKeyboardCell: { column: 1, row: 1 },
     pendingWallPreview: [{ column: 1, row: 1 }],
     wallPlacementGhost: { group: { visible: true } },

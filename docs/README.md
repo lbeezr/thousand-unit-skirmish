@@ -65,6 +65,7 @@ the build they name.
 | Understand the remaining maximum-tick tail and rejected zero-separation probe | [Remaining tick tail](qa-remaining-tick-tail-2026-10-04.md) |
 | Understand forced open-ground turns and their relation to screen headings | [Direct open-ground Move](qa-direct-open-ground-move-2026-10-04.md) |
 | Check displacement-driven sprite clocks, UV advancement and real atlas-cell differences without a browser | [CPU animation integration](qa-unit-displacement-animation-2026-10-04.md) |
+| Inspect browser suspension, current-state recovery and pending real lifecycle capture | [Browser resume QA](qa-browser-resume-2026-10-04.md) |
 | Check visible tree art against existing forest/node Gather identities | [Tree targeting QA](qa-tree-targeting-2026-10-04.md) |
 | Verify route progress through a parked army and preserved Stop intent | [Crowd forward-progress QA](qa-crowd-forward-progress-2026-10-03.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |

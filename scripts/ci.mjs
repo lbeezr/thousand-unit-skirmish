@@ -154,6 +154,8 @@ run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser
 run(['--test', 'scripts/browser-preflight.test.mjs'], 'Browser preflight diagnostics');
 run(['--test', 'scripts/unit-displacement-animation.test.mjs'], 'Temporal sprite cells from actual displacement and heading');
 run(['--test', 'scripts/renderer-capability.test.mjs'], 'WebGL2 capability report contracts (CPU mocks)');
+run(['--test', 'scripts/browser-state-recovery.test.mjs', 'scripts/browser-resume-client.test.mjs', 'scripts/renderer-browser-resume-scenario.test.mjs'], 'Browser resume freshness, bounded presentation and input cleanup');
+run(['scripts/browser-state-refresh-scenario.mjs'], 'Native privacy-preserving full state refresh and reconnect');
 run(['--test', 'scripts/worker-work-cycle-capture.test.mjs', 'scripts/renderer-worker-route-scenario.test.mjs', 'scripts/renderer-worker-route-joint.test.mjs'], 'Packed and ordinary Worker route adapter contracts (CPU mocks)');
 run(['--test', 'scripts/renderer-qualification.test.mjs', 'scripts/renderer-feature-capture.test.mjs', 'scripts/renderer-capture-context.test.mjs', 'scripts/renderer-qualification-novice.test.mjs'], 'Packed-game renderer qualification contracts (CPU mocks)');
 run(['--test', 'scripts/temporary-resources.test.mjs'], 'Owned temporary resource cleanup');
