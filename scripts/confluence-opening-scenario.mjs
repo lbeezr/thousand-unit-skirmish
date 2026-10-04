@@ -41,6 +41,10 @@ const command = (room, team, value, pattern) => room.clients[team].command({ ...
 const checkpoint = (room, pred = () => true) => room.f.checkpoint(pred, room.checkpointPath);
 const stock = (s, id) => s.state.resourceNodes.find(n => n.id === id);
 const sessionIdentities = snapshot => snapshot.state.seatSessions.map(({ id, team, tokenHash }) => ({ id, team, tokenHash }));
+function assertSessionIdentities(before, after, description) {
+  // Keep private token hashes out of an assertion diff/failure artifact.
+  assert.ok(JSON.stringify(sessionIdentities(before)) === JSON.stringify(sessionIdentities(after)), description);
+}
 const bothConnected = lobby => [0, 1].every(team => lobby.seats.some(seat => seat.team === team && seat.connected));
 function record(stage, s, extra = {}) {
   records.push({ stage, tick: s.state.tickNumber, matchId: s.matchId, mapHash: s.mapHash,
@@ -108,7 +112,7 @@ async function preserved(before, after) {
   assert.equal(after.matchId, before.matchId); assert.equal(after.mapHash, before.mapHash);
   assert.deepEqual(after.mapDefinition, before.mapDefinition);
   assert.equal(after.matchModeId, before.matchModeId); assert.equal(after.matchModeVersion, before.matchModeVersion);
-  assert.deepEqual(sessionIdentities(after), sessionIdentities(before), 'cold session identities');
+  assertSessionIdentities(before, after, 'cold session identities');
   const fields = ['currentArmySize', 'teamFood', 'teamWood', 'teamStone', 'resourceNodes', 'buildings', 'units', 'explored',
     'forestStocks', 'forestEpoch', 'homeTownCenters', 'workerProduction', 'teamResearch', 'teamUpgrades',
     'triggerStates', 'scenarioEventStates', 'matchElapsedSeconds', 'scenarioClockStarted', 'victoryHoldState',
@@ -124,7 +128,7 @@ async function preserved(before, after) {
     witness.replay.restore(before); const exact = witness.replay.checkpoint();
     assert.equal(exact.mapHash, before.mapHash); assert.equal(exact.matchId, before.matchId);
     assert.deepEqual(exact.mapDefinition, before.mapDefinition);
-    assert.deepEqual(sessionIdentities(exact), sessionIdentities(before));
+    assertSessionIdentities(before, exact, 'immediate cold session identities');
     for (const field of fields) {
       assert.ok(Object.hasOwn(before.state, field), `saved ${field} exists`);
       assert.deepEqual(exact.state[field], before.state[field], `immediate cold ${field}`);
@@ -152,7 +156,7 @@ async function resetProof(room, before, lobby) {
   for (const message of messages) assert.equal(mapHash(message.map), correctedHash);
   const reset = await checkpoint(room, s => s.mapHash === correctedHash && s.state.buildings.length === 0 && s.state.units.length === before.state.currentArmySize);
   assert.equal(reset.matchId, before.matchId); assert.equal(reset.matchModeId, 'authored'); assert.equal(reset.matchModeVersion, 1);
-  assert.deepEqual(sessionIdentities(reset), sessionIdentities(before), 'explicit reset retains session identities');
+  assertSessionIdentities(before, reset, 'explicit reset retains session identities');
   assert.deepEqual(reset.state.teamFood, [150, 150]); assert.deepEqual(reset.state.teamWood, [250, 250]); assert.deepEqual(reset.state.teamStone, [0, 0]);
   for (const n of map.resourceNodes) assert.equal(stock(reset, n.id).stock, n.stock);
   for (const n of map.resourceNodes.filter(n => /^s[01]-(berries|timber)$/.test(n.id))) {

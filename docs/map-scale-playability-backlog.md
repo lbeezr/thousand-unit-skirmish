@@ -26,9 +26,12 @@ the ordinary default and only fresh AI choice. Dated candidate receipts in the
 table retain their original scope. No additional maps beyond Large are being
 authored in this pass. The inventory owns the current aggregate status and
 representative play/capacity next steps; XL remains the separate runtime proposal.
-Confluence's food/wood opening invariant correction is pending its exact
-legacy-save contract and current-owner coordination; do not waive the existing
-nine-unit check or relocate resources in old saves.
+Confluence's [four-node opening correction](qa-confluence-opening-2026-10-04.md)
+passes the unchanged nine-unit assertion and the agreed exact legacy-save
+contract. Paid old worlds retain their geometry/resources through recovery;
+fresh games and explicit host resets use corrected positions. Native paid/naval
+and both reset-path proofs pass. Served/rendered acceptance remains with the
+delivery owner; this source result does not establish it.
 
 The first benchmark must report game/wall-time ratio, command acknowledgment and
 final application separately, actual arrival/formation spread, path expansions,
