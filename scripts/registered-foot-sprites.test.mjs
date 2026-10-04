@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { decodeRgba8, assertFrameUnclipped } from './sprite-pixel-bounds.mjs';
 import { createUnitSpriteRuntime, spriteActionClip, spriteClipDuration, spriteGroundDepthBias } from '../src/unit-sprite-runtime.mjs';
+import { analyzeUnitArtCoverage, checkUnitClipTiming, decodeRegisteredUnitFrames, validateUnitArtProduction } from './unit-art-production-contract.mjs';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url));
 const directions = ['north','north-east','east','south-east','south','south-west','west','north-west'];
@@ -102,3 +103,77 @@ for (const role of roles) {
     } finally {globalThis.fetch=previousFetch;}
   });
 }
+
+// Production pilot guards the established family separately from the held v4 packet.
+const production = JSON.parse(read('docs/art-direction/human-roster-v1/infantry-production-contract.json'));
+const establishedPack = JSON.parse(read(production.manifest));
+const established = establishedPack.assets[0];
+const establishedPage = establishedPack.pages[0];
+const establishedPixels = decodeRgba8(read('assets/units/infantry-sprite-v3/infantry-atlas-runtime.png'));
+const registered = decodeRegisteredUnitFrames(established, establishedPage, establishedPixels);
+
+test('established Infantry production: decoded fallbacks remain 21 missing cells, independent of descriptions', async () => {
+  const before = createHash('sha256').update(read('assets/units/infantry-sprite-v3/infantry-atlas-runtime.png')).digest('hex');
+  const edited = structuredClone(production);
+  edited.gameDescription = 'An edited gameplay description must not trigger regeneration.';
+  const report = await validateUnitArtProduction({contract: edited});
+  assert.deepEqual(report.errors, []);
+  assert.equal(report.requiredCells, 32); assert.equal(report.authoredCells, 11);
+  assert.deepEqual(report.missingCells, production.missingSourceCells);
+  assert.equal(report.normalBinding, 'v3'); assert.equal(report.renderAcceptance, 'pending');
+  assert.equal(createHash('sha256').update(read('assets/units/infantry-sprite-v3/infantry-atlas-runtime.png')).digest('hex'), before);
+  const strict = await validateUnitArtProduction({requireComplete: true});
+  assert.match(strict.errors.join('\n'), /21 action\/heading cells missing/);
+});
+
+test('production failure controls: frozen actions and copy-labelled directions cannot close cells', () => {
+  const frozen = structuredClone(established);
+  const walk = frozen.clips.find(c => c.stateId === 'walk' && c.directionId === 'south-east');
+  walk.sequence.forEach(key => { key.frameId = walk.sequence[0].frameId; });
+  assert.equal(analyzeUnitArtCoverage(frozen, registered).rows.find(r => r.key === 'walk|south-east').status, 'static-action');
+  const borrowed = structuredClone(established);
+  const se = borrowed.clips.find(c => c.stateId === 'attack' && c.directionId === 'south-east');
+  for (const clip of borrowed.clips.filter(c => c.stateId === 'attack')) clip.sequence = structuredClone(se.sequence);
+  const report = analyzeUnitArtCoverage(borrowed, registered);
+  assert.equal(report.rows.filter(r => r.state === 'attack' && r.status === 'borrowed-facing').length, 8);
+  assert.ok(report.missingCells.includes('attack|north-east'));
+  const absent = structuredClone(established);
+  absent.clips = absent.clips.filter(c => !(c.stateId === 'idle' && c.directionId === 'north'));
+  assert.match(analyzeUnitArtCoverage(absent, registered).errors.join('\n'), /required clip absent: idle\|north/);
+});
+
+test('production timing rejects 24 FPS samples played at 30 FPS and altered explicit keys', () => {
+  const source = {mode:'sampled-frames', sourceFPS:24, playbackFPS:24, frameCount:24, durationMs:1000};
+  const sequence = Array.from({length:24}, () => ({durationMs:1000/24}));
+  assert.deepEqual(checkUnitClipTiming(source, sequence), []);
+  const accelerated = {...source, playbackFPS:30};
+  const result = checkUnitClipTiming(accelerated, sequence.map(() => ({durationMs:1000/30})));
+  assert.match(result.join('\n'), /source\/playback FPS mismatch/);
+  assert.match(result.join('\n'), /duration/);
+  const keys = production.timing.walk;
+  assert.deepEqual(checkUnitClipTiming(keys, established.clips.find(c => c.stateId === 'walk' && c.directionId === 'south-east').sequence), []);
+  assert.match(checkUnitClipTiming(keys, [{durationMs:800}]).join('\n'), /explicit source key durations changed/);
+});
+
+test('production failure controls reject identity replacement, unreviewed calibration and premature acceptance', async () => {
+  const changes = [
+    [c => { c.identity.sources[0].sha256 = '0'.repeat(64); }, /approved identity\/source hash changed/],
+    [c => { c.identity.approvedRuntimeFiles[0].sha256 = '0'.repeat(64); }, /approved runtime bytes changed/],
+    [c => { c.identity.anchors[0].rgbaSha256 = '0'.repeat(64); }, /established identity anchor changed/],
+    [c => { c.integration.runtimeVersion = 'v4'; }, /ordinary roster does not bind/],
+    [c => { c.calibration.worldPerPixel *= 1.1; }, /world-per-pixel calibration changed/],
+    [c => { c.calibration.registrationSha256 = '0'.repeat(64); }, /registered pivots\/canvas\/offsets changed/],
+    [c => { c.calibration.cameraStatus = 'verified'; }, /verified camera requires/],
+    [c => { c.calibration.pivotStatus = 'reviewed'; }, /pivot acceptance cannot exceed/],
+    [c => { c.sourceComplete = true; }, /source completion cannot be claimed/],
+    [c => { c.renderAcceptance.status = 'accepted'; }, /identified ordinary-game render evidence missing/],
+    [c => { c.publication.newUploadsAuthorized = true; }, /no new uploads/],
+    [c => { c.provenance.trainingPermission = 'inferred-from-private-visibility'; }, /independent training-permission status/],
+    [c => { c.provenance.trainingPermission = 'documented'; }, /retained hashed receipt/],
+  ];
+  for (const [change, expected] of changes) {
+    const contract = structuredClone(production); change(contract);
+    const report = await validateUnitArtProduction({contract});
+    assert.match(report.errors.join('\n'), expected);
+  }
+});

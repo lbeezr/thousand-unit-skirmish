@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "assetId": "infantry",
+  "manifest": "assets/units/infantry-sprite-v3/sprite-atlas-pack-v1.json",
+  "identity": {
+    "status": "established-default-restored",
+    "decision": "https://github.com/lbeezr/thousand-unit-skirmish/pull/286",
+    "rebuildPolicy": "explicit-reviewed-revision",
+    "style": {
+      "id": "human-roster-v1",
+      "version": "2026-10-04-restored-family",
+      "reference": "docs/art-direction/human-roster-v1/README.md"
+    },
+    "descriptionPolicy": "Game descriptions are independent of approved art inputs. Prompt/description edits never regenerate or replace these pinned bytes.",
+    "sources": [
+      {
+        "path": "docs/art-direction/human-roster-v1/source/infantry-idle-facings.png",
+        "sha256": "0a94a11f2dffd4b722d3a732aa4d3117283d3fa41c89aac6f03487d7a7930b38"
+      },
+      {
+        "path": "docs/art-direction/human-roster-v1/source/infantry-walk-south-east-v1.png",
+        "sha256": "0a32c0248396a7ce57fd0842faf1a51a2e03b3f2e3f6d924ea0fd2a3adc26226"
+      },
+      {
+        "path": "docs/art-direction/human-roster-v1/source/infantry-attack-south-east-v1.png",
+        "sha256": "74bb1fab0e8b4c70a40642d626feaf7b2828038c8c6853536fd0858ac77b3062"
+      },
+      {
+        "path": "docs/art-direction/human-roster-v1/source/infantry-defeat-south-east-v1.png",
+        "sha256": "f6454f7ef5573b77086c90ba22a06cae0f469a28b92a6923629346c05181355c"
+      }
+    ],
+    "approvedRuntimeFiles": [
+      {
+        "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+        "sha256": "8579fbba5e13f439a208295416c38947bc094dfe0bbe52ac5f9a300aec094978"
+      },
+      {
+        "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+        "sha256": "454f752f9eabe65b6365ea208069fbd2a897bd77612865865fe08ab6ee5f808e"
+      }
+    ],
+    "anchors": [
+      {
+        "frameId": "idle-north-east-0",
+        "rgbaSha256": "822dcd073d33ee0923cfbd2fe907309f33ee5de87f8ef154f9e672747c912e0e"
+      },
+      {
+        "frameId": "idle-south-east-0",
+        "rgbaSha256": "9f2197fd73abf6f8fe53b86bafd5f2060e8e65eb1e2389de176e728cd69bef57"
+      }
+    ]
+  },
+  "provenance": {
+    "version": "retained-source-v1",
+    "sourceRecord": "docs/art-direction/human-roster-v1/README.md",
+    "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
+    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging",
+    "providerVisibility": "historical-settings-not-recorded",
+    "trainingPermission": "unknown",
+    "notes": "Existing repository source and manifests retained; provider privacy settings are not a no-training receipt."
+  },
+  "publication": {
+    "state": "existing-public-runtime-only",
+    "newUploadsAuthorized": false,
+    "scope": "Existing public repository sources and admitted runtime files only. New private material and provider uploads need separate authority."
+  },
+  "requiredStates": [
+    "idle",
+    "walk",
+    "attack",
+    "defeat"
+  ],
+  "requiredDirections": [
+    "north",
+    "north-east",
+    "east",
+    "south-east",
+    "south",
+    "south-west",
+    "west",
+    "north-west"
+  ],
+  "sourceComplete": false,
+  "missingSourceCells": [
+    "walk|north",
+    "walk|north-east",
+    "walk|east",
+    "walk|south",
+    "walk|south-west",
+    "walk|west",
+    "walk|north-west",
+    "attack|north",
+    "attack|north-east",
+    "attack|east",
+    "attack|south",
+    "attack|south-west",
+    "attack|west",
+    "attack|north-west",
+    "defeat|north",
+    "defeat|north-east",
+    "defeat|east",
+    "defeat|south",
+    "defeat|south-west",
+    "defeat|west",
+    "defeat|north-west"
+  ],
+  "timing": {
+    "idle": {
+      "mode": "timed-keys",
+      "frameDurationsMs": [
+        1000
+      ],
+      "durationMs": 1000,
+      "playbackFPS": 1.0,
+      "sourceFPS": null,
+      "notes": "Retained explicit 2D key timing; no sampled rig FPS is known."
+    },
+    "walk": {
+      "mode": "timed-keys",
+      "frameDurationsMs": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "durationMs": 800,
+      "playbackFPS": 10.0,
+      "sourceFPS": null,
+      "notes": "Retained explicit 2D key timing; no sampled rig FPS is known."
+    },
+    "attack": {
+      "mode": "timed-keys",
+      "frameDurationsMs": [
+        100,
+        100,
+        100,
+        100,
+        110,
+        110,
+        115,
+        115
+      ],
+      "durationMs": 850,
+      "playbackFPS": null,
+      "sourceFPS": null,
+      "notes": "Retained explicit 2D key timing; no sampled rig FPS is known."
+    },
+    "defeat": {
+      "mode": "timed-keys",
+      "frameDurationsMs": [
+        100,
+        100,
+        100,
+        100,
+        110,
+        110,
+        115,
+        115
+      ],
+      "durationMs": 850,
+      "playbackFPS": null,
+      "sourceFPS": null,
+      "notes": "Retained explicit 2D key timing; no sampled rig FPS is known."
+    }
+  },
+  "calibration": {
+    "worldPerPixel": 0.005242183290678879,
+    "bodyBaselineWorld": 1.2161865234375,
+    "registrationSha256": "c6ce005707aae31b78ca10318a14f969dac1ddc4b23fc1837b23c19548a1aa7d",
+    "pivotStatus": "unreviewed-estimate",
+    "cameraStatus": "prompt-only",
+    "cameraRecipe": null,
+    "cameraReference": "docs/art-direction/human-roster-v1/prompts-v2.json",
+    "notes": "45-degree elevated orthographic prompt; no exact camera/model recipe retained. Keep one pixel/root calibration; pose extents do not define body scale."
+  },
+  "integration": {
+    "owner": "Human foot-unit art lane",
+    "stateOwner": "01a103d4",
+    "runtimeVersion": "v3",
+    "defaultBinding": "wired",
+    "packaging": "existing-admitted",
+    "motionAcceptance": "pending",
+    "statusReference": "docs/human-foot-unit-coverage.md"
+  },
+  "renderAcceptance": {
+    "status": "pending",
+    "requiredScenes": [
+      "normal-zoom",
+      "crowded-scene"
+    ],
+    "evidence": [],
+    "owner": "Human foot-unit art lane with parent environment support"
+  }
+}
