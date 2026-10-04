@@ -35,9 +35,11 @@
       "uncompressedSha256": "09ab2abeca3e5dc36b5bd11765fc61f0443bc08250e004140c29c048aeb7dd68"
     },
     {
-      "path": "source-inputs.json",
-      "bytes": 108370,
-      "sha256": "3b8e80253ed5346446b23eaa90b3f741c34093b75811331f89d96cedc1d415b4"
+      "path": "source-inputs.json.gz",
+      "bytes": 36450,
+      "sha256": "3f654efb78abf432b4308879f2242ce1b5a82d5a39474dcc88db7878bfd31047",
+      "compression": "gzip",
+      "uncompressedSha256": "3b8e80253ed5346446b23eaa90b3f741c34093b75811331f89d96cedc1d415b4"
     },
     {
       "path": "static-audit.json",

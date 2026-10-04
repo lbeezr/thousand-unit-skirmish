@@ -68,7 +68,7 @@ firing arcs, shared finite fishing, sequential water traversal, cold recovery,
 authored reset and one-human clock/movement. Retained
 [summary](qa-evidence/confluence-grounds-2026-10-04/summary.json),
 [full receipt](qa-evidence/confluence-grounds-2026-10-04/report.json.gz) and
-[source hashes](qa-evidence/confluence-grounds-2026-10-04/source-inputs.json)
+[source hashes](qa-evidence/confluence-grounds-2026-10-04/source-inputs.json.gz)
 separate that result from the failed counterflow case. The repeatable audit identifies this row as
 `admitted-test-arena`, separately from regional Skirmish candidates and micro Labs.
 The refreshed 30-map checkout also identifies Bannerfall as `quick-custom-mode`;

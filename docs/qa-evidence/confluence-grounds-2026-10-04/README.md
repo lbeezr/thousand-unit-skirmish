@@ -6,7 +6,7 @@
   commands, economic conservation, sequential boat crossing, cold recovery/reset
   and one-human movement. These are local authoritative/DOM receipts, not rendered,
   deployed, human balance or supported-capacity acceptance.
-- `source-inputs.json`: exact local consumed JS/JSON hashes frozen during the
+- `source-inputs.json.gz`: exact local consumed JS/JSON hashes frozen during the
   accepted native run. Documentation evidence changes do not modify those inputs.
 - `retained-economy.json.gz`: economic fields extracted from the cold save, without
   recovery/session state. The original durable checkpoint is not published.
