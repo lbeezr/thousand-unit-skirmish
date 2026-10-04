@@ -31,8 +31,11 @@ exports `ScenarioEditHistory` and `regionGestureZone`, and
 `a93c8175af89b2bb34ca87585840b896360d7159`. History limits, gesture bounds,
 marker IDs/coordinates, validation errors and JSON behavior remain the same.
 Neither module imports runtime state, rules, rendering, storage or a host.
-New tools/tests use these paths; `main.js` keeps its existing imports during
-active client work.
+New tools/tests use these paths. The import-only
+[main-client batch PR370](https://github.com/lbeezr/thousand-unit-skirmish/pull/370)
+migrates both `main.js` imports to these canonical leaves, preserving their named
+bindings and every other host byte. It changes no history, gesture, import/export
+or editor behavior.
 
 The map-authoring owner retains the old
 [`scenario-authoring.mjs`](../src/scenario-authoring.mjs) and
@@ -43,8 +46,8 @@ JavaScript MIME/`no-store`/`nosniff` behavior and recursive release inclusion.
 The server does not import either authoring leaf; the import guard classifies
 both copies as authoring and rejects authoritative consumers.
 
-Known remaining old-path consumers are `src/main.js` (both),
-`scripts/scenario-authoring.test.mjs` (explicit export-identity coverage),
+After PR370 there are no tracked runtime imports through either alias. Remaining
+old-path consumers are `scripts/scenario-authoring.test.mjs` (explicit export-identity coverage),
 `scripts/server-hardening-scenario.mjs` (resize HTTP compatibility) and
 `scripts/railway-release-scenario.mjs` (both HTTP/byte checks). The exact path
 manifest/domain memberships deliberately retain both. The architecture plan
