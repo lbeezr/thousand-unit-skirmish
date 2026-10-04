@@ -21,6 +21,8 @@ export async function runUnassistedContest(contractFile, opening = null) {
   assert.equal(contract.opponentSource, qualifiedSource);
   assert.deepEqual(contract.seeds, [20260925, 0]);
   assert.equal(contract.seconds, 3600);
+  assert.equal(contract.witnessIntervalTicks, 3);
+  assert.ok((await readFile(new URL('../server.mjs', import.meta.url),'utf8')).includes('const STATE_EVERY_TICKS = 3;'));
   assert.deepEqual(contract.commandSeatOrder, [0, 1]);
   const opponentRoot = path.resolve(directory, 'source/opponent');
   const receipts = await Promise.all(['run', 'opponent'].map(label =>
@@ -115,14 +117,20 @@ export async function runUnassistedContest(contractFile, opening = null) {
         if (step % 9000 === 0) console.log(JSON.stringify({ progressSeconds: step/30, commands: metrics.map(m => m.commands) }));
         before = r.checkpoint().state;
       }
-      r.step(); const after = r.checkpoint().state;
+      r.step();
+      // Checkpoint capture refreshes vision. Observe only after the native
+      // state publication phase so the witness cannot advance combat sight.
+      if ((step+1)%3 !== 0) continue;
+      const after = r.checkpoint().state;
       for (const unit of before.units.filter(u => u.hp > 0)) {
         const next = after.units.find(u => key(u) === key(unit));
         if (!next || next.hp < unit.hp) metrics[unit.team].firstIncomingDamage ??= after.tickNumber;
         if (unit.kind === 'worker' && (!next || next.hp <= 0)) {
-          const attackers = after.units.filter(u => u.team !== unit.team && u.lastAttackTick === after.tickNumber
-            && Math.hypot(u.lastAttackX-unit.x,u.lastAttackZ-unit.z) < 1e-8);
-          losses.push({ tick: after.tickNumber, team: unit.team, worker: unit, dead: next, attackers });
+          const attackers = after.units.filter(u => u.team !== unit.team && u.lastAttackTick > before.tickNumber
+            && u.lastAttackTick <= after.tickNumber && next
+            && Math.hypot(u.lastAttackX-next.x,u.lastAttackZ-next.z) < 1e-8);
+          losses.push({ tick: after.tickNumber, observationWindow: [before.tickNumber+1,after.tickNumber],
+            team: unit.team, worker: unit, dead: next, attackers });
         }
       }
       const born = after.units.filter(u => u.kind === 'worker' && u.hp > 0 && !before.units.some(v => key(v) === key(u)));
@@ -134,8 +142,9 @@ export async function runUnassistedContest(contractFile, opening = null) {
         });
         assert.equal(candidates.length, 1, 'replacement birth matches one real completed paid queue');
         const purchase = candidates[0]; purchase.spawned = true;
-        const loss = losses.find(l => l.team === worker.team && l.tick < purchase.tick && l.attackers.length);
-        const spawn = { tick: after.tickNumber, worker, purchaseTick: purchase.tick, buildingId: purchase.buildingId, lossTick: loss?.tick ?? null };
+        const loss = losses.find(l => l.team === worker.team && l.tick <= purchase.tick && l.attackers.length);
+        const spawn = { tick: after.tickNumber, observationWindow: [before.tickNumber+1,after.tickNumber],
+          worker, purchaseTick: purchase.tick, buildingId: purchase.buildingId, lossTick: loss?.tick ?? null };
         spawns.push(spawn); if (loss) replacements.set(key(worker), spawn);
       }
       for (const team of [0, 1]) for (const type of ['food', 'wood']) {
@@ -145,10 +154,12 @@ export async function runUnassistedContest(contractFile, opening = null) {
           .filter(u => after.units.some(v => key(v) === key(u) && v.hp > 0 && v.cargo === 0));
         if (!delivered.length) continue;
         const cargo = delivered.reduce((sum,u) => sum+u.cargo,0);
-        assert.ok(bankIncrease+1e-5 >= cargo, 'actual living cargo is covered by native bank credit; normal simultaneous rewards remain separate');
-        const event = { tick: after.tickNumber, team, type, delivered, bankIncrease, cargo,
-          otherSimultaneousCredit: bankIncrease-cargo };
-        deposits.push(event); metrics[team].firstDeposit ??= event.tick;
+        assert.ok(bankIncrease+1e-5 >= cargo, 'observed living cargo is covered by native interval credit');
+        const event = { tick: after.tickNumber, observationWindow: [before.tickNumber+1,after.tickNumber],
+          team, type, delivered, bankIncrease, observedBeforeCargo: cargo,
+          unattributedIntervalCredit: bankIncrease-cargo };
+        deposits.push(event);
+        if (delivered.some(u => u.cargo === 10)) metrics[team].firstDeposit ??= event.tick;
         if (!metrics[team].recovery) for (const worker of delivered) {
           const spawn = replacements.get(key(worker)), job = jobs.get(key(worker));
           const enemyMilitary = after.units.filter(u => u.team !== team && u.kind !== 'worker' && u.hp > 0);

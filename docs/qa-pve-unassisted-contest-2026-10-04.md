@@ -49,8 +49,18 @@ generation, that replacement's accepted Gather of a currently disclosed source,
 and its later living10-cargo/native bank credit while the opponent has living
 military and the match is ongoing. Unexercised or incomplete recovery remains
 explicit; a winner alone cannot qualify it. Normal simultaneous bonus credit is
-reported separately from actual delivered cargo. Command-debit totals are not
+reported separately from observed carried cargo without inferring a bonus.
+Command-debit totals are not
 a complete resource conservation ledger.
+
+Native witnesses are captured only after the existing three-tick state phase.
+Checkpoint capture refreshes visibility, so calling it between those phases
+would change native combat sight. Unit loss, birth and delivery times name their
+three-tick observation windows, rather than an invented exact tick. Policy
+decisions still occur every30 ticks; native elimination is evaluated on the
+same state phase. The initial per-tick-capture pair at `8e93dadd` is retained as
+a diagnostic method failure and cannot support the unassisted claim. The
+corrected capture method keeps all declared acceptance and stopping conditions.
 
 ## Scope and owner coordination
 
