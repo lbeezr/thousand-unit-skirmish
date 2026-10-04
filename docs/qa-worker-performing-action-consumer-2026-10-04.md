@@ -35,11 +35,11 @@ listed in the [full inventory/audit](qa-unit-animation-audit-2026-10-03.md).
 
 ## Checks and evidence boundaries
 
-- 85 focused client/runtime/clock/fishing/recovery/producer tests pass, including
+- 92 focused client/runtime/clock/facing/fishing/recovery/producer tests pass, including
   both civilizations, selected/unselected, interruption/resume, unknown protocol,
   stable-field repair clear, generation/death, fog and strategic LOD buffers.
 - The procedural visual-state scenario, JavaScript/Node type checks, browser
-  static allowlist (109 modules) and runtime import graph pass.
+  static allowlist (111 modules after integrating main) and runtime import graph pass.
 - `node scripts/worker-performing-action-scenario.mjs --client-presentation`
   uses actual WebSocket commands and packets on shipped Stone Defense Field for
   both seats: approach, positive food, Stop/resume, paid Farm build/completion/
@@ -53,7 +53,8 @@ listed in the [full inventory/audit](qa-unit-animation-audit-2026-10-03.md).
 - The disposable packed Railway HTTP scenario passes all admitted client paths,
   JavaScript MIME, default unit manifests and atlas hashes. The new consumer and
   imported protocol constants have exact allowlist entries and normal `src` copy.
-  Clean release receipts and exact reviewed/merged revisions are recorded in the
+  The [clean release receipt](qa-evidence/worker-performing-action-2026-10-04/clean-release.json)
+  identifies the integrated packaging source; exact reviewed/merged revisions are recorded in the
   consumer PR; a local release check does not identify a Railway deployment.
 
 Native packet/frame evidence is [consumer-native.json](qa-evidence/worker-performing-action-2026-10-04/consumer-native.json).

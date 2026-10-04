@@ -5,14 +5,14 @@
     {
       "name": "gather approach waits",
       "team": 0,
-      "tick": 3,
+      "tick": 6,
       "food": 300,
       "wood": 600,
       "stone": 0,
       "workers": [
         {
           "id": 0,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "gathering",
           "action": null,
           "cargo": 0
@@ -29,10 +29,10 @@
       "workers": [
         {
           "id": 0,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "gathering",
           "action": "gather-food",
-          "cargo": 0.07
+          "cargo": 0.03
         }
       ]
     },
@@ -46,21 +46,21 @@
       "workers": [
         {
           "id": 1,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "building",
           "action": null,
           "cargo": 0
         },
         {
           "id": 2,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "building",
           "action": null,
           "cargo": 0
         },
         {
           "id": 3,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "building",
           "action": null,
           "cargo": 0
@@ -77,21 +77,21 @@
       "workers": [
         {
           "id": 1,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "building",
           "action": "build",
           "cargo": 0
         },
         {
           "id": 2,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "building",
           "action": null,
           "cargo": 0
         },
         {
           "id": 3,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "building",
           "action": null,
           "cargo": 0
@@ -108,21 +108,21 @@
       "workers": [
         {
           "id": 1,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 2,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 3,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0
@@ -139,7 +139,7 @@
       "workers": [
         {
           "id": 1,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "gathering",
           "action": "gather-food",
           "cargo": 0.1
@@ -156,7 +156,7 @@
       "workers": [
         {
           "id": 12,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "gathering",
           "action": null,
           "cargo": 0
@@ -173,7 +173,7 @@
       "workers": [
         {
           "id": 12,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "gathering",
           "action": "gather-food",
           "cargo": 0.1
@@ -190,21 +190,21 @@
       "workers": [
         {
           "id": 13,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "building",
           "action": null,
           "cargo": 0
         },
         {
           "id": 14,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "building",
           "action": null,
           "cargo": 0
         },
         {
           "id": 15,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "building",
           "action": null,
           "cargo": 0
@@ -221,21 +221,21 @@
       "workers": [
         {
           "id": 13,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "building",
           "action": "build",
           "cargo": 0
         },
         {
           "id": 14,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "building",
           "action": null,
           "cargo": 0
         },
         {
           "id": 15,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "building",
           "action": null,
           "cargo": 0
@@ -252,21 +252,21 @@
       "workers": [
         {
           "id": 13,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 14,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 15,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0
@@ -283,7 +283,7 @@
       "workers": [
         {
           "id": 13,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "gathering",
           "action": "gather-food",
           "cargo": 0.1
@@ -293,35 +293,35 @@
     {
       "name": "idle recovery",
       "team": 0,
-      "tick": 868,
+      "tick": 869,
       "food": 300,
       "wood": 540,
       "stone": 0,
       "workers": [
         {
           "id": 0,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
-          "cargo": 0.17
+          "cargo": 0.13
         },
         {
           "id": 1,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0.1
         },
         {
           "id": 2,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 3,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0
@@ -338,28 +338,28 @@
       "workers": [
         {
           "id": 12,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0.2
         },
         {
           "id": 13,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0.1
         },
         {
           "id": 14,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 15,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "idle",
           "action": null,
           "cargo": 0
@@ -371,12 +371,12 @@
       "team": 0,
       "tick": 873,
       "food": 300,
-      "wood": 0.27999999999999997,
+      "wood": 0.24,
       "stone": 0,
       "workers": [
         {
           "id": 1,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "repairing",
           "action": "repair",
           "cargo": 0.1
@@ -393,7 +393,7 @@
       "workers": [
         {
           "id": 1,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "repairing",
           "action": null,
           "cargo": 0.1
@@ -410,7 +410,7 @@
       "workers": [
         {
           "id": 13,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "repairing",
           "action": "repair",
           "cargo": 0.1
@@ -427,7 +427,7 @@
       "workers": [
         {
           "id": 13,
-          "generation": 3773285696,
+          "generation": 4072855678,
           "task": "repairing",
           "action": null,
           "cargo": 0.1
@@ -444,28 +444,28 @@
       "workers": [
         {
           "id": 0,
-          "generation": 3773285697,
+          "generation": 4072855679,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 1,
-          "generation": 3773285697,
+          "generation": 4072855679,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 2,
-          "generation": 3773285697,
+          "generation": 4072855679,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 3,
-          "generation": 3773285697,
+          "generation": 4072855679,
           "task": "idle",
           "action": null,
           "cargo": 0
@@ -482,28 +482,28 @@
       "workers": [
         {
           "id": 12,
-          "generation": 3773285697,
+          "generation": 4072855679,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 13,
-          "generation": 3773285697,
+          "generation": 4072855679,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 14,
-          "generation": 3773285697,
+          "generation": 4072855679,
           "task": "idle",
           "action": null,
           "cargo": 0
         },
         {
           "id": 15,
-          "generation": 3773285697,
+          "generation": 4072855679,
           "task": "idle",
           "action": null,
           "cargo": 0
@@ -515,7 +515,7 @@
     {
       "name": "gather approach waits",
       "team": 0,
-      "tick": 3,
+      "tick": 6,
       "heldPacketCpuMs": 640,
       "workers": [
         {
@@ -540,7 +540,7 @@
           "walking": false,
           "state": "gather",
           "frame": "idle-east-0",
-          "heading": 1.358620831479819
+          "heading": 1.3705848155718718
         }
       ]
     },
@@ -803,7 +803,7 @@
     {
       "name": "idle recovery",
       "team": 0,
-      "tick": 868,
+      "tick": 869,
       "heldPacketCpuMs": 640,
       "workers": [
         {
