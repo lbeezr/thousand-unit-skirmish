@@ -24,6 +24,7 @@ start; this index covers maintained guides, contracts, experiments, and evidence
 | How do we split work without losing integration ownership? | [Contributor planning](contributor-planning.md), [PR checklist](../.github/pull_request_template.md) |
 | How do contributors coordinate and integrate? | [AGENTS.md](../AGENTS.md) |
 | What does the implementation currently do? | Task guides and contracts, checked against source |
+| What does every building produce, research, unlock or supply, and why doesn't Farm create plots? | [Canonical building action coverage and starter progression](gameplay-foundation-plan.md#canonical-building-action-coverage--4-october-2026) |
 
 Change the owning document when a decision changes, then update affected links
 and summaries. Resolve a disagreement with source for present behavior, the game

@@ -1,7 +1,32 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from '../src/research-actions.mjs';
 import { GAMEPLAY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { cueForNotice } from '../src/audio-policy.mjs';
+
+for (const team of [0, 1]) test(`seat ${team}: actual research completion does not promise a false attack bonus`, () => {
+  const source = readFileSync(process.env.RESEARCH_NOTICE_SOURCE || new URL('../server.mjs', import.meta.url), 'utf8');
+  const start = source.indexOf('function updateTeamResearch('), end = source.indexOf('\nfunction ', start + 1);
+  assert.ok(start >= 0 && end > start);
+  for (const technology of Object.values(GAMEPLAY_DEFINITIONS.technologies)) {
+    const notices = [], building = { id: 11, team, complete: true, x: 0, z: 0 };
+    const context = vm.createContext({ teamResearch: [null, null], teamUpgrades: [emptyTechnologyCompletions(), emptyTechnologyCompletions()],
+      STEP_SECONDS: .05, dirty: false, buildingsById: new Map([[building.id, building]]),
+      researchRulesFor: id => id === technology.id ? technology : null,
+      broadcastGameplayNotice: (owner, x, z, notice) => notices.push({ owner, notice }),
+    });
+    context.teamResearch[team] = { type: technology.id, buildingId: building.id, remaining: .01 };
+    vm.runInContext(source.slice(start, end), context); context.updateTeamResearch();
+    assert.equal(context.teamUpgrades[team][technology.upgradeKey], true);
+    assert.equal(context.teamResearch[team], null);
+    assert.equal(notices.length, 1); assert.equal(notices[0].owner, team);
+    assert.match(notices[0].notice, /COMPLETE/);
+    assert.doesNotMatch(notices[0].notice, /\+20% ATTACK/, technology.id);
+    assert.equal(cueForNotice(notices[0].notice, { localTeam: team }), 'research-complete', technology.id);
+  }
+});
 
 for (const team of [0, 1]) test(`research availability owns economy, completion and prerequisites for seat ${team}`, () => {
   const definitions = structuredClone(GAMEPLAY_DEFINITIONS);

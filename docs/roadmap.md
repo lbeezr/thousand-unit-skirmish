@@ -10,6 +10,11 @@ sequence and acceptance criteria. Existing solo/two-seat checks are the regressi
 floor; expansion of gameplay functionality is the next development outcome.
 Art proceeds separately against stable presentation interfaces.
 
+The [canonical building action matrix](gameplay-foundation-plan.md#canonical-building-action-coverage--4-october-2026)
+owns all thirteen roles, six technologies, finite Farm diagnosis and small B0–B4
+action/production/ordinary-acceptance slices in the existing Interface/Content
+streams. The proposed starter teaching sequence adds no ruleset gates.
+
 The [victory audit](victory-modes-audit-2026-10-03.md) led to separate economy
 Skirmish and fast Objective Control. Ordinary human entry now starts Tiny
 Skirmish, with reviewed Small, Medium and Large choices; fresh PvE supports only Tiny.
