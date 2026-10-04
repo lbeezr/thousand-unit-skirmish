@@ -402,6 +402,7 @@ const scenarios = [
   ['scripts/impaired-connection-scenario.mjs', 'Delayed two-seat transport and interrupted-order recovery'],
   ['scripts/pve-room-launch-scenario.mjs', 'PvE room launch and rematch integration'],
   ['scripts/tiny-skirmish-pve-entry-scenario.mjs', 'Fresh Tiny Skirmish AI admission, paid economy and cold resume'],
+  ['scripts/pve-tiny-process-recovery-scenario.mjs', 'Normal Tiny paid process restart, reconnect and rematch control', 'pvp'],
   ['scripts/railway-release-scenario.mjs', 'Railway release integration'],
 ];
 
