@@ -1,0 +1,901 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-02",
+  "status": "producer capture manifest verified structurally; reference only",
+  "evidenceMethod": "Complete native Library manifest read, 931 lines. Local PNG/GLB materialization failed; no independent pixel or model-byte validation in this documentation slice.",
+  "sourceModel": {
+    "filename": "bellweather-sheep-original.glb",
+    "reportedBytes": 44244524,
+    "reportedSha256": "f26faaa05e40da6c9b2bb629a22cd78297d74a65405956dd332d0039303cb30f",
+    "reportedVertices": 750919,
+    "reportedTriangles": 1416280,
+    "inputSha256": "0ff688101304a7c10e181b3363ce767e8fb0082d0f754817edee81e04a9bf904",
+    "inputUrl": "https://raw.githubusercontent.com/lbeezr/thousand-unit-skirmish/3bcb675c4f441b482cb5ea876a47c7464e2a9b6a/docs/art-direction/bellweather-sheep-model-input-v1/bellweather-sheep-model-input-yaw-000-v1.png",
+    "originalNotOverwritten": true
+  },
+  "runtimeConvention": {
+    "runtime_up": "+Y",
+    "yaw_zero_nose": "+Z",
+    "positive_yaw": "+Z toward +X",
+    "runtime_to_blender_matrix": [
+      [
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        -1,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1
+      ]
+    ],
+    "runtime_to_blender": "(X,Y,Z) -> (X,-Z,Y); proper rotation, not a mirror",
+    "gltf_import": "Blender GLTF import converts glTF +Y-up to Blender +Z-up. Render root matrix is C * N * inverse(C).",
+    "gaze_vs_locomotion": "These yaw labels identify nose/face heading. Body-forward is a separate axis; this turned-head pose is unsuitable as a neutral locomotion facing."
+  },
+  "normalization": {
+    "source_hoof_centers_xz": [
+      [
+        -0.4426754415035248,
+        0.1663753092288971
+      ],
+      [
+        0.20586197078227997,
+        -0.7050201892852783
+      ],
+      [
+        0.6031396985054016,
+        -0.36563077569007874
+      ],
+      [
+        -0.16778743267059326,
+        0.4267553687095642
+      ]
+    ],
+    "source_root": [
+      0.049634695053100586,
+      -0.7112870216369629,
+      -0.11938007175922394
+    ],
+    "yaw_alignment_degrees": -1.7865252494812012,
+    "scale": 0.44712685318817746,
+    "body_axis_alignment_degrees": 40.24847384255837,
+    "face_vs_body_heading_degrees": 42.03499984741211,
+    "landmarks_source": {
+      "nose_tip": [
+        -0.4067077934741974,
+        0.3760557770729065,
+        0.9419397115707397
+      ],
+      "left_ear_tip": [
+        -0.7958215475082397,
+        0.4716113805770874,
+        0.7129558324813843
+      ],
+      "right_ear_tip": [
+        -0.031933993101119995,
+        0.5068327784538269,
+        0.7111740112304688
+      ],
+      "ear_tip_midpoint": [
+        -0.41387778520584106,
+        0.48922207951545715,
+        0.7120649218559265
+      ],
+      "shoulder_surface_above_front_hoof_station": [
+        -0.30608800053596497,
+        0.6306139826774597,
+        0.34582000970840454
+      ],
+      "rump_surface": [
+        0.5935546159744263,
+        0.19134490191936493,
+        -0.7658844590187073
+      ]
+    },
+    "landmark_method": "Source-vertex region centroids, with shoulder as maximum Y near body-axis front-hoof station; muzzle minus ear-tip midpoint defines face heading in XZ. Anatomical landmarks are approximations, not a rig.",
+    "shoulder_height_source": 1.3419010639190674,
+    "nose_to_rump_source_xz": 1.9791889190673828,
+    "body_front_hoof_station": 0.546750504718454,
+    "hoof_plane_method": "Minimum original source Y sets ground; four-cluster mean of vertices within 0.021287 units of ground sets hoof-plane center.",
+    "body_axis_source_xz": [
+      -0.6461036495932438,
+      0.76324967997523
+    ]
+  },
+  "measurements": {
+    "shoulder_height_world": 0.6,
+    "nose_to_rump_world_xz": 0.8849485132475093,
+    "nose_to_rump_target": 0.9,
+    "nose_to_rump_target_difference_percent": -1.6723874169434105,
+    "full_geometry_bounds_world": [
+      [
+        -0.39185154277424905,
+        0,
+        -0.3676512888458919
+      ],
+      [
+        0.34490080455582306,
+        0.6343321682179527,
+        0.4720679118463916
+      ]
+    ],
+    "full_geometry_dimensions_world": [
+      0.7367523473300721,
+      0.6343321682179527,
+      0.8397192006922835
+    ],
+    "hoof_footprint_bounds_world": [
+      [
+        -0.25495133569749573,
+        0,
+        -0.2990743211148946
+      ],
+      [
+        0.29052992716445436,
+        0.009508165905370694,
+        0.27317763762651526
+      ]
+    ],
+    "hoof_centers_world": [
+      [
+        -0.2240013681760121,
+        0,
+        0.120844245824859
+      ],
+      [
+        0.0779829807508083,
+        0,
+        -0.2595504114866585
+      ],
+      [
+        0.25079926130640984,
+        0,
+        -0.10233620453872083
+      ],
+      [
+        -0.10478086722173532,
+        0,
+        0.24104237040823492
+      ]
+    ],
+    "hoof_minimum_height_above_ground_world": [
+      0.00013997020141687244,
+      0.0001511369046056643,
+      0.0002696265291888267,
+      0
+    ],
+    "note": "Anatomical shoulder and rump are recorded approximate surface landmarks on an unrigged mesh; uniform scaling only, no axis stretching."
+  },
+  "camera": {
+    "projection": "orthographic",
+    "runtime_position": [
+      4.961815998135415,
+      7.1246588691175194,
+      4.961815998135415
+    ],
+    "look_at_runtime": [
+      0,
+      0,
+      0
+    ],
+    "up_runtime": [
+      0,
+      1,
+      0
+    ],
+    "azimuth_degrees": 45,
+    "elevation_degrees": 45.43590248481586,
+    "roll_degrees": 0,
+    "left_right_bottom_top": [
+      -1,
+      1,
+      -1,
+      1
+    ],
+    "near_far": [
+      0.1,
+      100
+    ],
+    "resolution": [
+      512,
+      512
+    ],
+    "projected_pixels_per_world_unit": 256,
+    "root_pixel_from_upper_left": [
+      256,
+      256
+    ],
+    "root_projection_error_pixels": 0.0003814697265625,
+    "root_marker_measured_centroid_pixel_centers": [
+      256,
+      256
+    ]
+  },
+  "renderSettings": {
+    "blender_version": "4.3.2",
+    "engine": "Cycles",
+    "device": "CPU",
+    "threads": 4,
+    "samples": 64,
+    "denoising": false,
+    "denoising_reason": "This Blender build lacks OpenImageDenoise; CPU render succeeds with denoising off.",
+    "color_management": {
+      "view_transform": "AgX",
+      "look": "None",
+      "exposure": 0,
+      "gamma": 1
+    },
+    "world": {
+      "color": [
+        0.8,
+        0.86,
+        1,
+        1
+      ],
+      "strength": 0.65
+    },
+    "lights_blender": [
+      {
+        "name": "Key",
+        "position": [
+          -3,
+          -4,
+          6
+        ],
+        "energy": 450,
+        "size": 5
+      },
+      {
+        "name": "Fill",
+        "position": [
+          4,
+          -2,
+          3
+        ],
+        "energy": 200,
+        "size": 4
+      },
+      {
+        "name": "Rim",
+        "position": [
+          -2,
+          4,
+          4
+        ],
+        "energy": 300,
+        "size": 3
+      }
+    ],
+    "fixed_world_lighting": true,
+    "transparent": true,
+    "floor_in_color_frames": false,
+    "process_receipt": {
+      "command": [
+        "/usr/bin/blender",
+        "-b",
+        "--threads",
+        "4",
+        "--python",
+        "render_sheep.py",
+        "--",
+        "final"
+      ],
+      "returncode": 0,
+      "wall_seconds": 22.209842540003592,
+      "peak_rss_kib": 862488,
+      "cpu_user_seconds": 70.172555,
+      "cpu_system_seconds": 1.994548,
+      "commandNote": "The original absolute conversation-workspace script path is retained in the private manifest; the public contract uses the script basename."
+    },
+    "repeatability": {
+      "saved_scene_reopened": true,
+      "source_sha256": "9f52edc3d8423853e06bda287638530e34ec5b1fc3364f3c2f9d283e41717a9e",
+      "repeat_sha256": "a93fd5ab06b8a59e658a69193d92b276592357ba88f57035a4dffa991ea7d0db",
+      "byte_identical": false,
+      "packed_images": [
+        [
+          "Image_0",
+          true
+        ]
+      ],
+      "pixel_identical": true,
+      "max_channel_difference": 0,
+      "mean_absolute_channel_difference": 0,
+      "differing_pixel_count": 0
+    },
+    "contact_shadow_layer": {
+      "accepted": false,
+      "color_capture_shadows": false,
+      "diagnostic_directory": "diagnostics/unapproved-contact-shadow-experiment",
+      "reason": "Raw shadow catcher pass was opaque; compositor alpha experiment has full-canvas sampling noise and is not accepted as a usable contact shadow layer. Retained as diagnostics, not included in reference previews.",
+      "records": [
+        {
+          "filename": "sheep-shadow-yaw-000.png",
+          "sha256": "cb8a231421ecf81d653580632dfb0ef493243d1654900ed86caab77f1734e4b3",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "bbox": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "filename": "sheep-shadow-yaw-045.png",
+          "sha256": "c74c1877ddca70d72f3e5e79e6a462f6d48c7b923843aada83dc2d292908626d",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "bbox": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "filename": "sheep-shadow-yaw-090.png",
+          "sha256": "61c749ef34dd2f7c30759d9384e8bc762363fd7cc8536ea155114d4320679695",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "bbox": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "filename": "sheep-shadow-yaw-135.png",
+          "sha256": "577b375ddca8e007c81d9875fbe0ce6538caad0801b68905521323d82e53efc0",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "bbox": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "filename": "sheep-shadow-yaw-180.png",
+          "sha256": "474e2fb534a24f45104a620eb5f88d630bed2776ff41a5f7c9cb35861b78d3e0",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "bbox": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "filename": "sheep-shadow-yaw-225.png",
+          "sha256": "00d9202a9a7efe7b604bf652093fa9496a0879c659be4094b8de297fe697bf74",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "bbox": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "filename": "sheep-shadow-yaw-270.png",
+          "sha256": "25941488799b812b13039319695e19c0b3a9eb56ce94ff439e481e856dac5e0d",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "bbox": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "filename": "sheep-shadow-yaw-315.png",
+          "sha256": "37a919032dcd74cea0e2fe472346110b524e96abc09acc5c7e76a3c631b21ef4",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "bbox": [
+            0,
+            0,
+            512,
+            512
+          ]
+        }
+      ]
+    }
+  },
+  "views": [
+    {
+      "world_yaw_degrees": 0,
+      "clip_key": "north",
+      "screen_heading": "down-left",
+      "filename": "sheep-yaw-000.png",
+      "sha256": "9f52edc3d8423853e06bda287638530e34ec5b1fc3364f3c2f9d283e41717a9e",
+      "dimensions": [
+        512,
+        512
+      ],
+      "alpha_bbox_exclusive": [
+        118,
+        132,
+        371,
+        281
+      ],
+      "clipped": false,
+      "nonzero_alpha_pixels": 22637,
+      "pivot_pixel_from_upper_left": [
+        256,
+        256
+      ],
+      "render_seconds": 2.5254103139959625,
+      "normalization_matrix_source_runtime": [
+        [
+          0.44690951704978943,
+          0,
+          -0.013939540833234787,
+          -0.023846320807933807
+        ],
+        [
+          0,
+          0.4471268653869629,
+          0,
+          0.3180355429649353
+        ],
+        [
+          0.013939540833234787,
+          0,
+          0.44690951704978943,
+          0.05266020819544792
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "cropped": false,
+      "layers": [
+        "color",
+        "alpha"
+      ]
+    },
+    {
+      "world_yaw_degrees": 45,
+      "clip_key": "north-east",
+      "screen_heading": "down",
+      "filename": "sheep-yaw-045.png",
+      "sha256": "60932c6bd16c99ac43d90d6483bfaf2741f28498886016ed66ab3ddb33047cbc",
+      "dimensions": [
+        512,
+        512
+      ],
+      "alpha_bbox_exclusive": [
+        155,
+        106,
+        345,
+        307
+      ],
+      "clipped": false,
+      "nonzero_alpha_pixels": 19973,
+      "pivot_pixel_from_upper_left": [
+        256,
+        256
+      ],
+      "render_seconds": 2.248832136996498,
+      "normalization_matrix_source_runtime": [
+        [
+          0.32586947083473206,
+          0,
+          0.3061560392379761,
+          0.020374499261379242
+        ],
+        [
+          0,
+          0.4471268653869629,
+          0,
+          0.3180355429649353
+        ],
+        [
+          -0.3061560392379761,
+          0,
+          0.32586947083473206,
+          0.054098282009363174
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "cropped": false,
+      "layers": [
+        "color",
+        "alpha"
+      ]
+    },
+    {
+      "world_yaw_degrees": 90,
+      "clip_key": "east",
+      "screen_heading": "down-right",
+      "filename": "sheep-yaw-090.png",
+      "sha256": "f669ba4b8299ba8a7aecfa1de77bb88e5f80eb51e941fb655d8ebe6afac74aed",
+      "dimensions": [
+        512,
+        512
+      ],
+      "alpha_bbox_exclusive": [
+        196,
+        99,
+        316,
+        307
+      ],
+      "clipped": false,
+      "nonzero_alpha_pixels": 17542,
+      "pivot_pixel_from_upper_left": [
+        256,
+        256
+      ],
+      "render_seconds": 2.190026949996536,
+      "normalization_matrix_source_runtime": [
+        [
+          0.013939361087977886,
+          0,
+          0.44690951704978943,
+          0.05266021564602852
+        ],
+        [
+          0,
+          0.4471268653869629,
+          0,
+          0.3180355429649353
+        ],
+        [
+          -0.44690951704978943,
+          0,
+          0.013939361087977886,
+          0.023846298456192017
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "cropped": false,
+      "layers": [
+        "color",
+        "alpha"
+      ]
+    },
+    {
+      "world_yaw_degrees": 135,
+      "clip_key": "south-east",
+      "screen_heading": "right",
+      "filename": "sheep-yaw-135.png",
+      "sha256": "4d2ab4871cfa3710eaa22ec41dc247eb5beb1724a8abc0cc58dbd90ad6baaca2",
+      "dimensions": [
+        512,
+        512
+      ],
+      "alpha_bbox_exclusive": [
+        161,
+        110,
+        378,
+        303
+      ],
+      "clipped": false,
+      "nonzero_alpha_pixels": 21396,
+      "pivot_pixel_from_upper_left": [
+        256,
+        256
+      ],
+      "render_seconds": 2.336065111005155,
+      "normalization_matrix_source_runtime": [
+        [
+          -0.3061559200286865,
+          0,
+          0.3258695900440216,
+          0.05409828945994377
+        ],
+        [
+          0,
+          0.4471268653869629,
+          0,
+          0.3180355429649353
+        ],
+        [
+          -0.3258695900440216,
+          0,
+          -0.3061559200286865,
+          -0.0203744787722826
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "cropped": false,
+      "layers": [
+        "color",
+        "alpha"
+      ]
+    },
+    {
+      "world_yaw_degrees": 180,
+      "clip_key": "south",
+      "screen_heading": "up-right",
+      "filename": "sheep-yaw-180.png",
+      "sha256": "9eaf1fa7b907596e545a1196e80cf3b964cb06ea3dae93620f6448ea40889511",
+      "dimensions": [
+        512,
+        512
+      ],
+      "alpha_bbox_exclusive": [
+        141,
+        114,
+        394,
+        285
+      ],
+      "clipped": false,
+      "nonzero_alpha_pixels": 23185,
+      "pivot_pixel_from_upper_left": [
+        256,
+        256
+      ],
+      "render_seconds": 2.386306121996313,
+      "normalization_matrix_source_runtime": [
+        [
+          -0.44690951704978943,
+          0,
+          0.013939501717686653,
+          0.02384631521999836
+        ],
+        [
+          0,
+          0.4471268653869629,
+          0,
+          0.3180355429649353
+        ],
+        [
+          -0.013939501717686653,
+          0,
+          -0.44690951704978943,
+          -0.05266020819544792
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "cropped": false,
+      "layers": [
+        "color",
+        "alpha"
+      ]
+    },
+    {
+      "world_yaw_degrees": 225,
+      "clip_key": "south-west",
+      "screen_heading": "up",
+      "filename": "sheep-yaw-225.png",
+      "sha256": "1fb1614da45cd474ba47d37fb75beed5cb15ba210ed68704f060c17b562be4f6",
+      "dimensions": [
+        512,
+        512
+      ],
+      "alpha_bbox_exclusive": [
+        167,
+        75,
+        357,
+        310
+      ],
+      "clipped": false,
+      "nonzero_alpha_pixels": 21942,
+      "pivot_pixel_from_upper_left": [
+        256,
+        256
+      ],
+      "render_seconds": 2.4004309360025218,
+      "normalization_matrix_source_runtime": [
+        [
+          -0.3258694112300873,
+          0,
+          -0.30615609884262085,
+          -0.020374510437250137
+        ],
+        [
+          0,
+          0.4471268653869629,
+          0,
+          0.3180355429649353
+        ],
+        [
+          0.30615609884262085,
+          0,
+          -0.3258694112300873,
+          -0.054098278284072876
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "cropped": false,
+      "layers": [
+        "color",
+        "alpha"
+      ]
+    },
+    {
+      "world_yaw_degrees": 270,
+      "clip_key": "west",
+      "screen_heading": "up-left",
+      "filename": "sheep-yaw-270.png",
+      "sha256": "bcb6fad2fd5ff588b370bd427e1166925814cc5454a1ddc5002e6b914b589b70",
+      "dimensions": [
+        512,
+        512
+      ],
+      "alpha_bbox_exclusive": [
+        196,
+        62,
+        316,
+        308
+      ],
+      "clipped": false,
+      "nonzero_alpha_pixels": 20014,
+      "pivot_pixel_from_upper_left": [
+        256,
+        256
+      ],
+      "render_seconds": 2.4778619229982723,
+      "normalization_matrix_source_runtime": [
+        [
+          -0.013939719647169113,
+          0,
+          -0.44690951704978943,
+          -0.052660197019577026
+        ],
+        [
+          0,
+          0.4471268653869629,
+          0,
+          0.3180355429649353
+        ],
+        [
+          0.44690951704978943,
+          0,
+          -0.013939719647169113,
+          -0.02384634129703045
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "cropped": false,
+      "layers": [
+        "color",
+        "alpha"
+      ]
+    },
+    {
+      "world_yaw_degrees": 315,
+      "clip_key": "north-west",
+      "screen_heading": "left",
+      "filename": "sheep-yaw-315.png",
+      "sha256": "570823e874f1defa7c44ac6bce906b88cf886fb4b3e7af5dc1998d85640b234c",
+      "dimensions": [
+        512,
+        512
+      ],
+      "alpha_bbox_exclusive": [
+        134,
+        88,
+        351,
+        309
+      ],
+      "clipped": false,
+      "nonzero_alpha_pixels": 22466,
+      "pivot_pixel_from_upper_left": [
+        256,
+        256
+      ],
+      "render_seconds": 2.3878532290036674,
+      "normalization_matrix_source_runtime": [
+        [
+          0.3061559796333313,
+          0,
+          -0.32586953043937683,
+          -0.05409828573465347
+        ],
+        [
+          0,
+          0.4471268653869629,
+          0,
+          0.3180355429649353
+        ],
+        [
+          0.32586953043937683,
+          0,
+          0.3061559796333313,
+          0.020374488085508347
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "cropped": false,
+      "layers": [
+        "color",
+        "alpha"
+      ]
+    }
+  ],
+  "producerReview": {
+    "all_eight_captures_succeeded": true,
+    "all_full_silhouettes_unclipped": true,
+    "visual_anatomy": "Four attached legs and cloven hooves are visible in the underside diagnostic. Face, eyes, ears, fleece and short tail are present. No unwanted floor mesh was observed. Hidden anatomy remains generated, not established by the original single input image.",
+    "appearance": "Cream fleece and pale face are retained. Rendered lighting is paler than the 2D input. Repeated fleece patterning is most evident underneath and on the back; keep as high-detail reference.",
+    "production_status": "Reference only. No rig, walk cycle, sprite-atlas/runtime integration, topology/license admission, or production acceptance.",
+    "head_body_turn_degrees": 42.03499984741211,
+    "next_pose_recommendation": "For locomotion, reuse this source and first obtain a neutral pose with body-forward separate from gaze. No paid generation or rigging is authorized by this validation bundle."
+  },
+  "preservedArtifacts": "Original, scene, eight uncropped color frames, diagnostic contact sheet, manifest and rejected shadow experiments held in the producer's Library bundle. Personal Library identifiers remain in the private handoff.",
+  "noPaidCallsInCapture": true,
+  "unresolved": [
+    "Model redistribution/runtime admission is unverified.",
+    "Turned head makes nose yaw distinct from body-forward by 42.03499984741211 degrees.",
+    "No rig, locomotion, sprite atlas, approved contact-shadow layer or runtime integration.",
+    "Contact sheet download failed in this review environment; producer's visual review is attributed."
+  ]
+}

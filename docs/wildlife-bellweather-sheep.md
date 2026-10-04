@@ -41,6 +41,20 @@ body headings and normalized atlas candidates have also cleared independent
 source/pixel review; no new animal artwork is admitted to the game. The ranked backlog below
 owns publication, binding, collar fitting and delivered appearance.
 
+## Historical reference sources — 2 October 2026
+
+The [v1 reference](art-direction/bellweather-sheep-reference-v1/README.md),
+[v2 descriptive correction](art-direction/bellweather-sheep-reference-v2/README.md),
+[v3 approximate-angle sheet](art-direction/bellweather-sheep-reference-v3/README.md)
+and [single-subject model input](art-direction/bellweather-sheep-model-input-v1/README.md)
+retain their original PNGs, exact prompts, source identities and dated reviews.
+Their printed angles do not prove measured camera, scale or root registration.
+The [angle standard](asset-angle-reference-standard.md) and
+[producer static-reference record](qa-evidence/bellweather-sheep-static-reference-2026-10-02/README.md)
+preserve that preparation and its nose/body distinction. These are historical
+design sources alongside the approved static runtime views above; private
+originals and newer action exports keep their separate publication limits.
+
 ## Tiny default adoption — 4 October 2026
 
 **Veyrholds · Terraced Vale** converts `s0-home-food`, `s1-home-food`,

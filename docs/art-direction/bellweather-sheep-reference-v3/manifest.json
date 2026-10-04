@@ -1,0 +1,229 @@
+{
+  "schema": "thousand-unit-skirmish.art-source-candidate.v1",
+  "date": "2026-10-02",
+  "packId": "art.bellweather-sheep-reference",
+  "version": "3.0.0",
+  "status": "approximate-angle concept reference; visual design retained; not calibrated runtime sprites",
+  "baseline": "9990ed3bb441fb0120a5aaad53d69798c18a66cc",
+  "generator": "OpenAI host-native image_gen edit",
+  "generatorModel": "not returned",
+  "sourceOutputId": "exec-afca621c-48f3-4c15-9135-cd373c63d80d",
+  "sourceOutputFilename": "exec-afca621c-48f3-4c15-9135-cd373c63d80d.png",
+  "originalOutputPreserved": true,
+  "source": {
+    "file": "bellweather-sheep-reference-v3.png",
+    "sha256": "ea31df740058b263da30039535d9a7a3a2a5252f06a6d8e5ac2884f2631e557f",
+    "bytes": 2029561,
+    "dimensionsPx": {
+      "width": 1536,
+      "height": 1024
+    },
+    "mode": "RGB"
+  },
+  "reference": {
+    "file": "docs/art-direction/bellweather-sheep-reference-v2/bellweather-sheep-reference-v2.png",
+    "sha256": "483cc54246c1070c5687ba50546a2ed7bf5640c27a48da9bb69ad3afbb5c56e9",
+    "role": "annotation edit; preserve existing Sheep appearance and poses",
+    "provenanceRoot": "docs/art-direction/vaelora-v1/bellweather-ecology.png"
+  },
+  "runtimeConvention": {
+    "verifiedAt": "9990ed3bb441fb0120a5aaad53d69798c18a66cc",
+    "sourceFiles": [
+      "src/camera-controls.mjs",
+      "src/main.js",
+      "src/unit-sprite-runtime.mjs"
+    ],
+    "worldUp": "+Y",
+    "yawZeroFacing": "+Z",
+    "positiveYaw": "+Z toward +X about +Y",
+    "yaw90Facing": "+X",
+    "camera": {
+      "direction": [
+        0.78,
+        1.12,
+        0.78
+      ],
+      "azimuthDegrees": 45,
+      "elevationDegrees": 45.43590248481586,
+      "projection": "orthographic"
+    },
+    "note": "Runtime clip names encode world headings; screen-compass words differ. The artwork is not measured against this camera."
+  },
+  "designTargets": {
+    "shoulderHeightWorld": 0.6,
+    "noseToRumpWorld": 0.9,
+    "root": "hoof-plane center between planted feet",
+    "status": "proposed dimensions, not measured from drawings"
+  },
+  "validation": {
+    "decodedPng": true,
+    "hashAndByteCopy": true,
+    "sourcePixelInspection": true,
+    "visuallyRetainedAppearance": true,
+    "identicalAnimalPixelsClaimed": false,
+    "multiViewGeometricConsistency": false,
+    "mechanicalCameraValidation": false,
+    "registeredRuntimePivots": false,
+    "animationClips": false,
+    "engineIntegration": false
+  },
+  "jobsThisRevision": {
+    "builtinImagegen": 1,
+    "meshy": 0,
+    "paidExternalProvider": 0
+  },
+  "files": {
+    "prompt": "PROMPT.json",
+    "review": "review.json",
+    "readme": "README.md"
+  },
+  "license": {
+    "status": "project-generated reference candidate; no new SPDX license asserted"
+  },
+  "panels": [
+    {
+      "id": "anatomy-front",
+      "row": 0,
+      "column": 0,
+      "view": "front",
+      "approximateConceptYawDegrees": 45,
+      "runtimeClipKey": "north-east",
+      "screenProjectionTarget": "down",
+      "proposalCropRectPx": [
+        40,
+        92,
+        295,
+        340
+      ],
+      "cropRectFormat": "x,y,width,height; upper-left origin",
+      "cropExtracted": false,
+      "geometryCalibrated": false
+    },
+    {
+      "id": "anatomy-left",
+      "row": 0,
+      "column": 1,
+      "view": "side, head left",
+      "approximateConceptYawDegrees": 315,
+      "runtimeClipKey": "north-west",
+      "screenProjectionTarget": "left",
+      "proposalCropRectPx": [
+        350,
+        90,
+        447,
+        338
+      ],
+      "cropRectFormat": "x,y,width,height; upper-left origin",
+      "cropExtracted": false,
+      "geometryCalibrated": false
+    },
+    {
+      "id": "anatomy-right",
+      "row": 0,
+      "column": 2,
+      "view": "side, head right",
+      "approximateConceptYawDegrees": 135,
+      "runtimeClipKey": "south-east",
+      "screenProjectionTarget": "right",
+      "proposalCropRectPx": [
+        802,
+        95,
+        415,
+        335
+      ],
+      "cropRectFormat": "x,y,width,height; upper-left origin",
+      "cropExtracted": false,
+      "geometryCalibrated": false
+    },
+    {
+      "id": "anatomy-back",
+      "row": 0,
+      "column": 3,
+      "view": "back",
+      "approximateConceptYawDegrees": 225,
+      "runtimeClipKey": "south-west",
+      "screenProjectionTarget": "up",
+      "proposalCropRectPx": [
+        1232,
+        95,
+        280,
+        332
+      ],
+      "cropRectFormat": "x,y,width,height; upper-left origin",
+      "cropExtracted": false,
+      "geometryCalibrated": false
+    },
+    {
+      "id": "oblique-front",
+      "row": 1,
+      "column": 0,
+      "view": "front three-quarter",
+      "approximateConceptYawDegrees": 0,
+      "runtimeClipKey": "north",
+      "screenProjectionTarget": "down-left",
+      "proposalCropRectPx": [
+        40,
+        510,
+        310,
+        300
+      ],
+      "cropRectFormat": "x,y,width,height; upper-left origin",
+      "cropExtracted": false,
+      "geometryCalibrated": false
+    },
+    {
+      "id": "oblique-left-rear",
+      "row": 1,
+      "column": 1,
+      "view": "side/rear, head left",
+      "approximateConceptYawDegrees": 270,
+      "runtimeClipKey": "west",
+      "screenProjectionTarget": "up-left",
+      "proposalCropRectPx": [
+        382,
+        510,
+        383,
+        300
+      ],
+      "cropRectFormat": "x,y,width,height; upper-left origin",
+      "cropExtracted": false,
+      "geometryCalibrated": false
+    },
+    {
+      "id": "oblique-back",
+      "row": 1,
+      "column": 2,
+      "view": "back three-quarter",
+      "approximateConceptYawDegrees": 180,
+      "runtimeClipKey": "south",
+      "screenProjectionTarget": "up-right",
+      "proposalCropRectPx": [
+        793,
+        492,
+        357,
+        320
+      ],
+      "cropRectFormat": "x,y,width,height; upper-left origin",
+      "cropExtracted": false,
+      "geometryCalibrated": false
+    },
+    {
+      "id": "oblique-right-front",
+      "row": 1,
+      "column": 3,
+      "view": "front/side, head right",
+      "approximateConceptYawDegrees": 90,
+      "runtimeClipKey": "east",
+      "screenProjectionTarget": "down-right",
+      "proposalCropRectPx": [
+        1160,
+        533,
+        346,
+        280
+      ],
+      "cropRectFormat": "x,y,width,height; upper-left origin",
+      "cropExtracted": false,
+      "geometryCalibrated": false
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "schema": "thousand-unit-skirmish.art-source-candidate.v1",
+  "date": "2026-10-02",
+  "packId": "art.bellweather-sheep-reference",
+  "version": "1.0.0",
+  "status": "concept-reference candidate; game-yaw registration rejected pending correction; no runtime integration",
+  "baseline": "9990ed3bb441fb0120a5aaad53d69798c18a66cc",
+  "parentBranch": "codex/wildlife-design-art-index",
+  "generator": "OpenAI host-native image_gen",
+  "generatorModel": "not returned",
+  "sourceOutputId": "exec-4d8d1eda-e51c-415d-986f-89ecf0c86fa4",
+  "sourceOutputFilename": "exec-4d8d1eda-e51c-415d-986f-89ecf0c86fa4.png",
+  "originalOutputPreserved": true,
+  "source": {
+    "file": "bellweather-sheep-reference-v1.png",
+    "sha256": "a644b19a449e52c5d0a61ea0b87eddbf158cb295fbeddeeca36dda5f7007a4a2",
+    "bytes": 2116630,
+    "dimensionsPx": {
+      "width": 1536,
+      "height": 1024
+    },
+    "mode": "RGB"
+  },
+  "reference": {
+    "file": "docs/art-direction/vaelora-v1/bellweather-ecology.png",
+    "sha256": "043d3be76343e9e5c04850fe99be84333b977a7215e503152bf1ab9dc588ed40",
+    "role": "identify the pictured Bellweather Sheep and painterly style only; full project-authored ecology key supplied",
+    "privateManuscriptsCopied": false,
+    "thirdPartyImageInputs": false
+  },
+  "designTargets": {
+    "status": "locked proposal targets, not measured generated geometry",
+    "camera": {
+      "azimuthDegrees": 45,
+      "elevationDegrees": 45.4359024848,
+      "projection": "orthographic",
+      "worldUp": "+Y",
+      "yawZeroFacing": "+Z"
+    },
+    "anatomy": {
+      "shoulderHeightWorld": 0.6,
+      "noseToRumpWorld": 0.9,
+      "root": "hoof plane center between planted feet",
+      "legs": 4,
+      "horns": false,
+      "harness": false
+    },
+    "coverageRequested": {
+      "anatomy": [
+        "front",
+        "left profile",
+        "right profile",
+        "rear"
+      ],
+      "cameraStudyWorldYaws": [
+        0,
+        90,
+        180,
+        270
+      ]
+    },
+    "eightDirectionCoverage": false
+  },
+  "validation": {
+    "decodedPng": true,
+    "hashAndByteCopy": true,
+    "sourcePixelInspection": true,
+    "mechanicalCameraValidation": false,
+    "registeredRuntimePivots": false,
+    "animationClips": false,
+    "engineIntegration": false,
+    "canonicalGameDevPackage": false
+  },
+  "jobs": {
+    "builtinImagegen": 1,
+    "meshy": 0,
+    "paidExternalProvider": 0
+  },
+  "license": {
+    "status": "project-generated reference candidate; no new SPDX license asserted",
+    "boundary": "Generation and provenance do not certify clearance of incidental output details."
+  },
+  "files": {
+    "prompt": "PROMPT.json",
+    "review": "review.json",
+    "readme": "README.md"
+  }
+}

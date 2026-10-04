@@ -1,0 +1,74 @@
+{
+  "schema": "thousand-unit-skirmish.art-source-candidate.v1",
+  "date": "2026-10-02",
+  "packId": "art.bellweather-sheep-model-input",
+  "version": "1.0.0",
+  "status": "single-subject image input candidate; pixel reviewed; no model job or runtime acceptance",
+  "sourceOutputId": "exec-897bf821-78ff-4676-9cf6-fe86ca88dfdc",
+  "sourceOutputFilename": "exec-897bf821-78ff-4676-9cf6-fe86ca88dfdc.png",
+  "originalOutputPreserved": true,
+  "generator": "OpenAI host-native image_gen edit",
+  "generatorModel": "not returned",
+  "source": {
+    "file": "bellweather-sheep-model-input-yaw-000-v1.png",
+    "sha256": "0ff688101304a7c10e181b3363ce767e8fb0082d0f754817edee81e04a9bf904",
+    "bytes": 1457172,
+    "dimensionsPx": {
+      "width": 1254,
+      "height": 1254
+    },
+    "mode": "RGB"
+  },
+  "reference": {
+    "file": "docs/art-direction/bellweather-sheep-reference-v3/bellweather-sheep-reference-v3.png",
+    "sha256": "ea31df740058b263da30039535d9a7a3a2a5252f06a6d8e5ac2884f2631e557f",
+    "panelId": "oblique-front",
+    "parentPanelRectPx": [
+      40,
+      510,
+      310,
+      300
+    ],
+    "rectFormat": "x,y,width,height; upper-left origin",
+    "role": "isolate visually approved lower-left Sheep; remove all other specimens and guides",
+    "byteCrop": false
+  },
+  "orientation": {
+    "approximateConceptYawDegrees": 0,
+    "view": "front three-quarter, nose toward lower-left",
+    "runtimeClipKey": "north",
+    "screenProjectionTarget": "down-left",
+    "cameraCalibrated": false
+  },
+  "review": {
+    "completeSingleSubject": true,
+    "fourPlantedLegsVisible": true,
+    "noLabelsGuidesNeighboringSubjects": true,
+    "plainNearWhiteBackground": true,
+    "subtleContactShadow": true,
+    "visuallyRetainedAppearance": true,
+    "identicalAnimalPixelsClaimed": false,
+    "hiddenAnatomyVerified": false
+  },
+  "validation": {
+    "decodedPng": true,
+    "hashAndByteCopy": true,
+    "sourcePixelInspection": true,
+    "modelGenerated": false,
+    "meshyUploaded": false,
+    "runtimeRegistration": false
+  },
+  "jobsThisRevision": {
+    "builtinImagegen": 1,
+    "meshy": 0,
+    "paidExternalProvider": 0
+  },
+  "files": {
+    "prompt": "PROMPT.json",
+    "review": "review.json",
+    "readme": "README.md"
+  },
+  "license": {
+    "status": "project-generated input candidate; no new SPDX license asserted"
+  }
+}

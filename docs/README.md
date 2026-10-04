@@ -110,6 +110,8 @@ from source/candidate packs. Then use the relevant contract:
 
 - [Art direction](art-direction-contract-v1.md) and [production lanes](art-production-lanes.md).
 - [Wildlife draft](wildlife-bellweather-sheep.md): inspected regional fauna, one Sheep proposal, behavior, habitat and future perspective/sprite coverage.
+- [Asset angle-reference standard](asset-angle-reference-standard.md): labeled rotations appropriate to asset type, verified runtime yaw/camera mapping, scale/root acceptance and angle-specific sprite-source provenance.
+- [Sheep model-reference pilot](bellweather-sheep-model-reference-pilot.md): preserved 2 October input and static-capture contracts; private model and later runtime adoption remain separate.
 - [Default low-bank shade](qa-shore-bank-shade-2026-10-03.md): contour-following land value cue, bounded geometry and preserved before/after CPU studies with native-render limits.
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
 - [Finished Frontier runtime](frontier-building-runtime.md): all six default finished building families, state fallback, packaging, shared depth/texture ownership and open normal-match QA.
