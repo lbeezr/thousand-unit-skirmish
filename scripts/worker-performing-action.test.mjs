@@ -5,7 +5,7 @@ import vm from 'node:vm';
 import { createWorkerPerformingActions } from '../src/worker-performing-action.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { buildingRepairStep } from '../src/base-lifecycle.mjs';
-import { isAreaGatherResource, activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent } from '../src/work-intent.mjs';
+import { FOREST_GATHER_SOURCE_KIND, isAreaGatherResource, activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent } from '../src/work-intent.mjs';
 import { gatherWorkArea } from '../src/gather-work-area.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
@@ -29,7 +29,7 @@ function fixture() {
   const journal = createWorkerPerformingActions();
   const context = vm.createContext({ units: [unit], tickNumber: 1, dirty: false,
     workerPerformingActions: journal, BUILDING_DEFINITIONS, buildingRepairStep,
-    isAreaGatherResource, activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent, gatherWorkArea,
+    FOREST_GATHER_SOURCE_KIND, isAreaGatherResource, activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent, gatherWorkArea,
     // This receipt fixture has no reachable replacement area. Full authority
     // resource-job tests exercise continuation; these check confirmed grants.
     nearestOpenCell: () => 0, walkableComponents: [-1],
