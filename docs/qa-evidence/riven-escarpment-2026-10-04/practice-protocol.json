@@ -1,0 +1,38 @@
+{
+  "sourceRevision": "046d9f07ab870a69712ece1e229b0ca61347fec6",
+  "sourceDirty": false,
+  "inputSHA256": {
+    "scripts/riven-escarpment-practice-scenario.mjs": "ec245cdbd6b1add2b9637c95b61bd67a58a61b190de355f0916243c4b1ccc120",
+    "scripts/fortified-crossing-fixture.mjs": "d3f5873cdc5fabd603e1833470edd166b18836240168daae3d8ae64d7193dbbf",
+    "maps/veyrholds-riven-escarpment.json": "42824ee5b4a4f9ef63df3961c2737ca37d3f71a61937d55860dec830ec38d2eb",
+    "server.mjs": "bba377a6af627f30cc2acd88fb52e2cbec3c7491add5ebb56394975c39e0bdc0",
+    "src/map-utils.mjs": "e8ed0f7626b309c2543758815c9d2dfd72d693904ade3e1687d421958b9309e3",
+    "src/elevation.mjs": "6c2df497780c9b00bac86fbc7ece5937efdf27cd70a36248e57ad32d9d928fce",
+    "src/gameplay-definitions.mjs": "61e1fc9aa85ad3d8672a3f3971f6692e136513b91e8bf0741f70882c9717d1ca",
+    "src/match-modes.mjs": "84d0e4838f1fd6479485bf4bbc05e9e8f0e839c6b72e2cbef4acecb111c29d53"
+  },
+  "startedAt": "2026-10-04T03:36:42.396Z",
+  "finishedAt": "2026-10-04T03:36:52.687Z",
+  "evidenceType": "public-Practice-protocol-smoke",
+  "rootDomEntry": false,
+  "injectedState": false,
+  "mapId": "veyrholds-riven-escarpment",
+  "dimensions": [
+    224,
+    224
+  ],
+  "launchOptions": {
+    "mode": "pvp",
+    "practice": true,
+    "matchModeId": "authored",
+    "matchModeVersion": 1
+  },
+  "packedFogBytesPerSeat": 12544,
+  "recoveredFromCheckpoint": true,
+  "stockAndBankPersistence": true,
+  "oneHumanPracticeMove": true,
+  "limits": [
+    "Initial stocks only; no paid city or full-route arrival acceptance.",
+    "No rendered/deployed/capacity acceptance."
+  ]
+}
