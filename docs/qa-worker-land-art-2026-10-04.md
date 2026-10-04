@@ -104,12 +104,12 @@ current-roster keys can also be admitted with the same manifest contract.
 | --- | --- | --- |
 | 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
 | 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
-| 3 | Fill wood/food/build/repair/attack/defeat's seven absent headings: **42 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
+| 3 | Fill wood/food/build/repair/attack/defeat's seven absent headings: **40 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
 | 4 | Seven remaining readable dedicated Stone-work headings and SE selector adoption. | SE now has dedicated pick poses; the broad eight-view attempt failed strike facing in the other rows. Animation owner also needs the actual Stone state/resource selector enabled after artwork exists; current default intentionally returns idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
 There are now 8 of 8 walk headings, eight distinct idle headings, SE land-action
-motion and SE Stone artwork awaiting default selector adoption. **49 land-action/heading cells remain** (42+7).
+motion and SE Stone artwork awaiting default selector adoption. **47 land-action/heading cells remain** (40+7).
 Fishing's seven missing headings are excluded and retained by its separate owner.
 The animation-owner ID is outside this executor's live collaboration tree; the
 manifest contract and retained dependencies are recorded here for parent routing.
@@ -310,3 +310,122 @@ records code `b2d8e6702236a1598bb7cbe302b17107de218b07`, 1175 files and
 `sha256:37e05e727ece6d2a3ef78f9037a16cb51ba67120a9c546bd6c368a1a80acb08e`. The existing three runtime files include this clip;
 no directory/defaultadoption flag or new HTTPpath is required. Stone state
 and exactheading policy adoption remain owned by the animation consumer.
+
+
+## Sixth usable slice: NW wood work, preserving the existing default consumer
+
+Dedicated StoneSE pack merged in [PR248](https://github.com/lbeezr/thousand-unit-skirmish/pull/248)
+at `69e05489058106d42b87cfb5c4896e14e940ea76` after [independent agent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/248#pullrequestreview-5403914566).
+The exact Stone binding request is in [PR216](https://github.com/lbeezr/thousand-unit-skirmish/pull/216#issuecomment-5975731648);
+this art slice continues without changing those owned state/clock helpers.
+
+[Retained NW wood v1](art-direction/human-roster-v1/generated/worker-wood-north-west-v1/README.md)
+has three real left-profile chops, but the first overhead tool envelope does not
+fit at the matched body scale. Preserve that rejected iteration.
+[Compact v2](art-direction/human-roster-v1/generated/worker-wood-north-west-v2/README.md)
+has three distinct complete shoulder windup/downstrike/recovery keys facing left,
+matching the public default NW idle. No headings are copied or mirrored.
+
+Packv0.21.0 adds `gather-wood|north-west`, three240ms keys,720ms looping.
+[Admission](../scripts/admit-worker-wood-north-west.py) uses one271/801 scale,
+source ground roots[256,816,1344] and baseline900, local root[160,308] in320x320
+cells atx2048/y0,320,640. Body height remains about230 pixels and maximum alpha
+height remains272, retaining exact0.0052421832906788795 world units per pixel.
+The side strip changes page/mask width2048→2560, height stays4096; every old
+frame rectangle/record, all prior clips and all decoded old pixels remain exact.
+The longest texture dimension remains4096. Page allocation grows25%; native
+GPU acceptance remains open. The previous encoded mask is retained in evidence,
+and decoded old zero mask pixels plus new zero extension are checked explicitly.
+
+[Preservation](qa-evidence/worker-land-art-2026-10-04/wood-north-west-preservation.json)
+protects128 prior records/pixels,53 prior clips, the historical full mask file and
+world scale. [Registration](qa-evidence/worker-land-art-2026-10-04/wood-north-west-registration.json),
+[ordinary/strategic keys](qa-evidence/worker-land-art-2026-10-04/wood-north-west-keys.png)
+and [loop](qa-evidence/worker-land-art-2026-10-04/wood-north-west-loop.webp) record
+exact shared roots, actual distinct RGBA hashes and the complete silhouette.
+The frozen fishing-era pixel test now measures its exact historical ROI row by
+row across the wider atlas; all original/fishing pixels remain protected.
+
+The existing default selector consumes confirmed `performingAction:gather-wood`
+atNW without state-helper changes, including empty cargo; intent alone remains
+idle. Tests exercise both Human seats selected/unselected, full loop, Stop/resume,
+movement/attack interruptions and cargo return. Missing other wood headings
+retain exact idle and NW food stays idle. Native recipe: on a containing normal
+Human match stand screen-right of a tree/wood node, face NW/screen-left, observe
+these three chops, Stop, resume, move away, return a load and attack/interrupted
+work. Record build/map/seat and ordinary/strategic scale, axe contact/ground root.
+Do not claim source/default CPU playback as actual GPU capture.
+
+Walks remain8/8; wood nowSE+NW, other five land-work/combat actions stillSE;
+Stone hasSE art awaiting the bounded consumer adoption. **48 cells remain**:
+6 wood +35 food/build/repair/attack/defeat +7 Stone. Fishing remains excluded.
+The next ranked art slice is a small complete actual food-work heading, then
+build/repair/attack/defeat and remaining Stone; preserve all useful SE motion.
+
+
+NW wood validation: all95 focused pixel/default Three action/receipt/clock/heading/
+fishing/contact/client/sharding tests pass. Atlas/docs/whitespace, deterministic
+byte-idempotent registration and real packed BasicAuthHTTP/WebSocket/hash checks
+pass. Independent review, author merge and exact deployed/native acceptance remain
+open at this checkpoint; no runtime/economy/clock helper changed.
+
+
+[Clean NW wood release](qa-evidence/worker-land-art-2026-10-04/wood-north-west-clean-release.json)
+records exact clean code `02ae8c55e68b82fa396d14541615a27c2c5d1b1c`,1176 files and
+`sha256:0d2a0acc4286e1f610ccb1997afd3284b762496001a3e4648144137cefe5477e`.
+The subsequent receipt/document checkpoint does not pretend to be the measured
+source; all runtime files are included in the existing default packaging path.
+
+
+## Seventh usable slice: NW food gathering
+
+NW wood merged in [PR253](https://github.com/lbeezr/thousand-unit-skirmish/pull/253)
+at `d217700fc025b5281c867691149b5f1bfff22ea3` after [independent agent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/253#pullrequestreview-5403990178)
+of exacthead `d42a8ba33861350f68c36b76fe04f1df5729e3cb`,95 focused checks and
+packedHTTP. Default wood CPU playback is verified; deployed/native remains open.
+
+[Food NW retained iteration](art-direction/human-roster-v1/generated/worker-food-north-west-v1/README.md)
+adds three actual left-profile bare-hand reach/collect/stow poses. Axe is absent
+as in the retained current SE food action; body/costume/backpack/profile match
+public NW idle. Standing body defines one232/720 scale; crouch height is naturally
+lower, never per-pose normalized. Source layout roots[352,864,1344], baseline849,
+local root[128,244] in256x256 cells. [Admission](../scripts/admit-worker-food-north-west.py)
+uses the existing side stripx2048/y960,1216,1472. Packv0.22.0 has
+`gather-food|north-west`, three240ms keys,720ms looping. No new atlas allocation,
+mask/dimension/world-scale change, state helper or economy change.
+
+[Preservation](qa-evidence/worker-land-art-2026-10-04/food-north-west-preservation.json)
+protects131 prior frame records/decoded pixels,54 prior clips and exact mask.
+[Registration](qa-evidence/worker-land-art-2026-10-04/food-north-west-registration.json),
+[key review](qa-evidence/worker-land-art-2026-10-04/food-north-west-keys.png) and
+[loop](qa-evidence/worker-land-art-2026-10-04/food-north-west-loop.webp) retain
+actual distinct RGBA and stable source-to-root offsets.
+
+The existing default productive-food selector plays these keys with empty cargo.
+Both Human seats selected/unselected: full loop, turn to missingN/exact idle and
+back without phase restart, Stop/resume, movement/attack interrupts and loaded
+Return→idle are checked. Wood/food resolve their own respective artwork; missing
+other food headings retain exact idle. Existing NW fishing fallback now uses
+its exact food clip, as designed; it is not dedicated fishing coverage. All98
+focused pixel/runtime/receipt/clock/heading/fishing/contact/client/sharding tests,
+atlas validation and byte-idempotent admission pass. Native recipe: on a
+containing ordinary Human map approach berries/farm from screen-right so actual
+work facesNW/left; watch reach/pullback/stow, Stop/resume, turn/relocate and load→
+return→bank. Record build/map/seat/selection and ordinary/strategic root/contact.
+Actual game/native evidence remains separate from CPU UV sampling.
+
+Walks8/8; woodSE+NW, foodSE+NW; build/repair/attack/defeat remainSE only;
+StoneSE art still requires its bounded animation-owner adoption. **47 cells
+remain**:6 wood+6 food+28 otherwork/combat+7 Stone. Next cheap useful slice:
+reuse the actual public NW axe-swing poses for one-shot NW attack with explicit
+attack timing/clamp, then supply build/repair/defeat and further real headings.
+[Latest actual staging observation](qa-evidence/worker-land-art-2026-10-04/staging-observation-food.json)
+still reports successful old64cc391e, predating every land slice. Parent's
+existing Railway/Mac route remains the identified delivery/native receiving
+owner; local browser fails sandbox-unavailable. No source merge is called delivery.
+
+
+[Clean NW food release](qa-evidence/worker-land-art-2026-10-04/food-north-west-clean-release.json)
+records exact clean code `95dc1d23f234b7cf4695bd9669846d4a1d95a0ca`,1176files,
+`sha256:2e7ac2f7b357ef2d6aceb7a86838d4f014755b55e6d017324394ab3a6e11e059`. All default runtime files are included; subsequent
+receipt/doc checkpoint is distinct from the measured source.

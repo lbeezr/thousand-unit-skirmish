@@ -84,12 +84,13 @@ test('actual checkpoint capture copies private motion before deferred serializat
   const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
   const capture = source.slice(source.indexOf('function captureMatchCheckpoint('), source.indexOf('function assertSnapshot('));
   const node = createResourceNodeState(definition);
+  let visionChecks = 0;
   const defaults = { MATCH_CHECKPOINT_SCHEMA_VERSION: 25, MATCH_RULES_VERSION: 6,
     sessions: new Map(), resourceNodeStates: new Map([[node.id, node]]), units: [], buildings: [],
     teamUpgrades: [{}, {}], teamResearch: [null, null], workerProduction: [{}, {}], homeTownCenters: [{}, {}],
     triggerStates: new Map(), scenarioEventStates: new Map(), victoryHoldState: { activeTeams: [], progressSeconds: [], triggerIds: [] },
     // Visibility is already supplied; this isolated capture proof owns motion copying.
-    ensureVisionMasks: () => {},
+    ensureVisionMasks: () => { visionChecks++; },
     visibleCellsByTeam: [[], []], exploredCellsByTeam: [[], []], forestStockEntries: () => [], mapDefinition: map,
     authoredMapDefinition: map, matchMode: { matchModeId: 'authored', matchModeVersion: 1 },
     matchMapHash: () => 'map', matchEconomyProfileId: () => 'profile', economyRulesetRevision: () => 'rules',
@@ -100,6 +101,7 @@ test('actual checkpoint capture copies private motion before deferred serializat
     matchWinnerTriggerId: null, matchWinnerReason: '', nextPlayerId: 1, navigationRevision: 0, nextMoveOrderId: 1 });
   const context = vm.createContext(defaults); vm.runInContext(capture, context);
   const saved = context.captureMatchCheckpoint(1, 1000), savedNode = saved.state.resourceNodes[0];
+  assert.equal(visionChecks, 1, 'checkpoint capture refreshes vision before copying private state');
   node.x += .01; node.wildlifeMotion.waitTicks--;
   assert.notEqual(savedNode.x, node.x); assert.notEqual(savedNode.wildlifeMotion.waitTicks, node.wildlifeMotion.waitTicks);
 });
