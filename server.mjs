@@ -33,6 +33,7 @@ import { mkdir, open, readFile, readdir, rename, stat, unlink, writeFile } from 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH } from './src/server/client-asset-paths.mjs';
+import { loadBuildIdentity } from './src/server/build-identity.mjs';
 import { deflateRawSync, inflateRawSync, constants as zlibConstants } from 'node:zlib';
 import { encodeWebSocketFrame, websocketFrameBytes } from './src/networking/websocket-frame.mjs';
 import { hasCompatiblePerMessageDeflateOffer } from './src/networking/websocket-deflate-offer.mjs';
@@ -75,6 +76,7 @@ import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
+const BUILD_IDENTITY = await loadBuildIdentity(ROOT);
 const HOST = process.env.RTS_HOST || '127.0.0.1';
 const PORT = Number(process.env.PORT || 4173);
 const RAILWAY_DEPLOYMENT = Boolean(process.env.RAILWAY_PROJECT_ID || process.env.RAILWAY_ENVIRONMENT);
@@ -8615,6 +8617,7 @@ const server = createServer(async (request, response) => {
     const peerTransport = [...peers];
     response.end(JSON.stringify({
       ok: true, tickRate: TICK_RATE, connected: connectedCount(), armySize: currentArmySize,
+      buildIdentity: BUILD_IDENTITY,
       matchId, ...matchMode,
       map: mapDefinition.id, width: MAP_WIDTH, height: MAP_HEIGHT, maps: mapCatalog.size,
       pve: {

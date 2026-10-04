@@ -1,21 +1,26 @@
 import { checkClientImports } from './check-client-imports.mjs';
+import { checkServedBuildIdentity, validateExpectedIdentity } from './check-served-build-identity.mjs';
 import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import tls from 'node:tls';
 
 const args = process.argv.slice(2);
 const options = new Map();
+const usage = 'Usage: node scripts/railway-smoke.mjs --environment staging|production --expected-source FULL_SHA [--expected-digest sha256:DIGEST] [--project PROJECT_ID]';
 for (let index = 0; index < args.length; index += 2) {
-  if (!['--environment', '--project'].includes(args[index]) || !args[index + 1]
+  if (!['--environment', '--project', '--expected-source', '--expected-digest'].includes(args[index]) || !args[index + 1]
     || options.has(args[index])) {
-    throw new Error('Usage: node scripts/railway-smoke.mjs --environment staging|production [--project PROJECT_ID]');
+    throw new Error(usage);
   }
   options.set(args[index], args[index + 1]);
 }
 const environment = options.get('--environment');
 if (!['staging', 'production'].includes(environment)) {
-  throw new Error('Usage: node scripts/railway-smoke.mjs --environment staging|production [--project PROJECT_ID]');
+  throw new Error(usage);
 }
+const expectedIdentity = { sourceRevision: options.get('--expected-source') };
+if (options.has('--expected-digest')) expectedIdentity.digest = options.get('--expected-digest');
+validateExpectedIdentity(expectedIdentity);
 const service = 'game';
 
 function railway(...command) {
@@ -86,14 +91,20 @@ function checkWebSocket(authenticated, expected) {
 
 try {
   const checks = [await check('/ready', 200), await check('/', 401), await check('/health', 401)];
-  for (const path of [
-    '/', '/health', '/vendor/three.module.js', '/vendor/three.core.js', '/src/audio.mjs',
-    '/src/environment-art.mjs', '/assets/environment/frontier-v1/meadow.webp',
-  ]) checks.push(await check(path, 200, true));
-  checks.push(...await checkClientImports(base, { authorization }));
-  checks.push(await checkWebSocket(false, 401));
-  checks.push(await checkWebSocket(true, 101));
-  console.log(JSON.stringify({ environment, domain, checks }));
+  const identity = await checkServedBuildIdentity(base, expectedIdentity, { authorization });
+  if (!identity.ok) {
+    console.log(JSON.stringify({ environment, domain, checks, identity, ok: false }));
+    process.exitCode = 1;
+  } else {
+    for (const path of [
+      '/', '/vendor/three.module.js', '/vendor/three.core.js', '/src/audio.mjs',
+      '/src/environment-art.mjs', '/assets/environment/frontier-v1/meadow.webp',
+    ]) checks.push(await check(path, 200, true));
+    checks.push(...await checkClientImports(base, { authorization }));
+    checks.push(await checkWebSocket(false, 401));
+    checks.push(await checkWebSocket(true, 101));
+    console.log(JSON.stringify({ environment, domain, checks, identity, ok: true }));
+  }
 } catch (error) {
   console.error(`${environment} smoke check failed: ${error.message}`);
   process.exitCode = 1;
