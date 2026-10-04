@@ -80,7 +80,7 @@ test('foreign Dock/Skiff probes retain ordinary ownership rejections before doma
 
 for (const team of [0, 1]) test(`Dock/Skiff command controls state their usable actions for seat ${team}`, () => {
   const buttons = ['patrol', 'follow'].map(type => ({ dataset: { persistentOrder: type }, classList: { toggle() {} }, setAttribute() {} }));
-  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), UNIT_DEFINITIONS, BUILDING_DEFINITIONS, localTeam: team, latestBuildings: [{ id: 7, team, type: 'dock' }],
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, localTeam: team, latestBuildings: [{ id: 7, team, type: 'dock' }],
     selectedBuildingId: 7, units: [{ kind: 'skiff' }], selectedIds: () => [0],
     ui: { commandHint: {}, buildingCommandDetails: {}, attackMoveToggle: { classList: { toggle() {} }, setAttribute() {} }, formationSelect: {} },
     persistentTargetMode: null, attackMoveMode: false, tapOrderArmed: false, matchWinner: -1,
