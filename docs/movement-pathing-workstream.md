@@ -74,6 +74,39 @@ land executor, not command admission or whole journeys.
 
 ### Shared semantics, domain policies
 
+Construction caller adoption owner `01a10933-e913-766b-b5de-3aa5a17c7038`
+reserves `constructionMovementActive` in `src/construction-work-intent.mjs`
+and the construction journey regressions in the existing registered
+`scripts/construction-work-intent.test.mjs`. Its exact shared consumer request is
+[PR395 comment 5985517851](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5985517851):
+core retains the shared planner/executor and `src/unit-movement.mjs`; construction
+requests only the predicate import/fallback inside `activeLandMovementBodyRadius`
+after the Worker adopter integrates. **Consumption ownership is pending; no
+agreement or default runtime adoption is claimed.** Crowd steering/body pairs
+and XL save validation remain disjoint active owners.
+
+At clean production source `13b13e82efe19d37ef3972907c8335a460fd041d`, real
+Move to `(0.79,0.95)` followed by selected-Worker Build House at `(6.5,0.5)`
+beside stone `[1,2]×[1,2]` admits thirteen unsafe static-circle substeps per
+seat, starting on its first steering step. Each House still completes and
+costs exactly 75 Wood. The [retained baseline](qa-evidence/construction-travel-2026-10-04/baseline.json)
+separates paid/productive correctness from the reproduced clearance failure.
+Eight both-seat live/pending/active/working-recovery journey regressions fail
+at that physical admission; the thirteen existing construction tests pass.
+No shared planner, flow algorithm, attack/Sheep path, production receipt or
+checkpoint schema is rewritten. The intent predicate uses existing live
+Worker build/repair fields, excludes interrupted/economy/combat/water states
+and introduces no saved state. It is pending the exact core-owned consumer.
+
+The [one cloud capability attempt](qa-evidence/construction-travel-2026-10-04/renderer-capability.json)
+is blocked by `sandbox-unavailable` and `storage-unavailable`, with zero game
+frames/screenshots. Construction retains release/deployment and actual rendered
+acceptance; no security bypass, Mac dependency or auth/dispatch retry is part
+of this lane. After construction is independently reviewed and normally
+integrated, sequence weapon-range route adoption, then Patrol/Follow/stance
+continuations under U4/U5 below, agreeing their exact combat-owned functions
+first. Preserve shared attack and Sheep cardinal/final-point consumers.
+
 Adopt these contracts through existing consumers one vertical change at a time.
 Do not install an unused service, parallel state registry or speculative class tree.
 

@@ -8,13 +8,109 @@ import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { isPalisade } from '../src/palisade-gate.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { activeWorkIntent, createConstructionWorkIntent, clearWorkIntent } from '../src/work-intent.mjs';
-import { constructionWorkArea, constructionAssignment, unfinishedConstructionSites, validConstructionWorkArea } from '../src/construction-work-intent.mjs';
+import { constructionMovementActive, constructionWorkArea, constructionAssignment, unfinishedConstructionSites, validConstructionWorkArea } from '../src/construction-work-intent.mjs';
+import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
+import { canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
 
 const map = { width: 64, height: 64 };
 const wall = (id, x, z = .5, overrides = {}) => ({ id, x, z, type: 'palisade-wall', team: 0, hp: 300, complete: false, ...overrides });
 const lookup = sites => new Map(sites.map(site => [site.id, site]));
 const intent = sites => ({ version: 1, kind: 'construction', generation: 17,
   siteIds: sites.map(site => site.id), area: constructionWorkArea(sites, map) });
+
+test('construction clearance derives only from the active land Worker build or repair order', () => {
+  const worker = { kind: 'worker', hp: 100, movementDomain: 'land', buildingTargetId: 1,
+    attackTargetId: -1, attackBuildingTargetId: -1, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '' };
+  assert.ok(constructionMovementActive(worker));
+  assert.ok(constructionMovementActive({ ...worker, repairing: true }));
+  for (const replacement of [{ hp: 0 }, { kind: 'infantry' }, { movementDomain: 'water' },
+    { holdingPosition: true }, { attackMove: true }, { stanceCombat: true }, { stanceReturning: true },
+    { persistentOrder: { type: 'patrol' } }, { attackTargetId: 2 }, { attackBuildingTargetId: 2 },
+    { gatherNodeId: 'berries' }, { gatherForestCell: 17 }, { gatherPhase: 'to-base' },
+    { buildingTargetId: null }, { buildingTargetId: -1 }, { buildingTargetId: undefined },
+    { buildingTargetId: 1.5 }, { buildingTargetId: '1' }]) {
+    assert.equal(constructionMovementActive({ ...worker, ...replacement }), false, JSON.stringify(replacement));
+  }
+});
+
+// Real command bodies and every admitted physical substep; no injected route or
+// alternate planner. Fixed ticks do not stand in for process/browser acceptance.
+async function constructionJourney(team, action) {
+  process.env.RTS_MAP = 'maps/open-field.json'; process.env.RTS_GAME_MODE = 'pvp';
+  process.env.RTS_PREGAME = '0'; process.env.RTS_MOVE_PLANNING_TURNS_PER_TICK = '0';
+  delete process.env.RTS_MATCH_STATE_PATH;
+  const definition = { id: 'construction-clearance-journey', name: 'Construction Clearance Journey',
+    width: 64, height: 48, terrainSeed: 881, fogOfWar: false, startingArmySize: 16,
+    startingResources: { food: 500, wood: 1000 },
+    spawnPoints: [{ team: 0, x: -20, z: -16 }, { team: 1, x: 20, z: 16 }],
+    resourceNodes: [], triggers: [], scenarioEvents: [],
+    obstacles: [{ column: 33, row: 25, width: 1, height: 1, material: 'stone' }] };
+  const fixture = await createPathingReplayFixture(definition, { traceLandSteps: true }), r = fixture.replay;
+  try {
+    for (const seat of [0, 1]) {
+      const actors = r.units.filter(u => u.team === seat);
+      r.order(seat, { type: 'stop', ids: actors.map(u => u.id) });
+      r.order(seat, { type: 'setStance', stance: 'noAttack', ids: actors.filter(u => u.kind !== 'worker').map(u => u.id) });
+    }
+    const id = r.units.find(u => u.team === team && u.kind === 'worker').id;
+    const command = (type, fields = {}) => r.order(team, { type, ids: [id],
+      unitGenerations: [r.units[id].generation], ...fields });
+    command('move', { x: .79, z: .95 }); r.drain();
+    for (let tick = 0; tick < 700 && r.units[id].pathIndex < r.units[id].path.length; tick++) r.step();
+    assert.deepEqual({ x: r.units[id].x, z: r.units[id].z }, { x: .79, z: .95 });
+    assert.ok(canTraverseStaticBodySegment(r.units[id], r.units[id], LAND_CLEARANCE_PROFILE.radiusByKind.worker,
+      definition.width, definition.height, r.isWalkable), 'command-only start is body clear');
+    const untouched = r.units.filter(u => u.id !== id).map(u => [u.id, u.orderRevision, u.buildingTargetId]);
+    assert.ok(command('build', { buildingType: 'house', x: 6.5, z: .5 }).some(n => /PLANNING BUILD/.test(n.message)));
+    const site = r.buildings.find(b => b.team === team), paidWood = r.wood[team];
+    assert.ok(site); assert.equal(paidWood, 925);
+    const durableIntent = structuredClone(r.units[id].workIntent);
+    const step = () => {
+      r.step();
+      for (const s of r.landSteps.filter(s => s.id === id)) assert.ok(canTraverseStaticBodySegment(s.from, s.to,
+        LAND_CLEARANCE_PROFILE.radiusByKind.worker, definition.width, definition.height, r.isWalkable),
+      `unsafe construction ${s.reason}: ${JSON.stringify({ from: s.from, to: s.to })}`);
+    };
+    await action({ r, id, siteId: site.id, command, step, durableIntent, paidWood });
+    assert.deepEqual(r.units.filter(u => u.id !== id).map(u => [u.id, u.orderRevision, u.buildingTargetId]), untouched,
+      'construction never recruits an unselected Worker or changes another order');
+  } finally { await fixture.dispose(); }
+}
+
+for (const team of [0, 1]) for (const recoverAt of ['none', 'pending', 'active', 'working']) {
+  test(`seat ${team}: paid construction safely approaches and works through ${recoverAt} recovery`, async () => {
+    await constructionJourney(team, async ({ r, id, siteId, step, durableIntent, paidWood }) => {
+      if (recoverAt !== 'pending') r.drain();
+      if (recoverAt === 'active') { step(); step(); assert.ok(r.units[id].pathIndex < r.units[id].path.length); }
+      if (recoverAt === 'working') {
+        for (let tick = 0; tick < 100 && !r.buildings.find(b => b.id === siteId).progress; tick++) step();
+        assert.ok(r.buildings.find(b => b.id === siteId).progress > 0);
+      }
+      if (recoverAt !== 'none') {
+        const saved = r.checkpoint(); assert.ok(r.validate(structuredClone(saved)));
+        r.restore(structuredClone(saved));
+        assert.deepEqual(r.units[id].workIntent, durableIntent);
+        assert.equal(r.units[id].buildingTargetId, siteId);
+        assert.equal(r.wood[team], paidWood, 'recovery never pays twice');
+      }
+      let receipts = 0;
+      for (let tick = 0; tick < 650 && !r.buildings.find(b => b.id === siteId).complete; tick++) {
+        const before = r.buildings.find(b => b.id === siteId).progress; step();
+        const site = r.buildings.find(b => b.id === siteId);
+        if (site.progress > before) {
+          receipts++;
+          const worker = r.units[id], half = BUILDING_DEFINITIONS[site.type].footprint / 2;
+          assert.ok(Math.hypot(Math.max(0, Math.abs(worker.x - site.x) - half),
+            Math.max(0, Math.abs(worker.z - site.z) - half)) <= 1.4, 'productive work requires unchanged legal edge reach');
+          assert.equal(r.snapshot(team).units.find(row => row[0] === id)[17], 'build', 'receipt describes actual productive work');
+        }
+      }
+      assert.ok(r.buildings.find(b => b.id === siteId).complete, 'safe approach must still finish paid work');
+      assert.ok(receipts > 0); assert.equal(r.wood[team], paidWood);
+      assert.equal(r.units[id].buildingTargetId, null);
+    });
+  });
+}
 
 test('fixed construction area follows all paid footprints plus two world units, clipped to map', () => {
   assert.deepEqual(constructionWorkArea([wall(1, .5), wall(2, 2.5, 1.5)], map),
