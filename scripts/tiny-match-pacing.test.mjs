@@ -22,7 +22,8 @@ test('canonical paid Tiny opening records actual purchases/recruits and repeats 
     assert.ok(seat.commandDebits.food >= 50, 'real recruit purchase');
     assert.ok(seat.firstPaidRecruitTick > seat.firstBarracksCompleteTick);
     assert.equal(seat.firstExpansionCompleteTick, null, 'home center is not a paid expansion');
-    assert.ok(seat.firstNativeAttackObservedTick <= 225 * 30, 'durable attack evidence survives expired three-tick peer receipts');
+    assert.ok(Number.isInteger(seat.firstNativeAttackObservedTick) && seat.firstNativeAttackObservedTick > 0
+      && seat.firstNativeAttackObservedTick <= 225 * 30, 'durable attack evidence survives expired three-tick peer receipts');
   }
   assert.deepEqual(first.initial.state.teamFood, [150, 150]);
   assert.deepEqual(first.initial.state.teamWood, [250, 250]);
