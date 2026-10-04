@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "action": "build",
+  "alias": "repair",
+  "worldDirection": "east",
+  "screenDirection": "down-right/front three-quarter",
+  "source": "docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/raw.png",
+  "sourceSha256": "2cdd49efa8b0ab96e8cdf153cb2b1239906f6412f3df7a791dca1415f1b60ed1",
+  "extractionSha256": "1bcf2457132790a2a0f4de6a05827b97ba981803f40d12c077b942240764b942",
+  "sharedScale": 0.755700325732899,
+  "columnRootsX": [
+    384,
+    784,
+    1184
+  ],
+  "rowBaselinesY": [
+    992
+  ],
+  "canvasPx": {
+    "width": 256,
+    "height": 256
+  },
+  "groundPivotPx": {
+    "x": 128,
+    "y": 244
+  },
+  "durationMs": 720,
+  "registrationStatus": "source-pixel reviewed; native ground/turn acceptance open",
+  "frames": [
+    {
+      "id": "build-east-0",
+      "sourceIndex": 6,
+      "source": "docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/extracted/06.png",
+      "sourceSha256": "f344ad44e472d1fe028098eecf74ea9acf260e9834ca73fbaa2c43515da1483a",
+      "sourceBounds": [
+        287,
+        678,
+        480,
+        992
+      ],
+      "offsetPx": [
+        55,
+        7
+      ],
+      "alphaBoundsPx": {
+        "x": 55,
+        "y": 7,
+        "width": 146,
+        "height": 237
+      },
+      "rgbaSha256": "4173389cb1e99b4959e3e293384b441dd45b5bb77daeb03086925633afa698f0"
+    },
+    {
+      "id": "build-east-1",
+      "sourceIndex": 7,
+      "source": "docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/extracted/07.png",
+      "sourceSha256": "53547e1af4e50fb375ed53457d8f386e01df1f3a95a88f85dd96d008da68908e",
+      "sourceBounds": [
+        679,
+        708,
+        888,
+        992
+      ],
+      "offsetPx": [
+        49,
+        29
+      ],
+      "alphaBoundsPx": {
+        "x": 49,
+        "y": 29,
+        "width": 158,
+        "height": 215
+      },
+      "rgbaSha256": "768af2b8ab625fc1219608b57aeb7ebd7c59a1031b7e7aab6a3cafd8d6372e7e"
+    },
+    {
+      "id": "build-east-2",
+      "sourceIndex": 8,
+      "source": "docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/extracted/08.png",
+      "sourceSha256": "ba7c080482df763bc32709e9b5dd24f0def870d3cd46fda38d495fd7cd47fa58",
+      "sourceBounds": [
+        1071,
+        696,
+        1258,
+        990
+      ],
+      "offsetPx": [
+        43,
+        20
+      ],
+      "alphaBoundsPx": {
+        "x": 43,
+        "y": 20,
+        "width": 141,
+        "height": 222
+      },
+      "rgbaSha256": "919d29a70f991a0cbd744c15ba415ae3a3fc386f60495041401f23a991a1f0de"
+    }
+  ]
+}

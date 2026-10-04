@@ -20,7 +20,8 @@ test('East axe keys preserve all preceding art and use three distinct whole same
   assert.deepEqual([image.width, image.height], [2560, 4096]);
   assert.equal(hash(JSON.stringify(asset.frames.slice(0, preservation.originalFrames))), preservation.originalFrameMetadataSha256);
   const originalClips = structuredClone(asset.clips.slice(0, preservation.originalClips));
-  for (const clip of preservation.originalReplacedClips) {
+  const hammer = JSON.parse(readFileSync(new URL('hammer-east-preservation.json', evidence)));
+  for (const clip of [...preservation.originalReplacedClips, ...hammer.originalReplacedClips]) {
     const index = originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId);
     originalClips[index] = clip;
   }
