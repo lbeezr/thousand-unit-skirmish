@@ -73,6 +73,13 @@ async function collect() {
   for (const sample of health.tickTiming.samples) ticks.set(sample.tickNumber, sample);
   return health;
 }
+function healthObservation(health) {
+  const timing = health.tickTiming;
+  return { firstSampleTick: timing.samples[0]?.tickNumber,
+    lastSampleTick: timing.samples.at(-1)?.tickNumber,
+    startLagP95Ms: timing.startLagP95Ms, startLagMaxMs: timing.startLagMaxMs,
+    scheduler: timing.scheduler };
+}
 try {
   await fixture.start(); clients = [await fixture.connect(0), await fixture.connect(1)];
   const sessions = clients.map(c => c.welcome.player.sessionToken);
@@ -117,7 +124,7 @@ try {
   }
   console.error(JSON.stringify({ policy, size, stage: 'paid research/training and both-resource economy ready', tick: ready.state.tickNumber }));
   stage = 'measured movement, combat, fog and ongoing economy';
-  await collect(); const startTick = ready.state.tickNumber, phases = [];
+  const initialHealth = await collect(); const startTick = ready.state.tickNumber, phases = [];
   for (let phase = 0; phase < 3; phase++) {
     const firstTick = Math.max(...ticks.keys()) + 1;
     await Promise.all([0, 1].map(team => {
@@ -136,7 +143,7 @@ try {
   }
   const observedEndTick = Math.max(...ticks.keys());
   const complete = await fixture.checkpoint(s => s.state.tickNumber >= observedEndTick);
-  await collect();
+  const completeHealth = await collect();
   // The economy and casualty witness is the exact end boundary. Capture through
   // it so later checkpoint work cannot qualify an earlier measured interval.
   const endTick = complete.state.tickNumber, measured = [...ticks.values()].filter(t => t.tickNumber > startTick && t.tickNumber <= endTick)
@@ -167,9 +174,12 @@ try {
   report = { schemaVersion: 1, head, sourceSha256, policy, size, node: process.version, platform: process.platform,
     cpu: os.cpus()[0]?.model, map, spent, economyProgress, orders, startTick, endTick, phases, casualties, paidLedger: true,
     checkpointRecovery: true, summary, ticks: measured,
+    healthObservations: { beforeCommands: healthObservation(initialHealth), afterWitness: healthObservation(completeHealth) },
     limits: ['native two-seat loopback, 160x160 fog map padded from Fortified Crossing; no scripted rewards or actor injection',
       'whole outer tick includes planning, movement/combat/economy, vision, scenario, broadcast and synchronous checkpoint work',
-      'three fixed 300-tick command phases, all unique samples retained; timers measure but do not choose authoritative planner work',
+      'three at-least-300-tick command phases; actual endpoints/checkpoint tail retained, all unique samples kept',
+      'health lag/scheduler observations name their rolling windows, not exact checkpoint-boundary lag samples',
+      'timers measure but do not choose authoritative planner work; callback-control planning runs outside tick timing',
       'shared cloud host and diagnostic polling overhead; no renderer, device capacity, timer-quality or causal speedup claim'] };
 } catch (error) {
   report = { schemaVersion: 1, head, sourceSha256, policy, size, stage, failure: error.message,
