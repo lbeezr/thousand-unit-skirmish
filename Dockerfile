@@ -12,6 +12,7 @@ COPY --chown=node:node assets/audio/runtime/ ./assets/audio/runtime/
 COPY --chown=node:node assets/audio/vaelora-zones-v1/ ./assets/audio/vaelora-zones-v1/
 COPY --chown=node:node assets/audio/vaelora-pilot-v1/sources/ ./assets/audio/vaelora-pilot-v1/sources/
 COPY --chown=node:node src/ ./src/
+COPY --chown=node:node docs/art-direction/human-roster-v1/infantry-production-contract.json ./docs/art-direction/human-roster-v1/
 COPY --chown=node:node maps/ ./maps/
 COPY --chown=node:node assets/environment/frontier-v1/ ./assets/environment/frontier-v1/
 COPY --chown=node:node assets/environment/frontier-painted-material-atlas-v1/manifest.json assets/environment/frontier-painted-material-atlas-v1/*.webp ./assets/environment/frontier-painted-material-atlas-v1/
