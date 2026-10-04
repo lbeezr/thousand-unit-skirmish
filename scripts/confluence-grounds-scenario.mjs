@@ -89,7 +89,7 @@ try {
   while (!navigations.length && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 20));
   assert.equal(navigations.length, 1); roomId = navigations[0].searchParams.get('room'); assert.ok(roomId);
   const room = await (await fetch(`${origin}/api/rooms/${roomId}`)).json();
-  assert.deepEqual(room.launchOptions, { mode: 'pvp', practice: true });
+  assert.deepEqual(room.launchOptions, { mode: 'pvp', practice: true, matchModeId: 'authored', matchModeVersion: 1 });
   checkpointPath = path.join(fixture.directory, 'rooms', 'rooms', roomId, 'match-state.json');
   clients = [await fixture.connect(0, null, roomId), await fixture.connect(1, null, roomId)];
   assert.ok(clients.every(c => c.welcome.state.practice && !c.welcome.state.lobby));
@@ -121,7 +121,7 @@ try {
   await build('watchtower', layout.plots.watchtower);
   const docks = await build('dock', layout.docks[0]);
   for (const team of [0, 1]) {
-    await command(team, { type: 'trainUnit', unitType: 'skiff', buildingId: own(docks, team, 'dock').id }, /QUEUED/);
+    await command(team, { type: 'trainUnit', kind: 'skiff', buildingId: own(docks, team, 'dock').id }, /QUEUED/);
     for (const [resource, amount] of Object.entries(UNIT_DEFINITIONS.skiff.cost)) spent[team][resource] += amount;
   }
   const afloat = await checkpoint(s => [0, 1].every(team => s.state.units.some(u => u.team === team && u.kind === 'skiff')));
