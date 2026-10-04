@@ -32,6 +32,13 @@ Choose one visible outcome, name its pack and consuming loader, and state the
 smallest useful proof. When a source sample has no loader yet, identify that
 boundary in its README so a later contributor can integrate it without guessing.
 
+For unit animations the user's priority is breadth before polish: cover required
+actions and directions with usable existing or supplied keys before improving
+finish. Follow the [ranked coverage matrix](qa-unit-animation-audit-2026-10-03.md#functional-coverage-priority--4-october-2026).
+Short rough sequences and explicit temporary placeholders can ship; wrong-facing,
+frozen playback and unusable root/contact remain functional blockers. Do not
+spend a perfection loop on working SE art while the other headings lack coverage.
+
 ## Small useful deliveries
 
 A few compatible tree silhouettes, one shoreline treatment, one unit role,
