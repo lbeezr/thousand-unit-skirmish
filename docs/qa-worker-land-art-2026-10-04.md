@@ -1132,3 +1132,12 @@ headings of five productive work actions for one full loop, heading turns,
 Stop/resume, waiting and movement interruptions, axe attack completion, prone
 corpse clamp, and each heading's cargo Return→deposit/idle. Keep exact deployment
 and release revision/hash with those observations. No preview flag is required.
+
+West203 focused land pixel/default/runtime/receipt/clock/heading/fishing/sharding
+checks pass (202 full batch plus the new full64 matrix assertion). Atlas/docs/
+whitespace, byte-idempotent admission and actual packaged guarded HTTP/WebSocket/
+hash scenario pass. Refreshed main brings PR277 PvE remembered-search fixes; its
+focused target cases also pass. [Clean full-land release](qa-evidence/worker-land-art-2026-10-04/west-actions-clean-release.json)
+measures `918ec903fe1f3a44d2cd1e838ed631ad6ba89b67`, `sourceDirty:false`,1179files,
+`sha256:6c01914a36c3260906697b42a8bb6c722e805297c32ac2e106ed2f53a0e91650`. Reviewed/merged source and actual
+containing deployment/native capture remain distinct milestones.
