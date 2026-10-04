@@ -4,6 +4,7 @@ import { CAPTURE_CONTEXT_VERSION, validateCaptureAdapter, validateCaptureContext
 
 const page = { cdp: { call: async () => ({}), evaluate: async () => ({}) }, wait: async () => ({}) };
 const context = { version: CAPTURE_CONTEXT_VERSION, page, openPage: async () => page, origin: 'http://127.0.0.1:4321',
+  evidenceDirectory: '/tmp/case-artifacts',
   source: Object.freeze({ revision: 'a'.repeat(40), digest: `sha256:${'b'.repeat(64)}` }), capture: async () => ({}) };
 test('version1 declares one exact adapter export and minimal owned context', () => {
   assert.equal(validateCaptureContext(context), context);
@@ -19,6 +20,7 @@ test('legacy owner shapes and absent context fields fail before gameplay executi
   }
   for (const field of Object.keys(context)) assert.throws(() => validateCaptureContext({ ...context, [field]: undefined }));
   for (const change of [{ version: 2 }, { page: {} }, { page: { ...page, cdp: {} } },
+    { evidenceDirectory: 'relative-path' },
     { source: { ...context.source } }, { source: Object.freeze({ ...context.source, digest: 'unknown' }) },
     { origin: 'https://private.invalid' }, { origin: 'http://127.0.0.1:4321/?private-token' },
     { origin: 'http://secret@127.0.0.1:4321' }]) assert.throws(() => validateCaptureContext({ ...context, ...change }));

@@ -223,6 +223,14 @@ Workers need a readable tool/pack; Infantry a spear/shield; Archers a bow/quiver
 
 The player is a commander, with personality expressed through strategy. There is no fixed cast or implemented campaign canon. Announcements remain brief and specific; world flavor can use practical observation and dry humor without obscuring gameplay information.
 
+Every player-facing creative or visual outcome should grow from linked art,
+storyboards or explorations: a coherent scene, readable action/state sequence or
+interface treatment, grounded in the world's selected direction. Existing sources
+can provide that backing; rough usable coverage can advance before polish.
+The [visual development contract](art-direction-contract-v1.md#visual-development-backing)
+defines the production inputs, and the [gap inventory](art-direction-gaps-2026-10-04.md)
+distinguishes missing design evidence from unfinished production and game acceptance.
+
 ## Scope boundaries and open decisions
 
 Campaigns, many asymmetric factions, a large technology tree, public accounts,

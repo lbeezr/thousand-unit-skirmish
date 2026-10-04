@@ -108,6 +108,7 @@ export async function runFeatureBatch(packFile, outputDirectory, selection = 'al
             const runAndDrain = async () => {
               let outcome;
               const ownedContext = Object.freeze({ version: CAPTURE_CONTEXT_VERSION, page: context.page, openPage, capture, origin: context.origin,
+                evidenceDirectory: directory,
                 source: Object.freeze({ revision: context.pack.sourceRevision, digest: context.pack.digest }) });
               validateCaptureContext(ownedContext);
               try { outcome = await adapter.run(ownedContext); }
