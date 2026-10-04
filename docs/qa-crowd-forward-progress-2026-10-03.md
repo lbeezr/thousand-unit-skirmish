@@ -71,3 +71,17 @@ The [browser startup failure](qa-evidence/move-planning-work-2026-10-03/browser-
 still blocks the rendered workload. No deployed revision, hardware speedup,
 universal crowd guarantee or completed tick-phase command/result migration is claimed.
 The [movement backlog](movement-pathing-workstream.md) retains those boundaries.
+
+## 4 October postmerge acceptance
+
+[PR #209](https://github.com/lbeezr/thousand-unit-skirmish/pull/209) merged at
+`64cc391e6d9c4164dca7bd45696cf3862fe19729`. The exact merge source has server
+SHA-256 `d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba`.
+[Postmerge evidence](qa-evidence/crowd-forward-progress-2026-10-03/postmerge.json)
+records 235 passing checks, browser/server type checks, nine terrain-route pairs
+and four parked-formation pairs with unchanged qualified candidate hashes.
+Both actual native scenes rerun at that merge source: all 996 original routes
+complete after active-travel restart; the parked replacements, eight Stops and
+exact newer goals/revisions survive arrival and idle restart. Native initial arrival
+is at 1,260 / 1,290 ticks. Review confirms the force combination and generation,
+terrain, query and timing contracts; the separate postmerge checkout is clean.
