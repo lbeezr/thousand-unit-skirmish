@@ -68,6 +68,7 @@ export async function createUnitPresentationClientFixture({ localTeam = 0 } = {}
   const elements = new Map();
   const context = vm.createContext({ ...economyClientBindings(), THREE, applyUnitStances, UNIT_DEFINITIONS,
     mapDefinition: { id: 'unit-presentation-fixture' }, localTeam, isHost: false,
+    activeMatchMode: {}, knownMaps: [], matchModeView: { update: noop }, setMapCatalog: noop,
     document: { querySelector(id) {
       if (!elements.has(id)) elements.set(id, { hidden: false, textContent: '' });
       return elements.get(id);
