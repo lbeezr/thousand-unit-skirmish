@@ -94,8 +94,8 @@ Small Worker wall times were 59.383/60.184 seconds. Large Worker wall times were
 96.286/95.487; its interval begins at a public snapshot earlier than the wall
 stopwatch, so their quotient is not an exact applied-clock measurement. Retained
 Large rolling clock windows measured 0.999818–0.999909; the separate longer paid
-checkpoint interval measured 0.999903. Tiny's single 2,000-unit diagnostic observed
-one skipped startup slot. Keep every skipped slot and source-qualified clock
+checkpoint interval measured 0.999903. Tiny retains two separate single-window
+2,000-unit diagnostics, each with one skipped slot. Keep every skipped slot and source-qualified clock
 window; do not assume measured server rates apply to staging or another load.
 
 Fresh ordinary entry/recovery evidence is separate from these historical crossing
@@ -176,7 +176,8 @@ separate from naturally paid development. Record command application/notice,
 actual arrival/spread, game/wall ratio, A* work, tick/start-lag p95/max/skips,
 vision/cache cost, RSS/heap/arrayBuffers, save costs, compressed egress and browser
 frame/memory. Current native diagnostics remain p95≤33.333 ms/max≤100 ms; the
-512 MiB probe stop is not a support budget. Tiny's single 2,000-unit window, Small's ladder
+512 MiB probe stop is not a support budget. Tiny's two separate single-window
+2,000-unit diagnostics, Small's ladder
 and Medium/Large's 24-unit windows are different source/workload evidence, not
 comparable hardware results or supported capacities.
 
