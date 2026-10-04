@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "review": "Retain all nine actual NW keys; admit complete action groups",
+  "bearing": "world north-west = screen-left profile; no substituted/mirrored headings",
+  "actions": {
+    "build/repair": "keys0..2 readable hammer windup/left strike/recovery",
+    "gather-stone": "keys3..5 narrow distinct pick windup/left strike/recovery",
+    "defeat": "keys6..8 buckle/ground collapse/fully prone terminal"
+  },
+  "scale": "one271/328, live body approx220\u2013230px vs232px reference; world pixel scale unchanged",
+  "ground": "fixed column roots; row baselines for live actions and reviewed contact baselines for fallen poses; fixed runtime pivots",
+  "unfinished": [
+    "motion smoothness",
+    "native relative body scale/ground/contact/target bearing",
+    "Stone default state and exact missing-heading adoption"
+  ],
+  "publication": "existing public seed; standing built-in edit approval; no private pixels/external paid job"
+}
