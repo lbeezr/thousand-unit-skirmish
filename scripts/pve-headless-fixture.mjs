@@ -60,6 +60,12 @@ export const replay = {
     }
   },
   step() { this.drain(); runSimulationTick(); },
+  advanceToStateBoundary() {
+    const steps = (STATE_EVERY_TICKS - tickNumber % STATE_EVERY_TICKS) % STATE_EVERY_TICKS;
+    for (let index = 0; index < steps; index++) this.step();
+    if (tickNumber % STATE_EVERY_TICKS !== 0) throw new Error('Simulation did not reach its state boundary');
+    return steps;
+  },
   observe(team) { return roomPayload(team); },
   checkpoint() { return captureMatchCheckpoint(1, 1); },
   restore(snapshot) { restoreMatchCheckpoint(snapshot); },

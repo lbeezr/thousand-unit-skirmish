@@ -3723,7 +3723,6 @@ function setArmySize(count, showMessage = false) {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
-  updateEconomyUI();
   if (showMessage) showToast(`BATTLEFIELD RESET · ${currentArmySize.toLocaleString()} UNITS`, 1500);
 }
 
@@ -3736,7 +3735,7 @@ function updateStationaryOrderControls(selectedBuilding) {
   }
 }
 
-function updateSelectionUI() {
+function updateSelectionUI({ refreshEconomy = true } = {}) {
   const priorCommandFocus = document.activeElement;
   const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
@@ -3809,6 +3808,9 @@ function updateSelectionUI() {
   const persistentSummary = document.querySelector('#selected-persistent-orders');
   if (persistentSummary) { persistentSummary.hidden = !persistentCounts.size;
     persistentSummary.textContent = [...persistentCounts].map(([label, count]) => `${count} ${label}`).join(' · '); }
+  // Build availability depends on selection as well as server resources.
+  // Snapshots already refresh economy; user selection changes must do it now.
+  if (refreshEconomy) updateEconomyUI();
   updateContextualCommands(priorCommandFocus);
 }
 
@@ -3968,9 +3970,9 @@ function revalidateControlGroups() {
   if (changed) updateControlGroupUI();
 }
 
-function clearActiveControlGroup() {
+function clearActiveControlGroup({ clearBuilding = true } = {}) {
   lastControlGroupRecall = null;
-  const buildingChanged = selectedBuildingId !== null;
+  const buildingChanged = clearBuilding && selectedBuildingId !== null;
   if (buildingChanged) {
     selectedBuildingId = null;
     for (const visual of buildingVisuals.values()) updateBuildingSelectionVisual(visual, false);
@@ -4727,7 +4729,7 @@ function applyState(state, initial = false) {
   if (controlGroupsChanged) updateControlGroupUI();
   selectionDirty = true;
   syncSelectionMesh();
-  updateSelectionUI();
+  updateSelectionUI({ refreshEconomy: false });
 }
 
 function updateEnvironmentStateCaptureSnapshot(state) {
@@ -4781,7 +4783,7 @@ function applyWaypointQueueCounts(rows = []) {
     if (!unit || (localTeam !== null && unit.team !== localTeam)) continue;
     unit.queuedWaypointCount = counts.get(unit.id) || 0;
   }
-  updateSelectionUI();
+  updateSelectionUI({ refreshEconomy: false });
 }
 
 function updateRosterProductionOptions(container, selectedProducer = null, catalog = false) {
@@ -7484,7 +7486,7 @@ function pickBuildingAt(x, y, predicate = (building) => building.team === localT
 function selectBuilding(building) {
   clearWildlifeSelection();
   selected.clear();
-  clearActiveControlGroup();
+  clearActiveControlGroup({ clearBuilding: false });
   selectedBuildingId = building.id;
   lastFriendlyUnitClick = null;
   lastUnitPickState = null;
@@ -7492,8 +7494,6 @@ function selectBuilding(building) {
   syncSelectionMesh();
   updateSelectionUI();
   for (const [id, visual] of buildingVisuals) updateBuildingSelectionVisual(visual, id === building.id);
-  updateCommandUI();
-  updateEconomyUI();
   showToast(`${buildingLabel(building.type)} SELECTED${BUILDING_DEFINITIONS[building.type]?.products.length ? ` · ${window.matchMedia('(pointer: coarse)').matches ? 'USE SET RALLY POINT, THEN TAP GROUND' : 'RIGHT-CLICK GROUND TO SET RALLY'}` : ''}`);
   audio.playEvent({ cue: 'select', buildingType: building.type });
 }
