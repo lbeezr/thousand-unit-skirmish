@@ -106,7 +106,7 @@ try {
   }
   console.error(JSON.stringify({ policy, size, stage: 'paid research/training and both-resource economy ready', tick: ready.state.tickNumber }));
   stage = 'measured movement, combat, fog and ongoing economy';
-  await collect(); const startTick = Math.max(...ticks.keys()), phases = [];
+  await collect(); const startTick = ready.state.tickNumber, phases = [];
   for (let phase = 0; phase < 3; phase++) {
     const firstTick = Math.max(...ticks.keys()) + 1;
     await Promise.all([0, 1].map(team => {
@@ -123,10 +123,15 @@ try {
     phases.push({ phase, firstTick, lastTick: Math.max(...ticks.keys()) });
     console.error(JSON.stringify({ policy, size, stage: 'measured phase complete', phase, tick: Math.max(...ticks.keys()) }));
   }
-  const endTick = Math.max(...ticks.keys()), measured = [...ticks.values()].filter(t => t.tickNumber > startTick && t.tickNumber <= endTick)
+  const observedEndTick = Math.max(...ticks.keys());
+  const complete = await fixture.checkpoint(s => s.state.tickNumber >= observedEndTick);
+  await collect();
+  // The economy and casualty witness is the exact end boundary. Capture through
+  // it so later checkpoint work cannot qualify an earlier measured interval.
+  const endTick = complete.state.tickNumber, measured = [...ticks.values()].filter(t => t.tickNumber > startTick && t.tickNumber <= endTick)
     .toSorted((a, b) => a.tickNumber - b.tickNumber);
   assert.equal(measured.length, endTick - startTick, 'every measured tick captured once across rolling windows');
-  const complete = await fixture.checkpoint(s => s.state.tickNumber >= endTick); ledger(complete);
+  ledger(complete);
   const economyProgress = [0, 1].flatMap(team => ['food', 'wood'].map(resource => {
     const node = economyNode(team, resource), stock = saved => saved.state.resourceNodes.find(n => n.id === node.id).stock;
     const bank = saved => saved.state[resource === 'food' ? 'teamFood' : 'teamWood'][team];
