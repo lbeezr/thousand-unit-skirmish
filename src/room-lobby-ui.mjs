@@ -160,6 +160,7 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
     return pending;
   }
   map.addEventListener('change', () => {
+    if (map.disabled) return;
     const entry = lobby?.maps.find(value => value.id === map.value);
     let configuration = null;
     try { if (entry) configuration = lobbyMapConfiguration(lobby, entry); } catch {}

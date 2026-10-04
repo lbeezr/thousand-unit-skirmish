@@ -230,6 +230,21 @@ try {
     assert.equal(change.state.armySize, change.map.startingArmySize ?? 1000);
     await savedPractice(saved => saved.mapDefinition.id === map.id && saved.state.scenarioClockStarted && saved.state.matchElapsedSeconds > 0);
   }
+  const confluenceId = 'siltmouths-confluence-grounds';
+  const confluence = practice.welcome.maps.find(map => map.id === confluenceId);
+  assert.ok(confluence?.selectable && confluence.ordinarySelectable && !confluence.internalFixture);
+  assert.deepEqual([confluence.width, confluence.height, confluence.sizeTierId], [160, 160, 'tiny']);
+  assert.deepEqual(confluence.matchModes.map(mode => [mode.id, mode.version]), [['authored', 1]]);
+  const confluenceCursor = practice.messages.length;
+  practice.send({ type: 'selectMap', mapId: confluenceId });
+  await until(() => practice.messages.slice(confluenceCursor).some(row => row.type === 'mapChange' && row.map.id === confluenceId),
+    'normal Practice admits Confluence Grounds');
+  const confluenceChange = practice.messages.slice(confluenceCursor).find(row => row.type === 'mapChange' && row.map.id === confluenceId);
+  assert.equal(confluenceChange.state.practice, true);
+  assert.equal(confluenceChange.state.armySize, 24);
+  assert.equal(confluenceChange.state.matchModeId, 'authored');
+  await savedPractice(saved => saved.mapDefinition.id === confluenceId && saved.state.currentArmySize === 24
+    && saved.matchModeId === 'authored' && saved.state.matchElapsedSeconds > 0);
   const beforeReset = await savedPractice(saved => saved.state.matchElapsedSeconds > 0);
   practice.send({ type: 'reset' });
   await until(() => practice.messages.some(row => row.type === 'notice' && row.message === 'BATTLEFIELD RESET'), 'practice rematch');
@@ -270,8 +285,10 @@ try {
   assert.equal(recoveredPractice.welcome.matchId, practiceMatch);
   assert.equal(recoveredPractice.welcome.state.practice, true);
   assert.equal(recoveredPractice.welcome.state.connected, 1);
-  const recoveredMap = labMaps.at(-1).id;
+  const recoveredMap = confluenceId;
   assert.equal(recoveredPractice.welcome.map.id, recoveredMap);
+  assert.equal(recoveredPractice.welcome.matchModeId, 'authored');
+  assert.equal(recoveredPractice.welcome.state.armySize, 24);
   recoveredPractice.send({ type: 'selectMap', mapId: 'frontier-materials' });
   await until(() => recoveredPractice.messages.some(row => row.type === 'mapChange' && row.map.id === 'frontier-materials'), 'unlocked map after recovery');
   recoveredPractice.send({ type: 'gather', ids: [0], nodeId: 'azure-berries' });
@@ -309,6 +326,7 @@ try {
   console.log(JSON.stringify({ passed: ['authenticated menu without automatic default admission', 'read-only active/stale session inspection',
     'interrupted authentication retains saved Resume without admission', 'strict Resume cannot allocate a new seat', 'departed menu ignores completed real Practice creation', 'fresh PvP lobby and both-seat launch', 'explicit saved-room Resume',
     'normal Play vs AI creates Tiny Skirmish and playable Map Studio rooms', 'one-player practice across all current lab maps and rematch',
+    'ordinary Confluence Grounds Practice selection, rematch and cold seat recovery',
     'practice checkpoint/seat recovery and real Worker food deposit', 'normal-menu Skirmish Practice selection and same-mode recovery', 'old default identity/checkpoint retained', 'entry and lazy client import delivery',
     'configured Tiny normal-menu one-seat Practice and strict Resume after restart'],
     modules: imports.length, modeUiModules: modeImports.length, practiceLabMaps: labMaps.map(map => map.id) }));

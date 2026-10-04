@@ -23,6 +23,9 @@ Narrow and short layouts reduce the art to keep entry choices nearby.
   timed events and rematch run with one connected player. There is no AI commander;
   enemy units retain their normal combat behavior. Map and army controls stay
   available to Azure. A friend may join Ember, but a second seat is not required.
+  The ordinary Battlefield catalog includes Confluence Grounds, Tiny 160 × 160,
+  with its admitted Authored Rules and 24-unit opening. Its map listing does not
+  offer Skirmish or AI, or claim a supported army capacity.
   The optional **Practice rules** disclosure chooses a supported mode before
   creation. Registry presets show their actual starting map: Bannerfall Arena
   for Bannerfall and Woodland Expanse for Objective Control. Bannerfall fixes
