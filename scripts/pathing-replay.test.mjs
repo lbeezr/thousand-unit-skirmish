@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 import { pathingBaselineMap } from './pathing-baseline-cases.mjs';
+import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
+import { captureReplayBoundary, recordAcceptedCommand, replayCommandTrace, sealCommandReplay } from './accepted-command-replay.mjs';
 
 process.env.RTS_MAP='maps/open-field.json';process.env.RTS_GAME_MODE='pvp';process.env.RTS_PREGAME='0';
 process.env.RTS_TICK_DIAGNOSTICS='1';process.env.RTS_SEPARATION_DIAGNOSTICS='1';
@@ -86,4 +88,80 @@ test('a footprint across the only choke is rejected without changing movement go
     assert.equal(r.navigationRevision,revision);assert.equal(r.buildings.length,0);
     assert.deepEqual(army.map(u=>u.moveGoalCell),goals);
   } finally {await fixture.dispose();}
+});
+
+// The movement adapter above calls rule functions directly. This trace uses the
+// full command handler and the unchanged checkpoint validator through the PvE
+// fixture, with AI/listening/timers disabled and an explicit authored mode.
+const replayIdentity = { matchModeId: 'authored', matchModeVersion: 1 };
+async function recordedMovement(primaryTeam) {
+  const map = { ...pathingBaselineMap({ group: 4 }), id: 'accepted-command-replay',
+    fogOfWar: true, obstacles: [],
+    spawnPoints: [{ team: 0, x: -28, z: 0 }, { team: 1, x: 28, z: 0 }] };
+  const fixture = await createPveHeadlessFixture(map, replayIdentity), r = fixture.replay;
+  try {
+    const initial = r.checkpoint(), commands = [], boundaries = [], otherTeam = 1 - primaryTeam;
+    const actors = [0, 1].map(team => initial.state.units.find(u => u.team === team && u.kind === 'infantry'));
+    const packet = (team, type, token, extra = {}) => ({ type, ids: [actors[team].id],
+      unitGenerations: [actors[team].generation], clientOrderToken: token, ...extra });
+    const move = (team, queue = false) => packet(team, 'move', queue ? 2 : 1,
+      { x: team ? 18.5 : -18.5, z: queue ? (team ? -3.5 : 3.5) : .5, ...(queue ? { queue: true } : {}) });
+    let resume;
+    for (let tick = 0; tick <= 60; tick++) {
+      if (tick === 0 || tick === 30) for (const team of [primaryTeam, otherTeam]) {
+        const command = move(team, tick === 30);
+        commands.push(await recordAcceptedCommand(r, team, command,
+          tick === 30 ? 'WAYPOINT QUEUED · 1 UNITS' : 'MOVE ORDER · 1 UNITS'));
+        command.ids[0] = -1; // Caller reuse cannot change the recorded authority input.
+      }
+      if (tick === 30) {
+        // A checkpoint between commands sharing one tick needs a command cursor;
+        // tick alone cannot say whether the queued order was already accepted.
+        resume = { checkpoint: r.checkpoint(), nextCommandIndex: commands.length };
+        commands.push(await recordAcceptedCommand(r, primaryTeam, packet(primaryTeam, 'stop', 3), 'STOP ORDER · 1 UNITS'));
+      }
+      if (tick === 50) commands.push(await recordAcceptedCommand(r, otherTeam, packet(otherTeam, 'stop', 3), 'STOP ORDER · 1 UNITS'));
+      boundaries.push(captureReplayBoundary(r, commands.length));
+      if (tick < 60) r.step();
+    }
+    return { initial, commands, boundaries, resume, actors };
+  } finally { await fixture.dispose(); }
+}
+
+for (const team of [0, 1]) test(`seat ${team}: immutable accepted-command trace resumes a same-tick cursor exactly`, async () => {
+  const recorded = await recordedMovement(team);
+  const input = structuredClone(recorded.initial);
+  const trace = sealCommandReplay(input, recorded.commands, 60);
+  input.mapDefinition.terrainSeed++;
+  assert.equal(trace.initialCheckpoint.mapDefinition.terrainSeed, 881, 'sealed seed is detached from caller input');
+  assert.throws(() => { trace.commands[0].command.ids[0] = -1; }, TypeError);
+  const portable = JSON.parse(JSON.stringify(trace));
+  const run = async resume => {
+    const fixture = await createPveHeadlessFixture(portable.initialCheckpoint.mapDefinition, replayIdentity);
+    try { return await replayCommandTrace(fixture.replay, portable, resume); }
+    finally { await fixture.dispose(); }
+  };
+  assert.deepEqual(await run(), recorded.boundaries, 'all authoritative fields and both-seat views replay without normalization');
+  const suffix = recorded.boundaries.filter(row => row.checkpoint.state.tickNumber >= 30);
+  assert.deepEqual(await run(recorded.resume), suffix, 'restart resumes the unaccepted suffix, including the remaining same-tick Stop');
+  for (const actor of recorded.actors) {
+    const moved = suffix[0].checkpoint.state.units.find(unit => unit.id === actor.id);
+    assert.ok(Math.hypot(moved.x - actor.x, moved.z - actor.z) > .1, 'accepted Move genuinely advances the actor');
+    const stopped = recorded.boundaries.at(-1).checkpoint.state.units.find(unit => unit.id === actor.id);
+    assert.deepEqual([stopped.path, stopped.queuedWaypoints], [[], []], 'accepted Stop clears route and queued intent');
+    assert.equal(stopped.generation, actor.generation, 'replay never remaps actor generation');
+  }
+  for (const row of recorded.boundaries) for (const seat of [0, 1]) {
+    assert.ok(row.views[seat].units.every(unit => unit[1] === seat), 'remote enemy orders remain hidden in each fog view');
+    assert.equal(row.views[seat].population[1 - seat], null);
+  }
+  // Negative control: a lost cursor repeats the other seat's already accepted
+  // queued Move. Both histories later Stop, so terminal pose alone is insufficient.
+  const duplicate = await run({ ...recorded.resume, nextCommandIndex: recorded.resume.nextCommandIndex - 1 });
+  const actorId = recorded.actors[1 - team].id;
+  const queued = row => row.checkpoint.state.units.find(unit => unit.id === actorId).queuedWaypoints.length;
+  assert.equal(queued(suffix[0]), 1);
+  assert.equal(queued(duplicate[0]), 2, 'control genuinely repeats an authority-accepted queued order');
+  assert.deepEqual(duplicate.at(-1), suffix.at(-1), 'later Stop hides the duplication from terminal checkpoint/view equality');
+  assert.throws(() => assert.deepEqual(duplicate, suffix, 'replay boundary mismatch'), /replay boundary mismatch/);
 });
