@@ -15,6 +15,8 @@ const extension = JSON.parse(readFileSync(new URL(
   '../docs/qa-evidence/worker-land-art-2026-10-04/wood-north-west-preservation.json', import.meta.url)));
 const originalMask = readFileSync(new URL(
   '../docs/qa-evidence/worker-land-art-2026-10-04/stone-era-team-mask.png', import.meta.url));
+const attackReuse = JSON.parse(readFileSync(new URL(
+  '../docs/qa-evidence/worker-land-art-2026-10-04/attack-north-west-reuse.json', import.meta.url)));
 
 // The old mask is entirely zero. Verify decoded zero pixels after the explicit
 // page extension, while retaining the original encoded file for historical hashes.
@@ -64,8 +66,12 @@ test(`${preservationHeading} admission preserves preceding frame records/pixels 
       ((r.y + y) * image.width + r.x + r.width) * 4));
   }
   assert.equal(framesHash.digest('hex'), preservation.originalFrameRgbaSha256);
-  if (preservation.originalClips) assert.equal(hash(JSON.stringify(asset.clips.slice(0, preservation.originalClips))),
-    preservation.originalClipMetadataSha256);
+  if (preservation.originalClips) {
+    const originalClips = structuredClone(asset.clips.slice(0, preservation.originalClips));
+    const index = originalClips.findIndex(c => c.stateId === 'attack' && c.directionId === 'north-west');
+    originalClips[index] = attackReuse.originalAttackClip;
+    assert.equal(hash(JSON.stringify(originalClips)), preservation.originalClipMetadataSha256);
+  }
 });
 
 }
@@ -281,7 +287,7 @@ test(`default NW ${resource} advances and stops/resumes on productive activity, 
     unit.walking = false; unit.task = 'gathering'; unit.performingAction = `gather-${resource}`;
     expect(unit, 2300, `gather-${resource}-north-west-0`);
     unit.attackStartedAt = 2400;
-    expect(unit, 2400, 'attack-south-east-0'); // Existing combat approximation unchanged.
+    expect(unit, 2400, 'gather-wood-north-west-0'); // Actual NW axe swing is also the authored attack.
     unit.attackStartedAt = 0;
     expect(unit, 2500, `gather-${resource}-north-west-0`);
     unit.task = 'returning'; unit.performingAction = null; unit.walking = true;

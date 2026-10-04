@@ -68,6 +68,7 @@ run(['scripts/region-event-scenario.mjs'], 'Region event recovery and rematch');
 run(['scripts/regional-ambience-scenario.mjs'], 'Regional ambience bus and lifecycle');
 run(['scripts/audio-shore-profile-scenario.mjs'], 'Ordinary Shore Fishing regional audio selection and lifecycle');
 run(['scripts/terrain-authoring-scenario.mjs'], 'Seeded terrain authoring and height surfaces');
+run(['--test', 'scripts/map-scale-audit.test.mjs', 'scripts/confluence-grounds.test.mjs'], 'Source-bound scale audit and admitted Confluence Practice arena');
 run(['scripts/landscape-authoring-scenario.mjs'], 'Organic regional landscape shapes');
 run(['scripts/forest-habitat-scenario.mjs'], 'Graduated woodland habitat margins');
 run(['scripts/forest-composition-scenario.mjs'], 'Regional dominant species groves');
@@ -94,6 +95,7 @@ run(['--test', 'scripts/unit-animation-runtime.test.mjs'], 'Default unit action 
 run(['--test', 'scripts/unit-presentation-client.test.mjs'], 'Client snapshot and unit presentation buffers');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
 run(['--test', 'scripts/worker-land-art.test.mjs'], 'Retained Worker land-action artwork and playback');
+run(['--test', 'scripts/worker-nw-attack-art.test.mjs'], 'Public NW axe attack reuse and one-shot playback');
 run(['--test', 'scripts/worker-performing-action.test.mjs'], 'Authoritative Worker positive-progress receipts');
 run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 'Worker work receipt commands, client frames, exhausted repair delivery and recovery');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
@@ -104,6 +106,7 @@ run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals a
 run(['--test', 'scripts/move-planning-slices.test.mjs'], 'Clock-independent route planning, stale results and fair queue turns');
 run(['--test', 'scripts/move-planning-tick.test.mjs', 'scripts/move-planning-tick-error.test.mjs', 'scripts/pathing-arrival.test.mjs'], 'Opt-in planning tick budgets, order invalidation, topology and recovery');
 run(['--test', 'scripts/tick-samples.test.mjs'], 'Opt-in whole-tick diagnostic chronology and values');
+run(['--test', 'scripts/tick-attribution.test.mjs'], 'Disposable tick attribution preserves private wire bytes and vision bodies');
 run(['scripts/pathing-native-scenario.mjs', 'dynamic-goal'], 'Native paid obstruction and formation arrival');
 run(['--test', 'scripts/dynamic-wall-pathing.test.mjs'], 'Paid wall and closed gate queued formation destinations');
 run(['scripts/dynamic-wall-native-scenario.mjs'], 'Native both-seat queued paid wall arrival');

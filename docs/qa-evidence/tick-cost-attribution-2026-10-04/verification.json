@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "reviewedHead": "3cdd076851f5642e2463ec0bc63cfdec44642c31",
+  "integrationMain": "f8237601a40aaeb38ad2b26804dfec19e6db2fd7",
+  "productionDiffFromMain": false,
+  "summarySha256": "6acb2833345b4bf716d941db06ac459965cf464aa7e8a60d7c45ffdcc7902c3d",
+  "author": {
+    "focusedTests": 70,
+    "types": true,
+    "docs": true,
+    "syntax": true,
+    "importArchitecture": true,
+    "whitespace": true
+  },
+  "independentReview": {
+    "remainingFindings": 0,
+    "focusedTests": 8,
+    "allSixReportsAndHashes": true,
+    "summaryReproduced": true,
+    "profileCategoriesAndBoundaries": true,
+    "docsSyntaxWhitespace": true
+  },
+  "nativeRuns": {
+    "uninstrumented": 4,
+    "diagnostic": 2,
+    "functionalPass": 6,
+    "gapFreeWitnessTicks": 5580
+  },
+  "defaultPlanningTurnsPerTick": 0,
+  "optimizationImplemented": false,
+  "limits": [
+    "source-only diagnostic tooling; no deployment/rendered/hardware-capacity proof",
+    "shared host, different command receipt ticks/casualties, sampled profiles and distinct capture endpoints limit causal/equal-rate claims"
+  ]
+}
