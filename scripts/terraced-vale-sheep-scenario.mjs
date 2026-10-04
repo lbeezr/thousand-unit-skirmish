@@ -71,8 +71,8 @@ async function until(r, predicate, description, limit = 30_000) {
   for (let ticks = 0; ticks < limit; ticks++) {
     if (predicate()) return ticks;
     r.step();
-    // Let Node retire pending I/O/microtasks while advancing the unchanged
-    // production simulation; a long synchronous replay can retain their data.
+    // Keep the harness event loop responsive in bounded batches while advancing
+    // the unchanged production simulation with its ordinary fixed step.
     if (ticks % 256 === 255) await new Promise(resolve => setImmediate(resolve));
   }
   assert.ok(predicate(), `${description} within ${limit} real fixed ticks`);

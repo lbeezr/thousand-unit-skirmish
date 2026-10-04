@@ -39,6 +39,16 @@ server checks establish those contracts; native GPU
 appearance remains incomplete in this executor because Chromium's SUID sandbox
 is unconfigured. No bypass or direct deployment is authorized.
 
+At `f6fb4d87`, refreshed through fork main `384ac60c`, all **119/119** focused
+checks pass. The real both-seat default lifecycle and exact old-map cold restore
+also pass with server SHA-256
+`7e60b0838092d31444efbeacc19a59f9b72edf9143c28d779268e5baa950c32e`.
+Two unchanged 650-food home nodes fully deplete; final combined banks are
+1,600 (the 300 opening food plus 1,300 returned food), including opposing-seat
+Gather. Remaining stock, cargo and banks conserve all 6,400 opening food.
+[PR249](https://github.com/lbeezr/thousand-unit-skirmish/pull/249) records the
+exact independent review, release inclusion and postmerge receipt separately.
+
 The active Railway delivery owner must supply an identified build containing
 this map identity change. On that build, launch ordinary Tiny as each seat,
 find the opening Sheep, claim/select/Herd/Stop it, Gather it with a Worker,
