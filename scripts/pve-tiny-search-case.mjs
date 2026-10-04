@@ -13,7 +13,7 @@ export async function replayTinySearch(seeds, nativeIdentity, initial = null) {
   assert.equal(map.victoryHoldSeconds, undefined); assert.equal(map.timedVictory, undefined);
   const fixture = await createPveHeadlessFixture(map, nativeIdentity), r = fixture.replay, trace = [];
   const metrics = [0, 1].map(() => ({ producerPurchase: null, producerComplete: null,
-    producerAssault: null, maxMilitary: 8, maxWorkers: 4, spentFood: 0, spentWood: 0 }));
+    buildingAssault: null, maxMilitary: 8, maxWorkers: 4, spentFood: 0, spentWood: 0 }));
   const view = team => toOpponentObservation(r.observe(team), team, map);
   try {
     if (initial) r.restore(initial); else initial = r.checkpoint();
@@ -54,7 +54,7 @@ export async function replayTinySearch(seeds, nativeIdentity, initial = null) {
           for (const command of policies[team].next(observation)) {
             if (command.type === 'attackBuilding') {
               assert.ok(observation.buildings.visibleEnemies.some(building => building.id === command.buildingId));
-              metric.producerAssault ??= observation.tick;
+              metric.buildingAssault ??= observation.tick;
             }
             if (command.type === 'build' && command.buildingType === 'barracks') metric.producerPurchase ??= observation.tick;
             const before = r.observe(team), notices = await r.order(team, command); r.drain();

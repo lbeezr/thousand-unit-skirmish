@@ -34,7 +34,7 @@ checkpoint bodies and has no connected seats or active authored scenario clock.
 ## Reproduced failure and bounded fix
 
 Both baseline seed assignments gather, pay for and complete producers, and
-recruit. Neither opponent issues an enemy-producer assault in 3,600 simulation
+recruit. Neither opponent issues a building assault in 3,600 simulation
 seconds; both games remain ongoing. Exploration replaces its goal when forward
 sight reveals the goal before the army arrives. After local goals stall near
 terrace edges, unknown local probes also prevent the existing global cursor
@@ -56,8 +56,12 @@ rejected/failed/unreachable orders. Times are simulation ticks / 30.
 
 | Azure / Ember policy seeds | Baseline | Retain revealed approach only | Final bounded cursor fix |
 | --- | --- | --- | --- |
-| 20260925 / 0 | Ongoing at 3,600s; neither producer assaulted | Ongoing at 3,600s; Ember assaults at 826s | Ember elimination at **495s**; first producer assault 202s |
-| 0 / 20260925 | Ongoing at 3,600s; neither producer assaulted | Ongoing at 3,600s; assaults at 1,798/1,622s | Ember elimination at **2,676s**; first producer assault 252s |
+| 20260925 / 0 | Ongoing at 3,600s; neither building assaulted | Ongoing at 3,600s; Ember building assault at 826s | Ember elimination at **495s**; first building assault 202s |
+| 0 / 20260925 | Ongoing at 3,600s; neither building assaulted | Ongoing at 3,600s; building assaults at 1,798/1,622s | Ember elimination at **2,676s**; first building assault 252s |
+
+Assault times in this table mean any visible building: the first game attacks a
+Storehouse at 202s and a Barracks at 419s. The intermediate swapped Azure
+case attacks a Farm at 1,798s and a land producer at 1,824s.
 
 The current-main two-case regression repeats those terminal times. Both seats
 pay for their first Barracks at 17s and complete it at 39–42s. First-case total
