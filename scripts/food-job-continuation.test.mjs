@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 import { foodStoneJobMap, auditWorkerId, typedDraw } from './food-stone-job-fixture.mjs';
-import { activeWorkIntent, createGatherWorkIntent } from '../src/work-intent.mjs';
+import { FOREST_GATHER_SOURCE_KIND, activeWorkIntent, createGatherWorkIntent } from '../src/work-intent.mjs';
 import { gatherWorkArea, nearbyGatherSources, GATHER_WORK_AREA_RADIUS } from '../src/gather-work-area.mjs';
 
 const stateOf = replay => replay.checkpoint().state;
@@ -205,7 +205,7 @@ for (const obstruction of ['component', 'no-field', 'no-path']) test(`plain Food
   const unit = { hp: 50, generation: 2, x: 0, z: 0, team: 0, cargo: 6, cargoType: 'food', queuedWaypoints: [],
     workIntent: expectedIntent({ generation: 2 }, { x: 0, z: 0 }), gatherNodeId: 'empty', gatherForestCell: -1 };
   const before = structuredClone(unit);
-  const context = vm.createContext({ activeWorkIntent, gatherWorkArea, nearbyGatherSources, GATHER_WORK_AREA_RADIUS,
+  const context = vm.createContext({ FOREST_GATHER_SOURCE_KIND, activeWorkIntent, gatherWorkArea, nearbyGatherSources, GATHER_WORK_AREA_RADIUS,
     WORKER_CARRY_CAPACITY: 10, nearestOpenCell: c => c, worldToCell: x => x,
     walkableComponents: obstruction === 'component' ? [0, 1] : [0, 0],
     resourceNodeStates: new Map([[node.id, node]]), MAP_WIDTH: 160, MAP_HEIGHT: 160,

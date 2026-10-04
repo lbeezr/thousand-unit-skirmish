@@ -1,6 +1,8 @@
 // Durable player work, separate from transient targets/routes/orderRevision.
+import { authoredForestAnchorCell } from './forest-gather-group.mjs';
 import { STONE_ECONOMY_PROFILE_ID } from './economy-profile.mjs';
 export const WORK_INTENT_VERSION = 1;
+export const FOREST_GATHER_SOURCE_KIND = 'forest-group';
 export const PLAIN_FOOD_SOURCE_KIND = 'neutral-land-food';
 
 export const isAreaGatherResource = resource => resource === 'wood' || resource === 'stone' || resource === 'food';
@@ -16,6 +18,10 @@ export function createGatherWorkIntent(generation, source, resource = 'wood') {
   }
   return { version: 1, kind: 'gather', generation, resource,
     ...(resource === 'food' ? { sourceKind: PLAIN_FOOD_SOURCE_KIND } : {}), anchor: { x: source.x, z: source.z } };
+}
+
+export function createForestGatherWorkIntent(generation, anchor) {
+  return { ...createGatherWorkIntent(generation, anchor), sourceKind: FOREST_GATHER_SOURCE_KIND };
 }
 
 export function createConstructionWorkIntent(generation, siteIds, area) {
@@ -47,8 +53,9 @@ export function validWorkIntent(intent, unit, map, { buildings = [], nextBuildin
     || !Number.isSafeInteger(intent.generation) || intent.generation < 1
     || intent.generation !== unit.generation) return false;
   if (intent.kind === 'gather') return keys(intent, ['version', 'kind', 'generation', 'resource',
-    ...(intent.resource === 'food' ? ['sourceKind'] : []), 'anchor'])
+    ...(intent.resource === 'food' || intent.sourceKind === FOREST_GATHER_SOURCE_KIND ? ['sourceKind'] : []), 'anchor'])
     && isAreaGatherResource(intent.resource)
+    && (intent.sourceKind !== FOREST_GATHER_SOURCE_KIND || (intent.resource === 'wood' && authoredForestAnchorCell(intent.anchor, map) >= 0))
     && (intent.resource !== 'food' || intent.sourceKind === PLAIN_FOOD_SOURCE_KIND)
     && (intent.resource !== 'stone' || map.economyProfileId === STONE_ECONOMY_PROFILE_ID)
     && keys(intent.anchor, ['x', 'z']) && onMap(intent.anchor, map);
