@@ -162,18 +162,25 @@ try {
   records.push({ stage: 'continued paid production and deposits', recruited: newInfantry.map(row => row[0]),
     paidFood, paidWood, producerComplete: true, tick: progress.tick });
   const oldGenerations = generations(human.latest), oldTick = human.latest.tick, after = human.messages.length;
+  const previousById = new Map(oldGenerations);
+  const assertNewOpeningGenerations = state => {
+    assert.deepEqual(generations(state).map(([id]) => id), initialGenerations.map(([id]) => id));
+    for (const [id, generation] of generations(state)) {
+      assert.notEqual(generation, previousById.get(id), `reset renews opening unit ${id}'s generation`);
+    }
+  };
   human.send({ type: 'reset' });
   await human.wait(row => row.type === 'notice' && row.message === 'BATTLEFIELD RESET', 'normal host rematch', after);
   const reset = await human.state(state => own(state).length === 12 && state.food[0] === 150 && state.wood[0] === 250
     && state.buildings.every(row => row.home), 'normal rematch opening');
   assert.ok(reset.tick >= oldTick); assert.equal(reset.winner, -1);
   assert.equal(reset.units.filter(row => row[1] === 1).length, 0, 'reset clears previous enemy sight');
-  assert.notDeepEqual(generations(reset), oldGenerations);
+  assertNewOpeningGenerations(reset);
   await roomMetadata();
   await restart('rematch epoch', async (saved, state) => {
     assert.equal(own(state).length, 12); assert.equal(state.winner, -1);
     assert.ok(state.buildings.every(row => row.home));
-    assert.notDeepEqual(generations(state), oldGenerations);
+    assertNewOpeningGenerations(state);
     assert.equal(state.food[0], saved.state.teamFood[0]); assert.equal(state.wood[0], saved.state.teamWood[0]);
   });
   if (launchMode === 'pvp') {
