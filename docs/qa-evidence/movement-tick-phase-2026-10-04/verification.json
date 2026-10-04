@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "inspectedHead": "aa6621411c710fddd0620c615091e533cba3222a",
+  "serverSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+  "scope": "test adapter and phase diagnosis; no production edits",
+  "focusedChecks": {
+    "passed": 55,
+    "failed": 0,
+    "files": [
+      "scripts/move-planning-slices.test.mjs",
+      "scripts/crowd-forward-progress.test.mjs",
+      "scripts/pathing-replay.test.mjs",
+      "scripts/dynamic-wall-pathing.test.mjs",
+      "scripts/palisade-gate.test.mjs"
+    ]
+  },
+  "phaseProbe": {
+    "schedules": 3,
+    "repeatsPerSchedule": 2,
+    "cancellationControl": true,
+    "generationNormalization": "fresh valid per-fixture tokens; selected movement-state hash omits generation",
+    "evidence": "phase-probe.json"
+  },
+  "defaultReplay": {
+    "case": "single-choke-16",
+    "repeats": 2,
+    "matchedPostmergeHead": "64cc391e6d9c4164dca7bd45696cf3862fe19729",
+    "runs": [
+      {
+        "sourceSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+        "traceSha256": "4a4f13f468eb4a21e4302e90c82b102698950adf4882d1b9407af33664c29a3f",
+        "initialRouteSha256": "2af80ac5c20cfc29e3908f5a0f8a11f5443d01d3a6e2b80f52643ad65438acae",
+        "ticks": 623,
+        "arrived": 16,
+        "invalidSteps": 0,
+        "unreachableGoals": 0
+      },
+      {
+        "sourceSha256": "d84d3a605d8443d0b3a3896c84a6c925b9d60c0c9393634a00ea8707f794f5ba",
+        "traceSha256": "4a4f13f468eb4a21e4302e90c82b102698950adf4882d1b9407af33664c29a3f",
+        "initialRouteSha256": "2af80ac5c20cfc29e3908f5a0f8a11f5443d01d3a6e2b80f52643ad65438acae",
+        "ticks": 623,
+        "arrived": 16,
+        "invalidSteps": 0,
+        "unreachableGoals": 0
+      }
+    ]
+  },
+  "scriptSha256": {
+    "scripts/pathing-replay-fixture.mjs": "bc2e55e5102e88f8b48647a714daf6e44ddb39d65ce1132a07df54777724df0f",
+    "scripts/move-planning-phase-probe.mjs": "1125c559354125ae373f2c75906ef1313189fb16e691afecc19e756c2507e736"
+  },
+  "limits": [
+    "unit assignment entrypoint, no socket/PvE ingestion capture",
+    "default replay fully drains callbacks; phase experiments control their opportunities",
+    "no production scheduler edit, rendered gameplay, HTTP health or hardware-capacity proof"
+  ]
+}

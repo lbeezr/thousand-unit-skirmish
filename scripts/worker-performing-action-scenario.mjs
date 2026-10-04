@@ -5,12 +5,15 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { buildingRepairStep } from '../src/base-lifecycle.mjs';
+import { createWorkerPresentationNativeFixture } from './worker-presentation-native-fixture.mjs';
 
 const fixture = await createFortifiedFixture({ mapPath: 'maps/stone-defense-field.json', timeoutMs: 30_000 });
 const row = (state, id) => state.units.find(unit => unit[0] === id);
 const productive = (state, ids, action) => ids.some(id => row(state, id)?.[17] === action);
 let clients, workers, tokens, orderToken = 1;
 const evidence = [];
+const presentation = process.argv.includes('--client-presentation')
+  ? await createWorkerPresentationNativeFixture() : null;
 async function command(team, payload, expected) {
   const notice = await clients[team].command({ ...payload, clientOrderToken: orderToken++ }, /./);
   assert.match(notice.message, expected);
@@ -31,6 +34,7 @@ async function reconnect() {
 }
 function record(name, team, state, ids) {
   assert.equal(state.workerPerformingActionVersion, 1);
+  presentation?.record(name, team, state, clients[team].welcome.map, ids);
   evidence.push({ name, team, tick: state.tick, food: state.food[team], wood: state.wood[team],
     stone: state.stone[team], workers: ids.map(id => ({ id, generation: row(state, id)[8],
       task: row(state, id)[9], action: row(state, id)[17], cargo: row(state, id)[6] })) });
@@ -115,6 +119,8 @@ try {
     record('rematch generation clears', team, clients[team].latest, workers[team]);
   }
   console.log(JSON.stringify({ contractVersion: 1, map: 'stone-defense-field', evidence,
-    limits: ['native WebSocket producer checks; no renderer or deployed appearance claim',
+    ...(presentation ? { clientPresentation: presentation.evidence } : {}),
+    limits: [presentation ? 'real WebSocket rows through actual CPU client receipt/scheduling and shipped atlas buffers; no browser/GPU/deployed appearance claim'
+      : 'native WebSocket producer checks; no renderer or deployed appearance claim',
       'exhausted repair uses explicitly seeded damaged Farms and nine repair steps of wood'] }, null, 2));
-} finally { await fixture.dispose(); }
+} finally { presentation?.dispose(); await fixture.dispose(); }

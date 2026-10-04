@@ -1,0 +1,15 @@
+{
+  "sourceRevision": "3c57eba992a357fa437ba663711a33fc9ffedccb",
+  "sourceDirty": false,
+  "digest": "sha256:46ddb787078068bee6db9879c40b9f3c0927892ec0275cc47a9ed9a89ab6f05f",
+  "scope": "clean Docker COPY release; local receipt, not a deployment",
+  "consumerPaths": [
+    "src/main.js",
+    "src/server/client-asset-paths.mjs",
+    "src/unit-sprite-runtime.mjs",
+    "src/unit-visual-state.mjs",
+    "src/worker-fishing-contact.mjs",
+    "src/worker-performing-action.mjs",
+    "src/worker-work-presentation.mjs"
+  ]
+}

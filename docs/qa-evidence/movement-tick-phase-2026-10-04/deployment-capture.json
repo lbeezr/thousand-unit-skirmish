@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "checkedOn": "2026-10-04",
+  "scope": "read-only staging deployment identification and local browser preflight",
+  "owner": "movement workstream",
+  "railway": {
+    "projectId": "32da8e2c-3377-49ed-8df0-45f72ecdc562",
+    "environmentId": "93f80e39-efd0-420a-9282-86886d3e88bd",
+    "environment": "staging",
+    "serviceId": "408356ca-c8cd-4932-abca-d5ebef430dd5",
+    "service": "game",
+    "domain": "game-staging-21f9.up.railway.app",
+    "sourceRepo": "lbeezr/thousand-unit-skirmish",
+    "sourceBranch": "main",
+    "deployment": {
+      "id": "e541d903-178b-47cb-8d1b-4358c93c5a8a",
+      "status": "SUCCESS",
+      "createdAt": "2026-10-04T00:04:25.347Z",
+      "commitHash": "64cc391e6d9c4164dca7bd45696cf3862fe19729"
+    }
+  },
+  "http": {
+    "healthVerified": false,
+    "attempts": [
+      {
+        "path": "/health",
+        "tool": "Node fetch",
+        "errorCode": "EAI_AGAIN"
+      },
+      {
+        "path": "/health",
+        "tool": "web open",
+        "error": "URL inaccessible"
+      }
+    ]
+  },
+  "capture": {
+    "status": "unsupported",
+    "screenshots": 0,
+    "privateTmpXdgDirectories": true,
+    "remainingIssue": "sandbox-unavailable",
+    "preflight": "browser-preflight.json"
+  },
+  "acceptance": {
+    "pr193And209Included": true,
+    "rendered2000UnitWorkload": "incomplete",
+    "stagingInGameObservation": "incomplete",
+    "nextResource": "provider/parent-coordinated browser with working sandbox and WebGL2",
+    "nextAction": "movement owner runs source-qualified rendered fixture, then ordinary staging checks with existing approved access"
+  },
+  "limits": [
+    "Railway SUCCESS is platform status, not an HTTP or rendered gameplay observation",
+    "no deployment, credential retrieval, paid art or sandbox option change",
+    "native/headless completion does not establish hardware capacity"
+  ]
+}

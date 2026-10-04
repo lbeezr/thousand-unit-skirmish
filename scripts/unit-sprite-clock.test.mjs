@@ -5,7 +5,7 @@ import vm from 'node:vm';
 import { activeState, spriteAnimationTime, spriteClipDuration } from '../src/unit-sprite-runtime.mjs';
 
 const main = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
-const generationReset = main.slice(main.indexOf('    if (existingUnit && unit.generation !== generation)'),
+const generationReset = main.slice(main.indexOf('    if (generationChanged)'),
   main.indexOf('    unit.serverX = x;', main.indexOf('function applyState(')));
 
 for (const previousState of ['walk', 'defeat']) for (const loaded of [true, false]) {
@@ -18,7 +18,7 @@ for (const previousState of ['walk', 'defeat']) for (const loaded of [true, fals
         lastPlayedAttackTick: 8, spriteClockState: previousState, spriteClockStartedAt: 1100};
       const selected = new Set([unit.id]), group = new Set([unit.id]), ages = [];
       const draw = () => ages.push(spriteAnimationTime(unit, activeState(unit, now), now));
-      const context = vm.createContext({unit, existingUnit: unit, id: unit.id, generation: 2, team,
+      const context = vm.createContext({unit, existingUnit: unit, generationChanged: true, id: unit.id, generation: 2, team,
         x: 4, z: 3, kind: 'infantry', hp: 100, targetedBy: 0, initial: false,
         selected, controlGroups: [group], controlGroupsChanged: false, changed: false,
         cargoVisualMayChange: false, performance: {now: () => now}, setUnitTint() {},
@@ -78,7 +78,7 @@ test('ground depth correction preserves screen position and clears dipping feet'
 
 test('worker combat uses attack sprites and then returns to its task', async () => {
   const { activeState } = await import('../src/unit-sprite-runtime.mjs');
-  const worker = { kind: 'worker', hp: 100, task: 'gathering', attackStartedAt: 1000 };
+  const worker = { kind: 'worker', hp: 100, task: 'gathering', performingAction: 'gather-food', attackStartedAt: 1000 };
   assert.equal(activeState(worker, 1200, 850), 'attack');
   assert.equal(activeState(worker, 1900, 850), 'gather');
   assert.equal(activeState({ ...worker, walking: true }, 1200, 850), 'walk');
@@ -88,8 +88,8 @@ test('worker combat uses attack sprites and then returns to its task', async () 
 
 test('worker repair has a distinct action state', async () => {
   const { activeState } = await import('../src/unit-sprite-runtime.mjs');
-  assert.equal(activeState({kind:'worker', hp:100, task:'repairing'}, 2000), 'repair');
-  assert.equal(activeState({kind:'worker', hp:100, task:'building'}, 2000), 'build');
+  assert.equal(activeState({kind:'worker', hp:100, task:'repairing', performingAction:'repair'}, 2000), 'repair');
+  assert.equal(activeState({kind:'worker', hp:100, task:'building', performingAction:'build'}, 2000), 'build');
 });
 
 

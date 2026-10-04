@@ -29,6 +29,8 @@ import { selectionContext } from './selection-context.mjs';
 import { updateSelectionPortrait } from './selection-portrait.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
+import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel } from './match-mode-controls.mjs';
+import { roomPresence } from './room-presence.mjs';
 import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
 import { farmHarvestNode } from './farm-harvest.mjs';
@@ -61,9 +63,11 @@ import {
   unitActionPoseAllowed, unitCargoVisualState, unitWorkerActionPose,
 } from './unit-visual-state.mjs';
 import { createUnitSpriteRuntime } from './unit-sprite-runtime.mjs';
+import { readWorkerPerformingAction, workerWorkAction } from './worker-work-presentation.mjs';
 import { createNeutralWildlifeRenderer } from './neutral-wildlife-renderer.mjs';
 import { readDisclosedWildlife, selectOwnedWildlife, reconcileWildlifeSelection,
   createWildlifeCommand, updateWildlifePositionMemory } from './wildlife-client-state.mjs';
+import { validWildlifeNodeDefinition } from './wildlife-state.mjs';
 import {
   MAX_ELEVATION_PATCHES, buildElevationGrid, capturePrerequisiteIds,
   findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
@@ -114,11 +118,13 @@ let mapDefinition = null;
 let dockPlacementContext = null;
 let lobbyPlayer = null;
 let latestLobby = null;
+let activeMatchMode = {};
 const roomLobby = createRoomLobby({ root: document.querySelector('#room-lobby'), send: sendCommand, copyInvite: copyRoomInvite });
+const matchModeView = createMatchModeControls({ root: document.querySelector('#match-mode-view'), id: 'active-match-mode', onChange: () => false });
 
 function applyLobby(lobby) {
   latestLobby = lobby || null;
-  roomLobby.update(latestLobby, lobbyPlayer);
+  roomLobby.update(latestLobby, lobbyPlayer, true, mapDefinition);
   if (lobbyPlayer) updateLobbyHostControls();
 }
 
@@ -655,6 +661,7 @@ let editorViewZoom = 1;
 let editorPanDrag = null;
 let socket = null;
 let connectedPlayers = 0;
+let soloPracticeActive = false;
 let waitingForResume = false;
 let selectionDirty = false;
 let latestObjectiveStates = new Map();
@@ -3523,11 +3530,11 @@ function updateUnitTransform(unit, now = performance.now()) {
   const bodyScale = isSiege ? 0 : isWorker ? visibleScale * 0.82 : isArcher ? visibleScale * 0.9 : visibleScale;
   const actionPoseAllowed = unitActionPoseAllowed(unit.hp, unit.defeatStartedAt);
   const workerActionPose = actionPoseAllowed && isWorker
-    ? unitWorkerActionPose(unit.kind, unit.visible, unit.task, unit.cargoType, unit.walking)
+    ? unitWorkerActionPose(unit.kind, unit.visible, unit.task, unit.performingAction, unit.walking)
     : 'none';
   const stride = actionPoseAllowed && unit.walking ? Math.sin(unit.motionPhase || 0) * 0.038 : 0;
   const idleBreath = actionPoseAllowed && !unit.walking
-    && unit.task !== 'gathering' && unit.task !== 'building' && unit.task !== 'repairing' && unit.attackStartedAt === 0
+    && workerActionPose === 'none' && unit.attackStartedAt === 0
     ? Math.sin(now * 0.0024 + unit.id * 1.7) * 0.018 : 0;
   const attackAge = actionPoseAllowed && unit.attackStartedAt > 0
     ? (now - unit.attackStartedAt) / ATTACK_POSE_MS : 1;
@@ -4486,6 +4493,7 @@ function appendUnitFromState(row, animateSpawn = false) {
     defeatStartedAt: 0, lastPlayedAttackTick: -1,
     damageFlashUntil: 0,
     kind, cargo, cargoType: economyResources(mapDefinition?.economyProfileId).includes(cargoType) ? cargoType : null,
+    performingAction: null,
     task: kind === 'worker' && WORKER_TASK_STATES.has(taskStatus) ? taskStatus
       : kind === 'worker' ? 'unknown' : null,
     queuedWaypointCount: 0,
@@ -4519,6 +4527,13 @@ function applyState(state, initial = false) {
   }
   if (!state || (mapDefinition && state.mapId && state.mapId !== mapDefinition.id)) return;
   const practiceStatus = document.querySelector('#practice-status');
+  soloPracticeActive = state.practice === true;
+  const identity = { ...(Object.hasOwn(state, 'matchModeId') ? { matchModeId: state.matchModeId } : {}),
+    ...(Object.hasOwn(state, 'matchModeVersion') ? { matchModeVersion: state.matchModeVersion } : {}) };
+  const modeChanged = JSON.stringify(identity) !== JSON.stringify(activeMatchMode);
+  activeMatchMode = identity;
+  matchModeView.update({ identity, map: mapDefinition, canonicalMap: null, online: true, editable: false });
+  if (modeChanged) setMapCatalog(knownMaps, mapDefinition?.id);
   if (practiceStatus) practiceStatus.hidden = state.practice !== true;
   const matchRestarted = (matchWinner >= 0 && state.winner === -1)
     || (Number.isFinite(state.matchElapsedSeconds) && state.matchElapsedSeconds + 1 < latestMatchElapsedSeconds);
@@ -4537,16 +4552,17 @@ function applyState(state, initial = false) {
   for (const row of state.units || []) {
     const [id, team, x, z, hp, kind, cargo, cargoType, generation = 0, taskStatus,
       targetedBy = 0, attackTick = -1, attackX = null, attackZ = null,
-      audioExecution = null, workHeading = null, workResourceVariant = null] = row;
+      audioExecution = null, workHeading = null, workResourceVariant = null, performingAction = null] = row;
     const existingUnit = units[id];
     const unit = existingUnit || appendUnitFromState(row, !initial);
     if (!unit || unit.team !== team) continue;
+    const generationChanged = Boolean(existingUnit && unit.generation !== generation);
     const wasVisible = unit.visible !== false;
     let cargoVisualMayChange = !existingUnit || !wasVisible;
     unit.visible = true;
     if (localTeam !== null && team !== localTeam) visibleEnemyIds.add(id);
     if (!existingUnit) changed = true;
-    if (existingUnit && unit.generation !== generation) {
+    if (generationChanged) {
       selected.delete(id);
       for (const group of controlGroups) {
         if (group.delete(id)) controlGroupsChanged = true;
@@ -4562,8 +4578,10 @@ function applyState(state, initial = false) {
       unit.hitStartedAt = 0;
       unit.defeatStartedAt = 0;
       unit.spriteClockState = null;
+      unit.spriteClockAction = null;
       unit.spriteClockStartedAt = null;
       unit.workResourceVariant = null;
+      unit.performingAction = null;
       unit.spawnStartedAt = initial ? 0 : performance.now();
       unit.lastPlayedAttackTick = -1;
       unit.angle = team === 0 ? Math.PI / 2 : -Math.PI / 2;
@@ -4643,6 +4661,15 @@ function applyState(state, initial = false) {
     if (initial || !wasVisible) {
       unit.renderX = x;
       unit.renderZ = z;
+      updateUnitTransform(unit);
+      changed = true;
+    }
+    const nextPerformingAction = generationChanged ? null : readWorkerPerformingAction(
+      state.workerPerformingActionVersion, unit.kind, unit.hp, unit.task, performingAction);
+    if (unit.performingAction !== nextPerformingAction) {
+      unit.performingAction = nextPerformingAction;
+      // A receipt clear can be the only change. Write idle/contact and dirty
+      // buffers now instead of retaining the last work key until a later frame.
       updateUnitTransform(unit);
       changed = true;
     }
@@ -5121,16 +5148,16 @@ function updateEconomyUI(state = {}, initial = false) {
 
 function updateRoomUI(connected) {
   connectedPlayers = connected;
+  const presence = roomPresence({ connected, practice: soloPracticeActive, resumePending: waitingForResume });
   ui.playersOnline.textContent = `${connected} / 2 PLAYERS`;
   ui.networkStatus.parentElement.dataset.urgent = String(waitingForResume);
-  ui.matchStatus.textContent = waitingForResume ? 'WAITING TO REJOIN' : connected >= 2 ? '2 / 2 ONLINE' : `${connected} / 2 ONLINE`;
-  ui.matchStatus.classList.toggle('full', connected >= 2);
-  ui.networkStatus.textContent = waitingForResume
-    ? 'SEAT ACTIVE ELSEWHERE' : connected >= 2 ? 'ROOM LIVE' : 'WAITING FOR PLAYER 2';
+  ui.matchStatus.textContent = presence.match;
+  ui.matchStatus.classList.toggle('full', presence.full);
+  ui.networkStatus.textContent = presence.network;
   ui.connectionDot.classList.remove('offline');
-  ui.connectionDot.classList.toggle('waiting', waitingForResume || connected < 2);
+  ui.connectionDot.classList.toggle('waiting', presence.waiting);
   ui.matchStatus.classList.remove('offline');
-  ui.matchStatus.classList.toggle('waiting', waitingForResume || connected < 2);
+  ui.matchStatus.classList.toggle('waiting', presence.waiting);
 }
 
 function setConnection(status) {
@@ -5184,7 +5211,12 @@ function setMapCatalog(maps, activeMapId) {
   for (const map of knownMaps) {
     const option = document.createElement('option');
     option.value = map.id;
-    option.textContent = map.name;
+    let configuration = null;
+    try { configuration = lobbyMapConfiguration(activeMatchMode, map); } catch {}
+    option.textContent = mapChoiceLabel(map);
+    // Running matches cannot change mode. Only offer maps that preserve it;
+    // lobby map changes use the atomic tuple and explain any authored fallback.
+    option.disabled = !configuration || Boolean(configuration.matchModeId);
     option.title = map.summary;
     ui.mapSelect.append(option);
   }
@@ -6401,7 +6433,7 @@ function validateImportedMap(value) {
       || resourceIds.has(node.id) || !allowedResources.includes(node.type)
       || !Number.isFinite(node.x) || !Number.isFinite(node.z)
       || Math.abs(node.x) >= definition.width / 2 || Math.abs(node.z) >= definition.height / 2
-      || !Number.isFinite(node.stock) || node.stock <= 0) {
+      || !Number.isFinite(node.stock) || node.stock <= 0 || !validWildlifeNodeDefinition(node)) {
       throw new Error('Map has an invalid, duplicate, out-of-bounds or unsupported resource node.');
     }
     resourceIds.add(node.id);
@@ -10221,10 +10253,10 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
       return;
     }
     if (message.type === 'mapChange') {
-      applyLobby(message.state.lobby);
       void loadMapAudio(message.map.audio);
       mapDefinition = message.map;
       buildMap(mapDefinition);
+      applyLobby(message.state.lobby);
       setMapCatalog(message.maps, mapDefinition.id);
       setArmySize(message.state.armySize);
       cameraTarget.set(0, 0, 0);
@@ -10474,10 +10506,10 @@ function animate(now) {
       if (turning) unit.angle += THREE.MathUtils.clamp(turnDelta, -frameDelta * 9, frameDelta * 9);
       else unit.angle = unit.targetAngle;
     }
-    const working = !walking && unit.kind === 'worker'
-      && (unit.task === 'gathering' || unit.task === 'building' || unit.task === 'repairing');
+    const workAction = workerWorkAction(unit);
+    const working = !walking && workAction !== null;
     // Keep pose phase current in LOD so a zoom-in resumes without a swing reset.
-    if (working) unit.motionPhase += frameDelta * (['building', 'repairing'].includes(unit.task) ? 6 : 5);
+    if (working) unit.motionPhase += frameDelta * (['build', 'repair'].includes(workAction) ? 6 : 5);
     const activeAttack = unit.attackStartedAt > 0;
     const activeHit = unit.hitStartedAt > 0;
     const activeSpawn = unit.spawnStartedAt > 0;

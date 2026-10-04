@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { createRoomLobby, lobbyRejoinUrl } from '../src/room-lobby-ui.mjs';
+import { matchModeCatalog, effectiveMapForMatchMode } from '../src/match-modes.mjs';
+import { readFileSync } from 'node:fs';
+import { mapSizeIdentity } from '../src/map-size-policy.mjs';
 
 const host = { id: 'player-1', team: 0 };
 const guest = { id: 'player-2', team: 1 };
@@ -19,7 +22,7 @@ function disabledControlBlur(doc) {
   doc.body.tabIndex = -1;
   doc.body.focus();
 }
-function fixture(player = host) {
+function fixture(player = host, settings = {}, definition) {
   const dom = new JSDOM('<dialog id="room-lobby"></dialog>', { url: 'http://localhost/' });
   const root = dom.window.document.querySelector('dialog');
   root.showModal = () => { root.open = true; };
@@ -32,8 +35,9 @@ function fixture(player = host) {
     phase: 'lobby', revision: 4, mapId: 'map-a', armySize: 8, canLaunch: false,
     maps: [{ id: 'map-a', name: '<img src=x>' }, { id: 'map-b', name: 'Second map' }],
     seats: [{ ...host, connected: true, ready: false }, { ...guest, connected: true, ready: false }],
+    ...settings,
   };
-  ui.update(state, player);
+  ui.update(state, player, true, definition);
   return { dom, root, ui, state, sent, player, get invites() { return invites; }, get rejoins() { return rejoins; }, node: id => root.querySelector(`#${id}`) };
 }
 
@@ -54,6 +58,104 @@ test('host controls send supported configuration and suppress pending duplicate 
   assert.match(f.node('lobby-status').textContent, /Lobby changed/);
   f.node('lobby-ready').click();
   assert.deepEqual(f.sent.at(-1), { type: 'setReady', ready: true, revision: 5 });
+});
+
+const millrace = JSON.parse(readFileSync(new URL('../maps/bellweather-millrace.json', import.meta.url)));
+const lab = JSON.parse(readFileSync(new URL('../maps/stone-defense-field.json', import.meta.url)));
+const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
+function modeSettings(identity = {}) {
+  return { ...identity, mapId: millrace.id, matchModes: matchModeCatalog(millrace),
+    maps: [millrace, lab].map(map => ({ id: map.id, name: map.name, matchModes: matchModeCatalog(map) })) };
+}
+
+test('a projected Tiny choice submits one map/mode tuple and retains legacy visibility without extra tiers', () => {
+  const tiny = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  const current = { ...millrace, ...mapSizeIdentity(millrace), selectable: false, legacyCurrent: true,
+    matchModes: matchModeCatalog(millrace) };
+  const offered = { ...tiny, ...mapSizeIdentity(tiny), selectable: true, legacyCurrent: false,
+    matchModes: matchModeCatalog(tiny) };
+  const objective = { matchModeId: 'objective-control', matchModeVersion: 1 };
+  const f = fixture(host, { ...modeSettings(objective), maps: [current, offered], canLaunch: true,
+    seats: [{ ...host, connected: true, ready: true }, { ...guest, connected: true, ready: true }] }, millrace);
+  const picker = f.node('lobby-map'), options = [...picker.options];
+  assert.deepEqual(options.map(option => option.value), [millrace.id, tiny.id]);
+  assert.equal(options[0].disabled, true); assert.match(options[0].textContent, /Current legacy map/);
+  assert.match(options[1].textContent, /Tiny · 160 × 160.*Authored Rules/);
+  assert.doesNotMatch(picker.textContent, /Small|Medium|Large|XL/);
+  picker.value = tiny.id; picker.dispatchEvent(new f.dom.window.Event('change'));
+  picker.dispatchEvent(new f.dom.window.Event('change'));
+  assert.deepEqual(f.sent, [{ type: 'configureLobby', revision: 4, mapId: tiny.id,
+    matchModeId: 'authored', matchModeVersion: 1 }]);
+  assert.equal(f.node('lobby-ready').disabled, true); assert.equal(f.node('lobby-launch').disabled, true);
+  const accepted = { ...f.state, revision: 5, mapId: tiny.id, matchModeId: 'authored', matchModeVersion: 1,
+    matchModes: matchModeCatalog(tiny), maps: [offered], canLaunch: false,
+    seats: f.state.seats.map(seat => ({ ...seat, ready: false })) };
+  f.ui.update(accepted, host, true, tiny);
+  assert.equal(picker.value, tiny.id); assert.equal(f.node('lobby-ready').disabled, false);
+  assert.equal(f.node('lobby-launch').disabled, true); assert.equal(f.node('lobby-match-mode').value, 'authored@1');
+  f.dom.window.close();
+});
+
+test('host mode binding waits through unrelated projections and uses authoritative ready resets', () => {
+  const f = fixture(host, modeSettings(), millrace), select = f.node('lobby-match-mode');
+  select.focus(); select.value = 'skirmish@1'; select.dispatchEvent(new f.dom.window.Event('change'));
+  assert.deepEqual(f.sent, [{ type: 'configureLobby', ...skirmish, revision: 4 }]);
+  disabledControlBlur(f.dom.window.document);
+  f.ui.update(f.state, host);
+  assert.equal(select.disabled, true); assert.equal(f.node('lobby-ready').disabled, true);
+  assert.equal(f.node('lobby-map').disabled, true);
+  select.dispatchEvent(new f.dom.window.Event('change')); f.node('lobby-ready').click();
+  assert.equal(f.sent.length, 1);
+  const accepted = { ...f.state, ...skirmish, revision: 5 };
+  f.ui.update(accepted, host, true, effectiveMapForMatchMode(millrace, skirmish));
+  assert.equal(select.value, 'skirmish@1'); assert.equal(select.disabled, false);
+  assert.equal(f.dom.window.document.activeElement, select);
+  assert.equal(f.node('lobby-ready').textContent, 'Ready');
+  assert.equal(f.node('lobby-launch').disabled, true);
+  assert.deepEqual([...select.options].map(option => option.value), ['objective-control@1', 'skirmish@1'],
+    'the effective map must not hide canonical Objective Control compatibility');
+  f.dom.window.close();
+});
+
+test('map changes explicitly label and send the atomic authored fallback without a mode lock', () => {
+  const f = fixture(host, modeSettings(skirmish), effectiveMapForMatchMode(millrace, skirmish));
+  const map = f.node('lobby-map');
+  const labOption = [...map.options].find(option => option.value === lab.id);
+  assert.equal(labOption.disabled, false); assert.match(labOption.textContent, /Authored Rules/);
+  map.value = lab.id; map.dispatchEvent(new f.dom.window.Event('change'));
+  assert.deepEqual(f.sent, [{ type: 'configureLobby', mapId: lab.id, matchModeId: 'authored', matchModeVersion: 1, revision: 4 }]);
+  assert.equal(f.node('lobby-match-mode').value, 'skirmish@1');
+  f.ui.reject('Lobby changed', { ...f.state, revision: 5 }, host);
+  assert.equal(f.node('lobby-map').value, millrace.id);
+  assert.equal(f.node('lobby-match-mode').value, 'skirmish@1');
+  assert.equal(f.node('lobby-ready').disabled, false);
+  f.dom.window.close();
+});
+
+test('guests cannot choose modes and unsupported identities block ready and launch', () => {
+  const f = fixture(guest, modeSettings(skirmish), effectiveMapForMatchMode(millrace, skirmish));
+  const select = f.node('lobby-match-mode');
+  assert.equal(select.disabled, true);
+  select.value = 'objective-control@1'; select.dispatchEvent(new f.dom.window.Event('change'));
+  assert.deepEqual(f.sent, []);
+  f.ui.update({ ...f.state, matchModeVersion: 2, canLaunch: true }, host);
+  assert.equal(f.node('lobby-ready').disabled, true); assert.equal(f.node('lobby-launch').disabled, true);
+  assert.match(f.node('lobby-match-mode-status').textContent, /Reload/);
+  f.dom.window.close();
+});
+
+test('projected tier labels and current legacy availability are consumed without guessing capacity', () => {
+  const maps = [
+    { id: 'tiny', name: 'Terraced Vale', width: 160, height: 160, sizeTierLabel: 'Tiny', selectable: true, supportedUnitCapacity: null },
+    { id: 'legacy', name: 'Old Lab', width: 64, height: 64, selectable: false, legacyCurrent: true },
+  ];
+  const f = fixture(host, { maps, mapId: 'legacy' });
+  const options = [...f.node('lobby-map').options];
+  assert.equal(options[0].textContent, 'Tiny · 160 × 160 · Terraced Vale');
+  assert.equal(options[1].textContent, 'Old Lab · Current legacy map');
+  assert.equal(options[1].disabled, true); assert.equal(f.node('lobby-map').value, 'legacy');
+  assert.equal(f.root.textContent.includes('capacity'), false);
+  f.dom.window.close();
 });
 
 test('guest/spectator authority, readiness and reconnect are presented accurately', () => {
@@ -129,7 +231,8 @@ test('overlapping Ready and chat acknowledgements preserve the most recent contr
   ready.focus(); ready.click(); disabledControlBlur(doc);
   input.focus(); input.value = 'Hello'; submitChat(); disabledControlBlur(doc);
   const firstChat = f.sent.find(command => command.type === 'sendLobbyChat');
-  f.ui.update(f.state, guest);
+  const firstReady = { ...f.state, seats: f.state.seats.map(seat => ({ ...seat, ready: seat.id === guest.id })) };
+  f.ui.update(firstReady, guest);
   assert.equal(doc.activeElement, doc.body, 'an older Ready acknowledgement cannot reclaim chat focus');
   f.ui.updateChat([], { playerId: guest.id, clientMessageId: firstChat.clientMessageId });
   assert.equal(doc.activeElement, input);

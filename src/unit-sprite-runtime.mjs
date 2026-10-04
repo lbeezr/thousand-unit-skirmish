@@ -1,5 +1,6 @@
 import { groundHeight } from './terrain-height.mjs';
 import { SHORE_FISH_VARIANT } from './shore-fishing.mjs';
+import { workerWorkAction, workerWorkResource } from './worker-work-presentation.mjs';
 const UNIT_ROLES = Object.freeze(['worker', 'infantry', 'archer']);
 const CAST_ROLES = Object.freeze(['human', 'orc', 'elf', 'troll']);
 const DIRECTIONS = Object.freeze([
@@ -127,18 +128,24 @@ export function activeState(unit, now, attackDurationMs = 900) {
   if (unit.walking) return 'walk';
   if (unit.attackStartedAt > 0 && now - unit.attackStartedAt < attackDurationMs) return 'attack';
   if (unit.kind === 'worker') {
-    if (unit.task === 'repairing') return 'repair';
-    if (unit.task === 'building') return 'build';
-    if (unit.task === 'gathering') return unit.workResourceVariant === SHORE_FISH_VARIANT
+    const work = workerWorkAction(unit);
+    if (work === 'repair') return 'repair';
+    if (work === 'build') return 'build';
+    if (work === 'gather-food') return unit.workResourceVariant === SHORE_FISH_VARIANT
       ? 'gather-fish' : 'gather';
+    if (work === 'gather-wood') return 'gather';
+    // Neither default roster has Stone work pixels. Preserve its honest idle
+    // heading rather than reuse generic gather clips whose artwork is wood.
     return 'idle';
   }
   return unit.attackStartedAt > 0 && now - unit.attackStartedAt < attackDurationMs ? 'attack' : 'idle';
 }
 
 export function spriteAnimationTime(unit, state, now) {
-  if (unit.spriteClockState !== state || !Number.isFinite(unit.spriteClockStartedAt)) {
+  const action = ['gather', 'gather-fish'].includes(state) ? workerWorkAction(unit) : state;
+  if (unit.spriteClockState !== state || unit.spriteClockAction !== action || !Number.isFinite(unit.spriteClockStartedAt)) {
     unit.spriteClockState = state;
+    unit.spriteClockAction = action;
     unit.spriteClockStartedAt = now;
   }
   if (state === 'attack') return Math.max(0, now - unit.attackStartedAt);
@@ -294,7 +301,8 @@ export function createUnitSpriteRuntime({
     if (!selectedPack || !teamBatches) return;
     const state = activeState(unit, now, durationMs(role, 'attack') || 900);
     const direction = normalizedDirection(unit.angle || 0);
-    const clip = spriteActionClip(selectedPack.clipByKey, state, direction, unit.cargoType, role, approximateActionDirections);
+    const resource = unit.kind === 'worker' ? workerWorkResource(unit) : unit.cargoType;
+    const clip = spriteActionClip(selectedPack.clipByKey, state, direction, resource, role, approximateActionDirections);
     const frameId = clipFrame(clip, spriteAnimationTime(unit, state, now));
     const frame = selectedPack.frameById.get(frameId);
     const crop = frame && frameRectFor(frame, selectedPack.page.id, selectedPack.layerId);
