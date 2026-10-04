@@ -216,6 +216,14 @@ and `foundation` from 0.4 until completion. A completed structure clears its dec
 Ground color draws after terrain/haze and before props, building color and Workers
 at transparent order -0.5, with depth testing and no depth writes. A late ground
 pass cannot rely on Worker depth: those soft-edged sprites do not write it.
+Palisades/gates use two bounded union meshes, one per stage, covering only their
+disclosed unfinished one-cell footprints. Same-owner reciprocal connections
+join soil across stage boundaries; gaps, completion/removal and height changes
+retain exposed edges. Stable world-coordinate samples reuse the existing soil
+core, with feathering only at exposed union boundaries. No per-site 3×3 square
+or overlapping ground layer remains on this path; other buildings retain their
+existing site artwork. Geometry buffers update only when membership, stage,
+position, connection or sampled terrain contact changes.
 The [composition investigation](qa-site-composition-2026-10-04.md) records the
 source cause, layer audit and separately pending hosted visual checks.
 Forest-cell clearing uses its own visible stock data rather than inventing
