@@ -9,12 +9,11 @@ const map={id:'direct-move-cold-recovery',name:'DIRECT MOVE COLD RECOVERY',width
   spawnPoints:[{team:0,x:-32,z:-24},{team:1,x:32,z:24}],
   resourceNodes:[],obstacles:[],triggers:[],scenarioEvents:[]};
 const f=await createFortifiedFixture({mapPath:'maps/open-field.json',timeoutMs:45000});
-const orders=[];let token=400;
+const orders=[],selected=[];let token=400;
 try{
   await f.start();let clients=[await f.connect(0),await f.connect(1)];
   clients[0].send({type:'publishMap',map});
   await Promise.all(clients.map(c=>c.wait(m=>m.type==='mapChange'&&m.map.id===map.id,'direct Move map')));
-  const selected=[];
   for(const team of [0,1]){
     const c=clients[team],u=c.latest.units.find(u=>u[1]===team&&u[5]==='infantry'),sign=team?1:-1;
     selected.push(u[0]);
@@ -42,10 +41,18 @@ try{
     assert.equal(restored.state.units[id].orderRevision,before.state.units[id].orderRevision);
     assert.deepEqual(restored.state.units[id].queuedWaypoints,before.state.units[id].queuedWaypoints);
   }
+  // Idle defensive stance takes ownership immediately after Move completion.
+  // Check the accepted final command's point, rather than requiring its retired
+  // ordinary-Move metadata to survive that existing combat transition.
   const done=u=>!u.movePlanningPending&&!u.queuedWaypoints.length&&u.pathIndex===u.path.length
-    &&Math.hypot(u.x-(u.moveGoalCell%96-47.5),u.z-(Math.floor(u.moveGoalCell/96)-47.5))<.02;
+    &&Math.hypot(u.x-(u.team?1:-1)*16.2,u.z-(u.team?1:-1)*3.8)<.02;
   const completed=await f.checkpoint(s=>s.mapDefinition.id===map.id&&selected.every(id=>done(s.state.units[id])));
   for(const id of selected)assert.equal(completed.state.units[id].moveGoalCell,before.state.units[id].queuedWaypoints[0].destination);
+  for(const [index,id] of selected.entries()) {
+    const sign=index?1:-1,unit=completed.state.units[id];
+    assert.deepEqual([unit.x,unit.z],[sign*16.2,sign*3.8],'native queued endpoint keeps the requested fractional point');
+    assert.equal(unit.hp,before.state.units[id].hp,'combat cannot masquerade as a movement timeout');
+  }
   const report={head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
     serverSha256:createHash('sha256').update(await readFile(new URL('../server.mjs',import.meta.url))).digest('hex'),
     pathLineSha256:createHash('sha256').update(await readFile(new URL('../src/unit-path-line.mjs',import.meta.url))).digest('hex'),
@@ -57,4 +64,12 @@ try{
     coldRestart:true,limits:['actual two-seat WebSocket commands and checkpoint-driven process restart; no renderer or hosted deployment claim']};
   if(process.argv[2])await writeFile(process.argv[2],JSON.stringify(report,null,2)+'\n');
   console.log(JSON.stringify(report));
+}catch(error){
+  const snapshot=await f.checkpoint().catch(()=>null);
+  console.error(JSON.stringify({failure:error.message,tick:snapshot?.state.tickNumber,
+    units:snapshot?.state.units.filter(u=>selected.includes(u.id)).map(u=>({id:u.id,hp:u.hp,
+      x:u.x,z:u.z,goal:u.moveGoalCell,point:u.moveGoalPoint,path:u.path,pathIndex:u.pathIndex,
+      queued:u.queuedWaypoints,pending:u.movePlanningPending,revision:u.orderRevision,
+      attackTarget:u.attackTargetId,stanceCombat:u.stanceCombat,stanceReturning:u.stanceReturning}))}));
+  throw error;
 }finally{await f.dispose();}

@@ -4,6 +4,8 @@ import { validateCaptureContext } from '../renderer-capture-context.mjs';
 export async function checkedCapture(candidate) {
   const context = validateCaptureContext(candidate);
   context.evidenceDirectory.toUpperCase();
+  // @ts-expect-error background policy cannot admit arbitrary launch flags
+  context.backgroundPolicy = '--disable-background-timer-throttling';
   await context.capture({ mapId: 'veyrholds-terraced-vale', checkpoint: 'move-feedback' });
   // @ts-expect-error browser lifecycle belongs to the shared runner
   context.browser;

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
-import { canTraverseUnitStep } from '../src/unit-movement.mjs';
+import { activeMoveGoalPoint, canTraverseUnitStep } from '../src/unit-movement.mjs';
 
 process.env.RTS_MAP='maps/open-field.json'; process.env.RTS_GAME_MODE='pvp'; process.env.RTS_PREGAME='0';
 delete process.env.RTS_MATCH_STATE_PATH;
@@ -26,7 +26,7 @@ function arrive(r,units,maxTicks=1600) {
   for(const u of units){
     assert.equal(u.movePlanningPending,false); assert.equal(u.pathIndex,u.path.length);
     assert.equal(u.queuedWaypoints.length,0);
-    const goal=r.point(u.moveGoalCell); assert.ok(Math.hypot(u.x-goal.x,u.z-goal.z)<.02);
+    const goal=activeMoveGoalPoint(u)??r.point(u.moveGoalCell); assert.ok(Math.hypot(u.x-goal.x,u.z-goal.z)<.02);
   }
   return distance;
 }
@@ -40,8 +40,8 @@ for(const team of [0,1])for(const kind of ['worker','infantry'])
         Object.assign(u,{x:-8.27,z:-9.19});r.step();
         const start={x:u.x,z:u.z}; order(r,u,x,z);
         assert.equal(u.path.length,1);
-        const goal=r.point(u.moveGoalCell),straight=Math.hypot(goal.x-start.x,goal.z-start.z);
-        assert.ok(Math.hypot(x-goal.x,z-goal.z)<=Math.SQRT1_2,'existing goal-cell quantization is retained');
+        const goal=activeMoveGoalPoint(u),straight=Math.hypot(goal.x-start.x,goal.z-start.z);
+        assert.deepEqual([goal.x,goal.z],[x,z],'the exact legal requested point is retained');
         assert.ok(Math.abs(arrive(r,[u])-straight)<1e-8,'no Manhattan excess distance');
         const settled={x:u.x,z:u.z};for(let tick=0;tick<20;tick++)r.step();
         assert.deepEqual({x:u.x,z:u.z},settled,'idle does not drift on near-zero movement');

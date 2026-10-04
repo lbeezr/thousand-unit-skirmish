@@ -156,14 +156,13 @@ test('adapter cannot capture or launch without source, ordinary-entry and exact 
   const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-catalog-scenario-test-'));
   try {
     const mapBytes = await readFile(new URL('../docs/qa-evidence/default-frontier-buildings-2026-10-03/acceptance-map-flat.json', import.meta.url));
-    const pack = { directory, sourceRevision: revision, sourceDirty: false, digest: `sha256:${'b'.repeat(64)}`,
-      files: ['room-supervisor.mjs', 'server.mjs', 'src/main.js', 'package-lock.json'] };
+    const qualifiedSource = Object.freeze({ revision, digest: `sha256:${'b'.repeat(64)}` });
     for (const [index, entryEvidence] of [undefined, { ordinaryEntry: true, sourceRevision: revision,
       mapId: CATALOG_BARRACKS_MAP, mapSha256: '0'.repeat(64) }, { ordinaryEntry: false, sourceRevision: revision,
       mapId: CATALOG_BARRACKS_MAP, mapSha256: createHash('sha256').update(mapBytes).digest('hex') }].entries()) {
       const output = path.join(directory, String(index));
       const report = await runCatalogBarracksScenario({ page: { cdp: { evaluate() { assert.fail('invalid entry queried the browser'); } } },
-        pack, revision, browserVersion: { product: 'CPU mock' }, outputDirectory: output, entryEvidence },
+        source: qualifiedSource, outputDirectory: output, entryEvidence },
       { capture() { assert.fail('invalid entry captured pixels'); } });
       assert.equal(report.status, 'failed'); assert.equal(report.issues[0].stage, 'context');
       assert.equal(report.readability, 'unverified'); assert.equal(report.paidBarracksAcceptance, 'open');
@@ -185,4 +184,25 @@ test('normal entrypoints keep their art selectors outside the gated post-render 
   const render = main.indexOf('renderer.render(scene, camera);', end);
   const observe = main.indexOf('catalogBarracksCapture.snapshot = catalogBarracksObservation', render);
   assert.ok(observe > render);
+});
+
+test('first shared capture failure retains a local cause while public sequence artifacts redact assertion payloads', async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-catalog-private-fault-test-'));
+  try {
+    const mapBytes = await readFile(new URL('../docs/qa-evidence/default-frontier-buildings-2026-10-03/acceptance-map-flat.json', import.meta.url));
+    const fault = new assert.AssertionError({ message: 'room=private-capture-session', actual: 'private', expected: null, operator: '===' });
+    const viewPath = path.posix.join(path.posix.dirname(manifestPath), view.path);
+    const page = { cdp: { call: async () => ({}), evaluate: async expression =>
+      expression.startsWith('(function observeCatalogPage') ? catalog
+        : expression.includes('const root = document.querySelector') ? null : { x: 100, y: 100 } }, wait: async () => catalog };
+    const report = await runCatalogBarracksScenario({ page,
+      source: Object.freeze({ revision, digest: `sha256:${'b'.repeat(64)}` }),
+      runtime: { manifest, defaultView: { manifest: manifestPath, path: viewPath, sha256: view.sha256 } },
+      outputDirectory: directory, entryEvidence: { ordinaryEntry: true, sourceRevision: revision,
+        mapId: CATALOG_BARRACKS_MAP, mapSha256: createHash('sha256').update(mapBytes).digest('hex') } },
+    { capture: async () => { throw fault; } });
+    assert.equal(report.status, 'failed'); assert.equal(report.cause, fault);
+    assert.deepEqual(report.issues, [{ stage: 'catalog', code: 'contract-failed', message: 'Scenario failed during catalog' }]);
+    assert.doesNotMatch(await readFile(path.join(directory, 'catalog-barracks.json'), 'utf8'), /private-capture-session/);
+  } finally { await rm(directory, { recursive: true, force: true }); }
 });

@@ -81,7 +81,7 @@ run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default
 run(['--test', 'scripts/asset-readability.test.mjs'], 'Read-only asset catalog consuming the existing production sidecar');
 run(['--test', 'scripts/building-orientation.test.mjs', 'scripts/building-placement-preview.test.mjs', 'scripts/building-rotation-controls.test.mjs', 'scripts/building-orientation-client.test.mjs'], 'Manual building orientation, final-art ghost and input contracts');
 run(['scripts/building-orientation-scenario.mjs'], 'Paid building orientation authority, exits and cold recovery');
-run(['--test', 'scripts/catalog-barracks-scenario.test.mjs'], 'Catalog and paid Barracks adapter contracts (CPU observations)');
+run(['--test', 'scripts/catalog-barracks-scenario.test.mjs', 'scripts/renderer-building-catalog-scenario.test.mjs'], 'Catalog and paid Barracks adapter contracts (CPU observations)');
 run(['--test', 'scripts/oak-depletion-atlas-runtime.test.mjs'], 'Generic oak depletion atlas loading, fallback and registration');
 run(['--test', 'scripts/interactive-runtime-image.test.mjs'], 'Verified interactive image hash, dimensions and disposal');
 run(['--test', 'scripts/terrain-cliff-faces.test.mjs'], 'Painted scree cliff faces preserve terrain, UV joins and fallback');
@@ -125,7 +125,7 @@ run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach
 run(['--test', 'scripts/unit-movement.test.mjs'], 'Unit separation terrain boundaries');
 run(['--test', 'scripts/crowd-forward-progress.test.mjs'], 'Parked crowd route progress and preserved idle actors');
 run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals and team reservation');
-run(['--test', 'scripts/unit-path-line.test.mjs', 'scripts/open-ground-move.test.mjs', 'scripts/worker-flat-flow-routes.test.mjs'], 'Direct open-ground trajectories and safe long waypoint repair');
+run(['--test', 'scripts/unit-path-line.test.mjs', 'scripts/open-ground-move.test.mjs', 'scripts/worker-flat-flow-routes.test.mjs', 'scripts/fractional-move-endpoints.test.mjs'], 'Direct open-ground trajectories and safe long waypoint repair');
 run(['--test', 'scripts/move-planning-slices.test.mjs'], 'Clock-independent route planning, stale results and fair queue turns');
 run(['--test', 'scripts/move-planning-tick.test.mjs', 'scripts/move-planning-tick-error.test.mjs', 'scripts/pathing-arrival.test.mjs'], 'Opt-in planning tick budgets, order invalidation, topology and recovery');
 run(['--test', 'scripts/tick-samples.test.mjs'], 'Opt-in whole-tick diagnostic chronology and values');
@@ -163,7 +163,7 @@ run(['--test', 'scripts/renderer-capability.test.mjs'], 'WebGL2 capability repor
 run(['--test', 'scripts/browser-state-recovery.test.mjs', 'scripts/browser-resume-client.test.mjs', 'scripts/renderer-browser-resume-scenario.test.mjs'], 'Browser resume freshness, bounded presentation and input cleanup');
 run(['scripts/browser-state-refresh-scenario.mjs'], 'Native privacy-preserving full state refresh and reconnect');
 run(['--test', 'scripts/worker-work-cycle-capture.test.mjs', 'scripts/renderer-worker-route-scenario.test.mjs', 'scripts/renderer-worker-route-joint.test.mjs'], 'Packed and ordinary Worker route adapter contracts (CPU mocks)');
-run(['--test', 'scripts/renderer-qualification.test.mjs', 'scripts/renderer-feature-capture.test.mjs', 'scripts/renderer-capture-context.test.mjs', 'scripts/renderer-qualification-novice.test.mjs', 'scripts/renderer-qualification-building-orientation.test.mjs'], 'Packed-game renderer qualification contracts (CPU mocks)');
+run(['--test', 'scripts/renderer-qualification.test.mjs', 'scripts/renderer-feature-capture.test.mjs', 'scripts/renderer-capture-context.test.mjs', 'scripts/renderer-qualification-novice.test.mjs', 'scripts/renderer-qualification-building-orientation.test.mjs', 'scripts/renderer-forest-job-scenario.test.mjs', 'scripts/fortified-browser-policy.test.mjs'], 'Packed-game renderer qualification contracts (CPU mocks)');
 run(['--test', 'scripts/temporary-resources.test.mjs'], 'Owned temporary resource cleanup');
 run(['--test', 'scripts/mature-settlement-scenario.test.mjs'], 'Paid settlement fixture ledger and layout');
 run(['scripts/mature-settlement-scenario.mjs'], 'Paid settlement construction, composition and recovery');

@@ -12,6 +12,10 @@ export const CAPTURE_CASES = Object.freeze({
   'novice-flow': './renderer-novice-flow-scenario.mjs',
   'worker-routes': './renderer-worker-route-scenario.mjs',
   'building-catalog': './renderer-building-catalog-scenario.mjs',
+  'forest-jobs': './renderer-forest-job-scenario.mjs',
+  'site-composition': './renderer-site-composition-scenario.mjs',
+  'tree-targeting': './renderer-tree-targeting-scenario.mjs',
+  'browser-resume': './renderer-browser-resume-scenario.mjs',
 });
 export function selectedCases(selection) {
   if (selection === 'all') return Object.keys(CAPTURE_CASES);
@@ -111,6 +115,7 @@ export async function runFeatureBatch(packFile, outputDirectory, selection = 'al
             const runAndDrain = async () => {
               let outcome;
               const ownedContext = Object.freeze({ version: CAPTURE_CONTEXT_VERSION, page: context.page, openPage, capture, origin: context.origin,
+                backgroundPolicy: context.backgroundPolicy,
                 evidenceDirectory: directory,
                 source: Object.freeze({ revision: context.pack.sourceRevision, digest: context.pack.digest }) });
               validateCaptureContext(ownedContext);

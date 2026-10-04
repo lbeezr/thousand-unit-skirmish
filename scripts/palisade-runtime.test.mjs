@@ -7,6 +7,7 @@ import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { palisadeConnections } from '../src/palisade-profile.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { clearWorkIntent, createConstructionWorkIntent } from '../src/work-intent.mjs';
+import { createMoveGoalPoint } from '../src/unit-movement.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const renderer = source.slice(source.indexOf('function createPalisadeVisual('), source.indexOf('function createArcheryRangeVisual('));
@@ -61,7 +62,7 @@ for (const type of ['move', 'attackMove']) test(`accepted queued ${type} interru
     queuedWaypoints: [], persistentOrder: null, gatherNodeId: null, gatherForestCell: -1,
     movePlanningPending: true, path: [8, 9], pathIndex: 0, attackTargetId: -1, attackBuildingTargetId: -1, attackMove: false,
     x: 0, z: 0, workIntent: createConstructionWorkIntent(3, [1, 2], { minX: 0, maxX: 2, minZ: 0, maxZ: 2 }) };
-  const context = vm.createContext({ clearWorkIntent, performance, MAP_WIDTH: 16, MAX_QUEUED_WAYPOINTS: 16, dirty: false,
+  const context = vm.createContext({ clearWorkIntent, createMoveGoalPoint, performance, MAP_WIDTH: 16, MAP_HEIGHT: 16, MAX_QUEUED_WAYPOINTS: 16, dirty: false,
     commandUnits: () => [unit], unitHasCapability: () => true, worldToCell: () => 22,
     nearestOpenCell: cell => cell, walkableComponents: new Int32Array(256), buildingsById: new Map(),
     buildFormationSlots: () => ({ slots: [22] }), orderUnitsForFormation: units => units,
