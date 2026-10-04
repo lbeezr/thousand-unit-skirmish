@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
@@ -247,9 +247,17 @@ try {
 
   // Model a crash checkpoint captured during attack-move route repair, after a
   // target was acquired but before the transient planner applied the new path.
+  // Stop the writer before replacing its checkpoint with the injected boundary.
+  await killServer(child);
+  child = null;
+  await Promise.allSettled(clients.map(closeClient));
+  clients = [];
   const pendingAttackMoveCheckpoint = JSON.parse(await readFile(checkpointPath, 'utf8'));
   const pendingAttackMoveUnit = pendingAttackMoveCheckpoint.state.units[0];
   pendingAttackMoveUnit.attackMove = true;
+  // Ordinary Move owns a fractional point; attack-move repair owns cell/range
+  // endpoints. Production clears the ordinary point at this order boundary.
+  pendingAttackMoveUnit.moveGoalPoint = null;
   pendingAttackMoveUnit.attackMoveRouteReady = true;
   pendingAttackMoveUnit.movePlanningPending = true;
   pendingAttackMoveUnit.attackTargetId = 125;
@@ -259,11 +267,6 @@ try {
   pendingAttackMoveUnit.pathIndex = 0;
   await writeFile(checkpointPath, JSON.stringify(pendingAttackMoveCheckpoint));
 
-  await killServer(child);
-  child = null;
-  await Promise.allSettled(clients.map(closeClient));
-  clients = [];
-
   stage = 'checkpoint recovery and seat reclaim';
   child = await startServer(port, checkpointPath, customMapDirectory);
   azure = await connectClient(port, azureToken);
@@ -271,6 +274,8 @@ try {
   clients = [azure, ember];
   assert.equal(azure.welcome.player.team, 0, 'Azure should reclaim its seat after worker recovery');
   assert.equal(ember.welcome.player.team, 1, 'Ember should reclaim its seat after worker recovery');
+  assert.ok(clients.every(client => client.welcome.recoveredFromCheckpoint && client.welcome.player.resumed
+    && client.welcome.matchId === pendingAttackMoveCheckpoint.matchId), 'pending attack-move recovery must retain the match and both seats');
   const finalPoint = cellCenter(secondPoint);
   stage = 'recovered route arrival at queued attack-move waypoint';
   const arrived = await azure.waitForState((state) => {
@@ -290,8 +295,34 @@ try {
   clients = [];
   const schemaTwoCheckpoint = JSON.parse(await readFile(checkpointPath, 'utf8'));
   schemaTwoCheckpoint.schemaVersion = 2;
+  // Schema 2 predates pinned definitions, economy profiles and match modes.
+  // Retaining modern mode fields intentionally blocks the schema-26 migration.
+  delete schemaTwoCheckpoint.rulesetRevision; delete schemaTwoCheckpoint.factionId;
+  delete schemaTwoCheckpoint.matchModeId; delete schemaTwoCheckpoint.matchModeVersion;
   delete schemaTwoCheckpoint.economyProfileId; delete schemaTwoCheckpoint.state.teamStone;
-  for (const unit of schemaTwoCheckpoint.state.units) delete unit.queuedWaypoints;
+  for (const unit of schemaTwoCheckpoint.state.units) {
+    delete unit.queuedWaypoints;
+    delete unit.moveGoalPoint; // Legacy routes retain their cell-centered endpoint.
+  }
+
+  stage = 'schema-2 future match-mode metadata rejection';
+  const forgedMode = { ...schemaTwoCheckpoint, matchModeId: 'authored', matchModeVersion: 1 };
+  const forgedBytes = JSON.stringify(forgedMode);
+  await writeFile(checkpointPath, forgedBytes);
+  child = await startServer(port, checkpointPath, customMapDirectory);
+  clients = [await connectClient(port, azureToken), await connectClient(port, emberToken)];
+  assert.ok(clients.every(client => !client.welcome.recoveredFromCheckpoint
+    && client.welcome.matchId !== schemaTwoCheckpoint.matchId), 'legacy saves cannot claim future match-mode metadata');
+  assert.match(serverLogs, /Invalid match checkpoint: unsupported schema version/);
+  const rejectedPath = (await readdir(dataDirectory)).find(name => name.startsWith('match.json.rejected-'));
+  assert.ok(rejectedPath, 'invalid legacy checkpoint is preserved for recovery');
+  assert.equal(await readFile(path.join(dataDirectory, rejectedPath), 'utf8'), forgedBytes);
+  await killServer(child);
+  child = null;
+  await Promise.allSettled(clients.map(closeClient));
+  clients = [];
+
+  stage = 'schema-2 checkpoint migration';
   await writeFile(checkpointPath, JSON.stringify(schemaTwoCheckpoint));
   child = await startServer(port, checkpointPath, customMapDirectory);
   azure = await connectClient(port, azureToken);
@@ -300,6 +331,21 @@ try {
   assert.equal(azure.welcome.recoveredFromCheckpoint, true, 'schema-2 checkpoints should migrate without resetting the match');
   assert.equal(azure.welcome.player.team, 0);
   assert.equal(ember.welcome.player.team, 1);
+  assert.ok(clients.every(client => client.welcome.recoveredFromCheckpoint && client.welcome.player.resumed
+    && client.welcome.matchId === schemaTwoCheckpoint.matchId), 'legacy migration retains the match and both saved seats');
+  const migratedCheckpoint = await waitForCheckpoint(checkpointPath, checkpoint =>
+    checkpoint.matchId === schemaTwoCheckpoint.matchId && checkpoint.schemaVersion === queuedCheckpoint.schemaVersion);
+  assert.equal(migratedCheckpoint.mapHash, schemaTwoCheckpoint.mapHash);
+  assert.deepEqual(migratedCheckpoint.mapDefinition, schemaTwoCheckpoint.mapDefinition);
+  assert.deepEqual(migratedCheckpoint.state.teamFood, schemaTwoCheckpoint.state.teamFood);
+  assert.deepEqual(migratedCheckpoint.state.teamWood, schemaTwoCheckpoint.state.teamWood);
+  assert.deepEqual(migratedCheckpoint.state.teamStone, [0, 0], 'migration creates no mineral grant');
+  assert.deepEqual(migratedCheckpoint.state.units.map(unit => [unit.id, unit.generation]),
+    schemaTwoCheckpoint.state.units.map(unit => [unit.id, unit.generation]));
+  assert.ok(migratedCheckpoint.state.units.every(unit => unit.queuedWaypoints.length === 0 && unit.moveGoalPoint === null),
+    'schema-2 migration initializes empty queues without inventing fractional Move points');
+  assert.equal(migratedCheckpoint.matchModeId, 'authored');
+  assert.equal(migratedCheckpoint.matchModeVersion, 1);
 
   const replacementFirst = { x: -14, z: 14 };
   const replacementFinal = { x: -12, z: -10 };
@@ -452,6 +498,8 @@ try {
     recoveryTick: arrived.tick,
     pendingAttackMoveRouteRecovered: true,
     schemaTwoCheckpointMigrated: true,
+    legacyMatchModeFieldsRejectedAndPreserved: true,
+    legacyMapBanksAndUnitGenerationsPreserved: true,
     fogOfWarQueueCountsAreTeamPrivate: true,
     replacementClearedQueue: replacedCheckpoint.state.units[0].queuedWaypoints.length === 0,
     perUnitQueueLimit: cappedCheckpoint.state.units[0].queuedWaypoints.length,
