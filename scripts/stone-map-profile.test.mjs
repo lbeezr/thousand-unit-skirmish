@@ -262,8 +262,12 @@ test('internal Practice selects shipped Stone and both seats naturally pay, refu
   assert.equal(offered.selectable, true); assert.match(mapChoiceLabel(offered), /Internal fixture.*STONE DEFENSE FIELD/);
   clients[0].send({ type: 'selectMap', mapId: map.id });
   await Promise.all(clients.map(client => client.wait(message => message.type === 'mapChange' && message.map.id === map.id)));
-  await Promise.all(clients.map(client => client.state(state => state.mapId === map.id && state.armySize === 24
-    && state.practice && state.scenarioClockStarted, 'two-seat internal Stone Practice')));
+  assert.ok(clients.every(client => client.latest.mapId === map.id && client.latest.armySize === 24
+    && client.latest.practice && client.latest.connected === 2));
+  // Idle Practice may emit clock updates without another full state snapshot.
+  await room.checkpoint(snapshot => snapshot.mapDefinition.id === map.id
+    && snapshot.state.currentArmySize === 24 && snapshot.state.scenarioClockStarted
+    && snapshot.state.matchElapsedSeconds > 0);
   assert.ok(clients.every(client => !client.messages.some(message => message.type === 'mapPublished')));
   assert.ok(!(await readdir(path.join(path.dirname(checkpointPath), 'custom-maps'))).includes(`${map.id}.json`));
   const workers = clients.map((client, team) => client.latest.units.filter(row => row[1] === team && row[5] === 'worker').map(row => row[0]));

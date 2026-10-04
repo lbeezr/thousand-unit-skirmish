@@ -30,6 +30,9 @@ export async function createPathingReplayFixture(map) {
 const replayPlanningCallbacks = [];
 export const replay = {
   prepare(map) {
+    // Caller-supplied CPU fixtures retain their authored rules, independently
+    // of the fresh ordinary server's default mode and catalog.
+    matchMode = normalizeMatchMode();
     activateMap(validateMapDefinition(map, 'pathing replay'));
     tickNumber = 0; navigationRevision = 0; nextMoveOrderId = 1;
     resetArmy(map.startingArmySize);
@@ -123,6 +126,8 @@ export const replay = {
     await writeFile(filename, source);
     const { replay } = await import(pathToFileURL(filename).href);
     replay.prepare(map);
+    const identity = replay.checkpoint();
+    assert.deepEqual([identity.matchModeId, identity.matchModeVersion], ['authored', 1]);
     return { replay, sourceSha256: createHash('sha256').update(original).digest('hex'),
       async dispose() { replay.dispose(); await rm(directory, { recursive: true, force: true }); } };
   } catch (error) { await rm(directory, { recursive: true, force: true }); throw error; }

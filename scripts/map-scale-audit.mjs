@@ -10,6 +10,7 @@ import { canTraverseElevation, elevationPathCost } from '../src/elevation.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { PVE_MAP_IDS } from '../src/pve-match.mjs';
+import { NORMAL_HUMAN_MATCH_MODE, NORMAL_MATCH_MAP_ID, matchModeDefinition } from '../src/match-modes.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const round = n => Number(n.toFixed(3));
@@ -244,13 +245,15 @@ export async function runAudit() {
   if (!source.includes('Math.floor(x + MAP_HALF_X)') || !source.includes('matchElapsedSeconds += STEP_SECONDS')
     || !source.includes('STEP_SECONDS = 1 / TICK_RATE') || !source.includes('moveSpeed * STEP_SECONDS'))
     throw new Error('Recheck cell conversion or time/movement contract.');
-  const defaultMapId = source.match(/process\.env\.RTS_MAP \|\| 'maps\/([^']+)\.json'/)?.[1];
-  if (!defaultMapId) throw new Error('Recheck default map contract.');
+  if (!source.includes('process.env.RTS_MATCH_MODE_VERSION === undefined ? NORMAL_HUMAN_MATCH_MODE : {}')
+    || !source.includes('matchModeDefinition(configuredMatchMode).defaultMapId ?? NORMAL_MATCH_MAP_ID'))
+    throw new Error('Recheck default map contract.');
+  const defaultMapId = matchModeDefinition(NORMAL_HUMAN_MATCH_MODE).defaultMapId ?? NORMAL_MATCH_MAP_ID;
   const constants = { defaultMapId, ticksPerSecond: integer('TICK_RATE'), maxBuildings: integer('MAX_BUILDINGS'),
     forestWoodPerCell: integer('FOREST_WOOD_PER_CELL'), defaultArmySize: integer('DEFAULT_STARTING_ARMY_SIZE') };
   const files = (await readdir(path.join(root, 'maps'))).filter(f => f.endsWith('.json')).sort();
   const inputFiles = ['scripts/map-scale-audit.mjs', 'server.mjs', 'simulation-scheduler.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs',
-    'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/pve-match.mjs', 'src/terrain-height.mjs', ...files.map(f => `maps/${f}`)];
+    'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/pve-match.mjs', 'src/match-modes.mjs', 'src/terrain-height.mjs', ...files.map(f => `maps/${f}`)];
   const hashes = {};
   for (const file of inputFiles) hashes[file] = hash(await readFile(path.join(root, file)));
   const maps = [];
