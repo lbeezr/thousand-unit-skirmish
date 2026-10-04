@@ -1,0 +1,11 @@
+{
+  "sourceRevision": "1ff55bb2b6ba9b56090579d658c8b9ed1f2fbe29",
+  "frameId": "walk-west-0",
+  "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+  "seedSha256": "bf4d2e5aa3531950f3d13e19514eed90005990ca1f47fbc3a968e807cf247c41",
+  "referenceSha256": "c10521713f6bcadf3930b9e23e3ed590c2639ff737f7488181a79a30c701ec3f",
+  "direction": "west",
+  "screenDirection": "up-left back-three-quarter",
+  "tool": "built-in ImageGen under standing bounded public-seed authorization",
+  "retainedSourceAssessment": "Inspected actual public legacy assets first; current public West walk supplies correct up-left/back identity/bearing. No other-facing relabel/private pixels."
+}
