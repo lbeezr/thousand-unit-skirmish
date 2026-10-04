@@ -6,7 +6,7 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { selectionContext } from '../src/selection-context.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from '../src/combat-stance-ui.mjs';
-import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, workerRoleFacts, WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS } from '../src/selection-portrait.mjs';
+import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, farmSelectionPortrait, FARM_PORTRAITS, workerRoleFacts, WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS } from '../src/selection-portrait.mjs';
 import { civilizationSpriteRole } from '../src/unit-sprite-runtime.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
@@ -655,14 +655,22 @@ for (const team of [0, 1]) test(`seat ${team}: Farm identity opens accurate comp
   assert.deepEqual(JSON.parse(JSON.stringify(events)), [{ cue: 'select', buildingType: 'farm' }]);
   assert.equal(button.hidden, false);
   assert.match(button.getAttribute('aria-label'), /Farm · Food plot.*open structure details/);
-  assert.equal(button.querySelector('img').getAttribute('src'), '/assets/ui/icons/food.svg');
+  assert.equal(button.querySelector('img').getAttribute('src'), FARM_PORTRAITS.complete.asset);
   assert.equal(button.dataset.codexEntry, 'building.farm');
   assert.equal(f.w.commandDock.hidden, true, 'selection keeps details dismissible');
   f.click(button);
   assert.equal(f.w.commandDock.dataset.activePanel, 'selection');
   const art = f.d.querySelector('[data-building-art]');
   assert.equal(art.hidden, false);
-  assert.match(art.textContent, /Food symbol.*illustration unavailable.*temporary House model/);
+  assert.match(art.textContent, /Farm illustration.*Planted food plot/);
+  assert.doesNotMatch(art.textContent, /temporary House|illustration unavailable/);
+  const artImage = art.querySelector('img'), artFrame = art.querySelector('.farm-selection-art-frame');
+  assert.equal(artImage.getAttribute('src'), FARM_PORTRAITS.complete.asset);
+  assert.equal(artImage.alt, ''); assert.equal(artFrame.getAttribute('aria-hidden'), 'true');
+  assert.match(css, /\.farm-selection-art-frame[^}]*width: 40px; height: 40px; overflow: hidden/);
+  assert.equal(artImage.style.width, `${1024 / 500 * 100}%`);
+  assert.equal(artImage.style.left, `${-260 / 500 * 100}%`);
+  assert.equal(artImage.style.top, `${-420 / 500 * 100}%`);
   const study = art.querySelector('a');
   assert.match(study.href, /4b626295510f761b0307aefe4c78c67c79eeabf5.*farm-reference-v1\.png$/);
   assert.equal(study.target, '_blank'); assert.match(study.rel, /noopener/);
@@ -673,10 +681,15 @@ for (const team of [0, 1]) test(`seat ${team}: Farm identity opens accurate comp
   f.escape(); assert.equal(f.d.activeElement, button);
   farm.harvestStock = 0; f.select([], farm);
   assert.equal(f.w.ui.selectedBuildingState.textContent, 'EXHAUSTED');
+  assert.equal(button.querySelector('img').getAttribute('src'), FARM_PORTRAITS.exhausted.asset);
+  assert.equal(art.querySelector('img'), artImage, 'state changes keep the existing image and link nodes');
+  assert.match(art.textContent, /Farm illustration.*Exhausted food plot/);
   assert.match(f.w.ui.selectedBuildingProduction.textContent, /0 \/ 200.*Exhausted/);
   assert.match(f.d.querySelector('[data-building-instruction]').textContent, /Clear exhausted Farm.*new Farm.*No regrowth/);
   farm.complete = false; farm.progress = .4; f.select([], farm);
   assert.equal(f.w.ui.selectedBuildingState.textContent, 'BUILDING · 40%');
+  assert.equal(artImage.getAttribute('src'), FARM_PORTRAITS.frame.asset);
+  assert.match(art.textContent, /Farm illustration.*under construction/);
   assert.match(f.d.querySelector('[data-building-instruction]').textContent, /finish construction/);
   assert.doesNotMatch(f.w.ui.selectedBuildingProduction.textContent, /remaining|Exhausted/);
   f.w.matchMedia = () => ({ matches: true }); farm.complete = true; farm.harvestStock = 100; f.select([], farm);
@@ -690,6 +703,59 @@ for (const team of [0, 1]) test(`seat ${team}: Farm identity opens accurate comp
   farm.team = team; farm.hp = 0; f.select([], farm); assert.equal(button.hidden, true);
   f.select([team * 2]); assert.equal(art.hidden, true);
   assert.equal(f.d.querySelector('[data-building-description]').hidden, true);
+});
+
+test('Farm art follows construction, health and exhaustion boundaries without implying unfinished food', () => {
+  const farm = { type: 'farm', complete: true, progress: 1, hp: 600, maxHp: 600, harvestStock: 1 };
+  for (const [patch, expected] of [
+    [{ complete: false, progress: 0, harvestStock: 0 }, 'foundation'],
+    [{ complete: false, progress: .275 }, 'foundation'],
+    [{ complete: false, progress: .276 }, 'frame'],
+    [{ complete: false, progress: 1, harvestStock: 200 }, 'frame'],
+    [{ hp: 361 }, 'complete'], [{ hp: 360 }, 'damaged'],
+    [{ hp: 181 }, 'damaged'], [{ hp: 180 }, 'critical'],
+    [{ harvestStock: 0 }, 'exhausted'], [{ harvestStock: 0, hp: 360 }, 'exhausted-damaged'],
+    [{ harvestStock: 0, hp: 180 }, 'exhausted-critical'],
+  ]) assert.equal(farmSelectionPortrait({ ...farm, ...patch }), FARM_PORTRAITS[expected]);
+  for (const patch of [{ type: 'mill' }, { harvestStock: undefined }, { harvestStock: NaN },
+    { harvestStock: -1 }, { hp: 0 }, { maxHp: undefined }, { maxHp: 0 },
+    { complete: false, progress: undefined }]) {
+    assert.equal(farmSelectionPortrait({ ...farm, ...patch }), null, 'unsupported snapshot keeps Food symbol');
+  }
+});
+
+for (const team of [0, 1]) test(`seat ${team}: failed Farm art retains Food symbol, exact facts, stable focus and state recovery`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const farm = { id: 10, team, type: 'farm', complete: true, hp: 600, maxHp: 600, harvestStock: 90 };
+  const button = f.bar.querySelector('[data-selection-portrait]'), frame = button.querySelector('.selection-portrait-art');
+  f.select([], farm); f.click(button);
+  const art = f.d.querySelector('[data-building-art]'), image = art.querySelector('img'), study = art.querySelector('a');
+  study.focus(); image.dispatchEvent(new f.w.Event('error'));
+  frame.querySelector('img').dispatchEvent(new f.w.Event('error'));
+  assert.equal(image.getAttribute('src'), '/assets/ui/icons/food.svg');
+  assert.equal(frame.querySelector('img').getAttribute('src'), '/assets/ui/icons/food.svg');
+  assert.equal(frame.hidden, false); assert.equal(image.parentElement.hidden, false);
+  assert.match(art.textContent, /Food symbol.*artwork unavailable/);
+  assert.equal(f.d.activeElement, study); assert.match(button.getAttribute('aria-label'), /Farm · Food plot.*structure details/);
+  farm.harvestStock = 89.5; f.select([], farm);
+  assert.equal(image.getAttribute('src'), '/assets/ui/icons/food.svg', 'live snapshots do not retry a failed Farm image');
+  assert.equal(art.querySelector('img'), image); assert.equal(f.d.activeElement, study);
+  assert.match(f.w.ui.selectedBuildingProduction.textContent, /89 \/ 200/);
+  assert.match(f.d.querySelector('[data-building-instruction]').textContent, /right-click.*harvest/);
+  farm.harvestStock = 0; f.select([], farm);
+  assert.equal(image.getAttribute('src'), FARM_PORTRAITS.exhausted.asset, 'different real state can use its own intact image');
+  assert.match(art.textContent, /Exhausted food plot/); assert.match(f.d.querySelector('[data-building-instruction]').textContent, /Clear exhausted Farm.*No regrowth/);
+  farm.harvestStock = undefined; f.select([], farm);
+  assert.equal(image.getAttribute('src'), '/assets/ui/icons/food.svg', 'unrepresented snapshot keeps explicit symbol');
+  image.dispatchEvent(new f.w.Event('error')); f.select([], farm);
+  assert.equal(image.parentElement.hidden, true, 'failed symbol leaves written facts and source link');
+  assert.equal(f.d.activeElement, study); assert.equal(f.w.sentCommands.length, 0);
+  f.escape(); assert.equal(f.d.activeElement, button); assert.equal(f.w.commandDock.hidden, true);
+  farm.harvestStock = 100; farm.complete = false; farm.progress = .1; f.select([], farm);
+  assert.equal(frame.querySelector('img').getAttribute('src'), FARM_PORTRAITS.foundation.asset);
+  assert.match(f.d.querySelector('[data-building-instruction]').textContent, /finish construction/);
+  f.w.teamUnits[-1] = []; f.w.localTeam = -1; f.w.updateSelectionUI();
+  assert.equal(button.hidden, true); assert.equal(art.hidden, true);
 });
 
 for (const team of [0, 1]) test(`seat ${team}: Barracks portrait matches lifecycle/team art and opens existing structure details`, t => {

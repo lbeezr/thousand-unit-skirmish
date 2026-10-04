@@ -76,3 +76,43 @@ Faces and upper equipment remain distinct in the 52px candidates. Facial detail
 and bow strokes diminish at 20px, so thumbnails stay decorative beside the
 written Archer name, both costs and availability reason. Native framing,
 clipping, identified delivery and unassisted recognition remain incomplete.
+
+
+## Farm runtime reuse — 4 October 2026
+
+The existing [admitted default Frontier Farm family](../../buildings/frontier-economy-models-v1/README.md)
+supplies the requested selection illustration directly. Its [manifest](../../buildings/frontier-economy-models-v1/farm-complete-renderer.json)
+SHA256 is `6a4ab7f6821c11e322eb2908c33b1cc96c5e32f6be2bfb33f683813754cb4800`;
+[world source/staging acceptance](../../../docs/qa-frontier-economy-art-2026-10-04.md)
+at `b07df5578aadf78b7b2a15dd46be56fd5b67fbf1` is separate from this HUD delivery.
+No image is generated, edited, duplicated or newly admitted. Private GLBs,
+capture recipes and source comparisons remain outside browser admission.
+
+All eight 1024×1024 originals use existing view-01 (45° illustrative view),
+with CSS viewport x260/y420/size500 in the existing 52px portrait and 40px inline
+figure. Their exact alpha union x280..738/y439..817 leaves 20/19/22/103px margins;
+the roof, scaffold, field and base remain intact. Original source pixels and
+compact color/grayscale studies were inspected: planted rows and exhausted bare
+soil remain distinct, as does the open construction frame. This fixed identity
+illustration does not claim the current camera yaw or live team standards.
+
+Paths below are relative to `assets/buildings/frontier-economy-models-v1`.
+
+| Registered state | Existing runtime source | SHA256 |
+| --- | --- | --- |
+| `complete` | `runtime/farm-complete-view-01.png` | `f0da663928ba4966af97acd4ee7789f9cd6aa0dea0914bb4ded94e2fd27ce90d` |
+| `foundation` | `runtime/farm-foundation-view-01.png` | `9b8967590e5e69922d255ed497708182b3071fa7b722c8e778e566e8a1e34f56` |
+| `frame` | `runtime/farm-frame-view-01.png` | `4706bd3dbb074d0920da0ae0b9e894f0f7c7cde7a8815bb89b489367ef7103ea` |
+| `damaged` | `runtime/farm-damaged-view-01.png` | `abb6dca80af2f9570924d91fbb7be000b986529b3c7643bca75a379d75e919ad` |
+| `critical` | `runtime/farm-critical-view-01.png` | `473fa8907174defa518b585851ddbc9848b48465148c45d11aeeea6abcaa6875` |
+| `exhausted` | `runtime/farm-exhausted-view-01.png` | `b42f0b6d27b29cf75d3ee08a36b7cb6611b30d415725d6dc2431d318c108d66c` |
+| `exhausted-damaged` | `runtime/farm-exhausted-damaged-view-01.png` | `c64285adf8e3aebe968208ce4e882f5f3998bb9783737c6ede1366bc49dc4a2c` |
+| `exhausted-critical` | `runtime/farm-exhausted-critical-view-01.png` | `e2ffa644e3d23d6ef3d6f0dbc1c77ac7a809afb25bb4da073c81c1a375dd0dd9` |
+
+The HUD follows registered construction/health/exhaustion thresholds, while
+requiring authoritative completion before showing available food. Missing or
+invalid state fields and image failures retain the labelled Food symbol; text,
+stock and Worker instructions remain authoritative. [The ordinary paid capture
+recipe](../../../docs/hud-art-integration.md#ordinary-game-capture-recipe-and-remaining-evidence)
+retains identified containing delivery, native crop/contrast/keyboard inspection
+and human recognition as unfinished. No native screenshot is claimed by CPU studies.
