@@ -18,7 +18,6 @@ import {
   roomIndexDocument,
   roomResponseMetadata,
   freshRoomLaunchOptions,
-  FRESH_PVE_UNAVAILABLE_REASON,
 } from './src/room-launch-options.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -52,7 +51,11 @@ const practiceSetup = (async () => {
   const file = path.resolve(ROOT, `maps/${NORMAL_MATCH_MAP_ID}.json`);
   if (!file.startsWith(`${maps}${path.sep}`)) return null;
   // The existing default worker validates this same canonical startup file.
-  try { return practiceEntryCatalog(JSON.parse(await readFile(file, 'utf8'))); }
+  try {
+    const presets = await Promise.all((await readdir(maps)).filter(name => name.endsWith('.json'))
+      .map(async name => JSON.parse(await readFile(path.join(maps, name), 'utf8'))));
+    return practiceEntryCatalog(JSON.parse(await readFile(file, 'utf8')), presets);
+  }
   catch { return null; }
 })();
 
@@ -572,7 +575,8 @@ async function handleRequest(request, response) {
     sendJson(response, 200, { enabled: true, roomCount: rooms.size, roomLimit: MAX_ROOMS, practiceSetup: await practiceSetup,
       ordinarySetup: { minimumSide: ORDINARY_MAP_MIN_SIDE, defaultMapId: NORMAL_MATCH_MAP_ID,
         ...NORMAL_HUMAN_MATCH_MODE, mapSizeTiers: MAP_SIZE_TIERS,
-        pve: { available: false, reason: FRESH_PVE_UNAVAILABLE_REASON } } });
+        pve: { available: true, mapId: NORMAL_MATCH_MAP_ID,
+          supportedMapIds: [NORMAL_MATCH_MAP_ID], ...NORMAL_HUMAN_MATCH_MODE } } });
     return;
   }
 

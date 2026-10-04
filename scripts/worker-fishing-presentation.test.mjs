@@ -49,19 +49,56 @@ test('published atlas preserves prior action pixels/metadata and all four approv
   // Reconstruct those historical clips for the frozen fishing-era hash;
   // all other original metadata and original/fishing pixels remain protected.
   const originalClips = structuredClone(asset.clips.slice(0, preservation.originalClips));
-  for (const direction of ['east', 'north', 'south']) {
+  for (const direction of ['east', 'north', 'south', 'west', 'north-west']) {
     const walk = originalClips.find(c => c.stateId === 'walk' && c.directionId === direction);
     assert.deepEqual(walk.sequence, Array.from({ length: 8 }, (_, i) =>
       ({ frameId: `walk-${direction}-${i}`, durationMs: 100 })));
     walk.sequence = [{ frameId: `idle-${direction}-0`, durationMs: 1000 }];
   }
+  const attack = originalClips.find(c => c.stateId === 'attack' && c.directionId === 'north-west');
+  assert.equal(attack.loop, false);
+  assert.deepEqual(attack.sequence, [0, 1, 2].map(i =>
+    ({ frameId: `gather-wood-north-west-${i}`, durationMs: 280 })));
+  attack.loop = true;
+  attack.sequence = [{ frameId: 'idle-north-west-0', durationMs: 1000 }];
+  for (const state of ['build', 'defeat']) {
+    const clip = originalClips.find(c => c.stateId === state && c.directionId === 'north-west');
+    assert.equal(clip.loop, state === 'build');
+    assert.deepEqual(clip.sequence, [0, 1, 2].map(i =>
+      ({ frameId: `${state}-north-west-${i}`, durationMs: state === 'build' ? 240 : 280 })));
+    clip.sequence = [{ frameId: 'idle-north-west-0', durationMs: 1000 }];
+  }
+  const eastAttack = originalClips.find(c => c.stateId === 'attack' && c.directionId === 'east');
+  assert.equal(eastAttack.loop, false);
+  assert.deepEqual(eastAttack.sequence, [0, 1, 2].map(i =>
+    ({ frameId: `gather-wood-east-${i}`, durationMs: 280 })));
+  eastAttack.loop = true;
+  eastAttack.sequence = [{ frameId: 'idle-east-0', durationMs: 1000 }];
+  const eastBuild = originalClips.find(c => c.stateId === 'build' && c.directionId === 'east');
+  assert.equal(eastBuild.loop, true);
+  assert.deepEqual(eastBuild.sequence, [0, 1, 2].map(i => ({ frameId: `build-east-${i}`, durationMs: 240 })));
+  eastBuild.sequence = [{ frameId: 'idle-east-0', durationMs: 1000 }];
+  const eastDefeat = originalClips.find(c => c.stateId === 'defeat' && c.directionId === 'east');
+  assert.equal(eastDefeat.loop, false);
+  assert.deepEqual(eastDefeat.sequence, [0, 1, 2].map(i => ({ frameId: `defeat-east-${i}`, durationMs: 280 })));
+  eastDefeat.sequence = [{ frameId: 'idle-east-0', durationMs: 1000 }];
+  const northHistory = JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/north-actions-preservation.json', import.meta.url)));
+  for (const clip of northHistory.originalReplacedClips) originalClips[originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId)] = clip;
+  for (const c of JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/north-east-actions-preservation.json', import.meta.url))).originalReplacedClips) originalClips[originalClips.findIndex(v => v.stateId === c.stateId && v.directionId === c.directionId)] = c;
+  for (const c of JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/south-actions-preservation.json', import.meta.url))).originalReplacedClips) originalClips[originalClips.findIndex(v => v.stateId === c.stateId && v.directionId === c.directionId)] = c;
+  for (const c of JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/south-west-actions-preservation.json', import.meta.url))).originalReplacedClips) originalClips[originalClips.findIndex(v => v.stateId === c.stateId && v.directionId === c.directionId)] = c;
+  for (const c of JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/west-actions-preservation.json', import.meta.url))).originalReplacedClips) originalClips[originalClips.findIndex(v => v.stateId === c.stateId && v.directionId === c.directionId)] = c;
   assert.equal(sha256(JSON.stringify(originalClips)), preservation.originalClipMetadataSha256);
-  assert.equal(asset.frames.length, preservation.originalFrames + 4 + 24);
-  assert.equal(asset.clips.length, preservation.originalClips + 1);
+  assert.equal(asset.frames.length, preservation.originalFrames + 4 + 40 + 4 + 3 + 3 + 9 + 3 + 3 + 3 + 6 + 14 + 15 + 15 + 15 + 15);
+  assert.equal(asset.clips.length, preservation.originalClips + 30);
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), preservation.worldUnitsPerPixel);
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', manifest)));
-  assert.deepEqual([image.width, image.height], [2048, 4096]);
-  assert.equal(sha256(image.pixels.subarray(0, preservation.originalDimensionsPx.height * image.width * 4)), preservation.originalRgbaSha256);
+  assert.deepEqual([image.width, image.height], [5632, 4096]);
+  // The land pack appends a side strip; hash the historical ROI row by row.
+  const originalPixels = createHash('sha256');
+  for (let y = 0; y < preservation.originalDimensionsPx.height; y++) originalPixels.update(
+    image.pixels.subarray(y * image.width * 4, (y * image.width + preservation.originalDimensionsPx.width) * 4));
+  assert.equal(originalPixels.digest('hex'), preservation.originalRgbaSha256);
   const clip = asset.clips.find(c => c.stateId === 'gather-fish');
   assert.equal(clip.directionId, 'south-east');
   assert.equal(clip.loop, true);

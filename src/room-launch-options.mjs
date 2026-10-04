@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { matchModeDefinition, normalizeMatchMode, NORMAL_HUMAN_MATCH_MODE } from './match-modes.mjs';
 
-export const FRESH_PVE_UNAVAILABLE_REASON = 'New Play vs AI matches are unavailable while 160 × 160 Skirmish AI acceptance is pending. Existing AI rooms can still be resumed.';
+export const FRESH_PVE_UNSUPPORTED_REASON = 'New Play vs AI matches support only 160 × 160 Terraced Vale with Skirmish@1. Existing AI rooms can still be resumed.';
 
 const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
 const MAP_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/;
@@ -55,6 +55,7 @@ export function normalizeRoomLaunchOptions(value) {
   }
   const matchMode = explicitMatchMode(value);
   if (mode === 'pve' && !matchModeDefinition(matchMode).pveSupported) {
+    if (matchMode.matchModeId === 'bannerfall') throw new TypeError('Bannerfall supports human matches and Practice; its AI is not implemented.');
     throw new TypeError('Skirmish does not support PvE until its base-elimination AI is accepted.');
   }
   const hasMapSeed = Object.hasOwn(value, 'mapSeed');
@@ -102,10 +103,15 @@ export function completeRoomLaunchOptions(value, createSeed = randomSeed) {
 
 // Fresh admission is separate from saved launch/index normalization. Plain PvP
 // rooms and one-human Practice retain authored access to internal Labs. Normal
-// two-seat entry uses Skirmish; explicit Practice mode choices remain authoritative.
+// two-seat entry and fresh AI use Skirmish; fresh AI admits only its accepted
+// Tiny preset. Explicit Practice mode choices remain authoritative.
 export function freshRoomLaunchOptions(value) {
   const options = normalizeRoomLaunchOptions(value);
-  if (options.mode === 'pve') throw new TypeError(FRESH_PVE_UNAVAILABLE_REASON);
+  if (options.mode === 'pve') {
+    const identity = hasMatchModeFields(options) ? normalizeMatchMode(options) : NORMAL_HUMAN_MATCH_MODE;
+    if (identity.matchModeId !== 'skirmish') throw new TypeError(FRESH_PVE_UNSUPPORTED_REASON);
+    return { ...options, ...identity };
+  }
   return { ...options, ...(!hasMatchModeFields(options)
     ? options.pregame ? NORMAL_HUMAN_MATCH_MODE : normalizeMatchMode()
     : {}) };
@@ -121,7 +127,9 @@ export function buildRoomWorkerEnvironment(parentEnvironment, launchOptions, sav
   if (hasMatchModeFields(options)) {
     environment.RTS_MATCH_MODE_ID = options.matchModeId;
     environment.RTS_MATCH_MODE_VERSION = String(options.matchModeVersion);
-    if (options.mode === 'pvp') environment.RTS_MAP = `maps/${matchModeDefinition(options).defaultMapId}.json`;
+    if (options.mode === 'pvp' || options.matchModeId === 'skirmish') {
+      environment.RTS_MAP = `maps/${matchModeDefinition(options).defaultMapId}.json`;
+    }
   } else if (options.mode === 'pvp') {
     // Pre-migration rooms without checkpoint data retain their historical map.
     environment.RTS_MAP ||= 'maps/bellweather-millrace.json';

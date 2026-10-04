@@ -5,7 +5,14 @@ const time = (value) => {
 };
 
 // Describe existing authored rules; this does not select or alter a match mode.
+export function mapScenarioSummary(definition = {}) {
+  if (definition.bannerfall?.version === 1) return 'Protect your original Town Center and destroy the enemy stronghold. Free waves reinforce your army; enemy troop kills unlock Riders.';
+  return definition.summary || 'Control the marked objectives and protect your army.';
+}
+
 export function mapVictoryRule(definition = {}) {
+  if (definition.bannerfall?.version === 1) return { label: 'Bannerfall',
+    description: 'Bannerfall · Destroy the enemy original Town Center to win; losing both on the same combat tick is a draw. Free waves of up to two troops arrive every 15 seconds up to 12 supply per side. Six enemy troop kills unlock Rider reinforcements. Blocked or capped waves are skipped. Other buildings cannot replace the stronghold.' };
   const triggers = definition.triggers || [];
   const victories = triggers.filter((item) => item.victory === true);
   const deadline = definition.timedVictory;
@@ -36,6 +43,9 @@ export function objectiveSummary(definition = {}, states = [], { team = null, ho
   const urgent = [];
   if (winner >= 0) return { action: winner === 2 ? 'Match drawn' : `${winner === 0 ? 'Azure' : 'Ember'} wins`, urgent: '' };
   const rule = mapVictoryRule(definition);
+  if (definition.bannerfall?.version === 1) return {
+    action: 'Bannerfall · Destroy the enemy original Town Center · Waves 15s · Riders at 6 kills', urgent: '',
+  };
   if (started) {
     for (let index = 0; index < 2; index++) {
       if (hold?.activeTeams?.[index]) urgent.push(`${index === 0 ? 'Azure' : 'Ember'} wins in ${time((definition.victoryHoldSeconds || 0) - (hold.progressSeconds?.[index] || 0))}`);

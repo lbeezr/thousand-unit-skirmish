@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "02ae8c55e68b82fa396d14541615a27c2c5d1b1c",
+  "sourceDirty": false,
+  "digest": "sha256:0d2a0acc4286e1f610ccb1997afd3284b762496001a3e4648144137cefe5477e",
+  "fileCount": 1176,
+  "runtimeFiles": [
+    {
+      "path": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+      "included": true,
+      "sha256": "80fc10b2281b42f99360679581295a1a54639de054cf8cb3f1944d68feff15ec"
+    },
+    {
+      "path": "assets/units/cast-human-sprite-v3/cast-atlas-runtime.png",
+      "included": true,
+      "sha256": "f9f2f82e9c349bf00b4daeeffaf111697c251b26fdeee7baf291256774b13e64"
+    },
+    {
+      "path": "assets/units/cast-human-sprite-v3/team-accent-mask.png",
+      "included": true,
+      "sha256": "d740bcc5711c84da12c15abbbbd2bfa51113a1369a9214d2fb39ec73d6815fb0"
+    }
+  ],
+  "packedHttpScenario": "passed; guarded startup, BasicAuth HTTP/WebSocket, actual packaged default files and hashes",
+  "nativeGpuAcceptance": "open; browser sandbox-unavailable in this environment"
+}

@@ -11,6 +11,8 @@ import { cancelWildlifeHerd, startWildlifeHerd, stepWildlifeHerd, validWildlifeH
 import { migrateWildlifeMotionCheckpoint, sameWildlifeCell, wildlifeCell, wildlifeStepUnoccupied, stepWildlifeMotion, validWildlifeMotion } from './src/wildlife-motion.mjs';
 import { migrateWildlifeHeadingCheckpoint } from './src/wildlife-heading.mjs';
 import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
+import { migrateTerracedValeSheepCheckpoint } from './src/terraced-vale-sheep.mjs';
+import { isHistoricalConfluenceDefinition } from './src/confluence-opening-compat.mjs';
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
 import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
@@ -54,6 +56,8 @@ import { normalizeMatchMode, matchModeDefinition, assertMatchModeCompatibility,
   effectiveMapForMatchMode, matchModeCatalog, NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from './src/match-modes.mjs';
 import { mapSizeIdentity, ordinaryMapCatalog } from './src/map-size-policy.mjs';
 import { migrateMatchModeCheckpoint, validateMatchModeCheckpoint } from './src/match-mode-checkpoint.mjs';
+import { BANNERFALL_RULES, createBannerfallState, creditBannerfallKill,
+  bannerfallWaveKind, stepBannerfallWaves, validateBannerfallState, bannerfallWinner } from './src/bannerfall-rules.mjs';
 import { headingToTarget } from './src/unit-heading.mjs';
 import { workerFishingPresentation } from './src/worker-fishing-presentation.mjs';
 import { WORKER_PERFORMING_ACTION_VERSION, createWorkerPerformingActions } from './src/worker-performing-action.mjs';
@@ -678,7 +682,9 @@ const MIME_TYPES = {
   '.mp3': 'audio/mpeg',
 };
 
-const configuredMatchMapId = pveLaunchOptions?.mapId ?? defaultMapId;
+const configuredMatchMapId = pveLaunchOptions?.mapId
+  ?? (!process.env.RTS_MAP ? matchModeDefinition(configuredMatchMode).defaultMapId : null)
+  ?? defaultMapId;
 let mapDefinition = mapCatalog.get(configuredMatchMapId);
 let authoredMapDefinition = mapDefinition;
 let dockPlacementContext = null;
@@ -764,6 +770,7 @@ let resourceNodeStates = new Map();
 let matchWinner = -1;
 let matchWinnerTriggerId = null;
 let matchWinnerReason = null;
+let bannerfallState = null;
 
 function resetHomeTownCenters(records = null) {
   homeTownCenters = [0, 1].map((team) => {
@@ -940,7 +947,7 @@ function mapCatalogPayload() {
       internalFixture: !mapSizeIdentity(map).ordinarySelectable }))
     : ordinaryMapCatalog(maps, authoredMapDefinition.id);
   return choices.map((map) => ({
-    id: map.id, name: shippedMapIds.has(map.id) && !regional(map) ? `Lab · ${map.name}` : map.name, summary: map.summary || `${map.width} × ${map.height}`,
+    id: map.id, name: shippedMapIds.has(map.id) && !regional(map) && map.id !== BANNERFALL_RULES.mapId ? `Lab · ${map.name}` : map.name, summary: map.summary || `${map.width} × ${map.height}`,
     ...mapSizeIdentity(map), selectable: map.selectable, legacyCurrent: map.legacyCurrent,
     internalFixture: map.internalFixture === true,
     matchModes: matchModeCatalog(map, { mode: pveLaunchOptions ? 'pve' : 'pvp', practice: soloPractice }),
@@ -1076,7 +1083,7 @@ function recordTickStartLag(lagMs) {
   tickStartLagCount = Math.min(TICK_SAMPLE_WINDOW, tickStartLagCount + 1);
 }
 
-function tickTimingPayload() {
+function tickTimingPayload(includeSamples = false) {
   const count = tickDurationCount;
   const base = (tickDurationCursor - count + TICK_SAMPLE_WINDOW) % TICK_SAMPLE_WINDOW;
   let slowestTick = null;
@@ -1115,7 +1122,10 @@ function tickTimingPayload() {
       lastOverloadSkippedSlots,
       lastOverloadTick,
     },
-    ...(tickDiagnosticSamples ? { slowestTick, scenarioTiming: (() => {
+    ...(tickDiagnosticSamples ? {
+      ...(includeSamples ? { samples: Array.from({ length: count }, (_, index) =>
+        tickDiagnosticSamples[(base + index) % TICK_SAMPLE_WINDOW]).filter(Boolean) } : {}),
+      slowestTick, scenarioTiming: (() => {
       const values = Array.from({ length: count }, (_, index) =>
         tickDiagnosticSamples[(base + index) % TICK_SAMPLE_WINDOW])
         .filter(sample => sample?.scenarioEvaluated).map(sample => sample.scenarioMs).sort((a, b) => a - b);
@@ -1796,7 +1806,9 @@ function resetArmy(count = currentArmySize) {
   matchWinner = -1;
   matchWinnerTriggerId = null;
   matchWinnerReason = null;
+  if (matchMode.matchModeId === 'bannerfall') count = BANNERFALL_RULES.openingArmySize;
   currentArmySize = Math.max(2, Math.min(MAX_UNITS, Math.floor(count / 2) * 2));
+  bannerfallState = matchMode.matchModeId === 'bannerfall' ? createBannerfallState() : null;
   resetScenarioEventClock();
   resetVictoryHoldState();
   const startingResources = mapDefinition.startingResources ?? {};
@@ -1856,7 +1868,7 @@ function resetArmy(count = currentArmySize) {
       z = safePosition.z;
     }
     reservedCells.add(spawnCell);
-    units.push(makeUnit(id, team, x, z, slot < 4 ? 'worker' : 'infantry', slot));
+    units.push(makeUnit(id, team, x, z, bannerfallState ? 'infantry' : slot < 4 ? 'worker' : 'infantry', slot));
   }
   for (const state of triggerStates.values()) {
     state.owner = -1;
@@ -1868,6 +1880,16 @@ function resetArmy(count = currentArmySize) {
   exploredCellsByTeam[1].fill(0);
   updateVisionMasks();
   dirty = true;
+}
+
+// Only an explicit host reset replaces this recognized saved layout. Army-size
+// changes and ongoing same-ID selection must not adopt new canonical positions.
+function resetExplicitMatchWorld() {
+  const shipped = mapCatalog.get(authoredMapDefinition.id);
+  const mapChanged = isHistoricalConfluenceDefinition(authoredMapDefinition, shipped, matchMapHash);
+  if (mapChanged) activateMap(shipped);
+  resetArmy(currentArmySize);
+  return mapChanged;
 }
 
 function compatibleWorkerPerformingAction(unit, receipt) {
@@ -1911,9 +1933,8 @@ function snapshotUnits(viewTeam = null) {
     const row = [
       unit.id, unit.team, Math.round(unit.x * 100) / 100,
       Math.round(unit.z * 100) / 100, unit.hp, unit.kind, cargo,
-      unit.cargoType, unit.generation,
+      unit.cargoType, unit.generation, task, focusedByUnit[unit.id] || 0,
     ];
-    row.push(task, focusedByUnit[unit.id] || 0);
     if (Number.isInteger(unit.lastAttackTick)
       && unit.lastAttackTick >= 0 && tickNumber - unit.lastAttackTick <= STATE_EVERY_TICKS) {
       const targetVisible = !mapDefinition.fogOfWar || viewTeam === null || unit.team === viewTeam;
@@ -2206,6 +2227,9 @@ function deliverScenarioReinforcements(team, requestedCount, kind, reservedCells
 }
 
 function evaluateScenarioTriggers(deltaSeconds) {
+  // Bannerfall resolves its designated cores after simultaneous combat damage,
+  // not through captures, recovery-aware elimination or scenario deadlines.
+  if (bannerfallState) return;
   if (matchWinner >= 0) return;
   const completedCaptures = [];
   let timedVictoryAnnouncement = null;
@@ -2618,6 +2642,11 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     workerPerformingActionVersion: WORKER_PERFORMING_ACTION_VERSION,
     type: 'state', economyProfileId: matchEconomyProfileId(), rulesetRevision: economyRulesetRevision(matchEconomyProfileId()), factionId: DEFAULT_FACTION_ID, unitWireIds: UNIT_WIRE_IDS, tick: tickNumber, armySize: currentArmySize,
     ...matchMode, matchMode: matchModeDefinition(matchMode),
+    ...(bannerfallState ? { reinforcements: { version: 1,
+      kills: [...bannerfallState.kills], kinds: [0, 1].map(team => bannerfallWaveKind(bannerfallState, team)),
+      nextWaveAtSeconds: bannerfallState.nextWaveIndex * BANNERFALL_RULES.waveSeconds,
+      populationCap: BANNERFALL_RULES.populationCap,
+      strongholdIds: homeTownCenters.map(center => center.id) } } : {}),
     ...(pregame ? { lobby: pregamePayload() } : {}),
     matchElapsedSeconds: Number(matchElapsedSeconds.toFixed(1)), scenarioClockStarted,
     ...(soloPractice ? { practice: true } : {}),
@@ -2793,6 +2822,7 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
       scenarioEventStates: [...scenarioEventStates.values()].map((state) => ({ ...state })),
       matchElapsedSeconds,
       scenarioClockStarted,
+      ...(bannerfallState ? { bannerfall: structuredClone(bannerfallState) } : {}),
       victoryHoldState: {
         activeTeams: [...victoryHoldState.activeTeams],
         progressSeconds: [...victoryHoldState.progressSeconds],
@@ -3201,7 +3231,7 @@ function validateMatchCheckpoint(snapshot) {
     && typeof state.scenarioClockStarted === 'boolean'
     && integerIn(state.matchWinner, -1, 2)
     && (state.matchWinnerTriggerId === null || typeof state.matchWinnerTriggerId === 'string')
-    && (state.matchWinnerReason === null || ['capture', 'capture-hold', 'elimination', 'timed-control'].includes(state.matchWinnerReason)), 'invalid match result or clock');
+    && (state.matchWinnerReason === null || ['capture', 'capture-hold', 'elimination', 'timed-control', 'stronghold-destruction'].includes(state.matchWinnerReason)), 'invalid match result or clock');
   assertSnapshot(Array.isArray(state.explored) && state.explored.length === 2, 'invalid exploration data');
   const explored = state.explored.map((encoded) => {
     assertSnapshot(typeof encoded === 'string', 'invalid exploration data');
@@ -3267,6 +3297,36 @@ function validateMatchCheckpoint(snapshot) {
     'team population exceeds its living-unit and queued-production cap');
   assertSnapshot(aliveByTeam[0] + aliveByTeam[1] + queuedByTeam[0] + queuedByTeam[1] <= MAX_UNITS,
     'match population exceeds its living-unit and queued-production cap');
+  if (savedMatchMode.matchModeId === 'bannerfall') {
+    validateBannerfallState(state.bannerfall, { units: state.units, elapsed: state.matchElapsedSeconds, maxUnits: MAX_UNITS });
+    assertSnapshot(state.currentArmySize === BANNERFALL_RULES.openingArmySize
+      && state.units.every(unit => ['infantry', 'rider'].includes(unit.kind))
+      && state.units.every(unit => unit.kind !== 'rider'
+        || state.bannerfall.kills[unit.team] === BANNERFALL_RULES.evolutionKills)
+      && state.units.every(unit => unit.attackTargetId < 0
+        || state.units[unit.attackTargetId].team !== unit.team)
+      && [0, 1].every(team => state.units.reduce((sum, unit) => sum + (unit.team === team && unit.hp > 0
+        ? UNIT_DEFINITIONS[unit.kind].population : 0), 0) <= BANNERFALL_RULES.populationCap)
+      && state.teamFood.every(value => value === 0) && state.teamWood.every(value => value === 0)
+      && state.teamStone.every(value => value === 0)
+      && state.teamResearch.every(research => research === null)
+      && state.teamUpgrades.every(upgrades => Object.values(upgrades).every(value => value === false))
+      && state.buildings.length === 0 && state.workerProduction.every(production => production.queue === 0),
+    'invalid Bannerfall roster or economy');
+    assertSnapshot(state.matchWinner === bannerfallWinner(state.homeTownCenters.map(center => center.hp))
+      && state.matchWinnerTriggerId === null
+      && state.matchWinnerReason === (state.matchWinner < 0 ? null : 'stronghold-destruction'),
+    'invalid Bannerfall stronghold result');
+    if (!state.scenarioClockStarted) assertSnapshot(state.matchElapsedSeconds === 0
+      && state.bannerfall.nextWaveIndex === 1 && state.bannerfall.kills.every(kills => kills === 0)
+      && state.bannerfall.creditedGenerations.length === 0
+      && state.units.length === BANNERFALL_RULES.openingArmySize
+      && state.units.every(unit => unit.kind === 'infantry' && unit.hp === UNIT_DEFINITIONS.infantry.combat.maxHp)
+      && aliveByTeam.every(alive => alive === BANNERFALL_RULES.openingArmySize / 2)
+      && state.homeTownCenters.every(center => center.hp === BUILDING_DEFINITIONS['town-center'].maxHp),
+    'waiting Bannerfall cannot contain completed gameplay');
+  } else assertSnapshot(!Object.hasOwn(state, 'bannerfall') && state.matchWinnerReason !== 'stronghold-destruction',
+    'Bannerfall state requires its explicit mode identity');
   return { definition: canonicalDefinition, state, explored, savedMatchMode };
 }
 
@@ -3278,10 +3338,13 @@ function restoreMatchCheckpoint(snapshot) {
   if (shippedMapIds.has(definition.id)) {
     const shippedDefinition = mapCatalog.get(definition.id);
     if (matchMapHash(shippedDefinition) !== snapshot.mapHash
-      && migrateMillraceSheepCheckpoint(snapshot, shippedDefinition, matchMapHash)) {
+      && (migrateMillraceSheepCheckpoint(snapshot, shippedDefinition, matchMapHash)
+        || migrateTerracedValeSheepCheckpoint(snapshot, shippedDefinition, matchMapHash))) {
       ({ definition, state, explored, savedMatchMode } = validateMatchCheckpoint(snapshot));
     }
-    assertSnapshot(matchMapHash(shippedDefinition) === snapshot.mapHash, 'shipped map changed since checkpoint');
+    assertSnapshot(matchMapHash(shippedDefinition) === snapshot.mapHash
+      || isHistoricalConfluenceDefinition(definition, shippedDefinition, matchMapHash),
+    'shipped map changed since checkpoint');
   } else {
     mapCatalog.set(definition.id, definition);
     runtimeMapIds.add(definition.id);
@@ -3372,6 +3435,8 @@ function restoreMatchCheckpoint(snapshot) {
   matchWinner = state.matchWinner;
   matchWinnerTriggerId = state.matchWinnerTriggerId;
   matchWinnerReason = state.matchWinnerReason;
+  bannerfallState = matchMode.matchModeId === 'bannerfall'
+    ? validateBannerfallState(state.bannerfall, { units: state.units, elapsed: state.matchElapsedSeconds, maxUnits: MAX_UNITS }) : null;
   exploredCellsByTeam = explored.map((cells) => Uint8Array.from(cells));
   nextPlayerId = state.nextPlayerId;
   navigationRevision = state.navigationRevision;
@@ -6903,8 +6968,11 @@ async function handleCommand(player, command) {
             ? new Map([...mapCatalog].filter(([id, map]) => id === pregame.mapId || mapSizeIdentity(map).ordinarySelectable))
             : mapCatalog;
           if (pregame.configure(player, command, choices)) {
+            const catalogDefinition = mapCatalog.get(pregame.mapId);
+            const retainedDefinition = isHistoricalConfluenceDefinition(authoredMapDefinition, catalogDefinition, matchMapHash)
+              ? authoredMapDefinition : catalogDefinition;
             matchMode = normalizeMatchMode(pregame);
-            activateMap(mapCatalog.get(pregame.mapId));
+            activateMap(retainedDefinition);
             resetArmy(pregame.armySize);
             broadcastMapChange();
           }
@@ -6933,9 +7001,10 @@ async function handleCommand(player, command) {
       }
       // Duplicate resets in a waiting lobby do not change revisions or rebuild units.
       if (pregame.phase === 'running') {
-        resetArmy(currentArmySize);
+        const mapChanged = resetExplicitMatchWorld();
         returnToPregame();
-        broadcastState();
+        if (mapChanged) broadcastMapChange();
+        else broadcastState();
         void queueMatchCheckpoint();
       }
       return;
@@ -6989,6 +7058,10 @@ async function handleCommand(player, command) {
   if (command.type === 'selectMap' && player.team === 0) selectMap(player, command.mapId);
   if (command.type === 'publishMap') await publishMap(player, command.map, command.persist === true);
   if (command.type === 'selectArmySize' && player.team === 0) {
+    if (bannerfallState) {
+      sendOrderNotice(player, command, 'BANNERFALL OPENING IS FIXED · 8 INFANTRY PER SIDE');
+      return;
+    }
     if (pveLaunchOptions) {
       sendOrderNotice(player, command, 'AI MATCH ARMY IS FIXED · MAIN MENU → PRACTICE TO CHANGE IT');
       return;
@@ -7005,9 +7078,10 @@ async function handleCommand(player, command) {
       sendOrderNotice(player, command, 'RESET REJECTED · ONLY THE HOST CAN RESET THE MATCH');
       return;
     }
-    resetArmy(currentArmySize);
+    const mapChanged = resetExplicitMatchWorld();
     broadcast({ type: 'notice', message: 'BATTLEFIELD RESET' });
-    broadcastState();
+    if (mapChanged) broadcastMapChange();
+    else broadcastState();
   }
 }
 
@@ -7587,6 +7661,34 @@ function updateWildlifeMotion() {
   }
 }
 
+function resolveBannerfallStrongholds() {
+  if (!bannerfallState || !scenarioClockStarted || matchWinner >= 0) return;
+  const winner = bannerfallWinner(homeTownCenters.map(center => center.hp));
+  if (winner < 0) return;
+  matchWinner = winner;
+  matchWinnerTriggerId = null;
+  matchWinnerReason = 'stronghold-destruction';
+  dirty = true;
+  broadcast({ type: 'victory', team: winner, reason: matchWinnerReason,
+    message: winner === 2 ? 'DRAW · BOTH ORIGINAL TOWN CENTERS DESTROYED'
+      : `${winner === 0 ? 'AZURE' : 'EMBER'} WINS · ENEMY ORIGINAL TOWN CENTER DESTROYED` });
+}
+
+function updateBannerfallWaves() {
+  if (!bannerfallState || !scenarioClockStarted || matchWinner >= 0) return;
+  const wave = stepBannerfallWaves(bannerfallState, matchElapsedSeconds, {
+    populationForTeam: team => populationForTeam(team).used,
+    spawn: (team, kind) => {
+      if (homeTownCenters[team].hp <= 0) return false;
+      const cell = findTownCenterProductionSpawnCell(team);
+      if (cell < 0) return false;
+      const point = cellToWorld(cell);
+      return Boolean(spawnProducedUnit(team, kind, point.x, point.z));
+    },
+  });
+  if (wave.due) dirty = true;
+}
+
 function simulateTick() {
   if (SEPARATION_DIAGNOSTICS_ENABLED) {
     separationTickCandidateVisits = 0;
@@ -7599,7 +7701,11 @@ function simulateTick() {
   workerPerformingActions.beginStep(tickNumber);
   if (pregame?.phase === 'lobby') return;
   if (matchWinner >= 0) return;
-  if (!scenarioClockStarted && connectedCount() >= (soloPractice ? 1 : 2)) scenarioClockStarted = true;
+  if (!scenarioClockStarted && connectedCount() >= (soloPractice ? 1 : 2)) {
+    scenarioClockStarted = true;
+    if (bannerfallState) dirty = true;
+  }
+  if (bannerfallState && !scenarioClockStarted) return;
   if (scenarioClockStarted) matchElapsedSeconds += STEP_SECONDS;
   updateWildlifeClaims();
   rebuildSpatialBuckets();
@@ -7762,6 +7868,15 @@ function simulateTick() {
     if (damage <= 0 || target.hp <= 0) continue;
     target.hp = Math.max(0, target.hp - damage);
     if (target.hp === 0) {
+      if (bannerfallState) {
+        const attackerTeam = 1 - target.team; // All accumulated combat hits target enemies.
+        const priorKills = bannerfallState.kills[attackerTeam];
+        creditBannerfallKill(bannerfallState, target, attackerTeam);
+        if (priorKills < BANNERFALL_RULES.evolutionKills
+          && bannerfallState.kills[attackerTeam] === BANNERFALL_RULES.evolutionKills) {
+          broadcast({ type: 'notice', message: `${attackerTeam === 0 ? 'AZURE' : 'EMBER'} RIDER REINFORCEMENTS UNLOCKED · 6 ENEMY TROOP KILLS` });
+        }
+      }
       broadcastGameplayNotice(target.team, target.x, target.z,
         `${target.team === 0 ? 'AZURE' : 'EMBER'} UNIT DEFEATED`);
     }
@@ -7771,6 +7886,9 @@ function simulateTick() {
     building.hp = Math.max(0, building.hp - damage);
     if (building.hp === 0) destroyBuilding(building);
   }
+  resolveBannerfallStrongholds();
+  if (matchWinner >= 0) return;
+  updateBannerfallWaves();
   for (const unit of units) {
     if (unit.hp > 0 && unit.attackTargetId >= 0 && units[unit.attackTargetId]?.hp <= 0) {
       clearAttackTarget(unit);
@@ -8346,7 +8464,7 @@ const server = createServer(async (request, response) => {
         lastBytes: lastCheckpointBytes, lastWriteMs: lastCheckpointWriteMs,
         lastCaptureMs: lastCheckpointCaptureMs, lastSerializeMs: lastCheckpointSerializeMs,
       },
-      tickTiming: tickTimingPayload(),
+      tickTiming: tickTimingPayload(url.searchParams.get('tickSamples') === '1'),
       separationWork: separationWorkPayload(),
       movePlanning: movePlanningSamples,
       transport: {

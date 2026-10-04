@@ -1,0 +1,170 @@
+{
+  "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/raw.png",
+  "frames": [
+    {
+      "frame": 0,
+      "sourceBounds": [
+        91,
+        17,
+        258,
+        300
+      ],
+      "opaquePixels": 24236,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 1,
+      "sourceBounds": [
+        436,
+        67,
+        602,
+        300
+      ],
+      "opaquePixels": 20799,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 2,
+      "sourceBounds": [
+        771,
+        53,
+        939,
+        300
+      ],
+      "opaquePixels": 23041,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 3,
+      "sourceBounds": [
+        90,
+        337,
+        272,
+        584
+      ],
+      "opaquePixels": 22718,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 4,
+      "sourceBounds": [
+        416,
+        376,
+        601,
+        579
+      ],
+      "opaquePixels": 21283,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 5,
+      "sourceBounds": [
+        771,
+        337,
+        917,
+        584
+      ],
+      "opaquePixels": 21280,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 6,
+      "sourceBounds": [
+        90,
+        614,
+        263,
+        883
+      ],
+      "opaquePixels": 24674,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 7,
+      "sourceBounds": [
+        429,
+        655,
+        613,
+        883
+      ],
+      "opaquePixels": 20724,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 8,
+      "sourceBounds": [
+        771,
+        633,
+        948,
+        883
+      ],
+      "opaquePixels": 23931,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 9,
+      "sourceBounds": [
+        92,
+        898,
+        263,
+        1199
+      ],
+      "opaquePixels": 24859,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 10,
+      "sourceBounds": [
+        425,
+        980,
+        611,
+        1200
+      ],
+      "opaquePixels": 20038,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 11,
+      "sourceBounds": [
+        769,
+        945,
+        956,
+        1201
+      ],
+      "opaquePixels": 24925,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 12,
+      "sourceBounds": [
+        87,
+        1252,
+        280,
+        1484
+      ],
+      "opaquePixels": 24241,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 13,
+      "sourceBounds": [
+        408,
+        1279,
+        589,
+        1473
+      ],
+      "opaquePixels": 22100,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 14,
+      "sourceBounds": [
+        739,
+        1266,
+        931,
+        1484
+      ],
+      "opaquePixels": 25171,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    }
+  ]
+}

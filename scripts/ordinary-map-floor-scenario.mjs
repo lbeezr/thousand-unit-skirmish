@@ -5,7 +5,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from '../src/match-modes.mjs';
-import { FRESH_PVE_UNAVAILABLE_REASON } from '../src/room-launch-options.mjs';
+import { FRESH_PVE_UNSUPPORTED_REASON } from '../src/room-launch-options.mjs';
 
 const fixture = await createFortifiedFixture({ supervisor: true, mapPath: null, timeoutMs: 15000 });
 const records = [], origin = `http://127.0.0.1:${fixture.port}`;
@@ -39,21 +39,54 @@ try {
   assert.deepEqual(mode(status.practiceSetup), authored);
   assert.equal(status.practiceSetup.map.id, NORMAL_MATCH_MAP_ID);
   assert.equal(status.practiceSetup.map.sizeTierLabel, 'Tiny');
-  assert.deepEqual(status.ordinarySetup.pve, { available: false, reason: FRESH_PVE_UNAVAILABLE_REASON });
+  assert.deepEqual(status.ordinarySetup.pve, { available: true, mapId: NORMAL_MATCH_MAP_ID,
+    supportedMapIds: [NORMAL_MATCH_MAP_ID], ...NORMAL_HUMAN_MATCH_MODE });
   const root = await fixture.connect(0);
   assert.equal(root.welcome.map.id, NORMAL_MATCH_MAP_ID);
   assert.deepEqual(mode(root.welcome), NORMAL_HUMAN_MATCH_MODE);
   assert.ok(root.welcome.maps.every(row => row.width >= 160 && row.height >= 160 && row.selectable));
-  assert.deepEqual(root.welcome.maps.map(row => row.id).sort(),
-    ['frontier-160', NORMAL_MATCH_MAP_ID, 'veyrholds-threefold-basin', 'woodland-expanse'].sort());
+  assert.deepEqual(root.welcome.maps.map(map => [map.id, map.width, map.height, map.sizeTierId]).sort(), [
+    ['bannerfall-arena', 160, 160, 'tiny'],
+    ['frontier-160', 160, 160, 'tiny'],
+    ['siltmouths-confluence-grounds', 160, 160, 'tiny'],
+    ['veyrholds-crownroads', 256, 256, 'large'],
+    ['veyrholds-riven-escarpment', 224, 224, 'medium'],
+    ['veyrholds-terraced-vale', 160, 160, 'tiny'],
+    ['veyrholds-threefold-basin', 192, 192, 'small'],
+    ['woodland-expanse', 160, 160, 'tiny'],
+  ]);
+  const small = root.welcome.maps.find(map => map.id === 'veyrholds-threefold-basin');
+  assert.equal(small.ordinarySelectable, true);
+  assert.equal(small.supportedUnitCapacity, null);
+  assert.deepEqual(small.matchModes.map(mode => [mode.id, mode.version]), [['authored', 1], ['skirmish', 1]],
+    'Small exposes only its actual authored and registered human Skirmish rules');
+  const medium = root.welcome.maps.find(map => map.id === 'veyrholds-riven-escarpment');
+  assert.equal(medium.ordinarySelectable, true);
+  assert.equal(medium.supportedUnitCapacity, null);
+  assert.deepEqual(medium.matchModes.map(mode => [mode.id, mode.version]), [['authored', 1], ['skirmish', 1]]);
+  assert.equal(medium.matchModes.find(mode => mode.id === 'skirmish').pveSupported, false);
+  const large = root.welcome.maps.find(map => map.id === 'veyrholds-crownroads');
+  assert.equal(large.ordinarySelectable, true);
+  assert.equal(large.supportedUnitCapacity, null);
+  assert.deepEqual(large.matchModes.map(mode => [mode.id, mode.version]), [['authored', 1], ['skirmish', 1]]);
+  assert.equal(large.matchModes.find(mode => mode.id === 'skirmish').pveSupported, false);
   assert.equal(root.latest.scenarioClockStarted, false);
-  records.push({ name: 'Unconfigured root and fresh status use Tiny Skirmish; three real Tiny maps and reviewed Small are ordinary choices; XL remains unavailable' });
+  const confluence = root.welcome.maps.find(map => map.id === 'siltmouths-confluence-grounds');
+  assert.equal(confluence.ordinarySelectable, true);
+  assert.equal(confluence.supportedUnitCapacity, null);
+  assert.deepEqual(confluence.matchModes.map(mode => [mode.id, mode.version]), [['authored', 1]],
+    'Confluence offers its admitted authored rules without inventing Skirmish or AI support');
+  records.push({ name: 'Unconfigured root and fresh status use Tiny Skirmish; all eight admitted maps meet the ordinary floor; Medium/Large are human Skirmish only and XL remains unavailable' });
 
   const created = await create({ mode: 'pvp', pregame: true });
   assert.deepEqual(created.launchOptions, { mode: 'pvp', pregame: true, ...NORMAL_HUMAN_MATCH_MODE });
   const host = await fixture.connect(0, null, created.roomId), guest = await fixture.connect(1, null, created.roomId);
   assert.equal(host.welcome.map.id, NORMAL_MATCH_MAP_ID);
+  await host.wait(row => row.type === 'lobby' && row.lobby.seats.filter(seat => seat.connected).length === 2,
+    'host sees guest admission before choosing the Ready revision');
   await ready(host); await ready(guest);
+  await host.wait(row => row.type === 'lobby' && row.lobby.canLaunch
+    && row.lobby.seats.filter(seat => seat.connected).every(seat => seat.ready), 'host sees both ready seats');
   const before = structuredClone(lobby(host));
   for (const command of [{ type: 'configureLobby', revision: before.revision, mapId: 'bellweather-millrace', ...authored },
     { type: 'configureLobby', revision: before.revision, mapId: 'stone-defense-field', ...authored }]) {
@@ -83,6 +116,13 @@ try {
   assert.equal(practice.welcome.map.id, NORMAL_MATCH_MAP_ID);
   assert.deepEqual(mode(practice.welcome), authored);
   assert.ok(ordinary(practice.welcome.maps).every(row => row.width >= 160 && row.height >= 160));
+  const confluenceChange = await exchange(practice, { type: 'selectMap', mapId: confluence.id },
+    row => row.type === 'mapChange' && row.map.id === confluence.id);
+  assert.deepEqual(mode(confluenceChange), authored);
+  assert.deepEqual([confluenceChange.map.width, confluenceChange.map.height, confluenceChange.state.armySize], [160, 160, 24]);
+  assert.equal(confluenceChange.state.practice, true);
+  assert.equal(confluenceChange.state.connected, 1);
+  records.push({ name: 'Ordinary Authored Practice selects admitted Confluence Grounds with its exact Tiny dimensions and 24-unit opening' });
   for (const id of ['shore-fishing', 'stone-defense-field']) {
     const row = practice.welcome.maps.find(row => row.id === id);
     assert.ok(row && row.internalFixture && row.selectable && !row.ordinarySelectable);
@@ -95,10 +135,10 @@ try {
   await practice.state(state => state.scenarioClockStarted, 'one-human Practice clock starts');
   records.push({ name: 'One-human Authored Practice opens Tiny and preserves explicit Shore Fishing and Stone Defense internal Labs' });
 
-  const unavailable = await fetch(`${origin}/api/rooms`, { method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ mode: 'pve', mapSeed: 0, policySeed: 1 }) });
-  assert.equal(unavailable.status, 400); assert.equal((await unavailable.json()).error, FRESH_PVE_UNAVAILABLE_REASON);
-  records.push({ name: 'Fresh ordinary AI creation is honestly unavailable while its160-map acceptance is pending' });
+  const unsupported = await fetch(`${origin}/api/rooms`, { method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ mode: 'pve', mapSeed: 0, policySeed: 1, ...authored }) });
+  assert.equal(unsupported.status, 400); assert.equal((await unsupported.json()).error, FRESH_PVE_UNSUPPORTED_REASON);
+  records.push({ name: 'Fresh ordinary AI supports only Tiny Skirmish; explicitly requested historical Authored AI remains resume-only' });
 
   await fixture.stop();
   const oldId = 'O'.repeat(32), aiId = 'A'.repeat(32);
@@ -134,6 +174,6 @@ try {
   console.log(JSON.stringify({ status: 'passed', records,
     serverSha256: createHash('sha256').update(await readFile(new URL('../server.mjs', import.meta.url))).digest('hex'),
     supervisorSha256: createHash('sha256').update(await readFile(new URL('../room-supervisor.mjs', import.meta.url))).digest('hex'),
-    limits: ['Native room/protocol acceptance; browser rendering, identified staging deployment and AI capability acceptance remain open.',
+    limits: ['Native room/protocol acceptance; browser rendering and identified staging deployment remain open.',
       'Explicit RTS_MAP roots and one-human internal Labs are separate from ordinary fresh REST entry; canonical fixture validation stays16–256.'] }));
 } finally { await fixture.dispose(); }

@@ -2,8 +2,28 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createSkirmishTargetPolicy, selectSkirmishTarget, PVE_SKIRMISH_LIMITS as limits } from '../src/pve-skirmish-targets.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
+import { replayRememberedSearch } from './pve-remembered-search-case.mjs';
+import { replayProgressSearch } from './pve-progress-search-case.mjs';
 
 const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
+for (const cold of [false, true]) test(`real Medium progressing route: ${cold ? 'cold restart during extension' : 'warm policy'} retains discovery past sixty seconds`, async () => {
+  const result = await replayProgressSearch('progressing', { cold });
+  assert.ok(result.disclosed > result.initialTick + limits.searchTicks);
+  assert.ok(result.disclosed < result.initialTick + limits.maxSearchTicks);
+  assert.ok(result.firstChanged === null || result.firstChanged >= result.disclosed, 'the original goal survives until actual native discovery');
+  if (cold) assert.equal(result.stages.restart, result.initialTick + 1830, 'fresh native fixture and policy at sixty-one seconds');
+  assert.deepEqual(await replayProgressSearch('progressing', { cold }), result);
+  console.log(JSON.stringify({ name: result.name, cold, disclosed: result.disclosed, firstChanged: result.firstChanged,
+    newCells: result.newCells, newCellsNearGoal: result.newCellsNearGoal, stages: result.stages }));
+});
+test('real Medium blocked route: bounded policy releases the genuinely stalled hidden goal', async () => {
+  const result = await replayProgressSearch('stalled');
+  assert.equal(result.firstChanged, result.initialTick + limits.searchTicks,
+    'short blocked routes keep the original escape deadline');
+  assert.equal(result.disclosed, null, 'the blocked original point stays unknown');
+  assert.ok(result.newCells > 0, 'the replacement route still discovers new ground');
+  assert.deepEqual(await replayProgressSearch('stalled'), result);
+});
 const unit = (team, id, extra = {}) => ({ team, id, generation: 1, x: team ? 20 : -20,
   z: 0, hp: 100, kind: 'infantry', focusedCount: 0, lastAttack: null, ...extra });
 const building = (team, id, extra = {}) => ({ team, id, type: 'barracks', hp: 1800,
@@ -17,6 +37,14 @@ function observation(team) {
     resources: { food: 0, wood: 0 }, resourceNodes: [], population: null, workerProduction: null,
     research: null, objectives: [{ id: 'bonus', owner: -1, victory: false,
       zone: { column: 37, row: 41, width: 6, height: 6 } }] };
+}
+function longObservation(team) {
+  const state = observation(team);
+  state.map.width = state.map.height = 224;
+  state.visibility = { columns: 224, rows: 224, data: Buffer.alloc(12544).toString('base64') };
+  state.buildings.visibleEnemies = [];
+  for (const soldier of state.units.friendly) { soldier.x = 60; soldier.z = 60; }
+  return state;
 }
 
 test('the versioned policy input rejects partial/unknown identities and preserves the legacy default', () => {
@@ -51,6 +79,153 @@ for (const team of [0, 1]) for (const seed of [0, 20260925, 0xffffffff]) {
 }
 
 for (const team of [0, 1]) {
+  test(`Medium seat ${team}: real remembered fog yields to new ground through exact cold recovery`, async () => {
+    const first = await replayRememberedSearch(team);
+    assert.equal(first.firstMemory, 0, 'unexplored ground precedes the remembered candidate');
+    assert.equal(first.nextMemory, 0, 'fresh policy still searches new ground after cold restore');
+    assert.deepEqual(await replayRememberedSearch(team), first, 'native orders, fog, cold checkpoint and recovery replay exactly');
+    console.log(JSON.stringify({ team, seed: first.seed, first: first.first, next: first.next, stages: first.stages }));
+  });
+
+  test(`seat ${team}: unexplored candidates precede remembered ground within the existing budget`, () => {
+    const state = observation(team), soldiers = state.units.friendly;
+    state.buildings.visibleEnemies = [];
+    const mask = Buffer.alloc(1280, 0x55);
+    const set = (column, row, value) => {
+      const cell = row * 80 + column;
+      mask[cell >> 2] = (mask[cell >> 2] & ~(3 << ((cell & 3) * 2))) | value << ((cell & 3) * 2);
+    };
+    set(12, 12, 0); state.visibility.data = mask.toString('base64');
+    const command = createSkirmishTargetPolicy(0).next(state, soldiers)[0];
+    assert.deepEqual([command.x, command.z], [-27.5, -19.5],
+      'the second global candidate is unknown; the first is already explored');
+  });
+
+  test(`seat ${team}: unknown ground outside the budget preserves a useful remembered fallback`, () => {
+    const state = observation(team), soldiers = state.units.friendly, policy = createSkirmishTargetPolicy(0);
+    state.buildings.visibleEnemies = [];
+    const mask = Buffer.alloc(1280, 0x55), cell = 52 * 80 + 36;
+    mask[cell >> 2] &= ~(3 << ((cell & 3) * 2));
+    state.visibility.data = mask.toString('base64');
+    const first = policy.next(state, soldiers)[0];
+    assert.deepEqual([first.x, first.z], [-35.5, -27.5], 'the 65th candidate is outside this turn');
+    state.tick += limits.searchTicks;
+    const next = policy.next(state, soldiers)[0];
+    assert.deepEqual([next.x, next.z], [-3.5, 20.5], 'fallback advances by one candidate, so the unknown cell enters the next budget');
+  });
+
+  test(`seat ${team}: persistent unknown goals cannot starve remembered-territory coverage`, () => {
+    const state = observation(team), soldiers = state.units.friendly, policy = createSkirmishTargetPolicy(0);
+    state.buildings.visibleEnemies = [];
+    const mask = Buffer.alloc(1280, 0x55);
+    for (const [column, row] of [[12, 12], [4, 36]]) {
+      const cell = row * 80 + column;
+      mask[cell >> 2] &= ~(3 << ((cell & 3) * 2));
+    }
+    state.visibility.data = mask.toString('base64');
+    const cells = new Set();
+    let remembered = 0;
+    for (let index = 0; index <= 80; index++) {
+      const command = policy.next(state, soldiers)[0];
+      assert.ok(command, 'an expired goal permits another bounded decision');
+      const cell = Math.floor(command.z + 32) * 80 + Math.floor(command.x + 40);
+      const memory = mask[cell >> 2] >> ((cell & 3) * 2) & 3;
+      if (index === 0) assert.equal(memory, 0, 'new ground gets the first search turn');
+      if (memory === 1) remembered++;
+      cells.add(`${command.x}:${command.z}`);
+      state.tick += limits.searchTicks;
+    }
+    assert.equal(cells.size, 80, 'one complete cursor sweep follows an unreached, still-hidden goal');
+    assert.equal(remembered, 78, 'both unknown cells and every remembered cell receive a turn');
+    const preferred = policy.next(state, soldiers)[0];
+    const cell = Math.floor(preferred.z + 32) * 80 + Math.floor(preferred.x + 40);
+    assert.equal(mask[cell >> 2] >> ((cell & 3) * 2) & 3, 0, 'unknown preference resumes after coverage');
+  });
+
+  test(`seat ${team}: original soldiers keep a moving goal past sixty seconds, then escape a stall`, () => {
+    const state = longObservation(team), soldiers = state.units.friendly, policy = createSkirmishTargetPolicy(0);
+    state.buildings.visibleEnemies = [];
+    const first = policy.next(state, soldiers)[0];
+    for (const tick of [1700, 1790]) {
+      state.tick = tick;
+      for (const soldier of soldiers) soldier.x += 1;
+      policy.next(state, soldiers);
+    }
+    state.tick = limits.searchTicks;
+    assert.deepEqual(policy.next(state, soldiers), [], 'ongoing movement does not receive a new goal at sixty seconds');
+    state.tick = 1790 + limits.retryTicks;
+    const stalled = policy.next(state, soldiers)[0];
+    assert.ok(stalled, 'ten seconds without movement escapes after the initial grace');
+    assert.notDeepEqual([stalled.x, stalled.z], [first.x, first.z]);
+  });
+
+  test(`seat ${team}: continuous original-cohort movement cannot exceed the hard goal bound`, () => {
+    const state = longObservation(team), soldiers = state.units.friendly, policy = createSkirmishTargetPolicy(0);
+    state.buildings.visibleEnemies = [];
+    const first = policy.next(state, soldiers)[0];
+    for (let tick = 300; tick < limits.maxSearchTicks; tick += 300) {
+      state.tick = tick;
+      for (const soldier of soldiers) soldier.x += .75;
+      assert.deepEqual(policy.next(state, soldiers), [], `moving goal remains held at ${tick}`);
+    }
+    state.tick = limits.maxSearchTicks;
+    for (const soldier of soldiers) soldier.x += .75;
+    const bounded = policy.next(state, soldiers)[0];
+    assert.notDeepEqual([bounded.x, bounded.z], [first.x, first.z], 'even continuous motion releases at three minutes');
+  });
+
+  for (const replacement of [false, true]) test(`seat ${team}: ${replacement ? 'reused generations' : 'reinforcements'} cannot fake old-goal progress`, () => {
+    const state = longObservation(team), soldiers = state.units.friendly, policy = createSkirmishTargetPolicy(0);
+    state.buildings.visibleEnemies = [];
+    const first = policy.next(state, soldiers)[0];
+    if (replacement) for (const soldier of soldiers) soldier.generation++;
+    else soldiers.push(unit(team, 100));
+    state.tick = 1790;
+    for (const soldier of soldiers) if (replacement || soldier.id === 100) soldier.x += 1;
+    policy.next(state, soldiers);
+    state.tick = limits.searchTicks;
+    const next = policy.next(state, soldiers)[0];
+    assert.notDeepEqual([next.x, next.z], [first.x, first.z], 'only original identities can extend the goal');
+  });
+
+  test(`seat ${team}: current enemy sight interrupts an extended moving goal`, () => {
+    const state = longObservation(team), soldiers = state.units.friendly, policy = createSkirmishTargetPolicy(0);
+    state.buildings.visibleEnemies = [];
+    policy.next(state, soldiers);
+    state.tick = 1790;
+    for (const soldier of soldiers) soldier.x += 1;
+    policy.next(state, soldiers);
+    state.tick = limits.searchTicks;
+    assert.deepEqual(policy.next(state, soldiers), []);
+    state.buildings.visibleEnemies = [building(1 - team, 100)]; state.tick++;
+    assert.equal(policy.next(state, soldiers)[0].buildingId, 100);
+  });
+
+  test(`seat ${team}: short direct routes retain the original deadline despite movement`, () => {
+    const state = observation(team), soldiers = state.units.friendly, policy = createSkirmishTargetPolicy(0);
+    state.buildings.visibleEnemies = [];
+    const first = policy.next(state, soldiers)[0];
+    state.tick = 1790;
+    for (const soldier of soldiers) soldier.x += 1;
+    policy.next(state, soldiers);
+    state.tick = limits.searchTicks;
+    const next = policy.next(state, soldiers)[0];
+    assert.notDeepEqual([next.x, next.z], [first.x, first.z]);
+  });
+
+  test(`seat ${team}: admitted Tiny keeps its deadline even for a long direct crossing`, () => {
+    const state = longObservation(team), soldiers = state.units.friendly, policy = createSkirmishTargetPolicy(0);
+    state.map.width = state.map.height = 160;
+    state.visibility = { columns: 160, rows: 160, data: Buffer.alloc(6400).toString('base64') };
+    const first = policy.next(state, soldiers)[0];
+    state.tick = 1790;
+    for (const soldier of soldiers) soldier.x += 1;
+    policy.next(state, soldiers);
+    state.tick = limits.searchTicks;
+    const next = policy.next(state, soldiers)[0];
+    assert.notDeepEqual([next.x, next.z], [first.x, first.z], 'Tiny stays on its previously qualified policy');
+  });
+
   test(`seat ${team}: revealing an exploration goal preserves the approach until arrival`, () => {
     const state = observation(team), policy = createSkirmishTargetPolicy(0), soldiers = state.units.friendly;
     state.buildings.visibleEnemies = [];
@@ -77,11 +252,29 @@ for (const team of [0, 1]) {
     const first = policy.next(state, soldiers)[0];
     state.tick = limits.searchTicks;
     const next = policy.next(state, soldiers)[0];
-    assert.deepEqual([next.x, next.z], [-35.5, -27.5], 'unknown local probes cannot starve bounded global search');
+    assert.deepEqual([next.x, next.z], [-27.5, -19.5], 'unknown local probes cannot starve bounded global search');
     assert.notDeepEqual([next.x, next.z], [first.x, first.z]);
     state.tick += limits.searchTicks;
     const third = policy.next(state, soldiers)[0];
-    assert.deepEqual([third.x, third.z], [-27.5, -27.5], 'subsequent expired goals advance the cursor');
+    assert.deepEqual([third.x, third.z], [-19.5, -11.5], 'subsequent expired goals distribute the cursor across rows');
+  });
+
+  test(`seat ${team}: arriving at successive frontiers advances global search across rows`, () => {
+    const state = observation(team), policy = createSkirmishTargetPolicy(0), soldiers = state.units.friendly;
+    state.buildings.visibleEnemies = [];
+    let command = policy.next(state, soldiers)[0];
+    const goals = [];
+    for (let index = 0; index < 4; index++) {
+      goals.push([command.x, command.z]);
+      for (const soldier of soldiers) { soldier.x = command.x; soldier.z = command.z; }
+      state.tick += 30;
+      const prior = command;
+      command = policy.next(state, soldiers)[0];
+      assert.ok(command, 'an arrived army receives another legal search order');
+      assert.notDeepEqual([command.x, command.z], [prior.x, prior.z]);
+    }
+    assert.deepEqual(goals, [[-35.5, -27.5], [-27.5, -19.5], [-19.5, -11.5], [-11.5, -3.5]],
+      'successfully reached goals also distribute search across rows');
   });
 
   test(`seat ${team}: recovery priorities exclude dead, friendly and water-only targets`, () => {
@@ -155,3 +348,25 @@ test('filtered observations and commands remain identical when hidden enemy stat
   assert.deepEqual(createSkirmishTargetPolicy(1).next(a, a.units.friendly),
     createSkirmishTargetPolicy(1).next(b, b.units.friendly));
 });
+
+for (const memory of [0, 1]) for (const [width, height] of [[80, 64], [80, 88], [160, 160], [224, 224]]) {
+  test(`global search covers every coarse cell once on ${width}×${height}, memory ${memory}`, () => {
+    const state = observation(0), policy = createSkirmishTargetPolicy(0), soldiers = state.units.friendly;
+    state.map.width = width; state.map.height = height;
+    state.visibility = { columns: width, rows: height,
+      data: Buffer.alloc(Math.ceil(width * height / 4), memory ? 0x55 : 0).toString('base64') };
+    state.buildings.visibleEnemies = [];
+    for (const soldier of soldiers) { soldier.x = 0; soldier.z = 0; }
+    policy.next(state, soldiers);
+    const cells = new Set(), count = Math.ceil(width / 8) * Math.ceil(height / 8);
+    for (let index = 0; index < count; index++) {
+      state.tick += limits.searchTicks;
+      const command = policy.next(state, soldiers)[0];
+      assert.ok(command && command.type === 'attackMove');
+      assert.ok(command.x > -width / 2 && command.x < width / 2);
+      assert.ok(command.z > -height / 2 && command.z < height / 2);
+      cells.add(`${command.x}:${command.z}`);
+    }
+    assert.equal(cells.size, count, 'cursor cannot become trapped in a short stride cycle');
+  });
+}

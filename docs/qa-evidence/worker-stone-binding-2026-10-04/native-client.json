@@ -1,0 +1,1298 @@
+{
+  "contractVersion": 1,
+  "map": "stone-defense-field",
+  "evidence": [
+    {
+      "name": "gather approach waits",
+      "team": 0,
+      "tick": 6,
+      "food": 300,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 0,
+          "generation": 2437779494,
+          "task": "gathering",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "node harvest",
+      "team": 0,
+      "tick": 147,
+      "food": 300,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 0,
+          "generation": 2437779494,
+          "task": "gathering",
+          "action": "gather-food",
+          "cargo": 0.07
+        }
+      ]
+    },
+    {
+      "name": "Stone approach waits",
+      "team": 0,
+      "tick": 240,
+      "food": 300.1666666666667,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 0,
+          "generation": 2437779494,
+          "task": "gathering",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "Stone harvest",
+      "team": 0,
+      "tick": 396,
+      "food": 300.1666666666667,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 0,
+          "generation": 2437779494,
+          "task": "gathering",
+          "action": "gather-stone",
+          "cargo": 0.07
+        }
+      ]
+    },
+    {
+      "name": "Stone Stop clears",
+      "team": 0,
+      "tick": 399,
+      "food": 300.1666666666667,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 0,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0.07
+        }
+      ]
+    },
+    {
+      "name": "Stone resumed grant",
+      "team": 0,
+      "tick": 402,
+      "food": 300.1666666666667,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 0,
+          "generation": 2437779494,
+          "task": "gathering",
+          "action": "gather-stone",
+          "cargo": 0.17
+        }
+      ]
+    },
+    {
+      "name": "paid Farm approach waits",
+      "team": 0,
+      "tick": 406,
+      "food": 300.1666666666667,
+      "wood": 540,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 1,
+          "generation": 2437779494,
+          "task": "building",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 2,
+          "generation": 2437779494,
+          "task": "building",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 3,
+          "generation": 2437779494,
+          "task": "building",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "build progress",
+      "team": 0,
+      "tick": 519,
+      "food": 300.1666666666667,
+      "wood": 540,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 1,
+          "generation": 2437779494,
+          "task": "building",
+          "action": "build",
+          "cargo": 0
+        },
+        {
+          "id": 2,
+          "generation": 2437779494,
+          "task": "building",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 3,
+          "generation": 2437779494,
+          "task": "building",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "Farm complete clears",
+      "team": 0,
+      "tick": 693,
+      "food": 300.1666666666667,
+      "wood": 540,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 1,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 2,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 3,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "Farm harvest",
+      "team": 0,
+      "tick": 696,
+      "food": 300.1666666666667,
+      "wood": 540,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 1,
+          "generation": 2437779494,
+          "task": "gathering",
+          "action": "gather-food",
+          "cargo": 0.1
+        }
+      ]
+    },
+    {
+      "name": "gather approach waits",
+      "team": 1,
+      "tick": 702,
+      "food": 300,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 12,
+          "generation": 2437779494,
+          "task": "gathering",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "node harvest",
+      "team": 1,
+      "tick": 813,
+      "food": 300,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 12,
+          "generation": 2437779494,
+          "task": "gathering",
+          "action": "gather-food",
+          "cargo": 0.1
+        }
+      ]
+    },
+    {
+      "name": "Stone approach waits",
+      "team": 1,
+      "tick": 906,
+      "food": 300.2,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 12,
+          "generation": 2437779494,
+          "task": "gathering",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "Stone harvest",
+      "team": 1,
+      "tick": 1062,
+      "food": 300.2,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 12,
+          "generation": 2437779494,
+          "task": "gathering",
+          "action": "gather-stone",
+          "cargo": 0.07
+        }
+      ]
+    },
+    {
+      "name": "Stone Stop clears",
+      "team": 1,
+      "tick": 1065,
+      "food": 300.2,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 12,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0.07
+        }
+      ]
+    },
+    {
+      "name": "Stone resumed grant",
+      "team": 1,
+      "tick": 1068,
+      "food": 300.2,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 12,
+          "generation": 2437779494,
+          "task": "gathering",
+          "action": "gather-stone",
+          "cargo": 0.17
+        }
+      ]
+    },
+    {
+      "name": "paid Farm approach waits",
+      "team": 1,
+      "tick": 1072,
+      "food": 300.2,
+      "wood": 540,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 13,
+          "generation": 2437779494,
+          "task": "building",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 14,
+          "generation": 2437779494,
+          "task": "building",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 15,
+          "generation": 2437779494,
+          "task": "building",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "build progress",
+      "team": 1,
+      "tick": 1191,
+      "food": 300.2,
+      "wood": 540,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 13,
+          "generation": 2437779494,
+          "task": "building",
+          "action": "build",
+          "cargo": 0
+        },
+        {
+          "id": 14,
+          "generation": 2437779494,
+          "task": "building",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 15,
+          "generation": 2437779494,
+          "task": "building",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "Farm complete clears",
+      "team": 1,
+      "tick": 1362,
+      "food": 300.2,
+      "wood": 540,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 13,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 14,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 15,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "Farm harvest",
+      "team": 1,
+      "tick": 1365,
+      "food": 300.2,
+      "wood": 540,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 13,
+          "generation": 2437779494,
+          "task": "gathering",
+          "action": "gather-food",
+          "cargo": 0.1
+        }
+      ]
+    },
+    {
+      "name": "idle recovery",
+      "team": 0,
+      "tick": 1368,
+      "food": 300.1666666666667,
+      "wood": 540,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 0,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0.17
+        },
+        {
+          "id": 1,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0.1
+        },
+        {
+          "id": 2,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 3,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "idle recovery",
+      "team": 1,
+      "tick": 1368,
+      "food": 300.2,
+      "wood": 540,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 12,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0.17
+        },
+        {
+          "id": 13,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0.1
+        },
+        {
+          "id": 14,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 15,
+          "generation": 2437779494,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "fixture positive repair",
+      "team": 0,
+      "tick": 1374,
+      "food": 300.1666666666667,
+      "wood": 0.24,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 1,
+          "generation": 2437779494,
+          "task": "repairing",
+          "action": "repair",
+          "cargo": 0.1
+        }
+      ]
+    },
+    {
+      "name": "fixture no wood clear delivered without another order",
+      "team": 0,
+      "tick": 1383,
+      "food": 300.1666666666667,
+      "wood": 0,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 1,
+          "generation": 2437779494,
+          "task": "repairing",
+          "action": null,
+          "cargo": 0.1
+        }
+      ]
+    },
+    {
+      "name": "fixture positive repair",
+      "team": 1,
+      "tick": 1386,
+      "food": 300.2,
+      "wood": 0.24,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 13,
+          "generation": 2437779494,
+          "task": "repairing",
+          "action": "repair",
+          "cargo": 0.1
+        }
+      ]
+    },
+    {
+      "name": "fixture no wood clear delivered without another order",
+      "team": 1,
+      "tick": 1395,
+      "food": 300.2,
+      "wood": 0,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 13,
+          "generation": 2437779494,
+          "task": "repairing",
+          "action": null,
+          "cargo": 0.1
+        }
+      ]
+    },
+    {
+      "name": "rematch generation clears",
+      "team": 0,
+      "tick": 1395,
+      "food": 300,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 0,
+          "generation": 2437779495,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 1,
+          "generation": 2437779495,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 2,
+          "generation": 2437779495,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 3,
+          "generation": 2437779495,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    },
+    {
+      "name": "rematch generation clears",
+      "team": 1,
+      "tick": 1395,
+      "food": 300,
+      "wood": 600,
+      "stone": 0,
+      "workers": [
+        {
+          "id": 12,
+          "generation": 2437779495,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 13,
+          "generation": 2437779495,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 14,
+          "generation": 2437779495,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        },
+        {
+          "id": 15,
+          "generation": 2437779495,
+          "task": "idle",
+          "action": null,
+          "cargo": 0
+        }
+      ]
+    }
+  ],
+  "clientPresentation": [
+    {
+      "name": "gather approach waits",
+      "team": 0,
+      "tick": 6,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 0,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-east-0",
+          "heading": 1.5707963267948966
+        }
+      ]
+    },
+    {
+      "name": "node harvest",
+      "team": 0,
+      "tick": 147,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 0,
+          "action": "gather-food",
+          "walking": false,
+          "state": "gather",
+          "frame": "idle-east-0",
+          "heading": 1.358620831479819
+        }
+      ]
+    },
+    {
+      "name": "Stone approach waits",
+      "team": 0,
+      "tick": 240,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 0,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-west-0",
+          "heading": -2.162553382585706
+        }
+      ]
+    },
+    {
+      "name": "Stone harvest",
+      "team": 0,
+      "tick": 396,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 0,
+          "action": "gather-stone",
+          "walking": false,
+          "state": "gather-stone",
+          "frame": "idle-east-0",
+          "heading": 1.1968136866525834
+        }
+      ]
+    },
+    {
+      "name": "Stone Stop clears",
+      "team": 0,
+      "tick": 399,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 0,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-east-0",
+          "heading": 1.5707963267948966
+        }
+      ]
+    },
+    {
+      "name": "Stone resumed grant",
+      "team": 0,
+      "tick": 402,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 0,
+          "action": "gather-stone",
+          "walking": false,
+          "state": "gather-stone",
+          "frame": "idle-east-0",
+          "heading": 1.5707963267948966
+        }
+      ]
+    },
+    {
+      "name": "paid Farm approach waits",
+      "team": 0,
+      "tick": 406,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 1,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-east-0",
+          "heading": 1.325817663668438
+        },
+        {
+          "id": 2,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-east-0",
+          "heading": 1.5707963267948966
+        },
+        {
+          "id": 3,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-east-0",
+          "heading": 1.8157749899213553
+        }
+      ]
+    },
+    {
+      "name": "build progress",
+      "team": 0,
+      "tick": 519,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 1,
+          "action": "build",
+          "walking": false,
+          "state": "build",
+          "frame": "build-south-east-0",
+          "heading": 2.4328555904688356
+        },
+        {
+          "id": 2,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": 2.151667795298546
+        },
+        {
+          "id": 3,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": 2.304802331092776
+        }
+      ]
+    },
+    {
+      "name": "Farm complete clears",
+      "team": 0,
+      "tick": 693,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 1,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-0",
+          "heading": 3.140358381624591
+        },
+        {
+          "id": 2,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": 2.700580669868772
+        },
+        {
+          "id": 3,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-0",
+          "heading": 2.771630727262352
+        }
+      ]
+    },
+    {
+      "name": "Farm harvest",
+      "team": 0,
+      "tick": 696,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 1,
+          "action": "gather-food",
+          "walking": false,
+          "state": "gather",
+          "frame": "gather-food-south-east-6",
+          "heading": 2.356194490192345
+        }
+      ]
+    },
+    {
+      "name": "gather approach waits",
+      "team": 1,
+      "tick": 702,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 12,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -1.5707963267948966
+        }
+      ]
+    },
+    {
+      "name": "node harvest",
+      "team": 1,
+      "tick": 813,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 12,
+          "action": "gather-food",
+          "walking": false,
+          "state": "gather",
+          "frame": "gather-food-south-east-0",
+          "heading": -1.2361641900907627
+        }
+      ]
+    },
+    {
+      "name": "Stone approach waits",
+      "team": 1,
+      "tick": 906,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 12,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": 2.159262917169714
+        }
+      ]
+    },
+    {
+      "name": "Stone harvest",
+      "team": 1,
+      "tick": 1062,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 12,
+          "action": "gather-stone",
+          "walking": false,
+          "state": "gather-stone",
+          "frame": "idle-south-east-0",
+          "heading": -1.1968131407419906
+        }
+      ]
+    },
+    {
+      "name": "Stone Stop clears",
+      "team": 1,
+      "tick": 1065,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 12,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -1.5707963267948966
+        }
+      ]
+    },
+    {
+      "name": "Stone resumed grant",
+      "team": 1,
+      "tick": 1068,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 12,
+          "action": "gather-stone",
+          "walking": false,
+          "state": "gather-stone",
+          "frame": "idle-south-east-0",
+          "heading": -1.5707963267948966
+        }
+      ]
+    },
+    {
+      "name": "paid Farm approach waits",
+      "team": 1,
+      "tick": 1072,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 13,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -1.5707963267948966
+        },
+        {
+          "id": 14,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -1.8157749899213553
+        },
+        {
+          "id": 15,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -1.5707963267948966
+        }
+      ]
+    },
+    {
+      "name": "build progress",
+      "team": 1,
+      "tick": 1191,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 13,
+          "action": "build",
+          "walking": false,
+          "state": "build",
+          "frame": "build-south-east-0",
+          "heading": -2.210695946232017
+        },
+        {
+          "id": 14,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -2.356138263834743
+        },
+        {
+          "id": 15,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -2.210695946232017
+        }
+      ]
+    },
+    {
+      "name": "Farm complete clears",
+      "team": 1,
+      "tick": 1362,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 13,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -3.1399600734420274
+        },
+        {
+          "id": 14,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -3.1411642784364413
+        },
+        {
+          "id": 15,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -2.245520648549011
+        }
+      ]
+    },
+    {
+      "name": "Farm harvest",
+      "team": 1,
+      "tick": 1365,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 13,
+          "action": "gather-food",
+          "walking": false,
+          "state": "gather",
+          "frame": "gather-food-south-east-0",
+          "heading": -2.356194490192345
+        }
+      ]
+    },
+    {
+      "name": "idle recovery",
+      "team": 0,
+      "tick": 1368,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 0,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-east-0",
+          "heading": 1.5707963267948966
+        },
+        {
+          "id": 1,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": 2.356194490192345
+        },
+        {
+          "id": 2,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": 2.700580669868772
+        },
+        {
+          "id": 3,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-0",
+          "heading": 2.771630727262352
+        }
+      ]
+    },
+    {
+      "name": "idle recovery",
+      "team": 1,
+      "tick": 1368,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 12,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -1.5707963267948966
+        },
+        {
+          "id": 13,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -2.356194490192345
+        },
+        {
+          "id": 14,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -3.1411642784364413
+        },
+        {
+          "id": 15,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -2.245520648549011
+        }
+      ]
+    },
+    {
+      "name": "fixture positive repair",
+      "team": 0,
+      "tick": 1374,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 1,
+          "action": "repair",
+          "walking": false,
+          "state": "repair",
+          "frame": "repair-south-east-6",
+          "heading": 2.356194490192345
+        }
+      ]
+    },
+    {
+      "name": "fixture no wood clear delivered without another order",
+      "team": 0,
+      "tick": 1383,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 1,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": 2.356194490192345
+        }
+      ]
+    },
+    {
+      "name": "fixture positive repair",
+      "team": 1,
+      "tick": 1386,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 13,
+          "action": "repair",
+          "walking": false,
+          "state": "repair",
+          "frame": "repair-south-east-0",
+          "heading": -2.356194490192345
+        }
+      ]
+    },
+    {
+      "name": "fixture no wood clear delivered without another order",
+      "team": 1,
+      "tick": 1395,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 13,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -2.356194490192345
+        }
+      ]
+    },
+    {
+      "name": "rematch generation clears",
+      "team": 0,
+      "tick": 1395,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 0,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-east-0",
+          "heading": 1.5707963267948966
+        },
+        {
+          "id": 1,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-east-0",
+          "heading": 1.5707963267948966
+        },
+        {
+          "id": 2,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-east-0",
+          "heading": 1.5707963267948966
+        },
+        {
+          "id": 3,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-east-0",
+          "heading": 1.5707963267948966
+        }
+      ]
+    },
+    {
+      "name": "rematch generation clears",
+      "team": 1,
+      "tick": 1395,
+      "heldPacketCpuMs": 640,
+      "workers": [
+        {
+          "id": 12,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -1.5707963267948966
+        },
+        {
+          "id": 13,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -1.5707963267948966
+        },
+        {
+          "id": 14,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -1.5707963267948966
+        },
+        {
+          "id": 15,
+          "action": null,
+          "walking": false,
+          "state": "idle",
+          "frame": "idle-south-east-0",
+          "heading": -1.5707963267948966
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "real WebSocket rows through actual CPU client receipt/scheduling and shipped atlas buffers; no browser/GPU/deployed appearance claim",
+    "exhausted repair uses explicitly seeded damaged Farms and nine repair steps of wood"
+  ],
+  "sourceRevision": "d725093be64dc8426fa2ac48a94ea3563bc87266",
+  "workerPackVersion": "0.24.0"
+}

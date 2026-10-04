@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "path": "collector-cold-inclusive-check.json.gz",
+      "bytes": 16348,
+      "sha256": "680708b0b995fafd1e734bfc1f30c3286639596f9e7fa06a9d43f450551d4dc9",
+      "compression": "gzip",
+      "uncompressedSha256": "b95008960b13dd5f7e124fdac978d2bc8a96710ae3e420601e13ad88045e733e"
+    },
+    {
+      "path": "diagnostic-brief-schema.json.gz",
+      "bytes": 1114,
+      "sha256": "8866ab2d6487049ff763b4a1c00b451478d9e1c3ddb0987c961b4b4f67b1e37d",
+      "compression": "gzip",
+      "uncompressedSha256": "d11eee44d6d8911753cb259d1a4e24a1ddbe99e1435d1e019c5761c36474c5d5"
+    },
+    {
+      "path": "diagnostic-dependency-dirty.json.gz",
+      "bytes": 16510,
+      "sha256": "dc98fffef5e08a31b1edbc55dacd8ce031401de3220f3904ae063bbdf3f248e7",
+      "compression": "gzip",
+      "uncompressedSha256": "88701cb589242ee281a5bcb4c61c06eb4f8c52de36b4ea784ec4f7b8dc489c13"
+    },
+    {
+      "path": "grid-cost.json.gz",
+      "bytes": 2477,
+      "sha256": "1d23035283dc4c1425651ebbf4d264253ab75858be0635b3b4319ee0acfce918",
+      "compression": "gzip",
+      "uncompressedSha256": "c7fd78103f77416b0ce2f55da5dd498a3e25e15b69da8926b27562be5160542f"
+    },
+    {
+      "path": "layout.png",
+      "bytes": 106547,
+      "sha256": "3bc41c2ab3e502c2b33f7e943d87c0e766db93ec3025061eb241cb3ea0a695a5"
+    },
+    {
+      "path": "native-24.json.gz",
+      "bytes": 16250,
+      "sha256": "a7ec9085564c038bdbbed23046351426d5e00c658d39ad1b10a2428eb4185267",
+      "compression": "gzip",
+      "uncompressedSha256": "4d9772ae2dd67e4c3a29664581d5234bfe1b009da03ef558f1b2beedaeceb307"
+    },
+    {
+      "path": "practice-protocol.json",
+      "bytes": 1606,
+      "sha256": "3cd2365b603d15e7401cb88f1cda1082faefaf77c6a12edd1b4392e78487a3ed"
+    },
+    {
+      "path": "static-audit.json.gz",
+      "bytes": 5932,
+      "sha256": "965fc65476a3a8639a7748e4e0365b90b24a2cae72a41cf79b93df5d5382b746",
+      "compression": "gzip",
+      "uncompressedSha256": "fc3039ba07de7f10140d93feca28c428dac8ed9aa11d5333fe135d9681e3397f"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 4985,
+      "sha256": "94ecfbd96e8511cf81e6e1743d0d56013b106766b039b961072968546806a8eb"
+    }
+  ]
+}

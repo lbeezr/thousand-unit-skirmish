@@ -81,6 +81,7 @@ const clients = [];
 async function start() {
   child = spawn(process.execPath, [SERVER_PATH], { cwd: ROOT, env: { ...process.env,
     PORT: String(port), RTS_HOST: '127.0.0.1', RTS_MATCH_STATE_PATH: checkpointPath,
+    RTS_MAP: 'maps/open-field.json',
     RTS_CUSTOM_MAP_DIRECTORY: path.join(temp, 'maps') }, stdio: ['ignore', 'pipe', 'pipe'] });
   child.stdout.on('data', x => logs += x); child.stderr.on('data', x => logs += x);
   const deadline = Date.now() + TIMEOUT_MS;

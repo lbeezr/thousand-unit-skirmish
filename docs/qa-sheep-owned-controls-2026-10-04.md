@@ -32,8 +32,10 @@ real Three CPU renderer positions, building/wall planners and existing army,
 Worker, Farm, Skiff, stance and cargo regression assertions. Exact counts,
 reviewed source, live-server results and packed release belong in the owning PR.
 
-Current ordinary Tiny defaults to Terraced Vale 160, which has no Sheep. The
-normal-input proof starts explicit Authored Rules without `RTS_MAP` and publishes
+The original controls proof predates Tiny animal adoption. Current ordinary
+Tiny defaults to Terraced Vale 160 with four Sheep; [default adoption evidence](qa-terraced-vale-sheep-2026-10-04.md)
+records its real entry. The earlier normal-input proof starts explicit Authored
+Rules without `RTS_MAP` and publishes
 an admitted 160×160 Sheep-bearing arena, preserving the ordinary floor; historical
 Millrace motion/claims proofs select their map explicitly.
 

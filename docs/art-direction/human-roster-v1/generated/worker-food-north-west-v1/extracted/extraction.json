@@ -1,0 +1,38 @@
+{
+  "source": "docs/art-direction/human-roster-v1/generated/worker-food-north-west-v1/raw.png",
+  "frames": [
+    {
+      "frame": 0,
+      "sourceBounds": [
+        35,
+        240,
+        537,
+        849
+      ],
+      "opaquePixels": 162737,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 1,
+      "sourceBounds": [
+        625,
+        211,
+        1027,
+        849
+      ],
+      "opaquePixels": 151915,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 2,
+      "sourceBounds": [
+        1163,
+        129,
+        1490,
+        849
+      ],
+      "opaquePixels": 150770,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    }
+  ]
+}

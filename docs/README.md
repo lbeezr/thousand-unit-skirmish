@@ -53,6 +53,10 @@ the build they name.
 | Follow the ranked movement/pathing backlog and shared write boundaries | [Movement workstream](movement-pathing-workstream.md) |
 | Verify deterministic planning turns, large routes and native recovery | [Planning work QA](qa-move-planning-work-2026-10-03.md) |
 | Compare opt-in planning turns per tick while retaining default scheduling | [Tick budget experiment](qa-move-planning-tick-budget-2026-10-04.md) |
+| Qualify the complete paid battle tick budget and understand the retained callback default | [Paid battle tick qualification](qa-paid-battle-tick-budget-2026-10-04.md) |
+| Compare callback/four whole ticks and inspect private payload, allocation and vision costs | [Tick cost attribution](qa-tick-cost-attribution-2026-10-04.md) |
+| Inspect the measured snapshot base-row allocation change and exact wire regressions | [Snapshot row allocation](qa-snapshot-row-allocation-2026-10-04.md) |
+| Understand the remaining maximum-tick tail and rejected zero-separation probe | [Remaining tick tail](qa-remaining-tick-tail-2026-10-04.md) |
 | Verify route progress through a parked army and preserved Stop intent | [Crowd forward-progress QA](qa-crowd-forward-progress-2026-10-03.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
 | Work on connected walls and explicit manual gates | [Palisade runtime](palisade-runtime.md), [gates](palisade-gates.md) |

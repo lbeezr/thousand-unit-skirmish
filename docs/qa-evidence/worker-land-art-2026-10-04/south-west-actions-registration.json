@@ -1,0 +1,501 @@
+{
+  "schemaVersion": 1,
+  "worldDirection": "south-west",
+  "screenDirection": "straight-up direct-back",
+  "sharedScale": 0.9003322259136213,
+  "columnRootsX": [
+    174,
+    518,
+    846
+  ],
+  "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/raw.png",
+  "sourceSha256": "0ae1b65e7cb9b3afe0af42b3cdbf1f19bdba135153277916c9aa0b1f4294e208",
+  "contactNote": "Live work uses row ground baselines; fallen poses use reviewed source contact lines, not bounding-box recentering. Runtime pivots remain fixed per clip; native contact/relative body scale open.",
+  "groups": [
+    {
+      "state": "gather-wood",
+      "alias": "attack",
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 320
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 308
+      },
+      "frames": [
+        {
+          "id": "gather-wood-south-west-0",
+          "sourceIndex": 0,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/00.png",
+          "sourceSha256": "32eb58ed651362d521dad5c231df9394806851783f5eca23433d6e07b8576b44",
+          "sourceBounds": [
+            91,
+            17,
+            258,
+            300
+          ],
+          "sourceGroundRootPx": [
+            174,
+            300
+          ],
+          "offsetPx": [
+            53,
+            53
+          ],
+          "alphaBoundsPx": {
+            "x": 53,
+            "y": 53,
+            "width": 150,
+            "height": 255
+          },
+          "rgbaSha256": "b47842df4276e25472ce03b2e982f59387ab148e2a6b177f7882cee7a0844025"
+        },
+        {
+          "id": "gather-wood-south-west-1",
+          "sourceIndex": 1,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/01.png",
+          "sourceSha256": "dab4c1a3b523587fefa4326abf8ea2d30f36b83ce072a630f285b4ddf90a8986",
+          "sourceBounds": [
+            436,
+            67,
+            602,
+            300
+          ],
+          "sourceGroundRootPx": [
+            518,
+            300
+          ],
+          "offsetPx": [
+            54,
+            98
+          ],
+          "alphaBoundsPx": {
+            "x": 55,
+            "y": 98,
+            "width": 148,
+            "height": 210
+          },
+          "rgbaSha256": "c1a30f00e1225748ada1931dcbf9cf6df508abae1c2964c8e0ef4dcf269d5a80"
+        },
+        {
+          "id": "gather-wood-south-west-2",
+          "sourceIndex": 2,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/02.png",
+          "sourceSha256": "88197d55401dce6507dbaf31ccaaffa553d75229779919ea719f5348966066ee",
+          "sourceBounds": [
+            771,
+            53,
+            939,
+            300
+          ],
+          "sourceGroundRootPx": [
+            846,
+            300
+          ],
+          "offsetPx": [
+            60,
+            86
+          ],
+          "alphaBoundsPx": {
+            "x": 60,
+            "y": 87,
+            "width": 151,
+            "height": 221
+          },
+          "rgbaSha256": "a11b9bf5029a53701c0d95b9ce7c72cb6af5c7d7d97b6dc6e92067168c4713b1"
+        }
+      ]
+    },
+    {
+      "state": "gather-food",
+      "alias": null,
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 256
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 244
+      },
+      "frames": [
+        {
+          "id": "gather-food-south-west-0",
+          "sourceIndex": 3,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/03.png",
+          "sourceSha256": "f710cc3b1d0dc88854893723320b4bf048d61a2e9889e387ef8440166bb9ec65",
+          "sourceBounds": [
+            90,
+            337,
+            272,
+            584
+          ],
+          "sourceGroundRootPx": [
+            174,
+            584
+          ],
+          "offsetPx": [
+            52,
+            22
+          ],
+          "alphaBoundsPx": {
+            "x": 52,
+            "y": 22,
+            "width": 164,
+            "height": 222
+          },
+          "rgbaSha256": "de234c576132944ca126d0829184a7aa51c57989c54315b9c87630503e032ef8"
+        },
+        {
+          "id": "gather-food-south-west-1",
+          "sourceIndex": 4,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/04.png",
+          "sourceSha256": "3a8a6f577528825f077a1ae955e019df5cd2f28e97bf8c90467be2e3fd8236ab",
+          "sourceBounds": [
+            416,
+            376,
+            601,
+            579
+          ],
+          "sourceGroundRootPx": [
+            518,
+            584
+          ],
+          "offsetPx": [
+            36,
+            57
+          ],
+          "alphaBoundsPx": {
+            "x": 36,
+            "y": 57,
+            "width": 167,
+            "height": 183
+          },
+          "rgbaSha256": "194edbf290bca8b6af50571f83a8f277b56a88e1bd020fd54fb674b0a8aed855"
+        },
+        {
+          "id": "gather-food-south-west-2",
+          "sourceIndex": 5,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/05.png",
+          "sourceSha256": "13cf3d132f22cbd380501fbe34a101539ca358706658c5ded50027bd34737744",
+          "sourceBounds": [
+            771,
+            337,
+            917,
+            584
+          ],
+          "sourceGroundRootPx": [
+            846,
+            584
+          ],
+          "offsetPx": [
+            60,
+            22
+          ],
+          "alphaBoundsPx": {
+            "x": 61,
+            "y": 22,
+            "width": 130,
+            "height": 222
+          },
+          "rgbaSha256": "b78ed9948a8238a9df89da880cefe613fbb55f988544ad679f97111b5a3551eb"
+        }
+      ]
+    },
+    {
+      "state": "build",
+      "alias": "repair",
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 320
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 308
+      },
+      "frames": [
+        {
+          "id": "build-south-west-0",
+          "sourceIndex": 6,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/06.png",
+          "sourceSha256": "2b654387bd0d569c411f4ac5ae8dd15d2390e55e4d49a9a1a78b19e9b9e52727",
+          "sourceBounds": [
+            90,
+            614,
+            263,
+            883
+          ],
+          "sourceGroundRootPx": [
+            174,
+            883
+          ],
+          "offsetPx": [
+            52,
+            66
+          ],
+          "alphaBoundsPx": {
+            "x": 52,
+            "y": 66,
+            "width": 156,
+            "height": 242
+          },
+          "rgbaSha256": "7f18d1d128aadffe392cc3870843539f9b5a92298026a1fb38d83942a406c0bc"
+        },
+        {
+          "id": "build-south-west-1",
+          "sourceIndex": 7,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/07.png",
+          "sourceSha256": "903f193037ced0b36e051e16efd933731b16acd561839916706769808bdf73ce",
+          "sourceBounds": [
+            429,
+            655,
+            613,
+            883
+          ],
+          "sourceGroundRootPx": [
+            518,
+            883
+          ],
+          "offsetPx": [
+            48,
+            103
+          ],
+          "alphaBoundsPx": {
+            "x": 48,
+            "y": 103,
+            "width": 166,
+            "height": 205
+          },
+          "rgbaSha256": "e345f2b61301ed883599601ce315849095e64210701e2d5f3d8c0d7a559878eb"
+        },
+        {
+          "id": "build-south-west-2",
+          "sourceIndex": 8,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/08.png",
+          "sourceSha256": "33c623d46735e7a3039e2a71cb61a21ef72f4c2f5b3abadaa0a640f3bee5c97f",
+          "sourceBounds": [
+            771,
+            633,
+            948,
+            883
+          ],
+          "sourceGroundRootPx": [
+            846,
+            883
+          ],
+          "offsetPx": [
+            60,
+            83
+          ],
+          "alphaBoundsPx": {
+            "x": 60,
+            "y": 83,
+            "width": 159,
+            "height": 225
+          },
+          "rgbaSha256": "b52332718191be5824dcd252569a82b7a6f779f699e6747c460a239ec4508a34"
+        }
+      ]
+    },
+    {
+      "state": "gather-stone",
+      "alias": null,
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 320
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 308
+      },
+      "frames": [
+        {
+          "id": "gather-stone-south-west-0",
+          "sourceIndex": 9,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/09.png",
+          "sourceSha256": "74ebe8dd9b1f14773363317762586d4f8ca9091ed634af1a0ee25286f3841055",
+          "sourceBounds": [
+            92,
+            898,
+            263,
+            1199
+          ],
+          "sourceGroundRootPx": [
+            174,
+            1201
+          ],
+          "offsetPx": [
+            54,
+            35
+          ],
+          "alphaBoundsPx": {
+            "x": 54,
+            "y": 35,
+            "width": 154,
+            "height": 271
+          },
+          "rgbaSha256": "e32eac1f7dcf436f42a548d051fb1b1f26b0b1bd3825a166d7a8a7a2678c737c"
+        },
+        {
+          "id": "gather-stone-south-west-1",
+          "sourceIndex": 10,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/10.png",
+          "sourceSha256": "f3c6705e1af560e1cb99863b790f10d99710e3752c72c05bc5fbfc0df8ca9622",
+          "sourceBounds": [
+            425,
+            980,
+            611,
+            1200
+          ],
+          "sourceGroundRootPx": [
+            518,
+            1201
+          ],
+          "offsetPx": [
+            44,
+            109
+          ],
+          "alphaBoundsPx": {
+            "x": 44,
+            "y": 109,
+            "width": 167,
+            "height": 198
+          },
+          "rgbaSha256": "7cb12feebc28f4e015360ac90392641649acfb7e5ef5320dd17c2ee51e502f47"
+        },
+        {
+          "id": "gather-stone-south-west-2",
+          "sourceIndex": 11,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/11.png",
+          "sourceSha256": "919d194be6b4b5589a1cc85a4aabf5cfc806c8daecc1fac5ea2850d39acd2565",
+          "sourceBounds": [
+            769,
+            945,
+            956,
+            1201
+          ],
+          "sourceGroundRootPx": [
+            846,
+            1201
+          ],
+          "offsetPx": [
+            59,
+            78
+          ],
+          "alphaBoundsPx": {
+            "x": 59,
+            "y": 78,
+            "width": 167,
+            "height": 230
+          },
+          "rgbaSha256": "580495241dab464aa2232c4679c3abb4c26e1e417d9ea0178df0a70aa5b1c6bb"
+        }
+      ]
+    },
+    {
+      "state": "defeat",
+      "alias": null,
+      "loop": false,
+      "durationMs": 840,
+      "canvasPx": {
+        "width": 256,
+        "height": 256
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 244
+      },
+      "frames": [
+        {
+          "id": "defeat-south-west-0",
+          "sourceIndex": 12,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/12.png",
+          "sourceSha256": "1aa96f99f33723c689bb113490f087d4233bd0a236487d102c83413729d147b9",
+          "sourceBounds": [
+            87,
+            1252,
+            280,
+            1484
+          ],
+          "sourceGroundRootPx": [
+            174,
+            1484
+          ],
+          "offsetPx": [
+            50,
+            35
+          ],
+          "alphaBoundsPx": {
+            "x": 50,
+            "y": 35,
+            "width": 174,
+            "height": 209
+          },
+          "rgbaSha256": "aa4d82cd90f296c1306878ca2234e061747f2496e53d1b6d03e1d4f106d897b3"
+        },
+        {
+          "id": "defeat-south-west-1",
+          "sourceIndex": 13,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/13.png",
+          "sourceSha256": "7384f6c6ede54efea77221b89901a7296248f997dac5ae2f608060cfdded35c3",
+          "sourceBounds": [
+            408,
+            1279,
+            589,
+            1473
+          ],
+          "sourceGroundRootPx": [
+            518,
+            1473
+          ],
+          "offsetPx": [
+            29,
+            69
+          ],
+          "alphaBoundsPx": {
+            "x": 29,
+            "y": 69,
+            "width": 163,
+            "height": 175
+          },
+          "rgbaSha256": "4b1d2c1e659bbb7818bb5c81408ad8ba798e5f3dddcc6bcb56a4f32c5b31b24e"
+        },
+        {
+          "id": "defeat-south-west-2",
+          "sourceIndex": 14,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/extracted/14.png",
+          "sourceSha256": "43be1c5dcfda7147d27d541685f2a39d44c3d7aef113eef14efd596d6ac62d56",
+          "sourceBounds": [
+            739,
+            1266,
+            931,
+            1484
+          ],
+          "sourceGroundRootPx": [
+            846,
+            1484
+          ],
+          "offsetPx": [
+            32,
+            48
+          ],
+          "alphaBoundsPx": {
+            "x": 32,
+            "y": 48,
+            "width": 173,
+            "height": 196
+          },
+          "rgbaSha256": "f54f64091c43dbea2c962b8694d273704ec173578b4e7f616b0524af8877f25f"
+        }
+      ]
+    }
+  ]
+}

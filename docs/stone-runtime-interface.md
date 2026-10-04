@@ -9,10 +9,13 @@ Watchtower payment/refunds and checkpoint recovery. The client supports profile 
 typed banks/cargo, drop-off labels and the paid Watchtower price. Profile-specific
 node admission and the existing patch brush now support Stone, with a
 [natural two-seat conservation proof](stone-authoring-preflight.md#profile-aware-schema-and-placement-interface).
-Ordinary play now exposes the profile through **Create Room → Map →
-Lab · STONE DEFENSE FIELD**; its [shipped map](../maps/stone-defense-field.json)
-uses the agreed 200 Stone per seat and zero starting Stone. The same native proof
-selects that catalog entry with the real lobby controls before harvesting/spending.
+The 160-minimum ordinary catalog excludes the compact Stone laboratory. Its
+[shipped map](../maps/stone-defense-field.json) remains accessible through
+**Practice → Battlefield → Internal fixture · Lab · STONE DEFENSE FIELD**,
+using the agreed 200 Stone per seat and zero starting Stone. A second player can
+join that Practice room. The natural two-seat proof uses this internal route;
+a separate real Tiny lobby check retains the ordinary floor, rejection,
+readiness, launch and reset assertions. No debug flag or map publication is needed.
 
 `src/economy-profile.mjs` owns the single additional price: new Watchtower
 construction costs its existing food/wood amounts plus 50 Stone only in the

@@ -1,14 +1,34 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
-import { createMatchModeControls, matchModePresentation } from '../src/match-mode-controls.mjs';
+import { createMatchModeControls, matchModePresentation, fixedMatchArmySize } from '../src/match-mode-controls.mjs';
 import { matchModeCatalog } from '../src/match-modes.mjs';
 
 const millrace = JSON.parse(readFileSync(new URL('../maps/bellweather-millrace.json', import.meta.url)));
 const lab = JSON.parse(readFileSync(new URL('../maps/stone-defense-field.json', import.meta.url)));
 const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
 const objective = { matchModeId: 'objective-control', matchModeVersion: 1 };
+
+test('actual running host controls retain fixed Bannerfall size after identity and player updates, and ordinary host authority returns', () => {
+  const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
+  const hook = source.match(/function updateMatchArmySizeControls\(\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(hook);
+  const dom = new JSDOM('<div class="size-options"><button data-count="250"></button><button data-count="1000"></button></div>');
+  const buttons = [...dom.window.document.querySelectorAll('button')];
+  const context = vm.createContext({ document: dom.window.document, fixedMatchArmySize,
+    activeMatchMode: { matchModeId: 'bannerfall', matchModeVersion: 1 }, isHost: true, lobbyPhase: null,
+    updateLobbyHostControls() { if (context.lobbyPhase === 'lobby') buttons.forEach(button => { button.disabled = true; }); } });
+  vm.runInContext(hook, context); context.updateMatchArmySizeControls();
+  assert.ok(buttons.every(button => button.disabled && /16 total units/.test(button.title)));
+  context.activeMatchMode = { matchModeId: 'authored', matchModeVersion: 1 }; context.updateMatchArmySizeControls();
+  assert.ok(buttons.every(button => !button.disabled));
+  context.isHost = false; context.updateMatchArmySizeControls(); assert.ok(buttons.every(button => button.disabled));
+  context.isHost = true; context.lobbyPhase = 'lobby'; context.updateMatchArmySizeControls();
+  assert.ok(buttons.every(button => button.disabled), 'pregame army controls remain in the authoritative lobby');
+  dom.window.close();
+});
 function disabledControlBlur(doc) {
   // JSDOM keeps disabled controls focused; model the native browser's BODY focus.
   doc.body.tabIndex = -1;
@@ -95,15 +115,27 @@ test('disconnect and lost host authority cancel pending intent without retrying'
   }
 });
 
-test('AI never offers Skirmish even if an inconsistent catalog includes it', () => {
-  const f = fixture({ opponentMode: 'pve' });
-  assert.deepEqual([...f.select.options].map(option => option.value), ['authored@1', 'objective-control@1']);
-  f.select.value = 'skirmish@1'; f.select.dispatchEvent(new f.dom.window.Event('change'));
-  assert.deepEqual(f.sent, []);
-  f.controls.update({ ...f.state, identity: skirmish });
-  assert.equal(f.select.disabled, true); assert.match(f.status.textContent, /unavailable for Play vs AI/);
-  assert.deepEqual(f.sent, []);
-  f.dom.window.close();
+test('AI accepts only the verified Tiny Skirmish map even with an inconsistent supplied catalog', () => {
+  const tiny = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  const supported = fixture({ opponentMode: 'pve', map: tiny, identity: skirmish,
+    catalog: matchModeCatalog(tiny, { mode: 'pve' }) });
+  assert.equal(supported.controls.supported, true);
+  assert.equal(supported.status.textContent, '');
+  assert.deepEqual([...supported.select.options].map(option => option.value), ['skirmish@1']);
+  supported.dom.window.close();
+  for (const map of [millrace,
+    JSON.parse(readFileSync(new URL('../maps/veyrholds-threefold-basin.json', import.meta.url)))]) {
+    const f = fixture({ opponentMode: 'pve', map,
+      catalog: matchModeCatalog(map).map(value => ({ ...value, pveSupported: true })) });
+    assert.ok(![...f.select.options].some(option => option.value === 'skirmish@1'));
+    f.select.value = 'skirmish@1'; f.select.dispatchEvent(new f.dom.window.Event('change'));
+    assert.deepEqual(f.sent, []);
+    f.controls.update({ ...f.state, identity: skirmish });
+    assert.equal(f.select.disabled, true); assert.equal(f.controls.supported, false);
+    assert.match(f.status.textContent, /unavailable for these settings/);
+    assert.deepEqual(f.sent, []);
+    f.dom.window.close();
+  }
 });
 
 test('runtime-withheld choices cannot be advertised from the local registry alone', () => {

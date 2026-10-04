@@ -1,0 +1,20 @@
+{
+  "id": "bannerfall-arena",
+  "name": "BANNERFALL ARENA",
+  "summary": "160 × 160 · BANNERFALL: FREE WAVES, RIDER EVOLUTION, ORIGINAL TOWN CENTER DESTRUCTION",
+  "width": 160,
+  "height": 160,
+  "terrainSeed": 431,
+  "terrainBase": "short-grass",
+  "fogOfWar": false,
+  "spawnPoints": [
+    { "team": 0, "x": -13, "z": 0 },
+    { "team": 1, "x": 13, "z": 0 }
+  ],
+  "startingArmySize": 16,
+  "startingResources": { "food": 0, "wood": 0 },
+  "resourceNodes": [],
+  "obstacles": [],
+  "triggers": [],
+  "scenarioEvents": []
+}

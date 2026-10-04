@@ -33,6 +33,20 @@ export function createWaterUnitRuntime(definition) {
     const current = createWaterRouteGraph(geometry, { reservedCells });
     return findWaterCellRoute(current, start, goal, { maxExpandedCells });
   }
+  function planReserved(unit, x, z, units, { reservedGoalCells = [], reservedTransitCells = [], forbiddenGoalCells = new Set(), ignoredGoalIds = new Set(), ignoredQueuedGoalIds = ignoredGoalIds, maxExpandedCells = Math.min(4096, graph.cellCount) } = {}) {
+    const goal = graph.cellAt(x, z), start = graph.cellAt(unit.x, unit.z);
+    const others = waterActors(units).filter(actor => actor !== unit && !ignoredGoalIds.has(actor.id)
+      && actor.pathIndex < actor.path.length);
+    // Never park on another active route. Shared transit cells remain usable;
+    // their final destinations remain reserved through saved routes/goals.
+    if (forbiddenGoalCells.has(goal) || others.some(actor => actor.path.slice(actor.pathIndex).includes(goal))) {
+      return { status: 'invalid-endpoints', expandedCells: 0, cells: [] };
+    }
+    const queued = waterActors(units).filter(actor => actor !== unit && !ignoredQueuedGoalIds.has(actor.id))
+      .flatMap(actor => (actor.queuedWaypoints ?? []).map(waypoint => waypoint.destination));
+    const destinations = [...others.map(actor => actor.moveGoalCell), ...queued, ...reservedGoalCells, ...reservedTransitCells].filter(cell => cell !== start);
+    return plan(unit, x, z, units, maxExpandedCells, destinations);
+  }
   return Object.freeze({
     graph,
     reservations: occupiedCells,
@@ -41,20 +55,7 @@ export function createWaterUnitRuntime(definition) {
       // again would strand two independently routed boats that finish adjacent.
       return plan(unit, x, z, units, maxExpandedCells);
     },
-    planReserved(unit, x, z, units, { reservedGoalCells = [], reservedTransitCells = [], forbiddenGoalCells = new Set(), ignoredGoalIds = new Set(), ignoredQueuedGoalIds = ignoredGoalIds, maxExpandedCells = Math.min(4096, graph.cellCount) } = {}) {
-      const goal = graph.cellAt(x, z), start = graph.cellAt(unit.x, unit.z);
-      const others = waterActors(units).filter(actor => actor !== unit && !ignoredGoalIds.has(actor.id)
-        && actor.pathIndex < actor.path.length);
-      // Never park on another active route. Shared transit cells remain usable;
-      // their final destinations remain reserved through saved routes/goals.
-      if (forbiddenGoalCells.has(goal) || others.some(actor => actor.path.slice(actor.pathIndex).includes(goal))) {
-        return { status: 'invalid-endpoints', expandedCells: 0, cells: [] };
-      }
-      const queued = waterActors(units).filter(actor => actor !== unit && !ignoredQueuedGoalIds.has(actor.id))
-        .flatMap(actor => (actor.queuedWaypoints ?? []).map(waypoint => waypoint.destination));
-      const destinations = [...others.map(actor => actor.moveGoalCell), ...queued, ...reservedGoalCells, ...reservedTransitCells].filter(cell => cell !== start);
-      return plan(unit, x, z, units, maxExpandedCells, destinations);
-    },
+    planReserved,
     validRoute(unit) {
       const cell = graph.cellAt(unit.x, unit.z);
       if (!Array.isArray(unit.path) || !graph.isNavigable(cell) || !Number.isInteger(unit.pathIndex)
@@ -75,8 +76,12 @@ export function createWaterUnitRuntime(definition) {
       counts.fill(0);
       for (const unit of actors) for (const cell of waterUnitOccupiedCells(graph, unit)) counts[cell]++;
       let changed = false;
+      const collisionBlocked = [];
       for (const unit of actors) {
         if (unit.holdingPosition || unit.pathIndex >= unit.path.length) continue;
+        if (!unit.gatherPhase && unit.repathTimer > 0) {
+          unit.repathTimer = Math.max(0, unit.repathTimer - seconds); changed = true;
+        }
         let remaining = speedForUnit(unit) * seconds;
         let blocked = false;
         while (remaining > 0 && unit.pathIndex < unit.path.length) {
@@ -95,7 +100,14 @@ export function createWaterUnitRuntime(definition) {
           const newCells = waterUnitOccupiedCells(graph, position);
           // Motion is axis-aligned and shorter than one cell; the union covers
           // its swept hull. Other water actors include both seats.
-          if (newCells.some(occupied => counts[occupied] - (oldCells.has(occupied) ? 1 : 0) > 0)) { blocked = true; break; }
+          if (newCells.some(occupied => counts[occupied] - (oldCells.has(occupied) ? 1 : 0) > 0)) {
+            blocked = true;
+            if (!unit.gatherPhase) {
+              if (!unit.waterMoveBlocked) unit.repathTimer = Math.max(unit.repathTimer ?? 0, 1);
+              collisionBlocked.push(unit);
+            }
+            break;
+          }
           for (const occupied of oldCells) counts[occupied]--;
           for (const occupied of newCells) counts[occupied]++;
           unit.x = position.x; unit.z = position.z;
@@ -106,6 +118,26 @@ export function createWaterUnitRuntime(definition) {
         if (unit.pathIndex >= unit.path.length && unit.gatherPhase !== 'to-base') {
           unit.path = []; unit.pathIndex = 0; unit.moveGoalCell = -1; changed = true;
         }
+      }
+      // A persistent collision retries the same ordinary Move after one second.
+      // Reserve other remaining transit as well as hulls/goals: symmetric hull-
+      // only replans would send both opponents into the same bypass again.
+      // Economy jobs keep their own source/owned-berth retry rules.
+      let remainingBudget = 16384, attempts = 0;
+      for (const unit of collisionBlocked) {
+        if (unit.repathTimer > 0 || remainingBudget <= 0 || attempts >= 16) continue;
+        attempts++; unit.repathTimer = 1; changed = true;
+        const point = graph.pointAt(unit.moveGoalCell);
+        if (!point) continue;
+        const route = planReserved(unit, point.x, point.z, actors, {
+          reservedTransitCells: actors.filter(other => other !== unit && other.pathIndex < other.path.length)
+            .flatMap(other => other.path.slice(other.pathIndex)),
+          maxExpandedCells: Math.min(4096, graph.cellCount, remainingBudget),
+        });
+        remainingBudget -= route.expandedCells;
+        if (route.status !== 'found') continue;
+        unit.path = route.cells; unit.pathIndex = 0; unit.waterMoveBlocked = false;
+        unit.orderRevision = (unit.orderRevision ?? 0) + 1;
       }
       return changed;
     },

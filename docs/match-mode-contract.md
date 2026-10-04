@@ -15,12 +15,16 @@ and integer version. Missing both means `authored@1`; a partial pair, unknown ID
 or unsupported version is an error. Never reinterpret missing legacy fields as
 the newest default. Registry descriptors expose `id`, `version`, `label`,
 `victoryPolicy`, `aiStrategyId`, `pveSupported`, `selectable` and `defaultMapId`.
+Registry `pveSupported:true` means at least one map is supported; optional frozen
+`pveMapIds` restricts it. Compatibility and catalog descriptors evaluate the actual
+map, so another human-compatible map cannot inherit its preset's AI capability.
 
 | Identity | Map compatibility | Victory / AI contract |
 | --- | --- | --- |
 | `authored@1` | Any validated authored map; hidden legacy identity | Exact authored capture, hold, deadline or elimination combination. Existing capture-post AI remains the current behavior. |
 | `objective-control@1` | Validated maps with at least one marked victory post | Exact authored rules and timers. `aiStrategyId: capture-posts`; existing curated PvE map restrictions still apply. |
-| `skirmish@1` | Tiny `veyrholds-terraced-vale` and reviewed Small `veyrholds-threefold-basin`; historical Millrace/Rootways remain compatible for recovery and explicit fixtures | `victoryPolicy: recovery-elimination`, `aiStrategyId: base-elimination`. Human PvP and explicit solo Practice supported. `pveSupported: false` until mode-specific AI acceptance. |
+| `skirmish@1` | Tiny `veyrholds-terraced-vale`, reviewed Small `veyrholds-threefold-basin`, Medium `veyrholds-riven-escarpment` and Large `veyrholds-crownroads`; historical Millrace/Rootways remain compatible for recovery and explicit fixtures | `victoryPolicy: recovery-elimination`, `aiStrategyId: base-elimination`. Human PvP/Practice supported. PvE accepted only on Terraced Vale: `pveSupported:true`, `pveMapIds:['veyrholds-terraced-vale']`; Small, Medium, Large and historical Skirmish maps remain unsupported for AI. |
+| `bannerfall@1` | Shipped `bannerfall-arena` | Original reinforcement prototype: `victoryPolicy: designated-stronghold`, `aiStrategyId: unsupported`, `pveSupported:false`. Human PvP/Practice only; `defaultMapId` chooses its arena and `fixedArmySize:16` keeps the eight-Infantry opening. [Exact rules](bannerfall-mode.md). |
 
 The hidden identity preserves elimination-only Lab maps and unusual legacy
 hybrids without calling them Objective Control. New selectors offer compatible
@@ -38,14 +42,31 @@ worker maps for fresh explicit human identities. An explicitly configured
 `RTS_MAP` root battlefield remains a historical/internal fixture path; fresh
 normal REST entry still uses the new preset.
 
+Choosing reviewed Small, Medium or Large in an ordinary Skirmish lobby preserves its
+active mode through the existing map-only configuration interface; no second
+Skirmish opt-in is required. Medium admission does not change its authored map,
+opening, economy, fog or defeat predicate. [Paid Medium entry and recovery](qa-medium-skirmish-admission-2026-10-04.md)
+are native source evidence; full battle pacing and served/browser acceptance
+remain open. AI owner `01a10297` retains any future Medium PvE qualification.
+The same boundary applies to [Large admission](qa-large-skirmish-admission-2026-10-04.md):
+paid human entry, recovery/rematch and explicit one-human Skirmish Practice pass;
+Large PvE remains unsupported and separately requires AI-owner qualification.
+
 The ordinary server catalog applies the [160-floor policy](map-size-tiers.md).
 Currently restored compact maps stay visible with `selectable:false` and
 `legacyCurrent:true`. Practice adds `internalFixture:true` for compact Labs and
 allows their explicit selection. Ordinary configure/select/publication rejects
 under-160 maps; canonical loading/checkpoint validation remains16–256. Status
 adds `ordinarySetup` with the default map/pair, floor, five tier descriptors and
-fresh AI availability. Fresh AI rooms are unavailable pending qualifying160-map
-acceptance; existing seeded AI rooms retain their map pool, identity and seeds.
+fresh AI availability. `ordinarySetup.pve` exposes `available:true`, the exact
+Terraced Vale `mapId`, `supportedMapIds:[Terraced Vale]` and `skirmish@1` pair.
+Fresh `{mode:'pve'}` defaults to this explicit pair; explicit Authored/Objective
+Control fresh AI requests reject before room allocation. Map seeds remain saved
+receipts for this one-map preset; policy seeds still select deterministic AI.
+Historical normalized/indexed/direct Authored or omitted identities retain their
+exact Millrace/Rootways seed pool. Checkpoint identity/map remain authoritative;
+no new default is applied during recovery. [Admission and paid protocol proof](qa-tiny-skirmish-pve-admission-2026-10-04.md)
+is separate from identified deployment and actual rendered acceptance.
 
 ## Canonical map and effective rules
 
@@ -122,10 +143,12 @@ Current exports in `src/match-modes.mjs`: `normalizeMatchMode(value)`,
 Compatibility returns an immutable descriptor or throws; projection returns an
 independent clone. Catalog includes hidden authored plus compatible/supported
 choices. `options` contains existing opponent `mode` and explicit `practice`.
+Mode-specific descriptors may expose `defaultMapId` and `fixedArmySize`; consumers
+must honor fixed openings rather than offering incompatible Lab army sizes.
 The registry, room launch, pregame model, effective simulation map and checkpoint
 recovery use this contract. The HTTP allowlist admits the browser-safe registry
 for the lobby consumer. The AI policy factory consumes the effective pair on
-activation/reset; its base-target implementation remains gated by PvE acceptance.
+activation/reset; its accepted Tiny base-target implementation is used by fresh PvE.
 Checkpoint migration, launch/metadata and native mode
 scenarios are registered in CI. Lobby rendering and mode-aware AI remain separate
-consumer work; fresh PvE is unavailable and saved authored AI rooms remain resumable.
+consumer work; fresh PvE supports only Tiny Skirmish and saved authored AI rooms remain resumable.

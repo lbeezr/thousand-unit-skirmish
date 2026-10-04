@@ -1,0 +1,29 @@
+{
+  "evidenceType": "extracted-authoritative-checkpoint-tool-observation",
+  "sourceRevision": "61ebee3145925c247658d265a4d9416b49b3dbdd",
+  "mapId": "siltmouths-confluence-grounds",
+  "tick": 14130,
+  "injectedState": false,
+  "boats": [
+    {
+      "id": 24,
+      "team": 0,
+      "x": -0.4200000000000114,
+      "z": 40.5,
+      "pathIndex": 63,
+      "pathLength": 114,
+      "moveGoalCell": 20602,
+      "waterMoveBlocked": true
+    },
+    {
+      "id": 25,
+      "team": 1,
+      "x": 0.4200000000000114,
+      "z": 40.5,
+      "pathIndex": 63,
+      "pathLength": 114,
+      "moveGoalCell": 20517,
+      "waterMoveBlocked": true
+    }
+  ]
+}

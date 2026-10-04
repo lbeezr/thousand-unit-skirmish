@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "sourceKeys": [
+    6,
+    7,
+    8
+  ],
+  "sourcePreservation": "same raw nine-key sheet/extractions; prior axe/food reviews retained",
+  "bearing": "actual down-right/front three-quarter in all keys",
+  "action": [
+    "compact square hammer windup",
+    "down-right strike",
+    "recovery"
+  ],
+  "registration": "same232/307, roots384/784/1184 baseline992, fixed128/244 pivot, no per-key scale/recenter",
+  "admittedNow": [
+    "build|east",
+    "repair|east faithful same-heading hammer alias"
+  ],
+  "remainingSourceCandidates": [],
+  "unfinished": [
+    "smoothness",
+    "native root/body/contact/target-bearing"
+  ],
+  "publication": "faithful retained public-seed source; no new generation/private pixels/paid job"
+}

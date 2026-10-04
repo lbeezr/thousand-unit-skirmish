@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 1,
+  "worldDirection": "north-west",
+  "screenDirection": "left",
+  "sharedScale": 0.8262195121951219,
+  "columnRootsX": [
+    280,
+    800,
+    1320
+  ],
+  "source": "docs/art-direction/human-roster-v1/generated/worker-north-west-actions-v1/raw.png",
+  "sourceSha256": "233e2042b4c94ec79d1762d1bf3274b6559afaa14f226a0a6d0b853b8960a7e1",
+  "contactNote": "Live work uses row ground baselines; fallen poses use reviewed source contact lines, not bounding-box recentering. Runtime pivots remain fixed per clip; native contact/relative body scale open.",
+  "groups": [
+    {
+      "state": "build",
+      "alias": "repair",
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 320
+      },
+      "groundPivotPx": {
+        "x": 160,
+        "y": 308
+      },
+      "frames": [
+        {
+          "id": "build-north-west-0",
+          "sourceIndex": 0,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-west-actions-v1/extracted/00.png",
+          "sourceSha256": "a104b622e105d08b0e3c24fe7cc9119344b0fb5ea307e313bdc5525d2ad7590d",
+          "sourceBounds": [
+            181,
+            37,
+            348,
+            341
+          ],
+          "sourceGroundRootPx": [
+            280,
+            341
+          ],
+          "offsetPx": [
+            78,
+            57
+          ],
+          "alphaBoundsPx": {
+            "x": 78,
+            "y": 57,
+            "width": 138,
+            "height": 251
+          },
+          "rgbaSha256": "7fdf2becf9fde4e253572d48ded054d8b4963404858dd1dc1b90c1e31cf92bfb"
+        },
+        {
+          "id": "build-north-west-1",
+          "sourceIndex": 1,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-west-actions-v1/extracted/01.png",
+          "sourceSha256": "8866d768f7aafa64897071b03f0fe9e0a9df959dffad70b07e9a8a9a189c9225",
+          "sourceBounds": [
+            612,
+            96,
+            867,
+            337
+          ],
+          "sourceGroundRootPx": [
+            800,
+            341
+          ],
+          "offsetPx": [
+            5,
+            106
+          ],
+          "alphaBoundsPx": {
+            "x": 5,
+            "y": 106,
+            "width": 211,
+            "height": 199
+          },
+          "rgbaSha256": "eab6e5e373da5dcd5779ad0f535882ee6feede87d5f72442870d199f7365b021"
+        },
+        {
+          "id": "build-north-west-2",
+          "sourceIndex": 2,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-west-actions-v1/extracted/02.png",
+          "sourceSha256": "9f4086f20ce2bdceecf8c8b57cfde76e1de1311d2551a20043457f1f33fb6039",
+          "sourceBounds": [
+            1177,
+            67,
+            1342,
+            340
+          ],
+          "sourceGroundRootPx": [
+            1320,
+            341
+          ],
+          "offsetPx": [
+            42,
+            82
+          ],
+          "alphaBoundsPx": {
+            "x": 42,
+            "y": 82,
+            "width": 136,
+            "height": 226
+          },
+          "rgbaSha256": "5e92397952ec3ebcf6ba101436a1438f9e0f6564a8e086a7cbc14e5cd9f03d62"
+        }
+      ]
+    },
+    {
+      "state": "gather-stone",
+      "alias": null,
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 320
+      },
+      "groundPivotPx": {
+        "x": 160,
+        "y": 308
+      },
+      "frames": [
+        {
+          "id": "gather-stone-north-west-0",
+          "sourceIndex": 3,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-west-actions-v1/extracted/03.png",
+          "sourceSha256": "217edfafdea785fa134ff39bef1e1303a9dac9dc7a455932944907c9e37c884f",
+          "sourceBounds": [
+            202,
+            354,
+            353,
+            682
+          ],
+          "sourceGroundRootPx": [
+            280,
+            684
+          ],
+          "offsetPx": [
+            96,
+            35
+          ],
+          "alphaBoundsPx": {
+            "x": 96,
+            "y": 35,
+            "width": 125,
+            "height": 271
+          },
+          "rgbaSha256": "e87646583bca7491ee7fec15fdbfad9e609fcc12d15f4dd93943b4c35c70ca36"
+        },
+        {
+          "id": "gather-stone-north-west-1",
+          "sourceIndex": 4,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-west-actions-v1/extracted/04.png",
+          "sourceSha256": "931c2b70b0121f2a60333a80491ffb1a58a3d9dcbd6c81e48e73039a0745c2be",
+          "sourceBounds": [
+            615,
+            454,
+            889,
+            683
+          ],
+          "sourceGroundRootPx": [
+            800,
+            684
+          ],
+          "offsetPx": [
+            7,
+            118
+          ],
+          "alphaBoundsPx": {
+            "x": 7,
+            "y": 118,
+            "width": 226,
+            "height": 189
+          },
+          "rgbaSha256": "76f3ab15c10ef588140c971171b6bba9b8ae85a2ec3755ad104f983fcbf51d93"
+        },
+        {
+          "id": "gather-stone-north-west-2",
+          "sourceIndex": 5,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-west-actions-v1/extracted/05.png",
+          "sourceSha256": "69843fc6558d0bc579b50bdce30a9bb6734381192bf4b6be69e7ef01bad857c0",
+          "sourceBounds": [
+            1129,
+            422,
+            1378,
+            684
+          ],
+          "sourceGroundRootPx": [
+            1320,
+            684
+          ],
+          "offsetPx": [
+            2,
+            92
+          ],
+          "alphaBoundsPx": {
+            "x": 2,
+            "y": 92,
+            "width": 206,
+            "height": 216
+          },
+          "rgbaSha256": "1bdc0e34923a0c0bd5f2a29b23aa4fbfe905413f43f1355d5e1173cdb5fcda49"
+        }
+      ]
+    },
+    {
+      "state": "defeat",
+      "alias": null,
+      "loop": false,
+      "durationMs": 840,
+      "canvasPx": {
+        "width": 512,
+        "height": 256
+      },
+      "groundPivotPx": {
+        "x": 256,
+        "y": 244
+      },
+      "frames": [
+        {
+          "id": "defeat-north-west-0",
+          "sourceIndex": 6,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-west-actions-v1/extracted/06.png",
+          "sourceSha256": "d8e4fe3eb20e97dd91b4c99e2db60b4c45db5c3fedbc93846e8ee49764f08390",
+          "sourceBounds": [
+            192,
+            745,
+            367,
+            993
+          ],
+          "sourceGroundRootPx": [
+            280,
+            993
+          ],
+          "offsetPx": [
+            183,
+            39
+          ],
+          "alphaBoundsPx": {
+            "x": 183,
+            "y": 39,
+            "width": 145,
+            "height": 205
+          },
+          "rgbaSha256": "191fe2c2a738c49e228bd57745be126886cb56b7d50de2bb0aeed9f9cd4273ae"
+        },
+        {
+          "id": "defeat-north-west-1",
+          "sourceIndex": 7,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-west-actions-v1/extracted/07.png",
+          "sourceSha256": "5f0966a7890a1b423dca1daeff157d84f927da356027cdf45b7021d636b0bc9d",
+          "sourceBounds": [
+            625,
+            831,
+            921,
+            974
+          ],
+          "sourceGroundRootPx": [
+            800,
+            974
+          ],
+          "offsetPx": [
+            111,
+            126
+          ],
+          "alphaBoundsPx": {
+            "x": 111,
+            "y": 126,
+            "width": 245,
+            "height": 118
+          },
+          "rgbaSha256": "5b152daf0a9f3d0438bb2be406337dfc74dac9a5590e3c075c423e6f3a6501fe"
+        },
+        {
+          "id": "defeat-north-west-2",
+          "sourceIndex": 8,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-west-actions-v1/extracted/08.png",
+          "sourceSha256": "df1d6a0baff9eed5eae32ca7ee7b11ab67373c29642c68bec896ed958fddcfa8",
+          "sourceBounds": [
+            1109,
+            862,
+            1454,
+            973
+          ],
+          "sourceGroundRootPx": [
+            1320,
+            973
+          ],
+          "offsetPx": [
+            82,
+            152
+          ],
+          "alphaBoundsPx": {
+            "x": 83,
+            "y": 152,
+            "width": 284,
+            "height": 92
+          },
+          "rgbaSha256": "1bf49d8a222d74efc5f1129da432aa2bf19d8462722340f9caf4185f0a32cd8a"
+        }
+      ]
+    }
+  ]
+}

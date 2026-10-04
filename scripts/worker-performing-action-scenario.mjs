@@ -59,6 +59,21 @@ try {
     await command(team, { type: 'gather', ids: [workers[team][0]], nodeId: node.id }, /GATHER ORDER/);
     await clients[team].state(state => productive(state, [workers[team][0]], 'gather-food'), 'resumed grant');
     await stop(team, [workers[team][0]]);
+    const stoneNode = clients[team].welcome.map.resourceNodes.find(node => node.type === 'stone'
+      && (team ? node.x > 0 : node.x < 0));
+    await command(team, { type: 'gather', ids: [workers[team][0]], nodeId: stoneNode.id }, /GATHER ORDER/);
+    const stoneApproach = await clients[team].state(state => row(state, workers[team][0])[9] === 'gathering'
+      && row(state, workers[team][0])[17] === null, 'assigned Stone approach');
+    record('Stone approach waits', team, stoneApproach, [workers[team][0]]);
+    const stone = await clients[team].state(state => productive(state, [workers[team][0]], 'gather-stone'), 'actual Stone grant');
+    assert.equal(row(stone, workers[team][0])[7], 'stone');
+    assert.ok(row(stone, workers[team][0])[6] > 0); record('Stone harvest', team, stone, [workers[team][0]]);
+    await stop(team, [workers[team][0]]);
+    record('Stone Stop clears', team, clients[team].latest, [workers[team][0]]);
+    await command(team, { type: 'gather', ids: [workers[team][0]], nodeId: stoneNode.id }, /GATHER ORDER/);
+    const stoneResumed = await clients[team].state(state => productive(state, [workers[team][0]], 'gather-stone'), 'resumed Stone grant');
+    record('Stone resumed grant', team, stoneResumed, [workers[team][0]]);
+    await stop(team, [workers[team][0]]);
     const builderIds = workers[team].slice(1);
     const wood = clients[team].latest.wood[team];
     await command(team, { type: 'build', buildingType: 'farm', ids: builderIds,

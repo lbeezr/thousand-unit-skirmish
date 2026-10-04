@@ -2,6 +2,10 @@
 
 [Documentation index](README.md) · [Map authoring](map-authoring.md)
 
+The [source-bound four-tier inventory](map-tier-inventory-2026-10-04.md) lists
+all eight ordinary-size choices, exact IDs, admitted modes, route times and
+remaining acceptance. Compact canonical files retain internal/legacy identity.
+
 ## Terraced Vale Tiny baseline
 
 **Veyrholds · Terraced Vale** adds a 160 × 160 ordinary regional choice and
@@ -9,13 +13,19 @@ one-human Practice scenario. It has broad valley passes, high flank routes,
 flat city campuses and two expansion pockets per seat. Its 133-unit base route
 takes about 51 game-seconds for a Worker; opening units/banks stay ordinary.
 Elimination applies, with two bonus-only posts and no deadline.
+Four neutral Sheep use the existing mirrored home/terrace food nodes: two per
+seat, with the home Sheep visible at opening. Their stocks stay 650/1,000,
+all IDs/coordinates stay fixed and total map food stays 6,100. Valley food
+remains ordinary. [Tiny Sheep adoption](qa-terraced-vale-sheep-2026-10-04.md)
+records normal claim/Gather and exact pre-adoption checkpoint recovery.
 [Map and native evidence](qa-terraced-vale-2026-10-03.md) records the paid economy,
 routes, recovery, diagnostic and remaining deployed/browser acceptance.
 
 The user now requires 160 on both axes as the ordinary minimum: **Tiny**, then
 Small/Medium/Large/XL. The [tier policy](map-size-tiers.md) supplies the shared
 catalog contract. Fresh normal two-seat entry now uses Terraced Vale/Skirmish;
-one-human Authored Practice starts on Tiny and retains explicit internal Labs.
+one-human Authored Practice starts on Tiny. The ordinary Practice catalog must
+also meet the floor; compact Labs remain internal fixtures and legacy identities.
 Normal choices require both axes at least160; a current compact restored map
 remains displayed disabled. Existing160 Labs retain their authored rules and
 separate Objective Control compatibility. See [floor acceptance](qa-ordinary-map-floor-2026-10-04.md).
@@ -29,7 +39,56 @@ two valley passes, a raised southern causeway and a high northern flank.
 It adds three expansion pockets per seat and preserves short home access.
 The 157-unit base route targets 60.4 Worker seconds; opening units/banks remain
 ordinary. [Small evidence](qa-threefold-basin-2026-10-04.md) separates static,
-paid/native and capacity receipts from pending Skirmish/deployed/browser adoption.
+paid/native and capacity receipts from deployed/browser acceptance. Small's
+Skirmish registry admission merged in [PR242](https://github.com/lbeezr/thousand-unit-skirmish/pull/242).
+
+## Riven Escarpment Medium candidate
+
+**Veyrholds · Riven Escarpment** is a 224×224 Medium source candidate. Twin
+escarpments surround a low rift, with two broad low passes and two raised routes;
+reachable ridge ramps, flat home campuses and three expansion pockets per seat
+use existing elevation. Its 207-unit route takes 79.6 nominal Worker seconds.
+[Medium measurements and acceptance](qa-riven-escarpment-2026-10-04.md) separate
+geometry, bounded native diagnostics and rendered testing. Its ordinary human
+Skirmish admission merged in [PR266](https://github.com/lbeezr/thousand-unit-skirmish/pull/266);
+[admission evidence](qa-medium-skirmish-admission-2026-10-04.md) records paid
+entry/recovery. PvE admission remains separate. The
+[elevation assessment](map-elevation-capabilities.md) describes current height,
+pathing and geometry limits for dramatic maps.
+
+## Crownroads Large candidate
+
+**Veyrholds · Crownroads** is an authored 256² Large candidate, using two crown
+ridges, a low basin, two broad passes and two raised alternatives. Four distinct
+expansion pockets per seat and flat home campuses use existing elevation. Its
+251-unit static route takes 96.5 nominal Worker seconds. [Large measurements
+and acceptance](qa-crownroads-2026-10-04.md) separate authored geometry, paid
+native play and incomplete rendered/deployed/capacity acceptance. Ordinary
+human Skirmish admission merged in [PR271](https://github.com/lbeezr/thousand-unit-skirmish/pull/271);
+[paid admission evidence](qa-large-skirmish-admission-2026-10-04.md) retains
+its exact source. Fresh PvE remains Tiny-only.
+
+## Confluence Grounds admitted testing arena
+
+**Siltmouths · Confluence Grounds** is a new 160 × 160 multi-purpose Practice
+arena. Connected fishing bays and legal level-0 Dock banks exercise paid Skiffs
+and shore Workers; flat campuses exercise Farm, Mill, Stone and Watchtower;
+three neutral Sheep are authored near each start. Two broad fords and two rim
+routes connect the land halves. It uses 24 opening units, 150 food/250 wood per
+seat, zero starting Stone, finite resources and the existing `stone-defense-v1`
+prices. The 135-unit static base route takes 51.9 Worker seconds.
+See [the map and acceptance record](qa-confluence-grounds-2026-10-04.md).
+The [opening correction and save contract](qa-confluence-opening-2026-10-04.md)
+moves both home berries/timber within the unchanged nine-unit invariant. Fresh
+games and explicit host reset use corrected positions; recognized old saves
+retain their geometry and real resource state until reset.
+
+This arena replaces ordinary testing needs served by compact examples. It does
+not delete or rename those canonical files. The mode owner retains the separate
+catalog/selection/publication change that hides compact fixtures from ordinary
+Practice; authored save restoration remains supported. This map has Authored
+rules and elimination fallback; it has no Skirmish/PvE admission or unit-capacity
+claim.
 
 ## Vaelora default roster — 30 September 2026
 
@@ -90,8 +149,9 @@ These are layout schematics; the in-game renderer supplies the current regional 
 
 ## Stone defense lab
 
-Choose **Practice → Authored Rules → Map → Lab · STONE DEFENSE FIELD**.
-This compact internal Lab is separate from the ordinary160-minimum catalog. The shipped
+The dated compact regression uses **Lab · STONE DEFENSE FIELD** through an explicit
+internal fixture. Ordinary Practice uses an admitted arena such as Confluence Grounds.
+The shipped
 [Stone Defense Field](../maps/stone-defense-field.json) needs no Map Studio
 import, custom JSON or debug setting. It uses Open Field's ground and food/wood
 layout with 24 starting units, 300 food and 600 wood per seat, fog and zero

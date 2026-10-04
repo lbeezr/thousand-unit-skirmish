@@ -10,6 +10,11 @@ const SPRITE_ROOT = '/assets/units';
 const SPRITE_GROUND_LIFT = 0.018;
 
 export function spriteActionClip(clipByKey, state, direction, cargoType, role, approximateDirections = false) {
+  // Dedicated mining art must keep the actual world heading. Missing Stone
+  // views use that heading's idle, never generic wood or a nearby pick view.
+  if (state === 'gather-stone') {
+    return clipByKey.get(`gather-stone|${direction}`) || clipByKey.get(`idle|${direction}`);
+  }
   // Fishing is cosmetic work identity, never a new cargo or gather rule. Use
   // only an actually authored heading; missing art retains its exact-facing
   // food/gather/idle fallback, including in approximate legacy previews.
@@ -134,8 +139,7 @@ export function activeState(unit, now, attackDurationMs = 900) {
     if (work === 'gather-food') return unit.workResourceVariant === SHORE_FISH_VARIANT
       ? 'gather-fish' : 'gather';
     if (work === 'gather-wood') return 'gather';
-    // Neither default roster has Stone work pixels. Preserve its honest idle
-    // heading rather than reuse generic gather clips whose artwork is wood.
+    if (work === 'gather-stone') return 'gather-stone';
     return 'idle';
   }
   return unit.attackStartedAt > 0 && now - unit.attackStartedAt < attackDurationMs ? 'attack' : 'idle';

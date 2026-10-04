@@ -10,7 +10,8 @@ import { canTraverseElevation, elevationPathCost } from '../src/elevation.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { PVE_MAP_IDS } from '../src/pve-match.mjs';
-import { NORMAL_MATCH_MAP_ID } from '../src/match-modes.mjs';
+import { NORMAL_HUMAN_MATCH_MODE, NORMAL_MATCH_MAP_ID, matchModeDefinition, matchModeCatalog } from '../src/match-modes.mjs';
+import { mapSizeIdentity } from '../src/map-size-policy.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const round = n => Number(n.toFixed(3));
@@ -79,6 +80,9 @@ function route(tree, goal) {
 const publicRoute = value => value && ({ ...value, cells: undefined });
 
 export function auditMap(map, constants) {
+  const sizeIdentity = mapSizeIdentity(map);
+  const ordinaryPve = sizeIdentity.ordinarySelectable
+    && (matchModeDefinition(NORMAL_HUMAN_MATCH_MODE).pveMapIds?.includes(map.id) ?? false);
   const { width: w, height: h } = map, size = w * h;
   const cellOf = p => Math.floor(p.z + h / 2) * w + Math.floor(p.x + w / 2);
   const square = (cell, side) => {
@@ -205,8 +209,17 @@ export function auditMap(map, constants) {
   const reachableCells = trees.map(tree => count(tree.distance.map(d => Number.isFinite(d) ? 1 : 0)));
   return { id: map.id, name: map.name, pool: map.region || map.audio?.packId?.startsWith('vaelora-') ? 'regional' : 'lab',
     purpose: ['shore-fishing', 'meshy-resource-review'].includes(map.id) ? 'micro-fixture'
+      : map.id === 'siltmouths-confluence-grounds' ? 'admitted-test-arena'
+      : map.id === 'bannerfall-arena' ? 'quick-custom-mode'
       : map.region ? 'regional-skirmish' : 'lab',
     defaultPvp: map.id === constants.defaultMapId, seededPve: PVE_MAP_IDS.includes(map.id),
+    ordinaryPve,
+    admission: { ...sizeIdentity,
+      normalHumanModes: sizeIdentity.ordinarySelectable
+        ? matchModeCatalog(map, { mode: 'pvp' }).filter(mode => mode.selectable)
+          .map(mode => ({ id: mode.id, version: mode.version, victoryPolicy: mode.victoryPolicy })) : [],
+      authoredPractice: sizeIdentity.ordinarySelectable,
+      freshOrdinaryPveMode: ordinaryPve ? { ...NORMAL_HUMAN_MATCH_MODE } : null },
     geometry: { columns: w, rows: h, cellSideWorldUnits: 1, worldWidth: w, worldHeight: h, area: size,
       terrainWalkableCells: size - count(obstacles), initialWalkableCells: size - count(blocked),
       initialWalkableFraction: round((size - count(blocked)) / size), reachableCellsBySeat: reachableCells,
@@ -245,21 +258,22 @@ export async function runAudit() {
   if (!source.includes('Math.floor(x + MAP_HALF_X)') || !source.includes('matchElapsedSeconds += STEP_SECONDS')
     || !source.includes('STEP_SECONDS = 1 / TICK_RATE') || !source.includes('moveSpeed * STEP_SECONDS'))
     throw new Error('Recheck cell conversion or time/movement contract.');
-  const defaultMapId = source.match(/process\.env\.RTS_MAP \|\| 'maps\/([^']+)\.json'/)?.[1]
-    ?? (source.includes('`maps/${matchModeDefinition(configuredMatchMode).defaultMapId ?? NORMAL_MATCH_MAP_ID}.json`')
-      ? NORMAL_MATCH_MAP_ID : null);
-  if (!defaultMapId) throw new Error('Recheck default map contract.');
+  if (!source.includes('process.env.RTS_MATCH_MODE_VERSION === undefined ? NORMAL_HUMAN_MATCH_MODE : {}')
+    || !source.includes('matchModeDefinition(configuredMatchMode).defaultMapId ?? NORMAL_MATCH_MAP_ID'))
+    throw new Error('Recheck default map contract.');
+  const defaultMapId = matchModeDefinition(NORMAL_HUMAN_MATCH_MODE).defaultMapId ?? NORMAL_MATCH_MAP_ID;
   const constants = { defaultMapId, ticksPerSecond: integer('TICK_RATE'), maxBuildings: integer('MAX_BUILDINGS'),
     forestWoodPerCell: integer('FOREST_WOOD_PER_CELL'), defaultArmySize: integer('DEFAULT_STARTING_ARMY_SIZE') };
   const files = (await readdir(path.join(root, 'maps'))).filter(f => f.endsWith('.json')).sort();
-  const inputFiles = ['scripts/map-scale-audit.mjs', 'server.mjs', 'simulation-scheduler.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs',
-    'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/pve-match.mjs', 'src/match-modes.mjs', 'src/terrain-height.mjs', ...files.map(f => `maps/${f}`)];
+  const inputFiles = ['scripts/map-scale-audit.mjs', 'server.mjs', 'room-supervisor.mjs', 'simulation-scheduler.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs',
+    'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/pve-match.mjs', 'src/match-modes.mjs', 'src/map-size-policy.mjs', 'src/bannerfall-rules.mjs', 'src/terrain-height.mjs', ...files.map(f => `maps/${f}`)];
   const hashes = {};
   for (const file of inputFiles) hashes[file] = hash(await readFile(path.join(root, file)));
   const maps = [];
   for (const file of files) maps.push({ file: `maps/${file}`,
     ...auditMap(JSON.parse(await readFile(path.join(root, 'maps', file), 'utf8')), constants) });
   return { schemaVersion: 1, sourceCommit: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
+    sourceDirty: Boolean(execFileSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).trim()),
     sourceInputSha256: hashes, constants,
     buildingFootprintSideCells: Object.fromEntries(Object.entries(BUILDING_DEFINITIONS).map(([id, definition]) => [id, definition.footprint])),
     unitMoveSpeedWorldUnitsPerGameSecond: Object.fromEntries(['worker', 'infantry', 'scout'].map(kind => [kind, UNIT_DEFINITIONS[kind].combat.moveSpeed])),
@@ -270,6 +284,7 @@ export async function runAudit() {
       city: `Greedy geometry only; ${CITY.length}-building template, flat pads, 1-cell free circulation rings, within 20 cells of own spawn and nearer own seat. Fit is a constructive static example, not maximum capacity or paid runtime acceptance.`,
       routes: 'Midpoint 7x7 removal tests local detour resilience, not independent flank routes. Center-column runs measure open crossing widths, not global min-cut or guaranteed army throughput.',
       resources: `Ordinary finite stock separated from ${constants.forestWoodPerCell} wood per initial forest cell (potential after progressive cutting). Type-specific clusters use transitive Chebyshev distance <=4; route distance to markers ignores interaction radius.`,
+      admission: 'Source policy only: size eligibility plus selectable human registry modes; authoredPractice uses the hidden authored@1 descriptor. Fresh ordinary PvE is the normal Skirmish allowlist, not generic authored/objective pveSupported or the retained seeded legacy pool. No served, browser, balance or capacity claim.',
       comparison: 'Never equate grid counts between engines. Compare travel at declared clock rates, map dimensions divided by gameplay building sides, usable area per seat, expansion count/access and route breadth.' }, maps };
 }
 

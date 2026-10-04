@@ -1,0 +1,11 @@
+{
+  "sourceRevision": "5f8fd2c4761d55db174a50484e2408d6c720bc35",
+  "frameId": "walk-south-west-0",
+  "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+  "seedSha256": "4b7920354b5ac8ec68991406884cf9887f00e7b6a1138d40432957623730882c",
+  "referenceSha256": "e304dccaf4d92d5e1205d4962903cbea947c7fd4ad27065a0c0557966dfb0923",
+  "direction": "south-west",
+  "screenDirection": "straight-up direct-back",
+  "tool": "built-in ImageGen under standing bounded public-seed authorization",
+  "retainedSourceAssessment": "Actual legacy assets inspected first; existing public SW walk supplies exact directly-away bearing and current character. No other-facing relabel or private pixels."
+}

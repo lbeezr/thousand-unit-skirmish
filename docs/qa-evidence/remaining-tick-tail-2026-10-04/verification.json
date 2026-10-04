@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "sourceOnly": true,
+  "reviewHead": "199df5c120f73a59ed066a0d9cf37ccac4adcd5a",
+  "findings": 0,
+  "currentMain": "83f4eb1b1bbf4b7df1c6e1c5c72afd65314f8a8e",
+  "productionServerSha256": "269ba44cda8dc64434af811d06dbcd5ae81f9a1bb2bbf56ac8907c0687af409c",
+  "runtimeDiffEmpty": true,
+  "reproducedSummarySha256": "5fd9858d35323bfe30cce9fc93bdd6d23bf11dfa606cf5f3e09bc3824436d1fe",
+  "checks": {
+    "analyzerReproducesExactly": true,
+    "rawProfileProbeSourceAndLogHashes": true,
+    "probeProcessesPassed": 6,
+    "embeddedFixedVectorAndActorChecks": true,
+    "docs": {
+      "markdownFiles": 571,
+      "localLinks": 3933
+    },
+    "syntax": true,
+    "fullPrWhitespace": true
+  },
+  "decision": "No production optimization selected; retain inconsistent guard measurement and unchanged callback default.",
+  "delivery": {
+    "qaAndEvidence": true,
+    "runtimeReleaseDeployment": "Not applicable to this documentation/evidence-only change",
+    "normalMerge": "Exact merge/postmerge receipt will be recorded in PR #268"
+  },
+  "remaining": {
+    "actualDeployedRevision": "Unverified",
+    "renderedPaid2000ActorRecovery": "Open; movement-owned linked capture backlog",
+    "futureProposal": "Source-qualified child-cost timings and actual branch/call counts before another optimization"
+  }
+}

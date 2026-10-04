@@ -1,0 +1,47 @@
+function snapshotUnits(viewTeam = null) {
+  const rows = [];
+  const focusedByUnit = new Uint16Array(units.length);
+  for (const attacker of units) {
+    if (attacker.hp <= 0 || attacker.attackTargetId < 0
+      || (mapDefinition.fogOfWar && [0, 1].includes(viewTeam) && attacker.team !== viewTeam)) continue;
+    const target = units[attacker.attackTargetId];
+    if (target?.hp > 0) focusedByUnit[target.id]++;
+  }
+  for (const unit of units) {
+    if (mapDefinition.fogOfWar && [0, 1].includes(viewTeam) && unit.team !== viewTeam
+      && !cellVisibleToTeam(viewTeam, worldToCell(unit.x, unit.z))) continue;
+    const task = unit.kind === 'worker'
+      && (!mapDefinition.fogOfWar || viewTeam === null || viewTeam === unit.team)
+      ? workerTaskStatus(unit) : null;
+    const roundedCargo = Math.round(unit.cargo * 100) / 100;
+    // Carrying-state controls must retain even a sub-cent final resource load.
+    const cargo = unit.cargo > 0 && roundedCargo === 0 ? unit.cargo : roundedCargo;
+    const row = [
+      unit.id, unit.team, Math.round(unit.x * 100) / 100,
+      Math.round(unit.z * 100) / 100, unit.hp, unit.kind, cargo,
+      unit.cargoType, unit.generation,
+    ];
+    row.push(task, focusedByUnit[unit.id] || 0);
+    if (Number.isInteger(unit.lastAttackTick)
+      && unit.lastAttackTick >= 0 && tickNumber - unit.lastAttackTick <= STATE_EVERY_TICKS) {
+      const targetVisible = !mapDefinition.fogOfWar || viewTeam === null || unit.team === viewTeam;
+      row.push(unit.lastAttackTick,
+        targetVisible ? unit.lastAttackX : null,
+        targetVisible ? unit.lastAttackZ : null);
+    }
+    const audioExecution = !mapDefinition.fogOfWar || unit.team === viewTeam ? workerAudioExecution(unit) : null;
+    if (audioExecution) row[14] = audioExecution;
+    const workHeading = task === 'gathering' ? workerGatherHeading(unit) : null;
+    if (workHeading !== null) row[15] = workHeading;
+    const fishing = task === 'gathering' ? workerFishingPresentation(
+      unit, resourceNodeStates.get(unit.gatherNodeId), mapDefinition,
+    ) : null;
+    if (fishing) row[16] = fishing.resourceVariant;
+    if (unit.kind === 'worker' && (!mapDefinition.fogOfWar || viewTeam === null || viewTeam === unit.team)) {
+      row[17] = workerPerformingAction(unit);
+    }
+    rows.push(row);
+  }
+  return rows;
+}
+

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { RoomPregame, validatePregameCheckpoint } from '../src/room-pregame.mjs';
+import { readFileSync } from 'node:fs';
 
 const host = { id: 'player-1', team: 0 };
 const guest = { id: 'player-2', team: 1 };
@@ -16,11 +17,62 @@ function readyBoth(value) {
 
 const authored = { matchModeId: 'authored', matchModeVersion: 1 };
 const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
+const bannerfall = { matchModeId: 'bannerfall', matchModeVersion: 1 };
+const arena = JSON.parse(readFileSync(new URL('../maps/bannerfall-arena.json', import.meta.url)));
 const modeMaps = new Map([...maps, ['bellweather-millrace', {
   id: 'bellweather-millrace', startingArmySize: 24, triggers: [{ victory: true }],
 }], ['underbough-rootways', {
   id: 'underbough-rootways', startingArmySize: 24, triggers: [{ victory: true }],
-}]]);
+}], [arena.id, arena]]);
+
+test('paired Bannerfall preset changes map/mode/army together and requires fresh readiness', () => {
+  const value = lobby();
+  readyBoth(value);
+  const before = value.payload();
+  assert.throws(() => value.configure(host, { revision: value.revision, ...bannerfall }, modeMaps), /not compatible/);
+  assert.deepEqual(value.payload(), before, 'mode-only selection cannot silently replace the current map');
+  assert.equal(value.configure(host, { revision: value.revision, mapId: arena.id, ...bannerfall }, modeMaps), true);
+  assert.equal(value.mapId, 'bannerfall-arena');
+  assert.equal(value.matchModeId, 'bannerfall');
+  assert.equal(value.matchModeVersion, 1);
+  assert.equal(value.armySize, 16);
+  assert.equal(value.revision, before.revision + 1);
+  assert.equal(value.canLaunch(), false);
+  assert.ok(value.payload().seats.every(seat => !seat.ready));
+  assert.throws(() => value.setReady(host, { revision: before.revision, ready: true }), /Lobby changed/);
+  readyBoth(value);
+  const selected = value.payload();
+  assert.equal(value.configure(host, { revision: value.revision, mapId: arena.id, armySize: 16, ...bannerfall }, modeMaps), false);
+  assert.deepEqual(value.payload(), selected, 'explicit fixed opening is a no-op and retains readiness');
+  assert.equal(value.launch(host, value.revision), true);
+});
+
+test('Bannerfall rejects incompatible fixed-army tuples without changing revision or readiness', () => {
+  const ordinary = lobby();
+  readyBoth(ordinary);
+  const ordinaryBefore = ordinary.payload();
+  assert.throws(() => ordinary.configure(host, { revision: ordinary.revision, mapId: arena.id,
+    armySize: 250, ...bannerfall }, modeMaps), /opening army is fixed/);
+  assert.deepEqual(ordinary.payload(), ordinaryBefore, 'the map and mode do not change before army validation');
+  const value = new RoomPregame(arena.id, 500, undefined, bannerfall);
+  assert.equal(value.armySize, 16, 'a fresh Bannerfall lobby uses its fixed opening');
+  value.syncSeats([{ ...host, connected: true }, { ...guest, connected: true }]);
+  readyBoth(value);
+  const before = value.payload();
+  for (const armySize of [250, 500, 1000, 2000, 0, null, '16']) {
+    assert.throws(() => value.configure(host, { revision: value.revision, armySize }, modeMaps), /opening army is fixed/);
+    assert.deepEqual(value.payload(), before);
+  }
+  for (const [player, command] of [[guest, { mapId: arena.id }], [host, { mapId: 'bellweather-millrace' }],
+    [host, { revision: value.revision - 1, ...bannerfall }], [host, { matchModeId: 'bannerfall' }]]) {
+    assert.throws(() => value.configure(player, { revision: value.revision, ...command }, modeMaps));
+    assert.deepEqual(value.payload(), before);
+  }
+  assert.equal(value.configure(host, { revision: value.revision, mapId: 'bellweather-millrace', ...skirmish }, modeMaps), true);
+  assert.equal(value.armySize, 24, 'leaving Bannerfall restores the newly selected map opening');
+  assert.equal(value.matchModeId, 'skirmish');
+  assert.equal(value.canLaunch(), false);
+});
 
 test('mode changes validate the full tuple, invalidate ready and cannot occur during play', () => {
   const value = lobby();

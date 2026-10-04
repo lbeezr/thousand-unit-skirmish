@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "action": "gather-food",
+  "worldDirection": "north-west",
+  "screenDirection": "left",
+  "source": "docs/art-direction/human-roster-v1/generated/worker-food-north-west-v1/raw.png",
+  "sourceSha256": "d9e3a4eb95d5d931fff5fad40f8bcae102235291be3a093fee5c5a3bc4c9de75",
+  "extractionSha256": "b004d02a12b689375f45a89088a54533d2545d17c004e157693bbdeb76811ec8",
+  "sharedScale": 0.32222222222222224,
+  "columnRootsX": [
+    352,
+    864,
+    1344
+  ],
+  "rowBaselinesY": [
+    849
+  ],
+  "groundPivotPx": {
+    "x": 128,
+    "y": 244
+  },
+  "durationMs": 720,
+  "registrationStatus": "source-pixel reviewed; native ground/turn acceptance open",
+  "frames": [
+    {
+      "id": "gather-food-north-west-0",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-food-north-west-v1/extracted/00.png",
+      "sourceSha256": "f6f4012b9698aafc74b6b011f1d3d2bdfaec125c0092f72fe72f2fa1c1d193ee",
+      "sourceBounds": [
+        35,
+        240,
+        537,
+        849
+      ],
+      "offsetPx": [
+        26,
+        48
+      ],
+      "alphaBoundsPx": {
+        "x": 26,
+        "y": 48,
+        "width": 162,
+        "height": 196
+      },
+      "rgbaSha256": "3e51bb3e7d2deeb75d888f16ccafee8a0f7420cf17c44dd9b4cbf6e65b3b48a1"
+    },
+    {
+      "id": "gather-food-north-west-1",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-food-north-west-v1/extracted/01.png",
+      "sourceSha256": "8201cfbfe13e243b50b035a4b4c50513671d22e21e95a7b7d84609c131ecc9c5",
+      "sourceBounds": [
+        625,
+        211,
+        1027,
+        849
+      ],
+      "offsetPx": [
+        51,
+        38
+      ],
+      "alphaBoundsPx": {
+        "x": 51,
+        "y": 38,
+        "width": 130,
+        "height": 206
+      },
+      "rgbaSha256": "0be1fc539107a5db870098a93b77868ea933c064ca7a83977e407bd76b80cab3"
+    },
+    {
+      "id": "gather-food-north-west-2",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-food-north-west-v1/extracted/02.png",
+      "sourceSha256": "a89825ec3d229d1f5d25f480f8c6767c63634def5cab3283e954a9935bd9522d",
+      "sourceBounds": [
+        1163,
+        129,
+        1490,
+        849
+      ],
+      "offsetPx": [
+        70,
+        12
+      ],
+      "alphaBoundsPx": {
+        "x": 70,
+        "y": 12,
+        "width": 105,
+        "height": 232
+      },
+      "rgbaSha256": "c89a0e423e5d82a0ca593314032665220ba0b1c5712eaa4b9e8c3a75d7a34a3f"
+    }
+  ]
+}

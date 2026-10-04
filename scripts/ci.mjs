@@ -68,6 +68,7 @@ run(['scripts/region-event-scenario.mjs'], 'Region event recovery and rematch');
 run(['scripts/regional-ambience-scenario.mjs'], 'Regional ambience bus and lifecycle');
 run(['scripts/audio-shore-profile-scenario.mjs'], 'Ordinary Shore Fishing regional audio selection and lifecycle');
 run(['scripts/terrain-authoring-scenario.mjs'], 'Seeded terrain authoring and height surfaces');
+run(['--test', 'scripts/map-scale-audit.test.mjs', 'scripts/confluence-grounds.test.mjs', 'scripts/confluence-opening-compat.test.mjs', 'scripts/confluence-opening-checkpoint.test.mjs', 'scripts/riven-escarpment.test.mjs', 'scripts/crownroads.test.mjs'], 'Source-bound scale audit, Confluence arena and Medium/Large layouts');
 run(['scripts/landscape-authoring-scenario.mjs'], 'Organic regional landscape shapes');
 run(['scripts/forest-habitat-scenario.mjs'], 'Graduated woodland habitat margins');
 run(['scripts/forest-composition-scenario.mjs'], 'Regional dominant species groves');
@@ -95,6 +96,17 @@ run(['--test', 'scripts/registered-foot-sprites.test.mjs'], 'Registered public f
 run(['--test', 'scripts/unit-presentation-client.test.mjs'], 'Client snapshot and unit presentation buffers');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
 run(['--test', 'scripts/worker-land-art.test.mjs'], 'Retained Worker land-action artwork and playback');
+run(['--test', 'scripts/worker-nw-attack-art.test.mjs'], 'Public NW axe attack reuse and one-shot playback');
+run(['--test', 'scripts/worker-north-west-actions-art.test.mjs'], 'NW hammer/pick/defeat artwork and default playback');
+run(['--test', 'scripts/worker-east-axe-art.test.mjs'], 'East axe work/attack artwork and default playback');
+run(['--test', 'scripts/worker-east-food-art.test.mjs'], 'East food artwork and default productive playback');
+run(['--test', 'scripts/worker-east-hammer-art.test.mjs'], 'East hammer build/repair art and default productive playback');
+run(['--test', 'scripts/worker-east-stone-defeat-art.test.mjs'], 'East dedicated Stone and terminal defeat art/default playback');
+run(['--test', 'scripts/worker-north-actions-art.test.mjs'], 'North full land-action art/default playback');
+run(['--test', 'scripts/worker-north-east-actions-art.test.mjs'], 'NE full land-action art/default playback');
+run(['--test', 'scripts/worker-west-actions-art.test.mjs'], 'west full land-action art/default playback');
+run(['--test', 'scripts/worker-south-west-actions-art.test.mjs'], 'south-west full land-action art/default playback');
+run(['--test', 'scripts/worker-south-actions-art.test.mjs'], 'south full land-action art/default playback');
 run(['--test', 'scripts/worker-performing-action.test.mjs'], 'Authoritative Worker positive-progress receipts');
 run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 'Worker work receipt commands, client frames, exhausted repair delivery and recovery');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
@@ -104,6 +116,8 @@ run(['--test', 'scripts/crowd-forward-progress.test.mjs'], 'Parked crowd route p
 run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals and team reservation');
 run(['--test', 'scripts/move-planning-slices.test.mjs'], 'Clock-independent route planning, stale results and fair queue turns');
 run(['--test', 'scripts/move-planning-tick.test.mjs', 'scripts/move-planning-tick-error.test.mjs', 'scripts/pathing-arrival.test.mjs'], 'Opt-in planning tick budgets, order invalidation, topology and recovery');
+run(['--test', 'scripts/tick-samples.test.mjs'], 'Opt-in whole-tick diagnostic chronology and values');
+run(['--test', 'scripts/tick-attribution.test.mjs'], 'Disposable tick attribution preserves private wire bytes and vision bodies');
 run(['scripts/pathing-native-scenario.mjs', 'dynamic-goal'], 'Native paid obstruction and formation arrival');
 run(['--test', 'scripts/dynamic-wall-pathing.test.mjs'], 'Paid wall and closed gate queued formation destinations');
 run(['scripts/dynamic-wall-native-scenario.mjs'], 'Native both-seat queued paid wall arrival');
@@ -117,6 +131,8 @@ run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife 
 run(['--test', 'scripts/sheep-relocated-client.test.mjs'], 'Relocated Sheep actual-cell rendering, picking and minimap fog');
 run(['--test', 'scripts/wildlife-client-state.test.mjs', 'scripts/wildlife-client-controls.test.mjs', 'scripts/sheep-placement-client.test.mjs'], 'Owned Sheep selection, normal Herd/Stop input and actual food placement');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');
+run(['--test', 'scripts/terraced-vale.test.mjs', 'scripts/terraced-vale-sheep.test.mjs', 'scripts/terraced-vale-sheep-entry.test.mjs'], 'Tiny default Sheep balance, reachability, real entry and exact old-map recovery');
+run(['scripts/terraced-vale-sheep-scenario.mjs'], 'Tiny default both-seat Sheep claim, shared food and recovery');
 run(['--test', 'scripts/millrace-sheep.test.mjs'], 'Historical Millrace Sheep budget and exact legacy map compatibility');
 run(['scripts/millrace-sheep-scenario.mjs'], 'Historical Millrace Sheep visibility, harvest, art and recovery');
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
@@ -150,6 +166,7 @@ run(['--experimental-test-coverage', '--test-coverage-include=src/networking/web
 run(['--test', 'scripts/worker-shutdown.test.mjs'], 'Signal-aware room worker shutdown');
 run(['--test', 'scripts/check-client-imports.test.mjs'], 'Served client import graph');
 run(['--test', 'scripts/snapshot-private-production.test.mjs'], 'Seat-private production snapshots');
+run(['--test', 'scripts/snapshot-row-allocation.test.mjs'], 'Base-row allocation preserves exact snapshot fields and wire bytes');
 
 run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor states');
 run(['--test', 'scripts/hud-action-icons.test.mjs'], 'Default HUD action glyphs and semantics');
@@ -157,6 +174,7 @@ run(['scripts/hud-action-icons-serving-scenario.mjs'], 'Default HUD action glyph
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
 run(['--test', 'scripts/match-modes.test.mjs', 'scripts/match-mode-controls.test.mjs'], 'Versioned match modes and supported UI choices');
 run(['--test', 'scripts/game-entry.test.mjs', 'scripts/game-navigation.test.mjs', 'scripts/room-presence.test.mjs', 'scripts/practice-entry.test.mjs'], 'Explicit main menu, mode-aware Practice, session entry and room presence');
+run(['--test', 'scripts/bannerfall-rules.test.mjs'], 'Bounded Bannerfall waves, evolution and stronghold rules');
 run(['--test', 'scripts/match-mode-checkpoint.test.mjs'], 'Match mode checkpoint identity and legacy preservation');
 run(['scripts/game-menu-scenario.mjs'], 'Fresh menu matches and protected resume authority');
 run(['--test', 'scripts/room-pregame.test.mjs', 'scripts/room-lobby-ui.test.mjs'], 'Pregame authority and lobby controls');
@@ -215,6 +233,8 @@ run(['--test', 'scripts/water-route-graph.test.mjs'], 'Isolated water route topo
 run(['--test', 'scripts/dock-placement.test.mjs'], 'Dock shoreline and water berth placement');
 run(['scripts/dock-scenario.mjs'], 'Both-seat paid Dock construction and recovery');
 run(['--test', 'scripts/water-unit-runtime.test.mjs', 'scripts/skiff-contracts.test.mjs'], 'Skiff water movement, paid queue and placeholder controls');
+run(['--test', 'scripts/skiff-counterflow.test.mjs'], 'Reciprocal Skiff passing, interruption and recovery on Confluence');
+run(['scripts/skiff-counterflow-scenario.mjs'], 'Paid Practice Skiff counterflow, Stop/replacement, cold recovery and owned Dock deposits');
 run(['scripts/skiff-scenario.mjs'], 'Both-seat paid Skiff production, berth occupancy and recovery');
 run(['--test', 'scripts/skiff-fishing.test.mjs'], 'Finite Skiff food, owned Dock delivery and conservation');
 run(['scripts/skiff-fishing-scenario.mjs'], 'Both-seat Skiff/Worker shared fish stock and cargo recovery');
@@ -310,6 +330,8 @@ const scenarios = [
   ['scripts/elimination-scenario.mjs', 'Terminal elimination and reconnect'],
   ['scripts/victory-elimination-native-scenario.mjs', 'Existing elimination recovery and clock boundaries'],
   ['scripts/match-mode-native-scenario.mjs', 'Skirmish rewards, defeat and versioned recovery'],
+  ['scripts/bannerfall-native-scenario.mjs', 'Bannerfall human waves, evolution, strongholds and recovery'],
+  ['scripts/bannerfall-room-entry-scenario.mjs', 'Bannerfall real human/Practice room entry and fixed settings'],
   ['scripts/persistent-command-scenario.mjs', 'Patrol and Follow authority/recovery'],
   ['scripts/stationary-command-scenario.mjs', 'Stop and hold authority/recovery'],
   ['scripts/queued-waypoint-scenario.mjs', 'Queued waypoint checkpoint recovery'],
@@ -392,10 +414,14 @@ const scenarios = [
   ['scripts/room-pregame-scenario.mjs', 'Pregame two-seat launch and recovery'],
   ['scripts/ordinary-map-floor-scenario.mjs', 'Ordinary Tiny floor, fresh modes and historical/Practice access'],
   ['scripts/small-skirmish-entry-scenario.mjs', 'Reviewed Small normal human paid entry and recovery'],
+  ['scripts/medium-skirmish-entry-scenario.mjs', 'Reviewed Medium normal human paid entry, cold recovery and rematch'],
+  ['scripts/large-skirmish-entry-scenario.mjs', 'Reviewed Large normal human paid entry, cold recovery, rematch and Skirmish Practice'],
   ['scripts/checkpoint-storage-recovery-scenario.mjs', 'Checkpoint storage failure and recovery'],
   ['scripts/room-expiry-scenario.mjs', 'Invite expiry and pending reconnect protection'],
   ['scripts/impaired-connection-scenario.mjs', 'Delayed two-seat transport and interrupted-order recovery'],
   ['scripts/pve-room-launch-scenario.mjs', 'PvE room launch and rematch integration'],
+  ['scripts/tiny-skirmish-pve-entry-scenario.mjs', 'Fresh Tiny Skirmish AI admission, paid economy and cold resume'],
+  ['scripts/pve-tiny-process-recovery-scenario.mjs', 'Normal Tiny PvE paid process restart, reconnect and rematch'],
   ['scripts/railway-release-scenario.mjs', 'Railway release integration'],
 ];
 

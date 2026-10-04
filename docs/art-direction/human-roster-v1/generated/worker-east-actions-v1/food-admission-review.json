@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "sourceKeys": [
+    3,
+    4,
+    5
+  ],
+  "sourcePreservation": "same raw nine-key sheet and all extractions; prior axe review retained",
+  "bearing": "actual down-right/front three-quarter body/face in all3keys",
+  "action": [
+    "bare-hand reach",
+    "crouched collect",
+    "rise/stow"
+  ],
+  "registration": "one232/307, roots384/784/1184 baseline670, fixed128/244 pivot, no per-key scale/recenter",
+  "admittedNow": [
+    "gather-food|east"
+  ],
+  "remainingSourceCandidates": [
+    6,
+    7,
+    8
+  ],
+  "unfinished": [
+    "smoothness",
+    "native body/root/contact/produce readability"
+  ],
+  "publication": "faithful reuse of retained public-seed iteration; no new generation/private pixels/paid job"
+}

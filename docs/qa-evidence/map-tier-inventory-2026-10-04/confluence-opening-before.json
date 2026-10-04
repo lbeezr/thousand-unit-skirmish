@@ -1,0 +1,58 @@
+{
+  "sourceRevision": "1d380b0ae7acca140a6f4289837aa145fc50f34e",
+  "mapSHA256": "12a9b2a71763fde866a02211cc235b38a6574095fab0040ee8582f99bd20acdc",
+  "mapId": "siltmouths-confluence-grounds",
+  "matchMode": {
+    "mode": "pvp",
+    "practice": true,
+    "matchModeId": "authored",
+    "matchModeVersion": 1
+  },
+  "scope": "Native public Authored Practice opening before any movement/gather commands; no rendered claim",
+  "seats": [
+    {
+      "team": 0,
+      "tick": 1,
+      "fogBytes": 6400,
+      "visibleResourceIds": [
+        "s0-berries",
+        "s0-stone-2",
+        "s0-sheep-0"
+      ],
+      "foodVisible": true,
+      "woodVisible": false,
+      "proximity": [
+        {
+          "type": "food",
+          "nearestDistance": 9.486832980505138
+        },
+        {
+          "type": "wood",
+          "nearestDistance": 12.806248474865697
+        }
+      ]
+    },
+    {
+      "team": 1,
+      "tick": 1,
+      "fogBytes": 6400,
+      "visibleResourceIds": [
+        "s1-berries",
+        "s1-stone-2",
+        "s1-sheep-0"
+      ],
+      "foodVisible": true,
+      "woodVisible": false,
+      "proximity": [
+        {
+          "type": "food",
+          "nearestDistance": 9.486832980505138
+        },
+        {
+          "type": "wood",
+          "nearestDistance": 12.806248474865697
+        }
+      ]
+    }
+  ]
+}

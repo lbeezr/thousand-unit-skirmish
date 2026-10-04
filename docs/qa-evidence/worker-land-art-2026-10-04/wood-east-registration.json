@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "action": "gather-wood",
+  "worldDirection": "east",
+  "screenDirection": "down-right/front three-quarter",
+  "source": "docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/raw.png",
+  "sourceSha256": "2cdd49efa8b0ab96e8cdf153cb2b1239906f6412f3df7a791dca1415f1b60ed1",
+  "sharedScale": 0.755700325732899,
+  "columnRootsX": [
+    384,
+    784,
+    1184
+  ],
+  "rowBaselineY": 349,
+  "canvasPx": {
+    "width": 256,
+    "height": 320
+  },
+  "groundPivotPx": {
+    "x": 128,
+    "y": 308
+  },
+  "durationMs": 720,
+  "attackDurationMs": 840,
+  "registrationStatus": "source-pixel reviewed; native root/body/target acceptance open",
+  "retainedUnadmittedSourceKeys": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "frames": [
+    {
+      "id": "gather-wood-east-0",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/extracted/00.png",
+      "sourceSha256": "624686eb684f6402915f18f1ef69581eb26f526f176ea52561e25edfd0bbf89f",
+      "sourceBounds": [
+        272,
+        18,
+        480,
+        349
+      ],
+      "sourceGroundRootPx": [
+        384,
+        349
+      ],
+      "offsetPx": [
+        43,
+        58
+      ],
+      "alphaBoundsPx": {
+        "x": 43,
+        "y": 58,
+        "width": 157,
+        "height": 250
+      },
+      "rgbaSha256": "4145f69905b153e8c1200142e70d4ac5dcbb718ed2166421f9ee6d32e6c585a4"
+    },
+    {
+      "id": "gather-wood-east-1",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/extracted/01.png",
+      "sourceSha256": "f7ebb686cc8ae13ee501cc1e599f1b873faa7841255e04cfa77cda0ff70c39ae",
+      "sourceBounds": [
+        668,
+        41,
+        917,
+        340
+      ],
+      "sourceGroundRootPx": [
+        784,
+        349
+      ],
+      "offsetPx": [
+        40,
+        75
+      ],
+      "alphaBoundsPx": {
+        "x": 40,
+        "y": 75,
+        "width": 188,
+        "height": 226
+      },
+      "rgbaSha256": "01eecf71bfa6eb8281c71b5cf2596134a46f4ff47e4c3ac7298f4db33b059caf"
+    },
+    {
+      "id": "gather-wood-east-2",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-east-actions-v1/extracted/02.png",
+      "sourceSha256": "ba629453288e4c4121df2c0d3bdbafd68d2ca667ea4302fd4daeaca9fedb58f3",
+      "sourceBounds": [
+        1083,
+        42,
+        1289,
+        348
+      ],
+      "sourceGroundRootPx": [
+        1184,
+        349
+      ],
+      "offsetPx": [
+        52,
+        76
+      ],
+      "alphaBoundsPx": {
+        "x": 52,
+        "y": 76,
+        "width": 156,
+        "height": 231
+      },
+      "rgbaSha256": "54bcdb0fb6920c51c31850e9ec1c6c74c0c8b0bb199ee5782418ac5033de0d52"
+    }
+  ]
+}

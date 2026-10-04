@@ -103,21 +103,45 @@ test('reported city placements provide non-overlapping free circulation rings an
   }
 });
 
-test('roster report covers all shipped files, records source hashes and separates Lab from solo defaults', async () => {
+test('roster report covers shipped files, hashes the ordinary Tiny policy and preserves the legacy solo pool', async () => {
   const report = await runAudit();
-  assert.equal(report.maps.length, 28);
-  assert.equal(report.maps.filter(m => m.pool === 'regional').length, 15);
-  assert.equal(report.maps.filter(m => m.purpose === 'regional-skirmish').length, 14);
+  assert.equal(report.maps.length, 32);
+  assert.equal(report.maps.filter(m => m.pool === 'regional').length, 18);
+  assert.equal(report.maps.filter(m => m.purpose === 'regional-skirmish').length, 16);
   assert.equal(report.maps.find(m => m.id === 'shore-fishing').purpose, 'micro-fixture');
+  assert.equal(report.maps.find(m => m.id === 'siltmouths-confluence-grounds').purpose, 'admitted-test-arena');
+  assert.equal(report.maps.find(m => m.id === 'bannerfall-arena').purpose, 'quick-custom-mode');
+  assert.deepEqual(report.maps.filter(m => m.ordinaryPve).map(m => m.id), ['veyrholds-terraced-vale']);
   assert.deepEqual(report.maps.filter(m => m.seededPve).map(m => m.id), ['bellweather-millrace', 'underbough-rootways']);
   assert.deepEqual(report.maps.filter(m => m.defaultPvp).map(m => m.id), ['veyrholds-terraced-vale']);
+  const ordinary = report.maps.find(m => m.defaultPvp);
+  assert.deepEqual([ordinary.geometry.columns, ordinary.geometry.rows], [160, 160]);
   assert.equal(report.maps.find(m => m.id === 'frontier-160').pool, 'lab');
   assert.equal(report.constants.ticksPerSecond, 30);
   assert.equal(report.timing.nominalGameSecondsPerWallSecond, 1);
   assert.equal(report.timing.observedGameSecondsPerWallSecond, null);
   assert.match(report.sourceInputSha256['maps/bellweather-millrace.json'], /^[0-9a-f]{64}$/);
+  assert.match(report.sourceInputSha256['src/match-modes.mjs'], /^[0-9a-f]{64}$/);
+  assert.match(report.sourceInputSha256['src/map-size-policy.mjs'], /^[0-9a-f]{64}$/);
+  assert.match(report.sourceInputSha256['src/bannerfall-rules.mjs'], /^[0-9a-f]{64}$/);
+  assert.equal(typeof report.sourceDirty, 'boolean');
+  assert.deepEqual(report.maps.filter(m => m.admission.ordinarySelectable).map(m => m.id),
+    ['bannerfall-arena', 'frontier-160', 'siltmouths-confluence-grounds', 'veyrholds-crownroads',
+      'veyrholds-riven-escarpment', 'veyrholds-terraced-vale', 'veyrholds-threefold-basin', 'woodland-expanse']);
+  const modeIds = id => report.maps.find(m => m.id === id).admission.normalHumanModes.map(m => m.id);
+  assert.deepEqual(modeIds('veyrholds-crownroads'), ['skirmish']);
+  assert.deepEqual(modeIds('siltmouths-confluence-grounds'), []);
+  assert.equal(report.maps.find(m => m.id === 'siltmouths-confluence-grounds').admission.authoredPractice, true);
+  assert.deepEqual(modeIds('bannerfall-arena'), ['bannerfall']);
+  assert.deepEqual(modeIds('frontier-160'), ['objective-control']);
+  assert.deepEqual(modeIds('woodland-expanse'), ['objective-control']);
+  assert.deepEqual(modeIds('bellweather-millrace'), []);
+  assert.equal(report.maps.find(m => m.id === 'bellweather-millrace').admission.authoredPractice, false);
+  assert.equal(report.maps.find(m => m.id === 'veyrholds-crownroads').admission.freshOrdinaryPveMode, null);
+  assert.deepEqual(ordinary.admission.freshOrdinaryPveMode, { matchModeId: 'skirmish', matchModeVersion: 1 });
+  assert.ok(report.maps.every(m => m.admission.supportedUnitCapacity === null));
   const records = summaryRecords(report);
-  assert.equal(records.length, 29);
+  assert.equal(records.length, 33);
   assert.equal(records[0].record, 'methods');
   assert.equal(records[1].economy.resources, undefined);
   assert.equal(records[1].economy.geometricResourceClusterCount, report.maps[0].economy.geometricResourceClusters.length);

@@ -4,7 +4,7 @@ import {
   buildRoomWorkerEnvironment,
   completeRoomLaunchOptions,
   freshRoomLaunchOptions,
-  FRESH_PVE_UNAVAILABLE_REASON,
+  FRESH_PVE_UNSUPPORTED_REASON,
   normalizeRoomIndex,
   normalizeRoomLaunchOptions,
   normalizeRoomMetadata,
@@ -68,6 +68,59 @@ test('room index v3 persists complete options and migrates v1 rooms to PvP defau
 const authored = { matchModeId: 'authored', matchModeVersion: 1 };
 const objective = { matchModeId: 'objective-control', matchModeVersion: 1 };
 const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
+const bannerfall = { matchModeId: 'bannerfall', matchModeVersion: 1 };
+
+test('Bannerfall human and Practice launches carry only explicit mode identity and preserve ordinary defaults', () => {
+  const inherited = { KEEP_ME: 'yes', RTS_GAME_MODE: 'pve', RTS_PVE_MAP_SEED: '3', RTS_PVE_POLICY_SEED: '4',
+    RTS_MATCH_MODE_ID: 'skirmish', RTS_MATCH_MODE_VERSION: '99', RTS_SOLO_PRACTICE: '1', RTS_PREGAME: '1' };
+  const before = { ...inherited };
+  for (const [options, expected] of [
+    [{ mode: 'pvp', pregame: true, ...bannerfall }, { KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp', RTS_PREGAME: '1',
+      RTS_MATCH_MODE_ID: 'bannerfall', RTS_MATCH_MODE_VERSION: '1', RTS_MAP: 'maps/bannerfall-arena.json' }],
+    [{ mode: 'pvp', practice: true, ...bannerfall }, { KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp', RTS_SOLO_PRACTICE: '1',
+      RTS_MATCH_MODE_ID: 'bannerfall', RTS_MATCH_MODE_VERSION: '1', RTS_MAP: 'maps/bannerfall-arena.json' }],
+    [{ mode: 'pvp', ...bannerfall }, { KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp',
+      RTS_MATCH_MODE_ID: 'bannerfall', RTS_MATCH_MODE_VERSION: '1', RTS_MAP: 'maps/bannerfall-arena.json' }],
+  ]) {
+    assert.deepEqual(normalizeRoomLaunchOptions(options), options);
+    assert.deepEqual(completeRoomLaunchOptions(options), options);
+    assert.deepEqual(buildRoomWorkerEnvironment(inherited, options), expected);
+    const room = { id: roomId, createdAt: 1, lastActiveAt: 2, launchOptions: options,
+      mapId: 'bannerfall-arena', ...bannerfall };
+    const index = roomIndexDocument([room]);
+    assert.deepEqual(normalizeRoomIndex(index), index);
+    assert.deepEqual(roomResponseMetadata(room), { launchOptions: options, mapId: 'bannerfall-arena',
+      ...bannerfall, roomMetadata: { mapId: 'bannerfall-arena', ...bannerfall } });
+  }
+  assert.deepEqual(inherited, before);
+  assert.deepEqual(normalizeRoomLaunchOptions(), { mode: 'pvp' });
+  assert.deepEqual(buildRoomWorkerEnvironment(inherited, {}), {
+    KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp', RTS_MAP: 'maps/bellweather-millrace.json',
+  });
+  assert.throws(() => normalizeRoomLaunchOptions({ pregame: true, practice: true, ...bannerfall }), /Practice starts/);
+});
+
+test('Bannerfall rejects AI before seed generation with its own capability explanation', () => {
+  let generated = 0;
+  for (const options of [{ mode: 'pve', ...bannerfall }, { mode: 'pve', mapSeed: 3, policySeed: 4, ...bannerfall }]) {
+    assert.throws(() => completeRoomLaunchOptions(options, () => generated++), error =>
+      /Bannerfall supports human matches and Practice; its AI is not implemented/.test(error.message)
+        && !/Skirmish|base-elimination/.test(error.message));
+    assert.throws(() => buildRoomWorkerEnvironment({}, options), /Bannerfall.*AI is not implemented/);
+  }
+  assert.equal(generated, 0);
+  assert.throws(() => normalizeRoomLaunchOptions({ matchModeId: 'bannerfall' }), /requires both/);
+  assert.throws(() => normalizeRoomLaunchOptions({ ...bannerfall, matchModeVersion: 2 }), /Unsupported matchModeVersion/);
+});
+
+test('Bannerfall room preset overrides an inherited map while ordinary rooms retain it', () => {
+  const inherited = { RTS_MAP: 'maps/bellweather-millrace.json' };
+  assert.equal(buildRoomWorkerEnvironment(inherited, { mode: 'pvp', ...bannerfall }).RTS_MAP,
+    'maps/bannerfall-arena.json');
+  assert.equal(buildRoomWorkerEnvironment(inherited, { mode: 'pvp' }).RTS_MAP,
+    'maps/bellweather-millrace.json');
+  assert.deepEqual(inherited, { RTS_MAP: 'maps/bellweather-millrace.json' });
+});
 
 test('explicit paired match modes preserve human launch settings and reject invalid identities', () => {
   for (const identity of [authored, objective, skirmish]) {
@@ -84,11 +137,8 @@ test('explicit paired match modes preserve human launch settings and reject inva
   }
 });
 
-test('PvE rejects unsupported Skirmish before generating seeds and retains supported identities', () => {
-  let generated = 0;
-  assert.throws(() => completeRoomLaunchOptions({ mode: 'pve', ...skirmish }, () => generated++), /does not support PvE/);
-  assert.equal(generated, 0);
-  for (const identity of [authored, objective]) {
+test('complete launch normalization accepts explicit Tiny Skirmish and preserves historical identities', () => {
+  for (const identity of [authored, objective, skirmish]) {
     let seed = 41;
     assert.deepEqual(completeRoomLaunchOptions({ mode: 'pve', ...identity }, () => seed++), {
       mode: 'pve', ...identity, mapSeed: 41, policySeed: 42,
@@ -247,23 +297,61 @@ test('fresh pregame selects Skirmish while Practice and plain authoring select e
   }
 });
 
-test('fresh PvE admission rejects before seed completion while saved AI options stay usable', () => {
-  let generated = 0;
-  for (const options of [{ mode: 'pve' }, { mode: 'pve', ...authored }, { mode: 'pve', ...objective },
+test('fresh PvE chooses explicit Tiny Skirmish and keeps supplied seeds without mutating options', () => {
+  for (const options of [{ mode: 'pve' }, { mode: 'pve', ...skirmish },
     { mode: 'pve', mapSeed: 0, policySeed: 0xffffffff }]) {
     const before = structuredClone(options);
+    assert.deepEqual(freshRoomLaunchOptions(options), { ...options, ...skirmish });
+    assert.deepEqual(options, before);
+    let next = 41;
+    const completed = completeRoomLaunchOptions(freshRoomLaunchOptions(options), () => next++);
+    assert.deepEqual(completed, { mode: 'pve', ...skirmish,
+      mapSeed: options.mapSeed ?? 41, policySeed: options.policySeed ?? 42 });
+  }
+});
+
+test('fresh unsupported AI identities reject before seed completion while saved AI stays usable', () => {
+  let generated = 0;
+  for (const options of [{ mode: 'pve', ...authored }, { mode: 'pve', ...objective }]) {
+    const before = structuredClone(options);
     assert.throws(() => completeRoomLaunchOptions(freshRoomLaunchOptions(options), () => generated++),
-      error => error instanceof TypeError && error.message === FRESH_PVE_UNAVAILABLE_REASON);
+      error => error instanceof TypeError && error.message === FRESH_PVE_UNSUPPORTED_REASON);
     assert.deepEqual(options, before);
   }
-  assert.throws(() => completeRoomLaunchOptions(freshRoomLaunchOptions({ mode: 'pve', ...skirmish }),
-    () => generated++), /does not support PvE/);
+  for (const invalid of [{ mode: 'pve', matchModeId: 'skirmish' },
+    { mode: 'pve', ...skirmish, matchModeVersion: 2 },
+    { mode: 'pve', mapId: 'veyrholds-threefold-basin' }]) {
+    assert.throws(() => completeRoomLaunchOptions(freshRoomLaunchOptions(invalid), () => generated++));
+  }
   assert.equal(generated, 0);
-  assert.match(FRESH_PVE_UNAVAILABLE_REASON, /160 × 160.*acceptance is pending/);
-  assert.match(FRESH_PVE_UNAVAILABLE_REASON, /Existing AI rooms can still be resumed/);
+  assert.match(FRESH_PVE_UNSUPPORTED_REASON, /160 × 160 Terraced Vale.*Skirmish@1/);
+  assert.match(FRESH_PVE_UNSUPPORTED_REASON, /Existing AI rooms can still be resumed/);
   const saved = { mode: 'pve', mapSeed: 0, policySeed: 0xffffffff };
   assert.deepEqual(completeRoomLaunchOptions(saved, () => generated++), saved);
   assert.equal(generated, 0, 'restoration keeps existing seeds');
+});
+
+test('explicit Tiny Skirmish ignores inherited maps and every seed preserves its supported preset', () => {
+  const inherited = Object.freeze({ RTS_MAP: 'maps/veyrholds-threefold-basin.json', KEEP_ME: 'yes' });
+  for (const mapSeed of [0, 1, 2, 0xfffffffe, 0xffffffff]) {
+    const options = completeRoomLaunchOptions(freshRoomLaunchOptions({ mode: 'pve', mapSeed, policySeed: 17 }));
+    const environment = buildRoomWorkerEnvironment(inherited, options, { mapId: 'underbough-rootways', ...authored });
+    assert.equal(environment.RTS_MAP, 'maps/veyrholds-terraced-vale.json');
+    assert.deepEqual(readPveLaunchOptions(environment), {
+      mode: 'pve', mapSeed, policySeed: 17, mapId: 'veyrholds-terraced-vale',
+    });
+    const room = { id: roomId, createdAt: 1, lastActiveAt: 2, launchOptions: options,
+      mapId: 'veyrholds-terraced-vale', ...skirmish };
+    assert.deepEqual(normalizeRoomIndex(roomIndexDocument([room])).rooms[0], room);
+    assert.equal(environment.KEEP_ME, 'yes');
+  }
+  assert.equal(inherited.RTS_MAP, 'maps/veyrholds-threefold-basin.json');
+  for (const fields of [{ RTS_MATCH_MODE_ID: 'skirmish' }, { RTS_MATCH_MODE_VERSION: '1' },
+    { RTS_MATCH_MODE_ID: 'skirmish', RTS_MATCH_MODE_VERSION: '2' },
+    { RTS_MATCH_MODE_ID: 'skirmish', RTS_MATCH_MODE_VERSION: '1.0' }]) {
+    assert.throws(() => readPveLaunchOptions({ RTS_GAME_MODE: 'pve', RTS_PVE_MAP_SEED: '0',
+      RTS_PVE_POLICY_SEED: '17', ...fields }), /requires both|Unsupported matchMode/);
+  }
 });
 
 test('legacy omitted identities stay Authored through normalization and all accepted index versions', () => {
@@ -326,6 +414,19 @@ test('legacy PvE seeds keep the exact curated map pool independently of fresh ad
     assert.deepEqual(normalizeMatchMode(restored.launchOptions), authored);
     const environment = buildRoomWorkerEnvironment({}, restored.launchOptions);
     assert.deepEqual(readPveLaunchOptions(environment), { mode: 'pve', mapSeed: seed, policySeed: 17, mapId });
+  }
+});
+
+test('explicit historical Authored and Objective Control retain the exact direct seeded map pool', () => {
+  for (const identity of [authored, objective]) {
+    for (const [mapSeed, mapId] of [[0, 'bellweather-millrace'], [1, 'underbough-rootways'],
+      [0xfffffffe, 'bellweather-millrace'], [0xffffffff, 'underbough-rootways']]) {
+      const launch = Object.freeze({ mode: 'pve', ...identity, mapSeed, policySeed: 17 });
+      const environment = buildRoomWorkerEnvironment({ RTS_MAP: 'maps/veyrholds-terraced-vale.json' }, launch);
+      assert.deepEqual(readPveLaunchOptions(environment), { mode: 'pve', mapSeed, policySeed: 17, mapId });
+      assert.deepEqual(normalizeRoomLaunchOptions(launch), launch);
+      assert.equal(environment.RTS_MAP, 'maps/veyrholds-terraced-vale.json', 'historical PvE seeds still own selection');
+    }
   }
 });
 

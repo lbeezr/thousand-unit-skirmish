@@ -71,6 +71,14 @@ or browser sandbox bypass is authorized by this checkpoint.
 
 ## Selection availability follow-up — 4 October 2026
 
+The HUD source check after PR234 also reproduced Patrol/Follow enabled in the
+open Orders drawer with no living owned units selected. Command refresh was
+overwriting the stationary-control selection gate, while the target-mode handler
+silently returned. The command refresh now retains that gate. Both-seat tests
+cover empty, dead, enemy-only, Worker, military, mixed, building and Skiff
+selection, plus repeated economy/command refresh. This is a separate functional
+empty-selection fix; it does not resolve the native completed-Range report below.
+
 The parent-owned native QA run identified deployed source
 `64cc391e6d9c4164dca7bd45696cf3862fe19729`, superseding the 3 October staging
 observation above. It reported an idle Worker whose construction stayed disabled

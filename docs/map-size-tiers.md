@@ -25,7 +25,13 @@ until a separately reviewed grid-limit, memory/path/visibility/transport/browser
 capacity slice passes. [The source-bound XL audit](map-grid-limit-audit-2026-10-04.md)
 also demonstrates wrapped 16-bit vision indices and projects cache/path/render
 costs. Small now has an authored [Threefold Basin candidate](qa-threefold-basin-2026-10-04.md).
-Medium/Large remain unauthored; no tier has a supported-capacity claim.
+Medium now has authored [Riven Escarpment](qa-riven-escarpment-2026-10-04.md),
+admitted for [ordinary human Skirmish](qa-medium-skirmish-admission-2026-10-04.md)
+with a static 207-unit / 79.615-second Worker route. [Large Crownroads](qa-crownroads-2026-10-04.md)
+adds four expansion sites and a 251-unit / 96.538-second Worker route, with
+[ordinary human Skirmish admission](qa-large-skirmish-admission-2026-10-04.md). No tier
+has a supported-capacity claim. [Existing elevation](map-elevation-capabilities.md)
+supports these layouts within its current three-level, single-surface contract.
 The first Tiny candidate is Terraced Vale; its static base route is 133 units,
 51.154 s Worker/Infantry, 29.556 s Scout. Native acceptance is recorded separately.
 
@@ -35,7 +41,9 @@ The first Tiny candidate is Terraced Vale; its static base route is 133 units,
 `mapSizeIdentity(map)` and `ordinaryMapCatalog(maps, currentMapId)`.
 The runtime supplies canonical descriptors for ordinary selection. Eligible
 160-side Labs retain their authored Objective Control identity; compact Labs
-remain available through explicit Authored Practice. Size eligibility does not
+remain available as explicit internal fixtures and legacy saves. Ordinary Practice
+must also meet the 160 floor. [Confluence Grounds](qa-confluence-grounds-2026-10-04.md)
+is the new multi-purpose admitted testing arena. Size eligibility does not
 admit a map to Skirmish without its registry binding.
 Each descriptor adds exact `width`, `height`, `sizeTierId`, `sizeTierLabel`,
 `ordinarySelectable`, `supportedUnitCapacity: null`; the catalog helper also
@@ -52,18 +60,22 @@ internal test launches remain explicit fixtures, separate from ordinary entry.
 
 The runtime consumes this policy for ordinary server projection and selection.
 Fresh normal two-seat entry uses Terraced Vale/Skirmish; Authored Practice starts
-on the same Tiny map and explicitly retains internal Labs. See the
+on the same Tiny map. The floor record predates the user's explicit clarification
+that ordinary Practice also needs 160 arenas; the mode owner must remove the
+`soloPractice` exemption while preserving the explicit `internalFixture` route.
+See the
 [floor acceptance record](qa-ordinary-map-floor-2026-10-04.md). Mode runtime
 owner task `01a103cc` owns server projection/selection and registry compatibility;
 entry owner branch `codex/match-mode-entry-ui-v1` owns the normal selectors and
 Practice entry. Agreement is recorded on [PR176](https://github.com/lbeezr/thousand-unit-skirmish/pull/176#issuecomment-5974560958)
 and [Practice PR155](https://github.com/lbeezr/thousand-unit-skirmish/pull/155#issuecomment-5974561478).
 Preserve one-human Practice, ready/start/rematch and current legacy room identity.
-Current seeded PvE maps are both smaller than 160. Fresh ordinary AI creation
-returns a clear unavailable explanation while qualifying Tiny AI acceptance is
-pending. Existing seeded rooms/checkpoints and their historical pool remain
-resumable. Status exposes `ordinarySetup.pve.available:false` and its reason for
-the entry owner; Tiny is not advertised as supported PvE.
+Historical seeded PvE maps are both smaller than 160 and remain resumable with
+their exact pool, identity and seeds. Fresh ordinary AI now selects only accepted
+Terraced Vale160/Skirmish@1. Status exposes `ordinarySetup.pve.available:true`,
+the exact map/pair and its one-entry `supportedMapIds`. Human-compatible Small
+and Medium/Large do not acquire AI support. [Admission proof](qa-tiny-skirmish-pve-admission-2026-10-04.md)
+retains rendered/deployed acceptance as an incomplete owned step.
 
 ## Progressive authoring and capacity gates
 

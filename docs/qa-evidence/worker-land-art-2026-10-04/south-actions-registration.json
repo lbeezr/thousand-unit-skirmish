@@ -1,0 +1,501 @@
+{
+  "schemaVersion": 1,
+  "worldDirection": "south",
+  "screenDirection": "up-right back-three-quarter",
+  "sharedScale": 0.8522012578616353,
+  "columnRootsX": [
+    174,
+    518,
+    856
+  ],
+  "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/raw.png",
+  "sourceSha256": "eb4dbc5ca1538e72206fdd9d07279acf701c458844d1018b9b2fea9ce6d9f64b",
+  "contactNote": "Live work uses row ground baselines; fallen poses use reviewed source contact lines, not bounding-box recentering. Runtime pivots remain fixed per clip; native contact/relative body scale open.",
+  "groups": [
+    {
+      "state": "gather-wood",
+      "alias": "attack",
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 320
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 308
+      },
+      "frames": [
+        {
+          "id": "gather-wood-south-0",
+          "sourceIndex": 0,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/00.png",
+          "sourceSha256": "d20cfec159a61eb0cba241ebc23328f6026e0116cedb1e2b9426de2bfadb2fb2",
+          "sourceBounds": [
+            105,
+            15,
+            263,
+            304
+          ],
+          "sourceGroundRootPx": [
+            174,
+            320
+          ],
+          "offsetPx": [
+            69,
+            48
+          ],
+          "alphaBoundsPx": {
+            "x": 69,
+            "y": 48,
+            "width": 135,
+            "height": 246
+          },
+          "rgbaSha256": "c8f24c73074719044c089959c9aed0d610a0f6ff311ceb46bb578a53b53c1a3f"
+        },
+        {
+          "id": "gather-wood-south-1",
+          "sourceIndex": 1,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/01.png",
+          "sourceSha256": "807bf8f65fc844ffbfb99f0ddd8ecb5ce5241e36c551f1815b95d8c8e175339f",
+          "sourceBounds": [
+            418,
+            81,
+            649,
+            306
+          ],
+          "sourceGroundRootPx": [
+            518,
+            320
+          ],
+          "offsetPx": [
+            43,
+            104
+          ],
+          "alphaBoundsPx": {
+            "x": 43,
+            "y": 104,
+            "width": 197,
+            "height": 192
+          },
+          "rgbaSha256": "cdd8512cdd860938545f9c585e23647de8616499b35e2f44b06e56ce3d2fe0da"
+        },
+        {
+          "id": "gather-wood-south-2",
+          "sourceIndex": 2,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/02.png",
+          "sourceSha256": "8a4c3fc5d7dec0b5354b528d08e039b412d0684b4664f3729a02d01ec3367e4c",
+          "sourceBounds": [
+            792,
+            72,
+            952,
+            320
+          ],
+          "sourceGroundRootPx": [
+            856,
+            320
+          ],
+          "offsetPx": [
+            73,
+            97
+          ],
+          "alphaBoundsPx": {
+            "x": 73,
+            "y": 97,
+            "width": 136,
+            "height": 211
+          },
+          "rgbaSha256": "074928c9326335b22ae803fd871d87b5050c2f3cd7bea4f37e8f8e1c0a064ed3"
+        }
+      ]
+    },
+    {
+      "state": "gather-food",
+      "alias": null,
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 256
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 244
+      },
+      "frames": [
+        {
+          "id": "gather-food-south-0",
+          "sourceIndex": 3,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/03.png",
+          "sourceSha256": "0d1fb4493b25544418fb584d81c5827b7998f742dbec8093a84ab359fd59a36c",
+          "sourceBounds": [
+            96,
+            343,
+            303,
+            606
+          ],
+          "sourceGroundRootPx": [
+            174,
+            613
+          ],
+          "offsetPx": [
+            62,
+            14
+          ],
+          "alphaBoundsPx": {
+            "x": 62,
+            "y": 14,
+            "width": 176,
+            "height": 224
+          },
+          "rgbaSha256": "b31c903179fa2f70a75ccd8c4eddb6dd2ebf1c12fb94107fdd7a1a843dcd30e9"
+        },
+        {
+          "id": "gather-food-south-1",
+          "sourceIndex": 4,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/04.png",
+          "sourceSha256": "c526afe4307bdb97d6d1f38b23ddc5821db8c4289b55e9104671ebc314e6d9f5",
+          "sourceBounds": [
+            447,
+            435,
+            625,
+            606
+          ],
+          "sourceGroundRootPx": [
+            518,
+            613
+          ],
+          "offsetPx": [
+            67,
+            92
+          ],
+          "alphaBoundsPx": {
+            "x": 67,
+            "y": 92,
+            "width": 152,
+            "height": 146
+          },
+          "rgbaSha256": "d5dd8012ba0055d14801fc820fb59fff40af1b2d4bfa13c74f426814450f3ad0"
+        },
+        {
+          "id": "gather-food-south-2",
+          "sourceIndex": 5,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/05.png",
+          "sourceSha256": "f3a19efae1fa008ec120a73381066f1352974b981be93d3ac8bfc08f262e1515",
+          "sourceBounds": [
+            793,
+            342,
+            942,
+            613
+          ],
+          "sourceGroundRootPx": [
+            856,
+            613
+          ],
+          "offsetPx": [
+            74,
+            13
+          ],
+          "alphaBoundsPx": {
+            "x": 74,
+            "y": 13,
+            "width": 127,
+            "height": 231
+          },
+          "rgbaSha256": "d4584a80fe871b9e673cfa1b7e868af283603f6777b5cab7d9a4c04b5a43dad1"
+        }
+      ]
+    },
+    {
+      "state": "build",
+      "alias": "repair",
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 320
+      },
+      "groundPivotPx": {
+        "x": 122,
+        "y": 308
+      },
+      "frames": [
+        {
+          "id": "build-south-0",
+          "sourceIndex": 6,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/06.png",
+          "sourceSha256": "5870473da019a9f55791f87889ddfeee521805422756b8d921c9decd0bed99ef",
+          "sourceBounds": [
+            106,
+            604,
+            255,
+            914
+          ],
+          "sourceGroundRootPx": [
+            174,
+            914
+          ],
+          "offsetPx": [
+            64,
+            44
+          ],
+          "alphaBoundsPx": {
+            "x": 64,
+            "y": 44,
+            "width": 127,
+            "height": 264
+          },
+          "rgbaSha256": "ac1bdb69dbc12e58a74b118530075132436b9318a06b66a881c91a4ff3bcbc32"
+        },
+        {
+          "id": "build-south-1",
+          "sourceIndex": 7,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/07.png",
+          "sourceSha256": "85daa68131bb4a4f5f601b4f3d874e6d4b2f50425fac207b68a6aadfc0b1f969",
+          "sourceBounds": [
+            409,
+            690,
+            669,
+            911
+          ],
+          "sourceGroundRootPx": [
+            518,
+            914
+          ],
+          "offsetPx": [
+            29,
+            117
+          ],
+          "alphaBoundsPx": {
+            "x": 29,
+            "y": 117,
+            "width": 222,
+            "height": 188
+          },
+          "rgbaSha256": "45a43e1db8b19f06e3b2b7039ca2c9537feb739f8a9a8becaa709910e03dce6a"
+        },
+        {
+          "id": "build-south-2",
+          "sourceIndex": 8,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/08.png",
+          "sourceSha256": "92a01aa3ccc2ba250f3daf1a37dca1482632ea2b40541f16be3e5a550ad477be",
+          "sourceBounds": [
+            794,
+            651,
+            963,
+            914
+          ],
+          "sourceGroundRootPx": [
+            856,
+            914
+          ],
+          "offsetPx": [
+            69,
+            84
+          ],
+          "alphaBoundsPx": {
+            "x": 69,
+            "y": 84,
+            "width": 144,
+            "height": 224
+          },
+          "rgbaSha256": "74b4d4ca40fa3ecd6f3b1abfbab09528bf589519150553fc08f6c744944d2065"
+        }
+      ]
+    },
+    {
+      "state": "gather-stone",
+      "alias": null,
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 320
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 308
+      },
+      "frames": [
+        {
+          "id": "gather-stone-south-0",
+          "sourceIndex": 9,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/09.png",
+          "sourceSha256": "0065a88b9c3b281228b1bf56695c0dddfdfd1578bbaa78de1d8871987ac64e33",
+          "sourceBounds": [
+            110,
+            916,
+            267,
+            1234
+          ],
+          "sourceGroundRootPx": [
+            174,
+            1234
+          ],
+          "offsetPx": [
+            73,
+            37
+          ],
+          "alphaBoundsPx": {
+            "x": 73,
+            "y": 38,
+            "width": 134,
+            "height": 270
+          },
+          "rgbaSha256": "1af93701f3aefcbf49ae80a45c784edbd84053814a00833e3788fe998f1daa7d"
+        },
+        {
+          "id": "gather-stone-south-1",
+          "sourceIndex": 10,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/10.png",
+          "sourceSha256": "29151eeb971fd3a03aab9c7e5f54e8ab9158310633bfc4ddf3b6732e37b29f62",
+          "sourceBounds": [
+            406,
+            1020,
+            664,
+            1221
+          ],
+          "sourceGroundRootPx": [
+            518,
+            1234
+          ],
+          "offsetPx": [
+            33,
+            126
+          ],
+          "alphaBoundsPx": {
+            "x": 33,
+            "y": 126,
+            "width": 220,
+            "height": 171
+          },
+          "rgbaSha256": "94bf82b648807cc54dd73973c17ab5dff2642fcff74ff40069851c61a01ddbb2"
+        },
+        {
+          "id": "gather-stone-south-2",
+          "sourceIndex": 11,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/11.png",
+          "sourceSha256": "311a4456ef78c5f3dec27c61200e3faae92eeb31f759c7b02146e28c7d5e21b1",
+          "sourceBounds": [
+            790,
+            958,
+            987,
+            1227
+          ],
+          "sourceGroundRootPx": [
+            856,
+            1234
+          ],
+          "offsetPx": [
+            72,
+            73
+          ],
+          "alphaBoundsPx": {
+            "x": 72,
+            "y": 73,
+            "width": 168,
+            "height": 229
+          },
+          "rgbaSha256": "38b96550a155cfe9481ee2d2e03fc1ff8695d449a379e8c9335a022a9ba6a4bf"
+        }
+      ]
+    },
+    {
+      "state": "defeat",
+      "alias": null,
+      "loop": false,
+      "durationMs": 840,
+      "canvasPx": {
+        "width": 512,
+        "height": 256
+      },
+      "groundPivotPx": {
+        "x": 256,
+        "y": 244
+      },
+      "frames": [
+        {
+          "id": "defeat-south-0",
+          "sourceIndex": 12,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/12.png",
+          "sourceSha256": "783b28e7984f7baad5293fb117d9f6b49236a41a49cbea2683200cac30df579b",
+          "sourceBounds": [
+            98,
+            1273,
+            309,
+            1484
+          ],
+          "sourceGroundRootPx": [
+            174,
+            1484
+          ],
+          "offsetPx": [
+            191,
+            64
+          ],
+          "alphaBoundsPx": {
+            "x": 191,
+            "y": 64,
+            "width": 180,
+            "height": 180
+          },
+          "rgbaSha256": "da6de5d6ff144a7e4cd783f2dc0eb6b680d4991170308ebdb077906f1aaf075d"
+        },
+        {
+          "id": "defeat-south-1",
+          "sourceIndex": 13,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/13.png",
+          "sourceSha256": "a346ff8ff9fb4183fc7ec920e77fbf7ca723932c0af031177e7b9fd33c8f72fd",
+          "sourceBounds": [
+            370,
+            1313,
+            642,
+            1490
+          ],
+          "sourceGroundRootPx": [
+            518,
+            1490
+          ],
+          "offsetPx": [
+            130,
+            93
+          ],
+          "alphaBoundsPx": {
+            "x": 130,
+            "y": 93,
+            "width": 232,
+            "height": 151
+          },
+          "rgbaSha256": "492667db5e0d4c9132b3cd71f4d4144727714f047d38e57b3e776b7edf80670d"
+        },
+        {
+          "id": "defeat-south-2",
+          "sourceIndex": 14,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/extracted/14.png",
+          "sourceSha256": "dc58dc07eaef7786e2d6fbd543ab1a46fd2cf7869ed2cd91975d1ab00f8afeb2",
+          "sourceBounds": [
+            707,
+            1308,
+            988,
+            1489
+          ],
+          "sourceGroundRootPx": [
+            856,
+            1489
+          ],
+          "offsetPx": [
+            129,
+            90
+          ],
+          "alphaBoundsPx": {
+            "x": 129,
+            "y": 90,
+            "width": 239,
+            "height": 154
+          },
+          "rgbaSha256": "baf96200c3eaebe2d54951b4e09fe22a98e1a0b90a7bb733fb45ccd44b653629"
+        }
+      ]
+    }
+  ]
+}
