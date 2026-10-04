@@ -13,7 +13,7 @@ function replaceExactly(source, before, after, count = 1) {
   assert.equal(source.split(before).length - 1, count, `server entrypoint changed: ${before}`);
   return source.split(before).join(after);
 }
-export async function createPathingReplayFixture(map) {
+export async function createPathingReplayFixture(map, { traceLandSteps = false } = {}) {
   const directory = await mkdtemp(path.join(tmpdir(), 'rts-pathing-replay-'));
   try {
     const original = await readFile(new URL('../server.mjs', import.meta.url), 'utf8');
@@ -24,12 +24,38 @@ export async function createPathingReplayFixture(map) {
     source = replaceExactly(source, 'scheduleSimulationTick();', '/* fixed-tick replay driver */', 2);
     source = replaceExactly(source, "process.on('SIGTERM', () => shutdown('SIGTERM'));", '');
     source = replaceExactly(source, "process.on('SIGINT', () => shutdown('SIGINT'));", '');
+    if (traceLandSteps) {
+      // Observe admitted substeps before their unchanged position assignments.
+      // Tick chords can miss a turn when the executor consumes two waypoints.
+      for (const [reason, assignments] of [
+        ['waypoint', '        unit.x = move.target.x;\n        unit.z = move.target.z;'],
+        ['steering', '        unit.x = nextX;\n        unit.z = nextZ;'],
+        ['fallback', '          unit.x = fallbackX;\n          unit.z = fallbackZ;'],
+        ['same-cell-combat', '            unit.x = x;\n            unit.z = z;'],
+        ['interaction-separation', '    unit.x = x;\n    unit.z = z;'],
+      ]) {
+        const coordinates = reason === 'waypoint' ? 'move.target.x, move.target.z'
+          : reason === 'steering' ? 'nextX, nextZ' : reason === 'fallback' ? 'fallbackX, fallbackZ' : 'x, z';
+        source = replaceExactly(source, assignments,
+          `recordReplayLandStep(unit, ${coordinates}, ${JSON.stringify(reason)});\n${assignments}`);
+      }
+    }
     const listen = source.lastIndexOf('\nserver.listen(PORT, HOST, () => {');
     assert.ok(listen > 0 && source.slice(listen).endsWith('});\n'), 'server listen entrypoint changed');
     source = source.slice(0, listen) + `
 const replayPlanningCallbacks = [];
+const replayLandSteps = [];
+function recordReplayLandStep(unit, x, z, reason) {
+  if (unit.movementDomain === 'water' || (unit.x === x && unit.z === z)) return;
+  replayLandSteps.push({ id: unit.id, generation: unit.generation, revision: unit.orderRevision,
+    team: unit.team, kind: unit.kind, tick: tickNumber, navigationRevision,
+    from: { x: unit.x, z: unit.z }, to: { x, z }, reason,
+    neighbours: units.filter(other => other !== unit && other.hp > 0 && other.movementDomain !== 'water')
+      .map(other => ({ id: other.id, generation: other.generation, kind: other.kind, x: other.x, z: other.z })) });
+}
 export const replay = {
   prepare(map) {
+    replayLandSteps.length = 0;
     // Custom trusted replay maps exercise their authored simulation rules;
     // ordinary default Skirmish admission is covered by the launch fixtures.
     matchMode = normalizeMatchMode({ matchModeId: 'authored', matchModeVersion: 1 });
@@ -74,6 +100,7 @@ export const replay = {
     return true;
   },
   step({ planningTurns } = {}) {
+    replayLandSteps.length = 0;
     if (planningTurns === undefined && MOVE_PLANNING_TURNS_PER_TICK === 0) this.drain();
     else if (planningTurns === undefined) { /* candidate uses the real tick hook */ }
     else {
@@ -121,6 +148,8 @@ export const replay = {
   },
   get diagnostic() { return tickDiagnosticSamples[(tickDurationCursor - 1 + TICK_SAMPLE_WINDOW) % TICK_SAMPLE_WINDOW]; },
   get separation() { return separationWorkPayload(); },
+  get landSteps() { return replayLandSteps.map(step => ({ ...step, from: { ...step.from }, to: { ...step.to },
+    neighbours: step.neighbours.map(other => ({ ...other })) })); },
   dispose() { clearInterval(heartbeatTimer); if (pveOpponentTimer) clearInterval(pveOpponentTimer); }
 };
 `;

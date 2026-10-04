@@ -21,6 +21,12 @@ with their respective lanes.
 U3's corrective review owns only the terminal-step guard before
 `simulateTick`'s `reachedWaypoint` assignment; it reuses existing route repair
 and combat invalidation without changing acquisition, range or damage policy.
+U4's first physical study owns only `scripts/land-body-clearance*`, the opt-in
+private substep observer in `scripts/pathing-replay-fixture.mjs`, its new QA
+records and this guide. It consumes the forest owner's gap map without editing
+forest jobs/frontiers, the existing 42-case cell-gap records or their fixture.
+Production movement, map admission, benchmark/report formats and renderer/CI
+interfaces remain outside this diagnostic slice.
 The parent allocated only `snapshotUnits`' base-row literal for the measured
 allocation experiment; its private fields, filters and visibility contract stay
 unchanged.
@@ -184,6 +190,79 @@ checks exact fractional arrival after actual process restart against accepted
 command coordinates, including that normal idle transition. These are bounded
 source/CPU witnesses; U3's remaining domain endpoint adoption and U4–U7's whole
 runtime, crowd, clearance, release/deployed identity and rendered matrix stay open.
+
+### U4 first vertical slice: measured land body contracts
+
+This is a consumed diagnostic contract, before production radius adoption.
+The study helper and real-simulation runner measure swept circles centered on
+authoritative x/z; one world unit equals one tile. Authored candidate radii are
+Worker 0.18, Infantry/Spearman/Archer 0.22, Scout/Rider 0.28 and Siege Engine 0.35.
+They are hypotheses, independent of sprite bounds and the current 0.56 soft
+separation. No production caller imports the study profile. Naval hull and
+Sheep policies remain with their existing adapters.
+
+The private observer records each admitted waypoint, steering, fallback,
+same-cell combat and interaction-separation substep before its unchanged
+position assignment. A per-tick chain must start at each actual pre-tick position
+and end at its actual post-tick position, including unselected land actors;
+an unobserved clamp/placement fails the study. The observer-on/off regression
+compares complete live unit records, including generations, without identity
+normalization. Short capsule/blocked-tile distance uses exact rectangle geometry;
+negative margin below −1e−9 is penetration and tangency is allowed. Pair distance
+uses each neighbor's current position in the serial executor, not future motion
+or client interpolation. Contact counts count directed substeps, not unique
+impacts. Static queries are bounded to at most 25 nearby cells in these cases;
+this is diagnostic work, not a production/performance budget.
+
+Six cases use trusted, production-validated initial placements, real ordinary
+Move commands and disabled military attack. Both-seat corner cases retain the
+exact U3 review reproduction, including its parked actors. Forest cases reuse
+the existing one-row gap with opposing Infantry, Infantry/Scout from each seat,
+and two 16-Infantry box formations. Workers remain idle; navigation revision
+and full walkability hash must stay constant. Every case repeats in a fresh
+adapter from the same full checkpoint; raw substeps/contacts, generations,
+revisions, commands and input hashes must match. The 1,800-tick deadline retains
+unfinished actors, and production center legality, complete observation and
+unchanged health are mandatory. Existing forest cell-gap evidence is preserved.
+
+| Case | Arrived / ticks | Candidate static-contact substeps | Candidate body-contact substeps | Worst measured margin |
+| --- | --- | --- | --- | --- |
+| Fractional stone corner, each seat | 1 / 234 | 79 | 92 | Static −0.2190; pair −0.1997 |
+| Opposing Infantry, one-row forest | 2 / 277 | 0 | 11 | Pair −0.4400 |
+| Opposing Infantry/Scout, each Scout seat | 2 / 277 | 0 | 9 | Pair −0.5000 |
+| Opposing 16+16 Infantry box formations | 32 / 365 | 0 | 5,183 | Pair −0.4400 |
+
+All measured center substeps remain legal, health is unchanged and every actor
+arrives. The two-unit opposing cases nevertheless pass through coincident
+centers; the corner mover travels 19.13 world units through repeated repairs
+for a sub-unit requested displacement. Completion and cell-gap passability
+therefore do not establish natural movement or physical clearance. These are
+fixed-tick/source geometry witnesses, with no hardware timing/capacity,
+normal-game pixels or deployed acceptance claim. Presentation backing is N/A
+for this internal probe; existing travel/heading/idle treatment is unchanged.
+
+Run `node --test scripts/land-body-clearance.test.mjs` for analytic geometry,
+observer equivalence, six paired real cases and finite-timeout regressions.
+Run `LAND_BODY_RECORD=/tmp/land-body.json.gz LAND_BODY_SUMMARY=/tmp/land-body-summary.json node scripts/land-body-clearance-study.mjs all 1800`
+to retain source-qualified raw and summarized observations. `corner`, `forest`
+or a named case selects a bounded subset. Radius-zero geometry is a zero-area
+control, separate from the production point/cell legality assertion.
+
+The next movement-owned runtime slice must choose an authoritative profile and
+a compatible ordinary-Move goal/segment policy together, measured against
+these cases; it cannot simply add a rejection guard that strands the accepted
+intent. Version-1 `moveGoalPoint` validation derives the exact point whenever
+the requested cell is selected. Projecting clearance within that cell therefore
+needs an explicit versioned goal policy and checkpoint subsection agreement,
+not silently altering v1 coordinates. Construction/combat retain their access/
+range semantics and consumer adoption; the resource owner retains dynamic
+forest masks/jobs. Gates, bridges, weighted terrain, loaded native recovery,
+interaction/range approaches and all-caller adoption remain U4 work. Opposing
+yield/side selection, compression/reform and fairness remain U5 work. Benchmark
+owner `01a101bc` retains validity reports; map `01a103e8` retains admission; CI
+`01a10378` retains capture interfaces. Movement owner `01a107ba` retains runtime
+adoption and actual identified-release rendered acceptance. No auth retry or
+denied hosted dispatch is attempted.
 
 ### Forest cell-gap characterization — 4 October 2026
 
