@@ -57,9 +57,8 @@ for (const resource of ['food', 'stone']) for (const team of [0, 1]) {
     try {
       await order(replay, team, { type: 'gather', nodeId: `seat-${team}-first` }, /GATHER ORDER/);
       until(replay, state => state.units[auditWorkerId(team)].cargo > .5, 'real initial draw');
-      if (resource === 'food') assert.equal(workerOf(replay, team).workIntent, null, 'Food retains source-only policy');
-      else assert.deepEqual(workerOf(replay, team).workIntent, createGatherWorkIntent(workerOf(replay, team).generation,
-        map.resourceNodes.find(n => n.id === `seat-${team}-first`), 'stone'));
+      assert.deepEqual(workerOf(replay, team).workIntent, createGatherWorkIntent(workerOf(replay, team).generation,
+        map.resourceNodes.find(n => n.id === `seat-${team}-first`), resource));
       const saved = replay.checkpoint(), views = [replay.observe(0), replay.observe(1)];
       replay.restore(saved);
       for (const seat of [0, 1]) assertRecoveredWorkerObservation(replay.observe(seat), views[seat]);
@@ -67,10 +66,10 @@ for (const resource of ['food', 'stone']) for (const team of [0, 1]) {
       const finished = until(replay, state => state.units[auditWorkerId(team)].cargo === 0
         && state.units[auditWorkerId(team)].gatherPhase === '', 'finite source delivers and ends');
       assert.deepEqual(resourceJobObservation(finished, resource, team), { team,
-        bank: (map.startingResources[resource] ?? 0) + (resource === 'stone' ? 12 : 6), cargo: 0, cargoType: null,
-        gatherNodeId: null, phase: '', workIntent: null, nextStock: resource === 'stone' ? 0 : 6 });
+        bank: (map.startingResources[resource] ?? 0) + 12, cargo: 0, cargoType: null,
+        gatherNodeId: null, phase: '', workIntent: null, nextStock: 0 });
       for (const node of finished.resourceNodes.filter(node => node.id !== `seat-${team}-first`
-        && !(resource === 'stone' && node.id === `seat-${team}-next`))) assert.equal(node.stock, 6);
+        && node.id !== `seat-${team}-next`)) assert.equal(node.stock, 6);
       const revision = workerOf(replay, team).orderRevision;
       for (let tick = 0; tick < 300; tick++) replay.step();
       assert.equal(workerOf(replay, team).orderRevision, revision, 'idle job has no failed retry loop');
@@ -94,6 +93,8 @@ for (const resource of ['food', 'stone']) for (const team of [0, 1]) {
       await order(replay, team, { type: 'gather', nodeId: `seat-${team}-next` }, /GATHER ORDER/);
       assert.equal(workerOf(replay, team).cargoType, resource);
       assert.equal(workerOf(replay, team).gatherNodeId, `seat-${team}-next`);
+      assert.deepEqual(workerOf(replay, team).workIntent, createGatherWorkIntent(workerOf(replay, team).generation,
+        map.resourceNodes.find(node => node.id === `seat-${team}-next`), resource), 'accepted same-class replacement creates a new original anchor');
       until(replay, state => state.resourceNodes.find(node => node.id === `seat-${team}-next`).stock < 5.5, 'manual successor draws');
       await order(replay, team, { type: 'stop' }, /STOP ORDER/);
       const stopped = stateOf(replay);

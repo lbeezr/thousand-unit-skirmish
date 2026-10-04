@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createGatherWorkIntent, createConstructionWorkIntent, validWorkIntent,
-  clearWorkIntent, clearGatherWorkIntent, activeWorkIntent } from '../src/work-intent.mjs';
+  clearWorkIntent, clearGatherWorkIntent, activeWorkIntent, isPlainNeutralFoodSource } from '../src/work-intent.mjs';
 import { STONE_ECONOMY_PROFILE_ID } from '../src/economy-profile.mjs';
 
 const map = { width: 160, height: 160 }, worker = { kind: 'worker', team: 0, hp: 50, generation: 3, orderRevision: 7 };
@@ -31,6 +31,24 @@ test('resource cancellation preserves a construction intent; external cancellati
   clearWorkIntent(unit); assert.equal(unit.workIntent, null);
   unit.workIntent = createGatherWorkIntent(3, { x: 0.5, z: 0.5 });
   clearGatherWorkIntent(unit); assert.equal(unit.workIntent, null);
+});
+test('Food intent carries an exact plain-neutral source class without admitting Farms, wildlife, fishing or future variants', () => {
+  const source = { id: 'plain', type: 'food', x: 0.5, z: 0.5, stock: 6 };
+  const intent = createGatherWorkIntent(3, source, 'food');
+  assert.ok(isPlainNeutralFoodSource(source));
+  assert.deepEqual(intent, { version: 1, kind: 'gather', generation: 3, resource: 'food',
+    sourceKind: 'neutral-land-food', anchor: { x: .5, z: .5 } });
+  assert.ok(validWorkIntent(JSON.parse(JSON.stringify(intent)), worker, map));
+  const missing = { ...intent }; delete missing.sourceKind;
+  for (const bad of [missing, { ...intent, sourceKind: 'farm' }, { ...intent, sourceKind: 'shore-fish' },
+    { ...intent, sourceKind: 'future-food' }, { ...intent, resource: 'wood' }]) assert.equal(validWorkIntent(bad, worker, map), false);
+  for (const metadata of [{ sourceBuildingId: 2 }, { team: 0 }, { wildlifeSpecies: 'bellweather-sheep' },
+    { wildlifeState: 'carcass' }, { wildlifeTeam: null }, { resourceVariant: 'shore-fish' }, { resourceVariant: 'future-food' }]) {
+    const other = { ...source, ...metadata };
+    assert.equal(isPlainNeutralFoodSource(other), false);
+    assert.throws(() => createGatherWorkIntent(3, other, 'food'), /Unsupported gather area/);
+  }
+  assert.equal(validWorkIntent(intent, { ...worker, movementDomain: 'water' }, map), false);
 });
 test('owned gate priority and remembered walls survive serialization; removed/completed sites can be pruned later', () => {
   const intent = createConstructionWorkIntent(3, [2, 1, 3], area);
