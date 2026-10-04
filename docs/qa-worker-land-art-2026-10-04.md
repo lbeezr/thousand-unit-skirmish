@@ -105,11 +105,11 @@ current-roster keys can also be admitted with the same manifest contract.
 | 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
 | 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
 | 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **34 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
-| 4 | Six remaining readable dedicated Stone-work headings and SE/NW selector adoption. | SE and NW now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. Animation owner also needs the actual Stone state/resource selector enabled after artwork exists; current default intentionally returns idle. No economy edits. |
+| 4 | Six remaining readable dedicated Stone-work headings; retain PR263 default selector adoption. | SE and NW now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. PR263 now enables exact authored Stone state/resource selection from productive receipts; missing headings retain their own idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
 There are now 8 of 8 walk headings, eight distinct idle headings, SE+NW land-action
-motion and SE+NW Stone artwork awaiting default selector adoption. **40 land-action/heading cells remain** (34+6).
+motion and default SE+NW Stone binding from PR263, with exact native/deployment acceptance open. **40 land-action/heading cells remain** (34+6).
 Fishing's seven missing headings are excluded and retained by its separate owner.
 The animation-owner ID is outside this executor's live collaboration tree; the
 manifest contract and retained dependencies are recorded here for parent routing.
@@ -605,7 +605,8 @@ axe strike, terminal/restart, walk/work interruption. Compare against SE/right
 and NW/left, both seats selected/unselected at ordinary/strategic zoom. Record
 exact source/release/deployment/map. Parent Railway/Mac route remains the assigned
 receiver; local sandbox-unavailable has supplied no actual game capture. Stone
-state adoption remains separately with animation01a103d4 / PR216.
+default binding now comes from merged PR263 / animation01a103d4; exact Stone
+native/deployed acceptance remains open.
 
 Current authored coverage from [the action-by-heading count](qa-evidence/worker-land-art-2026-10-04/land-action-coverage.json):
 
@@ -618,10 +619,17 @@ Current authored coverage from [the action-by-heading count](qa-evidence/worker-
 | Repair | SE,NW | 2/8;6 |
 | Attack | E,SE,NW | 3/8;5 |
 | Defeat | SE,NW | 2/8;6 |
-| Stone art (default state pending) | SE,NW | 2/8;6 |
+| Stone (default binding from PR263) | SE,NW | 2/8;6 |
 
 Authored24/64; **40 art cells remain**. Per heading: SE/NW8/8, E3/8;
 N/NE/S/SW/W each1/8. Ranked next: default admit complete retained East food,
 then same-heading hammer build/repair; supply East Stone/defeat; continue the
-other five headings. Deployment/native and bounded Stone adoption stay open,
+other five headings. Deployment/native and target-bearing integration stay open,
 with the concrete receiving owners above; no cosmetic perfection hold.
+
+
+While this slice was in progress, animation-owner [PR263](https://github.com/lbeezr/thousand-unit-skirmish/pull/263)
+merged at `0934be78`. Its main changes are integrated: dedicated exact Stone
+selection, compatible positive receipts and both-seat NW loop/Stop/resume tests.
+All earlier gap receipts remain historical. The art-owner branch makes no new
+state/clock/economy edits; runtime changes here originate from merged main.

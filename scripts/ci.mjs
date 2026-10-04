@@ -68,7 +68,7 @@ run(['scripts/region-event-scenario.mjs'], 'Region event recovery and rematch');
 run(['scripts/regional-ambience-scenario.mjs'], 'Regional ambience bus and lifecycle');
 run(['scripts/audio-shore-profile-scenario.mjs'], 'Ordinary Shore Fishing regional audio selection and lifecycle');
 run(['scripts/terrain-authoring-scenario.mjs'], 'Seeded terrain authoring and height surfaces');
-run(['--test', 'scripts/map-scale-audit.test.mjs', 'scripts/confluence-grounds.test.mjs'], 'Source-bound scale audit and admitted Confluence Practice arena');
+run(['--test', 'scripts/map-scale-audit.test.mjs', 'scripts/confluence-grounds.test.mjs', 'scripts/riven-escarpment.test.mjs'], 'Source-bound scale audit, Confluence arena and Medium escarpment');
 run(['scripts/landscape-authoring-scenario.mjs'], 'Organic regional landscape shapes');
 run(['scripts/forest-habitat-scenario.mjs'], 'Graduated woodland habitat margins');
 run(['scripts/forest-composition-scenario.mjs'], 'Regional dominant species groves');
@@ -157,6 +157,7 @@ run(['--experimental-test-coverage', '--test-coverage-include=src/networking/web
 run(['--test', 'scripts/worker-shutdown.test.mjs'], 'Signal-aware room worker shutdown');
 run(['--test', 'scripts/check-client-imports.test.mjs'], 'Served client import graph');
 run(['--test', 'scripts/snapshot-private-production.test.mjs'], 'Seat-private production snapshots');
+run(['--test', 'scripts/snapshot-row-allocation.test.mjs'], 'Base-row allocation preserves exact snapshot fields and wire bytes');
 
 run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor states');
 run(['--test', 'scripts/hud-action-icons.test.mjs'], 'Default HUD action glyphs and semantics');

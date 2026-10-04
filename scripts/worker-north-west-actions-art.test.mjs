@@ -137,15 +137,20 @@ test('default NW defeat overrides action/movement and holds its prone terminal k
   }
 });
 
-test('dedicated NW Stone is available in art while its default consumer gap remains explicit', async () => {
+test('dedicated NW Stone follows productive receipts, loops and Stops/resumes on both Human seats', async () => {
   const { expect } = await playbackHarness();
-  for (const team of [0, 1]) {
-    const unit = { ...worker(team, false), task: 'gathering', performingAction: 'gather-stone' };
-    assert.equal(activeState(unit, 1000), 'idle');
-    expect(unit, 1000, 'idle-north-west-0');
+  for (const team of [0, 1]) for (const selected of [false, true]) {
+    const unit = { ...worker(team, selected), task: 'gathering', performingAction: 'gather-stone' };
+    assert.equal(activeState(unit, 1000), 'gather-stone');
+    for (let i = 0; i <= 3; i++) expect(unit, 1000 + i * 240, `gather-stone-north-west-${i % 3}`);
+    unit.performingAction = null;
+    expect(unit, 1800, 'idle-north-west-0');
+    unit.performingAction = 'gather-stone';
+    expect(unit, 1900, 'gather-stone-north-west-0');
+    expect(unit, 2140, 'gather-stone-north-west-1');
   }
-  for (const heading of ['north', 'north-east', 'east', 'south', 'south-west', 'west']) {
-    assert.equal(spriteActionClip(clips, 'gather-stone', heading, 'stone', 'human', false)
+  for (const approximate of [false, true]) for (const heading of ['north', 'north-east', 'east', 'south', 'south-west', 'west']) {
+    assert.equal(spriteActionClip(clips, 'gather-stone', heading, 'stone', 'human', approximate)
       .sequence[0].frameId, `idle-${heading}-0`);
   }
 });

@@ -145,6 +145,6 @@
     "north-west": 8
   },
   "carryReturn": "all8 walks reused with existing cargo cue; no independent pose count",
-  "defaultStoneConsumer": "pending animation01a103d4 / PR216; activeState still idle for confirmed gather-stone",
+  "defaultStoneConsumer": "enabled by merged PR263 / animation01a103d4: positive receipts select exact authored SE/NW clips; six missing headings retain their own idle",
   "nativeDeployment": "open; identified containing parent Railway/Mac route required"
 }

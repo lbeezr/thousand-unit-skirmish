@@ -97,6 +97,20 @@ test('forest and Farm grants use existing finite stock without adding any author
   f.next(); f.gather(); assert.equal(f.action(), 'gather-food');
 });
 
+test('Stone productive → no-progress → resume → Stop snapshots follow actual grants and dirty clears', () => {
+  const f = fixture(); f.node.type = 'stone'; f.gather();
+  assert.equal(f.row(0)[17], 'gather-stone'); assert.equal(f.finish(), true);
+  f.next(); const cargo = f.unit.cargo; f.node.x = 20; f.gather();
+  assert.equal(f.unit.cargo, cargo); assert.equal(f.row(0)[9], 'gathering');
+  assert.equal(f.row(0)[17], null); assert.equal(f.finish(), true);
+  f.next(); f.node.x = 0; f.gather();
+  assert.ok(f.unit.cargo > cargo); assert.equal(f.row(0)[17], 'gather-stone');
+  assert.equal(f.finish(), true);
+  f.context.stopGathering(f.unit);
+  assert.equal(f.row(0)[9], 'idle'); assert.equal(f.row(0)[17], null);
+  assert.equal(f.finish(), true);
+});
+
 test('depletion and full capacity clear positive grants once the Worker starts returning', () => {
   for (const forest of [false, true]) for (const capacity of [false, true]) {
     const f = fixture(); if (forest) f.unit.gatherForestCell = 0;
