@@ -38,7 +38,7 @@ jobs:
         run: |
           mkdir -p "$EVIDENCE"
           test "$(id -u)" -gt 0
-          node scripts/renderer-capability.mjs --launch > "$EVIDENCE/preflight.json"
+          node scripts/renderer-qualification.mjs --preflight "$EVIDENCE" > "$EVIDENCE/preflight.log"
       - name: Pack clean source
         run: node scripts/pack-railway-release.mjs > "${{ runner.temp }}/renderer-pack.json"
       - name: Capture live packed-game movement

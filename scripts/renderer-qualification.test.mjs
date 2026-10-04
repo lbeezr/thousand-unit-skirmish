@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
-import { installReadbackProbe, validateFrame, validateMotion, validateRelease } from './renderer-qualification.mjs';
+import { installReadbackProbe, qualifyRendererCapability, validateFrame, validateMotion, validateRelease } from './renderer-qualification.mjs';
 
 const source = { revision: 'a'.repeat(40), dirty: false };
 const pack = { sourceRevision: source.revision, sourceDirty: false, digest: `sha256:${'b'.repeat(64)}`,
@@ -85,7 +85,27 @@ test('hosted workflow is bounded, read-only, non-root and retains failures', asy
   assert.match(workflow, /contents: read/); assert.match(workflow, /id -u.*-gt 0/);
   assert.match(workflow, /if: always\(\)/); assert.match(workflow, /retention-days: 1/);
   assert.doesNotMatch(workflow, /continue-on-error|no-sandbox|sudo|secrets\./);
-  assert.ok(workflow.indexOf('renderer-capability.mjs --launch') < workflow.indexOf('renderer-qualification.mjs "'));
+  assert.ok(workflow.indexOf('renderer-qualification.mjs --preflight') < workflow.indexOf('renderer-qualification.mjs "'));
+});
+
+test('preflight retries only owned-profile ENOTEMPTY cleanup, with one browser launch and retained errno', async () => {
+  for (const [failureCode, failures, expectedAttempts, status] of [
+    ['ENOTEMPTY', 1, 2, 'ready'], ['ENOTEMPTY', 3, 3, 'blocked'], ['EPERM', 1, 1, 'blocked'],
+    ['EACCES', 1, 1, 'blocked'], ['private-error-code', 1, 1, 'blocked'],
+  ]) {
+    let launches = 0, disposals = 0;
+    const report = await qualifyRendererCapability({ getSource: () => source, openBrowser: async () => {
+      launches++;
+      return { version: { product: 'CPU mock' }, page: async () => ({ errors: [], cdp: { on() {}, evaluate: async () => ({
+        available: true, renderer: { version: 'WebGL 2.0', unmaskedName: 'CPU mock' },
+        contextLost: false, glError: 0, samples: [[17, 33, 65, 255], [91, 123, 177, 255]],
+      }) } }), dispose: async () => { if (++disposals <= failures) throw Object.assign(new Error('private-token'), { code: failureCode }); } };
+    } });
+    assert.equal(launches, 1); assert.equal(disposals, expectedAttempts); assert.equal(report.status, status);
+    assert.equal(report.cleanup.attempts, expectedAttempts); assert.equal(report.webglReadbackPassed, true);
+    assert.equal(report.cleanup.errors[0].systemCode, failureCode === 'private-error-code' ? null : failureCode);
+    assert.doesNotMatch(JSON.stringify(report), /private-/);
+  }
 });
 
 test('actual orchestration retains early network/exception flags, safe OS codes and cleanup on failure', async () => {

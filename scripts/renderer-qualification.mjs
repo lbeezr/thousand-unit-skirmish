@@ -8,11 +8,35 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createFortifiedBrowser } from './fortified-browser-fixture.mjs';
+import { checkRendererCapability } from './renderer-capability.mjs';
 import { stopChild } from './temporary-resources.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+// Chrome descendants can finish writing an owned profile after Browser.close.
+// Retry only its idempotent disposal on ENOTEMPTY, never browser launch, sandbox
+// setup, permission failures or graphics checks. Retain the actual safe errno.
+function withProfileCleanup(browser, cleanup) {
+  return { ...browser, dispose: async () => {
+      for (let attempt = 1; attempt <= cleanup.maxAttempts; attempt++) {
+        cleanup.attempts++;
+        try { await browser.dispose(); return; }
+        catch (error) {
+          cleanup.errors.push({ systemCode: ['ENOTEMPTY', 'EPERM', 'EACCES', 'EBUSY'].includes(error.code) ? error.code : null });
+          if (error.code !== 'ENOTEMPTY' || attempt === cleanup.maxAttempts) throw error;
+          await sleep(100 * attempt);
+        }
+      }
+  } };
+}
+export async function qualifyRendererCapability({ openBrowser = createFortifiedBrowser, getSource } = {}) {
+  const cleanup = { maxAttempts: 3, attempts: 0, errors: [] };
+  const result = await checkRendererCapability({ getSource,
+    openBrowser: async () => withProfileCleanup(await openBrowser(), cleanup) });
+  return { ...result, cleanup };
+}
 
 export function validateRelease(pack, source) {
   assert.match(source.revision, /^[a-f0-9]{40}$/, 'source revision is required');
@@ -114,7 +138,8 @@ async function reservePort() {
 export async function qualifyPackedGame(packFile, evidenceDirectory) {
   await mkdir(evidenceDirectory, { recursive: true });
   const report = { schemaVersion: 1, scope: 'local-packed-game-movement', status: 'failed', sandbox: 'enabled',
-    uid: process.getuid?.() ?? null, source: null, release: null, frames: [], assets: [], browserEvents: [], issues: [] };
+    uid: process.getuid?.() ?? null, source: null, release: null, frames: [], assets: [], browserEvents: [], issues: [],
+    cleanup: { maxAttempts: 3, attempts: 0, errors: [] } };
   let stage = 'release', browser, page, server, temporary;
   const recordBrowserEvent = event => { if (report.browserEvents.length < 100) report.browserEvents.push(event); };
   try {
@@ -157,7 +182,7 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
       assert.equal(hash, sha256(await readFile(path.join(pack.directory, file))), 'served entry must match packed bytes');
       report.assets.push({ path: file, sha256: hash });
     }
-    stage = 'browser'; browser = await createFortifiedBrowser(); report.browser = browser.version;
+    stage = 'browser'; browser = withProfileCleanup(await createFortifiedBrowser(), report.cleanup); report.browser = browser.version;
     page = await browser.page('about:blank', { beforeScript: `(${installReadbackProbe.toString()})()` });
     page.cdp.on('Runtime.consoleAPICalled', event => {
       if (event.type === 'error') recordBrowserEvent({ kind: 'console-error' });
@@ -227,6 +252,11 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  if (process.argv.length !== 4) { process.stderr.write('Usage: node scripts/renderer-qualification.mjs PACK_JSON EVIDENCE_DIRECTORY\n'); process.exitCode = 2; }
+  if (process.argv.length !== 4) { process.stderr.write('Usage: node scripts/renderer-qualification.mjs --preflight|PACK_JSON EVIDENCE_DIRECTORY\n'); process.exitCode = 2; }
+  else if (process.argv[2] === '--preflight') {
+    const report = await qualifyRendererCapability(); await mkdir(process.argv[3], { recursive: true });
+    await writeFile(path.join(process.argv[3], 'preflight.json'), `${JSON.stringify(report, null, 2)}\n`);
+    console.log(JSON.stringify(report)); process.exitCode = report.status === 'ready' ? 0 : 1;
+  }
   else { const report = await qualifyPackedGame(process.argv[2], process.argv[3]); console.log(JSON.stringify(report)); process.exitCode = report.status === 'passed' ? 0 : 1; }
 }
