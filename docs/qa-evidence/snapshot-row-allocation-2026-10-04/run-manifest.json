@@ -1,0 +1,2410 @@
+{
+  "schemaVersion": 1,
+  "startedUtc": "2026-10-04T03:26:41.164Z",
+  "identities": {
+    "baseline": {
+      "root": "/workspace/thousand-unit-skirmish-snapshot-baseline",
+      "head": "b464199855a23b8f20503b46baba9f9705e350bb",
+      "srcTree": "da951c91d5be97d6fd36f0b23326a15055510923",
+      "serverSha256": "bba377a6af627f30cc2acd88fb52e2cbec3c7491add5ebb56394975c39e0bdc0",
+      "harnessSha256": "2995050e062a9b593d65b8943c95c4f2c982269a79c16df98562086866d99aed",
+      "observerSha256": "06a8efc6ab7b6880eda0a22effa1ae25e172f27890319dd6263923694e2c525b"
+    },
+    "candidate": {
+      "root": "/workspace/thousand-unit-skirmish-tick-proposal",
+      "head": "140115496470a119cba2252e9d9de9275d65e59a",
+      "srcTree": "da951c91d5be97d6fd36f0b23326a15055510923",
+      "serverSha256": "269ba44cda8dc64434af811d06dbcd5ae81f9a1bb2bbf56ac8907c0687af409c",
+      "harnessSha256": "2995050e062a9b593d65b8943c95c4f2c982269a79c16df98562086866d99aed",
+      "observerSha256": "06a8efc6ab7b6880eda0a22effa1ae25e172f27890319dd6263923694e2c525b"
+    }
+  },
+  "cases": [
+    [
+      "baseline",
+      0,
+      1,
+      false
+    ],
+    [
+      "candidate",
+      0,
+      1,
+      false
+    ],
+    [
+      "candidate",
+      0,
+      2,
+      false
+    ],
+    [
+      "baseline",
+      0,
+      2,
+      false
+    ],
+    [
+      "candidate",
+      4,
+      1,
+      false
+    ],
+    [
+      "baseline",
+      4,
+      1,
+      false
+    ],
+    [
+      "baseline",
+      4,
+      2,
+      false
+    ],
+    [
+      "candidate",
+      4,
+      2,
+      false
+    ],
+    [
+      "baseline",
+      0,
+      1,
+      true
+    ],
+    [
+      "candidate",
+      0,
+      1,
+      true
+    ],
+    [
+      "candidate",
+      4,
+      1,
+      true
+    ],
+    [
+      "baseline",
+      4,
+      1,
+      true
+    ]
+  ],
+  "retentionCriteria": {
+    "exactSnapshotWireAndRecovery": true,
+    "minimumFixedProbeAllocationReductionFraction": 0.2,
+    "processProfilesConfirmAllocationDirection": true,
+    "wholeTickDistributionsRetained": true,
+    "defaultSchedulerUnchanged": true
+  },
+  "runs": [
+    {
+      "variant": "baseline",
+      "policy": 0,
+      "repeat": 1,
+      "observed": false,
+      "startedUtc": "2026-10-04T03:26:41.168Z",
+      "endedUtc": "2026-10-04T03:28:17.793Z",
+      "output": "/tmp/snapshot-row-baseline-plain-0-r1.json",
+      "log": "/tmp/snapshot-row-baseline-plain-0-r1.log",
+      "exitCode": 0,
+      "signal": null,
+      "failure": null,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 5.991,
+          "p95": 19.899,
+          "max": 109.82
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 3.643,
+          "p95": 10.719,
+          "max": 109.816
+        },
+        "planningMs": {
+          "count": 0,
+          "p50": null,
+          "p95": null,
+          "max": null
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.944,
+          "max": 12.096
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.04,
+          "max": 6.113
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 9.353,
+          "max": 34.416
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 10.063
+        },
+        "overBudgetTicks": 9,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 1919,
+            "durationMs": 109.82,
+            "cpuMs": 94.512,
+            "simulationMs": 109.816,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.004,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2547,
+            "durationMs": 66.86,
+            "cpuMs": 66.833,
+            "simulationMs": 20.986,
+            "visionMs": 11.413,
+            "scenarioMs": 0.042,
+            "scenarioEvaluated": true,
+            "broadcastMs": 34.416,
+            "checkpointMs": 0.002
+          },
+          {
+            "tickNumber": 2361,
+            "durationMs": 42.583,
+            "cpuMs": 17.814,
+            "simulationMs": 8.24,
+            "visionMs": 1.577,
+            "scenarioMs": 0.018,
+            "scenarioEvaluated": true,
+            "broadcastMs": 32.749,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 1878,
+            "durationMs": 42.523,
+            "cpuMs": 55.844,
+            "simulationMs": 14.302,
+            "visionMs": 12.096,
+            "scenarioMs": 0.1,
+            "scenarioEvaluated": true,
+            "broadcastMs": 16.024,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2553,
+            "durationMs": 39.379,
+            "cpuMs": 27.587,
+            "simulationMs": 26.326,
+            "visionMs": 1.061,
+            "scenarioMs": 0.018,
+            "scenarioEvaluated": true,
+            "broadcastMs": 11.972,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2466,
+            "durationMs": 37.987,
+            "cpuMs": 42.171,
+            "simulationMs": 24.101,
+            "visionMs": 1.291,
+            "scenarioMs": 0.022,
+            "scenarioEvaluated": true,
+            "broadcastMs": 12.573,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 1899,
+            "durationMs": 37.632,
+            "cpuMs": 40.652,
+            "simulationMs": 16.057,
+            "visionMs": 11.815,
+            "scenarioMs": 0.038,
+            "scenarioEvaluated": true,
+            "broadcastMs": 9.722,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2007,
+            "durationMs": 36.374,
+            "cpuMs": 36.376,
+            "simulationMs": 29.964,
+            "visionMs": 2.085,
+            "scenarioMs": 0.029,
+            "scenarioEvaluated": true,
+            "broadcastMs": 4.295,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2511,
+            "durationMs": 35.157,
+            "cpuMs": 36.076,
+            "simulationMs": 18.631,
+            "visionMs": 3.518,
+            "scenarioMs": 0.032,
+            "scenarioEvaluated": true,
+            "broadcastMs": 12.975,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 1923,
+            "durationMs": 33.079,
+            "cpuMs": 33.15,
+            "simulationMs": 6.244,
+            "visionMs": 1.484,
+            "scenarioMs": 0.018,
+            "scenarioEvaluated": true,
+            "broadcastMs": 25.333,
+            "checkpointMs": 0.001
+          }
+        ]
+      },
+      "casualties": 560
+    },
+    {
+      "variant": "candidate",
+      "policy": 0,
+      "repeat": 1,
+      "observed": false,
+      "startedUtc": "2026-10-04T03:28:17.797Z",
+      "endedUtc": "2026-10-04T03:29:53.044Z",
+      "output": "/tmp/snapshot-row-candidate-plain-0-r1.json",
+      "log": "/tmp/snapshot-row-candidate-plain-0-r1.log",
+      "exitCode": 0,
+      "signal": null,
+      "failure": null,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 4.904,
+          "p95": 14.967,
+          "max": 47.347
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 3.059,
+          "p95": 7.672,
+          "max": 26.594
+        },
+        "planningMs": {
+          "count": 0,
+          "p50": null,
+          "p95": null,
+          "max": null
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.155,
+          "max": 10.053
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.027,
+          "max": 0.343
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 6.561,
+          "max": 30.094
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 4.574
+        },
+        "overBudgetTicks": 2,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2580,
+            "durationMs": 47.347,
+            "cpuMs": 24.635,
+            "simulationMs": 26.418,
+            "visionMs": 2.499,
+            "scenarioMs": 0.028,
+            "scenarioEvaluated": true,
+            "broadcastMs": 16.55,
+            "checkpointMs": 1.852
+          },
+          {
+            "tickNumber": 2691,
+            "durationMs": 36.536,
+            "cpuMs": 36.763,
+            "simulationMs": 5.289,
+            "visionMs": 1.131,
+            "scenarioMs": 0.02,
+            "scenarioEvaluated": true,
+            "broadcastMs": 30.094,
+            "checkpointMs": 0.002
+          },
+          {
+            "tickNumber": 2688,
+            "durationMs": 31.735,
+            "cpuMs": 19.826,
+            "simulationMs": 24.885,
+            "visionMs": 1.351,
+            "scenarioMs": 0.023,
+            "scenarioEvaluated": true,
+            "broadcastMs": 5.476,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2577,
+            "durationMs": 29.184,
+            "cpuMs": 17.348,
+            "simulationMs": 15.897,
+            "visionMs": 1.171,
+            "scenarioMs": 0.025,
+            "scenarioEvaluated": true,
+            "broadcastMs": 12.091,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2653,
+            "durationMs": 26.595,
+            "cpuMs": 26.598,
+            "simulationMs": 26.594,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2178,
+            "durationMs": 26.394,
+            "cpuMs": 28.476,
+            "simulationMs": 3.912,
+            "visionMs": 10.053,
+            "scenarioMs": 0.098,
+            "scenarioEvaluated": true,
+            "broadcastMs": 12.33,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2169,
+            "durationMs": 26.339,
+            "cpuMs": 70.665,
+            "simulationMs": 15.462,
+            "visionMs": 2.799,
+            "scenarioMs": 0.343,
+            "scenarioEvaluated": true,
+            "broadcastMs": 7.734,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2355,
+            "durationMs": 26.201,
+            "cpuMs": 26.457,
+            "simulationMs": 19.181,
+            "visionMs": 1.844,
+            "scenarioMs": 0.02,
+            "scenarioEvaluated": true,
+            "broadcastMs": 5.156,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 1800,
+            "durationMs": 26.039,
+            "cpuMs": 25.923,
+            "simulationMs": 10.767,
+            "visionMs": 3.303,
+            "scenarioMs": 0.057,
+            "scenarioEvaluated": true,
+            "broadcastMs": 8.653,
+            "checkpointMs": 3.259
+          },
+          {
+            "tickNumber": 1953,
+            "durationMs": 24.112,
+            "cpuMs": 12.519,
+            "simulationMs": 4.576,
+            "visionMs": 9.248,
+            "scenarioMs": 0.038,
+            "scenarioEvaluated": true,
+            "broadcastMs": 10.248,
+            "checkpointMs": 0.001
+          }
+        ]
+      },
+      "casualties": 570
+    },
+    {
+      "variant": "candidate",
+      "policy": 0,
+      "repeat": 2,
+      "observed": false,
+      "startedUtc": "2026-10-04T03:29:53.046Z",
+      "endedUtc": "2026-10-04T03:31:27.509Z",
+      "output": "/tmp/snapshot-row-candidate-plain-0-r2.json",
+      "log": "/tmp/snapshot-row-candidate-plain-0-r2.log",
+      "exitCode": 0,
+      "signal": null,
+      "failure": null,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 4.675,
+          "p95": 14.28,
+          "max": 61.9
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 3.053,
+          "p95": 8.317,
+          "max": 29.433
+        },
+        "planningMs": {
+          "count": 0,
+          "p50": null,
+          "p95": null,
+          "max": null
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.243,
+          "max": 7.451
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.029,
+          "max": 0.259
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 6.299,
+          "max": 52.928
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 3.556
+        },
+        "overBudgetTicks": 2,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2661,
+            "durationMs": 61.9,
+            "cpuMs": 61.905,
+            "simulationMs": 8.122,
+            "visionMs": 0.835,
+            "scenarioMs": 0.015,
+            "scenarioEvaluated": true,
+            "broadcastMs": 52.928,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2688,
+            "durationMs": 36.061,
+            "cpuMs": 14.903,
+            "simulationMs": 20.747,
+            "visionMs": 5.378,
+            "scenarioMs": 0.252,
+            "scenarioEvaluated": true,
+            "broadcastMs": 9.683,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2472,
+            "durationMs": 31.695,
+            "cpuMs": 19.749,
+            "simulationMs": 17.531,
+            "visionMs": 1.373,
+            "scenarioMs": 0.025,
+            "scenarioEvaluated": true,
+            "broadcastMs": 12.765,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2007,
+            "durationMs": 30.954,
+            "cpuMs": 31.001,
+            "simulationMs": 1.93,
+            "visionMs": 1.786,
+            "scenarioMs": 0.021,
+            "scenarioEvaluated": true,
+            "broadcastMs": 27.216,
+            "checkpointMs": 0.002
+          },
+          {
+            "tickNumber": 2663,
+            "durationMs": 29.434,
+            "cpuMs": 29.438,
+            "simulationMs": 29.433,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2473,
+            "durationMs": 28.889,
+            "cpuMs": 16.577,
+            "simulationMs": 28.886,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.003,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2475,
+            "durationMs": 27.755,
+            "cpuMs": 14.797,
+            "simulationMs": 5.885,
+            "visionMs": 7.451,
+            "scenarioMs": 0.027,
+            "scenarioEvaluated": true,
+            "broadcastMs": 14.392,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2478,
+            "durationMs": 26.956,
+            "cpuMs": 16.029,
+            "simulationMs": 11.478,
+            "visionMs": 5.618,
+            "scenarioMs": 0.064,
+            "scenarioEvaluated": true,
+            "broadcastMs": 9.796,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2664,
+            "durationMs": 26.088,
+            "cpuMs": 25.975,
+            "simulationMs": 6.54,
+            "visionMs": 0.895,
+            "scenarioMs": 0.017,
+            "scenarioEvaluated": true,
+            "broadcastMs": 18.635,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2127,
+            "durationMs": 25.286,
+            "cpuMs": 25.286,
+            "simulationMs": 1.366,
+            "visionMs": 5.338,
+            "scenarioMs": 0.032,
+            "scenarioEvaluated": true,
+            "broadcastMs": 18.55,
+            "checkpointMs": 0
+          }
+        ]
+      },
+      "casualties": 552
+    },
+    {
+      "variant": "baseline",
+      "policy": 0,
+      "repeat": 2,
+      "observed": false,
+      "startedUtc": "2026-10-04T03:31:27.513Z",
+      "endedUtc": "2026-10-04T03:33:02.015Z",
+      "output": "/tmp/snapshot-row-baseline-plain-0-r2.json",
+      "log": "/tmp/snapshot-row-baseline-plain-0-r2.log",
+      "exitCode": 0,
+      "signal": null,
+      "failure": null,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 5.117,
+          "p95": 14.197,
+          "max": 55.182
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 2.707,
+          "p95": 7.792,
+          "max": 37.856
+        },
+        "planningMs": {
+          "count": 0,
+          "p50": null,
+          "p95": null,
+          "max": null
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.339,
+          "max": 13.591
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.025,
+          "max": 0.289
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 6.557,
+          "max": 25.185
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 2.52
+        },
+        "overBudgetTicks": 4,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2178,
+            "durationMs": 55.182,
+            "cpuMs": 29.753,
+            "simulationMs": 16.323,
+            "visionMs": 13.591,
+            "scenarioMs": 0.082,
+            "scenarioEvaluated": true,
+            "broadcastMs": 25.185,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2649,
+            "durationMs": 37.944,
+            "cpuMs": 22.254,
+            "simulationMs": 23.518,
+            "visionMs": 0.982,
+            "scenarioMs": 0.018,
+            "scenarioEvaluated": true,
+            "broadcastMs": 13.425,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2402,
+            "durationMs": 37.858,
+            "cpuMs": 37.942,
+            "simulationMs": 37.856,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2646,
+            "durationMs": 36.041,
+            "cpuMs": 18.901,
+            "simulationMs": 14.333,
+            "visionMs": 5.863,
+            "scenarioMs": 0.075,
+            "scenarioEvaluated": true,
+            "broadcastMs": 15.77,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2526,
+            "durationMs": 30.386,
+            "cpuMs": 44.85,
+            "simulationMs": 19.416,
+            "visionMs": 2.602,
+            "scenarioMs": 0.03,
+            "scenarioEvaluated": true,
+            "broadcastMs": 8.338,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2423,
+            "durationMs": 30.23,
+            "cpuMs": 6.344,
+            "simulationMs": 30.229,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2525,
+            "durationMs": 29.803,
+            "cpuMs": 29.78,
+            "simulationMs": 29.803,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2650,
+            "durationMs": 27.734,
+            "cpuMs": 14.547,
+            "simulationMs": 27.732,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2589,
+            "durationMs": 25.691,
+            "cpuMs": 25.69,
+            "simulationMs": 11.727,
+            "visionMs": 2.55,
+            "scenarioMs": 0.024,
+            "scenarioEvaluated": true,
+            "broadcastMs": 11.389,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2648,
+            "durationMs": 25.686,
+            "cpuMs": 17.639,
+            "simulationMs": 25.685,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          }
+        ]
+      },
+      "casualties": 556
+    },
+    {
+      "variant": "candidate",
+      "policy": 4,
+      "repeat": 1,
+      "observed": false,
+      "startedUtc": "2026-10-04T03:33:02.017Z",
+      "endedUtc": "2026-10-04T03:34:38.378Z",
+      "output": "/tmp/snapshot-row-candidate-plain-4-r1.json",
+      "log": "/tmp/snapshot-row-candidate-plain-4-r1.log",
+      "exitCode": 0,
+      "signal": null,
+      "failure": null,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 4.669,
+          "p95": 13.01,
+          "max": 44.676
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 2.68,
+          "p95": 6.992,
+          "max": 30.625
+        },
+        "planningMs": {
+          "count": 192,
+          "p50": 0.124,
+          "p95": 1.042,
+          "max": 7.687
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 1.947,
+          "max": 17.099
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.026,
+          "max": 0.519
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 5.978,
+          "max": 24.358
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 4.044
+        },
+        "overBudgetTicks": 1,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2598,
+            "durationMs": 44.676,
+            "cpuMs": 16.074,
+            "simulationMs": 10.45,
+            "visionMs": 17.099,
+            "scenarioMs": 0.029,
+            "scenarioEvaluated": true,
+            "broadcastMs": 17.096,
+            "checkpointMs": 0.001,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2601,
+            "durationMs": 32.344,
+            "cpuMs": 17.818,
+            "simulationMs": 6.55,
+            "visionMs": 1.412,
+            "scenarioMs": 0.024,
+            "scenarioEvaluated": true,
+            "broadcastMs": 24.358,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2492,
+            "durationMs": 30.626,
+            "cpuMs": 38.421,
+            "simulationMs": 30.625,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0,
+            "planningMs": 0.328,
+            "planningTurns": 4,
+            "planningWorkItems": 32,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2599,
+            "durationMs": 29.356,
+            "cpuMs": 16.251,
+            "simulationMs": 29.354,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.002,
+            "checkpointMs": 0,
+            "planningMs": 0.003,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2600,
+            "durationMs": 29.185,
+            "cpuMs": 9.189,
+            "simulationMs": 29.184,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2070,
+            "durationMs": 28.587,
+            "cpuMs": 28.507,
+            "simulationMs": 6.023,
+            "visionMs": 9.898,
+            "scenarioMs": 0.033,
+            "scenarioEvaluated": true,
+            "broadcastMs": 10.171,
+            "checkpointMs": 2.463,
+            "planningMs": 0.033,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2097,
+            "durationMs": 24.469,
+            "cpuMs": 25.282,
+            "simulationMs": 5.099,
+            "visionMs": 9.086,
+            "scenarioMs": 0.025,
+            "scenarioEvaluated": true,
+            "broadcastMs": 10.259,
+            "checkpointMs": 0.001,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2602,
+            "durationMs": 23.045,
+            "cpuMs": 7.592,
+            "simulationMs": 23.044,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0,
+            "planningMs": 0.003,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2118,
+            "durationMs": 21.671,
+            "cpuMs": 13.438,
+            "simulationMs": 3.388,
+            "visionMs": 13.727,
+            "scenarioMs": 0.031,
+            "scenarioEvaluated": true,
+            "broadcastMs": 4.524,
+            "checkpointMs": 0.001,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2112,
+            "durationMs": 19.54,
+            "cpuMs": 10.688,
+            "simulationMs": 3.986,
+            "visionMs": 4.154,
+            "scenarioMs": 0.027,
+            "scenarioEvaluated": true,
+            "broadcastMs": 11.372,
+            "checkpointMs": 0.001,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          }
+        ]
+      },
+      "casualties": 378
+    },
+    {
+      "variant": "baseline",
+      "policy": 4,
+      "repeat": 1,
+      "observed": false,
+      "startedUtc": "2026-10-04T03:34:38.381Z",
+      "endedUtc": "2026-10-04T03:36:14.933Z",
+      "output": "/tmp/snapshot-row-baseline-plain-4-r1.json",
+      "log": "/tmp/snapshot-row-baseline-plain-4-r1.log",
+      "exitCode": 0,
+      "signal": null,
+      "failure": null,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 4.591,
+          "p95": 14.587,
+          "max": 35.034
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 2.622,
+          "p95": 8.069,
+          "max": 28.923
+        },
+        "planningMs": {
+          "count": 199,
+          "p50": 0.106,
+          "p95": 0.691,
+          "max": 2.17
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.484,
+          "max": 10.374
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.029,
+          "max": 0.438
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 6.647,
+          "max": 20.062
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 3.522
+        },
+        "overBudgetTicks": 3,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2742,
+            "durationMs": 35.034,
+            "cpuMs": 20.932,
+            "simulationMs": 13.752,
+            "visionMs": 1.189,
+            "scenarioMs": 0.029,
+            "scenarioEvaluated": true,
+            "broadcastMs": 20.062,
+            "checkpointMs": 0.001,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2505,
+            "durationMs": 34.561,
+            "cpuMs": 34.439,
+            "simulationMs": 14.506,
+            "visionMs": 9.608,
+            "scenarioMs": 0.029,
+            "scenarioEvaluated": true,
+            "broadcastMs": 10.416,
+            "checkpointMs": 0.001,
+            "planningMs": 0.017,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2259,
+            "durationMs": 34.338,
+            "cpuMs": 22.036,
+            "simulationMs": 14.786,
+            "visionMs": 9.589,
+            "scenarioMs": 0.058,
+            "scenarioEvaluated": true,
+            "broadcastMs": 9.904,
+            "checkpointMs": 0.001,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 1944,
+            "durationMs": 32.481,
+            "cpuMs": 31.637,
+            "simulationMs": 17.093,
+            "visionMs": 9.171,
+            "scenarioMs": 0.049,
+            "scenarioEvaluated": true,
+            "broadcastMs": 6.168,
+            "checkpointMs": 0,
+            "planningMs": 0.003,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 1962,
+            "durationMs": 29.023,
+            "cpuMs": 30.769,
+            "simulationMs": 10.158,
+            "visionMs": 9.063,
+            "scenarioMs": 0.058,
+            "scenarioEvaluated": true,
+            "broadcastMs": 9.744,
+            "checkpointMs": 0.001,
+            "planningMs": 0.022,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2536,
+            "durationMs": 28.924,
+            "cpuMs": 6.523,
+            "simulationMs": 28.923,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2523,
+            "durationMs": 27.62,
+            "cpuMs": 27.627,
+            "simulationMs": 5.466,
+            "visionMs": 10.374,
+            "scenarioMs": 0.12,
+            "scenarioEvaluated": true,
+            "broadcastMs": 11.658,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 1980,
+            "durationMs": 27.451,
+            "cpuMs": 29.255,
+            "simulationMs": 10.516,
+            "visionMs": 5.701,
+            "scenarioMs": 0.06,
+            "scenarioEvaluated": true,
+            "broadcastMs": 7.652,
+            "checkpointMs": 3.522,
+            "planningMs": 0.098,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2535,
+            "durationMs": 26.872,
+            "cpuMs": 15.767,
+            "simulationMs": 11.213,
+            "visionMs": 1.585,
+            "scenarioMs": 0.023,
+            "scenarioEvaluated": true,
+            "broadcastMs": 14.05,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2532,
+            "durationMs": 26.541,
+            "cpuMs": 17.046,
+            "simulationMs": 7.573,
+            "visionMs": 5.395,
+            "scenarioMs": 0.029,
+            "scenarioEvaluated": true,
+            "broadcastMs": 13.543,
+            "checkpointMs": 0,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          }
+        ]
+      },
+      "casualties": 383
+    },
+    {
+      "variant": "baseline",
+      "policy": 4,
+      "repeat": 2,
+      "observed": false,
+      "startedUtc": "2026-10-04T03:36:14.934Z",
+      "endedUtc": "2026-10-04T03:37:51.311Z",
+      "output": "/tmp/snapshot-row-baseline-plain-4-r2.json",
+      "log": "/tmp/snapshot-row-baseline-plain-4-r2.log",
+      "exitCode": 0,
+      "signal": null,
+      "failure": null,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 4.666,
+          "p95": 14.359,
+          "max": 96.56
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 2.744,
+          "p95": 7.95,
+          "max": 40.225
+        },
+        "planningMs": {
+          "count": 193,
+          "p50": 0.126,
+          "p95": 0.73,
+          "max": 3.483
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.286,
+          "max": 9.542
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.029,
+          "max": 0.289
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 5.991,
+          "max": 91.135
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 3.949
+        },
+        "overBudgetTicks": 3,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2103,
+            "durationMs": 96.56,
+            "cpuMs": 96.568,
+            "simulationMs": 3.204,
+            "visionMs": 2.166,
+            "scenarioMs": 0.054,
+            "scenarioEvaluated": true,
+            "broadcastMs": 91.135,
+            "checkpointMs": 0.001,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2747,
+            "durationMs": 40.227,
+            "cpuMs": 14.862,
+            "simulationMs": 40.225,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2749,
+            "durationMs": 34.773,
+            "cpuMs": 7.6,
+            "simulationMs": 34.772,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2527,
+            "durationMs": 31.496,
+            "cpuMs": 11.991,
+            "simulationMs": 31.494,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0,
+            "planningMs": 0.128,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2748,
+            "durationMs": 30.781,
+            "cpuMs": 16.226,
+            "simulationMs": 9.996,
+            "visionMs": 1.326,
+            "scenarioMs": 0.029,
+            "scenarioEvaluated": true,
+            "broadcastMs": 19.43,
+            "checkpointMs": 0.001,
+            "planningMs": 0.003,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2649,
+            "durationMs": 30.217,
+            "cpuMs": 31.209,
+            "simulationMs": 16.411,
+            "visionMs": 2.114,
+            "scenarioMs": 0.022,
+            "scenarioEvaluated": true,
+            "broadcastMs": 11.669,
+            "checkpointMs": 0,
+            "planningMs": 0.016,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 1963,
+            "durationMs": 29.237,
+            "cpuMs": 7.162,
+            "simulationMs": 29.236,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2523,
+            "durationMs": 29.116,
+            "cpuMs": 15.362,
+            "simulationMs": 9.897,
+            "visionMs": 8.594,
+            "scenarioMs": 0.037,
+            "scenarioEvaluated": true,
+            "broadcastMs": 10.589,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2526,
+            "durationMs": 27.274,
+            "cpuMs": 14.391,
+            "simulationMs": 9.394,
+            "visionMs": 9.542,
+            "scenarioMs": 0.055,
+            "scenarioEvaluated": true,
+            "broadcastMs": 8.282,
+            "checkpointMs": 0,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2745,
+            "durationMs": 26.242,
+            "cpuMs": 16.431,
+            "simulationMs": 12.268,
+            "visionMs": 1.143,
+            "scenarioMs": 0.026,
+            "scenarioEvaluated": true,
+            "broadcastMs": 12.804,
+            "checkpointMs": 0,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          }
+        ]
+      },
+      "casualties": 381
+    },
+    {
+      "variant": "candidate",
+      "policy": 4,
+      "repeat": 2,
+      "observed": false,
+      "startedUtc": "2026-10-04T03:37:51.312Z",
+      "endedUtc": "2026-10-04T03:39:28.368Z",
+      "output": "/tmp/snapshot-row-candidate-plain-4-r2.json",
+      "log": "/tmp/snapshot-row-candidate-plain-4-r2.log",
+      "exitCode": 0,
+      "signal": null,
+      "failure": null,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 4.944,
+          "p95": 14.933,
+          "max": 58.2
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 2.414,
+          "p95": 8.177,
+          "max": 58.141
+        },
+        "planningMs": {
+          "count": 193,
+          "p50": 0.115,
+          "p95": 0.714,
+          "max": 4.212
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.404,
+          "max": 9.077
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.027,
+          "max": 0.283
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 6.353,
+          "max": 15.034
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 5.572
+        },
+        "overBudgetTicks": 1,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2519,
+            "durationMs": 58.2,
+            "cpuMs": 58.207,
+            "simulationMs": 58.141,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.059,
+            "checkpointMs": 0,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2535,
+            "durationMs": 32.781,
+            "cpuMs": 28.517,
+            "simulationMs": 12.145,
+            "visionMs": 6.582,
+            "scenarioMs": 0.028,
+            "scenarioEvaluated": true,
+            "broadcastMs": 14.026,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2310,
+            "durationMs": 32.501,
+            "cpuMs": 32.388,
+            "simulationMs": 14.834,
+            "visionMs": 9.077,
+            "scenarioMs": 0.042,
+            "scenarioEvaluated": true,
+            "broadcastMs": 6.137,
+            "checkpointMs": 2.411,
+            "planningMs": 0.013,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2757,
+            "durationMs": 30.226,
+            "cpuMs": 16.806,
+            "simulationMs": 14.305,
+            "visionMs": 6.042,
+            "scenarioMs": 0.043,
+            "scenarioEvaluated": true,
+            "broadcastMs": 9.836,
+            "checkpointMs": 0,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2538,
+            "durationMs": 30.169,
+            "cpuMs": 25.091,
+            "simulationMs": 11.956,
+            "visionMs": 3.15,
+            "scenarioMs": 0.027,
+            "scenarioEvaluated": true,
+            "broadcastMs": 15.034,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2532,
+            "durationMs": 29.619,
+            "cpuMs": 30.47,
+            "simulationMs": 16.824,
+            "visionMs": 1.714,
+            "scenarioMs": 0.028,
+            "scenarioEvaluated": true,
+            "broadcastMs": 11.053,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2754,
+            "durationMs": 28.415,
+            "cpuMs": 16.686,
+            "simulationMs": 16.14,
+            "visionMs": 1.23,
+            "scenarioMs": 0.027,
+            "scenarioEvaluated": true,
+            "broadcastMs": 11.017,
+            "checkpointMs": 0.001,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2541,
+            "durationMs": 28.163,
+            "cpuMs": 15.377,
+            "simulationMs": 11.877,
+            "visionMs": 5.209,
+            "scenarioMs": 0.026,
+            "scenarioEvaluated": true,
+            "broadcastMs": 11.05,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2533,
+            "durationMs": 26.849,
+            "cpuMs": 13.654,
+            "simulationMs": 26.847,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2307,
+            "durationMs": 25.567,
+            "cpuMs": 25.436,
+            "simulationMs": 9.395,
+            "visionMs": 8.782,
+            "scenarioMs": 0.044,
+            "scenarioEvaluated": true,
+            "broadcastMs": 7.345,
+            "checkpointMs": 0,
+            "planningMs": 0.014,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          }
+        ]
+      },
+      "casualties": 396
+    },
+    {
+      "variant": "baseline",
+      "policy": 0,
+      "repeat": 1,
+      "observed": true,
+      "startedUtc": "2026-10-04T03:39:28.371Z",
+      "endedUtc": "2026-10-04T03:41:03.235Z",
+      "output": "/tmp/snapshot-row-baseline-observed-0-r1.json",
+      "log": "/tmp/snapshot-row-baseline-observed-0-r1.log",
+      "exitCode": 0,
+      "signal": null,
+      "failure": null,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 5.306,
+          "p95": 15.492,
+          "max": 56.266
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 2.852,
+          "p95": 8.332,
+          "max": 32.638
+        },
+        "planningMs": {
+          "count": 0,
+          "p50": null,
+          "p95": null,
+          "max": null
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.494,
+          "max": 6.441
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.031,
+          "max": 0.371
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 7.164,
+          "max": 19.62
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 4.504
+        },
+        "overBudgetTicks": 3,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2454,
+            "durationMs": 56.266,
+            "cpuMs": 20.4,
+            "simulationMs": 30.744,
+            "visionMs": 5.87,
+            "scenarioMs": 0.032,
+            "scenarioEvaluated": true,
+            "broadcastMs": 19.62,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2661,
+            "durationMs": 34.572,
+            "cpuMs": 20.073,
+            "simulationMs": 16.593,
+            "visionMs": 3.432,
+            "scenarioMs": 0.034,
+            "scenarioEvaluated": true,
+            "broadcastMs": 14.513,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2451,
+            "durationMs": 33.432,
+            "cpuMs": 20.15,
+            "simulationMs": 12.787,
+            "visionMs": 2.306,
+            "scenarioMs": 0.031,
+            "scenarioEvaluated": true,
+            "broadcastMs": 18.308,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2662,
+            "durationMs": 32.64,
+            "cpuMs": 10.857,
+            "simulationMs": 32.638,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2452,
+            "durationMs": 32.304,
+            "cpuMs": 8.68,
+            "simulationMs": 32.302,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2664,
+            "durationMs": 30.391,
+            "cpuMs": 18.342,
+            "simulationMs": 12.322,
+            "visionMs": 1.74,
+            "scenarioMs": 0.025,
+            "scenarioEvaluated": true,
+            "broadcastMs": 16.304,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2665,
+            "durationMs": 29.384,
+            "cpuMs": 9.896,
+            "simulationMs": 29.382,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2660,
+            "durationMs": 27.246,
+            "cpuMs": 9.296,
+            "simulationMs": 27.245,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2169,
+            "durationMs": 25.207,
+            "cpuMs": 57.857,
+            "simulationMs": 10.784,
+            "visionMs": 2.302,
+            "scenarioMs": 0.298,
+            "scenarioEvaluated": true,
+            "broadcastMs": 11.823,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2640,
+            "durationMs": 23.042,
+            "cpuMs": 23.588,
+            "simulationMs": 7.912,
+            "visionMs": 2.4,
+            "scenarioMs": 0.09,
+            "scenarioEvaluated": true,
+            "broadcastMs": 8.136,
+            "checkpointMs": 4.504
+          }
+        ]
+      },
+      "casualties": 563
+    },
+    {
+      "variant": "candidate",
+      "policy": 0,
+      "repeat": 1,
+      "observed": true,
+      "startedUtc": "2026-10-04T03:41:03.236Z",
+      "endedUtc": "2026-10-04T03:42:38.140Z",
+      "output": "/tmp/snapshot-row-candidate-observed-0-r1.json",
+      "log": "/tmp/snapshot-row-candidate-observed-0-r1.log",
+      "exitCode": 0,
+      "signal": null,
+      "failure": null,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 5.354,
+          "p95": 15.475,
+          "max": 154.99
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 3.282,
+          "p95": 9.731,
+          "max": 143.217
+        },
+        "planningMs": {
+          "count": 0,
+          "p50": null,
+          "p95": null,
+          "max": null
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.517,
+          "max": 8.199
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.029,
+          "max": 0.376
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 7.163,
+          "max": 79.334
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 6.677
+        },
+        "overBudgetTicks": 10,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2067,
+            "durationMs": 154.99,
+            "cpuMs": 252.297,
+            "simulationMs": 143.217,
+            "visionMs": 5.97,
+            "scenarioMs": 0.038,
+            "scenarioEvaluated": true,
+            "broadcastMs": 5.765,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2427,
+            "durationMs": 123.724,
+            "cpuMs": 145.697,
+            "simulationMs": 41.537,
+            "visionMs": 2.833,
+            "scenarioMs": 0.02,
+            "scenarioEvaluated": true,
+            "broadcastMs": 79.334,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2652,
+            "durationMs": 110.126,
+            "cpuMs": 117.259,
+            "simulationMs": 89.569,
+            "visionMs": 6.806,
+            "scenarioMs": 0.046,
+            "scenarioEvaluated": true,
+            "broadcastMs": 13.704,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2580,
+            "durationMs": 41.55,
+            "cpuMs": 22.107,
+            "simulationMs": 15.731,
+            "visionMs": 1.47,
+            "scenarioMs": 0.028,
+            "scenarioEvaluated": true,
+            "broadcastMs": 17.644,
+            "checkpointMs": 6.677
+          },
+          {
+            "tickNumber": 2406,
+            "durationMs": 39.027,
+            "cpuMs": 25.627,
+            "simulationMs": 16.429,
+            "visionMs": 4.394,
+            "scenarioMs": 0.036,
+            "scenarioEvaluated": true,
+            "broadcastMs": 18.168,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 1968,
+            "durationMs": 38.067,
+            "cpuMs": 14.591,
+            "simulationMs": 11.298,
+            "visionMs": 2.278,
+            "scenarioMs": 0.03,
+            "scenarioEvaluated": true,
+            "broadcastMs": 24.46,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2584,
+            "durationMs": 37.125,
+            "cpuMs": 10.228,
+            "simulationMs": 37.124,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.001,
+            "checkpointMs": 0
+          },
+          {
+            "tickNumber": 2583,
+            "durationMs": 36.57,
+            "cpuMs": 19.878,
+            "simulationMs": 15.888,
+            "visionMs": 1.628,
+            "scenarioMs": 0.029,
+            "scenarioEvaluated": true,
+            "broadcastMs": 19.025,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2187,
+            "durationMs": 34.922,
+            "cpuMs": 91.246,
+            "simulationMs": 21.414,
+            "visionMs": 3.424,
+            "scenarioMs": 0.22,
+            "scenarioEvaluated": true,
+            "broadcastMs": 9.863,
+            "checkpointMs": 0.001
+          },
+          {
+            "tickNumber": 2403,
+            "durationMs": 33.909,
+            "cpuMs": 19.839,
+            "simulationMs": 11.625,
+            "visionMs": 2.319,
+            "scenarioMs": 0.027,
+            "scenarioEvaluated": true,
+            "broadcastMs": 19.937,
+            "checkpointMs": 0
+          }
+        ]
+      },
+      "casualties": 569
+    },
+    {
+      "variant": "candidate",
+      "policy": 4,
+      "repeat": 1,
+      "observed": true,
+      "startedUtc": "2026-10-04T03:42:38.152Z",
+      "endedUtc": "2026-10-04T03:44:14.758Z",
+      "output": "/tmp/snapshot-row-candidate-observed-4-r1.json",
+      "log": "/tmp/snapshot-row-candidate-observed-4-r1.log",
+      "exitCode": 0,
+      "signal": null,
+      "failure": null,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 4.937,
+          "p95": 15.598,
+          "max": 36.786
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 2.843,
+          "p95": 8.449,
+          "max": 21.057
+        },
+        "planningMs": {
+          "count": 192,
+          "p50": 0.145,
+          "p95": 0.864,
+          "max": 5.631
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.442,
+          "max": 6.417
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.029,
+          "max": 0.627
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 6.892,
+          "max": 15.073
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0,
+          "max": 5.353
+        },
+        "overBudgetTicks": 2,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2550,
+            "durationMs": 36.786,
+            "cpuMs": 40.016,
+            "simulationMs": 17.105,
+            "visionMs": 3.926,
+            "scenarioMs": 0.058,
+            "scenarioEvaluated": true,
+            "broadcastMs": 11.142,
+            "checkpointMs": 4.555,
+            "planningMs": 0.004,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2697,
+            "durationMs": 33.453,
+            "cpuMs": 19.001,
+            "simulationMs": 16.86,
+            "visionMs": 1.492,
+            "scenarioMs": 0.028,
+            "scenarioEvaluated": true,
+            "broadcastMs": 15.073,
+            "checkpointMs": 0,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2703,
+            "durationMs": 32.171,
+            "cpuMs": 35.353,
+            "simulationMs": 14.743,
+            "visionMs": 4.247,
+            "scenarioMs": 0.032,
+            "scenarioEvaluated": true,
+            "broadcastMs": 13.148,
+            "checkpointMs": 0.001,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2700,
+            "durationMs": 31.968,
+            "cpuMs": 18.502,
+            "simulationMs": 11.483,
+            "visionMs": 4.638,
+            "scenarioMs": 0.028,
+            "scenarioEvaluated": true,
+            "broadcastMs": 10.465,
+            "checkpointMs": 5.353,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2460,
+            "durationMs": 26.721,
+            "cpuMs": 26.725,
+            "simulationMs": 9.25,
+            "visionMs": 5.111,
+            "scenarioMs": 0.025,
+            "scenarioEvaluated": true,
+            "broadcastMs": 8.336,
+            "checkpointMs": 3.999,
+            "planningMs": 0.193,
+            "planningTurns": 4,
+            "planningWorkItems": 32,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2442,
+            "durationMs": 25.881,
+            "cpuMs": 16.795,
+            "simulationMs": 10.379,
+            "visionMs": 6.417,
+            "scenarioMs": 0.029,
+            "scenarioEvaluated": true,
+            "broadcastMs": 9.056,
+            "checkpointMs": 0,
+            "planningMs": 0.411,
+            "planningTurns": 4,
+            "planningWorkItems": 32,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2733,
+            "durationMs": 25.418,
+            "cpuMs": 26.295,
+            "simulationMs": 10.524,
+            "visionMs": 1.455,
+            "scenarioMs": 0.627,
+            "scenarioEvaluated": true,
+            "broadcastMs": 12.812,
+            "checkpointMs": 0,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2694,
+            "durationMs": 24.789,
+            "cpuMs": 29.273,
+            "simulationMs": 9.864,
+            "visionMs": 1.584,
+            "scenarioMs": 0.029,
+            "scenarioEvaluated": true,
+            "broadcastMs": 13.312,
+            "checkpointMs": 0,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2673,
+            "durationMs": 22.724,
+            "cpuMs": 44.336,
+            "simulationMs": 12.729,
+            "visionMs": 1.629,
+            "scenarioMs": 0.054,
+            "scenarioEvaluated": true,
+            "broadcastMs": 8.313,
+            "checkpointMs": 0,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2247,
+            "durationMs": 22.604,
+            "cpuMs": 55.915,
+            "simulationMs": 11.051,
+            "visionMs": 2.592,
+            "scenarioMs": 0.292,
+            "scenarioEvaluated": true,
+            "broadcastMs": 8.67,
+            "checkpointMs": 0,
+            "planningMs": 0,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          }
+        ]
+      },
+      "casualties": 403
+    },
+    {
+      "variant": "baseline",
+      "policy": 4,
+      "repeat": 1,
+      "observed": true,
+      "startedUtc": "2026-10-04T03:44:14.759Z",
+      "endedUtc": "2026-10-04T03:45:51.524Z",
+      "output": "/tmp/snapshot-row-baseline-observed-4-r1.json",
+      "log": "/tmp/snapshot-row-baseline-observed-4-r1.log",
+      "exitCode": 0,
+      "signal": null,
+      "failure": null,
+      "summary": {
+        "totalTickMs": {
+          "count": 930,
+          "p50": 4.798,
+          "p95": 14.981,
+          "max": 90.664
+        },
+        "simulationIncludingPlanningMs": {
+          "count": 930,
+          "p50": 2.563,
+          "p95": 7.669,
+          "max": 90.662
+        },
+        "planningMs": {
+          "count": 194,
+          "p50": 0.138,
+          "p95": 0.773,
+          "max": 6
+        },
+        "visionMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 2.404,
+          "max": 7.01
+        },
+        "scenarioMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.035,
+          "max": 1.892
+        },
+        "broadcastMs": {
+          "count": 930,
+          "p50": 0.001,
+          "p95": 6.849,
+          "max": 24.985
+        },
+        "checkpointMs": {
+          "count": 930,
+          "p50": 0,
+          "p95": 0.001,
+          "max": 3.787
+        },
+        "overBudgetTicks": 6,
+        "budgetMs": 33.333333333333336,
+        "slowest": [
+          {
+            "tickNumber": 2728,
+            "durationMs": 90.664,
+            "cpuMs": 93.072,
+            "simulationMs": 90.662,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 0.002,
+            "checkpointMs": 0,
+            "planningMs": 0.003,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2226,
+            "durationMs": 56.754,
+            "cpuMs": 63.7,
+            "simulationMs": 35.105,
+            "visionMs": 3.414,
+            "scenarioMs": 0.761,
+            "scenarioEvaluated": true,
+            "broadcastMs": 17.474,
+            "checkpointMs": 0,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2739,
+            "durationMs": 49.91,
+            "cpuMs": 27.123,
+            "simulationMs": 23.689,
+            "visionMs": 4.073,
+            "scenarioMs": 0.037,
+            "scenarioEvaluated": true,
+            "broadcastMs": 22.109,
+            "checkpointMs": 0.001,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2745,
+            "durationMs": 44.497,
+            "cpuMs": 31.203,
+            "simulationMs": 20.888,
+            "visionMs": 1.589,
+            "scenarioMs": 0.031,
+            "scenarioEvaluated": true,
+            "broadcastMs": 21.989,
+            "checkpointMs": 0.001,
+            "planningMs": 0.14,
+            "planningTurns": 1,
+            "planningWorkItems": 1,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2511,
+            "durationMs": 38.073,
+            "cpuMs": 16.426,
+            "simulationMs": 9.297,
+            "visionMs": 3.766,
+            "scenarioMs": 0.026,
+            "scenarioEvaluated": true,
+            "broadcastMs": 24.985,
+            "checkpointMs": 0,
+            "planningMs": 0,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2742,
+            "durationMs": 33.467,
+            "cpuMs": 20.52,
+            "simulationMs": 16.315,
+            "visionMs": 1.721,
+            "scenarioMs": 0.1,
+            "scenarioEvaluated": true,
+            "broadcastMs": 15.33,
+            "checkpointMs": 0,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2727,
+            "durationMs": 32.714,
+            "cpuMs": 34.265,
+            "simulationMs": 17.821,
+            "visionMs": 3.97,
+            "scenarioMs": 0.033,
+            "scenarioEvaluated": true,
+            "broadcastMs": 10.89,
+            "checkpointMs": 0.001,
+            "planningMs": 0.027,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2703,
+            "durationMs": 28.738,
+            "cpuMs": 29.894,
+            "simulationMs": 12.209,
+            "visionMs": 3.578,
+            "scenarioMs": 0.034,
+            "scenarioEvaluated": true,
+            "broadcastMs": 12.917,
+            "checkpointMs": 0,
+            "planningMs": 0.009,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2721,
+            "durationMs": 27.584,
+            "cpuMs": 28.004,
+            "simulationMs": 18.088,
+            "visionMs": 1.21,
+            "scenarioMs": 1.892,
+            "scenarioEvaluated": true,
+            "broadcastMs": 6.393,
+            "checkpointMs": 0,
+            "planningMs": 0.001,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          },
+          {
+            "tickNumber": 2709,
+            "durationMs": 26.381,
+            "cpuMs": 29.672,
+            "simulationMs": 9.557,
+            "visionMs": 3.544,
+            "scenarioMs": 0.043,
+            "scenarioEvaluated": true,
+            "broadcastMs": 13.235,
+            "checkpointMs": 0,
+            "planningMs": 0.002,
+            "planningTurns": 0,
+            "planningWorkItems": 0,
+            "planningExpandedCells": 0
+          }
+        ]
+      },
+      "casualties": 397
+    }
+  ],
+  "completedUtc": "2026-10-04T03:45:51.529Z"
+}

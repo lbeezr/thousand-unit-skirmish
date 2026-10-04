@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "identities": {
+    "baseline": {
+      "root": "/workspace/thousand-unit-skirmish-snapshot-baseline",
+      "head": "b464199855a23b8f20503b46baba9f9705e350bb",
+      "srcTree": "da951c91d5be97d6fd36f0b23326a15055510923",
+      "serverSha256": "bba377a6af627f30cc2acd88fb52e2cbec3c7491add5ebb56394975c39e0bdc0",
+      "harnessSha256": "2995050e062a9b593d65b8943c95c4f2c982269a79c16df98562086866d99aed",
+      "observerSha256": "06a8efc6ab7b6880eda0a22effa1ae25e172f27890319dd6263923694e2c525b"
+    },
+    "candidate": {
+      "root": "/workspace/thousand-unit-skirmish-tick-proposal",
+      "head": "140115496470a119cba2252e9d9de9275d65e59a",
+      "srcTree": "da951c91d5be97d6fd36f0b23326a15055510923",
+      "serverSha256": "269ba44cda8dc64434af811d06dbcd5ae81f9a1bb2bbf56ac8907c0687af409c",
+      "harnessSha256": "2995050e062a9b593d65b8943c95c4f2c982269a79c16df98562086866d99aed",
+      "observerSha256": "06a8efc6ab7b6880eda0a22effa1ae25e172f27890319dd6263923694e2c525b"
+    }
+  },
+  "runtime": {
+    "node": "v24.19.0",
+    "platform": "linux",
+    "cpu": "INTEL(R) XEON(R) PLATINUM 8573C"
+  },
+  "dependencyLockSha256": "bb3e172250ea0d91981e270371e9ac293f7b4f378370ae05e86b74ab81fc3499",
+  "baselineBodySha256": "4815ed55d734594e9883d68d10d5b0ac7a940f2923086f4ea49605411bb3154e",
+  "productionDiff": "diff --git a/server.mjs b/server.mjs\nindex d857f00f..3fbbfd34 100644\n--- a/server.mjs\n+++ b/server.mjs\n@@ -1922,9 +1922,8 @@ function snapshotUnits(viewTeam = null) {\n     const row = [\n       unit.id, unit.team, Math.round(unit.x * 100) / 100,\n       Math.round(unit.z * 100) / 100, unit.hp, unit.kind, cargo,\n-      unit.cargoType, unit.generation,\n+      unit.cargoType, unit.generation, task, focusedByUnit[unit.id] || 0,\n     ];\n-    row.push(task, focusedByUnit[unit.id] || 0);\n     if (Number.isInteger(unit.lastAttackTick)\n       && unit.lastAttackTick >= 0 && tickNumber - unit.lastAttackTick <= STATE_EVERY_TICKS) {\n       const targetVisible = !mapDefinition.fogOfWar || viewTeam === null || unit.team === viewTeam;\n",
+  "defaultSchedulerUnchanged": true,
+  "scope": "Only fresh base-row array construction; exact baseline-to-candidate server replacement asserted."
+}
