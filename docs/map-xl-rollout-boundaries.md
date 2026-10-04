@@ -95,6 +95,14 @@ packed bytes / 34,136 base64 characters per seat; checkpoint explored grids are
 are bounded to 4 MiB per peer. The map's compact publication fit does **not** prove
 actual welcome/mapChange/worst-state frames or checkpoint size.
 
+Post-merge source review found that forest-group runtime integration adds a
+four-byte `Int32Array` membership entry per cell. The nested source-bound cost
+audit includes that live array: its partial resident model is now70bytes/cell,
+plus32bytes/spatial bucket, or9,449,248bytes at320. Checkpoint validation's
+separate temporary membership is409,600bytes at320. JS group cell lists,
+other temporary buffers and runtime/GC overhead remain excluded; this is not
+a measured RSS budget. The original66bytes/cell table remains historical.
+
 ## Next integrated slice and retained gates
 
 Before editing shared path publication/retention, resolve the concrete
