@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
+import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const socketSource = source.slice(source.indexOf('function connectSocket('),
@@ -22,6 +23,7 @@ function fixture() {
     close() {}
   }
   const context = vm.createContext({
+    ...browserRecoveryBindings(), document: { visibilityState: 'visible' },
     WebSocket, URL, location: { protocol: 'http:', host: 'localhost' }, pageLeaving: false,
     localTeam: null, cameraSeatTeam: null, socket: null,
     HAS_ROOM_PARAMETER: false, ROOM_SESSION_STORAGE_KEY: 'session',

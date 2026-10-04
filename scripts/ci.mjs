@@ -53,6 +53,8 @@ run(['node_modules/typescript/bin/tsc', '--project', 'tsconfig.check-node.json',
   'Strict checked Node framing boundary');
 run(['--test', 'scripts/check-node-types.test.mjs'], 'Node framing contract negative cases and ambient isolation');
 run(['--test', 'scripts/resource-visual-state.test.mjs'], 'Resource stage membership and legacy transitions');
+run(['--test', 'scripts/construction-ground-composition.test.mjs'], 'Construction ground painter order and terrain contact');
+run(['--test', 'scripts/palisade-construction-ground.test.mjs'], 'Connected owned palisade construction ground and lifecycle');
 
 run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
 run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authoring contracts');
@@ -82,6 +84,7 @@ run(['--test', 'scripts/oak-depletion-atlas-runtime.test.mjs'], 'Generic oak dep
 run(['--test', 'scripts/interactive-runtime-image.test.mjs'], 'Verified interactive image hash, dimensions and disposal');
 run(['--test', 'scripts/terrain-cliff-faces.test.mjs'], 'Painted scree cliff faces preserve terrain, UV joins and fallback');
 run(['--test', 'scripts/environment-instance-picking.test.mjs'], 'Actual tree alpha maps clicks to existing forest and wood-node Gather targets');
+run(['--test', 'scripts/renderer-tree-targeting-scenario.test.mjs'], 'Ordinary tree capture identity, privacy and existing adapter contract');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-synthesis-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--experimental-test-coverage', '--test-coverage-include=src/client/audio/audio-shipped-response.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
@@ -155,6 +158,8 @@ run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser
 run(['--test', 'scripts/browser-preflight.test.mjs'], 'Browser preflight diagnostics');
 run(['--test', 'scripts/unit-displacement-animation.test.mjs'], 'Temporal sprite cells from actual displacement and heading');
 run(['--test', 'scripts/renderer-capability.test.mjs'], 'WebGL2 capability report contracts (CPU mocks)');
+run(['--test', 'scripts/browser-state-recovery.test.mjs', 'scripts/browser-resume-client.test.mjs', 'scripts/renderer-browser-resume-scenario.test.mjs'], 'Browser resume freshness, bounded presentation and input cleanup');
+run(['scripts/browser-state-refresh-scenario.mjs'], 'Native privacy-preserving full state refresh and reconnect');
 run(['--test', 'scripts/worker-work-cycle-capture.test.mjs', 'scripts/renderer-worker-route-scenario.test.mjs', 'scripts/renderer-worker-route-joint.test.mjs'], 'Packed and ordinary Worker route adapter contracts (CPU mocks)');
 run(['--test', 'scripts/renderer-qualification.test.mjs', 'scripts/renderer-feature-capture.test.mjs', 'scripts/renderer-capture-context.test.mjs', 'scripts/renderer-qualification-novice.test.mjs', 'scripts/renderer-qualification-building-orientation.test.mjs'], 'Packed-game renderer qualification contracts (CPU mocks)');
 run(['--test', 'scripts/temporary-resources.test.mjs'], 'Owned temporary resource cleanup');

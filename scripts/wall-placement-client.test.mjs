@@ -45,6 +45,7 @@ function fixture(t, team = 0) {
     pendingBuildOrderToken: null, pendingBuildBaseline: new w.Set(),
     attackMoveMode: false, persistentTargetMode: null, tapOrderArmed: false, tapOrderPointer: null,
     cursorPointer: null, cursorShift: false, spaceDown: false, pan: null, drag: null,
+    selectionBox: d.createElement('div'), minimapPointerId: null,
     movedPointer: false, lastFriendlyUnitClick: null, lastUnitPickState: null, lastCursorSample: 0,
     guidanceDismissed: false, ui: { placementStatus: d.querySelector('#status') },
     groundHeight: () => 0, worldAt: (x, y) => ({ x: x / 10 - 10, z: y / 10 - 10 }), cameraTarget: { x: -8.5, z: -8.5 },
@@ -57,6 +58,7 @@ function fixture(t, team = 0) {
   });
   w.eval(wildlifeClientFunctionSource(source) + between('function wallPlacementAt(', 'function queueWorker('));
   w.eval(between('function updateRosterBuildingOptions(', 'function updateEconomyUI('));
+  w.eval(between('function captureBattlefieldPointer(', '\nlet spaceDown'));
   // Isolate battlefield cursor picking; its logic has separate tests.
   w.syncBattlefieldCursor = () => {};
   w.eval(between("renderer.domElement.addEventListener('pointerdown'", 'function canIssueMinimapMove('));

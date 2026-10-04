@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import * as THREE from 'three';
+import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 // Actual client picking, contextual resolution and command serialization, with
@@ -18,7 +19,7 @@ export function constructionTargetingFixture({ team = 0, units = [], selection =
   camera.position.set(0, 10, 0); camera.up.set(0, 0, -1); camera.lookAt(0, 0, 0);
   camera.updateMatrixWorld(true);
   const rect = { left: 10, top: 20, width: 400, height: 400 };
-  const context = vm.createContext({ THREE, BUILDING_DEFINITIONS, localTeam: team, units, selected,
+  const context = vm.createContext({ ...browserRecoveryBindings(), THREE, BUILDING_DEFINITIONS, localTeam: team, units, selected,
     latestBuildings: buildings, buildingVisuals, camera, pointerNdc: new THREE.Vector2(),
     raycaster: new THREE.Raycaster(), groundPlane: new THREE.Plane(new THREE.Vector3(0, 1, 0), 0),
     groundHit: new THREE.Vector3(), terrainSurface: null,

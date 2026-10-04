@@ -18,6 +18,7 @@ import { readWorkerPerformingAction } from '../src/worker-work-presentation.mjs'
 import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
 import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 import { fixedMatchArmySize } from '../src/match-mode-controls.mjs';
+import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 export const controlsMap = {
@@ -101,7 +102,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     close() {this.readyState=3;}
   }
   const query = selector => w.document.querySelector(selector);
-  Object.assign(w, {...selection,...economyProfile,...economyClient,...audioPolicy,...wildlifeClientBindings(),
+  Object.assign(w, {...browserRecoveryBindings(),...selection,...economyProfile,...economyClient,...audioPolicy,...wildlifeClientBindings(),
     THREE,UNIT_DEFINITIONS,BUILDING_DEFINITIONS,farmHarvestNode,isShoreFish,applyUnitStances,fixedMatchArmySize,
     rememberNotice,classifyOrderNotice,formatResourceStock,readWorkerPerformingAction,TextEncoder,WebSocket:WireSocket,
     mapDefinition:map,MAP_WIDTH:map.width,MAP_HEIGHT:map.height,MAP_HALF_X:map.width/2,MAP_HALF_Z:map.height/2,
@@ -150,6 +151,9 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     markUnitInstanceMatricesDirty:noop,flushUnitCargoPackColor:noop,setForestTreeVisual:noop,
     updateBuildingSelectionVisual:noop,reconcileBuildings(rows) {w.latestBuildings=rows;return 0;},
     buildingFootprint:type=>BUILDING_DEFINITIONS[type].footprint,
+    // This fixture has no environment tree meshes; real instance picking has
+    // its own Three geometry contract in environment-instance-picking.
+    pickHarvestableTreeAt:()=>null,
     cancelBuildPlacement() {w.buildPlacementActive=w.buildPlacementPending=false;},
     setArmySize() {throw new Error('This input fixture does not simulate army replacement; use the recovery fixture.');},
   });
@@ -168,7 +172,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     'updateStationaryOrderControls','updateSelectionUI','updateCommandUI','syncTargetOrderUI',
     'issueStationaryOrder','issueReturnCargo','setPersistentTargetMode','setAttackMoveMode','setTapOrderArmed',
     'issueMove','issueBuildingRallyPoint','issueAttack','issueAttackBuilding','issueGather','issueForestGather','issueContextOrder',
-    'minimapMapRect','worldFromMinimap','focusCameraFromMinimap','canIssueMinimapMove','finishMinimapPointer','finishPointer',
+    'minimapMapRect','worldFromMinimap','focusCameraFromMinimap','canIssueMinimapMove','finishMinimapPointer','finishPointer','captureBattlefieldPointer',
     'selectWholeTeam','selectFriendlyUnitKinds','selectFriendlyUnitKind','selectWorkers','selectIdleWorkers',
     'keyboardTargetIsEditing','controlGroupIndexFromKey','selectionCenterShortcutAllowed',
     'showToast','setOrderStatus','armOrderStatusTimeout','beginOrderStatus','finishOrderStatus','applyOrderNotice','sendTrackedOrder','sendCommand',
@@ -194,6 +198,12 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
   w.eval(listeners.map(node=>source.slice(node.start,node.end)).join('\n'));
   w.connectSocket();
   w.applyState(packet,true);wildlifeRenderer.update(camera);
+  const identify = state => ({ ...state, tick: Number.isSafeInteger(state.tick) ? state.tick : 0,
+    serverInstanceId: state.serverInstanceId ?? packet.serverInstanceId ?? 'fixture-server',
+    matchId: state.matchId ?? packet.matchId ?? 'fixture-match' });
+  w.browserStateRecovery.reset(identify(packet), w.performance.now());
+  w.browserStateRecovery.pending = null;
+  w.browserStateRecovery.snap = false;
   const checkErrors=()=>{if(errors.length)throw errors.shift();};checkErrors();
   const screen=point=>{
     const p=new THREE.Vector3(point.x,.22,point.z).project(camera);
@@ -204,7 +214,19 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     Object.defineProperties(event,{pointerId:{value:id},pointerType:{value:pointerType}});
     element.dispatchEvent(event);checkErrors();return event;
   }
-  const receive=value=>{connections.at(-1).message(value);wildlifeRenderer.update(camera);checkErrors();};
+  // This input fixture samples a visible presentation frame per receipt. Real
+  // suspension timing is covered by browser-state-recovery and cloud captures.
+  let presentationTime = w.performance.now();
+  const receive=value=>{
+    if (value.type === 'state' || value.type === 'stateRefresh') value = identify(value);
+    if (value.state) value = { ...value, state: identify(value.state) };
+    connections.at(-1).message(value);
+    const update = w.browserStateRecovery.frame(presentationTime += 16);
+    if (update) w.applyState(update.state, false, update.snap);
+    const counts = w.browserStateRecovery.takeWaypointCounts();
+    if (counts !== null) w.applyWaypointQueueCounts(counts);
+    wildlifeRenderer.update(camera);checkErrors();
+  };
   return {w,dom,canvas,minimap,sent,notices,connections,map,packet,screen,pointer,receive,
     click(point,extra={}) {const p=screen(point);pointer(canvas,'pointerdown',{...p,...extra});pointer(canvas,'pointerup',{...p,...extra});},
     right(point,extra={}) {return pointer(canvas,'pointerdown',{...screen(point),button:2,...extra});},

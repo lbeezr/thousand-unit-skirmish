@@ -2668,7 +2668,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
   return {
     ...(viewTeam === 0 ? {scenarioTrace: scenarioDiagnosticTrace()} : {}),
     workerPerformingActionVersion: WORKER_PERFORMING_ACTION_VERSION,
-    type: 'state', economyProfileId: matchEconomyProfileId(), rulesetRevision: economyRulesetRevision(matchEconomyProfileId()), factionId: DEFAULT_FACTION_ID, unitWireIds: UNIT_WIRE_IDS, tick: tickNumber, armySize: currentArmySize,
+    type: 'state', serverInstanceId: SERVER_INSTANCE_ID, matchId, economyProfileId: matchEconomyProfileId(), rulesetRevision: economyRulesetRevision(matchEconomyProfileId()), factionId: DEFAULT_FACTION_ID, unitWireIds: UNIT_WIRE_IDS, tick: tickNumber, armySize: currentArmySize,
     ...matchMode, matchMode: matchModeDefinition(matchMode),
     ...(bannerfallState ? { reinforcements: { version: 1,
       kills: [...bannerfallState.kills], kinds: [0, 1].map(team => bannerfallWaveKind(bannerfallState, team)),
@@ -7231,6 +7231,18 @@ async function publishMap(player, rawDefinition, persist = false) {
 
 async function handleCommand(player, command) {
   if (shuttingDown || !command || typeof command.type !== 'string') return;
+  if (command.type === 'stateRefresh') {
+    if (!Number.isSafeInteger(command.stateRefreshId) || command.stateRefreshId <= 0) return;
+    // A drain must not append an older same-tick replaceable projection after
+    // the fresh reply. Bytes already on the ordered socket precede the reply.
+    player.pendingState = null;
+    player.pendingWaypointCounts = null;
+    // Reply only to this peer using its normal privacy projection. This is a
+    // complete snapshot including owner waypoint counts; no simulation mutation.
+    // Keep the correlated reply out of ordinary replaceable state coalescing.
+    player.sendJson({ ...roomPayload(player.team), type: 'stateRefresh', stateRefreshId: command.stateRefreshId });
+    return;
+  }
   if (pregame) {
     syncPregameSeats();
     if (command.type === 'sendLobbyChat') {
