@@ -44,7 +44,8 @@ retains source evidence and acceptance. Identified staging source `839f0737`
 contains this Stone implementation; served runtime-byte verification and actual
 rendered cloud gameplay remain open with the same owner roles. The earlier
 `53a47ee` and `1acaf9a4` observations are historical.
-The [adopted Food source decision](food-source-continuation-proposal.md) extends
+Food continuation [PR319](https://github.com/lbeezr/thousand-unit-skirmish/pull/319)
+implements the [adopted source decision](food-source-continuation-proposal.md), extending
 only explicitly assigned plain neutral land Food. A Food-only durable source
 class preserves the original eight-unit circle, current visibility/reachability,
 selected-worker scope, typed cargo, external-order priority and cold recovery;
