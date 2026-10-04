@@ -157,9 +157,13 @@ area rectangles and permit owned Gates in compatibility sequences and targetless
 pending reacquisition. Legacy construction bounds derive only from remembered
 paid sites or the existing unfinished target.
 
-Runtime review and the complete candidate native/release proof are in progress;
-the first cold Gate completion case passes on the candidate, while retained
-baselines above continue to describe their exact earlier bytes. No idle-worker
+Runtime review caught three meaningful route-retry gaps: settled failed current
+targets never reacquired, exhausted budgets carried to a different site, and a
+found approach erased the budget before its later route failed. Regression tests
+execute the actual updater and route finalizer; all three are corrected in the
+candidate. Every automatic attempt now consumes the budget before planning.
+The final eleven-case native/release proof and final exact-head review are in
+progress. Retained baselines above describe their exact earlier bytes. No idle-worker
 recruitment, global job search, combat or Patrol rewrite belongs in this fix.
 
 Walls/gates owner retains source/release integration and the next continuation

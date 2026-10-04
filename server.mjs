@@ -6110,17 +6110,18 @@ function updateWallBuildOrders() {
     const retry = palisadeConstructionRetries.get(unit);
     const sameRetryTarget = retry?.navigationRevision === navigationRevision && retry.siteId === building.id;
     if (sameRetryTarget && (retry.attempts >= 3 || tickNumber < retry.nextTick)) continue;
+    // Count the automatic attempt before planning. Finding an approach does
+    // not guarantee that its later formation route will succeed.
+    palisadeConstructionRetries.set(unit, { navigationRevision, siteId: building.id,
+      nextTick: tickNumber + TICK_RATE, attempts: sameRetryTarget ? retry.attempts + 1 : 1 });
     const approach = findBuildingAttackApproachCell(unit, buildingAccessCells(building.footprint));
     if (!approach) {
       unit.buildingTargetId = null;
       unit.orderRevision++; if (order) order.revision = unit.orderRevision;
       unit.path = []; unit.pathIndex = 0; unit.movePlanningPending = false; unit.moveGoalCell = -1;
-      palisadeConstructionRetries.set(unit, { navigationRevision, siteId: building.id,
-        nextTick: tickNumber + TICK_RATE, attempts: sameRetryTarget ? retry.attempts + 1 : 1 });
       dirty = true;
       continue;
     }
-    palisadeConstructionRetries.delete(unit);
     const point = cellToWorld(approach.goal);
     assignFormationMove({ team: unit.team, sendJson() {} }, {
       type: 'move', ids: [unit.id], unitGenerations: [unit.generation], x: point.x, z: point.z,

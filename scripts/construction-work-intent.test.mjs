@@ -155,3 +155,19 @@ test('a newly remembered target gets its own retry budget after another builder 
   assert.equal(unit.buildingTargetId, 2); assert.deepEqual(unit.workIntent.siteIds, [2]);
   assert.deepEqual(unit.workIntent.area, area); assert.equal(c.navigationRevision, 1);
 });
+
+test('repeated actual empty route failures consume the bounded budget even when an approach is always found', () => {
+  const f = sequenceFixture(), { c, unit } = f;
+  f.reachable = true;
+  for (let tick = 0; tick < 120; tick++) {
+    c.tickNumber = tick; c.updateWallBuildOrders();
+    if (unit.movePlanningPending) {
+      const assignment = { unit, revision: unit.orderRevision, destination: 4, path: [], buildingTargetId: 1 };
+      c.applyPlannedMoveAssignment({ preserveAssignmentBuildingTarget: true }, assignment);
+      assert.equal(assignment.routeOutcome.routeFailure, true);
+    }
+  }
+  assert.equal(f.searches, 3, 'three automatic routes, rather than one every tick');
+  assert.deepEqual(unit.workIntent.siteIds, [1]); assert.equal(unit.buildingTargetId, 1);
+  c.navigationRevision++; c.updateWallBuildOrders(); assert.equal(f.searches, 4);
+});
