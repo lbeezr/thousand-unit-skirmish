@@ -54,6 +54,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'simulation/movement/formation-assignment',
     'millrace-sheep', 'skiff-fishing', 'skiff-group-orders', 'skiff-waypoints',
     'snapshot-private-production', 'terraced-vale-sheep', 'unit-movement',
+    'server/worker-food-tools', // Productive food labor and exact prior-content recovery; no route planning.
     'unit-obstacle-detour', 'unit-path-line', 'wall-build-order',
     'wall-construction-draft', 'wall-line-planner', 'water-unit-runtime',
     'wildlife-claims', 'wildlife-heading', 'wildlife-herding', 'wildlife-motion',
