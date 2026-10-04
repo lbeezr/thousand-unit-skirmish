@@ -23,8 +23,9 @@ unless explicitly marked shipped.
 
 Tiny/Small/Medium/Large are now authored and human-Skirmish admitted; Tiny is
 the ordinary default and only fresh AI choice. Dated candidate receipts in the
-table retain their original scope. No additional maps beyond Large are being
-authored in this pass. The inventory owns the current aggregate status and
+table retain their original scope. The next proposed XL layout is retained outside
+the runtime pool in the [joint rollout-boundary audit](map-xl-rollout-boundaries.md).
+The inventory owns the current aggregate status and
 representative play/capacity next steps. XL visibility now has a bounded runtime increment;
 ordinary XL remains unfinished. Next scope: jointly bound route work/storage and untouched
 checkpoint/transport size, then coordinate all 320 admission paths and one representative authored
