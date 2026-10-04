@@ -57,9 +57,11 @@ test('adapter consumes actual version1 immutable shared context, rejecting drift
   const page = { cdp: { call: async () => {}, evaluate: async () => {} }, wait: async () => {} };
   let acquired = 0;
   const context = { version: 1, page, openPage: async () => { acquired++; }, capture: async () => {},
+    evidenceDirectory: '/tmp/worker-routes-cpu-owned',
     origin: 'http://127.0.0.1:4321', source: Object.freeze({ revision: 'a'.repeat(40), digest: `sha256:${'b'.repeat(64)}` }) };
   assert.equal(validateCaptureContext(context), context);
   for (const change of [{ version: 2 }, { openPage: undefined }, { capture: undefined },
+    { evidenceDirectory: undefined }, { evidenceDirectory: 'relative-folder' },
     { source: { ...context.source } }, { origin: 'https://private-host.invalid' }]) {
     await assert.rejects(() => run({ ...context, ...change }));
   }

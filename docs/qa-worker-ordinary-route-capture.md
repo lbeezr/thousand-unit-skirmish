@@ -4,6 +4,8 @@ The registered [`worker-routes` scenario](../scripts/renderer-worker-route-scena
 uses the version 1 [shared capture context](../scripts/renderer-capture-context.mjs)
 and the [ordinary capture runner](renderer-qualification.md#ordinary-build-feature-adapter-and-dispatch).
 It exports `id = 'worker-routes'`, `contextVersion = 1` and `async run(context)`.
+The context includes the runner-owned absolute `evidenceDirectory`; this scenario
+keeps its sidecars in the directories returned by the shared checkpoint hook.
 Importing it starts no workload. The runner owns qualification, packed server,
 instrumented pages, the three-minute deadline, browser errors and cleanup; the
 scenario neither launches nor disposes those resources.
