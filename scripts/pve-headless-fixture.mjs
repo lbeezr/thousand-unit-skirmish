@@ -1,6 +1,5 @@
 // Fixed-tick AI regression adapter. Authoritative command, snapshot, simulation
-// and checkpoint function bodies remain intact; I/O scheduling is replaced and
-// the transient process transport nonce is excluded from replay observations.
+// and checkpoint function bodies remain intact; only I/O scheduling is replaced.
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -71,10 +70,7 @@ export const replay = {
     if (tickNumber % STATE_EVERY_TICKS !== 0) throw new Error('Simulation did not reach its state boundary');
     return steps;
   },
-  observe(team) {
-    const { serverInstanceId, ...gameplay } = roomPayload(team);
-    return gameplay;
-  },
+  observe(team) { return roomPayload(team); },
   checkpoint() { return captureMatchCheckpoint(1, 1); },
   visionCacheMetrics() { return visionCoverageBySourceCell.metrics(); },
   restore(snapshot) { restoreMatchCheckpoint(snapshot); },
