@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
+import { clearWorkIntent } from '../src/work-intent.mjs';
 import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const client = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
@@ -16,7 +17,7 @@ for (const type of ['stop', 'holdPosition']) test(`${type} preserves cargo and s
     attackTargetId: 1, attackBuildingTargetId: 2 };
   const building = { id: 5, hp: 600, complete: false };
   const notices = [];
-  const context = vm.createContext({ automaticTargetRejections: new WeakMap(), militaryCombatant: () => false, UNIT_DEFINITIONS: {}, dirty: false, tickNumber: 24, commandUnits: () => [unit],
+  const context = vm.createContext({ clearWorkIntent, automaticTargetRejections: new WeakMap(), militaryCombatant: () => false, UNIT_DEFINITIONS: {}, dirty: false, tickNumber: 24, commandUnits: () => [unit],
     sendOrderNotice: (_, __, notice) => notices.push(notice) });
   vm.runInContext(clearAttack + clearGather + stationary, context);
   context.assignStationaryOrder({ team: 1 }, { type, ids: [3] });

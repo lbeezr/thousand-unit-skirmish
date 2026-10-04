@@ -1,0 +1,909 @@
+{
+  "sourceRevision": "966d706dea1439a3d0cc7775009318066462c84a",
+  "sourceDirty": false,
+  "sourceFiles": [
+    {
+      "path": "maps/bannerfall-arena.json",
+      "sha256": "8ae471dd62deb740ddaeecf9a399ac129090bdcb075b707df7ce473ac3d3d163"
+    },
+    {
+      "path": "maps/bellweather-common.json",
+      "sha256": "bf882e3fe50d9cc4c42ffe0333eb56bed935a8af38f5df0b7143717de519ec43"
+    },
+    {
+      "path": "maps/bellweather-millrace.json",
+      "sha256": "c650fdbb81da54ed9ae4836869a570cab0151226e13dd93a098a971adc4dc8c9"
+    },
+    {
+      "path": "maps/cinder-ridge.json",
+      "sha256": "8be6ceb131066847e379f3ab94e8c3468143844d072178c66ba8868dcd31efcc"
+    },
+    {
+      "path": "maps/dense-clash.json",
+      "sha256": "700716c2a6f6527a60a914ed55583f30cdbcd928f55898003cdb7e94287e909a"
+    },
+    {
+      "path": "maps/ellionar-channel-gardens.json",
+      "sha256": "22d0347d91940e1da8d0c459643f9d8dfa7f82a909da8aca0a369435707a80b1"
+    },
+    {
+      "path": "maps/forked-vale.json",
+      "sha256": "8e0105cbf0b6dcda04781f6798fbcff92ade2421b6247f49eeaa8b4c6ac23c4a"
+    },
+    {
+      "path": "maps/fortified-crossing.json",
+      "sha256": "11f3f8f5a054d6bed5b3ff4577dc548b1a63626f19effe035e6f53c1989b3d11"
+    },
+    {
+      "path": "maps/frontier-160.json",
+      "sha256": "070154de2b89d838037635cea9b312b43d232018149fbde751ac6f2b21b478e4"
+    },
+    {
+      "path": "maps/frontier-materials.json",
+      "sha256": "ed1bda3202cf20e43e18541fe2bbd369e6f9d7c41d87af0c64de6bfff983eaf6"
+    },
+    {
+      "path": "maps/highland-grove.json",
+      "sha256": "e30193e2a3862ca41b24e5e971bfb5e6a5df8dbca8eb4518f08c4b610d4991f1"
+    },
+    {
+      "path": "maps/meshy-resource-review.json",
+      "sha256": "f8f87a1c80a469fbd738ee28fd680555c94014826fea21983a8751f8fc098635"
+    },
+    {
+      "path": "maps/open-field.json",
+      "sha256": "4a9b1dadac4f41ec9fd39fa6c88a6e8c06ecd43070a18fc77071b13fa22ee426"
+    },
+    {
+      "path": "maps/pale-meridian-observation-road.json",
+      "sha256": "c639c97e9dd561230c974954b097fd58f3508d6418eeb973e22da95e34a4f419"
+    },
+    {
+      "path": "maps/ru-lora-fringe-path.json",
+      "sha256": "6029920c3703b37f43f64c2807abce2027da091fd39e2a9468b51381e4449b93"
+    },
+    {
+      "path": "maps/ru-lora-salt-hollows.json",
+      "sha256": "597ca6ba9706e2936bdcd38faccc1c778c86480c72fa314e4bd7ca4e612e0e3c"
+    },
+    {
+      "path": "maps/sereward-cistern-road.json",
+      "sha256": "5a33ffcd22518921d0c399144a0816e1ce94cb93e75b8a53fe097e6fc7843a77"
+    },
+    {
+      "path": "maps/shore-fishing.json",
+      "sha256": "9d577f95faaafb659da8e1395ebe34a46ed64e26bab8fe10a09eab839facdefc"
+    },
+    {
+      "path": "maps/siltmouths-confluence-grounds.json",
+      "sha256": "02582970bdaac4caaf2d6ad5c8261b824b32462d08ba9155c2815b12cf0ec9ec"
+    },
+    {
+      "path": "maps/siltmouths-reed-crossings.json",
+      "sha256": "de31ac141ed5ad925a9de99b719dc36887bcd1e2175045ea2c877d3f32651983"
+    },
+    {
+      "path": "maps/sombral-mere-shore-gardens.json",
+      "sha256": "0ccd76ae8e747a881b275e1daf8da128e6a77f9ee21f658fbf63da794314dae9"
+    },
+    {
+      "path": "maps/stone-defense-field.json",
+      "sha256": "9ef3eb554c463757abdbbe278ce61b970022c6b09f95213aa819e00919686f35"
+    },
+    {
+      "path": "maps/stone-pass.json",
+      "sha256": "f69bcb0c2c68021dfd4ecc56e9606505f2b0f5179c4ef6848befacae8b3cab2a"
+    },
+    {
+      "path": "maps/three-crowns.json",
+      "sha256": "576af0ca3f55819f7afec7490a40140bb88b5f16a70d64a16872858767179b7f"
+    },
+    {
+      "path": "maps/underbough-rootways.json",
+      "sha256": "1f87b7c7c16dbd6d78b1083815bea023bbf75b0e992d784bf8f202b1625e8ac0"
+    },
+    {
+      "path": "maps/vesperra-pale-clearings.json",
+      "sha256": "e35a6cbe4c90fbac94517051d98ddcf53e262de00e502f196df36d961c0de0a1"
+    },
+    {
+      "path": "maps/veyrholds-crownroads.json",
+      "sha256": "0b62a9f967ef42c967eb9121e07395b75549d52d4a73dd16eaf29aebf19e3727"
+    },
+    {
+      "path": "maps/veyrholds-riven-escarpment.json",
+      "sha256": "42824ee5b4a4f9ef63df3961c2737ca37d3f71a61937d55860dec830ec38d2eb"
+    },
+    {
+      "path": "maps/veyrholds-slate-saddle.json",
+      "sha256": "be513107f5377eb7b1471a77e7586f68347c185906ad2e8fa6daf28dc4635611"
+    },
+    {
+      "path": "maps/veyrholds-terraced-vale.json",
+      "sha256": "2e352328e0b6795c04a11505672d17971231cc2e7ad34a858ff6418423d5d1f6"
+    },
+    {
+      "path": "maps/veyrholds-threefold-basin.json",
+      "sha256": "6d9769ce30a1da374ffa41660dd99a804fd078a6f706113ddce40e1785e3ba0b"
+    },
+    {
+      "path": "maps/woodland-expanse.json",
+      "sha256": "d30f6cebbae427b8489c73262f9609db7bed8a199bedae14c90679dbc0868053"
+    },
+    {
+      "path": "scripts/fortified-crossing-fixture.mjs",
+      "sha256": "d3f5873cdc5fabd603e1833470edd166b18836240168daae3d8ae64d7193dbbf"
+    },
+    {
+      "path": "scripts/resource-job-continuation-scenario.mjs",
+      "sha256": "b19b2187f89613c1a5d10374a577277de38f7f86de73131899233bedee646af5"
+    },
+    {
+      "path": "scripts/resource-job-fixture.mjs",
+      "sha256": "a652dd4bc2918b45f207a27dd7c05e8ec83788bd81b4a7f4049a297a04c203e4"
+    },
+    {
+      "path": "scripts/resource-job.test.mjs",
+      "sha256": "cf3b06a393a81a2249298a78e2be1a433fca8404217449e5cceb5fbe4740ae3e"
+    },
+    {
+      "path": "server.mjs",
+      "sha256": "8059d7e115071c24511dcd7f4b22dcd6033e1f4e9ff8350d0dc1bdb0d8f9c18a"
+    },
+    {
+      "path": "src/audio-assets.mjs",
+      "sha256": "688a21c9d9034e4c1106246042b4f31b7356a36fdf4491f25c6b592bcf605ef1"
+    },
+    {
+      "path": "src/audio-composer.css",
+      "sha256": "0e7b9d8882e0a1a34ddec4cfde6ce296542d5e74bf79471f2e4d26bc196f19fc"
+    },
+    {
+      "path": "src/audio-composer.mjs",
+      "sha256": "1211ffbaa48727249420c62a08726960997270c427ae6ec399a8146a3c855300"
+    },
+    {
+      "path": "src/audio-composition-player.mjs",
+      "sha256": "603c8fc6f6bf33a587a012b7c2daaa5013c4944174217d1492e57fbc0c30e399"
+    },
+    {
+      "path": "src/audio-composition.mjs",
+      "sha256": "fe0678adb91bdfd191ae09abfb5f0d0eb8e099e0659cf334e1bad7d3cf1dc75a"
+    },
+    {
+      "path": "src/audio-decoded-cache.mjs",
+      "sha256": "c646b6ac8ed690c690dee53a4408810029db5c3c6eb70fa64c70f792feb358d9"
+    },
+    {
+      "path": "src/audio-event-profile.mjs",
+      "sha256": "ede1dd33cad4db2eb9c1aa61a3b448a6c4b66e40fd8ffe1d4fc8234413a4ab59"
+    },
+    {
+      "path": "src/audio-library-store.mjs",
+      "sha256": "b5d9465501b68d5e02639d734f75e7a7ef796642fd2f4c7a8f60a0230eb31a72"
+    },
+    {
+      "path": "src/audio-library-ui.mjs",
+      "sha256": "9ef5392ae633a1f291d654f511265dab88f17cf684ddbc818da6c6b4f7fd1533"
+    },
+    {
+      "path": "src/audio-policy.mjs",
+      "sha256": "0783bec038ec106fa8203e425471a92d28bc454bf02d50c29912333738d6550b"
+    },
+    {
+      "path": "src/audio-recognition-check.mjs",
+      "sha256": "a572da4616831d5239e627800738a3291d10fe87189f04945e016c16a51ef792"
+    },
+    {
+      "path": "src/audio-shipped-catalog.mjs",
+      "sha256": "697587128f4b21c6cf55b297898f99031308712ad3ddb90e02b8a77dbbb94f64"
+    },
+    {
+      "path": "src/audio-shipped-loader.mjs",
+      "sha256": "d1470840baea446d2ddb8793f02b4f1f6bfe4acb4fe2fd04cf532f40d716566b"
+    },
+    {
+      "path": "src/audio-shipped-response.mjs",
+      "sha256": "73d85cd44a4f009293dd51e246823fb5c6844b3dc332e1465892c5814f2315cc"
+    },
+    {
+      "path": "src/audio-studio.css",
+      "sha256": "268815e781b6bbb6342226855c08c4577b3dd26b5b1c1350b3a6888b8a1fbebf"
+    },
+    {
+      "path": "src/audio-studio.mjs",
+      "sha256": "0fa23919518a664de81ad1defaa39ace9508f9714b7b21df500e844b2ed5c17e"
+    },
+    {
+      "path": "src/audio-zones.css",
+      "sha256": "e97ddae0494f315491c44eda2458914c31964dacf7fd91b9f0b577e8fd692aa4"
+    },
+    {
+      "path": "src/audio-zones.mjs",
+      "sha256": "d3f50451843a9701fca2a002371766a1f306a73f3f2db4e688d71ef930340df5"
+    },
+    {
+      "path": "src/audio.mjs",
+      "sha256": "2a1dfcba64bb9fa592d47575a9617ba77661b4cd1585e0132819a8aabe0a453f"
+    },
+    {
+      "path": "src/bannerfall-rules.mjs",
+      "sha256": "3b33f5e9e7c3938148f412f760bd72357e8f15a8312e18851394fa517883e26f"
+    },
+    {
+      "path": "src/base-lifecycle.mjs",
+      "sha256": "84a28a3abd1b1c3e121d5fa438d6709799704bfe057e5a9e718506d9dcc0d7ba"
+    },
+    {
+      "path": "src/battlefield-cursor.mjs",
+      "sha256": "4557ff2763821ba6881e5d45485347ad7e2e675502228f19e0f3a0cf47823f40"
+    },
+    {
+      "path": "src/building-production-cue.mjs",
+      "sha256": "6f79f0e7f38be4dcf1f1b8e85c2f1b516f9da17154a3f9170f0004b926f78b26"
+    },
+    {
+      "path": "src/building-sprites.mjs",
+      "sha256": "57b6fa6e80a28bb55f0d3722c310f199119309e35c90ce0e7e0e15d4d7586f46"
+    },
+    {
+      "path": "src/building-visual-state.mjs",
+      "sha256": "aa043def3bd3fd435ac5d07d1fd836d8896518310ecbfb259af168a6e55f5e30"
+    },
+    {
+      "path": "src/camera-controls.mjs",
+      "sha256": "178cbd16f798a7a8194e49474337f834452f7f2eb862baac2a272f32afd8a025"
+    },
+    {
+      "path": "src/captured-building-art.mjs",
+      "sha256": "d7e0b710d373b4412f04bb378354c31a26f3c823214afb92eba7331e17d88fc9"
+    },
+    {
+      "path": "src/combat-rules.mjs",
+      "sha256": "bcbc3415e2878e2944df2444253315c28769a0dccc5a2f47eefedc4f24e9dc79"
+    },
+    {
+      "path": "src/combat-stance-ui.mjs",
+      "sha256": "691a1ad29d9e610b6bb39bd6199c946d55dd52f95641bcb38bf434360f9fe8f4"
+    },
+    {
+      "path": "src/combat-stance.mjs",
+      "sha256": "cf62d9179301c0d1b45f9bb097008d1d6e80dbcf7ed01e740933dc964b9f9a74"
+    },
+    {
+      "path": "src/confluence-opening-compat.mjs",
+      "sha256": "d355d8e52e6e06ae594d994cb7162d38b5e5a097304581ace8dedd9d5c36d701"
+    },
+    {
+      "path": "src/dock-placement.mjs",
+      "sha256": "a30ea9d860ab17e81ee6c498ea9d0378e026b4807adf645bede4ee209cca0f97"
+    },
+    {
+      "path": "src/economy-checkpoint.mjs",
+      "sha256": "5351dfc15e59dc8cc85b84c18340034abd7e2127f4f1108df1278c9e15725028"
+    },
+    {
+      "path": "src/economy-client.mjs",
+      "sha256": "de47b8b0cca69c6a39dff4d44b003321f29cc06b03657ddabda4e3a2b837584e"
+    },
+    {
+      "path": "src/economy-ledger.mjs",
+      "sha256": "339f1c74cc4a368c4d5d4e14af0b67196a74a16df4ad6eea33d0e4294d3ebb9e"
+    },
+    {
+      "path": "src/economy-profile.mjs",
+      "sha256": "52595f24ab323b39e931364e8c2d117ab17a9638933dee4c9d8c55362297845a"
+    },
+    {
+      "path": "src/elevation.mjs",
+      "sha256": "6c2df497780c9b00bac86fbc7ece5937efdf27cd70a36248e57ad32d9d928fce"
+    },
+    {
+      "path": "src/environment-art.mjs",
+      "sha256": "8a25976ff766f6808f7a2792f36979a404f14384d7e7d67fd40a38a4bfeca057"
+    },
+    {
+      "path": "src/environment-pilot.mjs",
+      "sha256": "1446787ab917e717923d3220d7d3405cd0e09bce7ea06a6c5360c55b28d29091"
+    },
+    {
+      "path": "src/environment-plant-assets.mjs",
+      "sha256": "6936979a5c1c6a5113ac9855b44db32e2318a5073c49268c5acdd42187e5173f"
+    },
+    {
+      "path": "src/environment-review.mjs",
+      "sha256": "52214d4b685aa6cc04e70ec6de3f2123c07426c6eb0cac472f45429c8e2cb6a5"
+    },
+    {
+      "path": "src/farm-harvest.mjs",
+      "sha256": "acb8f95ba9e2bc87d05704138a4456f430745171c216ef41fbd115a88e17cfc7"
+    },
+    {
+      "path": "src/forest-age-composition.mjs",
+      "sha256": "81005d7d72d662c276cd5e6667d98ced8d70ca3d53d7c59cb914f8a956882daa"
+    },
+    {
+      "path": "src/forest-composition.mjs",
+      "sha256": "572df7ba2fd13ee4688473bfee80091f6527b2a8a6d8760e227d780d4a482e74"
+    },
+    {
+      "path": "src/forest-habitat.mjs",
+      "sha256": "dffb752d2ae050bc1a3a8fc5e89919119d6ceb1650a5619e63833fe25429c57d"
+    },
+    {
+      "path": "src/formation-assignment.mjs",
+      "sha256": "cc3dec345d81ecebb357e6dd341b555a6a15ca9a8ac270e573c391823f7f90be"
+    },
+    {
+      "path": "src/frontier-building-preview.mjs",
+      "sha256": "e33cb3011b114eda834706c2fad93e761f6d017d79a43222518b5ec9db6d481c"
+    },
+    {
+      "path": "src/game-entry-session.mjs",
+      "sha256": "a5fb98d7a69d3ba07f9a59db888f6105607cf4ab4a324690f50515ac9ddc04c0"
+    },
+    {
+      "path": "src/game-entry.mjs",
+      "sha256": "ca2cc524f8a9813bba352672f4e998c32f26ba6385f926f1ea39801d0e5e0b78"
+    },
+    {
+      "path": "src/game-menu.css",
+      "sha256": "c3f6cc5c9a8ffc7948c3aefb8f22d629d37008c286737981a4b1e5233b9c9246"
+    },
+    {
+      "path": "src/gameplay-action-rules.mjs",
+      "sha256": "7750cba6b1fec8f218fe53f52e64648db43894a973c8d117b5da0da1f83a14ca"
+    },
+    {
+      "path": "src/gameplay-definitions.mjs",
+      "sha256": "61e1fc9aa85ad3d8672a3f3971f6692e136513b91e8bf0741f70882c9717d1ca"
+    },
+    {
+      "path": "src/gameplay-presentation.mjs",
+      "sha256": "294f23f6174674cf893fe12b6a68d7aafa4b1cd8defac583e99fe0941c0b755f"
+    },
+    {
+      "path": "src/garden-vegetation.mjs",
+      "sha256": "4bd094819bbb777e75fd892d926194090ee44729df2ab0909302e9aba85d77f5"
+    },
+    {
+      "path": "src/gather-work-area.mjs",
+      "sha256": "5c5b37e6b9f7a29919a2d581bc085f9e016124071e7aafeddad94dc7e4a7aa5a"
+    },
+    {
+      "path": "src/hud-layout.mjs",
+      "sha256": "1f5f1a75d696f76b068a019cab318b95b211fe80f9705b0f4b4cad4df3373c84"
+    },
+    {
+      "path": "src/landscape-authoring.mjs",
+      "sha256": "bf591b45e26743f5f4bee2bfb4ab3d3ef60633310e3858041ef7823c4baec658"
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "d85025756fcd16737f9c93a75e4eb94d76873cf8df774551f1176ee899c2f143"
+    },
+    {
+      "path": "src/map-resize.mjs",
+      "sha256": "4857927d25e73966debeba039d50bc991356098e0f016bc5df84b094b0ce598b"
+    },
+    {
+      "path": "src/map-size-policy.mjs",
+      "sha256": "e6ba786efa79299cf8498d84534cf9c82a316f52cc4639accba5f1c59b803497"
+    },
+    {
+      "path": "src/map-studio-viewport.mjs",
+      "sha256": "ce66d5150838872dc89f07c2e02afab16056812453f18596b8be5c25621244af"
+    },
+    {
+      "path": "src/map-utils.mjs",
+      "sha256": "e8ed0f7626b309c2543758815c9d2dfd72d693904ade3e1687d421958b9309e3"
+    },
+    {
+      "path": "src/match-mode-checkpoint.mjs",
+      "sha256": "0cb3004b10278d19243a691e7deff5b7a0beb2b43ce57954e5d3cca0783d5eb7"
+    },
+    {
+      "path": "src/match-mode-controls.mjs",
+      "sha256": "afe86abce8032c9d77011dd29c745fbe20b374e1442814faa370e2adbdea25d9"
+    },
+    {
+      "path": "src/match-modes.mjs",
+      "sha256": "90a0cb8531595b017fe6e37b80bde13edfafcad6c4a5987be54a41295d9b3bde"
+    },
+    {
+      "path": "src/meadow-vegetation.mjs",
+      "sha256": "4eb6d0d6278d9eb4650afb6da9274ab4b17c26009b4f7b268be4493d7c91373c"
+    },
+    {
+      "path": "src/millrace-sheep.mjs",
+      "sha256": "5436ed8895b8784170dc67e21c0a9f9583c46929e66a6e5b203bafd01260b32a"
+    },
+    {
+      "path": "src/navigation-settings.mjs",
+      "sha256": "ef1e147212860863fe0968f4f81a268c582b264a8af791306dc16fe5b04856e7"
+    },
+    {
+      "path": "src/networking/websocket-deflate-offer.mjs",
+      "sha256": "347eef0f41a98083e4a4b5f29b504a75a460aa1a61faa089796000e0cc394961"
+    },
+    {
+      "path": "src/networking/websocket-frame.mjs",
+      "sha256": "83d35736c998478ce4ea3259aba9fdfe3b7b0cc3270441590b56dce9402707bf"
+    },
+    {
+      "path": "src/neutral-wildlife-renderer.mjs",
+      "sha256": "b6543bb0bb626cfa2781a96cde26758b51960dd8656a8e91ebbce55cd88f8e9c"
+    },
+    {
+      "path": "src/oak-depletion-atlas-runtime.mjs",
+      "sha256": "7492bc219a31f8f6c1d740c10d93b98639b716295996f05810f1af354dd17cb0"
+    },
+    {
+      "path": "src/objective-summary.mjs",
+      "sha256": "b918b98efd0ac5749d1923c3c976c9a9422910489e54a3fc02ad9e1ac7a84574"
+    },
+    {
+      "path": "src/order-feedback.mjs",
+      "sha256": "327ee05c6fc48e616c844a7c82531b27986d084b83018cd927f5f1563ce12851"
+    },
+    {
+      "path": "src/painted-material-atlas-runtime.mjs",
+      "sha256": "9b6316e139eb4bbe011cacf4c6286be0df682f0eae7ee35969fccac65d43e626"
+    },
+    {
+      "path": "src/painted-material-atlas.mjs",
+      "sha256": "706dd3999931959a09aebefeb69ff4a2670ac21b46e78434dd461742627e2cff"
+    },
+    {
+      "path": "src/palisade-gate-visual.mjs",
+      "sha256": "ee7d50e61407279a3297569f602a07fd99584df0307b6d90e8f25cdc42d94d1e"
+    },
+    {
+      "path": "src/palisade-gate.mjs",
+      "sha256": "85fe648e85cbcc15a36f8732ee2d438b75c58083d428cd8185903064b46af732"
+    },
+    {
+      "path": "src/palisade-profile.mjs",
+      "sha256": "76066571828f6eadf40869eb5150b74d2908a21e580db26d990656ccf1abc1c0"
+    },
+    {
+      "path": "src/podvine-low-pack.mjs",
+      "sha256": "d0c3330045125cf2a78a72a0a10653240f8d3ee0aafe24fc8130fb1b67306c62"
+    },
+    {
+      "path": "src/podvine-view-pack.mjs",
+      "sha256": "a8c5e8ece615eb486e6d49ab13cf64e3504abb7ae7d010b9d322bb3792c890e1"
+    },
+    {
+      "path": "src/podvine-worked-pack.mjs",
+      "sha256": "dc6fe92c1f0b4216be4ed710f58b57ddbd826db54eff15decb5acbb4bbb97405"
+    },
+    {
+      "path": "src/population-readout.mjs",
+      "sha256": "17a991f369a3a542a00263984eaf4aad852e11229e03c375b6a19aa6ebe94cc3"
+    },
+    {
+      "path": "src/population.mjs",
+      "sha256": "b104491202d94d34250cdb42f48133c0570d634fe1916d9a66693a7691e3e59e"
+    },
+    {
+      "path": "src/practice-entry-catalog.mjs",
+      "sha256": "47c67e9584ca6e24f6a4b6610efe6ea084e1fa28740312371f791f8a92eb4c3a"
+    },
+    {
+      "path": "src/practice-entry-controls.mjs",
+      "sha256": "f5190b765724cad51f03fde8a0fe3b28bc659ffb38a332520f54ce9889e1e0ac"
+    },
+    {
+      "path": "src/production-actions.mjs",
+      "sha256": "0d5dd15720c4808faf6cbba760f82b8904d74af332fd68a212921603b2e1536d"
+    },
+    {
+      "path": "src/pve-entry.mjs",
+      "sha256": "3e163188dd056485f283ea1f2095429f650e366bee1c5f01593eb59e13a3dc62"
+    },
+    {
+      "path": "src/pve-home-defense.mjs",
+      "sha256": "497ee5edc024559c670abd7d4f8da165ff7303f754723d93931f95801d9d9867"
+    },
+    {
+      "path": "src/pve-match.mjs",
+      "sha256": "cc881d5053e92bf28fc2e7fcb263abc981f02572adc88594ed7962b0f0e826de"
+    },
+    {
+      "path": "src/pve-model-proposal.mjs",
+      "sha256": "ada2a77610c984acae49edab2b0ce4175b414ac66e82e5c13d44e9ff84aa1350"
+    },
+    {
+      "path": "src/pve-objective-rotation.mjs",
+      "sha256": "e76ddac9372ff078b8f659cd898c4a457b78fa6e12d5bfa840fd2412cb29f767"
+    },
+    {
+      "path": "src/pve-opponent.mjs",
+      "sha256": "0dbdf2b2211ac6349b1d45b3cacecc390ae4dbb803f081b5215bca9fb206a1b4"
+    },
+    {
+      "path": "src/pve-production.mjs",
+      "sha256": "31d3ea9f23dd3e8c1246267e8954e9024fcf8819d9c8155492e0b58dbeb8a171"
+    },
+    {
+      "path": "src/pve-reconnaissance.mjs",
+      "sha256": "a1392146a77d2bb27c97e383c6ca3380774fe6621991ebc4da28fd765785d15f"
+    },
+    {
+      "path": "src/pve-regroup.mjs",
+      "sha256": "e07abd6a8bebf2ed788eda3e81b86b56fe5fb0cecffb6da2258cbf9816309785"
+    },
+    {
+      "path": "src/pve-skirmish-targets.mjs",
+      "sha256": "033559db1a2d8fd808f3b872f6290b91273cafdd8598374b4eee08a2be6cc31c"
+    },
+    {
+      "path": "src/regional-ground-kits.mjs",
+      "sha256": "8a3fdb62e61684d90181f654b697dc26c89d2cbfa7cd62d46ec812b0e374c89c"
+    },
+    {
+      "path": "src/regions.mjs",
+      "sha256": "158de7908b30bd499581b845f36d21cc39c6dcfe7eb64a4e6b372894121e264a"
+    },
+    {
+      "path": "src/research-actions.mjs",
+      "sha256": "417e0a550bae9e36f6c37fef152db198a8c828b826e7ebc83806b97528005450"
+    },
+    {
+      "path": "src/resource-brush-authoring.mjs",
+      "sha256": "b8cd0601f1ecac6f11b2b0db55d660d076e3bb05e229a35799da19c11459d6e8"
+    },
+    {
+      "path": "src/resource-brush-controls.mjs",
+      "sha256": "9a0d7fdaff597bd81e9bf8b57620de31c78add78890908a0867a4b75f6f856bf"
+    },
+    {
+      "path": "src/resource-cluster-authoring.mjs",
+      "sha256": "ccadf538549affbb531045f954f9866d3aaac26207583a08334117818c584bc2"
+    },
+    {
+      "path": "src/resource-format.mjs",
+      "sha256": "fff5a2bcdda99b99be8805993a3fac6aad7ea86cf74e688c662df27c1616050c"
+    },
+    {
+      "path": "src/resource-visual-state.mjs",
+      "sha256": "61bf91b386a0d9c3801d548f3fa1348d7ae6a31f32fa06921053bef21db8fec9"
+    },
+    {
+      "path": "src/room-launch-options.mjs",
+      "sha256": "2af6792d030a5e70956703581dc39ef84a9155664814c3549b00afbc6214f384"
+    },
+    {
+      "path": "src/room-lobby-chat-ui.mjs",
+      "sha256": "5fa049a957d6789f4da672c99a484f265c16aec8a581f7597d4f648841c7c42e"
+    },
+    {
+      "path": "src/room-lobby-chat.mjs",
+      "sha256": "4f31a3583cce7945e7e8a092c5d3f207614b3cb9c58d09ff5e1771b04b144162"
+    },
+    {
+      "path": "src/room-lobby-ui.mjs",
+      "sha256": "0b548e45b25c13148e0fe8b39bf514e2392449b7838fccab4fc717aadb97a0e1"
+    },
+    {
+      "path": "src/room-lobby.css",
+      "sha256": "a71f4f6d73fba4474de3496530572fc25950e13e32984e5b61089547aebfdfd0"
+    },
+    {
+      "path": "src/room-pregame.mjs",
+      "sha256": "b1b51a24335c7e955701177ac5eb0e716d5f4a358a00b5d70aa6cadcb0caf69b"
+    },
+    {
+      "path": "src/room-presence.mjs",
+      "sha256": "87802468b2ea2362c367cd9f5d97023236db68b104133498123085614141ab6a"
+    },
+    {
+      "path": "src/scenario-authoring.mjs",
+      "sha256": "4b31b39b747b9f5e03ce3696e3e94ad88969509111e715caf2a6f4fc877381c7"
+    },
+    {
+      "path": "src/scenario-regions.mjs",
+      "sha256": "83fa1c2d4ad04d52ed8accc6338ff06f93a4a89b3ec147fb3d14ea2d50babafe"
+    },
+    {
+      "path": "src/selection-context.mjs",
+      "sha256": "9b1f2b4583daccc56ac7424501568069642453127b9867be0b14718554238472"
+    },
+    {
+      "path": "src/selection-portrait.mjs",
+      "sha256": "4622c433b622ee900ab697b43b97c3b4189653f0a8c8bbf97c4e6afc8c9c4739"
+    },
+    {
+      "path": "src/server/client-asset-paths.mjs",
+      "sha256": "b3cefcce241d9336da49b323a441af8da8e601a14361508ef5e74e0d9b035b7e"
+    },
+    {
+      "path": "src/server/pve-model-proposal.mjs",
+      "sha256": "efe3be2c0b4dc90daf89e5140c0f9d458d225161a827c6451edc96a5a1dd7b29"
+    },
+    {
+      "path": "src/settlement-authoring.mjs",
+      "sha256": "f500af2579c31a475dda0aedcca481cd0476fa80e5f9f2ed2442d5e12251e2f2"
+    },
+    {
+      "path": "src/sheep-static-preview.mjs",
+      "sha256": "d1149fa8d161fa5c92846088dd228715da762f69cc91380210154723a3dd449a"
+    },
+    {
+      "path": "src/shore-bank-shade.mjs",
+      "sha256": "c2e75b50205ab63219d959abf023b6f0fdb8de3795c38cc0ae6280d1c99dfd08"
+    },
+    {
+      "path": "src/shore-fishing-placeholder.mjs",
+      "sha256": "f72a6129bcaab326ef55e11914fe46e78c8a3776f604863b1c4e17f3f2c0cc30"
+    },
+    {
+      "path": "src/shore-fishing-placement.mjs",
+      "sha256": "1eee019f892864814f3eb1d34fd73be9d1a70bd815edadf134add194cb5e6965"
+    },
+    {
+      "path": "src/shore-fishing.mjs",
+      "sha256": "ffdda375ee012f2ea1b22b00c7e65ce16f58d7e78d6c738c92e99ad21bf86115"
+    },
+    {
+      "path": "src/shore-vegetation.mjs",
+      "sha256": "e823246e4558aa39853228c14e8d3d33fed12e16d6e8f1c59371e02ff240a1fa"
+    },
+    {
+      "path": "src/skiff-fishing.mjs",
+      "sha256": "34c77f4252e84beacadb3794b3cd2707931a362dbf2e00ae4f747777da69e65a"
+    },
+    {
+      "path": "src/skiff-group-orders.mjs",
+      "sha256": "d36b691df90ff14a49e41fdc76c3c394c8963d40add85bd9492b18fe9f5a0818"
+    },
+    {
+      "path": "src/skiff-waypoints.mjs",
+      "sha256": "2142ab485bb25753489feee9d88cc0abe17a8a7d327dd2f5178f5ad613e5391c"
+    },
+    {
+      "path": "src/snapshot-private-production.mjs",
+      "sha256": "1ea19ceb89690112c804538d7c5ca24530758aa37ee6439adf19e98d6e27c855"
+    },
+    {
+      "path": "src/sunbloom-crown-pack.mjs",
+      "sha256": "9823823f5ef4a44f2d4997086fbe87d67fa8671d60b04d3ccaf14bd71a8d2506"
+    },
+    {
+      "path": "src/sunbloom-low-pack.mjs",
+      "sha256": "773b584b94aff4a59356867438523dc8d60e589b0911f8e3044799d675335ed5"
+    },
+    {
+      "path": "src/sunbloom-view-pack.mjs",
+      "sha256": "38f5b11d76fbef36383d5efe3f179dcdf4cc554e907ecbe2ca21e8d347ad5c1b"
+    },
+    {
+      "path": "src/sunbloom-worked-pack.mjs",
+      "sha256": "11dfcd08c9e10258d9f1dd9759f7c938b664837f259a8c0587903546b4bda740"
+    },
+    {
+      "path": "src/terraced-vale-sheep.mjs",
+      "sha256": "ab0ec30a47f4a6304962ddcfc649988a4512d2c2346e2ee4497bea0732d15f11"
+    },
+    {
+      "path": "src/terrain-atmosphere.mjs",
+      "sha256": "518176a497650f9aeef066654237689f584c4fa4c65fbc15ad3b7f4e4e3bda39"
+    },
+    {
+      "path": "src/terrain-authoring.mjs",
+      "sha256": "1600d9879fcca6a3d098a493901eebefff65eda6818efa69c574dbfb8639c38c"
+    },
+    {
+      "path": "src/terrain-blend.mjs",
+      "sha256": "26384435e9f4805e9722cad9d64bc3ad46c0b2e9cfe9b74dc631fb019779f9c4"
+    },
+    {
+      "path": "src/terrain-height.mjs",
+      "sha256": "ea2fd45af26db2a50542251a69c8057238cbfa5bc76e2e3b50cf061196fd3887"
+    },
+    {
+      "path": "src/terrain-materials.mjs",
+      "sha256": "ea967fd790430b709d9bca9cd2c28f81cbd9275f13317198a7922091bef1fc31"
+    },
+    {
+      "path": "src/terrain-texture-sampling.mjs",
+      "sha256": "7f1a60c8d9b5c1d2e1c5d67fff0c35ee396c004092b7aa861ff8956adc23a15e"
+    },
+    {
+      "path": "src/town-center-spawn.mjs",
+      "sha256": "b5a1c9ec1b6ae221518f6cf1abaa14903c757c8dbb49ea70f5ac6d198d9b086c"
+    },
+    {
+      "path": "src/unit-heading.mjs",
+      "sha256": "8c0791f0660d3ff1e4942ea1d52eeb198cad940beced277560d9a6c7bd0933f1"
+    },
+    {
+      "path": "src/unit-lod-state.mjs",
+      "sha256": "db2f13823bf80e6256499077814fba935a4b0e901ef2d8c295daf57c7d52b1ac"
+    },
+    {
+      "path": "src/unit-movement.mjs",
+      "sha256": "3578a83e800b39fc1f7480e40e8574262bb5ffbf9a7f12ee7023462c16d76cf2"
+    },
+    {
+      "path": "src/unit-obstacle-detour.mjs",
+      "sha256": "067a8e6d0cb2fd625f5d094dd120c7a8ad8fc02e1e98380bf00735a638a82106"
+    },
+    {
+      "path": "src/unit-path-line.mjs",
+      "sha256": "9e1d246a57b452c96e7a916665cde63ea3ac9058aca986db04d35f58fce99889"
+    },
+    {
+      "path": "src/unit-selection.mjs",
+      "sha256": "bc1f25e947441bde69b025e57d3b4ae302231df429cf5b738ab3cf6005407bbb"
+    },
+    {
+      "path": "src/unit-sprite-runtime.mjs",
+      "sha256": "2cf3a492d4950755daa2d211a76236ed0550fc41fb127b1f74293902deeffdb7"
+    },
+    {
+      "path": "src/unit-visual-state.mjs",
+      "sha256": "03789c877320a9989f9e383938e19fea0abd28bd7e75275bbfe1a328a953dbd3"
+    },
+    {
+      "path": "src/veilcap-view-pack.mjs",
+      "sha256": "00ec434bee853d3436706aaab2f2441a728acb6d64504d49a1fc877d3cf849fe"
+    },
+    {
+      "path": "src/veilcap-worked-pack.mjs",
+      "sha256": "ff7cc9aaefb63f4583ac42d99c2df9126e74ece33e72819e8c5ccfba2eb1e4ba"
+    },
+    {
+      "path": "src/wall-build-order.mjs",
+      "sha256": "54d09b952413ec46aa69ce7dad4ba5ccd677608f7e8af844a7d225986cf82348"
+    },
+    {
+      "path": "src/wall-construction-draft.mjs",
+      "sha256": "0a8c50ff95919fc3ca9995879fad722756b9858100bd468d541788274f3e84d8"
+    },
+    {
+      "path": "src/wall-line-planner.mjs",
+      "sha256": "c0a8a3bf4a7c1c1a41ca3bd20da9ffb01b61fd0435cb56e969d415178786c882"
+    },
+    {
+      "path": "src/wall-placement-ghost.mjs",
+      "sha256": "ace004a53e2e24ce8ab26a6f08bafea0529d43aa0e783e64374488e790d562db"
+    },
+    {
+      "path": "src/wall-placement.mjs",
+      "sha256": "5ac2b8007c1e1bd7ab5c71def67f60bb0086857b2e649f2794d2391fa62b9630"
+    },
+    {
+      "path": "src/water-contours.mjs",
+      "sha256": "8a66f693650ce678aa10e0789e3db810b9177692ff8ee1f165e21c4320303dee"
+    },
+    {
+      "path": "src/water-route-graph.mjs",
+      "sha256": "e417db4d993b2a253f1958dc6a44b7451a6ebb85f6ebfb25d17e1e028d27ed6e"
+    },
+    {
+      "path": "src/water-study-fish-binding.mjs",
+      "sha256": "1d44f5bf152b275618918eb2d2c60a1e2fb55ad118e121c3675b13d9ed33e7de"
+    },
+    {
+      "path": "src/water-study-preview.mjs",
+      "sha256": "9077d95dbc54268f8c9c06e64502f0fe60db361a1f2ce30e6de43003a3ee85cb"
+    },
+    {
+      "path": "src/water-study-state.mjs",
+      "sha256": "6a883ffef4c621fba546c52f0cf569802915dd2f06587a60f58c65442aa3078d"
+    },
+    {
+      "path": "src/water-surface-geometry.mjs",
+      "sha256": "4f9ff52453130e54edc713899c4e774823368c7cdd7866e67b9597e10539d134"
+    },
+    {
+      "path": "src/water-surface-study.mjs",
+      "sha256": "5118255b6c6af619d5bc6fe6921e7b8ae78df3dd676e8f9641c7ba1d4f5ac393"
+    },
+    {
+      "path": "src/water-unit-runtime.mjs",
+      "sha256": "f7e47052f14b6444e7612a5a98da158390fde37dad87b946c2be4e16ccf4c0f6"
+    },
+    {
+      "path": "src/wildlife-claims.mjs",
+      "sha256": "35735c20738c02b3c63794cd95f25602b8803a1e72709b24c801a6c3c503d05d"
+    },
+    {
+      "path": "src/wildlife-client-state.mjs",
+      "sha256": "a1ed2f8bb8aa80e7bae7b85e0cd8e0a3648c772b6d5343bbd1aa650f5cb8989f"
+    },
+    {
+      "path": "src/wildlife-heading.mjs",
+      "sha256": "20be79f7ba7e6440c781599f630059fd390f1a1996f520dc8e7fb68be9402457"
+    },
+    {
+      "path": "src/wildlife-herding.mjs",
+      "sha256": "13852c9f68fbbb9ad75f18b2d5c54ed4f3cf91252c689f50ee1eb08cdd4b1104"
+    },
+    {
+      "path": "src/wildlife-motion.mjs",
+      "sha256": "f03c005c8f5ee09bc0184e4953abd769ed48ee26b8f074725f35100844b2e32d"
+    },
+    {
+      "path": "src/wildlife-state.mjs",
+      "sha256": "a3948359d97b7f71e2a729cfff56ca62309e1eae39cd8cbb32a8918a1558e9c1"
+    },
+    {
+      "path": "src/work-intent.mjs",
+      "sha256": "e9d5d3b338c4e2f17bfbe1f8bfe9f8c469efcd1e604e1644270cc8e07b1c47c1"
+    },
+    {
+      "path": "src/worker-fishing-contact.mjs",
+      "sha256": "b35172be282d14ade2d4da9abe5de161523a9b59870e1030010e25f44efbf509"
+    },
+    {
+      "path": "src/worker-fishing-presentation.mjs",
+      "sha256": "fa8d25046b446425dcc1a06097df15bf22fcb60d79cdb3073dc551f4c384bca1"
+    },
+    {
+      "path": "src/worker-performing-action.mjs",
+      "sha256": "ade3c5a74858229a2b5886b6b652a53aec73d0e06d0f8dded3d42da8962ba207"
+    },
+    {
+      "path": "src/worker-work-presentation.mjs",
+      "sha256": "bce3a3b9149793be5f5f2914b7261a88e86da2736051cb36f41805b733a5e14c"
+    }
+  ],
+  "nodeVersion": "v24.19.0",
+  "evidenceType": "local-native-source-replay",
+  "deployedObservation": false,
+  "reports": [
+    {
+      "kind": "forest",
+      "expected": "continues",
+      "recovered": true,
+      "recoveryTick": 270,
+      "recoverySequence": {
+        "saved": 9,
+        "restored": 10
+      },
+      "cutTick": 240,
+      "tick": 630,
+      "wood": 118,
+      "cargo": 0,
+      "consumed": 18,
+      "otherConsumed": true,
+      "worker": {
+        "gatherForestCell": -1,
+        "gatherNodeId": null,
+        "gatherPhase": ""
+      },
+      "dimensions": [
+        160,
+        160
+      ]
+    },
+    {
+      "kind": "node",
+      "expected": "continues",
+      "recovered": true,
+      "recoveryTick": 330,
+      "recoverySequence": {
+        "saved": 11,
+        "restored": 12
+      },
+      "cutTick": 300,
+      "tick": 660,
+      "wood": 112,
+      "cargo": 0,
+      "consumed": 12,
+      "otherConsumed": true,
+      "worker": {
+        "gatherForestCell": -1,
+        "gatherNodeId": null,
+        "gatherPhase": ""
+      },
+      "dimensions": [
+        160,
+        160
+      ]
+    }
+  ]
+}
