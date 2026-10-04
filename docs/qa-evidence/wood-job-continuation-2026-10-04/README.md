@@ -57,6 +57,11 @@ also passed. Postmerge evidence is recorded on PR #283 rather than inferred.
 
 ## Remaining acceptance and next content
 
+Source merge `8200ec6c` and clean postmerge verification are complete. Parent's
+current identified staging `53a47ee` does not contain this merge; deployment and
+ordinary-game acceptance are **incomplete**. Track the next receiving action in
+the [economy/content queue](../../economy-content-workstream.md).
+
 Economy/content owns source review, normal merge, package inclusion and
 postmerge verification. The Railway/economy-content receiving stream must
 identify a release containing PR #283; the existing cloud testing stream owns
