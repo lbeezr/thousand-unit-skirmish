@@ -1,0 +1,389 @@
+{
+  "stage": "final",
+  "sourceCommit": "74d6095e03a3221035c135ddc6eb8aacaa8905c2",
+  "mapSHA256": "1d91efb4f377f5c382f5a18e31e30d70efae17fb7434f133b878a2802c309dbd",
+  "startedAt": "2026-10-04T00:53:10.083Z",
+  "arrivals": [
+    {
+      "team": 1,
+      "kind": "infantry",
+      "start": {
+        "x": 56.18,
+        "z": 0.5
+      },
+      "target": {
+        "x": -57.5,
+        "z": -2.5
+      },
+      "criterion": "within 0.8 world units of the commanded point",
+      "gameSeconds": 49.43333333333333,
+      "wallSeconds": 49.409012221000005,
+      "finalNoticeMs": 32.10670600000003,
+      "final": {
+        "x": -56.89,
+        "z": -2.5
+      }
+    },
+    {
+      "team": 0,
+      "kind": "infantry",
+      "start": {
+        "x": -58.82,
+        "z": 0.5
+      },
+      "target": {
+        "x": 57.5,
+        "z": -2.5
+      },
+      "criterion": "within 0.8 world units of the commanded point",
+      "gameSeconds": 50.13333333333333,
+      "wallSeconds": 50.109377734,
+      "finalNoticeMs": 21.660746000000017,
+      "final": {
+        "x": 56.8,
+        "z": -2.5
+      }
+    },
+    {
+      "team": 1,
+      "kind": "worker",
+      "start": {
+        "x": 56.4,
+        "z": -0.4
+      },
+      "target": {
+        "x": -57.5,
+        "z": 0.5
+      },
+      "criterion": "within 0.8 world units of the commanded point",
+      "gameSeconds": 50.13333333333333,
+      "wallSeconds": 50.109312777999996,
+      "finalNoticeMs": 32.48057799999998,
+      "final": {
+        "x": -56.85,
+        "z": 0.5
+      }
+    },
+    {
+      "team": 0,
+      "kind": "worker",
+      "start": {
+        "x": -58.6,
+        "z": -0.4
+      },
+      "target": {
+        "x": 57.5,
+        "z": 0.5
+      },
+      "criterion": "within 0.8 world units of the commanded point",
+      "gameSeconds": 50.93333333333333,
+      "wallSeconds": 50.90955878,
+      "finalNoticeMs": 31.437788000000012,
+      "final": {
+        "x": 56.71,
+        "z": 0.5
+      }
+    },
+    {
+      "team": 1,
+      "kind": "scout",
+      "start": {
+        "x": 55.5,
+        "z": 8.5
+      },
+      "target": {
+        "x": -57.5,
+        "z": 3.5
+      },
+      "criterion": "within 0.8 world units of the commanded point",
+      "gameSeconds": 26.5,
+      "wallSeconds": 26.498873537999994,
+      "finalNoticeMs": 0.9396980000019539,
+      "final": {
+        "x": -56.75,
+        "z": 3.5
+      }
+    },
+    {
+      "team": 0,
+      "kind": "scout",
+      "start": {
+        "x": -59.5,
+        "z": 8.5
+      },
+      "target": {
+        "x": 57.5,
+        "z": 3.5
+      },
+      "criterion": "within 0.8 world units of the commanded point",
+      "gameSeconds": 27.4,
+      "wallSeconds": 27.398646370999998,
+      "finalNoticeMs": 0.650340000000142,
+      "final": {
+        "x": 56.8,
+        "z": 3.5
+      }
+    },
+    {
+      "team": 1,
+      "kind": "worker-return",
+      "start": {
+        "x": -56.85,
+        "z": 0.5
+      },
+      "target": {
+        "x": 57.5,
+        "z": 0.5
+      },
+      "criterion": "within 0.8 world units of the commanded point",
+      "gameSeconds": 50.6,
+      "wallSeconds": 50.601960936999994,
+      "finalNoticeMs": 0.9380959999980405,
+      "final": {
+        "x": 56.71,
+        "z": 0.5
+      }
+    },
+    {
+      "team": 0,
+      "kind": "worker-return",
+      "start": {
+        "x": 56.71,
+        "z": 0.5
+      },
+      "target": {
+        "x": -57.5,
+        "z": 0.5
+      },
+      "criterion": "within 0.8 world units of the commanded point",
+      "gameSeconds": 50.6,
+      "wallSeconds": 50.598982371000005,
+      "finalNoticeMs": 1.01802399999724,
+      "final": {
+        "x": -56.85,
+        "z": 0.5
+      }
+    },
+    {
+      "team": 0,
+      "kind": "practice-worker",
+      "start": {
+        "x": -58.6,
+        "z": -0.4
+      },
+      "target": {
+        "x": -48.5,
+        "z": 0.5
+      },
+      "criterion": "within 0.8 world units of the commanded point",
+      "gameSeconds": 3.966666666666667,
+      "wallSeconds": 3.950984150000033,
+      "finalNoticeMs": 2.817206999985501,
+      "final": {
+        "x": -48.5,
+        "z": -0.29
+      }
+    }
+  ],
+  "economy": [
+    {
+      "team": 1,
+      "type": "stable",
+      "target": {
+        "x": 57.5,
+        "z": 10.5
+      },
+      "before": {
+        "food": 150,
+        "wood": 250
+      },
+      "after": {
+        "food": 150,
+        "wood": 50
+      },
+      "cost": {
+        "food": 0,
+        "wood": 200
+      },
+      "footprintCells": 9,
+      "completeAtGameSeconds": 15.5
+    },
+    {
+      "team": 0,
+      "type": "stable",
+      "target": {
+        "x": -57.5,
+        "z": 10.5
+      },
+      "before": {
+        "food": 150,
+        "wood": 250
+      },
+      "after": {
+        "food": 150,
+        "wood": 50
+      },
+      "cost": {
+        "food": 0,
+        "wood": 200
+      },
+      "footprintCells": 9,
+      "completeAtGameSeconds": 15.3
+    },
+    {
+      "team": 0,
+      "event": "paid-food-deposit",
+      "stock": 120,
+      "gameSeconds": 32
+    },
+    {
+      "team": 1,
+      "event": "paid-food-deposit",
+      "stock": 120,
+      "gameSeconds": 32
+    },
+    {
+      "team": 1,
+      "type": "town-center",
+      "target": {
+        "x": 39.5,
+        "z": -21.5
+      },
+      "before": {
+        "food": 120,
+        "wood": 480
+      },
+      "after": {
+        "food": 20,
+        "wood": 80
+      },
+      "cost": {
+        "food": 100,
+        "wood": 400
+      },
+      "footprintCells": 25,
+      "completeAtGameSeconds": 246.2
+    },
+    {
+      "team": 1,
+      "type": "house",
+      "target": {
+        "x": 31.5,
+        "z": -21.5
+      },
+      "before": {
+        "food": 20,
+        "wood": 80
+      },
+      "after": {
+        "food": 20,
+        "wood": 5
+      },
+      "cost": {
+        "food": 0,
+        "wood": 75
+      },
+      "footprintCells": 9,
+      "completeAtGameSeconds": 256.6
+    },
+    {
+      "team": 0,
+      "type": "town-center",
+      "target": {
+        "x": -39.5,
+        "z": -21.5
+      },
+      "before": {
+        "food": 120,
+        "wood": 480
+      },
+      "after": {
+        "food": 20,
+        "wood": 80
+      },
+      "cost": {
+        "food": 100,
+        "wood": 400
+      },
+      "footprintCells": 25,
+      "completeAtGameSeconds": 256.8
+    },
+    {
+      "team": 0,
+      "type": "house",
+      "target": {
+        "x": -31.5,
+        "z": -21.5
+      },
+      "before": {
+        "food": 20,
+        "wood": 80
+      },
+      "after": {
+        "food": 20,
+        "wood": 5
+      },
+      "cost": {
+        "food": 0,
+        "wood": 75
+      },
+      "footprintCells": 9,
+      "completeAtGameSeconds": 267.1
+    }
+  ],
+  "browserVerified": false,
+  "deployedVerified": false,
+  "ordinaryDefaultMode": "skirmish@1",
+  "normalCatalogEntry": {
+    "id": "veyrholds-terraced-vale",
+    "name": "Veyrholds \u00b7 Terraced Vale",
+    "summary": "Tiny \u00b7 160 \u00d7 160 \u00b7 broad passes, high flanks and expansion shelves \u00b7 elimination; bonus-only posts"
+  },
+  "initialFog": [
+    {
+      "team": 0,
+      "bytes": 6400,
+      "enemyVisibleUnits": 0
+    },
+    {
+      "team": 1,
+      "bytes": 6400,
+      "enemyVisibleUnits": 0
+    }
+  ],
+  "finalEconomy": [
+    {
+      "team": 0,
+      "food": 20,
+      "wood": 5,
+      "exploredFogBytes": 6400
+    },
+    {
+      "team": 1,
+      "food": 20,
+      "wood": 5,
+      "exploredFogBytes": 6400
+    }
+  ],
+  "combat": [
+    {
+      "team": 0,
+      "targetId": 1000000001,
+      "beforeHP": 2400,
+      "afterHP": 2398.5,
+      "elapsedGameSeconds": 1.8
+    },
+    {
+      "team": 1,
+      "targetId": 1000000000,
+      "beforeHP": 2400,
+      "afterHP": 2398.5,
+      "elapsedGameSeconds": 1.8
+    }
+  ],
+  "coldRecovery": true,
+  "rematch": true,
+  "oneHumanPractice": true,
+  "passed": true,
+  "finishedAt": "2026-10-04T00:57:43.730Z"
+}

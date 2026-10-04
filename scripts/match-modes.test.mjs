@@ -2,7 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { normalizeMatchMode, matchModeDefinition, assertMatchModeCompatibility,
-  effectiveMapForMatchMode, matchModeCatalog } from '../src/match-modes.mjs';
+  effectiveMapForMatchMode, matchModeCatalog, NORMAL_MATCH_MAP_ID,
+  NORMAL_HUMAN_MATCH_MODE } from '../src/match-modes.mjs';
 
 const authored = { matchModeId: 'authored', matchModeVersion: 1 };
 const objective = { matchModeId: 'objective-control', matchModeVersion: 1 };
@@ -42,12 +43,38 @@ test('partial, unknown and malformed mode identities reject without coercion', (
 
 test('registry exposes the agreed policy and honest AI support as immutable descriptors', () => {
   assert.deepEqual(matchModeDefinition(), { id: 'authored', version: 1, label: 'Authored Rules',
-    victoryPolicy: 'authored', aiStrategyId: 'capture-posts', pveSupported: true, selectable: false });
+    victoryPolicy: 'authored', aiStrategyId: 'capture-posts', pveSupported: true, selectable: false,
+    defaultMapId: 'veyrholds-terraced-vale' });
   assert.deepEqual(matchModeDefinition(objective), { id: 'objective-control', version: 1, label: 'Objective Control',
-    victoryPolicy: 'authored', aiStrategyId: 'capture-posts', pveSupported: true, selectable: true });
+    victoryPolicy: 'authored', aiStrategyId: 'capture-posts', pveSupported: true, selectable: true,
+    defaultMapId: 'woodland-expanse' });
   assert.deepEqual(matchModeDefinition(skirmish), { id: 'skirmish', version: 1, label: 'Skirmish',
-    victoryPolicy: 'recovery-elimination', aiStrategyId: 'base-elimination', pveSupported: false, selectable: true });
+    victoryPolicy: 'recovery-elimination', aiStrategyId: 'base-elimination', pveSupported: false, selectable: true,
+    defaultMapId: 'veyrholds-terraced-vale' });
   assert.throws(() => { matchModeDefinition(skirmish).pveSupported = true; }, TypeError);
+});
+
+test('Tiny normal map supports human Skirmish without inventing objective or AI capability', () => {
+  assert.equal(NORMAL_MATCH_MAP_ID, 'veyrholds-terraced-vale');
+  assert.deepEqual(NORMAL_HUMAN_MATCH_MODE, skirmish);
+  assert.throws(() => { NORMAL_HUMAN_MATCH_MODE.matchModeId = 'authored'; }, TypeError);
+  const map = deepFreeze(JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url))));
+  assert.deepEqual([map.width, map.height], [160, 160]);
+  assert.equal(assertMatchModeCompatibility(skirmish, map).id, 'skirmish');
+  assert.equal(assertMatchModeCompatibility(skirmish, map, { mode: 'pvp', practice: true }).id, 'skirmish');
+  assert.throws(() => assertMatchModeCompatibility(skirmish, map, { mode: 'pve' }), /does not support PvE/);
+  assert.throws(() => assertMatchModeCompatibility(objective, map), /not compatible/);
+  assert.deepEqual(matchModeCatalog(map).map(mode => mode.id), ['authored', 'skirmish']);
+  assert.deepEqual(matchModeCatalog(map, { mode: 'pvp', practice: true }).map(mode => mode.id), ['authored', 'skirmish']);
+  assert.deepEqual(matchModeCatalog(map, { mode: 'pve' }).map(mode => mode.id), ['authored']);
+  const effective = effectiveMapForMatchMode(map, skirmish);
+  assert.deepEqual(effective, map, 'Tiny already has bonus-only posts and no hold or deadline');
+  assert.notEqual(effective, map);
+  assert.notEqual(effective.triggers, map.triggers);
+  assert.deepEqual(effective.triggers.map(trigger => [trigger.foodReward, trigger.woodReward, trigger.victory]),
+    [[75, 50, false], [75, 50, false]]);
+  assert.equal(Object.hasOwn(effective, 'timedVictory'), false);
+  assert.equal(Object.hasOwn(effective, 'victoryHoldSeconds'), false);
 });
 
 for (const original of maps) {

@@ -8,6 +8,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
 import { practiceEntryCatalog } from './src/practice-entry-catalog.mjs';
+import { NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from './src/match-modes.mjs';
+import { ORDINARY_MAP_MIN_SIDE, MAP_SIZE_TIERS } from './src/map-size-policy.mjs';
 import {
   buildRoomWorkerEnvironment,
   completeRoomLaunchOptions,
@@ -15,6 +17,8 @@ import {
   normalizeRoomMetadata,
   roomIndexDocument,
   roomResponseMetadata,
+  freshRoomLaunchOptions,
+  FRESH_PVE_UNAVAILABLE_REASON,
 } from './src/room-launch-options.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -45,7 +49,7 @@ const INDEX_SAVE_INTERVAL_MS = 20_000;
 const ROOM_SWEEP_INTERVAL_MS = 60_000;
 const practiceSetup = (async () => {
   const maps = path.join(ROOT, 'maps');
-  const file = path.resolve(ROOT, process.env.RTS_MAP || 'maps/bellweather-millrace.json');
+  const file = path.resolve(ROOT, `maps/${NORMAL_MATCH_MAP_ID}.json`);
   if (!file.startsWith(`${maps}${path.sep}`)) return null;
   // The existing default worker validates this same canonical startup file.
   try { return practiceEntryCatalog(JSON.parse(await readFile(file, 'utf8'))); }
@@ -245,7 +249,7 @@ async function readRoomLaunchOptions(request) {
     throw error;
   }
   const body = Buffer.concat(chunks).toString('utf8').trim();
-  if (!body) return completeRoomLaunchOptions();
+  if (!body) return freshRoomLaunchOptions();
   let value;
   try { value = JSON.parse(body); }
   catch {
@@ -253,7 +257,7 @@ async function readRoomLaunchOptions(request) {
     error.statusCode = 400;
     throw error;
   }
-  try { return completeRoomLaunchOptions(value); }
+  try { return freshRoomLaunchOptions(value); }
   catch (cause) {
     const error = new Error(String(cause.message || cause));
     error.statusCode = 400;
@@ -299,10 +303,10 @@ function logWorkerOutput(label, stream, isError = false) {
   });
 }
 
-function startWorker(customMapDirectory, matchStatePath, label, launchOptions = { mode: 'pvp' }, onRoomMetadata) {
+function startWorker(customMapDirectory, matchStatePath, label, launchOptions = { mode: 'pvp', ...NORMAL_HUMAN_MATCH_MODE }, onRoomMetadata, savedMetadata = null) {
   return new Promise((resolve, reject) => {
     const { RTS_ACCESS_PASSWORD: _accessPassword, ...parentEnvironment } = process.env;
-    const workerEnvironment = buildRoomWorkerEnvironment(parentEnvironment, launchOptions);
+    const workerEnvironment = buildRoomWorkerEnvironment(parentEnvironment, launchOptions, savedMetadata);
     const child = spawn(process.execPath, [WORKER_PATH], {
       cwd: ROOT,
       env: {
@@ -372,11 +376,16 @@ async function ensureRoomWorker(room) {
   if (room.starting) return room.starting;
   room.starting = (async () => {
     await mkdir(room.customMapDirectory, { recursive: true });
+    // Index metadata is a historical startup fallback when a checkpoint is absent.
+    // Custom-map geometry still requires its checkpoint; never invent a shipped file.
+    const savedMetadata = room.mapId && await stat(path.join(ROOT, 'maps', `${room.mapId}.json`))
+      .then(value => value.isFile()).catch(() => false) ? normalizeRoomMetadata(room) : null;
     const worker = await startWorker(
       room.customMapDirectory, room.matchStatePath, `room ${room.id.slice(0, 8)}`, room.launchOptions,
       (roomMetadata, worker) => {
         if (room.worker === worker) updateRoomMetadata(room, roomMetadata);
       },
+      savedMetadata,
     );
     room.worker = worker;
     updateRoomMetadata(room, worker.roomMetadata);
@@ -399,7 +408,8 @@ async function ensureDefaultWorker() {
   defaultWorkerStarting = (async () => {
     await mkdir(DEFAULT_MAP_DIRECTORY, { recursive: true });
     const worker = await startWorker(
-      DEFAULT_MAP_DIRECTORY, DEFAULT_MATCH_STATE_PATH, 'default room', { mode: 'pvp' },
+      DEFAULT_MAP_DIRECTORY, DEFAULT_MATCH_STATE_PATH, 'default room',
+      process.env.RTS_MAP ? { mode: 'pvp' } : { mode: 'pvp', ...NORMAL_HUMAN_MATCH_MODE },
     );
     defaultWorker = worker;
     worker.child.once('exit', (code, signal) => {
@@ -559,7 +569,10 @@ async function handleRequest(request, response) {
   if (!hasAccess(request)) { requireAccess(response); return; }
 
   if (url.pathname === '/api/rooms/status' && request.method === 'GET') {
-    sendJson(response, 200, { enabled: true, roomCount: rooms.size, roomLimit: MAX_ROOMS, practiceSetup: await practiceSetup });
+    sendJson(response, 200, { enabled: true, roomCount: rooms.size, roomLimit: MAX_ROOMS, practiceSetup: await practiceSetup,
+      ordinarySetup: { minimumSide: ORDINARY_MAP_MIN_SIDE, defaultMapId: NORMAL_MATCH_MAP_ID,
+        ...NORMAL_HUMAN_MATCH_MODE, mapSizeTiers: MAP_SIZE_TIERS,
+        pve: { available: false, reason: FRESH_PVE_UNAVAILABLE_REASON } } });
     return;
   }
 

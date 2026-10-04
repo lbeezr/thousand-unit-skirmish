@@ -1,5 +1,7 @@
 import { randomBytes } from 'node:crypto';
-import { matchModeDefinition, normalizeMatchMode } from './match-modes.mjs';
+import { matchModeDefinition, normalizeMatchMode, NORMAL_HUMAN_MATCH_MODE } from './match-modes.mjs';
+
+export const FRESH_PVE_UNAVAILABLE_REASON = 'New Play vs AI matches are unavailable while 160 × 160 Skirmish AI acceptance is pending. Existing AI rooms can still be resumed.';
 
 const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
 const MAP_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/;
@@ -98,7 +100,18 @@ export function completeRoomLaunchOptions(value, createSeed = randomSeed) {
   };
 }
 
-export function buildRoomWorkerEnvironment(parentEnvironment, launchOptions) {
+// Fresh admission is separate from saved launch/index normalization. Plain PvP
+// rooms and one-human Practice retain authored access to internal Labs. Normal
+// two-seat entry uses Skirmish; explicit Practice mode choices remain authoritative.
+export function freshRoomLaunchOptions(value) {
+  const options = normalizeRoomLaunchOptions(value);
+  if (options.mode === 'pve') throw new TypeError(FRESH_PVE_UNAVAILABLE_REASON);
+  return { ...options, ...(!hasMatchModeFields(options)
+    ? options.pregame ? NORMAL_HUMAN_MATCH_MODE : normalizeMatchMode()
+    : {}) };
+}
+
+export function buildRoomWorkerEnvironment(parentEnvironment, launchOptions, savedMetadata = null) {
   const options = normalizeRoomLaunchOptions(launchOptions);
   const environment = { ...parentEnvironment };
   for (const key of WORKER_LAUNCH_ENV_KEYS) delete environment[key];
@@ -108,6 +121,10 @@ export function buildRoomWorkerEnvironment(parentEnvironment, launchOptions) {
   if (hasMatchModeFields(options)) {
     environment.RTS_MATCH_MODE_ID = options.matchModeId;
     environment.RTS_MATCH_MODE_VERSION = String(options.matchModeVersion);
+    if (options.mode === 'pvp') environment.RTS_MAP = `maps/${matchModeDefinition(options).defaultMapId}.json`;
+  } else if (options.mode === 'pvp') {
+    // Pre-migration rooms without checkpoint data retain their historical map.
+    environment.RTS_MAP ||= 'maps/bellweather-millrace.json';
   }
   if (options.mode === 'pve') {
     if (options.mapSeed === undefined || options.policySeed === undefined) {
@@ -115,6 +132,14 @@ export function buildRoomWorkerEnvironment(parentEnvironment, launchOptions) {
     }
     environment.RTS_PVE_MAP_SEED = String(options.mapSeed);
     environment.RTS_PVE_POLICY_SEED = String(options.policySeed);
+  }
+  const metadata = normalizeRoomMetadata(savedMetadata);
+  if (options.mode === 'pvp' && metadata) {
+    environment.RTS_MAP = `maps/${metadata.mapId}.json`;
+    if (hasMatchModeFields(metadata)) {
+      environment.RTS_MATCH_MODE_ID = metadata.matchModeId;
+      environment.RTS_MATCH_MODE_VERSION = String(metadata.matchModeVersion);
+    }
   }
   return environment;
 }
