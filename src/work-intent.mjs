@@ -1,12 +1,21 @@
 // Durable player work, separate from transient targets/routes/orderRevision.
 import { STONE_ECONOMY_PROFILE_ID } from './economy-profile.mjs';
 export const WORK_INTENT_VERSION = 1;
+export const PLAIN_FOOD_SOURCE_KIND = 'neutral-land-food';
 
-export const isAreaGatherResource = resource => resource === 'wood' || resource === 'stone';
+export const isAreaGatherResource = resource => resource === 'wood' || resource === 'stone' || resource === 'food';
+// Food cargo does not imply a plain-node job: Farms, wildlife and variants
+// carry the same currency while retaining their separate authority/lifecycles.
+export const isPlainNeutralFoodSource = source => source?.type === 'food'
+  && ['sourceBuildingId', 'team', 'wildlifeSpecies', 'wildlifeState', 'wildlifeTeam', 'resourceVariant']
+    .every(key => source[key] === undefined);
 
 export function createGatherWorkIntent(generation, source, resource = 'wood') {
-  if (!isAreaGatherResource(resource)) throw new Error('Unsupported gather area resource');
-  return { version: 1, kind: 'gather', generation, resource, anchor: { x: source.x, z: source.z } };
+  if (!isAreaGatherResource(resource) || (resource === 'food' && !isPlainNeutralFoodSource(source))) {
+    throw new Error('Unsupported gather area resource/source');
+  }
+  return { version: 1, kind: 'gather', generation, resource,
+    ...(resource === 'food' ? { sourceKind: PLAIN_FOOD_SOURCE_KIND } : {}), anchor: { x: source.x, z: source.z } };
 }
 
 export function createConstructionWorkIntent(generation, siteIds, area) {
@@ -37,8 +46,10 @@ export function validWorkIntent(intent, unit, map, { buildings = [], nextBuildin
   if (unit.kind !== 'worker' || unit.movementDomain === 'water' || intent.version !== 1
     || !Number.isSafeInteger(intent.generation) || intent.generation < 1
     || intent.generation !== unit.generation) return false;
-  if (intent.kind === 'gather') return keys(intent, ['version', 'kind', 'generation', 'resource', 'anchor'])
+  if (intent.kind === 'gather') return keys(intent, ['version', 'kind', 'generation', 'resource',
+    ...(intent.resource === 'food' ? ['sourceKind'] : []), 'anchor'])
     && isAreaGatherResource(intent.resource)
+    && (intent.resource !== 'food' || intent.sourceKind === PLAIN_FOOD_SOURCE_KIND)
     && (intent.resource !== 'stone' || map.economyProfileId === STONE_ECONOMY_PROFILE_ID)
     && keys(intent.anchor, ['x', 'z']) && onMap(intent.anchor, map);
   if (intent.kind !== 'construction' || !keys(intent, ['version', 'kind', 'generation', 'siteIds', 'area'])) return false;

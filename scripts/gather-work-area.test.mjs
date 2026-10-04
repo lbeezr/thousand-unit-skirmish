@@ -36,6 +36,19 @@ test('Stone selection is an explicit exact-type fixed area; Wood helpers and Foo
     source('near-wood', -11), source('near-food', -11, 6, 'food')];
   assert.deepEqual(nearbyGatherSources(stone, anchor, sources).map(s => s.id), ['near-stone', 'edge-stone']);
   assert.deepEqual(nearbyWoodSources(stone, anchor, sources), []);
-  assert.equal(gatherWorkArea(anchor, 'food'), null);
-  assert.deepEqual(nearbyGatherSources({ ...anchor, type: 'food' }, anchor, sources), []);
+  assert.deepEqual(nearbyGatherSources(gatherWorkArea(anchor, 'food'), anchor, sources).map(s => s.id), ['near-food']);
+});
+test('plain Food area excludes other Food source classes and retains the inclusive original boundary with stable ties', () => {
+  const food = gatherWorkArea(anchor, 'food');
+  const plain = source('plain', -10.5, 6, 'food');
+  const candidates = [plain, { ...plain, id: 'farm', sourceBuildingId: 1, team: 0 },
+    { ...plain, id: 'sheep', wildlifeSpecies: 'bellweather-sheep', wildlifeState: 'alive' },
+    { ...plain, id: 'carcass', wildlifeSpecies: 'bellweather-sheep', wildlifeState: 'carcass' },
+    { ...plain, id: 'fish', resourceVariant: 'shore-fish' }, { ...plain, id: 'unknown', resourceVariant: 'future-food' },
+    source('edge', -3.5, 6, 'food'), source('far', -3.499, 6, 'food'), source('empty', -11, 0, 'food'),
+    { ...plain, id: 'a' }];
+  const before = structuredClone(candidates);
+  assert.deepEqual(nearbyGatherSources(food, anchor, candidates).map(n => n.id), ['a', 'plain', 'edge']);
+  assert.deepEqual(candidates, before);
+  assert.deepEqual(food, { type: 'food', x: anchor.x, z: anchor.z });
 });
