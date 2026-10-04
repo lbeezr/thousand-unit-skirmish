@@ -79,6 +79,12 @@ Retained local artifacts are in `/workspace/pve-skirmish-evidence-2026-10-03`:
 paid checkpoints/traces, full-map probe/checkpoints/traces and focused output.
 These observations do not establish win rate, balance or fun.
 
+2026-10-04 follow-up: runtime PR200 and the AI fixture's canonical mode activation
+close the projected-map restore blocker. [New full-map receipt](qa-pve-mode-adapter-2026-10-04.md)
+records actual schema-27 restart, both-match elimination and exact replay, while
+retaining mode-specific loss recovery and ordinary acceptance. The observations
+above remain historical source evidence.
+
 Next: integrate the restored authoritative pair at the socket-policy boundary,
 repeat full shipped-map checkpoint matches for both seats, exercise producer/
 Worker recovery through army loss, then coordinate PvE capability enablement and

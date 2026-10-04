@@ -2,7 +2,7 @@ import { createReconnaissancePolicy } from './pve-reconnaissance.mjs';
 import { createHomeDefensePolicy } from './pve-home-defense.mjs';
 import { createRegroupPolicy } from './pve-regroup.mjs';
 import { createSkirmishTargetPolicy } from './pve-skirmish-targets.mjs';
-import { matchModeDefinition } from './match-modes.mjs';
+import { matchModeDefinition, normalizeMatchMode } from './match-modes.mjs';
 import { createObjectiveRotationPolicy } from './pve-objective-rotation.mjs';
 import { TECHNOLOGY_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 import { farmHarvestNodeId } from './farm-harvest.mjs';
@@ -825,12 +825,16 @@ export function attachDeterministicOpponent(socket, {
   let nextClientOrderToken = 1;
   let reportedNoSeat = false;
   let timer = null;
-  let policy = createDeterministicPolicy(seed);
+  let matchMode = normalizeMatchMode();
+  let policy = createDeterministicPolicy(seed, matchMode);
+  let invalidMatchMode = false;
   let previousWinner = null;
   let hostResetPending = false;
 
-  const resetForNewMatch = () => {
-    policy = createDeterministicPolicy(seed);
+  const resetForNewMatch = (identity = matchMode) => {
+    matchMode = identity;
+    policy = createDeterministicPolicy(seed, matchMode);
+    invalidMatchMode = false;
     finished = false;
     hostResetPending = false;
   };
@@ -846,6 +850,25 @@ export function attachDeterministicOpponent(socket, {
       return;
     }
 
+    // Welcome/map-change identify a fresh setup. State identity is authoritative
+    // after recovery, but unchanged snapshots must preserve private policy watches.
+    if (message.type === 'welcome' || message.type === 'mapChange' || message.type === 'state') {
+      const carriesIdentity = value => value && (Object.hasOwn(value, 'matchModeId')
+        || Object.hasOwn(value, 'matchModeVersion'));
+      const freshSetup = message.type !== 'state';
+      if (freshSetup || carriesIdentity(message)) {
+        try {
+          const identity = normalizeMatchMode(carriesIdentity(message) ? message : message.state ?? {});
+          if (freshSetup || identity.matchModeId !== matchMode.matchModeId
+            || identity.matchModeVersion !== matchMode.matchModeVersion) resetForNewMatch(identity);
+        } catch (error) {
+          invalidMatchMode = true;
+          onError(error instanceof Error ? error : new Error(String(error)));
+          return;
+        }
+      }
+    }
+
     if (message.type === 'welcome') {
       team = validTeam(message.player?.team) ? message.player.team : null;
       map = message.map && typeof message.map === 'object' ? message.map : null;
@@ -859,7 +882,6 @@ export function attachDeterministicOpponent(socket, {
       map = message.map && typeof message.map === 'object' ? message.map : map;
       latestState = message.state?.type === 'state' ? message.state : latestState;
       previousWinner = Number.isInteger(latestState?.winner) ? latestState.winner : null;
-      resetForNewMatch();
     } else if (message.type === 'notice'
       && typeof message.message === 'string' && message.message.startsWith('BATTLEFIELD RESET')) {
       hostResetPending = true;
@@ -871,7 +893,7 @@ export function attachDeterministicOpponent(socket, {
         && isPristineMatchState(message, team, map);
       hostResetPending = false;
       previousWinner = winner;
-      if (winnerCleared || hostResetConfirmed) resetForNewMatch();
+      if (!invalidMatchMode && (winnerCleared || hostResetConfirmed)) resetForNewMatch();
     } else if (message.type === 'victory') {
       finished = true;
     }
@@ -884,7 +906,7 @@ export function attachDeterministicOpponent(socket, {
   socket.addEventListener('message', handleMessage);
   socket.addEventListener('close', handleClose);
   timer = setInterval(() => {
-    if (socketClosed || disposed || finished || team === null || !latestState || socket.readyState !== 1) return;
+    if (socketClosed || disposed || finished || invalidMatchMode || team === null || !latestState || socket.readyState !== 1) return;
     let observation;
     try {
       observation = toOpponentObservation(latestState, team, map);
