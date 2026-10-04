@@ -2,6 +2,23 @@
 
 [Documentation index](README.md) · [Map authoring](map-authoring.md)
 
+## Terraced Vale Tiny baseline
+
+**Veyrholds · Terraced Vale** adds a 160 × 160 ordinary regional choice and
+one-human Practice scenario. It has broad valley passes, high flank routes,
+flat city campuses and two expansion pockets per seat. Its 133-unit base route
+takes about 51 game-seconds for a Worker; opening units/banks stay ordinary.
+Elimination applies, with two bonus-only posts and no deadline.
+[Map and native evidence](qa-terraced-vale-2026-10-03.md) records the paid economy,
+routes, recovery, diagnostic and remaining deployed/browser acceptance.
+
+The user now requires 160 on both axes as the ordinary minimum: **Tiny**, then
+Small/Medium/Large/XL. The [tier policy](map-size-tiers.md) supplies the shared
+catalog contract; mode/entry owners still need to bind fresh defaults and
+selection filtering. The prior smaller files remain internal fixtures and legacy
+save identities. The dated roster below describes their prior ordinary entry;
+this map-only slice has not changed those server defaults.
+
 ## Vaelora default roster — 30 September 2026
 
 **Bellweather · Millrace** is the default two-seat map. Seeded solo play chooses
