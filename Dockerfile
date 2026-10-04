@@ -15,6 +15,7 @@ COPY --chown=node:node src/ ./src/
 COPY --chown=node:node maps/ ./maps/
 COPY --chown=node:node assets/environment/frontier-v1/ ./assets/environment/frontier-v1/
 COPY --chown=node:node assets/environment/frontier-painted-material-atlas-v1/manifest.json assets/environment/frontier-painted-material-atlas-v1/*.webp ./assets/environment/frontier-painted-material-atlas-v1/
+COPY --chown=node:node assets/environment/frontier-oak-depletion-atlas-v1/manifest.json assets/environment/frontier-oak-depletion-atlas-v1/*.webp ./assets/environment/frontier-oak-depletion-atlas-v1/
 COPY --chown=node:node assets/environment/ellionar-sunbloom-low-v4/sunbloom-low-atlas.webp ./assets/environment/ellionar-sunbloom-low-v4/
 COPY --chown=node:node assets/environment/ellionar-sunbloom-worked-v3/sunbloom-worked-atlas.webp ./assets/environment/ellionar-sunbloom-worked-v3/
 COPY --chown=node:node assets/environment/ellionar-sunbloom-crowns-v2/sunbloom-crowns-atlas.webp ./assets/environment/ellionar-sunbloom-crowns-v2/

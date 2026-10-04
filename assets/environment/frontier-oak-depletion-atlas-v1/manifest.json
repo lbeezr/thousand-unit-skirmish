@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "packId": "frontier-oak-depletion-atlas-v1",
+  "packVersion": "1.0.0",
+  "sourceBindings": {
+    "candidateManifestSha256": "5eab150c16fd2dd75fe873c206235e91897f0e7e7d346f0ca27a192dcecf4bd4",
+    "sourcePageSha256": "a134ccc0d1ef46e1e33845e20a08e59662f951677f68461d2cf6004d4ae15110",
+    "interactiveManifestSha256": "f55d11ecc6a717bc47b85df9972345ec9f12d71480b3b06bbacf162743c6d212"
+  },
+  "frames": [
+    {
+      "id": "worked",
+      "sourcePath": "assets/environment/frontier-interactive-v1/oak-worked.png",
+      "sourceSha256": "17f433b67aa6a4a0784ecac1293aba4796c3f2ab7491b6bf3bcf61f49de8018f",
+      "canvasPx": {
+        "width": 1226,
+        "height": 1283
+      },
+      "groundPivotPx": {
+        "x": 613.0,
+        "y": 1283
+      },
+      "worldSize": {
+        "width": 4.1,
+        "height": 3.75
+      },
+      "rectPx": {
+        "x": 32,
+        "y": 32,
+        "width": 1226,
+        "height": 1283
+      },
+      "uvRectTopLeft": {
+        "min": {
+          "u": 0.008257113821138211,
+          "v": 0.023619186046511628
+        },
+        "max": {
+          "u": 0.31948678861788615,
+          "v": 0.9553052325581395
+        }
+      }
+    },
+    {
+      "id": "low",
+      "sourcePath": "assets/environment/frontier-interactive-v1/oak-low.png",
+      "sourceSha256": "ea255be33ebc77d62a5fb1176175565ef56745ef6568b74a75ed228022127528",
+      "canvasPx": {
+        "width": 1226,
+        "height": 1283
+      },
+      "groundPivotPx": {
+        "x": 613.0,
+        "y": 1283
+      },
+      "worldSize": {
+        "width": 4.1,
+        "height": 3.75
+      },
+      "rectPx": {
+        "x": 1344,
+        "y": 32,
+        "width": 1226,
+        "height": 1283
+      },
+      "uvRectTopLeft": {
+        "min": {
+          "u": 0.34159044715447157,
+          "v": 0.023619186046511628
+        },
+        "max": {
+          "u": 0.6528201219512195,
+          "v": 0.9553052325581395
+        }
+      }
+    },
+    {
+      "id": "depleted",
+      "sourcePath": "assets/environment/frontier-interactive-v1/oak-depleted.png",
+      "sourceSha256": "65c38d012c7184d01761bf53144be407fa03c215e66c150e9893e5a35c0c1371",
+      "canvasPx": {
+        "width": 1226,
+        "height": 1283
+      },
+      "groundPivotPx": {
+        "x": 613.0,
+        "y": 1283
+      },
+      "worldSize": {
+        "width": 4.1,
+        "height": 3.75
+      },
+      "rectPx": {
+        "x": 2656,
+        "y": 32,
+        "width": 1226,
+        "height": 1283
+      },
+      "uvRectTopLeft": {
+        "min": {
+          "u": 0.6749237804878049,
+          "v": 0.023619186046511628
+        },
+        "max": {
+          "u": 0.9861534552845529,
+          "v": 0.9553052325581395
+        }
+      }
+    }
+  ],
+  "page": {
+    "dimensionsPx": {
+      "width": 3936,
+      "height": 1376
+    },
+    "cellPx": {
+      "width": 1312,
+      "height": 1376
+    },
+    "layout": [
+      3,
+      1
+    ],
+    "gutterPx": 32,
+    "gutterRule": "edge-rgb-transparent-alpha",
+    "colorSpace": "srgb",
+    "alphaMode": "straight",
+    "wrapMode": "clamp",
+    "sampling": {
+      "generateMipmaps": false,
+      "maxMipLevel": 5,
+      "uvInsetPx": 0.5,
+      "minFilter": "linear-mipmap-linear",
+      "magFilter": "linear",
+      "anisotropy": 1
+    }
+  },
+  "provenance": {
+    "source": "Existing public oak candidate/interactive full-cutout source PNG pixels",
+    "encoding": "WebP quality 86, method 6; alpha unchanged; independent premultiplied BOX cell mips",
+    "pillowVersion": "12.3.0"
+  },
+  "files": [
+    {
+      "level": 0,
+      "path": "oak-depletion-mip-0.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "0d0614752134b52633a85b778a95fc220e7894b612c8eb4ecf8664cabf47e6b0",
+      "dimensionsPx": {
+        "width": 3936,
+        "height": 1376
+      },
+      "bytes": 814708,
+      "alphaWeightedRgbRmse": 5.193344
+    },
+    {
+      "level": 1,
+      "path": "oak-depletion-mip-1.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "2abac6807ebf4cf23e0225c395d17bf5a03790fe690613ff10d58544f1efc4a5",
+      "dimensionsPx": {
+        "width": 1968,
+        "height": 688
+      },
+      "bytes": 259494,
+      "alphaWeightedRgbRmse": 6.102143
+    },
+    {
+      "level": 2,
+      "path": "oak-depletion-mip-2.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "f871c1877a25cba33bce584a922a90c8e029cf9c656705f1d12ffeb994aec12c",
+      "dimensionsPx": {
+        "width": 984,
+        "height": 344
+      },
+      "bytes": 79736,
+      "alphaWeightedRgbRmse": 6.378004
+    },
+    {
+      "level": 3,
+      "path": "oak-depletion-mip-3.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "0089b287b00aa815a4e6edc33a010de331f17c4cfb66e0b5e846084a80013ee0",
+      "dimensionsPx": {
+        "width": 492,
+        "height": 172
+      },
+      "bytes": 25716,
+      "alphaWeightedRgbRmse": 6.829907
+    },
+    {
+      "level": 4,
+      "path": "oak-depletion-mip-4.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "9004dea3590247ecd5fe24a8748e8a62b98e30e9211d2dd151889a1a20ca8b21",
+      "dimensionsPx": {
+        "width": 246,
+        "height": 86
+      },
+      "bytes": 8894,
+      "alphaWeightedRgbRmse": 7.031532
+    },
+    {
+      "level": 5,
+      "path": "oak-depletion-mip-5.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "5bb62b5ef483fad8853d60e4dd796e3d4368f9372b548733474d1d1a14c33409",
+      "dimensionsPx": {
+        "width": 123,
+        "height": 43
+      },
+      "bytes": 3212,
+      "alphaWeightedRgbRmse": 6.903163
+    }
+  ]
+}
