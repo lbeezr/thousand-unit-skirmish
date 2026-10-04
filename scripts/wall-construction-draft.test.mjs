@@ -1,4 +1,5 @@
 import { createWorkerPerformingActions } from '../src/worker-performing-action.mjs';
+import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
 import { validFarmStock } from '../src/farm-harvest.mjs';
 import { economyServerBindings, economyServerFunctions, visionServerBindings, visionServerFunctions } from './economy-server-fixture.mjs';
 import { validGateState, buildingBlocksMovement, isPalisade } from '../src/palisade-gate.mjs';
@@ -33,6 +34,7 @@ const extract = (name, next) => {
   return source.slice(start, end);
 };
 const functions = [
+  ['invalidateVisionCoverage', 'activateMap'],
   ['cellIndex', 'nearestOpenCellInComponent'], ['rebuildWalkableComponents', 'findAvailableCellNear'],
   ['buildingAccessCells', 'findBuildingAttackApproachCell'],
   ['reservedResourceNodes', 'rejectBuild'], ['pendingMoveAssignmentsByUnit', 'pathIntersectsCells'],
@@ -60,6 +62,7 @@ function fixture(team = 0) {
     unitHasCapability: (u, capability) => UNIT_DEFINITIONS[u.kind].capabilities.includes(capability),
     activeWallBuildOrder, unfinishedConstructionSites, isPalisade, palisadeConstructionRetries: new WeakMap(),
     navigationRevision: 0, attackFlowFields: new Map(), dirty: false,
+    VisionCoverageCache, visionCoverageGeneration: 0, visionCoverageBySourceCell: null,
     broadcastGameplayNotice() {}, sendOrderNotice() {}, clearAttackTarget() {},
   });
   vm.runInContext(economyServerFunctions + visionServerFunctions + functions, context);
