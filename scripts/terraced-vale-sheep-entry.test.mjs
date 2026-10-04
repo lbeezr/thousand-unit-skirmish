@@ -90,9 +90,9 @@ async function managedRoomServer() {
     }
     throw new Error(`Supervisor health timeout: ${logs}`);
   }
-  async function connect(roomId,team) {
+  async function connect(roomId,team,{holdMessages=false}={}) {
     const socket=new WebSocket(`ws://127.0.0.1:${port}/ws?room=${encodeURIComponent(roomId)}`,['rts-v1']);clients.add(socket);
-    const messages=[],pending=new Set();let latest=null,lobby=null;
+    const messages=[],pending=new Set(),held=[];let latest=null,lobby=null;
     function wait(predicate,label,after=0) {
       const found=messages.slice(after).find(predicate);if(found)return Promise.resolve(found);
       return new Promise((resolve,reject)=>{
@@ -101,13 +101,18 @@ async function managedRoomServer() {
         },15_000)};pending.add(waiter);
       });
     }
-    socket.addEventListener('message',event=>{
-      const message=JSON.parse(event.data);messages.push(message);
+    function receive(message) {
+      messages.push(message);
       if(message.type==='state')latest=message;else if(message.state)latest=message.state;
       if(message.lobby)lobby=message.lobby;else if(message.state?.lobby)lobby=message.state.lobby;
       for(const waiter of pending)if(waiter.predicate(message)){
         pending.delete(waiter);clearTimeout(waiter.timer);waiter.resolve(message);
       }
+    }
+    socket.addEventListener('message',event=>{
+      const message=JSON.parse(event.data);
+      if(holdMessages&&message.type!=='welcome')held.push(message);
+      else receive(message);
     });
     socket.addEventListener('close',()=>{
       for(const waiter of pending){clearTimeout(waiter.timer);waiter.reject(new Error(`Seat ${team} socket closed: ${logs}`));}
@@ -116,9 +121,25 @@ async function managedRoomServer() {
     const welcome=await wait(message=>message.type==='welcome',`seat ${team} welcome`);
     assert.equal(welcome.player.team,team);
     return {socket,messages,welcome,wait,get latest(){return latest;},get lobby(){return lobby;},
+      releaseMessages(){holdMessages=false;for(const message of held.splice(0))receive(message);},
       send(command){socket.send(JSON.stringify(command));}};
   }
   return {start,dispose,connect,origin};
+}
+
+function waitForConnectedSeats(client) {
+  return client.wait(message=>{
+    const lobby=message.lobby||message.state?.lobby;
+    return lobby?.phase==='lobby'&&[0,1].every(team=>lobby.seats.some(seat=>seat.team===team&&seat.connected));
+  },`seat ${client.welcome.player.team} observes both connected seats`);
+}
+
+async function readyInLobby(client,layout,team) {
+  const after=client.messages.length;layout.button('lobby-ready').click();
+  assert.equal(layout.sent.at(-1)?.type,'setReady');assert.equal(layout.sent.at(-1).ready,true);
+  const response=await client.wait(message=>message.type==='lobbyRejected'
+    ||message.type==='lobby'&&message.lobby.seats.some(seat=>seat.team===team&&seat.ready),'ordinary Ready accepted',after);
+  assert.equal(response.type,'lobby',response.message);
 }
 
 function lobbyDOM(client,origin) {
@@ -149,6 +170,9 @@ test('normal Create Room → Tiny/skirmish lobby launch discloses neutral access
       body:JSON.stringify({mode:'pvp',pregame:true})});assert.equal(response.status,201);
     const created=await response.json();assert.deepEqual(created.launchOptions,{mode:'pvp',pregame:true,...NORMAL_HUMAN_MATCH_MODE});
     const clients=[await server.connect(created.roomId,0),await server.connect(created.roomId,1)];
+    // Guest admission invalidates the host's welcome revision. Observe that
+    // update on each socket before constructing controls or sending Ready.
+    await Promise.all(clients.map(waitForConnectedSeats));
     const layouts=clients.map(client=>lobbyDOM(client,server.origin));t.after(()=>layouts.forEach(layout=>layout.close()));
     const shipped=JSON.parse(await readFile(new URL('../maps/veyrholds-terraced-vale.json',import.meta.url)));
     for(const [team,client]of clients.entries()) {
@@ -168,11 +192,7 @@ test('normal Create Room → Tiny/skirmish lobby launch discloses neutral access
       assert.equal(map.resourceNodes.filter(row=>row.type==='wood').reduce((total,row)=>total+row.stock,0),7950);
       assert.equal(state.scenarioClockStarted,false);assert.equal(client.lobby.phase,'lobby');
     }
-    for(const [team,client]of clients.entries()) {
-      const after=client.messages.length;layouts[team].button('lobby-ready').click();
-      await client.wait(message=>message.type==='lobby'&&message.lobby.seats.some(seat=>seat.team===team&&seat.ready),'ordinary Ready accepted',after);
-      assert.equal(layouts[team].sent.at(-1).type,'setReady');assert.equal(layouts[team].sent.at(-1).ready,true);
-    }
+    for(const [team,client]of clients.entries())await readyInLobby(client,layouts[team],team);
     await clients[0].wait(message=>message.type==='lobby'&&message.lobby.canLaunch,'both real seats ready');
     assert.equal(layouts[0].button('lobby-launch').disabled,false);assert.equal(layouts[1].button('lobby-launch').hidden,true);
     const launchAfter=clients.map(client=>client.messages.length);layouts[0].button('lobby-launch').click();
@@ -229,4 +249,28 @@ test('normal Create Room → Tiny/skirmish lobby launch discloses neutral access
       sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}).trim(),sourceBytes,
       limits:['CPU Three scene/atlas and DOM lobby protocol; no native-browser/GPU appearance claim.',
         'Access uses production terrain traversal; separate native scenario owns actual claim/Gather/recovery.']}));
+  });
+
+test('delayed host seat updates retain the Ready revision guard and require observing guest admission',
+  {timeout:40_000},async t=>{
+    const server=await managedRoomServer();t.after(()=>server.dispose());await server.start();
+    const response=await fetch(`${server.origin}/api/rooms`,{method:'POST',headers:{'content-type':'application/json',origin:server.origin},
+      body:JSON.stringify({mode:'pvp',pregame:true})});assert.equal(response.status,201);
+    const {roomId}=await response.json(),host=await server.connect(roomId,0,{holdMessages:true}),guest=await server.connect(roomId,1);
+    await waitForConnectedSeats(guest);
+    assert.equal(host.lobby.seats.length,1,'host still has its welcome revision');
+    let observed=false;const admitted=waitForConnectedSeats(host).then(()=>{observed=true;});
+    await Promise.resolve();assert.equal(observed,false,'guest welcome alone cannot satisfy the host observation');
+    const after=host.messages.length;host.send({type:'setReady',ready:true,revision:host.lobby.revision});
+    host.releaseMessages();
+    const rejected=await host.wait(message=>message.type==='lobbyRejected','stale Ready rejected',after);
+    assert.equal(rejected.message,'Lobby changed. Review the settings and ready again.');
+    assert.ok(rejected.lobby.revision>host.welcome.state.lobby.revision);
+    assert.ok(rejected.lobby.seats.every(seat=>!seat.ready));assert.equal(rejected.lobby.canLaunch,false);
+    await admitted;
+    const layout=lobbyDOM(host,server.origin);t.after(()=>layout.close());
+    await readyInLobby(host,layout,0);
+    assert.equal(host.lobby.seats.find(seat=>seat.team===0).ready,true);
+    assert.equal(host.lobby.seats.find(seat=>seat.team===1).ready,false);
+    assert.equal(host.lobby.canLaunch,false,'one accepted Ready cannot launch without the other real seat');
   });
