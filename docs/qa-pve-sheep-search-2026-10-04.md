@@ -44,6 +44,26 @@ and complete paid producers and recruits; native orders remain legal and the
 existing checkpoint/reset assertions pass. Winner and pacing change; these
 results do not establish balance, fairness, capacity or fun.
 
+At reviewed candidate `6a68e1e7`, all four native Authored/Skirmish × assignment
+cases pass with the same terminal results and exact repeats. Three publication/
+both-seat cold-foundation checks also pass; original immediate restart ticks
+14,129/13,418, four surviving Workers and resource conservation remain intact.
+The matched comparison restores each baseline's untouched original checkpoint:
+the 3,600-second ongoing match becomes a 2,705-second Ember elimination, and the
+2,236-second Ember result becomes a 1,564-second Azure result. Each candidate
+exactly repeats every order, notice, checkpoint and reset; command counts are
+681/548 and no command-rejection assertion fails. This retains the native
+600-second checkpoint/fresh-policy continuation whenever a game reaches it.
+
+The normal PvE process case passes on the same candidate, with real paid
+foundation, paid queue and host-reset epoch restarts. Its foundation checkpoint
+at tick 7 resumes at tick 8; queue 381 and reset 1,467 resume at their saved ticks.
+Real-time restart permits normal clock progress and retains exact stabilized
+banks and generations; it does not claim whole-state equality at different
+ticks. Both recruits complete for 100 food/0 wood, cargo deposits subsequently
+occur, and the native AI gathers after reset/restart. Independent review passes
+23 focused checks and both actual native Skirmish full cases with exact repeats.
+
 An earlier four-local-probe budget and a budget plus distributed cursor each
 fixed the first assignment but timed out the opposite one. Those pilots are
 retained as rejected experiments; neither is the submitted policy. The focused
@@ -59,8 +79,9 @@ node scripts/pve-tiny-process-recovery-scenario.mjs
 ```
 
 The full native matrix, both-seat paid loss recovery, matched initial-checkpoint
-comparison, independent review and postmerge qualification are receiving checks
-for this slice; their final receipts retain exact source qualification. The
+comparison and independent review pass. [PR255](https://github.com/lbeezr/thousand-unit-skirmish/pull/255)
+owns integration and postmerge qualification; final receipts retain exact source
+qualification. The
 dated PR247 page preserves its measured failure and process result. Actual
 rendered/deployed play and defeat/result rematch remain open with their existing
 mode, entry and staging owners; no deployment or browser capture is claimed.

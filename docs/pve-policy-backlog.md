@@ -26,9 +26,10 @@ seeds `[20260925, 0]` under both native identities; the opposite assignment
 repeats elimination at 2,236 seconds. The AI lane's
 [bounded search follow-up](qa-pve-sheep-search-2026-10-04.md) gives the existing
 global grid first choice and distributes its cursor across rows. Native
-Skirmish pilots exactly repeat elimination at 2,705/1,564 seconds; full matrix,
-matched checkpoint, cold recovery and independent qualification remain receiving
-checks. Preserve the older map's measurements;
+Skirmish games exactly repeat elimination at 2,705/1,564 seconds. The full matrix,
+same-original-checkpoint comparison, cold recovery and independent review pass
+in [PR255](https://github.com/lbeezr/thousand-unit-skirmish/pull/255); integration
+and served qualification remain owned. Preserve the older map's measurements;
 do not infer new-map full-game readiness from them or from paid process recovery.
 
 | Rank / state | Next outcome and concrete action | Write boundary | Dependency / acceptance |
