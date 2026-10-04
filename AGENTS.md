@@ -50,6 +50,24 @@ Keep independent streams moving in parallel; agree on shared interfaces before o
 edits. Use short-lived incremental branches, and own conflicts and fix-forward work. Do not
 accumulate a large disconnected PR or turn the producer into an approval queue.
 
+## Testing and completion
+
+Use the [testing strategy](docs/testing-strategy.md) and existing
+[command guide](docs/testing.md). Inspect `node scripts/ci.mjs --list`, then run
+focused checks for the changed contract and required repository checks. Prefer
+seeded scenarios through existing harnesses over repeated manual clicks. For
+browser/render work, first run `node scripts/browser-preflight.mjs --launch` in
+the intended cloud environment; startup readiness alone is not WebGL2/game-render
+acceptance. Record unsupported capability once, retain its owner/next action and
+continue independent work. Do not bypass security or depend on stopped Mac testing.
+
+Record source SHA, clean release digest and exact served/deployed identity
+separately. CPU/process/asset checks and preview screenshots do not close an
+ordinary-game visual outcome. The implementation owner retains that verification
+at the identified release; mark missing evidence incomplete. Review visual
+reference changes against approved art before replacing baselines. Proposed
+test lanes stay proposed until their wiring and regressions are merged.
+
 ## Shared work
 
 Use code, focused PRs, and short decision notes as shared state. Read current `main` and the

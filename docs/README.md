@@ -10,6 +10,7 @@ start; this index covers maintained guides, contracts, experiments, and evidence
 | What experience are we building, and what is outside scope? | [Game bible](game-bible.md) |
 | What outcome should we pursue next? | [Roadmap](roadmap.md) |
 | What evidence supports a product claim? | [QA plan](qa-vertical-slice.md) |
+| How do we choose tests, qualify cloud rendering and close verification? | [Testing strategy](testing-strategy.md) |
 | How should the game look and read? | [Art direction](art-direction-contract-v1.md) |
 | What are Vaelora’s selected zone maps and ecology keys? | [Art checkpoint](art-direction/vaelora-v1/README.md) |
 | Where do I read and extend Vaelora's lore? | [Lore wiki](lore/README.md): world, regions, peoples, institutions, history and magic |
@@ -47,6 +48,7 @@ the build they name.
 | --- | --- |
 | Understand runtime boundaries and files | [Architecture](architecture.md) |
 | Run focused checks, browser scenarios, or measurements | [Testing](testing.md) |
+| Reuse deterministic test lanes, record evidence and prioritize missing automation | [Testing strategy and execution contract](testing-strategy.md) |
 | Change commands, snapshots, or bot observations | [Gameplay contract](gameplay-command-observation-contract.md) |
 | Understand missing Stone/gold/copper and the next integration contract | [Mineral readiness audit](mineral-economy-readiness.md) |
 | Understand overload behavior | [Simulation timing](simulation-timing.md) |
@@ -58,6 +60,7 @@ the build they name.
 | Inspect the measured snapshot base-row allocation change and exact wire regressions | [Snapshot row allocation](qa-snapshot-row-allocation-2026-10-04.md) |
 | Understand the remaining maximum-tick tail and rejected zero-separation probe | [Remaining tick tail](qa-remaining-tick-tail-2026-10-04.md) |
 | Understand forced open-ground turns and their relation to screen headings | [Direct open-ground Move](qa-direct-open-ground-move-2026-10-04.md) |
+| Check displacement-driven sprite clocks, UV advancement and real atlas-cell differences without a browser | [CPU animation integration](qa-unit-displacement-animation-2026-10-04.md) |
 | Verify route progress through a parked army and preserved Stop intent | [Crowd forward-progress QA](qa-crowd-forward-progress-2026-10-03.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
 | Work on connected walls and explicit manual gates | [Palisade runtime](palisade-runtime.md), [gates](palisade-gates.md) |
