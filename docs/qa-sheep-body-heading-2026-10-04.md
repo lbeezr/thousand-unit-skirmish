@@ -1,8 +1,11 @@
 # Sheep canonical body heading — 4 October 2026
 
-The wildlife worker owns this technical conversion and recovery slice. Source
-base is fork main `9351320d`; the source commit belongs in its review/merge
-receipt. No new animal frames, private source or action loader are admitted.
+The wildlife worker owns this technical conversion and recovery slice. Original
+candidate `60c928066faca119e40d9353536f5a87bcb962da` used fork main `9351320d`.
+The refreshed candidate incorporates owned controls
+`d7613cfd15bc887888016b40389cdefe04d80663` and ordinary-map-floor main
+`966dc0a597eb15162b751522d111c7ae854de22f`; its exact reviewed head belongs in
+the PR receipt. No new animal frames, private source or action loader are admitted.
 
 The [owning contract](wildlife-bellweather-sheep.md#canonical-body-heading--4-october-2026)
 and [shared implementation](../src/wildlife-heading.mjs) define body-forward yaw
@@ -12,7 +15,7 @@ adapter adds it back. Future body action frames and the geometric body proxy
 use body yaw directly. Half-sector ties choose increasing yaw, including the
 337.5°→north wrap, independent of camera quarter rotations.
 
-The final focused run passed **186/186 checks** across heading, motion, neutral
+The original candidate's focused run passed **186/186 checks** across heading, motion, neutral
 renderer, actual eight-view atlas loading, explicit match-mode checkpoint,
 actual Herd authority, military stance recovery, shared food lifecycle/claims,
 Millrace state, relocated picking/minimap, typed economy recovery, PvE checkpoint
@@ -26,7 +29,7 @@ and schema29, then replays the same fixed ticks to identical state.
 
 The actual HTTP/WebSocket render scenario passed all eight admitted views,
 canonical map-change headings, public heading-module admission, rejected
-private paths, harvest/depletion, restart and rematch. Normal default Millrace
+private paths, harvest/depletion, restart and rematch. Then-default Millrace
 passed both-seat natural harvest/return, exact old-map stock/cargo migration,
 current restart and six-Sheep rematch. The two-seat Herd scenario passed three
 recoveries, current/hidden ownership disclosure, recapture, shared Gather,
@@ -36,13 +39,14 @@ travel and observed at most 0.6000000000000005 world units/second. These runs
 used server SHA256 `7fb59ec25498b9a1670767325e1e6af8b0e1eb2cd9921a6a1ef2572de3abe9eb`.
 Runtime imports, strict JS/Node type checks, docs links and diff whitespace pass.
 
-An additional adoption audit at this base hits the unchanged Worker fishing
-fixture (`idle` versus expected `gather-fish`), independently reproduced at
-main `a22b75ce`. The parallel owned-controls slice supplies the confirmed
-`performingAction: 'gather-food'` fixture correction; its nine audit checks pass.
-The wildlife integrator owns refreshing this heading branch after controls
-merges and rerunning the whole adoption audit. This slice edits no Worker
-action behavior or audit source.
+The refreshed candidate retains all owned-controls tests and the confirmed
+`performingAction: 'gather-food'` fishing-audit fixture correction, without
+changing Worker action behavior. Ordinary Tiny now starts Terraced Vale 160,
+which contains zero Sheep. The integrated Herd/input proof starts explicit
+Authored Rules without `RTS_MAP`, then publishes a 160×160 Sheep arena; the
+legacy Millrace regression selects its historical map explicitly. Current
+Sheep acceptance identifies those map paths rather than claiming Sheep in the
+ordinary default opening.
 
 Schema28→29 changes every saved Sheep heading and the schema only. Exact
 comparisons retain actual positions, sequence, goals, waits, activities, Herd

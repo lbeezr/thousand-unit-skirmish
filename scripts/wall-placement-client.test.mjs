@@ -1,4 +1,5 @@
 import { economyClientBindings } from './economy-client-fixture.mjs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
@@ -27,7 +28,7 @@ function fixture(t, team = 0) {
   canvas.releasePointerCapture = id => { captures.delete(id); const event = new w.Event('lostpointercapture'); Object.defineProperty(event, 'pointerId', { value: id }); canvas.dispatchEvent(event); };
   w.matchMedia = () => ({ matches: false });
   const units = [0, 1].map(id => ({ id, kind: 'worker', hp: 100, team: id, serverX: 8.5, serverZ: 8.5 }));
-  Object.assign(w, { ...economyClientBindings(), BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, WallPlacementGesture, wallCellAt, previewWallPlacement, wallPlacementFeedback,
+  Object.assign(w, { ...economyClientBindings(), ...wildlifeClientBindings(), BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, WallPlacementGesture, wallCellAt, previewWallPlacement, wallPlacementFeedback,
     renderer: { domElement: canvas }, wallPlacementGesture: new WallPlacementGesture(), wallKeyboardCell: null,
     pendingWallPreview: null,
     wallPlacementGhost: createWallPlacementGhost(), placementGhost: { visible: false },
@@ -54,7 +55,7 @@ function fixture(t, team = 0) {
     keyboardTargetIsEditing: event => event.target?.matches('input'), cameraNavigationKeydown: () => false,
     controlGroupIndexFromKey: () => null, appShell: d.createElement('div'),
   });
-  w.eval(between('function wallPlacementAt(', 'function queueWorker('));
+  w.eval(wildlifeClientFunctionSource(source) + between('function wallPlacementAt(', 'function queueWorker('));
   w.eval(between('function updateRosterBuildingOptions(', 'function updateEconomyUI('));
   // Isolate battlefield cursor picking; its logic has separate tests.
   w.syncBattlefieldCursor = () => {};

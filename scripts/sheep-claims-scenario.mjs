@@ -3,9 +3,9 @@ import { readFile } from 'node:fs/promises';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { MILLRACE_SHEEP_IDS } from '../src/millrace-sheep.mjs';
 
-// Real default-map Move claims and recovery, followed by a compact authored
+// Real historical Millrace Move claims and recovery, then an ordinary authored
 // match for contested/shared access. Never edit a saved position, stock or bank.
-const fixture = await createFortifiedFixture({ mapPath: null, timeoutMs: 35_000 });
+const fixture = await createFortifiedFixture({ mapPath: 'maps/bellweather-millrace.json', timeoutMs: 35_000 });
 const EPSILON = 1e-6, CLAIM_RADIUS = 1.4;
 const openingIds = [0, 1].map(team => `s${team}-0-1`);
 const nodeIn = (saved, id) => saved.state.resourceNodes.find(node => node.id === id);
@@ -64,7 +64,7 @@ try {
   await fixture.start();
   let clients = [await fixture.connect(0), await fixture.connect(1)];
   const defaultMap = clients[0].welcome.map;
-  assert.equal(defaultMap.id, 'bellweather-millrace', 'the normal default entry has naturally claimable Sheep');
+  assert.equal(defaultMap.id, 'bellweather-millrace', 'explicit historical Millrace has naturally claimable Sheep');
   const defaultWorkers = clients.map((client, team) => client.latest.units.find(row => row[1] === team && row[5] === 'worker')[0]);
   const initial = await fixture.checkpoint();
   unharvested(initial, defaultMap);
@@ -100,7 +100,7 @@ try {
   // Author an ordinary fogged meadow match through the real map API, with the
   // minimum eight-Worker opening and one shared food node.
   const compact = JSON.parse(await readFile(new URL('../maps/open-field.json', import.meta.url)));
-  Object.assign(compact, { id: 'sheep-claims-proof', name: 'SHEEP CLAIMS PROOF', summary: '32 × 24 · automatic proximity claims', width: 32, height: 24,
+  Object.assign(compact, { id: 'sheep-claims-proof', name: 'SHEEP CLAIMS PROOF', summary: '160 × 160 · automatic proximity claims', width: 160, height: 160,
     terrainBase: 'meadow', fogOfWar: true, startingArmySize: 8,
     spawnPoints: [{ team: 0, x: -10.5, z: -4.5 }, { team: 1, x: 10.5, z: -4.5 }],
     startingResources: { food: 0, wood: 0 }, scenarioEvents: [],
@@ -108,10 +108,10 @@ try {
   });
   const after = clients.map(client => client.messages.length);
   clients[0].send({ type: 'publishMap', map: compact, persist: true });
-  const publication = await clients[0].wait(message => message.type === 'mapPublished' || message.type === 'mapRejected', 'compact claims map admitted', after[0]);
+  const publication = await clients[0].wait(message => message.type === 'mapPublished' || message.type === 'mapRejected', 'ordinary claims map admitted', after[0]);
   assert.equal(publication.type, 'mapPublished', publication.message);
   await Promise.all(clients.map((client, team) => client.wait(message => message.type === 'mapChange' && message.map.id === compact.id,
-    'ordinary compact match started', after[team])));
+    'ordinary claims match started', after[team])));
   const workers = clients.map((client, team) => client.latest.units.find(row => row[1] === team && row[5] === 'worker')[0]);
   const sharedId = compact.resourceNodes[0].id;
   const shared = saved => nodeIn(saved, sharedId);

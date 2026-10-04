@@ -6,22 +6,22 @@ import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
 
-// Source-only authority proof: real compact-map publication, Workers, orders,
+// Source-only authority proof: real ordinary-map publication, Workers, orders,
 // paid construction and restarts. No saved stock, bank or position is patched.
 // Ordinary browser selection/HUD binding and hosted appearance remain separate.
 const map = JSON.parse(await readFile(new URL('../maps/open-field.json', import.meta.url)));
-Object.assign(map, { id: 'sheep-herding-proof', name: 'SHEEP HERDING PROOF', summary: '48 × 32 · owned Sheep authority',
-  width: 48, height: 32, terrainBase: 'meadow', fogOfWar: true, startingArmySize: 8,
+Object.assign(map, { id: 'sheep-herding-proof', name: 'SHEEP HERDING PROOF', summary: '160 × 160 · owned Sheep authority',
+  width: 160, height: 160, terrainBase: 'meadow', fogOfWar: true, startingArmySize: 8,
   spawnPoints: [{ team: 0, x: -14.5, z: -5.5 }, { team: 1, x: 14.5, z: -5.5 }],
   startingResources: { food: 0, wood: 250 }, scenarioEvents: [],
-  obstacles: [{ column: 23, row: 17, width: 1, height: 1, material: 'stone' }],
+  obstacles: [{ column: 79, row: 81, width: 1, height: 1, material: 'stone' }],
   resourceNodes: [
     { id: 'herd-sheep-0', type: 'food', x: -6.5, z: 4.5, stock: 4.25 },
     { id: 'herd-sheep-1', type: 'food', x: 6.5, z: 4.5, stock: 4.25 },
     { id: 'hidden-sheep', type: 'food', x: .5, z: -14.5, stock: 100 },
   ].map(node => ({ ...node, wildlifeSpecies: 'bellweather-sheep' })),
 });
-const fixture = await createFortifiedFixture({ mapPath: null, timeoutMs: 45_000 });
+const fixture = await createFortifiedFixture({ mapPath: null, matchModeId: 'authored', timeoutMs: 45_000 });
 const sourceHash = async () => createHash('sha256').update(await readFile(new URL('../server.mjs', import.meta.url))).digest('hex');
 const serverSha256 = await sourceHash();
 const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera();
@@ -139,7 +139,7 @@ try {
   const publication = await clients[0].wait(message => message.type === 'mapPublished' || message.type === 'mapRejected', 'ordinary herding map admitted', after[0]);
   assert.equal(publication.type, 'mapPublished', publication.message);
   await Promise.all(clients.map((client, team) => client.wait(message => message.type === 'mapChange' && message.map.id === map.id,
-    'compact herding match started', after[team])));
+    'ordinary herding match started', after[team])));
   workers = clients.map((client, team) => client.latest.units.filter(row => row[1] === team && row[5] === 'worker').map(row => row[0]));
   const initial = await fixture.checkpoint(saved => saved.mapDefinition.id === map.id);
   untouched(initial);

@@ -145,6 +145,11 @@ try {
   // Mode identity was added after military stance; retain that prior state shape.
   legacy.schemaVersion = 26;
   delete legacy.matchModeId; delete legacy.matchModeVersion;
+  // Schema28 added herd state. A real schema26 fixture cannot claim it while
+  // testing the unchanged authored mode migration.
+  for (const node of legacy.state.resourceNodes) {
+    delete node.wildlifeHerd; delete node.wildlifeGrazeAnchor;
+  }
   legacy.state.triggerStates.forEach(state => Object.assign(state,
     { owner: state.id === 'post-2' ? 1 : 0, progressTeam: -1, progress: 0 }));
   legacy.state.scenarioClockStarted = true; legacy.state.matchElapsedSeconds = 899.95;

@@ -1,4 +1,5 @@
 import { economyClientBindings } from './economy-client-fixture.mjs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -116,14 +117,14 @@ for (const team of [0, 1]) test(`Return cargo uses Mill for food and rejects woo
 });
 
 for (const team of [0, 1]) test(`selected depot hints describe registered resources for seat ${team}`, () => {
-  const context = vm.createContext({ ...economyClientBindings(), ...economyServerBindings(), BUILDING_DEFINITIONS, localTeam: team, selectedBuildingId: 7,
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), ...economyServerBindings(), BUILDING_DEFINITIONS, localTeam: team, selectedBuildingId: 7,
     latestBuildings: [], ui: { commandHint: {}, commandTitle: {} }, persistentTargetMode: null,
     tapOrderArmed: false, attackMoveMode: false, window: { matchMedia: () => ({ matches: false }) },
     document: { querySelectorAll: () => [] }, buildingLabel: type => BUILDING_DEFINITIONS[type].label,
     updateStationaryOrderControls() {}, updateBuildingResearchControls() {}, syncTargetOrderUI() {},
     syncBattlefieldCursor() {}, updateContextualCommands() {},
   });
-  vm.runInContext(commandUI, context);
+  vm.runInContext(wildlifeClientFunctionSource(client) + commandUI, context);
   for (const [type, resources] of [['mill', 'food'], ['storehouse', 'food and wood']]) {
     context.latestBuildings = [{ id: 7, team, type, complete: true }];
     context.updateCommandUI();
