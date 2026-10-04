@@ -1,4 +1,5 @@
 import { economyServerBindings, economyServerFunctions, workerFlowRouteBindings } from './economy-server-fixture.mjs';
+import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -180,7 +181,7 @@ for (const team of [0, 1]) {
 
 test('Return cargo control sends only living friendly carrying workers with generation metadata', () => {
   const sent = [], status = [];
-  const context = vm.createContext({ ...economyServerBindings(), localTeam: 0, matchWinner: -1, currentOrderToken: 100,
+  const context = vm.createContext({ ...economyServerBindings(), ...browserRecoveryBindings(), localTeam: 0, matchWinner: -1, currentOrderToken: 100,
     selected: new Set([0, 1, 2, 3, 4]), persistentTargetMode: 'follow',
     units: [worker(0), worker(1), worker(0, { hp: 0 }), worker(0, { cargo: 0 }), worker(0, { kind: 'infantry' })],
     socket: { readyState: 1, send: text => sent.push(JSON.parse(text)) }, WebSocket: { OPEN: 1 },
