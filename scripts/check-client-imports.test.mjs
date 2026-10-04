@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { checkClientImports } from './check-client-imports.mjs';
+import { checkClientImports } from './browser/check-client-imports.mjs';
 
 function fixture(files) {
   const requests = [];
