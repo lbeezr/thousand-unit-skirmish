@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-04",
+  "sourceBaseline": "5d081ecf376f2e6e19331713bb5cc764bae75941",
+  "tool": "built-in image_gen.imagegen",
+  "purpose": "User-requested examples of composed-scene backing, lifecycle storyboards, and silhouette exploration",
+  "runtimeUse": false,
+  "outputs": [
+    {
+      "file": "bellweather-match-study-v1.png",
+      "originalOutput": "exec-7f5b5dbe-10aa-4b6d-8587-270adedcc3cf.png",
+      "bytes": 3445055,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "8cafc309510dc5e6a3c3dbeab58aa8271b053c7c8b067af608ca7b48cfe680d6",
+      "status": "exploratory-unselected",
+      "references": [
+        {
+          "path": "docs/art-direction/vaelora-v1/bellweather-ecology.png",
+          "role": "regional ecology and palette",
+          "sha256": "043d3be76343e9e5c04850fe99be84333b977a7215e503152bf1ab9dc588ed40"
+        },
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/town-center.png",
+          "role": "selected civic architecture",
+          "sha256": "180fc38469e67b414aa6d5c100b97bbd94f708f6c9d3ef904df493ac982e42f0"
+        },
+        {
+          "path": "docs/art-direction/human-vaelora-sprites-v1/source/Idle/facings.png",
+          "role": "selected Human Worker identity",
+          "sha256": "323071be89e1fc6e181ec4c7b946d28048043380b4faaa285f368e6efe1c54ad"
+        },
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/house.png",
+          "role": "selected domestic architecture",
+          "sha256": "5a6bbc19ff710dccc14a9bc1d82412357c8988afd4a2517091f353331e185cb9"
+        }
+      ]
+    },
+    {
+      "file": "house-lifecycle-storyboard-v1.png",
+      "originalOutput": "exec-9f429967-f268-4017-8a7b-3147f9b0fd4e.png",
+      "bytes": 2695168,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "20e76c10b511468be3152f77efb53b18587427c4a088141aba52b09c9ad0b62e",
+      "status": "exploratory-unselected",
+      "references": [
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/house.png",
+          "role": "selected House identity",
+          "sha256": "5a6bbc19ff710dccc14a9bc1d82412357c8988afd4a2517091f353331e185cb9"
+        },
+        {
+          "path": "docs/art-direction/human-vaelora-sprites-v1/source/Idle/facings.png",
+          "role": "selected Worker identity and illustrative scale",
+          "sha256": "323071be89e1fc6e181ec4c7b946d28048043380b4faaa285f368e6efe1c54ad"
+        }
+      ]
+    },
+    {
+      "file": "economy-silhouette-explorations-v1.png",
+      "originalOutput": "exec-afe4a490-a9a9-47ea-a0b3-e2a51dba5d43.png",
+      "bytes": 2872676,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "68be1b13696a47d0e04a2415f1a9f9f9efb8748e42e8744d51727973f7ff66ee",
+      "status": "exploratory-unselected",
+      "references": [
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/house.png",
+          "role": "shared domestic materials",
+          "sha256": "5a6bbc19ff710dccc14a9bc1d82412357c8988afd4a2517091f353331e185cb9"
+        },
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/storehouse.png",
+          "role": "shared working architecture",
+          "sha256": "976322d67489295e45f3533d20a51e02522f7d304b9c8446e79d70fcfdade8a8"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/bellweather-ecology.png",
+          "role": "regional ecology and palette",
+          "sha256": "043d3be76343e9e5c04850fe99be84333b977a7215e503152bf1ab9dc588ed40"
+        }
+      ]
+    }
+  ]
+}
