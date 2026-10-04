@@ -27,7 +27,11 @@ for (const resource of ['food', 'stone']) {
     clients[0].send({ type: 'publishMap', map, persist: true });
     const publication = await clients[0].wait(message => ['mapPublished', 'mapRejected'].includes(message.type), 'typed audit map', after);
     assert.equal(publication.type, 'mapPublished', publication.message);
-    await Promise.all(clients.map(client => client.state(state => state.mapId === map.id)));
+    // An idle publication may emit only mapChange; don't await a future dirty
+    // state frame after missing that event on either seat.
+    await Promise.all(clients.map(client => client.wait(message => message.type === 'mapChange'
+      && message.map.id === map.id, 'typed audit map change')));
+    for (const client of clients) assert.equal(client.latest.mapId, map.id);
     await Promise.all(clients.map((client, team) => client.command({ type: 'gather', ids: [auditWorkerId(team)],
       nodeId: `seat-${team}-first`, clientOrderToken: team + 1 }, /GATHER ORDER/)));
     await room.checkpoint(saved => [0, 1].every(team => saved.state.units[auditWorkerId(team)].cargo > .5));
