@@ -3,6 +3,7 @@ import test from 'node:test';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 import { woodJobMap, woodJobTarget, woodDraw } from './resource-job-fixture.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { inWoodWorkArea, woodWorkArea } from '../src/gather-work-area.mjs';
 
 const stateOf = replay => replay.checkpoint().state;
 const workerOf = replay => stateOf(replay).units[0];
@@ -114,11 +115,19 @@ test('legacy cold restore creates only the existing active Wood job and rejects 
 
 test('an undisclosed Wood source inside the original circle is skipped and never wakes an exhausted job', async () => {
   const map = woodJobMap('node'); map.fogOfWar = true;
-  map.resourceNodes.find(node => node.id === 'next-tree').z = 13.5;
+  Object.assign(map.resourceNodes.find(node => node.id === 'next-tree'), { x: -11.5, z: 13 });
   const fixture = await createPveHeadlessFixture(map, { matchModeId: 'authored', matchModeVersion: 1 });
   const { replay } = fixture;
   try {
     await order(replay, { type: 'gather', nodeId: 'first-tree' }, /GATHER ORDER/);
+    const depleted = until(replay, s => s.resourceNodes.find(node => node.id === 'first-tree').stock === 0,
+      'first source depletes while the in-area successor is hidden');
+    const hidden = depleted.resourceNodes.find(node => node.id === 'next-tree');
+    assert.ok(inWoodWorkArea(woodWorkArea(depleted.units[0].workIntent.anchor), hidden),
+      'successor is strictly inside the original area, so visibility must exclude it');
+    const cell = Math.floor(hidden.z + map.height / 2) * map.width + Math.floor(hidden.x + map.width / 2);
+    const view = Buffer.from(replay.observe(0).visibility.data, 'base64');
+    assert.notEqual((view[cell >> 2] >> ((cell & 3) * 2)) & 3, 2, 'successor is not currently visible at retarget time');
     const finished = until(replay, s => s.units[0].gatherPhase === '' && s.units[0].cargo === 0
       && s.teamWood[0] > 100, 'visible area ends without seeking hidden Wood');
     assert.equal(finished.teamWood[0], 106);

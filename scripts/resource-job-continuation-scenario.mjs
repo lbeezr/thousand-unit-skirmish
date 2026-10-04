@@ -35,7 +35,7 @@ for (const kind of ['forest', 'node']) {
     const cut = await room.checkpoint(s => kind === 'forest'
       ? s.state.forestStocks.some(([cell, stock]) => cell === target.forestCell && stock === 0)
       : s.state.resourceNodes.find(n => n.id === target.nodeId).stock === 0);
-    let recovered = false, recoveryTick = null;
+    let recovered = false, recoveryTick = null, recoverySequence = null;
     if (expected === 'continues') {
       const originalAnchor = kind === 'forest' ? { x: -11.5, z: .5 } : { x: -11.5, z: 5.5 };
       assert.deepEqual(cut.state.units[0].workIntent.anchor, originalAnchor);
@@ -43,10 +43,12 @@ for (const kind of ['forest', 'node']) {
       const saved = JSON.parse(await readFile(room.checkpointPath, 'utf8'));
       await room.start(); client = await room.connect(0, tokens[0]); await room.connect(1, tokens[1]);
       assert.equal(client.welcome.recoveredFromCheckpoint, true);
-      const restored = await room.checkpoint(s => s.state.tickNumber >= saved.state.tickNumber);
+      const restored = await room.checkpoint(s => s.sequence > saved.sequence
+        && s.state.tickNumber >= saved.state.tickNumber);
       assert.deepEqual(restored.state.units[0].workIntent, saved.state.units[0].workIntent);
       assert.deepEqual(restored.state.units[0].workIntent.anchor, originalAnchor);
       recovered = true; recoveryTick = restored.state.tickNumber;
+      recoverySequence = { saved: saved.sequence, restored: restored.sequence };
     }
     const banked = await client.state(s => s.wood[0] >= 106, 'actual six wood delivery');
     const observedTick = banked.tick + 90;
@@ -69,7 +71,7 @@ for (const kind of ['forest', 'node']) {
       assert.equal(current.state.teamWood[0], kind === 'forest' ? 118 : 112);
       assert.equal(worker.workIntent, null, 'finite area ends without an automatic retry');
     }
-    reports.push({ kind, expected, recovered, recoveryTick, cutTick: cut.state.tickNumber, tick: current.state.tickNumber,
+    reports.push({ kind, expected, recovered, recoveryTick, recoverySequence, cutTick: cut.state.tickNumber, tick: current.state.tickNumber,
       wood: current.state.teamWood[0], cargo, consumed, otherConsumed,
       worker: { gatherForestCell: worker.gatherForestCell, gatherNodeId: worker.gatherNodeId, gatherPhase: worker.gatherPhase }, dimensions: [160, 160] });
   } finally { await room.dispose(); }
