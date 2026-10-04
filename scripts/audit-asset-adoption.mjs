@@ -11,6 +11,7 @@ import { activeState, spriteActionClip, spriteDirectory } from '../src/unit-spri
 import { checkClientImports } from './check-client-imports.mjs';
 import { groundTextureName, PAINTED_MATERIAL_ATLAS_MANIFEST, PAINTED_MATERIAL_NAMES,
   paintedMaterialAtlasDescriptor } from '../src/painted-material-atlas-runtime.mjs';
+import { OAK_DEPLETION_ATLAS_MANIFEST, oakDepletionAtlasDescriptor, oakDepletionStage } from '../src/oak-depletion-atlas-runtime.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = relative => readFile(path.join(root, relative));
@@ -80,6 +81,19 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null, 
         && /const painted = paintedGrounds\?\.texture\(name\);\s*if \(painted\) return painted;/.test(environment)
         && PAINTED_MATERIAL_NAMES.every(name => descriptor.rects.has(groundTextureName(name, {}, false, '')));
       dependencies.push(...descriptor.mipFiles);
+    } else if (record.probe === 'oak-depletion') {
+      module = 'src/oak-depletion-atlas-runtime.mjs';
+      assert.equal(relativeUrl(OAK_DEPLETION_ATLAS_MANIFEST), record.manifest);
+      oakDepletionAtlasDescriptor(manifest);
+      environment ??= (await read('src/environment-art.mjs')).toString();
+      assert.match(main, /createWoodResourceInstances\(mapDefinition, stage, stagePositions\)/,
+        'normal main must consume stock-stage wood instances');
+      assert.ok(graph.has('src/environment-art.mjs'), 'normal environment renderer must be reachable');
+      defaultBound = /const oakDepletion = await loadOakDepletionAtlas\(\)/.test(environment)
+        && /const stage = oakDepletionStage\(path\.replace/.test(environment)
+        && /if \(atlasTexture\) \{ loaded\.set\(path, atlasTexture\); continue; \}/.test(environment)
+        && /if \(oakDepletionStage\(name\)\) applyOakDepletionSampling\(material\)/.test(environment)
+        && ['worked', 'low', 'depleted'].every(stage => oakDepletionStage(`oak-${stage}`) === stage);
     } else if (record.probe === 'frontier-building') {
       module = 'src/frontier-building-preview.mjs';
       assert.match(main, /frontierBuildingManifestUrl\(building\.type, frontierBuildingsPreview\)/,

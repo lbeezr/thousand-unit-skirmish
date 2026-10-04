@@ -1,0 +1,170 @@
+{
+  "baselineHead": "331df727201c091741f55431d4b83021f479a7b5",
+  "baselineServerSha256": "35d6cde1208464dc8718941a24b4b12159aad023d2b65bb0ccf84aab52305b66",
+  "candidateHead": "9b28054298ecd2100af506f665865b7cc8ea2560",
+  "candidateServerSha256": "bf78f947dc21fd514a15562fc0c13f6ffba09f608041962bea001deebd408508",
+  "node": "v24.19.0",
+  "records": [
+    {
+      "case": {
+        "kind": "single-choke",
+        "group": 16
+      },
+      "repeats": 2,
+      "initialRoutesUnchanged": true,
+      "ticksBefore": 606,
+      "ticksAfter": 623,
+      "arrived": 16,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "maxNoProgressTicksBefore": 32,
+      "maxNoProgressTicksAfter": 31,
+      "traceSha256": "4a4f13f468eb4a21e4302e90c82b102698950adf4882d1b9407af33664c29a3f",
+      "initialRouteSha256": "2af80ac5c20cfc29e3908f5a0f8a11f5443d01d3a6e2b80f52643ad65438acae"
+    },
+    {
+      "case": {
+        "kind": "single-choke",
+        "group": 64
+      },
+      "repeats": 2,
+      "initialRoutesUnchanged": true,
+      "ticksBefore": 682,
+      "ticksAfter": 647,
+      "arrived": 64,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "maxNoProgressTicksBefore": 88,
+      "maxNoProgressTicksAfter": 34,
+      "traceSha256": "c3d986619e9e5d582f081092db6677e48def4ba79f883862e94b8ea159d252ba",
+      "initialRouteSha256": "da2f0b4b1d278957145a52c7d673b489859172888b16f8325b52c41d27c36b62"
+    },
+    {
+      "case": {
+        "kind": "single-choke",
+        "group": 256
+      },
+      "repeats": 2,
+      "initialRoutesUnchanged": true,
+      "ticksBefore": 1031,
+      "ticksAfter": 848,
+      "arrived": 256,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "maxNoProgressTicksBefore": 289,
+      "maxNoProgressTicksAfter": 34,
+      "traceSha256": "5646aeb1804cfe0fd1291f8f81f1fc70bce6f66ff1f3859d06d4d33e6ec37c8f",
+      "initialRouteSha256": "6a519dd9ed83407b3cbcdafeb74763ef12ca93aa0c22dadae1142f0e3ca69515"
+    },
+    {
+      "case": {
+        "kind": "s-bend",
+        "group": 64
+      },
+      "repeats": 2,
+      "initialRoutesUnchanged": true,
+      "ticksBefore": 769,
+      "ticksAfter": 711,
+      "arrived": 64,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "maxNoProgressTicksBefore": 123,
+      "maxNoProgressTicksAfter": 34,
+      "traceSha256": "9c893049a7fe141d608c4de36de9ab9d8e6406ac4570be54af376a540d5ebc3c",
+      "initialRouteSha256": "9928df51a1d63b7398715d26f7cb565f70d93df961aa141aa0585d2e9a3a536b"
+    },
+    {
+      "case": {
+        "kind": "dynamic-route",
+        "group": 64
+      },
+      "repeats": 2,
+      "initialRoutesUnchanged": true,
+      "ticksBefore": 700,
+      "ticksAfter": 663,
+      "arrived": 64,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "maxNoProgressTicksBefore": 65,
+      "maxNoProgressTicksAfter": 53,
+      "traceSha256": "dce570577ac593cef9b82666570293bff1038efe92a3b39847e66b99b9738e7c",
+      "initialRouteSha256": "da2f0b4b1d278957145a52c7d673b489859172888b16f8325b52c41d27c36b62"
+    },
+    {
+      "case": {
+        "kind": "dynamic-goal",
+        "group": 64
+      },
+      "repeats": 2,
+      "initialRoutesUnchanged": true,
+      "ticksBefore": 692,
+      "ticksAfter": 665,
+      "arrived": 64,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "maxNoProgressTicksBefore": 69,
+      "maxNoProgressTicksAfter": 34,
+      "traceSha256": "6d5e8db4975dcec1379715f2e7b8adafbc5461be0c5abcbb6d1f129b27424cf0",
+      "initialRouteSha256": "da2f0b4b1d278957145a52c7d673b489859172888b16f8325b52c41d27c36b62"
+    },
+    {
+      "case": {
+        "kind": "disconnect-rejection",
+        "group": 16
+      },
+      "repeats": 2,
+      "initialRoutesUnchanged": true,
+      "ticksBefore": 606,
+      "ticksAfter": 623,
+      "arrived": 16,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "maxNoProgressTicksBefore": 32,
+      "maxNoProgressTicksAfter": 31,
+      "traceSha256": "4a4f13f468eb4a21e4302e90c82b102698950adf4882d1b9407af33664c29a3f",
+      "initialRouteSha256": "2af80ac5c20cfc29e3908f5a0f8a11f5443d01d3a6e2b80f52643ad65438acae"
+    },
+    {
+      "case": {
+        "kind": "large-single-choke",
+        "group": 996,
+        "team": 0
+      },
+      "repeats": 2,
+      "initialRoutesUnchanged": true,
+      "ticksBefore": 1990,
+      "ticksAfter": 1214,
+      "arrived": 996,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "maxNoProgressTicksBefore": 939,
+      "maxNoProgressTicksAfter": 55,
+      "traceSha256": "cf477ce22a76b4c0b080f79633002d6dd483e986095b8a284644d4cd034eb8a8",
+      "initialRouteSha256": "a214439a2bc2293d06afd4b8b907fc840b671e70c2fad20c45140193dc1348ce"
+    },
+    {
+      "case": {
+        "kind": "large-single-choke",
+        "group": 996,
+        "team": 1
+      },
+      "repeats": 2,
+      "initialRoutesUnchanged": true,
+      "ticksBefore": 1936,
+      "ticksAfter": 1259,
+      "arrived": 996,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "maxNoProgressTicksBefore": 837,
+      "maxNoProgressTicksAfter": 59,
+      "traceSha256": "a139c91deafc5f7fd7a55733b62582c6375e0e12dc42afe11910b416fea89a71",
+      "initialRouteSha256": "cdfe519fb258d9da9000bbbcfefad183117b3fbfdeac4ccce9903859b3af6da6"
+    }
+  ],
+  "limits": [
+    "canonical replay drains real planning callbacks between ticks; excludes asynchronous planning/movement interleaving",
+    "real server tick bodies, no peers or checkpoint writes; transport/rendering and wall-clock scheduler capacity excluded",
+    "cloud host not isolated; timings observational, no comparable hardware speedup or supported-capacity claim",
+    "steering changes movement traces and arrival ticks; these are simulation progress measurements, not CPU speedup"
+  ]
+}

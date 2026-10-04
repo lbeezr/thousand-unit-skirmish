@@ -7221,8 +7221,12 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   if (trackSeparationWork) {
     separationTickMaxCandidatesPerCall = Math.max(separationTickMaxCandidatesPerCall, unitCandidateVisits);
   }
-  let vx = dx + separationX * 0.62;
-  let vz = dz + separationZ * 0.62;
+  // Stacked parked units can otherwise outweigh the route and make a mover
+  // oscillate just outside the waypoint threshold. Keep repulsion softer than
+  // its intended direction; a single neighbor retains the existing force.
+  const separationScale = 0.62 / Math.max(1, Math.hypot(separationX, separationZ));
+  let vx = dx + separationX * separationScale;
+  let vz = dz + separationZ * separationScale;
   const length = Math.hypot(vx, vz) || 1;
   vx /= length;
   vz /= length;
@@ -8343,6 +8347,7 @@ const server = createServer(async (request, response) => {
   ].includes(relative);
   const publicEnvironmentModule = relative === ENVIRONMENT_MODULE_PATH;
   const publicPaintedMaterialAtlasAsset = /^assets\/environment\/frontier-painted-material-atlas-v1\/(?:manifest\.json|frontier-painted-material-atlas-mip-[0-5]\.webp)$/.test(relative);
+  const publicOakDepletionAtlasAsset = /^assets\/environment\/frontier-oak-depletion-atlas-v1\/(?:manifest\.json|oak-depletion-mip-[0-5]\.webp)$/.test(relative);
   const publicEnvironmentAtlasMetadata = ['bellweather', 'sereward', 'pale-meridian', 'siltmouths', 'vesperra', 'sombral-mere', 'underbough', 'underbough-bramble', 'underbough-root-oak', 'underbough-moss-hornbeam', 'underbough-young-hornbeam', 'underbough-leafy-hornbeam-v2', 'underbough-muted-copperleaf-v2', 'underbough-old-plum', 'veyrholds', 'ellionar', 'ellionar-hedge', 'sereward-acacia', 'sereward-scrub', 'bellweather-hedgerow', 'ru-lora-fringe'].some((region) =>
     relative === `assets/environment/frontier-v1/${region}-lifecycle-atlas.json`);
   const publicEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-v1'
@@ -8426,7 +8431,7 @@ const server = createServer(async (request, response) => {
     || relative === 'assets/audio/vaelora-zones-v1/catalog.json'
     || /^assets\/audio\/vaelora-zones-v1\/sources\/tus_(?:bellweather|underbough|sereward|ellionar|veyrholds|pale-meridian|siltmouths|vesperra|sombral-mere|ru-lora-fringe|ru-lora-interior)_(?:music|terrain|contrast|signature)_0[12]_v001\.mp3$/.test(relative)
     || /^assets\/audio\/vaelora-pilot-v1\/sources\/tus_ui_(?:wood-token|iron-latch|muted-pluck|horn-note)_01_v001\.mp3$/.test(relative);
-  if (!publicZoneAudioAsset && !publicClientAsset && !publicEnvironmentModule && !publicPaintedMaterialAtlasAsset && !publicEnvironmentAsset && !publicEnvironmentAtlasMetadata && !publicUiAsset
+  if (!publicZoneAudioAsset && !publicClientAsset && !publicEnvironmentModule && !publicPaintedMaterialAtlasAsset && !publicOakDepletionAtlasAsset && !publicEnvironmentAsset && !publicEnvironmentAtlasMetadata && !publicUiAsset
     && !publicDirectionalResourceAtlas && !publicMeshyResourceAsset && !publicPodvineViewAsset && !publicInteractiveEnvironmentAsset && !publicEnvironmentPilotAsset && !publicBuildingSpriteAsset && !publicMapAsset
     && !publicFrontierCompleteAsset && !publicUnitSpriteAsset && !publicWildlifeAsset && !publicBuildingLifecycleManifest && !publicBuildingLifecycleRuntimeAsset) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });

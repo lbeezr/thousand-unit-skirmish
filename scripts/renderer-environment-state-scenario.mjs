@@ -10,6 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resourceVisualStage } from '../src/resource-visual-state.mjs';
 import { constructionGroundStage } from '../src/building-visual-state.mjs';
+import { oakDepletionAtlasDescriptor, OAK_DEPLETION_ATLAS_ROOT } from '../src/oak-depletion-atlas-runtime.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SERVER_ENTRY = path.join(ROOT, 'server.mjs');
@@ -254,7 +255,16 @@ async function verifyEnvironmentPack() {
     );
     verified.push({ path: relativePath, sha256, dimensionsPx: dimensions });
   }
-  return { manifest, verified };
+  const oakManifest = JSON.parse(await readFile(path.join(ROOT, OAK_DEPLETION_ATLAS_ROOT, 'manifest.json'), 'utf8'));
+  const oakVerified = [];
+  for (const file of oakDepletionAtlasDescriptor(oakManifest).mipFiles) {
+    const imagePath = path.join(ROOT, file.path);
+    assert.equal(createHash('sha256').update(await readFile(imagePath)).digest('hex'), file.sha256);
+    const dimensions = decodeImageDimensions(imagePath);
+    assert.deepEqual({ width: dimensions.width, height: dimensions.height }, file.dimensionsPx);
+    oakVerified.push({ path: file.path, sha256: file.sha256, dimensionsPx: dimensions });
+  }
+  return { manifest, verified, oakVerified };
 }
 
 async function findChromeExecutable() {
@@ -534,9 +544,12 @@ async function waitForRuntimeAssets(browser, verifiedPack) {
   assert.ok(status?.ready === true, `${browser.teamLabel} did not load the exact environment state pack`);
   assert.equal(status.packId, verifiedPack.manifest.packId);
   assert.equal(status.packVersion, verifiedPack.manifest.packVersion);
-  assert.deepEqual(status.loadedFiles.map((file) => file.path).sort(), [...REQUIRED_RUNTIME_FILES].sort(),
-    `${browser.teamLabel} must fetch and decode all ten manifest-listed runtime textures`);
-  const expectedByPath = new Map(verifiedPack.verified.map((file) => [file.path, file]));
+  assert.equal(status.oakDepletionAtlas, true, 'capture must verify the new default oak depletion path');
+  const actualFiles = [...verifiedPack.verified.filter(file => !/^oak-(worked|low|depleted)\.webp$/.test(file.path)),
+    ...verifiedPack.oakVerified];
+  assert.deepEqual(status.loadedFiles.map((file) => file.path).sort(), actualFiles.map(file => file.path).sort(),
+    `${browser.teamLabel} must decode the normal seven individual files and six oak atlas mips`);
+  const expectedByPath = new Map(actualFiles.map((file) => [file.path, file]));
   for (const file of status.loadedFiles) {
     const expected = expectedByPath.get(file.path);
     assert.ok(expected, `unexpected browser-loaded runtime file ${file.path}`);
@@ -1161,6 +1174,7 @@ async function runStaticPilotPlan() {
     runtimeAssets: {
       packRoot: 'assets/environment/frontier-interactive-v1',
       expectedFiles: REQUIRED_RUNTIME_FILES,
+      oakAtlas: { packRoot: OAK_DEPLETION_ATLAS_ROOT, expectedMipFiles: 6 },
       verifiedDuringPlan: false,
     },
     captureGate: {
@@ -1221,7 +1235,7 @@ async function runStaticPreflight() {
   assert.equal(constructionGroundStage(0.2, false), 'earthwork');
   assert.equal(constructionGroundStage(0.6, false), 'foundation');
   assert.equal(constructionGroundStage(1, true), 'clear');
-  const { manifest, verified } = await verifyEnvironmentPack();
+  const { manifest, verified, oakVerified } = await verifyEnvironmentPack();
   const report = {
     ok: true,
     mode: 'static-preflight',
@@ -1241,6 +1255,7 @@ async function runStaticPreflight() {
     runtimeAssets: {
       packId: manifest.packId, packVersion: manifest.packVersion,
       count: verified.length, paths: verified.map((file) => file.path),
+      oakAtlas: { count: oakVerified.length, paths: oakVerified.map(file => file.path) },
       sha256AndDecodedDimensionsVerifiedLocally: true,
       browserFetchAndFogSnapshotCheck: 'required before every runtime screenshot',
     },

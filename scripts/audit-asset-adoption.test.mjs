@@ -52,6 +52,14 @@ test('painted ground guard rejects a missing authored mip and a disconnected def
   await assert.rejects(audit({ environment }), /frontier-painted-material-atlas-v1: approved runtime asset is not default-bound/);
 });
 
+test('oak depletion guard rejects lost default sampling and a missing authored mip', async () => {
+  await assert.rejects(audit({ releaseFiles: release.files.filter(file => !file.endsWith('oak-depletion-mip-5.webp')) }),
+    /frontier-oak-depletion-atlas-v1: default runtime dependency omitted from release/);
+  const environment = (await readFile(path.join(root, 'src/environment-art.mjs'), 'utf8')).replace(
+    'const oakDepletion = await loadOakDepletionAtlas()', 'const oakDepletion = await Promise.resolve(null)');
+  await assert.rejects(audit({ environment }), /frontier-oak-depletion-atlas-v1: approved runtime asset is not default-bound/);
+});
+
 test('a default Worker downgrade cannot silently strand the approved fishing manifest', async () => {
   const main = (await readFile(path.join(root, 'src/main.js'), 'utf8')).replace("{ human: 'v3', infantry:", "{ human: 'v2', infantry:");
   await assert.rejects(audit({ main }), /human-worker-fishing-SE: approved runtime asset is not default-bound/);

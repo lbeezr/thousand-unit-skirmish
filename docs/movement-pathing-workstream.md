@@ -9,8 +9,9 @@ Evidence must name the source/workload and preserve failures.
 
 This lane owns `src/unit-movement.mjs`, `src/unit-obstacle-detour.mjs`, formation
 assignment and path-planning helpers, and their focused diagnostics/tests.
-The current slice touches only `processMovePlanningSlice`, its constants and
-diagnostic record in `server.mjs`, plus pathing tests/tools. Target acquisition,
+The planning slice touched only `processMovePlanningSlice`, its constants and
+diagnostic record in `server.mjs`. The crowd slice touches only `getMoveVector`'s
+force combination, plus pathing tests/tools. Target acquisition,
 `getUnitAttackPath`, attack completion, stances, damage and `simulateTick` remain
 with the combat owner. Central tick/command integration needs a concrete shared
 interface decision before overlapping edits. Water commands remain with the
@@ -20,8 +21,8 @@ Skiff owner; art, rendering and map rules remain with their respective lanes.
 
 | Rank / status | Outcome and next action | Write boundary / dependency | Acceptance |
 | --- | --- | --- | --- |
-| 1 · active | Replace timer-selected planning work with deterministic destination/node budgets. Reproduce fast/delayed-clock service differences, then make one bounded correction. | `processMovePlanningSlice`, its work limits and diagnostics; pathing tests. No combat-loop edit. | Identical service work under changed clock observations; bounded destination attempts; whole-search node budget with documented atomic-search overshoot; stale Stop/replacement guards and waiting-order fairness; both-seat large-route traces, native planning/restart, focused review and postmerge checks. |
-| 2 · next | Reduce the preserved parked-formation replacement stall to a repeatable case, comparing current and baseline source before selecting a steering correction. Both-seat 2,000-roster route completion is already measured. | Movement test adapter and crowd scenarios first; `getMoveVector`/local-detour edits require exact shared boundary if combat also edits them. | Reproduce the two-unit stall independently, then prove selected replacements arrive while idle/Stop/Hold actors retain intent and position; zero illegal steps, both-seat repeat hashes and operation counts. No hardware speedup claim from an unisolated host. |
+| 1 · complete | Clock-independent service work merged in [PR #193](https://github.com/lbeezr/thousand-unit-skirmish/pull/193), `331df72`; [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#integration-and-remaining-evidence) pass. | Planning constants, queue-slice helper and diagnostics only. | 209 postmerge checks; nine route pairs preserve hashes; native large routes and recovery. Atomic-search overshoot remains explicit. |
+| 2 · integrating | The parked-formation stall reproduces with a one/two-tick older Move. Bound accumulated repulsion so it cannot reverse a route; finish independent review, normal merge and postmerge checks. | Only `getMoveVector`'s final force combination and focused tests/tools. Combat-owner targeting/stances remain untouched. | [Crowd QA](qa-crowd-forward-progress-2026-10-03.md): 228 checks; all eight headings on both seats; four large parked cases twice; nine terrain route pairs; native parked controls/restarts. |
 | 3 · pending dependency | Move completed path results into an agreed authoritative tick phase if the current asynchronous application contract needs correction. Inspect accepted-tick/result generations before proposing changes. | Shared command/tick pipeline with combat owner. | Same accepted command log gives the same committed outcomes; replacement/Stop cancels old results; FIFO/fair queue service and recovery remain correct. Do not equate fixed slice budgets with a completed tick-pipeline redesign. |
 | 4 · pending capture | Complete the corrected rendered 2,000-unit workload through paid economy, combat and restart. | Existing browser workload; identified sandboxed WebGL2/runtime and device/network profile. | Actual rendered run, authoritative goals/positions, paid work and recovery. Native/tool-only checks cannot close the render/deployed acceptance gap. |
 
@@ -41,8 +42,9 @@ the initial scene is retained separately rather than silently substituted.
 The [planning QA](qa-move-planning-work-2026-10-03.md) now retains the durable
 mirrored 128×128 baseline, unchanged candidate traces and native recovery.
 Both initial 996-unit routes complete. An additional replacement into a parked
-formation leaves two seat-1 Infantry stalled; this remains the next narrow
-correctness investigation, separate from the deterministic planning correction.
+formation leaves two seat-1 Infantry stalled. The [crowd QA](qa-crowd-forward-progress-2026-10-03.md)
+preserves its baseline and candidate separately: stacked parked Infantry reverse
+the movement vector; a bounded separation force resolves that reproduction.
 
 `processMovePlanningSlice` currently stops work by elapsed milliseconds. A
 clock-independent service budget is the first concrete contract correction;
