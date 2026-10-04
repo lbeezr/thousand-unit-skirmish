@@ -24,6 +24,7 @@ for (const key of Object.keys(process.env)) if (key.startsWith('RTS_')) delete p
 const sourceRevision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim();
 const sourceDirty = execFileSync('git', ['status', '--porcelain'], { cwd: ROOT, encoding: 'utf8' }).trim() !== '';
 const sources = await captureDepotSources(ROOT, { outputDirectory: output });
+const startedAt = new Date().toISOString(), wallStart = performance.now();
 const fixture = await createFortifiedFixture({ mapPath: null, supervisor: true, timeoutMs: 180_000 });
 const records = [], spent = [0, 1].map(() => ({ food: 0, wood: 0, stone: 0 }));
 const sum = (rows, f) => rows.reduce((n, row) => n + f(row), 0);
@@ -51,6 +52,7 @@ function record(stage, s, extra = {}) {
     near(accounted, supplied, `${stage} ${type} conservation`);
   }
   records.push({ stage, tick: s.state.tickNumber, elapsedGameSeconds: s.state.matchElapsedSeconds,
+    wallElapsedSeconds: (performance.now() - wallStart) / 1000,
     banks: { food: s.state.teamFood, wood: s.state.teamWood, stone: s.state.teamStone },
     paid: structuredClone(spent), resources: s.state.resourceNodes.map(({ id, stock, wildlifeState, wildlifeTeam }) => ({ id, stock, wildlifeState, wildlifeTeam })),
     buildings: s.state.buildings.map(({ id, team, type, complete, harvestStock }) => ({ id, team, type, complete, harvestStock })),
@@ -68,7 +70,7 @@ async function moveWorkers(plot) {
   for (const team of [0, 1]) await command(team, { type: 'move', ids: workers[team], ...position(team, plot) }, /PLANNING MOVE|MOVE ORDER/);
   return checkpoint(s => workers.every((ids, team) => ids.every(id => {
     const u = s.state.units[id], p = position(team, plot);
-    return !u.path.length && Math.hypot(u.x - p.x, u.z - p.z) < 4;
+    return u.pathIndex >= u.path.length && Math.hypot(u.x - p.x, u.z - p.z) < 4;
   })));
 }
 async function build(type, plot) {
@@ -156,14 +158,14 @@ try {
   const damaged = await checkpoint(s => targets.every(id => s.state.units[id].hp < initial.state.units[id].hp && s.state.units[id].hp > 0));
   record('both-paid-watchtowers-fire', damaged, { targetHp: targets.map(id => damaged.state.units[id].hp) });
   for (const team of [0, 1]) await command(team, { type: 'move', ids: [targets[team]], ...position(1 - team, [30, 84]) }, /PLANNING MOVE|MOVE ORDER/);
-  await checkpoint(s => targets.every(id => !s.state.units[id].path.length));
+  await checkpoint(s => targets.every(id => s.state.units[id].pathIndex >= s.state.units[id].path.length));
   const fishDelivered = await checkpoint(s => [0, 1].every(team => node(s, `s${team}-shore-fish`).stock < 170
     && s.state.teamFood[team] > 110)); record('finite-fish-food-delivered', fishDelivered);
   await stopAndReturn(workers); await stopAndReturn(boats.map(id => [id]));
   // Traverse the actual connected bays in both directions, away from Dock berths.
   for (const team of [0, 1]) await command(team, { type: 'move', ids: [boats[team]], ...position(1 - team, [37, 128]) }, /SKIFF WATER ROUTE|PLANNING MOVE|MOVE ORDER/);
   const crossed = await checkpoint(s => boats.every((id, team) => {
-    const u = s.state.units[id], p = position(1 - team, [37, 128]); return !u.path.length && Math.hypot(u.x - p.x, u.z - p.z) < 1;
+    const u = s.state.units[id], p = position(1 - team, [37, 128]); return u.pathIndex >= u.path.length && Math.hypot(u.x - p.x, u.z - p.z) < 1;
   })); record('both-skiffs-cross-connected-bays', crossed);
   await fixture.stop(); const retained = JSON.parse(await readFile(checkpointPath)); record('cold-checkpoint-before', retained);
   await writeFile(path.join(output, 'retained-checkpoint.json'), JSON.stringify(retained) + '\n');
@@ -191,13 +193,13 @@ try {
   clients[1].socket.close(); await clients[0].state(s => s.connected === 1, 'single-player Practice');
   const id = reset.state.units.find(u => u.team === 0 && u.kind === 'worker').id;
   await command(0, { type: 'move', ids: [id], ...position(0, [30, 87]) }, /PLANNING MOVE|MOVE ORDER/);
-  const solo = await checkpoint(s => s.state.tickNumber > reset.state.tickNumber + 30 && !s.state.units[id].path.length
+  const solo = await checkpoint(s => s.state.tickNumber > reset.state.tickNumber + 30 && s.state.units[id].pathIndex >= s.state.units[id].path.length
     && Math.hypot(s.state.units[id].x - position(0, [30, 87]).x, s.state.units[id].z - position(0, [30, 87]).z) < 1);
   assert.equal(solo.state.scenarioClockStarted, true); record('one-human-practice-clock-and-move', solo);
   await assertDepotSourcesUnchanged(ROOT, sources, { outputDirectory: output });
   assert.equal(execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim(), sourceRevision);
   await writeFile(path.join(output, 'source-inputs.json'), JSON.stringify(sources, null, 2) + '\n');
-  await writeFile(path.join(output, 'report.json'), JSON.stringify({ sourceRevision, sourceDirty, nodeVersion: process.version,
+  await writeFile(path.join(output, 'report.json'), JSON.stringify({ sourceRevision, sourceDirty, startedAt, completedAt: new Date().toISOString(), nodeVersion: process.version,
     sourceContentSha256: sources.sourceContentSha256, mapId: map.id, dimensions: [160, 160], economyProfileId: map.economyProfileId,
     evidenceType: 'native-authoritative-ordinary-practice', injectedState: false, actualRootPracticeEntry: true,
     ordinaryCatalogSelection: true, humanMatches: 0, records,
