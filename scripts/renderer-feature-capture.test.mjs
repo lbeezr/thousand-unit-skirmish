@@ -54,6 +54,7 @@ test('sequential batch binds screenshots to one pack and preserves blocked cases
   try {
     const adapters = Object.keys(CAPTURE_CASES).map(id => ({ id, run: async context => {
       sequence.push(id); assert.deepEqual(context.source, { revision, digest }); assert.equal(context.version, 1);
+      assert.equal(context.evidenceDirectory, path.join(directory, id)); assert.equal(Object.isFrozen(context), true);
       assert.equal(Object.isFrozen(context.source), true);
       await context.capture({ mapId: 'bellweather-millrace', checkpoint: `${id}-departure` });
       return { status: id === 'worker-animations' ? 'blocked' : 'passed', checks: [{ id: 'ordinary-case-evidence', passed: id !== 'worker-animations' }] };
