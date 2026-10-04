@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { visionIndexWitness, gridCosts, runGridCostAudit } from './map-grid-cost-audit.mjs';
+import './xl-map-boundary-audit.test.mjs';
 
 test('256-cell-side coverage indices survive; 320 cell indices wrap under the historical 16-bit storage contract', () => {
   assert.deepEqual(visionIndexWitness(256), { index: 65535, stored: 65535, wraps: false });
@@ -20,7 +21,10 @@ test('fog packing, checkpoint base64 and geometry grow with area without a capac
 });
 test('source-bound allocation accounting records provenance and retains XL rejection', async () => {
   const report = await runGridCostAudit();
-  assert.equal(report.model.residentBytesPerCell, 66); assert.equal(report.model.bucketBytes, 32);
+  assert.equal(report.model.residentBytesPerCell, 70); assert.equal(report.model.bucketBytes, 32);
+  assert.equal(report.model.residentExtraBytesPerCell.forestWorkGroupMembership, 4);
+  assert.equal(report.grids.at(-1).checkpointValidationForestGroupMembershipBytes, 409600);
+  assert.match(report.sourceInputSha256['src/forest-gather-group.mjs'], /^[a-f0-9]{64}$/);
   assert.equal(report.model.visionIndexBits, 32);
   assert.equal(report.model.visionCache.maxBytes, 8388608);
   assert.equal(report.model.visionCache.maxEntries, 8192);
