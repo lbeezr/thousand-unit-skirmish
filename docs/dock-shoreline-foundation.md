@@ -7,9 +7,7 @@ takes 20 accumulated Worker-seconds and has 1,200 HP. These are provisional
 foundation values, not naval balance tuning. It now produces the provisional
 [Skiff](skiff-water-movement.md), using the shared paid queue and population rules.
 It accepts [Skiff food cargo](skiff-fishing.md) at its water berth. It has no
-Worker drop-off, rally, population or resource bonus. The existing procedural
-House is an explicit Dock appearance placeholder; no finished pier artwork or
-water-side pier collision is present.
+Worker drop-off, rally, population or resource bonus. The default Dock uses [registered landing/boathouse lifecycle captures](../assets/buildings/frontier-economy-models-v1/README.md), with procedural House failure fallback. The visible landing adds no water-side pier collision.
 
 ## Land footprint and water access
 

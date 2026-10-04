@@ -2,8 +2,7 @@
 
 The [4 October economy model batch](art-direction/frontier-economy-meshy-v1/README.md)
 adds user-authorized Mill/Farm/Dock source candidates using isolated reference
-art. Existing eight-building identities remain the reuse baseline. Generation
-is separate from measured capture, lifecycle coverage and ordinary-game adoption.
+art. Existing eight-building identities remain the reuse baseline. The [economy runtime family](../assets/buildings/frontier-economy-models-v1/README.md) now registers all eight directions, construction/damage and Farm exhaustion. [Identified staging acceptance](qa-frontier-economy-art-2026-10-04.md) retains the integration owner.
 
 [Illustrated wiki](lore/frontier-architecture.md) · [Concept pack](../assets/buildings/frontier-civilization-concepts-v1/README.md) · [Building atlas plan](building-atlas-production-plan.md)
 

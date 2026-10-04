@@ -18,7 +18,7 @@ async function fixture(action) {
     await symlink(path.join(sourceRoot, 'node_modules'), path.join(root, 'node_modules'), 'dir');
     await mkdir(path.join(scratch, retained), { recursive: true });
     await writeFile(path.join(scratch, retained, 'screenshot.png'), 'unrelated screenshot bytes');
-    for (const script of ['pack-railway-release.mjs', 'release/pack-railway-release.mjs', 'railway-release-scenario.mjs', 'check-client-imports.mjs', 'check-served-build-identity.mjs', 'release/check-served-build-identity.mjs', 'check-runtime-imports.mjs', 'module-imports.mjs', 'temporary-resources.mjs']) {
+    for (const script of ['pack-railway-release.mjs', 'release/pack-railway-release.mjs', 'railway-release-scenario.mjs', 'check-client-imports.mjs', 'browser/check-client-imports.mjs', 'check-served-build-identity.mjs', 'release/check-served-build-identity.mjs', 'check-runtime-imports.mjs', 'module-imports.mjs', 'temporary-resources.mjs']) {
       await mkdir(path.dirname(path.join(root, 'scripts', script)), { recursive: true });
       await copyFile(path.join(sourceRoot, 'scripts', script), path.join(root, 'scripts', script));
     }

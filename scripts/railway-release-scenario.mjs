@@ -1,5 +1,5 @@
 import { stopChild } from './temporary-resources.mjs';
-import { checkClientImports } from './check-client-imports.mjs';
+import { checkClientImports } from './browser/check-client-imports.mjs';
 import { compareServedBuildIdentity } from './release/check-served-build-identity.mjs';
 import { BROWSER_ENTRYPOINTS, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS } from './check-runtime-imports.mjs';
 import { CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH } from '../src/server/client-asset-paths.mjs';
@@ -143,7 +143,7 @@ try {
     assert.equal(response.headers.get('cache-control'), 'no-store', filename);
     assert.match(response.headers.get('content-type') || '', filename.endsWith('.html') ? /text\/html/
       : filename.endsWith('.css') ? /text\/css/ : filename.endsWith('.json') ? /application\/json/
-        : /(?:java|ecma)script/, filename);
+        : filename.endsWith('.png') ? /image\/png/ : /(?:java|ecma)script/, filename);
     assert.equal((await response.arrayBuffer()).byteLength, 0, `HEAD must omit the body: ${filename}`);
   }
   for (const filename of ['server.mjs', 'scripts/check-runtime-imports.mjs', 'src/server/client-asset-paths.mjs',
@@ -446,6 +446,32 @@ try {
   assert.equal(frontierPaths.length, 72, 'eight manifests and 64 original frames');
   for (const frontierRoot of frontierRoots) for (const absent of ['model-provenance.json', 'meshy_output/house.glb', 'preview.html', 'source/build_military.py', 'models/barracks-complete.glb']) {
     assert.equal((await fetch(`${base}/${frontierRoot}${absent}`, { headers: { authorization } })).status, 404);
+  }
+  const economyRoot = 'assets/buildings/frontier-economy-models-v1/';
+  const economyPaths = [];
+  for (const family of ['mill', 'farm', 'dock']) {
+    const manifestPath = economyRoot + family + '-complete-renderer.json';
+    const response = await fetch(`${base}/${manifestPath}`, {headers: {authorization}});
+    assert.equal(response.status, 200); const manifest = await response.json();
+    assert.equal(manifest.asset, family); assert.equal(manifest.stateOrder.length, family === 'farm' ? 8 : 5);
+    economyPaths.push(manifestPath);
+    for (const entry of [manifest.completeState, ...manifest.states]) for (const view of entry.views) {
+      const assetPath = economyRoot + view.path; economyPaths.push(assetPath);
+      assert.ok(contextRules.includes('!' + assetPath));
+      for (const method of ['GET', 'HEAD']) {
+        const frame = await fetch(`${base}/${assetPath}`, {method, headers: {authorization}});
+        assert.equal(frame.status, 200); assert.match(frame.headers.get('content-type'), /image\/png/);
+        assert.equal(Number(frame.headers.get('content-length')), view.bytes);
+        const bytes = Buffer.from(await frame.arrayBuffer());
+        if (method === 'GET') assert.equal(createHash('sha256').update(bytes).digest('hex'), view.sha256);
+        else assert.equal(bytes.length, 0);
+      }
+    }
+  }
+  assert.equal(economyPaths.length, 147);
+  assert.deepEqual(releaseManifest.files.filter(file => file.startsWith(economyRoot)).sort(), economyPaths.sort());
+  for (const absent of ['source/capture_economy.py', 'source/farm-capture-receipt.json', 'captures/runtime-v1/farm-complete-view-01.png', 'models/farm.glb', 'runtime/mill-exhausted-view-00.png', 'runtime/farm-complete-view-08.png']) {
+    for (const method of ['GET', 'HEAD']) assert.equal((await fetch(`${base}/${economyRoot}${absent}`, {method, headers: {authorization}})).status, 404);
   }
   const resourceStateModule = await fetch(`${base}/src/resource-visual-state.mjs`, { headers: { authorization } });
   assert.equal(resourceStateModule.status, 200);
