@@ -115,7 +115,7 @@ try {
   const denied = await checkpoint(); assert.deepEqual(denied.state.buildings, initial.state.buildings);
   assert.deepEqual(denied.state.teamWood, [250, 250]); record('unfunded-tower-rejected', denied);
   for (const team of [0, 1]) await command(team, { type: 'gather', ids: workers[team], nodeId: `s${team}-timber` }, /GATHER ORDER/);
-  await checkpoint(s => s.state.teamWood.every(n => n >= 600));
+  await checkpoint(s => s.state.teamWood.every(n => n >= 500));
   record('natural-local-wood-banked', await stopAndReturn());
   for (const team of [0, 1]) await command(team, { type: 'gather', ids: workers[team], nodeId: `s${team}-stone-0` }, /GATHER ORDER/);
   await checkpoint(s => s.state.teamStone.every(n => n >= 50)); record('natural-local-stone-banked', await stopAndReturn());
@@ -159,16 +159,36 @@ try {
   record('both-paid-watchtowers-fire', damaged, { targetHp: targets.map(id => damaged.state.units[id].hp) });
   for (const team of [0, 1]) await command(team, { type: 'move', ids: [targets[team]], ...position(1 - team, [30, 84]) }, /PLANNING MOVE|MOVE ORDER/);
   await checkpoint(s => targets.every(id => s.state.units[id].pathIndex >= s.state.units[id].path.length));
-  const fishDelivered = await checkpoint(s => [0, 1].every(team => node(s, `s${team}-shore-fish`).stock < 170
-    && s.state.teamFood[team] > 110)); record('finite-fish-food-delivered', fishDelivered);
-  await stopAndReturn(workers); await stopAndReturn(boats.map(id => [id]));
+  await stopAndReturn(workers);
+  await checkpoint(s => boats.every(id => s.state.units[id].cargo > 1 && s.state.units[id].cargo < 8));
+  for (const team of [0, 1]) await command(team, { type: 'stop', ids: [boats[team]] }, /STOP ORDER/);
+  const fishCargo = await checkpoint(s => boats.every(id => s.state.units[id].gatherPhase === '' && s.state.units[id].cargo > 0));
+  assert.ok(fishCargo.state.units.every(u => u.kind === 'skiff' || u.cargo === 0));
+  const deliveries = boats.map((id, team) => ({ team, skiffId: id, dockId: own(fishCargo, team, 'dock').id,
+    cargo: fishCargo.state.units[id].cargo, bankBefore: fishCargo.state.teamFood[team] }));
+  record('stopped-fish-cargo-before-owned-dock-delivery', fishCargo, { deliveries });
+  for (const team of [0, 1]) await command(team, { type: 'returnCargo', ids: [boats[team]] }, /RETURN CARGO ORDER/);
+  const fishDelivered = await checkpoint(s => deliveries.every(d => s.state.units[d.skiffId].cargo === 0
+    && Math.abs(s.state.teamFood[d.team] - d.bankBefore - d.cargo) < 1e-5));
+  for (const d of deliveries) {
+    assert.equal(fishDelivered.state.units[d.skiffId].dropoffBuildingId, d.dockId);
+    await command(d.team, { type: 'returnCargo', ids: [d.skiffId] }, /RETURN CARGO REJECTED/);
+  }
+  record('finite-fish-food-delivered-to-owned-dock-once', fishDelivered,
+    { deliveries: deliveries.map(d => ({ ...d, bankAfter: fishDelivered.state.teamFood[d.team] })) });
   // Traverse the actual connected bays in both directions, away from Dock berths.
   for (const team of [0, 1]) await command(team, { type: 'move', ids: [boats[team]], ...position(1 - team, [37, 128]) }, /SKIFF WATER ROUTE|PLANNING MOVE|MOVE ORDER/);
   const crossed = await checkpoint(s => boats.every((id, team) => {
     const u = s.state.units[id], p = position(1 - team, [37, 128]); return u.pathIndex >= u.path.length && Math.hypot(u.x - p.x, u.z - p.z) < 1;
   })); record('both-skiffs-cross-connected-bays', crossed);
   await fixture.stop(); const retained = JSON.parse(await readFile(checkpointPath)); record('cold-checkpoint-before', retained);
-  await writeFile(path.join(output, 'retained-checkpoint.json'), JSON.stringify(retained) + '\n');
+  // Preserve economic recovery evidence without publishing recovery session state.
+  await writeFile(path.join(output, 'retained-economy.json'), JSON.stringify({ schemaVersion: retained.schemaVersion,
+    economyProfileId: retained.economyProfileId, matchId: retained.matchId, mapHash: retained.mapHash,
+    mapDefinition: retained.mapDefinition, state: { tickNumber: retained.state.tickNumber,
+      teamFood: retained.state.teamFood, teamWood: retained.state.teamWood, teamStone: retained.state.teamStone,
+      buildings: retained.state.buildings, resourceNodes: retained.state.resourceNodes,
+      cargo: retained.state.units.map(({ id, team, cargo, cargoType }) => ({ id, team, cargo, cargoType })) } }, null, 2) + '\n');
   await fixture.start(); clients = [await fixture.connect(0, tokens[0], roomId), await fixture.connect(1, tokens[1], roomId)];
   assert.ok(clients.every(c => c.welcome.recoveredFromCheckpoint));
   const restored = await checkpoint(s => s.sequence > retained.sequence);

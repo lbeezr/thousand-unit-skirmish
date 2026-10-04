@@ -35,7 +35,9 @@ The first Tiny candidate is Terraced Vale; its static base route is 133 units,
 `mapSizeIdentity(map)` and `ordinaryMapCatalog(maps, currentMapId)`.
 The runtime supplies canonical descriptors for ordinary selection. Eligible
 160-side Labs retain their authored Objective Control identity; compact Labs
-remain available through explicit Authored Practice. Size eligibility does not
+remain available as explicit internal fixtures and legacy saves. Ordinary Practice
+must also meet the 160 floor. [Confluence Grounds](qa-confluence-grounds-2026-10-04.md)
+is the new multi-purpose admitted testing arena. Size eligibility does not
 admit a map to Skirmish without its registry binding.
 Each descriptor adds exact `width`, `height`, `sizeTierId`, `sizeTierLabel`,
 `ordinarySelectable`, `supportedUnitCapacity: null`; the catalog helper also
@@ -52,7 +54,10 @@ internal test launches remain explicit fixtures, separate from ordinary entry.
 
 The runtime consumes this policy for ordinary server projection and selection.
 Fresh normal two-seat entry uses Terraced Vale/Skirmish; Authored Practice starts
-on the same Tiny map and explicitly retains internal Labs. See the
+on the same Tiny map. The floor record predates the user's explicit clarification
+that ordinary Practice also needs 160 arenas; the mode owner must remove the
+`soloPractice` exemption while preserving the explicit `internalFixture` route.
+See the
 [floor acceptance record](qa-ordinary-map-floor-2026-10-04.md). Mode runtime
 owner task `01a103cc` owns server projection/selection and registry compatibility;
 entry owner branch `codex/match-mode-entry-ui-v1` owns the normal selectors and
