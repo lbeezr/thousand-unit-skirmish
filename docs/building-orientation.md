@@ -89,6 +89,10 @@ is still required; changing full-canvas hashes alone cannot prove the ghost
 because workers also move. House on flat ground establishes only that bounded
 case. Other-family, raised-ground and occlusion acceptance remain open.
 
+Headless exact-replay observations exclude the per-process `serverInstanceId`
+transport nonce introduced by browser recovery; complete gameplay payloads remain
+compared. Actual process/browser recovery tests retain that identity contract.
+
 The orientation owner retains rendered acceptance on the exact packed source and
 identified staging build. Layering owner `01a107d0-baaf-73f1-b097-4d31db1ae026`
 retains the dark building square, occlusion and palisade earth fixes. Shared
