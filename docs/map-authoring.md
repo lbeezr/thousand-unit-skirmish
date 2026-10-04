@@ -21,6 +21,45 @@ room-scoped; see [configuration](configuration.md). `server.mjs` validates the
 full definition, while `src/map-utils.mjs` shares reachability and dependency checks
 with the editor. Existing shipped JSON is the best complete example.
 
+## Authoring module paths
+
+Architecture candidate 7 gives the existing pure editor helpers canonical homes:
+[`authoring/scenario-authoring.mjs`](../src/authoring/scenario-authoring.mjs)
+exports `ScenarioEditHistory` and `regionGestureZone`, and
+[`authoring/map-resize.mjs`](../src/authoring/map-resize.mjs) exports
+`resizeWorldMarkers`. Their implementation bytes are unchanged from main
+`a93c8175af89b2bb34ca87585840b896360d7159`. History limits, gesture bounds,
+marker IDs/coordinates, validation errors and JSON behavior remain the same.
+Neither module imports runtime state, rules, rendering, storage or a host.
+New tools/tests use these paths; `main.js` keeps its existing imports during
+active client work.
+
+The map-authoring owner retains the old
+[`scenario-authoring.mjs`](../src/scenario-authoring.mjs) and
+[`map-resize.mjs`](../src/map-resize.mjs) paths as explicit named re-exports.
+They expose exactly the same bindings, with no wrapper or duplicate history.
+Both canonical and compatibility paths have exact HTTP admission, existing
+JavaScript MIME/`no-store`/`nosniff` behavior and recursive release inclusion.
+The server does not import either authoring leaf; the import guard classifies
+both copies as authoring and rejects authoritative consumers.
+
+Known remaining old-path consumers are `src/main.js` (both),
+`scripts/scenario-authoring.test.mjs` (explicit export-identity coverage),
+`scripts/server-hardening-scenario.mjs` (resize HTTP compatibility) and
+`scripts/railway-release-scenario.mjs` (both HTTP/byte checks). The exact path
+manifest/domain memberships deliberately retain both. The architecture plan
+keeps the migration history, and the parent-owned
+[maps/resourcing proposal](maps-resourcing-saga-plan.md) still links the old
+scenario path; its reconciliation belongs to that owner.
+
+Retirement is a separate coordinated slice: migrate the client/tools/docs and
+compatibility assertions to canonical paths, confirm with affected owners that
+no supported external import/command needs the aliases, and verify an identified
+containing served release permits page reload with the current `no-store`
+policy. Then remove both shim admissions/memberships and pass source, served,
+packed, editor and privacy checks without them. A repository search alone does
+not satisfy the served-release condition. No retirement is claimed here.
+
 ## Coordinates and terrain
 
 ### Organic landscape composition

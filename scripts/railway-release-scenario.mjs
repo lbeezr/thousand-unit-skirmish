@@ -151,6 +151,18 @@ try {
     assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
       `exact client admission must deny: ${filename}`);
   }
+  // Both old browser imports and canonical authoring paths must survive packing
+  // with the source bytes and the same exact-path GET/HEAD policy.
+  for (const filename of ['src/scenario-authoring.mjs', 'src/map-resize.mjs',
+    'src/authoring/scenario-authoring.mjs', 'src/authoring/map-resize.mjs']) {
+    const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
+    assert.equal(response.status, 200, filename);
+    assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
+    assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+    assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+    assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),
+      createHash('sha256').update(await readFile(path.join(sourceRoot, filename))).digest('hex'), filename);
+  }
   // Both compatibility and canonical HUD entries must retain exact packed bytes.
   for (const helper of ['resource-format', 'population-readout', 'objective-summary']) {
     for (const filename of [`src/${helper}.mjs`, `src/client/hud/${helper}.mjs`]) {

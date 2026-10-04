@@ -5,8 +5,8 @@ import vm from 'node:vm';
 import { createWorkerPerformingActions } from '../src/worker-performing-action.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { buildingRepairStep } from '../src/base-lifecycle.mjs';
-import { activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent } from '../src/work-intent.mjs';
-import { woodWorkArea } from '../src/gather-work-area.mjs';
+import { isAreaGatherResource, activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent } from '../src/work-intent.mjs';
+import { gatherWorkArea } from '../src/gather-work-area.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 function fn(name) {
@@ -29,7 +29,7 @@ function fixture() {
   const journal = createWorkerPerformingActions();
   const context = vm.createContext({ units: [unit], tickNumber: 1, dirty: false,
     workerPerformingActions: journal, BUILDING_DEFINITIONS, buildingRepairStep,
-    activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent, woodWorkArea,
+    isAreaGatherResource, activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent, gatherWorkArea,
     // This receipt fixture has no reachable replacement area. Full authority
     // resource-job tests exercise continuation; these check confirmed grants.
     nearestOpenCell: () => 0, walkableComponents: [-1],
@@ -53,7 +53,7 @@ function fixture() {
   });
   vm.runInContext(['compatibleWorkerPerformingAction', 'workerPerformingAction',
     'snapshotUnits', 'workerTaskStatus', 'stopGathering', 'ensureGatherWorkIntent',
-    'continueWoodGathering', 'updateForestWorkerEconomy',
+    'continueAreaGathering', 'updateForestWorkerEconomy',
     'updateWorkerEconomy'].map(fn).join('\n') + '\n' + construction, context);
   context.flushPendingForestClears = () => {};
   journal.beginStep(context.tickNumber);
