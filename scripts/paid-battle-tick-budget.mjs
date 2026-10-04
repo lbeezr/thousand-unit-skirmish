@@ -36,7 +36,17 @@ const own = (team, kind) => clients[team].latest.units.filter(u => u[1] === team
 const economyNode = (team, type) => map.resourceNodes.find(n => n.type === type && (team ? n.x > 20 : n.x < -20));
 async function order(team, command, expected) {
   const issuedTick = clients[team].latest.tick;
-  const notice = await sendFortifiedCommand(clients[team], { ...command, clientOrderToken: token++ }, expected);
+  const client = clients[team], issued = { ...command, clientOrderToken: token++ };
+  let notice;
+  if (command.type === 'researchUpgrade') {
+    // Legacy research notices have no order token. This seat issues research
+    // serially; accept only a new terminal notice, then verify paid completion.
+    const after = client.messages.length;
+    client.send(issued);
+    const terminal = new RegExp(`(?:${expected.source})|RESEARCH REJECTED|FAILED|MATCH OVER`, expected.flags);
+    notice = await client.wait(m => m.type === 'notice' && terminal.test(m.message), 'paid research admission', after);
+    assert.match(notice.message, expected);
+  } else notice = await sendFortifiedCommand(client, issued, expected);
   orders.push({ team, issuedTick, appliedNoticeTick: clients[team].latest.tick,
     type: command.type, unitCount: command.ids?.length ?? 0, x: command.x, z: command.z,
     buildingType: command.buildingType, upgrade: command.upgrade, kind: command.kind, notice: notice.message });
@@ -91,6 +101,7 @@ try {
     const barracks = clients[team].latest.buildings.find(b => b.team === team && b.type === 'barracks');
     await pay(team, { type: 'trainUnit', buildingId: barracks.id, kind: 'infantry' }, U.infantry, /QUEUED/);
     await pay(team, { type: 'researchUpgrade', buildingId: barracks.id, upgrade: 'infantry-attack' }, T['infantry-attack'], /STARTED/);
+    console.error(JSON.stringify({ policy, size, stage: 'paid research admitted', team }));
     for (const [i, type] of ['food', 'wood'].entries()) {
       const node = economyNode(team, type);
       await order(team, { type: 'gather', ids: [workers[i + 2][0]], nodeId: node.id }, /GATHER ORDER/);
