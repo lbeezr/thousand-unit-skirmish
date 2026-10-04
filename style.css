@@ -1033,6 +1033,11 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
 .contextual-command-bar .selection-portrait:focus-visible { outline:2px solid var(--lime); outline-offset:2px; }
 .selection-portrait-art { display:block; position:relative; width:100%; height:100%; overflow:hidden; }
 .selection-portrait-art img { position:absolute; max-width:none; height:auto; }
+.unit-art-action { position:relative; padding-left:34px; }
+.contextual-command-bar .unit-art-action { padding-left:34px; }
+.unit-action-art { position:absolute; left:7px; top:50%; transform:translateY(-50%); width:20px; height:20px; overflow:hidden; pointer-events:none; }
+.unit-action-art img { position:absolute; max-width:none; height:auto; }
+.unit-action-art[hidden], .selection-portrait-art[hidden] { display:none; }
 .contextual-command-bar .contextual-icon-command { display:inline-flex; align-items:center; gap:5px; }
 .contextual-icon-command img { flex:0 0 20px; }
 .attack-move-toggle.contextual-icon-command { justify-content:flex-start; gap:5px; }

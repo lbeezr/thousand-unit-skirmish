@@ -13,6 +13,8 @@ for (const team of [0, 1]) test(`roster production choices follow definitions an
   const container = { dataset: {}, children: [], replaceChildren() { this.children = []; }, append(button) { this.children.push(button); } };
   const context = vm.createContext({ UNIT_DEFINITIONS, BUILDING_DEFINITIONS, formatResourceRequirement,
     setHudActionAvailability, isHudActionUnavailable,
+    castPreview: false, humanRosterPreview: false,
+    updateProductionPortrait: (button, _kind, _role, text) => { button.textContent = text; },
     document: { createElement() { return { dataset: {}, getAttribute() { return null; }, removeAttribute() {}, addEventListener(_, callback) { this.click = callback; } }; } },
     localTeam: team, latestBuildings: [building], teamUnits: [[], []],
     latestFood: [500, 500], latestWood: [500, 500], latestWorkerProduction: [null, null], latestPopulation: [null, null],
@@ -59,6 +61,8 @@ for (const team of [0, 1]) test(`Stable exposes both mounted products and weight
   const container = { dataset: {}, children: [], replaceChildren() { this.children = []; }, append(button) { this.children.push(button); } };
   const context = vm.createContext({ UNIT_DEFINITIONS, BUILDING_DEFINITIONS, formatResourceRequirement,
     setHudActionAvailability, isHudActionUnavailable,
+    castPreview: false, humanRosterPreview: false,
+    updateProductionPortrait: (button, _kind, _role, text) => { button.textContent = text; },
     document: { createElement() { return { dataset: {}, getAttribute() { return null; }, removeAttribute() {}, addEventListener(_, callback) { this.click = callback; } }; } },
     localTeam: team, latestBuildings: [building], teamUnits: [[], []], latestFood: [500, 500], latestWood: [500, 500],
     latestWorkerProduction: [null, null], latestPopulation: [{ available: 1 }, { available: 1 }],

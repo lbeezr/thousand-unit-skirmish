@@ -26,7 +26,7 @@ import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from './hud-layout.mjs';
 import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
-import { updateSelectionPortrait, farmSelectionFacts } from './selection-portrait.mjs';
+import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts } from './selection-portrait.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
 import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel, fixedMatchArmySize } from './match-mode-controls.mjs';
@@ -3871,6 +3871,12 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
     ? unitSpriteRuntime.roleForUnit(portraitUnit) : null;
   updateSelectionPortrait(document, context, portraitUnit, portraitRole);
+  for (const [kind, button] of [['worker', ui.trainWorker], ['infantry', ui.trainInfantry]]) {
+    const role = localTeam !== null && castPreview
+      && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
+      ? unitSpriteRuntime.roleForUnit({ kind, team: localTeam }) : null;
+    updateProductionPortrait(button, kind, role);
+  }
   bar.dataset.context = context.kind;
   if (bar.hidden !== (context.kind === 'none')) bar.hidden = context.kind === 'none';
   if (quickAccess.hidden !== !bar.hidden) quickAccess.hidden = !bar.hidden;
@@ -4909,7 +4915,11 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
     const authoritativeReason = authoritative && !authoritative.available ? authoritative.reason : '';
     const unavailable = Boolean(reason || populationReason || authoritativeReason);
     setHudActionAvailability(button, unavailable, contextual);
-    button.textContent = `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`;
+    const role = localTeam !== null && castPreview
+      && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
+      ? unitSpriteRuntime.roleForUnit({ kind: definition.id, team: localTeam }) : null;
+    updateProductionPortrait(button, definition.id, role,
+      `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`);
   }
   container.hidden = products.length === 0;
 }

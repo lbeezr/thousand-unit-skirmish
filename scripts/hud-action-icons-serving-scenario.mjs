@@ -65,6 +65,21 @@ try {
       assert.equal((await fetch(`${base}/assets/ui/icons/actions/${sourceOnly}`, { method })).status, 404);
     }
   }
+  for (const [file, expectedHash] of [
+    ['human-infantry-source.png', '0a94a11f2dffd4b722d3a732aa4d3117283d3fa41c89aac6f03487d7a7930b38'],
+    ['boughward-infantry-source.png', '17f6ff8f66274a00c1206301b00a8e298ffc7692ec307975c77300e2a62cb33c'],
+  ]) {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/assets/ui/portraits/${file}`, { method });
+      assert.equal(response.status, 200); assert.match(response.headers.get('content-type'), /^image\/png/);
+      const bytes = Buffer.from(await response.arrayBuffer());
+      if (method === 'GET') assert.equal(hash(bytes), expectedHash);
+      else assert.equal(bytes.length, 0);
+    }
+  }
+  for (const file of ['PROVENANCE.md', 'unapproved.png']) {
+    assert.equal((await fetch(`${base}/assets/ui/portraits/${file}`)).status, 404);
+  }
   console.log('Six default HUD action glyphs: labelled HTML, GET/HEAD MIME/hash checks; source-only/unapproved paths stay closed.');
 } finally {
   child.kill('SIGINT');
