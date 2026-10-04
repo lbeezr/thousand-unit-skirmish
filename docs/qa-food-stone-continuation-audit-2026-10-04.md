@@ -1,6 +1,9 @@
 # Food and Stone continuation audit — 4 October 2026
 
 Economy/content's next bounded slice after Wood [PR #283](https://github.com/lbeezr/thousand-unit-skirmish/pull/283).
+This is the dated pre-extension observation at `2617b934`, preserved unchanged
+as baseline evidence. The later [Stone continuation slice](qa-stone-job-continuation-2026-10-04.md)
+intentionally updates current Stone test expectations; Food remains source-only.
 The [source/acceptance queue](economy-content-workstream.md) records Wood merge
 `8200ec6c` separately from parent's identified staging `53a47ee`, which does not
 contain it. This audit changes no runtime, source stock, price, radius or shared
