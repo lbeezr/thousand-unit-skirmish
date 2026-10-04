@@ -27,6 +27,7 @@ function snapshot(team, { winner = -1, elapsed = 0, trained = false, generation 
       ...(trained ? [row(24, team, generation)] : [])] };
 }
 function fixture(team) {
+  let fixtureTick = 0;
   const connections = [];
   const fishUpdates = [];
   const modeViews = [];
@@ -39,7 +40,16 @@ function fixture(team) {
   class WebSocket {
     constructor() { this.events = new Map(); connections.push(this); }
     addEventListener(type, callback) { this.events.set(type, callback); }
-    message(value) { this.events.get('message')({data: JSON.stringify(value)}); }
+    message(value) {
+      if (value.type === 'state') value = { ...value, tick: ++fixtureTick, serverInstanceId: 'fixture-server', matchId: 'fixture-match' };
+      if (value.state) value = { ...value, state: { ...value.state, tick: ++fixtureTick, serverInstanceId: 'fixture-server', matchId: 'fixture-match' } };
+      this.events.get('message')({data: JSON.stringify(value)});
+      const update = context.browserStateRecovery.frame(1000);
+      if (update) { context.applyLobby(update.state.lobby); context.applyState(update.state, false, update.snap); }
+      const counts = context.browserStateRecovery.takeWaypointCounts();
+      if (counts !== null) context.applyWaypointQueueCounts(counts);
+      return value;
+    }
     closeEvent() { this.events.get('close')(); }
     close() {}
   }
@@ -48,7 +58,7 @@ function fixture(team) {
     applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
-    document: {querySelector:element,querySelectorAll:() => []}, window: {clearTimeout:noop},
+    document: {visibilityState:'visible',querySelector:element,querySelectorAll:() => []}, window: {clearTimeout:noop},
     sessionStorage: {getItem:() => null,setItem:noop,removeItem:noop},
     pageLeaving:false, localTeam:team, cameraSeatTeam:team, isHost:team === 0, socket:null,
     HAS_ROOM_PARAMETER:false, ROOM_SESSION_STORAGE_KEY:'session', waitingForResume:false,
@@ -86,6 +96,9 @@ function fixture(team) {
     declaration('applyState','updateEnvironmentStateCaptureSnapshot'),declaration('setPlayer','setMapCatalog'),socketSource,
     'setArmySize(24); connectSocket();',
   ].join('\n'),context);
+  context.browserStateRecovery.reset({ serverInstanceId: 'fixture-server', matchId: 'fixture-match', tick: 0 }, 1000);
+  context.browserStateRecovery.pending = null;
+  context.browserStateRecovery.snap = false;
   const connect = () => { vm.runInContext('connectSocket()',context); return connections.at(-1); };
   const welcome = (connection,state,definition = map) => connection.message({type:'welcome',map:definition,maps:[],state,
     player:{team,isHost:team === 0,resumed:true}});
@@ -364,8 +377,8 @@ for (const team of [0, 1]) {
 test('accepted state packets alone drive fish cues through recovery, omitted stocks and seat changes', () => {
   const f = fixture(0), old = f.connections[0];
   const packet = { ...snapshot(0), resourceNodes: [{ id: 'fish', stock: 1 }], visibility: { data: 'current-packet' } };
-  old.message(packet);
-  assert.deepEqual(JSON.parse(JSON.stringify(f.fishUpdates.at(-1))), { state: packet, options: { spectator: false } });
+  const received = old.message(packet);
+  assert.deepEqual(JSON.parse(JSON.stringify(f.fishUpdates.at(-1))), { state: received, options: { spectator: false } });
   const current = f.connect();
   f.welcome(current, { ...packet, resourceNodes: [] });
   assert.deepEqual(JSON.parse(JSON.stringify(f.fishUpdates.at(-1).state.resourceNodes)), []);

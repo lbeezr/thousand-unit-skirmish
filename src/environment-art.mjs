@@ -515,7 +515,7 @@ export function createConstructionGroundInstances(stage, capacity) {
       transparent: true,
       alphaTest: texture ? 0.04 : 0,
       opacity: texture ? 1 : stage === 'earthwork' ? 0.52 : 0.42,
-      depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
+      depthTest: true, depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
     }),
     capacity,
   );
@@ -523,7 +523,9 @@ export function createConstructionGroundInstances(stage, capacity) {
   textureMaterials(constructionInstances, stage).add(mesh);
   mesh.count = 0;
   mesh.visible = false;
-  mesh.renderOrder = 8;
+  // Ground paint follows terrain/haze, before transparent building and unit
+  // color. Actors do not write depth, so a late decal paints over their feet.
+  mesh.renderOrder = -0.5;
   mesh.frustumCulled = false;
   return mesh;
 }
