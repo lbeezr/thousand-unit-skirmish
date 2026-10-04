@@ -89,6 +89,12 @@ map/match identity, paid buildings, crops, stocks and banks; reset restores the
 a Worker and advances the Practice clock. Full recovery/session checkpoints stay
 private; [retained economic state](qa-evidence/confluence-grounds-2026-10-04/retained-economy.json.gz)
 contains only the measured economic fields. No AI or human-match acceptance is inferred.
+The exact accepted and historical counterflow source commits remain reachable on
+the [native evidence branch](https://github.com/lbeezr/thousand-unit-skirmish/tree/codex/evidence-confluence-native-38174fc5).
+The economic clock receipt is 436.033 game-seconds across 436.086 wall receipt
+seconds (ratio 0.999879), excluding startup/restart/reset. It is a functional
+economy run with 24 opening units and two paid Skiffs, not a tick, browser or
+capacity benchmark.
 
 ## Counterflow collision diagnostic
 
