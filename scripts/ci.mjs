@@ -98,6 +98,7 @@ run(['scripts/worker-performing-action-scenario.mjs'], 'Worker work receipt comm
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');
 run(['--test', 'scripts/unit-movement.test.mjs'], 'Unit separation terrain boundaries');
+run(['--test', 'scripts/crowd-forward-progress.test.mjs'], 'Parked crowd route progress and preserved idle actors');
 run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals and team reservation');
 run(['--test', 'scripts/move-planning-slices.test.mjs'], 'Clock-independent route planning, stale results and fair queue turns');
 run(['scripts/pathing-native-scenario.mjs', 'dynamic-goal'], 'Native paid obstruction and formation arrival');
