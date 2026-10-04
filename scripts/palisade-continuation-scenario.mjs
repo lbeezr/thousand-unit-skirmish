@@ -4,6 +4,7 @@ import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { constructionWorkArea } from '../src/construction-work-intent.mjs';
+import { createGatherWorkIntent } from '../src/work-intent.mjs';
 
 // Real paid construction/recovery cases. --observe records behavior without claiming the known
 // continuation defect is fixed. Default mode requires natural continuation.
@@ -35,6 +36,17 @@ const ledger = predicate => fixture.checkpoint(s => {
 });
 const progress = (snapshot, ids) => snapshot.state.buildings.filter(b => ids.includes(b.id)).map(b => [b.id, b.progress]);
 const sitesComplete = (snapshot, ids) => ids.every(id => snapshot.state.buildings.find(b => b.id === id)?.complete === true);
+function assertFoodConserved(snapshot) {
+  const stock = snapshot.state.resourceNodes.filter(node => node.type === 'food').reduce((sum, node) => sum + node.stock, 0);
+  const cargo = snapshot.state.units.filter(unit => unit.cargoType === 'food').reduce((sum, unit) => sum + unit.cargo, 0);
+  const bank = snapshot.state.teamFood.reduce((sum, food) => sum + food, 0);
+  assert.ok(Math.abs(stock + cargo + bank - 2000) < 1e-9, 'all authored Food remains in stock, cargo or banks');
+}
+function assertOldConstructionCleared(unit, ids) {
+  assert.equal(unit.wallBuildOrder, null, 'accepted replacement clears the old wall order');
+  assert.ok(!ids.includes(unit.buildingTargetId), 'accepted replacement clears the old construction target');
+  assert.ok(!unit.workIntent?.siteIds?.some(id => ids.includes(id)), 'accepted replacement forgets old construction site IDs');
+}
 function assertSites(snapshot, expected) {
   assert.equal(snapshot.state.buildings.length, expected.length, 'all and only admitted surviving paid sites remain');
   for (const site of expected) {
@@ -143,6 +155,22 @@ try {
     const remainingPalisadeIds = assigned.state.buildings.map(b => b.id)
       .filter(id => !cancelled.includes(id) && !excludedIds.includes(id));
     const houseIds = mode === 'manual-replacement' ? builders.map(u => beforeRestart.state.units[u.id].buildingTargetId) : [];
+    const assertGatherReplacement = snapshot => {
+      for (const team of [0, 1]) {
+        const unit = snapshot.state.units[builders[team].id];
+        const node = map.resourceNodes.find(node => node.id === (team ? 'ember-food' : 'azure-food'));
+        assert.equal(unit.buildingTargetId, null);
+        assert.equal(unit.gatherNodeId, node.id);
+        assert.deepEqual(unit.workIntent, createGatherWorkIntent(builders[team].generation, node, 'food'),
+          'accepted Gather retains the new typed job, generation and original anchor');
+        assertOldConstructionCleared(unit, [...wallIds[team], gates[team].id]);
+      }
+      assertFoodConserved(snapshot);
+    };
+    if (!observe && replacement) {
+      for (const team of [0, 1]) assertOldConstructionCleared(beforeRestart.state.units[builders[team].id], [...wallIds[team], gates[team].id]);
+      if (mode === 'gather') assertGatherReplacement(beforeRestart);
+    }
     if (houseIds.length) {
       assert.equal(new Set(houseIds).size, 2);
       assert.ok(houseIds.every((id, team) => beforeRestart.state.buildings.some(b => b.id === id && b.type === 'house' && b.team === team)));
@@ -188,12 +216,13 @@ try {
     if (!observe) for (const team of [0, 1]) {
       const order = recovered.state.units[builders[team].id].workIntent;
       if (replacement) {
-        assert.equal(recovered.state.units[builders[team].id].wallBuildOrder, null);
-        if (mode !== 'manual-replacement') assert.equal(order, null, 'accepted explicit replacement cancels construction');
-        else assert.deepEqual(order.siteIds, [houseIds[team]], 'manual House replaces the old construction intent');
+        assertOldConstructionCleared(recovered.state.units[builders[team].id], [...wallIds[team], gates[team].id]);
+        if (mode === 'stop' || mode === 'move') assert.equal(order, null, 'Stop/Move cancels construction without creating new work');
+        else if (mode === 'manual-replacement') assert.deepEqual(order.siteIds, [houseIds[team]], 'manual House replaces the old construction intent');
       }
       else assert.deepEqual(order.area, sourceAreas[team], 'cold recovery keeps the original fixed source area');
     }
+    if (!observe && mode === 'gather') assertGatherReplacement(recovered);
     let settled, resuming = null;
     if (replacement) {
       settled = await ledger(s => s.state.tickNumber >= beforeRestart.state.tickNumber + 90
@@ -217,6 +246,10 @@ try {
         && s.state.units[u.id].workIntent === null));
     }
     assertSites(settled, expectedSites);
+    if (!observe && replacement) {
+      for (const team of [0, 1]) assertOldConstructionCleared(settled.state.units[builders[team].id], [...wallIds[team], gates[team].id]);
+      if (mode === 'gather') assertGatherReplacement(settled);
+    }
     assert.deepEqual(settled.state.teamWood, paidWood, 'continuation/recovery does not pay again');
     assert.equal(settled.state.nextBuildingId, beforeRestart.state.nextBuildingId, 'continuation allocates no additional paid identities');
     assert.deepEqual(progress(settled, excludedIds), progress(beforeRestart, excludedIds),
