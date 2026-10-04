@@ -5,14 +5,13 @@ import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
 import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
+import { resourcePickingBindings, resourcePickingFunctionSource } from './resource-picking-fixture-bindings.mjs';
 
 const main = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const start = main.indexOf('  // Resource markers stay legible');
 const end = main.indexOf('\n  context.globalAlpha = 1;\n\n  const viewportCorners', start);
 assert.ok(start >= 0 && end > start);
 const minimapRows = `function paintResourceRows(context, rect) { ${main.slice(start, end)} }`;
-const pickStart = main.indexOf('function pickResourceNodeAt(');
-const picking = main.slice(pickStart, main.indexOf('\nfunction pickForestCellAt(', pickStart));
 const map = { id: 'relocated-client-proof', width: 16, height: 16, fogOfWar: true, resourceNodes: [
   { id: 'relocated-sheep', type: 'food', wildlifeSpecies: 'bellweather-sheep', stock: 100, x: 2.5, z: -3.5 },
 ] };
@@ -29,14 +28,14 @@ function fixture(t, team) {
   renderer.reset(map.resourceNodes, map);
   t.after(() => renderer.dispose());
   const fog = new Uint8Array(256), arcs = [];
-  const context = vm.createContext({ ...wildlifeClientBindings(), localTeam: team, mapDefinition: map, MAP_WIDTH: 16, MAP_HEIGHT: 16,
+  const context = vm.createContext({ ...resourcePickingBindings(), ...wildlifeClientBindings(), localTeam: team, mapDefinition: map, MAP_WIDTH: 16, MAP_HEIGHT: 16,
     MAP_HALF_X: 8, MAP_HALF_Z: 8, latestFogCells: fog, wildlifeRenderer: renderer,
-    latestResourceStocks: new Map([[authored.id, 100]]), latestBuildings: [], farmHarvestNode: () => null,
-    pickBuildingAt: () => null, isShoreFish: () => false, resourceNodeVisuals: new Map(), camera, screenPoint: new THREE.Vector3(), groundHeight: () => .15,
+    latestResourceStocks: new Map([[authored.id, 100]]), latestBuildings: [],
+    isShoreFish: () => false, resourceNodeVisuals: new Map(), camera, screenPoint: new THREE.Vector3(), groundHeight: () => .15,
     renderer: { domElement: { getBoundingClientRect: () => ({ width: 200, height: 160 }) } },
     minimapPoint: (x, z) => ({ x: (x + 8) * 10, y: (z + 8) * 10 }),
   });
-  vm.runInContext(wildlifeClientFunctionSource(main) + minimapRows + picking, context);
+  vm.runInContext(wildlifeClientFunctionSource(main) + minimapRows + resourcePickingFunctionSource(main), context);
   const pen = { beginPath() {}, fill() {}, arc(x, y, radius) { arcs.push({ x, y, radius }); } };
   const screen = p => {
     const v = new THREE.Vector3(p.x, .37, p.z).project(camera);
