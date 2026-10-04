@@ -140,6 +140,8 @@ run(['--test', 'scripts/ci-lanes.test.mjs'], 'Test lane selection and evidence s
 run(['--test', 'scripts/pve-reconnaissance.test.mjs'], 'Bounded Scout reconnaissance');
 run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser timing attribution');
 run(['--test', 'scripts/browser-preflight.test.mjs'], 'Browser preflight diagnostics');
+run(['--test', 'scripts/unit-displacement-animation.test.mjs'], 'Temporal sprite cells from actual displacement and heading');
+run(['--test', 'scripts/renderer-capability.test.mjs'], 'WebGL2 capability report contracts (CPU mocks)');
 run(['--test', 'scripts/temporary-resources.test.mjs'], 'Owned temporary resource cleanup');
 run(['--test', 'scripts/mature-settlement-scenario.test.mjs'], 'Paid settlement fixture ledger and layout');
 run(['scripts/mature-settlement-scenario.mjs'], 'Paid settlement construction, composition and recovery');

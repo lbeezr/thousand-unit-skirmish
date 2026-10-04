@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { ciChecks } from './ci.mjs';
-import { browserPrerequisite, EXTRA_LANES, parseCiOptions, runCiSelection, selectCiChecks } from './ci-lanes.mjs';
+import { rendererPrerequisite, EXTRA_LANES, parseCiOptions, runCiSelection, selectCiChecks } from './ci-lanes.mjs';
 
 const checks = ciChecks();
 const selected = args => selectCiChecks(checks, parseCiOptions(args));
@@ -52,6 +52,10 @@ test('unknown, repeated, malformed, and unsupported shard options fail', () => {
 
 test('visual runs a prerequisite and an actual adapter capture; performance runs a real CPU workload', () => {
   assert.deepEqual(selected(['--lane=visual']).selected, EXTRA_LANES.visual);
+  assert.deepEqual(EXTRA_LANES.visual[0].args, ['scripts/renderer-capability.mjs', '--launch']);
+  for (const file of ['scripts/unit-displacement-animation.test.mjs', 'scripts/renderer-capability.test.mjs']) {
+    assert.ok(selected(['--lane=fast']).selected.some(check => check.args[0] === '--test' && check.args.includes(file)), file);
+  }
   assert.equal(EXTRA_LANES.visual[1].command, 'game-dev');
   assert.ok(EXTRA_LANES.visual[1].args.includes('renderer-environment-state-pilot'));
   assert.ok(!EXTRA_LANES.visual[1].args.includes('--pilot-plan'));
@@ -107,7 +111,7 @@ test('programmer/execution faults fail safely and preserve the original error fo
 
 test('unsupported browser blocks capture; ready startup alone cannot pass visual acceptance', () => {
   const options = parseCiOptions(['--lane=visual']);
-  const unsupported = { status: 1, stdout: JSON.stringify({ scope: 'browser-startup', status: 'unsupported',
+  const unsupported = { status: 1, stdout: JSON.stringify({ schemaVersion: 1, scope: 'renderer-capability-only', status: 'blocked',
     issues: [{ code: 'sandbox-unavailable', message: 'The sandbox could not start.' }] }) };
   let calls = 0;
   const blocked = runCiSelection(selected(['--lane=visual']), options,
@@ -120,7 +124,7 @@ test('unsupported browser blocks capture; ready startup alone cannot pass visual
   calls = 0;
   const captureFailure = runCiSelection(selected(['--lane=visual']), options,
     { execute: () => ++calls === 1
-      ? { status: 0, stdout: JSON.stringify({ scope: 'browser-startup', status: 'ready' }) }
+      ? { status: 0, stdout: JSON.stringify({ schemaVersion: 1, scope: 'renderer-capability-only', status: 'ready', webglReadbackPassed: true }) }
       : { status: 1 } });
   assert.equal(calls, 2);
   assert.equal(captureFailure.report.status, 'failed');
@@ -134,11 +138,35 @@ test('missing capture launcher is blocked; malformed preflight is a failure, not
   assert.match(blocked.report.checks[0].reason, /launcher is unavailable/);
   for (const result of [{ status: 0, stdout: 'bad JSON' }, { status: 1, stdout: '{}' },
     { status: 0, stdout: '{"status":"unsupported"}' }]) {
-    assert.equal(browserPrerequisite(result), null);
+    assert.equal(rendererPrerequisite(result), null);
     const failed = runCiSelection({ selected: [EXTRA_LANES.visual[0]], laneCount: 1 }, parseCiOptions(['--lane=visual']),
       { execute: () => result });
     assert.equal(failed.exitCode, 1);
     assert.equal(failed.report.status, 'failed');
+  }
+});
+
+test('malformed capability issues and execution errors cannot escape or fabricate readiness', () => {
+  const options = parseCiOptions(['--lane=visual']);
+  const blocked = issues => ({ status: 1, stdout: JSON.stringify({
+    schemaVersion: 1, scope: 'renderer-capability-only', status: 'blocked', issues,
+  }) });
+  const ready = { status: 0, stdout: JSON.stringify({
+    schemaVersion: 1, scope: 'renderer-capability-only', status: 'ready', webglReadbackPassed: true,
+  }) };
+  for (const result of [
+    blocked([null]), blocked([{}]), blocked([{ code: '', message: 'missing code' }]),
+    blocked([{ code: 'code', message: 1 }]),
+    { ...ready, error: new Error('private execution sentinel') },
+    { ...ready, signal: 'SIGTERM' },
+    { status: 0, stdout: JSON.stringify({ schemaVersion: 1, scope: 'renderer-capability-only', status: 'ready' }) },
+  ]) {
+    assert.equal(rendererPrerequisite(result), null);
+    const failed = runCiSelection(selected(['--lane=visual']), options, { execute: () => result });
+    assert.equal(failed.exitCode, 1);
+    assert.equal(failed.report.status, 'failed');
+    assert.equal(failed.report.unrunCount, 1);
+    assert.equal(failed.report.fullCpuSuitePassed, false);
   }
 });
 

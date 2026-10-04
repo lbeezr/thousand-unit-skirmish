@@ -33,7 +33,7 @@ export function isFastCheck({ args }) {
 
 export const EXTRA_LANES = {
   visual: [
-    { args: ['scripts/browser-preflight.mjs', '--launch'], label: 'Browser startup prerequisite', prerequisite: 'browser' },
+    { args: ['scripts/renderer-capability.mjs', '--launch'], label: 'WebGL2 readback prerequisite', prerequisite: 'renderer' },
     { command: 'game-dev', args: ['scenario', 'run', 'renderer-environment-state-pilot', '--project', '.', '--confirm', '--allow-gpu', '--jsonl'],
       label: 'Four-frame rendered environment pilot' },
   ],
@@ -53,14 +53,18 @@ export function selectCiChecks(checks, options) {
   return { selected, laneCount: laneChecks.length };
 }
 
-export function browserPrerequisite(result) {
+export function rendererPrerequisite(result) {
+  if (result.error || result.signal) return null;
   let report;
   try { report = JSON.parse(result.stdout); } catch { return null; }
-  if (result.status === 0 && report?.status === 'ready' && report.scope === 'browser-startup') {
+  if (report?.schemaVersion !== 1 || report.scope !== 'renderer-capability-only') return null;
+  if (result.status === 0 && report.status === 'ready' && report.webglReadbackPassed === true) {
     return { status: 'passed' };
   }
-  if (result.status === 1 && report?.status === 'unsupported' && report.scope === 'browser-startup'
-      && Array.isArray(report.issues) && report.issues.length) {
+  if (result.status === 1 && report.status === 'blocked'
+      && Array.isArray(report.issues) && report.issues.length
+      && report.issues.every(issue => issue && typeof issue.code === 'string' && issue.code.trim()
+        && typeof issue.message === 'string' && issue.message.trim())) {
     return { status: 'blocked', reason: report.issues.map(issue => `${issue.code}: ${issue.message}`).join('; ') };
   }
   return null;
@@ -86,10 +90,10 @@ export function runCiSelection({ selected, laneCount }, options, { execute, sour
     if (result.error?.code === 'ENOENT' && check.command === 'game-dev') {
       status = 'blocked';
       reason = 'game-dev launcher is unavailable; use the existing adapter on an authorized renderer executor.';
-    } else if (check.prerequisite === 'browser') {
-      const prerequisite = browserPrerequisite(result);
+    } else if (check.prerequisite === 'renderer') {
+      const prerequisite = rendererPrerequisite(result);
       if (prerequisite) ({ status, reason = null } = prerequisite);
-      else reason = 'Browser preflight did not return a valid ready/unsupported report.';
+      else reason = 'Renderer preflight did not return a valid ready/blocked report.';
     } else if (!result.error && result.status === 0) status = 'passed';
     else reason = result.error ? `Check could not execute (${result.error.code ?? 'unknown'}).`
       : `Check exited ${result.status ?? 'unknown'}${result.signal ? ` (${result.signal})` : ''}.`;
