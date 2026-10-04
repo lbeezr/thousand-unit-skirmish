@@ -27,8 +27,11 @@ for these eight approved PNG views; native appearance acceptance remains open.
 The next [one-heading local walk candidate](sheep-local-walk-candidate.md) records
 verified Blender/Rigify availability and producer-reported hoof landmarks.
 The private GLB has since been recovered and source-verified by the read-only
-inspector. Joints, weights, deformation and walking renders remain unverified;
-no animal animation is added. The ranked backlog below owns the next source step.
+inspector. A conservative local rig and one body-forward heading's actual walk,
+graze and prone captures have cleared private source/deformation review. Eight
+body headings and normalized atlas candidates have also cleared independent
+source/pixel review; no new animal artwork is admitted to the game. The ranked backlog below
+owns publication, binding, collar fitting and delivered appearance.
 
 ## Implemented neutral food foundation — 3 October 2026
 
@@ -89,15 +92,48 @@ with exact distance ties settled by lower stable unit ID. Without a contender,
 the last owner remains. Claim changes apply only while alive: carcass/depleted
 labels stay frozen and shared Gather rights remain unchanged.
 
-Visible rows and checkpoint schema **26** carry `wildlifeTeam: null | 0 | 1`
-(neutral, Azure, Ember). The label grants no sight, population or movement rights
-in this slice. Exact schema25 saves initialize neutral labels without altering
+Visible rows and checkpoint schema **27** carry `wildlifeTeam: null | 0 | 1`
+(neutral, Azure, Ember). Claims grant no sight or population. Only the owner
+may issue the separate Herd/Stop authority commands below. Exact schema25 saves initialize neutral labels without altering
 position, private motion, stock, cargo or banks; older compatible migrations
 chain through motion24 and stance25. Current saves validate/restore actual ownership. Authoring
 rejects runtime team labels; rematch resets them to neutral. The public field
 is the actual collar input for art task `01a101a8-fba6-7323-a40c-27efd0112007`;
-no collar asset or herd selection/order binding is invented here.
+collar art and ordinary Herd selection/order binding remain dependent work.
 [Claim/recovery evidence](qa-sheep-claims-2026-10-03.md) records the owned follow-ups.
+
+### Owner-only Herd authority — client entry pending
+
+The server accepts `herd {nodeId,x,z,resourceEpoch,clientOrderToken}` and
+`stopWildlife {nodeId,resourceEpoch,clientOrderToken}`. Resource epoch is the
+existing snapshot `forestEpoch`; stale commands reject. The owner must currently
+see an alive positive-food Sheep and the exact destination must be visible,
+in bounds and legal land before any navigation lookup. Existing cardinal land
+navigation supplies the route at 0.6 world units/second. No extra food, sight,
+army unit, population or currency is created. Current position/heading/activity
+remain the public pose contract; route and grazing anchor stay private.
+
+Stop, accepted shared Worker Gather, recapture, harvest and depletion cancel
+travel at the actual position. Arrival/cancellation stores a new local grazing
+anchor, preventing travel back to the authored point. Carcasses freeze there.
+Current positive food reserves its actual cell for construction, gate occupancy,
+production and rally; depleted food releases it. New obstructions stop an
+intersecting herd route before a save, with feedback only while the owner sees
+the Sheep. Checkpoint schema 28 deep-copies the anchor, route object and path;
+exact schema 27 saves gain no travel intent and preserve claims/food/motion.
+Live old saves retain their authored grazing anchor; frozen saves use their
+actual pose. Invalid current shapes, land cells, routes or lifecycle reject.
+
+**Ordinary game entry is incomplete.** The active HUD owner owns the separate
+string-ID selection/order binding proposed below; see the
+[HUD controls backlog](hud-controls-backlog.md). Renderer/client cross-cell
+pose admission, minimap fog, build/wall previews and disclosed-resource AI
+locations must use actual visible positions before default Herd controls ship.
+The existing authored-radius renderer guard is intentionally still present;
+this authority slice does not claim moved-Sheep client appearance. Wildlife
+worker retains this interface/in-game outcome and requires that concrete
+agreement before overlapping client changes. Deployment/native appearance also
+remain owned follow-ups; see [Herd evidence](qa-sheep-herding-2026-10-03.md).
 
 Stop after depletion preserves a Worker's final cargo. Select that Worker and
 choose **Return cargo** to deliver it to a reachable completed owned food drop-off,
@@ -159,18 +195,22 @@ verified delivery; useful small PRs ship independently.
    Sheep, radius1.4 world units and a clear legal land segment (no walls/water/
    impassable elevation). Existing owner's nearby eligible presence retains it;
    otherwise nearest eligible unit claims/recaptures, exact ties by stable unit
-   ID. Snapshot/checkpoint schema26 `wildlifeTeam: null|0|1`; ownership grants no food,
+   ID. Snapshot/checkpoint `wildlifeTeam: null|0|1`; ownership grants no food,
    movement, sight or population. Preserve existing shared Gather rights in this
    first ownership slice. Public team contract is the real collar input; no
-   invented Claim click. Next: independent review, guarded merge, staging and
-   ordinary-game claim/collar acceptance with the active art owner. Write scope: pure claims, tick/state recovery,
+   invented Claim click. Merged 2e6bca931c4ce05cce6ba1b0e6342a25bbb9aa02;
+   reviewed 627554d90662612b1e470b7f734d478e331ebace, 1593 unit checks passed.
+   Next: staging and ordinary-game claim/collar acceptance with the active art owner. Write scope: pure claims, tick/state recovery,
    both-seat fog/tie/blocked/claim-reclaim tests. Art task
    `01a101a8-fba6-7323-a40c-27efd0112007` consumes the real team field for collars.
-3. **Controllable herding**. After ownership, agree ordinary selection/order
-   binding with the UI owner, implement a bounded owner-only path to legal land
-   using existing navigation, and preserve the same food node ID/stock through
-   motion, Gather, depletion and recovery. This needs explicit moving-node fog,
-   construction and gather-route checks before relaxing the meadow-cell bound.
+3. **Controllable herding**. Server commands, bounded owner-only existing land
+   navigation, live food reservations and schema 28 recovery are implemented in
+   [PR205](https://github.com/lbeezr/thousand-unit-skirmish/pull/205). Next: independent authority review/merge,
+   agree ordinary string-ID selection/order binding with the UI owner, then
+   finish cross-cell renderer/minimap/build-preview and AI disclosure. Preserve
+   the same food node ID/stock through motion, Gather, depletion and recovery.
+   Authority checks use actual moving positions; ordinary client entry remains
+   incomplete until that interface agreement and binding are complete.
    Acceptance: both seats issue real herd orders, blocked/foreign/fog-invalid
    orders reject, interruption/restart does not teleport food or revive carcasses.
 4. **Art acceptance of activity/carcass/collar**. Consume verified admitted art
@@ -377,11 +417,11 @@ source, substitute purchased generation, or alter security to close that gap.
 
 | Rank | Next outcome and action | Write boundary and dependencies | Acceptance |
 | --- | --- | --- | --- |
-| 1 | **Source inspection — in progress.** Preserve the verified original and review actual limb/neck attachment after the completed source-pinned import. | Private working area and inspection receipts; original model stays immutable and out of Git/runtime. Readable source bytes are verified; joint fit/deformation remain unreviewed. | Exact original hash/byte guard passes; imported topology, actual joints and four hoof contacts are reviewed; original remains unchanged. Tool acceptance is inspection evidence, not a deployed-game claim. |
-| 2 | **Graze and carcass trial — source-dependent.** Author one body-forward heading's small head-down/up loop and a distinct non-graphic prone pose. | New private Blender copies, color captures, timing/provenance and rejected iterations. Requires reviewed neck/limb deformation from rank 1. | Same animal/camera, 512 px canvas, root `[256,256]`, 256 px/world unit and fixed lighting; planted grazing hooves, grounded prone limbs, stable fleece and no baked floor/shadow. Independent review; carcass is visibly distinct from standing. |
-| 3 | **Genuine walk trial — source-dependent.** Fit a small local rig and capture one heading's four contact plus four passing keys. | Private rig/debug-contact/capture files; no paid rigging or base regeneration. Requires reviewed limb fit and stable weights. | Actual leg articulation; world-space stance contact, penetration and cycle closure measured; root travel removed only for sprite capture; explicit stride and frame timings. A bobbing/translating still does not count as walking. |
+| 1 | **Source inspection — bounded private review complete.** Preserve the verified original and reviewed conservative manual fit; carry deformation limits into exports. | Private working area and inspection receipts; original model stays immutable and out of Git/runtime. Actual source import and small limb/neck poses were independently reviewed; manual fit remains an authored approximation, not an existing source skeleton. | Exact original hash/byte guard passes; imported topology, actual joints and four hoof contacts are reviewed; original remains unchanged. Tool acceptance is inspection evidence, not a deployed-game claim. |
+| 2 | **Graze and carcass trial — private candidate reviewed.** Preserve the reviewed body-zero head-down/up loop and selected actual 3D prone pose and reviewed eight-heading derivatives; next admit approved exports through rank 4. | New private Blender copies, color captures, timing/provenance and rejected iterations. Requires reviewed neck/limb deformation from rank 1. | Same animal/camera, 512 px canvas, root `[256,256]`, 256 px/world unit and fixed lighting; planted grazing hooves, grounded prone limbs, stable fleece and no baked floor/shadow. Independent review; carcass is visibly distinct from standing. |
+| 3 | **Genuine walk trial — private candidate reviewed.** Preserve the reviewed body-zero articulated loop, world-contact evidence and reviewed eight-heading derivatives; next admit approved exports through rank 4. | Private rig/debug-contact/capture files; no paid rigging or base regeneration. Requires reviewed limb fit and stable weights. | Actual leg articulation; world-space stance contact, penetration and cycle closure measured; root travel removed only for sprite capture; explicit stride and frame timings. A bobbing/translating still does not count as walking. |
 | 4 | **Approved action binding — input/interface-dependent.** Admit only the reviewed exports explicitly approved for publication, then bind available graze/walk/carcass coverage by default. | Atlas builder/manifest, Sheep loader and exact server/release asset allowlist. Requires new-export publication approval and agreement with the simulation owner before shared client edits. | Exact source/runtime hashes, fixed pivots/scale, explicit clips and missing-heading fallbacks; stock/food remaining, harvest freeze, fog/omission, depletion, reset and disposal preserved. HTTP/release checks pass. Unsupported action art remains explicitly static/marker fallback. |
-| 5 | **True-ownership cues — authority-dependent.** Fit the collar and accessible emblem/selection treatment only after real claim state exists. | Sheep overlay/mask and agreed selection UI; coordinate with the simulation and HUD owners. Requires the user's claim-method decision and validated server ownership, including carcass/reset semantics. | Neutral remains unmarked; only actual owner enables a cue. Shapes/text accompany team color. Placement holds at every admitted heading/pose; fog/depletion hides cues; proximity, viewer seat and Gather never invent ownership. |
+| 5 | **True-ownership cues — private fitting active.** Fit the collar and accessible emblem/selection treatment against the real claim field; validate every admitted pose/heading before binding. | Sheep overlay/mask and agreed selection UI; coordinate with the simulation and HUD owners. The implemented claim contract supplies authoritative `wildlifeTeam` (`null`, `0` or `1`), with frozen carcass labels and neutral rematch. Private collar fitting is incomplete; coordinate shared UI/client edits before binding. | Neutral remains unmarked; only actual owner enables a cue. Shapes/text accompany team color. Placement holds at every admitted heading/pose; fog/depletion hides cues; proximity, viewer seat and Gather never invent ownership. |
 | 6 | **Delivered native acceptance — open and retained.** Verify the approved binding on the identified relevant deployment and normal/default Millrace. | Existing QA/adoption records and bounded game captures; active Railway/native owners support delivery and capture. Requires a deployed revision containing the binding and a working sandboxed browser. | Exact source/release/deployment recorded separately; ordinary/strategic/close motion, ground contact, foliage occlusion, carcass food remaining, exhaustion, both-seat visibility and rematch observed. CPU/atlas/merge evidence alone cannot close this item. |
 
 The active simulation owner retains bounded movement, food conservation and
@@ -409,8 +449,15 @@ the earlier eight-view approval is not approval for new motion/carcass artwork.
 Existing local-rig work is authorized, but purchased rigging, regeneration,
 additional provider spending and expanded access are not. If execution becomes
 unavailable, checkpoint private/source work and report recovery needs promptly.
-At this checkpoint, source inspection is active, the shared heading interface
-is unresolved, ownership is absent and normal Linux browser preflight
-fails before screenshots. These conditions pause their dependent actions only.
+At the 4 October private production checkpoint, source inspection and a bounded
+body-zero action trial have cleared independent review. Eight body headings
+are captured from the actual rig under the same camera/world lighting; a smaller
+normalized atlas candidate preserves the capture root and scale. Independent
+directional source/pixel review has also passed. Temporal/native appearance and
+new-export publication remain incomplete.
+The shared heading interface is unresolved. Actual server ownership now exists,
+so private collar fitting can advance; full pose/heading attachment and accessible
+readability remain unaccepted. Normal Linux browser preflight fails before
+screenshots. These conditions pause their dependent actions only.
 Continue any ranked item whose input, interface and authorization are ready;
 when none is ready, report the concrete blockers without inventing extra work.

@@ -80,6 +80,7 @@ run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush pre
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default bindings and release dependencies');
+run(['--test', 'scripts/oak-depletion-atlas-runtime.test.mjs'], 'Generic oak depletion atlas loading, fallback and registration');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-synthesis-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--experimental-test-coverage', '--test-coverage-include=src/audio-shipped-response.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
@@ -97,6 +98,7 @@ run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');
 run(['--test', 'scripts/unit-movement.test.mjs'], 'Unit separation terrain boundaries');
+run(['--test', 'scripts/crowd-forward-progress.test.mjs'], 'Parked crowd route progress and preserved idle actors');
 run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals and team reservation');
 run(['--test', 'scripts/move-planning-slices.test.mjs'], 'Clock-independent route planning, stale results and fair queue turns');
 run(['scripts/pathing-native-scenario.mjs', 'dynamic-goal'], 'Native paid obstruction and formation arrival');
@@ -181,11 +183,14 @@ run(['--test', 'scripts/pve-farm-policy.test.mjs'], 'PvE finite paid Farm starva
 run(['--test', 'scripts/pve-home-defense.test.mjs'], 'PvE visible economic raids, bounded defense and objective recovery replay');
 run(['--test', 'scripts/pve-regroup.test.mjs'], 'PvE bounded regroup after wipeout, paid recovery and restart replay');
 run(['--test', 'scripts/pve-skirmish-targets.test.mjs', 'scripts/pve-skirmish-replay.test.mjs'], 'Explicit Skirmish AI targets, fog fairness and paid producer restart replay');
+run(['--test', 'scripts/pve-mode-adapter.test.mjs', 'scripts/pve-skirmish-checkpoint.test.mjs'], 'Authoritative AI mode activation and canonical Skirmish recovery');
 run(['--test', 'scripts/pve-objective-rotation.test.mjs'], 'PvE public objective rotation after paid obstruction and checkpoint replay');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');
 run(['--test', 'scripts/wildlife-motion.test.mjs'], 'Bounded deterministic Sheep motion');
 run(['--test', 'scripts/wildlife-claims.test.mjs'], 'Automatic Sheep claim ownership and legality');
+run(['--test', 'scripts/wildlife-herding.test.mjs', 'scripts/sheep-herding-authority.test.mjs'], 'Owner-only Sheep Herd authority, live food occupancy and checkpoint recovery');
+run(['scripts/sheep-herding-scenario.mjs'], 'Both-seat Sheep Herd, shared harvest, construction and recovery');
 run(['scripts/sheep-claims-scenario.mjs'], 'Both-seat automatic Sheep claims and recovery');
 run(['scripts/sheep-motion-scenario.mjs'], 'Default both-seat Sheep motion and recovery');
 run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');
@@ -239,6 +244,7 @@ run(['--test', 'scripts/economy-checkpoint.test.mjs', 'scripts/economy-server.te
 run(['--test', 'scripts/economy-client.test.mjs'], 'Typed economy client profile, cargo and affordability');
 run(['--test', 'scripts/economy-recovery-native.test.mjs'], 'Native economy profile identity and exact rejected recovery preservation');
 run(['scripts/farm-scenario.mjs', '--fog'], 'Both-seat paid Farm planting, finite depletion and recovery');
+run(['scripts/farm-stone-paid-scenario.mjs'], 'Shipped paid Farm/Watchtower, natural Stone handoff and cold recovery');
 run(['--test', 'scripts/depot-economy-analysis.test.mjs', 'scripts/depot-source-snapshot.test.mjs'], 'Depot measurement placements, accounting, payback math and source provenance');
 run(['scripts/depot-economy-scenario.mjs', '--smoke'], 'Paid depot measurement smoke and both-seat conservation');
 run(['--test', 'scripts/roster-building-ui.test.mjs'], 'Registry building options');

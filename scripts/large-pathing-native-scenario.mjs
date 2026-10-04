@@ -7,6 +7,8 @@ import { pathingBaselineMap } from './pathing-baseline-cases.mjs';
 
 const team=Number(process.argv[2]??0);
 assert.ok(team===0||team===1);
+const controlKind=process.argv[3]??'clear';
+assert.ok(['clear','parked'].includes(controlKind));
 const map=pathingBaselineMap({group:996,kind:'large-single-choke',team});
 const fixture=await createFortifiedFixture({mapPath:'maps/open-field.json',diagnostics:true,timeoutMs:120000});
 const sourceSha256=createHash('sha256').update(await readFile(new URL('../server.mjs',import.meta.url))).digest('hex');
@@ -41,12 +43,14 @@ try {
   const arrived=await fixture.checkpoint(s=>s.mapDefinition.id===map.id&&ids.every((id,i)=>
     done(s.state.units[id])&&s.state.units[id].moveGoalCell===originalGoals[i]));
   const stoppedIds=ids.slice(0,8),replacementIds=ids.slice(8,16),remainingIds=ids.slice(16,24);
+  const olderGoal={x:direction*(controlKind==='parked'?24.5:44.5),z:controlKind==='parked'?.5:clearDirection*24.5};
+  const replacementGoal={x:direction*(controlKind==='parked'?28.5:44.5),z:controlKind==='parked'?8.5:clearDirection*28.5};
   // Overlap three ordinary commands before the first planner's notice. The
   // generation guards must preserve Stop and the newer destination regardless
   // of whether the older order applied zero, some or all of its routes first.
-  const older=order({type:'move',ids:ids.slice(0,24),x:direction*44.5,z:clearDirection*24.5},/MOVE ORDER|ORDER SUPERSEDED/);
+  const older=order({type:'move',ids:ids.slice(0,24),...olderGoal},/MOVE ORDER|ORDER SUPERSEDED/);
   const stop=order({type:'stop',ids:stoppedIds},/STOP ORDER/);
-  const replacement=order({type:'move',ids:replacementIds,x:direction*44.5,z:clearDirection*28.5},/MOVE ORDER/);
+  const replacement=order({type:'move',ids:replacementIds,...replacementGoal},/MOVE ORDER/);
   await Promise.all([older,stop,replacement]);
   const stopped=await fixture.checkpoint(s=>s.mapDefinition.id===map.id&&stoppedIds.every(id=>{
     const u=s.state.units[id];return !u.movePlanningPending&&u.path.length===0&&!u.attackMove;
@@ -54,7 +58,7 @@ try {
   const replacementResults=replacementIds.map(id=>{
     const u=stopped.state.units[id],goal=u.moveGoalCell;
     const x=goal%map.width-map.width/2+.5,z=Math.floor(goal/map.width)-map.height/2+.5;
-    assert.ok(Math.abs(x-direction*44.5)<=1&&clearDirection*z>=27.5&&clearDirection*z<=29.5,
+    assert.ok(Math.abs(x-replacementGoal.x)<=1&&Math.abs(z-replacementGoal.z)<=1,
       'newer command assigns goals in its own area, outside the older command formation');
     assert.equal(u.orderRevision,arrived.state.units[id].orderRevision+2);
     return {id,goal,revision:u.orderRevision};
@@ -77,7 +81,7 @@ try {
     assert.deepEqual([b.x,b.z,b.orderRevision,b.moveGoalCell,b.path,b.movePlanningPending],
       [a.x,a.z,a.orderRevision,a.moveGoalCell,a.path,a.movePlanningPending]);
   }
-  const report={head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),sourceSha256,team,map,
+  const report={head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),sourceSha256,team,controlKind,map,
     roster:initial.state.units.length,selected:ids.length,arrived:ids.length,
     midTick:mid.state.tickNumber,arrivalTicks:arrived.state.tickNumber-initial.state.tickNumber,
     orders,activeRouteRestart:true,stopPreserved:stoppedIds.length,replacementPreserved:replacementIds.length,

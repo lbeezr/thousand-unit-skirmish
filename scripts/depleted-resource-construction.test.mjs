@@ -5,7 +5,8 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
-import { validWildlifeMotion, sameWildlifeCell, freezeWildlifeMotion } from '../src/wildlife-motion.mjs';
+import { validWildlifeHerdState } from '../src/wildlife-herding.mjs';
+import { wildlifeCell, validWildlifeMotion, sameWildlifeCell, freezeWildlifeMotion } from '../src/wildlife-motion.mjs';
 import { createResourceNodeState, validWildlifeNodeState, validWildlifeTeam } from '../src/wildlife-state.mjs';
 import { validResourceVariantState } from '../src/shore-fishing.mjs';
 
@@ -91,12 +92,13 @@ test('depletion preserves terrain, living units, objectives and building exclusi
   assert.equal(context.buildPlacementAt(0, 0).blockedReason, 'ANOTHER BUILDING TOO CLOSE');
 });
 
-test('checkpoint overlap uses validated remaining stock at authored positions', () => {
+test('checkpoint overlap uses validated remaining stock at actual current positions', () => {
   const definition = { width: 16, height: 16,
     resourceNodes: types.map((type, index) => ({ ...type, x: index - 1.5, z: -0.5, stock: 100 })) };
   function check(rows) {
     const context = vm.createContext({ ...economyClientBindings(), buildingBlocksMovement, definition, state: { resourceNodes: rows }, finite: Number.isFinite,
       validWildlifeNodeState, validWildlifeTeam, validResourceVariantState, validWildlifeMotion, sameWildlifeCell,
+      validWildlifeHerdState, wildlifeCell, checkpointWildlifeWalkable:()=>true,checkpointWildlifeTraverse:()=>true,
       assertSnapshot: (condition, message) => { assert.ok(condition, message); },
     });
     vm.runInContext(savedResources, context);
@@ -121,6 +123,12 @@ test('checkpoint overlap uses validated remaining stock at authored positions', 
   const wandered = structuredClone(rows);
   const animal = wandered.find(node => node.wildlifeSpecies); animal.x += .1;
   assert.deepEqual(check(wandered), check(rows), 'legal continuous motion retains the authored exclusion cell');
+  const relocated = structuredClone(rows), relocatedSheep = relocated.find(node => node.wildlifeSpecies);
+  relocatedSheep.x = -5.5; relocatedSheep.z = 3.5;
+  relocatedSheep.wildlifeGrazeAnchor = { x: relocatedSheep.x, z: relocatedSheep.z };
+  freezeWildlifeMotion(relocatedSheep);
+  assert.equal(check(relocated)[0], wildlifeCell(relocatedSheep, definition), 'relocated positive food reserves its saved actual cell');
+  assert.notEqual(check(relocated)[0], check(rows)[0], 'vacated authored cell is released');
   for (const invalid of [rows.slice(1), [rows[0], rows[0], rows[2], rows[3]],
     rows.map(node => ({ ...node, stock: -1 })),
     [{ ...depletedRows[0], wildlifeState: 'alive' }, ...depletedRows.slice(1)],
@@ -130,7 +138,9 @@ test('checkpoint overlap uses validated remaining stock at authored positions', 
 });
 
 test('atomic palisade admission shares the exact-zero resource exclusion', () => {
-  const wall = server.slice(server.indexOf('function buildWallLine('), server.indexOf('function buildBuilding('));
+  const reserveStart = server.indexOf('function reservedResourceNodes()');
+  const reservations = server.slice(reserveStart, server.indexOf('\n}', reserveStart)+2);
+  const wall = reservations + server.slice(server.indexOf('function buildWallLine('), server.indexOf('function buildBuilding('));
   const node = { id: 'sheep', x: 1, z: 0, stock: 100, type: 'food', wildlifeSpecies: 'bellweather-sheep' };
   for (const stock of [undefined, 100, 0.25, 0]) {
     let preparation;

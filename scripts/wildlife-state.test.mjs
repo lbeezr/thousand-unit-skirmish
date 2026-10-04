@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { cancelWildlifeHerd } from '../src/wildlife-herding.mjs';
 import { isShoreFish } from '../src/shore-fishing.mjs';
 import {
   activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted,
@@ -79,7 +80,7 @@ for (const team of [0, 1]) test(`seat ${team} validates its Workers and visibili
     unit(2, team, 0, true), unit(3, team, 100, false), unit(4, team, 100, true, 1)];
   const notices = [], routes = [];
   let visible = true;
-  const context = vm.createContext({ isShoreFish, farmBuildingId: () => null, harvestNodeById: id => context.resourceNodeStates.get(id), resourceNodeStates: new Map([[node.id, node]]),
+  const context = vm.createContext({ cancelWildlifeHerd, isShoreFish, farmBuildingId: () => null, harvestNodeById: id => context.resourceNodeStates.get(id), resourceNodeStates: new Map([[node.id, node]]),
     spawnByTeam: [{ x: 0, z: 0 }, { x: 0, z: 0 }], walkableComponents: [0, 1],
     WORKER_CARRY_CAPACITY: 10, dirty: false,
     worldToCell: x => x, nearestOpenCell: cell => cell, cellVisibleToTeam: () => visible,

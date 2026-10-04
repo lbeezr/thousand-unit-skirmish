@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "mapSHA256": "1d91efb4f377f5c382f5a18e31e30d70efae17fb7434f133b878a2802c309dbd",
+  "acceptedNativeSource": "2efb46ef903d80e1afbce410839f574a42e3b69a",
+  "postModeDiagnosticSource": "1784387cb300597ff12102f331aea775834a0541",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 2697,
+      "sha256": "1dc02cde23e40ec7a6d02314c45bd3424ba574f4147c9a64a38b895f511bdf44",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "browser-preflight.stderr",
+      "bytes": 655,
+      "sha256": "1a56acf6551c42b5cf9805558a68d7583ffd5c4b423d304950a37deb18e7e852",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "collector.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "collector.stdout.json",
+      "bytes": 4530,
+      "sha256": "aab460d683d53021e39cd11c23168ad88c0378f81bcc91be10be8ccf476ce61a",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "diagnostic.json",
+      "bytes": 63323,
+      "sha256": "999fab987aabfa41a5a3010c655e9779aab6ebb90eb3543ae1b214ac2bf6bb3e",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "loadDiagnostic-server.log",
+      "bytes": 152,
+      "sha256": "894271a1f1aa92d9e30595251be5c6b802f31750dc45b4d035dbd4eed645fc49",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "native-accepted.jsonl",
+      "bytes": 9129,
+      "sha256": "a514d0fc8e9d6e16babb9d57c4a2226746328c1288887933b9a8c7b218f713a5",
+      "disposition": "accepted native source2efb46ef"
+    },
+    {
+      "path": "native-accepted.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "native-before-main-rebase.jsonl",
+      "bytes": 8760,
+      "sha256": "0b066f21913d518183a7fde66c4731ca96ce7ea02cbed4583e8a93d653d03c48",
+      "disposition": "prior-core pass"
+    },
+    {
+      "path": "native-first-attempt.jsonl",
+      "bytes": 168,
+      "sha256": "e5aaff906e8e3813321b42d131d8cbec45018424578d1f7c3a4007a5ddc129fd",
+      "disposition": "retained failure"
+    },
+    {
+      "path": "native-first-attempt.stderr",
+      "bytes": 586,
+      "sha256": "662564b1ad064c8823d073a5567afb0773bf903f0977c6bc993677df31c16b88",
+      "disposition": "retained failure"
+    },
+    {
+      "path": "native-history-waiter.jsonl",
+      "bytes": 8622,
+      "sha256": "49bdcb0a0af6a8115addcc04488790a7a958c86abb74f065feb079c471164faf",
+      "disposition": "unaccepted historical harness"
+    },
+    {
+      "path": "native-home-record-failure.jsonl",
+      "bytes": 8227,
+      "sha256": "bf06d70d6423e8358ee6fc589fc3dd2f042257eaf9b28470302a2f1b7f5cd663",
+      "disposition": "retained failure"
+    },
+    {
+      "path": "native-integrated-combat-failure.jsonl",
+      "bytes": 6341,
+      "sha256": "3bd75522af86682b126aa0992ac74e52ef0b4c45df0b776312a5690c9d86fb91",
+      "disposition": "retained failure"
+    },
+    {
+      "path": "native-second-attempt.jsonl",
+      "bytes": 885,
+      "sha256": "97aa19a7e1f044cbfb1a8d69dcac5a91517201aabc30ee82a3cb2b0671cdb296",
+      "disposition": "retained failure"
+    },
+    {
+      "path": "native-second-attempt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "retained failure"
+    },
+    {
+      "path": "native-third-attempt.jsonl",
+      "bytes": 901,
+      "sha256": "b7c6736d44afb9b1935752690038152ffcc1d32ae48eccac5e8534943bf0d39d",
+      "disposition": "retained failure"
+    },
+    {
+      "path": "native-third-attempt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "retained failure"
+    },
+    {
+      "path": "openingClock-server.log",
+      "bytes": 152,
+      "sha256": "0d78bec6cf21d3adb027a1a44031a69ae925cacf5e689c4169c4cc605e8ec9d0",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "package-receipt.json",
+      "bytes": 475,
+      "sha256": "b9d29f351211dc063ca3af897b9b31a8c3ad6b833c73810a27a1a73af696411f",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "packed-entry-reproduction.mjs",
+      "bytes": 4263,
+      "sha256": "f0f40603bfbba946931b41590dc6c96ff2bfb3434999326262b7d51601c0df9f",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "packed-entry.json",
+      "bytes": 529,
+      "sha256": "bd6c518e557f84d83a35f8ceac59c7c4cb0366741e3e2876d4f5bc638b9b90b9",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "post-mode-core/collector.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "post-mode/crowd diagnostic or package check"
+    },
+    {
+      "path": "post-mode-core/collector.stdout.json",
+      "bytes": 4542,
+      "sha256": "59e32a28f2ff1834a29fc4d76f9900b6bf482d759bf1a054849e7d73819976e3",
+      "disposition": "post-mode/crowd diagnostic or package check"
+    },
+    {
+      "path": "post-mode-core/diagnostic.json",
+      "bytes": 59293,
+      "sha256": "931219d2980c4f2103286c534fe995b89274dd142bdb11be228d1d1f15aa3006",
+      "disposition": "post-mode/crowd diagnostic or package check"
+    },
+    {
+      "path": "post-mode-core/loadDiagnostic-server.log",
+      "bytes": 152,
+      "sha256": "ef93f1834f29deac3874f1dba0049b4073da1d9c7b2cc2f79e2b33e38045fa47",
+      "disposition": "post-mode/crowd diagnostic or package check"
+    },
+    {
+      "path": "post-mode-core/openingClock-server.log",
+      "bytes": 152,
+      "sha256": "0cf2e40f7a7e48705b74a793b461084d598fe56050eba960dba5cadc8bab22ca",
+      "disposition": "post-mode/crowd diagnostic or package check"
+    },
+    {
+      "path": "post-mode-core/package-receipt.json",
+      "bytes": 475,
+      "sha256": "7e5cca62fb3eda61cc11cd78a126ee8aa6a4c664729b559c1287532328be7638",
+      "disposition": "post-mode/crowd diagnostic or package check"
+    },
+    {
+      "path": "post-mode-core/packed-entry.json",
+      "bytes": 529,
+      "sha256": "168f27763138c95c723275a5a08259c04f8b3cf806f37286b8424aace63febda",
+      "disposition": "post-mode/crowd diagnostic or package check"
+    },
+    {
+      "path": "reproduction.mjs",
+      "bytes": 10492,
+      "sha256": "efa40f5aedc863ae923514dbc6fb4df369cd4f2a8067059fb5d1286c4732d23e",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "staging-ready.stderr",
+      "bytes": 47,
+      "sha256": "115ac061d5c11b9f88bc706341277e549679986ec53ba237026722b790803312",
+      "disposition": "identified source evidence or reproduction"
+    },
+    {
+      "path": "static-audit.json",
+      "bytes": 26825,
+      "sha256": "38f4722de4d2e5fc7ddfba947f527b2fd14d5bfa1667fdadeea3de3071f3d2f7",
+      "disposition": "identified source evidence or reproduction"
+    }
+  ]
+}

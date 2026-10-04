@@ -237,6 +237,7 @@ Run from the repository root:
 | PvE visible Worker/building raids and bounded objective recovery | `node --test scripts/pve-home-defense.test.mjs`; [both-seat raid, fog and restart evidence](qa-pve-home-defense-2026-10-03.md) |
 | PvE bounded regroup after a wipeout | `node --test scripts/pve-regroup.test.mjs`; [paid recovery, checkpoint and four-map comparisons](qa-pve-regroup-2026-10-03.md) |
 | Explicit Skirmish AI source policy | `node --test scripts/pve-skirmish-targets.test.mjs scripts/pve-skirmish-replay.test.mjs`; [paid producer and integration limits](qa-pve-skirmish-targets-2026-10-03.md) |
+| Authoritative socket AI mode and canonical Skirmish recovery | `node --test scripts/pve-mode-adapter.test.mjs scripts/pve-skirmish-checkpoint.test.mjs`; [full-map replay and retained capability acceptance](qa-pve-mode-adapter-2026-10-04.md) |
 | PvE obstructed capture target rotation | `node --test scripts/pve-objective-rotation.test.mjs`; [paid walls, matched control and restart](qa-pve-objective-rotation-2026-10-03.md) |
 | PvE destroyed producer replacement | `node scripts/pve-barracks-recovery-scenario.mjs` |
 | PvE objective retake after losses | `node scripts/pve-objective-recovery-runtime-scenario.mjs TEAM SEED` (teams `0`, `1`; CI seed `20260925`, additional audited seed `4294967295`) |

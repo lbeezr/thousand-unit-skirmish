@@ -13,6 +13,7 @@ import { previewWallPlacement } from '../src/wall-placement.mjs';
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const client = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const handler = server.slice(server.indexOf('function setGateOpen('), server.indexOf('function findProductionSpawnCell('));
+const reservations = server.slice(server.indexOf('function reservedResourceNodes('), server.indexOf('// Record the routes'));
 const lifecycle = client.slice(client.indexOf('function updateBuildingLifecycleActions('), client.indexOf('function updateRosterBuildingOptions('));
 const gateRow = overrides => ({ id: 1, team: 0, type: 'palisade-gate', hp: 300, complete: true,
   gateOpen: false, footprint: [4], ...overrides });
@@ -50,6 +51,7 @@ test('manual owner operation, global movement and strict recovered gate state', 
 function runtime(building = gateRow({ gateOpen: true })) {
   const notices = [], mask = new Uint8Array(9); mask[4] = buildingBlocksMovement(building) ? 1 : 0;
   const context = vm.createContext({ planGateTransition, buildingsById: new Map([[1, building]]), units: [],
+    resourceNodeStates: new Map(), mapDefinition: { resourceNodes: [] },
     buildingBlocked: mask, CELL_COUNT: 9, walkableComponents: new Int32Array(9), navigationRevision: 10,
     dirty: false, attackFlowFields: { clear() { context.cacheClears++; } }, cacheClears: 0, replans: 0,
     worldToCell: (x, z) => z * 3 + x, captureBuildingConnectivity: () => new Map(),
@@ -89,6 +91,29 @@ test('a thrown closing assessment restores the original mask without committing 
   assert.throws(() => r.command(false), /assessment/);
   assert.equal(r.mask[4], 0); assert.equal(r.building.gateOpen, true);
   assert.equal(r.context.navigationRevision, 10); assert.equal(r.context.dirty, false);
+});
+
+test('positive Sheep stock reserves its actual gate cell until depletion', () => {
+  const r = runtime();
+  const sheep = { id: 'moved-sheep', wildlifeSpecies: 'bellweather-sheep',
+    wildlifeState: 'alive', stock: 8.5, x: 1, z: 1 };
+  r.context.mapDefinition.resourceNodes = [{ ...sheep, x: 0, z: 0 }];
+  r.context.resourceNodeStates.set(sheep.id, sheep);
+  for (const state of ['alive', 'carcass']) {
+    sheep.wildlifeState = state;
+    const saved = structuredClone(sheep);
+    r.command(false);
+    assert.match(r.notices.at(-1).notice, /UNITS IN GATE/);
+    assert.deepEqual(sheep, saved);
+    assert.equal(r.building.gateOpen, true);
+    assert.equal(r.mask[4], 0);
+    assert.equal(r.context.navigationRevision, 10);
+  }
+  sheep.stock = 0; sheep.wildlifeState = 'depleted';
+  r.command(false);
+  assert.equal(r.building.gateOpen, false);
+  assert.equal(r.mask[4], 1);
+  assert.equal(r.context.navigationRevision, 11);
 });
 
 test('friendly open/closed gates join a free reused wall line; foreign gates reserve occupancy', () => {
@@ -216,7 +241,7 @@ test('actual wall admission permits approaches through open gate topology while 
   sendOrderNotice:(_,__,notice)=>notices.push(notice),rejectBuild:(_,reason)=>notices.push('BUILD REJECTED · '+reason),
  });
  c.buildingBlocked[30]=gateOpen?0:1;
- vm.runInContext(['isWalkable','rebuildWalkableComponents','buildingAccessCells','captureBuildingConnectivity','canPlaceBuildingWithoutDisconnectingEntities','buildWallLine'].map(fn).join('\n'),c);
+ vm.runInContext(reservations + ['isWalkable','rebuildWalkableComponents','buildingAccessCells','captureBuildingConnectivity','canPlaceBuildingWithoutDisconnectingEntities','buildWallLine'].map(fn).join('\n'),c);
  c.rebuildWalkableComponents();
  c.buildWallLine({team:0},{ids:[0],points:[{column:4,row:4}]});
  assert.equal(notices[0], 'PALISADE LINE PLACED · 1 SEGMENTS · 15 WOOD');
