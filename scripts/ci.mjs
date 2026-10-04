@@ -93,6 +93,7 @@ run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
 run(['--test', 'scripts/unit-animation-runtime.test.mjs'], 'Default unit action frames and lifetimes');
 run(['--test', 'scripts/unit-presentation-client.test.mjs'], 'Client snapshot and unit presentation buffers');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
+run(['--test', 'scripts/worker-land-art.test.mjs'], 'Retained Worker land-action artwork and playback');
 run(['--test', 'scripts/worker-performing-action.test.mjs'], 'Authoritative Worker positive-progress receipts');
 run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 'Worker work receipt commands, client frames, exhausted repair delivery and recovery');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
