@@ -46,16 +46,20 @@ lost session, modified terrain/resource state or deleted authored save. New
 selection and fresh defaults must consume the same server-owned policy. Legacy
 internal test launches remain explicit fixtures, separate from ordinary entry.
 
-This module/proposal does not yet bind server/supervisor/UI defaults. Mode runtime
+The runtime consumes this policy for ordinary server projection and selection.
+Fresh normal two-seat entry uses Terraced Vale/Skirmish; Authored Practice starts
+on the same Tiny map and explicitly retains internal Labs. See the
+[floor acceptance record](qa-ordinary-map-floor-2026-10-04.md). Mode runtime
 owner task `01a103cc` owns server projection/selection and registry compatibility;
 entry owner branch `codex/match-mode-entry-ui-v1` owns the normal selectors and
 Practice entry. Agreement is recorded on [PR176](https://github.com/lbeezr/thousand-unit-skirmish/pull/176#issuecomment-5974560958)
 and [Practice PR155](https://github.com/lbeezr/thousand-unit-skirmish/pull/155#issuecomment-5974561478).
 Preserve one-human Practice, ready/start/rematch and current legacy room identity.
-Current seeded PvE maps are both smaller than 160; base-elimination AI has not
-been accepted. Do not advertise the elimination Tiny candidate as supported PvE
-or erase legacy bot checkpoints. The owning mode/entry slice must provide honest
-fresh-AI capability behavior before removing that old normal launch path.
+Current seeded PvE maps are both smaller than 160. Fresh ordinary AI creation
+returns a clear unavailable explanation while qualifying Tiny AI acceptance is
+pending. Existing seeded rooms/checkpoints and their historical pool remain
+resumable. Status exposes `ordinarySetup.pve.available:false` and its reason for
+the entry owner; Tiny is not advertised as supported PvE.
 
 ## Progressive authoring and capacity gates
 

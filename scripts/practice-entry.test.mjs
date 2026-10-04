@@ -9,6 +9,15 @@ import { mapVictoryRule } from '../src/objective-summary.mjs';
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const millrace = JSON.parse(readFileSync(new URL('../maps/bellweather-millrace.json', import.meta.url)));
 const catalog = practiceEntryCatalog(millrace), roomId = 'R'.repeat(32);
+test('the actual Practice provider projects exact size identity without consumer injection', () => {
+  const tiny = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  const setup = practiceEntryCatalog(tiny);
+  assert.deepEqual([setup.map.width, setup.map.height, setup.map.sizeTierId, setup.map.sizeTierLabel],
+    [160, 160, 'tiny', 'Tiny']);
+  assert.equal(setup.map.ordinarySelectable, true);
+  assert.equal(catalog.map.sizeTierLabel, 'Internal fixture');
+  assert.equal(catalog.map.ordinarySelectable, false);
+});
 const json = (value, status = 200) => new Response(JSON.stringify(value), { status });
 const turn = () => new Promise(resolve => setImmediate(resolve));
 async function menu(setup = catalog, create = () => json({ roomId })) {
@@ -57,7 +66,7 @@ test('removed Practice capability blocks creation until a deliberate supported r
   assert.match(f.dom.window.document.querySelector('[data-rule]').textContent, /chosen mode is unavailable/);
   f.button.click(); await turn(); assert.deepEqual(f.posts, []);
   f.choose('authored@1'); assert.equal(f.button.disabled, false);
-  f.button.click(); await turn(); assert.deepEqual(f.posts, [{ mode: 'pvp', practice: true }]);
+  f.button.click(); await turn(); assert.deepEqual(f.posts, [{ mode: 'pvp', practice: true, matchModeId: 'authored', matchModeVersion: 1 }]);
   f.dom.window.close();
 });
 
@@ -79,7 +88,7 @@ test('normal Practice sends the chosen complete mode pair once while creation is
 test('authored default keeps one-click lab Practice and a previous local choice can return to it', async () => {
   const f = await menu(); f.choose('skirmish@1'); f.choose('authored@1');
   f.button.click(); await turn();
-  assert.deepEqual(f.posts, [{ mode: 'pvp', practice: true }]);
+  assert.deepEqual(f.posts, [{ mode: 'pvp', practice: true, matchModeId: 'authored', matchModeVersion: 1 }]);
   assert.equal(f.navigations.length, 1); f.dom.window.close();
 });
 
@@ -127,4 +136,26 @@ test('failed Practice creation recovers native disabled-button focus without tak
     assert.equal(doc.activeElement, moveFocus ? settings : f.button);
     f.dom.window.close();
   }
+});
+
+
+test('Practice sends the displayed server default pair before a later default migration', async () => {
+  for (const matchModeId of ['authored', 'skirmish']) {
+    const f = await menu({ ...catalog, matchModeId, matchModeVersion: 1 });
+    assert.equal(f.select.value, `${matchModeId}@1`); f.button.click(); await turn();
+    assert.deepEqual(f.posts, [{ mode: 'pvp', practice: true, matchModeId, matchModeVersion: 1 }]);
+    f.dom.window.close();
+  }
+});
+
+test('Practice describes an offered Tiny map by its exact dimensions without inventing other tiers', async () => {
+  const tiny = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  const setup = practiceEntryCatalog(tiny);
+  setup.map.sizeTierId = 'tiny'; setup.map.sizeTierLabel = 'Tiny';
+  const f = await menu(setup);
+  assert.equal(f.dom.window.document.querySelector('[data-map]').textContent, `Starts on Tiny · 160 × 160 · ${tiny.name}.`);
+  assert.equal(f.button.disabled, false); f.button.click(); await turn();
+  assert.deepEqual(f.posts, [{ mode: 'pvp', practice: true, matchModeId: 'authored', matchModeVersion: 1 }]);
+  assert.doesNotMatch(f.dom.window.document.querySelector('#practice-mode-setup').textContent, /Small|Medium|Large|XL/);
+  f.dom.window.close();
 });

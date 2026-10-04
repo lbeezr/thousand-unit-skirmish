@@ -21,6 +21,7 @@ import { validateMapRegion } from '../src/regions.mjs';
 import { validateMapAudioReference } from '../src/audio-event-profile.mjs';
 import { findInvalidResourceVariant } from '../src/shore-fishing.mjs';
 import { TERRAIN_MATERIALS } from '../src/terrain-materials.mjs';
+import { validWildlifeNodeDefinition } from '../src/wildlife-state.mjs';
 
 test('typed offline Stone placement preserves historical geometry and splits the agreed 200 budget', async () => {
   const historical = await createStoneAuthoringFixture(), before = JSON.stringify(historical.baseMap);
@@ -120,7 +121,7 @@ test('actual client importer admits Stone only under the exact profile and prese
   const importer = source.slice(source.indexOf('function validateImportedMap('), source.indexOf('\nasync function importEditorMap('));
   const constants = Object.fromEntries([...source.matchAll(/^const (MAX_[A-Z_]+|MIN_[A-Z_]+) = (\d+);/gm)].map(match => [match[1], Number(match[2])]));
   const context = vm.createContext({ ...mapUtils, ...scenarioRegions, ...constants, MAX_PER_TEAM: 1000,
-    validateMapRegion, validateMapAudioReference, findInvalidResourceVariant, TERRAIN_MATERIALS,
+    validateMapRegion, validateMapAudioReference, findInvalidResourceVariant, validWildlifeNodeDefinition, TERRAIN_MATERIALS,
     economyResources, EDITOR_MATERIALS: ['stone', 'forest', 'water'],
     UNIT_DEFINITIONS: GAMEPLAY_DEFINITIONS.units, TECHNOLOGY_DEFINITIONS: GAMEPLAY_DEFINITIONS.technologies });
   vm.runInContext(importer, context);

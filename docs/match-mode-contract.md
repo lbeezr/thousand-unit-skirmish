@@ -14,19 +14,38 @@ existing opponent `mode: pvp | pve`. Supply both together, with an exact string 
 and integer version. Missing both means `authored@1`; a partial pair, unknown ID
 or unsupported version is an error. Never reinterpret missing legacy fields as
 the newest default. Registry descriptors expose `id`, `version`, `label`,
-`victoryPolicy`, `aiStrategyId`, `pveSupported` and `selectable`.
+`victoryPolicy`, `aiStrategyId`, `pveSupported`, `selectable` and `defaultMapId`.
 
 | Identity | Map compatibility | Victory / AI contract |
 | --- | --- | --- |
 | `authored@1` | Any validated authored map; hidden legacy identity | Exact authored capture, hold, deadline or elimination combination. Existing capture-post AI remains the current behavior. |
 | `objective-control@1` | Validated maps with at least one marked victory post | Exact authored rules and timers. `aiStrategyId: capture-posts`; existing curated PvE map restrictions still apply. |
-| `skirmish@1` | Initially `bellweather-millrace` and `underbough-rootways` | `victoryPolicy: recovery-elimination`, `aiStrategyId: base-elimination`. Human PvP and explicit solo Practice supported. `pveSupported: false` until mode-specific AI acceptance. |
+| `skirmish@1` | `veyrholds-terraced-vale`; historical Millrace/Rootways remain compatible for recovery and explicit fixtures | `victoryPolicy: recovery-elimination`, `aiStrategyId: base-elimination`. Human PvP and explicit solo Practice supported. `pveSupported: false` until mode-specific AI acceptance. |
 
 The hidden identity preserves elimination-only Lab maps and unusual legacy
 hybrids without calling them Objective Control. New selectors offer compatible
 explicit modes; an existing hidden selection must still be displayed honestly.
 Practice remains an independent one-human entry with authored rules by default;
 this contract does not globally relabel Lab maps or change their rules.
+
+Fresh normal two-seat room admission (`pregame:true`) defaults explicitly to
+Terraced Vale/`skirmish@1`. One-human Practice and plain Map Studio rooms default
+explicitly to `authored@1` on Terraced Vale, preserving internal Lab access; the
+Practice menu can deliberately choose supported Skirmish. Status and launch use
+the same Practice pair. Explicit Objective Control starts Woodland Expanse160
+with unchanged authored timers. Registry presets override inherited compact
+worker maps for fresh explicit human identities. An explicitly configured
+`RTS_MAP` root battlefield remains a historical/internal fixture path; fresh
+normal REST entry still uses the new preset.
+
+The ordinary server catalog applies the [160-floor policy](map-size-tiers.md).
+Currently restored compact maps stay visible with `selectable:false` and
+`legacyCurrent:true`. Practice adds `internalFixture:true` for compact Labs and
+allows their explicit selection. Ordinary configure/select/publication rejects
+under-160 maps; canonical loading/checkpoint validation remains16–256. Status
+adds `ordinarySetup` with the default map/pair, floor, five tier descriptors and
+fresh AI availability. Fresh AI rooms are unavailable pending qualifying160-map
+acceptance; existing seeded AI rooms retain their map pool, identity and seeds.
 
 ## Canonical map and effective rules
 
@@ -93,8 +112,9 @@ and originals remain intact, preserve authored elimination-plus-deadline, and
 reject invalid identities, incompatible maps and unsupported PvE. Runtime
 acceptance additionally needs both-seat lobby/readiness, capture without victory,
 post-deadline survival, recoverable production/defeat, reset/restart and exact
-legacy recovery. The ordinary default remains authored until AI, entry/map support
-and actual play establish Skirmish readiness.
+legacy recovery. Human normal entry uses Tiny Skirmish; AI adoption remains a
+separate capability acceptance. [Floor native evidence](qa-ordinary-map-floor-2026-10-04.md)
+does not establish rendered or identified staging acceptance.
 
 Current exports in `src/match-modes.mjs`: `normalizeMatchMode(value)`,
 `matchModeDefinition(value)`, `assertMatchModeCompatibility(value, map, options)`,
@@ -108,4 +128,4 @@ for the lobby consumer. The AI policy factory consumes the effective pair on
 activation/reset; its base-target implementation remains gated by PvE acceptance.
 Checkpoint migration, launch/metadata and native mode
 scenarios are registered in CI. Lobby rendering and mode-aware AI remain separate
-consumer work; PvE Skirmish is rejected and ordinary defaults remain authored.
+consumer work; fresh PvE is unavailable and saved authored AI rooms remain resumable.

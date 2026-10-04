@@ -112,6 +112,7 @@ run(['--test', 'scripts/sheep-static-preview.test.mjs'], 'Sheep static reference
 run(['--test', 'scripts/sheep-eight-view-runtime.test.mjs'], 'Admitted eight-view Sheep source and default runtime');
 run(['--test', 'scripts/sheep-directional-readiness.test.mjs'], 'Sheep directional source and anchor acceptance');
 run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife render lifecycle and fallback');
+run(['--test', 'scripts/sheep-relocated-client.test.mjs'], 'Relocated Sheep actual-cell rendering, picking and minimap fog');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');
 run(['--test', 'scripts/millrace-sheep.test.mjs'], 'Default Millrace Sheep budget and exact legacy map compatibility');
 run(['scripts/millrace-sheep-scenario.mjs'], 'Normal default Sheep visibility, harvest, art and recovery');
@@ -186,9 +187,11 @@ run(['--test', 'scripts/pve-regroup.test.mjs'], 'PvE bounded regroup after wipeo
 run(['--test', 'scripts/pve-skirmish-targets.test.mjs', 'scripts/pve-skirmish-replay.test.mjs'], 'Explicit Skirmish AI targets, fog fairness and paid producer restart replay');
 run(['--test', 'scripts/pve-mode-adapter.test.mjs', 'scripts/pve-skirmish-checkpoint.test.mjs'], 'Authoritative AI mode activation and canonical Skirmish recovery');
 run(['--test', 'scripts/pve-skirmish-loss.test.mjs'], 'Canonical both-seat Skirmish paid army and producer loss recovery');
+run(['--test', 'scripts/pve-tiny-search.test.mjs'], 'Tiny configured Skirmish policy: canonical authored elimination, fog, paid production and reset');
 run(['--test', 'scripts/pve-objective-rotation.test.mjs'], 'PvE public objective rotation after paid obstruction and checkpoint replay');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');
+run(['--test', 'scripts/wildlife-import-parity.test.mjs'], 'Actual client and native publisher wildlife metadata parity');
 run(['--test', 'scripts/wildlife-motion.test.mjs'], 'Bounded deterministic Sheep motion');
 run(['--test', 'scripts/wildlife-claims.test.mjs'], 'Automatic Sheep claim ownership and legality');
 run(['--test', 'scripts/wildlife-herding.test.mjs', 'scripts/sheep-herding-authority.test.mjs'], 'Owner-only Sheep Herd authority, live food occupancy and checkpoint recovery');
@@ -380,6 +383,7 @@ const scenarios = [
   ['scripts/worker-cargo-return-scenario.mjs', 'Frontier Reach forest route repair and deposits', 'frontier-160'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
   ['scripts/room-pregame-scenario.mjs', 'Pregame two-seat launch and recovery'],
+  ['scripts/ordinary-map-floor-scenario.mjs', 'Ordinary Tiny floor, fresh modes and historical/Practice access'],
   ['scripts/checkpoint-storage-recovery-scenario.mjs', 'Checkpoint storage failure and recovery'],
   ['scripts/room-expiry-scenario.mjs', 'Invite expiry and pending reconnect protection'],
   ['scripts/impaired-connection-scenario.mjs', 'Delayed two-seat transport and interrupted-order recovery'],

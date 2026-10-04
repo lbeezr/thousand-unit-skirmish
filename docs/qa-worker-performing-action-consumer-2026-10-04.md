@@ -67,6 +67,12 @@ outcome; source/release/review milestones do not close appearance acceptance.
 
 ## Ordinary-game capture recipe
 
+This is a **functional** check under the user's breadth-before-polish priority.
+Accept rough working keys and explicit temporary fallbacks; record absent motion
+as coverage still owed. Check state, direction, progressing keys, clear/resume and
+usable root/contact. Wrong-facing, frozen playback or broken root/contact blocks
+the affected slice; smoother poses, net styling and cosmetic finish do not.
+
 Use a build containing the producer and this consumer through the normal lobby,
 with default sprites and no preview flags. Record deployed SHA, map, seat,
 Worker ID, task/action, heading, selection and zoom beside each short clip.

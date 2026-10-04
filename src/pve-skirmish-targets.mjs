@@ -48,14 +48,16 @@ export function createSkirmishTargetPolicy(seed = 0) {
       const cell = Math.floor(point.z + height / 2) * width + Math.floor(point.x + width / 2);
       return (bytes.charCodeAt(cell >> 2) >> ((cell & 3) * 2)) & 3;
     };
+    const expired = search && tick >= search.tick + PVE_SKIRMISH_LIMITS.searchTicks
+      && Math.hypot(center.x - search.x, center.z - search.z) > 2;
+    // Forward sight can reveal a goal before the army arrives there.
     if (search && tick >= search.tick && tick - search.tick < PVE_SKIRMISH_LIMITS.searchTicks
-      && (tick === search.tick || Math.hypot(center.x - search.x, center.z - search.z) > 2)
-      && seen(search) !== 2) return search;
+      && (tick === search.tick || Math.hypot(center.x - search.x, center.z - search.z) > 2)) return search;
     const clamp = point => ({ x: Math.max(-width / 2 + 1.5, Math.min(width / 2 - 1.5, Math.floor(point.x) + .5)),
       z: Math.max(-height / 2 + 1.5, Math.min(height / 2 - 1.5, Math.floor(point.z) + .5)) });
     const candidates = [];
     // Sixteen nearby frontier probes; neither authored spawns nor raw terrain are inputs.
-    for (const radius of [10, 16]) for (let index = 0; index < 8; index++) {
+    for (const radius of expired ? [] : [10, 16]) for (let index = 0; index < 8; index++) {
       const [dx, dz] = directions[(index + rotation) % 8], length = Math.hypot(dx, dz);
       const point = clamp({ x: center.x + dx / length * radius, z: center.z + dz / length * radius });
       const visibility = seen(point);
@@ -65,7 +67,7 @@ export function createSkirmishTargetPolicy(seed = 0) {
     }
     rotation = (rotation + 1) % 8;
     let point = candidates.sort((a, b) => a.score - b.score)[0];
-    // A cursor makes bounded progress across the map when the local frontier is exhausted.
+    // An unreached local goal must not starve the cursor behind unseen cliffs.
     const columns = Math.ceil(width / 8), rows = Math.ceil(height / 8), count = columns * rows;
     for (let i = 0; !point && i < Math.min(count, PVE_SKIRMISH_LIMITS.searchCandidates); i++) {
       const cell = cursor++ % count;

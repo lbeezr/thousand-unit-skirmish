@@ -65,6 +65,7 @@ import {
 import { createUnitSpriteRuntime } from './unit-sprite-runtime.mjs';
 import { readWorkerPerformingAction, workerWorkAction } from './worker-work-presentation.mjs';
 import { createNeutralWildlifeRenderer } from './neutral-wildlife-renderer.mjs';
+import { validWildlifeNodeDefinition } from './wildlife-state.mjs';
 import {
   MAX_ELEVATION_PATCHES, buildElevationGrid, capturePrerequisiteIds,
   findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
@@ -2354,7 +2355,7 @@ function buildMap(definition) {
   // Town Centers are authoritative entities reconciled from match snapshots.
   buildWoodNodeInstances(definition.resourceNodes || []);
   buildBerryNodeInstances(definition.resourceNodes || []);
-  wildlifeRenderer.reset(definition.resourceNodes || []);
+  wildlifeRenderer.reset(definition.resourceNodes || [], definition);
   for (const node of definition.resourceNodes || []) {
     addResourceNodeVisual(node);
     latestResourceStocks.set(node.id, node.stock);
@@ -2847,13 +2848,14 @@ function drawMinimap(now = performance.now(), force = false) {
 
   // Resource markers stay legible when hundreds of unit dots cover the same area.
   for (const node of mapDefinition.resourceNodes || []) {
-    const column = Math.floor(node.x + MAP_HALF_X);
-    const row = Math.floor(node.z + MAP_HALF_Z);
+    const position = node.wildlifeSpecies === undefined ? node : wildlifeRenderer.positionFor?.(node.id);
+    if (node.wildlifeSpecies !== undefined && (!position || !wildlifeRenderer.isAvailable(node.id))) continue;
+    const column = Math.floor(position.x + MAP_HALF_X);
+    const row = Math.floor(position.z + MAP_HALF_Z);
     const fogState = latestFogCells?.[row * MAP_WIDTH + column] ?? 2;
     if (fogState === 0) continue;
     if (node.wildlifeSpecies !== undefined
       && (fogState !== 2 || !wildlifeRenderer.isAvailable(node.id))) continue;
-    const position = node.wildlifeSpecies === undefined ? node : wildlifeRenderer.positionFor?.(node.id) ?? node;
     const point = minimapPoint(position.x, position.z, rect);
     const stock = latestResourceStocks.get(node.id) ?? node.stock;
     context.globalAlpha = fogState === 1 ? 0.55 : 1;
@@ -6400,7 +6402,7 @@ function validateImportedMap(value) {
       || resourceIds.has(node.id) || !allowedResources.includes(node.type)
       || !Number.isFinite(node.x) || !Number.isFinite(node.z)
       || Math.abs(node.x) >= definition.width / 2 || Math.abs(node.z) >= definition.height / 2
-      || !Number.isFinite(node.stock) || node.stock <= 0) {
+      || !Number.isFinite(node.stock) || node.stock <= 0 || !validWildlifeNodeDefinition(node)) {
       throw new Error('Map has an invalid, duplicate, out-of-bounds or unsupported resource node.');
     }
     resourceIds.add(node.id);
