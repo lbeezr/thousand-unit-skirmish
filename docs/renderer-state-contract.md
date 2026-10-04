@@ -80,7 +80,7 @@ No art key awards resources or damage. Build/repair target bearing is still a
 separate producer dependency; row 15 currently describes gathering only.
 
 New unit art should follow the [current unit-loader subset](sprite-atlas-contract-v1.md#current-unit-loader-binding-subset)
-as well as the general schema. Animation integration task `01a103d4` owns any
+as well as the general schema. The animation integration workstream owns any
 required selector/role/timing extension; unit-art owners retain supplied pixels
 and registration. Rough usable action/headings can ship before cosmetic polish.
 

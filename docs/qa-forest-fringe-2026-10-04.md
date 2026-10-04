@@ -3,8 +3,7 @@
 [Renderer contract](renderer-state-contract.md#environment-stages-and-fog) ·
 [Testing strategy](testing-strategy.md) · [Command guide](testing.md)
 
-Owner: forest-fog investigation delegated from task
-`01a0f784-c5d7-72e0-82e8-1747b4c840c1`. Outcome remains open until an identified
+Owner: forest discovery implementation workstream. Outcome remains open until an identified
 containing deployment has actual normal-game rendered acceptance. Cloud only;
 stopped Mac testing is not a dependency.
 
@@ -51,7 +50,9 @@ demonstrated mechanism; the visual contribution of canopy projection remains ope
 ## Precise decision and bounded candidate
 
 This is a **terrain discovery rule change**, not a correction to a broken LOS or
-save contract. The recommended candidate discovers one additional forest layer:
+save contract. The one-cell option was explicitly selected for the requested
+discovery improvement; no broader visibility change was authorized. It discovers
+one additional forest layer:
 
 1. Keep the exact current LOS coverage, sight ranges and existing high-ground bonus.
 2. Consider only forest target cells inside that same source radius whose ray's
@@ -78,7 +79,7 @@ does not add or claim that separate feature.
 
 | Option | Tradeoff |
 | --- | --- |
-| Recommended: one-cell explored-only forest fringe | Makes the nearby woodland silhouette/depth less black while retaining unit visibility. Explicitly changes terrain discovery on fogged maps; integration needs that decision. |
+| Selected: one-cell explored-only forest fringe | Makes the nearby woodland silhouette/depth less black while retaining unit visibility. Explicitly changes terrain discovery on fogged maps; the bounded rule was selected before integration. |
 | Keep exploration rules; soften or repair the rendered mask | Preserves the existing discovery contract. Requires actual pixels to select feathering/root-aware masking and check canopy/depth at both zooms. It cannot establish deeper terrain knowledge. |
 | Expand forest LOS or globally reveal terrain | Broader scouting/balance change; outside this candidate. |
 
