@@ -7,7 +7,7 @@ import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { formatResourceRequirement } from '../src/resource-format.mjs';
 import { buildingCanRotate, turnBuildingOrientation } from '../src/building-orientation.mjs';
 const source=readFileSync(new URL('../src/main.js',import.meta.url),'utf8');
-const span=(from,to)=>source.slice(source.indexOf(from),source.indexOf(to));
+const span=(from,to)=>source.slice(source.indexOf(from),source.indexOf(to,source.indexOf(from)));
 export function constructionClientFixture({team=0,units,selection=[],buildings=[]}={}) {
   const payloads=[],toasts=[],selected=new Set(selection);let token=0;
   const context=vm.createContext({ ...economyClientBindings(),units,selected,localTeam:team,selectedBuildingId:null,
@@ -36,7 +36,7 @@ export function constructionClientFixture({team=0,units,selection=[],buildings=[
     span('function selectedIds(', '\nfunction issueStationaryOrder('),
     span('function sendTrackedOrder(', '\nfunction projectUnit('),
     span('function cancelBuildPlacement(', '\nfunction queueWorker('),
-    span('function rotateBuildPlacement(', '\nmountBuildingRotationControls('),
+    span('function rotateBuildPlacement(', "\nwindow.addEventListener('keydown', (event) => {"),
     span('function resumeConstruction(', '\nlet cursorPointer ='),
   ].join('\n'),context);
   return {context,selected,payloads,toasts};

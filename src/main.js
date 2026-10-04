@@ -3349,6 +3349,17 @@ const buildingPlacementPreview = createBuildingPlacementPreview();
 const placementGhost = buildingPlacementPreview.group;
 placementGhost.userData.preview = buildingPlacementPreview;
 scene.add(placementGhost);
+
+mountBuildingRotationControls(document, buildingRotationSettings, rotateBuildPlacement);
+window.addEventListener('keydown', event => {
+  const direction = buildingRotationKeyDirection(event, buildingRotationSettings.get(), {
+    active: buildPlacementActive && buildingCanRotate(buildPlacementType, BUILDING_DEFINITIONS),
+    pending: buildPlacementPending, editing: keyboardTargetIsEditing(event),
+    dialogOpen: Boolean(document.querySelector('dialog[open]')),
+  });
+  if (direction) { event.preventDefault(); rotateBuildPlacement(direction); }
+});
+
 const wallPlacementGhost = createWallPlacementGhost();
 scene.add(wallPlacementGhost.group);
 
@@ -9395,15 +9406,6 @@ function rotateBuildPlacement(direction) {
   updateBuildPlacementGhost(cursorPointer?.x, cursorPointer?.y);
 }
 
-mountBuildingRotationControls(document, buildingRotationSettings, rotateBuildPlacement);
-window.addEventListener('keydown', event => {
-  const direction = buildingRotationKeyDirection(event, buildingRotationSettings.get(), {
-    active: buildPlacementActive && buildingCanRotate(buildPlacementType, BUILDING_DEFINITIONS),
-    pending: buildPlacementPending, editing: keyboardTargetIsEditing(event),
-    dialogOpen: Boolean(document.querySelector('dialog[open]')),
-  });
-  if (direction) { event.preventDefault(); rotateBuildPlacement(direction); }
-});
 
 window.addEventListener('keydown', (event) => {
   lastFriendlyUnitClick = null;

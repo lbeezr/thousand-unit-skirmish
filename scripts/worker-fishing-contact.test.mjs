@@ -114,7 +114,7 @@ test('bank ring and water glyph pick the same land resource, retaining current f
     MAP_WIDTH: map.width, MAP_HEIGHT: map.height, camera, screenPoint: new THREE.Vector3(),
     resourceNodeVisuals: new Map([[node.id, { fishingWater: water }]]), latestBuildings: [], latestResourceStocks: new Map(),
     latestFogCells: fog, farmHarvestNode: () => null, wildlifeRenderer: { isAvailable: () => true },
-    groundHeight: () => 0, renderer: { domElement: { getBoundingClientRect: () => ({ width: 1280, height: 800 }) } },
+    pickBuildingAt: () => null, groundHeight: () => 0, renderer: { domElement: { getBoundingClientRect: () => ({ width: 1280, height: 800 }) } },
   });
   vm.runInContext(main.slice(main.indexOf('function pickResourceNodeAt('), main.indexOf('function pickForestCellAt(')), context);
   const screen = point => { const p = new THREE.Vector3(point.x, .22, point.z).project(camera); return [(p.x*.5+.5)*1280,(-p.y*.5+.5)*800]; };
