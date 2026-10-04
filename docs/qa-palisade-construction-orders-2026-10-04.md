@@ -116,9 +116,17 @@ work intent. Accepted external replacement orders cancel intent. The parent
 assigned economy (`01a101f7-5683`, tree continuation) primary ownership of the
 minimal shared `workIntent` shape, external-order cancellation and checkpoint
 serialization/validation/migration. Walls owns construction-specific nearby
-resume/reacquisition and its tests after that shared foundation. The exact field
-contract and foundation are pending; no overlapping shared-boundary edits occur
-in this preparation. Routine agreed internal integration needs no new parent
+resume/reacquisition and its tests after that shared foundation. The [exact v1
+field contract](https://github.com/lbeezr/thousand-unit-skirmish/pull/87#issuecomment-5980213095)
+is agreed; its canonical runtime adoption is still pending. Construction-only
+helpers in `src/construction-work-intent.mjs` derive the fixed footprint bounds
+plus two world units, retain only remembered owned unfinished IDs and prepend
+an explicitly assigned adjoining Gate without expanding the area. Adjacency
+inspects remembered IDs only; an unassigned neighbor cannot extend the job.
+Eight pure helper tests cover both seats, border clipping, immutable ordering,
+completion/destruction pruning and unrelated replacement. These helpers are
+not yet bound to the server and do not claim the continuation fix. No overlapping
+shared-boundary edits occur in this preparation. Routine agreed internal integration needs no new parent
 approval. No idle-worker recruitment, global job search, combat or Patrol
 rewrite belongs in this fix.
 
