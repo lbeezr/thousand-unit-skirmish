@@ -340,10 +340,20 @@ pending queue checkpoint restore, exact safe points, projected unsafe points,
 legacy v1 upgrade during repair, Stop/replacement and a newly paid adjacent
 wall that changes the arrival without losing request/queue. Every observed
 selected substep must be statically clear; health and generation stay intact.
+Both seats also exercise a real Move from an inherited overlapping pose:
+short escape never deepens that overlap, reaches the projected point and
+preserves the accepted order revision. Those inherited escape substeps are
+reported as recovery, not zero-penetration starts.
 The private study consumes production's exact geometry helpers while retaining
 its separate authored candidate profile and historical evidence. New study
 registration remains the [existing CI-owner handoff](https://github.com/lbeezr/thousand-unit-skirmish/pull/369#issuecomment-5984188895);
 the runtime regressions extend already registered test paths.
+After Food Tools' independent merge, the replay adapter follows the native
+content-migration pipeline for old saves. Validation operates on a copy of
+retained study input. A regression loads the exact pre-technology checkpoint
+and preserves its input hash, generations, commands and complete motion/contact
+record under the new source; it does not normalize identities or rewrite the
+historical measured files.
 
 The [preserved endpoint storyboard](qa-evidence/fractional-move-endpoints-2026-10-04/endpoint-storyboard.svg)
 and [travel/heading/idle reference](qa-direct-open-ground-move-2026-10-04.md)

@@ -315,6 +315,30 @@ for (const team of [0, 1]) test(`seat ${team}: a paid adjacent wall changes clea
   } finally { await f.dispose(); }
 });
 
+for (const team of [0, 1]) test(`seat ${team}: an old overlapped pose escapes through real Move without deeper penetration or lost intent`, async () => {
+  const scene = { ...map, obstacles: [{ column: 31, row: 24, width: 1, height: 1, material: 'stone' }] };
+  const f = await createPathingReplayFixture(scene, { traceLandSteps: true }), r = f.replay;
+  try {
+    quiet(r); let u = r.units.find(u => u.team === team && u.kind === 'infantry');
+    Object.assign(u, { x: .001, z: .001 }); const id = u.id;
+    const old = r.checkpoint(); assert.ok(r.validate(old)); r.restore(old); u = r.units[id];
+    move(r, u, .001, .001); const revision = u.orderRevision; let observedEscape = false;
+    for (let tick = 0; tick < 90 && (u.movePlanningPending || u.pathIndex < u.path.length); tick++) {
+      r.step();
+      for (const s of r.landSteps.filter(s => s.id === id)) {
+        assert.ok(canTraverseStaticBodySegment(s.from, s.to, .22, map.width, map.height, r.isWalkable, { allowEscape: true }));
+        if (!canTraverseStaticBodySegment(s.from, s.to, .22, map.width, map.height, r.isWalkable)) {
+          observedEscape = true;
+          assert.ok(s.to.x >= s.from.x, 'the inherited left-wall overlap never gets deeper during escape');
+        }
+      }
+    }
+    assert.ok(observedEscape); assert.deepEqual([u.x, u.z], [.22, .22]);
+    assert.equal(u.orderRevision, revision, 'escape does not manufacture replacement orders or a repair loop');
+    assert.deepEqual([u.moveGoalPoint.requestedX, u.moveGoalPoint.requestedZ], [.001, .001]);
+  } finally { await f.dispose(); }
+});
+
 for (const team of [0, 1]) test(`seat ${team}: native accepted v2 queued projection survives real process restart`, async () => {
   const f = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 30000 });
   let clients, tokens, token = 6100;
