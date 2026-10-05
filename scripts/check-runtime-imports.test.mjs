@@ -25,6 +25,19 @@ test('scenario-event contract remains a dependency-free world leaf', async () =>
   }
 });
 
+test('capture-prerequisite contract remains a dependency-free world leaf', async () => {
+  const canonical = 'src/world/capture-prerequisites.mjs';
+  assert.ok(RUNTIME_DOMAINS.world.includes(canonical));
+  assert.deepEqual(moduleImports(await readFile(new URL(`../${canonical}`, import.meta.url), 'utf8'), canonical), []);
+  for (const target of ['client/hud/resource-format', 'authoring/scenario-authoring',
+    'presentation/assets/interactive-runtime-image', 'networking/websocket-frame']) {
+    const relative = path.posix.relative('src/world', `src/${target}.mjs`);
+    assert.throws(() => check({
+      [canonical]: `export { value } from '${relative}';`, [`src/${target}.mjs`]: 'export const value = 1;',
+    }), /world domain cannot reach (?:client|authoring|presentation|server) domain/, target);
+  }
+});
+
 test('offline adapter compatibility preserves its four named exports and binding identity', async () => {
   const legacy = await import('../src/pve-model-proposal.mjs');
   const current = await import('../src/server/pve-model-proposal.mjs');

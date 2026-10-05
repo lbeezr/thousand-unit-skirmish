@@ -157,6 +157,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     'src/server/checkpoint-json-budget.mjs', 'src/server/checkpoint-json-scan.mjs', 'src/server/checkpoint-file-reader.mjs',
     'src/gameplay-definitions.mjs', 'src/elevation.mjs', 'src/map-utils.mjs',
     'src/world/scenario-event-chain.mjs',
+    'src/world/capture-prerequisites.mjs',
     'src/town-center-spawn.mjs', 'src/terrain-authoring.mjs', 'src/forest-fringe.mjs',
     'maps/veyrholds-slate-saddle.json', 'scripts/performance-run-evidence.mjs',
     'scripts/generate-far-marches.mjs', 'scripts/fixtures/xl-far-marches.json',
