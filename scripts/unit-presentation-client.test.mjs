@@ -2,6 +2,25 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createUnitPresentationClientFixture, workerSnapshotRow as row } from './unit-presentation-client-fixture.mjs';
 
+test('shared presentation snapshot receipt executes real terminal recap rendering and clearing', async () => {
+  for (const team of [0, 1, null]) {
+    const f = await createUnitPresentationClientFixture({ localTeam: team });
+    try {
+      const rows = [row({ id: 0, team: 0 }), row({ id: 1, team: 1 })];
+      f.apply(rows, { winner: 0, matchElapsedSeconds: 123, food: [12, 98], wood: [34, 76], alive: [1, 1] });
+      const document = f.context.document, resources = document.querySelector('#match-recap-resources');
+      assert.equal(document.querySelector('#match-recap').hidden, false);
+      assert.equal(document.querySelector('#match-recap-duration').textContent, 'Duration 2:03');
+      assert.equal(resources.textContent, team === null ? ''
+        : `Your remaining resources: ${team === 0 ? 12 : 98} Food · ${team === 0 ? 34 : 76} Wood`);
+      assert.equal(resources.hidden, team === null);
+      f.apply(rows, { winner: -1 });
+      assert.equal(document.querySelector('#match-recap').hidden, true);
+      assert.equal(resources.textContent, '');
+    } finally { f.dispose(); }
+  }
+});
+
 for (const team of [0, 1]) for (const selected of [false, true]) {
   test(`confirmed activity: seat ${team}, selected ${selected}, assigned waits use real idle frames`, async () => {
     const f = await createUnitPresentationClientFixture({ localTeam: team });
