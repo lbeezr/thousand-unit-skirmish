@@ -134,9 +134,9 @@ startup failure; the architecture/authoring owner retains the existing browser
 scenario when capability becomes available. No dispatch retry or new storage
 service belongs to this extraction.
 
-#### Version-1 draft contract candidate
+#### Version-1 draft contract
 
-The local organization candidate places only the existing version constant and
+[PR451](https://github.com/lbeezr/thousand-unit-skirmish/pull/451) places only the existing version constant and
 recovery-envelope validator in
 [`map-studio/draft/v1/contract.mjs`](../src/authoring/map-studio/draft/v1/contract.mjs).
 The version is the saved draft format, rather than the whole editor or storage
@@ -154,9 +154,8 @@ all existing dimension and parser/file/route assertions remain.
 One exact browser path is added alongside the retained store path, with GET/HEAD
 and unknown/suffix/version-path denial checks. Every prior asset URL, schema,
 protocol/save format and eleven compatibility entries stay unchanged.
-Architecture/authoring owns local review, source/packed checks and the existing
-unverified browser acceptance. This candidate is separate from paused import-error
-publication and the prepared portable-map validator; it contains neither change.
+Architecture/authoring owns review, source/packed checks and the existing
+unverified browser acceptance.
 The storage API is retained as a working adapter, with no retirement scheduled.
 Moving it later requires a separately agreed API boundary, all host/fixture/XL
 consumers and source/served/packed checks; version directories alone do not justify
