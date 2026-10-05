@@ -47,25 +47,15 @@ unchanged. No art/runtime changes or held assets are adopted.
 ## Active Spearman continuation — 5 October 2026
 
 The foot-art owner continues after each admitted slice. South PR505 merged at
-`1cad8b8b93be3c2a9671f6da11b806fd5b7b7f9f`; its exact merged default/clean
-package and HTTP checks pass, with native evidence still open. Own-Southwest
-source is independently cleared and registered in default v1 pack0.15.0:3 new
-poses,1 exact reused idle opening, all72 preceding frames and31 other clips
-preserved. Next actual own source is `idle-west-0`,237×285/root110,285, idle05;
-its side view and idle-only attack are inspected, with0 authored/admitted West
-keys yet. Spearman source gaps are9. Packaging, merge, deployment and actual
-game acceptance remain separately recorded.
-
-| Rank / owner | Next step | Dependency and acceptance |
-| --- | --- | --- |
-| 1 — Spearman foot art | Finish Southwest exact-head/default release and own merge; continue ownW/NW attacks in separate increments. | Approved public own-view seeds; no paid provider or private-input pixels. Preserve all old frames, scale/pivots and clips; exact default key playback, clean pack and HTTP receipts precede each own merge. |
-| 2 — Spearman foot art | Supply matched terminal defeats N/NE/E/S/SW/W/NW incrementally. | Same identity and heading; readable ordered fall/prone keys, fixed inherited root, one-shot terminal hold, preserved previous art. Existing1080ms defeat lifetime is the state-owner boundary. |
-| 3 — Foot art with permitted parent/capture01a10378 | Observe contact, reach, readability and actual playback at the exact containing source/release. | All63 original native/deployed cells remain unverified. Retained cloud sandbox/storage capability is blocked; respect access denials, without bypass or stopped Mac dependency. An identified deployment and rendered game evidence are required. |
-
-State01a103d4 retains clocks/selectors; Infantry task01a10d9c and other art/gameplay
-owners remain separate. After each review/merge the current step advances to the
-next disjoint row-1 or row-2 heading; source/package/deployment/playable evidence
-remain separately recorded.
+`1cad8b8b93be3c2a9671f6da11b806fd5b7b7f9f`; Southwest PR509 merged at
+`f33c3a1a64a86597c7724204061dd19a691200a0`. Exact containing clean packages,
+HTTP admission and merged CPU checks pass; identified-game evidence stays open.
+[West source](qa-spearman-west-attack-2026-10-05.md) independently clears the rough
+minimum and registers default pack0.16.0:3 new poses,1 exact reused own idle,
+all75 preceding frames/31 clips preserved. Spearman gaps8:attackNW and7 defeats;
+Infantry21+Archer21=50 source cells. All63 native/deployed cells remain unverified.
+Next is genuine own-Northwest attack(public idle04), then7 matching terminal
+falls, then Archer. No combat/state/stance edits or held identity adoption.
 
 ## Spearman Southwest source attack — 5 October 2026
 
