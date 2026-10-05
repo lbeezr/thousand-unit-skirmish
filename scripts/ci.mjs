@@ -86,6 +86,7 @@ run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default
 run(['--test', 'scripts/asset-readability.test.mjs'], 'Read-only asset catalog consuming the existing production sidecar');
 run(['--test', 'scripts/building-orientation.test.mjs', 'scripts/building-placement-preview.test.mjs', 'scripts/building-rotation-controls.test.mjs', 'scripts/building-orientation-client.test.mjs'], 'Manual building orientation, final-art ghost and input contracts');
 run(['scripts/building-orientation-scenario.mjs'], 'Paid building orientation authority, exits and cold recovery');
+run(['scripts/building-economy-orientation-scenario.mjs'], 'Paid economy facing, chosen Dock shore and cold recovery');
 run(['--test', 'scripts/catalog-barracks-scenario.test.mjs', 'scripts/renderer-building-catalog-scenario.test.mjs'], 'Catalog and paid Barracks adapter contracts (CPU observations)');
 run(['--test', 'scripts/oak-depletion-atlas-runtime.test.mjs'], 'Generic oak depletion atlas loading, fallback and registration');
 run(['--test', 'scripts/interactive-runtime-image.test.mjs'], 'Verified interactive image hash, dimensions and disposal');

@@ -89,13 +89,19 @@ source hashes and prior clean-release receipts do not close game appearance.
 
 The [orientation workstream](building-orientation.md) adds default-integrated manual
 quarter turns and a translucent actual Complete-image placement ghost for the
-eight approved square families. Original images/anchors, normal depth shader and
+eleven approved square families. The 5 October follow-up wires Mill/Farm/Dock
+controls and persisted facing; manually facing-bound Docks share one chosen shore
+for placement, recovery, Skiff birth and delivery, preserving unmarked legacy saves.
+Original images/anchors, normal depth shader and
 paid occupancy/costs remain preserved. The orientation owner retains clean release,
 identified staging and actual preview/paid-building appearance acceptance; qualified
 cloud capture and layering fixes are independent supporting scopes. The retained
-preflight is blocked, so CPU/texture/native recovery results claim zero rendered
-frames. Exact-head PR checks and the qualified Actions artifact record subsequent
-source and rendered evidence separately.
+local preflight is blocked, so CPU/texture/native recovery results claim zero rendered
+frames. The earlier qualified House capture accepts only that build and case;
+new economy-family appearance and identified delivery remain owner-retained work.
+Exact-head PR checks and qualified Actions artifacts record source and rendered
+evidence separately. The [family matrix](building-orientation.md#5-october-2026--economy-facing-regression-audit)
+distinguishes admitted art, logical facing and unsupported wall/gate contracts.
 
 ## Buildings, wildlife, fishing and HUD
 

@@ -4,12 +4,19 @@ import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { ROTATABLE_BUILDINGS, buildingCanRotate, validBuildingOrientation, turnBuildingOrientation,
   orderedBuildingExitCells, buildingEntranceDirection } from '../src/building-orientation.mjs';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
+import { frontierBuildingManifestUrl } from '../src/frontier-building-preview.mjs';
 
 const map = { id: 'orientation-guard', name: 'Orientation guard', width: 64, height: 64,
   terrainSeed: 19, fogOfWar: false, startingArmySize: 24, startingResources: { food: 1000, wood: 1000 },
   spawnPoints: [{ team: 0, x: -20, z: 0 }, { team: 1, x: 20, z: 0 }],
   obstacles: [{ column: 30, row: 42, width: 3, height: 3, material: 'stone' }],
   resourceNodes: [], triggers: [], scenarioEvents: [] };
+
+test('every default registered square building family has a declared manual-facing contract', () => {
+  const authored = Object.keys(BUILDING_DEFINITIONS).filter(type => frontierBuildingManifestUrl(type));
+  assert.deepEqual(new Set(ROTATABLE_BUILDINGS), new Set(authored), 'new art admission must also wire placement facing');
+  assert.equal(authored.length, 11);
+});
 
 test('only approved square families admit four integer facings; unsupported geometry stays fixed', () => {
   for (const type of ROTATABLE_BUILDINGS) {
@@ -18,7 +25,7 @@ test('only approved square families admit four integer facings; unsupported geom
     for (const bad of [null, -1, 4, 1.5, '1', NaN, Infinity, {}, []]) assert.equal(validBuildingOrientation(type, bad, BUILDING_DEFINITIONS), false);
     assert.equal(validBuildingOrientation(type, undefined, BUILDING_DEFINITIONS), true);
   }
-  for (const type of ['farm', 'mill', 'dock', 'palisade-wall', 'palisade-gate']) {
+  for (const type of ['palisade-wall', 'palisade-gate']) {
     assert.equal(buildingCanRotate(type, BUILDING_DEFINITIONS), false);
     assert.equal(validBuildingOrientation(type, 1, BUILDING_DEFINITIONS), false);
   }
@@ -44,6 +51,61 @@ test('rotated threshold ranks legal exits with stable cell tie breaks', () => {
     const blockedFront = ordered.filter(cell => cell !== ordered[0]);
     assert.ok(orderedBuildingExitCells(building, blockedFront, width, width).every(cell => blockedFront.includes(cell)));
   }
+});
+
+for (const type of ['mill', 'farm']) test(`${type} authority persists every facing while preserving square occupancy and one debit`, async () => {
+  const fixture = await createPathingReplayFixture(map), { replay } = fixture;
+  try {
+    const ids = replay.units.filter(u => u.team === 0 && u.kind === 'worker').map(u => u.id);
+    for (let orientation = 0; orientation < 4; orientation++) {
+      const command = { type: 'build', ids, buildingType: type, x: -16.5 + orientation * 5, z: 15.5, orientation };
+      const wood = replay.wood[0];
+      assert.match(replay.order(0, command).at(-1).message, /PLACED/);
+      const building = replay.buildings.at(-1);
+      assert.equal(building.orientation, orientation);
+      assert.equal(building.footprint.length, 9);
+      assert.equal(replay.wood[0], wood - BUILDING_DEFINITIONS[type].cost.wood);
+      const saved = replay.checkpoint();
+      replay.validate(saved); replay.restore(structuredClone(saved));
+      assert.equal(replay.snapshot(0).buildings.at(-1).orientation, orientation);
+      assert.match(replay.order(0, command).at(-1).message, /SPACE BLOCKED/);
+      assert.equal(replay.wood[0], wood - BUILDING_DEFINITIONS[type].cost.wood);
+    }
+  } finally { await fixture.dispose(); }
+});
+
+for (let orientation = 0; orientation < 4; orientation++) test(`Dock facing ${orientation} keeps placement, checkpoint and chosen shore coherent`, async () => {
+  const shores = [
+    { column: 20, row: 44, width: 3, height: 5 },
+    { column: 23, row: 41, width: 5, height: 3 },
+    { column: 20, row: 36, width: 3, height: 5 },
+    { column: 15, row: 41, width: 5, height: 3 },
+  ];
+  const fixture = await createPathingReplayFixture({ ...map, obstacles: [{ ...shores[orientation], material: 'water' }] });
+  const { replay } = fixture;
+  try {
+    const ids = replay.units.filter(u => u.team === 0 && u.kind === 'worker').map(u => u.id);
+    const command = { type: 'build', ids, buildingType: 'dock', x: -10.5, z: 10.5, orientation };
+    const wood = replay.wood[0];
+    assert.match(replay.order(0, { ...command, orientation: (orientation + 1) % 4 }).at(-1).message, /DOCK FRONT.*ROTATE/);
+    assert.equal(replay.wood[0], wood); assert.equal(replay.buildings.length, 0); assert.equal(replay.navigationRevision, 0);
+    assert.match(replay.order(0, command).at(-1).message, /PLACED/);
+    assert.equal(replay.wood[0], wood - BUILDING_DEFINITIONS.dock.cost.wood);
+    assert.equal(replay.buildings[0].dockFacingVersion, 1);
+    const saved = replay.checkpoint(); replay.validate(saved); replay.restore(structuredClone(saved));
+    const visible = replay.snapshot(0).buildings[0];
+    assert.equal(visible.orientation, orientation); assert.equal(visible.dockFacingVersion, 1);
+    for (const patch of [{ dockFacingVersion: null }, { dockFacingVersion: 2 }, { orientation: undefined },
+      { orientation: (orientation + 1) % 4 }]) {
+      const corrupt = structuredClone(saved); Object.assign(corrupt.state.buildings[0], patch);
+      assert.throws(() => replay.validate(corrupt), /invalid building record|invalid Dock shoreline/);
+    }
+    const legacy = structuredClone(saved); delete legacy.state.buildings[0].dockFacingVersion;
+    legacy.state.buildings[0].orientation = 0;
+    replay.validate(legacy); replay.restore(legacy);
+    assert.equal(replay.snapshot(0).buildings[0].orientation, 0, 'fixed-facing old saves never spin on recovery');
+    assert.equal(replay.snapshot(0).buildings[0].dockFacingVersion, undefined);
+  } finally { await fixture.dispose(); }
 });
 
 test('real authority rejects malformed facing/collisions without cost or occupancy changes and validates saved facing', async () => {

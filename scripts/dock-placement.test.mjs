@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
-import { createDockPlacementContext } from '../src/dock-placement.mjs';
+import { createDockPlacementContext, dockBerthOrientation, validDockFacingState } from '../src/dock-placement.mjs';
 import { createWaterRouteGraph, isWaterCellRouteValid } from '../src/water-route-graph.mjs';
 import { BUILDING_DEFINITIONS as B, GAMEPLAY_DEFINITIONS, GAMEPLAY_RULESET_REVISION, validateGameplayDefinitions } from '../src/gameplay-definitions.mjs';
 import { buildingPresentation } from '../src/gameplay-presentation.mjs';
@@ -27,6 +27,41 @@ for (const side of Object.keys(maps)) test(`Dock ${side} shore yields a clear be
   assert.equal(isWaterCellRouteValid(createWaterRouteGraph(map, { clearanceCells: 1 }), access.route), true);
   assert.deepEqual(access.route, [access.spawnCell, access.exitCell]);
   assert.deepEqual(map, before, 'placement neither consumes stock nor reserves water');
+});
+
+test('manual Dock facing binds the chosen shore and cannot fall back to another legal berth', () => {
+  for (const [orientation, side] of ['south', 'east', 'north', 'west'].entries()) {
+    const context = createDockPlacementContext(mapFor(side), B.dock);
+    assert.equal(context.accessAt(center, orientation).side, side);
+    for (let other = 0; other < 4; other++) if (other !== orientation) {
+      assert.equal(context.accessAt(center, other).valid, false);
+      assert.match(context.accessAt(center, other).reason, /ROTATE/);
+    }
+  }
+  const corners = mapFor('east'); corners.obstacles.push({ ...maps.north, material: 'water' });
+  const context = createDockPlacementContext(corners, B.dock);
+  assert.equal(context.accessAt(center).side, 'north', 'legacy priority stays stable');
+  assert.equal(context.accessAt(center, 1).side, 'east', 'explicit facing wins over legacy priority');
+  for (const bad of [null, -1, 4, 1.5, '1', NaN]) assert.equal(context.accessAt(center, bad).valid, false);
+  const east = context.accessAt(center, 1);
+  assert.equal(createDockPlacementContext(corners, B.dock, { reservedCells: [east.spawnCell] }).accessAt(center, 1).valid, false,
+    'occupied chosen shore never silently launches from the open north shore');
+});
+
+test('Dock facing records preserve legacy zero and reject corrupt version/facing combinations', () => {
+  for (const orientation of [undefined, 0]) {
+    const legacy = { type: 'dock', orientation };
+    assert.equal(validDockFacingState(legacy), true); assert.equal(dockBerthOrientation(legacy), undefined);
+  }
+  for (let orientation = 0; orientation < 4; orientation++) {
+    const site = { type: 'dock', orientation, dockFacingVersion: 1 };
+    assert.equal(validDockFacingState(site), true); assert.equal(dockBerthOrientation(site), orientation);
+  }
+  for (const patch of [{ orientation: 1 }, { dockFacingVersion: 1 }, { dockFacingVersion: null },
+    { dockFacingVersion: 0 }, { dockFacingVersion: 2 }, { dockFacingVersion: '1' },
+    { dockFacingVersion: 1, orientation: 4 }, { dockFacingVersion: 1, orientation: '1' },
+    { dockFacingVersion: 1, orientation: 0, type: 'mill' }])
+    assert.equal(validDockFacingState({ type: 'dock', ...patch }), false);
 });
 
 test('inland, submerged, raised, narrow, enclosed and map-edge sites reject without snapping', () => {
@@ -87,7 +122,7 @@ for (const team of [0, 1]) test(`seat ${team} browser preview enforces the share
   const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
   const placement = source.slice(source.indexOf('function buildPlacementAt('), source.indexOf('\nfunction updateBuildPlacementGhost('));
   const map = { ...mapFor('east'), resourceNodes: [], triggers: [] };
-  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), BUILDING_DEFINITIONS: B, buildPlacementType: 'dock',
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), BUILDING_DEFINITIONS: B, buildPlacementType: 'dock', buildPlacementOrientation: 1,
     MAP_WIDTH: 20, MAP_HEIGHT: 20, MAP_HALF_X: 10, MAP_HALF_Z: 10,
     mapDefinition: map, dockPlacementContext: createDockPlacementContext(map, B.dock), localTeam: team,
     latestFood: [0, 0], latestWood: [100, 100], latestBuildings: [],
@@ -98,6 +133,9 @@ for (const team of [0, 1]) test(`seat ${team} browser preview enforces the share
   });
   vm.runInContext(wildlifeClientFunctionSource() + placement, context);
   assert.equal(context.buildPlacementAt(0, 0).valid, true);
+  context.buildPlacementOrientation = 0;
+  assert.match(context.buildPlacementAt(0, 0).blockedReason, /DOCK FRONT.*ROTATE/);
+  context.buildPlacementOrientation = 1;
   context.mapDefinition.resourceNodes.push({ id: 'shore-food', x: -1.5, z: -1.5, stock: 10 });
   assert.equal(context.buildPlacementAt(0, 0).blockedReason, 'RESOURCE IN THIS SITE');
   context.latestResourceStocks.set('shore-food', 0);
@@ -107,7 +145,7 @@ for (const team of [0, 1]) test(`seat ${team} browser preview enforces the share
   assert.equal(context.buildPlacementAt(0, 0).blockedReason, 'ANOTHER BUILDING TOO CLOSE');
   context.latestBuildings.length = 0;
   context.dockPlacementContext = createDockPlacementContext({ ...map, obstacles: [] }, B.dock);
-  assert.equal(context.buildPlacementAt(0, 0).blockedReason, 'DOCK NEEDS CLEAR WATER BERTH');
+  assert.match(context.buildPlacementAt(0, 0).blockedReason, /DOCK FRONT.*ROTATE/);
   context.buildPlacementType = 'house';
   assert.equal(context.buildPlacementAt(0, 0).valid, true, 'ordinary buildings retain their land rule');
 });

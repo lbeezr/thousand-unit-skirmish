@@ -84,7 +84,7 @@ for (const team of [0, 1]) test(`Dock/Skiff command controls state their usable 
     selectedBuildingId: 7, units: [{ kind: 'skiff' }], selectedIds: () => [0],
     ui: { commandHint: {}, buildingCommandDetails: {}, attackMoveToggle: { classList: { toggle() {} }, setAttribute() {} }, formationSelect: {} },
     persistentTargetMode: null, attackMoveMode: false, tapOrderArmed: false, matchWinner: -1,
-    window: { matchMedia: () => ({ matches: false }) }, document: { querySelectorAll: () => buttons },
+    window: { matchMedia: () => ({ matches: false }) }, document: { querySelectorAll: () => buttons, querySelector: () => null },
     buildingLabel: () => 'Dock', updateStationaryOrderControls() {}, updateBuildingResearchControls() {},
     syncBattlefieldCursor() {}, updateContextualCommands() {},
   });

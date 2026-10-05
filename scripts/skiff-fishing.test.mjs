@@ -6,6 +6,7 @@ import { createWaterUnitRuntime } from '../src/water-unit-runtime.mjs';
 import { waterRaster } from '../src/water-contours.mjs';
 import { GAMEPLAY_DEFINITIONS, UNIT_DEFINITIONS, validateGameplayDefinitions, gameplayRulesetRevision } from '../src/gameplay-definitions.mjs';
 import { selectionContext } from '../src/selection-context.mjs';
+import { createDockPlacementContext } from '../src/dock-placement.mjs';
 
 function fixture(stock = 12.1) {
   const map = { width: 64, height: 64, spawnPoints: [{ team: 0, x: -20, z: 0 }, { team: 1, x: 20, z: 0 }],
@@ -31,6 +32,27 @@ function stop(unit) {
   unit.gatherNodeId = null; unit.gatherPhase = ''; unit.dropoffBuildingId = null;
   unit.path = []; unit.pathIndex = 0; unit.moveGoalCell = -1; unit.waterMoveBlocked = false;
 }
+
+test('fishing delivery uses the manually chosen Dock shore while legacy Docks keep their old berth', () => {
+  const map = { width: 20, height: 20, obstacles: [
+    { material: 'water', column: 7, row: 2, width: 3, height: 5 },
+    { material: 'water', column: 10, row: 7, width: 5, height: 3 },
+  ], resourceNodes: [] };
+  const water = createWaterUnitRuntime(map), fish = createSkiffFishingContext(map, water);
+  const dock = { id: 1, type: 'dock', team: 0, hp: 1200, complete: true,
+    x: -1.5, z: -1.5, orientation: 1, dockFacingVersion: 1 };
+  const shores = createDockPlacementContext(map, { footprint: 3, placement: { kind: 'shoreline', waterClearanceCells: 1 } });
+  const center = water.graph.cellAt(dock.x, dock.z), east = shores.accessAt(center, 1);
+  assert.equal(fish.dockCell(dock), east.spawnCell);
+  assert.deepEqual(fish.dockCells(dock), [east.spawnCell, ...east.spawnFootprint.filter(cell => cell !== east.spawnCell && water.graph.isNavigable(cell))]);
+  const unit = { ...fixture().world.units[0], ...water.graph.pointAt(east.spawnCell), cargo: 10, cargoType: 'food' };
+  const route = fish.deliveryRoute(unit, [dock], [unit]);
+  assert.ok(route); assert.equal(route.cells.at(-1), east.spawnCell); assert.equal(route.buildingId, dock.id);
+  const legacy = { ...dock, orientation: 0 }; delete legacy.dockFacingVersion;
+  assert.equal(fish.dockCell(legacy), shores.accessAt(center).spawnCell);
+  assert.equal(fish.deliveryRoute(unit, [legacy], [unit]), null, 'legacy north shore is in another water component');
+  assert.equal(fish.dockCell({ ...dock, orientation: 0 }), -1, 'invalid chosen shore cannot switch unloading to another side');
+});
 
 test('fish banks remain dry land; boats derive a reachable approach beside the same water visual', () => {
   const f = fixture(), before = structuredClone(f.map), wet = waterRaster(f.map);

@@ -4,7 +4,7 @@
 
 The orientation workstream owns manual placement facing through normal rendering,
 release inclusion, identified staging delivery and actual appearance verification.
-This increment uses the eight existing Complete families and introduces no art.
+Manual facing now covers the eleven registered square building families and introduces no art.
 Smart facing remains a separate follow-on. Source and CPU acceptance do not close
 rendered or deployed acceptance.
 
@@ -37,13 +37,41 @@ continue to direct units after birth.
 The ghost resets and releases texture leases on cancellation/type changes;
 late image loads cannot restore a canceled preview. Buttons retain the last valid
 battlefield site while focused, so mouse/touch rotation remains visible over HUD.
-Actual placement still requires a fresh valid battlefield click. All eight
+Actual placement still requires a fresh valid battlefield click. All eleven
 approved families retain their calibrated source colors, anchors and full images.
 Explicit old-art/family comparison URLs do not establish rotated procedural
 fallback parity for excluded families; use an ordinary URL for this feature.
-Farm, Mill, Dock and palisades have no approved Complete family in this increment:
-they retain footprint/line previews and fixed facing. Farm/building-action and
-asset readability audits remain separate outcomes.
+Mill, Farm and Dock now use their admitted economy lifecycle packs. Palisades retain their line/connection contract; Gate facing comes from the existing wall conversion rather than this free-rotation control. Farm/building-action and asset readability audits remain separate outcomes.
+
+## 5 October 2026 — economy-facing regression audit
+
+At main `446d5a99374b3aaf06d30948ad9c01cb3f6080e5`, eleven families had default registered views, but the original eight-family rotation list still excluded Mill, Farm and Dock. This hid their buttons, ignored rotation keys, and rejected paid nonzero facing. The fix admits all eleven explicitly; a registry-parity guard catches another art-only admission. The existing key/button, pending request, camera and editing guards serve every admitted family.
+
+| Family | Footprint | Registered headings per state | Placement facing before → after | States in default registered manifest |
+| --- | --- | --- | --- | --- |
+| Town Center | 5×5 | 0,45,90,135,180,225,270,315° | four → four | Complete |
+| House | 3×3 | same eight | four → four | Complete |
+| Storehouse | 3×3 | same eight | four → four | Complete |
+| Stable | 3×3 | same eight | four → four | Complete |
+| Workshop | 3×3 | same eight | four → four | Complete |
+| Watchtower | 3×3 | same eight | four → four | Complete |
+| Barracks | 3×3 | same eight | four → four | Complete |
+| Archery Range | 3×3 | same eight | four → four | Complete |
+| Mill | 3×3 | same eight | fixed → four | Foundation, Frame, Complete, Damaged, Critical |
+| Farm | 3×3 | same eight | fixed → four | those five plus Exhausted, Exhausted Damaged, Exhausted Critical |
+| Dock | 3×3 land, shoreline constraint | same eight | fixed → four legal shore choices | Foundation, Frame, Complete, Damaged, Critical |
+| Palisade | 1-cell line segments | no registered captured family | line/connection placement | procedural connection states |
+| Palisade Gate | converted wall cell | no registered captured family | wall conversion | procedural gate/connection states |
+
+The eight captured headings remain camera views; manual placement has four logical quarter-turns. Ordinary placed art, lifecycle art, procedural fallback and preview consume the same persisted `orientation`. There is no sprite-only occupancy rotation: each square keeps its reserved cells. Mill/Farm retain legal perimeter drop-off/harvest access, rather than inventing a doorway-only rule. Art backing is the already admitted [economy pack](../assets/buildings/frontier-economy-models-v1/README.md) and its selected reference records.
+
+Dock's registered front landing is +Z. Explicit manual facing 0/1/2/3 binds the water berth to south/east/north/west. The chosen shore must provide the same hull clearance and outward legal water edge during preview, authoritative placement, saved-state validation, Skiff birth and fish delivery. An unavailable chosen shore shows a rotate hint and rejects before cost/occupancy/IDs change; it never silently switches to another open shore. New explicit-facing paid Docks carry optional `dockFacingVersion: 1`, emitted in snapshots and persisted with their facing. Invalid markers, missing marked facing and corrupt marked shoreline reject recovery.
+
+Unmarked old Docks saved zero while selecting any cardinal berth; they retain that historical priority and zero artwork on recovery. Commands from older clients that omit facing retain the same legacy contract. Marked manual sites never take that compatibility branch. No checkpoint version migration, old-site automatic spin, new art, held source publication, cost change or camera-wheel change is introduced.
+
+Cloud executor: Linux `/workspace`, connected on 5 October. The one local normal-sandbox capability probe was blocked by `sandbox-unavailable`/`storage-unavailable`, with zero game frames. The qualified #323 Actions capture now requests House, Mill, Farm and Dock through native HUD/input, each with default ghost, quarter-turn and paid Complete parity; Dock publishes disclosed two-shore terrain through the ordinary map command. Capture acquisition and actual appearance acceptance remain separate. Earlier House screenshots do not establish these new families or this revision. Implementation owner retains current cloud capture, independent appearance inspection, clean release and identified staging verification.
+
+Focused commands include the checks below plus `node --test scripts/dock-placement.test.mjs scripts/skiff-fishing.test.mjs scripts/frontier-economy-art.test.mjs`, `node scripts/building-economy-orientation-scenario.mjs`, and the existing Dock/Skiff native compatibility scenarios. The new native scenario uses real paid sites/costs, all four Dock facings for both seats and two process restarts. It explicitly supplies completed checkpoint fixtures for spawn tests and makes no rendered claim.
 
 ## Controls and precedent
 
