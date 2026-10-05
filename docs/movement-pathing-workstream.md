@@ -1170,6 +1170,41 @@ milestone (art N/A). The shared owner retains exact-head review, integration,
 packaging and existing deployment/capture follow-through; no source test closes
 served identity or actual normal-game pixels.
 
+### Worker retention preparation
+
+The next writer is justified by the read-only
+[Worker characterization](qa-evidence/worker-retention-2026-10-05/publication.mjs),
+not by missing coverage alone. It consumes unchanged `workerFlowPath`,
+`applyWorkerFlowRoute`, `routeWorkerToDropoff` and land `assignReturnCargo`
+bodies with controlled flat/weighted selectors and synthetic saved-field pressure.
+Of 27 rectangular/square/legacy cases, 12 exceed the aggregate envelope after
+publication, including all three two-Worker explicit Return cases. The actual
+checkpoint route leaf refuses those overshoots. Three replacement controls fit;
+all cases preserve the selected raw tail (distinct from `field.goal`), original
+weighted cost, raw drop-off length scoring and cargo. This is not a full XL save,
+admitted match or gameplay/capacity failure witness.
+
+Explicit land Return is the proposed first bounded adopter: its existing
+selection publishes onto temporary clones, then the command copies their paths
+into live actors. A guard treating those clones as saved units is incorrect, and
+the existing deliveries array can retain a selected route for every recipient.
+Core prepares only live command publication/retained-field reservation and
+bounded per-recipient staging at the land branch of `assignReturnCargo`;
+resource retains drop-off selection, raw scoring, original reduction, cargo,
+rates and work continuation. Water Return and the Worker flow helper stay separate.
+The implementation must credit each actually replaced/cleared saved field,
+including any active/resume aliases, preserve unreachable rejection, retain an
+accepted selected goal/drop-off under capacity deferral and use guarded existing
+service/recovery rather than execute the old work leg. No saved ledger flag.
+
+Acceptance for that separate slice includes quota boundaries and alias credit,
+pre-copy admission/finite staging, selected-tail/raw-score controls, pending
+Return cancellation/replacement and real both-seat cargo delivery/queued
+continuation/cold recovery on existing admitted grids. General Worker flow and
+topology retries remain further adopters; no all-writer completion is implied.
+This preparation changes no runtime and remains separate from merged PR430.
+Source, package, served identity and actual normal-game pixels stay distinct.
+
 Stationary construction is another uncovered core consumer, with no runtime
 patch selected. Twelve real-command probes at the same clean source stage two
 or four Workers from each seat, pay 75 Wood for a House and observe actual work.
