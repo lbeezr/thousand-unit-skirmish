@@ -12,6 +12,8 @@ test('queued-first Palisade completion avoids an already accepted military retur
   if (process.env.CONSTRUCTION_QUEUED_FIRST_RECORD) {
     await writeFile(process.env.CONSTRUCTION_QUEUED_FIRST_RECORD, JSON.stringify(result, null, 2) + '\n');
   }
+  assert.equal(result.originalDeadlineTick, 2700, 'the original workload deadline stays fixed');
+  assert.equal(result.militaryArrived, true, 'actor120 must reach its original accepted return by that deadline');
   const parking = result.events.find(event => event.kind === 'builder-parked').worker;
   const clearance = LAND_CLEARANCE_PROFILE.radiusByKind.worker + LAND_CLEARANCE_PROFILE.radiusByKind.infantry;
   assert.ok(Math.hypot(parking.x - result.returnPoint.x, parking.z - result.returnPoint.z) >= clearance - 1e-9,
