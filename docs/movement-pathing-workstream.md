@@ -1381,11 +1381,29 @@ real live actors from Return's temporary clones; Return remains charged by its
 merged command adopter. Selection, raw scoring, chosen tail, reduction, cargo,
 rates and continuation stay resource-owned. Core proposes only reservation at
 the live publication slot and a bounded operation-local ledger/repair handoff.
-The proposed shared writes are that subsection of `applyWorkerFlowRoute`,
-scope lifetime in `updateWorkerEconomy`, and minimal forwarding through
-`routeWorker`, `routeForestWorker`, `routeWorkerToDropoff`,
-`updateForestWorkerEconomy` and `workerAtDropoff`. Resource retains every
-surrounding selection, validity, harvest and continuation condition.
+The actual continuation call graph narrows the proposed shared writes to that
+subsection of `applyWorkerFlowRoute`, a private synchronous wrapper at the
+existing `simulateTick` call to unchanged `updateWorkerEconomy`, and only the
+path/index/goal publication triplet in `updateForestWorkerEconomy`'s existing
+access-cell center approach. No scope argument forwarding or helper-signature
+change is needed. Resource retains every surrounding selection, validity,
+visibility, harvest and continuation condition. The lazy operation census
+begins at its first positive publication and ends before returning to the tick;
+legacy grids bypass it and Return clones remain outside its live charging.
+The exact unresolved boundary is recorded with the
+[resource owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/330#issuecomment-5988773910).
+This preparation contains no Worker runtime patch.
+
+The read-only [forest center publication witness](qa-evidence/worker-retention-2026-10-05/forest-center-publication.mjs)
+consumes the actual access-cell and economy bodies. At synthetic saved-route
+quota on each of the three XL shapes, this direct one-cell publication grows
+Q to Q+1 without invoking a flow helper, while preserving the active job,
+partial Wood cargo, stock, pose, queue, generation and order revision. The
+existing selected access center is within unchanged harvesting range, while
+the initial fractional pose is outside it. This establishes the missing writer
+in the proposed operation; it is not execution, productive harvesting, full
+checkpoint, native XL or rendered acceptance. A small legacy case bypasses
+the XL checkpoint leaf unchanged.
 The initial adopter must charge every positive Worker route write within its
 scope, including automatic drop-off/resumption and navigation reselection.
 Reusing one phase ledger while leaving other growing Worker writers uncharged
