@@ -74,6 +74,58 @@ land executor, not command admission or whole journeys.
 
 ### Shared semantics, domain policies
 
+After PR399 merged at `50d2e99e`, the project coordinator allocated a narrow
+target-free explicit AttackMove objective increment at main `82a66766` to
+caller-adoption owner `01a10933-e913-766b-b5de-3aa5a17c7038`, recorded on
+[PR395](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5985799879).
+It owns a pure `src/combat-movement.mjs` predicate, its import and final
+kind-radius fallback in `activeLandMovementBodyRadius`, the one simulation
+domain registration, and focused command journey regressions. Existing radius
+values remain in `unit-movement`; server/planner/attack helper bodies stay with
+their owners. The registry entry is disjoint from architecture's three
+server import-literal migrations; crowd PR400 remains ordinary Move only.
+Pending planning qualifies; explicit `noAttack` stance still travels. Worker,
+nonmilitary/dead/water/hold, either active target, automatic stance combat or
+return, persistent Patrol/Follow, gathering and construction are excluded.
+Acceptance requires both-seat physical commands, acquisition deactivation,
+safe finite saved-route resumption from fractional pursuit positions with
+bounded existing repair, unchanged range/damage, pending/active interruptions,
+queued replacement, checkpoint recovery, and navigation changes. Actual Patrol
+is a negative control, not an adopter. Baseline command-only AttackMove and
+Patrol each admit 17 unsafe static-circle substeps per seat beside the same
+authored corner. Any larger host change needed for resumption is reported
+before expanding. Weapon-range pursuit and Patrol/Follow/stance continuation
+remain the next separately allocated increments. Cloud rendered acceptance
+remains open under the retained capability failure below.
+
+The [retained before/after command record](qa-evidence/attack-move-objective-2026-10-05/baseline-and-candidate.json)
+keeps the 17 unsafe steps per seat at baseline and zero after objective adoption;
+actual Patrol still has 17 per seat. The
+[fractional target-loss probes](qa-evidence/attack-move-objective-2026-10-05/pre-review-resumption.json)
+retain eight real-command acquisition/kill/resume journeys with zero unsafe
+resumed steps and at most one existing repair. The registered attack-flow suite
+imports 39 new objective checks, including saved-route pursuit recovery,
+Stop/queued replacement and paid navigation changes during combat. Actual
+damage receipts use unchanged weapon range/armor/damage rules. The adjacent
+core rejoin regression now asserts route exhaustion rather than exactly two
+cells; the new adopter legitimately prefixes the shared current-cell rejoin.
+Endpoint, queued intent, one repair and pending-service assertions remain.
+The [pre-review native witness](qa-evidence/attack-move-objective-2026-10-05/pre-review-native.json)
+names its dirty source honestly: both WebSocket seats complete explicit
+`noAttack` objectives after actual process cold restart, retaining HP/intent.
+Exact reviewed-head checks/types/clean pack and independent review remain
+integration dependencies until recorded on the increment's PR.
+
+Two baseline failures are distinct from this change: untouched main `82a66766`
+fails `wildlife-motion.test.mjs`'s extracted checkpoint-capture test because its
+VM lacks the new `preflightXlCheckpointRoutes` binding, reported to the
+[XL owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/403#issuecomment-5985876523).
+The existing native `live-attack-move-repair-scenario.mjs` fails identically on
+untouched main and this candidate during close-spawn army isolation, before
+issuing AttackMove: the intended enemy Worker is already dead at tick 408.
+Neither failure is claimed green or repaired by caller adoption. The focused
+255-check regression selection passes; it does not claim the full CPU suite.
+
 Construction caller adoption owner `01a10933-e913-766b-b5de-3aa5a17c7038`
 reserves `constructionMovementActive` in `src/construction-work-intent.mjs`
 and the construction journey regressions in the existing registered
@@ -115,8 +167,10 @@ Worker build/repair fields, excludes interrupted/economy/combat/water states
 and introduces no saved state. Stationary construction interaction separation
 still uses the economy-only body selector and is **not** qualified by this
 travel/approach slice; site evacuation/legacy overlap and body-pair clearance
-remain explicit further work. Independent exact-head review and author normal
-merge are the current source-integration dependencies.
+remain explicit further work. Independent exact-head review approved
+`1bbf9d81`, author normal merge integrated PR399 at `50d2e99e`, and 99
+merged-source focused checks/types/imports/docs plus clean pack and startup
+smoke pass. Source integration is complete; served/rendered acceptance stays open.
 
 The [one cloud capability attempt](qa-evidence/construction-travel-2026-10-04/renderer-capability.json)
 is blocked by `sandbox-unavailable` and `storage-unavailable`, with zero game

@@ -298,7 +298,7 @@ test('legal crowd deflection repairs once, preserves the queued route and rejoin
     assert.equal(f.context.applyPlannedMoveAssignment(job,assignment),true);
     assert.equal(f.mover.attackMoveRouteReady,true);assert.equal(f.mover.movePlanningPending,false);
     for(let tick=0;tick<100&&f.mover.pathIndex<f.mover.path.length;tick++)f.move();
-    assert.equal(f.mover.pathIndex,2);assert.deepEqual({x:f.mover.x,z:f.mover.z},point(28));
+    assert.equal(f.mover.pathIndex,f.mover.path.length);assert.deepEqual({x:f.mover.x,z:f.mover.z},point(28));
     assert.equal(f.mover.queuedWaypoints,queued);assert.equal(queued.length,1);
   }
 });

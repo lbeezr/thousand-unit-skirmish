@@ -1,0 +1,636 @@
+{
+  "candidateBase": "82a6676680c417d860a117d39511c1b118ddfec1",
+  "candidateDirty": true,
+  "results": [
+    {
+      "type": "acquisition",
+      "team": 0,
+      "point": {
+        "x": 3.5,
+        "z": 2.5
+      },
+      "t": 3,
+      "x": 0.610108197928093,
+      "z": 0.8083081279301064,
+      "radius": 0,
+      "saved": [
+        1568,
+        1574
+      ]
+    },
+    {
+      "type": "loss",
+      "team": 0,
+      "point": {
+        "x": 3.5,
+        "z": 2.5
+      },
+      "t": 278,
+      "from": {
+        "x": 2.266265737813397,
+        "z": 2.5
+      },
+      "at": {
+        "x": 2.2088967148498817,
+        "z": 2.435039194006518
+      },
+      "preBodyClear": true,
+      "path": [
+        1568,
+        1574
+      ],
+      "index": 0,
+      "radius": 0.22
+    },
+    {
+      "type": "result",
+      "team": 0,
+      "point": {
+        "x": 3.5,
+        "z": 2.5
+      },
+      "acquired": true,
+      "resumed": true,
+      "contacts": 0,
+      "escapes": 0,
+      "steps": 60,
+      "repairs": 1,
+      "hp": 0,
+      "position": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "pending": false,
+      "loss": {
+        "t": 278,
+        "from": {
+          "x": 2.266265737813397,
+          "z": 2.5
+        },
+        "at": {
+          "x": 2.2088967148498817,
+          "z": 2.435039194006518
+        },
+        "preBodyClear": true,
+        "path": [
+          1568,
+          1574
+        ],
+        "index": 0,
+        "radius": 0.22
+      }
+    },
+    {
+      "type": "acquisition",
+      "team": 1,
+      "point": {
+        "x": 3.5,
+        "z": 2.5
+      },
+      "t": 0,
+      "x": 0.714137078160564,
+      "z": 1.028898428046759,
+      "radius": 0,
+      "saved": [
+        1568,
+        1574
+      ]
+    },
+    {
+      "type": "loss",
+      "team": 1,
+      "point": {
+        "x": 3.5,
+        "z": 2.5
+      },
+      "t": 273,
+      "from": {
+        "x": 2.2758477013202727,
+        "z": 2.5
+      },
+      "at": {
+        "x": 2.2183044468971187,
+        "z": 2.4351934804089646
+      },
+      "preBodyClear": true,
+      "path": [
+        1568,
+        1574
+      ],
+      "index": 0,
+      "radius": 0.22
+    },
+    {
+      "type": "result",
+      "team": 1,
+      "point": {
+        "x": 3.5,
+        "z": 2.5
+      },
+      "acquired": true,
+      "resumed": true,
+      "contacts": 0,
+      "escapes": 0,
+      "steps": 60,
+      "repairs": 1,
+      "hp": 0,
+      "position": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "pending": false,
+      "loss": {
+        "t": 273,
+        "from": {
+          "x": 2.2758477013202727,
+          "z": 2.5
+        },
+        "at": {
+          "x": 2.2183044468971187,
+          "z": 2.4351934804089646
+        },
+        "preBodyClear": true,
+        "path": [
+          1568,
+          1574
+        ],
+        "index": 0,
+        "radius": 0.22
+      }
+    },
+    {
+      "type": "acquisition",
+      "team": 0,
+      "point": {
+        "x": 2.25,
+        "z": 0.95
+      },
+      "t": 3,
+      "x": 0.7077288327260952,
+      "z": 0.7013700107285745,
+      "radius": 0,
+      "saved": [
+        1568,
+        1574
+      ]
+    },
+    {
+      "type": "loss",
+      "team": 0,
+      "point": {
+        "x": 2.25,
+        "z": 0.95
+      },
+      "t": 266,
+      "from": {
+        "x": 1.0437128120562535,
+        "z": 0.6159736208092721
+      },
+      "at": {
+        "x": 0.9589528462011389,
+        "z": 0.5978943702896597
+      },
+      "preBodyClear": true,
+      "path": [
+        1568,
+        1574
+      ],
+      "index": 0,
+      "radius": 0.22
+    },
+    {
+      "type": "result",
+      "team": 0,
+      "point": {
+        "x": 2.25,
+        "z": 0.95
+      },
+      "acquired": true,
+      "resumed": true,
+      "contacts": 0,
+      "escapes": 0,
+      "steps": 77,
+      "repairs": 0,
+      "hp": 0,
+      "position": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "pending": false,
+      "loss": {
+        "t": 266,
+        "from": {
+          "x": 1.0437128120562535,
+          "z": 0.6159736208092721
+        },
+        "at": {
+          "x": 0.9589528462011389,
+          "z": 0.5978943702896597
+        },
+        "preBodyClear": true,
+        "path": [
+          1568,
+          1574
+        ],
+        "index": 0,
+        "radius": 0.22
+      }
+    },
+    {
+      "type": "acquisition",
+      "team": 1,
+      "point": {
+        "x": 2.25,
+        "z": 0.95
+      },
+      "t": 0,
+      "x": 0.8243160535617539,
+      "z": 0.9054103678629477,
+      "radius": 0,
+      "saved": [
+        1568,
+        1574
+      ]
+    },
+    {
+      "type": "loss",
+      "team": 1,
+      "point": {
+        "x": 2.25,
+        "z": 0.95
+      },
+      "t": 263,
+      "from": {
+        "x": 1.0472642142470154,
+        "z": 0.7716414714517909
+      },
+      "at": {
+        "x": 0.9696345712007575,
+        "z": 0.7331090223780338
+      },
+      "preBodyClear": true,
+      "path": [
+        1568,
+        1574
+      ],
+      "index": 0,
+      "radius": 0.22
+    },
+    {
+      "type": "result",
+      "team": 1,
+      "point": {
+        "x": 2.25,
+        "z": 0.95
+      },
+      "acquired": true,
+      "resumed": true,
+      "contacts": 0,
+      "escapes": 0,
+      "steps": 78,
+      "repairs": 0,
+      "hp": 0,
+      "position": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "pending": false,
+      "loss": {
+        "t": 263,
+        "from": {
+          "x": 1.0472642142470154,
+          "z": 0.7716414714517909
+        },
+        "at": {
+          "x": 0.9696345712007575,
+          "z": 0.7331090223780338
+        },
+        "preBodyClear": true,
+        "path": [
+          1568,
+          1574
+        ],
+        "index": 0,
+        "radius": 0.22
+      }
+    },
+    {
+      "type": "acquisition",
+      "team": 0,
+      "point": {
+        "x": 2.3,
+        "z": 2.3
+      },
+      "t": 3,
+      "x": 0.610108197928093,
+      "z": 0.8083081279301064,
+      "radius": 0,
+      "saved": [
+        1568,
+        1574
+      ]
+    },
+    {
+      "type": "loss",
+      "team": 0,
+      "point": {
+        "x": 2.3,
+        "z": 2.3
+      },
+      "t": 266,
+      "from": {
+        "x": 1.0529324044800632,
+        "z": 2.5
+      },
+      "at": {
+        "x": 1.0298383319655935,
+        "z": 2.416466923163291
+      },
+      "preBodyClear": true,
+      "path": [
+        1568,
+        1574
+      ],
+      "index": 0,
+      "radius": 0.22
+    },
+    {
+      "type": "result",
+      "team": 0,
+      "point": {
+        "x": 2.3,
+        "z": 2.3
+      },
+      "acquired": true,
+      "resumed": true,
+      "contacts": 0,
+      "escapes": 0,
+      "steps": 98,
+      "repairs": 1,
+      "hp": 0,
+      "position": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "pending": false,
+      "loss": {
+        "t": 266,
+        "from": {
+          "x": 1.0529324044800632,
+          "z": 2.5
+        },
+        "at": {
+          "x": 1.0298383319655935,
+          "z": 2.416466923163291
+        },
+        "preBodyClear": true,
+        "path": [
+          1568,
+          1574
+        ],
+        "index": 0,
+        "radius": 0.22
+      }
+    },
+    {
+      "type": "acquisition",
+      "team": 1,
+      "point": {
+        "x": 2.3,
+        "z": 2.3
+      },
+      "t": 0,
+      "x": 0.714137078160564,
+      "z": 1.028898428046759,
+      "radius": 0,
+      "saved": [
+        1568,
+        1574
+      ]
+    },
+    {
+      "type": "loss",
+      "team": 1,
+      "point": {
+        "x": 2.3,
+        "z": 2.3
+      },
+      "t": 263,
+      "from": {
+        "x": 1.062514367986939,
+        "z": 2.5
+      },
+      "at": {
+        "x": 1.0390491958983779,
+        "z": 2.4165704080678485
+      },
+      "preBodyClear": true,
+      "path": [
+        1568,
+        1574
+      ],
+      "index": 0,
+      "radius": 0.22
+    },
+    {
+      "type": "result",
+      "team": 1,
+      "point": {
+        "x": 2.3,
+        "z": 2.3
+      },
+      "acquired": true,
+      "resumed": true,
+      "contacts": 0,
+      "escapes": 0,
+      "steps": 98,
+      "repairs": 1,
+      "hp": 0,
+      "position": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "pending": false,
+      "loss": {
+        "t": 263,
+        "from": {
+          "x": 1.062514367986939,
+          "z": 2.5
+        },
+        "at": {
+          "x": 1.0390491958983779,
+          "z": 2.4165704080678485
+        },
+        "preBodyClear": true,
+        "path": [
+          1568,
+          1574
+        ],
+        "index": 0,
+        "radius": 0.22
+      }
+    },
+    {
+      "type": "acquisition",
+      "team": 0,
+      "point": {
+        "x": 0.75,
+        "z": 3.5
+      },
+      "t": 3,
+      "x": 0.610108197928093,
+      "z": 0.8083081279301064,
+      "radius": 0,
+      "saved": [
+        1568,
+        1574
+      ]
+    },
+    {
+      "type": "loss",
+      "team": 0,
+      "point": {
+        "x": 0.75,
+        "z": 3.5
+      },
+      "t": 266,
+      "from": {
+        "x": 0.5,
+        "z": 2.2729324044800627
+      },
+      "at": {
+        "x": 0.5,
+        "z": 2.186265737813396
+      },
+      "preBodyClear": true,
+      "path": [
+        1568,
+        1574
+      ],
+      "index": 0,
+      "radius": 0.22
+    },
+    {
+      "type": "result",
+      "team": 0,
+      "point": {
+        "x": 0.75,
+        "z": 3.5
+      },
+      "acquired": true,
+      "resumed": true,
+      "contacts": 0,
+      "escapes": 0,
+      "steps": 91,
+      "repairs": 0,
+      "hp": 0,
+      "position": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "pending": false,
+      "loss": {
+        "t": 266,
+        "from": {
+          "x": 0.5,
+          "z": 2.2729324044800627
+        },
+        "at": {
+          "x": 0.5,
+          "z": 2.186265737813396
+        },
+        "preBodyClear": true,
+        "path": [
+          1568,
+          1574
+        ],
+        "index": 0,
+        "radius": 0.22
+      }
+    },
+    {
+      "type": "acquisition",
+      "team": 1,
+      "point": {
+        "x": 0.75,
+        "z": 3.5
+      },
+      "t": 0,
+      "x": 0.714137078160564,
+      "z": 1.028898428046759,
+      "radius": 0,
+      "saved": [
+        1568,
+        1574
+      ]
+    },
+    {
+      "type": "loss",
+      "team": 1,
+      "point": {
+        "x": 0.75,
+        "z": 3.5
+      },
+      "t": 263,
+      "from": {
+        "x": 0.5,
+        "z": 2.2825143679869386
+      },
+      "at": {
+        "x": 0.5,
+        "z": 2.1958477013202717
+      },
+      "preBodyClear": true,
+      "path": [
+        1568,
+        1574
+      ],
+      "index": 0,
+      "radius": 0.22
+    },
+    {
+      "type": "result",
+      "team": 1,
+      "point": {
+        "x": 0.75,
+        "z": 3.5
+      },
+      "acquired": true,
+      "resumed": true,
+      "contacts": 0,
+      "escapes": 0,
+      "steps": 91,
+      "repairs": 0,
+      "hp": 0,
+      "position": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "pending": false,
+      "loss": {
+        "t": 263,
+        "from": {
+          "x": 0.5,
+          "z": 2.2825143679869386
+        },
+        "at": {
+          "x": 0.5,
+          "z": 2.1958477013202717
+        },
+        "preBodyClear": true,
+        "path": [
+          1568,
+          1574
+        ],
+        "index": 0,
+        "radius": 0.22
+      }
+    }
+  ],
+  "actualDamageReceipts": 80,
+  "limits": [
+    "Real commands acquire and kill an enemy Worker; no target health or routes injected.",
+    "Eight diagnostic target-loss journeys finish safely with zero contacts and at most one existing repair.",
+    "Pre-review probe; exact-head regression/review/pack identities are recorded separately."
+  ]
+}
