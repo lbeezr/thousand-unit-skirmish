@@ -56,8 +56,12 @@ try {
   await fixture.start(); clients=[await fixture.connect(0,tokens[0]),await fixture.connect(1,tokens[1])];
   assert.ok(clients.every(c=>c.welcome.recoveredFromCheckpoint));
   for(const team of [0,1]) await command(team,'replantFarm',{buildingId:oldIds[team]},/REPLANT REJECTED/);
-  const delivered=await fixture.checkpoint(s=>s.state.buildings.every(b=>b.complete)&&s.state.teamFood.every(f=>f>200));
+  const delivered=await fixture.checkpoint(s=>s.state.buildings.every(b=>b.complete)&&s.state.teamFood.every((food,team)=>food>paid.state.teamFood[team]+1e-5));
   assert.deepEqual(delivered.state.teamWood,[280,280]);
+  for(const team of [0,1]) {
+    assert.ok(delivered.state.teamFood[team]>paid.state.teamFood[team]+1e-5,'new crop must materially credit the depot');
+    assert.ok(plot(delivered,team).harvestStock<200,'renewed Workers must actually harvest');
+  }
   record('first-delivery',delivered);
   const result={sourceRevision,sourceDirty,mapId:map.id,records,scope:'native socket/checkpoint authority; no rendered frames'};
   if(output) await writeFile(path.join(output,'result.json'),JSON.stringify(result,null,2)+'\n');
