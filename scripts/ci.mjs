@@ -54,6 +54,7 @@ run(['node_modules/typescript/bin/tsc', '--project', 'tsconfig.check-node.json',
 run(['--test', 'scripts/check-node-types.test.mjs'], 'Node framing contract negative cases and ambient isolation');
 run(['--test', 'scripts/resource-visual-state.test.mjs'], 'Resource stage membership and legacy transitions');
 run(['--test', 'scripts/construction-ground-composition.test.mjs'], 'Construction ground painter order and terrain contact');
+run(['--test', 'scripts/building-fog-composition.test.mjs'], 'Owned building fog composition preserves disclosure and terrain fog');
 run(['--test', 'scripts/palisade-construction-ground.test.mjs'], 'Connected owned palisade construction ground and lifecycle');
 run(['--test', 'scripts/renderer-site-composition-scenario.test.mjs'], 'Owned site capture cannot pass metadata as visual acceptance');
 run(['scripts/site-composition-scene-scenario.mjs'], 'Real paid both-seat site composition scene preparation');

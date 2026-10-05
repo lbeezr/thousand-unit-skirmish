@@ -226,6 +226,12 @@ existing site artwork. Geometry buffers update only when membership, stage,
 position, connection or sampled terrain contact changes.
 The [composition investigation](qa-site-composition-2026-10-04.md) records the
 source cause, layer audit and separately pending hosted visual checks.
+Battlefield fog alpha excludes remembered cells inside live owned paid building
+footprints from the current snapshot, preventing the fog's late color pass from
+painting across their artwork. This changes only the fog texture: authoritative
+cell visibility, minimap fog, unknown terrain and all enemy footprints retain
+their original state. Each snapshot restores the mask before applying this
+bounded exemption, so removal or ownership loss cannot leave a clearing behind.
 Forest-cell clearing uses its own visible stock data rather than inventing
 ordinary resource IDs.
 
