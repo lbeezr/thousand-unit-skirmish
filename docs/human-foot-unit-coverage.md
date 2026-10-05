@@ -44,6 +44,53 @@ CPU checks and pack admission do not establish actual identified-build playback.
 Capture owner01a10378 retains that test; Spearman art/attack owner01a10469 is
 unchanged. No art/runtime changes or held assets are adopted.
 
+## Active Spearman continuation — 5 October 2026
+
+The foot-art owner continues after each admitted slice. Own-South attack source
+is independently cleared and registered in default v1 pack0.14.0:3 new poses,
+1 exact reused idle opening, all69 preceding frames and31 other clips preserved.
+Current next source is actual `idle-south-west-0`,231×283, inherited root111,283,
+identity idle06. Its own back-facing source and idle-only attack were inspected;
+no Southwest attack keys are authored or admitted yet. Remaining Spearman
+source coverage is10 cells. Packaging, merge, deployment and actual game
+acceptance remain separately recorded.
+
+| Rank / owner | Next step | Dependency and acceptance |
+| --- | --- | --- |
+| 1 — Spearman foot art | Finish South exact-head/default release and own merge; continue ownSW/W/NW attacks in separate increments. | Approved public own-view seeds; no paid provider or private-input pixels. Preserve all old frames, scale/pivots and clips; exact default key playback, clean pack and HTTP receipts precede each own merge. |
+| 2 — Spearman foot art | Supply matched terminal defeats N/NE/E/S/SW/W/NW incrementally. | Same identity and heading; readable ordered fall/prone keys, fixed inherited root, one-shot terminal hold, preserved previous art. Existing1080ms defeat lifetime is the state-owner boundary. |
+| 3 — Foot art with permitted parent/capture01a10378 | Observe contact, reach, readability and actual playback at the exact containing source/release. | All63 original native/deployed cells remain unverified. Retained cloud sandbox/storage capability is blocked; respect access denials, without bypass or stopped Mac dependency. An identified deployment and rendered game evidence are required. |
+
+State01a103d4 retains clocks/selectors; Infantry task01a10d9c and other art/gameplay
+owners remain separate. After each review/merge the current step advances to the
+next disjoint row-1 or row-2 heading; source/package/deployment/playable evidence
+remain separately recorded.
+
+## Spearman South source attack — 5 October 2026
+
+The [South attack increment](qa-spearman-south-attack-2026-10-05.md) adds3
+own-view ready/thrust/recovery keys and reuses1 exact existing idle opening,
+880ms one-shot. Default v1 pack0.14.0 preserves all69 preceding complete
+frame records/pixels,31 other clips, pivots, body scale and world bounds.
+Three416×352 cells occupy the transparent right-column extension2048×3968
+to2560×3968; every old RGBA/mask pixel stays exact. UV width and encoded mask
+change with the wider page; source body calibration remains fixed.
+
+The independent corrected source clears804 own-seed donors (13 belt/pouch,
+791 newly authored hidden wood),633 original joint overlaps and48 exact
+original weapon/cuff ownership transfers, counted separately. Original costume
+straps remain fixed, occluded rear hand has no original pixel claim, and the
+explicit own-tail coaxial correction/separate plane depths keep the spear
+continuous. All earlier source/process/render iterations remain retained.
+
+Spearman has8/8 genuine source walks and attacksSE/NE/E/N/S. Exact remaining
+cells: attack×SW/W/NW and defeat×N/NE/E/S/SW/W/NW: **10**. Infantry/Archer
+retain21 each at inspected6ee1cce4: **52 military source gaps**. All63 original
+native/deployed cells remain unverified. Continue the own-Southwest source
+already inspected, remainingW/NW attacks, matching terminal defeats, then
+established Archer coverage. Foot art retains identified game acceptance through
+permitted parent/capture01a10378; state01a103d4 retains clocks/selectors.
+
 ## Spearman North source attack — 5 October 2026
 
 The [North attack increment](qa-spearman-north-attack-2026-10-05.md) adds three

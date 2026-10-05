@@ -161,6 +161,20 @@ records one SE walk and seven idle placeholders, with a separate registered
 ordinary capture case. Missing faithful source keys/rig and identified rendered
 playback remain owned by the delegated Infantry lane and capture owner01a10378.
 
+The [5 October Spearman South attack increment](qa-spearman-south-attack-2026-10-05.md)
+adds3 faithful own-view attack keys and reuses1 exact idle opening,880ms
+one-shot. Default v1 pack0.14.0 preserves69 prior frames/crops,31 other clips,
+pivots, body calibration and world bounds. A transparent right-column extension
+2048×3968→2560×3968 preserves all prior RGBA/mask pixels; UV width and encoded
+mask change. Independent source review clears804 explicit own-seed donors,
+633 original overlaps and48 exact original ownership transfers; these are
+separate counts. Source coverage is Spearman10, Infantry/Archer21 each at
+inspected6ee1cce4:52 military gaps. All63 original native/deployed cells remain
+unverified. Foot art owns exact-head review/clean package/HTTP/normal own merge,
+thenSW/W/NW attacks and matching defeats, plus identified game contact/reach/
+readability through permitted parent/capture01a10378. Existing cloud capability
+block remains; no bypass, denied dispatch retry or stopped Mac dependency.
+
 The [5 October Spearman North attack increment](qa-spearman-north-attack-2026-10-05.md)
 adds three own-view keys and reuses the exact idle opening in default v1
 pack0.13.0. All66 prior frames/pixels,31 other clips and body scale/pivots

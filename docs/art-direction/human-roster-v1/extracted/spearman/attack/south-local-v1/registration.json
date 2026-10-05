@@ -1,0 +1,262 @@
+{
+  "heightWorld": 1.6722564697265625,
+  "worldPerPixel": 0.0052421832906788795,
+  "baselineManifestSHA256": "56e30446c8a2c4cb679bad49668b1c73485c43e30e693c9396b654305b65174a",
+  "baselineRuntimeSHA256": "5fc22808b401d615e8dac14bdbfa342dfafef59ad01865fd5a6c9a6f9a2bc072",
+  "baselineDecodedAtlasSHA256": "abc707a125feda0d1629cf9f67b8ba5560994badb4d9f751b92d42809a6419e3",
+  "baselineMaskSHA256": "4d721612b9d43b681b237191c6c17fbf00ac171783eff80d28eb64fef688c186",
+  "identitySource": {
+    "path": "docs/art-direction/human-roster-v1/extracted/spearman/idle/07.png",
+    "sha256": "130947b20e1d083adfb17d8f940a1f0ed18f1238782d84c9afb6fa578a593c68",
+    "registeredFrameId": "idle-south-0",
+    "registeredSeedSHA256": "c0920ec34bfe51065c50953dde2f5a4a54809a56087f38836ace8b2cc3e2a837"
+  },
+  "baselineRegisteredPoseSHA256": "b5fb4f26d4824209005c1fdfdbb404e966b5e5a8d6b4824c94302bc4769bc6cb",
+  "baselineUnchangedClipsSHA256": "491bc199c0955283a334ef46b16a718330fcf00b7bbabf45d874fdff7ae05971",
+  "baselineAssetMetadataSHA256": "856e6cf9c24e1a18b46d978a6e47e632f0f6bc5da586e547500c6d77698647d6",
+  "baselinePageMetadataSHA256": "74f3ba63e0faf2a2177582a03470581dcf0f08b495d2d872eafb3c54a53fc021",
+  "canvasPx": {
+    "width": 416,
+    "height": 352
+  },
+  "groundPivotPx": {
+    "x": 212,
+    "y": 309
+  },
+  "atlasSlotsPx": [
+    [
+      2052,
+      4
+    ],
+    [
+      2052,
+      364
+    ],
+    [
+      2052,
+      724
+    ]
+  ],
+  "baselineDimensionsPx": {
+    "width": 2048,
+    "height": 3968
+  },
+  "registeredDimensionsPx": {
+    "width": 2560,
+    "height": 3968
+  },
+  "registeredPageMetadataSHA256": "7010917adbec62d9e48f48c856f2afac0c89c4e7272839fbac7a419e28953559",
+  "registeredMaskSHA256": "45d8a78af8c0d9ad3bda7626a7e6dc76a83ff9c87b5499f96efb915b6540c001",
+  "sequence": [
+    {
+      "frameId": "idle-south-0",
+      "durationMs": 120
+    },
+    {
+      "frameId": "attack-south-0",
+      "durationMs": 200
+    },
+    {
+      "frameId": "attack-south-1",
+      "durationMs": 160
+    },
+    {
+      "frameId": "attack-south-2",
+      "durationMs": 400
+    }
+  ],
+  "allNewSlotsRGBAZeroBeforeAppend": true,
+  "allNewSlotRectanglesDisjointFrom69OldFrameRects": true,
+  "allocationChange": "rightward width2048\u21922560; old complete RGBA and L-mask rectangle preserved; one512px column admits reviewed source keys, no scale/registration move",
+  "schemaVersion": 1,
+  "sourceRevision": "6ee1cce46d0ac4f4fcc4610a0d2b1a2bee928690",
+  "stateId": "attack",
+  "directionId": "south",
+  "baselinePackVersion": "0.13.0",
+  "packVersion": "0.14.0",
+  "baselineBounds": {
+    "artBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.7722564697265626,
+        0.6828955364727002
+      ]
+    },
+    "cullingBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.8722564697265625,
+        0.6828955364727002
+      ]
+    }
+  },
+  "registeredBounds": {
+    "artBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.7722564697265626,
+        0.6828955364727002
+      ]
+    },
+    "cullingBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.8722564697265625,
+        0.6828955364727002
+      ]
+    }
+  },
+  "registeredAssetMetadataSHA256": "856e6cf9c24e1a18b46d978a6e47e632f0f6bc5da586e547500c6d77698647d6",
+  "registeredDecodedAtlasSHA256": "aff12651763b4ba5744faed4a8cf659048f254a23642e37915867e8ef046f06e",
+  "poses": [
+    {
+      "file": "00-ready.png",
+      "pose": "ready",
+      "sha256": "81922e56f946761f843ee652e64d8d0111ba3d5e35342e46edc4410cb1bd702f",
+      "durationMs": 200,
+      "spearAngleDeltaDegrees": 90,
+      "spearDeltaPx": [
+        3,
+        -11
+      ],
+      "upperBodyDeltaPx": [
+        0,
+        0
+      ]
+    },
+    {
+      "file": "01-thrust.png",
+      "pose": "thrust",
+      "sha256": "0fda73c21e393e0e212165a0ef58fe527b138b80885d626abdda924c2ea8dec9",
+      "durationMs": 160,
+      "spearAngleDeltaDegrees": 90,
+      "spearDeltaPx": [
+        11,
+        -18
+      ],
+      "upperBodyDeltaPx": [
+        4,
+        -2
+      ]
+    },
+    {
+      "file": "02-recovery.png",
+      "pose": "recovery",
+      "sha256": "e9ba13f888e64788a6786f314f2fd796395b0344fbb7bf8808d8390450d4fbe4",
+      "durationMs": 400,
+      "spearAngleDeltaDegrees": 4,
+      "spearDeltaPx": [
+        1,
+        0
+      ],
+      "upperBodyDeltaPx": [
+        1,
+        -1
+      ]
+    }
+  ],
+  "reusedPriorRegisteredPoses": 69,
+  "reusedOpeningPoses": 1,
+  "newlyAuthoredPoses": 3,
+  "registeredTotalPoses": 72,
+  "loop": false,
+  "durationMs": 880,
+  "mirroredPoses": 0,
+  "borrowedDirectionPoses": 0,
+  "generationProviderCalls": 0,
+  "paidJobs": 0,
+  "sourceKind": "same approved public South2D seed; fixed camera, exact own split arm/weapon ownership, authored coaxial tail correction and hidden wood; no3D master inferred",
+  "reconstruction": {
+    "sourceSHA256": "c0920ec34bfe51065c50953dde2f5a4a54809a56087f38836ace8b2cc3e2a837",
+    "restoredBodyPixels": 13,
+    "bodyMaterialCounts": {
+      "belt-pouch": 13
+    },
+    "authoredHiddenWoodPixels": 791,
+    "hiddenWoodMaterialCounts": {
+      "newly authored own-wood hidden shaft": 616,
+      "newly authored own-wood hidden shaft AA edge": 175
+    },
+    "authoredHiddenArmPixels": 0,
+    "authoredHiddenRearHandPixels": 0,
+    "totalDonorPixels": 804,
+    "existingJointOverlapPixels": 633,
+    "jointOverlapCounts": {
+      "near": 351,
+      "far": 282
+    },
+    "originalOwnershipPixels": 5455,
+    "fixedOriginalStrapPixels": 807,
+    "exactOriginalVisibleReconstruction": true,
+    "sourceOwnershipTransferredPixels": 48,
+    "sourceOwnershipTransfers": {
+      "weapon-upper": 2,
+      "front-fore": 46
+    },
+    "outsideSources": 0,
+    "method": "exact own-South original masks; fixed costume straps retained; counted bounded own-body donors and independently authored hidden own-wood bridge; no original rear-hand claim"
+  },
+  "processReceiptSHA256": {
+    "camera-scale-check.json": "4c164347346dd08d8eff462bdad1454375145f288597cbde9d6be053424e5000",
+    "geometry-check.json": "39317340565186bd84ae26606743f23474dcb3f4428c580cbf02969547cd21ac",
+    "donor-coordinate-map.json": "7369f376741a1f31bd3e317a7cc964d594d5dc4fb43f51eddce535c30fafda81",
+    "rig-input.json": "0a421c38cb78c785b3f351ba5cbaa880817c2f6d0baae3e74c358720e61635af",
+    "render_arm_study.py": "e5e69bdd1e47070b8efebf90190fc54b1145e0d9a1da92ca5a9182cdec6e3f9d",
+    "prepare_own_south_masks.py": "d9b50447dec5c5e29cb9d29052951c486a6cdeab48867511c0639e5f04b5603d",
+    "normalization-receipt.json": "947520959e440f921f041386c28aa8c884719504739f24e2dc0b737a5ed7f5fe",
+    "applied-depth-correction.json": "e1b5fdd2da0404f7ea689726acc890ef1fcf5555513e558cb3b29e9c178fe731",
+    "applied-source-ownership-transfers.json": "d375bf89e56ff8696e2f6e5b462a0bd2e83c3499a35be404963a0cd26c62becf",
+    "ownership-correction-snapshot.json": "643f0957fc074b138dbe3c308b22748f8358afd99b425a97c3ce61a2e0dc7a76"
+  },
+  "sourceReview": "independent-source-review-cleared-exact-corrected-09-and-normalized-10",
+  "ordinaryGameReview": "pending-identified-game-capture",
+  "packProvenanceNote": "South attack reuses exact own idle opening and three newly authored free CPU source-UV ready/thrust/recovery keys,880ms one-shot. All69 prior frames/31 other clips/pivots/body calibration remain exact. Three formerly empty416x352 cells admit the keys in a transparent right-column page extension2048x3968 to2560x3968, preserving every prior atlas/mask pixel. Explicit804 exact own-South donor pixels and633 original joint overlap pixels; no provider/paid jobs, other-facing or private pixels. Native appearance pending. Exact48 original weapon/cuff ownership transfers; authored coaxial tail rest alignment and separate weapon plane depths preserve screen scale/root.",
+  "packReadme": "# Human Spearman preview\n\nDefault v1 pack0.14.0 preserves all69 prior poses and31 other clips and adds three own-South ready/thrust/recovery keys, reusing one exact existing idle opening for an880ms one-shot. All8 source walks and SE/NE/E/N attacks remain. The72 frame records contain32 originals,28 earlier authored walks and12 own-facing attack poses (NE/E/N/S).\n\nThe page extends transparently from2048x3968 to2560x3968; the exact old RGBA/mask prefix remains. Three proven empty416x352 slots contain this slice; every prior decoded RGBA byte outside those slots, every old crop/registration/pivot and body calibration remain exact. Conservative rooted bounds admit the weapon. Explicit own-seed donors:804; original joint overlaps:633, counted separately. All source scripts/scenes/raw trials and normalized exports remain retained. No paid/provider jobs, private source, mirrored/borrowed facing or held identity.\n\nSource gaps at inspected 6ee1cce4 plus this slice: Spearman10 (attack SW/W/NW; defeat N/NE/E/S/SW/W/NW), Infantry21, Archer21:52 military source cells. All63 original native/deployed cells remain unverified. The full builder replays seven directional walk stages then NE/E/N/S attack stages. Last-stage repeat: append-spearman-public-seed-action.py south.\n\nThe exact48 original moving wood/cuff fringe samples transfer to the weapon/forearm with no alpha deletion or added donors. Authored fixed coaxial tail alignment and upper/tail depths -0.04/-0.045 remove source-axis and coplanar render defects; source UVs and camera/body scale remain fixed.\n",
+  "sourceReviewReceiptSHA256": "7f576593d68d488659bec571f76fd9409686e66f7e6144b1dc0d148347b0df54",
+  "independentProcessReceiptSHA256": {
+    "independent-geometry-check.json": "ea227d346c2d85a6f63b27a3fa1bb98235b203e68ef86a9584fce67fe2a4d076",
+    "independent-source-export-check.json": "bdd4010dacab9c4b513e63e7e957e371ca7537e919a117931c987a191d48ef72"
+  },
+  "sourceOwnershipTransferredPixels": 48,
+  "weaponTailRestTransform": {
+    "kind": "fixed authored coaxial tail correction before every common weapon pose",
+    "sourcePivotPx": [
+      202.2277667984191,
+      190
+    ],
+    "targetPivotPx": [
+      174.7916376306621,
+      190
+    ],
+    "rotationDegrees": -0.3961506718501293,
+    "scale": 1,
+    "sourceUVUnchanged": true,
+    "reason": "Two approved visible shaft runs are nearly parallel but offset27.436129px at source y190. This explicit own-tail rest transform aligns their axes; it is not untouched full-shaft geometry or per-frame fitting."
+  },
+  "appliedWeaponDepths": {
+    "upper": -0.04,
+    "tail": -0.045
+  },
+  "sourceReviewReportSHA256": "38cd9e17dc5fbe3e856f76d693d7508a8a19cb775d73471c8b579366eaea1ab2",
+  "sourceReviewFinalReceiptSHA256": "ca1e5598baf1d986404de8e83762a90cb8bd5f9caf55efa95e971c17831a9a8a"
+}

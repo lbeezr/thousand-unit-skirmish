@@ -5,8 +5,8 @@ from PIL import Image
 import copy, hashlib, io, json, subprocess, sys
 from foot_sprite_world_bounds import placed_sprite_bounds
 
-if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in ['north-east', 'east', 'north']):
-    raise ValueError('Expected a reviewed north-east, east or north attack stage')
+if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in ['north-east', 'east', 'north', 'south']):
+    raise ValueError('Expected a reviewed north-east, east, north or south attack stage')
 direction = sys.argv[1] if len(sys.argv) == 2 else 'north-east'
 root = Path(__file__).resolve().parents[1]
 source = root / f'docs/art-direction/human-roster-v1/extracted/spearman/attack/{direction}-local-v1'
@@ -30,7 +30,8 @@ if receipt['groundPivotPx'] != {'x': idle['groundPivotPx']['x'] + 80, 'y': idle[
     raise ValueError('Reviewed action root changed')
 slots = {'north-east': [[4, 3204], [428, 3204], [852, 3204]],
          'east': [[4, 3588], [428, 3588], [852, 3588]],
-         'north': [[1316, 2772], [1316, 3204], [1316, 3588]]}
+         'north': [[1316, 2772], [1316, 3204], [1316, 3588]],
+         'south': [[2052, 4], [2052, 364], [2052, 724]]}
 if receipt['atlasSlotsPx'] != slots[direction]:
     raise ValueError('Reviewed disjoint action slots changed')
 already = [f for f in asset['frames'] if f['id'] in own_ids]
@@ -135,8 +136,8 @@ else:
     mask_bytes = None
     new_size = (registered_dimensions['width'], registered_dimensions['height'])
     if new_size != atlas.size:
-        if new_size[0] != atlas.width or new_size[1] <= atlas.height:
-            raise ValueError('Only reviewed downward transparent page extension is supported')
+        if new_size[0] < atlas.width or new_size[1] < atlas.height or max(new_size) > 4096:
+            raise ValueError('Only reviewed transparent page extension within 4096 pixels is supported')
         grown = Image.new('RGBA', new_size)
         grown.paste(atlas, (0, 0))
         if grown.crop((0, 0, atlas.width, atlas.height)).tobytes() != atlas.tobytes():
