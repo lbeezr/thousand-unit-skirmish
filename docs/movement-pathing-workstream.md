@@ -1054,6 +1054,91 @@ rendered acceptance or consumer-GPU capacity. Caller [PR444](https://github.com/
 owns the separate real-command parked-endpoint audit; crowd retains final
 approach/yield work and original arrival assertions/deadlines stay intact.
 
+### U5 next queued leg and active construction parking — 5 October 2026
+
+The construction caller measured Worker 68 parked at `(18.5,1.5)` on tick 1571,
+631 ticks before actor 120's accepted queued return became current on tick 2202.
+The current-only query correctly admitted that future point before activation;
+its 18 regressions and the caller's cost, queue, exact-goal and idle-pose controls
+passed. This is a separate final-parking policy gap. The caller supplied the
+real-command chronology at `6ee1cce4`, with simulation bytes matching `487a54fa31d`;
+the primitive tests below do not reproduce that native journey.
+
+Core owns the separate opt-in `createNextQueuedMilitaryEndpointClaims` and
+`decideActiveConstructionParking` exports in the same endpoint module, its
+[registered primitive regressions](../scripts/military-next-leg-claims-journeys.mjs),
+and this subsection. Construction `01a10933-e913` owns default host consumption,
+active completion/egress intent, existing escape/retry behavior, the real-command
+regression, packaging and rendered acceptance. Crowd `01a10933-c2b0` keeps its
+disjoint arbitration/forward-progress work. The existing current-only export
+and productive work/cost admission stay unchanged.
+
+```js
+const scope = Object.freeze({ tick: tickNumber, navigationRevision, epoch: movePlanningEpoch });
+const next = createNextQueuedMilitaryEndpointClaims({
+  units, width: MAP_WIDTH, height: MAP_HEIGHT, maxUnits: MAX_UNITS,
+  maxQueuedWaypoints: MAX_QUEUED_WAYPOINTS, isWalkable, scope
+});
+try {
+  const nextStatus = next.check({ scope, team: worker.team,
+    position: parkingPose, radius: .18 }).status;
+  const decision = decideActiveConstructionParking({
+    activeConstruction: hasActiveCompletionIntent,
+    currentStatus, nextStatus, escapeAvailable: hasIndependentlyAdmittedOwnEscape
+  });
+  // park: finish/clear intent only after existing physical/current admissions.
+  // escape: keep active intent and execute the Worker's own safe continuation.
+  // wait: retain active completion/egress intent and existing bounded retry.
+  // inactive: preserve the existing pose; this policy grants no displacement.
+} finally { next.close(); }
+```
+
+One roster census reads only `queuedWaypoints[0]` from eligible living ordinary
+land military, never a route or later leg; queue length is bounded by the host's
+existing maximum of eight. Same-team claims use authored radii and the existing
+activation-time fractional projection at this navigation revision. Older
+accepted queued-point revisions are valid; generation, request and original
+goal remain unchanged. AttackMove heads and nonordinary current intent are
+outside this narrow policy. Statically covered heads increment
+`relocationPending` without guessing the host's replacement endpoint. Queries
+return `{status,visited}` with `available`, `claimed` or `deferred`, visiting at
+most nine buckets and 64 claims. Scalar diagnostics count census/head reads,
+claims, static probes, pending relocation, queries, bucket/claim visits and
+deferrals. No new order, checkpoint, route grant, global registry or actor write.
+
+The view belongs to one synchronous command/construction operation in which
+military intent, roster and navigation stay stable. Pass the identical newly
+frozen scope to each query and close in `finally`; rebuild after another command,
+phase, queue/intent mutation, navigation revision, reset or cold restore. A
+different scope, closed view, roster-length change, incomplete input or changed
+encountered actor/head/point defers. These local guards do **not** detect a new
+claim outside the queried buckets if a caller incorrectly reuses the old scope;
+the view is an operation snapshot, not a live reservation service.
+
+Use the view only to choose an active builder's final parking pose. It must not
+veto productive work or traversal across future claims. Prefer a pose admitted
+by both current and next-leg queries and all existing physical guards. If all
+preferred poses are claimed/deferred, continue work at its normal rate/cost and
+keep active completion/egress intent until the Worker can take its own
+independently admitted safe escape or existing bounded retry. Do not clear the
+last site into a claimed idle pose, relocate the military goal, push an idle or
+Stop/Hold actor, or reserve every future goal. `escapeAvailable` is proof supplied
+by the caller's existing movement admission; the decision helper cannot grant
+motion. A physically sealed site remains an active wait; no unconditional
+finite-escape guarantee is claimed.
+
+The 45 primitive regressions plus the unchanged 18 current-query controls cover
+both seats, head-only reads, fractional activation, cancellation/rebuild at the
+same navigation revision, identity/scope/close deferral, the visit limit and all
+small/160/256/planned320 index shapes. An all-preferred-poses-claimed control
+keeps productive work admission available and selects active wait/own escape.
+This source contract needs independent review before caller adoption. Default
+integration must pass the retained construction-queued-first-wall journey,
+exact goals/queue/costs, idle-pose immobility, productive completion, both-seat
+cold recovery and blocked/released escape controls. Those native, served and
+normal rendered outcomes remain with the construction owner; these primitive
+checks establish neither admitted320 play nor consumer-GPU capacity.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
