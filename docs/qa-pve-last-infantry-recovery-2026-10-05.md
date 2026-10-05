@@ -79,12 +79,21 @@ both whole replays repeat exactly. Both short forks remain ongoing.
 These tests are imported by the existing registered Worker recovery check;
 they do not replace, weaken or change the full Tiny3600second completion tests.
 Initial focused execution passed9/9 on the candidate over main `dbc83db3`.
-Exact final-head checks and independent review are retained in the owning PR
-and evidence archive; a scoped pass is not a full CPU-suite pass.
+The independently reviewed final head `fb73e908` passed122focused checks and
+925syntax checks, plus import/type/docs checks; [PR428](https://github.com/lbeezr/thousand-unit-skirmish/pull/428#issuecomment-5987657009)
+merged `67295aef` with an identical tree and nine postmerge recovery passes.
+The [sealed124member evidence](https://raw.githubusercontent.com/lbeezr/thousand-unit-skirmish/642714d2ea40e931de90b1511154cee28027d6ef/evidence/pve-last-infantry-recovery-67295aef.zip)
+retains exact source, original packets, matched controls, independent review and
+validation; a scoped pass is not a full CPU-suite pass.
 
-Next: AI `01a10297` owns unchanged full-match completion diagnosis using the
-retained source packets and new qualification evidence. CI `01a10378` retains
-normal CPU qualification. Movement `01a107ba` retains route/clearance work;
+Next: AI `01a10297` owns unchanged full-match completion diagnosis. The parent
+reports CI `01a10378` is running fresh immutable full qualification containing
+this fix and separate fixture corrections, with complete failure evidence;
+the exact frozen revision/result receipt is pending here. Do not duplicate its
+full Tiny match run. Resume diagnosis from any resulting failure packet, using
+checkpoint, accepted ledger and filtered views before bounded controls. Paid
+Infantry recovery succeeds; full-match completion remains unestablished.
+Movement `01a107ba` retains route/clearance work;
 no movement dependency or cause was established by this fix. Ordinary served
 Tiny recovery acceptance remains with AI and shared staging/capture owners;
 deployed revision and rendered observation are unverified here. Medium stays
