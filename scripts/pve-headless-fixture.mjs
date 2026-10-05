@@ -72,6 +72,7 @@ export const replay = {
   },
   observe(team) { return roomPayload(team); },
   checkpoint() { return captureMatchCheckpoint(1, 1); },
+  validateCheckpoint(snapshot) { return validateMatchCheckpoint(snapshot); },
   visionCacheMetrics() { return visionCoverageBySourceCell.metrics(); },
   restore(snapshot) { restoreMatchCheckpoint(snapshot); },
   dispose() { clearInterval(heartbeatTimer); if (pveOpponentTimer) clearInterval(pveOpponentTimer); }

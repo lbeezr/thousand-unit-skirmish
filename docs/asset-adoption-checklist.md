@@ -32,6 +32,46 @@ a transfer gap. These criteria do not prevent incremental scoped merges.
 
 ## Exact deployment evidence
 
+### Continuing delivery owners — 5 October 2026
+
+The coordinating parent reports eleven workstreams started or resumed between
+21:49 and 21:53 UTC. This is an ownership checkpoint in the existing aggregate
+delivery ledger, not eleven verified outputs or a new roadmap. The latest
+inspected main is `1e75f6a8`: [PR490](https://github.com/lbeezr/thousand-unit-skirmish/pull/490)
+validates existing flora lifecycle bindings, [PR489](https://github.com/lbeezr/thousand-unit-skirmish/pull/489)
+adds Spearman North source keys, [PR488](https://github.com/lbeezr/thousand-unit-skirmish/pull/488)
+repairs fixtures, [PR487](https://github.com/lbeezr/thousand-unit-skirmish/pull/487)
+is a partial crowd correction, and [PR485](https://github.com/lbeezr/thousand-unit-skirmish/pull/485)
+qualifies existing Infantry through tests. These merges do not close their
+remaining delivery or playable acceptance. Unless a row identifies executed
+evidence, a resumed assignment records ownership only; waiting is not progress.
+Source, clean package, deployed/served identity and actual game observation
+remain separate evidence. The dated deployment receipts below stay historical.
+
+| Continuing workstream / retained owner | Executed evidence and present dependency | Concrete next step and acceptance |
+| --- | --- | --- |
+| [Movement](movement-pathing-workstream.md) `01a107ba`, with crowd `01a10933` | PR487's narrowed selector and [ordinary transverse-rejoin evidence](qa-crowd-transverse-rejoin-2026-10-05.md) are integrated; native group completion and occupied-endpoint ownership remain open. The resumed lane has no new completed journey recorded here. | Core retains shared admissions/repairs and endpoint policy; crowd retains its selector/body boundary. Replay the retained failing paid-wall/queued group with unchanged inputs and deadlines, agree any endpoint hook with core, and retain actual goal, contact, recovery and identified ordinary-game evidence. A parked experimental controller is unqualified. |
+| [Spearman](human-foot-unit-coverage.md) `01a10469` | [North attack source](qa-spearman-north-attack-2026-10-05.md) is merged in PR489; other attacks/defeats and identified playback remain incomplete. Resumption supplies no new accepted frames. | Produce/review the next documented own-South attack increment from authorized source, preserve existing frames/calibration, then verify default pack, clean HTTP/release, containing deployment and ordinary reach/contact/readability. Clocks/selectors retain their separate owner. |
+| [Default Infantry](qa-default-infantry-walk-2026-10-05.md) `01a10d9c` | PR485 is tests-only: the actual default has one genuine SE walk and seven idle placeholders, with 21 action source gaps. One image-generation attempt failed review; no rerun is approved. | Assess preserved approved source/rig feasibility and the rejected attempt without another generation. Request the exact missing authorization if generation is needed; qualified capture must identify the actual actor/pack/source frames. Tests or an idle hold cannot count as a new walk. |
+| [Building states](building-atlas-production-plan.md) `01a10c40` | Existing Complete/lifecycle gaps remain recorded in this ledger and the production plan. New building-art publication is **Forbidden**; resumed ownership does not release it. | Audit available approved states and preserve fallback; prepare only authorized private source/contract work while the publication decision is unresolved. Any later admitted lifecycle slice needs default state use, release/deployment identity and paid construction/damage/repair/removal observation. |
+| [Flora](regional-environment-kits.md), [terrain backlog](#terrain-workstream-backlog) `01a10e0d-a9de-718e-b403-f59a7d7af02b` | PR490 integrates four-state fixed-view binding validation and approved individual fallback; its [current flora matrix](tree-variety-pilot.md#current-flora-delivery-ownership--5-october-2026) retains the next berry slice. This is executed source work, not new Oak geometry or current-game appearance. The private Mac Oak GLB has not been transferred to the cloud; Mac work is stopped. | Follow that matrix's berry lifecycle boundary using authorized cloud sources; retain its release/deployment/depletion/reset/contact acceptance. Use a supported private Oak transfer only when available. No Mac dependency or claim that the missing GLB is present. |
+| [Wildlife](wildlife-bellweather-sheep.md) `01a10d83` | Public default Sheep/claim/herd/harvest behavior remains; private GLB transfer is pending. Prior private-source review is not cloud receipt, public release or ordinary playback proof. | Verify the supported private transfer and exact source before private joint/deformation work; retain the public fallback and stock/identity contracts. Default action admission and both-seat claim/herd/carcass/Harvest observation require their own authorized package and identified build. |
+| [Farm renewal](farm-finite-planting.md), [economy workstream](economy-content-workstream.md) `01a10e0d-d8e7-70fa-ae57-6c301bd2c023` | Finite stock, exhaustion and replacement planting are existing contracts; a resumed assignment supplies no new renewal run. | Exercise the documented zero-stock owner renewal through actual controls, payment, fresh building/source identity, no stale job reuse and cold recovery; fix only a reproduced in-scope fault. Preserve finite stock, refunds and the separate authored lifecycle art. |
+| [Textured walls](coastal-barrier-art-workstream.md) `01a10d89` | The Meshy wall pilot has approval for 30 credits and reference upload, but device login is pending. The simplified wall look remains held. No new provider job, downloaded model or accepted wall is evidenced. | Complete supported login before the exact approved pilot; keep private packets and held look unchanged. Review bounded ports/identity and actual texture treatment before any authorized default integration; require clean package/HTTP, identified deployment and paid wall/gate observation separately. |
+| [Architecture](architecture.md#checkpoint-validator-contract-preparation--5-october-2026), this boundary owner | PR481 is integrated. The current lane executed an input/order audit and prepared tests of the actual validator/restore consumer; reviewed contract integration and server/simulation/XL allocation remain pending. No host extraction is claimed. | Review/integrate the disjoint contract preparation, agree the envelope/preflight limits, map/hash/launch adapters and write scope with affected owners, then extract only that responsibility with exact parity, private HTTP denial and source/package/deployment evidence. Continue with the next documented disjoint seam after each reviewed slice. |
+| [Consumer delivery/tests](test-reliability-workstream.md), [qualified cloud capture](renderer-qualification.md) `01a1085f` | PR488 repairs consumer fixtures; PR485 qualifies actual default Infantry identity in tests. Neither establishes new art, full-suite success or ordinary-game acceptance. No new resumed-lane result is recorded here. | Keep actual consumer bindings and inherited failures visible; run the next bounded ordinary feature batch on a clean identified pack, preserve positive/negative controls and report actual served actor/art/state. Coordinate a concrete hook overlap with its implementation owner, without weakening assertions or duplicating movement ownership. |
+| Public staging `01a10e00`, [existing release/capture guide](renderer-qualification.md) | Assigned/resumed; this checkpoint has no new provider or served-identity receipt. Earlier SUCCESS deployments below are dated observations. | Inspect the current public staging rollout through existing authorization, identify source and served release separately, verify required runtime bytes and then support the owner-run ordinary batch. Do not infer live deployment from PR489 or mutate credentials/security/configuration to obtain proof. |
+
+Private publication/transfer holds remain scoped and unchanged: building art is
+Forbidden; Sheep GLB transfer and cloud Oak availability are unresolved; the
+simplified wall treatment is held; the failed Infantry generation has no approved
+rerun. The wall pilot's bounded approval grants no broader paid-job authority.
+Held/rejected [PR25](https://github.com/lbeezr/thousand-unit-skirmish/pull/25),
+[PR230](https://github.com/lbeezr/thousand-unit-skirmish/pull/230) and
+[PR241](https://github.com/lbeezr/thousand-unit-skirmish/pull/241) remain unchanged.
+This documentary reconciliation publishes no private source or new art and
+authorizes no Mac execution, provider spend, deployment or access change.
+
 ### Historical inspection — 3 October 2026
 
 Railway read-only `environment-status` + `list-deployments`, inspected about

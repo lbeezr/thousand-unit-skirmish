@@ -845,12 +845,68 @@ and all unrelated host bytes; it does not incorporate an error-handling change.
 | Checkpoint / next scoped slice | Input and owning boundary | Semantic acceptance and retirement limit |
 | --- | --- | --- |
 | Server caller slice [PR404](https://github.com/lbeezr/thousand-unit-skirmish/pull/404): the three `server.mjs` lifecycle, map-audio validator and formation literals | Fresh-main integration after PR395; exact scope retains construction/crowd and XL checkpoint imports/bodies. Canonical entries are `src/rules/base-lifecycle.mjs`, `src/world/map-audio-reference.mjs` and `src/simulation/movement/formation-assignment.mjs`. | Four identical bindings and every other host byte; actual consumer/native, types/imports, clean pack and packed HTTP/private-path checks plus implemented-head independent review belong to PR404. Zero tracked-runtime compatibility callers; all eleven surfaces and every existing fixture/admission remain. |
-| Checkpoint validation seam in `server.mjs`; affected `economy-server-fixture.mjs` binding only if extraction replaces its existing slice | Server/simulation, building/action and XL map owners agree `validateMatchCheckpoint`'s actual inputs, validation/error order, route-preflight hook and return contract before code moves. Preserve [PR403](https://github.com/lbeezr/thousand-unit-skirmish/pull/403)'s capture/validation consumers and [PR407](https://github.com/lbeezr/thousand-unit-skirmish/pull/407)'s bounded file/parser contracts; validation, version migration and atomic storage remain separate responsibilities. | Existing `economy-checkpoint.test.mjs`, `fog-checkpoint-boundary.test.mjs`, `match-mode-checkpoint.test.mjs` and `checkpoint-storage-recovery-scenario.mjs`, preserving malformed-input rejection, resources, visibility, version handling and cold recovery. This seam stays outside the authoring slice and active crowd/focused-Attack host hooks. No host-state catch-all parameter or behavior rewrite. |
+| Checkpoint validation seam in `server.mjs`; contract preparation against `6ee1cce4` | Architecture owns the executable contract preparation below; server/simulation, building/action and XL owners must agree the bounded extraction before host edits. Preserve [PR403](https://github.com/lbeezr/thousand-unit-skirmish/pull/403)'s capture/validation consumers and [PR407](https://github.com/lbeezr/thousand-unit-skirmish/pull/407)'s bounded file/parser contracts. The host, movement and preflight bodies are unchanged in this preparation. | Existing economy/match-mode/fog/checkpoint recovery consumers plus [checkpoint-validator contracts](../scripts/checkpoint-validator-contract.test.mjs) exercise the actual authority body and restore path. Next: confirm the envelope/preflight interface and write allocation described below, then independently review a small extraction. Preparation is not an extracted runtime, package/deployment proof or ordinary-game acceptance. |
 | Map Studio form snapshot controller [PR406](https://github.com/lbeezr/thousand-unit-skirmish/pull/406): `src/authoring/map-studio-form-state.mjs` with the two real draft callers in `src/main.js` | First small implementation of this row. Explicit `createMapStudioFormState({ root, document }) → { capture, restore }` owns only live dialog values; no host-state catch-all, storage, timer, rendering or simulation dependencies. The architecture/authoring owner retains the controller and source/browser acceptance. | Preserve old function bodies apart from closure identifiers/indentation, all draft JSON/version/storage/gesture/import/export/publish behavior and every prior brush case. Fixture uses production initialization; focused form/draft cases, import/privacy guard and exact served/packed bytes establish the source milestone. No new shim and all eleven existing surfaces retained. Normal-sandbox rendered draft acceptance remains incomplete. |
 | Versioned Map Studio draft storage/preflight [PR412](https://github.com/lbeezr/thousand-unit-skirmish/pull/412): `src/authoring/map-studio-draft-store.mjs` and real `main.js` callers | Explicit deferred storage getter, key identity inputs and cached recovery references. Preserve version 1 and old rejection/error ordering; no new file budget, migration, storage service or server checkpoint dependency. Architecture/authoring retains source and rendered recovery ownership. | Current registered brush/form cases plus malformed/old/foreign drafts, interruption/cancel/restore reread, storage failures, real portable import/export parity and native saved-map restart. Preserve every old host byte outside the bounded extraction/calls, all eleven compatibility surfaces and exact public/private packed HTTP policy. |
 | Scenario history coordination [PR415](https://github.com/lbeezr/thousand-unit-skirmish/pull/415): existing `src/authoring/scenario-authoring.mjs` and actual record/Undo/Redo host callers | Architecture/authoring owns the applying flag and operation ordering in the canonical module. DOM/state assignments remain explicit host callbacks; the existing bounded history instance and all old resets/callers remain. The new export is canonical-only; the legacy namespace retains its two original bindings. | Preserve active-state gating, availability updates, reentrant suppression, redo branching, exhausted restoration, error propagation/suppression and draft-save order. Direct contracts and real template controls exercise selections, no match mutation and recovery/import resets; actual packed bytes cover both old/canonical paths. No new admission, alias retirement, source-policy/registry edits or unrelated host changes. |
 | Remaining Map Studio capture/debounce/recovery presentation and publish seam in `src/main.js`; existing `map-studio-draft-scenario.mjs` consumer | Architecture/authoring retains the concrete lifecycle/publish contract and rendered recovery evidence. Use current form, store and history APIs; preserve ordered subpanel callbacks. Keep checkpoint parsing/XL file/route budgets with their owner, crowd/focused Attack/selected-route movement with their owners and match-ending actions with theirs. Avoid a broad editor context or unused formatter extraction. | Next evidence: real draft edit/save/reopen/publish on an identified containing cloud release when normal-sandbox capability is available. Source/CPU results do not close that recorded startup gap. Further source work needs an independently useful responsibility and real caller contract; current modal behavior and product decisions are not silently changed to manufacture another slice. |
 | Root tool commands and test/fixture homes: current `package.json`, workflows and `docs/testing.md` consumers | Testing-strategy/command owners own registration migration, discovery and supported commands. Authoring/assets/scenario/performance owners first select an actual workload/API boundary from the purpose-based stage above. | Preserve every existing case, fixed input/seed, coverage floor, command and release consumer; root entries retire only after external/fixture/identified-release obligations clear. Those registries and broad tool/test moves are outside this lane's current write scope. |
+
+### Checkpoint validator contract preparation — 5 October 2026
+
+Architecture owns this continuing boundary with server/simulation and XL as the
+affected interface owners. At main `6ee1cce4`, `validateMatchCheckpoint` has 514
+physical lines. It validates an already parsed snapshot synchronously; it does
+not read a file, migrate a schema, activate a map or assign running match state.
+The ordinary restore caller validates first, applies its launch/catalog checks
+and any existing Sheep content migration, validates again when that migration
+applies, then performs activation and state restoration. Keep those operations
+and atomic checkpoint storage outside validation.
+
+The ordered envelope is part of the supported rejection contract: object shape;
+XL aggregate route preflight; XL JSON/state preflight; schema; economy/profile and
+resource banks; faction; rules version; sequence; save time; match identity;
+canonical map validation; saved match-mode identity and launch compatibility;
+effective mode projection; elevation/rules compatibility; canonical map checksum;
+simulation state. State validation then proceeds through pregame, forest/unit,
+economy/production, building/resource, objective/event/result, exploration/session,
+reference/population and Bannerfall checks in its existing order. Do not reorder
+checks or normalize malformed input to obtain a cleaner error.
+
+Both preflights retain their existing scalar limits and execute before schema or
+map admission: routes receive `MAX_UNITS` and `MAX_RESOURCE_NODES`; state receives
+those limits plus `MAX_BUILDINGS`. They preserve their error identity/message/code,
+do not alter routes and leave the existing <=256 policy untouched. Ordinary 320
+admission stays closed. Route budget, JSON byte/parser budget, map validation and
+live movement remain distinct contracts with their existing owners.
+
+The return is exactly `{ definition: canonicalDefinition, state, explored,
+savedMatchMode }`: normalized canonical authored map, the original saved-state
+object by identity, two newly decoded Node Buffers and normalized mode identity.
+Validation uses an effective map internally but returns the canonical authored
+one. Input serialization and the live match remain unchanged. Restore's separate
+shipped-map veto is not moved into this return contract.
+
+The first proposed extraction is only that envelope/preflight responsibility,
+before domain-state validation. Its explicit inputs would be the existing
+schema/rules and three record limits, the existing map-validation/hash adapters,
+and launch mode/Practice values. Import current pure economy/mode definitions and
+the private preflights directly; no host-state catch-all, catalog, persistence,
+movement writer or public HTTP admission. Agree whether limits/launch values are
+factory inputs or per-call values with their owning callers before implementation.
+Full-state validation remains host-owned until its separate domain interfaces
+are established; copying all 514 lines behind dozens of injected bindings is
+not the selected first step.
+
+The existing headless authority fixture adds only a direct validator observation;
+the registered economy checkpoint suite imports the focused contracts without
+renaming tests or changing CI/package registration. Authored/Skirmish return and
+restore parity, two-fault first-error cases, XL preflight codes and the separate
+catalog veto are executable through the actual production functions. Existing
+fog/route/JSON/match-mode and native cold-recovery checks remain required for a
+later runtime extraction. No source extraction, deployed revision or playable
+acceptance is claimed by preparing these tests. The pending owner agreement is
+the next action, not a completed migration.
 
 ### Coupling and size ratchets
 
