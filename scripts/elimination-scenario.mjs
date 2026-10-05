@@ -113,12 +113,12 @@ function createClient(port, sessionToken = null) {
     });
   }
 
-  function waitForState(predicate, timeoutMs = SCENARIO_TIMEOUT_MS) {
+  function waitForState(predicate, timeoutMs = SCENARIO_TIMEOUT_MS, description = 'an authoritative state') {
     if (latestState && predicate(latestState)) return Promise.resolve(latestState);
     return new Promise((resolve, reject) => {
       const waiter = { predicate, resolve, reject, timeout: setTimeout(() => {
         stateWaiters.splice(stateWaiters.indexOf(waiter), 1);
-        reject(new Error('Timed out waiting for an authoritative state.'));
+        reject(new Error(`Timed out waiting for ${description}.`));
       }, timeoutMs) };
       stateWaiters.push(waiter);
     });
@@ -210,8 +210,13 @@ try {
     nodeId: FOOD_NODE_ID, clientOrderToken: 30 });
   await gatherNotice;
   const gatheredFood = await azure.waitForState((state) => state.mapId === map.id
-    && state.food[0] === FOOD_NODE_STOCK
-    && state.resourceNodes.find((node) => node.id === FOOD_NODE_ID)?.stock === 0);
+    && state.resourceNodes.find((node) => node.id === FOOD_NODE_ID)?.stock === 0
+    && azureWorkers.every((worker) => state.units.find((unit) => unit[0] === worker[0])?.[6] === 0),
+  SCENARIO_TIMEOUT_MS, 'Azure to empty the food node and deliver every Worker cargo');
+  // Fractional harvesting/deposits can leave a binary rounding residue. Require
+  // completed delivery and conservation, then keep the actual bank exact below.
+  assert.ok(Math.abs(gatheredFood.food[0] - FOOD_NODE_STOCK) < 1e-9,
+    `all ${FOOD_NODE_STOCK} Food must be conserved in Azure's bank; received ${gatheredFood.food[0]}`);
   assert.equal(gatheredFood.food[1], 0,
     'only the commanded team should gain food before the elimination match');
 
@@ -246,7 +251,9 @@ try {
   send(azure.socket, { type: 'move', ids: [terminalUnitId], x: 0, z: 0, clientOrderToken: 31 });
   await rejectedOrder;
 
-  assert.equal(states[0].food[0], FOOD_NODE_STOCK,
+  assert.equal(states[0].food[0], gatheredFood.food[0],
+    'combat must preserve the entire observed Food bank');
+  assert.ok(states[0].food[0] + 1e-9 >= FOOD_NODE_STOCK,
     'the winner should still have enough food for a worker order');
   const rejectedProductionOrder = azure.waitForMessage((message) => message.type === 'notice'
     && message.clientOrderToken === 32
@@ -276,7 +283,7 @@ try {
   assert.equal(resumedWelcome.player.resumed, true);
   assert.equal(resumedWelcome.state.winner, 0);
   assert.equal(resumedWelcome.state.winnerReason, 'elimination');
-  assert.equal(resumedWelcome.state.food[0], FOOD_NODE_STOCK,
+  assert.equal(resumedWelcome.state.food[0], gatheredFood.food[0],
     'a terminal production order must not spend the winner’s banked food');
   assert.equal(resumedWelcome.state.workerProduction[0].queue, 0,
     'a terminal production order must not add a worker to the queue');
