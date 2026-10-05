@@ -11,7 +11,7 @@ test('Follow clearance derives only from target-free military persistent intent'
     persistentOrder: { type: 'follow', targetId: 7, targetGeneration: 2, status: 'blocked' }, movePlanningPending: true };
   assert.equal(followTravelMovementActive(unit), true);
   for (const [kind, radius] of Object.entries(LAND_CLEARANCE_PROFILE.radiusByKind)) {
-    assert.equal(activeLandMovementBodyRadius({ ...unit, kind }), kind === 'worker' ? 0 : radius);
+    assert.equal(activeLandMovementBodyRadius({ ...unit, kind }), radius);
   }
   for (const override of [{ kind: 'worker' }, { kind: 'sheep' }, { kind: 'skiff' }, { kind: 'unknown' },
     { hp: 0 }, { movementDomain: 'water' }, { holdingPosition: true }, { attackMove: true },
@@ -280,16 +280,16 @@ for (const team of [0, 1]) {
   });
   test(`seat ${team}: actual Worker Follow remains outside the military body adopter`, async () => {
     await journey(team, ({ actor, follow, settle }) => {
-      follow(); settle(); assert.equal(followTravelMovementActive(actor()), false); assert.equal(activeLandMovementBodyRadius(actor()), 0);
+      follow(); settle(); assert.equal(followTravelMovementActive(actor()), false); assert.equal(activeLandMovementBodyRadius(actor()), .18);
     }, 'worker');
   });
-  test(`seat ${team}: queued Worker Follow retains its existing cell-only catch-up policy`, async () => {
+  test(`seat ${team}: queued Worker Follow retains its chosen catch-up under the Worker body profile`, async () => {
     await journey(team, async ({ actor, command, follow, phase, recover, finishPoint }) => {
       follow(); phase('pending'); const goal = actor().moveGoalCell, revision = actor().orderRevision;
       command('move', { x: -3.5, z: -3.5, queue: true });
       assert.equal(actor().persistentOrder, null); assert.equal(actor().moveGoalCell, goal);
-      assert.equal(actor().orderRevision, revision); assert.equal(actor().moveGoalPoint, null);
-      assert.equal(activeLandMovementBodyRadius(actor()), 0);
+      assert.equal(actor().orderRevision, revision); assert.equal(actor().moveGoalPoint?.cell, goal);
+      assert.equal(actor().moveGoalPoint?.revision, revision); assert.equal(activeLandMovementBodyRadius(actor()), .18);
       await recover(true); finishPoint(); assert.equal(actor().queuedWaypoints.length, 0);
     }, 'worker');
   });

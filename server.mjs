@@ -85,7 +85,7 @@ import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT } from './src/unit-crowd-steering.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
-import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, stanceAcquiredMovementActive, patrolAcquiredMovementActive, followTravelMovementActive } from './src/combat-movement.mjs';
+import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, stanceAcquiredMovementActive, patrolAcquiredMovementActive, followTravelMovementActive, workerFollowTravelMovementActive } from './src/combat-movement.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const BUILD_IDENTITY = await loadBuildIdentity(ROOT);
@@ -6887,7 +6887,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     if (destination < 0) return;
     reservedDestinations.add(destination);
     if (queueWaypoint && canQueueBehindCurrentRoute(unit)) {
-      const retainFollowCatchUp = followTravelMovementActive(unit)
+      const retainFollowCatchUp = (followTravelMovementActive(unit) || workerFollowTravelMovementActive(unit))
         && (unit.movePlanningPending || unit.pathIndex < unit.path.length)
         && Number.isInteger(unit.moveGoalCell) && unit.moveGoalCell >= 0 && unit.moveGoalCell < CELL_COUNT;
       clearWorkIntent(unit);
