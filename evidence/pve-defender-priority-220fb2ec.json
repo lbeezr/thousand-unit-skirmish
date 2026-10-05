@@ -1,0 +1,12 @@
+{
+  "path": "/workspace/pve-defender-priority-220fb2ec-evidence.zip",
+  "bytes": 5220782,
+  "sha256": "d787573fad5a71a4c48adba36fa281b5cba708004967eed73916dfaefdb49457",
+  "members": 445,
+  "manifestSha256": "a513367765468811800cb21581370b09a49b15c202daae93cb02930b3a07b25e",
+  "source": "220fb2ecbd46cd3539a2c6741cf91200c696082b",
+  "reviewedHead": "068822a90e7ae6cc285d1c5e0c2ad8600a4627ad",
+  "verified": true,
+  "fullCpuSuitePassed": false,
+  "fullTinyCompletionEstablished": false
+}
