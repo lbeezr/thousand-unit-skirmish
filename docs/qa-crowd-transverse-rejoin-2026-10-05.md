@@ -88,15 +88,39 @@ Stop/recovery and occupied queued endpoints. Their actual sweep predicates and
 original finite deadlines remain in force. Independent source review approves
 the narrowed guard; its approval does not qualify large-group liveness.
 
-The delivery PR records final exact-head checks, clean release identity and the
-new unchanged native result separately. Source integration and release inclusion
+At `997dc4d0`, the expanded movement/body/controller checks pass 313/313 and
+the eight unchanged paid-wall/closed-gate controls pass 7/8. Seat 1 queued-wall
+still fails at 54/64 exact arrivals by 2,700 fixed ticks. The original selector's
+body, unchanged current server and the same public fixture/commands/deadline
+reproduce that failure at 0/64. Only private import routing changes; there is no
+controller or changed admission. Keep this fixed-tick control separate from
+the native capture above.
+
+A bounded final 20-tick observation retains the narrowed case's ten unfinished
+actors. Actor 120's exact final cell 3234 is occupied by idle Worker 68 at its
+center `(18.5,1.5)`. Its 20 observed vector calls return source crowd waits with
+zero proposals through the existing parked-target guard. The other nine actors
+have step proposals, which do not alone establish productive progress. No
+experimental controller gate waits exist in this run. Worker 68 must retain its
+pose: a crowd shove or endpoint overlap cannot satisfy the all 64 arrival oracle.
+Construction/caller `01a10933-e913` owns the endpoint/access contract; any change
+to shared admission or repair also requires core `01a107ba`'s agreement.
+
+The clean 1,393-file pack and packed HTTP/identity/import/asset scenario pass.
+The fast lane at `997dc4d0` stops after 1,048 passed checks on the unchanged
+Worker fishing Farm-picking assertion (`farm:77` versus expected null at line 146);
+152 selected checks are unrun. Its failing case executes unchanged client
+picker functions in a VM and does not call crowd steering. No full-lane or
+full-CPU-suite pass is claimed. The delivery PR records final exact-head
+focused checks, independent review and clean release identity separately.
+Source integration and release inclusion
 do not establish hosted, rendered or deployed proof. The existing cloud capture
 and served-authentication blocks remain recorded with their owners; no denied
 dispatch, cancelled login, Mac or browser-security retry is authorized.
 
-Next crowd action is a retained ordinary-source witness for the remaining
-dynamic-wall knot, distinguishing physically refused steps from safe steps
-discarded by arbitration, followed by a justified bounded increment. Shared
-writer or repair changes require core agreement; endpoints remain separately
-owned. Crowd retains identified-release ordinary rendered verification through
+Next crowd action is a source witness for productive versus oscillating
+nonterminal step proposals before another justified bounded increment. The
+parked final-goal conflict is dependent on the separately owned endpoint/access
+contract, not authority to move an inactive actor. Shared writer or repair
+changes require core agreement. Crowd retains identified-release ordinary rendered verification through
 CI/capture owner `01a10378`'s existing interface.

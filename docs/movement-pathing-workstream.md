@@ -879,9 +879,14 @@ guard; its 160-tick ordinary-input replay preserves 64 inactive actors and admit
 mixed and large native completion is open. Core `01a107ba` retains shared
 writes/repair/Worker economy; caller/construction retain endpoints. Art is N/A.
 The delivery PR owns exact-head review, regressions, clean pack and normal source
-merge; served/deployed/rendered evidence is separate. Next crowd scope is a
-remaining ordinary-knot source witness and a justified bounded increment,
-with core agreement before any shared host edit. Existing capture/authentication
+merge; served/deployed/rendered evidence is separate. The unchanged fixed-tick
+wall/gate controls pass 7/8; the remaining queued-wall case reaches 54/64 versus
+the original selector's 0/64, still below the unchanged 2,700-tick completion
+contract. Retained actor 120 waits at an exact goal occupied by idle Worker 68;
+caller/construction `01a10933-e913` owns that endpoint/access dependency and core
+`01a107ba` retains shared admission/repair. Preserve the idle pose. Next independent
+crowd scope is a productive-versus-oscillating nonterminal proposal witness
+before another bounded increment. Existing capture/authentication
 blocks retain their owners and next actions; no held dispatch or login retry.
 
 ### U5 crowd owner reservation — 4 October 2026
@@ -988,7 +993,7 @@ separating no physically admitted step from priority arbitration discarding a
 safe candidate, followed by a reviewed bounded correction and unchanged
 both-seat/gate/forest/bridge controls. The paid-house final-approach work remains
 open alongside this narrow native slice. Construction `01a10933-e913` and core
-`01a107ba` separately own Worker68 occupying actor120's accepted queued endpoint
+`01a107ba` separately own Worker 68 occupying actor 120's accepted queued endpoint
 `(18.5, 1.5)`; crowd does not duplicate that access contract or shove the builder.
 Original deadlines/endpoints, Stop priority, shared admissions and standing
 author-owned merge authority remain intact. Source/pack/provider/served/render
