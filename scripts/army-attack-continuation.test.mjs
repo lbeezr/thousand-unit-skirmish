@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import './focused-building-attack-journeys.mjs';
 import vm from 'node:vm';
 import { runArmyAttackCase } from './army-attack-continuation-case.mjs';
 import { runUnqueuedFogLossCase } from './army-attack-fog-case.mjs';

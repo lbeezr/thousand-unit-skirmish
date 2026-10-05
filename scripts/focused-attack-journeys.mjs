@@ -230,7 +230,8 @@ for (const team of [0, 1]) test(`seat ${team}: actual building-target Attack rem
     const site = r.buildings.find(b => b.team !== team && b.type === 'house'); assert.ok(site);
     assert.ok(command(id, 'attackBuilding', { buildingId: site.id }).some(n => /ATTACK BUILDING ORDER/.test(n.message)));
     assert.equal(actor().attackTargetId, -1); assert.equal(actor().attackBuildingTargetId, site.id);
-    assert.equal(focusedUnitAttackMovementActive(actor()), false); assert.equal(activeLandMovementBodyRadius(actor()), 0);
+    assert.equal(focusedUnitAttackMovementActive(actor()), false);
+    assert.equal(activeLandMovementBodyRadius(actor()), LAND_CLEARANCE_PROFILE.radiusByKind.infantry);
     for (let t = 0; t < 20; t++) { r.step(); assert.equal(focusedUnitAttackMovementActive(actor()), false); }
   });
 });
