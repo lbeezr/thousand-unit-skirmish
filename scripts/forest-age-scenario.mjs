@@ -14,3 +14,4 @@ console.log(`Irregular ages: ${mature.length} separated mature points, all ${poi
 // Source-side pine pilot regressions share this existing vegetation CI entry.
 await import('./tree-variety-pilot.test.mjs');
 await import('./forest-lifecycle-atlas.test.mjs');
+await import('./berry-lifecycle-bindings.test.mjs');

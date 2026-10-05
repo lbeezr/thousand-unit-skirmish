@@ -9,7 +9,9 @@ No generation, purchases, provider access, private upload or Mac work occurred.
 
 ## Current flora delivery ownership — 5 October 2026
 
-Canonical main audited at `6ee1cce46d0ac4f4fcc4610a0d2b1a2bee928690`.
+Canonical main first audited at `6ee1cce46d0ac4f4fcc4610a0d2b1a2bee928690`;
+refreshed to `1e75f6a8b9129c0c7b72f8f0d9ac93a1b85c0497` after
+[regional binding PR490](https://github.com/lbeezr/thousand-unit-skirmish/pull/490).
 The resumed flora owner retains default consistency, the berry/tree acceptance
 work below, and the next documented disjoint slice after review. The pilot's
 prepared selector remains unbound; the current integration increment validates
@@ -21,8 +23,8 @@ depletion atlas and tree-targeting work remain separate owned outcomes.
 | Generic oak/pine forest | V3 eight physical full views. Positive stock retains the selected standing card; zero uses the existing generic stump path. | Same-design directional worked/low/depleted art is absent; pine alone lacks 24 cells. Flora owner needs exact approved source and matching registered public derivatives before selecting more lifecycle headings. No generation budget is authorized. |
 | Regional trees | 21 four-state families, one fixed-oblique view each; existing atlas or individual fallback. | Flora owner now validates exact state/clip identities, one common canvas/root, and safe nonoverlapping page cells before atlas binding. Approved valid pages remain unchanged. Next: identified cloud/staging full→worked→low→depleted/reset captures. |
 | Generic wood nodes | Full V3 oak eight-view atlas; worked/low/depleted use the terrain-owned single-view oak depletion atlas, with individual failure fallback. | Terrain integration retains its [deployment/root/zoom/fog/depth acceptance](qa-oak-depletion-atlas-adoption.md). This flora slice does not replace or duplicate that atlas. |
-| Generic berries | Full V3 eight-view atlas; worked/low/depleted remain the older single-view interactive family. | Flora owner next validates actual default stage URL/UV/root/scale bindings and same-position rebuild, without claiming matched eight-heading lifecycle art. Matching authored derivatives are the concrete art dependency. |
-| Underbough thornberry | Palette family binds four states at one view and one 1.8-wide registration. | The [historical Worker/gameplay proof](qa-underbough-gameplay-proof-2026-10-01.md) does not establish current deployed pixels. Flora owner next validates this normal regional factory, then captures actual Gather/depletion/reset on an identified cloud release. |
+| Generic berries | Full V3 eight-view atlas; worked/low/depleted remain the older single-view interactive family. | Flora owner validates actual default stage URL/hash/UV/root/scale bindings and same-position rebuild in the source check below. This does not claim matched eight-heading lifecycle art. Matching authored derivatives and ordinary-game cloud capture remain the concrete dependencies. |
+| Underbough thornberry | Palette family binds four states at one view and one 1.8-wide registration. | All four registered public hashes and the actual production state/reset/rebuild path pass the source check below. The [historical Worker/gameplay proof](qa-underbough-gameplay-proof-2026-10-01.md) does not establish current deployed pixels. Flora owner retains actual Gather/depletion/reset captures on an identified cloud release. |
 | Pine seeded variety | Pure seed/cell yaw/scale policy and source sidecar are prepared. | Unbound; preserve existing selectors. Missing matched lifecycle art and the recorded renderer seam prevent safe activation; no popping-state yaw rollout. |
 | Oak painterly retexture | Approved public default identity remains unchanged. | Paid retexture candidate remains private on the stopped Mac path. Its source owner retains the transfer/publication decision. No private bytes, repaint, provider job or credits are authorized here. |
 
@@ -52,10 +54,38 @@ introduced. Source/package checks, containing deployment, exact served identity
 and actual game-pixel acceptance stay separate; deployment and current flora
 appearance are still unverified. No parked item counts as delivery.
 
-Continuing order: review/integrate this consistency slice; refresh canonical
-main; validate default generic/Underbough berry bindings in a disjoint flora
-test slice; then retain cloud acceptance and matching source-art dependencies
-above. Do not manufacture another selector, atlas or cleanup to fill a queue.
+The regional slice merged in PR490 after independent agent review of exact head
+`6f8b6e9f25c74511aff2d925fc497039853e7e60` against the first audited main;
+no blocking defects. Focused checks, strict JS/Node types, runtime boundaries,
+documentation links and the native packed-release scenario pass. Its clean pack
+digest is `sha256:b58c9c0cac66d1bea6499f1f3a1499bbc5216df173ca46937ff3055cc31fcb14`.
+That is a local package, not Railway's built image digest. Staging deployment
+`b508e1c2-d06a-4c63-88b4-57cf962678f8` for merge source `1e75f6a8` was
+**BUILDING** at the read-only platform check; it is not recorded as delivered.
+Exact served identity and current game pixels remain incomplete.
+The cloud served-build request to staging `/health` was refused by its network
+proxy with CONNECT 403 (no HTTP response from the game). No alternate route or
+retry was attempted. The release/cloud access owner must provide an authorized
+working served-identity path; platform metadata does not close that denial.
+
+The next disjoint slice is [berry production binding validation](../scripts/berry-lifecycle-bindings.test.mjs),
+registered through the existing forest-age CI entry. It runs the actual
+`buildBerryNodeInstances` and `setBerryNodeStage` bodies read from the current
+client host, with the normal generic and Underbough factories. No host or art
+bytes are changed. It checks hashes/URLs, geometry registration, four stages,
+same-slot matrices, registered geometry root rows/baked slope, unaffected
+neighboring state counts, unchanged full-view UVs during every transition/reset,
+and same-position rebuild identity. Generic full retains the v3 5×5 canvas and baked
+root; older states retain their 2.55×1.56 registration. This test cannot prove
+matching silhouettes, anatomical direction, shader output or productive Gather.
+The two focused tests and the existing nine-test forest-age entry pass locally.
+
+Continuing order after berry review/integration: refresh main and verify
+containing staging source/served identity; once cloud qualification is repaired,
+capture normal and strategic full→worked→low→depleted/reset in ordinary games.
+Keep tree/berry matching source-art inputs and the private oak publication hold
+with their owners above. These are real dependencies; another selector, atlas,
+repaint or cleanup is not a justified ready substitute.
 
 ## Source audit
 
