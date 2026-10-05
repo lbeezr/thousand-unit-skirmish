@@ -7832,7 +7832,10 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
     const query = crowdNeighborsNear(unit);
     const progressTarget = target;
     const diagnostics = { visits: query.visits, neighbors: query.neighbors.length, overflow: query.overflow };
-    if (query.overflow) return { target, waitingForCrowd: true, stepDistance: 0, crowd: diagnostics };
+    if (query.overflow) return { ...selectCrowdStep({ unit, target,
+      stepDistance: Math.min(remainingStep, .25), neighbors: query.neighbors,
+      tick: tickNumber, navigationRevision, epoch: movePlanningEpoch, overflow: true }), crowd: diagnostics };
+    const controlDiagnostics = { passageProposals: 0, passageBodyVisits: 0 };
     let travelDirection = { x: target.x - unit.x, z: target.z - unit.z };
     if (unit.pathIndex < unit.path.length - 1) {
       const following = cellToWorld(unit.path[unit.pathIndex + 1]);
@@ -7841,17 +7844,26 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
       if (!dx && !dz) { dx = following.x - target.x; dz = following.z - target.z; }
       travelDirection = { x: dx, z: dz };
       target = crowdPassagePoint(target, { x: dx, z: dz }, unit, query.neighbors,
-        inset => canTraverseStaticBodySegment(inset, inset, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable));
+        inset => canTraverseStaticBodySegment(inset, inset, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable), controlDiagnostics);
     }
     const crowdMove = selectCrowdStep({ unit, target, stepDistance: Math.min(remainingStep, .25),
-      travelDirection, progressTarget,
-      tick: tickNumber, navigationRevision,
+      travelDirection, progressTarget, diagnostics: controlDiagnostics,
+      tick: tickNumber, navigationRevision, epoch: movePlanningEpoch,
       neighbors: query.neighbors, cellCenter: cellToWorld(currentCell),
       pointAllowed: to => to.x >= -MAP_HALF_X + .5 && to.x <= MAP_HALF_X - .5
         && to.z >= -MAP_HALF_Z + .5 && to.z <= MAP_HALF_Z - .5
         && canTraverseStaticBodySegment(to, to, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable),
       targetOf: other => ordinaryCrowdBodyRadius(other)
         ? activeMoveGoalPoint(other) ?? cellToWorld(other.moveGoalCell) : null,
+      directionOf: other => {
+        if (!ordinaryCrowdBodyRadius(other)) return null;
+        const waypoint = cellToWorld(other.path[other.pathIndex]);
+        return { x: waypoint.x - other.x, z: waypoint.z - other.z };
+      },
+      escapeAllowed: to => to.x >= -MAP_HALF_X + .5 && to.x <= MAP_HALF_X - .5
+        && to.z >= -MAP_HALF_Z + .5 && to.z <= MAP_HALF_Z - .5
+        && canTraverseUnitStep(currentCell, worldToCell(to.x, to.z), MAP_WIDTH, elevationLevelByCell, isWalkable)
+        && canTraverseStaticBodySegment(unit, to, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable),
       canTraverse: to => to.x >= -MAP_HALF_X + .5 && to.x <= MAP_HALF_X - .5
         && to.z >= -MAP_HALF_Z + .5 && to.z <= MAP_HALF_Z - .5
         && canTraverseUnitStep(currentCell, worldToCell(to.x, to.z), MAP_WIDTH, elevationLevelByCell, isWalkable)
@@ -7864,7 +7876,7 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
       // necessarily rejects, so repair starts from the actual cell. A blocked
       // body alone never triggers this handoff or loses its queued intent.
       return { target: progressTarget, reachedWaypoint: true, stepDistance: 0,
-        rejectedStaticProposal: true, crowd: diagnostics };
+        rejectedStaticProposal: true, crowd: diagnostics, crowdControl: crowdMove.crowdControl };
     }
     if (crowdMove) return { ...crowdMove, crowd: { ...diagnostics,
       waiting: Boolean(crowdMove.waitingForCrowd), yielding: Boolean(crowdMove.yieldingForCrowd),

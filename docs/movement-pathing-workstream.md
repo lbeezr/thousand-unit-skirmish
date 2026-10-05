@@ -601,8 +601,19 @@ the existing 64-unit seat-1 return case is 60/64 at 2,700 ticks, and the new
 perpendicular-goal module control remains red. Owner remains
 `01a10933-c2b0`; next step is resolve those liveness cases. A [concrete extension
 decision](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5986484334)
-with core owner `01a107ba` precedes integration of any new passage arbitration
-beyond the agreed local-only hooks. Then retain fresh exact-head review,
+was [approved by core owner `01a107ba`](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5986553571):
+one bounded transient actor controller may use the existing ordinary-Move
+vector/wait hooks, without a planner, tick hook or shared position writer.
+Crowd owns adjacent `crowd-wait-lease` and `crowd-parked-contour` modules and
+their controls. The retained checkpoint above remains historical; the approved
+continuation is under qualification against both unchanged 64-unit returns,
+the perpendicular follower and parked-body/Stop/recovery negative controls.
+The continuation's latest preserved-lane prototype is 64/64 at 1,141 ticks on
+seat 0 and 63/64 at 2,700 on seat 1, with actor 113 still on its first leg.
+The perpendicular clear-forward control is green; 47 focused controls pass.
+These runtime-hashed prototype records do not replace clean historical evidence
+or qualify the larger controller. No interface dependency remains. Next:
+integrate fresh main and resolve the retained deadline miss, then retain fresh exact-head review,
 affected checks/clean pack and normal merge. Worker ordinary/economy movement stays with
 its existing source policy in this first military slice. No new position
 admission/planner edit or rendered-acceptance claim is included.

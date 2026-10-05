@@ -13,6 +13,7 @@ test('a distant perpendicular final goal does not force a same-route front actor
   const target = { x: -.22, z: 1.999 };
   const moveAt = tick => selectCrowdStep({ unit: front, target, progressTarget: { x: -.5, z: 1.5 },
     travelDirection: { x: 0, z: -1 }, tick, stepDistance: .043333333333333,
+    directionOf: () => ({ x: 0, z: -1 }),
     neighbors: [rear], cellCenter: { x: -.5, z: 3.5 }, canTraverse: p => p.x <= -.22 + 1e-9 });
   moveAt(0);
   const move = moveAt(40);
@@ -95,8 +96,9 @@ test('bounded overflow and unknown physical bodies fail closed; no neighbour is 
 
 test('clear final point stays exact while a blocked terminal cannot snap through a body', () => {
   const u = actor(), target = { x: .05, z: .5 };
-  assert.deepEqual(selectCrowdStep({ unit: u, target, stepDistance: .1, neighbors: [], canTraverse: () => true }),
-    { target, reachedWaypoint: true, stepDistance: .05 });
+  const { crowdControl, noProgressTicks, ...move } = selectCrowdStep({ unit: u, target, stepDistance: .1, neighbors: [], canTraverse: () => true });
+  assert.deepEqual(move, { target, reachedWaypoint: true, stepDistance: .05 });
+  assert.equal(noProgressTicks, 0); assert.ok(crowdControl.proposals > 0 && crowdControl.proposals <= 128);
   const blocked = selectCrowdStep({ unit: u, target, stepDistance: .1,
     neighbors: [actor({ x: .48 })], canTraverse: () => true });
   assert.equal(blocked.reachedWaypoint, undefined);

@@ -13,7 +13,8 @@ function replaceExactly(source, before, after, count = 1) {
   assert.equal(source.split(before).length - 1, count, `server entrypoint changed: ${before}`);
   return source.split(before).join(after);
 }
-export async function createPathingReplayFixture(map, { traceLandSteps = false, traceRouteRejoins = false } = {}) {
+export async function createPathingReplayFixture(map, { traceLandSteps = false, traceRouteRejoins = false,
+  traceCrowdSteps = false } = {}) {
   const directory = await mkdtemp(path.join(tmpdir(), 'rts-pathing-replay-'));
   try {
     const original = await readFile(new URL('../server.mjs', import.meta.url), 'utf8');
@@ -43,17 +44,27 @@ export async function createPathingReplayFixture(map, { traceLandSteps = false, 
           `recordReplayLandStep(unit, ${coordinates}, ${JSON.stringify(reason)});\n${assignments}`);
       }
     }
+    if (traceCrowdSteps) source = replaceExactly(source,
+      'const move = getMoveVector(unit, remainingStep, allowLocalDetour);',
+      'const move = recordReplayCrowdStep(unit, remainingStep, allowLocalDetour);');
     const listen = source.lastIndexOf('\nserver.listen(PORT, HOST, () => {');
     assert.ok(listen > 0 && source.slice(listen).endsWith('});\n'), 'server listen entrypoint changed');
     source = source.slice(0, listen) + `
 const replayPlanningCallbacks = [];
 const replayLandSteps = [];
+const replayCrowdSteps = [];
 const replayRouteRejoins = [];
 function recordReplayRouteRejoin(route, options) {
   const result = rejoinSelectedUnitRoute(route, options);
   replayRouteRejoins.push({ id: options.position.id, radius: options.radius,
     position: { x: options.position.x, z: options.position.z },
     selected: [...route.path], path: [...result.route.path], rejoin: result.rejoin });
+  return result;
+}
+function recordReplayCrowdStep(unit, remainingStep, allowLocalDetour) {
+  const result = getMoveVector(unit, remainingStep, allowLocalDetour);
+  if (result?.crowd) replayCrowdSteps.push({ id: unit.id, tick: tickNumber,
+    ...result.crowd, ...result.crowdControl, complete: Boolean(result.crowdControl) });
   return result;
 }
 function recordReplayLandStep(unit, x, z, reason) {
@@ -67,6 +78,7 @@ function recordReplayLandStep(unit, x, z, reason) {
 export const replay = {
   prepare(map) {
     replayLandSteps.length = 0;
+    replayCrowdSteps.length = 0;
     replayRouteRejoins.length = 0;
     // Custom trusted replay maps exercise their authored simulation rules;
     // ordinary default Skirmish admission is covered by the launch fixtures.
@@ -113,6 +125,7 @@ export const replay = {
   },
   step({ planningTurns } = {}) {
     replayLandSteps.length = 0;
+    replayCrowdSteps.length = 0;
     replayRouteRejoins.length = 0;
     if (planningTurns === undefined && MOVE_PLANNING_TURNS_PER_TICK === 0) this.drain();
     else if (planningTurns === undefined) { /* candidate uses the real tick hook */ }
@@ -174,6 +187,7 @@ export const replay = {
   get separation() { return separationWorkPayload(); },
   get landSteps() { return replayLandSteps.map(step => ({ ...step, from: { ...step.from }, to: { ...step.to },
     neighbours: step.neighbours.map(other => ({ ...other })) })); },
+  get crowdSteps() { return replayCrowdSteps.map(step => ({ ...step })); },
   get routeRejoins() { return replayRouteRejoins.map(join => ({ ...join, position: { ...join.position },
     selected: [...join.selected], path: [...join.path] })); },
   dispose() { clearInterval(heartbeatTimer); if (pveOpponentTimer) clearInterval(pveOpponentTimer); }

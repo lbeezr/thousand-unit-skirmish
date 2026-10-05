@@ -141,25 +141,61 @@ controls reproduce failure without new contacts and are diagnostic evidence,
 not additional benchmark or journey completion proof.
 
 The [specific core-interface decision](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5986484334)
-asks owner `01a107ba` whether a separately scoped transient passage/wait
-arbitration controller can extend the original hook agreement, which excluded
-new flow algorithms. Crowd retains a reviewable design and the reproduction;
-new integration beyond that agreement is dependent on this concrete decision.
+was [approved by owner `01a107ba`](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5986553571).
+Crowd may integrate a bounded transient passage/wait controller through the
+existing ordinary-Move vector/wait branch, with no planner or new tick hook.
 The existing admissions, planner, orders and Worker policy remain unchanged.
 This is not a parent merge queue or a global rendered-acceptance gate.
 
-The proposed next slice reserves a separate
-`src/crowd-passage-arbitration.mjs` and focused tests; no implementation or
-default integration of that controller is claimed here. Its reviewable contract
-is a transient, bounded claim/escape decision over the existing live serial
-neighbor query. Only an eligible actor's own admitted step or intent-preserving
-wait may result. Claims must expire and recheck generation, order, navigation,
-eligibility and current geometry; least-served ties must replace permanent ID
-priority when repeated release would starve a peer. A selected retreat cannot
-be silently bypassed by the direct-step shortcut. Parked actors never acquire
-an automatic release or receive a rewritten order. Body-only waiting cannot
-trigger static route repair. The exact budgets and arbitration algorithm still
-need design and qualification, not guessed values copied from the failed trials.
+The continuation owns `src/crowd-wait-lease.mjs`,
+`src/crowd-parked-contour.mjs` and registered controls. It is under qualification;
+the clean historical checkpoint above does not include these modules. A lease
+requires a stalled, currently obstructing live peer beside an actually stationary
+body. It reserves at most 60 ticks and admits only its owner's fresh short steps.
+At most fourteen bounded corridor observations reject one-step openings that cannot
+accommodate the retreat. Fixed-target progress or waypoint advance releases
+the hold; distance travelled alone does not. A failed dependency cannot renew
+without meaningful progress, a new peer order, or departure/material movement
+of the specific body that blocked the attempted retreat.
+
+The peer may finish local steering around at most eight connected parked bodies,
+using twelve bounded face-entry proposals and four transient contour corners.
+Obstruction checks use the unchanged raw waypoint, because a projected same-cell
+point may stop short of its blocking body. Corners test all retained physical bodies;
+the bounding rectangle proposes steering points rather than claiming clearance.
+The contour expires in 90 ticks and a blocked leg falls back after eight ticks.
+Both controllers return only an own admitted short step or intent-preserving
+wait. The direct shortcut cannot bypass a grant. Stop, generation/order/path,
+navigation, match/restore epoch and skipped observations discard transient state.
+Reconstruction after restore is deterministic from fresh observations; it does
+not promise an identical resumed motion hash. Parked actors never acquire an
+automatic release or receive a rewritten order. Body-only waiting cannot trigger
+static route repair. Fresh exact-head diagnostics and wider journeys remain
+required before qualification, packaging and normal merge.
+
+The [continuation checkpoint](qa-evidence/ordinary-crowd-steering-2026-10-05/controller-continuation/checkpoint.json)
+binds the unqualified runtime hashes and unchanged both-seat 64-unit records.
+The perpendicular clear-forward control is now green; 47 focused module/controller
+controls pass. The latest preserved-lane prototype reaches **64/64 at 1,141 ticks**
+on seat 0 and **63/64 at 2,700** on seat 1. Actor 113 has not completed its first
+leg. The spawn pair has cleared; a diagnostic cold reconstruction admits its
+remaining geometry, which does not prove the retained history meets its deadline.
+An earlier current-direction lane variant retained 143,559 full selected substeps,
+zero swept terrain/body contacts, and complete work counters, but only 56/64
+seat-1 arrivals. That physical record does not qualify the latest runtime.
+The twelve real journey controls and ninety focused movement/controller checks
+passed that earlier variant. These are not fresh exact-head acceptance.
+
+Broader follower exemption and earlier contour activation were retired after
+large return regressions; their failures remain in the checkpoint. The smallest
+reviewable increment is the clear-forward perpendicular follower correction,
+current-route direction observation for that guard, and epoch/overflow lifecycle
+and work accounting. Lease/contour selection remains a separate unqualified
+experiment; no lease was exercised in the counted full-group record. There is
+no open interface approval dependency or parent gate. The technical remaining
+failure is retained journey liveness. Next: integrate fresh main and finish that
+unchanged return before exact-head review, pack, normal merge and separate
+identified-release verification.
 
 Acceptance uses the retained boxed 94/103 and parked/gate 102 controls as
 diagnostics, then the unchanged real 64-unit queue/topology/parked-builder inputs
@@ -168,7 +204,7 @@ after the blocker receives its own later command; they are distinct from an
 unoccupied reachable journey that must complete. The existing 32-unit swept
 contact, progress, repair, fairness, Stop, queue and recovery checks must also
 continue to pass. This new design stays separate from the three core position
-admissions and requires the named interface decision before default integration.
+admissions and stays within the approved interface.
 
 The cloud renderer capability attempt at clean source
 `8f36c252f681f3dbaa1fa18a85ec3303cd5b4022` was blocked by the Linux browser
