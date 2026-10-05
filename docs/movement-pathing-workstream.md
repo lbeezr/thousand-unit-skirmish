@@ -1395,7 +1395,8 @@ The exact unresolved boundary is recorded with the
 This preparation contains no Worker runtime patch.
 
 The read-only [forest center publication witness](qa-evidence/worker-retention-2026-10-05/forest-center-publication.mjs)
-consumes the actual access-cell and economy bodies. At synthetic saved-route
+and [clean-source report](qa-evidence/worker-retention-2026-10-05/forest-center-publication.json)
+consume the actual access-cell and economy bodies. At synthetic saved-route
 quota on each of the three XL shapes, this direct one-cell publication grows
 Q to Q+1 without invoking a flow helper, while preserving the active job,
 partial Wood cargo, stock, pose, queue, generation and order revision. The
