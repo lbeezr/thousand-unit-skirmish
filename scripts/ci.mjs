@@ -150,7 +150,7 @@ run(['--test', 'scripts/sheep-eight-view-runtime.test.mjs'], 'Admitted eight-vie
 run(['--test', 'scripts/sheep-directional-readiness.test.mjs'], 'Sheep directional source and anchor acceptance');
 run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife render lifecycle and fallback');
 run(['--test', 'scripts/sheep-relocated-client.test.mjs'], 'Relocated Sheep actual-cell rendering, picking and minimap fog');
-run(['--test', 'scripts/wildlife-client-state.test.mjs', 'scripts/wildlife-client-controls.test.mjs', 'scripts/sheep-placement-client.test.mjs'], 'Owned Sheep selection, normal Herd/Stop input and actual food placement');
+run(['--test', 'scripts/wildlife-client-state.test.mjs', 'scripts/wildlife-client-controls.test.mjs', 'scripts/sheep-carcass-client.test.mjs', 'scripts/sheep-placement-client.test.mjs'], 'Owned Sheep selection, normal Herd/Stop input and actual food placement');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');
 run(['--test', 'scripts/terraced-vale.test.mjs', 'scripts/terraced-vale-sheep.test.mjs', 'scripts/terraced-vale-sheep-entry.test.mjs'], 'Tiny default Sheep balance, reachability, real entry and exact old-map recovery');
 run(['scripts/terraced-vale-sheep-scenario.mjs'], 'Tiny default both-seat Sheep claim, shared food and recovery');

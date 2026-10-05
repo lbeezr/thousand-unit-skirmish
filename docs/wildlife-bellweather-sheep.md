@@ -217,10 +217,22 @@ owner and remaining food, **Herd** and **Stop**. Right-click visible clear land,
 use Herd then tap/click, or right-click the minimap to send the exact destination;
 **S** stops it. Shift queues are unavailable. Army orders and group assignment
 do not apply to Sheep; selecting units/buildings or box/group/army selection
-clears the Sheep context. Fog/omission, recapture, harvest, depletion, epoch/map
+clears the Sheep context. Fog/omission, live recapture, depletion, epoch/map
 change, seat change and a fresh welcome immediately clear selection and targeting.
+Harvest now retains selection as carcass inspection and cancels armed Herd targeting.
 Normal tracked notices finish Herd/Stop status. Shared Worker Gather remains
 available for neutral, foreign and carcass food.
+
+**5 October carcass interaction:** click any currently visible positive-food
+carcass after unit/building picking priority. The same compact strip shows
+**Sheep carcass**, remaining Food (`<1` for positive fractional stock),
+**Harvest · idle Worker** and **Select workers**. Harvest sends the nearest
+idle owned Worker with empty cargo through ordinary generation-bound Gather;
+it never interrupts a busy Worker or discards cargo. If none is available,
+select Workers and right-click the carcass. Inspection remains while stock
+falls; depletion, fog/omission and fresh context clear it. Carcasses expose no
+Herd/Stop authority. [Focused source/recovery evidence](qa-sheep-carcass-interaction-2026-10-05.md)
+keeps packaging, staging, rendering and private carcass art distinct.
 
 Wildlife worker owns this narrow binding through the agreed HUD interface; see
 the [HUD controls backlog](hud-controls-backlog.md). The default renderer admits

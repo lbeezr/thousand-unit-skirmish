@@ -179,7 +179,8 @@ try {
     }
   }
   // The extracted world contract and old map API retain exact packed HTTP bytes.
-  for (const filename of ['src/map-utils.mjs', 'src/world/scenario-event-chain.mjs']) {
+  for (const filename of ['src/map-utils.mjs', 'src/world/scenario-event-chain.mjs',
+    'src/world/capture-prerequisites.mjs']) {
     for (const method of ['GET', 'HEAD']) {
       const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
       assert.equal(response.status, 200, `${method}: ${filename}`);
@@ -195,7 +196,8 @@ try {
     }
   }
   for (const filename of ['src/world/', 'src/world/unknown.mjs',
-    'src/world/scenario-event-chain.mjs/extra', 'src//world/scenario-event-chain.mjs']) {
+    'src/world/scenario-event-chain.mjs/extra', 'src//world/scenario-event-chain.mjs',
+    'src/world/capture-prerequisites.mjs/extra', 'src//world/capture-prerequisites.mjs']) {
     for (const method of ['GET', 'HEAD']) {
       assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
         404, `world admission remains exact (${method}): ${filename}`);

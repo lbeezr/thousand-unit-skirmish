@@ -10,7 +10,7 @@ export function wildlifeClientBindings() {
 }
 
 export function wildlifeClientFunctionSource(source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8')) {
-  const names = ['selectedWildlife', 'clearWildlifeSelection', 'applyWildlifeState',
+  const names = ['wildlifeSelectionSummary', 'wildlifeHarvestWorker', 'updateWildlifeHarvestControl', 'issueWildlifeHarvest', 'selectedWildlife', 'clearWildlifeSelection', 'applyWildlifeState',
     'wildlifePointVisible', 'wildlifeEndpointLegal', 'constructionResourceNodes',
     'selectWildlife', 'issueWildlifeOrder'];
   const declarations = parse(source, { ecmaVersion: 'latest', sourceType: 'module' }).body
