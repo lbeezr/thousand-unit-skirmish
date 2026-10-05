@@ -721,6 +721,41 @@ preserves its raw path and still reduces the open route. No runtime predicate is
 weakened to satisfy a fixture. Re-review and exact-head checks include all three
 affected registered paths and the construction consumer before normal merge.
 
+### Shared selected-route start rejoin — 5 October 2026
+
+At `bd7f2915`, ordinary Move has an inline fractional-start rejoin and Worker
+economy has its radius-specific reduction/publication. Neither is a generic
+post-selection combat adapter. Shared owner `01a107ba` supplies only
+`rejoinSelectedUnitRoute` in `src/unit-movement.mjs` and consumes it in ordinary
+Move's existing `applyPlannedMoveAssignment` subsection. The
+[caller API](https://github.com/lbeezr/thousand-unit-skirmish/pull/405#issuecomment-5986027786)
+is allocated to combat caller `01a10933-e913` after its unchanged weapon-range,
+stance-travel and retained-waypoint policy selects/truncates an approach.
+
+The pure helper accepts the selected route, actual position, explicit radius,
+start cell, first physical point, dimensions/occupancy/center conversion, a
+caller-supplied terrain-rejoin decision and optional `acceptPrefix(center, cell)`.
+It returns the original route with `unchanged`, a shallow route copy with only
+`[startCell, ...path]` and `prefixed`, or the untouched route with `rejected` if
+geometry is malformed or the caller rejects the synthesized prefix. Those
+rejoin outcomes are transient and separate from route status. Empty/null paths
+and explicit non-ready route outcomes remain unchanged; they do not become
+arrival. Metadata, selected tail, original cost/length, identity, and every
+retained leading/anti-reversal waypoint survive. No whole-route reduction,
+target/order/objective publication or persisted field.
+
+Ordinary Move keeps its existing distant-leg terrain rule, adjacent body rule,
+fractional final-center handling and executor/recovery guards. Registered tests
+cover all explicit profile radii, immutable metadata/path, policy rejection,
+null/empty/failure distinctions and malformed geometry. Retained real-command
+corner/adjacent-leg liveness, queue/restart, weighted routes, Worker/construction
+and target-free AttackMove regressions establish the bounded consumer parity.
+Combat acquisition, weapon range/damage, `getUnitAttackPath`/
+`boundedAutomaticApproach`, global attack/Sheep flows and crowd-owned steering/
+wait hooks remain outside this slice. Existing endpoint/travel storyboards are
+unchanged design backing. Source/release/deployment/rendered acceptance stay
+separate; shared owner retains independent review, merge and remaining delivery.
+
 ## Ranked backlog
 
 | Rank / status | Outcome and next action | Write boundary / dependency | Acceptance |
