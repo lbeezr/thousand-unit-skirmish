@@ -1,3 +1,5 @@
+import { constructionServerBindings, constructionServerFunctions } from './construction-server-fixture.mjs';
+import { economyServerBindings } from './economy-server-fixture.mjs';
 import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
 import { preparePaidWallLine } from '../src/wall-construction-draft.mjs';
 import assert from 'node:assert/strict';
@@ -10,7 +12,6 @@ import { BUILDING_DEFINITIONS, GAMEPLAY_RULESET_REVISION } from '../src/gameplay
 import { buildingBlocksMovement, isPalisade, planGateTransition, validGateState } from '../src/palisade-gate.mjs';
 import { createGateTimbers, updateGateTimbers } from '../src/palisade-gate-visual.mjs';
 import { previewWallPlacement } from '../src/wall-placement.mjs';
-import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { constructionWorkArea, constructionAssignment } from '../src/construction-work-intent.mjs';
 import { activeWorkIntent, createConstructionWorkIntent } from '../src/work-intent.mjs';
 
@@ -232,12 +233,11 @@ test('exact preceding gate-free Dock ruleset retains paid Dock rows; older ident
   }
 });
 
-test('actual wall admission permits approaches through open gate topology while preserving closed gates', () => {
+function wallAdmissionFixture(team = 0, gateOpen = true) {
  const source = server;
  const fn = name => { const start=source.indexOf('function '+name+'('), end=source.indexOf('\nfunction ',start+1); assert.ok(start>=0 && end>start); return source.slice(start,end); };
- for (const gateOpen of [true, false]) {
- const notices=[],gate={id:1,type:'palisade-gate',team:0,complete:true,gateOpen,hp:300,footprint:[30]},worker={id:0,team:0,kind:'worker',hp:100,x:-3,z:-3,generation:1,orderRevision:1,path:[],queuedWaypoints:[]};
- const c=vm.createContext({VisionCoverageCache,visionCoverageGeneration:0,Set,Map,TypeError,isPalisade,buildingBlocksMovement,preparePaidWallLine,buildings:[gate],buildingsById:new Map([[1,gate]]),units:[worker],
+ const notices=[],gate={id:1,type:'palisade-gate',team,complete:true,gateOpen,hp:300,footprint:[30]},worker={id:0,team,kind:'worker',hp:100,x:-3,z:-3,generation:1,orderRevision:1,path:[],queuedWaypoints:[]};
+ const c=vm.createContext({...economyServerBindings(),...constructionServerBindings(),VisionCoverageCache,visionCoverageGeneration:0,Set,Map,TypeError,isPalisade,buildingBlocksMovement,preparePaidWallLine,buildings:[gate],buildingsById:new Map([[1,gate]]),units:[worker],
   MAP_WIDTH:9,MAP_HEIGHT:9,CELL_COUNT:81,MAX_BUILDINGS:128,HOME_TOWN_CENTER_ID_BASE:1000000,nextBuildingId:2,
   blocked:new Uint8Array(81),buildingBlocked:new Uint8Array(81),townCenterBlocked:new Uint8Array(81),elevationLevelByCell:new Uint8Array(81),
   mapDefinition:{width:9,height:9,resourceNodes:[],triggers:[]},resourceNodeStates:new Map(),homeTownCenters:[],spawnByTeam:[{x:-3,z:-3},{x:3,z:3}],
@@ -246,12 +246,18 @@ test('actual wall admission permits approaches through open gate topology while 
   activeMoveRoutesRemainConnected:()=>true,
   BUILDING_DEFINITIONS:{'palisade-wall':{cost:{food:0,wood:15},buildSeconds:5,maxHp:300,footprint:1}},teamFood:[0,0],teamWood:[250,250],
   navigationRevision:1,dirty:false,attackFlowFields:new Map(),replanPathsBlockedBy(){},assignFormationMove(){},
-  activeWallBuildOrder,activeWorkIntent,createConstructionWorkIntent,constructionWorkArea,constructionAssignment,palisadeConstructionRetries:new WeakMap(),
+  activeWorkIntent,createConstructionWorkIntent,constructionWorkArea,constructionAssignment,
   sendOrderNotice:(_,__,notice)=>notices.push(notice),rejectBuild:(_,reason)=>notices.push('BUILD REJECTED · '+reason),
  });
  c.buildingBlocked[30]=gateOpen?0:1;
- vm.runInContext(invalidation + reservations + ['isWalkable','rebuildWalkableComponents','buildingAccessCells','captureBuildingConnectivity','canPlaceBuildingWithoutDisconnectingEntities','palisadeConstructionIntent','preparePalisadeBuilderAssignments','finishPalisadeBuilderAssignments','buildWallLine'].map(fn).join('\n'),c);
+ vm.runInContext(constructionServerFunctions + invalidation + reservations + ['isWalkable','rebuildWalkableComponents','buildingAccessCells','captureBuildingConnectivity','canPlaceBuildingWithoutDisconnectingEntities','palisadeConstructionIntent','preparePalisadeBuilderAssignments','finishPalisadeBuilderAssignments','buildWallLine'].map(fn).join('\n'),c);
  c.rebuildWalkableComponents();
+ return {c,notices,gate,worker};
+}
+
+test('actual wall admission permits approaches through open gate topology while preserving closed gates', () => {
+ for (const gateOpen of [true, false]) {
+ const {c,notices} = wallAdmissionFixture(0,gateOpen);
  c.buildWallLine({team:0},{ids:[0],points:[{column:4,row:4}]});
  assert.equal(notices[0], 'PALISADE LINE PLACED · 1 SEGMENTS · 15 WOOD');
  assert.equal(c.teamWood[0], 235); assert.equal(c.buildings.length, 2);
@@ -271,3 +277,85 @@ test('preparation permits only explicit existing passable topology as Worker acc
  assert.equal(preparePaidWallLine({...args, passableExistingWallCells:[30]}).status, 'ready');
  for (const bad of [[40], [31], null, '30', Array(82).fill(30)]) assert.throws(()=>preparePaidWallLine({...args, passableExistingWallCells:bad}), TypeError);
 });
+
+// Real paid-wall and builder admission; the planner is captured, never run.
+// These controls qualify admission/retention, not physical movement liveness.
+function productionWallAdmissionFixture(team, occupied) {
+  const f = wallAdmissionFixture(team), { c, worker } = f;
+  Object.assign(worker, { buildingTargetId: null, workIntent: null, pathIndex: 0,
+    moveGoalCell: -1, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '',
+    attackTargetId: -1, attackBuildingTargetId: -1 });
+  Object.assign(c, { MAX_UNITS: 2000, performance, tickNumber: 0,
+    ATTACK_MOVE_SCAN_INTERVAL_TICKS: 15, SHARED_MOVE_PATHS: true,
+    nextMoveOrderId: 1, movePlanningQueue: [], scheduleNextMovePlanning() {},
+    BUILDER_INTERACTION_RANGE: 1.4 });
+  const access = c.buildingAccessCells([40]);
+  if (occupied) access.forEach((cell, index) => c.units.push({
+    id: index + 1, team, kind: 'infantry', hp: 100, generation: 1,
+    orderRevision: 1, moveGoalCell: cell, ...c.cellToWorld(cell), path: [], pathIndex: 0,
+  }));
+  const fn = name => {
+    const start = server.indexOf(`function ${name}(`), end = server.indexOf('\nfunction ', start + 1);
+    assert.ok(start >= 0 && end > start); return server.slice(start, end);
+  };
+  const admission = server.slice(server.indexOf('function nearestBuilderAccessCell('),
+    server.indexOf('// Persistent intent rides'));
+  vm.runInContext(admission + ['cancelGatherOrder', 'clientOrderToken', 'distanceToBuildingEdge'].map(fn).join('\n'), c);
+  return { ...f, access, place: () => c.buildWallLine({ team }, {
+    ids: [worker.id], points: [{ column: 4, row: 4 }], clientOrderToken: 17,
+  }) };
+}
+
+for (const team of [0, 1]) {
+  test(`seat ${team}: paid wall with available access admits one owned planning job`, () => {
+    const { c, worker, place, notices, access } = productionWallAdmissionFixture(team, false);
+    place();
+    assert.equal(c.teamWood[team], 235); assert.equal(c.teamWood[1 - team], 250);
+    assert.equal(c.nextBuildingId, 3); assert.equal(c.buildings.length, 2);
+    assert.deepEqual(worker.workIntent.siteIds, [2]); assert.equal(worker.buildingTargetId, 2);
+    assert.equal(worker.workIntent.generation, worker.generation); assert.equal(worker.orderRevision, 2);
+    assert.equal(worker.wallBuildOrder.revision, worker.orderRevision);
+    assert.equal(worker.movePlanningPending, true); assert.ok(access.includes(worker.moveGoalCell));
+    assert.equal(c.palisadeConstructionRetries.has(worker), false);
+    assert.equal(c.movePlanningQueue.length, 1);
+    const job = c.movePlanningQueue[0], assignment = job.assignments[0];
+    assert.equal(job.buildingTargetId, 2); assert.equal(job.epoch, c.movePlanningEpoch);
+    assert.equal(assignment.unit, worker); assert.equal(assignment.revision, worker.orderRevision);
+    assert.equal(assignment.destination, worker.moveGoalCell); assert.equal(job.assignments.length, 1);
+    assert.equal(notices.at(-1), 'PALISADE LINE PLACED · 1 SEGMENTS · 15 WOOD');
+    place();
+    assert.equal(c.teamWood[team], 235); assert.equal(c.nextBuildingId, 3);
+    assert.equal(c.movePlanningQueue.length, 1, 'replayed paid site cannot enqueue or charge twice');
+    assert.equal(c.movePlanningQueue[0], job, 'the original paid planning job remains owned');
+  });
+  test(`seat ${team}: occupied endpoints retain paid wall and retry without planning through them`, () => {
+    const { c, worker, place } = productionWallAdmissionFixture(team, true);
+    place();
+    const site = c.buildingsById.get(2), intent = structuredClone(worker.workIntent);
+    const revision = worker.orderRevision, nav = c.navigationRevision;
+    assert.equal(c.teamWood[team], 235); assert.equal(c.teamWood[1 - team], 250);
+    assert.equal(c.nextBuildingId, 3); assert.equal(c.buildings.length, 2);
+    assert.deepEqual(intent.siteIds, [2]); assert.equal(worker.buildingTargetId, site.id);
+    assert.equal(worker.moveGoalCell, -1); assert.equal(worker.movePlanningPending, false);
+    assert.equal(c.movePlanningQueue.length, 0, 'reserved access cannot enter the planner');
+    const retry = c.currentConstructionAccessRetry(worker, site);
+    assert.ok(retry?.accessBlocked); assert.equal(retry.siteId, site.id);
+    let repairs = 0;
+    c.enqueueRouteRepairs = () => { repairs++; };
+    for (let tick = 1; tick <= 90; tick++) {
+      c.tickNumber = tick;
+      c.updateConstructionAccess(worker, site, c.constructionEndpointSnapshotGetter());
+      assert.equal(c.currentConstructionAccessRetry(worker, site), retry);
+      assert.deepEqual(worker.workIntent, intent); assert.equal(worker.orderRevision, revision);
+      assert.equal(worker.buildingTargetId, site.id); assert.equal(worker.moveGoalCell, -1);
+      assert.equal(c.movePlanningQueue.length, 0); assert.equal(c.teamWood[team], 235);
+      assert.equal(c.navigationRevision, nav); assert.equal(site.progress, 0);
+      assert.equal(c.buildingsById.get(site.id), site, 'waiting retains the original paid site');
+    }
+    assert.equal(repairs, 0); assert.equal(worker.wallBuildOrder.revision, revision);
+    place();
+    assert.equal(c.teamWood[team], 235); assert.equal(c.nextBuildingId, 3);
+    assert.deepEqual(worker.workIntent, intent); assert.equal(worker.orderRevision, revision);
+    assert.equal(c.currentConstructionAccessRetry(worker, site), retry);
+  });
+}
