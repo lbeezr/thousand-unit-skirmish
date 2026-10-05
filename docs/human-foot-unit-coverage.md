@@ -46,18 +46,19 @@ unchanged. No art/runtime changes or held assets are adopted.
 
 ## Active Spearman continuation — 5 October 2026
 
-The foot-art owner continues after each admitted slice. Own-South attack source
-is independently cleared and registered in default v1 pack0.14.0:3 new poses,
-1 exact reused idle opening, all69 preceding frames and31 other clips preserved.
-Current next source is actual `idle-south-west-0`,231×283, inherited root111,283,
-identity idle06. Its own back-facing source and idle-only attack were inspected;
-no Southwest attack keys are authored or admitted yet. Remaining Spearman
-source coverage is10 cells. Packaging, merge, deployment and actual game
-acceptance remain separately recorded.
+The foot-art owner continues after each admitted slice. South PR505 merged at
+`1cad8b8b93be3c2a9671f6da11b806fd5b7b7f9f`; its exact merged default/clean
+package and HTTP checks pass, with native evidence still open. Own-Southwest
+source is independently cleared and registered in default v1 pack0.15.0:3 new
+poses,1 exact reused idle opening, all72 preceding frames and31 other clips
+preserved. Next actual own source is `idle-west-0`,237×285/root110,285, idle05;
+its side view and idle-only attack are inspected, with0 authored/admitted West
+keys yet. Spearman source gaps are9. Packaging, merge, deployment and actual
+game acceptance remain separately recorded.
 
 | Rank / owner | Next step | Dependency and acceptance |
 | --- | --- | --- |
-| 1 — Spearman foot art | Finish South exact-head/default release and own merge; continue ownSW/W/NW attacks in separate increments. | Approved public own-view seeds; no paid provider or private-input pixels. Preserve all old frames, scale/pivots and clips; exact default key playback, clean pack and HTTP receipts precede each own merge. |
+| 1 — Spearman foot art | Finish Southwest exact-head/default release and own merge; continue ownW/NW attacks in separate increments. | Approved public own-view seeds; no paid provider or private-input pixels. Preserve all old frames, scale/pivots and clips; exact default key playback, clean pack and HTTP receipts precede each own merge. |
 | 2 — Spearman foot art | Supply matched terminal defeats N/NE/E/S/SW/W/NW incrementally. | Same identity and heading; readable ordered fall/prone keys, fixed inherited root, one-shot terminal hold, preserved previous art. Existing1080ms defeat lifetime is the state-owner boundary. |
 | 3 — Foot art with permitted parent/capture01a10378 | Observe contact, reach, readability and actual playback at the exact containing source/release. | All63 original native/deployed cells remain unverified. Retained cloud sandbox/storage capability is blocked; respect access denials, without bypass or stopped Mac dependency. An identified deployment and rendered game evidence are required. |
 
@@ -65,6 +66,34 @@ State01a103d4 retains clocks/selectors; Infantry task01a10d9c and other art/game
 owners remain separate. After each review/merge the current step advances to the
 next disjoint row-1 or row-2 heading; source/package/deployment/playable evidence
 remain separately recorded.
+
+## Spearman Southwest source attack — 5 October 2026
+
+The [Southwest increment](qa-spearman-south-west-attack-2026-10-05.md) adds3
+own-view ready/thrust/recovery keys after1 exact reused idle opening,880ms
+one-shot. Default v1 pack0.15.0/75 frames preserves all72 prior complete frame
+records/crops,31 other clips, pivots, body calibration/world bounds and mask bytes.
+Three empty416×416 right-column cells fit the existing2560×3968 page; all other
+RGBA bytes remain exact. Fixed padding80/80/root191,363 and alpha heights
+310/317/279 preserve the319px scale maximum.
+
+Independent source review clears688 own-seed donors(22 belt/pouch,666 authored
+hidden wood),853 exact original joint overlaps and74 original sleeve ownership
+transfers, counted separately. The853 overlaps include129 original rear-sleeve
+underlap samples correcting the actual cuff seam. The exact121-sample partial
+rear finger/cuff edge receives the same authored own-tail rest transform; no
+complete hidden hand is claimed. All first/corrected source/render/process
+iterations remain retained; no paid/provider jobs, private-source input or
+other-facing replacement. The rough functional minimum is met.
+
+Source coverage:8/8 genuine Spearman walks and attacksSE/NE/E/N/S/SW.
+Exact remaining cells:attack×W/NW and defeat×N/NE/E/S/SW/W/NW: **9**.
+Infantry/Archer21 each at inspected1cad8b8b: **51 military source gaps**.
+All63 original native/deployed cells remain unverified. Continue the inspected
+own-West seed, Northwest attack, matching terminal defeats, then Archer;
+Infantry task01a10d9c stays separate. Foot art retains identified-game
+contact/reach/readability through permitted parent/capture01a10378;
+state01a103d4 retains clocks/selectors.
 
 ## Spearman South source attack — 5 October 2026
 
