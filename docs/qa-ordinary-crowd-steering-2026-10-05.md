@@ -148,6 +148,28 @@ new integration beyond that agreement is dependent on this concrete decision.
 The existing admissions, planner, orders and Worker policy remain unchanged.
 This is not a parent merge queue or a global rendered-acceptance gate.
 
+The proposed next slice reserves a separate
+`src/crowd-passage-arbitration.mjs` and focused tests; no implementation or
+default integration of that controller is claimed here. Its reviewable contract
+is a transient, bounded claim/escape decision over the existing live serial
+neighbor query. Only an eligible actor's own admitted step or intent-preserving
+wait may result. Claims must expire and recheck generation, order, navigation,
+eligibility and current geometry; least-served ties must replace permanent ID
+priority when repeated release would starve a peer. A selected retreat cannot
+be silently bypassed by the direct-step shortcut. Parked actors never acquire
+an automatic release or receive a rewritten order. Body-only waiting cannot
+trigger static route repair. The exact budgets and arbitration algorithm still
+need design and qualification, not guessed values copied from the failed trials.
+
+Acceptance uses the retained boxed 94/103 and parked/gate 102 controls as
+diagnostics, then the unchanged real 64-unit queue/topology/parked-builder inputs
+on both seats. Occupied exact final points must retain intent and resume only
+after the blocker receives its own later command; they are distinct from an
+unoccupied reachable journey that must complete. The existing 32-unit swept
+contact, progress, repair, fairness, Stop, queue and recovery checks must also
+continue to pass. This new design stays separate from the three core position
+admissions and requires the named interface decision before default integration.
+
 The cloud renderer capability attempt at clean source
 `8f36c252f681f3dbaa1fa18a85ec3303cd5b4022` was blocked by the Linux browser
 sandbox and unavailable storage. The [retained capability record](qa-evidence/ordinary-crowd-steering-2026-10-05/renderer-capability-blocked.json)
