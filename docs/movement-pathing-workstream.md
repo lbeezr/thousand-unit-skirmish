@@ -1066,6 +1066,29 @@ original budgets/admissions/position writes/repair and caller/construction endpo
 publication stay with their owners. No qualified production fix/full-suite/PR/main
 event or deployed/rendered completion is claimed; the linked QA owns evidence.
 
+5 October influence-boundary assessment: the
+[physical derivation, work bounds and retained results](qa-native-wall-seat1-2026-10-05.md#physical-influence-boundary--derivation-before-retained-measurements)
+keep the four intervention IDs and all64/21 controls. A finite swept corridor
+exclusion reduces direct physical candidates, but an actual ordinary-steering
+counterfactual shows physical exclusion does not prove input independence.
+Selected-mover potential input components contain63 actors throughout; this is
+an overapproximation, not a causal/minimal control set. Existing2.1 retention
+cannot certify generic9/12-tick reach. All bounded four-actor decisions refuse;
+unchanged48/96 repeats retain stalled baseline and no qualified recovery.
+
+A coarser current portal query stays below128 visits/64 returns in this sample,
+but the throat has residents at every snapshot and no opposite-portal full transit.
+Direction tokens alone cannot drain an occupied knot. Crowd `01a10933-c2b0`
+retains the smallest next read-only resident-exit capacity/receipt oracle at the
+original accepted own call, with≤4 observed leaders and unchanged64/21 controls.
+Do not raise the actor cap, change headings, waive service deadlines or adopt a
+motion policy from diagnostic success. Core retains query/index/receipt trust,
+budgets/admissions/position writes/repair; caller/construction retain endpoints.
+The copied-fixture seam remains agreed; any future shared host adapter requires
+an exact owner decision. No production/PR/main/full-suite event or served/rendered
+completion follows this assessment; the linked QA and existing PR445 retain
+source/clean-pack checks separately from gameplay acceptance.
+
 ### U5 construction endpoint availability — agreed bounded interface
 
 The [core/caller agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/443#issuecomment-5989678024)

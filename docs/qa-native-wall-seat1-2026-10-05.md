@@ -944,3 +944,205 @@ scope failure. Raw authorized local inputs/results remain outside git; denied
 drafts and pending private bundles remain untouched. Source/clean pack, provider/
 served identity and rendered/deployed proof remain separate and incomplete where
 not observed.
+
+
+## Physical influence boundary — derivation before retained measurements
+
+This read-only investigation keeps the64 affected actors/21 original harmed
+controls and the four-actor intervention cap. It does not execute another retreat
+or authorize a production motion policy. Before testing, the candidate boundary
+has three separate layers: direct finite-horizon physical reach, ordinary steering
+input dependencies, and complete query coverage. None alone proves fair service.
+
+For a fixed center corridor `C` of length at most `.75`, body `j` cannot physically
+intersect its swept body within `H` ticks if
+`distance(j, C) > radius(owner) + radius(j) + H * speed(j) / 30`.
+This triangle-inequality exclusion ignores terrain, so the included set is a
+necessary overapproximation, not proof that each body can reach through obstacles.
+A labelled nominal earliest-contact view splits the corridor into at most12
+own-call segments assuming full early budgets, using both radii plus
+`k * speed(j) / 30` at segment `k`. This view cannot exclude a body when the
+owner may wait or receive less own-call budget; safe inclusion uses the whole
+horizon. Nominal nine-tick completion cannot promise those budgets. Frozen bodies have zero reach only under an explicit
+unchanged-position/intent guard. Unknown movement/radius or lost completeness
+refuses the boundary. Tangency is included conservatively.
+
+Maximum query reach from the owner's initial center is
+`min(.75, H * speed(owner) / 30) + radius(owner) + max_j(radius(j) + H * speed(j) / 30)`.
+For this infantry-only mover population, that is `.613333/.96/1.48/1.97/2.23`
+at1/3/6/9/12 ticks. Generic land peers give `.736667/1.21/1.92/2.60/3.05` for an
+infantry owner. Existing2.1 retention therefore cannot certify a generic9/12-tick
+horizon, or even the conservative infantry12-tick horizon. Wider2.25 bucket
+collection is not wider2.1 retained membership. No future budget or held end pose
+is assumed. A one-tick witness is recomputed at each own call and never promoted
+to a whole-passage clearance guarantee.
+
+Physical exclusion does not establish executor independence: ordinary
+`selectCrowdStep` reads opposing goals within2 tiles, separation within both
+radii plus `.3`, and other queried bodies for passage-point/admission/priority
+choices. A conservative current dependency graph therefore retains2.1-tile input
+edges. Current graph connectivity is only potential influence, not an observed
+causal claim, and cannot certify later edge stability. The finite horizon can
+admit new edges. Fairness still measures all64 actors, including harmed actors
+outside any direct collision envelope.
+
+### Preflight work bounds and alternative
+
+With≤4 roots,≤64 returned bodies and≤12 segments, the collision audit costs at
+most3,072 point/segment distance evaluations, plus256 whole-corridor evaluations.
+Early segment classification uses earliest full budgets only as a labelled
+nominal lower-bound view; the safe all-horizon envelope does not assume timely
+owner progress. Receipt accounting remains64 actors/128 receipts per frame with
+1,839 declared route cells. A64-node graph costs2,016 unordered pair distances;
+query-based closure instead costs at most64 queries/8,192 bucket visits/4,096
+neighbor entries and refuses overflow or a65th node. No recursive uncontrolled
+expansion or actor-cap increase is permitted. The offline oracle scans the136
+retained bodies to expose query omissions, charging that separate work; it is
+not a production128-visit query or executable admission adapter.
+
+A coarser alternative would track the existing authored throat (column48,row32),
+its two portal planes and a bounded entrance registry, then hand off direction
+only after actual body exit/empty occupancy receipts. A64-entry registry needs
+one bounded complete region query and linear per-frame accounting, rather than
+recursive local closure. It must still refuse incomplete collection, unknown
+entrant/phase, parked occupation or lost exit capacity; unchanged accepted goals,
+Stop and body/static admissions remain mandatory. The terrain cell alone is not
+a single-lane proof: two radius`.22` infantry bodies geometrically fit across
+one tile at centers`.22/.78`, with pair gap`.12`. A conservative single-file
+scheduler is a coordination choice requiring evidence, not a terrain fact.
+
+For an unobstructed full body transit across the one-tile throat, the minimum
+center travel is `1 + 2 * .22 = 1.44`, at least17 infantry ticks. A single-file
+four-unit tangent batch has continuous center spacing`.44`: the optimistic
+exit ticks are17/22/27/32, so its last body needs at least32 ticks. Two geometric
+lanes reduce this optimistic lower bound to22 ticks, without proving valid
+approaches. Rounding each headway separately would overstate these minima; it
+would describe an extra scheduling restriction, not a physical lower bound. Thus the existing12-tick service
+window cannot be claimed as full throat clearance. If a coordinator serializes nonoverlapping four-actor `.15`
+service batches, those batches alone need at least32 ticks to cover64 actors; strict12-tick service
+for every actor is not justified by merely alternating direction. These lower
+bounds precede measurement and are not throughput guarantees.
+
+The smallest assessment now measures the retained fixed110 corridor, bounded
+root reach envelopes, current input-dependency components and actual throat
+occupancy/crossings under unchanged normal movement at48/96 ticks. It reports
+all64/all21 service controls, query omissions and work maxima. This source-only
+assessment will select the next read-only experiment; no no-intervention success
+qualifies production recovery. Art N/A; private inputs/results remain outside git.
+
+
+### Retained measurements and bounded refusal
+
+The [influence oracle](../scripts/crowd-influence-boundary.mjs),
+[serial observer](../scripts/crowd-influence-boundary-probe.mjs),
+[48/96 runner](../scripts/crowd-influence-boundary-diagnostic.mjs) and
+[negative controls](../scripts/crowd-influence-boundary.test.mjs) reuse the same
+cold reconstructed physical serial source input at tick3120. This is not a warm
+native continuation or a new benchmark. The136 live land bodies keep their full
+registry speed/radius bounds, including inactive actors; the observer returns
+each normal vector unchanged. The existing four intervention IDs77/81/87/110
+remain fixed;64 movers and all21 historical harmed controls are measured.
+
+| Horizon, ticks | Fixed110 corridor bodies,48 /96 | Four-root radial envelope,48 /96 | Selected-mover current / potential input component |
+| --- | --- | --- | --- |
+| 1 | 2–5 /2–5 | 5–8 /5–8 | 63 /63 |
+| 3 | 3–6 /3–6 | 6–11 /6–11 | 63 /63 |
+| 6 | 4–9 /4–10 | 7–17 /7–17 | 63 /63 |
+| 9 | 4–12 /4–13 | 12–22 /12–23 | 63 /63 |
+| 12 | 5–16 /5–16 | 21–26 /21–26 | 63 /63 |
+
+At the first110 call the physical sets are81/87 at one tick,81/83/87 at three,
+77/81/83/87 at six and nine, and76/77/81/83/87 at twelve. Thus even three ticks
+include an outside actor. Over the unchanged baseline trajectory, the twelve-tick
+fixed corridor includes only5 of the21 original harmed controls (75/76/113/115/118).
+This does not explain away the other16: an executed changed retreat would alter
+these envelopes, and losses can propagate through steering dependencies. The
+four-root radial set is an overapproximation of any short heading, not authority
+to recruit up to26 actors. The63-node graph is potential input dependence within
+the selected64, not measured causality, a minimal control set or proof that a
+global controller is required.
+
+A focused source counterfactual supplies the distinction: an opposed peer at
+`(0,1.95)` is outside the infantry twelve-tick fixed east corridor's physical
+reach, but removing that peer changes `selectCrowdStep` from straight east to an
+eastward lane with positive-z motion. Both candidates remain physically clear.
+Collision-only membership therefore cannot establish mechanical independence.
+
+The bounded diagnostic rule refuses incomplete/overflow queries, insufficient
+certified radius, a physically included outside body or a potential input
+component outside the fixed cohort. All retained decisions refuse at every
+horizon. No physically included body happens to be missing from the current2.1
+query in these observations; this does not certify collection of unknown omitted
+bodies at9/12 ticks. A hypothetical passing rule yields only a candidate witness,
+not clearance/admission: the host must still certify current serial query coverage,
+accepted identity/order/phase, actual remaining budget, static/body admission,
+receipt continuity and finite cancellation. The controller cannot use a frozen
+parked assumption or shunt an outside actor. No unchanged-boundary retry is added.
+
+### Coarse chokepoint comparison and measured work
+
+At twelve ticks the diagnostic current-position region query returns43–56
+bodies, visits56–63 bucket entries across the96-tick window and never overflows;
+29–35 selected movers are potential entrants, with both accepted goal directions
+present every round. The worst rectangle spans36 bucket heads. A complete bounded
+portal registry could avoid recursive64-query closure, but this separately built
+136-body current index is not the production start-of-tick index. Production
+would need certified incremental membership or a bounded conservative stale-index
+adapter, and entry coordination would be a new admission scope involving actors
+outside the four existing intervention IDs. These observations authorize neither.
+
+Every tick-end snapshot is occupied (48/48 and96/96), with up to8 circle footprints
+intersecting the throat, rather than8 fully contained centers. Tick-end snapshots
+do not prove uninterrupted occupancy between writes. The six actual plane events
+are all actor95 entering/backing out at the left portal:3125→3126,3145→3150 and
+3151→3157. Every corresponding post-step occupancy still has7 or8 bodies. There
+is no opposite-portal full transit or empty post-exit receipt. Portal candidates
+carry ledger validity; transit matching requires continuous admitted chains,
+original identity/route and phase. Gap, duplicate, epoch, unmatched-chain and
+generation negatives cannot earn transit; same-side backout is never a transit.
+Thus an empty-gate direction token alone cannot drain this already occupied knot.
+
+| Diagnostic work, separately charged | 48 ticks | 96 ticks |
+| --- | ---: | ---: |
+| Full body oracle visits, own call plus tick-end | 13,056 | 26,112 |
+| Current index rebuild visits, five horizons | 32,640 | 65,280 |
+| Fixed corridor distances, five horizons | 32,400 | 64,800 |
+| Nominal early-segment distances | 8,196 | 18,663 |
+| Four-root distances, five horizons | 129,600 | 259,200 |
+| Input graph pair distances, current plus five horizons | 580,608 | 1,161,216 |
+| Input graph edge visits | 769,784 | 1,529,598 |
+| Receipt body visits at six plane events | 810 | 810 |
+
+These are deterministic work counts, not timing or production-capacity evidence.
+Two identical repeats per window retain exact trajectory/report hashes; together
+there are12,218 original selected substeps, zero new static/body contacts and72
+unchanged inactive actors. All64/21 comparisons exactly equal stalled baseline;
+55/59 actors fail sustained progress at48/96. Original normal repairs invalidate
+some accepted-route service records, which cannot be credited as valid service.
+No recovered actor, fair schedule or qualified motion policy is claimed.
+
+### Smallest viable next experiment and ownership
+
+First observe resident exit capacity, before proposing directional entry tokens:
+one resident's original accepted own-call exit proposal, its actual budget and
+swept static/body blockers, and a matched post-exit occupancy receipt. Preserve
+Stop, goals, queues, parked bodies and all64/21 service/loss controls. At most four
+observed leaders remain a diagnostic scope; no resident is moved or recruited.
+Refuse unknown/overflow coverage, changed order/phase, missing receipts, unavailable
+exit capacity or the unchanged occupied boundary. If no resident can leave safely
+under its accepted order, record the blocking chain rather than fabricate a new
+heading, grow the actor cap or extend the12-tick service deadline until it passes.
+Only a real empty/exit handoff witness can justify evaluating entry scheduling.
+The17-tick full-transit lower bound remains distinct from the existing12-tick
+partial-service requirement.
+
+Crowd owner `01a10933-c2b0` retains this next read-only resident-exit oracle. Core
+retains host query/receipt trust, budgets/admissions/position writes/repair;
+caller/construction retain endpoint publication. The pure copied-fixture seam is
+agreed; a future host admission/index change needs an exact owner decision before
+shared edits. Existing both-seat forest/gate/bridge/Stop/native requirements and
+observer-only runtime controls at `d885aa98` remain in force. Independent review
+corrected portal chain validation and the four-unit transit minima (32/22 ticks).
+Exact source/check/clean-pack receipts are appended to existing PR445 after the
+source seal. No production adoption, new PR/main event, full-suite rerun or
+served/rendered proof is claimed. Private inputs/results remain outside git.
