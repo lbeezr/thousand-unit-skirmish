@@ -26,7 +26,12 @@ export function selectSkirmishTarget(observation, soldiers) {
   }
   for (const unit of observation.units.visibleEnemies) {
     if (unit.team !== team || !(unit.hp > 0) || !landUnit(unit.kind)) continue;
-    candidates.push({ key: `unit:${identity(unit)}`, priority: 1, type: 'attack',
+    // A disclosed combatant already in range of this assault can kill it while
+    // it attacks a producer. Clear that immediate threat before the building.
+    const immediate = unit.kind !== 'worker' && UNIT_DEFINITIONS[unit.kind].capabilities.includes('attack')
+      && soldiers.some(soldier => Math.hypot(unit.x - soldier.x, unit.z - soldier.z)
+        <= UNIT_DEFINITIONS[unit.kind].combat.range);
+    candidates.push({ key: `unit:${identity(unit)}`, priority: immediate ? -1 : 1, type: 'attack',
       targetId: unit.id, targetGeneration: unit.generation, x: unit.x, z: unit.z });
   }
   const distance = target => (target.x - center.x) ** 2 + (target.z - center.z) ** 2;

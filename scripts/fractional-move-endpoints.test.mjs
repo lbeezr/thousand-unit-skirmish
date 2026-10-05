@@ -36,7 +36,7 @@ function arrive(r, u, limit = 1800) {
 }
 
 for (const team of [0, 1]) for (const queued of [false, true]) for (const restore of [false, true])
-test(`seat ${team}: crowded fractional corner ${queued ? 'queued' : 'ordinary'} arrival has static clearance ${restore ? 'with pending plan recovery' : 'with live authority'}`, async () => {
+test(`seat ${team}: occupied fractional corner retains ${queued ? 'queued' : 'ordinary'} intent and arrives after release ${restore ? 'with pending plan recovery' : 'with live authority'}`, async () => {
   const scene = { ...map, obstacles: [{ column: 31, row: 24, width: 1, height: 1, material: 'stone' }] };
   const f = await createPathingReplayFixture(scene), r = f.replay;
   try {
@@ -59,6 +59,20 @@ test(`seat ${team}: crowded fractional corner ${queued ? 'queued' : 'ordinary'} 
       u = r.units[id]; parked = parkedIds.map(id => r.units[id]);
     }
     r.drain(); assert.deepEqual(u.path, [1568]);
+    const parkedBefore = structuredClone(parked), revision = u.orderRevision, path = [...u.path];
+    for (let tick = 0; tick < 60; tick++) {
+      r.step();
+      assert.deepEqual(parked, parkedBefore, 'an occupied endpoint never shoves stopped actors');
+      assert.equal(u.orderRevision, revision, 'body wait does not generate a static repair');
+      assert.deepEqual(u.path, path); assert.equal(u.pathIndex, 0);
+      assert.deepEqual([u.moveGoalPoint.x, u.moveGoalPoint.z], [goal.x, goal.z]);
+      assert.equal(u.queuedWaypoints.length, Number(queued));
+    }
+    // These retained study poses include overlapping parked circles and a
+    // parked static penetration. Release the diagnostic obstruction explicitly;
+    // this is not a command-only movement witness for those legacy poses.
+    parked.forEach((actor, i) => Object.assign(actor, { x: 10.5 + i, z: 10.5 }));
+    const released = structuredClone(parked);
     let finished = false;
     for (let tick = 0; tick < 1800 && !finished; tick++) {
       const before = { x: u.x, z: u.z, cell: r.cell(u.x, u.z) }, hp = u.hp;
@@ -78,8 +92,7 @@ test(`seat ${team}: crowded fractional corner ${queued ? 'queued' : 'ordinary'} 
     }
     assert.ok(finished, 'refusing the snap cannot strand the order');
     if (queued) { arrive(r, u); assert.deepEqual([u.x, u.z], [5.23, 4.71]); }
-    for (const [i, actor] of parked.entries())
-      assert.deepEqual([actor.x, actor.z], positions[i + 1], 'parked Infantry remain fixed');
+    assert.deepEqual(parked, released, 'released parked actors remain fixed through exact arrival');
   } finally { await f.dispose(); }
 });
 

@@ -197,7 +197,10 @@ export function createUnitRoutePublicationLedger(width, height, units, nodes, li
     if (outcome.status !== 'ready') throw new Error('unreserved route publication');
     routeEntries = outcome.prospectiveEntries;
     return outcome;
-  } };
+  },
+  // Initial scalar census only; check/commit retain their existing contracts.
+  // Opt-in diagnostics reuse these counts without scanning paths again.
+  censusFieldVisits: fieldVisits, censusRouteEntries: routeEntries };
 }
 
 // Ordinary single-unit Move keeps the requested point apart from its legal

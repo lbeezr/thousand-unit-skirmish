@@ -3,6 +3,7 @@ import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import {UNIT_DEFINITIONS} from '../src/gameplay-definitions.mjs';
+import {ordinaryCrowdBodyRadius} from '../src/unit-crowd-steering.mjs';
 
 const source=readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
 const start=source.indexOf('function getMoveVector('),end=source.indexOf('\nfunction ',start+1);
@@ -23,7 +24,7 @@ function fixture({heading=[0,1],team=0,count=2,offset=.095}={}) {
     for(const u of units){const b=Math.floor((u.z+half)/bucketSize)*columns+Math.floor((u.x+half)/bucketSize);
       next[u.id]=heads[b];heads[b]=u.id;}
   }
-  const context=vm.createContext({units,UNIT_DEFINITIONS,STEP_SECONDS:1/30,MAP_WIDTH:width,
+  const context=vm.createContext({units,UNIT_DEFINITIONS,ordinaryCrowdBodyRadius,STEP_SECONDS:1/30,MAP_WIDTH:width,
     MAP_HALF_X:half,MAP_HALF_Z:half,MIN_SEPARATION:.56,SPATIAL_BUCKET_SIZE:bucketSize,
     spatialBucketColumns:columns,spatialBucketRows:columns,spatialBucketHeads:heads,spatialBucketNext:next,
     SEPARATION_DIAGNOSTICS_ENABLED:false,cellToWorld:point,worldToCell:cell});

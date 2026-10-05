@@ -1,0 +1,150 @@
+{
+  "status": "source-qualified",
+  "testedCodeHead": "1fa2c46df86c6c743baf8943f1b4301933be249b",
+  "freshMain": "51c3085fd486bddc6a23b9457c04fe3ce3e916c8",
+  "runtimeSha256": {
+    "server.mjs": "c160faca67a17c6a40d31657bda789848ddf878c9358e7df8ad05cb48ddfd0ab",
+    "src/unit-crowd-steering.mjs": "ff74bdc28832f550f565a0210d2cfee6fe7be29f1f7b5a484b402da0f01f573d",
+    "src/crowd-wait-lease.mjs": "ddf971e93748761319c3ee1e752f593afa2a7dba205757fa09e7e1fa227b7721",
+    "src/crowd-parked-contour.mjs": "dbac12ec6c207e80df7f3a1f5146fa93637ab4465053854c8d3389224d4f6812"
+  },
+  "diagnosis": {
+    "baselineCodeHead": "3c38364e8f90c374d01365e6d5f672c865120897",
+    "repairEvents": 14,
+    "acceptedRepairRevisions": 14,
+    "constantNavigationRevision": 3,
+    "allEvents": "Each follows a physically admitted own step from a legal raw-waypoint cell join to an illegal adjacent corner join beside the closed paid gate. Core repair is legitimate; local parked-body detour selection repeatedly strands that route.",
+    "witness": "gate-repair-join-witness.json.gz",
+    "baseline": "gate-repair-baseline.json.gz",
+    "trace": "gate-repair-trace.json.gz"
+  },
+  "correction": "Only when a stationary physical body overlaps the adjacent raw waypoint, reject a local parked-body detour whose strict static-circle continuation to that raw waypoint is blocked. Revalidate retained detours and alternatives; this terrain preview does not assert body clearance through the occupied waypoint. Every actual own step retains full physical/body admission. Original immediate adjacent-invalid and 30-stall static handoffs stay unchanged.",
+  "bounds": {
+    "queryVisits": 128,
+    "neighborBodies": 64,
+    "shortProposals": 128,
+    "pointProposals": 64,
+    "parkedWaypointProbes": 64,
+    "detourTerrainProbes": 8,
+    "actualTerrainPreviewMax": 7,
+    "actualParkedWaypointProbeMax": 38
+  },
+  "qualification": {
+    "record": "terrain-detour-64.json.gz",
+    "deadlineTicks": 2700,
+    "observedArrivals": [
+      {
+        "team": 0,
+        "arrived": 64,
+        "ticks": 1141,
+        "inactiveActorsPreserved": 72,
+        "missingControlRecords": 0
+      },
+      {
+        "team": 1,
+        "arrived": 64,
+        "ticks": 2600,
+        "inactiveActorsPreserved": 72,
+        "missingControlRecords": 0
+      }
+    ],
+    "selectedSubsteps": 141567,
+    "staticContactSteps": 0,
+    "pairContactSteps": 0,
+    "pairTolerance": 1e-09,
+    "revisionChanges": [
+      {
+        "team": 0,
+        "maxAcceptedRevisionChanges": 6,
+        "maxStaticRepairsExcludingSingleQueueHandoff": 5
+      },
+      {
+        "team": 1,
+        "maxAcceptedRevisionChanges": 10,
+        "maxStaticRepairsExcludingSingleQueueHandoff": 9
+      }
+    ],
+    "actor113": {
+      "firstGoalTick": 2251,
+      "arrivalTick": 2555,
+      "acceptedRepairRevisions": 0,
+      "queuedHandoffs": 1
+    },
+    "sameRetainedInput": "Independent normalized comparison with preceding fresh-main checkpoints excludes only timestamps/match/generation identities; all geometry, destinations and deadlines retained."
+  },
+  "checks": {
+    "registeredMovementBodyControllerAndJourneys": {
+      "passed": 152,
+      "failed": 0,
+      "head": "1fa2c46df86c6c743baf8943f1b4301933be249b"
+    },
+    "followColdQueue": {
+      "passed": 63,
+      "failed": 0,
+      "head": "1fa2c46df86c6c743baf8943f1b4301933be249b"
+    },
+    "independentFocused": {
+      "passed": 49,
+      "failed": 0,
+      "head": "1fa2c46df86c6c743baf8943f1b4301933be249b"
+    },
+    "types": "pass",
+    "runtimeImports": "215 modules, no cycles",
+    "docs": "pass"
+  },
+  "retired": {
+    "wideCornerRecovery": {
+      "seat0": 64,
+      "seat1": 15,
+      "staticContacts": 0,
+      "bodyContacts": 0,
+      "record": "retired-wide-corner-recovery.json.gz"
+    },
+    "parkedCornerRecovery": {
+      "seat1": 62,
+      "actor113FirstGoal": 2642,
+      "record": "retired-parked-corner-recovery.json.gz"
+    },
+    "note": "No corner-recovery or 120-stall allowance remains in runtime."
+  },
+  "pack": {
+    "sourceRevision": "1fa2c46df86c6c743baf8943f1b4301933be249b",
+    "sourceDirty": false,
+    "digest": "sha256:0a6e611395501188dcc4b593935c47f7bb914cfe565187e2d5cc26edb0d2e31f",
+    "files": 1386,
+    "localHttpScenario": "pass",
+    "qualification": "Package inclusion and served CPU/HTTP checks only; no deployment or rendered claim."
+  },
+  "delivery": {
+    "merged": false,
+    "servedSource": "unverified",
+    "deployedSource": "unverified",
+    "renderer": "blocked once; zero game frames; no retry"
+  },
+  "owner": "01a10933-c2b0-70f1-991d-761518eb5010",
+  "dependency": "No open shared interface decision or parent merge gate.",
+  "nextAction": "Seal exact-head evidence, normal author merge, inspect existing deployment identity; retain ordinary rendered proof through CI/capture owner01a10378 without bypassing the recorded browser failure.",
+  "evidenceSha256": {
+    "terrain-detour-final-1.json.gz": "b2a50a049f5bb9e2810e07c974f6578c8fadd61a7d8e6cf7f8e66d4c169f0d3a",
+    "gate-repair-baseline.json.gz": "ae74ccc5a930b3874ea0b01ccc675a2c8759e187638afc821103a11f585c7036",
+    "independent-terrain-detour-review.json": "7aa824940e336a1d93c0c8e82f4eba9948784a77f5f5d173ad34065ca3887759",
+    "independent-terrain-detour-focused.tap.gz": "6ce2005c112fb83b800995dfc8fd6a31d003921c432945f67e60aa5813391195",
+    "terrain-detour-follow.tap.gz": "d4e0ac034bdbf4469101a38ebd5d75bbaa4b7a00c8b874335b0b6aca81cc5409",
+    "terrain-detour-final-0.json.gz": "459aff976732fab205f06b06355db480aaecdbb949c1e655eb0ea93364d475a0",
+    "terrain-detour-types.txt": "f357000d242e2d62bf4774e5876f3a6100bef808bd2470977069bc302789825f",
+    "gate-repair-trace.json.gz": "34a04d085bcf6bd7de1506cb3b78c026c715e539079936483e7e74d381020486",
+    "terrain-detour-docs.txt": "f1b3bdd96c6d142989e6af744c18b3b035f76cc0930c21c0e006349ae5a7cc21",
+    "retired-parked-corner-recovery.json.gz": "54338e1ccaf84404def131b5eac203493dfff59ec1f4df1a4abf3dae545d6278",
+    "terrain-detour-input-0.json.gz": "f76ccb09adc61b68946e4a28e66076f8fc09eafad2fb10bae61bf122174da188",
+    "terrain-detour-input-1.json.gz": "868967cc624328556da5351edc793a3fc9bdb00d8fb1f6d6038453b10937920d",
+    "terrain-detour-boundaries.tap.gz": "cd26e2ceff9f5721f9bf788a31a488fad510f83fdeec5fbd1af251dacdc0f443",
+    "terrain-detour-64.json.gz": "16dbeaed68d345df91aa26039646c343c5714a810d727c2dd3a8652fd70180a6",
+    "terrain-detour-packed-http.txt": "bb581b11f52e147cdb14f0503526ece672429d583a2557e73cc4dfb10e4022f3",
+    "retired-wide-corner-recovery.json.gz": "7d2a2e5fc678953d3a43ae51b0695994e4b0ec4b6b95026c4867ae1509e1036f",
+    "terrain-detour-actor-0.json.gz": "21947b02ead137acb20e602e9448c7c453b2836d1a755aadd5e1c61ecd2eb034",
+    "gate-repair-join-witness.json.gz": "fea4f4473d1be4687f920213cf094b83c030f446fbe94927e93190a2bb6eb3b2",
+    "independent-terrain-detour-qualification.json": "b3710012d034f2e93ea133e252c2116b4913a37c66d1c64d27d88feec9c40907",
+    "terrain-detour-actor-1.json.gz": "a81f4a71c0adbda034fb0109998d11ef1592dd610969e17d399757b3fcd91207",
+    "terrain-detour-imports.txt": "7060b2c2be7f7aeaccb67ce77097abd11d6f3d5d1b207d792d52875b35606b9c"
+  }
+}

@@ -1,0 +1,1147 @@
+{
+  "status": "unqualified",
+  "baseHead": "7d123046697ce08cdf47fa41e6469155ebc9e10d",
+  "runtimeSha256": {
+    "server.mjs": "8d8509c3ad0475a989d98dfca031c0b00cadda512209338e997ab7c8aa84b57c",
+    "src/unit-crowd-steering.mjs": "b0a0cfc582aaf76fd4308600a05b556d93dd19ce22a829991a92784c56a6bd90",
+    "src/crowd-wait-lease.mjs": "ddf971e93748761319c3ee1e752f593afa2a7dba205757fa09e7e1fa227b7721",
+    "src/crowd-parked-contour.mjs": "dbac12ec6c207e80df7f3a1f5146fa93637ab4465053854c8d3389224d4f6812",
+    "scripts/pathing-replay-fixture.mjs": "ce31591d4b05fe915dd28a713af70b50e762eb7389d783514c3b8da57bc51283",
+    "scripts/queued-gate-pathing.mjs": "c2cdfb7d8a51cf1b4d322a34101208df1f41bb0dc786596d34a221475449349c"
+  },
+  "retainedWorkload": "Existing paid closed-gate 64-unit queued return; unchanged2700 deadline, both seats",
+  "latest": [
+    {
+      "team": 0,
+      "group": 64,
+      "sourceSha256": "8d8509c3ad0475a989d98dfca031c0b00cadda512209338e997ab7c8aa84b57c",
+      "inputSha256": "031daa9a9e1875f3c99a5911aad96430b9a6dd4678751172bf50878b4f8ce421",
+      "ticks": 1141,
+      "arrived": 64,
+      "handoffs": [
+        {
+          "id": 4,
+          "firstGoalReachedTick": 216,
+          "queuedLegStartTick": 216,
+          "arrivalTick": 640
+        },
+        {
+          "id": 5,
+          "firstGoalReachedTick": 217,
+          "queuedLegStartTick": 217,
+          "arrivalTick": 636
+        },
+        {
+          "id": 6,
+          "firstGoalReachedTick": 219,
+          "queuedLegStartTick": 219,
+          "arrivalTick": 816
+        },
+        {
+          "id": 7,
+          "firstGoalReachedTick": 220,
+          "queuedLegStartTick": 220,
+          "arrivalTick": 643
+        },
+        {
+          "id": 8,
+          "firstGoalReachedTick": 129,
+          "queuedLegStartTick": 129,
+          "arrivalTick": 526
+        },
+        {
+          "id": 9,
+          "firstGoalReachedTick": 130,
+          "queuedLegStartTick": 130,
+          "arrivalTick": 494
+        },
+        {
+          "id": 10,
+          "firstGoalReachedTick": 228,
+          "queuedLegStartTick": 228,
+          "arrivalTick": 661
+        },
+        {
+          "id": 11,
+          "firstGoalReachedTick": 228,
+          "queuedLegStartTick": 228,
+          "arrivalTick": 736
+        },
+        {
+          "id": 12,
+          "firstGoalReachedTick": 228,
+          "queuedLegStartTick": 228,
+          "arrivalTick": 653
+        },
+        {
+          "id": 13,
+          "firstGoalReachedTick": 228,
+          "queuedLegStartTick": 228,
+          "arrivalTick": 728
+        },
+        {
+          "id": 14,
+          "firstGoalReachedTick": 204,
+          "queuedLegStartTick": 204,
+          "arrivalTick": 624
+        },
+        {
+          "id": 15,
+          "firstGoalReachedTick": 206,
+          "queuedLegStartTick": 206,
+          "arrivalTick": 719
+        },
+        {
+          "id": 16,
+          "firstGoalReachedTick": 207,
+          "queuedLegStartTick": 207,
+          "arrivalTick": 591
+        },
+        {
+          "id": 17,
+          "firstGoalReachedTick": 208,
+          "queuedLegStartTick": 208,
+          "arrivalTick": 587
+        },
+        {
+          "id": 18,
+          "firstGoalReachedTick": 210,
+          "queuedLegStartTick": 210,
+          "arrivalTick": 583
+        },
+        {
+          "id": 19,
+          "firstGoalReachedTick": 119,
+          "queuedLegStartTick": 119,
+          "arrivalTick": 456
+        },
+        {
+          "id": 20,
+          "firstGoalReachedTick": 261,
+          "queuedLegStartTick": 261,
+          "arrivalTick": 648
+        },
+        {
+          "id": 21,
+          "firstGoalReachedTick": 272,
+          "queuedLegStartTick": 272,
+          "arrivalTick": 637
+        },
+        {
+          "id": 22,
+          "firstGoalReachedTick": 182,
+          "queuedLegStartTick": 182,
+          "arrivalTick": 547
+        },
+        {
+          "id": 23,
+          "firstGoalReachedTick": 170,
+          "queuedLegStartTick": 170,
+          "arrivalTick": 705
+        },
+        {
+          "id": 24,
+          "firstGoalReachedTick": 195,
+          "queuedLegStartTick": 195,
+          "arrivalTick": 693
+        },
+        {
+          "id": 25,
+          "firstGoalReachedTick": 237,
+          "queuedLegStartTick": 237,
+          "arrivalTick": 678
+        },
+        {
+          "id": 26,
+          "firstGoalReachedTick": 195,
+          "queuedLegStartTick": 195,
+          "arrivalTick": 732
+        },
+        {
+          "id": 27,
+          "firstGoalReachedTick": 197,
+          "queuedLegStartTick": 197,
+          "arrivalTick": 620
+        },
+        {
+          "id": 28,
+          "firstGoalReachedTick": 198,
+          "queuedLegStartTick": 198,
+          "arrivalTick": 781
+        },
+        {
+          "id": 29,
+          "firstGoalReachedTick": 206,
+          "queuedLegStartTick": 206,
+          "arrivalTick": 544
+        },
+        {
+          "id": 30,
+          "firstGoalReachedTick": 216,
+          "queuedLegStartTick": 216,
+          "arrivalTick": 673
+        },
+        {
+          "id": 31,
+          "firstGoalReachedTick": 218,
+          "queuedLegStartTick": 218,
+          "arrivalTick": 766
+        },
+        {
+          "id": 32,
+          "firstGoalReachedTick": 217,
+          "queuedLegStartTick": 217,
+          "arrivalTick": 705
+        },
+        {
+          "id": 33,
+          "firstGoalReachedTick": 217,
+          "queuedLegStartTick": 217,
+          "arrivalTick": 751
+        },
+        {
+          "id": 34,
+          "firstGoalReachedTick": 212,
+          "queuedLegStartTick": 212,
+          "arrivalTick": 597
+        },
+        {
+          "id": 35,
+          "firstGoalReachedTick": 199,
+          "queuedLegStartTick": 199,
+          "arrivalTick": 760
+        },
+        {
+          "id": 36,
+          "firstGoalReachedTick": 195,
+          "queuedLegStartTick": 195,
+          "arrivalTick": 783
+        },
+        {
+          "id": 37,
+          "firstGoalReachedTick": 197,
+          "queuedLegStartTick": 197,
+          "arrivalTick": 572
+        },
+        {
+          "id": 38,
+          "firstGoalReachedTick": 198,
+          "queuedLegStartTick": 198,
+          "arrivalTick": 506
+        },
+        {
+          "id": 39,
+          "firstGoalReachedTick": 200,
+          "queuedLegStartTick": 200,
+          "arrivalTick": 504
+        },
+        {
+          "id": 40,
+          "firstGoalReachedTick": 271,
+          "queuedLegStartTick": 271,
+          "arrivalTick": 615
+        },
+        {
+          "id": 41,
+          "firstGoalReachedTick": 241,
+          "queuedLegStartTick": 241,
+          "arrivalTick": 599
+        },
+        {
+          "id": 42,
+          "firstGoalReachedTick": 216,
+          "queuedLegStartTick": 216,
+          "arrivalTick": 790
+        },
+        {
+          "id": 43,
+          "firstGoalReachedTick": 216,
+          "queuedLegStartTick": 216,
+          "arrivalTick": 798
+        },
+        {
+          "id": 44,
+          "firstGoalReachedTick": 200,
+          "queuedLegStartTick": 200,
+          "arrivalTick": 609
+        },
+        {
+          "id": 45,
+          "firstGoalReachedTick": 197,
+          "queuedLegStartTick": 197,
+          "arrivalTick": 549
+        },
+        {
+          "id": 46,
+          "firstGoalReachedTick": 195,
+          "queuedLegStartTick": 195,
+          "arrivalTick": 613
+        },
+        {
+          "id": 47,
+          "firstGoalReachedTick": 197,
+          "queuedLegStartTick": 197,
+          "arrivalTick": 529
+        },
+        {
+          "id": 48,
+          "firstGoalReachedTick": 198,
+          "queuedLegStartTick": 198,
+          "arrivalTick": 502
+        },
+        {
+          "id": 49,
+          "firstGoalReachedTick": 199,
+          "queuedLegStartTick": 199,
+          "arrivalTick": 502
+        },
+        {
+          "id": 50,
+          "firstGoalReachedTick": 281,
+          "queuedLegStartTick": 281,
+          "arrivalTick": 772
+        },
+        {
+          "id": 51,
+          "firstGoalReachedTick": 281,
+          "queuedLegStartTick": 281,
+          "arrivalTick": 866
+        },
+        {
+          "id": 52,
+          "firstGoalReachedTick": 190,
+          "queuedLegStartTick": 190,
+          "arrivalTick": 760
+        },
+        {
+          "id": 53,
+          "firstGoalReachedTick": 191,
+          "queuedLegStartTick": 191,
+          "arrivalTick": 789
+        },
+        {
+          "id": 54,
+          "firstGoalReachedTick": 193,
+          "queuedLegStartTick": 193,
+          "arrivalTick": 856
+        },
+        {
+          "id": 55,
+          "firstGoalReachedTick": 194,
+          "queuedLegStartTick": 194,
+          "arrivalTick": 952
+        },
+        {
+          "id": 56,
+          "firstGoalReachedTick": 195,
+          "queuedLegStartTick": 195,
+          "arrivalTick": 896
+        },
+        {
+          "id": 57,
+          "firstGoalReachedTick": 197,
+          "queuedLegStartTick": 197,
+          "arrivalTick": 868
+        },
+        {
+          "id": 58,
+          "firstGoalReachedTick": 198,
+          "queuedLegStartTick": 198,
+          "arrivalTick": 613
+        },
+        {
+          "id": 59,
+          "firstGoalReachedTick": 200,
+          "queuedLegStartTick": 200,
+          "arrivalTick": 560
+        },
+        {
+          "id": 60,
+          "firstGoalReachedTick": 210,
+          "queuedLegStartTick": 210,
+          "arrivalTick": 1066
+        },
+        {
+          "id": 61,
+          "firstGoalReachedTick": 212,
+          "queuedLegStartTick": 212,
+          "arrivalTick": 871
+        },
+        {
+          "id": 62,
+          "firstGoalReachedTick": 213,
+          "queuedLegStartTick": 213,
+          "arrivalTick": 1065
+        },
+        {
+          "id": 63,
+          "firstGoalReachedTick": 214,
+          "queuedLegStartTick": 214,
+          "arrivalTick": 1087
+        },
+        {
+          "id": 64,
+          "firstGoalReachedTick": 216,
+          "queuedLegStartTick": 216,
+          "arrivalTick": 882
+        },
+        {
+          "id": 65,
+          "firstGoalReachedTick": 217,
+          "queuedLegStartTick": 217,
+          "arrivalTick": 926
+        },
+        {
+          "id": 66,
+          "firstGoalReachedTick": 219,
+          "queuedLegStartTick": 219,
+          "arrivalTick": 1141
+        },
+        {
+          "id": 67,
+          "firstGoalReachedTick": 220,
+          "queuedLegStartTick": 220,
+          "arrivalTick": 975
+        }
+      ],
+      "physical": null,
+      "inactiveActorsPreserved": 72,
+      "distinctGoals": 64,
+      "requested": [
+        2752,
+        2753,
+        2754,
+        2755,
+        2844,
+        2845,
+        2748,
+        2749,
+        2750,
+        2751,
+        2847,
+        2848,
+        2849,
+        2850,
+        2851,
+        2940,
+        2846,
+        2941,
+        3133,
+        3037,
+        2942,
+        2943,
+        2944,
+        2945,
+        2946,
+        2947,
+        3228,
+        3229,
+        3230,
+        3231,
+        3038,
+        3039,
+        3040,
+        3041,
+        3042,
+        3043,
+        3036,
+        3132,
+        3232,
+        3233,
+        3134,
+        3135,
+        3136,
+        3137,
+        3138,
+        3139,
+        3234,
+        3235,
+        3324,
+        3325,
+        3326,
+        3327,
+        3328,
+        3329,
+        3330,
+        3331,
+        3420,
+        3421,
+        3422,
+        3423,
+        3424,
+        3425,
+        3426,
+        3427
+      ],
+      "goals": [
+        2752,
+        2753,
+        2754,
+        2755,
+        2844,
+        2845,
+        2748,
+        2749,
+        2750,
+        2751,
+        2847,
+        2848,
+        2849,
+        2850,
+        2851,
+        2940,
+        2846,
+        2941,
+        3133,
+        3037,
+        2942,
+        2943,
+        2944,
+        2945,
+        2946,
+        2947,
+        3228,
+        3229,
+        3230,
+        3231,
+        3038,
+        3039,
+        3040,
+        3041,
+        3042,
+        3043,
+        3036,
+        3132,
+        3232,
+        3233,
+        3134,
+        3135,
+        2756,
+        3137,
+        3138,
+        3139,
+        3234,
+        3235,
+        3324,
+        3325,
+        3326,
+        3327,
+        3328,
+        3329,
+        3330,
+        3331,
+        3420,
+        3421,
+        3422,
+        3423,
+        3424,
+        3425,
+        3426,
+        3427
+      ],
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "maxPathLength": 33,
+      "onlyNamedBuilder": true,
+      "builderReturned": true,
+      "parkOrder": null,
+      "parkedIntentPreserved": false,
+      "maxNoProgressTicks": 921,
+      "unblockedDestinationsPreserved": true,
+      "unfinished": [],
+      "builderPosition": {
+        "x": -28,
+        "z": 0
+      },
+      "traceSha256": "f3591a55e82f59df3ad2dfa8ddb4d7e2512a0b30fbeeab38fb586f290d358eb8"
+    },
+    {
+      "team": 1,
+      "group": 64,
+      "sourceSha256": "8d8509c3ad0475a989d98dfca031c0b00cadda512209338e997ab7c8aa84b57c",
+      "inputSha256": "86c4547ce9c7168a4c5a477834f649a184fc08c47aa4895b6fdb225cc6416b77",
+      "ticks": 2700,
+      "arrived": 63,
+      "handoffs": [
+        {
+          "id": 72,
+          "firstGoalReachedTick": 702,
+          "queuedLegStartTick": 702,
+          "arrivalTick": 1583
+        },
+        {
+          "id": 73,
+          "firstGoalReachedTick": 1355,
+          "queuedLegStartTick": 1355,
+          "arrivalTick": 1757
+        },
+        {
+          "id": 74,
+          "firstGoalReachedTick": 1352,
+          "queuedLegStartTick": 1352,
+          "arrivalTick": 1732
+        },
+        {
+          "id": 75,
+          "firstGoalReachedTick": 777,
+          "queuedLegStartTick": 777,
+          "arrivalTick": 1644
+        },
+        {
+          "id": 76,
+          "firstGoalReachedTick": 1027,
+          "queuedLegStartTick": 1027,
+          "arrivalTick": 1623
+        },
+        {
+          "id": 77,
+          "firstGoalReachedTick": 1561,
+          "queuedLegStartTick": 1561,
+          "arrivalTick": 1937
+        },
+        {
+          "id": 78,
+          "firstGoalReachedTick": 658,
+          "queuedLegStartTick": 658,
+          "arrivalTick": 1288
+        },
+        {
+          "id": 79,
+          "firstGoalReachedTick": 656,
+          "queuedLegStartTick": 656,
+          "arrivalTick": 1222
+        },
+        {
+          "id": 80,
+          "firstGoalReachedTick": 688,
+          "queuedLegStartTick": 688,
+          "arrivalTick": 1561
+        },
+        {
+          "id": 81,
+          "firstGoalReachedTick": 665,
+          "queuedLegStartTick": 665,
+          "arrivalTick": 1598
+        },
+        {
+          "id": 82,
+          "firstGoalReachedTick": 789,
+          "queuedLegStartTick": 789,
+          "arrivalTick": 1324
+        },
+        {
+          "id": 83,
+          "firstGoalReachedTick": 678,
+          "queuedLegStartTick": 678,
+          "arrivalTick": 1406
+        },
+        {
+          "id": 84,
+          "firstGoalReachedTick": 835,
+          "queuedLegStartTick": 835,
+          "arrivalTick": 1358
+        },
+        {
+          "id": 85,
+          "firstGoalReachedTick": 1374,
+          "queuedLegStartTick": 1374,
+          "arrivalTick": 1730
+        },
+        {
+          "id": 86,
+          "firstGoalReachedTick": 919,
+          "queuedLegStartTick": 919,
+          "arrivalTick": 1515
+        },
+        {
+          "id": 87,
+          "firstGoalReachedTick": 1634,
+          "queuedLegStartTick": 1634,
+          "arrivalTick": 1962
+        },
+        {
+          "id": 88,
+          "firstGoalReachedTick": 614,
+          "queuedLegStartTick": 614,
+          "arrivalTick": 1309
+        },
+        {
+          "id": 89,
+          "firstGoalReachedTick": 610,
+          "queuedLegStartTick": 610,
+          "arrivalTick": 981
+        },
+        {
+          "id": 90,
+          "firstGoalReachedTick": 1623,
+          "queuedLegStartTick": 1623,
+          "arrivalTick": 1955
+        },
+        {
+          "id": 91,
+          "firstGoalReachedTick": 765,
+          "queuedLegStartTick": 765,
+          "arrivalTick": 1388
+        },
+        {
+          "id": 92,
+          "firstGoalReachedTick": 818,
+          "queuedLegStartTick": 818,
+          "arrivalTick": 1556
+        },
+        {
+          "id": 93,
+          "firstGoalReachedTick": 947,
+          "queuedLegStartTick": 947,
+          "arrivalTick": 1380
+        },
+        {
+          "id": 94,
+          "firstGoalReachedTick": 2300,
+          "queuedLegStartTick": 2300,
+          "arrivalTick": 2591
+        },
+        {
+          "id": 95,
+          "firstGoalReachedTick": 1592,
+          "queuedLegStartTick": 1592,
+          "arrivalTick": 1966
+        },
+        {
+          "id": 96,
+          "firstGoalReachedTick": 829,
+          "queuedLegStartTick": 829,
+          "arrivalTick": 1291
+        },
+        {
+          "id": 97,
+          "firstGoalReachedTick": 961,
+          "queuedLegStartTick": 961,
+          "arrivalTick": 1399
+        },
+        {
+          "id": 98,
+          "firstGoalReachedTick": 1698,
+          "queuedLegStartTick": 1698,
+          "arrivalTick": 2006
+        },
+        {
+          "id": 99,
+          "firstGoalReachedTick": 650,
+          "queuedLegStartTick": 650,
+          "arrivalTick": 1624
+        },
+        {
+          "id": 100,
+          "firstGoalReachedTick": 726,
+          "queuedLegStartTick": 726,
+          "arrivalTick": 1468
+        },
+        {
+          "id": 101,
+          "firstGoalReachedTick": 852,
+          "queuedLegStartTick": 852,
+          "arrivalTick": 1210
+        },
+        {
+          "id": 102,
+          "firstGoalReachedTick": 1617,
+          "queuedLegStartTick": 1617,
+          "arrivalTick": 1945
+        },
+        {
+          "id": 103,
+          "firstGoalReachedTick": 2364,
+          "queuedLegStartTick": 2364,
+          "arrivalTick": 2654
+        },
+        {
+          "id": 104,
+          "firstGoalReachedTick": 2064,
+          "queuedLegStartTick": 2064,
+          "arrivalTick": 2364
+        },
+        {
+          "id": 105,
+          "firstGoalReachedTick": 1871,
+          "queuedLegStartTick": 1871,
+          "arrivalTick": 2193
+        },
+        {
+          "id": 106,
+          "firstGoalReachedTick": 1582,
+          "queuedLegStartTick": 1582,
+          "arrivalTick": 1985
+        },
+        {
+          "id": 107,
+          "firstGoalReachedTick": 942,
+          "queuedLegStartTick": 942,
+          "arrivalTick": 1587
+        },
+        {
+          "id": 108,
+          "firstGoalReachedTick": 707,
+          "queuedLegStartTick": 707,
+          "arrivalTick": 1035
+        },
+        {
+          "id": 109,
+          "firstGoalReachedTick": 681,
+          "queuedLegStartTick": 681,
+          "arrivalTick": 1780
+        },
+        {
+          "id": 110,
+          "firstGoalReachedTick": 736,
+          "queuedLegStartTick": 736,
+          "arrivalTick": 1082
+        },
+        {
+          "id": 111,
+          "firstGoalReachedTick": 985,
+          "queuedLegStartTick": 985,
+          "arrivalTick": 1446
+        },
+        {
+          "id": 112,
+          "firstGoalReachedTick": 784,
+          "queuedLegStartTick": 784,
+          "arrivalTick": 1147
+        },
+        {
+          "id": 113,
+          "firstGoalReachedTick": null,
+          "queuedLegStartTick": null,
+          "arrivalTick": null
+        },
+        {
+          "id": 114,
+          "firstGoalReachedTick": 884,
+          "queuedLegStartTick": 884,
+          "arrivalTick": 1320
+        },
+        {
+          "id": 115,
+          "firstGoalReachedTick": 1021,
+          "queuedLegStartTick": 1021,
+          "arrivalTick": 1342
+        },
+        {
+          "id": 116,
+          "firstGoalReachedTick": 868,
+          "queuedLegStartTick": 868,
+          "arrivalTick": 1272
+        },
+        {
+          "id": 117,
+          "firstGoalReachedTick": 797,
+          "queuedLegStartTick": 797,
+          "arrivalTick": 1229
+        },
+        {
+          "id": 118,
+          "firstGoalReachedTick": 896,
+          "queuedLegStartTick": 896,
+          "arrivalTick": 1404
+        },
+        {
+          "id": 119,
+          "firstGoalReachedTick": 758,
+          "queuedLegStartTick": 758,
+          "arrivalTick": 1090
+        },
+        {
+          "id": 120,
+          "firstGoalReachedTick": 727,
+          "queuedLegStartTick": 727,
+          "arrivalTick": 1401
+        },
+        {
+          "id": 121,
+          "firstGoalReachedTick": 805,
+          "queuedLegStartTick": 805,
+          "arrivalTick": 1203
+        },
+        {
+          "id": 122,
+          "firstGoalReachedTick": 754,
+          "queuedLegStartTick": 754,
+          "arrivalTick": 1241
+        },
+        {
+          "id": 123,
+          "firstGoalReachedTick": 1728,
+          "queuedLegStartTick": 1728,
+          "arrivalTick": 2050
+        },
+        {
+          "id": 124,
+          "firstGoalReachedTick": 746,
+          "queuedLegStartTick": 746,
+          "arrivalTick": 1365
+        },
+        {
+          "id": 125,
+          "firstGoalReachedTick": 1435,
+          "queuedLegStartTick": 1435,
+          "arrivalTick": 1790
+        },
+        {
+          "id": 126,
+          "firstGoalReachedTick": 1526,
+          "queuedLegStartTick": 1526,
+          "arrivalTick": 1979
+        },
+        {
+          "id": 127,
+          "firstGoalReachedTick": 2114,
+          "queuedLegStartTick": 2114,
+          "arrivalTick": 2487
+        },
+        {
+          "id": 128,
+          "firstGoalReachedTick": 649,
+          "queuedLegStartTick": 649,
+          "arrivalTick": 1406
+        },
+        {
+          "id": 129,
+          "firstGoalReachedTick": 651,
+          "queuedLegStartTick": 651,
+          "arrivalTick": 1076
+        },
+        {
+          "id": 130,
+          "firstGoalReachedTick": 653,
+          "queuedLegStartTick": 653,
+          "arrivalTick": 1026
+        },
+        {
+          "id": 131,
+          "firstGoalReachedTick": 752,
+          "queuedLegStartTick": 752,
+          "arrivalTick": 1571
+        },
+        {
+          "id": 132,
+          "firstGoalReachedTick": 781,
+          "queuedLegStartTick": 781,
+          "arrivalTick": 1254
+        },
+        {
+          "id": 133,
+          "firstGoalReachedTick": 2207,
+          "queuedLegStartTick": 2207,
+          "arrivalTick": 2554
+        },
+        {
+          "id": 134,
+          "firstGoalReachedTick": 763,
+          "queuedLegStartTick": 763,
+          "arrivalTick": 1584
+        },
+        {
+          "id": 135,
+          "firstGoalReachedTick": 1537,
+          "queuedLegStartTick": 1537,
+          "arrivalTick": 1883
+        }
+      ],
+      "physical": null,
+      "inactiveActorsPreserved": 72,
+      "distinctGoals": 64,
+      "requested": [
+        2748,
+        2749,
+        2750,
+        2751,
+        2752,
+        2753,
+        2844,
+        2845,
+        2846,
+        2847,
+        2848,
+        2849,
+        2850,
+        2851,
+        2940,
+        2941,
+        2944,
+        2945,
+        2946,
+        2947,
+        3036,
+        3037,
+        3133,
+        2754,
+        2942,
+        2755,
+        3039,
+        3040,
+        3041,
+        3042,
+        3043,
+        3132,
+        3230,
+        3327,
+        2943,
+        3038,
+        3135,
+        3136,
+        3137,
+        3138,
+        3139,
+        3228,
+        3229,
+        3134,
+        3231,
+        3328,
+        3232,
+        3233,
+        3234,
+        3235,
+        3324,
+        3325,
+        3326,
+        3424,
+        3425,
+        3426,
+        3329,
+        3330,
+        3331,
+        3420,
+        3421,
+        3422,
+        3423,
+        3427
+      ],
+      "goals": [
+        2748,
+        2749,
+        2750,
+        2751,
+        2752,
+        2753,
+        2844,
+        2845,
+        2846,
+        2847,
+        2848,
+        2849,
+        2850,
+        2851,
+        2940,
+        2941,
+        2944,
+        2945,
+        2946,
+        2947,
+        3036,
+        3037,
+        3133,
+        2754,
+        2942,
+        2755,
+        3039,
+        3040,
+        3041,
+        3042,
+        3043,
+        3132,
+        3230,
+        3327,
+        2943,
+        3038,
+        3135,
+        2756,
+        3137,
+        3138,
+        3139,
+        3203,
+        3229,
+        3134,
+        3231,
+        3328,
+        3232,
+        3233,
+        3234,
+        3235,
+        3324,
+        3325,
+        3326,
+        3424,
+        3425,
+        3426,
+        3329,
+        3330,
+        3331,
+        3420,
+        3421,
+        3422,
+        3423,
+        3427
+      ],
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "maxPathLength": 68,
+      "onlyNamedBuilder": true,
+      "builderReturned": true,
+      "parkOrder": null,
+      "parkedIntentPreserved": false,
+      "maxNoProgressTicks": 1594,
+      "unblockedDestinationsPreserved": true,
+      "unfinished": [
+        {
+          "id": 113,
+          "x": -1.7790653850760747,
+          "z": 0.21999999999999997,
+          "goal": {
+            "x": -12.5,
+            "z": 1.5
+          },
+          "pathIndex": 21,
+          "pathLength": 33
+        }
+      ],
+      "builderPosition": {
+        "x": 28,
+        "z": 22
+      },
+      "traceSha256": "39b832a1c8d9ec0ae9a5a13b83a91981fb546ba00fdcfaa8d29b84bb28d8244a"
+    }
+  ],
+  "missingAcceptance": [
+    "seat1 actor113 misses first-leg and queued-return deadline",
+    "exact-head independent review",
+    "fresh-main full affected checks",
+    "clean pack and normal merge",
+    "identified deployment and ordinary rendered proof"
+  ],
+  "nextAction": "Integrate current main; reduce retained late first-leg113 without changing workload, then exact-head both-seat physical/intent qualification.",
+  "retiredExperiments": {
+    "broaderFollowerExemption": {
+      "seat0": 50,
+      "seat1": 55
+    },
+    "earlyContour30": {
+      "seat0": 64,
+      "seat1": 2
+    },
+    "earlyWorkerContour30": {
+      "seat0": 64,
+      "seat1": 4
+    }
+  },
+  "physicalEarlierVariant": {
+    "file": "counted-physical-64.json.gz",
+    "seat0": 64,
+    "seat1": 56,
+    "staticContacts": 0,
+    "pairContacts": 0,
+    "sourceNote": "Earlier current-direction opposed-lane variant, not qualification for latest preserved-lane runtime.",
+    "leaseExercised": false
+  },
+  "review": "Independent incremental read-only diagnosis; no exact-head approval/merge signoff."
+}
