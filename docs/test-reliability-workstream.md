@@ -40,12 +40,34 @@ computed value references. A local shadow of an imported name can still select
 an unnecessary import; referenced nonlocal host imports fail setup. Contract
 tests record that limit instead of claiming a general lexical-scope resolver.
 
+## Bounded economy/drop-off audit
+
+At main `c42a9b4b`, the selected paid-economy, Storehouse, Mill and cargo-return
+fixtures reproduce 46 passes and six failures across 52 checks. Every failure is
+the paid-economy consumer missing `currentConstructionAccessRetry` when real
+`finishPalisadeBuilderAssignments` runs. The drop-off consumers themselves pass;
+there is no evidence for a new economy dependency resolver or runtime change.
+
+The paid-economy fixture now consumes the existing production-derived construction
+functions/imports and fresh retry state. All 14 original test bodies remain
+unchanged. Four additional both-seat controls exercise paid assignment keeping
+the current occupied-endpoint retry and removing retries with a foreign site,
+epoch, generation, revision or nonblocking state. Equal actor fields cannot
+transfer a WeakMap retry to another object. Payment, assigned site and revision
+remain checked. Scenario route admission stays an explicit synchronous double.
+
+Core Farm/Worker ownership remains at `01a107c9-0032`/`01a107ba`: no server,
+production module, shared route binding, CI registry or gameplay edit is allocated
+here. Their existing construction roots and drop-off scoring remain the consumed
+interface; production modularization can later replace the seam with exports.
+
 ## Coordination and ongoing queue
 
 | Slice / owner | Next step | Dependency / evidence |
 | --- | --- | --- |
-| Construction shared fixture / `01a1085f` | Independently review exact source, qualify both consumers and normally integrate; merge/clean-pack identities live in the slice PR. | All original 22 receipt and 15 paid-wall test bodies stay byte-identical. Seven loader controls cover inserted helpers, import forms, labels/computed values, setup failures and isolated retries. |
-| Next reliability slice / `01a1085f` | Audit the existing economy/drop-off shared fixture against recurring missing production exports; select a bounded interface only if another concrete failure justifies it. | PR397 history and `economy-server-fixture.mjs`; no bulk migration or reserved writes yet. |
+| Construction shared fixture / `01a1085f` | Completed in [PR453](https://github.com/lbeezr/thousand-unit-skirmish/pull/453); retain production-root contracts during future extraction. | All original 22 receipt and 15 paid-wall test bodies stay byte-identical. Seven loader controls cover inserted helpers, import forms, labels/computed values, setup failures and isolated retries. |
+| Paid-economy shared construction adopter / `01a1085f` | Independently review and qualify the exact integrated head, then normally merge; source and clean-pack identities belong in the slice PR. | Six real missing-helper failures; original 14 bodies plus four retry-ownership controls. Storehouse/Mill/return regressions remain unchanged. |
+| Next reliability audit / `01a1085f` | Read-only audit remaining paid construction consumers for real missing dependencies before selecting another bounded migration. | Shared economy/route bindings and core Farm/Worker owners; passing drop-off checks do not justify mass rewriting. No production write reserved. |
 | Production modularization owner | Preserve or explicitly replace these construction roots when extracting them into an exported runtime module; then replace only the affected fixture slice. | No production host/module/path changes in this slice. Architecture owner retains import/domain guards. |
 | Checked-type owner | Retain strict project membership, negative contracts and ambient isolation; assess the fixture interface in the dedicated type lane. | No tsconfig, runtime type-contract or coverage-floor edits here. Existing type gates remain required. |
 | CPU qualification owner `01a10378` | Qualify containing source through the existing full-suite workflow. | The existing receipt registration runs the new loader controls; labels, deadlines, shard selection and CI registry are unchanged. Focused checks are not a full-suite receipt. |

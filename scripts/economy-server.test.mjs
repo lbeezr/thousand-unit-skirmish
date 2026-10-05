@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
 import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
+import { constructionServerBindings, constructionServerFunctions } from './construction-server-fixture.mjs';
 import { BUILDING_DEFINITIONS, missingGameplayPrerequisites } from '../src/gameplay-definitions.mjs';
 import { STONE_ECONOMY_PROFILE_ID as STONE, DEFAULT_ECONOMY_PROFILE_ID as BASE } from '../src/economy-profile.mjs';
 import { constructionAssignment, constructionWorkArea } from '../src/construction-work-intent.mjs';
@@ -14,14 +15,15 @@ function fn(name) {
   const start = source.indexOf(`function ${name}(`), end = source.indexOf('\nfunction ', start + 1);
   assert.ok(start >= 0 && end > start); return source.slice(start, end);
 }
+
 // Real paid-command bodies; geometry is a simple reachable, vacant test site.
 function fixture(team, profile = STONE, { acceptAssignment = true } = {}) {
   const notices = [], worker = { id: 0, team, kind: 'worker', hp: 35, x: -4.5, z: 0.5,
     generation: 1, orderRevision: 0, buildingTargetId: null, workIntent: null, wallBuildOrder: null,
     cargo: 0, cargoType: null, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '' };
-  const context = vm.createContext({ ...economyServerBindings(profile), BUILDING_DEFINITIONS,
+  const context = vm.createContext({ ...economyServerBindings(profile), ...constructionServerBindings(), BUILDING_DEFINITIONS,
     VisionCoverageCache, visionCoverageGeneration: 0,
-    constructionAssignment, constructionWorkArea, isPalisade, palisadeConstructionRetries: new WeakMap(),
+    constructionAssignment, constructionWorkArea, isPalisade,
     teamFood: [300.25, 300.25], teamWood: [600.125, 600.125], teamStone: [50, 50],
     teamUpgrades: [{}, {}], units: [worker], buildings: [], buildingsById: new Map(),
     MAX_BUILDINGS: 128, MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8, CELL_COUNT: 256,
@@ -45,7 +47,7 @@ function fixture(team, profile = STONE, { acceptAssignment = true } = {}) {
     mapDefinition: { width: 16, height: 16, economyProfileId: profile, triggers: [] },
     destroyBuilding(building) { context.buildingsById.delete(building.id); context.buildings.splice(context.buildings.indexOf(building), 1); },
   });
-  vm.runInContext(economyServerFunctions + ['invalidateVisionCoverage', 'palisadeConstructionIntent', 'preparePalisadeBuilderAssignments',
+  vm.runInContext(economyServerFunctions + constructionServerFunctions + ['invalidateVisionCoverage', 'palisadeConstructionIntent', 'preparePalisadeBuilderAssignments',
     'finishPalisadeBuilderAssignments', 'buildBuilding', 'cancelConstruction'].map(fn).join('\n'), context);
   const build = type => context.buildBuilding({ team }, { ids: [0], buildingType: type, x: 0.5, z: 3.5 });
   return { context, notices, worker, build };
@@ -137,6 +139,43 @@ for (const team of [0, 1]) {
       assert.throws(() => c.depositWorkerCargo(worker), /Unsupported Worker cargo/);
       assert.equal(worker.cargo, 3.125); assert.equal(worker.cargoType, type);
       assert.deepEqual([c.teamFood, c.teamWood, c.teamStone], before);
+    }
+  });
+}
+
+// Synchronous route admission may retain an occupied endpoint wait. The paid
+// assignment must keep only that actor/site/epoch/revision's production retry.
+for (const team of [0, 1]) {
+  function buildWithAccessRetry(overrides = {}) {
+    const f = fixture(team), c = f.context, admit = c.assignFormationMove;
+    let retry;
+    c.assignFormationMove = (...args) => {
+      admit(...args);
+      retry = { accessBlocked: true, siteId: f.worker.buildingTargetId,
+        epoch: c.movePlanningEpoch, generation: f.worker.generation,
+        revision: f.worker.orderRevision, ...overrides };
+      c.palisadeConstructionRetries.set(f.worker, retry);
+    };
+    f.build('watchtower');
+    assert.deepEqual([c.teamFood[team], c.teamWood[team], c.teamStone[team]], [250.25, 450.125, 0]);
+    assert.deepEqual(f.worker.workIntent.siteIds, [1]);
+    assert.equal(f.worker.buildingTargetId, 1);
+    assert.equal(f.worker.orderRevision, 1);
+    return { ...f, retry };
+  }
+  test(`seat ${team}: paid assignment retains its current occupied-endpoint retry`, () => {
+    const { context: c, worker, retry } = buildWithAccessRetry();
+    assert.equal(c.palisadeConstructionRetries.get(worker), retry);
+    assert.equal(c.currentConstructionAccessRetry(worker, c.buildingsById.get(1)), retry);
+    assert.equal(c.currentConstructionAccessRetry({ ...worker }, c.buildingsById.get(1)), null,
+      'retry ownership follows actor identity, not equal fields');
+  });
+  test(`seat ${team}: paid assignment removes stale or nonblocking endpoint retries`, () => {
+    for (const overrides of [{ siteId: 2 }, { epoch: -1 }, { generation: 2 },
+      { revision: 0 }, { accessBlocked: false }]) {
+      const { context: c, worker } = buildWithAccessRetry(overrides);
+      assert.equal(c.palisadeConstructionRetries.has(worker), false, JSON.stringify(overrides));
+      assert.equal(c.currentConstructionAccessRetry(worker, c.buildingsById.get(1)), null);
     }
   });
 }
