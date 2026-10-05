@@ -1260,8 +1260,9 @@ this internal retention change; rejected art holds remain intact.
 
 ### Next general Worker publication contract
 
-The retained reporter now additionally consumes the actual `workerAtDropoff`
-stale-navigation branch. Six synthetic flat/weighted quota cases on 320×160,
+The [clean-source navigation retry witnesses](qa-evidence/worker-retention-2026-10-05/navigation-retry.json)
+and reporter additionally consume the actual `workerAtDropoff` stale-navigation
+branch at `231d5e00`. Six synthetic flat/weighted quota cases on 320×160,
 160×320 and 320² preserve live cargo, phase, raw selected tail/score/cost, but
 increase saved entries beyond quota after reselecting a drop-off. The checkpoint
 leaf refuses those overshoots. These are source writer witnesses with controlled
