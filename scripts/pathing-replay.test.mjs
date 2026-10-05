@@ -61,14 +61,38 @@ for(const team of [0,1])test(`seat ${team}: consecutive paid footprints reserve 
   const {fixture,r,army}=await movingGroup('dynamic-goal',team);
   try {
     const workers=r.units.filter(u=>u.team===team&&u.kind==='worker');
+    const before=new Map(army.map(u=>[u.id,{goal:u.moveGoalCell,revision:u.orderRevision,
+      generation:u.generation,queue:structuredClone(u.queuedWaypoints)}]));
     const first=r.order(team,{type:'build',ids:[workers[0].id],buildingType:'house',x:16.5,z:.5});
     assert.equal(r.buildings.length,1,'first paid footprint is admitted before planning drains');
     assert.ok(!first.some(n=>/REJECTED|FAILED/.test(n.message)));
-    assert.ok(army.some(u=>u.movePlanningPending&&!r.isWalkable(u.moveGoalCell)),
-      'first repair is pending while the unit still stores its blocked original destination');
+    const footprint=new Set(r.buildings[0].footprint);
+    const displaced=army.filter(u=>footprint.has(before.get(u.id).goal));
+    assert.ok(displaced.length>0,'the paid footprint really blocks original formation destinations');
+    const assignments=new Map(r.planningJobs.flatMap(job=>job.assignments).map(a=>[a.unit.id,a]));
+    for(const u of displaced) {
+      const saved=before.get(u.id),assignment=assignments.get(u.id);
+      assert.equal(u.movePlanningPending,true,'blocked goals have accepted repairs before planning drains');
+      assert.ok(assignment,'each displaced unit owns a pending repair assignment');
+      assert.equal(u.moveGoalCell,assignment.destination,'accepted repair goal is durable before route publication');
+      assert.notEqual(u.moveGoalCell,saved.goal,'the blocked original destination is replaced');
+      assert.ok(r.isWalkable(u.moveGoalCell));
+      assert.equal(r.components[r.cell(u.x,u.z)],r.components[u.moveGoalCell]);
+      assert.deepEqual(u.path,[],'a durable goal does not pretend the pending route has published');
+      assert.equal(u.pathIndex,0);
+      assert.ok(u.orderRevision>saved.revision);
+      assert.equal(assignment.revision,u.orderRevision,'publication remains tied to the accepted revision');
+    }
+    for(const u of army) {
+      assert.equal(u.generation,before.get(u.id).generation);
+      assert.deepEqual(u.queuedWaypoints,before.get(u.id).queue,'internal repair preserves queued intent');
+    }
     const second=r.order(team,{type:'build',ids:[workers[1].id],buildingType:'house',x:19.5,z:.5});
     assert.ok(!second.some(n=>/REJECTED|FAILED/.test(n.message)));
-    assert.equal(r.buildings.length,2,'second paid footprint is admitted before planning drains');r.drain();
+    assert.equal(r.buildings.length,2,'second paid footprint is admitted before planning drains');
+    assert.equal(new Set(army.map(u=>u.moveGoalCell)).size,64,'pending goals remain separately reserved');
+    for(const u of army)assert.ok(r.isWalkable(u.moveGoalCell),'neither paid footprint remains an accepted destination');
+    r.drain();
     assert.equal(new Set(army.map(u=>u.moveGoalCell)).size,64);
     for(const u of army)assert.equal(r.components[r.cell(u.x,u.z)],r.components[u.moveGoalCell]);
     for(let tick=0;tick<1000&&army.some(u=>u.pathIndex<u.path.length);tick++)r.step();
