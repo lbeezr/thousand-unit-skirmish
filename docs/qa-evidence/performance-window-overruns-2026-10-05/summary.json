@@ -1,0 +1,761 @@
+{
+  "schemaVersion": 1,
+  "scenario": "existing map-capacity-scenario / Crownroads 24 / three 10-second movement waves / cold recovery",
+  "command": "node scripts/map-capacity-scenario.mjs --map veyrholds-crownroads --loads 24 --seconds 10 --output DIR --rss-stop-mib 512",
+  "sealedTelemetry": false,
+  "runs": [
+    {
+      "label": "baseline",
+      "sourceCommit": "b5b4dd49139b86dbe6ad0d299469f6b193df81b1",
+      "sourceDirty": false,
+      "dirtyPaths": [],
+      "serverSha256": "590c98e9a1d9e0d5a65b38249f73434706f120e1c2d8b3ec5f25d028ead25385",
+      "runtimeContentSha256": "38302211fbe26e8a48cfda73ca2f87d9593020173a28b7cea5c4d685fe9304e9",
+      "runtimeDigestMethod": "sorted server.mjs, package-lock.json and src .mjs/.js; path NUL bytes NUL",
+      "runtimeFileCount": 213,
+      "scriptSha256": "e81b683e975bfa7807410c1a834694d4af3f6664abd545c2abb64b90a1506fd4",
+      "mapId": "veyrholds-crownroads",
+      "mapSha256": "0b62a9f967ef42c967eb9121e07395b75549d52d4a73dd16eaf29aebf19e3727",
+      "terrainSeed": 104031,
+      "width": 256,
+      "height": 256,
+      "healthBuildIdentity": {
+        "status": "unknown",
+        "origin": "unavailable",
+        "sourceRevision": null,
+        "sourceDirty": null,
+        "digest": null
+      },
+      "matchModeId": "authored",
+      "matchModeVersion": 1,
+      "host": {
+        "platform": "linux",
+        "arch": "x64",
+        "cpus": 5,
+        "cpuModel": "AMD EPYC 9V74 80-Core Processor",
+        "memoryBytes": 18882699264,
+        "loadBefore": [
+          0,
+          0,
+          0
+        ],
+        "isolated": false,
+        "loadAfter": [
+          0,
+          0,
+          0
+        ]
+      },
+      "startedAt": "2026-10-05T13:42:16.906Z",
+      "finishedAt": "2026-10-05T13:42:53.539Z",
+      "rawSha256": "2527a62dd4d7c28a07418d77bf4d0a0dd836e801af02053c12e27e2efd271f60",
+      "gzipSha256": "ceac4b4aa2a9d4c925da085122b394b2cbdb79b7cc42b45382959fbf2323ecb6",
+      "passedExistingDiagnosticEnvelope": true,
+      "envelope": {
+        "sampledWindows": 65,
+        "tickP95PeakMs": 13.914,
+        "tickMaxMs": 15.024,
+        "startLagP95PeakMs": 1.113,
+        "startLagMaxMs": 6.25,
+        "maximumPlanningSliceMs": 4.582,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "peakSampledServerRssBytes": 135245824,
+      "gridBoundaryProtocol": [
+        {
+          "width": 257,
+          "height": 256,
+          "accepted": false,
+          "message": "Map custom map width and height must be integers between 16 and 256."
+        },
+        {
+          "width": 256,
+          "height": 257,
+          "accepted": false,
+          "message": "Map custom map width and height must be integers between 16 and 256."
+        },
+        {
+          "width": 320,
+          "height": 320,
+          "accepted": false,
+          "message": "Map custom map width and height must be integers between 16 and 256."
+        },
+        {
+          "width": 256,
+          "height": 256,
+          "accepted": true,
+          "message": null
+        }
+      ],
+      "waves": [
+        {
+          "region": "north-pass",
+          "tickTiming": {
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "budgetMs": 33.333,
+            "p50Ms": 1.205,
+            "p95Ms": 3.183,
+            "maxMs": 6.031,
+            "startLagP95Ms": 0.937,
+            "startLagMaxMs": 2.42,
+            "scheduler": {
+              "policy": "drop-elapsed-slots",
+              "skippedTickSlotsTotal": 0,
+              "lastOverloadSkippedSlots": 0,
+              "lastOverloadTick": null
+            },
+            "slowestTick": {
+              "tickNumber": 276,
+              "durationMs": 6.031,
+              "cpuMs": 6.37,
+              "simulationMs": 1.62,
+              "visionMs": 0.322,
+              "scenarioMs": 0.011,
+              "scenarioEvaluated": true,
+              "broadcastMs": 4.077,
+              "checkpointMs": 0.001
+            },
+            "scenarioTiming": {
+              "sampleCount": 100,
+              "p50Ms": 0.009,
+              "p95Ms": 0.012,
+              "maxMs": 0.059
+            }
+          },
+          "planningMaxSliceMs": 2.186,
+          "finalNoticeReceiptMs": [
+            5.287,
+            5.894
+          ],
+          "firstObservedMovementReceiptMs": [
+            95.371,
+            95.82
+          ],
+          "clock": {
+            "gameSeconds": 10.999999999999968,
+            "wallSeconds": 11.002,
+            "factor": 0.9998182148700206
+          },
+          "skippedSlotDelta": 0
+        },
+        {
+          "region": "high-flank",
+          "tickTiming": {
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "budgetMs": 33.333,
+            "p50Ms": 1.422,
+            "p95Ms": 3.507,
+            "maxMs": 9.191,
+            "startLagP95Ms": 1.064,
+            "startLagMaxMs": 6.25,
+            "scheduler": {
+              "policy": "drop-elapsed-slots",
+              "skippedTickSlotsTotal": 0,
+              "lastOverloadSkippedSlots": 0,
+              "lastOverloadTick": null
+            },
+            "slowestTick": {
+              "tickNumber": 558,
+              "durationMs": 9.191,
+              "cpuMs": 9.187,
+              "simulationMs": 0.944,
+              "visionMs": 0.164,
+              "scenarioMs": 0.008,
+              "scenarioEvaluated": true,
+              "broadcastMs": 8.073,
+              "checkpointMs": 0
+            },
+            "scenarioTiming": {
+              "sampleCount": 100,
+              "p50Ms": 0.009,
+              "p95Ms": 0.011,
+              "maxMs": 0.022
+            }
+          },
+          "planningMaxSliceMs": 4.582,
+          "finalNoticeReceiptMs": [
+            40.861,
+            44.259
+          ],
+          "firstObservedMovementReceiptMs": [
+            119.081,
+            119.41
+          ],
+          "clock": {
+            "gameSeconds": 11.000000000000378,
+            "wallSeconds": 11.003,
+            "factor": 0.9997273470871925
+          },
+          "skippedSlotDelta": 0
+        },
+        {
+          "region": "causeway",
+          "tickTiming": {
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "budgetMs": 33.333,
+            "p50Ms": 1.603,
+            "p95Ms": 3.894,
+            "maxMs": 5.878,
+            "startLagP95Ms": 0.854,
+            "startLagMaxMs": 1.522,
+            "scheduler": {
+              "policy": "drop-elapsed-slots",
+              "skippedTickSlotsTotal": 0,
+              "lastOverloadSkippedSlots": 0,
+              "lastOverloadTick": null
+            },
+            "slowestTick": {
+              "tickNumber": 818,
+              "durationMs": 5.878,
+              "cpuMs": 5.726,
+              "simulationMs": 5.877,
+              "visionMs": 0,
+              "scenarioMs": 0,
+              "scenarioEvaluated": false,
+              "broadcastMs": 0.001,
+              "checkpointMs": 0
+            },
+            "scenarioTiming": {
+              "sampleCount": 100,
+              "p50Ms": 0.009,
+              "p95Ms": 0.013,
+              "maxMs": 0.056
+            }
+          },
+          "planningMaxSliceMs": 2.925,
+          "finalNoticeReceiptMs": [
+            53.106,
+            55.346
+          ],
+          "firstObservedMovementReceiptMs": [
+            47.317,
+            47.572
+          ],
+          "clock": {
+            "gameSeconds": 10.000000000000192,
+            "wallSeconds": 10.001,
+            "factor": 0.9999000099990193
+          },
+          "skippedSlotDelta": 0
+        }
+      ],
+      "windowsWithObservedOverruns": null,
+      "maximumRollingOverBudgetCount": null
+    },
+    {
+      "label": "candidate-pre-review",
+      "sourceCommit": "9392d05803e56a480f61e7a6db7b2acaf9986f76",
+      "sourceDirty": false,
+      "dirtyPaths": [],
+      "serverSha256": "a51de0100bb67fb4a758a67d88063cb6748c320bb756b9e2e9bbdc284c4da4c5",
+      "runtimeContentSha256": "845a4561a140cc58ad9ed8a5489cb147f8e71ada31cb4eea2a1ca91bda115d69",
+      "runtimeDigestMethod": "sorted server.mjs, package-lock.json and src .mjs/.js; path NUL bytes NUL",
+      "runtimeFileCount": 213,
+      "scriptSha256": "b6c7bb99ae268cfbc58fba256ca62602545fb0311823e281d1fd5844c5fc14f5",
+      "mapId": "veyrholds-crownroads",
+      "mapSha256": "0b62a9f967ef42c967eb9121e07395b75549d52d4a73dd16eaf29aebf19e3727",
+      "terrainSeed": 104031,
+      "width": 256,
+      "height": 256,
+      "healthBuildIdentity": {
+        "status": "unknown",
+        "origin": "unavailable",
+        "sourceRevision": null,
+        "sourceDirty": null,
+        "digest": null
+      },
+      "matchModeId": "authored",
+      "matchModeVersion": 1,
+      "host": {
+        "platform": "linux",
+        "arch": "x64",
+        "cpus": 5,
+        "cpuModel": "AMD EPYC 9V74 80-Core Processor",
+        "memoryBytes": 18882699264,
+        "loadBefore": [
+          0,
+          0,
+          0
+        ],
+        "isolated": false,
+        "loadAfter": [
+          0.08,
+          0.02,
+          0.01
+        ]
+      },
+      "startedAt": "2026-10-05T13:44:47.988Z",
+      "finishedAt": "2026-10-05T13:45:24.780Z",
+      "rawSha256": "05d8af43ff8fd2dc84ff50313663b20cd5ca528d741d65df78c480f57495e0d1",
+      "gzipSha256": "1f374922b1485c6de6882af8f05084156460e141bf7d16fb8381b63d86ceb0c6",
+      "passedExistingDiagnosticEnvelope": true,
+      "envelope": {
+        "sampledWindows": 66,
+        "tickP95PeakMs": 14.889,
+        "tickMaxMs": 38.411,
+        "startLagP95PeakMs": 2.471,
+        "startLagMaxMs": 27.507,
+        "maximumPlanningSliceMs": 5.554,
+        "initialTickWindowsWithoutLag": 1,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "peakSampledServerRssBytes": 141586432,
+      "gridBoundaryProtocol": [
+        {
+          "width": 257,
+          "height": 256,
+          "accepted": false,
+          "message": "Map custom map width and height must be integers between 16 and 256."
+        },
+        {
+          "width": 256,
+          "height": 257,
+          "accepted": false,
+          "message": "Map custom map width and height must be integers between 16 and 256."
+        },
+        {
+          "width": 320,
+          "height": 320,
+          "accepted": false,
+          "message": "Map custom map width and height must be integers between 16 and 256."
+        },
+        {
+          "width": 256,
+          "height": 256,
+          "accepted": true,
+          "message": null
+        }
+      ],
+      "waves": [
+        {
+          "region": "north-pass",
+          "tickTiming": {
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "budgetMs": 33.333,
+            "p50Ms": 1.343,
+            "p95Ms": 3.596,
+            "p99Ms": 4.586,
+            "overBudgetTickCount": 0,
+            "maxMs": 5.968,
+            "startLagP95Ms": 1.019,
+            "startLagMaxMs": 1.816,
+            "scheduler": {
+              "policy": "drop-elapsed-slots",
+              "skippedTickSlotsTotal": 1,
+              "lastOverloadSkippedSlots": 1,
+              "lastOverloadTick": 31
+            },
+            "slowestTick": {
+              "tickNumber": 108,
+              "durationMs": 5.968,
+              "cpuMs": 6.645,
+              "simulationMs": 2.519,
+              "visionMs": 0.821,
+              "scenarioMs": 0.012,
+              "scenarioEvaluated": true,
+              "broadcastMs": 2.617,
+              "checkpointMs": 0.001
+            },
+            "scenarioTiming": {
+              "sampleCount": 100,
+              "p50Ms": 0.009,
+              "p95Ms": 0.014,
+              "maxMs": 0.086
+            }
+          },
+          "planningMaxSliceMs": 5.554,
+          "finalNoticeReceiptMs": [
+            53.827,
+            54.422
+          ],
+          "firstObservedMovementReceiptMs": [
+            88.446,
+            126.249
+          ],
+          "clock": {
+            "gameSeconds": 10.999999999999968,
+            "wallSeconds": 11.035,
+            "factor": 0.9968282736746686
+          },
+          "skippedSlotDelta": 1
+        },
+        {
+          "region": "high-flank",
+          "tickTiming": {
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "budgetMs": 33.333,
+            "p50Ms": 1.305,
+            "p95Ms": 2.972,
+            "p99Ms": 3.87,
+            "overBudgetTickCount": 0,
+            "maxMs": 5.317,
+            "startLagP95Ms": 1.031,
+            "startLagMaxMs": 2.064,
+            "scheduler": {
+              "policy": "drop-elapsed-slots",
+              "skippedTickSlotsTotal": 1,
+              "lastOverloadSkippedSlots": 1,
+              "lastOverloadTick": 31
+            },
+            "slowestTick": {
+              "tickNumber": 710,
+              "durationMs": 5.317,
+              "cpuMs": 5.39,
+              "simulationMs": 5.316,
+              "visionMs": 0,
+              "scenarioMs": 0,
+              "scenarioEvaluated": false,
+              "broadcastMs": 0.001,
+              "checkpointMs": 0
+            },
+            "scenarioTiming": {
+              "sampleCount": 100,
+              "p50Ms": 0.009,
+              "p95Ms": 0.011,
+              "maxMs": 0.177
+            }
+          },
+          "planningMaxSliceMs": 3.834,
+          "finalNoticeReceiptMs": [
+            35.839,
+            38.388
+          ],
+          "firstObservedMovementReceiptMs": [
+            132.65,
+            133.073
+          ],
+          "clock": {
+            "gameSeconds": 11.000000000000378,
+            "wallSeconds": 11.003,
+            "factor": 0.9997273470871925
+          },
+          "skippedSlotDelta": 0
+        },
+        {
+          "region": "causeway",
+          "tickTiming": {
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "budgetMs": 33.333,
+            "p50Ms": 1.28,
+            "p95Ms": 3.475,
+            "p99Ms": 6.494,
+            "overBudgetTickCount": 0,
+            "maxMs": 13.944,
+            "startLagP95Ms": 0.983,
+            "startLagMaxMs": 1.667,
+            "scheduler": {
+              "policy": "drop-elapsed-slots",
+              "skippedTickSlotsTotal": 1,
+              "lastOverloadSkippedSlots": 1,
+              "lastOverloadTick": 31
+            },
+            "slowestTick": {
+              "tickNumber": 870,
+              "durationMs": 13.944,
+              "cpuMs": 13.941,
+              "simulationMs": 1.124,
+              "visionMs": 0.081,
+              "scenarioMs": 0.01,
+              "scenarioEvaluated": true,
+              "broadcastMs": 12.166,
+              "checkpointMs": 0.563
+            },
+            "scenarioTiming": {
+              "sampleCount": 100,
+              "p50Ms": 0.01,
+              "p95Ms": 0.012,
+              "maxMs": 0.064
+            }
+          },
+          "planningMaxSliceMs": 3.564,
+          "finalNoticeReceiptMs": [
+            46.351,
+            49.51
+          ],
+          "firstObservedMovementReceiptMs": [
+            63.359,
+            63.626
+          ],
+          "clock": {
+            "gameSeconds": 11.000000000000135,
+            "wallSeconds": 11.002,
+            "factor": 0.9998182148700359
+          },
+          "skippedSlotDelta": 0
+        }
+      ],
+      "windowsWithObservedOverruns": 11,
+      "maximumRollingOverBudgetCount": 1
+    },
+    {
+      "label": "candidate",
+      "sourceCommit": "4d7e37b39fa5f9e07d95abb4e7270d315c8dab9f",
+      "sourceDirty": true,
+      "dirtyPaths": [
+        "?? docs/qa-evidence/performance-window-overruns-2026-10-05/"
+      ],
+      "serverSha256": "2d09a53b3cf31bf6de810c1ce034de3a0e7e473b6549804997cde8e0dd9bf71c",
+      "runtimeContentSha256": "7c2f48c2755844fa1570f010a500e597a8f9c19f91cee26e75cf58a7b3d23d78",
+      "runtimeDigestMethod": "sorted server.mjs, package-lock.json and src .mjs/.js; path NUL bytes NUL",
+      "runtimeFileCount": 213,
+      "scriptSha256": "b6c7bb99ae268cfbc58fba256ca62602545fb0311823e281d1fd5844c5fc14f5",
+      "mapId": "veyrholds-crownroads",
+      "mapSha256": "0b62a9f967ef42c967eb9121e07395b75549d52d4a73dd16eaf29aebf19e3727",
+      "terrainSeed": 104031,
+      "width": 256,
+      "height": 256,
+      "healthBuildIdentity": {
+        "status": "unknown",
+        "origin": "unavailable",
+        "sourceRevision": null,
+        "sourceDirty": null,
+        "digest": null
+      },
+      "matchModeId": "authored",
+      "matchModeVersion": 1,
+      "host": {
+        "platform": "linux",
+        "arch": "x64",
+        "cpus": 5,
+        "cpuModel": "AMD EPYC 9V74 80-Core Processor",
+        "memoryBytes": 18882699264,
+        "loadBefore": [
+          0.03,
+          0.01,
+          0
+        ],
+        "isolated": false,
+        "loadAfter": [
+          0.21,
+          0.06,
+          0.01
+        ]
+      },
+      "startedAt": "2026-10-05T13:49:14.191Z",
+      "finishedAt": "2026-10-05T13:49:50.962Z",
+      "rawSha256": "1228a9188b419b394fa3d2281167ec99ca67fd862770a2df698cceaffb6bf6dd",
+      "gzipSha256": "9d7462f81dd021e65e2da4c47fccacdb86772ff5f2764da0fbf5b4db07bf21ef",
+      "passedExistingDiagnosticEnvelope": true,
+      "envelope": {
+        "sampledWindows": 66,
+        "tickP95PeakMs": 18.245,
+        "tickMaxMs": 18.245,
+        "startLagP95PeakMs": 1.363,
+        "startLagMaxMs": 7.666,
+        "maximumPlanningSliceMs": 3.82,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "peakSampledServerRssBytes": 158167040,
+      "gridBoundaryProtocol": [
+        {
+          "width": 257,
+          "height": 256,
+          "accepted": false,
+          "message": "Map custom map width and height must be integers between 16 and 256."
+        },
+        {
+          "width": 256,
+          "height": 257,
+          "accepted": false,
+          "message": "Map custom map width and height must be integers between 16 and 256."
+        },
+        {
+          "width": 320,
+          "height": 320,
+          "accepted": false,
+          "message": "Map custom map width and height must be integers between 16 and 256."
+        },
+        {
+          "width": 256,
+          "height": 256,
+          "accepted": true,
+          "message": null
+        }
+      ],
+      "waves": [
+        {
+          "region": "north-pass",
+          "tickTiming": {
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "budgetMs": 33.333,
+            "p50Ms": 1.133,
+            "p95Ms": 2.781,
+            "p99Ms": 3.78,
+            "overBudgetTickCount": 0,
+            "maxMs": 4.228,
+            "startLagP95Ms": 0.896,
+            "startLagMaxMs": 1.895,
+            "scheduler": {
+              "policy": "drop-elapsed-slots",
+              "skippedTickSlotsTotal": 0,
+              "lastOverloadSkippedSlots": 0,
+              "lastOverloadTick": null
+            },
+            "slowestTick": {
+              "tickNumber": 192,
+              "durationMs": 4.228,
+              "cpuMs": 4.178,
+              "simulationMs": 0.971,
+              "visionMs": 0.091,
+              "scenarioMs": 0.009,
+              "scenarioEvaluated": true,
+              "broadcastMs": 3.155,
+              "checkpointMs": 0.001
+            },
+            "scenarioTiming": {
+              "sampleCount": 100,
+              "p50Ms": 0.009,
+              "p95Ms": 0.014,
+              "maxMs": 0.061
+            }
+          },
+          "planningMaxSliceMs": 2.346,
+          "finalNoticeReceiptMs": [
+            5.43,
+            7.13
+          ],
+          "firstObservedMovementReceiptMs": [
+            66.12,
+            67.647
+          ],
+          "clock": {
+            "gameSeconds": 10.999999999999968,
+            "wallSeconds": 11.002,
+            "factor": 0.9998182148700206
+          },
+          "skippedSlotDelta": 0
+        },
+        {
+          "region": "high-flank",
+          "tickTiming": {
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "budgetMs": 33.333,
+            "p50Ms": 1.285,
+            "p95Ms": 2.841,
+            "p99Ms": 3.61,
+            "overBudgetTickCount": 0,
+            "maxMs": 4.442,
+            "startLagP95Ms": 0.919,
+            "startLagMaxMs": 1.313,
+            "scheduler": {
+              "policy": "drop-elapsed-slots",
+              "skippedTickSlotsTotal": 0,
+              "lastOverloadSkippedSlots": 0,
+              "lastOverloadTick": null
+            },
+            "slowestTick": {
+              "tickNumber": 718,
+              "durationMs": 4.442,
+              "cpuMs": 9.653,
+              "simulationMs": 4.441,
+              "visionMs": 0,
+              "scenarioMs": 0,
+              "scenarioEvaluated": false,
+              "broadcastMs": 0.001,
+              "checkpointMs": 0
+            },
+            "scenarioTiming": {
+              "sampleCount": 100,
+              "p50Ms": 0.009,
+              "p95Ms": 0.011,
+              "maxMs": 0.048
+            }
+          },
+          "planningMaxSliceMs": 2.668,
+          "finalNoticeReceiptMs": [
+            27.324,
+            29.182
+          ],
+          "firstObservedMovementReceiptMs": [
+            80.701,
+            81.018
+          ],
+          "clock": {
+            "gameSeconds": 11.000000000000377,
+            "wallSeconds": 11.003,
+            "factor": 0.9997273470871922
+          },
+          "skippedSlotDelta": 0
+        },
+        {
+          "region": "causeway",
+          "tickTiming": {
+            "sampleCount": 300,
+            "windowSeconds": 10,
+            "budgetMs": 33.333,
+            "p50Ms": 1.498,
+            "p95Ms": 3.031,
+            "p99Ms": 3.552,
+            "overBudgetTickCount": 0,
+            "maxMs": 4.361,
+            "startLagP95Ms": 1.066,
+            "startLagMaxMs": 2.929,
+            "scheduler": {
+              "policy": "drop-elapsed-slots",
+              "skippedTickSlotsTotal": 0,
+              "lastOverloadSkippedSlots": 0,
+              "lastOverloadTick": null
+            },
+            "slowestTick": {
+              "tickNumber": 893,
+              "durationMs": 4.361,
+              "cpuMs": 9.578,
+              "simulationMs": 4.36,
+              "visionMs": 0,
+              "scenarioMs": 0,
+              "scenarioEvaluated": false,
+              "broadcastMs": 0.001,
+              "checkpointMs": 0
+            },
+            "scenarioTiming": {
+              "sampleCount": 100,
+              "p50Ms": 0.01,
+              "p95Ms": 0.011,
+              "maxMs": 0.026
+            }
+          },
+          "planningMaxSliceMs": 3.82,
+          "finalNoticeReceiptMs": [
+            52.989,
+            56.603
+          ],
+          "firstObservedMovementReceiptMs": [
+            95.557,
+            95.892
+          ],
+          "clock": {
+            "gameSeconds": 11.000000000000139,
+            "wallSeconds": 11.004,
+            "factor": 0.9996364958197146
+          },
+          "skippedSlotDelta": 0
+        }
+      ],
+      "windowsWithObservedOverruns": 0,
+      "maximumRollingOverBudgetCount": 0
+    }
+  ],
+  "limits": [
+    "Serial bounded observational shared-cloud costs; no causal speedup, controlled comparison or hardware capacity qualification.",
+    "Final candidate dirty flag is retained: only the untracked baseline/pre-review evidence directory; committed runtime files match its exact source.",
+    "Rolling windows overlap; counts are not additive across windows.",
+    "Whole-tick timings exclude default out-of-tick callback planning; maxPlanningSliceMs is separately observed.",
+    "No exact accepted-command-tick replay, allocation/GC, target-cgroup pressure, process peak between samples, browser, hosted-network or paid-economy qualification.",
+    "Baseline dependency provisioning overlapped part of observation.",
+    "Host cpuModel and memoryBytes are OS reports, not a reserved hardware allocation or consumer device.",
+    "Health buildIdentity is unknown for these source workers; source metadata, clean release, deployed and rendered identity stay separate."
+  ]
+}

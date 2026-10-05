@@ -5,7 +5,7 @@ import test from 'node:test';
 import { readFile } from 'node:fs/promises';
 import { createContext, runInContext } from 'node:vm';
 import * as THREE from 'three';
-import { spriteActionClip } from '../src/unit-sprite-runtime.mjs';
+import { spriteActionClip, spriteActionProvenance, createUnitSpriteRuntime } from '../src/unit-sprite-runtime.mjs';
 import { unitArtDirections } from './unit-art-production-contract.mjs';
 import { validateCaptureAdapter } from './renderer-capture-context.mjs';
 import { id, contextVersion, run, mapId, directories, loadUnitInputs, identifyUnitFrame,
@@ -43,6 +43,8 @@ function fixture(kind,heading,{state='walk',times=[0,200,400,800]}={}) {
     const unit={id:unitId,generation:3,team:0,kind,role,angle,x,z,serverX:x,serverZ:z,
       matrix,visibleScale:1,groundY:.018,scale:1,
       walking:state==='walk',clockState:state,clockStartedAt:1000,uv,actorDraw:true,inView:true,
+      actionSelection:{role,version:directories[role].split('-').at(-1),
+        ...spriteActionProvenance(new Map(pack.assets[0].clips.map(c=>[`${c.stateId}|${c.directionId}`,c])),state,heading,null,role,true)},
       atlasPath:`/assets/units/${directories[role]}/${pack.files.find(f=>f.id===page.runtimeFileId).path}`};
     return {number:index+10,time:1000+elapsed,units:[unit]};
   });
@@ -132,7 +134,7 @@ test('post-render observer pins the actual render boundary and never pauses or m
   const before=JSON.stringify(game),probe={number:0,targets:[42],samples:[],pending:null,errors:[]};
   const context=createContext({...game,window:{__rtsUnitAnimation:probe},localTeam:0,now:1000,
     mapDefinition:{id:mapId},zoom:1.5,unitSpriteReady:true,latestPopulation:[{used:12,capacity:15}],latestWorkerProduction:[],
-    unitSpriteRuntime:{roleForUnit:()=> 'human'},URL,location:{href:'http://127.0.0.1:1/?room=opaque'},camera:{},
+    unitSpriteRuntime:{roleForUnit:()=> 'human',observeAction:()=>u.actionSelection},URL,location:{href:'http://127.0.0.1:1/?room=opaque'},camera:{},
     innerWidth:1280,innerHeight:720,devicePixelRatio:1,
     groundHeight:()=>0,THREE:{Vector3:class {project(){this.x=0;this.y=0;this.z=0;return this;}}},
     renderer:{info:{render:{frame:10}},domElement:{getBoundingClientRect:()=>({left:0,top:0,width:1280,height:720})}}});
@@ -147,4 +149,56 @@ test('adapter probe leaves normal menu and room URLs unchanged; diagnostics stay
     runInContext(`(${installUnitProbe.toString()})()`,context);
     assert.equal(replaced,null);
   }
+});
+
+test('actual capture consumer retains fallback provenance and rejects false completeness or missing signals',()=>{
+  const f=fixture('spearman','north'),result=validateHeadingSamples(f.samples,f.options);
+  assert.ok(result.samples.every(s=>s.actionSelection.reason==='idle-placeholder'
+    &&s.actionSelection.requestedDirection==='north'&&s.actionSelection.selectedDirection==='north'));
+  for(const change of [unit=>{unit.actionSelection.reason='exact';},
+    unit=>{unit.actionSelection.selectedDirection='south-east';},unit=>{delete unit.actionSelection;}]) {
+    const changed=structuredClone(f.samples);change(changed[0].units[0]);
+    assert.throws(()=>validateHeadingSamples(changed,f.options),/action selection provenance/);
+  }
+});
+
+test('post-render hook consumes the real read-only runtime and bounds provenance reads to owned visible targets',async()=>{
+  const originalFetch=globalThis.fetch;
+  globalThis.fetch=async url=>({ok:true,json:async()=>JSON.parse(await readFile(new URL(`..${url}`,import.meta.url)))});
+  class TextureLoader { load(url,done) {
+    const texture=new THREE.Texture({src:url});queueMicrotask(()=>done(texture));return texture;
+  } }
+  try {
+    const scene=new THREE.Scene();
+    const runtime=createUnitSpriteRuntime({THREE:{...THREE,TextureLoader},scene,capacity:1,
+      teamHex:[0x5aa7d7,0xe67a5e],cameraQuaternion:new THREE.Quaternion(),roles:['spearman']});
+    runtime.setCount(0,1);runtime.setVisible(true);assert.equal(await runtime.ready,true);
+    const unit={id:42,generation:3,team:0,slot:0,kind:'spearman',hp:35,angle:0,walking:true,
+      renderX:0,renderZ:0,scale:1,visible:true,attackStartedAt:0,defeatStartedAt:0};
+    runtime.update(unit,1000,1);
+    const before=JSON.stringify(unit),buffers=scene.children.map(m=>Array.from(m.instanceMatrix.array));
+    const probe={number:0,targets:[42],samples:[],pending:null,errors:[]};
+    let reads=0;
+    const context=createContext({units:[Object.freeze(unit),{...unit,id:43,team:1},{...unit,id:44,visible:false}],
+      scene,unitSpriteRuntime:{roleForUnit:runtime.roleForUnit,observeAction(...args){reads++;return runtime.observeAction(...args);}},
+      window:{__rtsUnitAnimation:probe},localTeam:0,now:1200,selected:new Set(),latestBuildings:[],
+      latestFood:[150,150],latestWood:[250,250],latestPopulation:[],latestWorkerProduction:[],
+      mapDefinition:{id:mapId},zoom:1.5,unitSpriteReady:true,URL,location:{href:'http://127.0.0.1:1/'},camera:{},
+      innerWidth:1280,innerHeight:720,devicePixelRatio:1,groundHeight:()=>0,
+      THREE:{Vector3:class {project(){this.x=0;this.y=0;this.z=0;return this;}}},
+      renderer:{info:{render:{frame:10}},domElement:{getBoundingClientRect:()=>({left:0,top:0,width:1280,height:720})}}});
+    const observe=()=>runInContext(`(${observeRenderedUnits.toString()})()`,context);
+    observe();assert.equal(probe.errors.length,0);assert.equal(reads,1);
+    assert.equal(probe.last.units.length,1);assert.equal(probe.last.units[0].actionSelection.reason,'idle-placeholder');
+    assert.equal(probe.samples[0].units[0].actionSelection.selectedDirection,'north');
+    assert.equal(JSON.stringify(unit),before);assert.deepEqual(scene.children.map(m=>Array.from(m.instanceMatrix.array)),buffers);
+    context.units=Array.from({length:40},(_,id)=>({...unit,id}));
+    probe.targets=[];reads=0;observe();assert.equal(reads,32);
+    assert.equal(probe.last.units.filter(u=>u.actionSelection).length,32);
+    probe.targets=[39];reads=0;observe();assert.equal(reads,1);
+    assert.equal(probe.last.units.find(u=>u.id===39).actionSelection.reason,'idle-placeholder');
+    probe.targets=Array.from({length:40},(_,id)=>id);reads=0;observe();assert.equal(reads,8);
+    for(let i=0;i<190;i++)observe();assert.equal(probe.samples.length,180);
+    assert.equal(probe.errors.length,0);
+  } finally {globalThis.fetch=originalFetch;}
 });

@@ -56,6 +56,24 @@ export function civilizationSpriteRole(kind, civilization) {
   return civilization === 'boughward' ? `boughward-${kind}` : kind === 'worker' ? 'human' : kind;
 }
 
+// Read-only provenance for the existing capture adapter. Resolving a clip is
+// not evidence of motion: a walk key may deliberately reference idle frames.
+export function spriteActionProvenance(clipByKey, state, direction, cargoType, role, approximateDirections = false) {
+  const clip = spriteActionClip(clipByKey, state, direction, cargoType, role, approximateDirections);
+  const requestedAction = state === 'gather' && ['food', 'wood'].includes(cargoType) ? `gather-${cargoType}` : state;
+  const sequence = clip?.sequence || [];
+  const idlePlaceholder = state !== 'idle' && sequence.length > 0
+    && sequence.every(({ frameId }) => frameId.startsWith('idle-'));
+  const actionFallback = Boolean(clip && clip.stateId !== requestedAction);
+  const directionFallback = Boolean(clip && clip.directionId !== direction);
+  return { requestedAction, requestedDirection: direction,
+    selectedAction: clip?.stateId ?? null, selectedDirection: clip?.directionId ?? null,
+    frameCount: sequence.length, distinctFrameIds: new Set(sequence.map(({ frameId }) => frameId)).size,
+    idlePlaceholder, actionFallback, directionFallback,
+    reason: !sequence.length ? 'missing-clip' : idlePlaceholder ? 'idle-placeholder'
+      : directionFallback ? 'direction-fallback' : actionFallback ? 'action-fallback' : 'exact' };
+}
+
 export function spriteDirectory(role, version) {
   if (/^boughward-(worker|infantry|spearman|archer|scout|rider|siege-engine)$/.test(role) && version === 'v1') return `${role}-sprite-v1`;
   const supportedVersions = {
@@ -296,6 +314,18 @@ export function createUnitSpriteRuntime({
     return humanAppearancePreview && unit.kind === 'worker' ? 'human' : castPreview ? castRoleForUnit(unit) : unit.kind;
   }
 
+  function observeAction(unit, now, localTeam) {
+    // Never disclose retained fog records or another player's units. No unit,
+    // clock, selector, matrix or history is modified by this opt-in read.
+    if (![0, 1].includes(localTeam) || !unit || unit.team !== localTeam || unit.visible === false) return null;
+    const role = roleForUnit(unit), pack = rolePacks.get(role);
+    if (!ready || !pack) return null;
+    const state = activeState(unit, now, durationMs(role, 'attack') || 900);
+    const resource = unit.kind === 'worker' ? workerWorkResource(unit) : unit.cargoType;
+    return { role, version: pack.version, ...spriteActionProvenance(pack.clipByKey, state,
+      normalizedDirection(unit.angle || 0), resource, role, approximateActionDirections) };
+  }
+
   function update(unit, now, visibleScale) {
     fishingContact?.hide(unit);
     if (!ready) return;
@@ -412,6 +442,7 @@ export function createUnitSpriteRuntime({
     markTeamDirty,
     durationMs,
     roleForUnit,
+    observeAction,
     update,
   };
 }

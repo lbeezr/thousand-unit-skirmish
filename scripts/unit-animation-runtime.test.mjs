@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { activeState, civilizationSpriteRole, createUnitSpriteRuntime, normalizedDirection,
-  spriteActionClip, spriteClipDuration } from '../src/unit-sprite-runtime.mjs';
+  spriteActionClip, spriteActionProvenance, spriteClipDuration } from '../src/unit-sprite-runtime.mjs';
 
 const directories = { human: 'cast-human-sprite-v3', infantry: 'infantry-sprite-v3',
   spearman: 'spearman-sprite-v1', archer: 'archer-sprite-v2', scout: 'scout-sprite-v1',
@@ -167,4 +167,66 @@ test('all shipped headings resolve available frames without resetting continuous
       runtime.update(unit, 10100, 1); assert.equal(unit.spriteClockStartedAt, 2000, 'visibility resumes elapsed work');
     }
   });
+});
+
+test('read-only action provenance exposes seven shipped Spearman idle walk placeholders on both seats', async () => {
+  await withRuntime((runtime, scene) => {
+    let placeholders = 0, authored = 0;
+    for (const team of [0, 1]) for (const [index, direction] of directions.entries()) {
+      const unit = actor(team, 'spearman'); unit.angle = index * Math.PI / 4;
+      unit.walking = true;
+      runtime.update(unit, 1000, 1);
+      const beforeUnit = JSON.stringify(unit);
+      const beforeBuffers = scene.children.map(mesh => [Array.from(mesh.instanceMatrix.array),
+        Array.from(mesh.geometry.attributes.instanceAtlasRect.array)]);
+      const value = runtime.observeAction(unit, 1200, team);
+      assert.equal(JSON.stringify(unit), beforeUnit, 'diagnosis must not start/reset a clock');
+      assert.deepEqual(scene.children.map(mesh => [Array.from(mesh.instanceMatrix.array),
+        Array.from(mesh.geometry.attributes.instanceAtlasRect.array)]), beforeBuffers);
+      assert.equal(value.selectedDirection, direction);
+      assert.equal(value.directionFallback, false);
+      if (direction === 'south-east') {
+        assert.equal(value.reason, 'exact'); assert.equal(value.distinctFrameIds, 8); authored++;
+      } else {
+        assert.equal(value.reason, 'idle-placeholder'); assert.equal(value.distinctFrameIds, 1); placeholders++;
+        assert.equal(value.selectedAction, 'walk', 'clip label alone cannot certify motion');
+      }
+    }
+    assert.deepEqual({ placeholders, authored }, { placeholders: 14, authored: 2 });
+  }, 'spearman', 'v1');
+});
+
+test('provenance distinguishes direction borrowing, action fallback, idle, static action and absent clips', () => {
+  const action = (stateId, directionId, frameIds) => ({ stateId, directionId,
+    sequence: frameIds.map(frameId => ({ frameId, durationMs: 100 })) });
+  const idle = action('idle', 'north', ['idle-north-0']);
+  const attack = action('attack', 'south-east', ['attack-south-east-0', 'attack-south-east-1']);
+  const food = action('gather-food', 'north', ['gather-food-north-0']);
+  const build = action('build', 'north', ['build-north-0']);
+  const clips = new Map([idle, attack, food, build].map(c => [`${c.stateId}|${c.directionId}`, c]));
+  const read = (state, cargoType = null, approximate = false) =>
+    spriteActionProvenance(clips, state, 'north', cargoType, 'human', approximate);
+  assert.equal(read('attack', null, true).reason, 'direction-fallback');
+  assert.equal(read('attack', null, true).selectedDirection, 'south-east');
+  assert.equal(read('attack').reason, 'idle-placeholder');
+  assert.equal(read('attack').actionFallback, true);
+  assert.equal(read('gather-fish').reason, 'action-fallback');
+  assert.equal(read('gather-fish').selectedAction, 'gather-food');
+  assert.equal(read('repair').selectedAction, 'build');
+  assert.equal(read('gather', 'food').reason, 'exact', 'typed gather is an exact action');
+  assert.equal(read('build').reason, 'exact', 'an authored static action is not an idle placeholder');
+  assert.equal(read('idle').reason, 'exact', 'ordinary idle is intentional');
+  assert.equal(spriteActionProvenance(new Map(), 'walk', 'north', null, 'human').reason, 'missing-clip');
+});
+
+test('runtime action observations suppress enemy, fog and unknown seat records before inspecting them', async () => {
+  await withRuntime(runtime => {
+    const enemy = { team: 1, get kind() { throw Error('enemy fields inspected'); } };
+    const hidden = { team: 0, visible: false, get kind() { throw Error('hidden fields inspected'); } };
+    assert.equal(runtime.observeAction(enemy, 1000, 0), null);
+    assert.equal(runtime.observeAction(hidden, 1000, 0), null);
+    assert.equal(runtime.observeAction(actor(), 1000, null), null);
+    assert.equal(runtime.observeAction(actor(), 1000, 2), null);
+    assert.equal(runtime.observeAction(null, 1000, 0), null);
+  }, 'human', 'v3');
 });

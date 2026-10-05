@@ -13,10 +13,8 @@ import { GAMEPLAY_DEFINITIONS, BUILDING_DEFINITIONS, UNIT_DEFINITIONS,
 import { unfinishedRefund, buildingRepairStep } from '../src/base-lifecycle.mjs';
 import { canTraverseElevation } from '../src/elevation.mjs';
 import { buildElevationGrid } from '../src/map-utils.mjs';
-import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
-import { unfinishedConstructionSites, constructionMovementActive } from '../src/construction-work-intent.mjs';
-import { createOrdinaryMilitaryEndpointAvailability } from '../src/simulation/movement/military-endpoint-availability.mjs';
-import { canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
+import { unfinishedConstructionSites } from '../src/construction-work-intent.mjs';
+import { constructionServerBindings, constructionServerFunctions } from './construction-server-fixture.mjs';
 import { planWallLine } from '../src/wall-line-planner.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
@@ -40,7 +38,7 @@ const functions = [
   ['reservedResourceNodes', 'rejectBuild'], ['pendingMoveAssignmentsByUnit', 'pathIntersectsCells'],
   ['creditRefund', 'cancelTraining'], ['destroyBuilding', 'pendingMoveAssignmentsByUnit'],
   ['palisadeConstructionIntent', 'preparePalisadeBuilderAssignments'], ['distanceToBuildingEdge', 'destroyBuilding'],
-  ['constructionEndpointSnapshotGetter', 'updateTeamResearch'],
+  ['updateWallBuildOrders', 'updateTeamResearch'],
 ].map(([a, b]) => extract(a, b)).join('\n');
 
 function fixture(team = 0) {
@@ -48,7 +46,7 @@ function fixture(team = 0) {
     buildingTargetId: null, repairing: false, orderRevision: 0,
     attackTargetId: -1, attackBuildingTargetId: -1, path: [], pathIndex: 0,
     queuedWaypoints: [], moveGoalCell: -1, gatherForestCell: -1, gatherPhase: '' };
-  const context = vm.createContext({ workerPerformingActions: createWorkerPerformingActions(), validFarmStock, ...economyServerBindings(), ...visionServerBindings(), validGateState, buildingBlocksMovement, BUILDING_DEFINITIONS: definitions, UNIT_DEFINITIONS,
+  const context = vm.createContext({ ...constructionServerBindings(), workerPerformingActions: createWorkerPerformingActions(), validFarmStock, ...economyServerBindings(), ...visionServerBindings(), validGateState, buildingBlocksMovement, BUILDING_DEFINITIONS: definitions, UNIT_DEFINITIONS,
     MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8, CELL_COUNT: 256,
     blocked: new Uint8Array(256), buildingBlocked: new Uint8Array(256), townCenterBlocked: new Uint8Array(256),
     elevationLevelByCell: new Uint8Array(256), canTraverseElevation,
@@ -60,13 +58,12 @@ function fixture(team = 0) {
     unfinishedRefund, buildingRepairStep: (b, wood, seconds) => buildingRepairStep(b, wood, seconds,
       { ...GAMEPLAY_DEFINITIONS, buildings: definitions }),
     unitHasCapability: (u, capability) => UNIT_DEFINITIONS[u.kind].capabilities.includes(capability),
-    activeWallBuildOrder, unfinishedConstructionSites, isPalisade, palisadeConstructionRetries: new WeakMap(),
-    constructionMovementActive, createOrdinaryMilitaryEndpointAvailability, canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE,
+    unfinishedConstructionSites, isPalisade,
     MAX_UNITS: 2000, movePlanningEpoch: 0, tickNumber: 0, TICK_RATE: 30,
     navigationRevision: 0, attackFlowFields: new Map(), dirty: false,
     broadcastGameplayNotice() {}, sendOrderNotice() {}, clearAttackTarget() {},
   });
-  vm.runInContext(economyServerFunctions + visionServerFunctions + functions, context);
+  vm.runInContext(economyServerFunctions + visionServerFunctions + constructionServerFunctions + functions, context);
   context.invalidateVisionCoverage('fixture-initial');
   context.rebuildWalkableComponents();
   const assessPlacement = cells => {

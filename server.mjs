@@ -1048,7 +1048,8 @@ let tickNumber = 0;
 let dirty = true;
 const workerPerformingActions = createWorkerPerformingActions();
 const pendingMoveStartBroadcasts = new Set();
-const tickDurationsMs = new Float32Array(TICK_SAMPLE_WINDOW);
+// Preserve timer precision for comparisons against the exact scheduler period.
+const tickDurationsMs = new Float64Array(TICK_SAMPLE_WINDOW);
 const tickStartLagsMs = new Float32Array(TICK_SAMPLE_WINDOW);
 const tickDiagnosticSamples = TICK_DIAGNOSTICS_ENABLED ? new Array(TICK_SAMPLE_WINDOW).fill(null) : null;
 const separationWorkSamples = SEPARATION_DIAGNOSTICS_ENABLED ? {
@@ -1144,6 +1145,10 @@ function tickTimingPayload(includeSamples = false) {
     budgetMs: Number((1000 / TICK_RATE).toFixed(3)),
     p50Ms: valueAt(0.5),
     p95Ms: valueAt(0.95),
+    p99Ms: valueAt(0.99),
+    // Use unrounded durations and the actual scheduler period, not budgetMs's
+    // display precision. This is a count in this rolling window, not a total.
+    overBudgetTickCount: samples.filter(durationMs => durationMs > 1000 / TICK_RATE).length,
     maxMs: count ? Number(samples[count - 1].toFixed(3)) : null,
     startLagP95Ms: lagAt(0.95),
     startLagMaxMs: lagCount ? Number(lags[lagCount - 1].toFixed(3)) : null,
