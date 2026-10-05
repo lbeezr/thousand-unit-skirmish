@@ -1,0 +1,385 @@
+{
+  "coreApiHead": "4dcfb968c83a0ad678720a2942274f3b9d660f59",
+  "coreMergedAt": "93d45c732bf6fff9fcb78782054b32866f7b8448",
+  "candidateBase": "a482c6d4a03b2254ed85a9480a018a4708ee33a8",
+  "candidateDirty": true,
+  "records": [
+    {
+      "team": 0,
+      "kind": "infantry",
+      "order": {
+        "targetId": 8,
+        "targetGeneration": 3665117725
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "start": {
+        "x": 0.75,
+        "z": 0.95
+      },
+      "targetPoint": {
+        "x": 2.25,
+        "z": 0.95
+      },
+      "goal": 1570,
+      "initialPath": [
+        1568,
+        1569,
+        1570
+      ],
+      "ticks": 263,
+      "steps": 14,
+      "contacts": 0,
+      "first": null,
+      "damage": [
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        }
+      ],
+      "targetHp": 0,
+      "actorPosition": {
+        "x": 1.1118851596173167,
+        "z": 0.5
+      },
+      "actorTarget": -1,
+      "stance": "noAttack"
+    },
+    {
+      "team": 1,
+      "kind": "infantry",
+      "order": {
+        "targetId": 0,
+        "targetGeneration": 478804295
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "start": {
+        "x": 0.75,
+        "z": 0.95
+      },
+      "targetPoint": {
+        "x": 2.25,
+        "z": 0.95
+      },
+      "goal": 1570,
+      "initialPath": [
+        1568,
+        1569,
+        1570
+      ],
+      "ticks": 263,
+      "steps": 14,
+      "contacts": 0,
+      "first": null,
+      "damage": [
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        }
+      ],
+      "targetHp": 0,
+      "actorPosition": {
+        "x": 1.1118851596173167,
+        "z": 0.5
+      },
+      "actorTarget": -1,
+      "stance": "noAttack"
+    },
+    {
+      "team": 0,
+      "kind": "archer",
+      "order": {
+        "targetId": 8,
+        "targetGeneration": 1261292071
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "start": {
+        "x": 0.75,
+        "z": 0.95
+      },
+      "targetPoint": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "goal": 1574,
+      "initialPath": [
+        1568,
+        1569,
+        1570,
+        1571,
+        1572,
+        1573,
+        1574
+      ],
+      "ticks": 461,
+      "steps": 26,
+      "contacts": 0,
+      "first": null,
+      "damage": [
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 2,
+          "range": 4.43478150704935
+        }
+      ],
+      "targetHp": 0,
+      "actorPosition": {
+        "x": 2.06521849295065,
+        "z": 0.5
+      },
+      "actorTarget": -1,
+      "stance": "noAttack"
+    },
+    {
+      "team": 1,
+      "kind": "archer",
+      "order": {
+        "targetId": 0,
+        "targetGeneration": 921880471
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "start": {
+        "x": 0.75,
+        "z": 0.95
+      },
+      "targetPoint": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "goal": 1574,
+      "initialPath": [
+        1568,
+        1569,
+        1570,
+        1571,
+        1572,
+        1573,
+        1574
+      ],
+      "ticks": 461,
+      "steps": 26,
+      "contacts": 0,
+      "first": null,
+      "damage": [
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 7,
+          "range": 4.43478150704935
+        },
+        {
+          "amount": 2,
+          "range": 4.43478150704935
+        }
+      ],
+      "targetHp": 0,
+      "actorPosition": {
+        "x": 2.06521849295065,
+        "z": 0.5
+      },
+      "actorTarget": -1,
+      "stance": "noAttack"
+    }
+  ],
+  "limits": [
+    "Pre-review integration witness; final exact head and clean pack are recorded separately on PR410.",
+    "Existing command bodies and actual physical substeps, not an alternate route algorithm.",
+    "Native restart and ordinary rendered acceptance are separate."
+  ]
+}

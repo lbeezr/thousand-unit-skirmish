@@ -84,6 +84,7 @@ import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoin
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
+import { focusedUnitAttackMovementActive } from './src/combat-movement.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const BUILD_IDENTITY = await loadBuildIdentity(ROOT);
@@ -7117,7 +7118,19 @@ function assignAttack(player, command) {
     unit.attackBuildingTargetId = -1;
     unit.repathTimer = 0.6;
     unit.lastAttackCell = targetCell;
-    unit.path = path;
+    if (focusedUnitAttackMovementActive(unit)) {
+      const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
+      const rejoined = rejoinSelectedUnitRoute({ path }, {
+        position: unit, startCell, firstPoint: cellToWorld(path[0] ?? startCell), radius,
+        width: MAP_WIDTH, height: MAP_HEIGHT, isWalkable, cellToWorld,
+        acceptPrefix: center => canTraverseStaticBodySegment(unit, center, radius,
+          MAP_WIDTH, MAP_HEIGHT, isWalkable),
+      });
+      // Keep the accepted target/revision while existing repath waits for a
+      // legal join. Rejection never publishes the original unsafe approach.
+      unit.path = rejoined.rejoin === 'rejected' ? [] : rejoined.route.path;
+      if (rejoined.rejoin === 'rejected') unit.repathTimer = STEP_SECONDS;
+    } else unit.path = path;
     unit.pathIndex = 0;
   }
   const unreachableCount = selectedUnits.length - assignments.length;
@@ -8260,10 +8273,21 @@ function simulateTick() {
             dirty = true;
             continue;
           }
-          unit.path = approach.path;
+          let rejoinRejected = false;
+          if (focusedUnitAttackMovementActive(unit)) {
+            const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
+            const rejoined = rejoinSelectedUnitRoute(approach, {
+              position: unit, startCell, firstPoint: cellToWorld(approach.path[0] ?? startCell), radius,
+              width: MAP_WIDTH, height: MAP_HEIGHT, isWalkable, cellToWorld,
+              acceptPrefix: center => canTraverseStaticBodySegment(unit, center, radius,
+                MAP_WIDTH, MAP_HEIGHT, isWalkable),
+            });
+            rejoinRejected = rejoined.rejoin === 'rejected';
+            unit.path = rejoinRejected ? [] : rejoined.route.path;
+          } else unit.path = approach.path;
           unit.pathIndex = 0;
           unit.lastAttackCell = targetCell;
-          unit.repathTimer = 0.6;
+          unit.repathTimer = rejoinRejected ? STEP_SECONDS : 0.6;
         }
       }
     }

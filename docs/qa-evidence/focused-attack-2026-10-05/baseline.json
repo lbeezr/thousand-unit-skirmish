@@ -1,0 +1,437 @@
+{
+  "runtimeSource": "bd7f291507e26c8a57d8a7b4ca82be70ce2d4eb0",
+  "baselineHostAndMovementUnmodified": true,
+  "workload": {
+    "width": 64,
+    "height": 48,
+    "terrainSeed": 881,
+    "armySize": 16,
+    "stoneRectangle": [
+      1,
+      1,
+      2,
+      2
+    ],
+    "actorStart": [
+      0.75,
+      0.95
+    ],
+    "stance": "noAttack",
+    "archerSource": "real Build Archery Range and trainUnit commands"
+  },
+  "records": [
+    {
+      "team": 0,
+      "kind": "infantry",
+      "order": {
+        "targetId": 8,
+        "targetGeneration": 4123367216
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "start": {
+        "x": 0.75,
+        "z": 0.95
+      },
+      "targetPoint": {
+        "x": 2.25,
+        "z": 0.95
+      },
+      "goal": 1570,
+      "initialPath": [
+        1569,
+        1570
+      ],
+      "ticks": 263,
+      "steps": 4,
+      "contacts": 4,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8243160535617539,
+          "z": 0.9054103678629477
+        },
+        "reason": "steering"
+      },
+      "damage": [
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        }
+      ],
+      "targetHp": 0,
+      "actorPosition": {
+        "x": 1.0472642142470154,
+        "z": 0.7716414714517909
+      },
+      "actorTarget": -1,
+      "stance": "noAttack"
+    },
+    {
+      "team": 1,
+      "kind": "infantry",
+      "order": {
+        "targetId": 0,
+        "targetGeneration": 1186338799
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "start": {
+        "x": 0.75,
+        "z": 0.95
+      },
+      "targetPoint": {
+        "x": 2.25,
+        "z": 0.95
+      },
+      "goal": 1570,
+      "initialPath": [
+        1569,
+        1570
+      ],
+      "ticks": 263,
+      "steps": 4,
+      "contacts": 4,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8243160535617539,
+          "z": 0.9054103678629477
+        },
+        "reason": "steering"
+      },
+      "damage": [
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        },
+        {
+          "amount": 10,
+          "range": 1.2158886195029264
+        }
+      ],
+      "targetHp": 0,
+      "actorPosition": {
+        "x": 1.0472642142470154,
+        "z": 0.7716414714517909
+      },
+      "actorTarget": -1,
+      "stance": "noAttack"
+    },
+    {
+      "team": 0,
+      "kind": "archer",
+      "order": {
+        "targetId": 8,
+        "targetGeneration": 1193189800
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "start": {
+        "x": 0.75,
+        "z": 0.95
+      },
+      "targetPoint": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "goal": 1574,
+      "initialPath": [
+        1569,
+        1570,
+        1571,
+        1572,
+        1573,
+        1574
+      ],
+      "ticks": 461,
+      "steps": 17,
+      "contacts": 4,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8243160535617539,
+          "z": 0.9054103678629477
+        },
+        "reason": "steering"
+      },
+      "damage": [
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 2,
+          "range": 4.4879761175601285
+        }
+      ],
+      "targetHp": 0,
+      "actorPosition": {
+        "x": 2.0120238824398715,
+        "z": 0.5
+      },
+      "actorTarget": -1,
+      "stance": "noAttack"
+    },
+    {
+      "team": 1,
+      "kind": "archer",
+      "order": {
+        "targetId": 0,
+        "targetGeneration": 34695218
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "start": {
+        "x": 0.75,
+        "z": 0.95
+      },
+      "targetPoint": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "goal": 1574,
+      "initialPath": [
+        1569,
+        1570,
+        1571,
+        1572,
+        1573,
+        1574
+      ],
+      "ticks": 461,
+      "steps": 17,
+      "contacts": 4,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8243160535617539,
+          "z": 0.9054103678629477
+        },
+        "reason": "steering"
+      },
+      "damage": [
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 7,
+          "range": 4.4879761175601285
+        },
+        {
+          "amount": 2,
+          "range": 4.4879761175601285
+        }
+      ],
+      "targetHp": 0,
+      "actorPosition": {
+        "x": 2.0120238824398715,
+        "z": 0.5
+      },
+      "actorTarget": -1,
+      "stance": "noAttack"
+    }
+  ],
+  "limits": [
+    "Pure predicate preparation is not yet integrated; no allocated host or profile consumer has changed.",
+    "Existing production command bodies and every physical substep run through the existing test-only adapter.",
+    "This is neither exact reviewed candidate evidence nor a native/rendered witness."
+  ]
+}

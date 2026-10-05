@@ -10,7 +10,7 @@ import { createMapStudioFormState } from './authoring/map-studio-form-state.mjs'
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from './authoring/map-studio-draft-store.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS, validateMapRegion } from './regions.mjs';
-import { regionGestureZone, ScenarioEditHistory } from './authoring/scenario-authoring.mjs';
+import { regionGestureZone, ScenarioEditHistory, createScenarioEditCoordinator } from './authoring/scenario-authoring.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, validCompletionTrigger } from './scenario-regions.mjs';
 import { regionalGroundColor } from './regional-ground-kits.mjs';
 import { researchOptions, researchAction } from './research-actions.mjs';
@@ -626,27 +626,31 @@ let knownMaps = [];
 let editorDefinition = null;
 let selectedEditorRegionId = null;
 const scenarioEditHistory = new ScenarioEditHistory(64);
-let scenarioHistoryApplying = false;
 function scenarioEditorState() {
   return { regions: ui.studioRegions.value, events: editorScenarioEvents,
     regionId: selectedEditorRegionId, eventId: selectedEditorScenarioEventId };
 }
+const scenarioEditCoordinator = createScenarioEditCoordinator({
+  history: scenarioEditHistory,
+  canRecord: () => editorDefinition,
+  capture: scenarioEditorState,
+  apply(state) {
+    ui.studioRegions.value = state.regions;
+    editorScenarioEvents = state.events;
+    selectedEditorRegionId = state.regionId;
+    selectedEditorScenarioEventId = state.eventId;
+    syncEditorRegionControls(); syncEditorScenarioEventControls(); drawEditorGrid();
+  },
+  onRecord() {
+    document.querySelector('#studio-scenario-undo').disabled = !scenarioEditHistory.canUndo;
+    document.querySelector('#studio-scenario-redo').disabled = !scenarioEditHistory.canRedo;
+  },
+});
 function recordScenarioEdit() {
-  if (!scenarioHistoryApplying && editorDefinition) scenarioEditHistory.record(scenarioEditorState());
-  document.querySelector('#studio-scenario-undo').disabled = !scenarioEditHistory.canUndo;
-  document.querySelector('#studio-scenario-redo').disabled = !scenarioEditHistory.canRedo;
+  scenarioEditCoordinator.record();
 }
 function restoreScenarioEdit(direction) {
-  const state = scenarioEditHistory[direction]();
-  if (!state) return;
-  scenarioHistoryApplying = true;
-  ui.studioRegions.value = state.regions;
-  editorScenarioEvents = state.events;
-  selectedEditorRegionId = state.regionId;
-  selectedEditorScenarioEventId = state.eventId;
-  syncEditorRegionControls(); syncEditorScenarioEventControls(); drawEditorGrid();
-  scenarioHistoryApplying = false;
-  recordScenarioEdit(); scheduleMapStudioDraftSave();
+  if (scenarioEditCoordinator.restore(direction)) scheduleMapStudioDraftSave();
 }
 function syncEditorRegionControls() {
   const list = document.querySelector('#studio-region-list');
