@@ -1,0 +1,4 @@
+
+> thousand-unit-skirmish@0.95.0 check:types
+> tsc --project tsconfig.check-js.json --pretty false && tsc --project tsconfig.check-node.json --pretty false
+

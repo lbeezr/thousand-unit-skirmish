@@ -197,6 +197,35 @@ failure is retained journey liveness. Next: integrate fresh main and finish that
 unchanged return before exact-head review, pack, normal merge and separate
 identified-release verification.
 
+Fresh-main integration and the [exact-source follow-up](qa-evidence/ordinary-crowd-steering-2026-10-05/controller-continuation/fresh-main-checkpoint.json)
+now pin the code and separate milestones. At `a4cef75f`, all 130 registered
+movement/body/controller checks and all 63 Follow/cold/queue checks pass.
+The unchanged 64-unit returns remain 64/64 at 1,141 ticks and **63/64 at 2,700**.
+All 141,861 selected serial substeps have zero swept terrain/body contacts;
+72 inactive actors retain their positions each tick and their final command
+intent. Private counters have no missing records: at most 77 short proposals,
+31 point proposals, 22 passage-point observations and 49 query visits on seat 1.
+Maximum contour age is 33 ticks, no lease is exercised, and maximum observed
+wait age is 1,595 ticks. These bounds do not make the deadline failure acceptable.
+Actor 113 has fourteen revision changes without reaching its first goal or
+consuming its queue; next work traces those existing static-repair handoffs.
+
+Independent review of clean `a4cef75f` passes 47/47 focused controls and finds a
+stale-peer eligibility defect. Clean `3c38364e` resolves it with a registered
+negative control; independent review and author checks pass 48/48. Review finds
+no new physical-admission bypass or shared writer/order mutation, and grants
+no broad-liveness merge signoff. The later guarded intermediate-cell-entry
+experiment regresses seat 0 to 50/64 and is retired; it is not in the source.
+
+Clean `3c38364e` packs 1,386 files, including all three crowd modules, with digest
+`sha256:0c48299e70a39d94266a10ce6c6555c49d4924a7970243f350b8d607c4de17da`.
+The existing packed HTTP/WebSocket/startup/assets scenario passes locally.
+This proves package inclusion and served CPU/HTTP behavior of an unqualified
+candidate, not deployment, rendered gameplay or merge readiness. Source is
+still draft PR400. The smallest source increment now independently reviewed
+is the narrow follower correction plus stale-peer eligibility/lifecycle checks;
+the larger arbitration remains separately unqualified within that draft.
+
 Acceptance uses the retained boxed 94/103 and parked/gate 102 controls as
 diagnostics, then the unchanged real 64-unit queue/topology/parked-builder inputs
 on both seats. Occupied exact final points must retain intent and resume only

@@ -812,8 +812,14 @@ The continuation's latest preserved-lane prototype is 64/64 at 1,141 ticks on
 seat 0 and 63/64 at 2,700 on seat 1, with actor 113 still on its first leg.
 The perpendicular clear-forward control is green; 47 focused controls pass.
 These runtime-hashed prototype records do not replace clean historical evidence
-or qualify the larger controller. No interface dependency remains. Next:
-integrate fresh main and resolve the retained deadline miss, then retain fresh exact-head review,
+or qualify the larger controller. No interface dependency remains. Fresh main `762c9b76` is integrated; clean
+`a4cef75f` passes 130 boundary and 63 Follow/cold checks, with zero contacts over
+141,861 full selected substeps but the same 63/64 deadline miss. Independent
+review identifies stale combat-peer grant consumption; clean `3c38364e` fixes
+it and passes 48 focused controls. Its clean 1,386-file pack and local served
+HTTP scenario pass; merged/deployed/rendered acceptance remains open. Next:
+trace actor113's fourteen repair revisions in the unchanged input and resolve
+the retained deadline, then retain fresh exact-head broad review,
 affected checks/clean pack and normal merge. Worker ordinary/economy movement stays with
 its existing source policy in this first military slice. No new position
 admission/planner edit or rendered-acceptance claim is included.

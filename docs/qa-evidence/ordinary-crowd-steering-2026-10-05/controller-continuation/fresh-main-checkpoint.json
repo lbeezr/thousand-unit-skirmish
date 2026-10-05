@@ -1,0 +1,72 @@
+{
+  "status": "unqualified",
+  "testedCodeHead": "3c38364e8f90c374d01365e6d5f672c865120897",
+  "freshMain": "762c9b762c831bf86460c7f90d669c584a07d550",
+  "runtimeSha256": {
+    "server.mjs": "2d1c3d6c725deaae5b93b7142a8607d1fd628eee1165d249bd888252498389ac",
+    "src/unit-crowd-steering.mjs": "b843ce711fc749718b8ade9fc84a93a03321170b4e5aa0b838d4ccb4a3e064a0",
+    "src/crowd-wait-lease.mjs": "ddf971e93748761319c3ee1e752f593afa2a7dba205757fa09e7e1fa227b7721",
+    "src/crowd-parked-contour.mjs": "dbac12ec6c207e80df7f3a1f5146fa93637ab4465053854c8d3389224d4f6812"
+  },
+  "sourceTests": {
+    "a4cef75f1d6f0cd280c7679e40d1796f5dadc8a7": {
+      "registeredMovementBodyController": 130,
+      "followCallerQueueCold": 63,
+      "failures": 0,
+      "types": "pass",
+      "runtimeImports": "215 modules; no cycles",
+      "docs": "pass"
+    },
+    "3c38364e8f90c374d01365e6d5f672c865120897": {
+      "focusedModuleController": 48,
+      "failures": 0,
+      "independentReview": "eligibility fix verified; broad liveness remains open",
+      "packedHttpScenario": "pass"
+    }
+  },
+  "unchanged64": {
+    "sourceHead": "a4cef75f1d6f0cd280c7679e40d1796f5dadc8a7",
+    "record": "fresh-main-64.json.gz",
+    "maxRevisionChangesIncludingQueuedHandoff": {
+      "0": 6,
+      "1": 14
+    },
+    "note": "Actor113 has14 revision changes without queued handoff; these require repair-event diagnosis. Latest eligibility-only fix has focused exact-head checks; fullphysical record is pinned to its preceding source."
+  },
+  "pack": {
+    "sourceRevision": "3c38364e8f90c374d01365e6d5f672c865120897",
+    "sourceDirty": false,
+    "digest": "sha256:0c48299e70a39d94266a10ce6c6555c49d4924a7970243f350b8d607c4de17da",
+    "files": 1386,
+    "crowdModules": [
+      "src/crowd-parked-contour.mjs",
+      "src/crowd-wait-lease.mjs",
+      "src/unit-crowd-steering.mjs"
+    ],
+    "qualification": "Clean package inclusion and local served CPU/HTTP checks only; unqualified gameplay source, no deployment/rendered acceptance."
+  },
+  "retiredFurtherExperiments": {
+    "intermediateCellWithoutEntryGuard": {
+      "seat0": 64,
+      "seat1": 0
+    },
+    "intermediateActualCellEntry": {
+      "seat0": 50,
+      "seat1": 63
+    }
+  },
+  "independentReview": {
+    "completeSource": "independent-a4-review.json",
+    "resolvedEligibilityFix": "independent-3c-review.json",
+    "mergeApproval": false
+  },
+  "delivery": {
+    "merged": false,
+    "deployedIdentity": "unverified",
+    "renderedProof": "blocked once; no retry",
+    "packSmoke": "passed"
+  },
+  "owner": "01a10933-c2b0-70f1-991d-761518eb5010",
+  "dependency": "No open interface decision or parent gate. Retained ordinary liveness misses its accepted deadline.",
+  "nextAction": "Trace actor113 repair handoffs in the unchanged input before another selection change; maintain one bounded own-step controller and preserve goals/queues/parked actors."
+}
