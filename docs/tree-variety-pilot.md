@@ -10,8 +10,9 @@ No generation, purchases, provider access, private upload or Mac work occurred.
 ## Current flora delivery ownership — 5 October 2026
 
 Canonical main first audited at `6ee1cce46d0ac4f4fcc4610a0d2b1a2bee928690`;
-refreshed to `1e75f6a8b9129c0c7b72f8f0d9ac93a1b85c0497` after
-[regional binding PR490](https://github.com/lbeezr/thousand-unit-skirmish/pull/490).
+refreshed to `a2bdd0411530ae729a8af4ffb45c5f59e437ee7b` after
+[regional binding PR490](https://github.com/lbeezr/thousand-unit-skirmish/pull/490)
+and [berry binding PR494](https://github.com/lbeezr/thousand-unit-skirmish/pull/494).
 The resumed flora owner retains default consistency, the berry/tree acceptance
 work below, and the next documented disjoint slice after review. The pilot's
 prepared selector remains unbound; the current integration increment validates
@@ -51,8 +52,9 @@ Cloud renderer qualification at the audited head returned **blocked**, exit 1:
 The cloud testing owner must supply a provider-provisioned browser sandbox and
 writable per-job profile/configuration storage. No bypass or Mac dependency is
 introduced. Source/package checks, containing deployment, exact served identity
-and actual game-pixel acceptance stay separate; deployment and current flora
-appearance are still unverified. No parked item counts as delivery.
+and actual game-pixel acceptance stay separate; the containing staging deployment
+is verified below, while served identity and current flora appearance remain
+unverified. No parked item counts as delivery.
 
 The regional slice merged in PR490 after independent agent review of exact head
 `6f8b6e9f25c74511aff2d925fc497039853e7e60` against the first audited main;
@@ -61,14 +63,15 @@ documentation links and the native packed-release scenario pass. Its clean pack
 digest is `sha256:b58c9c0cac66d1bea6499f1f3a1499bbc5216df173ca46937ff3055cc31fcb14`.
 That is a local package, not Railway's built image digest. Staging deployment
 `b508e1c2-d06a-4c63-88b4-57cf962678f8` for merge source `1e75f6a8` was
-**BUILDING** at the read-only platform check; it is not recorded as delivered.
+**BUILDING** at the initial read-only check and later reached **REMOVED**;
+that superseded deployment is not recorded as delivered.
 Exact served identity and current game pixels remain incomplete.
 The cloud served-build request to staging `/health` was refused by its network
 proxy with CONNECT 403 (no HTTP response from the game). No alternate route or
 retry was attempted. The release/cloud access owner must provide an authorized
 working served-identity path; platform metadata does not close that denial.
 
-The next disjoint slice is [berry production binding validation](../scripts/berry-lifecycle-bindings.test.mjs),
+The merged berry slice is [berry production binding validation](../scripts/berry-lifecycle-bindings.test.mjs),
 registered through the existing forest-age CI entry. It runs the actual
 `buildBerryNodeInstances` and `setBerryNodeStage` bodies read from the current
 client host, with the normal generic and Underbough factories. No host or art
@@ -80,12 +83,42 @@ root; older states retain their 2.55×1.56 registration. This test cannot prove
 matching silhouettes, anatomical direction, shader output or productive Gather.
 The two focused tests and the existing nine-test forest-age entry pass locally.
 
-Continuing order after berry review/integration: refresh main and verify
-containing staging source/served identity; once cloud qualification is repaired,
-capture normal and strategic full→worked→low→depleted/reset in ordinary games.
-Keep tree/berry matching source-art inputs and the private oak publication hold
-with their owners above. These are real dependencies; another selector, atlas,
-repaint or cleanup is not a justified ready substitute.
+Berry PR494 received independent agent review at exact head
+`2f6ca0b60f92ecddb0a73a5f7faef1a43c606945` and merged as
+`10e2cacde43ab7c176d14828763687e757f083b2`. At that exact merged source,
+the nine-test forest-age entry and native packed-release scenario passed; the
+clean local release digest was
+`sha256:d07815575d3bccb85d8e5253ef318774f5995635de2f9dff612e53f52c7989f6`.
+Those new source tests establish binding behavior, not missing-art completion.
+
+### Containing staging delivery receipt
+
+Permitted Railway reads reported terminal **SUCCESS** at
+`2026-10-05T22:21:25.044Z` for deployment
+`8ec6ce72-8f78-4358-befa-e2a9c409ba32`, source
+`a2bdd0411530ae729a8af4ffb45c5f59e437ee7b`:
+
+| Provider scope | Exact identity |
+| --- | --- |
+| Project | `32da8e2c-3377-49ed-8df0-45f72ecdc562` |
+| Game service | `408356ca-c8cd-4932-abca-d5ebef430dd5` |
+| Staging environment | `93f80e39-efd0-420a-9282-86886d3e88bd` |
+
+Git ancestry verifies that this deployed source contains both flora merges.
+The earlier exact-source `10e2cacd` deployment
+`021dd1a2-e3ed-43c8-95bd-3d9969480fb9` reached **REMOVED** after image build;
+its build milestone alone did not establish delivery. The containing success
+above closes provider deployment only. The local release digest belongs to
+`10e2cacd`, not the later source or Railway image. No served bytes or game
+frames were obtained; CONNECT403 and browser sandbox/storage denials remain
+recorded, without alternate-route requests or repeated browser setup.
+
+Continuing order: prepare the bounded pine art specification below; the flora
+owner then retains permitted served-identity verification and normal/strategic
+Gather→depletion→reset captures when the release/cloud access owner supplies
+an allowed capture surface. Tree/berry source-art inputs and the private oak
+publication hold remain with their owners above. No additional test-only slice
+is justified without a demonstrated gap in current production behavior.
 
 ## Source audit
 
@@ -215,6 +248,88 @@ or complete lifecycle claim is allowed. Existing regional four-state atlases
 retain their mip cap6,64px gutters and half-texel inset. Pine keeps the existing
 eight individual textures and their mip sampling; the historical unguttered
 pine atlas is not newly bound or duplicated.
+
+## Smallest pine lifecycle art specification — yaw 0
+
+**Status: specification only; no new art produced or accepted.** Flora owner
+retains this specification, future default integration and ordinary-game
+acceptance. The source producer is **unassigned**. Its concrete dependency is
+authorized access to the exact approved private pine source identified by the
+existing manifest, plus permission for any new derivative publication. Existing
+public reuse does not authorize private transfer or new uploads. No paid job,
+credits, generation, repaint, private transfer/publication or Mac work is part
+of this step. The production sidecar still has **24 missing source cells**,
+`sourceComplete: false` and `prepared-unbound` integration.
+
+The smallest complete sequence at one approved physical heading adds exactly
+`worked|0`, `low|0` and `depleted|0`, beside the immutable existing `full|0`.
+Yaw 0 is selected because its retained frame, runtime derivative and provenance
+are already pinned in the [pine production sidecar](art-direction/tree-variety-v1/pine-production-contract.json).
+This is a diagnostic sequence, not a default rollout or a collapse of the
+existing eight headings. All other seven headings still need all three states;
+only actual accepted derivatives may reduce the missing-cell count.
+
+| Cell / stock out of six | Proposed state treatment, retaining the approved pine identity |
+| --- | --- |
+| `full\|0` / 6, 5 | Existing tall, irregular tiered pine with its exposed roots; reuse approved bytes. |
+| `worked\|0` / 4, 3 | Authored canopy/branch loss that reads as partial harvesting; retain the same trunk, roots and orientation. |
+| `low\|0` / 2, 1 | Visibly reduced remaining crown/branches on the same tree; do not shrink the whole card to simulate depletion. |
+| `depleted\|0` / 0 | Pine-specific cut stump and root remnant at the same ground pivot, without standing canopy; the generic oak placeholder is not this source cell. |
+
+This written sequence is the proposed storyboard, backed by the retained
+[pine contact sheet](../assets/environment/frontier-meshy-fixed-camera-v3/pine/contact-sheet.png)
+and [full yaw-0 reference](../assets/environment/frontier-meshy-fixed-camera-v3/pine/references/frames/color/view-00.png).
+It retains the approved anatomy/palette while pursuing painterly readability;
+it does not authorize a new material or texture treatment. A clay-like or
+metallic candidate that fails review remains rejected evidence, not a reason
+to regenerate or alter the approved full frame independently.
+
+### Exact registration and provenance
+
+- Full reference SHA256:
+  `a241c7f91db71d5eb4a1b8b268ff8ac50cc463105051b4d3cb4926fc8a4dce75`;
+  runtime `pine-00.webp` SHA256:
+  `b00664dbb4bd46d470e084eed6eee2b1a9c8f83c62e0f5cc1784928de1ae13f0`.
+- The [existing manifest](../assets/environment/frontier-meshy-fixed-camera-v3/pine/manifest.json)
+  SHA256 is `ff85258c0f4ac1ca427f423e57e4296e98833f061f1aebebdaf1ef09196dc419`.
+  Its `sourceModel`/`sourceModelSha256` fields identify the absent private source;
+  source availability and provider receipt/rights evidence remain unverified.
+  Retain mesh task `01a0e074-dcd7-74dd-a8b1-3a7b20ed3268` and remesh task
+  `01a0e079-d166-76cc-b3a7-42ab091febf7` as provenance, not a new job request.
+- Capture transparent 640×640 lossless RGBA, ground pivot `[320,480]`,
+  128px/world unit and 5×5 world frame. Fix the orthographic camera at
+  azimuth45°, elevation45.43590248481586° and physical positive-world-Y
+  model yaw0°. Keep the existing world-fixed lights/color pipeline above.
+  No camera orbit, mirrored image or card rotation substitutes for this yaw.
+- Preserve the original grounding/centering transform and full-source union
+  fit across all states: baseScale3.2675419644341033,
+  fitScale0.8193414402973493, effectiveScale2.6772325393714684.
+  The full normalized dimensions remain the calibration reference above;
+  depleted geometry may occupy less of that same canvas. Do not refit,
+  recenter, crop or rescale individual states to fill their frames.
+- Capture at unit card scale. Future integration retains each slot's existing
+  final scale/root/heading across gather, depletion and reset. Current generic
+  pine slot scale is `0.76 + variation * 0.2`; the prepared pilot's `[0.7,1.0]`
+  selector remains unbound. The current generic stump's `slot.scale * 0.48`
+  is a fallback policy, not the scale for these proposed same-design cells.
+  Stock, yield, authoritative cell, collision and clearing rules stay unchanged.
+
+### Future acceptance and next dependency
+
+The source producer must provide the three exact state/yaw IDs, candidate file
+hashes, source/variant lineage, fixed-camera/root/fit capture settings and
+separate derivative-publication authority. Keep candidate/source receipts
+separate from approved public runtime files; this specification grants no upload
+permission. Flora review then compares all four cells at normal0.91 and
+strategic0.48 zoom on meadow/drygrass, checking stable roots/anatomical direction,
+readable harvesting and the approved painterly target before expansion.
+
+After matched art and an allowed capture surface exist, the flora owner retains
+default binding, exact release/served identity and ordinary Gather stock
+6→4→2→0, reset and same-position rebuild observation. A one-heading source
+comparison does not establish that gameplay path or all eight lifecycle
+headings. Missing source/art and denied capture access are the next blockers;
+more tests, a selector rollout or a new atlas cannot complete them.
 
 ## Contract, checks and delivery boundary
 
