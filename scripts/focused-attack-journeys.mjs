@@ -111,12 +111,13 @@ async function journey(team, kind, action) {
 
 for (const team of [0, 1]) for (const kind of ['infantry', 'archer']) for (const recovery of ['none', 'accepted', 'active', 'damage']) {
   test(`seat ${team}: explicit noAttack ${kind} keeps its full selected route and kills through ${recovery} recovery`, async () => {
-    await journey(team, kind, ({ r, id, targetId, actor, target, attack, step, recover, finish, radius, counts }) => {
+    await journey(team, kind, ({ r, id, targetId, actor, target, attack, clear, step, recover, finish, radius, counts }) => {
       const revision = actor().orderRevision;
       const selected = r.attackApproach(id, targetId), startCell = r.cell(actor().x, actor().z);
       assert.ok(selected.reachable);
       assert.ok(attack().some(n => /ATTACK ORDER/.test(n.message)));
       assertSelectedRoutePreserved(actor().path, selected.path, startCell);
+      assert.ok(clear(actor(), r.point(actor().path[0])), 'accepted publication must already have a body-clear first approach');
       const acceptedRevision = actor().orderRevision, goal = actor().moveGoalCell;
       assert.equal(acceptedRevision, revision + 1); assert.equal(goal, r.cell(target().x, target().z));
       assert.equal(actor().path.at(-1), goal, 'full selected focused route is retained, including ranged target-cell tail');
@@ -145,7 +146,7 @@ for (const team of [0, 1]) test(`seat ${team}: focused Attack supersedes pending
 });
 
 for (const team of [0, 1]) test(`seat ${team}: moving-target repath retains the deliberately selected legal waypoint and durable goal`, async () => {
-  await journey(team, 'infantry', ({ r, id, targetId, actor, target, command, attack, step, finish }) => {
+  await journey(team, 'infantry', ({ r, id, targetId, actor, target, command, attack, clear, step, finish }) => {
     attack(); const goal = actor().moveGoalCell, revision = actor().orderRevision;
     step(); step(); command(targetId, 'move', { x: 8.5, z: -3.5 }); r.drain();
     let witnessed = 0;
@@ -154,11 +155,13 @@ for (const team of [0, 1]) test(`seat ${team}: moving-target repath retains the 
       const targetCell = r.cell(target().x, target().z), priorTargetCell = actor().lastAttackCell;
       const retained = actor().pathIndex < actor().path.length && canTraverseUnitStep(cell, next, 64, r.levels, r.isWalkable);
       const selected = r.attackApproach(id, targetId, true);
+      const before = { x: actor().x, z: actor().z };
       step();
       if (actor().attackTargetId === targetId && actor().lastAttackCell !== priorTargetCell && retained) {
         witnessed++;
         assert.ok(actor().path.slice(0, 2).includes(next), 'rejoin can prefix but cannot discard the intentional retained waypoint');
         assertSelectedRoutePreserved(actor().path, selected.path, cell);
+        assert.ok(clear(before, r.point(actor().path[0])), 'repath publication has a body-clear first approach from the actual fractional start');
         assert.equal(actor().path.at(-1), targetCell, 'repath still publishes the full target-selected route');
       }
       assert.equal(actor().moveGoalCell, goal); assert.equal(actor().orderRevision, revision);
