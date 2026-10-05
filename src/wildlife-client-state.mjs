@@ -73,8 +73,17 @@ export function selectOwnedWildlife(view, nodeId) {
   return row?.wildlifeState === 'alive' && row.stock > 0 && row.wildlifeTeam === view.team ? nodeId : null;
 }
 
+// Carcasses are shared Food, even when the living animal had another owner.
+// Selection does not grant Herd/Stop authority: those retain the live predicate.
+export function selectInspectableWildlife(view, nodeId) {
+  if (!seat(view?.team) || typeof nodeId !== 'string') return null;
+  const row = view.rows?.get(nodeId);
+  return row?.wildlifeState === 'carcass' && row.stock > 0
+    ? nodeId : selectOwnedWildlife(view, nodeId);
+}
+
 export function reconcileWildlifeSelection(nodeId, previousView, currentView) {
-  return sameContext(previousView, currentView) ? selectOwnedWildlife(currentView, nodeId) : null;
+  return sameContext(previousView, currentView) ? selectInspectableWildlife(currentView, nodeId) : null;
 }
 
 // Keep the view from which selection was made as selectionView. A rematch using

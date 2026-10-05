@@ -81,7 +81,7 @@ import {
 import { createUnitSpriteRuntime } from './unit-sprite-runtime.mjs';
 import { readWorkerPerformingAction, workerWorkAction } from './worker-work-presentation.mjs';
 import { createNeutralWildlifeRenderer } from './neutral-wildlife-renderer.mjs';
-import { readDisclosedWildlife, selectOwnedWildlife, reconcileWildlifeSelection,
+import { readDisclosedWildlife, selectInspectableWildlife, reconcileWildlifeSelection,
   createWildlifeCommand, updateWildlifePositionMemory } from './wildlife-client-state.mjs';
 import {
   MAX_ELEVATION_PATCHES, buildElevationGrid, capturePrerequisiteIds, scenarioEventSourceIds,
@@ -3776,8 +3776,8 @@ function updateStationaryOrderControls(selectedBuilding) {
   const wildlife = selectedWildlife();
   const disabled = localTeam === null || matchWinner >= 0 || selectedIds().length === 0 || Boolean(selectedBuilding);
   for (const button of document.querySelectorAll('[data-stationary-order], [data-persistent-order]')) {
-    button.disabled = wildlife ? matchWinner >= 0 || button.dataset.stationaryOrder !== 'stop' : disabled;
-    button.hidden = Boolean(wildlife) && button.dataset.stationaryOrder !== 'stop';
+    button.disabled = wildlife ? matchWinner >= 0 || wildlife.wildlifeState !== 'alive' || button.dataset.stationaryOrder !== 'stop' : disabled;
+    button.hidden = Boolean(wildlife) && (wildlife.wildlifeState !== 'alive' || button.dataset.stationaryOrder !== 'stop');
   }
 }
 
@@ -3844,7 +3844,7 @@ function updateSelectionUI({ refreshEconomy = true } = {}) {
       queuedWaypointTotal += queuedWaypoints;
     }
   }
-  ui.selected.textContent = selectedWildlife() ? '1 SHEEP' : selected.size.toLocaleString();
+  ui.selected.textContent = selectedWildlife() ? selectedWildlife().wildlifeState === 'carcass' ? '1 CARCASS' : '1 SHEEP' : selected.size.toLocaleString();
   ui.selectedBlue.textContent = blue.toLocaleString();
   ui.selectedRed.textContent = red.toLocaleString();
   ui.selectedWorkers.textContent = workers.toLocaleString();
@@ -3866,6 +3866,8 @@ function updateSelectionUI({ refreshEconomy = true } = {}) {
   // Build availability depends on selection as well as server resources.
   // Snapshots already refresh economy; user selection changes must do it now.
   if (refreshEconomy) updateEconomyUI();
+  if (selectedWildlife()) updateCommandUI();
+  else updateWildlifeHarvestControl();
   updateContextualCommands(priorCommandFocus);
 }
 
@@ -3904,12 +3906,12 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   updateCombatStanceUI();
   document.querySelector('#assign-selected-group').disabled = !context.total;
   bar.querySelector('[data-context-summary]').textContent = wildlife
-    ? `Bellweather Sheep · ${TEAM_NAMES[wildlife.wildlifeTeam]} · ${formatResourceStock(wildlife.stock)} food · Herd / Stop`
+    ? wildlifeSelectionSummary(wildlife)
     : building
     ? `${buildingLabel(building.type)} · ${ui.selectedBuildingHealth.textContent} · ${ui.selectedBuildingProduction.textContent}`
     : context.total ? `${context.total} selected${context.kind === 'military' || context.kind === 'mixed' ? ` · ${ui.formationSelect.value} formation` : ''} · ${Object.entries(context.counts).filter(([, n]) => n).map(([role, n]) => `${n} ${role}`).join(' · ')}${context.counts.worker || context.counts.skiff ? ` · Cargo ${Object.entries(context.cargo).map(([resource, stock]) => `${formatResourceStock(stock)} ${resource}`).join(' / ')}` : ''}` : '';
   for (const button of bar.querySelectorAll('[data-stationary-order], [data-persistent-order]')) {
-    button.hidden = wildlife ? button.dataset.stationaryOrder !== 'stop'
+    button.hidden = wildlife ? wildlife.wildlifeState !== 'alive' || button.dataset.stationaryOrder !== 'stop'
       : !['workers', 'military', 'mixed', 'boats'].includes(context.kind);
     if (button.dataset.stationaryOrder === 'stop') button.title = wildlife
       ? 'Stop this Sheep at its current position · S'
@@ -3924,7 +3926,7 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   for (const button of bar.querySelectorAll('[data-context-proxy]')) {
     const source = document.getElementById(button.dataset.contextProxy);
     const action = button.dataset.contextProxy;
-    button.hidden = wildlife ? action !== 'order-target-toggle'
+    button.hidden = wildlife ? wildlife.wildlifeState === 'carcass' ? action !== 'select-workers' : action !== 'order-target-toggle'
       : action === 'order-target-toggle' && building && !BUILDING_DEFINITIONS[building.type]?.products.length ? true : action.startsWith('train-') ? true : action === 'order-target-toggle' ? context.kind === 'none'
       : action === 'attack-move-toggle' ? !['military', 'mixed'].includes(context.kind)
       : action === 'train-infantry' ? building?.type !== 'barracks'
@@ -4461,7 +4463,7 @@ function updateCommandUI() {
   updateStationaryOrderControls(selectedBuilding);
   const rallyCell = Number.isInteger(selectedBuilding?.rallyCell) ? selectedBuilding.rallyCell : -1;
   const wildlife = selectedWildlife();
-  const mode = wildlife ? 'HERD' : selectedBuilding ? buildingSupportsRally(selectedBuilding.type) ? 'RALLY' : 'BUILDING' : persistentTargetMode ? persistentTargetMode.toUpperCase() : attackMoveMode ? 'ATTACK MOVE' : 'MOVE';
+  const mode = wildlife ? wildlife.wildlifeState === 'carcass' ? 'HARVEST' : 'HERD' : selectedBuilding ? buildingSupportsRally(selectedBuilding.type) ? 'RALLY' : 'BUILDING' : persistentTargetMode ? persistentTargetMode.toUpperCase() : attackMoveMode ? 'ATTACK MOVE' : 'MOVE';
   if (ui.commandMode) {
     ui.commandMode.textContent = mode;
     ui.commandMode.dataset.mode = selectedBuilding ? 'rally' : attackMoveMode ? 'attack-move' : 'move';
@@ -4484,7 +4486,7 @@ function updateCommandUI() {
     }
     ui.commandIcon.classList.toggle('attack-move', !selectedBuilding && attackMoveMode);
   }
-  if (ui.commandTitle) ui.commandTitle.textContent = wildlife ? 'Herd your Sheep' : selectedBuilding
+  if (ui.commandTitle) ui.commandTitle.textContent = wildlife ? wildlife.wildlifeState === 'carcass' ? wildlifeSelectionSummary(wildlife) : 'Herd your Sheep' : selectedBuilding
     ? selectedBuilding.home ? 'TOWN CENTER · HOME' : `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`
     : persistentTargetMode === 'patrol' ? 'Patrol there and back' : persistentTargetMode === 'follow' ? 'Follow a friendly leader' : attackMoveMode ? 'Advance and engage' : 'Move or attack';
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
@@ -4510,7 +4512,8 @@ function updateCommandUI() {
   if (selectedBuilding?.type === 'dock' && ui.commandHint) ui.commandHint.textContent = 'Train a Skiff (placeholder) · owned boats deliver food at this Dock · no rally.';
   if (!selectedBuilding && selectedWaterUnits() && ui.commandHint) ui.commandHint.textContent = 'Select Skiffs · target fish or water · Shift water queues up to 8 waypoints · fishing boats deliver one load before leaving · Stop clears the queue and keeps cargo.';
   if (persistentTargetMode && ui.commandHint) ui.commandHint.textContent = `${tapOrderArmed ? 'Tap or click' : coarsePointer ? 'Use Target battlefield, then tap' : 'Right-click'} ${persistentTargetMode === 'follow' ? 'a friendly unit' : 'ground to set the second patrol endpoint'}`;
-  if (wildlife && ui.commandHint) ui.commandHint.textContent = tapOrderArmed
+  if (wildlife && ui.commandHint) ui.commandHint.textContent = wildlife.wildlifeState === 'carcass'
+    ? 'Harvest sends the nearest idle Worker with empty cargo · Or select Workers and right-click this carcass' : tapOrderArmed
     ? 'Tap or click currently visible clear land · Stop keeps the Sheep here'
     : coarsePointer ? 'Use Herd, then tap visible clear land · Stop · S'
       : 'Right-click currently visible clear land · Stop · S · Shift queues are unavailable';
@@ -4543,6 +4546,7 @@ function updateCommandUI() {
   }
   if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(wildlife) || Boolean(selectedBuilding) || selectedWaterUnits();
   if (ui.formationSelect?.parentElement) ui.formationSelect.parentElement.hidden = Boolean(wildlife);
+  updateWildlifeHarvestControl();
   syncTargetOrderUI();
   syncBattlefieldCursor();
   updateContextualCommands();
@@ -4553,11 +4557,12 @@ function syncTargetOrderUI() {
   const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
   ui.orderTargetToggle.disabled = localTeam === null || matchWinner >= 0 || buildPlacementActive
+    || selectedWildlife()?.wildlifeState === 'carcass'
     || Boolean(selectedBuilding && !buildingSupportsRally(selectedBuilding.type));
   ui.orderTargetToggle.classList.toggle('active', tapOrderArmed);
   ui.orderTargetToggle.setAttribute('aria-pressed', String(tapOrderArmed));
   ui.orderTargetToggle.querySelector('span').textContent = tapOrderArmed ? 'Cancel target'
-    : selectedWildlife() ? 'Herd' : selectedBuilding ? 'Set rally point' : 'Target battlefield';
+    : selectedWildlife() ? selectedWildlife().wildlifeState === 'carcass' ? 'Harvest with Workers' : 'Herd' : selectedBuilding ? 'Set rally point' : 'Target battlefield';
   ui.orderTargetToggle.querySelector('small').textContent = tapOrderArmed
     ? 'Tap or click a battlefield target' : selectedBuilding ? 'Tap or click ground once' : 'Tap or click once to issue';
 }
@@ -7240,11 +7245,11 @@ function pickAt(x, y, predicate, { advance = true } = {}) {
   };
 }
 
-function pickResourceNodeAt(x, y, { visibleOnly = false, ownedWildlifeOnly = false } = {}) {
+function pickResourceNodeAt(x, y, { visibleOnly = false, inspectableWildlifeOnly = false } = {}) {
   if (localTeam === null || !Array.isArray(mapDefinition?.resourceNodes)) return null;
   // Farm uses the same visible body as building selection; its base point alone
   // misses roof/edge clicks and silently turns a harvest order into a Move.
-  if (!ownedWildlifeOnly) {
+  if (!inspectableWildlifeOnly) {
     const farm = pickBuildingAt(x, y, building => building.team === localTeam
       && building.type === 'farm' && building.complete && building.hp > 0);
     if (farm) return farmHarvestNode(farm);
@@ -7257,7 +7262,7 @@ function pickResourceNodeAt(x, y, { visibleOnly = false, ownedWildlifeOnly = fal
     const disclosed = authored.wildlifeSpecies === undefined ? null : latestWildlifeView?.rows.get(authored.id);
     const node = disclosed ? { ...authored, ...disclosed } : authored;
     if (node.type === 'wood' && (latestResourceStocks.get(node.id) ?? node.stock) <= 0) continue;
-    if (ownedWildlifeOnly && selectOwnedWildlife(latestWildlifeView, node.id) === null) continue;
+    if (inspectableWildlifeOnly && selectInspectableWildlife(latestWildlifeView, node.id) === null) continue;
     if (node.wildlifeSpecies !== undefined && (!disclosed || disclosed.stock <= 0
       || !wildlifePointVisible(disclosed) || !wildlifeRenderer.isAvailable(node.id))) continue;
     if (visibleOnly && mapDefinition.fogOfWar) {
@@ -7452,8 +7457,8 @@ function pickFriendly(x, y, additive = false) {
       selectBuilding(building);
       return;
     }
-    const wildlife = pickResourceNodeAt(x, y, { visibleOnly: true, ownedWildlifeOnly: true });
-    if (wildlife && selectOwnedWildlife(latestWildlifeView, wildlife.id)) {
+    const wildlife = pickResourceNodeAt(x, y, { visibleOnly: true, inspectableWildlifeOnly: true });
+    if (wildlife && selectInspectableWildlife(latestWildlifeView, wildlife.id)) {
       selectWildlife(wildlife);
       return;
     }
@@ -7528,8 +7533,44 @@ function mapCellToWorld(cell) {
   };
 }
 
+function wildlifeSelectionSummary(wildlife) {
+  const food = wildlife.stock < 1 ? '<1' : formatResourceStock(wildlife.stock);
+  return wildlife.wildlifeState === 'carcass'
+    ? `Sheep carcass · ${food} food remaining · Harvest with Workers`
+    : `Bellweather Sheep · ${TEAM_NAMES[wildlife.wildlifeTeam]} · ${food} food · Herd / Stop`;
+}
+
+function wildlifeHarvestWorker() {
+  const wildlife = selectedWildlife();
+  if (wildlife?.wildlifeState !== 'carcass' || localTeam === null || matchWinner >= 0
+    || !wildlifePointVisible(wildlife)) return null;
+  return teamUnits[localTeam].filter(unit => unit.kind === 'worker' && unit.hp > 0
+    && unit.team === localTeam && unit.task === 'idle' && unit.cargo === 0)
+    .sort((a, b) => (a.serverX - wildlife.x) ** 2 + (a.serverZ - wildlife.z) ** 2
+      - ((b.serverX - wildlife.x) ** 2 + (b.serverZ - wildlife.z) ** 2) || a.id - b.id)[0] || null;
+}
+
+function updateWildlifeHarvestControl() {
+  const button = document.querySelector('[data-harvest-wildlife]');
+  if (!button) return;
+  button.hidden = selectedWildlife()?.wildlifeState !== 'carcass';
+  button.disabled = !wildlifeHarvestWorker() || socket?.readyState !== WebSocket.OPEN;
+  button.title = button.disabled
+    ? 'Needs an idle Worker with empty cargo · Or select Workers and right-click this carcass'
+    : 'Send the nearest idle Worker with empty cargo to harvest this carcass';
+}
+
+function issueWildlifeHarvest() {
+  const wildlife = selectedWildlife(), worker = wildlifeHarvestWorker();
+  if (!worker) { showToast('SELECT WORKERS AND RIGHT-CLICK THIS CARCASS'); return false; }
+  return Boolean(sendTrackedOrder({ type: 'gather', ids: [worker.id], nodeId: wildlife.id },
+    'HARVEST FOOD', 1, 'WORKER'));
+}
+
+document.querySelector('[data-harvest-wildlife]')?.addEventListener('click', issueWildlifeHarvest);
+
 function selectedWildlife() {
-  return selectOwnedWildlife(latestWildlifeView, selectedWildlifeId) === null
+  return selectInspectableWildlife(latestWildlifeView, selectedWildlifeId) === null
     ? null : latestWildlifeView.rows.get(selectedWildlifeId);
 }
 
@@ -7589,6 +7630,9 @@ function applyWildlifeState(state, initial = false) {
   const view = readDisclosedWildlife(mapDefinition, state, localTeam, wildlifePointVisible);
   if (selectedWildlifeId !== null
     && reconcileWildlifeSelection(selectedWildlifeId, selectedWildlifeView, view) === null) clearWildlifeSelection();
+  if (view?.rows.get(selectedWildlifeId)?.wildlifeState === 'carcass') {
+    tapOrderArmed = false; tapOrderPointer = null;
+  }
   latestWildlifeView = view;
   wildlifePositionMemory = updateWildlifePositionMemory(wildlifePositionMemory, view);
   wildlifeRenderer.reconcile(view ? [...view.rows.values()] : [], wildlifePointVisible);
@@ -7607,7 +7651,7 @@ function applyWildlifeState(state, initial = false) {
 }
 
 function selectWildlife(node) {
-  const id = selectOwnedWildlife(latestWildlifeView, node?.id);
+  const id = selectInspectableWildlife(latestWildlifeView, node?.id);
   if (id === null) return;
   if (buildPlacementActive) cancelBuildPlacement(false);
   clearWildlifeSelection();
@@ -7625,7 +7669,9 @@ function selectWildlife(node) {
   updateSelectionUI();
   updateCommandUI();
   updateEconomyUI();
-  showToast('SHEEP SELECTED · HERD TO VISIBLE CLEAR LAND · STOP · S');
+  showToast(selectedWildlife().wildlifeState === 'carcass'
+    ? `${wildlifeSelectionSummary(selectedWildlife())} · HARVEST WITH WORKERS`
+    : 'SHEEP SELECTED · HERD TO VISIBLE CLEAR LAND · STOP · S');
   updateBuildPlacementHint();
   audio.playEvent({ cue: 'select' });
 }
@@ -7634,7 +7680,7 @@ function issueWildlifeOrder(type, point, queueWaypoint = false) {
   if (localTeam === null || matchWinner >= 0) return false;
   if (queueWaypoint) { showToast('QUEUED HERDING IS UNAVAILABLE'); return false; }
   const wildlife = selectedWildlife();
-  if (!wildlife || !wildlifePointVisible(wildlife)) { showToast('SELECT YOUR VISIBLE LIVE SHEEP'); return false; }
+  if (!wildlife || wildlife.wildlifeState !== 'alive' || !wildlifePointVisible(wildlife)) { showToast('SELECT YOUR VISIBLE LIVE SHEEP'); return false; }
   const command = createWildlifeCommand(type, selectedWildlifeId, selectedWildlifeView, latestWildlifeView,
     point, { isVisible: wildlifePointVisible, isLegalEndpoint: wildlifeEndpointLegal });
   if (!command) { showToast('HERD NEEDS CURRENTLY VISIBLE CLEAR LAND'); return false; }
@@ -7743,6 +7789,7 @@ function setAttackMoveMode(enabled, announce = true) {
 function setTapOrderArmed(enabled, announce = true) {
   if (enabled) {
     if (localTeam === null || matchWinner >= 0) return;
+    if (selectedWildlife()?.wildlifeState === 'carcass') { showToast('SELECT WORKERS TO HARVEST THIS CARCASS'); return; }
     if (latestBuildings.find(row => row.id === selectedBuildingId)?.type === 'dock') { showToast('MOVE THE SKIFF AFTER SPAWN'); return; }
     if (buildPlacementActive) { showToast('FINISH OR CANCEL BUILD PLACEMENT FIRST'); return; }
     if (selectedBuildingId === null && !selectedWildlife() && selectedIds().length === 0) {
@@ -8134,7 +8181,7 @@ function syncBattlefieldCursor() {
   };
   if (selectedWildlife() && state.canOrder && !state.panning && !state.panReady && !state.dragging) {
     const point = cursorPointer ? worldAt(cursorPointer.x, cursorPointer.y) : null;
-    setBattlefieldCursor(cursorShift || (point && !wildlifeEndpointLegal(point)) ? 'unavailable' : 'move');
+    setBattlefieldCursor(selectedWildlife().wildlifeState === 'carcass' || cursorShift || (point && !wildlifeEndpointLegal(point)) ? 'unavailable' : 'move');
     return;
   }
   // Picking is read-only here: hovering must never cycle an overlapping target stack.
