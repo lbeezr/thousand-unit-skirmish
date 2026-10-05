@@ -8,4 +8,12 @@ Each clip starts on a beat, has a beat length and a source offset in seconds. Th
 
 The saved composition contains references and edit metadata only. A WAV export is a rendered copy; the original recording bytes are not modified. Portable backup and player distribution are handled by the audio library pack workflow. WAV export is limited to five minutes to bound browser memory use. The first version has no piano roll, note sampler, waveform editing or automatic tempo matching.
 
+Stop, editing, selecting a composition, another Play attempt and disposal cancel
+pending preview startup, including the wait for the browser audio context to
+resume. A cancelled attempt cannot schedule clips or replace a newer status
+with a late failure. Current failures keep their existing messages and permit
+another Play attempt. `node --test scripts/audio-composer-preview.test.mjs`
+checks these controls through the mounted editor with deferred audio promises;
+it does not establish native browser playback.
+
 Run `node scripts/audio-composer-scenario.mjs` for timing, validation, two-track save/reopen and WAV scheduling checks. The browser fixture at `scripts/audio-composer-browser.html` loads two generated quarter-second WAVs. On 27 September 2026, a browser pass created two tracks, looped the first source, placed the second source at beat four, saved and reopened the composition, then rendered a four-second stereo WAV. Preview uses the runtime player after that module lands in the integrated tree.
