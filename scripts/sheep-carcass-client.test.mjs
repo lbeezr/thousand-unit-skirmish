@@ -72,6 +72,24 @@ test('live selected Sheep becoming a carcass cancels armed Herd and retains insp
   assert.equal(f.w.document.querySelector('[data-harvest-wildlife]').hidden, false);
 });
 
+for (const team of [0, 1]) test(`seat ${team}: Harvest picks nearest eligible Worker from actual snapshot positions`, async t => {
+  const state = controlsState();
+  const node = state.resourceNodes.find(row => row.id === 'sheep-neutral');
+  Object.assign(node, { stock: 12.25, wildlifeState: 'carcass', wildlifeActivity: undefined });
+  const distant = state.units.find(row => row[1] === team && row[5] === 'worker');
+  distant[2] = node.x - 7; distant[3] = node.z;
+  const nearWorker = [4, team, node.x + 2, node.z, 100, 'worker', 0, null, 19, 'idle'];
+  const busyWorker = [5, team, node.x + 1, node.z, 100, 'worker', 0, null, 20, 'gathering'];
+  const cargoWorker = [6, team, node.x, node.z + 1, 100, 'worker', 1, 'food', 21, 'idle'];
+  state.units.push(nearWorker, busyWorker, cargoWorker);
+  const f = await wildlifeControlsFixture(team, { state }); t.after(() => f.close());
+  f.w.camera.zoom = 3; f.w.camera.updateProjectionMatrix(); f.click(node);
+  assert.equal(f.w.selectedWildlifeId, node.id);
+  f.w.document.querySelector('[data-harvest-wildlife]').click();
+  assert.deepEqual(f.sent.at(-1).ids, [4], 'closer eligible Worker wins over lower ID and closer busy/carrying Workers');
+  assert.deepEqual(f.sent.at(-1).unitGenerations, [19]);
+});
+
 test('production carcass checkpoint replays Food exactly and restored client Harvest depletes it', async t => {
   process.env.RTS_MAP = 'maps/open-field.json'; process.env.RTS_GAME_MODE = 'pvp'; process.env.RTS_PREGAME = '0';
   delete process.env.RTS_MATCH_STATE_PATH;

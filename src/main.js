@@ -7546,8 +7546,8 @@ function wildlifeHarvestWorker() {
     || !wildlifePointVisible(wildlife)) return null;
   return teamUnits[localTeam].filter(unit => unit.kind === 'worker' && unit.hp > 0
     && unit.team === localTeam && unit.task === 'idle' && unit.cargo === 0)
-    .sort((a, b) => (a.x - wildlife.x) ** 2 + (a.z - wildlife.z) ** 2
-      - ((b.x - wildlife.x) ** 2 + (b.z - wildlife.z) ** 2) || a.id - b.id)[0] || null;
+    .sort((a, b) => (a.serverX - wildlife.x) ** 2 + (a.serverZ - wildlife.z) ** 2
+      - ((b.serverX - wildlife.x) ** 2 + (b.serverZ - wildlife.z) ** 2) || a.id - b.id)[0] || null;
 }
 
 function updateWildlifeHarvestControl() {
