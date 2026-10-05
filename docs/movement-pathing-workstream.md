@@ -98,6 +98,34 @@ despite legal-range damage and successful target kills. The
 [retained baseline](qa-evidence/focused-attack-2026-10-05/baseline.json) preserves
 the full Archer route to its target cell and physical/damage evidence.
 
+Core [PR411](https://github.com/lbeezr/thousand-unit-skirmish/pull/411) is now
+normally merged at `93d45c73`. Caller
+[PR410](https://github.com/lbeezr/thousand-unit-skirmish/pull/410) consumes its
+actual `rejoinSelectedUnitRoute` at the two allocated focused publications,
+after accepted revision and after existing reachable/null handling. Shared
+kind radii feed existing static-body execution checks. Prefix acceptance uses
+the shared static sweep to the current cell center; rejection publishes an
+empty path while preserving the accepted target/revision/goal for existing
+repath handling. It never republishes the unsafe original approach. Both-seat
+controlled prior-checkpoint overlaps prove rejection/recovery admits no new
+unsafe step or out-of-range damage, and unchanged in-range firing still works;
+legacy placement/stationary separation remain unqualified by that control.
+No `getUnitAttackPath`, selected-route reduction/truncation, global flow,
+same-cell closure, saved-goal/schema or automatic acquisition policy changes.
+
+The [pre-review candidate](qa-evidence/focused-attack-2026-10-05/candidate.json)
+records zero unsafe steps for both Infantry/Archer seats, with exactly one
+current-cell prefix and the complete selected suffix preserved. All four
+command workloads still kill at the same baseline ticks (263 Infantry,
+461 Archer). The 45 new registered checks compare complete authoritative
+selection against publication, require actual productive damage before damage
+recovery, and cover moving-target continuation, accepted-order identity,
+pending Move supersession, paid navigation changes, exclusions and rejection.
+Two broader seat-0 dead-target visibility fixtures reproduce with the old
+publisher; preserve those baseline failures separately from adoption checks.
+Final exact-head review/types/clean pack/native and author merge evidence
+belong to PR410; rendered/served acceptance remains open.
+
 After PR399 merged at `50d2e99e`, the project coordinator allocated a narrow
 target-free explicit AttackMove objective increment at main `82a66766` to
 caller-adoption owner `01a10933-e913-766b-b5de-3aa5a17c7038`, recorded on

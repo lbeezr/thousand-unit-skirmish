@@ -248,3 +248,29 @@ for (const team of [0, 1]) test(`seat ${team}: a paid footprint repairs focused 
     assert.ok(r.buildings.some(b => b.id === site.id), 'the paid footprint survives its builder target loss');
   });
 });
+
+for (const team of [0, 1]) test(`seat ${team}: rejected prefix retains focused intent through recovery without publishing unsafe travel`, async () => {
+  await journey(team, 'infantry', ({ r, id, targetId, actor, target, command, attack, clear, recover, finish }) => {
+    // A prior point-only checkpoint can have a finite position whose new body
+    // overlaps the neighboring stone. This is a rejection control, not a claim
+    // that this slice repairs legacy placement or stationary separation.
+    const legacy = r.checkpoint(); legacy.state.units[id].x = .91;
+    assert.ok(r.validate(structuredClone(legacy))); r.restore(structuredClone(legacy));
+    assert.equal(clear(actor(), actor()), false);
+    assert.ok(attack().some(n => /ATTACK ORDER/.test(n.message)));
+    const revision = actor().orderRevision, goal = actor().moveGoalCell;
+    const position = { x: actor().x, z: actor().z }, hp = target().hp;
+    assert.deepEqual(actor().path, [], 'a rejected prefix does not publish the original unsafe route');
+    recover();
+    for (let t = 0; t < 30; t++) {
+      r.step(); assert.deepEqual(actor().path, []); assert.equal(actor().attackTargetId, targetId);
+      assert.equal(actor().orderRevision, revision); assert.equal(actor().moveGoalCell, goal);
+      assert.deepEqual(r.landSteps.filter(s => s.id === id), []);
+      assert.deepEqual({ x: actor().x, z: actor().z }, position);
+    }
+    assert.equal(target().hp, hp, 'rejection cannot invent out-of-range damage');
+    command(targetId, 'move', { x: 2.18, z: .95 }); r.drain(); finish();
+    assert.deepEqual({ x: actor().x, z: actor().z }, position, 'unchanged in-range firing can still complete without travel');
+    assert.equal(actor().orderRevision, revision); assert.equal(actor().moveGoalCell, goal);
+  });
+});
