@@ -17,8 +17,29 @@ the current write scope. The shipped-audio reader already has its own owner.
 
 | Rank/status | Reproduction and outcome | Write boundary | Next action/dependency | Acceptance owner |
 | --- | --- | --- | --- | --- |
-| 1 — integration tracked | [PR #190](https://github.com/lbeezr/thousand-unit-skirmish/pull/190) fixes missing-parent raw stacks and malformed JSON excerpts in visual-pack input loading. Real invalid/valid CLI, repair/retry, programmer-fault and unchanged symlink checks pass. | Validator, existing visual-pack path-safety scenario, this note | The linked PR retains exact reviewed head, merge and fresh-main tool acceptance. | Error-handling owner; tooling only, no production deployment. |
+| 1 — reproduced, source fix under review | Audio Composer Stop during pending context resume still scheduled one source; a late rejection replaced the stopped status. Reproduced at `b5b4dd49`. | Composer preview startup, mounted-editor tests, CI registration and composer guide | Review the exact head, integrate and verify packaged source. Native/deployed preview cancellation requires an identified runtime and available browser. | Error-handling owner; coordinated release owner retains deployment. |
+| Historical — integration tracked | [PR #190](https://github.com/lbeezr/thousand-unit-skirmish/pull/190) fixes missing-parent raw stacks and malformed JSON excerpts in visual-pack input loading. Real invalid/valid CLI, repair/retry, programmer-fault and unchanged symlink checks pass. | Validator, existing visual-pack path-safety scenario, this note | The linked PR retains exact reviewed head, merge and fresh-main tool acceptance. | Error-handling owner; tooling only, no production deployment. |
 | 2 — native acceptance blocked | Audio open and import source fixes have merged in PRs #166 and #172. The actual browser launch failed with `sandbox-unavailable`; no deployed revision has been identified for native Audio Studio retry/import observation. | No further source edit is justified by this blocker. | Parent identifies the coordinated runtime release; resume normal/blocked-open/import retry observation in a provider runtime with a working browser sandbox. | Parent owns coordinated release; error-handling owner retains native acceptance in the linked audio PRs below. |
+| 3 — next bounded audit, unconfirmed | Check WAV export's combined Blob read/decode catch for lost causes and programmer faults. | Read-only audit of `renderCompositionWav`; no edits reserved | Reproduce with actual export API and verify current ownership before proposing any change. Map import/validators remain with architecture; shipped-audio reader remains outside this lane. | Error-handling owner |
+
+### Composer preview audit — 5 October 2026
+
+Current remote main and local source were `b5b4dd49139b86dbe6ad0d299469f6b193df81b1`.
+Open PR inspection showed only held art PRs #25/#230/#241; no overlapping
+composer change. Workspace `.agents` and `.codex` directories were empty.
+The mounted production editor with a deferred `AudioContext.resume()` scheduled
+one source after Stop while reporting “Preview stopped.” A separate late resume
+rejection replaced that status. The same regression suite against unchanged
+baseline failed six of nine tests; the fix passes all nine. It also proves
+obsolete startup cannot stop a successful retry, editing cancels startup,
+disposal closes once, and late decode success/failure leaves Stop intact.
+
+The fix checks the existing preview token after resume and guards the existing
+failure status with that token. No error is wrapped or relabelled; active error
+messages, original error/cause objects, saved metadata and source Blobs are
+unchanged. Art backing: N/A, existing controls/status treatment is retained.
+These are CPU DOM/audio doubles, not native playback, deployment or rendered
+evidence. Exact-head review and packaging are recorded in the owned PR.
 
 ## Completed evidence
 
