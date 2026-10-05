@@ -22,12 +22,13 @@ import { exploredForestFringe } from './src/forest-fringe.mjs';
 import { VisionCoverageCache } from './src/server/vision-coverage-cache.mjs';
 import { preflightXlCheckpointRoutes, XL_CHECKPOINT_ROUTE_MAX_ENTRIES } from './src/server/checkpoint-route-budget.mjs';
 import { preflightXlCheckpointCloneInputs, preflightXlCheckpointState } from './src/server/checkpoint-json-budget.mjs';
+import { validateCheckpointEnvelope } from './src/server/checkpoint-envelope.mjs';
 import { readMatchCheckpointFile } from './src/server/checkpoint-file-reader.mjs';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
 import { creditResourceBalance } from './src/economy-ledger.mjs';
 import { STONE_ECONOMY_PROFILE_ID, resolveEconomyProfileId, economyResources, economyRulesetRevision, constructionCostForProfile, acceptsProfileDropoff, debitEconomyCost, proportionalEconomyRefund, creditEconomyRefund } from './src/economy-profile.mjs';
-import { migrateEconomyCheckpoint, validateEconomyCheckpoint } from './src/economy-checkpoint.mjs';
+import { migrateEconomyCheckpoint } from './src/economy-checkpoint.mjs';
 import { workerFoodGatherMultiplier, migrateFoodToolsCheckpoint } from './src/server/worker-food-tools.mjs';
 import { unfinishedRefund, buildingRepairStep } from './src/rules/base-lifecycle.mjs';
 import { productionAction } from './src/production-actions.mjs';
@@ -65,7 +66,7 @@ import { RoomLobbyChat } from './src/room-lobby-chat.mjs';
 import { normalizeMatchMode, matchModeDefinition, assertMatchModeCompatibility,
   effectiveMapForMatchMode, matchModeCatalog, NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from './src/match-modes.mjs';
 import { mapSizeIdentity, ordinaryMapCatalog } from './src/map-size-policy.mjs';
-import { migrateMatchModeCheckpoint, validateMatchModeCheckpoint } from './src/match-mode-checkpoint.mjs';
+import { migrateMatchModeCheckpoint } from './src/match-mode-checkpoint.mjs';
 import { BANNERFALL_RULES, createBannerfallState, creditBannerfallKill,
   bannerfallWaveKind, stepBannerfallWaves, validateBannerfallState, bannerfallWinner } from './src/bannerfall-rules.mjs';
 import { headingToTarget } from './src/unit-heading.mjs';
@@ -2909,29 +2910,11 @@ function validCellPath(value, cellCount) {
 }
 
 function validateMatchCheckpoint(snapshot) {
-  assertSnapshot(snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot), 'expected an object');
-  preflightXlCheckpointRoutes(snapshot.mapDefinition, snapshot.state,
-    { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES });
-  preflightXlCheckpointState(snapshot,
-    { maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES });
-  assertSnapshot(snapshot.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION, 'unsupported schema version');
-  validateEconomyCheckpoint(snapshot);
-  assertSnapshot(snapshot.factionId === DEFAULT_FACTION_ID, 'unsupported faction');
-  assertSnapshot([1, 2, 3, 4, MATCH_RULES_VERSION].includes(snapshot.rulesVersion),
-    'unsupported game rules version');
-  assertSnapshot(Number.isSafeInteger(snapshot.sequence) && snapshot.sequence >= 1, 'invalid sequence');
-  assertSnapshot(Number.isFinite(snapshot.savedAt) && snapshot.savedAt > 0, 'invalid save time');
-  assertSnapshot(typeof snapshot.matchId === 'string' && /^[A-Za-z0-9_-]{22}$/.test(snapshot.matchId), 'invalid match identity');
-  const canonicalDefinition = validateMapDefinition(snapshot.mapDefinition, 'match checkpoint');
-  const savedMatchMode = validateMatchModeCheckpoint(snapshot);
-  assertMatchModeCompatibility(savedMatchMode, canonicalDefinition, { mode: pveLaunchOptions ? 'pve' : 'pvp', practice: soloPractice });
-  const definition = effectiveMapForMatchMode(canonicalDefinition, savedMatchMode);
-  assertSnapshot(snapshot.rulesVersion === MATCH_RULES_VERSION
-    || !definition.elevationPatches?.some((patch) => patch.level > 0),
-  'elevated map requires current game rules');
-  assertSnapshot(snapshot.mapHash === matchMapHash(canonicalDefinition), 'map checksum mismatch');
-  assertSnapshot(typeof snapshot.state === 'object' && snapshot.state !== null, 'missing simulation state');
-  const state = snapshot.state;
+  const { canonicalDefinition, effectiveDefinition: definition, state, savedMatchMode } = validateCheckpointEnvelope(snapshot, {
+    checkpointSchemaVersion: MATCH_CHECKPOINT_SCHEMA_VERSION, gameRulesVersion: MATCH_RULES_VERSION,
+    maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES,
+    validateMapDefinition, matchMapHash, launchMode: pveLaunchOptions ? 'pve' : 'pvp', practice: soloPractice,
+  });
   const savedPregame = validatePregameCheckpoint(state.pregame);
   if (savedPregame?.phase === 'lobby') {
     assertSnapshot(state.scenarioClockStarted === false && state.matchElapsedSeconds === 0,

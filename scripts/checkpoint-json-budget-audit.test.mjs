@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { runCheckpointJsonBudgetAudit } from './checkpoint-json-budget-audit.mjs';
 
 test('actual maximum admitted roster and supported-field upper witness fit the derived XL JSON quotas', async () => {
   const r = await runCheckpointJsonBudgetAudit({ native: true }), w = r.nativeWitness;
+  const envelope = await readFile(new URL('../src/server/checkpoint-envelope.mjs', import.meta.url));
+  assert.equal(r.sourceInputSha256['src/server/checkpoint-envelope.mjs'], createHash('sha256').update(envelope).digest('hex'));
   assert.equal(w.status, 'passed'); assert.equal(w.actualAdmitted256Checkpoint.units, 2000);
   assert.ok(w.actualAdmitted256Checkpoint.unitMemberCountMax <= 128);
   const upper = w.synthetic320SupportedFieldUpperWitness;

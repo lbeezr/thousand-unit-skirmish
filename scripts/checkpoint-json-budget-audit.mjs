@@ -9,7 +9,7 @@ import { CheckpointJsonScan } from '../src/server/checkpoint-json-scan.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const files = ['server.mjs', 'src/server/checkpoint-json-budget.mjs', 'src/server/checkpoint-json-scan.mjs',
+const files = ['server.mjs', 'src/server/checkpoint-envelope.mjs', 'src/server/checkpoint-json-budget.mjs', 'src/server/checkpoint-json-scan.mjs',
   'src/server/checkpoint-file-reader.mjs', 'src/server/checkpoint-route-budget.mjs',
   'src/gameplay-definitions.mjs', 'src/work-intent.mjs', 'scripts/pve-headless-fixture.mjs',
   'scripts/checkpoint-json-budget-audit.mjs', 'scripts/fixtures/xl-far-marches.json'];
