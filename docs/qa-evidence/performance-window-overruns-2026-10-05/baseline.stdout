@@ -1,0 +1,4 @@
+{"armySize":24,"targetRegion":"north-pass","movedBySeat":[12,12],"tickP95Ms":3.183,"skippedSlotDelta":0}
+{"armySize":24,"targetRegion":"high-flank","movedBySeat":[12,12],"tickP95Ms":3.507,"skippedSlotDelta":0}
+{"armySize":24,"targetRegion":"causeway","movedBySeat":[12,12],"tickP95Ms":3.894,"skippedSlotDelta":0}
+{"output":"/tmp/performance-budget-baseline","passed":true,"error":null}
