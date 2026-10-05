@@ -307,7 +307,10 @@ for (const [width, height] of [[16, 17], [160, 160], [256, 256]]) for (const tea
       const queued = structuredClone(actor.queuedWaypoints[0]), revision = actor.orderRevision;
       r.step();
       assert.equal(r.diagnostic.landRouteRetention, undefined, 'legacy ticks omit XL retention diagnostics');
-      assert.notEqual(actor.path, selected, 'real executor publishes a copied local detour');
+      // Ordinary military Move now steers transiently around physical bodies.
+      // The legacy splice/quota contract is exercised by the phase controls
+      // above; this real journey must retain its selected route and queue.
+      assert.equal(actor.path, selected, 'ordinary crowd avoidance leaves the selected route intact');
       assert.equal(actor.path.at(-1), tail); assert.equal(actor.moveGoalCell, goal);
       assert.equal(actor.orderRevision, revision); assert.deepEqual(actor.queuedWaypoints[0], queued);
       assert.deepEqual({ x: blocker.x, z: blocker.z, revision: blocker.orderRevision }, parked);
