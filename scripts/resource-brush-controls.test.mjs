@@ -8,6 +8,7 @@ import { createMapStudioFormState } from '../src/authoring/map-studio-form-state
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from '../src/authoring/map-studio-draft-store.mjs';
 import { mapStudioDraftFixture } from './fixtures/map-studio-draft-fixture.mjs';
 import * as draftV1 from '../src/authoring/map-studio/draft/v1/contract.mjs';
+import { createMapImportValidator } from '../src/authoring/map-import-validator.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
@@ -533,4 +534,45 @@ test('actual scenario history resets on draft recovery and portable import', asy
   assert.deepEqual(f.copy(f.w.readEditorRegions()), [region]);
   assert.equal(f.w.scenarioEditHistory.canUndo, false); assert.equal(f.w.scenarioEditHistory.canRedo, false);
   assert.equal(f.d.getElementById('studio-scenario-redo').disabled, true);
+});
+
+test('canonical portable validator retains normalization, 256 dimensions, error order and input ownership', t => {
+  const f = mapStudioDraftFixture(t); f.open();
+  const policy = { maxPerTeam: f.w.MAX_PER_TEAM, maxResourceNodes: f.w.MAX_MAP_RESOURCE_NODES,
+    maxTriggers: f.w.MAX_MAP_TRIGGERS, maxScenarioEvents: f.w.MAX_MAP_SCENARIO_EVENTS,
+    maxScenarioEventRepeats: f.w.MAX_SCENARIO_EVENT_REPEATS,
+    minScenarioEventRepeatSeconds: f.w.MIN_SCENARIO_EVENT_REPEAT_SECONDS,
+    maxObjectiveFoodReward: f.w.MAX_OBJECTIVE_FOOD_REWARD,
+    maxTriggerUnitReward: f.w.MAX_TRIGGER_UNIT_REWARD, obstacleMaterials: ['stone', 'forest', 'water'] };
+  const validate = createMapImportValidator(policy), input = f.copy(f.w.collectEditorMap());
+  delete input.victoryMode; delete input.fogOfWar; input.terrainSeed = 'invalid';
+  const before = JSON.stringify(input), normalized = validate(input);
+  assert.equal(JSON.stringify(input), before); assert.notEqual(normalized, input);
+  assert.equal(normalized.victoryMode, 'any'); assert.equal(normalized.fogOfWar, false);
+  assert.equal(normalized.terrainSeed, 1);
+  const largest = validate({ ...input, width: 256, height: 256 });
+  assert.equal(largest.width, 256); assert.equal(largest.height, 256);
+  for (const dimensions of [{ width: 257 }, { height: 257 }]) {
+    assert.throws(() => validate({ ...input, ...dimensions }),
+      { message: 'Map width and height must be whole numbers between 16 and 256.' });
+    assert.throws(() => validate({ ...input, id: 'invalid ID', ...dimensions }),
+      { message: 'Map ID must use lowercase letters, numbers, and hyphens.' });
+  }
+  assert.equal(JSON.stringify(input), before);
+});
+
+test('portable validators retain each host policy without taking editor or simulation state', t => {
+  const f = mapStudioDraftFixture(t); f.open();
+  const policy = { maxPerTeam: f.w.MAX_PER_TEAM, maxResourceNodes: f.w.MAX_MAP_RESOURCE_NODES,
+    maxTriggers: f.w.MAX_MAP_TRIGGERS, maxScenarioEvents: f.w.MAX_MAP_SCENARIO_EVENTS,
+    maxScenarioEventRepeats: f.w.MAX_SCENARIO_EVENT_REPEATS,
+    minScenarioEventRepeatSeconds: f.w.MIN_SCENARIO_EVENT_REPEAT_SECONDS,
+    maxObjectiveFoodReward: f.w.MAX_OBJECTIVE_FOOD_REWARD,
+    maxTriggerUnitReward: f.w.MAX_TRIGGER_UNIT_REWARD, obstacleMaterials: ['stone', 'forest', 'water'] };
+  const standard = createMapImportValidator(policy), noResources = createMapImportValidator({ ...policy, maxResourceNodes: 0 });
+  const input = f.copy(f.w.collectEditorMap()), before = JSON.stringify(input), match = f.copy(f.w.mapDefinition);
+  assert.throws(() => noResources(input), /resource nodes/);
+  assert.deepEqual(standard(input).resourceNodes, input.resourceNodes);
+  assert.equal(JSON.stringify(input), before); assert.deepEqual(f.copy(f.w.mapDefinition), match);
+  assert.equal(f.timers.size, 0);
 });
