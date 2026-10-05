@@ -23,11 +23,14 @@ node --test scripts/registered-foot-sprites.test.mjs
 
 The first command emits JSON for the current pilot and exits successfully when
 the partial state is accurately declared. The strict command intentionally fails
-with **21 missing cells**. All 32 required clips exist in v3, but decoded registered
-pixels establish only eight idle headings plus SE walk/attack/defeat: **11 authored
-cells**. Walk/attack/defeat for N/NE/E/S/SW/W/NW still hold idle. Counts establish
+with **20 missing cells** after the [reviewed NE cutout](qa-infantry-ne-cutout-walk-2026-10-05.md).
+All32 required clips exist in v3; pixels establish eight idle headings, SE walk/
+attack/defeat and NE walk: **12 authored cells**. Six other walks and seven non-SE
+attack/defeat headings still hold idle. Counts establish
 source motion availability, not correctness of gait, facing anatomy or acceptance.
-Archer v2 and Spearman v1 retain 21 missing cells each: **63 total**, unchanged.
+The original pilot recorded21 missing cells for each military role. Current
+other-role increments belong to the [foot-unit workstream](human-foot-unit-coverage.md);
+this pilot does not derive their present totals.
 
 The JSON report includes identity/style, provenance, publication and integration
 status alongside decoded coverage, timing errors, normal binding and pending
@@ -67,7 +70,8 @@ remain missing. Pinned world-per-pixel, canvas, root and crop offsets catch auto
 pose fitting. Camera and pivot review cannot be claimed beyond retained evidence.
 
 Explicit 2D source keys use `timed-keys`: retained frame milliseconds and total
-duration are checked directly. Infantry walk is eight 100 ms keys, 800 ms total;
+duration are checked directly. Infantry SE keeps eight100ms keys and reviewed NE
+uses four200ms keys, both800ms total. Per-heading entries preserve source cadence;
 attack/defeat are 850 ms with variable cadence. No intrinsic rig FPS is known.
 For future `sampled-frames`, source FPS, playback FPS, frame count and duration
 must agree. A regression control deliberately rejects 24 FPS samples played at
@@ -108,9 +112,9 @@ approve a missing capture. Crowded appearance review is not a benchmark claim.
 
 1. Retain the Infantry sidecar as the catalog pilot; add other role sidecars only
    after inspecting their actual sources and contracts.
-2. Obtain a matching Infantry NE strip or editable exact-character model/camera
-   recipe for four contact/passing keys, 200 ms each. That input is still missing;
-   no available mismatched character or duplicated SE facing closes the cell.
+2. The reviewed own-NE public-seed cutout supplies four200ms contact/passing keys.
+   Next inspect own-East source for a faithful bounded local slice or exact missing
+   surfaces; no mismatched character or copied NE/SE facing closes that cell.
 3. Use one isolated worktree/output directory per art slice, preserve prior
    iterations, and name the owner who integrates the reviewed pack. Catalog work
    consumes the above interface; state/protocol work retains its existing owner.

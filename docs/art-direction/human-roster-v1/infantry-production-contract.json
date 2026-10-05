@@ -33,11 +33,11 @@
     "approvedRuntimeFiles": [
       {
         "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
-        "sha256": "8579fbba5e13f439a208295416c38947bc094dfe0bbe52ac5f9a300aec094978"
+        "sha256": "56192faba2266acc8ef8925884c162adf0d0638a1b4e72b52da990c62b0a45c3"
       },
       {
         "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
-        "sha256": "454f752f9eabe65b6365ea208069fbd2a897bd77612865865fe08ab6ee5f808e"
+        "sha256": "6a7b444ba178b25223f4353af13cf58d8dda7c49ef800e19445c62f04eb6297b"
       }
     ],
     "anchors": [
@@ -50,21 +50,42 @@
         "rgbaSha256": "9f2197fd73abf6f8fe53b86bafd5f2060e8e65eb1e2389de176e728cd69bef57"
       }
     ],
-    "registeredFramesSha256": "99855c4234be473cc93172d3b9109d62414d11debb91c179bd349720447dec70"
+    "registeredFramesSha256": "6025e8560bc8de23b18d6035e2aeccc38637f86dbddbe09cd7b49cf1166be645",
+    "revisions": [
+      {
+        "id": "reviewed-ne-public-seed-cutout-v1",
+        "sourceReview": "docs/qa-infantry-ne-cutout-walk-2026-10-05.md",
+        "previousRuntimeFiles": [
+          {
+            "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+            "sha256": "8579fbba5e13f439a208295416c38947bc094dfe0bbe52ac5f9a300aec094978"
+          },
+          {
+            "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+            "sha256": "454f752f9eabe65b6365ea208069fbd2a897bd77612865865fe08ab6ee5f808e"
+          }
+        ],
+        "previousRegisteredFramesSha256": "99855c4234be473cc93172d3b9109d62414d11debb91c179bd349720447dec70",
+        "previousRegistrationSha256": "403b00e980025ebab498215579c6a775f2526cf559cb8cab650f24d344f967ed",
+        "retainedFrames": 32,
+        "newFrames": 4,
+        "originalSourcePinsUnchanged": true
+      }
+    ]
   },
   "provenance": {
-    "version": "retained-source-v1",
+    "version": "retained-source-v1-ne-public-seed-cutout-v1",
     "sourceRecord": "docs/art-direction/human-roster-v1/README.md",
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
-    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging",
+    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; Pillow source-UV leg articulation from public NE seed",
     "providerVisibility": "historical-settings-not-recorded",
     "trainingPermission": "unknown",
-    "notes": "Existing repository source and manifests retained; provider privacy settings are not a no-training receipt."
+    "notes": "Existing repository source and manifests retained; provider privacy settings are not a no-training receipt. Explicit reviewed NE revision retains all32 established poses; private generator comparison remains rejected and unpublished."
   },
   "publication": {
     "state": "existing-public-runtime-only",
     "newUploadsAuthorized": false,
-    "scope": "Existing public repository sources and admitted runtime files only. New private material and provider uploads need separate authority."
+    "scope": "Existing public repository sources and admitted runtime files only. New private material and provider uploads need separate authority. Selected independently reviewed runtime NE derivative reuses only existing public seed samples; private studies/masks/iterations are not published. No new private/provider upload or generation authority."
   },
   "requiredStates": [
     "idle",
@@ -85,7 +106,6 @@
   "sourceComplete": false,
   "missingSourceCells": [
     "walk|north",
-    "walk|north-east",
     "walk|east",
     "walk|south",
     "walk|south-west",
@@ -132,7 +152,22 @@
       "durationMs": 800,
       "playbackFPS": 10,
       "sourceFPS": null,
-      "notes": "Retained explicit 2D key timing; no sampled rig FPS is known."
+      "notes": "Retained explicit 2D key timing; no sampled rig FPS is known.",
+      "directions": {
+        "north-east": {
+          "mode": "timed-keys",
+          "frameDurationsMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "durationMs": 800,
+          "sourceFPS": null,
+          "playbackFPS": null,
+          "notes": "Four independently reviewed NE cutout keys; retained SE eight100ms cadence unchanged."
+        }
+      }
     },
     "attack": {
       "mode": "timed-keys",
@@ -172,7 +207,7 @@
   "calibration": {
     "worldPerPixel": 0.005242183290678879,
     "bodyBaselineWorld": 1.2161865234375,
-    "registrationSha256": "403b00e980025ebab498215579c6a775f2526cf559cb8cab650f24d344f967ed",
+    "registrationSha256": "535b6d429327252184e83f1843bca0304be24d06935d49dd9465daacda62ee85",
     "pivotStatus": "unreviewed-estimate",
     "cameraStatus": "prompt-only",
     "cameraRecipe": null,

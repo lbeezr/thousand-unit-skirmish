@@ -7,6 +7,12 @@ identified-build ordinary visual test. Spearman art/attack owner `01a10469`
 retains its separate pack. State owner `01a103d4` retains clocks and selectors.
 This slice changes acceptance tooling only; no art, gameplay or runtime bytes.
 
+This is the retained original diagnosis/tooling milestone. The later
+[reviewed NE cutout increment](qa-infantry-ne-cutout-walk-2026-10-05.md) changes
+the actual default to v3 pack0.6.0 with two source walks and six remaining holds.
+Playable acceptance is separate; the historical measurements below retain their
+exact build.
+
 ## Finding and exact source gap
 
 At inspected main `f3b655bfe71617222ad1f540a6826e8683f20f41`, the actual no-option

@@ -1,3 +1,5 @@
-# Human Infantry preview
+# Human Infantry partial walking pack
 
-Eight idle views, SE walk, attack and defeat candidates; other actions/directions hold idle. Team mask pending. Human roster completion is not claimed. Body-height baseline preserved; game motion review pending.
+Pack0.6.0 retains all 32 original poses and31 other clips and adds four reviewed own-NE contact/passing keys,200 ms each, from the existing public painted Infantry seed. SE keeps eight100 ms keys. Six walk headings and14 non-SE attack/defeat cells remain idle (20 gaps). Source review is separate from pending default rendered gait/contact and identified deployment acceptance.
+
+The entire prior2048x1024 color/mask prefix remains exact; page height grows to 1280. Original source sheets, handedness, face, equipment and registered frames remain unchanged. No private generator comparison, held/rejected character, donor painting, mirroring or provider job is used. Bounds height adjusts234->236 pixels to retain the exact0.005242183290678879 world-per-pixel calibration; body pixels/root/scale are not fitted. The zero team mask remains zero. [Registration](../../../docs/art-direction/human-roster-v1/infantry-ne-walk-registration.json) and [owned acceptance record](../../../docs/qa-infantry-ne-cutout-walk-2026-10-05.md).

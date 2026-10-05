@@ -122,7 +122,7 @@ async function auditUnitArtProduction({root=repoRoot,contractPath=pilot,contract
   if((requireComplete||contract.sourceComplete)&&coverage.missingCells.length)errors.push(`source completion cannot be claimed: ${coverage.missingCells.length} action/heading cells missing`);
   for(const row of coverage.rows.filter(r=>r.status==='authored')){
     const clip=asset.clips.find(c=>`${c.stateId}|${c.directionId}`===row.key);
-    const spec=contract.timing[row.state];
+    const spec=contract.timing[row.state]?.directions?.[row.direction]??contract.timing[row.state];
     if(!spec)errors.push(`source timing absent: ${row.state}`);
     else errors.push(...checkUnitClipTiming(spec,clip.sequence).map(e=>`${row.key}: ${e}`));
   }

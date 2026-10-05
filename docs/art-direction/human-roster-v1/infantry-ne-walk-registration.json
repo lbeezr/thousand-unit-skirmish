@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "assetId": "infantry",
+  "heading": "north-east",
+  "packVersion": "0.6.0",
+  "sourceKind": "reviewed-public-seed-local-2d-cutout",
+  "sourceRevision": "6ee1cce46d0ac4f4fcc4610a0d2b1a2bee928690",
+  "sourceFrameId": "idle-north-east-0",
+  "sourceSheet": "docs/art-direction/human-roster-v1/source/infantry-idle-facings.png",
+  "sourceSheetSHA256": "0a94a11f2dffd4b722d3a732aa4d3117283d3fa41c89aac6f03487d7a7930b38",
+  "priorAtlasRgbaSHA256": "273339bf3def3cf9cd77466bd31a4ed690373cff0a315658c4e3b59581c1a052",
+  "priorFramesSHA256": "58a4980039cb3abeb71bd8f3ebe350985b5d515b1e85897995e67af642d0975c",
+  "priorOtherClipsSHA256": "533563c15c2aa58a56e7ac2037b81263ee7359f556e5a3d7af06a19c1d4e3a9b",
+  "priorRegisteredFramesSHA256": "99855c4234be473cc93172d3b9109d62414d11debb91c179bd349720447dec70",
+  "priorRuntimeFiles": [
+    {
+      "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+      "sha256": "8579fbba5e13f439a208295416c38947bc094dfe0bbe52ac5f9a300aec094978"
+    },
+    {
+      "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+      "sha256": "454f752f9eabe65b6365ea208069fbd2a897bd77612865865fe08ab6ee5f808e"
+    }
+  ],
+  "canvasPx": {
+    "width": 256,
+    "height": 256
+  },
+  "groundPivotPx": {
+    "x": 128,
+    "y": 246
+  },
+  "worldPerPixel": 0.005242183290678879,
+  "priorBoundsHeightWorld": 1.2266708900188577,
+  "boundsHeightWorld": 1.2371552566002153,
+  "durationsMs": [
+    200,
+    200,
+    200,
+    200
+  ],
+  "reviewedRgbaSHA256": [
+    "8d45ed53c63c3f4a73947922618a974c672426c3a5c185785eb6ed3fe0d4539a",
+    "70e51ca39a8b8841b82d207e81ba2d7ec6b1e84fe403e0411821d3901819aa78",
+    "7f79c72085fd447c78208bf758befc54be63d5a1a11513b115ee9410775f325d",
+    "fa4b048925abaf44853db3d80639cd60d1ba7b47a6a2ef62ee9f7946c4de2bed"
+  ],
+  "sourceReview": "Independent actual-pixel source/half-size review: alternating anatomical support/passing, coherent cuffs, frozen spear/shield; rough source slice approved. Source-size contact contours within one pixel. No rendered-game acceptance.",
+  "authoring": {
+    "tool": "Pillow CPU source-UV cutout",
+    "sourceOwnership": {
+      "body": 15442,
+      "anatomicalRightLeg": 1960,
+      "anatomicalLeftLeg": 1905
+    },
+    "restRecompositionExact": true,
+    "paintedDonorPixels": 0,
+    "equipmentMirrored": false,
+    "perFrameFitting": false,
+    "process": "Private retained masks, explicit anatomical knee/ankle/toe controls and iterations; no provider operation."
+  },
+  "acceptance": {
+    "default": "wired",
+    "packaging": "pending",
+    "deployment": "unverified",
+    "rendered": "pending",
+    "owner": "delegated default Infantry lane",
+    "captureOwner": "01a10378"
+  }
+}
