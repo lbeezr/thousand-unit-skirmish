@@ -1,0 +1,183 @@
+{
+  "sourceRevision": "231d5e0045963c94a35d157a25a5ca5f92820563",
+  "sourceDirty": false,
+  "inputSha256": {
+    "workerFlowPath": "eaef291541c9fe71fb2434ac59f7d4b20146e0335d6d0eedfa1ca08ddb56156d",
+    "applyWorkerFlowRoute": "2f20d2f041c9394790de4a149c62ade7d9d6e69236d0bba2eb98d49db02091be",
+    "routeWorkerToDropoff": "8bd507ec26504c417f13e8f5500635e49cf146235acc9fffc5b791051ae63b14",
+    "assignReturnCargo": "493caee51229dace566a61718d8f3165be0e424544b40a6fda6c97d31ba63687",
+    "clearAttackMoveOrder": "8594ffeb860130c2646e71e99859316b018e0f5d606d115aa0faccb3e22d6334",
+    "workerAtDropoff": "eca62fdf3257bab36f6d5dd413f5443ed448e8afe75a5c5efa9b59be1100580e"
+  },
+  "scope": "Production Worker route/reduction/drop-off/land Return and workerAtDropoff stale-navigation bodies with controlled selectors/policy and synthetic saved-field pressure; repair requests observed at the service boundary, real checkpoint route leaf only. Baseline JSON remains historical; registered Return journeys separately consume the actual service/recovery/physical/deposit bodies. No full XL checkpoint, paid-building lifecycle, ordinary XL admission, CPU capacity, served or rendered claim. This retained record contains only the six navigation-retry cases; the driver repeats all 33 cases.",
+  "cases": [
+    {
+      "mode": "flat",
+      "width": 320,
+      "height": 160,
+      "command": "navigation-retry",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048577,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 8,
+          "selectedGoal": 25765,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "pendingRepairRequests": [],
+      "notices": []
+    },
+    {
+      "mode": "weighted",
+      "width": 320,
+      "height": 160,
+      "command": "navigation-retry",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048581,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 8,
+          "selectedGoal": 25765,
+          "originalLength": 5,
+          "originalCost": 515,
+          "executionLength": 5,
+          "status": "ready"
+        }
+      ],
+      "pendingRepairRequests": [],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 160,
+      "height": 320,
+      "command": "navigation-retry",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048577,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 8,
+          "selectedGoal": 25685,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "pendingRepairRequests": [],
+      "notices": []
+    },
+    {
+      "mode": "weighted",
+      "width": 160,
+      "height": 320,
+      "command": "navigation-retry",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048581,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 8,
+          "selectedGoal": 25685,
+          "originalLength": 5,
+          "originalCost": 515,
+          "executionLength": 5,
+          "status": "ready"
+        }
+      ],
+      "pendingRepairRequests": [],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 320,
+      "height": 320,
+      "command": "navigation-retry",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048577,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 8,
+          "selectedGoal": 51365,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "pendingRepairRequests": [],
+      "notices": []
+    },
+    {
+      "mode": "weighted",
+      "width": 320,
+      "height": 320,
+      "command": "navigation-retry",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048581,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 8,
+          "selectedGoal": 51365,
+          "originalLength": 5,
+          "originalCost": 515,
+          "executionLength": 5,
+          "status": "ready"
+        }
+      ],
+      "pendingRepairRequests": [],
+      "notices": []
+    }
+  ]
+}
