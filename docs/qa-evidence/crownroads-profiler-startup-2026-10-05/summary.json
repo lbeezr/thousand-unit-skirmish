@@ -17,13 +17,17 @@
       "bytes": 679,
       "sha256": "46a6e10d5c774387578338bbb80b98d61b6d0d19cb8688ebd1fbf9df723988ff"
     },
-    "original-check.json": {
-      "bytes": 162938,
-      "sha256": "8c96d79f833b03f0bd1017752546af390c2fbcbccb295737cb282276c4e31e0f"
+    "original-check.json.gz": {
+      "bytes": 13567,
+      "sha256": "02a5f365108064c6ab2ff4af3defcc77b169a9ccaf9066f831c4b775126addf2",
+      "uncompressedBytes": 162938,
+      "uncompressedSHA256": "8c96d79f833b03f0bd1017752546af390c2fbcbccb295737cb282276c4e31e0f"
     },
-    "refined-check.json": {
-      "bytes": 162938,
-      "sha256": "8c96d79f833b03f0bd1017752546af390c2fbcbccb295737cb282276c4e31e0f"
+    "refined-check.json.gz": {
+      "bytes": 13567,
+      "sha256": "02a5f365108064c6ab2ff4af3defcc77b169a9ccaf9066f831c4b775126addf2",
+      "uncompressedBytes": 162938,
+      "uncompressedSHA256": "8c96d79f833b03f0bd1017752546af390c2fbcbccb295737cb282276c4e31e0f"
     }
   },
   "rawSHA256": "29b55edba53ba618b76e1592b010f806ef8c8237daf4b6d00736d3ce53bf3d12",
