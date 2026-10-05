@@ -196,3 +196,21 @@ test('an active own retreat cannot consume a projected intermediate waypoint', (
   assert.equal(unit.path, before.path); assert.equal(unit.pathIndex, before.pathIndex);
   assert.deepEqual(unit.queuedWaypoints, before.queue);
 });
+
+test('combat eligibility loss cannot lend a stale grant to another ordinary actor', () => {
+  const unit = actor({ id: 1, x: 0, z: .5 }), peer = actor({ id: 2, x: .44, z: .5 });
+  const worker = { id: 3, kind: 'worker', hp: 100, x: .9, z: .94, path: [], pathIndex: 0, moveGoalCell: -1 };
+  const move = (u, tick) => selectCrowdStep({ unit: u, tick, target: { x: 2, z: .5 },
+    neighbors: [u === unit ? peer : unit, worker], stepDistance: .09, canTraverse: () => true });
+  for (let tick = 0; tick < 120; tick++) { move(peer, tick); move(unit, tick); }
+  assert.ok(move(unit, 120).yieldingForCrowd); move(peer, 120);
+  const revision = unit.orderRevision;
+  unit.attackTargetId = 99; // Autonomous eligibility loss retains the accepted revision.
+  peer.x += .025; worker.z -= .03; // Diagnostic clear-forward pose from independent review.
+  const parked = structuredClone(worker), result = move(peer, 121);
+  assert.equal(unit.orderRevision, revision);
+  assert.equal(result.noProgressTicks, 0);
+  assert.ok(result.x > .9 && Math.abs(result.z) < 1e-9 && !result.waitingForCrowd);
+  assert.equal(result.crowdControl.contourAge, 0);
+  assert.deepEqual(worker, parked);
+});

@@ -272,7 +272,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   // claimant blocks every forward/lateral candidate. Parked actors never yield.
   // The tie uses durable actor identity; each retreat is still a short physical
   // admission and leaves route/order/queue unchanged.
-  const readState = other => { const s = steeringStates.get(other); return s && s.epoch === epoch
+  const readState = other => { const s = steeringStates.get(other); return ordinaryCrowdBodyRadius(other) > 0 && s && s.epoch === epoch
       && s.generation === other.generation && s.revision === other.orderRevision
       && s.navigationRevision === navigationRevision && s.path === other.path && s.pathIndex === other.pathIndex
       && s.lastTick >= tick - 1 && s.lastTick <= tick ? s : null; };
