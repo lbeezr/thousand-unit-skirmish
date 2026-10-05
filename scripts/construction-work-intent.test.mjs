@@ -318,8 +318,14 @@ test('actual construction sequence bounds unreachable retries, invalidates stale
   c.navigationRevision++; c.updateWallBuildOrders(); assert.equal(f.searches, 4);
   f.reachable = true; c.navigationRevision++; c.updateWallBuildOrders();
   assert.equal(f.searches, 5); assert.equal(unit.buildingTargetId, site.id); assert.equal(activeWallBuildOrder(unit), order);
-  site.complete = true; c.updateWallBuildOrders(); assert.equal(unit.wallBuildOrder, null);
-  assert.equal(unit.workIntent, null);
+  site.complete = true; c.updateWallBuildOrders();
+  assert.equal(unit.wallBuildOrder, order, 'last completed site retains its completion/egress order');
+  assert.deepEqual(unit.workIntent.siteIds, [site.id]);
+  assert.equal(unit.buildingTargetId, site.id);
+  // This controlled sequence fixture does not run the parking consumer. Its
+  // admitted cleanup is covered by the real-command queued-first journeys.
+  unit.buildingTargetId = null; c.updateWallBuildOrders();
+  assert.equal(unit.wallBuildOrder, null); assert.equal(unit.workIntent, null);
 });
 
 test('actual failed route retains a target, then construction reacquires it without replacing active routes or in-range work', () => {

@@ -227,7 +227,8 @@ run(['--test', 'scripts/building-placement-forest.test.mjs'], 'Disclosed forest 
 run(['--test', 'scripts/wall-line-planner.test.mjs'], 'Atomic modular wall-line authoring');
 run(['--test', 'scripts/wall-construction-draft.test.mjs'], 'Draft paid palisade preparation and lifecycle contracts');
 run(['--test', 'scripts/palisade-runtime.test.mjs'], 'Palisade order identity and placeholder connections');
-run(['--test', 'scripts/construction-work-intent.test.mjs'], 'Construction fixed area and explicitly remembered site policy');
+run(['--test', 'scripts/construction-work-intent.test.mjs', 'scripts/construction-next-leg-journeys.test.mjs',
+  'scripts/construction-queued-first-wall.test.mjs'], 'Construction paid continuation, queued-head parking and cold recovery');
 run(['scripts/palisade-continuation-scenario.mjs'], 'Paid Gate interruption, remembered construction and cold recovery');
 run(['--test', 'scripts/wall-placement.test.mjs', 'scripts/wall-placement-client.test.mjs'], 'Atomic palisade drag and keyboard placement');
 run(['--test', 'scripts/palisade-gate.test.mjs'], 'Palisade gate operation, recovery and controls');
