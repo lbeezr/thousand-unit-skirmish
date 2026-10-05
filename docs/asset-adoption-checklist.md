@@ -114,9 +114,11 @@ Infantry v3; Archer v3 PR230 and blocky Spearman v2 PR241 remain unmerged drafts
 The [actual default Infantry qualification](qa-default-infantry-walk-2026-10-05.md)
 records the historical one-SE/seven-idle diagnosis and a separate registered
 ordinary capture case. The [reviewed own-NE cutout](qa-infantry-ne-cutout-walk-2026-10-05.md)
-adds four keys to default v3 pack0.6.0, retaining all32 original poses/31 other
+adds four keys to candidate default v3 pack0.6.0, retaining all32 original poses/31 other
 clips and calibration. Two source walks leave six walk gaps/20 action cells.
-Infantry owns next own-East source assessment and default/release outcome;
+Branch push and source/package checks passed; draft PR creation returned
+`Forbidden`, so PR/merge and deployed adoption remain incomplete. Infantry owns
+normal PR delivery and the own-East private trial under independent review;
 capture01a10378 supports an identified containing build. Source/pack checks do
 not close planted feet, actual playback or normal/crowded appearance.
 

@@ -38,7 +38,9 @@ Restoring the default is a source correction, not a live bug or appearance claim
 The [default Infantry diagnosis and qualification](qa-default-infantry-walk-2026-10-05.md)
 adds Infantry v3 to CPU displacement/UV/time checks and a separate registered
 ordinary capture case. The [reviewed NE cutout increment](qa-infantry-ne-cutout-walk-2026-10-05.md)
-admits four own-source contact/passing keys to normal v3 pack0.6.0. SE is unchanged;
+on the pushed candidate branch admits four own-source contact/passing keys to
+normal v3 pack0.6.0. PR creation returned `Forbidden`, so main/deployed adoption
+is pending normal authorized PR access. SE is unchanged;
 N/E/S/SW/W/NW retain idle. **Two of eight source walks; six walk gaps and20 Infantry
 action cells remain missing.** All32 original poses/31 other clips, source sheets
 and body/world-pixel calibration remain. The generated trial was rejected and
@@ -46,8 +48,8 @@ stays private; the admitted cutout uses no paint donors, job, mirror or held art
 
 Owner: delegated default Infantry lane; capture01a10378 supports identified
 ordinary playback while Infantry retains default/release/appearance completion.
-Next disjoint step: inspect own-East source for a faithful local contact/passing
-slice or identify exact occluded surfaces. Dependency: own-facing source and
+Next disjoint step: own-East restrained source-UV trial is under independent
+review after actual source/occlusion inspection; it is not admitted. Dependency: own-facing source and
 independent pixel review. Source/default/package/deployed/playable evidence stay
 distinct; NE acceptance needs a containing exact build. Spearman01a10469 is unchanged.
 

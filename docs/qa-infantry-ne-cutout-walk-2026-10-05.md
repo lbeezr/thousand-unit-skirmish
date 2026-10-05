@@ -6,7 +6,8 @@ its art/files are unchanged.
 
 ## Reviewed source and ordinary default
 
-Normal no-option Infantry remains `infantry-sprite-v3`, now pack 0.6.0. Four
+The candidate branch keeps normal no-option Infantry on `infantry-sprite-v3`,
+with pack 0.6.0. Four
 reviewed own-NE contact/passing keys replace the NE idle hold,200 ms each,800 ms
 loop. SE retains eight100 ms keys. **Two of eight source walks; N/E/S/SW/W/NW
 still hold idle. Six walk gaps and20 Infantry action cells remain missing.**
@@ -50,6 +51,23 @@ only the four independently reviewed frame hashes against its pinned baseline.
 
 ## Qualification and acceptance boundary
 
+Delivery checkpoint: implementation `996f87b434b2bba83e47a66c4f1b0323d1d27bab`,
+including the independently approved builder guard, is pushed to
+[`codex/infantry-ne-cutout-feasibility-20261005`](https://github.com/lbeezr/thousand-unit-skirmish/tree/codex/infantry-ne-cutout-feasibility-20261005).
+The exact clean source passed the 104 focused registered-foot, clock, Infantry
+observer and displacement tests, type/docs/import checks, and packed HTTP checks.
+The 1,393-file release digest is
+`sha256:3f56b8983121ebbf80d4d8b041f97d9e94bfffe9d66f96661fa3148b63dc0675`.
+Independent integration review found no blocking defects; the supplementary guard
+review confirmed that running the legacy builder leaves all current pack hashes
+unchanged. These are scoped CPU/package results, not a full-suite or render claim.
+
+The branch push succeeded, but ordinary draft PR creation returned
+`Post https://api.github.com/graphql: Forbidden`. No PR was created or merge
+performed, and no alternate access path was attempted. The implementation owner
+retains normal PR/merge delivery when authorized GitHub PR access is available.
+Main and any deployed build must not be described as containing this branch.
+
 Focused checks read actual decoded runtime images: reviewed key hashes, original
 poses/clips/page prefix, frozen body/equipment, calibration, timing and boot
 contours. Four unique same-leading-leg images fail anatomical alternation;
@@ -86,3 +104,11 @@ For wider NE poses, the smallest extra source is two complete articulated NE
 leg layers with overlap under the existing sash/shield/cuffs and exposed inner/
 sole surfaces. A full equipped rig with fixed camera/root is a larger alternative.
 This narrow reviewed cutout required neither new private input nor paid permission.
+
+Continuation is active: the own-East registered idle and equipment/leg overlaps
+were inspected at source size. Independent feasibility review allows a restrained
+private trial with separate anatomical masks, frozen foreground spear and
+cloth/shield edges, and distinct per-leg contact depths. Four local source-UV keys
+are under independent pixel review; they are not admitted or counted as a walk.
+NE's common floor-row gait test cannot qualify this oblique view. No additional
+provider job, paid credits, mirrored facing or painted surface was used.
