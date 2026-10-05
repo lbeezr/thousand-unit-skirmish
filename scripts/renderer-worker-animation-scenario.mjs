@@ -196,7 +196,8 @@ export function identifyUnitFrame(unit,pack,cells,time) {
   const frame=matches.find(f=>f.id===expected),pixel=cells[frame.id];
   assert.ok(pixel,'registered visible source pixels are required');
   const drawnRoot=registeredSpriteRoot(unit,asset,frame,page);
-  return {frameId:frame.id,rgbaSha256:pixel.rgba,alphaSha256:pixel.alpha,state,direction,
+  return {kind:unit.kind,role:unit.role,assetId:asset.id,packVersion:pack.packVersion,
+    frameId:frame.id,rgbaSha256:pixel.rgba,alphaSha256:pixel.alpha,state,direction,
     actionSelection:unit.actionSelection??null,
     clipState:clip.stateId,clipDirection:clip.directionId,clipLoop:clip.loop,clipDurationMs:duration,elapsedMs:elapsed,index,drawnRoot};
 }

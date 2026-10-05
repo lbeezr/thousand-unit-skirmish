@@ -73,7 +73,8 @@ test('real Infantry UV/time/matrix playback, Stop and resume keep seven static h
     const f=await runtimeSamples(heading,{team}),result=validateHeadingSamples(f.samples,f.options);
     assert.equal(result.status,heading==='south-east'?'animated':'incomplete-art-correct-facing');
     assert.equal(result.distinctCells,heading==='south-east'?3:1);
-    assert.ok(result.samples.every(s=>s.clipDirection===heading&&s.drawnRoot.visibleScale===1));
+    assert.ok(result.samples.every(s=>s.clipDirection===heading&&s.drawnRoot.visibleScale===1
+      &&s.kind==='infantry'&&s.role==='infantry'&&s.assetId==='infantry'&&s.packVersion==='0.5.0'));
     validateStoppedSamples(f.stopped,{...f.options,stopTime:1999});
     const resume=validateHeadingSamples(f.resumed,f.options);
     assert.equal(resume.samples[0].elapsedMs,0);assert.equal(f.resumed[0].units[0].clockStartedAt,2400);
