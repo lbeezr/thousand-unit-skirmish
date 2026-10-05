@@ -1,4 +1,5 @@
-export const MAP_STUDIO_DRAFT_VERSION = 1;
+import { requireRecovery as requireDraftRecovery } from './map-studio/draft/v1/contract.mjs';
+export { MAP_STUDIO_DRAFT_VERSION } from './map-studio/draft/v1/contract.mjs';
 
 // Storage access stays deferred so browser getter failures reach existing catches.
 // The host retains debounce, dialog lifecycle, capture and recovery presentation.
@@ -26,15 +27,7 @@ export function createMapStudioDraftStore({ getStorage }) {
   }
 
   function requireRecovery(draft, sourceMapId) {
-    const state = draft?.editor;
-    const definition = state?.definition;
-    if (draft?.version !== MAP_STUDIO_DRAFT_VERSION || draft.sourceMapId !== sourceMapId
-      || !definition || !Number.isInteger(definition.width) || !Number.isInteger(definition.height)
-      || definition.width < 16 || definition.width > 256 || definition.height < 16 || definition.height > 256
-      || !Array.isArray(definition.obstacles) || !Array.isArray(definition.spawnPoints)) {
-      throw new Error('The saved draft could not be read. Discard it to start a fresh map.');
-    }
-    return { state, definition };
+    return requireDraftRecovery(draft, sourceMapId);
   }
 
   return { key, read, write, remove, requireRecovery };

@@ -128,11 +128,38 @@ suite retains every case and adds corrupt/old/foreign draft rejection, interrupt
 close/cancel/restore, pagehide, storage failures, portable JSON parity and invalid
 field recovery/export rejection. Native saved-map restart recovery and packed
 HTTP remain separate checks. All eleven compatibility surfaces remain supported;
-the new authoring path has exact browser admission and no module dependencies.
+the original draft-store extraction had exact browser admission and no module dependencies.
 Rendered draft acceptance remains open at the recorded cloud sandbox/profile
 startup failure; the architecture/authoring owner retains the existing browser
 scenario when capability becomes available. No dispatch retry or new storage
 service belongs to this extraction.
+
+#### Version-1 draft contract
+
+[PR451](https://github.com/lbeezr/thousand-unit-skirmish/pull/451) places only the existing version constant and
+recovery-envelope validator in
+[`map-studio/draft/v1/contract.mjs`](../src/authoring/map-studio/draft/v1/contract.mjs).
+The version is the saved draft format, rather than the whole editor or storage
+implementation. The dependency-free contract has two named exports:
+`MAP_STUDIO_DRAFT_VERSION` and `requireRecovery(draft, sourceMapId)`.
+The validator body, error, 16–256 ceiling and returned references are preserved.
+It does not add migration, deep map validation, storage or capture behavior.
+
+The existing `map-studio-draft-store.mjs` remains the public host API. It re-exports
+the same constant and delegates recovery through the same per-store two-argument
+method; keys, raw JSON reads, writes, removal and deferred getter behavior stay
+there. Main, the draft fixture, registered brush tests and XL consumers retain
+their entrypaths. The XL source audit follows and hashes the versioned contract;
+all existing dimension and parser/file/route assertions remain.
+One exact browser path is added alongside the retained store path, with GET/HEAD
+and unknown/suffix/version-path denial checks. Every prior asset URL, schema,
+protocol/save format and eleven compatibility entries stay unchanged.
+Architecture/authoring owns review, source/packed checks and the existing
+unverified browser acceptance.
+The storage API is retained as a working adapter, with no retirement scheduled.
+Moving it later requires a separately agreed API boundary, all host/fixture/XL
+consumers and source/served/packed checks; version directories alone do not justify
+removing supported entrypaths.
 
 ### Scenario history coordination
 
