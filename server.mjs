@@ -1,7 +1,7 @@
 import { freshVoluntaryEndings, voluntaryCapability, decideVoluntaryEnding, cancelVoluntaryOffer, savedVoluntaryEndings, validSavedVoluntaryEndings, migrateVoluntaryEndingCheckpoint, VOLUNTARY_REASONS } from './src/server/voluntary-endings.mjs';
 import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } from './src/shore-fishing.mjs';
 import { farmHarvestNode, farmHarvestNodeId, farmBuildingId, validFarmStock } from './src/farm-harvest.mjs';
-import { createDockPlacementContext } from './src/dock-placement.mjs';
+import { createDockPlacementContext, dockBerthOrientation, validDockFacingState } from './src/dock-placement.mjs';
 import { createWaterUnitRuntime, waterUnitOccupiedCells } from './src/water-unit-runtime.mjs';
 import { createSkiffFishingContext } from './src/skiff-fishing.mjs';
 import { SKIFF_GROUP_ORDER_LIMIT, planSkiffGroupMove, planSkiffGroupFishing, planSkiffGroupReturn } from './src/skiff-group-orders.mjs';
@@ -2770,6 +2770,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     })),
     buildings: viewBuildings.map((building) => ({
       id: building.id, team: building.team, type: building.type, orientation: building.orientation ?? 0,
+      ...(building.dockFacingVersion === undefined ? {} : { dockFacingVersion: building.dockFacingVersion }),
       ...(building.type === 'farm' ? { harvestStock: building.harvestStock,
         harvestCapacity: BUILDING_DEFINITIONS.farm.harvest.stock } : {}),
       ...(building.type === 'palisade-gate' ? { gateOpen: building.gateOpen } : {}),
@@ -3146,6 +3147,7 @@ function validateMatchCheckpoint(snapshot) {
     assertSnapshot(building && integerIn(building.id, 1, Number.MAX_SAFE_INTEGER)
       && !buildingIds.has(building.id) && integerIn(building.team, 0, 1)
       && rules && validGateState(building) && validBuildingOrientation(building.type, building.orientation, BUILDING_DEFINITIONS)
+      && validDockFacingState(building)
       && finite(building.x) && finite(building.z)
       && integerIn(building.rallyCell, -1, cellCount - 1)
       && Array.isArray(building.footprint) && building.footprint.length > 0
@@ -3178,7 +3180,8 @@ function validateMatchCheckpoint(snapshot) {
     assertSnapshot(building.footprint.length === expectedFootprint.size
       && building.footprint.every((cell) => expectedFootprint.has(cell)), 'invalid building footprint geometry');
     if (building.type === 'dock') {
-      assertSnapshot(checkpointDockPlacement.accessAt(centerRow * definition.width + centerColumn).valid, 'invalid Dock shoreline placement');
+      assertSnapshot(checkpointDockPlacement.accessAt(centerRow * definition.width + centerColumn,
+        dockBerthOrientation(building)).valid, 'invalid Dock shoreline placement');
     }
     for (const cell of building.footprint) {
       assertSnapshot(!occupiedFootprintCells.has(cell) && !staticBlocked[cell]
@@ -6297,7 +6300,7 @@ function buildBuilding(player, command) {
     return;
   }
   if (BUILDING_DEFINITIONS[command.buildingType].placement?.kind === 'shoreline') {
-    const berth = dockPlacementContext.accessAt(centerCell);
+    const berth = dockPlacementContext.accessAt(centerCell, command.orientation);
     if (!berth.valid) { rejectBuild(player, berth.reason, command); return; }
   }
   if (footprint.some(isResourceCell)) {
@@ -6323,6 +6326,7 @@ function buildBuilding(player, command) {
   const id = nextBuildingId;
   const building = {
     id, team: player.team, type: command.buildingType, x: center.x, z: center.z, orientation: command.orientation ?? 0,
+    ...(command.buildingType === 'dock' && command.orientation !== undefined ? { dockFacingVersion: 1 } : {}),
     footprint, hp: BUILDING_DEFINITIONS[command.buildingType].maxHp, progress: 0, complete: false, queue: 0, productionQueue: [], trainingRemaining: 0,
     productionBlocked: false, rallyCell: -1,
     ...(command.buildingType === 'farm' ? { harvestStock: 0 } : {}),
@@ -6461,7 +6465,7 @@ function setGateOpen(player, command) {
 function findProductionSpawnCell(building) {
   if (building.type === 'dock') {
     const berth = createDockPlacementContext(mapDefinition, BUILDING_DEFINITIONS.dock,
-      { reservedCells: waterUnitRuntime.reservations(units) }).accessAt(worldToCell(building.x, building.z));
+      { reservedCells: waterUnitRuntime.reservations(units) }).accessAt(worldToCell(building.x, building.z), dockBerthOrientation(building));
     return berth.valid ? berth.spawnCell : -1;
   }
   const legalExits = legalBuildingExitCells(building.footprint, buildingAccessCells(building.footprint), MAP_WIDTH,

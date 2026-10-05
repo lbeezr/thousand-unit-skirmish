@@ -7993,7 +7993,7 @@ function buildPlacementAt(clientX, clientY) {
   else if (cost.stone !== undefined && latestStone[localTeam] < cost.stone) blockedReason = `NEED ${formatResourceRequirement(cost.stone)} STONE`;
   else if (!selectedIds().some((id) => units[id]?.kind === 'worker')) blockedReason = 'SELECT WORKERS';
   if (!blockedReason && BUILDING_DEFINITIONS[buildPlacementType].placement?.kind === 'shoreline') {
-    const berth = dockPlacementContext?.accessAt(centerRow * MAP_WIDTH + centerColumn);
+    const berth = dockPlacementContext?.accessAt(centerRow * MAP_WIDTH + centerColumn, buildPlacementOrientation);
     if (!berth?.valid) blockedReason = berth?.reason || 'DOCK NEEDS CLEAR WATER BERTH';
   }
   if (mapDefinition) {

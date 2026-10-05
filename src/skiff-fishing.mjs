@@ -1,7 +1,7 @@
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 import { isShoreFish } from './shore-fishing.mjs';
 import { shoreFishSitePositions } from './shore-fishing-placement.mjs';
-import { createDockPlacementContext } from './dock-placement.mjs';
+import { createDockPlacementContext, dockBerthOrientation } from './dock-placement.mjs';
 import { creditResourceBalance } from './economy-ledger.mjs';
 
 const at = (unit, point) => point && Math.hypot(unit.x - point.x, unit.z - point.z) < 1e-7;
@@ -34,7 +34,7 @@ export function createSkiffFishingContext(map, water) {
   }));
   const dockCells = building => {
     if (building?.type !== 'dock' || !building.complete || !(building.hp > 0)) return [];
-    const access = docks.accessAt(graph.cellAt(building.x, building.z));
+    const access = docks.accessAt(graph.cellAt(building.x, building.z), dockBerthOrientation(building));
     // Multiple hulls may unload at distinct admitted cells of the authored berth.
     return access.valid ? [access.spawnCell, ...access.spawnFootprint.filter(cell => cell !== access.spawnCell && graph.isNavigable(cell))] : [];
   };
