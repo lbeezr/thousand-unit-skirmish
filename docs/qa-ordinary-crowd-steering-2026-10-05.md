@@ -301,3 +301,52 @@ change or launch retry is authorized. CI/capture owner `01a10378` retains the
 existing capture interface. Crowd retains ordinary rendered verification at an
 identified deployed release. Clean release digest and deployed source are
 currently unverified; merge/source/pack evidence must remain separate.
+
+## Intermediate projected-route ranking correction
+
+Crowd owner `01a10933-c2b0` retains this bounded correction in
+`src/unit-crowd-steering.mjs`; core `01a107ba` retains shared position admission,
+repair and budgets, and caller/construction owners retain endpoints. Presentation
+backing is N/A: this changes candidate ranking only.
+
+An ordinary nonterminal passage projection can follow the actor along the raw
+route axis. Projected-distance progress then gives no credit for advancing that
+axis; opposing-lane preference can cancel lateral ingress. The correction ranks
+ordinary proposals by fixed raw-waypoint distance only when the projected delta
+is perpendicular to an explicit route direction, the raw waypoint is ahead,
+and opposition and a lane are present. Lane preference, proposals, swept terrain/
+body admission, limits and exact executor targets stay intact. Active detour,
+lease, contour and explicit recovery-angle proposals retain their previous
+score. An admitted necessary retreat remains selectable; blocked admission waits.
+
+The production module SHA-256 is
+`036c315fdf815b0414c06f05355ea7816dfc35c6d9b460887d29673fb7ba321e`.
+Synthetic controls cover all four rotations, lane preference, same orders/poses,
+terminal and nonperpendicular exclusions, raw route behind, missing direction/
+lane/opposition, necessary retreat, recovery, exact endpoints, blocked wait,
+Hold and pending planning. The CI terrain/body group registers these controls. Its 283 focused checks
+pass, together with documentation/import checks and both TypeScript projects.
+Existing both-seat forest/opposing group, bridge and paid-gate physical journeys
+are reused; selected segments retain their terrain/body predicates. Point gaps
+and lane scores do not prove physical clearance.
+
+One matched native prerequisite used the retained seed881 adapter with unchanged
+commands, 64 distinct-goal arrival assertions and 60-second deadline. Its only
+production change was this module; all other runtime dependencies and the Node
+binary were fingerprinted unchanged. All 64 arrived at 990 elapsed journey ticks.
+Eight retained own-call choices uniquely match actual admissions, including
+waypoint 12 to 13 at tick 556; that actor subsequently completes its goal. On the
+same eight baseline source-admitted candidate sets, offline reranking changes
+summed raw-waypoint progress from -0.0037755 to +0.2949082. Those alternatives
+were not executed as a counterfactual trajectory. No private checkpoint or raw
+native capture is published with this source slice.
+
+Historical baselines remain variable: two earlier timeouts stopped at 49/64 and
+50/64; a later unchanged baseline passed 64/64 at 1200 journey ticks; the focused
+failure stopped at 50/64. The 990-tick sample and phase departure support this
+bounded remedy, not a statistical capacity/throughput claim or attribution of
+all native failures. This prerequisite is seat 0 only and uses a retained local
+adapter, not an exact current-main full-match execution. Both-seat native
+qualification of the larger reservation follow-up, deployed/served identity and
+rendered ordinary-game proof remain open. Next crowd action is that unchanged
+qualification and source/release delivery; no shared writer change is required.

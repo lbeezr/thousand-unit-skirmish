@@ -163,6 +163,14 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   const laneAxis = Math.abs(routeX) >= Math.abs(routeZ) ? 'z' : 'x';
   const laneSign = laneAxis === 'z' ? Math.sign(routeX) : -Math.sign(routeZ);
   const lane = finitePoint(cellCenter) ? cellCenter[laneAxis] + laneSign * (.5 - radius) : null;
+  // A closest intermediate point can follow the actor along the route axis.
+  // Then projected-distance progress loses all credit for advancing that axis,
+  // while the opposing lane can cancel lateral ingress. Rank ordinary proposals
+  // against the fixed waypoint only in this perpendicular projection context.
+  const projectedRouteFeedback = opposed && lane !== null && directionLength
+    && unit.pathIndex < unit.path.length - 1 && finitePoint(progressTarget)
+    && Math.abs(dx * routeX + dz * routeZ) < EPSILON
+    && (progressTarget.x - unit.x) * routeX + (progressTarget.z - unit.z) * routeZ > EPSILON;
   let separationX = 0, separationZ = 0;
   for (const other of neighbors) {
     stats.bodyVisits++;
@@ -215,15 +223,18 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   if (!state.lease && !state.contour && (!opposed || lane === null) && Math.hypot(separationX, separationZ) < EPSILON && clear(direct))
     return { x: headingX, z: headingZ, target, stepDistance: directLength, noProgressTicks, crowdControl: stats };
   let best = null, bestScore = -Infinity;
-  const consider = to => {
+  const consider = (to, ordinaryProposal = true) => {
     const length = Math.hypot(to.x - unit.x, to.z - unit.z);
     if (length <= EPSILON || length > stepDistance + EPSILON || !clear(to)) return;
     const progress = distance - Math.hypot(target.x - to.x, target.z - to.z);
+    const rankRawRoute = ordinaryProposal && projectedRouteFeedback && !state.detour && !state.lease && !state.contour;
+    const rankingProgress = rankRawRoute
+      ? remaining - Math.hypot(progressTarget.x - to.x, progressTarget.z - to.z) : progress;
     const cross = headingX * (to.z - unit.z) - headingZ * (to.x - unit.x);
     const laneProgress = opposed && lane !== null
       ? Math.abs(unit[laneAxis] - lane) - Math.abs(to[laneAxis] - lane) : 0;
     const directed = (to.x - unit.x) * preferredX + (to.z - unit.z) * preferredZ;
-    const score = state.detour ? .1 * progress + .9 * directed : progress + laneProgress + (cross > 0 ? 1e-7 : 0);
+    const score = state.detour ? .1 * progress + .9 * directed : rankingProgress + laneProgress + (cross > 0 ? 1e-7 : 0);
     if (score > bestScore) {
       bestScore = score;
       best = { x: (to.x - unit.x) / length, z: (to.z - unit.z) / length, target, stepDistance: length };
@@ -343,7 +354,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     for (const scale of [1, .5]) for (const angle of [105, -105, 135, -135, 180]) {
       const radians = angle * Math.PI / 180, length = stepDistance * scale;
       consider({ x: unit.x + (headingX * Math.cos(radians) - headingZ * Math.sin(radians)) * length,
-        z: unit.z + (headingZ * Math.cos(radians) + headingX * Math.sin(radians)) * length });
+        z: unit.z + (headingZ * Math.cos(radians) + headingX * Math.sin(radians)) * length }, false);
     }
     if (best) best.yieldingForCrowd = true;
   }
