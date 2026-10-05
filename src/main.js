@@ -5,6 +5,7 @@ import { fishingVisualSites, createWorkerFishingContactRuntime } from './worker-
 import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
 import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { mountResourceBrushControls } from './resource-brush-controls.mjs';
+import { createMapStudioFormState } from './authoring/map-studio-form-state.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS, validateMapRegion } from './regions.mjs';
 import { regionGestureZone, ScenarioEditHistory } from './authoring/scenario-authoring.mjs';
@@ -5410,25 +5411,7 @@ function clearMapStudioDraft() {
   }
 }
 
-function captureMapStudioFormValues() {
-  const values = {};
-  for (const field of ui.mapStudio.querySelectorAll('input[id^="studio-"], select[id^="studio-"], textarea[id^="studio-"]')) {
-    if (field.type === 'file') continue;
-    values[field.id] = field.type === 'checkbox'
-      ? { checked: field.checked }
-      : { value: field.value };
-  }
-  return values;
-}
-
-function restoreMapStudioFormValues(values = {}) {
-  for (const [id, state] of Object.entries(values)) {
-    const field = document.getElementById(id);
-    if (!field || !ui.mapStudio.contains(field)) continue;
-    if (field.type === 'checkbox') field.checked = state?.checked === true;
-    else if (typeof state?.value === 'string') field.value = state.value;
-  }
-}
+const mapStudioFormState = createMapStudioFormState({ root: ui.mapStudio, document });
 
 function captureMapStudioDraft() {
   if (!editorDefinition || !editorDraftSourceMapId) return null;
@@ -5463,7 +5446,7 @@ function captureMapStudioDraft() {
       triggerCreationPending: editorTriggerCreationPending,
       selectedPrerequisiteIds: selectedEditorPrerequisiteIds(),
       editorTool,
-      formValues: captureMapStudioFormValues(),
+      formValues: mapStudioFormState.capture(),
     },
   };
 }
@@ -5521,7 +5504,7 @@ function restoreMapStudioDraft(draft) {
     || (typeof state.editorTool === 'string' && state.editorTool.startsWith('ground:')
       && TERRAIN_MATERIALS.includes(state.editorTool.slice(7)))
     ? state.editorTool : 'stone');
-  restoreMapStudioFormValues(state.formValues);
+  mapStudioFormState.restore(state.formValues);
   try { selectedEditorRegionId = readEditorRegions().some(r => r.id === state.formValues?.['studio-region-list']?.value) ? state.formValues['studio-region-list'].value : null; } catch { selectedEditorRegionId = null; }
   syncEditorRegionControls();
   scenarioEditHistory.clear(); recordScenarioEdit();

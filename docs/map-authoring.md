@@ -63,6 +63,35 @@ policy. Then remove both shim admissions/memberships and pass source, served,
 packed, editor and privacy checks without them. A repository search alone does
 not satisfy the served-release condition. No retirement is claimed here.
 
+### Map Studio form snapshot controller
+
+[`authoring/map-studio-form-state.mjs`](../src/authoring/map-studio-form-state.mjs)
+exports `createMapStudioFormState({ root, document })`, returning `capture()` and
+`restore(values = {})`. The dependencies are the existing dialog root and its
+host document, supplied explicitly. This DOM controller has no module imports,
+storage, timer, event binding, renderer, simulation or publishing dependency.
+It queries live `studio-` input/select/textarea controls on each capture, including
+dynamically mounted resource-brush controls; file inputs remain excluded.
+Snapshots retain `{ checked: boolean }` or `{ value: string }`, so version-1
+draft JSON remains compatible. Restore uses the supplied document's ID lookup,
+ignores missing/outside-dialog fields, sets checkboxes only for literal `true`
+and assigns only string values to other controls. It dispatches no edit events
+and retains existing DOM setter exceptions.
+
+`main.js` creates one controller and uses it from its real draft capture/restore
+callers. Draft validation, source-map/storage keys, the 160 ms save debounce,
+history, selection, gestures, import/export and room publishing stay in the host.
+The two former private form functions had no public imports and need no shim;
+all eleven established compatibility surfaces remain supported. The exact new
+browser path joins the existing manifest; authoring cannot enter server or
+authoritative closures. Resource-brush fixtures use the production controller
+initialization instead of slicing the former functions, retaining every prior
+case and adding form/draft contracts. Packed HTTP checks cover actual bytes,
+GET/HEAD headers and sibling/malformed-path denial. Rendered draft recovery
+acceptance remains with the architecture/authoring owner until normal-sandbox
+cloud browser capability supports the existing draft scenario; CPU evidence
+does not establish that browser outcome.
+
 ## Coordinates and terrain
 
 ### Organic landscape composition
