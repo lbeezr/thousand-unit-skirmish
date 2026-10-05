@@ -120,7 +120,7 @@ export const replay = {
     else if (command.type === 'attack') assignAttack(player, command);
     else if (command.type === 'attackBuilding') assignAttackBuilding(player, command);
     else if (command.type === 'trainUnit') trainUnit(player, command);
-    else if (command.type === 'gather') assignGather(player, command);
+    else if (command.type === 'gather') assignGatherWithRouteAdmission(player, command);
     else if (command.type === 'returnCargo') assignReturnCargo(player, command);
     else if (command.type === 'build') buildBuilding(player, command);
     else if (command.type === 'buildWall') buildWallLine(player, command);
