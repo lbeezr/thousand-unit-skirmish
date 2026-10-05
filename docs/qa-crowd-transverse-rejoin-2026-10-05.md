@@ -124,3 +124,36 @@ parked final-goal conflict is dependent on the separately owned endpoint/access
 contract, not authority to move an inactive actor. Shared writer or repair
 changes require core agreement. Crowd retains identified-release ordinary rendered verification through
 CI/capture owner `01a10378`'s existing interface.
+
+## Remaining-stall triage after PR487
+
+Read-only classification of the same retained ordinary final window, ticks
+2,681–2,700, finds eight of the nine actors outside actor 120 advancing fixed
+waypoints or consuming a queued leg. Distance is compared within the same
+generation, revision, path index and raw waypoint; comparisons across a waypoint
+or queued-leg transition cannot diagnose oscillation. These observations cover
+only this window, not the actors' full histories or the unchanged arrival deadline.
+
+Actor 121 is the exception: its sampled poses span 0.82333 world units of travel
+while losing 0.02196
+distance to its unchanged raw waypoint, with no-progress age 58→77. Its twenty
+calls produce ordinary step proposals, not source crowd waits or priority yields.
+A pure swept-body check of the direct step toward each actual projected target
+finds actor 120 blocking every one. This is analytic geometry on retained poses,
+not the complete candidate set or an observed executor admission. It does not
+establish a stall independent of actor 120's separately owned endpoint conflict.
+No experimental controller gate waits are present.
+
+Core's current endpoint query deliberately reserves current accepted/pending
+goals and excludes future queued goals. The formation slot was assigned before
+Worker 68's wall command, but the precise actor 120/Worker 68 activation chronology
+remains unknown. Caller `01a10933-e913` owns one queued-first palisade real-command
+chronology regression. Crowd does not duplicate it, expand future-goal claims,
+replace accepted goals or move the idle Worker.
+
+There is **no independently attributable remaining stall ready for a crowd
+correction** in this evidence. Crowd remains waiting on that caller-owned
+chronology or a new independent ordinary witness. No runtime change, new replay
+or full batch was run for this triage; private raw evidence and classification
+stay local. Source/release delivery of PR487 and deployed/rendered proof remain
+separate.
