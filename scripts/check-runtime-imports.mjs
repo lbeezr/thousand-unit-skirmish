@@ -49,7 +49,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'town-center-spawn', 'unit-heading', 'water-contours', 'water-route-graph',
   ],
   simulation: [
-    'combat-stance', 'confluence-opening-compat', 'construction-work-intent', 'economy-checkpoint',
+    'combat-movement', 'combat-stance', 'confluence-opening-compat', 'construction-work-intent', 'economy-checkpoint',
     'forest-fringe', 'forest-gather-group', 'formation-assignment', 'gather-work-area', 'match-mode-checkpoint',
     'simulation/movement/formation-assignment',
     'millrace-sheep', 'skiff-fishing', 'skiff-group-orders', 'skiff-waypoints',

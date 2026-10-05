@@ -1,0 +1,422 @@
+{
+  "baselineSource": "50d2e99e08aaea47c362d3c33fb692eda8009c39",
+  "candidateBase": "82a6676680c417d860a117d39511c1b118ddfec1",
+  "candidateDirty": true,
+  "workload": {
+    "width": 64,
+    "height": 48,
+    "terrainSeed": 881,
+    "startingArmySize": 16,
+    "stoneRectangle": {
+      "minX": 1,
+      "minZ": 1,
+      "maxX": 2,
+      "maxZ": 2
+    },
+    "actor": "infantry",
+    "radius": 0.22,
+    "stance": "noAttack",
+    "start": {
+      "x": 0.75,
+      "z": 0.95
+    },
+    "goal": {
+      "x": 6.5,
+      "z": 0.5
+    }
+  },
+  "baseline": [
+    {
+      "team": 0,
+      "command": {
+        "type": "attackMove",
+        "ids": [
+          4
+        ],
+        "unitGenerations": [
+          4053202005
+        ],
+        "x": 6.5,
+        "z": 0.5
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING ATTACK MOVE \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "ATTACK MOVE ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "radius": 0.22,
+      "contacts": 17,
+      "substeps": 67,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.836402473213775,
+          "z": 0.9432380673137045
+        },
+        "reason": "steering"
+      },
+      "position": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "intent": {
+        "attackMove": true,
+        "persistentOrder": null
+      },
+      "hpUnchanged": true
+    },
+    {
+      "team": 1,
+      "command": {
+        "type": "attackMove",
+        "ids": [
+          12
+        ],
+        "unitGenerations": [
+          1548357621
+        ],
+        "x": 6.5,
+        "z": 0.5
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING ATTACK MOVE \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "ATTACK MOVE ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "radius": 0.22,
+      "contacts": 17,
+      "substeps": 67,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.836402473213775,
+          "z": 0.9432380673137045
+        },
+        "reason": "steering"
+      },
+      "position": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "intent": {
+        "attackMove": true,
+        "persistentOrder": null
+      },
+      "hpUnchanged": true
+    },
+    {
+      "team": 0,
+      "command": {
+        "type": "patrol",
+        "ids": [
+          4
+        ],
+        "unitGenerations": [
+          1675471459
+        ],
+        "x": 6.5,
+        "z": 0.5
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING PATROL \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "PATROL ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "radius": 0.22,
+      "contacts": 17,
+      "substeps": 123,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.836402473213775,
+          "z": 0.9432380673137045
+        },
+        "reason": "steering"
+      },
+      "position": {
+        "x": 1.6466666666666552,
+        "z": 0.5
+      },
+      "intent": {
+        "attackMove": true,
+        "persistentOrder": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 0,
+          "status": "active",
+          "nextTick": 473
+        }
+      },
+      "hpUnchanged": true
+    },
+    {
+      "team": 1,
+      "command": {
+        "type": "patrol",
+        "ids": [
+          12
+        ],
+        "unitGenerations": [
+          2277426273
+        ],
+        "x": 6.5,
+        "z": 0.5
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING PATROL \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "PATROL ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "radius": 0.22,
+      "contacts": 17,
+      "substeps": 137,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.836402473213775,
+          "z": 0.9432380673137045
+        },
+        "reason": "steering"
+      },
+      "position": {
+        "x": 0.5,
+        "z": 0.5
+      },
+      "intent": {
+        "attackMove": true,
+        "persistentOrder": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 0,
+          "status": "active",
+          "nextTick": 552
+        }
+      },
+      "hpUnchanged": true
+    }
+  ],
+  "candidate": [
+    {
+      "team": 0,
+      "command": {
+        "type": "attackMove",
+        "ids": [
+          4
+        ],
+        "unitGenerations": [
+          1783271491
+        ],
+        "x": 6.5,
+        "z": 0.5
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING ATTACK MOVE \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "ATTACK MOVE ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "radius": 0.22,
+      "contacts": 0,
+      "substeps": 77,
+      "first": null,
+      "position": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "intent": {
+        "attackMove": true,
+        "persistentOrder": null
+      },
+      "hpUnchanged": true
+    },
+    {
+      "team": 1,
+      "command": {
+        "type": "attackMove",
+        "ids": [
+          12
+        ],
+        "unitGenerations": [
+          3935008706
+        ],
+        "x": 6.5,
+        "z": 0.5
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING ATTACK MOVE \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "ATTACK MOVE ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "radius": 0.22,
+      "contacts": 0,
+      "substeps": 77,
+      "first": null,
+      "position": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "intent": {
+        "attackMove": true,
+        "persistentOrder": null
+      },
+      "hpUnchanged": true
+    },
+    {
+      "team": 0,
+      "command": {
+        "type": "patrol",
+        "ids": [
+          4
+        ],
+        "unitGenerations": [
+          1398225742
+        ],
+        "x": 6.5,
+        "z": 0.5
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING PATROL \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "PATROL ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "radius": 0.22,
+      "contacts": 17,
+      "substeps": 123,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.836402473213775,
+          "z": 0.9432380673137045
+        },
+        "reason": "steering"
+      },
+      "position": {
+        "x": 1.6466666666666552,
+        "z": 0.5
+      },
+      "intent": {
+        "attackMove": true,
+        "persistentOrder": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 0,
+          "status": "active",
+          "nextTick": 473
+        }
+      },
+      "hpUnchanged": true
+    },
+    {
+      "team": 1,
+      "command": {
+        "type": "patrol",
+        "ids": [
+          12
+        ],
+        "unitGenerations": [
+          4002349820
+        ],
+        "x": 6.5,
+        "z": 0.5
+      },
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING PATROL \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "PATROL ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "radius": 0.22,
+      "contacts": 17,
+      "substeps": 137,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.836402473213775,
+          "z": 0.9432380673137045
+        },
+        "reason": "steering"
+      },
+      "position": {
+        "x": 0.5,
+        "z": 0.5
+      },
+      "intent": {
+        "attackMove": true,
+        "persistentOrder": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 0,
+          "status": "active",
+          "nextTick": 552
+        }
+      },
+      "hpUnchanged": true
+    }
+  ],
+  "limits": [
+    "Historical baseline precedes allocation; movement helper and construction predicate match main82.",
+    "Candidate is explicitly an uncommitted pre-review working tree, not exact reviewed source.",
+    "Production command bodies and physical admissions run through the existing test adapter; this is not a rendered witness.",
+    "Patrol contacts are retained as a negative control, not claimed repaired."
+  ]
+}
