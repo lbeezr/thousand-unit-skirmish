@@ -105,6 +105,18 @@ user's visual-direction hold. Its public-source registration, 48 reused poses,
 provenance and runtime admission remain preserved, but the gold costume/round
 shield is not the established Human identity. The corrective default restores
 Infantry v3; Archer v3 PR230 and blocky Spearman v2 PR241 remain unmerged drafts.
+The [5 October Spearman Northeast attack increment](qa-spearman-ne-attack-2026-10-05.md)
+adds three own-facing ready/thrust/recovery keys to default v1 pack0.11.0 and
+reuses the exact original idle opening. All60 prior frames,31 other clips and
+body scale/pivots remain; the old page/mask prefix is exact, new slots extend
+height3200→3584, and rooted weapon bounds expand. Independent source review
+clears the functional source. Spearman13 and Infantry/Archer21 each leave55
+military source gaps; all63 original native/deployed cells remain unverified.
+Exact head/release/packed-HTTP evidence stays in the owning PR. Foot art owns
+appearance through the permitted identified-release capture route with parent
+delivery support and transport owner01a10378. Next: own East attack, remaining
+attack headings and matched terminal defeat. State owner01a103d4 retains clocks.
+
 The [5 October Spearman Northwest increment](qa-spearman-north-west-walk-2026-10-05.md)
 adds four occlusion-aware own-view poses to default v1 pack0.10.0, preserving all56
 previous poses and31 other clips. Spearman source walks are8/8. Page dimensions

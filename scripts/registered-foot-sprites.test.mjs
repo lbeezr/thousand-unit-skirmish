@@ -7,6 +7,7 @@ import './registered-spearman-south-walk.test.mjs';
 import './registered-spearman-south-west-walk.test.mjs';
 import './registered-spearman-west-walk.test.mjs';
 import './registered-spearman-north-west-walk.test.mjs';
+import './registered-spearman-ne-attack.test.mjs';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
