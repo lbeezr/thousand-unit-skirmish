@@ -82,14 +82,42 @@ queues another job. The planner scheduler and recovery-route submission are
 explicit captures; no physical execution, arrival or productive liveness is
 claimed. Crowd owner `01a10933` retains that runtime outcome.
 
+## Diagnostic VM identity repair
+
+Public [CI run37326861233](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37326861233)
+uses merge-ref `9bb0a234` for PR463. Shard 1 / job `111819948554` fails in
+`local-detour-route-budget-journeys.mjs:291`: the extracted `runSimulationTick`
+reads an unbound `matchId`. The same check fails on exact CI source, base
+`e839f59d` and containing main `c3725def`. Commit `fbea1455` added match/map
+association to private whole-tick diagnostics; the VM setup did not follow it.
+The run's formation assertion and native queued-wall timeout remain separate
+crowd-owned failures. No full-suite verdict changes from this fixture correction.
+
+The repaired fixture evaluates the actual production match-identity initializer
+with Node's real `randomBytes` binding. It supplies its actual synthetic metadata
+map object, named for the fixture dimensions, rather than pretending to be a
+shipped/admitted XL map or substituting a fixed match ID. All original assertions
+remain. Added controls verify current match/map association and earlier-row
+immutability, scalar-only route retention, and no identity/map read when whole-tick
+diagnostics are off. Temporary constant-identity, retention-identity leak and
+diagnostic-off leak mutations must fail those controls.
+
+The bounded write scope is this fixture plus this guide. A specific coordination
+note for diagnostics owner `01a10c49-2cac` lives in
+[PR464](https://github.com/lbeezr/thousand-unit-skirmish/pull/464#issuecomment-5997376584):
+its private replay pause projection and crowd/core agreement remain separate.
+No production initializer, diagnostic payload, player row, replay hook, movement
+policy, deadline or CI registration changes here.
+
 ## Coordination and ongoing queue
 
 | Slice / owner | Next step | Dependency / evidence |
 | --- | --- | --- |
 | Construction shared fixture / `01a1085f` | Completed in [PR453](https://github.com/lbeezr/thousand-unit-skirmish/pull/453); retain production-root contracts during future extraction. | All original 22 receipt and 15 paid-wall test bodies stay byte-identical. Seven loader controls cover inserted helpers, import forms, labels/computed values, setup failures and isolated retries. |
 | Paid-economy shared construction adopter / `01a1085f` | Completed in [PR457](https://github.com/lbeezr/thousand-unit-skirmish/pull/457); retain typed payment and retry ownership. | Six real missing-helper failures; original 14 bodies plus four retry-ownership controls. Storehouse/Mill/return regressions remain unchanged. |
-| Paid Gate shared construction adopter / `01a1085f` | Independently review and qualify the exact integrated head, then normally merge; exact source/pack identities belong in the slice PR. | Reproduced accepted-builder missing dependency despite green topology-only baseline; original assertions plus both-seat endpoint/paid-job controls. No production or CI edit. |
-| Next reliability audit / `01a1085f` | Check reported extraction setup failures against exact containing source before another bounded migration; passing remaining paid-construction consumers need no rewrite. | The selected 109 baseline checks pass. Core Farm/Worker and modularization owners retain runtime roots; crowd owner retains actual movement liveness. No further production write reserved. |
+| Paid Gate shared construction adopter / `01a1085f` | Completed in [PR460](https://github.com/lbeezr/thousand-unit-skirmish/pull/460); retain admission/paid-job controls. | Reproduced accepted-builder missing dependency despite green topology-only baseline; original assertions plus both-seat endpoint/paid-job controls. No production or CI edit. |
+| Diagnostic VM identity / `01a1085f` | Independently review exact source, qualify identity/privacy and original detour checks, then normally integrate one fixture PR. | Exact public CI/base/main reproduction; real production initializer and truthful synthetic map metadata. Diagnostics owner `01a10c49-2cac` retains its separate replay consumer. |
+| Next reliability audit / `01a1085f` | Check new reported extraction failures against exact containing source before selecting another bounded migration. | Passing fixtures need no rewrite. Core/modularization owners retain runtime roots; crowd owner retains formation/native-wall liveness; CPU owner retains the known-red full suite. No further production write reserved. |
 | Production modularization owner | Preserve or explicitly replace these construction roots when extracting them into an exported runtime module; then replace only the affected fixture slice. | No production host/module/path changes in this slice. Architecture owner retains import/domain guards. |
 | Checked-type owner | Retain strict project membership, negative contracts and ambient isolation; assess the fixture interface in the dedicated type lane. | No tsconfig, runtime type-contract or coverage-floor edits here. Existing type gates remain required. |
 | CPU qualification owner `01a10378` | Qualify containing source through the existing full-suite workflow. | The existing receipt registration runs the new loader controls; labels, deadlines, shard selection and CI registry are unchanged. Focused checks are not a full-suite receipt. |
