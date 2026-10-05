@@ -106,9 +106,10 @@ function recoveryFixture() {
     afterStartup: { workerRun: i + 2, health: { map: 'crownroads', tickTiming: { sampleCount: 4, startLagP95Ms: 40 } } } }));
   const ticks = cases.flatMap(c => Array.from({ length: 60 }, (_, i) => row(i + 1, { workerRun: c.workerRun })));
   const runs = cases.map(c => ({ workerRun: c.workerRun, profiles: c.profiles, droppedStartupRows: 0,
-    startupWindow: { startRequest: { tickNumber: 3, monotonicMs: 10 }, startCompletion: { tickNumber: 3, monotonicMs: 40 } },
+    startupWindow: { startRequest: { tickNumber: 3, monotonicMs: 160 }, startCompletion: { tickNumber: 3, monotonicMs: 190 } },
     profileWindows: c.profiles ? { cpu: {} } : {}, cpuProfile: c.profiles ? {} : null, allocationProfile: c.profiles ? {} : null,
-    startupRows: [], rows: [{ ...row(4, { workerRun: c.workerRun }), tickStartedMs: 50, previousTickStartedMs: 0, startLagMs: 50 - 1000 / 30 }] }));
+    startupRows: [], rows: Array.from({ length: 57 }, (_, i) => ({ ...row(i + 4, { workerRun: c.workerRun }),
+      tickStartedMs: (i + 4) * 50, previousTickStartedMs: (i + 3) * 50, startLagMs: 50 - 1000 / 30 })) }));
   return { cases, ticks, runs };
 }
 test('matched recovery control preserves fixed sixty-tick identity and reports startup adjacency without waiver', () => {
@@ -121,7 +122,9 @@ test('recovery controls reject changed input, wrong startup anchor, missing tick
   for (const corrupt of [f => f.cases[1].checkpointSHA256 = 'b'.repeat(64), f => f.cases[1].workerRun = 2,
     f => f.ticks.pop(), f => f.runs[1].cpuProfile = {}, f => f.runs[1].startupWindow.startRequest.tickNumber = 4,
     f => f.runs[0].rows[0].startLagMs = 0, f => f.runs[0].rows[0].simulationMs = 4,
-    f => f.runs[0].droppedStartupRows = 1, f => f.runs[0].startupRows.push(f.runs[0].rows[0])]) {
+    f => f.runs[0].droppedStartupRows = 1, f => f.runs[0].startupRows.push(f.runs[0].rows[0]),
+    f => f.runs[0].rows.splice(10, 1), f => f.runs[0].rows.shift(),
+    f => { f.runs[0].rows[10].tickStartedMs += 5; f.runs[0].rows[10].previousTickStartedMs += 5; }]) {
     const f = recoveryFixture(); corrupt(f);
     assert.equal(capturedRecoveryProfileControl(f.cases, f.runs, f.ticks, 'crownroads').status, 'invalid-observations');
   }

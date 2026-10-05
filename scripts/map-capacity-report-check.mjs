@@ -161,17 +161,19 @@ export function capturedRecoveryProfileControl(cases, runs, tickRows, mapId) {
     if (run && (c.profiles ? !run.cpuProfile || !run.allocationProfile
       : run.cpuProfile !== null || run.allocationProfile !== null || Object.keys(run.profileWindows ?? {}).length !== 0)) reasons.add('profile-mode-mismatch');
     const clockRows = [...(run?.startupRows ?? []), ...(run?.rows ?? [])].filter(row => row.mapId === mapId
-      && row.tickNumber >= c.firstTick && row.tickNumber <= c.lastTick);
+      && row.tickNumber >= c.firstTick && row.tickNumber <= c.lastTick).toSorted((a, b) => a.tickNumber - b.tickNumber);
     for (const row of clockRows) {
       const initial = row.tickNumber === c.firstTick && row.previousTickStartedMs === null && row.startLagMs === null;
-      if (!Number.isFinite(row.tickStartedMs) || !initial && (!Number.isFinite(row.previousTickStartedMs) || !Number.isFinite(row.startLagMs)
+      if (!Number.isFinite(row.tickStartedMs) || !initial && (!Number.isFinite(row.previousTickStartedMs) || row.tickStartedMs < row.previousTickStartedMs || !Number.isFinite(row.startLagMs)
         || Math.abs(row.startLagMs - Math.max(0, row.tickStartedMs - row.previousTickStartedMs - row.budgetMs)) > 1e-8))
         reasons.add('invalid-recovery-tick-clock');
       const joined = selected.find(tick => tick.matchId === row.matchId && tick.tickNumber === row.tickNumber);
       if (!joined || Math.abs(joined.durationMs - row.durationMs) > .0005 || joined.budgetMs !== row.budgetMs
         || joined.overBudget !== row.overBudget || ['cpuMs', ...tickPhases].some(key => joined[key] !== row[key])) reasons.add('recovery-clock-identity-mismatch');
     }
-    if (!clockRows.length || new Set(clockRows.map(row => JSON.stringify([row.matchId, row.mapId, row.tickNumber]))).size !== clockRows.length)
+    if (clockRows.length !== 57 || clockRows.some((row, i) => row.tickNumber !== c.checkpointTick + 4 + i
+      || i > 0 && row.previousTickStartedMs !== clockRows[i - 1].tickStartedMs)
+      || new Set(clockRows.map(row => JSON.stringify([row.matchId, row.mapId, row.tickNumber]))).size !== clockRows.length)
       reasons.add('incomplete-recovery-tick-clocks');
     const startupMs = run?.startupWindow ? run.startupWindow.startCompletion.monotonicMs - run.startupWindow.startRequest.monotonicMs : null;
     return { ordinal: c.ordinal, profiles: c.profiles, workerRun: c.workerRun, checkpointSHA256: c.checkpointSHA256,
