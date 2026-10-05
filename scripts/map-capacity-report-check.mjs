@@ -131,6 +131,67 @@ export function capturedInnerAttribution(runs, tickRows, mapId) {
       'Diagnostic profiles and wrappers add overhead; no uninstrumented speedup or capacity claim.'] };
 }
 
+export function capturedRecoveryProfileControl(cases, runs, tickRows, mapId) {
+  if (cases === undefined) return { status: 'unavailable', reasons: ['no-recovery-profile-control'] };
+  const reasons = new Set();
+  if (!Array.isArray(cases) || cases.length !== 4 || cases.some((c, i) => c?.profiles !== [true, false, false, true][i])
+    || new Set(cases.map(c => c.checkpointSHA256)).size !== 1
+    || new Set(cases.map(c => c.checkpointTick)).size !== 1
+    || !cases.every(c => /^[a-f0-9]{64}$/.test(c.checkpointSHA256))) {
+    return { status: 'invalid-observations', reasons: ['unmatched-recovery-cases'] };
+  }
+  if (new Set(cases.map(c => c.workerRun)).size !== 4) reasons.add('duplicate-recovery-worker');
+  const observations = cases.map(c => {
+    const selected = (tickRows ?? []).filter(row => row.workerRun === c.workerRun && row.mapId === mapId
+      && row.tickNumber >= c.firstTick && row.tickNumber <= c.lastTick);
+    const matchingRuns = (runs ?? []).filter(run => run.workerRun === c.workerRun), run = matchingRuns[0];
+    const timing = capturedTickAttribution(selected, mapId);
+    if (!Number.isSafeInteger(c.workerRun) || c.workerRun < 2 || c.ordinal !== cases.indexOf(c) + 1
+      || !Number.isSafeInteger(c.checkpointTick) || c.firstTick !== c.checkpointTick + 1 || c.lastTick !== c.checkpointTick + 60
+      || timing.status !== 'valid-observations' || timing.uniqueObservedTicks !== 60
+      || timing.coverage.length !== 1 || timing.coverage[0].firstTick !== c.firstTick || timing.coverage[0].lastTick !== c.lastTick
+      || matchingRuns.length !== 1 || run?.profiles !== c.profiles || run?.droppedStartupRows !== 0
+      || !Number.isFinite(run?.startupWindow?.startRequest?.monotonicMs)
+      || !Number.isFinite(run?.startupWindow?.startCompletion?.monotonicMs)
+      || run.startupWindow.startCompletion.monotonicMs < run.startupWindow.startRequest.monotonicMs
+      || run.startupWindow.startRequest.tickNumber !== c.checkpointTick + 3
+      || c.beforeStartup?.workerRun !== c.workerRun || c.afterStartup?.workerRun !== c.workerRun
+      || c.beforeStartup?.health?.map !== mapId || c.afterStartup?.health?.map !== mapId
+      || !c.beforeStartup?.health?.tickTiming || !c.afterStartup?.health?.tickTiming) reasons.add('incomplete-recovery-control');
+    if (run && (c.profiles ? !run.cpuProfile || !run.allocationProfile
+      : run.cpuProfile !== null || run.allocationProfile !== null || Object.keys(run.profileWindows ?? {}).length !== 0)) reasons.add('profile-mode-mismatch');
+    const clockRows = [...(run?.startupRows ?? []), ...(run?.rows ?? [])].filter(row => row.mapId === mapId
+      && row.tickNumber >= c.firstTick && row.tickNumber <= c.lastTick);
+    for (const row of clockRows) {
+      const initial = row.tickNumber === c.firstTick && row.previousTickStartedMs === null && row.startLagMs === null;
+      if (!Number.isFinite(row.tickStartedMs) || !initial && (!Number.isFinite(row.previousTickStartedMs) || !Number.isFinite(row.startLagMs)
+        || Math.abs(row.startLagMs - Math.max(0, row.tickStartedMs - row.previousTickStartedMs - row.budgetMs)) > 1e-8))
+        reasons.add('invalid-recovery-tick-clock');
+      const joined = selected.find(tick => tick.matchId === row.matchId && tick.tickNumber === row.tickNumber);
+      if (!joined || Math.abs(joined.durationMs - row.durationMs) > .0005 || joined.budgetMs !== row.budgetMs
+        || joined.overBudget !== row.overBudget || ['cpuMs', ...tickPhases].some(key => joined[key] !== row[key])) reasons.add('recovery-clock-identity-mismatch');
+    }
+    if (!clockRows.length || new Set(clockRows.map(row => JSON.stringify([row.matchId, row.mapId, row.tickNumber]))).size !== clockRows.length)
+      reasons.add('incomplete-recovery-tick-clocks');
+    const startupMs = run?.startupWindow ? run.startupWindow.startCompletion.monotonicMs - run.startupWindow.startRequest.monotonicMs : null;
+    return { ordinal: c.ordinal, profiles: c.profiles, workerRun: c.workerRun, checkpointSHA256: c.checkpointSHA256,
+      firstTick: c.firstTick, lastTick: c.lastTick, timing, startupWindow: run?.startupWindow, startupMs,
+      profileWindows: run?.profileWindows, observedClockRows: clockRows.length,
+      startLagMs: quantiles(clockRows.filter(row => Number.isFinite(row.startLagMs)).map(row => row.startLagMs)),
+      beforeStartupTiming: c.beforeStartup?.health?.tickTiming, afterStartupTiming: c.afterStartup?.health?.tickTiming,
+      afterWindowTiming: c.afterWindow?.health?.tickTiming,
+      startupAdjacentRows: clockRows.filter(row => run?.startupWindow
+        && Number.isFinite(row.previousTickStartedMs)
+        && row.previousTickStartedMs <= run.startupWindow.startCompletion.monotonicMs
+        && row.tickStartedMs >= run.startupWindow.startRequest.monotonicMs) };
+  });
+  return { status: reasons.size ? 'invalid-observations' : 'valid-observations', reasons: [...reasons], observations,
+    limits: ['Same checkpoint bytes and fixed first60 game ticks, with no new gameplay commands; peer connection receipt times and host scheduling are not replayed.',
+      'Observer-only keeps function/memory/GC instrumentation; it isolates CPU/allocation profiler startup, not all observer overhead.',
+      'Profiler and observer startup precede active inner rows; native rolling health retains earlier recovery ticks.',
+      'Temporal overlap with a tick-start gap is not proof that all delay is caused by profiler startup; budgets remain unchanged.'] };
+}
+
 export function capturedBudgetEnvelope(samples, planning = []) {
   const timing = samples.map(s => s.health?.tickTiming).filter(Boolean);
   const peak = key => Math.max(0, ...timing.map(t => t[key] ?? 0));
@@ -156,9 +217,11 @@ export function checkCapacityReport(report) {
     const envelope = capturedBudgetEnvelope(load.samples, load.waves.flatMap(w => w.planning));
     const tickAttribution = capturedTickAttribution(load.tickRows, report.mapId);
     const innerAttribution = capturedInnerAttribution(load.attributionRuns, load.tickRows, report.mapId);
-    return { armySize: load.armySize, envelope, tickAttribution, innerAttribution, passed: load.passed === true && load.coldRecovery === true
+    const recoveryProfileControl = capturedRecoveryProfileControl(load.recoveryProfileCases, load.attributionRuns, load.tickRows, report.mapId);
+    return { armySize: load.armySize, envelope, tickAttribution, innerAttribution, recoveryProfileControl, passed: load.passed === true && load.coldRecovery === true
       && (load.tickRows === undefined || tickAttribution.status === 'valid-observations')
       && (load.attributionRuns === undefined || innerAttribution.status === 'valid-observations')
+      && (load.recoveryProfileCases === undefined || recoveryProfileControl.status === 'valid-observations')
       && load.waves.length === 3 && load.waves.every(w => w.observedGameTicksAfterAcceptance >= 300
         && w.planning.length === 2 && w.planning.every(p => p.routeFailures === 0)) && envelope.passed };
   });
