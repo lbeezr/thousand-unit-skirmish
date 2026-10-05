@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "head": "eb43a9767de76dfbd1bfc21bdcde26c04668fa73",
+    "dirty": false,
+    "serverSha256": "cc6bd7d2abc06602f91a4cf014d4e2c9b8ce848245acbb59e605445082d3c0e4",
+    "moduleSha256": "42b73f18de3094aaaa1c0405fcaa93755fca9d6244a30bc0bb4bb6db4fc24836"
+  },
+  "status": "incomplete",
+  "scope": "Retained fixed-tick crowd journeys, prepared validated positions; no native/rendered/deployed proof",
+  "retainedBaselineSha256": "6ae5f13f1d989360c25d9988519a215d6947527bd234e4b47290db23ffd2df12",
+  "summary": [
+    {
+      "id": "forest-opposing-infantry",
+      "arrived": 2,
+      "ticks": 279,
+      "staticContacts": 0,
+      "pairContacts": 0,
+      "maxProgressGap": null,
+      "maxRepairs": 0,
+      "seatLastArrival": [
+        279,
+        279
+      ],
+      "inputHash": "af658cf323052ae7c17b3d58e34982fba6700316ad965474115d41e4f65aec15",
+      "repeatExact": false,
+      "progressGapNote": "Retained forest observer measures no-displacement gaps separately; no net-progress-gap measurement claimed here."
+    },
+    {
+      "id": "forest-opposing-scout-seat-0",
+      "arrived": 2,
+      "ticks": 279,
+      "staticContacts": 0,
+      "pairContacts": 0,
+      "maxProgressGap": null,
+      "maxRepairs": 0,
+      "seatLastArrival": [
+        161,
+        279
+      ],
+      "inputHash": "cd65cbe890aa168bf074b8f4ebac7702e097d3d06fd39155508d9ba7e5afd11e",
+      "repeatExact": false,
+      "progressGapNote": "Retained forest observer measures no-displacement gaps separately; no net-progress-gap measurement claimed here."
+    },
+    {
+      "id": "forest-opposing-scout-seat-1",
+      "arrived": 2,
+      "ticks": 279,
+      "staticContacts": 0,
+      "pairContacts": 0,
+      "maxProgressGap": null,
+      "maxRepairs": 0,
+      "seatLastArrival": [
+        279,
+        161
+      ],
+      "inputHash": "058533a0b080f3790ac0179e408a83dcbf94741b595844044a6b5c688514c512",
+      "repeatExact": false,
+      "progressGapNote": "Retained forest observer measures no-displacement gaps separately; no net-progress-gap measurement claimed here."
+    },
+    {
+      "id": "forest-opposing-box-16",
+      "arrived": 32,
+      "ticks": 417,
+      "staticContacts": 0,
+      "pairContacts": 0,
+      "maxProgressGap": null,
+      "maxRepairs": 8,
+      "seatLastArrival": [
+        394,
+        417
+      ],
+      "inputHash": "aba4ea83b1a8fccf7ebbae1f80e6bf78663e22ab0d09cf2483a95b111629da6a",
+      "repeatExact": false,
+      "progressGapNote": "Retained forest observer measures no-displacement gaps separately; no net-progress-gap measurement claimed here."
+    },
+    {
+      "id": "bridge-mirror-false",
+      "arrived": 32,
+      "ticks": 417,
+      "staticContacts": 0,
+      "pairContacts": 0,
+      "maxProgressGap": 72,
+      "maxRepairs": 8,
+      "seatLastArrival": [
+        394,
+        417
+      ],
+      "inputHash": "1abffb88189301ccf995f9d449a7fa372f43e0c98809a8c4770b44739888f979",
+      "repeatExact": true
+    },
+    {
+      "id": "bridge-mirror-true",
+      "arrived": 32,
+      "ticks": 438,
+      "staticContacts": 0,
+      "pairContacts": 0,
+      "maxProgressGap": 72,
+      "maxRepairs": 8,
+      "seatLastArrival": [
+        438,
+        426
+      ],
+      "inputHash": "2914f3da8c18c28e1ffdc621d378c2b7165b7343a11ec97e8f2784ac7a9887ad",
+      "repeatExact": true
+    },
+    {
+      "id": "gate-mirror-false",
+      "arrived": 32,
+      "ticks": 417,
+      "staticContacts": 0,
+      "pairContacts": 0,
+      "maxProgressGap": 72,
+      "maxRepairs": 8,
+      "seatLastArrival": [
+        394,
+        417
+      ],
+      "inputHash": "05cafbb15db924a1a4259b48f99a48e1798bb5ebd74ab9a66bc7c507776a37e3",
+      "repeatExact": true
+    },
+    {
+      "id": "gate-mirror-true",
+      "arrived": 32,
+      "ticks": 438,
+      "staticContacts": 0,
+      "pairContacts": 0,
+      "maxProgressGap": 72,
+      "maxRepairs": 8,
+      "seatLastArrival": [
+        438,
+        426
+      ],
+      "inputHash": "e8b5036c402204c17edeae2ddea63f15e5d8dbf20319f7f655dac19544b5cb4f",
+      "repeatExact": true
+    }
+  ],
+  "checks": {
+    "existingMovementEndpointBodyControls": {
+      "pass": 132,
+      "fail": 0
+    },
+    "focusedCrowdModuleAndJourneys": {
+      "pass": 29,
+      "fail": 1,
+      "failedTest": "distant perpendicular final goal forces same-route front actor to retreat"
+    },
+    "queuedGateSeat1": {
+      "arrived": 60,
+      "required": 64,
+      "ticks": 2700,
+      "unfinishedIds": [
+        94,
+        102,
+        103,
+        104
+      ]
+    },
+    "runtimeImports": "passed",
+    "documentation": "passed at source head",
+    "types": "passed"
+  },
+  "delivery": {
+    "packed": false,
+    "merged": false,
+    "deploymentIdentity": "unverified",
+    "renderedFrames": 0,
+    "rendererBlockedRecord": "renderer-capability-blocked.json"
+  },
+  "files": {
+    "documentation.txt": {
+      "bytes": 66,
+      "sha256": "cf1abb21d5e03059c226adce2db8bd7b67ed7a7dea6fefbbfcfb45becfe4c7f3"
+    },
+    "existing-controls.tap.gz": {
+      "bytes": 3632,
+      "sha256": "5b96df059828d5cc9b87cf5bb10160dc9d7f31b4128d8b66e8cceee234f9a83a"
+    },
+    "focused-tests.tap.gz": {
+      "bytes": 1509,
+      "sha256": "40f294187dcef85a06e01622586b74b897805e96b0edf4ab3d5fa106d244bf5f"
+    },
+    "independent-journeys.tap.gz": {
+      "bytes": 498,
+      "sha256": "2d3036f6e95109d3a9b248bcc1eda5e45a229973ff930cb097a34dfa18daa782"
+    },
+    "independent-review.json": {
+      "bytes": 1496,
+      "sha256": "97c5ef9c9b031c73bbc0fceefbaee3919285a2f2bba24fdf290f0acc447fcabb"
+    },
+    "journeys.json.gz": {
+      "bytes": 2634462,
+      "sha256": "ac4f62a7b5f9b2c694b3fe74ce5a1025e105300da34d646709c622575ca86070"
+    },
+    "queued-gate-seat-1.json": {
+      "bytes": 491,
+      "sha256": "a1af210596c3a3ee494ffcb1359055a8eb88735dc9f99972d3b9c252f3d0bf82"
+    },
+    "renderer-capability-blocked.json": {
+      "bytes": 947,
+      "sha256": "d0d0d3ab9cd9d2f632354951f418e92c2e76c1a743294f3b6f9712e4a5a9b9c0"
+    },
+    "review-boxed-local.json.gz": {
+      "bytes": 1499,
+      "sha256": "c08c618ac7f57392753e5e00fd8001b429889c86b9642422de23930f108cf0bc"
+    },
+    "review-ring-diagnostics.json.gz": {
+      "bytes": 3455,
+      "sha256": "8df1bb085e22f624690eb0c418e3e0d77a9e766e651f8796955c6b047f1d851f"
+    },
+    "runtime-imports.txt": {
+      "bytes": 1152,
+      "sha256": "7968c14426e48881bed5c2a935d5ab748f61bcada15c5d46806709ee1d9b3817"
+    },
+    "types.txt": {
+      "bytes": 380,
+      "sha256": "3e887c99201c1531b3188defe45c7f415ba86b0e8b42b7826ebfce3d38cbb1ba"
+    }
+  },
+  "independentReview": {
+    "sourceHead": "eb43a9767de76dfbd1bfc21bdcde26c04668fa73",
+    "record": "independent-review.json",
+    "criticalPhysicalSafetyOrScopeIssues": "none newly found",
+    "liveness": "blocking",
+    "mergeApproval": false
+  }
+}

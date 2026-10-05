@@ -64,14 +64,24 @@ of full Tiny noncompletion; both short forks remain ongoing.
 
 [PR428](https://github.com/lbeezr/thousand-unit-skirmish/pull/428#issuecomment-5987657009)
 merged the narrow recovery at `67295aef`, following independent final-head review,
-122 final-head checks and nine postmerge recovery passes. The parent reports
-that CI owner `01a10378` is now running a fresh immutable full qualification
-containing this policy fix and the separate fixture corrections, retaining
-complete failure evidence. Its exact frozen revision/result receipt is pending
-here. AI `01a10297` retains completion diagnosis and will resume from any failure
-packet that run produces: inspect checkpoint, accepted ledger and filtered views
-before a bounded mechanism control. Do not duplicate the full Tiny match run.
-Paid Infantry recovery is established; full-match completion is not established.
+122 final-head checks and nine postmerge recovery passes. At the PR431 planning
+checkpoint, CI owner `01a10378` was running the next immutable full qualification.
+The completed receipt below supersedes that earlier running status. Paid
+Infantry recovery is established; full-match completion is not established.
+
+The next normal full qualification at `67295aef` finishes with1105passed,
+1failed and217unrun; original seeds `[20260925,0]` remain ongoing in both
+modes at3600seconds, while reversed seeds complete/exact-repeat at2711seconds.
+The [nearby-defender receipt](qa-pve-defender-assault-2026-10-05.md) independently
+verifies both actual terminal packets. Both economies and armies remain alive;
+four attackers assault a visible Town Center while a disclosed Infantry kills
+them. Matched60second policy forks reproduce a producer-priority weakness:
+unchanged targeting loses all four while the defender stays at100HP; giving a
+military unit already within its public attack range priority kills it after
+death observed within78ticks, preserves all four attackers and resumes actual structure damage.
+Warm and fresh combat-restore regressions exactly repeat in both modes. This
+bounded post-deadline improvement does not establish full-match completion;
+CI `01a10378` owns the next normal qualification after the substantive correction.
 
 Ordinary development PvE is admitted for Terraced Vale Tiny Skirmish only,
 through mode-owner [PR250](https://github.com/lbeezr/thousand-unit-skirmish/pull/250).
@@ -119,7 +129,7 @@ change a victory timer to close the queue.
 | --- | --- | --- | --- |
 | 1 — original-order shard pass; historical cause unproven | Preserve the reported timeout and completed CI rerun; investigate further only if it reproduces with a final-state payload. | AI analysis/[owned receipt](qa-pve-millrace-production-2026-10-04.md); preserve production/regroup assertions and budgets. | CI owner `01a10378` completed the original-order 368-check shard at `b96847b9`: 368 passed, 0 failed/unrun, including both-seat production. [CI receipt](https://github.com/lbeezr/thousand-unit-skirmish/pull/296#issuecomment-5982273952). This is one shard of 1104, not a full-suite or runtime-fix claim. Historical cause remains unproven; no duplicate collector. |
 | 2 — merged Tiny source / rendered acceptance open | Use the now-qualified shared cloud capture interface for ordinary Tiny entry, fog, paid economy, wipeout recovery, reconnect and rematch at an identified source/served revision. Preserve PR255/277/281 source proofs. | Existing Tiny AI/QA receipts; registry, server and fog remain with `01a103cc`, map with `01a103e8`. | User reports actual packed-renderer qualification via [PR323](https://github.com/lbeezr/thousand-unit-skirmish/pull/323). Tiny native and process recovery evidence still does not close its own ordinary rendered play, pacing or balance. Capture/served identity remains with shared capture/staging owners. |
-| 3 — paid Infantry recovery merged / full qualification running | Opponent AI `01a10297` retains completion diagnosis. Resume from any failure packet produced by CI's fresh immutable full qualification; inspect checkpoint, accepted ledger and filtered views before bounded controls. Do not duplicate the full Tiny match run. The separate PR372 Worker case stays with pacing/movement. | Existing [bounded recovery receipt](qa-pve-last-infantry-recovery-2026-10-05.md) and justified AI policy/scenario regressions only; shared authority/movement/economy, map and admission excluded. | [PR428](https://github.com/lbeezr/thousand-unit-skirmish/pull/428) merged67295aef: one paid Infantry spawns, survives fresh queue restore and exactly repeats in both retained seat0 native failures; nine postmerge checks pass. Full-match completion remains unestablished. CI `01a10378` owns the fresh full run including the policy fix and separate fixture corrections; frozen revision/result receipt pending here. Preserve fog, mode/seeds and3600s ceiling. Rendered acceptance and balance stay open; no route/search cause is inferred. |
+| 3 — nearby-defender correction / full completion open | Opponent AI `01a10297`: integrate and verify the narrowly reproduced visible military threat priority, then diagnose any exact failure from CI’s next normal full run. Preserve original Tiny assertions and avoid a competing full attempt. PR372 remains separate. | `src/pve-skirmish-targets.mjs`, exact-checkpoint regressions and [defender receipt](qa-pve-defender-assault-2026-10-05.md); shared authority/movement/economy, map and admission excluded. | Normal full67295aefqualification:1105passed/1failed/217unrun, original seeds ongoing3600s in both modes, reversed complete/repeat2711s. Its verified terminal forks lose four attackers under producer priority; nearby military priority kills the defender within2.6s, preserves all four and resumes producer damage. Full completion, rendered acceptance and balance remain open. CI `01a10378` retains normal qualification after integration. |
 | 4 — authored rotation merged / served acceptance open | Observe obstruction escape and return through the ordinary served objective-control path. | `src/pve-objective-rotation.mjs` and existing paid evidence; navigation remains with its owner. | [PR203](https://github.com/lbeezr/thousand-unit-skirmish/pull/203) at `89772d6f` rotates after 60 seconds without approach, occupancy, capture or combat, with temporary 120-second cooldown. Its [matched wall-ring proof](qa-pve-objective-rotation-2026-10-03.md) wins at 107.6/109.7 seconds across cold restore versus a 360-second baseline timeout. Rendered acceptance remains open. |
 | 5 — paid recovery source / ordinary observation open | Observe Worker/Farm depletion, paid recruitment, home defense and reform; fix only a reproduced policy failure. | AI production/recovery modules and tests; shared economy/price/server code excluded. | [Canonical paid loss proof](qa-pve-mode-adapter-2026-10-04.md#paid-loss-recovery) covers both seats/maps, rebuilt producer, recruits, cold restore and five-unit advance. Native Farm cost is 60 wood; normal policy minimum is 85 including reserve. No resource grants. |
 

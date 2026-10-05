@@ -7,11 +7,12 @@ import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent,
   activeLandMovementBodyRadius, workerEconomyBodyRadius, LAND_CLEARANCE_PROFILE,
-  canTraverseStaticBodySegment, createClearanceMoveGoalPoint, rejoinSelectedUnitRoute,
-  unitRouteRejoinDecision, createUnitRoutePublicationLedger } from '../src/unit-movement.mjs';
+  canTraverseStaticBodySegment, createClearanceMoveGoalPoint, activeMoveGoalPoint, createMoveGoalPoint,
+  rejoinSelectedUnitRoute, unitRouteRejoinDecision, createUnitRoutePublicationLedger } from '../src/unit-movement.mjs';
 import { XL_CHECKPOINT_ROUTE_MAX_ENTRIES } from '../src/server/checkpoint-route-budget.mjs';
 import { canTraverseFlatUnitSegment, shortcutFlatUnitPath } from '../src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from '../src/unit-obstacle-detour.mjs';
+import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, canTraverseCrowdBodySegment } from '../src/unit-crowd-steering.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { farmHarvestNode, farmBuildingId } from '../src/farm-harvest.mjs';
 import { workerFlowRouteBindings } from './economy-server-fixture.mjs';
@@ -289,7 +290,8 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     spatialBucketTeamNext:teamNext,spatialBucketOfUnit:bucketOf,
     spatialBucketColumn:x=>Math.max(0,Math.min(bucketColumns-1,Math.floor((x+half)/bucketSize))),
     spatialBucketRow:z=>Math.max(0,Math.min(bucketColumns-1,Math.floor((z+half)/bucketSize))),
-    elevationLevelByCell:levels,canTraverseUnitStep,activeLandMovementBodyRadius,workerEconomyBodyRadius,LAND_CLEARANCE_PROFILE,canTraverseStaticBodySegment,createClearanceMoveGoalPoint,rejoinSelectedUnitRoute,
+    elevationLevelByCell:levels,canTraverseUnitStep,activeLandMovementBodyRadius,workerEconomyBodyRadius,LAND_CLEARANCE_PROFILE,canTraverseStaticBodySegment,createClearanceMoveGoalPoint,activeMoveGoalPoint,rejoinSelectedUnitRoute,
+    ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, navigationRevision: 0, movePlanningEpoch: 0,
     canTraverseFlatUnitSegment,findStationaryWorkerDetour,SEPARATION_DIAGNOSTICS_ENABLED:false,
     createUnitRoutePublicationLedger, MAX_UNITS:2000, MAX_RESOURCE_NODES:128, XL_CHECKPOINT_ROUTE_MAX_ENTRIES,
     tickDiagnosticSamples:null, landRouteRetentionTick:null,
@@ -321,6 +323,79 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
   return {mover,units,levels,blockedCells,walkable,context,repairs,
     move:()=>context.moveOneTick(),spread:()=>{vm.runInContext(spread,context);context.spreadInteractingUnits();}};
 }
+
+test('crowd static handoff is rejected before writes and preserves the selected goal and queue', () => {
+  const f = fixture({ x: 1.22, z: 1.78, cliff: false, blocked: [44] });
+  Object.assign(f.mover, { gatherNodeId: null, gatherPhase: '', path: [43, 35, 36, 37], moveGoalCell: 37,
+    queuedWaypoints: [{ destination: 38, attackMove: false }] });
+  for (const other of f.units.slice(1)) other.hp = 0;
+  f.context.getMoveVector(f.mover); f.context.tickNumber = 31;
+  const proposal = f.context.getMoveVector(f.mover);
+  assert.equal(proposal.rejectedStaticProposal, true);
+  assert.deepEqual(proposal.target, point(43));
+  assert.equal(proposal.stepDistance, 0);
+  const before = structuredClone(f.mover); f.move();
+  assert.deepEqual({ x: f.mover.x, z: f.mover.z }, { x: before.x, z: before.z });
+  assert.equal(f.mover.pathIndex, before.pathIndex); assert.deepEqual(f.mover.path, before.path);
+  assert.deepEqual(f.mover.queuedWaypoints, before.queuedWaypoints);
+  assert.equal(f.repairs.length, 1); assert.equal(f.repairs[0].destination, 37);
+});
+function retainedCornerFixture(z = -.0243263632693783) {
+  // Translate retained actor113's gate-corner repair into this existing grid.
+  // The closed gate's northeast corner(17,1) becomes(0,0).
+  const f = fixture({ x: .5048335008102818, z, cliff: false, blocked: [27] });
+  Object.assign(f.mover, { generation: 17, gatherNodeId: null, gatherPhase: '', path: [35, 34, 33],
+    moveGoalCell: 33, queuedWaypoints: [{ destination: 32, attackMove: false }] });
+  [[.5, .5], [-.5, .5], [.5, -.5]].forEach(([x, z], i) => Object.assign(f.units[i + 1], { x, z }));
+  // Rebuild only test bucket observations after diagnostic staging.
+  f.context.spatialBucketHeads.fill(-1); f.context.spatialBucketNext.fill(-1);
+  for (const u of f.units) {
+    const b = f.context.spatialBucketRow(u.z) * bucketColumns + f.context.spatialBucketColumn(u.x);
+    f.context.spatialBucketNext[u.id] = f.context.spatialBucketHeads[b]; f.context.spatialBucketHeads[b] = u.id;
+  }
+  return f;
+}
+
+test('retained gate approach rejects a terrain-stranding parked-body detour', () => {
+  const f = retainedCornerFixture(.0260869880010786);
+  f.mover.x = .5753289270085982;
+  const before = structuredClone(f.mover), parked = structuredClone(f.units.slice(1));
+  assert.ok(canTraverseUnitStep(cell(before.x, before.z), 35, width, f.levels, f.walkable));
+  const move = f.context.getMoveVector(f.mover);
+  assert.ok(!move.rejectedStaticProposal && !move.waitingForCrowd && !move.reachedWaypoint);
+  const to = { x: before.x + move.x * move.stepDistance, z: before.z + move.z * move.stepDistance };
+  assert.ok(canTraverseUnitStep(cell(to.x, to.z), 35, width, f.levels, f.walkable));
+  assert.ok(canTraverseStaticBodySegment(before, to, .22, width, width, f.walkable));
+  assert.ok(canTraverseCrowdBodySegment(before, to, .22, parked));
+  assert.ok(move.crowd.parkedWaypointProbes <= CROWD_NEIGHBOR_LIMIT);
+  assert.ok(move.crowdControl.detourTerrainProbes <= 8);
+  f.move(); assert.equal(f.repairs.length, 0); assert.deepEqual(f.units.slice(1), parked);
+  assert.equal(f.mover.pathIndex, before.pathIndex); assert.deepEqual(f.mover.path, before.path);
+  assert.equal(f.mover.orderRevision, before.orderRevision); assert.equal(f.mover.moveGoalCell, before.moveGoalCell);
+  assert.deepEqual(f.mover.queuedWaypoints, before.queuedWaypoints);
+});
+
+for (const overflow of [false, true]) test(`already broken gate-corner join keeps the original static repair, overflow=${overflow}`, () => {
+  const f = retainedCornerFixture(), before = structuredClone(f.mover);
+  f.context.crowdNeighborsNear = () => ({ visits: 128, neighbors: f.units.slice(1), overflow });
+  const move = f.context.getMoveVector(f.mover);
+  assert.equal(move.rejectedStaticProposal, true); assert.equal(move.stepDistance, 0);
+  f.move(); assert.equal(f.repairs.length, 1); assert.deepEqual(f.mover, before);
+});
+
+test('an inherited static escape that the core could admit is still subject to body admission', () => {
+  const f = fixture({ x: .05, z: .5, cliff: false, blocked: [35] });
+  Object.assign(f.mover, { generation: 17, gatherNodeId: null, gatherPhase: '', path: [36], moveGoalCell: 36 });
+  f.mover.moveGoalPoint = createMoveGoalPoint(f.mover, .12, .5, 36, width, width);
+  for (const other of f.units.slice(1)) other.hp = 0;
+  Object.assign(f.units[1], { hp: 100, x: .5, z: .5 });
+  assert.equal(canTraverseStaticBodySegment(f.mover.moveGoalPoint, f.mover.moveGoalPoint, .22, width, width, f.walkable), false);
+  assert.equal(canTraverseStaticBodySegment(f.mover, f.mover.moveGoalPoint, .22, width, width, f.walkable, { allowEscape: true }), true);
+  const proposal = f.context.getMoveVector(f.mover);
+  assert.equal(proposal.rejectedStaticProposal, undefined); assert.equal(proposal.waitingForCrowd, true);
+  const before = structuredClone(f.mover); f.move();
+  assert.deepEqual(f.mover, before); assert.equal(f.repairs.length, 0);
+});
 
 test('crowd separation cannot push a moving unit across an impassable elevation edge', () => {
   const f=fixture();const before=cell(f.mover.x,f.mover.z);f.move();
@@ -538,6 +613,10 @@ for (const [label, kind, policy] of landExecutionPolicies) {
     // target selection, full journeys and naval execution require other tests.
     for (const team of [0, 1]) for (const terrain of ['cliff', 'corner']) {
       const f = fixture({ kind, x: -.01, z: .001, cliff: false });
+      // This is the executor's illegal-proposal control. Ordinary crowd steering
+      // now corrects this proposal before admission; exercise the unchanged
+      // executor guard with the legacy proposal, independently of that module.
+      f.context.ordinaryCrowdBodyRadius = () => 0;
       Object.assign(f.mover, { team, gatherNodeId: null, gatherPhase: '', ...structuredClone(policy) });
       for (const other of f.units.slice(1)) other.hp = 0;
       if (terrain === 'cliff') { f.levels[27] = 1; f.levels[35] = 2; }

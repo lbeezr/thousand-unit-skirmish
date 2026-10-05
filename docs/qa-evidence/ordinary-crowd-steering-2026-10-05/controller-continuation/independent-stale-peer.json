@@ -1,0 +1,96 @@
+[
+  {
+    "variant": "exact-head",
+    "grant": {
+      "x": -1,
+      "z": 1.2246467991473532e-16,
+      "target": {
+        "x": 2,
+        "z": 0.5
+      },
+      "stepDistance": 0.09,
+      "yieldingForCrowd": true,
+      "noProgressTicks": 120,
+      "crowdControl": {
+        "proposals": 48,
+        "pointProposals": 0,
+        "escapeProposals": 14,
+        "bodyVisits": 106,
+        "arbitrationVisits": 10,
+        "leaseAge": 0,
+        "contourAge": 0,
+        "waitAge": 120
+      }
+    },
+    "unitLease": true,
+    "peerContourBefore": false,
+    "peerContourAfter": true,
+    "result": {
+      "x": 0,
+      "z": 1,
+      "target": {
+        "x": 2,
+        "z": 0.5
+      },
+      "stepDistance": 0.09,
+      "noProgressTicks": 0,
+      "crowdControl": {
+        "proposals": 41,
+        "pointProposals": 17,
+        "escapeProposals": 0,
+        "bodyVisits": 119,
+        "arbitrationVisits": 5,
+        "leaseAge": 0,
+        "contourAge": 0,
+        "waitAge": 0
+      }
+    }
+  },
+  {
+    "variant": "reject-ineligible-peer-state",
+    "grant": {
+      "x": -1,
+      "z": 1.2246467991473532e-16,
+      "target": {
+        "x": 2,
+        "z": 0.5
+      },
+      "stepDistance": 0.09,
+      "yieldingForCrowd": true,
+      "noProgressTicks": 120,
+      "crowdControl": {
+        "proposals": 48,
+        "pointProposals": 0,
+        "escapeProposals": 14,
+        "bodyVisits": 106,
+        "arbitrationVisits": 10,
+        "leaseAge": 0,
+        "contourAge": 0,
+        "waitAge": 120
+      }
+    },
+    "unitLease": true,
+    "peerContourBefore": false,
+    "peerContourAfter": false,
+    "result": {
+      "x": 1,
+      "z": 0,
+      "target": {
+        "x": 2,
+        "z": 0.5
+      },
+      "stepDistance": 0.09000000000000002,
+      "noProgressTicks": 0,
+      "crowdControl": {
+        "proposals": 34,
+        "pointProposals": 0,
+        "escapeProposals": 0,
+        "bodyVisits": 71,
+        "arbitrationVisits": 6,
+        "leaseAge": 0,
+        "contourAge": 0,
+        "waitAge": 0
+      }
+    }
+  }
+]

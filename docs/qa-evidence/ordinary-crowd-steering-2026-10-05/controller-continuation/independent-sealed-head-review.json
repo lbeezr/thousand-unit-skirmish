@@ -1,0 +1,16 @@
+{
+  "sealedHead": "b84b4529639e4b4a1f9e9d0b6cea23b622e25f55",
+  "clean": true,
+  "qualifiedRuntime": "1fa2c46df86c6c743baf8943f1b4301933be249b",
+  "runtimeHashesMatch": true,
+  "sourceSha256": {
+    "server.mjs": "c160faca67a17c6a40d31657bda789848ddf878c9358e7df8ad05cb48ddfd0ab",
+    "src/unit-crowd-steering.mjs": "ff74bdc28832f550f565a0210d2cfee6fe7be29f1f7b5a484b402da0f01f573d",
+    "src/crowd-wait-lease.mjs": "ddf971e93748761319c3ee1e752f593afa2a7dba205757fa09e7e1fa227b7721",
+    "src/crowd-parked-contour.mjs": "dbac12ec6c207e80df7f3a1f5146fa93637ab4465053854c8d3389224d4f6812"
+  },
+  "delta": "24 documentation/evidence files only; no runtime or test change.",
+  "findings": [],
+  "sourceQualification": "Final independent source qualification carries forward unchanged to this sealed head.",
+  "remaining": "Author normal merge/deployment identity and ordinary rendered proof remain separate; no source-review blocker."
+}
