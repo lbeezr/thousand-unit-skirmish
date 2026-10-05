@@ -256,3 +256,48 @@ for (const team of [0, 1]) test(`seat ${team}: checkpoint recovery rejects a sav
       'control genuinely moves the replacement instead of merely changing feedback');
   } finally { await recovered.dispose(); }
 });
+
+for(const team of [0,1])test(`seat ${team}: opted-in pause projection preserves actual replay and filtered snapshot state`,async()=>{
+  const map=pathingBaselineMap({group:4});
+  const off=await createPathingReplayFixture(map),on=await createPathingReplayFixture(map,{observeMovement:true});
+  try {
+    const r=on.replay;r.restore(off.replay.checkpoint());
+    const own=r.units.filter(u=>u.team===team&&u.kind==='infantry'),enemy=r.units.find(u=>u.team!==team);
+    assert.throws(()=>off.replay.observeMovement(team,[own[0].id]),/explicitly enabled/);
+    r.observeMovement(team,[enemy.id,...own.map(u=>u.id)]);
+    assert.deepEqual(r.movementObservations().map(row=>row.id),own.map(u=>u.id));
+    for(const fixture of [off,on])fixture.replay.order(team,{type:'move',ids:own.map(u=>u.id),x:16.5,z:.5});
+    assert.ok(r.movementObservations().every(row=>row.planningPending===true),'actual accepted sliced planning is pending');
+    for(let tick=0;tick<30;tick++) {
+      off.replay.step();r.step();
+      assert.deepEqual(r.units,off.replay.units);assert.deepEqual(r.snapshot(team).units,off.replay.snapshot(team).units);
+      assert.deepEqual(r.actorTrace,[]);assert.deepEqual(r.crowdSteps,[]);
+      const rows=r.movementObservations();assert.ok(rows.length<=4);
+      assert.ok(rows.every(row=>Object.keys(row).join('|')==='id|holding|planningPending|performingAction|routeActive|decision'));
+    }
+    assert.ok(r.movementObservations().some(row=>row.decision==='vector-proposal'));
+    const saved=r.checkpoint();r.restore(saved);assert.deepEqual(r.movementObservations(),[]);
+    const actor=r.units.find(u=>u.id===own[0].id);r.observeMovement(team,[actor.id]);
+    assert.equal(r.movementObservations()[0].decision,'unobserved');
+    r.order(team,{type:'holdPosition',ids:[actor.id]});assert.equal(r.movementObservations()[0].holding,true);
+    r.step();assert.equal(r.movementObservations()[0].holding,true);
+    r.order(team,{type:'stop',ids:[actor.id]});assert.equal(r.movementObservations()[0].routeActive,false);
+    r.prepare(map);assert.deepEqual(r.movementObservations(),[]);
+  } finally {await off.dispose();await on.dispose();}
+});
+
+for(const team of [0,1])test(`seat ${team}: productive work receipt remains separate from a missing vector observation`,async()=>{
+  const map=pathingBaselineMap({group:4}),spawn=map.spawnPoints[team];
+  map.resourceNodes=[{id:'food',type:'food',x:spawn.x,z:spawn.z-1.5,stock:100}];
+  const f=await createPathingReplayFixture(map,{observeMovement:true}),r=f.replay;
+  try {
+    const worker=r.units.find(u=>u.team===team&&u.kind==='worker');r.observeMovement(team,[worker.id]);
+    r.order(team,{type:'gather',ids:[worker.id],nodeId:'food'});r.drain();
+    let row;
+    for(let tick=0;tick<120;tick++) {r.step();row=r.movementObservations()[0];if(row.performingAction)break;}
+    assert.equal(row.performingAction,'gather-food');assert.ok(worker.cargo>0);
+    r.step();row=r.movementObservations()[0];
+    assert.equal(row.performingAction,'gather-food');assert.equal(row.decision,'unobserved');
+    assert.equal(row.routeActive,false);assert.equal(row.holding,false);assert.equal(row.planningPending,false);
+  } finally {await f.dispose();}
+});

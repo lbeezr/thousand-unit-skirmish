@@ -7,7 +7,7 @@ export function createTickAttribution({ functions, context, visionContext, memor
   const wrapped = { ...functions }, stringify = JSON.stringify;
   let active = false, current = null, frameDepth = 0, vision = null, session;
   let rowWindow = null, profileWindows = null;
-  const rows = [], gc = [];
+  const rows = [], gc = []; let droppedRows = 0;
   const captureGc = entries => {
     for (const e of entries) if (rowWindow && e.startTime >= rowWindow.start.monotonicMs
       && e.startTime <= (rowWindow.end?.monotonicMs ?? Infinity)) {
@@ -26,7 +26,9 @@ export function createTickAttribution({ functions, context, visionContext, memor
       finally { add(callsKey); add(msKey, now() - start); }
     };
   };
-  for (const name of ['roomPayload', 'deflateRawSync', 'encodeWebSocketFrame', 'captureMatchCheckpoint']) {
+  for (const name of ['roomPayload', 'deflateRawSync', 'encodeWebSocketFrame', 'captureMatchCheckpoint',
+    'simulateTick', 'rebuildSpatialBuckets', 'getMoveVector', 'spreadInteractingUnits']) {
+    if (typeof functions[name] !== 'function') continue;
     wrapped[name] = measured(name, functions[name]);
   }
   wrapped.stringify = function (...args) {
@@ -91,11 +93,11 @@ export function createTickAttribution({ functions, context, visionContext, memor
       const after = memory();
       const metrics = context().cacheMetrics;
       if (metrics) current.visionCacheAfter = metrics;
-      Object.assign(current, { tickNumber: diagnostic.tickNumber, endedMs: now(), durationMs: duration,
+      Object.assign(current, diagnostic, { endedMs: now(), durationMs: duration,
         heapAfterBytes: after.heapUsed, netHeapDeltaBytes: after.heapUsed - current.heapBeforeBytes,
         rssBytes: after.rss, externalBytes: after.external, arrayBufferBytes: after.arrayBuffers });
       rows.push(current);
-      if (rows.length > 2000) rows.shift();
+      if (rows.length > 2000) { rows.shift(); droppedRows++; }
     }
     return functions.recordTickDuration.call(this, duration, diagnostic, ...args);
   };
@@ -103,7 +105,7 @@ export function createTickAttribution({ functions, context, visionContext, memor
     wrapped,
     async start() {
       if (active) throw new Error('Attribution already active');
-      rows.length = 0; gc.length = 0;
+      rows.length = 0; gc.length = 0; droppedRows = 0;
       rowWindow = null; profileWindows = {};
       if (profiles) {
         session = new Session(); session.connect();
@@ -140,7 +142,7 @@ export function createTickAttribution({ functions, context, visionContext, memor
       await new Promise(resolve => setImmediate(resolve));
       captureGc(gcObserver.takeRecords()); gcObserver.disconnect();
       return { endTick: rowWindow.end.tickNumber, rowWindow, profileWindows,
-        rows: [...rows], gc: [...gc], cpuProfile, allocationProfile,
+        rows: [...rows], droppedRows, gc: [...gc], cpuProfile, allocationProfile,
         limits: ['inclusive function timings overlap; do not add nested timings',
           'heap deltas are net live-heap change, not allocated bytes; sampled allocation estimates include collected objects',
           'payload/frame lengths count constructed bytes, not native allocation or peer traffic; external/arrayBuffer snapshots are retained occupancy',

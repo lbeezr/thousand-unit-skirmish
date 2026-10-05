@@ -12,9 +12,10 @@ import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 process.env.RTS_MAP='maps/open-field.json';process.env.RTS_GAME_MODE='pvp';process.env.RTS_PREGAME='0';
 delete process.env.RTS_MATCH_STATE_PATH;
 export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true,parkOrder=null,
-  tracePhysical=false,captureInput,captureFinal,traceActorIds=[],captureActorTrace}={}) {
+  tracePhysical=false,captureInput,captureFinal,traceActorIds=[],captureActorTrace,
+  observePauses=false,pauseActorIds=null}={}) {
   const map=pathingBaselineMap({group:64}),fixture=await createPathingReplayFixture(map,
-    {traceLandSteps:tracePhysical,traceCrowdSteps:tracePhysical,traceActorIds}),r=fixture.replay;
+    {traceLandSteps:tracePhysical,traceCrowdSteps:tracePhysical,traceActorIds,observeMovement:observePauses}),r=fixture.replay;
   try {
     for(const seat of [0,1]) {
       const passive=r.units.filter(u=>u.team===seat&&u.kind==='infantry');
@@ -75,6 +76,8 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
     const inactiveBefore=inactive.map(passiveIntent);
     const input=r.checkpoint();captureInput?.(structuredClone(input));
     const inputSha256=createHash('sha256').update(JSON.stringify(input)).digest('hex');
+    // Selected own actors only. This opt-in tooling never requests rich traces.
+    if(observePauses)r.observeMovement(team,pauseActorIds??[...ids.slice(0,7),worker.id]);
     const actorTrace=[];
     const trace=createHash('sha256');let invalidSteps=0,unreachableGoals=0,maxPathLength=0;
     const capsuleTrace=createHash('sha256'),actorIds=new Set(ids);
@@ -140,6 +143,7 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
     captureFinal?.(r.checkpoint());
     captureActorTrace?.(actorTrace);
     return {team,group:64,sourceSha256:fixture.sourceSha256,inputSha256,ticks:r.tick-startTick,arrived,
+      pauseObservations:observePauses?r.movementObservations():null,
       handoffs:[...handoffs.values()],physical:tracePhysical?{selectedSubsteps,staticContactSteps,pairContactSteps,
         worstPairMargin,capsuleTraceSha256:capsuleTrace.digest('hex'),controlMax,missingControlRecords}:null,
       inactiveActorsPreserved:inactive.length,distinctGoals:new Set(goals).size,requested,goals,invalidSteps,unreachableGoals,maxPathLength,
@@ -154,6 +158,7 @@ if(process.argv[1]===fileURLToPath(import.meta.url)) {
   for(const team of [0,1]) {
     const runs=[];for(let i=0;i<2;i++)runs.push(await runQueuedGateCase({team,
       observe:process.argv.includes('--observe'),returnBuilder:!process.argv.includes('--park-builder'),
+      observePauses:process.argv.includes('--observe-pauses'),
       parkOrder:process.argv.includes('--hold-builder')?'holdPosition':process.argv.includes('--stop-builder')?'stop':null}));
     assert.equal(runs[0].traceSha256,runs[1].traceSha256);
     records.push({team,runs});console.log(JSON.stringify({team,ticks:runs[0].ticks,arrived:runs[0].arrived,distinctGoals:runs[0].distinctGoals,repeatExact:true}));

@@ -69,6 +69,68 @@ export function capturedTickAttribution(rows, mapId) {
       'Collecting raw diagnostics adds polling/serialization overhead; no controlled hardware or causal speedup claim.'] };
 }
 
+// Inclusive diagnostic functions overlap; these are not a budget decomposition.
+export function capturedInnerAttribution(runs, tickRows, mapId) {
+  if (!Array.isArray(runs) || !runs.length) return { status: 'unavailable', reasons: ['no-inner-capture'] };
+  const reasons = new Set(), rows = [], keys = new Set(), gc = [];
+  const identity = row => JSON.stringify([row.workerRun, row.matchId, row.mapId, row.tickNumber]);
+  const native = new Map((tickRows ?? []).map(row => [identity(row), row]));
+  const functions = ['simulateTick', 'rebuildSpatialBuckets', 'getMoveVector', 'spreadInteractingUnits'];
+  for (const run of runs) {
+    if (!Number.isInteger(run.workerRun) || run.workerRun < 1 || run.droppedRows !== 0
+      || !Array.isArray(run.rows) || !Array.isArray(run.gc)
+      || !Number.isFinite(run.rowWindow?.start?.monotonicMs) || !Number.isFinite(run.rowWindow?.end?.monotonicMs)
+      || run.rowWindow.end.monotonicMs < run.rowWindow.start.monotonicMs) {
+      reasons.add('incomplete-inner-capture'); continue;
+    }
+    for (const raw of run.rows) {
+      const row = { ...raw, workerRun: run.workerRun }, key = identity(row);
+      if (keys.has(key)) reasons.add('duplicate-inner-tick-identity');
+      keys.add(key);
+      if (!Number.isFinite(row.startedMs) || !Number.isFinite(row.endedMs)
+        || row.startedMs < run.rowWindow.start.monotonicMs || row.endedMs > run.rowWindow.end.monotonicMs
+        || row.endedMs < row.startedMs || !Number.isFinite(row.netHeapDeltaBytes)
+        || !['rssBytes', 'heapBeforeBytes', 'heapAfterBytes', 'externalBytes', 'arrayBufferBytes'].every(k => Number.isFinite(row[k]) && row[k] >= 0)
+        || !functions.every(name => row[`${name}Calls`] === undefined && row[`${name}Ms`] === undefined
+          || Number.isSafeInteger(row[`${name}Calls`]) && row[`${name}Calls`] > 0
+            && Number.isFinite(row[`${name}Ms`]) && row[`${name}Ms`] >= 0)
+        || row.simulateTickCalls !== 1) reasons.add('invalid-inner-row');
+      const joined = native.get(key);
+      if (joined && (Math.abs(joined.durationMs - row.durationMs) > .0005
+        || joined.overBudget !== row.overBudget || joined.budgetMs !== row.budgetMs
+        || ['cpuMs', ...tickPhases].some(phase => joined[phase] !== row[phase]))) reasons.add('inner-native-tick-mismatch');
+      rows.push(row);
+    }
+    for (const event of run.gc) {
+      if (!Number.isFinite(event.startMs) || !Number.isFinite(event.durationMs) || event.durationMs < 0
+        || event.startMs < run.rowWindow.start.monotonicMs || event.startMs > run.rowWindow.end.monotonicMs) reasons.add('invalid-gc-window');
+      else gc.push({ ...event, workerRun: run.workerRun });
+    }
+  }
+  const outer = capturedTickAttribution(rows, mapId);
+  if (outer.status !== 'valid-observations') reasons.add('invalid-inner-tick-attribution');
+  const measured = rows.filter(row => row.mapId === mapId);
+  const overlapRows = measured.filter(row => gc.some(event => event.workerRun === row.workerRun
+    && event.startMs < row.endedMs && event.startMs + event.durationMs > row.startedMs));
+  return { status: reasons.size ? 'invalid-observations' : 'valid-observations', reasons: [...reasons],
+    ticks: outer, joinedNativeTicks: measured.filter(row => native.has(identity(row))).length,
+    innerOnlyTicks: measured.filter(row => !native.has(identity(row))).length,
+    functions: Object.fromEntries(functions.map(name => {
+      const active = measured.filter(row => row[`${name}Calls`] > 0);
+      return [name, { activeTicks: active.length, calls: active.reduce((n, row) => n + row[`${name}Calls`], 0),
+        activeTickMs: quantiles(active.map(row => row[`${name}Ms`])) }];
+    })),
+    gc: { observedEvents: gc.length, observedDurationMs: gc.reduce((n, event) => n + event.durationMs, 0),
+      overlappingTickIdentities: overlapRows.map(row => ({ workerRun: row.workerRun, matchId: row.matchId, mapId: row.mapId, tickNumber: row.tickNumber })),
+      overlappingOverBudgetTicks: overlapRows.filter(row => row.overBudget).length },
+    netHeapDeltaBytes: measured.length ? { min: Math.min(...measured.map(row => row.netHeapDeltaBytes)), max: Math.max(...measured.map(row => row.netHeapDeltaBytes)) } : null,
+    limits: ['Inclusive function times overlap and do not sum to simulation time.',
+      'GC overlap uses the broader observer span (wrapper entry through diagnostic/memory capture), not only production duration; it is not proof of an overrun cause.',
+      'Net heap change and RSS/external occupancy are not allocated bytes or peak-between-sample measurements.',
+      'Inner-only rows lie outside the independent rolling-health capture; joins preserve worker/match/map/tick identity.',
+      'Diagnostic profiles and wrappers add overhead; no uninstrumented speedup or capacity claim.'] };
+}
+
 export function capturedBudgetEnvelope(samples, planning = []) {
   const timing = samples.map(s => s.health?.tickTiming).filter(Boolean);
   const peak = key => Math.max(0, ...timing.map(t => t[key] ?? 0));
@@ -93,8 +155,10 @@ export function checkCapacityReport(report) {
   const loads = report.loads.map(load => {
     const envelope = capturedBudgetEnvelope(load.samples, load.waves.flatMap(w => w.planning));
     const tickAttribution = capturedTickAttribution(load.tickRows, report.mapId);
-    return { armySize: load.armySize, envelope, tickAttribution, passed: load.passed === true && load.coldRecovery === true
+    const innerAttribution = capturedInnerAttribution(load.attributionRuns, load.tickRows, report.mapId);
+    return { armySize: load.armySize, envelope, tickAttribution, innerAttribution, passed: load.passed === true && load.coldRecovery === true
       && (load.tickRows === undefined || tickAttribution.status === 'valid-observations')
+      && (load.attributionRuns === undefined || innerAttribution.status === 'valid-observations')
       && load.waves.length === 3 && load.waves.every(w => w.observedGameTicksAfterAcceptance >= 300
         && w.planning.length === 2 && w.planning.every(p => p.routeFailures === 0)) && envelope.passed };
   });

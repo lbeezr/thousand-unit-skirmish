@@ -7,13 +7,14 @@ import { createServer } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { capturedBudgetEnvelope, capturedTickAttribution } from './map-capacity-report-check.mjs';
+import { capturedBudgetEnvelope, capturedTickAttribution, capturedInnerAttribution } from './map-capacity-report-check.mjs';
+import { createTickAttributionAdapter } from './tick-attribution-adapter.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
-const options = { map: 'veyrholds-threefold-basin', loads: '24,250,500,1000', seconds: '10', 'rss-stop-mib': '512' };
+const options = { map: 'veyrholds-threefold-basin', loads: '24,250,500,1000', seconds: '10', 'rss-stop-mib': '512', attribution: 'off' };
 for (let i = 2; i < process.argv.length; i += 2) {
   const key = process.argv[i].replace(/^--/, '');
-  assert.ok(['map', 'loads', 'seconds', 'output', 'rss-stop-mib'].includes(key) && process.argv[i + 1], 'Use --map ID --loads CSV --seconds N --output DIR --rss-stop-mib N.');
+  assert.ok(['map', 'loads', 'seconds', 'output', 'rss-stop-mib', 'attribution'].includes(key) && process.argv[i + 1], 'Use --map ID --loads CSV --seconds N --output DIR --rss-stop-mib N --attribution off|on.');
   options[key] = process.argv[i + 1];
 }
 assert.ok(['veyrholds-terraced-vale', 'veyrholds-threefold-basin', 'veyrholds-riven-escarpment', 'veyrholds-crownroads'].includes(options.map));
@@ -21,6 +22,10 @@ const loads = options.loads.split(',').map(Number), seconds = Number(options.sec
 assert.ok(loads.length >= 1 && loads.length <= 5 && new Set(loads).size === loads.length && loads.every(n => [24, 250, 500, 1000, 2000].includes(n)));
 assert.ok(Number.isInteger(seconds) && seconds >= 10 && seconds <= 60);
 assert.ok(Number.isFinite(rssStop) && rssStop >= 128 * 1024 ** 2 && rssStop <= 2048 * 1024 ** 2);
+assert.ok(['off', 'on'].includes(options.attribution));
+const innerAttribution = options.attribution === 'on';
+assert.ok(!innerAttribution || (options.map === 'veyrholds-crownroads' && loads.length === 1 && loads[0] === 24 && seconds === 10),
+  'Inner attribution is bounded to Crownroads, 24 units and ten-second waves');
 const output = options.output ? path.resolve(options.output) : await mkdtemp(path.join(os.tmpdir(), 'rts-map-capacity-report-'));
 await mkdir(output, { recursive: true });
 const temp = await mkdtemp(path.join(os.tmpdir(), 'rts-map-capacity-'));
@@ -31,6 +36,10 @@ const report = { schemaVersion: 1, sourceCommit: execFileSync('git', ['rev-parse
   mapId: map.id, mapSHA256: hash(mapBytes), scriptSHA256: hash(await readFile(fileURLToPath(import.meta.url))),
   reportCheckSHA256: hash(await readFile(new URL('./map-capacity-report-check.mjs', import.meta.url))),
   serverSHA256: hash(await readFile(path.join(ROOT, 'server.mjs'))),
+  attributionMode: options.attribution,
+  attributionSources: innerAttribution ? {
+    adapterSHA256: hash(await readFile(new URL('./tick-attribution-adapter.mjs', import.meta.url))),
+    observerSHA256: hash(await readFile(new URL('./tick-attribution-observer.mjs', import.meta.url))) } : null,
   startedAt: new Date().toISOString(), host: { platform: process.platform, arch: process.arch, cpus: os.cpus().length,
     cpuModel: os.cpus()[0]?.model, memoryBytes: os.totalmem(), loadBefore: os.loadavg(), isolated: false },
   workload: { loads, wavesPerLoad: 3, minimumWallSecondsPerWave: seconds, minimumGameTicksAfterAcceptance: 300, fog: true, opening: '4 Workers per seat plus Infantry; existing selectArmySize diagnostics above 24',
@@ -108,19 +117,35 @@ async function checkGridBoundaries(clients, health) {
 async function runLoad(count) {
   const record = { armySize: count, waves: [], samples: [], passed: false }; report.loads.push(record);
   const tickRows = new Map(); let workerRun = 0;
+  const adapter = innerAttribution ? await createTickAttributionAdapter({ simulation: true }) : null;
+  if (adapter) record.attributionRuns = [];
   const checkpoint = path.join(temp, String(count), 'match.json'), portNumber = await port();
   const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('RTS_')));
   Object.assign(env, { PORT: String(portNumber), RTS_HOST: '127.0.0.1', RTS_MAP: `maps/${map.id}.json`,
     RTS_CUSTOM_MAP_DIRECTORY: path.join(temp, String(count), 'custom'), RTS_MATCH_STATE_PATH: checkpoint,
     RTS_TICK_DIAGNOSTICS: '1', RTS_SEPARATION_DIAGNOSTICS: '1' });
-  let child, clients = [], logs = '';
+  let child, clients = [], logs = '', attributionStart = null;
+  const controlAttribution = async action => {
+    const response = await fetch(`http://127.0.0.1:${portNumber}/__attribution/${action}`, { signal: AbortSignal.timeout(15000) });
+    assert.equal(response.status, 200); return response.json();
+  };
+  const finishAttribution = async () => {
+    if (!attributionStart) return;
+    const observed = await controlAttribution('stop');
+    record.attributionRuns.push({ workerRun, originalSha256: adapter.originalSha256,
+      adapterSha256: adapter.adapterSha256, start: attributionStart, ...observed });
+    attributionStart = null;
+  };
   const launch = async () => {
     workerRun++;
-    child = spawn(process.execPath, ['server.mjs'], { cwd: ROOT, env, stdio: ['ignore', 'pipe', 'pipe'] });
+    child = spawn(process.execPath, [adapter?.filename ?? 'server.mjs'], { cwd: ROOT, env, stdio: ['ignore', 'pipe', 'pipe'] });
     child.stdout.on('data', chunk => { logs += chunk; }); child.stderr.on('data', chunk => { logs += chunk; });
     for (let attempt = 0; attempt < 150; attempt++) {
       if (child.exitCode !== null) throw new Error(`Server exited: ${logs.slice(-2000)}`);
-      try { if ((await health()).ok) return; } catch {} await sleep(100);
+      let ready = false;
+      try { ready = (await health()).ok; } catch {}
+      if (ready) { if (adapter) attributionStart = await controlAttribution('start'); return; }
+      await sleep(100);
     }
     throw new Error('Server readiness timeout');
   };
@@ -254,24 +279,34 @@ async function runLoad(count) {
         overBudgetTickCount: after.health.tickTiming.overBudgetTickCount, skippedSlotDelta: wave.skippedSlotDelta }));
     }
     const tokens = clients.map(c => c.welcome.player.sessionToken), matchId = clients[0].current.matchId;
+    await finishAttribution();
     await Promise.all(clients.map(c => c.close())); clients = []; await stop(child); await launch();
     clients.push(await client(portNumber, 0, tokens[0])); clients.push(await client(portNumber, 1, tokens[1]));
     const recovery = await health();
     assert.equal(recovery.checkpoint.recovered, true); assert.equal(recovery.map, map.id); assert.equal(recovery.armySize, count);
     for (const c of clients) { assert.equal(c.welcome.player.resumed, true); assert.equal(c.current.matchId, matchId); }
     await capture(); record.coldRecovery = true;
+    await finishAttribution();
     record.capturedBudgetEnvelope = capturedBudgetEnvelope(record.samples, record.waves.flatMap(w => w.planning));
     assert.ok(record.capturedBudgetEnvelope.passed, 'All captured windows, including cold recovery, must meet the diagnostic budgets');
     record.tickRows = [...tickRows.values()];
     record.tickAttribution = capturedTickAttribution(record.tickRows, map.id);
     assert.equal(record.tickAttribution.status, 'valid-observations', 'Retained raw ticks must have identified, consistent phase fields');
+    if (adapter) {
+      record.innerAttribution = capturedInnerAttribution(record.attributionRuns, record.tickRows, map.id);
+      assert.equal(record.innerAttribution.status, 'valid-observations', 'Inner rows must retain valid unique identities and bounded capture');
+    }
     console.log(JSON.stringify({ armySize: count, uniqueAttributedTicks: record.tickAttribution.uniqueObservedTicks,
       overBudgetTicks: record.tickAttribution.overBudgetTicks, dominantPhaseCounts: record.tickAttribution.overrunDominantPhaseCounts }));
     record.peakServerRssBytes = Math.max(...record.samples.map(s => s.serverRssBytes ?? 0)); record.passed = true;
   } finally {
     record.tickRows = [...tickRows.values()];
     record.tickAttribution = capturedTickAttribution(record.tickRows, map.id);
-    await Promise.all(clients.map(c => c.close())); await stop(child);
+    try {
+      await finishAttribution();
+      if (adapter) record.innerAttribution = capturedInnerAttribution(record.attributionRuns, record.tickRows, map.id);
+    }
+    finally { await Promise.all(clients.map(c => c.close())); await stop(child); await adapter?.dispose(); }
     await writeFile(path.join(output, `${count}-server.log`), logs);
   }
 }

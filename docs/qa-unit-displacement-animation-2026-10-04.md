@@ -115,7 +115,7 @@ served/deployed identity and actual rendered acceptance remain separate.
 | --- | --- | --- |
 | 1 — current slice; rendered use open | Clip labels conceal seven Spearman idle walk placeholders. Integrate and retain provenance in existing animation capture evidence. | Read-only runtime observation and animation-domain adapter/tests. Both-seat 14 placeholder / 2 exact controls; false provenance rejected; no selector/art changes. Identified deployed/GPU consumer use still requires the existing capable capture owner. |
 | 2 — implemented; review/integration and rendered use tracked in its PR | Pending and seven representative loader failure paths originally produced the same null action observation. The existing animation probe now retains bounded aggregate load state and finite failure provenance, including failure before any capture. | Read-only `observeLoad()` and existing adapter/report only; no roles, URLs, error payloads, identifiers, counts or timestamps. Promise outcomes, warning identity/count, all-or-nothing admission and late sibling controls remain unchanged. Shadow no-overlap confirmation and precise foot-art supported-version-only patch inspection cover the allocated loader boundary. |
-| 3 — pause ambiguity reproduced; hook agreement pending | On both seats, a production crowd wait, Hold and planning-pending state produce identical ordinary unit rows. Select one finite observation in the existing private queued-gate report; do not infer a deadlock from missing motion. | Requested owned actors only, at most eight current-step observations; no paths, targets, neighbors or public/session transport changes. Crowd/core owners must agree the exact replay hook before implementation. Rich native instrumentation and movement policy stay with their owners. |
+| 3 — finite replay observation implemented; exact review/integration tracked in PR464 | On both seats, a production crowd wait, Hold and planning-pending state produce identical ordinary unit rows. Finite observations are consumed in the existing private queued-gate report; do not infer a deadlock from missing motion. | Requested owned actors only, at most eight current-step observations; no paths, targets, neighbors or public/session transport changes. Crowd/core approved the finite replay observer; repair instrumentation remains unchanged. Rich native instrumentation and movement policy stay with their owners. |
 
 ### Pending versus failed loader provenance — 5 October 2026
 
@@ -200,8 +200,10 @@ The smallest current consumer identified is `runQueuedGateCase()` in
 missing controller records and unfinished actors, but no finite pause observation
 for a selected owned actor. The proposed shared boundary is the existing
 `recordReplayCrowdStep` and repair-entry hooks in
-`scripts/pathing-replay-fixture.mjs`. Owner agreement with crowd `01a10933-c2b0`
-and core `01a107ba` is pending; no hook or algorithm has been changed.
+`scripts/pathing-replay-fixture.mjs`. The parent relayed crowd `01a10933-c2b0` and core `01a107ba` approval of
+this boundary at audited `5ec7394e`; both confirmed no additional ownership gate.
+The increment uses the vector hook only; the repair hook and algorithms stay
+unchanged. No repair-attempt or accepted-repair value is invented.
 
 Any implementation should opt in a valid team and at most eight requested owned
 actors before reading their movement fields, retain one current-step observation
@@ -220,3 +222,27 @@ player unit-row fields, public health/session data or browser cause claim, and
 does not expose enemy movement internals even when an enemy actor is visible.
 Source/tool consumption, packaged runtime, identified deployment and actual
 rendered acceptance remain distinct. Art backing N/A.
+
+
+The implemented opt-in `observeMovement` mode configures an explicit team and
+at most eight distinct requested IDs through `replay.observeMovement(team, ids)`.
+`movementObservations()` returns fresh fixed-size rows containing `id`, `holding`,
+`planningPending`, `performingAction`, `routeActive`, and `decision`. Existing
+productive-work receipts supply the optional action; Hold/planning/work/route
+flags remain separate from the last vector observation. Decisions are finite:
+`vector-wait`, `vector-proposal`, `static-proposal-rejected`,
+`no-vector-proposal`, or `unobserved`. They describe an evaluated proposal,
+not an admitted move, accepted repair or deadlock. Identity/generation/order,
+current step and navigation revision qualify the recorded decision. Requests
+and decisions clear on reset/restore; decisions clear before each step.
+
+Finite-only mode skips legacy result cloning and global crowd records, without
+enabling the rich actor trace. The original vector call executes exactly once
+and returns its unchanged result. The existing queued-gate consumer opts in with
+`observePauses` (CLI `--observe-pauses`) and retains at most eight terminal rows
+in its existing report. Its default requests name seven own Infantry and the
+own builder; `pauseActorIds` can select a smaller explicit set. Requests for
+opponents/unknown/dead/replaced actors produce no rows. Original commands,
+Stop priority, simulation, repair, 2700-tick deadlines and arrival assertions
+remain intact. This projection is private source replay evidence, not normal
+browser or deployment acceptance.
