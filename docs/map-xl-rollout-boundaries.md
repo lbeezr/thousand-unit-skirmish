@@ -248,6 +248,9 @@ copies and live route/search retention remain separate. Diagnostic timing and
 Node memory samples do not establish match capacity or comparable performance.
 Ordinary320 admission still waits for the movement-owned live publication/search
 outcome and actual320 cold recovery, playability, performance and rendered proof.
+The source-bound dimension audit follows the extracted Map Studio draft-store
+guard, verifies its client binding before restoration, and hashes that helper;
+the extraction preserves its256 limit.
 
 Then change all relevant 320 dimension consumers together, keeping wall command
 waypoints 256 and other non-geometric quotas unchanged. Admit one canonical
