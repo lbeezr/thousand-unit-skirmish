@@ -15,6 +15,7 @@ import { buildElevationGrid } from '../src/map-utils.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { runCheckpointJsonBudgetAudit } from './checkpoint-json-budget-audit.mjs';
 import { createMapStudioDraftStore } from '../src/authoring/map-studio-draft-store.mjs';
+import { requireRecovery as requireDraftRecovery } from '../src/authoring/map-studio/draft/v1/contract.mjs';
 import { preflightXlCheckpointRoutes, XL_CHECKPOINT_ROUTE_MAX_ENTRIES,
   XL_CHECKPOINT_ROUTE_MAX_SIDE, XL_CHECKPOINT_ROUTE_LEGACY_SIDE,
   XL_CHECKPOINT_ROUTE_SLOT_BYTES } from '../src/server/checkpoint-route-budget.mjs';
@@ -148,6 +149,7 @@ export async function nativeAdmissionProbe(map) {
 export async function runXlBoundaryAudit({ native = false } = {}) {
   const files = ['server.mjs', 'room-supervisor.mjs', 'index.html', 'src/main.js',
     'src/authoring/map-studio-draft-store.mjs',
+    'src/authoring/map-studio/draft/v1/contract.mjs',
     'src/wall-line-planner.mjs', 'src/water-route-graph.mjs', 'src/map-size-policy.mjs',
     'src/match-modes.mjs', 'src/server/vision-coverage-cache.mjs',
     'src/server/checkpoint-route-budget.mjs',
@@ -214,9 +216,13 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
   const draftStore = createMapStudioDraftStore({ getStorage: () => {
     throw new Error('The dimension audit must not access browser storage.');
   } });
+  if (!inputs['src/authoring/map-studio-draft-store.mjs'].includes(
+    "import { requireRecovery as requireDraftRecovery } from './map-studio/draft/v1/contract.mjs';")
+    || !draftStore.requireRecovery.toString().includes('return requireDraftRecovery(draft, sourceMapId);'))
+    throw new Error('Map Studio draft version contract binding moved; update the audit.');
   const limits = {
     server: sourceNumber(source, /definition\.width > (\d+) \|\| definition\.height >/),
-    studioRestore: sourceNumber(draftStore.requireRecovery.toString(), /definition\.width > (\d+)/),
+    studioRestore: sourceNumber(requireDraftRecovery.toString(), /definition\.width > (\d+)/),
     studioImport: sourceNumber(extractFunction(inputs['src/main.js'], 'validateImportedMap'), /definition\.width > (\d+)/),
     studioResize: sourceNumber(extractFunction(inputs['src/main.js'], 'resizeEditorMap'), /width > (\d+)/),
     studioHtml: [...inputs['index.html'].matchAll(/id="studio-(?:width|height)"[^>]*max="(\d+)"/g)].map(m => Number(m[1])),
