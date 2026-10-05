@@ -11,6 +11,18 @@ import { activeWorkIntent, createConstructionWorkIntent, clearWorkIntent } from 
 import { constructionMovementActive, constructionWorkArea, constructionAssignment, unfinishedConstructionSites, validConstructionWorkArea } from '../src/construction-work-intent.mjs';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 import { canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
+import { constructionEndpointContract } from './construction-endpoint-contract.mjs';
+
+for (const team of [0, 1]) for (const direction of ['military-first', 'builder-first']) {
+  test(`seat ${team}: ${direction} retains a parked builder and the blocked exact military point through cold recovery`, async () => {
+    await constructionEndpointContract({ team, direction });
+  });
+}
+for (const team of [0, 1]) for (const parkOrder of ['stop', 'holdPosition']) {
+  test(`seat ${team}: builder ${parkOrder} keeps military exact arrival pending until selected departure`, async () => {
+    await constructionEndpointContract({ team, direction: 'military-first', parkOrder });
+  });
+}
 
 const map = { width: 64, height: 64 };
 const wall = (id, x, z = .5, overrides = {}) => ({ id, x, z, type: 'palisade-wall', team: 0, hp: 300, complete: false, ...overrides });
