@@ -242,3 +242,5 @@ import './registered-spearman-east-attack.test.mjs';
 import './registered-spearman-north-attack.test.mjs';
 
 import './registered-spearman-south-attack.test.mjs';
+
+import './registered-spearman-south-west-attack.test.mjs';

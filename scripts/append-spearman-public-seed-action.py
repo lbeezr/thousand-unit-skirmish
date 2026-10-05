@@ -5,8 +5,8 @@ from PIL import Image
 import copy, hashlib, io, json, subprocess, sys
 from foot_sprite_world_bounds import placed_sprite_bounds
 
-if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in ['north-east', 'east', 'north', 'south']):
-    raise ValueError('Expected a reviewed north-east, east, north or south attack stage')
+if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in ['north-east', 'east', 'north', 'south', 'south-west']):
+    raise ValueError('Expected a reviewed north-east, east, north, south or south-west attack stage')
 direction = sys.argv[1] if len(sys.argv) == 2 else 'north-east'
 root = Path(__file__).resolve().parents[1]
 source = root / f'docs/art-direction/human-roster-v1/extracted/spearman/attack/{direction}-local-v1'
@@ -24,14 +24,17 @@ expected_sequence = [
     {'frameId': f'attack-{direction}-2', 'durationMs': 400},
 ]
 idle = next(f for f in asset['frames'] if f['id'] == f'idle-{direction}-0')
-if (width, height) != (416, 352) or receipt['stateId'] != 'attack' or receipt['sequence'] != expected_sequence:
+canvas = (416, 416) if direction == 'south-west' else (416, 352)
+padding = (80, 80) if direction == 'south-west' else (80, 24)
+if (width, height) != canvas or receipt['stateId'] != 'attack' or receipt['sequence'] != expected_sequence:
     raise ValueError('Reviewed action canvas or one-shot cadence changed')
-if receipt['groundPivotPx'] != {'x': idle['groundPivotPx']['x'] + 80, 'y': idle['groundPivotPx']['y'] + 24}:
+if receipt['groundPivotPx'] != {'x': idle['groundPivotPx']['x'] + padding[0], 'y': idle['groundPivotPx']['y'] + padding[1]}:
     raise ValueError('Reviewed action root changed')
 slots = {'north-east': [[4, 3204], [428, 3204], [852, 3204]],
          'east': [[4, 3588], [428, 3588], [852, 3588]],
          'north': [[1316, 2772], [1316, 3204], [1316, 3588]],
-         'south': [[2052, 4], [2052, 364], [2052, 724]]}
+         'south': [[2052, 4], [2052, 364], [2052, 724]],
+         'south-west': [[2052, 1084], [2052, 1516], [2052, 1948]]}
 if receipt['atlasSlotsPx'] != slots[direction]:
     raise ValueError('Reviewed disjoint action slots changed')
 already = [f for f in asset['frames'] if f['id'] in own_ids]
