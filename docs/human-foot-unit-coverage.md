@@ -33,6 +33,23 @@ N/NE/E/S/SW/W/NW: **21 cells per role, 63 total**. Different-identity source key
 do not close that goal. All 63 original deployed/native cells remain unverified.
 Restoring the default is a source correction, not a live bug or appearance claim.
 
+## Spearman East source increment — 5 October 2026
+
+The [East walk increment](qa-spearman-east-walk-2026-10-05.md) adds four locally
+authored poses from Spearman's own public East seed, preserving all 36 existing
+registered poses, including the NE slice. Source pack 0.5.0 has three genuine
+walk headings (SE/NE/East) and **19 missing Spearman cells**: walk × N/S/SW/W/NW,
+attack and defeat × N/NE/E/S/SW/W/NW. Infantry and Archer retain 21 each, giving
+**61 Human military source gaps**. No paid/provider calls, private inputs,
+mirrors or held art are used. Independent source review found no blocking defect;
+source evidence remains separate from identified delivery and ordinary rendered
+contact, pacing and readability. All 63 original deployed/native cells remain open.
+
+Current ready production backlog: own-seed walking for N/S/SW/W/NW, then attack
+and terminal defeat as separate small increments. The permitted NE/East capture
+remains owned while source production continues. Historical checkpoints below
+retain their dated counts and evidence.
+
 ## Spearman NE source slice — 5 October 2026
 
 The [NE walk slice](qa-spearman-ne-walk-2026-10-05.md) preserves the established
@@ -104,5 +121,5 @@ A release/hash/CPU pass is a milestone. Review, deployed identity and actual in-
 The [bounded Worker/Spearman ordinary capture adapter](qa-worker-spearman-animation-capture-2026-10-04.md)
 owns the next rendered gait/work/Stop acceptance through CI's shared hosted transport.
 It authors zero art frames. Worker source gait is8/8; this NE source slice makes
-Spearman gait2/8, with N/E/S/SW/W/NW explicitly incomplete. The62 military source
+Spearman gait3/8, with N/S/SW/W/NW explicitly incomplete. The61 military source
 action-heading gaps and all identified-build ordinary/deployed acceptance remain open.

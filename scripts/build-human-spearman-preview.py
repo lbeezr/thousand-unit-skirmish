@@ -41,3 +41,6 @@ import subprocess,sys
 subprocess.run([sys.executable,str(root/'scripts/compact-human-atlas.py'),str(out)],check=True)
 if (source/'extracted/spearman/walk/north-east-local-v1/registration.json').exists():
  subprocess.run([sys.executable,str(root/'scripts/append-spearman-ne-walk.py')],check=True)
+
+if (source/'extracted/spearman/walk/east-local-v1/registration.json').exists():
+ subprocess.run([sys.executable,str(root/'scripts/append-spearman-east-walk.py')],check=True)
