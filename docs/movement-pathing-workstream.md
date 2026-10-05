@@ -91,6 +91,7 @@ not clearance acceptance. No positions, HP, routes, vision or algorithms are pat
 | Production rally | Caller diagnostic: pay/build/train, issue Set Rally and trace static body/recovery at the original selected goal. Agree the exact initializer only if a failure is measured. | Cell-only publication is a source gap, not proof of penetration. No duplicate route algorithm or new saved intent marker. |
 | Worker combat | Caller/combat owner: extend existing real Worker repath/unit-target/objective/acquired cases with .18 static observations before allocating hooks. | Existing productive native combat/recovery is not static-circle qualification. Do not alter Worker combat capability/range or recruit economy flow. |
 | Construction/combat stationary interaction and evacuation | Existing core/combat placement owners: real paid obstruction/recovery reproduction through the particular writer, then exact local agreement. | Retained 12 construction probes execute 54 separation steps with zero new static contacts and productive completion. They do not justify a selector patch or universal clearance claim. |
+| Parked construction / exact military endpoints | Caller [eight real-command witnesses and agreed interface](qa-construction-endpoint-contract-2026-10-05.md) verify both order directions, idle/Stop/Hold and separate-module cold recovery. Core owns the bounded endpoint query implementation; caller's next increment consumes only agreed construction access/work-pose/retry seams. | Existing occupied endpoints retain exact intent/queue until independently commanded builder departure. The agreed all-reserved dynamic pending/retry extension retains paid intent, consumes no static-failure attempts and waits for a safe candidate before route repair. Implementation remains open; no overlap, shove, silent goal replacement or crowd/economy duplication. |
 | Defensive return and same-cell combat | Combat owner: keep 24 safe return controls and productive in-range empty-route firing; separately reproduce PR424's both-seat building endpoint stall before any arrival-policy proposal. | A .22 profile exclusion alone is not a defect. PR424's Archer stall is an independently retained endpoint contract, not authority for forced relocation/range/damage changes. |
 | Core retention/search bounds, group steering/body pairs | Core [PR434](https://github.com/lbeezr/thousand-unit-skirmish/pull/434), crowd [PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400) retain their current failures and next actions. | No duplicate Return/flow/quota or 64-unit return-liveness patch. Crowd safety does not close unfinished actors/deadlines. |
 | Naval/wildlife and spawn/restore/scenario placements | Their domain owners: command/endpoint/topology/cold-recovery inventory at the actual adapter, then domain-specific body/placement acceptance. | Cardinal water/hull reservations and Sheep selected tails are intentional. No global shared attack/Sheep flow pruning. |
@@ -925,6 +926,33 @@ reviewed fix. No neighbor shove, endpoint overlap or silent goal replacement is
 an acceptable test fix. CI `01a10378` retains the next fresh full CPU attempt and
 supported served/rendered interface. No private archive access or publication.
 
+### U5 native wall seat-1 diagnosis — 5 October 2026
+
+Crowd owner `01a10933-c2b0` retains the separate
+[native wall diagnosis](qa-native-wall-seat1-2026-10-05.md) at `252abb29`.
+The unchanged public native program completes seat 0 and times out seat 1
+under its original 60-second/all-64 physical-arrival contract. At the last
+checkpoint, 63 unfinished actors are near the central choke: 28 first-leg
+westbound actors and 35 eastbound return actors. No pending planning explains
+the stop. A separate live observer records no lease/contour grants or overflow;
+the existing parked/single-peer recovery cannot cover that moving-only knot.
+A bounded restored-input trace preserves 72 inactive actors and has zero
+contacts across 6,496 selected substeps. This does not qualify native completion.
+
+Both a generalized lease and a current-cell lane variant failed the retained
+choke; the lane variant also regressed the seat-1 gate. Both are retired and
+no runtime correction is claimed. Next crowd scope is a retained source witness
+separating no physically admitted step from priority arbitration discarding a
+safe candidate, followed by a reviewed bounded correction and unchanged
+both-seat/gate/forest/bridge controls. The paid-house final-approach work remains
+open alongside this narrow native slice. Construction `01a10933-e913` and core
+`01a107ba` separately own Worker68 occupying actor120's accepted queued endpoint
+`(18.5, 1.5)`; crowd does not duplicate that access contract or shove the builder.
+Original deadlines/endpoints, Stop priority, shared admissions and standing
+author-owned merge authority remain intact. Source/pack/provider/served/render
+proof stays separate, with the existing CI/capture interface and no private
+archive access/publication or denied capability/auth retries.
+
 ### U5 construction endpoint availability — agreed bounded interface
 
 The [core/caller agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/443#issuecomment-5989678024)
@@ -948,10 +976,11 @@ endpoints, queries, buckets, endpoint visits and deferrals. No route/queue scan,
 actor mutation, saved flag, global registry, planner change or navigation search.
 The snapshot must be rebuilt after another operation or cold recovery.
 
-The agreed construction consumer must retain the paid target/repair flag, remembered sites/area and queue
+The agreed construction consumer must retain the paid target/repair flag,
+remembered sites/area and queue
 when access is occupied or deferred, including initial admission with no safe
 cell. Its extension of existing transient retries must check at most once per
-second, consumes no static-failure attempts and enqueues the existing guarded
+second, consume no static-failure attempts and enqueue the existing guarded
 repair service only after a safe candidate exists. Endpoint release must resume
 work without a navigation revision change. Actual work poses are admitted before
 progress/completion, including completion before approach exhaustion. Stop,
