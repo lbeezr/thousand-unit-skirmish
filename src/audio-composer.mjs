@@ -142,6 +142,7 @@ export function mountAudioComposer(container, {pack, sourceBlobs = {}, onChange}
       return context.decodeAudioData(await blob.arrayBuffer());
     }});
     await context.resume();
+    if (disposed || token !== previewToken) return;
     await player.play(draft);
     if (!disposed && token === previewToken) setStatus('Preview playing.');
   }
@@ -166,7 +167,14 @@ export function mountAudioComposer(container, {pack, sourceBlobs = {}, onChange}
     if (action === 'remove-clip') { getTrack().clips = getTrack().clips.filter(item => item.id !== selectedClipId); selectedClipId = null; updated(); return; }
     if (action === 'stop') { stop(); setStatus('Preview stopped.'); return; }
     if (action === 'save') { save().catch(error => setStatus(error.message,true)); return; }
-    if (action === 'play') { play().catch(error => setStatus(`Preview unavailable: ${error.message}`,true)); return; }
+    if (action === 'play') {
+      const pending = play();
+      const token = previewToken;
+      pending.catch(error => {
+        if (!disposed && token === previewToken) setStatus(`Preview unavailable: ${error.message}`,true);
+      });
+      return;
+    }
     if (action === 'export') {
       setStatus('Rendering WAV…');
       renderCompositionWav(draft, sourceBlobs).then(blob => {
