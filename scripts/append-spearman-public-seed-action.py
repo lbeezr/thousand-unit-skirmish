@@ -5,8 +5,8 @@ from PIL import Image
 import copy, hashlib, io, json, subprocess, sys
 from foot_sprite_world_bounds import placed_sprite_bounds
 
-if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in ['north-east', 'east']):
-    raise ValueError('Expected the reviewed north-east or east attack stage')
+if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in ['north-east', 'east', 'north']):
+    raise ValueError('Expected a reviewed north-east, east or north attack stage')
 direction = sys.argv[1] if len(sys.argv) == 2 else 'north-east'
 root = Path(__file__).resolve().parents[1]
 source = root / f'docs/art-direction/human-roster-v1/extracted/spearman/attack/{direction}-local-v1'
@@ -29,7 +29,8 @@ if (width, height) != (416, 352) or receipt['stateId'] != 'attack' or receipt['s
 if receipt['groundPivotPx'] != {'x': idle['groundPivotPx']['x'] + 80, 'y': idle['groundPivotPx']['y'] + 24}:
     raise ValueError('Reviewed action root changed')
 slots = {'north-east': [[4, 3204], [428, 3204], [852, 3204]],
-         'east': [[4, 3588], [428, 3588], [852, 3588]]}
+         'east': [[4, 3588], [428, 3588], [852, 3588]],
+         'north': [[1316, 2772], [1316, 3204], [1316, 3588]]}
 if receipt['atlasSlotsPx'] != slots[direction]:
     raise ValueError('Reviewed disjoint action slots changed')
 already = [f for f in asset['frames'] if f['id'] in own_ids]
@@ -157,6 +158,14 @@ else:
         page_sha = hashlib.sha256(json.dumps(pack['pages'][0], separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
         if page_sha != receipt['registeredPageMetadataSHA256']:
             raise ValueError('Extended page differs from reviewed metadata receipt')
+    # No-growth stages must validate their final declarations before any write,
+    # just as an extended page does. A valid baseline alone is insufficient.
+    final_mask_sha = hashlib.sha256(mask_bytes).hexdigest() if mask_bytes is not None else sha(out / 'team-accent-mask.png')
+    if final_mask_sha != receipt.get('registeredMaskSHA256', receipt['baselineMaskSHA256']):
+        raise ValueError('Final team mask differs from reviewed registration receipt')
+    final_page_sha = hashlib.sha256(json.dumps(pack['pages'][0], separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+    if final_page_sha != receipt.get('registeredPageMetadataSHA256', receipt['baselinePageMetadataSHA256']):
+        raise ValueError('Final page differs from reviewed registration receipt')
     for index, image in enumerate(images):
         x, y = receipt['atlasSlotsPx'][index]
         if x < 0 or y < 0 or x + width > atlas.width or y + height > atlas.height or atlas.crop((x, y, x + width, y + height)).tobytes() != bytes(width * height * 4):

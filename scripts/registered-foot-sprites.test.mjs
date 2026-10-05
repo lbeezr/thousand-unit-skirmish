@@ -238,3 +238,5 @@ test('a canonically valid shortened attack crop cannot silently remove retained 
 });
 
 import './registered-spearman-east-attack.test.mjs';
+
+import './registered-spearman-north-attack.test.mjs';

@@ -44,6 +44,27 @@ CPU checks and pack admission do not establish actual identified-build playback.
 Capture owner01a10378 retains that test; Spearman art/attack owner01a10469 is
 unchanged. No art/runtime changes or held assets are adopted.
 
+## Spearman North source attack — 5 October 2026
+
+The [North attack increment](qa-spearman-north-attack-2026-10-05.md) adds three
+own-view ready/thrust/recovery keys and reuses the exact idle opening in default
+v1 pack0.13.0,880ms one-shot. All66 earlier frames/pixels and31 other clips,
+body calibration remain exact; rooted weapon bounds conservatively expand.
+Three empty416×352 cells fit
+within the existing2048×3968 page, preserving page allocation and encoded mask.
+The selected corrected source has1,643 body donors plus211 explicitly authored
+hidden-sleeve donors;749 original joint overlaps and13 original cuff transfers
+are counted separately. Every donor is indexed to the same public North seed.
+
+Spearman source walks are8/8; attacksSE/NE/E/N. Exact remaining source cells:
+attack×S/SW/W/NW and defeat×N/NE/E/S/SW/W/NW: **11**. Infantry/Archer retain21
+at inspected bbc8ac54: **53 military source gaps**. All63 original native/deployed
+cells remain unverified. Ranked continuation: own-South attack, remainingSW/W/NW
+attacks, matching terminal defeats, then established Archer coverage. Infantry
+belongs to task01a10d9c. Foot art retains exact-release contact/reach/readability
+acceptance; permitted parent delivery/capture01a10378 supports the identified
+containing game; state01a103d4 retains clocks/selectors.
+
 ## Spearman East source attack — 5 October 2026
 
 The [East attack increment](qa-spearman-east-attack-2026-10-05.md) reuses one exact
