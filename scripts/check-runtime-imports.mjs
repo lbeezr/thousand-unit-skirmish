@@ -76,7 +76,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'building-production-cue', 'building-sprites', 'building-visual-state', 'building-fog-composition',
     'camera-controls', 'captured-building-art', 'environment-art', 'asset-readability', 'catalog-barracks-observation',
     'environment-instance-picking',
-    'environment-plant-assets', 'forest-age-composition', 'forest-composition',
+    'environment-plant-assets', 'forest-age-composition', 'forest-composition', 'forest-lifecycle-atlas',
     'forest-habitat', 'gameplay-presentation', 'garden-vegetation', 'meadow-vegetation',
     'neutral-wildlife-renderer', 'oak-depletion-atlas-runtime',
     'painted-material-atlas', 'painted-material-atlas-runtime', 'palisade-gate-visual', 'palisade-construction-ground',
