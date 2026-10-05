@@ -7,13 +7,27 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { normalizedDirection, spriteActionClip, spriteActionProvenance, spriteGroundDepthBias } from '../src/unit-sprite-runtime.mjs';
 import { decodeRgba8 } from './sprite-pixel-bounds.mjs';
-import { decodeRegisteredUnitFrames, unitArtDirections } from './unit-art-production-contract.mjs';
+import { analyzeUnitArtCoverage, decodeRegisteredUnitFrames, unitArtDirections } from './unit-art-production-contract.mjs';
 import { validateCaptureContext } from './renderer-capture-context.mjs';
 
 export const id = 'worker-animations';
 export const contextVersion = 1;
 export const mapId = 'veyrholds-terraced-vale';
 export const directories = Object.freeze({human:'cast-human-sprite-v3',spearman:'spearman-sprite-v1'});
+// Source gaps come from the exact served/pinned manifest and decoded pixels.
+// Adding one faithful heading must not leave the capture claiming seven gaps.
+export function missingWalkDirections({pack,cells}) {
+  const coverage=analyzeUnitArtCoverage(pack.assets[0],cells,['idle','walk']);
+  assert.deepEqual(coverage.errors,[],'registered direction source must be valid');
+  return coverage.rows.filter(r=>r.state==='walk'&&r.status!=='authored').map(r=>r.direction);
+}
+export function validateHeadingCoverage({rows,expectedMissingWalkDirections}) {
+  const total=unitArtDirections.length*2;
+  assert.equal(rows.length,total);
+  assert.equal(rows.filter(r=>r.status==='animated').length,total-expectedMissingWalkDirections.length);
+  assert.deepEqual(rows.filter(r=>r.status==='incomplete-art-correct-facing')
+    .map(r=>[r.kind,r.heading]),expectedMissingWalkDirections.map(heading=>['spearman',heading]));
+}
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const pause = ms => new Promise(resolve => setTimeout(resolve,ms));
 
@@ -187,7 +201,7 @@ export function validateHeadingSamples(samples,{unitId,heading,kind,pack,cells})
   assert.ok(moving.every(s=>s.unit.generation===first.unit.generation),'unit generation must remain stable');
   assert.ok(moving.every(s=>s.unit.clockStartedAt===first.unit.clockStartedAt),'continuous movement cannot restart its clock');
   const rgba=new Set(moving.map(s=>s.identity.rgbaSha256)),alpha=new Set(moving.map(s=>s.identity.alphaSha256));
-  const expectedGap=kind==='spearman'&&heading!=='south-east';
+  const expectedGap=kind==='spearman'&&missingWalkDirections({pack,cells}).includes(heading);
   if(expectedGap) {
     assert.ok(moving.every(s=>s.identity.frameId.startsWith(`idle-${heading}-`)),'missing Spearman gait must retain the correct-facing idle');
     assert.equal(rgba.size,1,'a retained idle fallback is not newly animated coverage');
@@ -272,8 +286,8 @@ export async function run(context) {
     normalEntry:'Create Room / ordinary Tiny Skirmish / two connected seats',
     testedCivilization:'human',testedTeam:0,peerCivilization:'boughward',
     defaultHumanRoles:{worker:'human/v3',spearman:'spearman/v1'},production:[],rows:[],captures:[],issues:[],
-    expectedMissingWalkDirections:unitArtDirections.filter(d=>d!=='south-east'),
-    newlyAuthoredFrames:0,deployedRevision:null,stagingAcceptance:false,unitLoad:null};
+    expectedMissingWalkDirections:[],
+    captureAuthoredFrames:0,deployedRevision:null,stagingAcceptance:false,unitLoad:null};
   const checks=[],check=(id,passed)=>checks.push({id,passed:Boolean(passed)});
   let phase='ordinary-entry',peer;
   async function checkpoint(label,unitId,options={}) {
@@ -298,6 +312,7 @@ export async function run(context) {
   try {
     const main=await readFile(new URL('../src/main.js',import.meta.url),'utf8');
     const loaded=await loadUnitInputs(origin),inputs=loaded.inputs;report.assets=loaded.assets;
+    report.expectedMissingWalkDirections=missingWalkDirections(inputs.spearman);
     await preparePage(host,main,origin);await host.cdp.call('Page.navigate',{url:`${origin}/`});
     await host.wait("document.querySelector('#menu-create-room')&&!document.querySelector('#menu-create-room').disabled",'ordinary Create Room');
     await host.cdp.evaluate("document.querySelector('#menu-create-room').click()");
@@ -372,7 +387,7 @@ export async function run(context) {
           await order(host,{type:'move',ids:[actor.id],...goal});
           await host.wait(`(()=>{const s=window.__rtsUnitAnimation.samples.filter(s=>s.units.some(u=>u.id===${actor.id}&&u.walking&&u.clockState==='walk'&&Math.abs(Math.atan2(Math.sin(u.angle-${bearing}),Math.cos(u.angle-${bearing})))<.2));return s.length>=3&&s.at(-1).time-s[0].time>=800;})()`,'settled actual gait interval',12000);
           const firstWalk=await checkpoint(`${phase}-walk-1`,actor.id,{state:'walk'});
-          const expectedGap=actor.kind==='spearman'&&heading!=='south-east';
+          const expectedGap=actor.kind==='spearman'&&report.expectedMissingWalkDirections.includes(heading);
           const walking=await checkpoint(`${phase}-walk-2`,actor.id,{state:'walk',minTime:firstWalk.time+200,
             ...(expectedGap?{}:{notUv:firstWalk.units[0].uv})});
           assert.ok(walking.units[0].walking,'Stop must interrupt actual travel');
@@ -398,8 +413,7 @@ export async function run(context) {
         }
       }
     }
-    assert.equal(report.rows.length,16);assert.equal(report.rows.filter(r=>r.status==='animated').length,9);
-    assert.equal(report.rows.filter(r=>r.status==='incomplete-art-correct-facing').length,7);
+    validateHeadingCoverage(report);
     assert.deepEqual(await host.cdp.evaluate('window.__rtsUnitAnimation.errors'),[]);
     report.status=report.issues.length?'failed':'blocked';
   } catch(error) {
