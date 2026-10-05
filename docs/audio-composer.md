@@ -8,6 +8,16 @@ Each clip starts on a beat, has a beat length and a source offset in seconds. Th
 
 The saved composition contains references and edit metadata only. A WAV export is a rendered copy; the original recording bytes are not modified. Portable backup and player distribution are handled by the audio library pack workflow. WAV export is limited to five minutes to bound browser memory use. The first version has no piano roll, note sampler, waveform editing or automatic tempo matching.
 
+WAV export keeps native recording read failures distinct from decode failures.
+Missing, inaccessible or unreadable Blob failures display a safe read/retry
+message; native decode `EncodingError` retains the existing recording-specific
+message. Each keeps its original exception as `cause`, without displaying native
+details. Unexpected faults pass through unchanged. A failed read never invokes
+the decoder; either failure prevents offline rendering. Retrying uses a fresh
+offline context and leaves source Blobs and saved compositions intact.
+`node --test scripts/audio-composer-wav.test.mjs` covers these contracts with
+injected offline audio failures and mounted-editor status checks.
+
 Stop, editing, selecting a composition, another Play attempt and disposal cancel
 pending preview startup, including the wait for the browser audio context to
 resume. A cancelled attempt cannot schedule clips or replace a newer status
@@ -15,5 +25,15 @@ with a late failure. Current failures keep their existing messages and permit
 another Play attempt. `node --test scripts/audio-composer-preview.test.mjs`
 checks these controls through the mounted editor with deferred audio promises;
 it does not establish native browser playback.
+
+An export belongs to the composition state and filename that started it. Editing,
+switching or creating a composition, Stop, Save, Play and a newer export discard
+the prior export's eventual download/status publication. Browser offline work
+already underway can finish, but obsolete results allocate no download URL and
+cannot replace the current status. An active export retains normal WAV output,
+errors and URL revocation; another export can retry the current draft. Selecting
+a track or clip without editing does not cancel export. Mounted-editor delayed
+completion controls run in `scripts/audio-composer-export-lifecycle.test.mjs`;
+native browser rendering and actual download acceptance remain separate.
 
 Run `node scripts/audio-composer-scenario.mjs` for timing, validation, two-track save/reopen and WAV scheduling checks. The browser fixture at `scripts/audio-composer-browser.html` loads two generated quarter-second WAVs. On 27 September 2026, a browser pass created two tracks, looped the first source, placed the second source at beat four, saved and reopened the composition, then rendered a four-second stereo WAV. Preview uses the runtime player after that module lands in the integrated tree.

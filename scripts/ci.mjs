@@ -54,6 +54,7 @@ run(['node_modules/typescript/bin/tsc', '--project', 'tsconfig.check-node.json',
 run(['--test', 'scripts/check-node-types.test.mjs'], 'Node framing contract negative cases and ambient isolation');
 run(['--test', 'scripts/resource-visual-state.test.mjs'], 'Resource stage membership and legacy transitions');
 run(['--test', 'scripts/construction-ground-composition.test.mjs'], 'Construction ground painter order and terrain contact');
+run(['--test', 'scripts/building-fog-composition.test.mjs'], 'Owned building fog composition preserves disclosure and terrain fog');
 run(['--test', 'scripts/palisade-construction-ground.test.mjs'], 'Connected owned palisade construction ground and lifecycle');
 run(['--test', 'scripts/renderer-site-composition-scenario.test.mjs'], 'Owned site capture cannot pass metadata as visual acceptance');
 run(['scripts/site-composition-scene-scenario.mjs'], 'Real paid both-seat site composition scene preparation');
@@ -95,6 +96,8 @@ run(['--experimental-test-coverage', '--test-coverage-include=src/client/audio/a
   '--test', 'scripts/audio-shipped-response.test.mjs'], 'Shipped audio response coverage floor (100%)');
 run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio import provenance');
 run(['--test', 'scripts/audio-composer-preview.test.mjs'], 'Audio composer preview resume cancellation and retry');
+run(['--test', 'scripts/audio-composer-wav.test.mjs'], 'Audio composer WAV read/decode diagnostics and retry');
+run(['--test', 'scripts/audio-composer-export-lifecycle.test.mjs'], 'Audio composer export completion ownership and retry');
 run(['scripts/audio-shipped-serving-scenario.mjs'], 'Authoritative shipped audio serving');
 run(['scripts/audio-wall-order-scenario.mjs'], 'Applied wall-line audio acknowledgement');
 run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measurement integrity');

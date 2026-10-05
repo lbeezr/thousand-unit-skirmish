@@ -17,10 +17,66 @@ the current write scope. The shipped-audio reader already has its own owner.
 
 | Rank/status | Reproduction and outcome | Write boundary | Next action/dependency | Acceptance owner |
 | --- | --- | --- | --- | --- |
-| 1 — reproduced, source fix under review | Audio Composer Stop during pending context resume still scheduled one source; a late rejection replaced the stopped status. Reproduced at `b5b4dd49`. | Composer preview startup, mounted-editor tests, CI registration and composer guide | Review the exact head, integrate and verify packaged source. Native/deployed preview cancellation requires an identified runtime and available browser. | Error-handling owner; coordinated release owner retains deployment. |
+| 1 — reproduced, source fix under review | Pending export of First mix downloaded as Second mix after selection/Stop, replacing the stopped status; late failure also replaced it. Reproduced at `2b4a5246`. | Mounted composer export completion, delayed lifecycle tests, CI and owning guides | Independent exact-head review, merge and clean package/serving proof. Native/deployed download remains open. | Error-handling owner; coordinated release owner retains deployment. |
+| 2 — source integrated, native acceptance blocked | [PR #455](https://github.com/lbeezr/thousand-unit-skirmish/pull/455) preserves WAV read/decode causes and unexpected fault identity. Merge `55860818ca95c41c454fb0ff9df05ac177464192`; independent review and fresh-source/package/serving checks pass. | No additional read/decode source edit justified | Observe native export failure/repair/retry on an identified release in a working provider browser. | Error-handling owner; coordinated release owner retains deployment. |
+| 2 — source integrated, native acceptance blocked | [PR #450](https://github.com/lbeezr/thousand-unit-skirmish/pull/450) cancels pending preview resume and obsolete status updates. Merge `70289cacc33065182e0c9a4ab7f36251e6178c07`; independent review found no blockers. Nine regressions, composer/player/library checks and clean package/serving pass. | No additional preview source edit is justified | Observe preview Stop/retry on an identified release in a working provider browser sandbox. Head `19e581cd` probe was blocked with sandbox/storage failures, zero frames/screenshots; do not retry unchanged capability. | Error-handling owner; coordinated release owner retains deployment. |
 | Historical — integration tracked | [PR #190](https://github.com/lbeezr/thousand-unit-skirmish/pull/190) fixes missing-parent raw stacks and malformed JSON excerpts in visual-pack input loading. Real invalid/valid CLI, repair/retry, programmer-fault and unchanged symlink checks pass. | Validator, existing visual-pack path-safety scenario, this note | The linked PR retains exact reviewed head, merge and fresh-main tool acceptance. | Error-handling owner; tooling only, no production deployment. |
 | 2 — native acceptance blocked | Audio open and import source fixes have merged in PRs #166 and #172. The actual browser launch failed with `sandbox-unavailable`; no deployed revision has been identified for native Audio Studio retry/import observation. | No further source edit is justified by this blocker. | Parent identifies the coordinated runtime release; resume normal/blocked-open/import retry observation in a provider runtime with a working browser sandbox. | Parent owns coordinated release; error-handling owner retains native acceptance in the linked audio PRs below. |
-| 3 — next bounded audit, unconfirmed | Check WAV export's combined Blob read/decode catch for lost causes and programmer faults. | Read-only audit of `renderCompositionWav`; no edits reserved | Reproduce with actual export API and verify current ownership before proposing any change. Map import/validators remain with architecture; shipped-audio reader remains outside this lane. | Error-handling owner |
+| 3 — next bounded audit, unconfirmed | Check asynchronous Save completion after editing or selecting another composition while persistence is pending. | Read-only mounted-editor Save audit; no edits reserved | Reproduce lost edits or stale status before proposing any change and verify persistence ownership. Map import/validators remain with architecture; shipped-audio reader remains outside this lane. | Error-handling owner |
+
+### Delayed export completion audit — 5 October 2026
+
+Fresh main `2b4a5246b83ad9faecbaefa7bb467f75e9625245` had no composer
+changes after PR #455. Open PR inspection showed architecture-owned #451 and
+held art #25/#230/#241; none overlaps export. Through the mounted production
+editor, a delayed first-composition render followed by selection of the second
+composition and Stop downloaded `Second-mix.wav` from the first render and
+replaced “Preview stopped” with “WAV exported.” A separate delayed rejection
+replaced the stopped status. No native browser/download is claimed by these
+instrumented DOM/audio observations.
+
+Each export now owns its initiating filename and completion identity. Existing
+edit/selection/new/Stop/Play paths, Save, and a newer export discard obsolete
+publication. Invalid edits also invalidate completion before validation fails.
+No offline rendering abort mechanism is added; results can settle without
+allocating download URLs or cleanup timers. Current errors keep their messages
+and original error/cause objects; normal download publication and its 60-second
+URL revocation remain. Mere track/clip selection does not cancel an export.
+
+All 17 delayed lifecycle controls pass; unchanged baseline fails 13 and passes
+four positive controls. Both settlement orders, successful/failed old results,
+normal output/name/duration/cleanup, edit and composition retries, Stop,
+invalid-edit error status, pending Save, New, Play and disposal are covered.
+Preview, WAV cause/identity, library and existing scheduling checks remain green.
+Art backing: N/A, existing controls/status treatment retained. Native rendering,
+downloads and deployment identity remain open under the earlier browser block;
+no browser or denied CLI metadata route was retried. Exact review and source,
+package and serving identities belong in the owned PR.
+
+### WAV export audit — 5 October 2026
+
+Local and remote main matched `70289cacc33065182e0c9a4ab7f36251e6178c07`.
+Open PRs #451/#452/#453 concern authoring format, animation diagnostics and
+construction fixtures; none overlaps composer export. Reproduction through the
+actual export API with injected native failures proved that `EncodingError` and
+Blob `NotReadableError` lost their causes; read failure received a decode message,
+and decoder `TypeError` lost identity behind the same message.
+The 14 focused controls fail 13 cases on unchanged baseline; all 14 pass with
+the fix. Existing WAV scheduling passes on both revisions, and preview/library
+checks remain green.
+
+Split the existing read/decode catch. Only native Blob `NotFoundError`,
+`NotReadableError` and `SecurityError` get a safe read/retry message with cause.
+Only native decode `EncodingError` keeps the existing decode message with cause.
+Unexpected exceptions, including name-spoofed ordinary Errors, pass through
+unchanged. These classifications follow the [File API read failure reasons](https://w3c.github.io/FileAPI/#errorsAndExceptions)
+and [Web Audio decode algorithm](https://webaudio.github.io/web-audio-api/#dom-baseaudiocontext-decodeaudiodata).
+No offline rendering starts after either failure; retry creates a new context,
+preserves source bytes and matches a valid WAV. Mounted-editor status checks
+retain private native details in the cause only. Art backing: N/A, existing
+status treatment retained. This is CPU/API evidence, not native decoding,
+playback, downloads, rendered or deployed acceptance. Existing CLI metadata
+denials and browser capability blockers are retained without retry.
 
 ### Composer preview audit — 5 October 2026
 
