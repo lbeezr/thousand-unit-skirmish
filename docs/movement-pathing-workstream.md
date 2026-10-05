@@ -1056,6 +1056,8 @@ approach/yield work and original arrival assertions/deadlines stay intact.
 
 ### U5 next queued leg and active construction parking — 5 October 2026
 
+The [default construction consumer](qa-construction-next-leg-adoption-2026-10-05.md) now retains last-site completion/egress intent, selects current/next-clear final parking through the existing planner, and registers the actual queued-first wall regression plus both-seat cold/replacement journeys. Productive work remains independent; core helpers and crowd steering retain their ownership. Exact release/served evidence belongs in its PR; rendered acceptance remains open.
+
 The construction caller measured Worker 68 parked at `(18.5,1.5)` on tick 1571,
 631 ticks before actor 120's accepted queued return became current on tick 2202.
 The current-only query correctly admitted that future point before activation;

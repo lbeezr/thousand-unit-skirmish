@@ -76,7 +76,7 @@ import { WORKER_PERFORMING_ACTION_VERSION, createWorkerPerformingActions } from 
 import { preparePaidWallLine } from './src/wall-construction-draft.mjs';
 import { activeWallBuildOrder } from './src/wall-build-order.mjs';
 import { constructionMovementActive, constructionWorkArea, constructionAssignment, unfinishedConstructionSites, validConstructionWorkArea } from './src/construction-work-intent.mjs';
-import { createOrdinaryMilitaryEndpointAvailability } from './src/simulation/movement/military-endpoint-availability.mjs';
+import { createOrdinaryMilitaryEndpointAvailability, createNextQueuedMilitaryEndpointClaims, decideActiveConstructionParking } from './src/simulation/movement/military-endpoint-availability.mjs';
 import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition } from './src/palisade-gate.mjs';
 import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoint, activeMoveGoalPoint, validMoveGoalPoint, unitRoutePathCost,
@@ -6673,6 +6673,58 @@ function constructionPoseAvailable(unit, position, endpoints) {
     && endpoints.check({ team: unit.team, position, radius }).status === 'available';
 }
 
+// Completed selected work remains the durable egress intent. The existing
+// planner and physical executor own every movement write; claims grant none.
+const constructionParkingRetries = new WeakMap();
+function finishActiveConstructionParking(unit, building, getEndpoints, nextStatus) {
+  if (!constructionMovementActive(unit)) return false;
+  const intent = palisadeConstructionIntent(unit);
+  const continuesWork = intent && unfinishedConstructionSites(intent, unit.team, buildingsById).length > 0;
+  if (continuesWork) {
+    if (!constructionPoseAvailable(unit, unit, getEndpoints())) return false;
+    unit.buildingTargetId = null;
+    return true; // Another paid site already owns continuation; this is not final parking.
+  }
+  const endpoints = getEndpoints();
+  const statusAt = position => canTraverseStaticBodySegment(position, position,
+    LAND_CLEARANCE_PROFILE.radiusByKind.worker, MAP_WIDTH, MAP_HEIGHT, isWalkable)
+    ? endpoints.check({ team: unit.team, position, radius: LAND_CLEARANCE_PROFILE.radiusByKind.worker }).status
+    : 'blocked';
+  const parkingAt = position => decideActiveConstructionParking({ activeConstruction: true,
+    currentStatus: statusAt(position), nextStatus: nextStatus(unit, position) });
+  const activeRoute = unit.movePlanningPending || unit.pathIndex < unit.path.length;
+  if (parkingAt(unit) === 'park' && !activeRoute) {
+    unit.buildingTargetId = null;
+    constructionParkingRetries.delete(unit);
+    return true;
+  }
+  // Continue an already accepted own approach, retaining its construction body
+  // until it settles. No future claim vetoes traversal or productive work.
+  if (activeRoute && unit.moveGoalCell >= 0 && parkingAt(cellToWorld(unit.moveGoalCell)) === 'park') return false;
+  let retry = constructionParkingRetries.get(unit);
+  if (!retry || retry.siteId !== building.id || retry.epoch !== movePlanningEpoch
+    || retry.generation !== unit.generation || retry.revision !== unit.orderRevision
+    || retry.navigationRevision !== navigationRevision) {
+    retry = { siteId: building.id, epoch: movePlanningEpoch, generation: unit.generation,
+      revision: unit.orderRevision, navigationRevision, nextTick: tickNumber };
+    constructionParkingRetries.set(unit, retry);
+  }
+  if (tickNumber < retry.nextTick) return false;
+  retry.nextTick = tickNumber + TICK_RATE;
+  const start = nearestOpenCell(worldToCell(unit.x, unit.z)), component = walkableComponents[start];
+  // Reuse the existing radius-eight selector and shared route publication.
+  // Future-clear endpoints are preferences for final parking only. If none
+  // exists, keep the completed target and retry, without false planning state.
+  const destination = findAvailableCellNear(start, component, {
+    has: cell => parkingAt(cellToWorld(cell)) !== 'park',
+  });
+  if (destination >= 0) {
+    enqueueRouteRepairs([{ unit, destination }], { mode: 'construction-access', orderLabel: 'CONSTRUCTION EGRESS' });
+    retry.revision = unit.orderRevision;
+  }
+  return false;
+}
+
 function currentConstructionAccessRetry(unit, building) {
   const retry = palisadeConstructionRetries.get(unit);
   return retry?.accessBlocked && retry.siteId === building?.id && retry.epoch === movePlanningEpoch
@@ -6745,6 +6797,10 @@ function updateWallBuildOrders(getEndpoints = constructionEndpointSnapshotGetter
       if (plot?.complete && plot.team === unit.team && unit.buildingTargetId === plot.id) continue;
     }
     const sites = unfinishedConstructionSites(intent, unit.team, buildingsById);
+    const completedTarget = buildingsById.get(unit.buildingTargetId);
+    if (!sites.length && completedTarget?.complete && constructionMovementActive(unit)) {
+      continue; // Preserve the last paid site/area through active egress and cold recovery.
+    }
     if (sites.length !== intent.siteIds.length) { intent.siteIds = sites.map(site => site.id); dirty = true; }
     if (!sites.length) {
       clearWorkIntent(unit); unit.wallBuildOrder = null; palisadeConstructionRetries.delete(unit); dirty = true;
@@ -6797,58 +6853,71 @@ function updateWallBuildOrders(getEndpoints = constructionEndpointSnapshotGetter
 function updateBuildingAndProduction() {
   const getEndpoints = constructionEndpointSnapshotGetter();
   updateWallBuildOrders(getEndpoints);
-  for (const unit of units) {
-    if (unit.hp <= 0 || !unitHasCapability(unit, unit.repairing ? 'repair' : 'build') || unit.buildingTargetId === null) continue;
-    const building = buildingsById.get(unit.buildingTargetId);
-    if (!building || (unit.repairing && !building.complete)) {
-      unit.buildingTargetId = null; unit.repairing = false;
-      continue;
-    }
-    updateConstructionAccess(unit, building, getEndpoints);
-    if (building.complete && !unit.repairing) {
-      // A cooperative completion must not park another active builder inside
-      // an accepted endpoint. Finish its own safe work approach first.
-      if (constructionPoseAvailable(unit, unit, getEndpoints())) {
-        unit.buildingTargetId = null; finishFarmReplantHarvest(unit, building);
+  const scope = Object.freeze({ tick: tickNumber, navigationRevision, epoch: movePlanningEpoch });
+  let next;
+  const nextStatus = (unit, position) => {
+    next ||= createNextQueuedMilitaryEndpointClaims({ units, width: MAP_WIDTH, height: MAP_HEIGHT,
+      maxUnits: MAX_UNITS, maxQueuedWaypoints: MAX_QUEUED_WAYPOINTS, isWalkable, scope });
+    return next.check({ scope, team: unit.team, position, radius: LAND_CLEARANCE_PROFILE.radiusByKind.worker }).status;
+  };
+  try {
+    for (const unit of units) {
+      if (unit.hp <= 0 || !unitHasCapability(unit, unit.repairing ? 'repair' : 'build') || unit.buildingTargetId === null) continue;
+      const building = buildingsById.get(unit.buildingTargetId);
+      if (!building || (unit.repairing && !building.complete)) {
+        unit.buildingTargetId = null; unit.repairing = false;
+        continue;
       }
-      continue;
-    }
-    const dx = Math.max(0, Math.abs(unit.x - building.x) - BUILDING_DEFINITIONS[building.type].footprint / 2);
-    const dz = Math.max(0, Math.abs(unit.z - building.z) - BUILDING_DEFINITIONS[building.type].footprint / 2);
-    if (dx * dx + dz * dz > BUILDER_INTERACTION_RANGE * BUILDER_INTERACTION_RANGE) continue;
-    if (!constructionPoseAvailable(unit, unit, getEndpoints())) continue;
-    if (unit.repairing) {
-      const repair = buildingRepairStep(building, teamWood[unit.team], STEP_SECONDS);
-      if (repair.hp > 0) {
-        const previousHp = building.hp;
-        building.hp += repair.hp;
-        teamWood[unit.team] = Math.max(0, teamWood[unit.team] - repair.wood);
-        if (building.hp > previousHp) workerPerformingActions.record(unit, 'repair', building.id);
-        dirty = true;
-      }
-      if (building.hp >= BUILDING_DEFINITIONS[building.type].maxHp - 1e-9) {
-        building.hp = BUILDING_DEFINITIONS[building.type].maxHp; unit.buildingTargetId = null; unit.repairing = false;
-      }
-      continue;
-    }
-    const rules = buildingRulesFor(building.type);
-    const previousProgress = building.progress;
-    building.progress = Math.min(1, building.progress + STEP_SECONDS / rules.buildSeconds);
-    if (building.progress > previousProgress) workerPerformingActions.record(unit, 'build', building.id);
-    dirty = true;
-    if (building.progress >= 1) {
-      building.complete = true;
-      if (building.type === 'farm') building.harvestStock = BUILDING_DEFINITIONS.farm.harvest.stock;
-      for (const builder of units) {
-        if (builder.buildingTargetId === building.id && constructionPoseAvailable(builder, builder, getEndpoints())) {
-          builder.buildingTargetId = null;
-          finishFarmReplantHarvest(builder, building);
+      const fullRepair = unit.repairing && building.hp >= BUILDING_DEFINITIONS[building.type].maxHp - 1e-9;
+      if (building.complete && (!unit.repairing || fullRepair)) {
+        // Completion egress can settle outside productive reach. Do not send a
+        // finished repair back to access or gate its cleanup on work admission.
+        if (fullRepair) building.hp = BUILDING_DEFINITIONS[building.type].maxHp;
+        if (finishActiveConstructionParking(unit, building, getEndpoints, nextStatus)) {
+          unit.repairing = false;
+          finishFarmReplantHarvest(unit, building);
         }
+        continue;
       }
-      broadcastGameplayNotice(building.team, building.x, building.z,
-        `${rules.label} COMPLETE${rules.trainLabel ? ` · TRAIN ${rules.trainLabel}` : ''}`);
+      updateConstructionAccess(unit, building, getEndpoints);
+      const dx = Math.max(0, Math.abs(unit.x - building.x) - BUILDING_DEFINITIONS[building.type].footprint / 2);
+      const dz = Math.max(0, Math.abs(unit.z - building.z) - BUILDING_DEFINITIONS[building.type].footprint / 2);
+      if (dx * dx + dz * dz > BUILDER_INTERACTION_RANGE * BUILDER_INTERACTION_RANGE) continue;
+      if (!constructionPoseAvailable(unit, unit, getEndpoints())) continue;
+      if (unit.repairing) {
+        const repair = buildingRepairStep(building, teamWood[unit.team], STEP_SECONDS);
+        if (repair.hp > 0) {
+          const previousHp = building.hp;
+          building.hp += repair.hp;
+          teamWood[unit.team] = Math.max(0, teamWood[unit.team] - repair.wood);
+          if (building.hp > previousHp) workerPerformingActions.record(unit, 'repair', building.id);
+          dirty = true;
+        }
+        if (building.hp >= BUILDING_DEFINITIONS[building.type].maxHp - 1e-9) {
+          building.hp = BUILDING_DEFINITIONS[building.type].maxHp;
+          if (finishActiveConstructionParking(unit, building, getEndpoints, nextStatus)) unit.repairing = false;
+        }
+        continue;
+      }
+      const rules = buildingRulesFor(building.type);
+      const previousProgress = building.progress;
+      building.progress = Math.min(1, building.progress + STEP_SECONDS / rules.buildSeconds);
+      if (building.progress > previousProgress) workerPerformingActions.record(unit, 'build', building.id);
+      dirty = true;
+      if (building.progress >= 1) {
+        building.complete = true;
+        if (building.type === 'farm') building.harvestStock = BUILDING_DEFINITIONS.farm.harvest.stock;
+        for (const builder of units) {
+          if (builder.buildingTargetId === building.id && finishActiveConstructionParking(builder, building, getEndpoints, nextStatus)) {
+            finishFarmReplantHarvest(builder, building);
+          }
+        }
+        broadcastGameplayNotice(building.team, building.x, building.z,
+          `${rules.label} COMPLETE${rules.trainLabel ? ` · TRAIN ${rules.trainLabel}` : ''}`);
+      }
     }
-  }
+
+  } finally { next?.close(); }
 
   for (const building of buildings) {
     if (!building.complete || building.queue <= 0) continue;
