@@ -1,0 +1,223 @@
+{
+  "source": "172c53f3669b3564503cdbdfae2c83637517d235",
+  "cases": [
+    {
+      "name": "tiny-authored-20260925-0",
+      "source": {
+        "revision": "172c53f3669b3564503cdbdfae2c83637517d235",
+        "dirty": false
+      },
+      "seeds": [
+        20260925,
+        0
+      ],
+      "nativeIdentity": {
+        "matchModeId": "authored",
+        "matchModeVersion": 1
+      },
+      "tick": 108000,
+      "winner": -1,
+      "authorityLiving": [
+        {
+          "team": 0,
+          "unitsByKind": {},
+          "buildings": [
+            {
+              "id": 2,
+              "type": "barracks",
+              "hp": 696.0000000000216,
+              "complete": true,
+              "x": -63.5,
+              "z": 6.5
+            }
+          ]
+        },
+        {
+          "team": 1,
+          "unitsByKind": {
+            "worker": 4,
+            "scout": 1,
+            "rider": 1,
+            "infantry": 10
+          },
+          "buildings": [
+            {
+              "id": 1,
+              "type": "barracks",
+              "hp": 1800,
+              "complete": true,
+              "x": 50.5,
+              "z": 0.5
+            },
+            {
+              "id": 3,
+              "type": "house",
+              "hp": 800,
+              "complete": true,
+              "x": 56.5,
+              "z": -5.5
+            },
+            {
+              "id": 6,
+              "type": "storehouse",
+              "hp": 1128.6000000000013,
+              "complete": true,
+              "x": -29.5,
+              "z": -27.5
+            },
+            {
+              "id": 11,
+              "type": "town-center",
+              "hp": 2180.399999999978,
+              "complete": true,
+              "x": -29.5,
+              "z": -21.5
+            },
+            {
+              "id": 13,
+              "type": "stable",
+              "hp": 1600,
+              "complete": true,
+              "x": 52.5,
+              "z": -9.5
+            },
+            {
+              "id": 18,
+              "type": "farm",
+              "hp": 600,
+              "complete": true,
+              "x": 60.5,
+              "z": 6.5
+            }
+          ]
+        }
+      ],
+      "lastFilteredDecisionViews": [
+        {
+          "team": 0,
+          "tick": 107970,
+          "livingFriendlyUnits": 0,
+          "livingVisibleEnemyUnits": 0,
+          "livingVisibleEnemyBuildings": 0
+        },
+        {
+          "team": 1,
+          "tick": 107970,
+          "livingFriendlyUnits": 16,
+          "livingVisibleEnemyUnits": 0,
+          "livingVisibleEnemyBuildings": 0
+        }
+      ],
+      "interpretation": "Terminal witness only: the reason the surviving Barracks is not eliminated is not established; route/policy diagnosis belongs to the AI owner."
+    },
+    {
+      "name": "tiny-skirmish-20260925-0",
+      "source": {
+        "revision": "172c53f3669b3564503cdbdfae2c83637517d235",
+        "dirty": false
+      },
+      "seeds": [
+        20260925,
+        0
+      ],
+      "nativeIdentity": {
+        "matchModeId": "skirmish",
+        "matchModeVersion": 1
+      },
+      "tick": 108000,
+      "winner": -1,
+      "authorityLiving": [
+        {
+          "team": 0,
+          "unitsByKind": {},
+          "buildings": [
+            {
+              "id": 2,
+              "type": "barracks",
+              "hp": 696.0000000000216,
+              "complete": true,
+              "x": -63.5,
+              "z": 6.5
+            }
+          ]
+        },
+        {
+          "team": 1,
+          "unitsByKind": {
+            "worker": 4,
+            "scout": 1,
+            "rider": 1,
+            "infantry": 10
+          },
+          "buildings": [
+            {
+              "id": 1,
+              "type": "barracks",
+              "hp": 1800,
+              "complete": true,
+              "x": 50.5,
+              "z": 0.5
+            },
+            {
+              "id": 3,
+              "type": "house",
+              "hp": 800,
+              "complete": true,
+              "x": 56.5,
+              "z": -5.5
+            },
+            {
+              "id": 6,
+              "type": "storehouse",
+              "hp": 1128.6000000000013,
+              "complete": true,
+              "x": -29.5,
+              "z": -27.5
+            },
+            {
+              "id": 11,
+              "type": "town-center",
+              "hp": 2180.399999999978,
+              "complete": true,
+              "x": -29.5,
+              "z": -21.5
+            },
+            {
+              "id": 13,
+              "type": "stable",
+              "hp": 1600,
+              "complete": true,
+              "x": 52.5,
+              "z": -9.5
+            },
+            {
+              "id": 18,
+              "type": "farm",
+              "hp": 600,
+              "complete": true,
+              "x": 60.5,
+              "z": 6.5
+            }
+          ]
+        }
+      ],
+      "lastFilteredDecisionViews": [
+        {
+          "team": 0,
+          "tick": 107970,
+          "livingFriendlyUnits": 0,
+          "livingVisibleEnemyUnits": 0,
+          "livingVisibleEnemyBuildings": 0
+        },
+        {
+          "team": 1,
+          "tick": 107970,
+          "livingFriendlyUnits": 16,
+          "livingVisibleEnemyUnits": 0,
+          "livingVisibleEnemyBuildings": 0
+        }
+      ],
+      "interpretation": "Terminal witness only: the reason the surviving Barracks is not eliminated is not established; route/policy diagnosis belongs to the AI owner."
+    }
+  ]
+}

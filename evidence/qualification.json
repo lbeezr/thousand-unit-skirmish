@@ -1,0 +1,317 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "revision": "172c53f3669b3564503cdbdfae2c83637517d235",
+    "dirty": false,
+    "branch": "codex/full-cpu-172c53f3",
+    "checkout": "/workspace/thousand-unit-skirmish-elimination-fixture",
+    "observedMain": "172c53f3669b3564503cdbdfae2c83637517d235"
+  },
+  "includedFixes": {
+    "pr419": "e80323b5e6f4df96bf03467c4600ddafadc56dc8",
+    "pr420": "51febdccefc313a3a46e2153c5b38fec10226bc2"
+  },
+  "fullAttempt": {
+    "classification": "operator interrupted during unbounded native cleanup",
+    "command": "npm test -- --report=/workspace/cpu-qualification-172c53f3/report.json",
+    "exitCode": 1,
+    "finishedAt": "2026-10-05T02:38:34.395Z",
+    "status": "failed",
+    "selectedCount": 1314,
+    "passedCount": 930,
+    "interruptedCheckCount": 1,
+    "unrunCount": 383,
+    "fullCpuSuitePassed": false,
+    "interruptedCheck": {
+      "label": "Completion event recovery and host diagnostics",
+      "status": "failed",
+      "exitCode": null,
+      "reason": "Check exited unknown (SIGTERM)."
+    },
+    "assertionFailureEstablished": false,
+    "nativePassSummaryIsNotProcessExit": true,
+    "operatorRecord": "operator-interruption.json"
+  },
+  "coverageFloors": [
+    {
+      "label": "Shipped audio response coverage floor (100%)",
+      "args": [
+        "--experimental-test-coverage",
+        "--test-coverage-include=src/client/audio/audio-shipped-response.mjs",
+        "--test-coverage-lines=100",
+        "--test-coverage-branches=100",
+        "--test-coverage-functions=100",
+        "--test",
+        "scripts/audio-shipped-response.test.mjs"
+      ],
+      "status": "unrun"
+    },
+    {
+      "label": "Outbound WebSocket frame coverage floor (100%)",
+      "args": [
+        "--experimental-test-coverage",
+        "--test-coverage-include=src/networking/websocket-frame.mjs",
+        "--test-coverage-lines=100",
+        "--test-coverage-branches=100",
+        "--test-coverage-functions=100",
+        "--test",
+        "scripts/websocket-frame.test.mjs"
+      ],
+      "status": "unrun"
+    },
+    {
+      "label": "WebSocket deflate-offer coverage floor (100%)",
+      "args": [
+        "--experimental-test-coverage",
+        "--test-coverage-include=src/networking/websocket-deflate-offer.mjs",
+        "--test-coverage-lines=100",
+        "--test-coverage-branches=100",
+        "--test-coverage-functions=100",
+        "--test",
+        "scripts/websocket-deflate-offer.test.mjs"
+      ],
+      "status": "unrun"
+    },
+    {
+      "label": "Production/research shared-rule coverage floor (100%)",
+      "args": [
+        "--experimental-test-coverage",
+        "--test-coverage-include=src/rules/gameplay-action-rules.mjs",
+        "--test-coverage-lines=100",
+        "--test-coverage-branches=100",
+        "--test-coverage-functions=100",
+        "--test",
+        "scripts/gameplay-action-rules.test.mjs"
+      ],
+      "status": "unrun"
+    }
+  ],
+  "dedicatedContracts": [
+    {
+      "file": "scripts/pve-skirmish-targets.test.mjs",
+      "fullAttemptStatus": "unrun"
+    },
+    {
+      "file": "scripts/pve-tiny-search.test.mjs",
+      "fullAttemptStatus": "unrun"
+    },
+    {
+      "file": "scripts/pve-fog-restart.test.mjs",
+      "fullAttemptStatus": "unrun"
+    },
+    {
+      "file": "scripts/elimination-scenario.mjs",
+      "fullAttemptStatus": "unrun"
+    }
+  ],
+  "tinyDiagnostic": {
+    "scope": "separate exact-source unchanged registered command; never stitched into full report",
+    "command": "node --test scripts/pve-tiny-search.test.mjs",
+    "exitCode": 1,
+    "finishedAt": "2026-10-05T02:41:59.333Z",
+    "tests": 4,
+    "passed": 2,
+    "failed": 2,
+    "skipped": 0,
+    "cases": [
+      "✖ Tiny native authored, configured Skirmish seeds 20260925,0: paid fogged match and reset exactly replay (27695.505783ms)",
+      "✔ Tiny native authored, configured Skirmish seeds 0,20260925: paid fogged match and reset exactly replay (46410.06436ms)",
+      "✖ Tiny native skirmish, configured Skirmish seeds 20260925,0: paid fogged match and reset exactly replay (29552.238753ms)",
+      "✔ Tiny native skirmish, configured Skirmish seeds 0,20260925: paid fogged match and reset exactly replay (46033.932284ms)"
+    ],
+    "successes": [
+      {
+        "seeds": [
+          0,
+          20260925
+        ],
+        "seconds": 2711,
+        "winner": 1,
+        "reason": "elimination",
+        "metrics": [
+          {
+            "producerPurchase": 450,
+            "producerComplete": 1110,
+            "buildingAssault": 51180,
+            "maxMilitary": 12,
+            "maxWorkers": 4,
+            "spentFood": 1330,
+            "spentWood": 915
+          },
+          {
+            "producerPurchase": 420,
+            "producerComplete": 1170,
+            "buildingAssault": 12660,
+            "maxMilitary": 12,
+            "maxWorkers": 5,
+            "spentFood": 2195,
+            "spentWood": 1700
+          }
+        ],
+        "nativeIdentity": "authored@1",
+        "policyIdentity": "skirmish@1"
+      },
+      {
+        "seeds": [
+          0,
+          20260925
+        ],
+        "seconds": 2711,
+        "winner": 1,
+        "reason": "elimination",
+        "metrics": [
+          {
+            "producerPurchase": 450,
+            "producerComplete": 1110,
+            "buildingAssault": 51180,
+            "maxMilitary": 12,
+            "maxWorkers": 4,
+            "spentFood": 1330,
+            "spentWood": 915
+          },
+          {
+            "producerPurchase": 420,
+            "producerComplete": 1170,
+            "buildingAssault": 12660,
+            "maxMilitary": 12,
+            "maxWorkers": 5,
+            "spentFood": 2195,
+            "spentWood": 1700
+          }
+        ],
+        "nativeIdentity": "skirmish@1",
+        "policyIdentity": "skirmish@1"
+      }
+    ],
+    "failurePackets": [
+      {
+        "name": "tiny-authored-20260925-0",
+        "source": {
+          "revision": "172c53f3669b3564503cdbdfae2c83637517d235",
+          "dirty": false
+        },
+        "nativeIdentity": {
+          "matchModeId": "authored",
+          "matchModeVersion": 1
+        },
+        "policyIdentity": {
+          "matchModeId": "skirmish",
+          "matchModeVersion": 1
+        },
+        "seeds": [
+          20260925,
+          0
+        ],
+        "winner": -1,
+        "terminalStateClock": {
+          "tickNumber": 108000,
+          "matchWinner": -1,
+          "matchWinnerTriggerId": null,
+          "matchWinnerReason": null
+        },
+        "lastDecisionTicks": [
+          107970,
+          107970
+        ],
+        "traceEntries": 876,
+        "finalTraceTick": 107160,
+        "rawDecodedBytes": 748978,
+        "rawDecodedSha256": "7b0620f1b56ec9230a56352bc5935c91ed4da776ff9ac16c14f12c436c5e6add",
+        "compressedBytes": 45885,
+        "evidenceDirectory": "/workspace/cpu-qualification-172c53f3/tiny-failure-evidence/tiny-authored-20260925-0",
+        "envelopeVerified": true,
+        "diagnosis": "not established"
+      },
+      {
+        "name": "tiny-skirmish-20260925-0",
+        "source": {
+          "revision": "172c53f3669b3564503cdbdfae2c83637517d235",
+          "dirty": false
+        },
+        "nativeIdentity": {
+          "matchModeId": "skirmish",
+          "matchModeVersion": 1
+        },
+        "policyIdentity": {
+          "matchModeId": "skirmish",
+          "matchModeVersion": 1
+        },
+        "seeds": [
+          20260925,
+          0
+        ],
+        "winner": -1,
+        "terminalStateClock": {
+          "tickNumber": 108000,
+          "matchWinner": -1,
+          "matchWinnerTriggerId": null,
+          "matchWinnerReason": null
+        },
+        "lastDecisionTicks": [
+          107970,
+          107970
+        ],
+        "traceEntries": 876,
+        "finalTraceTick": 107160,
+        "rawDecodedBytes": 748978,
+        "rawDecodedSha256": "4bcdd44b31f899e492b74e079df7e59c6994168d9d691fd3ebd79700e82ce9e5",
+        "compressedBytes": 45891,
+        "evidenceDirectory": "/workspace/cpu-qualification-172c53f3/tiny-failure-evidence/tiny-skirmish-20260925-0",
+        "envelopeVerified": true,
+        "diagnosis": "not established"
+      }
+    ],
+    "changedAssertionsBudgetsSeedsReplayReset": false,
+    "gameplayCause": "not established; terminal and filtered views are now retained for owner diagnosis"
+  },
+  "ownership": {
+    "fullCleanup": {
+      "owner": "fixture stream 01a1085f",
+      "coordination": "https://github.com/lbeezr/thousand-unit-skirmish/pull/419#issuecomment-5987167121",
+      "nextAction": "Resolve bounded client-close/server teardown behavior; new immutable full qualification is needed after owned fixes."
+    },
+    "tiny": {
+      "owner": "AI 01a10297",
+      "coordination": "https://github.com/lbeezr/thousand-unit-skirmish/pull/420",
+      "nextAction": "Consume retained exact-source terminal/trace/filtered-view packets before diagnosing or changing gameplay."
+    },
+    "mediumSchema": {
+      "owner": "fixture stream 01a1085f",
+      "classification": "Parent-confirmed separate schema30 migration fixture gap; unrun in this full attempt.",
+      "coordination": "https://github.com/lbeezr/thousand-unit-skirmish/pull/420#issuecomment-5987105017"
+    }
+  },
+  "constraints": {
+    "sourceEdits": 0,
+    "fullAttemptRetries": 0,
+    "changedRegistrationsFloorsBudgets": 0,
+    "manualHostedDispatch": false,
+    "hostedAuthenticationRetry": false,
+    "newDependencies": false,
+    "renderedOrDeploymentAcceptanceClaim": false
+  },
+  "priorEvidenceUnchanged": true,
+  "independentReview": {
+    "schemaVersion": 1,
+    "reviewer": "/root/audio_quality_review",
+    "source": "172c53f3669b3564503cdbdfae2c83637517d235",
+    "status": "passed",
+    "scope": "Closed full/diagnostic records, actual envelope-to-record bytes/checksums/components, endpoint witness, retained prior hashes, public artifact content scan, README and standard-library verifier.",
+    "conclusion": "No blockers to unmerged commit-pinned evidence delivery; full attempt interrupted, Tiny diagnostic separate, no gameplay cause established.",
+    "nativeTestsOrSourceChangesPerformed": false,
+    "verifiedFailurePacketBytes": [
+      748978,
+      748978
+    ],
+    "verifiedTraceEntries": [
+      876,
+      876
+    ],
+    "verifiedLastDecisionTicks": [
+      107970,
+      107970
+    ],
+    "archiveVerification": "Final ZIP/member verification is recorded separately in delivery receipt."
+  },
+  "evidenceDirectory": "/workspace/cpu-qualification-172c53f3"
+}

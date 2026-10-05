@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "source": "172c53f3669b3564503cdbdfae2c83637517d235",
+  "archive": "/workspace/cpu-qualification-172c53f3/cpu-qualification-172c53f3.zip",
+  "bytes": 537183,
+  "members": 44,
+  "sha256": "99838b932bec32f05cf464bd8d92f711bc77199384147e9356ff82c6343f18f0",
+  "manifestSha256": "6a53dd8c65de14fd7f1919cd324aefac05eb749cade6018c20769659f5710217",
+  "exactConsoleOutputPreserved": true,
+  "verifiedActualTinyPackets": 2,
+  "fullCpuSuitePassed": false
+}
