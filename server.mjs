@@ -9852,8 +9852,11 @@ function runSimulationTick() {
   if (tickDiagnosticSamples) {
     const cpu = process.cpuUsage(cpuStartedAt);
     diagnostic = {
+      matchId, mapId: mapDefinition.id,
       tickNumber,
       durationMs: Number(durationMs.toFixed(3)),
+      budgetMs: 1000 / TICK_RATE,
+      overBudget: durationMs > 1000 / TICK_RATE,
       cpuMs: Number(((cpu.user + cpu.system) / 1000).toFixed(3)),
       simulationMs: Number((afterSimulation - tickStartedAt).toFixed(3)),
       visionMs: Number((afterVision - afterSimulation - scenarioMs).toFixed(3)),
