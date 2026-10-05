@@ -982,6 +982,50 @@ contracts and caller/core endpoint ownership. No full-suite retry until a
 substantive fix; source evidence remains separate from served/rendered proof.
 
 
+### U5 construction endpoint availability — agreed bounded interface
+
+The [core/caller agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/443#issuecomment-5989678024)
+keeps already parked conflicts as safe waits: preserve the military's exact
+point/cell, revision and queue; only the builder's own accepted movement or work
+continuation moves it. Core owns
+[military-endpoint-availability.mjs](../src/simulation/movement/military-endpoint-availability.mjs);
+construction owner `01a10933-e913` consumes it in access selection, actual
+work-position admission and a separate dynamic-occupancy retry increment.
+
+`createOrdinaryMilitaryEndpointAvailability({units,width,height,maxUnits})`
+takes one bounded roster census per command or synchronous construction phase.
+`check({team,position,radius})` returns `{status,visited}`, with `status` equal to
+`available`, `blocked` or `deferred`. It reserves current same-team ordinary land
+military accepted/pending goals, using the validated fractional point or the
+historical/formation cell center and existing authored physical radii. Pending
+intent is already durable before route publication. A stale point cannot become
+a center; incomplete metadata/census and the 64-endpoint query limit defer.
+Queries visit at most nine local buckets, and scalar diagnostics count census,
+endpoints, queries, buckets, endpoint visits and deferrals. No route/queue scan,
+actor mutation, saved flag, global registry, planner change or navigation search.
+The snapshot must be rebuilt after another operation or cold recovery.
+
+The agreed construction consumer must retain the paid target/repair flag,
+remembered sites/area and queue
+when access is occupied or deferred, including initial admission with no safe
+cell. Its extension of existing transient retries must check at most once per
+second, consume no static-failure attempts and enqueue the existing guarded
+repair service only after a safe candidate exists. Endpoint release must resume
+work without a navigation revision change. Actual work poses are admitted before
+progress/completion, including completion before approach exhaustion. Stop,
+replacement, death, completion and cold recovery invalidate/rebuild transient
+state. Core does not implement those construction consumers in this query slice.
+
+The registered query regressions cover both seats, fractional/inset/cell goals,
+pending intent, authored radii, stale identity, cancellation/cold reconstruction,
+no payload reads and fail-closed census/query limits. A full-circle oracle checks
+3,000 seeded queries against six live 2,000-endpoint rosters on small/160/256 and
+all three planned320 shapes. This proves the local query contract only; it is not
+an admitted XL match, whole-route body avoidance, paid-house full-arrival pass,
+rendered acceptance or consumer-GPU capacity. Caller [PR444](https://github.com/lbeezr/thousand-unit-skirmish/pull/444)
+owns the separate real-command parked-endpoint audit; crowd retains final
+approach/yield work and original arrival assertions/deadlines stay intact.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
