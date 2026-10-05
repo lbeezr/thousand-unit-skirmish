@@ -86,7 +86,7 @@ import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoin
   unitRouteResultIsCurrent, rejoinSelectedUnitRoute, unitRouteRejoinDecision, createUnitRoutePublicationLedger } from './src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
-import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT } from './src/unit-crowd-steering.mjs';
+import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, canTraverseCrowdBodySegment } from './src/unit-crowd-steering.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
 import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, stanceAcquiredMovementActive, patrolAcquiredMovementActive, followTravelMovementActive, workerFollowTravelMovementActive } from './src/combat-movement.mjs';
 
@@ -764,6 +764,9 @@ let spatialBucketTeamTails = [new Int32Array(0), new Int32Array(0)];
 let spatialBucketTeamCounts = [new Uint16Array(0), new Uint16Array(0)];
 let spatialBucketTeamCursors = [new Int32Array(0), new Int32Array(0)];
 const spatialBucketOfUnit = new Int32Array(MAX_UNITS);
+// Production may append/reuse a slot after the tick's bucket census.
+// Construction body admission waits until the next normal rebuild in that case.
+let spatialBucketRosterCurrent = false;
 const spatialBucketTeamNext = [new Int32Array(MAX_UNITS), new Int32Array(MAX_UNITS)];
 const attackMoveCandidateBuckets = new Int32Array(targetBucketCapacity);
 const attackMoveCandidateRemaining = new Uint16Array(targetBucketCapacity);
@@ -1799,6 +1802,7 @@ function spawnProducedUnit(team, kind, x, z) {
   if (id < 0) return false;
 
   const unit = makeUnit(id, team, x, z, kind, teamSlots);
+  spatialBucketRosterCurrent = false;
   if (id === units.length) units.push(unit);
   else {
     for (const other of units) {
@@ -8133,6 +8137,7 @@ function rebuildSpatialBuckets() {
     }
     teamCount[bucket]++;
   }
+  spatialBucketRosterCurrent = true;
 }
 
 function findAttackMoveTarget(unit, acquireRadius = ATTACK_MOVE_ACQUIRE_RADIUS, offsets = attackMoveBucketOffsets) {
@@ -8471,6 +8476,17 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   return { x: vx, z: vz, target, stepDistance: remainingStep };
 }
 
+// Each actual construction write uses a fresh bounded query of live body poses.
+// A body-only refusal retains the existing route/work/queue, without static repair.
+// No neighbor displacement, endpoint reservation or saved activation state.
+function constructionBodyStepAllowed(unit, to) {
+  if (!constructionMovementActive(unit)) return true;
+  if (!spatialBucketRosterCurrent) return false;
+  const query = crowdNeighborsNear(unit);
+  return !query.overflow && canTraverseCrowdBodySegment(unit, to,
+    LAND_CLEARANCE_PROFILE.radiusByKind.worker, query.neighbors, { allowEscape: true });
+}
+
 function crowdNeighborsNear(unit) {
   // Buckets describe the start of this tick; earlier actors can move .15 tiles.
   // This conservative radius covers their live positions and two-tile warning.
@@ -8625,7 +8641,8 @@ function spreadInteractingUnits() {
       || !canTraverseUnitStep(worldToCell(unit.x, unit.z), worldToCell(x, z),
         MAP_WIDTH, elevationLevelByCell, isWalkable)
       || (clearanceRadius && !canTraverseStaticBodySegment(unit, { x, z },
-        clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) continue;
+        clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))
+      || !constructionBodyStepAllowed(unit, { x, z })) continue;
     unit.x = x;
     unit.z = z;
     unit.lastMoveTick = tickNumber;
@@ -9132,6 +9149,7 @@ function simulateTick() {
         break;
       }
       if (move.reachedWaypoint) {
+        if (!constructionBodyStepAllowed(unit, move.target)) break;
         if (!automaticPositionAllowed(unit, move.target.x, move.target.z)) {
           if (unit.stanceReturning) abandonBlockedStanceReturn(unit);
           else { rejectAutomaticTarget(unit, units[unit.attackTargetId]); clearAttackTarget(unit); }
@@ -9157,6 +9175,7 @@ function simulateTick() {
       if (canTraverseUnitStep(currentCell, nextCell, MAP_WIDTH, elevationLevelByCell, isWalkable)
         && (!clearanceRadius || canTraverseStaticBodySegment(unit, { x: nextX, z: nextZ },
           clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {
+        if (!constructionBodyStepAllowed(unit, { x: nextX, z: nextZ })) break;
         unit.x = nextX;
         unit.z = nextZ;
       } else {
@@ -9169,6 +9188,7 @@ function simulateTick() {
           MAP_WIDTH, elevationLevelByCell, isWalkable) && automaticPositionAllowed(unit, fallbackX, fallbackZ)
           && (!clearanceRadius || canTraverseStaticBodySegment(unit, { x: fallbackX, z: fallbackZ },
             clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {
+          if (!constructionBodyStepAllowed(unit, { x: fallbackX, z: fallbackZ })) break;
           unit.x = fallbackX;
           unit.z = fallbackZ;
         } else {
