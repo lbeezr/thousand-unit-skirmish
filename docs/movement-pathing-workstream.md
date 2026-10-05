@@ -842,6 +842,23 @@ separation, group formation movement, naval/wildlife adapters, dynamic forest
 cuts, gates/bridges and native all-caller recovery still need their own adoption.
 Denied hosted dispatch and cancelled authentication remain paused.
 
+### U5 intermediate projected-route ranking — 5 October 2026
+
+Crowd `01a10933-c2b0` owns the small ordinary nonterminal selector correction and
+[bounded evidence](qa-ordinary-crowd-steering-2026-10-05.md#intermediate-projected-route-ranking-correction).
+When a closest passage point follows the actor along its route axis, raw-waypoint
+progress ranks ordinary opposed-lane proposals within that specifically gated
+context. Swept collision admission, necessary retreats, recovery overrides,
+exact endpoints, queues and budgets remain intact; shared writes/repair stay
+with core `01a107ba`, endpoints with caller/construction owners.
+The unchanged seed881 native prerequisite reaches 64 distinct goals at 990
+journey ticks and exits the retained waypoint phase. Variable earlier baseline
+passes/failures remain recorded; no full both-seat or rendered/deployed claim is
+made. Next action: author-owned reviewed source integration and clean packaging,
+then unchanged larger native qualification and deployed/served/rendered proof.
+The existing cloud capability/authentication blocks remain with their named
+owners; no held dispatch or cancelled login is retried.
+
 ### U5 crowd owner reservation — 4 October 2026
 
 5 October source qualification: [PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400)
