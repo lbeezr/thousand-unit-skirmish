@@ -58,6 +58,20 @@ actual journey coverage and rendered acceptance are separate.
 
 ### Shared semantics, domain policies
 
+The [automatic-stance pursuit adoption](qa-automatic-stance-pursuit-2026-10-05.md)
+in [PR432](https://github.com/lbeezr/thousand-unit-skirmish/pull/432) consumes
+shared static-circle clearance and the unchanged selected-route rejoin at
+[the two allocated acquisition/repath conditions](https://github.com/lbeezr/thousand-unit-skirmish/pull/425#issuecomment-5987896694).
+Its real-command Infantry witness changes four unsafe steps per stance/seat to
+zero, while preserving the selected suffix, fixed anchors and legal-range damage.
+Both-seat Infantry/paid Archer journeys cover cold recovery, moving targets,
+manual/queued priority, paid blockage and rejected prefixes. StandGround/NoAttack,
+Worker/water, building/persistent targets, return and same-cell writer remain
+excluded. The separate 24-case Defensive return controls stay safe without a
+return patch. Same-cell range closure remains a combat endpoint contract.
+Exact reviewed source, clean pack and process results are recorded on the PR;
+provider identity and rendered acceptance remain OPEN.
+
 The separate **target-free military Follow candidate** consumes core PR422's
 durable accepted pending-goal contract at merged building-target source `032eea7d`.
 It adds `followTravelMovementActive` and the caller-owned body-profile fallback;

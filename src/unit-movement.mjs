@@ -1,12 +1,13 @@
 import { BASE_ELEVATION_PATH_COST, canTraverseElevation, elevationPathCost } from './elevation.mjs';
 import { visitGridSegmentCells } from './unit-path-line.mjs';
 import { constructionMovementActive } from './construction-work-intent.mjs';
-import { attackMoveObjectiveMovementActive, focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, patrolTravelMovementActive, patrolAcquiredMovementActive, followTravelMovementActive } from './combat-movement.mjs';
+import { attackMoveObjectiveMovementActive, focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, stanceAcquiredMovementActive, patrolTravelMovementActive, patrolAcquiredMovementActive, followTravelMovementActive } from './combat-movement.mjs';
 
 // Static land circles, in tiles/world units. Adopters are explicit: ordinary
 // single-unit Move/queued points, Worker economy/construction and target-free
 // explicit AttackMove objectives/acquired pursuit, focused unit/building Attack,
-// Patrol travel/pursuit and target-free military Follow;
+// acquired Aggressive/Defensive stance pursuit, Patrol travel/pursuit and
+// target-free military Follow;
 // other domains follow.
 // These are authored collision sizes, not sprite bounds or soft-separation size.
 export const LAND_CLEARANCE_PROFILE = Object.freeze({ id: 'land-static-circle-v1',
@@ -245,7 +246,7 @@ export function activeLandMovementBodyRadius(unit) {
   return ordinaryMoveBodyRadius(unit) || workerEconomyBodyRadius(unit)
     || (constructionMovementActive(unit) ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0)
     || (attackMoveObjectiveMovementActive(unit) || focusedUnitAttackMovementActive(unit) || focusedBuildingAttackMovementActive(unit) || attackMoveAcquiredMovementActive(unit)
-      || patrolTravelMovementActive(unit) || patrolAcquiredMovementActive(unit) || followTravelMovementActive(unit)
+      || stanceAcquiredMovementActive(unit) || patrolTravelMovementActive(unit) || patrolAcquiredMovementActive(unit) || followTravelMovementActive(unit)
       ? LAND_CLEARANCE_PROFILE.radiusByKind[unit.kind] ?? 0 : 0);
 }
 

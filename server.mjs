@@ -84,7 +84,7 @@ import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoin
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
-import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, patrolAcquiredMovementActive, followTravelMovementActive } from './src/combat-movement.mjs';
+import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, stanceAcquiredMovementActive, patrolAcquiredMovementActive, followTravelMovementActive } from './src/combat-movement.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const BUILD_IDENTITY = await loadBuildIdentity(ROOT);
@@ -8450,7 +8450,7 @@ function simulateTick() {
             continue;
           }
           let rejoinRejected = false;
-          if (focusedUnitAttackMovementActive(unit) || attackMoveAcquiredMovementActive(unit) || patrolAcquiredMovementActive(unit)) {
+          if (focusedUnitAttackMovementActive(unit) || attackMoveAcquiredMovementActive(unit) || stanceAcquiredMovementActive(unit) || patrolAcquiredMovementActive(unit)) {
             const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
             const rejoined = rejoinSelectedUnitRoute(approach, {
               position: unit, startCell, firstPoint: cellToWorld(approach.path[0] ?? startCell), radius,
@@ -8551,7 +8551,7 @@ function simulateTick() {
           unit.attackTargetId = target.id;
           unit.repathTimer = 0.6;
           unit.lastAttackCell = movePath.targetCell;
-          if (attackMoveAcquiredMovementActive(unit) || patrolAcquiredMovementActive(unit)) {
+          if (attackMoveAcquiredMovementActive(unit) || stanceAcquiredMovementActive(unit) || patrolAcquiredMovementActive(unit)) {
             const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
             const rejoined = rejoinSelectedUnitRoute(movePath, {
               position: unit, startCell, firstPoint: cellToWorld(movePath.path[0] ?? startCell), radius,
