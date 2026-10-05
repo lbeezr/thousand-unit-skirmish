@@ -185,9 +185,9 @@ existing draft fixture cover region/event restoration, branching, local save,
 no running-match mutation and resets after recovery/import. Architecture/authoring
 retains rendered recovery acceptance at the existing cloud capability gap.
 
-### Portable-map validator candidate
+### Portable-map validator boundary
 
-The local source candidate on main `70289cac` places the existing 298-line
+The source slice based on main `fec90d44` places the existing 298-line
 `validateImportedMap` body in
 [`authoring/map-import-validator.mjs`](../src/authoring/map-import-validator.mjs).
 Its sole named export is `createMapImportValidator`, taking eight existing scalar
