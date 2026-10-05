@@ -223,7 +223,52 @@ pixels, source publication, paid generation or rejected art is admitted.
 
 | Active slice / owner | Next action and bounded scope | Dependencies and observable acceptance |
 | --- | --- | --- |
-| Explicit manual renewal / Farm owner | Finish independent review and exact-head client/authority/native controls, then normal authorized PR integration. `farm-harvest`, optional construction intent validation, narrow server admission/completion hooks and existing lifecycle/selection UI only. | Existing crowd/access routing and architecture boundary stay owned by Crowd01a10933 and architecture; no steering, renderer or shared state schema replacement. Both seats, exactly-once debit, first food delivery, stale generations, invalid plot/funds, interruption, destroy/replacement and cold recovery must pass. |
+| Explicit manual renewal / Farm owner | Merged [PR491](https://github.com/lbeezr/thousand-unit-skirmish/pull/491) as `d5c12fb1`; retain default outcome through the next delivery/ordinary acceptance rows. `farm-harvest`, optional construction intent validation, narrow server admission/completion hooks and existing lifecycle/selection UI only. | Existing crowd/access routing and architecture boundary stay owned by Crowd01a10933 and architecture; no steering, renderer or shared state schema replacement. Both seats, exactly-once debit, first food delivery, stale generations, invalid plot/funds, interruption, destroy/replacement and cold recovery must pass. |
 | Default release and containing staging / Farm owner with existing public staging delivery owner | Pack clean exact merged source and verify server/client modules; identify an actually containing authorized staging build and smoke it. | Source, release digest and served/deployed source stay separate. No private-art publication or production promotion follows from this code scope. See [deployment guide](deployment.md). |
 | Ordinary Farm renewal acceptance / Farm owner | Execute normal Tiny paid build → Gather → depletion → select Workers/plot → Replant → first depot credit on both seats, desktop/touch and normal/strategic zoom. | Cloud probe at base `6ee1cce4` failed `sandbox-unavailable` and `storage-unavailable`, zero frames/screenshots. Supported browser provider configuration is required; no security bypass or stopped Mac dependency. Record exact build, buttons/state, food/wood/cargo and rendered frames using [qualification](renderer-qualification.md). |
-| Next disjoint readiness slice / Farm owner | Extend the owner-run ordinary Farm capture adapter to select actual Workers and use explicit Replant after depletion, with stock/cargo/bank assertions and no injected food/stock. | Do this after reviewed small source integration. Existing HUD novice/carcass/body pickers remain intact; modify only the Farm recipe and its controls. Actual rendered execution still depends on the qualified cloud renderer. |
+| Next disjoint readiness slice / Farm owner | Extend the owner-run ordinary Farm capture adapter to select actual Workers and use explicit Replant after depletion, with stock/cargo/bank assertions and no injected food/stock. | Now implemented in the existing [paid-economy recipe](../scripts/frontier-economy-game-capture.mjs) through a [pointer renewal step](../scripts/farm-renewal-capture-step.mjs); obtain independent review and integrate its nine refusal/receipt controls. Existing HUD novice/carcass/body pickers remain intact; only the Farm recipe and its controls change. Actual rendered execution still depends on the qualified cloud renderer. |
+
+
+### Reviewed source and delivery checkpoint
+
+[PR491](https://github.com/lbeezr/thousand-unit-skirmish/pull/491) implements the
+default action; merged source `d5c12fb1a707b6d26053a8babf64f6979bc94f7f`.
+Independent `/root/farm_review` found and resolved a native-delivery false
+positive (`> 200` admitted floating-point residue); no remaining findings at
+`c5c48b09`, with unchanged Farm files confirmed at final head `fff6c23f`.
+Owner exact-final-head 28 focused checks, both strict type projects, import/docs
+guards and clean packaging pass. The 97 containing-source Farm/construction
+controls and 32 Farm/PvE checks remain scoped historical receipts, not full CI.
+Both owner and reviewer corrected native socket/cold-restart runs credited
+**210 food** to each seat after renewal, with **280 wood**, fresh IDs and stale
+replay rejection. Owner native result source was clean `c5c48b09`; final Farm
+runtime files were unchanged. An earlier false-positive receipt is not delivery
+proof. The reviewed final-head clean pack is
+`sha256:389eb29517a0c9dbd3f6515ddd84d197b4e0996df99a27a2689ff7f0a0720aa8`
+(1,394 files); authenticated packed HTTP/WebSocket/asset checks passed at
+`c5c48b09`. No rendered game evidence is claimed.
+
+Railway staging accepted an auto-deploy for merge `d5c12fb1`, deployment
+`d7615114-9232-49ba-9ad5-4e5128d7e66f`, initially **QUEUED** behind earlier
+main builds. This is a delivery request, not a served or successful-deploy claim.
+The existing staging service/source is verified; source integration remains
+`lbeezr/thousand-unit-skirmish:main`. No config/credential/domain/publication
+mutation occurred. Farm owner retains terminal-status/served-identity checks.
+
+The next disjoint step updates the existing owner-run Farm art recipe by default:
+wait for real exhausted-plot cargo delivery → click actual Idle Workers control
+→ click the actual exhausted plot → verify preserved selection → click **Replant
+· 60 wood** → capture fresh foundation → wait for automatic crop/depot credit.
+The helper requires exact selected Worker IDs, one 60-wood debit, death of the old
+ID, unchanged wood after construction and a material baseline-relative food
+credit. Nine CPU controls reject missing/duplicate payment, wrong/lost selection,
+stale identity and absent/residual deposits. It uses read-only observations and
+real pointer input; no bank/stock/world injection or helper socket Replant command.
+These are recipe contracts; actual images still require the qualified browser.
+
+After this reviewed recipe slice, the next ready work is a persistent
+mixed-selection/wood-cargo regression, preserving busy/unselected exact orders
+through renewal and delivering retained wood before first renewed food. Farm
+owner retains the existing authority-test fixture only; Crowd/architecture/HUD
+runtime writes are not reserved by that follow-on. In parallel, delivery and
+ordinary-renderer blockers stay active under their named rows above.
