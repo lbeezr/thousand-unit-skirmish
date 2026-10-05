@@ -168,7 +168,7 @@
     "rendererBlockedRecord": "renderer-capability-blocked.json"
   },
   "files": {
-    "documentation.log": {
+    "documentation.txt": {
       "bytes": 66,
       "sha256": "cf1abb21d5e03059c226adce2db8bd7b67ed7a7dea6fefbbfcfb45becfe4c7f3"
     },
@@ -208,11 +208,11 @@
       "bytes": 3455,
       "sha256": "8df1bb085e22f624690eb0c418e3e0d77a9e766e651f8796955c6b047f1d851f"
     },
-    "runtime-imports.log": {
+    "runtime-imports.txt": {
       "bytes": 1152,
       "sha256": "7968c14426e48881bed5c2a935d5ab748f61bcada15c5d46806709ee1d9b3817"
     },
-    "types.log": {
+    "types.txt": {
       "bytes": 380,
       "sha256": "3e887c99201c1531b3188defe45c7f415ba86b0e8b42b7826ebfce3d38cbb1ba"
     }
