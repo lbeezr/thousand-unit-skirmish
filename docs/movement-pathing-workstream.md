@@ -996,6 +996,22 @@ is requested before shared executor edits. Endpoint occupancy stays caller/core
 owned. No full-suite retry or PR/main event until a substantive qualified fix;
 original native deadlines and gate/forest/bridge/Stop acceptance remain intact.
 
+5 October four-actor frontier continuation: the
+[construction-containing comparison](qa-native-wall-seat1-2026-10-05.md#bounded-dependency-frontier-comparison--construction-containing-boundary)
+incorporates actual consumer `c8aa92c8` at an explicit source boundary and leaves
+construction access/work-pose ownership intact. Core agrees the pure diagnostic
+projection seam; no production executor edit or global approval gate is needed.
+Crowd's disjoint coordinator caps77/81/87/110 and two nonoverlapping finite attempts.
+All four gain at48 ticks, but21 conservative affected neighbors lose more than
+`.01`; at96, actor81 loses `.453568` and77/87 move backward in the last24 ticks.
+Returning actor110 aborts77's retreat before contact. Deterministic ranking,
+bounded queries and finite safety do not establish fairness. Next crowd scope is
+return-to-gap admission and affected-neighbor service debt using actual own-call
+receipts, fresh guards and the same4-actor/2-attempt bounds; no hold/renewal or
+unchanged-dependency retry. Keep transferred-loss holdout and original
+gate/forest/bridge/Stop/native acceptance. No full-suite/PR/main event until a
+qualified substantive fix; private denied drafts/bundle remain untouched.
+
 ### U5 construction endpoint availability — agreed bounded interface
 
 The [core/caller agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/443#issuecomment-5989678024)

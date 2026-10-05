@@ -538,3 +538,144 @@ loss/fairness need a separately reviewed rule before runtime adoption. Core's
 pure executor seam, unchanged native deadlines and both-seat gate/forest/bridge/
 Stop controls remain dependencies; source/pack/provider/served/render proofs stay
 separate. Art backing is N/A for this internal diagnostic slice.
+
+## Bounded dependency-frontier comparison — construction-containing boundary
+
+The core-owned pure diagnostic interface is now agreed through the delegated
+decision: host-owned live guards, actual own-call remaining budget and fresh
+serial-pose neighbors; future previews spend nothing and promise no passage.
+The [original narrow proposal](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5990685776)
+identifies the seam. This slice uses disposable adapters; it neither requires a
+production executor edit nor introduces a global approval dependency. Core keeps
+budget, position admission and publication/repair. Crowd owns the disjoint
+[frontier coordinator](../scripts/crowd-dependency-frontier-probe.mjs),
+[comparison runner](../scripts/crowd-dependency-frontier-diagnostic.mjs) and tests.
+
+The integration boundary is explicit: preliminary comparisons use main
+`51e3d038`; the retained comparisons below incorporate construction consumer
+`c8aa92c8`/PR448 and core endpoint query PR446. The consumer owns safe construction
+access/work-pose admission and retained paid jobs during dynamic endpoint waits.
+The crowd adapter leaves that consumer intact. Both sources reproduce the same
+full-unit trajectory hashes for these comparisons. Worker68's inherited parked
+pose and the other inactive actors remain preserved; construction's separate
+paid-house/endpoint acceptance is not inferred from choke progress or failure.
+
+### Scope, deterministic selection and bounded work
+
+The retained actor110 input and physical serial reconstruction from the previous
+section are reused; no new benchmark, archive or packet publication is introduced.
+Fresh own-call observations identify actor77 as actor81's remaining desired-step
+blocker. The intervention frontier is exactly **77/81/87/110**, four actors total.
+Three comparisons run from the same input: unchanged baseline, original actor110
+retreat, and that retreat followed by at most one additional actor's finite retreat.
+
+After actor110 finishes, currently body-blocked frontier peers are ranked by least
+executed progress toward their original fixed raw waypoint, with actor identity
+breaking exact ties. Every body blocker counts. Seven fixed retreat angles are
+considered for eligible frontier blockers that have not already yielded. A
+candidate must have a strict full static/body corridor and clear the chosen
+peer's entire current desired segment at the previewed far pose. Other currently
+clear frontier desired segments must remain clear **at that far pose**; this does
+not promise uninterrupted clearance while the owner retreats or returns.
+
+Selection is revalidated at the chosen actor's own serial call. Future frames
+remain unspendable. Each step uses actual remaining budget and the existing
+executor's admissions; no peer moves, no priority/grant changes, and no endpoint,
+accepted goal, queue, deadline or Stop/order override is introduced. Each maneuver
+is bounded to `.75`/12 ticks. They never overlap. A failed selection or changed
+dependency is not retried within this episode. Any route/identity/phase,
+eligibility, query or observation failure permanently cancels the attempt,
+including cancellation before activation. There is no room hold or renewal.
+
+There is one second-maneuver planning decision plus at most one own-call
+revalidation. With four actors and one already attempted owner, the worst case is
+126 angle trials and378 counterfactual projections. Every query retains the
+128-visit/64-body limits and overflow refusal. In this case, only4 angle trials,
+6 counterfactual projections/50 direct body visits,36 corridor body visits and3
+additional future queries are observed; frontier-query maxima are43 visits/23
+retained bodies. The first retreat's separate bounded previews and the original
+controller's work remain visible in their own reports. This is bounded diagnostic
+work, not a capacity or production throughput result.
+
+### Executed result and longer comparison
+
+Each mode repeats twice at48 ticks and again twice at96 ticks:12 runs total.
+Full-unit trajectory hashes and coordinator reports repeat exactly, without
+normalizing identities. Across37,078 selected substeps there are zero static/body
+contacts, and actual cell/elevation admission passes. All72 inactive actors retain
+position, health and accepted movement/work intent; normal scan clocks can change.
+
+Actor110 finishes `.75` in9 ticks. At tick10, the deterministic rule selects
+actor77 to help actor81. Actor77 advances through8 admitted retreat steps,
+`.693333` total, then aborts before step9 at tick18: returning actor110 closes the
+corridor, with proposed swept margin `-.045250`. The existing admission prevents
+contact. Both owners immediately resume ordinary steering.
+
+| Frontier actor | Baseline progress at48 | Frontier progress at48 | Difference | Frontier progress during ticks24–48 |
+| --- | --- | --- | --- | --- |
+| 77 | `.708403` | `.913345` | `+.204942` | `+.165958` |
+| 81 | `.911273` | `1.303164` | `+.391891` | `+.194003` |
+| 87 | `1.626825` | `1.834769` | `+.207943` | `+.492798` |
+| 110 | `1.608361` | `1.914949` | `+.306588` | `+.805369` |
+
+All four retain their original route/order/index/goal/queue at48, and all four
+exceed `.15` executed progress during the last24 ticks. This is a finite local
+gain, not fairness. The conservative affected-neighbor set unions neighbors of
+the owners' admitted steps over the whole window and includes all64 selected
+military actors. At48,21 of those actors lose more than `.01` fixed-waypoint
+progress relative to baseline; the original single retreat disadvantages26.
+Actor119's loss is `.431832` in both interventions. Changed routes are excluded
+from positive fairness qualification using full path hashes as well as accepted
+generation/revision/index/goal/queue. These measurements do not attribute those
+losses to construction endpoint occupancy.
+
+The96-tick holdout rejects sustained recovery even inside the four-actor frontier:
+actor81 is `.453568` behind baseline and moves `-.705883` toward its retained
+waypoint during ticks72–96. Actors77 and87 also move backward during that interval,
+by `.018832` and `.301175`. At tick89 the frontier guard observes actor110's
+advanced route index and cancels the already exhausted episode; its later progress cannot be credited as
+an unchanged-route fairness witness. Twenty-seven affected actors lose more than
+`.01` at96. Both48- and96-tick whole-neighbor comparisons fail the declared `.15`
+sustained-progress/`.01` loss test. Cold replay and fixed planning drain still do
+not reproduce warm native scheduling or close original native completion.
+
+The construction-containing observer-only paid-gate controls remain64/64 at
+992/2,615 ticks, zero contacts across141,624 selected substeps,72 unchanged
+inactive actors per seat and zero projected-target mismatches. No full suite,
+native wall rerun or deployment/render claim follows from this focused control.
+
+Focused controls pass together:78 tests, including deterministic progress ranking
+and exact ties, preservation of clear far-pose peer segments, every blocker,
+pre-start cancellation, peer order/Stop/path/phase changes, query/observation loss,
+no unchanged retry, own-call budget spending and transferred-loss/route-replacement
+rejection. Runtime imports pass at216 modules/395 local edges with zero cycles.
+The CI registry adds only this focused test; workflow triggers remain unchanged.
+
+Run the local comparison without fetching evidence:
+
+```sh
+node scripts/crowd-dependency-frontier-diagnostic.mjs --input=LOCAL_CHECKPOINT --ticks=48
+node scripts/crowd-dependency-frontier-diagnostic.mjs --input=LOCAL_CHECKPOINT --ticks=96
+```
+
+### Decision and next bounded experiment
+
+The deterministic ranking and two finite maneuvers are executable and reviewed
+as diagnostic tooling. They **do not qualify a production fairness policy**:
+short-window gains transfer loss to neighbors and disappear at the longer bound.
+The returning first owner is an executed third-body counterexample to far-pose
+room predictions. Increasing the frontier or extending a room promise is not
+justified by this result.
+
+Crowd's next smallest experiment is admission that accounts for the first owner's
+actual return-to-gap progress and affected-neighbor service debt, still within
+four actors/two finite maneuvers. It must use executed own-call receipts and a
+fresh accepted guard set, never a counterfactual baseline oracle, held owner or
+future space reservation. Retain the96-tick transferred-loss counterexample and
+original both-seat gate/forest/bridge/Stop controls before any runtime adoption.
+Core's pure diagnostic boundary is agreed; only a concrete overlapping production
+interface decision would require further coordination. Endpoint occupancy remains
+construction owned. Fresh source-derived inputs/results stay outside git; the
+separately denied drafts and pending private bundle are neither accessed nor
+published. No new PR/main event or full-suite rerun until a substantive qualified
+fix. Source/pack/provider/served/render proofs stay separate; art backing N/A.

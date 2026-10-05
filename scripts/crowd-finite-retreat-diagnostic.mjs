@@ -15,7 +15,7 @@ const replaceOnce = (text, before, after) => {
 
 // Adapt copies of the canonical fixed-tick fixture, crowd module and server.
 // Shared production files and the original admission/position-write branches stay intact.
-export async function createFiniteRoomFixture(map, config) {
+export async function createFiniteRoomFixture(map, config, { probeModuleUrl = new URL('./crowd-finite-retreat-probe.mjs', import.meta.url).href } = {}) {
   const directory = await mkdtemp(path.join(tmpdir(), 'rts-finite-room-'));
   let fixture;
   try {
@@ -25,8 +25,7 @@ export async function createFiniteRoomFixture(map, config) {
       .replace(/from '(\.\/?[^']+)'/g, (_, name) => `from '${pathToFileURL(path.resolve(root, 'src', name)).href}'`)
       + '\nexport function diagnosticHasGrant(unit){const s=steeringStates.get(unit);return Boolean(s?.lease||s?.contour);}\n';
     await writeFile(crowdPath, crowd);
-    const helperUrl = pathToFileURL(path.join(root, 'scripts/crowd-finite-retreat-probe.mjs')).href;
-    let source = `import {createFiniteRoomProbe} from ${JSON.stringify(helperUrl)};\nconst finiteRoomProbe=createFiniteRoomProbe(${JSON.stringify(config)});\n` + original;
+    let source = `import {createFiniteRoomProbe} from ${JSON.stringify(probeModuleUrl)};\nconst finiteRoomProbe=createFiniteRoomProbe(${JSON.stringify(config)});\n` + original;
     source = replaceOnce(source, "from './src/unit-crowd-steering.mjs'", `from '${pathToFileURL(crowdPath).href}'`);
     source = replaceOnce(source, 'stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT',
       'stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, diagnosticHasGrant');
