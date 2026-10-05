@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "packId": "spearman-sprite",
-  "packVersion": "0.7.0",
+  "packVersion": "0.8.0",
   "maturity": "runtime-candidate",
   "provenance": {
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
     "source": "Vaelora Human roster role and action sheets",
-    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; Blender CPU 2D source-UV NE leg articulation; Blender CPU 2D source-UV East leg articulation; Blender CPU 2D source-UV north leg articulation; Blender CPU 2D source-UV south leg articulation",
-    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four new locally authored NE walk poses retain the established public painted identity; all 32 prior registered poses are unchanged. Six walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored East walk poses retain the established public painted identity; all 36 prior registered poses are unchanged. Five walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored North walk poses retain the established own-view public painted identity; all 40 prior registered poses and 31 other clips are unchanged. Four walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored South walk poses retain the established own-view public painted identity; all 44 prior registered poses and 31 other clips are unchanged. The full prior 2048x2048 RGBA page and mask pixels survive a downward extension to 2048x3200. Three walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance."
+    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; Blender CPU 2D source-UV NE leg articulation; Blender CPU 2D source-UV East leg articulation; Blender CPU 2D source-UV north leg articulation; Blender CPU 2D source-UV south leg articulation; Blender CPU 2D source-UV south-west leg articulation",
+    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four new locally authored NE walk poses retain the established public painted identity; all 32 prior registered poses are unchanged. Six walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored East walk poses retain the established public painted identity; all 36 prior registered poses are unchanged. Five walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored North walk poses retain the established own-view public painted identity; all 40 prior registered poses and 31 other clips are unchanged. Four walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored South walk poses retain the established own-view public painted identity; all 44 prior registered poses and 31 other clips are unchanged. The full prior 2048x2048 RGBA page and mask pixels survive a downward extension to 2048x3200. Three walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored Southwest walk poses retain the established own-view public painted identity; all 48 prior registered poses and 31 other clips are unchanged. The page dimensions and encoded zero mask remain unchanged; all previous page RGBA outside the four previously empty new slots stays exact. Two walk headings, seven attack and seven defeat headings remain missing. Source review is separate from ordinary rendered gait/contact acceptance."
   },
   "files": [
     {
@@ -19,7 +19,7 @@
         "width": 2048,
         "height": 3200
       },
-      "sha256": "b1a3a6c577a022fa3e165ffa97276f234b20aae8bd0bce99ce1c3c45a24d7dd2"
+      "sha256": "8feec95e667f7ca4ff0b0c5fbca77296b3b11f5cf7b1f7bf3ec0353025129079"
     },
     {
       "id": "spearman-atlas-runtime",
@@ -30,7 +30,7 @@
         "width": 2048,
         "height": 3200
       },
-      "sha256": "b1a3a6c577a022fa3e165ffa97276f234b20aae8bd0bce99ce1c3c45a24d7dd2"
+      "sha256": "8feec95e667f7ca4ff0b0c5fbca77296b3b11f5cf7b1f7bf3ec0353025129079"
     },
     {
       "id": "spearman-team-mask",
@@ -2187,6 +2187,178 @@
             }
           ],
           "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-south-west-0",
+          "groundPivotPx": {
+            "x": 155,
+            "y": 307
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 352
+          },
+          "alphaBoundsPx": {
+            "x": 43,
+            "y": 24,
+            "width": 233,
+            "height": 275
+          },
+          "fallbackRectPx": {
+            "pageId": "spearman-color",
+            "rectPx": {
+              "x": 1316,
+              "y": 2052,
+              "width": 320,
+              "height": 352
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "spearman-color",
+              "rectPx": {
+                "x": 1316,
+                "y": 2052,
+                "width": 320,
+                "height": 352
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-south-west-1",
+          "groundPivotPx": {
+            "x": 155,
+            "y": 307
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 352
+          },
+          "alphaBoundsPx": {
+            "x": 43,
+            "y": 24,
+            "width": 233,
+            "height": 264
+          },
+          "fallbackRectPx": {
+            "pageId": "spearman-color",
+            "rectPx": {
+              "x": 1644,
+              "y": 2052,
+              "width": 320,
+              "height": 352
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "spearman-color",
+              "rectPx": {
+                "x": 1644,
+                "y": 2052,
+                "width": 320,
+                "height": 352
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-south-west-2",
+          "groundPivotPx": {
+            "x": 155,
+            "y": 307
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 352
+          },
+          "alphaBoundsPx": {
+            "x": 43,
+            "y": 24,
+            "width": 233,
+            "height": 270
+          },
+          "fallbackRectPx": {
+            "pageId": "spearman-color",
+            "rectPx": {
+              "x": 4,
+              "y": 2412,
+              "width": 320,
+              "height": 352
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "spearman-color",
+              "rectPx": {
+                "x": 4,
+                "y": 2412,
+                "width": 320,
+                "height": 352
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-south-west-3",
+          "groundPivotPx": {
+            "x": 155,
+            "y": 307
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 352
+          },
+          "alphaBoundsPx": {
+            "x": 43,
+            "y": 24,
+            "width": 233,
+            "height": 269
+          },
+          "fallbackRectPx": {
+            "pageId": "spearman-color",
+            "rectPx": {
+              "x": 332,
+              "y": 2412,
+              "width": 320,
+              "height": 352
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "spearman-color",
+              "rectPx": {
+                "x": 332,
+                "y": 2412,
+                "width": 320,
+                "height": 352
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
         }
       ],
       "clips": [
@@ -2414,8 +2586,20 @@
           "loop": true,
           "sequence": [
             {
-              "frameId": "idle-south-west-0",
-              "durationMs": 1000
+              "frameId": "walk-south-west-0",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-south-west-1",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-south-west-2",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-south-west-3",
+              "durationMs": 200
             }
           ]
         },

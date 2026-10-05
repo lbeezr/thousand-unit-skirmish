@@ -1,0 +1,138 @@
+{
+  "baselineRegisteredPoseSHA256": "092cefb8d34d5818f197b626ef939a0b2f41099d947b7d4272ba67a139e155f5",
+  "baselineUnchangedClipsSHA256": "a1f5ce1e203bc5eb0bbbea60582d7a51acc1920024151b68f5aa0d755382bcdb",
+  "baselineAssetMetadataSHA256": "0494af4603627b42502777172d5275538ec54e2d76f325095d0f763d1ec9b814",
+  "baselinePageMetadataSHA256": "3af4142ef00d4cccb38005246687ccbbd0a402e67d5c6115dd719e1bab8d1b7d",
+  "registeredPageMetadataSHA256": "3af4142ef00d4cccb38005246687ccbbd0a402e67d5c6115dd719e1bab8d1b7d",
+  "baselineMaskSHA256": "eda032b76b64eabe3b282a8882756ddad49f8ab392afce878d001e2f317982e4",
+  "heightWorld": 1.6722564697265625,
+  "worldPerPixel": 0.0052421832906788795,
+  "baselineManifestSHA256": "92e6d57d36a45117965995e34d1628f413f54a99cafabbf9a5972c208f579fd7",
+  "baselineRuntimeSHA256": "b1a3a6c577a022fa3e165ffa97276f234b20aae8bd0bce99ce1c3c45a24d7dd2",
+  "baselineDecodedAtlasSHA256": "138537ead7b701bcaba0194d5fba6a6472e4361c765c8a0564c831e489a8bc6a",
+  "historicalClipSubsetSHA256": {
+    "ne": "106edac4f66972123d74353fbeb8fa0dfe3916f2d82fcc3cd12002419fba759f",
+    "east": "20b72bb456fa9d929f12d829282af6bd3ec9ad727623740f88cb1438150b3833",
+    "north": "e3609087fe897591107332f2208f0ad4b3056f8d4d47f6447493d9defe46f27e",
+    "south": "dde760132862bb871ef39986b12570d66ee1b177ad787d89a79f99841ab02c04"
+  },
+  "identitySource": {
+    "path": "docs/art-direction/human-roster-v1/extracted/spearman/idle/06.png",
+    "sha256": "033a1089e31e0764038c50a8b65c90f6fa35be1bcbdb742955f9749365bdaad7",
+    "registeredFrameId": "idle-south-west-0",
+    "registeredSeedSHA256": "100440b6a98f9549e2f098b9f96661c7721005f9af174e6c660510009e107195"
+  },
+  "schemaVersion": 1,
+  "sourceRevision": "53951d6b60921d707a94d23652d8e4dd511b7a3c",
+  "directionId": "south-west",
+  "baselinePackVersion": "0.7.0",
+  "packVersion": "0.8.0",
+  "baselineDimensionsPx": {
+    "width": 2048,
+    "height": 3200
+  },
+  "registeredDimensionsPx": {
+    "width": 2048,
+    "height": 3200
+  },
+  "registeredMaskSHA256": "eda032b76b64eabe3b282a8882756ddad49f8ab392afce878d001e2f317982e4",
+  "sourceKind": "new fixed-camera 2D leg poses from own public Southwest identity seed; no matching 3D master claimed",
+  "authoringTool": "Blender 4.3.2 Cycles CPU, fixed orthographic public-source UV planes",
+  "canvasPx": {
+    "width": 320,
+    "height": 352
+  },
+  "groundPivotPx": {
+    "x": 155,
+    "y": 307
+  },
+  "paddingPx": {
+    "x": 44,
+    "y": 24
+  },
+  "atlasSlotsPx": [
+    [
+      1316,
+      2052
+    ],
+    [
+      1644,
+      2052
+    ],
+    [
+      4,
+      2412
+    ],
+    [
+      332,
+      2412
+    ]
+  ],
+  "maximumAlphaHeightPx": 319,
+  "reusedPriorRegisteredPoses": 48,
+  "newlyAuthoredPoses": 4,
+  "mirroredPoses": 0,
+  "borrowedDirectionPoses": 0,
+  "generationProviderCalls": 0,
+  "paidJobs": 0,
+  "privateInputs": 0,
+  "durationMs": 800,
+  "loop": true,
+  "sourceTiming": "four explicit 200ms keys; authoring fps20 is not runtime playback fps",
+  "shaftSeparation": {
+    "sourceAlphaPositiveSamples": 509,
+    "reconstructedSamples": 0,
+    "partition": "x > .6*y+72, y >=188; original transparent shaft/leg gap"
+  },
+  "processRetention": "all source scene/scripts/masks, previews and all iterations retained privately; selected public-seed derivatives only published",
+  "ordinaryGameAcceptance": "pending",
+  "supportFootVelocityAcceptance": "pending",
+  "matching3DMaster": "not located; own-direction public 2D seed permits this free source slice",
+  "normalization": "zero RGB only under alpha0; every visible RGBA and alpha sample preserved from selected CPU output",
+  "sourceSampling": "packed source textures/UV/masks exact; rendered upper pixels frozen across keys, CPU transparent-material sampling differs from seed RGBA",
+  "independentSourceReview": {
+    "reviewer": "independent_foot_art_review",
+    "selectedIteration": "02-own-seed-leg-study",
+    "status": "no blocking source findings",
+    "ordinaryGameAcceptance": "pending",
+    "positivePoseTriangleInstances": 66456,
+    "minimumSignedAreaRatio": 0.5632578531901041,
+    "reconstructedSourceSamples": 0
+  },
+  "poses": [
+    {
+      "file": "00.png",
+      "pose": "contact-left",
+      "durationMs": 200,
+      "sha256": "79a12cd4f5e7e825038dd5afe4faf034d676dd29bd6fdd51c6086b05fa34a8e0",
+      "rawCPUOutputSHA256": "da23c4020e54c1238287ea400b01d3558917adcfed4d517d6da4346efb9c4975",
+      "transparentRGBPixelsNormalized": 117
+    },
+    {
+      "file": "01.png",
+      "pose": "passing-right",
+      "durationMs": 200,
+      "sha256": "82a883d6f6a252f04bdcc7beb13d112e0075828f30ea7ea0f111be89a51c0e87",
+      "rawCPUOutputSHA256": "054b9be10e629e581bd6c5ad5e3c81b05a3e1be6e625350a27babadcec869e7c",
+      "transparentRGBPixelsNormalized": 117
+    },
+    {
+      "file": "02.png",
+      "pose": "contact-right",
+      "durationMs": 200,
+      "sha256": "817c938f7166ad415245be847146087c25e16b7e46056b2d919537b0670ed95d",
+      "rawCPUOutputSHA256": "4ecaf17e7445d29927998d337279b711fdf681708457bbfede66be5b9f320319",
+      "transparentRGBPixelsNormalized": 122
+    },
+    {
+      "file": "03.png",
+      "pose": "passing-left",
+      "durationMs": 200,
+      "sha256": "7eca1bb7223884fda0a3e786f92a13287da2a7a2a72a4ea9ae1cd3f36b6125cb",
+      "rawCPUOutputSHA256": "52e5f5c1b7223b9affc97669491d390fd9e2858680dae6ac2b6a76d08eb46234",
+      "transparentRGBPixelsNormalized": 118
+    }
+  ],
+  "packProvenanceNote": "Four new locally authored Southwest walk poses retain the established own-view public painted identity; all 48 prior registered poses and 31 other clips are unchanged. The page dimensions and encoded zero mask remain unchanged; all previous page RGBA outside the four previously empty new slots stays exact. Two walk headings, seven attack and seven defeat headings remain missing. Source review is separate from ordinary rendered gait/contact acceptance.",
+  "packReadme": "# Human Spearman partial animation pack\n\nPack 0.8.0 preserves all 48 existing registered poses and adds four locally authored Southwest walk keys from the already-public painted Southwest seed. SE/NE/East/North/South walks, SE attack/defeat and all eight idle facings remain unchanged. Southwest uses four 200ms contact/passing keys, one 800ms loop, existing body calibration and padded original pivot. Two walk headings, seven attack and seven defeat headings remain missing (16 cells).\n\nPage dimensions remain 2048x3200; the encoded zero team mask is unchanged. All prior page RGBA outside the four formerly empty Southwest slots stays exact; old frame rectangles/pivots and scale remain fixed. No matching 3D master, provider job, held v2 art or state/simulation change is involved.\n\nSelected source/provenance: `docs/art-direction/human-roster-v1/extracted/spearman/walk/south-west-local-v1/registration.json`. The full builder replays baseline, NE, East, North, South and Southwest; older append scripts intentionally guard their construction stage. Exact original packed textures/UVs differ from CPU-resampled rendering, whose upper pixels stay frozen between keys. All private process and art iterations remain retained. Ordinary GPU gait, support-foot speed, normal/strategic/crowded appearance and deployed acceptance remain pending.\n"
+}

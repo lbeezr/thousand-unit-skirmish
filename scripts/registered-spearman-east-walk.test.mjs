@@ -18,12 +18,13 @@ const pixels=decodeRgba8(read(`${directory}/spearman-atlas-runtime.png`));
 const cells=decodeRegisteredUnitFrames(asset,page,pixels);
 
 test('Spearman East preserves all 36 prior registered poses, clips and body calibration',()=>{
-  const legacy=asset.frames.filter(f=>!f.id.startsWith('walk-east-')&&!/^walk-north-\d+$/.test(f.id)&&!/^walk-south-\d+$/.test(f.id));
-  assert.equal(legacy.length,36);assert.equal(asset.frames.length,48);
+  const laterIds=new Set(["walk-east-0","walk-east-1","walk-east-2","walk-east-3","walk-north-0","walk-north-1","walk-north-2","walk-north-3","walk-south-0","walk-south-1","walk-south-2","walk-south-3","walk-south-west-0","walk-south-west-1","walk-south-west-2","walk-south-west-3"]);
+  const legacy=asset.frames.filter(f=>!laterIds.has(f.id));
+  assert.equal(legacy.length,36);assert.equal(asset.frames.length,52);
   assert.equal(sha(JSON.stringify(legacy.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
-  // Pin the actual unaffected clips after separately reviewed walk replacements.
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='walk'&&["east","north","south"].includes(c.directionId)));
-  assert.equal(unchanged.length,29);assert.equal(sha(JSON.stringify(unchanged)),'7ec4b9a8e193a8774edb6b4f1a4963367ec34465b220393a00ad6a462f2d4f0e');
+  // Pin actual retained clips; later own-view replacements are separately checked.
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='walk'&&["east","north","south","south-west"].includes(c.directionId)));
+  assert.equal(unchanged.length,28);assert.equal(sha(JSON.stringify(unchanged)),'20b72bb456fa9d929f12d829282af6bd3ec9ad727623740f88cb1438150b3833');
   assert.equal(asset.heightWorld/Math.max(...asset.frames.map(f=>f.alphaBoundsPx.height)),receipt.worldPerPixel);
   assert.equal(asset.heightWorld,receipt.heightWorld);
   assert.equal(sha(read(receipt.identitySource.path)),receipt.identitySource.sha256);
@@ -31,7 +32,7 @@ test('Spearman East preserves all 36 prior registered poses, clips and body cali
   for(const key of ['mirroredPoses','borrowedDirectionPoses','generationProviderCalls','paidJobs'])assert.equal(receipt[key],0);
 });
 
-test('Spearman East contains four exact source poses and leaves the other 17 cells incomplete',()=>{
+test('Spearman East contains four exact source poses and leaves the other 16 cells incomplete',()=>{
   const clip=asset.clips.find(c=>c.stateId==='walk'&&c.directionId==='east');
   assert.equal(clip.loop,true);assert.equal(clip.sequence.reduce((n,k)=>n+k.durationMs,0),800);
   for(let index=0;index<4;index++){
@@ -46,9 +47,9 @@ test('Spearman East contains four exact source poses and leaves the other 17 cel
     for(let y=0;y<352;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+320)*4),original.pixels.subarray(y*320*4,(y+1)*320*4));
   }
   const report=analyzeUnitArtCoverage(asset,cells);
-  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,17);
+  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,16);
   const ne=report.rows.find(r=>r.key==='walk|east');assert.equal(ne.status,'authored');assert.equal(ne.distinctFrames,4);assert.equal(ne.distinctSilhouettes,4);
-  assert.deepEqual(missingWalkDirections({pack,cells}),['south-west','west','north-west']);
+  assert.deepEqual(missingWalkDirections({pack,cells}),['west','north-west']);
   assert.ok(report.missingCells.includes('attack|east'));assert.ok(report.missingCells.includes('defeat|east'));
   const frozen=structuredClone(asset),walk=frozen.clips.find(c=>c.stateId==='walk'&&c.directionId==='east');
   walk.sequence.forEach(k=>{k.frameId=walk.sequence[0].frameId;});
