@@ -22,6 +22,7 @@ try {
     ['skirmish', 'maps/veyrholds-terraced-vale.json'],
     ['bannerfall', null],
     ['objective-control', 'maps/woodland-expanse.json'],
+    ['authored', 'maps/fortified-crossing.json'],
   ]) {
     const fixture = await createFortifiedFixture({ mapPath, matchModeId: mode, timeoutMs: 15000 });
     try {
