@@ -2,14 +2,50 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { canTraverseCrowdBodySegment, ordinaryCrowdBodyRadius, selectCrowdStep,
   CROWD_NEIGHBOR_LIMIT } from '../src/unit-crowd-steering.mjs';
-import { LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
+import { LAND_CLEARANCE_PROFILE, segmentRectangleDistanceSquared } from '../src/unit-movement.mjs';
 
 const actor = (extra = {}) => ({ id: 1, generation: 17, orderRevision: 8, kind: 'infantry',
   x: 0, z: .5, hp: 100, path: [1], pathIndex: 0, moveGoalCell: 1, ...extra });
 
+test('parked-body detour chooses the physically open side beside a wall', () => {
+  const u = actor({ x: -1 }), parked = actor({ id: 2, x: .5, path: [], pathIndex: 0, holdingPosition: true });
+  const initial = structuredClone(parked), target = { x: 2, z: .5 };
+  for (let tick = 1; tick <= 150 && !u.pathIndex; tick++) {
+    const move = selectCrowdStep({ unit: u, target, stepDistance: .09, tick, neighbors: [parked],
+      pointAllowed: p => p.z <= .78, canTraverse: p => p.z <= .78 });
+    if (move.waitingForCrowd) continue;
+    const to = move.reachedWaypoint ? move.target : { x: u.x + move.x * move.stepDistance, z: u.z + move.z * move.stepDistance };
+    assert.ok(canTraverseCrowdBodySegment(u, to, .22, [parked])); assert.ok(to.z <= .78);
+    Object.assign(u, to); if (move.reachedWaypoint) u.pathIndex++;
+    assert.deepEqual(parked, initial);
+  }
+  assert.equal(u.pathIndex, 1, 'reachable endpoint does not oscillate beneath an invalid detour point');
+  assert.deepEqual([u.x, u.z], [target.x, target.z]);
+});
+
+for (const reverse of [false, true]) test(`two Scouts yield serially through a finite passage, reverse=${reverse}`, () => {
+  const units = [-2, 2].map((x, id) => actor({ id, kind: 'scout', x, target: { x: x < 0 ? 3 : -3, z: .5 } }));
+  const walls = [{ minX: -1.5, maxX: 1.5, minZ: -10, maxZ: 0 },
+    { minX: -1.5, maxX: 1.5, minZ: 1, maxZ: 10 }];
+  for (let tick = 1; tick <= 360 && units.some(u => !u.pathIndex); tick++) {
+    for (const u of reverse ? units.toReversed() : units) {
+      if (u.pathIndex) continue;
+      const neighbors = units.filter(v => v !== u);
+      const allowed = (from, to) => walls.every(w => Math.sqrt(segmentRectangleDistanceSquared(from, to, w)) >= .28 - 1e-9);
+      const move = selectCrowdStep({ unit: u, target: u.target, neighbors, stepDistance: .09, tick,
+        cellCenter: { x: Math.floor(u.x) + .5, z: .5 }, pointAllowed: p => allowed(p, p), canTraverse: p => allowed(u, p) });
+      if (move.waitingForCrowd) continue;
+      const to = move.reachedWaypoint ? move.target : { x: u.x + move.x * move.stepDistance, z: u.z + move.z * move.stepDistance };
+      assert.ok(allowed(u, to)); assert.ok(canTraverseCrowdBodySegment(u, to, .28, neighbors));
+      Object.assign(u, to); if (move.reachedWaypoint) u.pathIndex++;
+    }
+  }
+  assert.ok(units.every(u => u.pathIndex === 1), 'circles that cannot fit abreast require physical yielding');
+});
+
 test('ordinary crowd eligibility preserves stopped, idle, pending, dead and other caller policies', () => {
   assert.equal(ordinaryCrowdBodyRadius(actor()), .22);
-  for (const extra of [{ holdingPosition: true }, { pathIndex: 1 }, { hp: 0 },
+  for (const extra of [{ holdingPosition: true }, { pathIndex: 1 }, { hp: 0 }, { kind: 'worker' }, { movePlanningPending: true },
     { movementDomain: 'water' }, { moveGoalCell: -1 }, { attackMove: true }, { persistentOrder: {} },
     { stanceReturning: true }, { stanceCombat: true }, { attackTargetId: 0 },
     { attackBuildingTargetId: 0 }, { gatherNodeId: 0 }, { gatherForestCell: 0 },

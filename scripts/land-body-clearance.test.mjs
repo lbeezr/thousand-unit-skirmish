@@ -99,15 +99,25 @@ for (const spec of LAND_BODY_CASES) test(`${spec.id}: complete real substeps rep
   const first = await runLandBodyCase(spec, { captureInput: input => { initialCheckpoint = input; } });
   const second = await runLandBodyCase(spec, { initialCheckpoint });
   assert.deepEqual(second, first, 'raw observations include actual generations/revisions and serial neighbour positions');
-  assert.equal(first.arrived, first.actors.length, 'bounded cases cannot hide unfinished actors');
+  assert.equal(first.arrived, spec.scene === 'corner' ? 0 : first.actors.length,
+    'occupied parked endpoints wait; physically passable opposing routes complete');
   assert.equal(first.invalidCenterSubsteps, 0); assert.equal(first.unobservedPositionMutations, 0);
   assert.equal(first.healthLoss, 0); assert.ok(first.maxStaticQueries <= 25);
-  assert.equal(first.navigationRevision, 0); assert.ok(first.selectedSubsteps > 0);
+  assert.equal(first.navigationRevision, 0);
+  if (spec.scene === 'corner') assert.equal(first.selectedSubsteps, 0, 'occupied endpoint consumes no movement');
+  else assert.ok(first.selectedSubsteps > 0);
   for (const actor of first.actors) {
-    assert.equal(actor.finalGoalCell, actor.goalCell); assert.ok(actor.arrivalTick <= 1800);
-    assert.equal(actor.pending, false); assert.equal(actor.pathIndex, actor.pathLength);
-    assert.ok(Math.hypot(actor.x - actor.goal.x, actor.z - actor.goal.z) < .02);
+    assert.equal(actor.finalGoalCell, actor.goalCell);
+    assert.equal(actor.pending, false);
+    if (spec.scene === 'corner') {
+      assert.equal(actor.arrivalTick, null); assert.equal(actor.finalRevision, actor.initialRevision);
+      assert.ok(actor.pathIndex < actor.pathLength);
+    } else {
+      assert.ok(actor.arrivalTick <= 1800); assert.equal(actor.pathIndex, actor.pathLength);
+      assert.ok(Math.hypot(actor.x - actor.goal.x, actor.z - actor.goal.z) < .02);
+    }
   }
+  assert.equal(first.staticContactSteps, 0); assert.equal(first.pairContactSteps, 0);
   if (spec.scene === 'forest') for (const actor of first.actors) assert.ok(actor.crossedTick > 0);
 });
 
@@ -117,11 +127,16 @@ test('study retains finite-deadline unfinished actors instead of labeling pendin
   assert.ok(run.actors.every(u => u.arrivalTick === null && u.pathIndex < u.pathLength));
 });
 
-test('Food Tools content migration preserves retained pre-technology body input identity and complete geometry', async () => {
+test('retained pre-technology corner input keeps its identity under occupied-endpoint body admission', async () => {
   const record = JSON.parse(gunzipSync(await readFile(new URL('../docs/qa-evidence/ordinary-move-static-clearance-2026-10-04/substeps.json.gz', import.meta.url)))).records[0];
   const run = await runLandBodyCase(LAND_BODY_CASES[0], { initialCheckpoint: record.initialCheckpoint });
   const { sourceSha256: priorSource, ...prior } = record.runs[0];
   const { sourceSha256: currentSource, ...current } = run;
   assert.notEqual(currentSource, priorSource, 'the new content migration is a different exact production source');
-  assert.deepEqual(current, prior, 'supplied checkpoint hash, generations, commands, serial trace and all contacts remain exact');
+  assert.equal(current.initialCheckpointSha256, prior.initialCheckpointSha256);
+  assert.deepEqual(current.commands, prior.commands);
+  assert.equal(current.navigationMaskSha256, prior.navigationMaskSha256);
+  assert.equal(current.arrived, 0, 'historical overlapping endpoint is no longer penetrated');
+  assert.equal(current.pairContactSteps, 0); assert.equal(current.staticContactSteps, 0);
+  assert.equal(current.actors[0].generation, prior.actors[0].generation);
 });

@@ -387,6 +387,16 @@ Denied hosted dispatch and cancelled authentication remain paused.
 
 ### U5 crowd owner reservation — 4 October 2026
 
+5 October implementation checkpoint: [draft PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400)
+now consumes the [agreed hooks](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5985598359).
+The [crowd acceptance record](qa-ordinary-crowd-steering-2026-10-05.md) retains
+both the 32-unit zero-contact narrow-passage results and the wider 64-unit
+queue/counterflow failures under qualification. Owner remains
+`01a10933-c2b0`; next step is finish those existing controls, exact-head review,
+checks/clean pack and normal merge. Worker ordinary/economy movement stays with
+its existing source policy in this first military slice. No new position
+admission/planner edit or rendered-acceptance claim is included.
+
 Crowd owner `01a10933-c2b0-70f1-991d-761518eb5010` reserves
 `src/unit-crowd-steering.mjs` and its own focused module/ordinary-journey tests.
 Core owner `01a107ba` retains [PR395](https://github.com/lbeezr/thousand-unit-skirmish/pull/395)

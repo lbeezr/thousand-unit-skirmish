@@ -79,6 +79,7 @@ import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoin
   unitRouteResultIsCurrent } from './src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
+import { ordinaryCrowdBodyRadius, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT } from './src/unit-crowd-steering.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -7731,8 +7732,64 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   let unitCandidateVisits = 0;
   if (trackSeparationWork) separationTickMoveVectorCalls++;
   const point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
-  const target = point && unit.pathIndex === unit.path.length - 1
+  let target = point && unit.pathIndex === unit.path.length - 1
     && unit.path[unit.pathIndex] === point.cell ? point : cellToWorld(unit.path[unit.pathIndex]);
+  const crowdRadius = ordinaryCrowdBodyRadius(unit);
+  if (crowdRadius) {
+    const currentCell = worldToCell(unit.x, unit.z), targetCell = worldToCell(target.x, target.z);
+    const adjacent = Math.abs(currentCell % MAP_WIDTH - targetCell % MAP_WIDTH) <= 1
+      && Math.abs(Math.floor(currentCell / MAP_WIDTH) - Math.floor(targetCell / MAP_WIDTH)) <= 1;
+    const coreRadius = activeLandMovementBodyRadius(unit);
+    // Submit only a necessarily rejected terminal proposal to the unchanged
+    // pre-write guard. That guard schedules existing bounded static repair;
+    // no actor position, waypoint or movement budget is consumed. Never use
+    // strict point overlap alone: the core may admit a short inherited escape.
+    if (!isWalkable(targetCell)
+      || (adjacent && !canTraverseUnitStep(currentCell, targetCell, MAP_WIDTH, elevationLevelByCell, isWalkable))
+      || (coreRadius && !canTraverseStaticBodySegment(target, target, coreRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable)
+        && !canTraverseStaticBodySegment(unit, target, coreRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true })))
+      return { target, reachedWaypoint: true, stepDistance: 0, rejectedStaticProposal: true };
+    const query = crowdNeighborsNear(unit);
+    const progressTarget = target;
+    const diagnostics = { visits: query.visits, neighbors: query.neighbors.length, overflow: query.overflow };
+    if (query.overflow) return { target, waitingForCrowd: true, stepDistance: 0, crowd: diagnostics };
+    let travelDirection = { x: target.x - unit.x, z: target.z - unit.z };
+    if (unit.pathIndex < unit.path.length - 1) {
+      const following = cellToWorld(unit.path[unit.pathIndex + 1]);
+      const previous = unit.pathIndex ? cellToWorld(unit.path[unit.pathIndex - 1]) : cellToWorld(worldToCell(unit.x, unit.z));
+      let dx = target.x - previous.x, dz = target.z - previous.z;
+      if (!dx && !dz) { dx = following.x - target.x; dz = following.z - target.z; }
+      travelDirection = { x: dx, z: dz };
+      target = crowdPassagePoint(target, { x: dx, z: dz }, unit, query.neighbors,
+        inset => canTraverseStaticBodySegment(inset, inset, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable));
+    }
+    const crowdMove = selectCrowdStep({ unit, target, stepDistance: Math.min(remainingStep, .25),
+      travelDirection, progressTarget,
+      tick: tickNumber, navigationRevision,
+      neighbors: query.neighbors, cellCenter: cellToWorld(currentCell),
+      pointAllowed: to => to.x >= -MAP_HALF_X + .5 && to.x <= MAP_HALF_X - .5
+        && to.z >= -MAP_HALF_Z + .5 && to.z <= MAP_HALF_Z - .5
+        && canTraverseStaticBodySegment(to, to, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable),
+      targetOf: other => ordinaryCrowdBodyRadius(other)
+        ? activeMoveGoalPoint(other) ?? cellToWorld(other.moveGoalCell) : null,
+      canTraverse: to => to.x >= -MAP_HALF_X + .5 && to.x <= MAP_HALF_X - .5
+        && to.z >= -MAP_HALF_Z + .5 && to.z <= MAP_HALF_Z - .5
+        && canTraverseUnitStep(currentCell, worldToCell(to.x, to.z), MAP_WIDTH, elevationLevelByCell, isWalkable)
+        && canTraverseStaticBodySegment(unit, to, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }) });
+    if (crowdMove?.noProgressTicks >= 30
+      && !canTraverseUnitStep(currentCell, targetCell, MAP_WIDTH, elevationLevelByCell, isWalkable)
+      && !canTraverseStaticBodySegment(unit, progressTarget, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable)) {
+      // Deflection can strand an obsolete waypoint across a wall. After a
+      // bounded net stall, submit a proposal the existing cell-step guard
+      // necessarily rejects, so repair starts from the actual cell. A blocked
+      // body alone never triggers this handoff or loses its queued intent.
+      return { target: progressTarget, reachedWaypoint: true, stepDistance: 0,
+        rejectedStaticProposal: true, crowd: diagnostics };
+    }
+    if (crowdMove) return { ...crowdMove, crowd: { ...diagnostics,
+      waiting: Boolean(crowdMove.waitingForCrowd), yielding: Boolean(crowdMove.yieldingForCrowd),
+      noProgressTicks: crowdMove.noProgressTicks ?? 0 } };
+  }
   let dx = target.x - unit.x;
   let dz = target.z - unit.z;
   const distance = Math.hypot(dx, dz);
@@ -7812,6 +7869,29 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   vx /= length;
   vz /= length;
   return { x: vx, z: vz, target, stepDistance: remainingStep };
+}
+
+function crowdNeighborsNear(unit) {
+  // Buckets describe the start of this tick; earlier actors can move .15 tiles.
+  // This conservative radius covers their live positions and two-tile warning.
+  const neighbors = [], queryRadius = 2.25, retainSquared = 2.1 ** 2;
+  let visits = 0;
+  for (let row = spatialBucketRow(unit.z - queryRadius); row <= spatialBucketRow(unit.z + queryRadius); row++) {
+    for (let column = spatialBucketColumn(unit.x - queryRadius); column <= spatialBucketColumn(unit.x + queryRadius); column++) {
+      let id = spatialBucketHeads[row * spatialBucketColumns + column];
+      while (id !== -1) {
+        if (visits >= 128) return { neighbors, visits, overflow: true };
+        visits++;
+        const other = units[id]; id = spatialBucketNext[id];
+        if (other === unit || other.hp <= 0 || other.movementDomain === 'water') continue;
+        if ((other.x - unit.x) ** 2 + (other.z - unit.z) ** 2 > retainSquared) continue;
+        if (neighbors.length >= CROWD_NEIGHBOR_LIMIT) return { neighbors, visits, overflow: true };
+        neighbors.push(other);
+      }
+    }
+  }
+  neighbors.sort((a, b) => a.id - b.id || a.generation - b.generation);
+  return { neighbors, visits, overflow: false };
 }
 
 function stationaryWorkerCellsNear(unit, blockerCell) {
@@ -8351,6 +8431,7 @@ function simulateTick() {
     while (remainingStep > 0 && unit.pathIndex < unit.path.length) {
       const move = getMoveVector(unit, remainingStep, allowLocalDetour);
       if (!move) break;
+      if (move.waitingForCrowd) break;
       if (move.detour) {
         unit.path = unit.path.slice(); // Planning can share identical routes.
         unit.path.splice(unit.pathIndex, move.detour.replaceCount, ...move.detour.path);

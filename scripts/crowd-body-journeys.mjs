@@ -20,7 +20,7 @@ const command = (r, team, actors, type, extra = {}) => {
 };
 
 export async function runCrowdPassageJourney({ scene = 'bridge', group = 1, ownerTeam = 0,
-  maxTicks = 1800, initialCheckpoint = null, captureInput, interrupt = false } = {}) {
+  maxTicks = 900, initialCheckpoint = null, captureInput, interrupt = false, mirror = false, recoverAt = null } = {}) {
   assert.ok(['bridge', 'gate'].includes(scene) && [1, 16].includes(group));
   configureLandBodyReplay();
   const map = forestGapMap({ gap: 1, group });
@@ -39,6 +39,7 @@ export async function runCrowdPassageJourney({ scene = 'bridge', group = 1, owne
     for (const team of [0, 1]) r.units.filter(u => u.kind === 'infantry' && u.team === team)
       .forEach((u, i) => Object.assign(u, { x: (team ? 11.5 : -11.5) + Math.floor(i / 4) * (team ? 1.2 : -1.2),
         z: group === 1 ? .5 : .5 + (i % 4 - 1.5) * 1.2 }));
+    if (mirror) for (const actor of actors) actor.x = -actor.x;
     let gateReceipt = null;
     if (scene === 'gate') {
       let worker = r.units.find(u => u.kind === 'worker' && u.team === ownerTeam);
@@ -52,9 +53,12 @@ export async function runCrowdPassageJourney({ scene = 'bridge', group = 1, owne
       for (let tick = 0; tick < 900 && !gate.complete; tick++) r.step();
       assert.ok(gate.complete, 'named Worker completes a normally paid gate');
       assert.equal(r.wood[ownerTeam], before - BUILDING_DEFINITIONS['palisade-gate'].cost.wood);
-      setup.push(command(r, ownerTeam, [worker], 'move', { x: ownerTeam ? 22.5 : -22.5, z: -12.5 }));
+      setup.push(command(r, ownerTeam, [worker], 'move', { x: ownerTeam ? 22.5 : -22.5, z: -16.5 }));
       for (let tick = 0; tick < 900 && worker.pathIndex < worker.path.length; tick++) r.step();
-      assert.equal(worker.pathIndex, worker.path.length);
+      assert.equal(worker.pathIndex, worker.path.length, JSON.stringify({ x: worker.x, z: worker.z,
+        target: r.point(worker.path[worker.pathIndex]), goal: worker.moveGoalCell, same: worker === r.units[worker.id],
+        hold: worker.holdingPosition, point: activeMoveGoalPoint(worker), path: worker.path.slice(Math.max(0, worker.pathIndex - 1), worker.pathIndex + 2),
+        near: r.units.filter(u => u !== worker && Math.hypot(u.x - worker.x, u.z - worker.z) < 2).map(u => ({ id: u.id, x: u.x, z: u.z })) }));
       setup.push(command(r, ownerTeam, [worker], 'stop'));
       const notices = r.order(ownerTeam, { type: 'setGateOpen', buildingId: gate.id, open: true });
       assert.ok(notices.some(n => n.message.startsWith('GATE OPEN')));
@@ -70,9 +74,10 @@ export async function runCrowdPassageJourney({ scene = 'bridge', group = 1, owne
     const actorIds = new Set(actors.map(u => u.id));
     const parked = r.units.filter(u => !actorIds.has(u.id)).map(u => structuredClone(u));
     const health = actors.map(u => u.hp), commands = [];
+    const destinationX = team => (team ? -12.5 : 12.5) * (mirror ? -1 : 1);
     for (const team of [0, 1]) commands.push(command(r, team, actors.filter(u => u.team === team), 'move',
-      { x: team ? -12.5 : 12.5, z: .5, formation: 'box' }));
-    const states = actors.map(u => ({ id: u.id, generation: u.generation, team: u.team, goalCell: u.moveGoalCell,
+      { x: destinationX(team), z: .5, formation: 'box' }));
+    let states = actors.map(u => ({ id: u.id, generation: u.generation, team: u.team, goalCell: u.moveGoalCell,
       goal: { ...(activeMoveGoalPoint(u) ?? r.point(u.moveGoalCell)) }, initialRevision: u.orderRevision,
       arrivalTick: null, crossingTick: null, maxNoProgressTicks: 0, lastProgress: 0,
       bestRemainingDistance: Infinity, routeKey: '', orderRevision: u.orderRevision, publishedRouteChanges: 0 }));
@@ -80,14 +85,20 @@ export async function runCrowdPassageJourney({ scene = 'bridge', group = 1, owne
     let staticContacts = 0, pairContacts = 0, worstStaticMargin = null, worstPairMargin = null, selectedSubsteps = 0, ticks = 0;
     const observations = [];
     for (let tick = 1; tick <= maxTicks; tick++) {
+      if (recoverAt === tick) {
+        const saved = r.checkpoint(); assert.ok(r.validate(structuredClone(saved))); r.restore(saved); r.drain();
+        actors = actors.map(u => r.units.find(v => v.id === u.id));
+      }
       if (interrupt && tick === 40) {
         for (const team of [0, 1]) commands.push(command(r, team, actors.filter(u => u.team === team), 'stop'));
         const stopped = structuredClone(actors); r.step();
         assert.deepEqual(actors, stopped, 'Stop supersedes movement without moving accepted stationary actors');
         for (const team of [0, 1]) {
           const own = actors.filter(u => u.team === team);
-          commands.push(command(r, team, own, 'move', { x: team ? -12.5 : 12.5, z: .5, formation: 'box' }));
+          commands.push(command(r, team, own, 'move', { x: destinationX(team), z: .5, formation: 'box' }));
         }
+        states.forEach((s, i) => Object.assign(s, { goalCell: actors[i].moveGoalCell,
+          goal: { ...(activeMoveGoalPoint(actors[i]) ?? r.point(actors[i].moveGoalCell)) } }));
       }
       r.step(); ticks = tick;
       assert.equal(r.navigationRevision, navRevision);
@@ -112,14 +123,15 @@ export async function runCrowdPassageJourney({ scene = 'bridge', group = 1, owne
         observeForestRouteProgress(r, u, s, tick);
         if (s.arrivalTick === null && done(u, s.goal)) s.arrivalTick = tick;
         if (s.arrivalTick === null) s.maxNoProgressTicks = Math.max(s.maxNoProgressTicks, tick - s.lastProgress);
-        if (s.crossingTick === null && (u.team ? u.x < -4 : u.x >= 4)) s.crossingTick = tick;
+        const forwardX = u.x * (mirror ? -1 : 1);
+        if (s.crossingTick === null && (u.team ? forwardX < -4 : forwardX >= 4)) s.crossingTick = tick;
       }
       trace.update(JSON.stringify(r.units) + '\n');
       if (states.every(s => s.arrivalTick !== null)) break;
     }
-    return { scene, group, ownerTeam, maxTicks, inputSha256: hash(input), sourceSha256: f.sourceSha256,
+    return { scene, group, ownerTeam, mirror, recoverAt, maxTicks, inputSha256: hash(input), sourceSha256: f.sourceSha256,
       setup, gateReceipt, commands, navRevision, ticks, selectedSubsteps, staticContacts, pairContacts,
       worstStaticMargin, worstPairMargin, states, arrived: states.filter(s => s.arrivalTick !== null).length,
-      unfinished: states.filter(s => s.arrivalTick === null), traceSha256: trace.digest('hex'), observations };
+      unfinished: states.filter(s => s.arrivalTick === null), traceSha256: trace.digest('hex'), observations, actorRoutes: actors.map(u => ({id:u.id,x:u.x,z:u.z,pathIndex:u.pathIndex,path:u.path.slice(Math.max(0,u.pathIndex-1),u.pathIndex+3).map(c=>r.point(c))})) };
   } finally { await f.dispose(); }
 }
