@@ -28,7 +28,7 @@ function fixture() {
   const node = { id: 'node', type: 'food', x: 0, z: 0, stock: 10 };
   const building = { id: 1, type: 'farm', x: 0, z: 0, hp: 100, complete: false, progress: 0 };
   const journal = createWorkerPerformingActions();
-  const context = vm.createContext({ units: [unit], tickNumber: 1, dirty: false,
+  const context = vm.createContext({ units: [unit], tickNumber: 1, dirty: false, workerEconomyRouteScope: null,
     workerPerformingActions: journal, BUILDING_DEFINITIONS, buildingRepairStep,
     FOREST_GATHER_SOURCE_KIND, isAreaGatherResource, activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent, gatherWorkArea,
     // This receipt fixture has no reachable replacement area. Full authority

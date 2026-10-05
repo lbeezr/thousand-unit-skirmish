@@ -29,6 +29,7 @@ export function visionServerBindings() {
 // validator; complete authority trajectories live in worker-flat-flow-routes.
 export function workerFlowRouteBindings() {
   return { ...unitMovement, shortcutFlatUnitPath, canTraverseFlatUnitSegment,
+    workerEconomyRouteScope: null,
     movePlanningEpoch: 0, navigationRevision: 0, WORKER_INTERACTION_RANGE: 1.5,
     distanceToBuildingEdge: () => Infinity,
     cellToWorld: cell => ({ x: cell % 16 - 8 + .5, z: Math.floor(cell / 16) - 8 + .5 }),

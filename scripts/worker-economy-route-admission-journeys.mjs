@@ -1,0 +1,227 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import vm from 'node:vm';
+import { readFileSync } from 'node:fs';
+import * as movement from '../src/unit-movement.mjs';
+import * as workIntent from '../src/work-intent.mjs';
+import { shortcutFlatUnitPath, canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
+import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
+import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { creditResourceBalance } from '../src/economy-ledger.mjs';
+import { preflightXlCheckpointRoutes, XL_CHECKPOINT_ROUTE_MAX_ENTRIES as QUOTA } from '../src/server/checkpoint-route-budget.mjs';
+
+const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+function body(name) {
+  const start = source.indexOf(`function ${name}(`), end = source.indexOf('\nfunction ', start + 1);
+  assert.ok(start > 0 && end > start, name); return source.slice(start, end);
+}
+const names = ['workerFlowPath', 'applyWorkerFlowRoute', 'publishWorkerEconomyRoute',
+  'updateWorkerEconomyWithRouteAdmission', 'routeWorkerToDropoff', 'workerAtDropoff', 'routeWorker',
+  'forestOpenAccessCells', 'routeForestWorker', 'updateForestWorkerEconomy', 'updateWorkerEconomy',
+  'ensureGatherWorkIntent', 'depositWorkerCargo', 'stopGathering', 'cancelGatherOrder',
+  'clearAttackMoveOrder', 'assignStationaryOrder', 'pendingMoveAssignmentsByUnit', 'enqueueRouteRepairs',
+  'applyPlannedMoveAssignment', 'completeMovePlanningJob', 'processMovePlanningSlice',
+  'scheduleNextMovePlanning', 'serviceMovePlanningForTick'];
+const record = path => ({ hp: 0, kind: 'infantry', path, pathIndex: path.length, attackMoveResumePath: null });
+const entries = f => f.units.reduce((n, u) => n + u.path.length + (u.attackMoveResumePath?.length ?? 0), 0);
+
+// Synthetic XL route pressure and controlled flow/A* selection; real economy,
+// publication, repair/service and checkpoint-leaf bodies. Not native XL saves.
+function fixture({ width = 320, height = 320, total = 0, weighted = false, count = 1,
+  oldLength = 0, resumeLength = 0, team = 0, turns = 1 } = {}) {
+  const cell = (x, z) => Math.floor(z + height / 2) * width + Math.floor(x + width / 2);
+  const point = c => ({ x: c % width - width / 2 + .5, z: Math.floor(c / width) - height / 2 + .5 });
+  const start = cell(.5, .5), raw = Array.from({ length: 5 }, (_, i) => start + i + 1);
+  const longer = [...raw, raw.at(-1) + 1], levels = new Uint8Array(width * height);
+  if (weighted) for (const c of raw.slice(2)) levels[c] = 1;
+  const actors = Array.from({ length: count }, (_, id) => ({ ...record(Array(oldLength).fill(start)), id,
+    hp: 35, generation: 9, orderRevision: 7, team, kind: 'worker', movementDomain: 'land', ...point(start),
+    attackMoveResumePath: resumeLength ? Array(resumeLength).fill(start) : null,
+    cargo: 10, cargoType: 'food', workIntent: null, gatherPhase: 'to-base', gatherNodeId: null,
+    gatherForestCell: -1, dropoffBuildingId: 10, dropoffNavigationRevision: 3,
+    moveGoalCell: start, moveGoalPoint: null, movePlanningPending: false, queuedWaypoints: [],
+    attackMove: false, attackTargetId: -1, attackBuildingTargetId: -1, buildingTargetId: null }));
+  const units = [...actors], nodes = new Map();
+  for (let remaining = total - count * (oldLength + resumeLength); remaining > 0;) {
+    const length = Math.min(remaining, levels.length), path = Array(length);
+    Object.defineProperty(path, 0, { get() { throw new Error('no pressure payload scan'); } });
+    units.push(record(path)); remaining -= length;
+  }
+  const fields = [{ goal: longer.at(-1), goals: new Set([raw.at(-1), longer.at(-1)]), path: raw },
+    { goal: longer.at(-1), goals: new Set([longer.at(-1)]), path: longer }];
+  const candidates = [{ id: 10, goals: [...fields[0].goals] }, { id: 11, goals: [...fields[1].goals] }];
+  const callbacks = [], censuses = [], selections = [], notices = [], searches = [], samples = [];
+  const forestCellMask = new Uint8Array(levels.length), forestWoodRemaining = new Float64Array(levels.length);
+  const context = vm.createContext({ ...movement, ...workIntent, shortcutFlatUnitPath, canTraverseFlatUnitSegment,
+    activeWallBuildOrder, UNIT_DEFINITIONS, creditResourceBalance,
+    MAP_WIDTH: width, MAP_HEIGHT: height, MAP_HALF_X: width / 2, MAP_HALF_Z: height / 2, CELL_COUNT: levels.length,
+    MAX_UNITS: 2000, MAX_RESOURCE_NODES: 128, XL_CHECKPOINT_ROUTE_MAX_ENTRIES: QUOTA,
+    units, resourceNodeStates: nodes, elevationLevelByCell: levels, forestCellMask, forestWoodRemaining,
+    cellIndex: (column, row) => row * width + column, worldToCell: cell, cellToWorld: point,
+    isWalkable: c => c >= 0 && c < levels.length && !forestCellMask[c],
+    WALK_SPEED: 4, STEP_SECONDS: 1 / 30, WORKER_INTERACTION_RANGE: 1.4, WORKER_CARRY_CAPACITY: 10,
+    GATHER_RATE: 2, workerFoodGatherMultiplier: () => 1, teamUpgrades: [{}, {}],
+    movePlanningEpoch: 0, navigationRevision: 4, dirty: false, workerEconomyRouteScope: null,
+    automaticTargetRejections: new WeakMap(), workerPerformingActions: { record() {} },
+    commandUnits: command => command.ids.map(id => units[id]),
+    unitHasCapability: (u, capability) => u.kind === 'worker' && capability === 'gather', militaryCombatant: () => false,
+    economyResources: () => ['food', 'wood', 'stone'], matchEconomyProfileId: () => 'classic',
+    sendOrderNotice: (_p, _c, message) => notices.push(message), broadcastGameplayNotice() {},
+    nearestOpenCell: c => c, walkableComponents: new Int32Array(levels.length), workerDropoffCandidates: () => candidates,
+    getAttackFlowFieldForGoals: (_goals, key) => key.includes(':10:') ? fields[0] : fields[1],
+    getAttackFlowField: () => fields[0], pathFromAttackFlow: (_start, field) => field.path.slice(),
+    buildingsById: new Map([[10, { id: 10, team, complete: true, ...point(raw.at(-1)) }]]),
+    acceptsProfileDropoff: () => true, distanceToBuildingEdge: (u, b) => Math.hypot(u.x - b.x, u.z - b.z),
+    teamFood: [100, 100], teamWood: [100, 100], teamStone: [0, 0],
+    cellVisibleToTeam: () => true, forestStockChangedCells: new Set(), pendingForestClears: new Set(),
+    continueAreaGathering: () => false, flushPendingForestClears() {}, harvestNodeById: id => nodes.get(id),
+    activateWildlifeHarvest: () => false, markWildlifeDepleted() {},
+    activeMovePlanningJob: null, movePlanningQueue: [], nextMoveOrderId: 1, tickNumber: 0,
+    MOVE_PLANNING_SLICE_BUDGET_MS: 5, MOVE_PLANNING_MAX_WORK_ITEMS_PER_SLICE: 8,
+    MOVE_PLANNING_MAX_EXPANDED_CELLS_PER_SLICE: 4096, MOVE_PLANNING_TURNS_PER_TICK: turns,
+    TICK_RATE: 30, ATTACK_MOVE_SCAN_INTERVAL_TICKS: 15, SHARED_MOVE_PATHS: true,
+    pendingMoveStartBroadcasts: new Set(), movePlanningServiceTick: null,
+    performance: { now: () => 0 }, setImmediate: callback => callbacks.push(callback),
+    findPathAStar(from, destination, diagnostics) {
+      searches.push(destination); diagnostics.searchCount++; diagnostics.expandedCells += 5;
+      return Array.from({ length: Math.max(0, destination - from) }, (_, i) => from + i + 1);
+    },
+    recordMovePlanningSample: sample => samples.push(sample),
+    console: { error(message, error) { throw new Error(message, { cause: error }); } },
+  });
+  context.createUnitRoutePublicationLedger = (...args) => {
+    const ledger = movement.createUnitRoutePublicationLedger(...args); censuses.push(ledger); return ledger;
+  };
+  vm.runInContext(names.map(body).join('\n'), context);
+  const apply = context.applyWorkerFlowRoute;
+  context.applyWorkerFlowRoute = (...args) => {
+    const result = apply(...args);
+    selections.push({ selected: result.selectedGoalCell, originalLength: result.originalPathLength,
+      originalCost: result.originalCost, status: result.status, outcome: result.publicationOutcome });
+    return result;
+  };
+  const f = { actors, units, nodes, context, raw, fields, start, point, cell, levels,
+    censuses, selections, callbacks, notices, searches, samples, forestCellMask, forestWoodRemaining,
+    economy: () => context.updateWorkerEconomyWithRouteAdmission(),
+    drain() { let bound = 0; while (callbacks.length) { assert.ok(++bound <= 8, 'no capacity callback busy-loop'); callbacks.shift()(); } },
+    tick() { context.tickNumber++; context.serviceMovePlanningForTick(context.tickNumber); f.drain(); },
+    release() { units.at(-1).path = []; },
+    checkpointLeaf() {
+      return preflightXlCheckpointRoutes({ width, height }, { resourceNodes: nodes,
+        units: units.map(u => u.hp > 0 ? u : { ...u, path: Array(u.path.length).fill(start) }) },
+      { maxUnits: 2000, maxResourceNodes: 128 });
+    },
+    forestActor(u = actors[0]) {
+      const current = start + 10, tree = current + 1, center = point(current);
+      Object.assign(u, { x: center.x - .4, z: center.z - .49, cargo: 5, cargoType: 'wood',
+        gatherPhase: 'to-node', gatherForestCell: tree, gatherNodeId: null,
+        workIntent: workIntent.createForestGatherWorkIntent(u.generation, point(tree)),
+        path: [], pathIndex: 0, moveGoalCell: current, movePlanningPending: false });
+      forestCellMask[tree] = 1; forestWoodRemaining[tree] = 100;
+      return { current, tree, job: structuredClone(u.workIntent) };
+    },
+  };
+  assert.equal(entries(f), total); return f;
+}
+
+for (const [width, height] of [[320, 160], [160, 320], [320, 320]]) {
+  test(`Worker economy ${width}x${height}: stale navigation retains raw selection under quota deferral`, () => {
+    for (const weighted of [false, true]) for (const free of [0, 1, 5]) {
+      const f = fixture({ width, height, weighted, total: QUOTA - free }), u = f.actors[0]; f.economy();
+      const fits = free >= (weighted ? 5 : 1), selected = f.selections[0];
+      assert.equal(selected.selected, f.raw.at(-1)); assert.notEqual(selected.selected, f.fields[0].goal);
+      assert.equal(selected.originalLength, 5);
+      assert.equal(selected.originalCost, movement.unitRoutePathCost(f.start, f.raw, width, f.levels));
+      assert.equal(selected.status, fits ? 'ready' : 'deferred');
+      assert.equal(u.dropoffBuildingId, 10, 'original raw length five beats six before reduction');
+      assert.equal(u.dropoffNavigationRevision, 4); assert.equal(u.moveGoalCell, f.raw.at(-1));
+      assert.equal(u.cargo, 10); assert.equal(u.cargoType, 'food'); assert.equal(u.gatherPhase, 'to-base');
+      assert.equal(u.movePlanningPending, !fits); assert.ok(entries(f) <= QUOTA); assert.ok(f.checkpointLeaf());
+      assert.equal(f.censuses.length, 1); assert.equal(f.context.workerEconomyRouteScope, null);
+      if (!fits) {
+        const pending = f.context.pendingMoveAssignmentsByUnit().get(u.id);
+        assert.equal(pending.destination, f.raw.at(-1), 'explicit retry survives already-refreshed dropoff navigation');
+        assert.equal(pending.path.length, 0); assert.equal(u.path.length, 0);
+      }
+    }
+  });
+  test(`Worker economy ${width}x${height}: forest center refusal preserves job/cargo/stock and one pending repair`, () => {
+    const f = fixture({ width, height, total: QUOTA }), u = f.actors[0], forest = f.forestActor();
+    u.queuedWaypoints.push({ destination: forest.current + 4, attackMove: false, point: null });
+    f.economy(); f.drain(); const revision = u.orderRevision, pending = f.context.pendingMoveAssignmentsByUnit().get(u.id);
+    assert.equal(pending.destination, forest.current); assert.equal(u.movePlanningPending, true);
+    assert.equal(entries(f), QUOTA); assert.ok(f.checkpointLeaf());
+    for (let i = 0; i < 6; i++) f.economy();
+    assert.equal(u.orderRevision, revision); assert.equal(f.context.pendingMoveAssignmentsByUnit().get(u.id), pending);
+    assert.equal(f.censuses.length, 1, 'waiting center does not repeat the census or repair');
+    assert.equal(u.path.length, 0); assert.deepEqual(u.workIntent, forest.job);
+    assert.equal(u.cargo, 5); assert.equal(u.cargoType, 'wood'); assert.equal(f.forestWoodRemaining[forest.tree], 100);
+    assert.equal(u.queuedWaypoints.length, 1); assert.equal(f.context.workerEconomyRouteScope, null);
+  });
+}
+
+test('mixed flow and center writers share one census in either stable actor order', () => {
+  for (const forestFirst of [false, true]) {
+    const f = fixture({ total: QUOTA - 1, count: 2 });
+    f.forestActor(f.actors[forestFirst ? 0 : 1]); f.economy();
+    assert.equal(f.censuses.length, 1); assert.equal(entries(f), QUOTA);
+    assert.equal(f.actors.filter(u => u.path.length === 1).length, 1);
+    assert.equal(f.actors.filter(u => u.movePlanningPending).length, 1);
+    assert.ok(f.checkpointLeaf());
+  }
+});
+
+test('active-only replacement does not credit a retained resume alias', () => {
+  const f = fixture({ total: QUOTA, oldLength: 3, resumeLength: 3 }), u = f.actors[0];
+  u.attackMoveResumePath = u.path; const alias = u.path; f.economy();
+  assert.equal(entries(f), QUOTA - 2); assert.equal(u.attackMoveResumePath, alias);
+  assert.equal(f.selections[0].status, 'ready'); assert.equal(u.movePlanningPending, false);
+  assert.ok(f.checkpointLeaf());
+});
+
+for (const team of [0, 1]) for (const turns of [1, 2])
+test(`seat ${team}, scheduler ${turns}: explicit selected-goal retry reserves fresh capacity and deposits once`, () => {
+  const f = fixture({ total: QUOTA, team, turns }), u = f.actors[0]; f.economy(); f.drain();
+  const destination = u.moveGoalCell, revision = u.orderRevision; f.economy();
+  assert.equal(u.orderRevision, revision); assert.equal(f.context.teamFood[team], 100); assert.equal(u.cargo, 10);
+  f.release(); f.tick(); assert.equal(u.movePlanningPending, false); assert.equal(u.path.at(-1), destination);
+  assert.ok(entries(f) <= QUOTA); assert.ok(f.censuses.length >= 2, 'asynchronous publication takes a fresh reservation');
+  // Controlled physical arrival isolates deposit accounting from execution;
+  // separate existing real journeys exercise physical movement/cold saves.
+  Object.assign(u, f.point(destination)); f.economy(); f.economy();
+  assert.equal(f.context.teamFood[team], 110); assert.equal(u.cargo, 0); assert.equal(u.gatherPhase, '');
+});
+
+test('pending forest flow keeps its selected tail instead of replacing it with the current access center', () => {
+  const f = fixture({ total: QUOTA }), u = f.actors[0], forest = f.forestActor();
+  u.movePlanningPending = true; u.moveGoalCell = forest.current - 1;
+  const before = structuredClone(u); f.economy();
+  assert.deepEqual(u, before); assert.equal(f.censuses.length, 0);
+});
+
+test('scope unwinds in finally and only current accepted actors reach repair handoff', () => {
+  for (const mutation of ['stop', 'generation', 'replacement', 'epoch', 'throw']) {
+    const f = fixture({ total: QUOTA }), u = f.actors[0];
+    f.context.flushPendingForestClears = () => {
+      if (mutation === 'stop') f.context.assignStationaryOrder({ team: 0 }, { type: 'stop', ids: [u.id] });
+      else if (mutation === 'generation') u.generation++;
+      else if (mutation === 'replacement') f.units[0] = { ...u, generation: 10, path: [], movePlanningPending: false };
+      else if (mutation === 'epoch') f.context.movePlanningEpoch++;
+      else throw new Error('controlled economy failure');
+    };
+    if (mutation === 'throw') assert.throws(f.economy, /controlled economy failure/); else f.economy();
+    assert.equal(f.context.workerEconomyRouteScope, null);
+    assert.equal(f.context.pendingMoveAssignmentsByUnit().size, mutation === 'throw' ? 1 : 0);
+    assert.equal(u.cargo, 10); assert.equal(entries(f), QUOTA);
+  }
+});
+
+test('idle XL economy is census-free; legacy route publication preserves its original bypass', () => {
+  const idle = fixture({ total: QUOTA }); idle.actors[0].gatherPhase = ''; idle.economy();
+  assert.equal(idle.censuses.length, 0); assert.equal(idle.context.workerEconomyRouteScope, null);
+  for (const [width, height] of [[16, 17], [160, 160], [256, 256]]) {
+    const f = fixture({ width, height }); f.economy();
+    assert.equal(f.censuses.length, 0); assert.equal(f.actors[0].path.at(-1), f.raw.at(-1));
+    assert.equal(f.actors[0].movePlanningPending, false); assert.equal(f.checkpointLeaf(), null);
+  }
+});
