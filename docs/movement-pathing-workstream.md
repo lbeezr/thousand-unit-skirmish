@@ -967,6 +967,21 @@ retain native timeout, paid-house physical arrivals and dynamic-wall deficits;
 no full-suite retry until a substantive fix. Caller/core's endpoint consumer
 stays separate, and no runtime correction or completion is claimed here.
 
+5 October bounded peer-room observation: crowd retains the
+[concrete room witnesses and counterexamples](qa-native-wall-seat1-2026-10-05.md#fresh-peer-step-room-observation--5-october-continuation)
+at the existing native serial poses. Owner131's legal short retreat frees
+peer79's first desired segment, but actor101 blocks the next; owner91's legal
+corridors leave peer119 blocked by actor121. Passing gate controls retain
+64/64 at992/2,615, zero contacts and72 unchanged inactive actors per seat, and
+also contain insufficient local room witnesses. No guard bypass, speculative
+lease or runtime correction qualifies. Next crowd step is a bounded recovery
+contract proving executed peer progress, finite owner retreat and deterministic
+fairness; core must agree any pure current-pose projection/admission adapter
+before shared executor edits. Preserve unchanged native/gate/forest/bridge/Stop
+contracts and caller/core endpoint ownership. No full-suite retry until a
+substantive fix; source evidence remains separate from served/rendered proof.
+
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5

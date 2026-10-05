@@ -288,3 +288,115 @@ can be retained on its non-main branch and in PR445's existing record without
 creating another full-run event. It changes no workflow, access or protection.
 Source-only observations do not close runtime, provider/served identity or
 ordinary rendered verification.
+
+## Fresh peer-step room observation — 5 October continuation
+
+Crowd's next bounded observation uses the retained public-source `5f2c82f1`
+native samples at ticks 2,880–3,120, rather than repeating the native journey.
+A disposable adapter restores the matching, locally captured checkpoint only
+for the unchanged terrain/elevation oracle and full paths. It overlays the
+owner and queried peers' recorded serial poses and path indices, checks
+identity/revision/path length, matching navigation revision and the raw waypoint
+heading, then recomputes
+`crowdPassagePoint` from that pose. All 108 admitted owner reconstructions match
+the recorded owner projection; four records with a path/identity mismatch are
+excluded. The two principal peers below also retain the raw-route direction
+observed at their own turn. These are fresh source-derived diagnostics, outside
+git; no private CPU archive or artifact bundle is accessed or published.
+
+Only strict terrain/body-clear `.75` self-retreat corridors already observed
+in the original trace are considered. For the relevant close peers, their
+first desired segment and every possible contacting body lie inside the
+owner's recorded `2.1` neighborhood. The restored full roster supplies additional
+physical checks; no unrecorded far actor can establish the positive short-step
+witness. The owner corridor uses the full swept capsule, not endpoint cells or
+soft separation. Terrain checks retain map bounds, elevation/corner traversal
+and static clearance. Peer checks use its freshly projected desired target and
+an ordinary first-step budget (`2.6 / 30` for Infantry), not its distant final
+goal or another actor's earlier blocker list.
+A positive peer opening and every horizon step require strict swept static
+clearance and nonnegative body margins within `1e-9`; admission through an
+inherited-contact escape does not qualify as zero-contact room.
+
+The counterfactual changes only the prospective yielding actor's pose, first
+by its admitted short retreat and then by the full `.75` corridor. It executes
+neither move, modifies no controller state, creates no lease/contour and never
+publishes a route/order/position. The peer's next execution must still revalidate
+its own budget, priority, route and all current bodies. In particular, a
+lower-ID peer may already have consumed its real movement budget that tick.
+
+### Concrete useful room and counterexamples
+
+At the owner's retained tick-3,120 serial pose:
+
+| Owner / peer | Fresh desired segment before retreat | Result after legal owner retreat | Progress and safety limit |
+| --- | --- | --- | --- |
+| 131 / 79 | Strict terrain-clear; actor131 is its only body blocker. | The owner's first `.086667` retreat already clears the peer's first segment. A full `.75` retreat also clears it, with peer body margin `+.017131`. | The first peer step advances `.081377` toward its raw waypoint. The next projected same-waypoint step is blocked by actor101. Full owner retreat loses `.749211` of raw-waypoint progress; corridor body margin is `+.003914`. |
+| 91 / 119 | Strict terrain-clear; blocked by actors91 and121. Actor91 has an admitted candidate discarded by priority. | Both clear owner corridors (90°/105°) leave actor121 blocking the peer, after either the short or full retreat. | No peer step becomes legal; residual body margin is `-.015030`. Owner corridor margins are positive (`+.005025` / `+.057424`), so self-clearance alone is insufficient. |
+| 110 / 87 | Strict terrain-clear; actor110 is the only blocker. | The first owner retreat leaves the peer blocked. Either full corridor clears it, with peer body margin `+.006173`. | At tick3,120, nine counterfactual same-waypoint projections cover `.78` without contact. At tick3,060 the same identity/revision/path-index pair reaches only `.26` before actor81 blocks it. A one-call opening does not promise a persistent corridor. |
+
+These positive peer segments have zero static/body contacts in the tested
+counterfactual. The negative margin in the second row is a rejected diagnostic
+proposal, never an executed contact. The same-waypoint horizon freezes every
+other actor and does not consume a waypoint, run priority selection or service
+planning. It bounds the room observation; it is not a multi-tick execution,
+route-completion guarantee or fairness result.
+
+Actor131's revision2/path-index14 is stable from ticks3,000–3,120; its recorded
+wait grows from121 to241. Actor79 keeps revision3/path-index13 across ticks2,880–3,120, with wait584→824. Actor91's revision4/path-index6 is stable across
+the observed window, with wait666→906; peer119 keeps revision1/path-index48
+across that window, with wait557→797. Actor110/87 keep revisions15/4 and path indices0/0 between the two compared
+samples. Their waits grow153→213 and483→543 while the available body corridor
+changes. These observations retain actor/route progress separately from a
+changing dependency and do not claim a persistent pair from one blocker edge.
+
+Across the selected 108 owner observations, 15 fresh stalled peer segments are
+blocked by the owner. Ten become clear after at least one full retreat, and
+seven after at least one admitted short retreat. Counts describe this bounded
+sample and overlapping candidate trials, not success rates for the native
+roster. No executed native recovery or all-64 completion is claimed.
+
+### Unchanged passing controls
+
+The same read-only projection/retreat observation runs in the existing paid
+gate controls, with original commands and the 2,700-tick completion limit:
+
+| Seat | Completion / ticks | Selected substeps | Static / body contact steps | Inactive actors preserved | Sampled owner-blocked peer segments / cleared after full retreat |
+| --- | --- | --- | --- | --- | --- |
+| 0 | `64/64`, `992` | `43,208` | `0 / 0` | `72` | `3 / 1` |
+| 1 | `64/64`, `2,615` | `98,416` | `0 / 0` | `72` | `19 / 11` |
+
+All 25/155 recorded owner projections match the live control projection;
+controller maxima remain77 proposals/114 arbitration visits with zero missing
+control records. Gate seat1 also exhibits a one-step opening followed by a
+third-body blocker (owner98/peer118, then actor97), yet eventually completes
+under the existing controller. Therefore such a local witness alone cannot
+explain permanent native failure or select a safe recovery rule. Regenerated
+identity-dependent capsule hashes are not compared as byte-stable packets.
+
+### Precise remaining correction contract
+
+This observation establishes physically useful local room and equally concrete
+insufficient-room counterexamples. It does **not** qualify removal of the
+multi-peer guard, a new lease, a priority exemption or a parked shove. Runtime,
+Stop/order priority, accepted endpoints and original native deadlines remain
+unchanged. Worker68/actor120 endpoint occupancy remains caller/core-owned.
+
+A correction needs an agreed pure executor projection/admission contract at the
+current serial pose: peer identity, order/navigation/epoch/path/index guards,
+actual available first-substep budget, projected target and every static/body
+blocker. Reading a final goal or invoking the mutating selector as a preview
+cannot satisfy it. Crowd owns the bounded recovery rule; core owns agreement
+on any host adapter before shared `getMoveVector` or position-write edits.
+
+The recovery rule must then show **executed** peer route progress within finite
+owner time and displacement bounds, with fresh admission of every owner and
+peer step, release/reset on observed progress or changed eligibility, and
+suppression of repeated failed unchanged dependencies. Actor131/79 is the
+specific counterexample to treating one freed step as that proof; actor91/119
+is the counterexample to granting solely because the owner's escape is clear.
+The changing110/87 corridor requires revalidation rather than a room promise.
+Deterministic fairness and preservation of inactive/parked actors must be
+measured in the unchanged both-seat native and gate/forest/bridge/Stop controls
+before claiming a runtime correction. No full-suite retry, new PR/main push or
+served/rendered proof accompanies this source-only diagnosis continuation.
