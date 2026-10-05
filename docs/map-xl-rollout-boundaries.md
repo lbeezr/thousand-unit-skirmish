@@ -215,13 +215,14 @@ node --test scripts/checkpoint-json-budget.test.mjs
 
 It reads actual source limits (2,000 actors,128 buildings/resources/sites,
 eight waypoints, five production slots,25 maximum footprint cells) and records
-input hashes. The actual admitted256² roster checkpoint measures2,178,138
+input hashes. On the current combat-state shape, the actual admitted256²
+roster checkpoint measures2,182,138
 compact bytes,100,117 values,6,037 containers, depth5 and48 actor fields. A
 declared supported-field combination adds both route kinds to their1,048,576
 aggregate,128×64 herd paths, all site/waypoint slots,128 buildings/resources,
-102,400 fractional-stock rows and both320 exploration grids:19,450,422 bytes,
+102,400 fractional-stock rows and both320 exploration grids:19,458,422 bytes,
 2,104,047 values,154,704 containers and depth7; actor non-route payload is at
-most4,482 bytes. It fits the quotas without expanding them. This synthetic
+most4,485 bytes. It fits the quotas without expanding them. This synthetic
 combination is an allocation witness, not a semantically valid320 world/save.
 
 The explicit canonical sizing allowance is29,066,026 bytes: route digits,
