@@ -48,8 +48,9 @@ programmer error/cause identity remain. No catch, new asynchronous request,
 resend queue, protocol change or raw map/error content is added.
 
 Architecture/authoring retains the [draft/publish lifecycle seam](architecture.md#continuing-boundary-workstream),
-map import/validators and rendered recovery. Its open PR #451 concerns the draft
-format; no active PR overlaps these two transport-rejection status writes.
+map import/validators and rendered recovery. At audit start, PR #451 concerned
+the draft format; refreshing main included that merge without conflict, and no
+active PR overlapped these two transport-rejection status writes.
 Diagnostic loaders and held art #25/#230/#241 are unchanged. The implementation
 adds no lifecycle or validation changes. Art backing: the existing
 [Save & Play status treatment](qa-evidence/studio-landscape-strokes-2026-09-30/save-play.png)
