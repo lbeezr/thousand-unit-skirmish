@@ -83,6 +83,7 @@ export async function createStaticSheepRuntime({ THREE, scene, bindingUrl }) {
   mesh.visible = false;
   scene.add(mesh);
   const local = new THREE.Vector3(), up = new THREE.Vector3(), toward = new THREE.Vector3();
+  let pickContext = null;
   let disposed = false;
   function geometryForFrame(frame) {
     if (geometries.has(frame.id)) return geometries.get(frame.id);
@@ -103,6 +104,24 @@ export async function createStaticSheepRuntime({ THREE, scene, bindingUrl }) {
   return {
     binding, manifest, mesh,
     supports(state) { return !disposed && Boolean(staticSheepFrame(manifest, binding, state)); },
+    containsPixel(uv) {
+      if (disposed || !Number.isFinite(uv?.x) || !Number.isFinite(uv.y)
+        || uv.x < 0 || uv.x > 1 || uv.y < 0 || uv.y > 1) return false;
+      // Raycast UVs already include the direction's atlas rectangle. Sample
+      // the verified decoded image, rather than its transparent canvas bounds.
+      if (!pickContext) {
+        const canvas = typeof OffscreenCanvas === 'function' ? new OffscreenCanvas(1, 1)
+          : globalThis.document?.createElement('canvas');
+        if (!canvas) return false;
+        canvas.width = canvas.height = 1;
+        pickContext = canvas.getContext('2d', { willReadFrequently: true });
+        if (!pickContext) return false;
+      }
+      pickContext.clearRect(0, 0, 1, 1);
+      pickContext.drawImage(image, Math.min(image.width - 1, Math.floor(uv.x * image.width)),
+        Math.min(image.height - 1, Math.floor(uv.y * image.height)), 1, 1, 0, 0, 1, 1);
+      return pickContext.getImageData(0, 0, 1, 1).data[3] / 255 >= material.alphaTest;
+    },
     update(state, camera) {
       const frame = !disposed && ['x', 'groundY', 'z'].every(key => Number.isFinite(state?.[key]))
         ? staticSheepFrame(manifest, binding, state) : null;

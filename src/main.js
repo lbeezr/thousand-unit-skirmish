@@ -7255,6 +7255,21 @@ function pickResourceNodeAt(x, y, { visibleOnly = false, inspectableWildlifeOnly
     if (farm) return farmHarvestNode(farm);
   }
   const rect = renderer.domElement.getBoundingClientRect();
+  if (mapDefinition.resourceNodes.some(node => node.wildlifeSpecies !== undefined) && wildlifeRenderer.pick) {
+    wildlifeRenderer.update(camera);
+    pointerNdc.set((x / rect.width) * 2 - 1, -(y / rect.height) * 2 + 1);
+    camera.updateMatrixWorld(true);
+    raycaster.setFromCamera(pointerNdc, camera);
+    const id = wildlifeRenderer.pick(raycaster, nodeId => {
+      const row = latestWildlifeView?.rows.get(nodeId);
+      return Boolean(row && row.stock > 0 && wildlifePointVisible(row)
+        && (!inspectableWildlifeOnly || selectInspectableWildlife(latestWildlifeView, nodeId) !== null));
+    });
+    if (id !== null) {
+      const definition = mapDefinition.resourceNodes.find(node => node.id === id);
+      if (definition) return { ...definition, ...latestWildlifeView.rows.get(id) };
+    }
+  }
   let nearest = null;
   let nearestDistance = 26 * 26;
   for (const authored of [...mapDefinition.resourceNodes,
