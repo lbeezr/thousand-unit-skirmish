@@ -1,0 +1,491 @@
+{
+  "source": "67295aef1a744bde9000ce2c3d12e00b78a922e0",
+  "cases": [
+    {
+      "name": "tiny-authored-20260925-0",
+      "source": {
+        "revision": "67295aef1a744bde9000ce2c3d12e00b78a922e0",
+        "dirty": false
+      },
+      "seeds": [
+        20260925,
+        0
+      ],
+      "nativeIdentity": {
+        "matchModeId": "authored",
+        "matchModeVersion": 1
+      },
+      "tick": 108000,
+      "winner": -1,
+      "living": [
+        {
+          "team": 0,
+          "units": [
+            {
+              "id": 50,
+              "kind": "worker",
+              "hp": 44,
+              "x": 6.338777053224941,
+              "z": 10.5
+            },
+            {
+              "id": 51,
+              "kind": "worker",
+              "hp": 48,
+              "x": 20.5,
+              "z": 31.02
+            },
+            {
+              "id": 75,
+              "kind": "worker",
+              "hp": 88,
+              "x": 20.5,
+              "z": 31.575017596294188
+            },
+            {
+              "id": 83,
+              "kind": "worker",
+              "hp": 100,
+              "x": 17.958858679159047,
+              "z": 10.5
+            },
+            {
+              "id": 95,
+              "kind": "infantry",
+              "hp": 100,
+              "x": -58.515912634470396,
+              "z": -1.5088217276275675
+            }
+          ],
+          "buildings": [
+            {
+              "id": 2,
+              "type": "barracks",
+              "hp": 1800,
+              "complete": true,
+              "x": -63.5,
+              "z": 6.5
+            },
+            {
+              "id": 4,
+              "type": "house",
+              "hp": 800,
+              "complete": true,
+              "x": -51.5,
+              "z": 0.5
+            },
+            {
+              "id": 15,
+              "type": "storehouse",
+              "hp": 1200,
+              "complete": true,
+              "x": -60.5,
+              "z": -5.5
+            },
+            {
+              "id": 21,
+              "type": "farm",
+              "hp": 600,
+              "complete": true,
+              "x": -54.5,
+              "z": 6.5
+            }
+          ]
+        },
+        {
+          "team": 1,
+          "units": [
+            {
+              "id": 12,
+              "kind": "worker",
+              "hp": 100,
+              "x": 36.95321313352147,
+              "z": -21.219693759326155
+            },
+            {
+              "id": 14,
+              "kind": "worker",
+              "hp": 100,
+              "x": 36.899721528303374,
+              "z": -21.772072760662294
+            },
+            {
+              "id": 15,
+              "kind": "worker",
+              "hp": 100,
+              "x": 54.5,
+              "z": -5.609179053451208
+            },
+            {
+              "id": 41,
+              "kind": "worker",
+              "hp": 100,
+              "x": 58.5,
+              "z": 3.633333333333331
+            },
+            {
+              "id": 56,
+              "kind": "scout",
+              "hp": 60,
+              "x": 58.5,
+              "z": -9.5
+            },
+            {
+              "id": 80,
+              "kind": "infantry",
+              "hp": 71,
+              "x": -58.33026755093531,
+              "z": -3.0671324723658744
+            },
+            {
+              "id": 82,
+              "kind": "infantry",
+              "hp": 78,
+              "x": -58.667770957227134,
+              "z": -3.212245312413621
+            },
+            {
+              "id": 86,
+              "kind": "spearman",
+              "hp": 110,
+              "x": -57.922940878892426,
+              "z": -2.856190435278714
+            },
+            {
+              "id": 92,
+              "kind": "infantry",
+              "hp": 78,
+              "x": -58.87288993828218,
+              "z": -2.6971408856691093
+            },
+            {
+              "id": 96,
+              "kind": "infantry",
+              "hp": 100,
+              "x": 7.5,
+              "z": 8.899999999999684
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "type": "barracks",
+              "hp": 1616.400000000001,
+              "complete": true,
+              "x": 50.5,
+              "z": 0.5
+            },
+            {
+              "id": 3,
+              "type": "house",
+              "hp": 800,
+              "complete": true,
+              "x": 56.5,
+              "z": -5.5
+            },
+            {
+              "id": 6,
+              "type": "storehouse",
+              "hp": 874.2000000000058,
+              "complete": true,
+              "x": -29.5,
+              "z": -27.5
+            },
+            {
+              "id": 11,
+              "type": "town-center",
+              "hp": 2383.7999999999997,
+              "complete": true,
+              "x": 66.5,
+              "z": 6.5
+            },
+            {
+              "id": 13,
+              "type": "stable",
+              "hp": 1600,
+              "complete": true,
+              "x": 58.5,
+              "z": -11.5
+            },
+            {
+              "id": 18,
+              "type": "watchtower",
+              "hp": 1200,
+              "complete": true,
+              "x": 46.5,
+              "z": 0.5
+            },
+            {
+              "id": 22,
+              "type": "farm",
+              "hp": 600,
+              "complete": true,
+              "x": 60.5,
+              "z": 6.5
+            }
+          ]
+        }
+      ],
+      "filtered": [
+        {
+          "team": 0,
+          "tick": 107970,
+          "livingFriendlyUnits": 5,
+          "livingVisibleEnemyUnits": 5,
+          "livingVisibleEnemyBuildings": 0
+        },
+        {
+          "team": 1,
+          "tick": 107970,
+          "livingFriendlyUnits": 10,
+          "livingVisibleEnemyUnits": 2,
+          "livingVisibleEnemyBuildings": 5
+        }
+      ],
+      "interpretation": "Exact terminal witness only; gameplay cause not established."
+    },
+    {
+      "name": "tiny-skirmish-20260925-0",
+      "source": {
+        "revision": "67295aef1a744bde9000ce2c3d12e00b78a922e0",
+        "dirty": false
+      },
+      "seeds": [
+        20260925,
+        0
+      ],
+      "nativeIdentity": {
+        "matchModeId": "skirmish",
+        "matchModeVersion": 1
+      },
+      "tick": 108000,
+      "winner": -1,
+      "living": [
+        {
+          "team": 0,
+          "units": [
+            {
+              "id": 50,
+              "kind": "worker",
+              "hp": 44,
+              "x": 6.338777053224941,
+              "z": 10.5
+            },
+            {
+              "id": 51,
+              "kind": "worker",
+              "hp": 48,
+              "x": 20.5,
+              "z": 31.02
+            },
+            {
+              "id": 75,
+              "kind": "worker",
+              "hp": 88,
+              "x": 20.5,
+              "z": 31.575017596294188
+            },
+            {
+              "id": 83,
+              "kind": "worker",
+              "hp": 100,
+              "x": 17.958858679159047,
+              "z": 10.5
+            },
+            {
+              "id": 95,
+              "kind": "infantry",
+              "hp": 100,
+              "x": -58.515912634470396,
+              "z": -1.5088217276275675
+            }
+          ],
+          "buildings": [
+            {
+              "id": 2,
+              "type": "barracks",
+              "hp": 1800,
+              "complete": true,
+              "x": -63.5,
+              "z": 6.5
+            },
+            {
+              "id": 4,
+              "type": "house",
+              "hp": 800,
+              "complete": true,
+              "x": -51.5,
+              "z": 0.5
+            },
+            {
+              "id": 15,
+              "type": "storehouse",
+              "hp": 1200,
+              "complete": true,
+              "x": -60.5,
+              "z": -5.5
+            },
+            {
+              "id": 21,
+              "type": "farm",
+              "hp": 600,
+              "complete": true,
+              "x": -54.5,
+              "z": 6.5
+            }
+          ]
+        },
+        {
+          "team": 1,
+          "units": [
+            {
+              "id": 12,
+              "kind": "worker",
+              "hp": 100,
+              "x": 36.95321313352147,
+              "z": -21.219693759326155
+            },
+            {
+              "id": 14,
+              "kind": "worker",
+              "hp": 100,
+              "x": 36.899721528303374,
+              "z": -21.772072760662294
+            },
+            {
+              "id": 15,
+              "kind": "worker",
+              "hp": 100,
+              "x": 54.5,
+              "z": -5.609179053451208
+            },
+            {
+              "id": 41,
+              "kind": "worker",
+              "hp": 100,
+              "x": 58.5,
+              "z": 3.633333333333331
+            },
+            {
+              "id": 56,
+              "kind": "scout",
+              "hp": 60,
+              "x": 58.5,
+              "z": -9.5
+            },
+            {
+              "id": 80,
+              "kind": "infantry",
+              "hp": 71,
+              "x": -58.33026755093531,
+              "z": -3.0671324723658744
+            },
+            {
+              "id": 82,
+              "kind": "infantry",
+              "hp": 78,
+              "x": -58.667770957227134,
+              "z": -3.212245312413621
+            },
+            {
+              "id": 86,
+              "kind": "spearman",
+              "hp": 110,
+              "x": -57.922940878892426,
+              "z": -2.856190435278714
+            },
+            {
+              "id": 92,
+              "kind": "infantry",
+              "hp": 78,
+              "x": -58.87288993828218,
+              "z": -2.6971408856691093
+            },
+            {
+              "id": 96,
+              "kind": "infantry",
+              "hp": 100,
+              "x": 7.5,
+              "z": 8.899999999999684
+            }
+          ],
+          "buildings": [
+            {
+              "id": 1,
+              "type": "barracks",
+              "hp": 1616.400000000001,
+              "complete": true,
+              "x": 50.5,
+              "z": 0.5
+            },
+            {
+              "id": 3,
+              "type": "house",
+              "hp": 800,
+              "complete": true,
+              "x": 56.5,
+              "z": -5.5
+            },
+            {
+              "id": 6,
+              "type": "storehouse",
+              "hp": 874.2000000000058,
+              "complete": true,
+              "x": -29.5,
+              "z": -27.5
+            },
+            {
+              "id": 11,
+              "type": "town-center",
+              "hp": 2383.7999999999997,
+              "complete": true,
+              "x": 66.5,
+              "z": 6.5
+            },
+            {
+              "id": 13,
+              "type": "stable",
+              "hp": 1600,
+              "complete": true,
+              "x": 58.5,
+              "z": -11.5
+            },
+            {
+              "id": 18,
+              "type": "watchtower",
+              "hp": 1200,
+              "complete": true,
+              "x": 46.5,
+              "z": 0.5
+            },
+            {
+              "id": 22,
+              "type": "farm",
+              "hp": 600,
+              "complete": true,
+              "x": 60.5,
+              "z": 6.5
+            }
+          ]
+        }
+      ],
+      "filtered": [
+        {
+          "team": 0,
+          "tick": 107970,
+          "livingFriendlyUnits": 5,
+          "livingVisibleEnemyUnits": 5,
+          "livingVisibleEnemyBuildings": 0
+        },
+        {
+          "team": 1,
+          "tick": 107970,
+          "livingFriendlyUnits": 10,
+          "livingVisibleEnemyUnits": 2,
+          "livingVisibleEnemyBuildings": 5
+        }
+      ],
+      "interpretation": "Exact terminal witness only; gameplay cause not established."
+    }
+  ]
+}

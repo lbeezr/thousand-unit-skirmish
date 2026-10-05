@@ -1,0 +1,534 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "revision": "67295aef1a744bde9000ce2c3d12e00b78a922e0",
+    "dirty": false,
+    "branch": "codex/full-cpu-67295aef",
+    "checkout": "/workspace/thousand-unit-skirmish-elimination-fixture",
+    "observedMain": "67295aef1a744bde9000ce2c3d12e00b78a922e0"
+  },
+  "includedFixes": {
+    "pr423": "3071135979dc2909c26a58dfebe9e52f67be8e8c",
+    "pr426": "09215b1a5a260b0d235b7d45e26a0b2ff51be46e",
+    "pr427": "870a83d0808d5888bdfdee89e059194e4b8989ef",
+    "pr428": "67295aef1a744bde9000ce2c3d12e00b78a922e0"
+  },
+  "command": "npm test -- --report=/workspace/cpu-qualification-67295aef/report.json",
+  "classification": "normal unchanged unsharded full CPU attempt",
+  "result": {
+    "status": "failed",
+    "exitCode": 1,
+    "finishedAt": "2026-10-05T04:27:46.460Z",
+    "selectedCount": 1323,
+    "passedCount": 1105,
+    "failedCount": 1,
+    "unrunCount": 217,
+    "fullCpuSuitePassed": false,
+    "failedChecks": [
+      {
+        "label": "Tiny authored and native Skirmish: fog, paid production, exact replay and reset",
+        "status": "failed",
+        "exitCode": 1,
+        "reason": "Check exited 1."
+      }
+    ]
+  },
+  "coverageFloors": [
+    {
+      "args": [
+        "--experimental-test-coverage",
+        "--test-coverage-include=src/client/audio/audio-shipped-response.mjs",
+        "--test-coverage-lines=100",
+        "--test-coverage-branches=100",
+        "--test-coverage-functions=100",
+        "--test",
+        "scripts/audio-shipped-response.test.mjs"
+      ],
+      "label": "Shipped audio response coverage floor (100%)",
+      "status": "passed"
+    },
+    {
+      "args": [
+        "--experimental-test-coverage",
+        "--test-coverage-include=src/networking/websocket-frame.mjs",
+        "--test-coverage-lines=100",
+        "--test-coverage-branches=100",
+        "--test-coverage-functions=100",
+        "--test",
+        "scripts/websocket-frame.test.mjs"
+      ],
+      "label": "Outbound WebSocket frame coverage floor (100%)",
+      "status": "passed"
+    },
+    {
+      "args": [
+        "--experimental-test-coverage",
+        "--test-coverage-include=src/networking/websocket-deflate-offer.mjs",
+        "--test-coverage-lines=100",
+        "--test-coverage-branches=100",
+        "--test-coverage-functions=100",
+        "--test",
+        "scripts/websocket-deflate-offer.test.mjs"
+      ],
+      "label": "WebSocket deflate-offer coverage floor (100%)",
+      "status": "passed"
+    },
+    {
+      "args": [
+        "--experimental-test-coverage",
+        "--test-coverage-include=src/rules/gameplay-action-rules.mjs",
+        "--test-coverage-lines=100",
+        "--test-coverage-branches=100",
+        "--test-coverage-functions=100",
+        "--test",
+        "scripts/gameplay-action-rules.test.mjs"
+      ],
+      "label": "Production/research shared-rule coverage floor (100%)",
+      "status": "unrun"
+    }
+  ],
+  "keyContracts": [
+    {
+      "file": "scripts/completion-event-scenario.mjs",
+      "label": "Completion event recovery and host diagnostics",
+      "status": "passed",
+      "exitCode": 0,
+      "batchSummaries": [],
+      "caseOutcomes": [],
+      "terminalSummaries": []
+    },
+    {
+      "file": "scripts/completion-event-cleanup.test.mjs",
+      "label": "Completion event bounded fixture cleanup",
+      "status": "passed",
+      "exitCode": 0,
+      "batchSummaries": [
+        "ℹ tests 7",
+        "ℹ pass 7",
+        "ℹ fail 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 13213.086118"
+      ],
+      "caseOutcomes": [
+        "✔ graceful and already closed clients leave no timer or listener (3.204292ms)",
+        "✔ a missing close event at state 1 fails within the cleanup allowance and still disposes the server (1.550178ms)",
+        "✔ a missing close event at state 2 fails within the cleanup allowance and still disposes the server (0.812644ms)",
+        "✔ synchronous close failure is retained after server and temporary-data cleanup (0.945897ms)",
+        "✔ an original scenario failure and every disposal failure remain visible (1.178955ms)",
+        "✔ an original scenario failure is rethrown unchanged after successful cleanup (0.804414ms)",
+        "✔ real scenario missing-close fault exits nonzero after assertions and leaves no owned server or data (13096.502625ms)"
+      ],
+      "terminalSummaries": []
+    },
+    {
+      "file": "scripts/pathing-replay.test.mjs",
+      "label": "Obstructed formation goals and team reservation",
+      "status": "passed",
+      "exitCode": 0,
+      "batchSummaries": [
+        "ℹ tests 11",
+        "ℹ pass 11",
+        "ℹ fail 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 6198.350981"
+      ],
+      "caseOutcomes": [
+        "✔ seat 0: paid obstruction relocates blocked formation goals without reusing surviving friendly goals (483.019252ms)",
+        "✔ seat 1: paid obstruction relocates blocked formation goals without reusing surviving friendly goals (279.27947ms)",
+        "✔ opponent movement destinations do not change friendly obstruction fallback cells (368.471416ms)",
+        "✔ seat 0: consecutive paid footprints reserve pending repaired destinations before planning drains (342.496663ms)",
+        "✔ seat 1: consecutive paid footprints reserve pending repaired destinations before planning drains (284.492415ms)",
+        "✔ a footprint across the only choke is rejected without changing movement goals or navigation (166.564255ms)",
+        "✔ headless process identity is a packet input without changing recovered authority (296.46893ms)",
+        "✔ seat 0: immutable accepted-command trace resumes a same-tick cursor exactly (1730.815036ms)",
+        "✔ seat 1: immutable accepted-command trace resumes a same-tick cursor exactly (1539.049104ms)",
+        "✔ seat 0: checkpoint recovery rejects a saved command for a reused rematch slot (277.589031ms)",
+        "✔ seat 1: checkpoint recovery rejects a saved command for a reused rematch slot (311.473724ms)"
+      ],
+      "terminalSummaries": []
+    },
+    {
+      "file": "scripts/pve-worker-recovery.test.mjs",
+      "label": "PvE last-slot Worker recovery and fixed-tick economy replay",
+      "status": "passed",
+      "exitCode": 0,
+      "batchSummaries": [
+        "ℹ tests 33",
+        "ℹ pass 33",
+        "ℹ fail 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 345295.277359"
+      ],
+      "caseOutcomes": [
+        "✔ Medium seat 0: paid depletion, Scout disclosure, forest Gather and native deposit, controls/cold exact replay (44787.707283ms)",
+        "✔ Medium seat 1: paid depletion, Scout disclosure, forest Gather and native deposit, controls/cold exact replay (48423.089995ms)",
+        "✔ Medium seat 0: native forest Worker loss, paid replacement and restored income, controls/cold exact replay (85672.12512ms)",
+        "✔ Medium seat 1: native forest Worker loss, paid replacement and restored income, controls/cold exact replay (96064.108314ms)",
+        "✔ seat 0, seed 0: last Infantry price, reserve boundaries and retry budget (9.06625ms)",
+        "✔ seat 0, seed 20260925: last Infantry price, reserve boundaries and retry budget (6.186131ms)",
+        "✔ seat 0, seed 4294967295: last Infantry price, reserve boundaries and retry budget (7.627348ms)",
+        "✔ seat 1, seed 0: last Infantry price, reserve boundaries and retry budget (10.298528ms)",
+        "✔ seat 1, seed 20260925: last Infantry price, reserve boundaries and retry budget (8.44299ms)",
+        "✔ seat 1, seed 4294967295: last Infantry price, reserve boundaries and retry budget (6.694615ms)",
+        "✔ last Infantry recovery preserves Worker priority, queues and authoritative availability (1.647717ms)",
+        "✔ Tiny authored, seat 0: retained real total loss, paid Infantry, cold queue and exact replay (3918.026962ms)",
+        "✔ Tiny skirmish, seat 0: retained real total loss, paid Infantry, cold queue and exact replay (3427.839624ms)",
+        "✔ seat 0, seed 0: replace lost Workers using the last population slot (1049.499867ms)",
+        "✔ seat 0, seed 20260925: replace lost Workers using the last population slot (883.542593ms)",
+        "✔ seat 0, seed 4294967295: replace lost Workers using the last population slot (928.190644ms)",
+        "✔ seat 1, seed 0: replace lost Workers using the last population slot (1027.701005ms)",
+        "✔ seat 1, seed 20260925: replace lost Workers using the last population slot (1111.593779ms)",
+        "✔ seat 1, seed 4294967295: replace lost Workers using the last population slot (1149.857935ms)",
+        "✔ seat 0, seed 0: restart an empty economy at the native Worker price (2.568889ms)",
+        "✔ seat 0, seed 20260925: restart an empty economy at the native Worker price (0.645467ms)",
+        "✔ seat 0, seed 4294967295: restart an empty economy at the native Worker price (1.12377ms)",
+        "✔ seat 1, seed 0: restart an empty economy at the native Worker price (0.5852ms)",
+        "✔ seat 1, seed 20260925: restart an empty economy at the native Worker price (0.728985ms)",
+        "✔ seat 1, seed 4294967295: restart an empty economy at the native Worker price (0.419498ms)",
+        "✔ Medium seat 0: real total Worker loss, last-price training, cold paid queue and deposit exactly replay (29584.62213ms)",
+        "✔ Medium seat 1: real total Worker loss, last-price training, cold paid queue and deposit exactly replay (27024.164416ms)",
+        "✔ seat 0, seed 0: Worker priority retains authoritative budgets and retry guards (1.728848ms)",
+        "✔ seat 0, seed 20260925: Worker priority retains authoritative budgets and retry guards (0.577838ms)",
+        "✔ seat 0, seed 4294967295: Worker priority retains authoritative budgets and retry guards (0.379628ms)",
+        "✔ seat 1, seed 0: Worker priority retains authoritative budgets and retry guards (0.307601ms)",
+        "✔ seat 1, seed 20260925: Worker priority retains authoritative budgets and retry guards (0.247313ms)",
+        "✔ seat 1, seed 4294967295: Worker priority retains authoritative budgets and retry guards (0.2254ms)"
+      ],
+      "terminalSummaries": []
+    },
+    {
+      "file": "scripts/pve-skirmish-targets.test.mjs",
+      "label": "Explicit Skirmish AI targets, fog fairness and paid producer restart replay",
+      "status": "passed",
+      "exitCode": 0,
+      "batchSummaries": [
+        "ℹ tests 78",
+        "ℹ pass 78",
+        "ℹ fail 0",
+        "ℹ skipped 0",
+        "ℹ duration_ms 24745.795245"
+      ],
+      "caseOutcomes": [
+        "✔ seat 0: paid producer assault after owned bonus, exact checkpoint replay and legacy control (4005.171829ms)",
+        "✔ seat 1: paid producer assault after owned bonus, exact checkpoint replay and legacy control (3426.338864ms)",
+        "✔ real Medium progressing route: warm policy retains discovery past sixty seconds (4241.440819ms)",
+        "✔ real Medium progressing route: cold restart during extension retains discovery past sixty seconds (4253.230122ms)",
+        "✔ real Medium blocked route: bounded policy releases the genuinely stalled hidden goal (3224.405994ms)",
+        "✔ the versioned policy input rejects partial/unknown identities and preserves the legacy default (1.733584ms)",
+        "✔ seat 0, seed 0: explicit Skirmish attacks visible recovery after reward ownership (24.797878ms)",
+        "✔ seat 0, seed 20260925: explicit Skirmish attacks visible recovery after reward ownership (4.953318ms)",
+        "✔ seat 0, seed 4294967295: explicit Skirmish attacks visible recovery after reward ownership (2.812377ms)",
+        "✔ seat 1, seed 0: explicit Skirmish attacks visible recovery after reward ownership (3.609526ms)",
+        "✔ seat 1, seed 20260925: explicit Skirmish attacks visible recovery after reward ownership (6.670395ms)",
+        "✔ seat 1, seed 4294967295: explicit Skirmish attacks visible recovery after reward ownership (18.508097ms)",
+        "✔ Medium seat 0: real remembered fog yields to new ground through exact cold recovery (2668.562364ms)",
+        "✔ seat 0: unexplored candidates precede remembered ground within the existing budget (1.3623ms)",
+        "✔ seat 0: unknown ground outside the budget preserves a useful remembered fallback (0.604025ms)",
+        "✔ seat 0: persistent unknown goals cannot starve remembered-territory coverage (2.509024ms)",
+        "✔ seat 0: original soldiers keep a moving goal past sixty seconds, then escape a stall (0.820088ms)",
+        "✔ seat 0: continuous original-cohort movement cannot exceed the hard goal bound (1.205512ms)",
+        "✔ seat 0: reinforcements cannot fake old-goal progress (0.934878ms)",
+        "✔ seat 0: reused generations cannot fake old-goal progress (0.248506ms)",
+        "✔ seat 0: current enemy sight interrupts an extended moving goal (0.616728ms)",
+        "✔ seat 0: short direct routes retain the original deadline despite movement (0.524427ms)",
+        "✔ seat 0: admitted Tiny keeps its deadline even for a long direct crossing (0.432276ms)",
+        "✔ seat 0: revealing an exploration goal preserves the approach until arrival (0.387344ms)",
+        "✔ seat 0: an unreached frontier gives the global cursor a turn at its deadline (0.200144ms)",
+        "✔ seat 0: arriving at successive frontiers advances global search across rows (0.753761ms)",
+        "✔ seat 0: recovery priorities exclude dead, friendly and water-only targets (0.310166ms)",
+        "✔ seat 0: visibility loss, reused identities, reinforcements and combat remain safe (0.424756ms)",
+        "✔ seat 0: bounded retries and search rotation leave moving and fighting soldiers alone (0.85614ms)",
+        "✔ Medium seat 1: real remembered fog yields to new ground through exact cold recovery (3718.960119ms)",
+        "✔ seat 1: unexplored candidates precede remembered ground within the existing budget (0.324985ms)",
+        "✔ seat 1: unknown ground outside the budget preserves a useful remembered fallback (0.370342ms)",
+        "✔ seat 1: persistent unknown goals cannot starve remembered-territory coverage (2.083889ms)",
+        "✔ seat 1: original soldiers keep a moving goal past sixty seconds, then escape a stall (0.278751ms)",
+        "✔ seat 1: continuous original-cohort movement cannot exceed the hard goal bound (0.461592ms)",
+        "✔ seat 1: reinforcements cannot fake old-goal progress (0.246957ms)",
+        "✔ seat 1: reused generations cannot fake old-goal progress (0.181827ms)",
+        "✔ seat 1: current enemy sight interrupts an extended moving goal (0.310283ms)",
+        "✔ seat 1: short direct routes retain the original deadline despite movement (0.266934ms)",
+        "✔ seat 1: admitted Tiny keeps its deadline even for a long direct crossing (0.154679ms)",
+        "✔ seat 1: revealing an exploration goal preserves the approach until arrival (0.7353ms)",
+        "✔ seat 1: an unreached frontier gives the global cursor a turn at its deadline (0.130825ms)",
+        "✔ seat 1: arriving at successive frontiers advances global search across rows (0.234736ms)",
+        "✔ seat 1: recovery priorities exclude dead, friendly and water-only targets (0.091527ms)",
+        "✔ seat 1: visibility loss, reused identities, reinforcements and combat remain safe (0.200309ms)",
+        "✔ seat 1: bounded retries and search rotation leave moving and fighting soldiers alone (0.275865ms)",
+        "✔ filtered observations and commands remain identical when hidden enemy state changes (0.974017ms)",
+        "✔ global search covers every coarse cell once on 80×64, memory 0 (2.053424ms)",
+        "✔ global search covers every coarse cell once on 80×88, memory 0 (3.151264ms)",
+        "✔ global search covers every coarse cell once on 160×160, memory 0 (8.470788ms)",
+        "✔ global search covers every coarse cell once on 224×224, memory 0 (15.277026ms)",
+        "✔ global search covers every coarse cell once on 80×64, memory 1 (3.781519ms)",
+        "✔ global search covers every coarse cell once on 80×88, memory 1 (4.049086ms)",
+        "✔ global search covers every coarse cell once on 160×160, memory 1 (8.524443ms)",
+        "✔ global search covers every coarse cell once on 224×224, memory 1 (20.066927ms)",
+        "✔ Tiny seat 0: lost contact uses one public coordinate and expires despite movement/reinforcement (0.843249ms)",
+        "✔ Tiny seat 0: original arrival, complete loss and reused generations release contact (0.715272ms)",
+        "✔ Tiny seat 0: visible recovery/identity reacquisition outranks coordinate memory (0.247558ms)",
+        "✔ Tiny seat 0: rewind, map/seat change and fresh policy cannot inherit unseen contact (0.47883ms)",
+        "✔ side 80 seat 0: contact memory does not change other tiers (0.130844ms)",
+        "✔ side 192 seat 0: contact memory does not change other tiers (0.072134ms)",
+        "✔ side 224 seat 0: contact memory does not change other tiers (0.06577ms)",
+        "✔ side 256 seat 0: contact memory does not change other tiers (0.067976ms)",
+        "✔ Tiny seat 1: lost contact uses one public coordinate and expires despite movement/reinforcement (0.093279ms)",
+        "✔ Tiny seat 1: original arrival, complete loss and reused generations release contact (0.227005ms)",
+        "✔ Tiny seat 1: visible recovery/identity reacquisition outranks coordinate memory (0.072845ms)",
+        "✔ Tiny seat 1: rewind, map/seat change and fresh policy cannot inherit unseen contact (0.404381ms)",
+        "✔ side 80 seat 1: contact memory does not change other tiers (0.175147ms)",
+        "✔ side 192 seat 1: contact memory does not change other tiers (0.073376ms)",
+        "✔ side 224 seat 1: contact memory does not change other tiers (0.102464ms)",
+        "✔ side 256 seat 1: contact memory does not change other tiers (0.081236ms)",
+        "✔ Tiny contact history remains invariant under hidden enemy movement, generation and banks (6.629415ms)",
+        "✔ current native Tiny contact inspection is useful, bounded and forgotten by cold recovery (3982.333056ms)",
+        "✔ Tiny noncompletion evidence: failure preserves exact payload and hidden-view boundary (94.512185ms)",
+        "✔ Tiny noncompletion evidence: corruption and broken sinks cannot erase the qualification failure (66.523011ms)",
+        "✔ Tiny noncompletion evidence: successful terminal input emits no packet (0.226742ms)",
+        "✔ Tiny noncompletion evidence: authored short native packet restores exact authority (1434.467879ms)",
+        "✔ Tiny noncompletion evidence: skirmish short native packet restores exact authority (713.296499ms)"
+      ],
+      "terminalSummaries": []
+    },
+    {
+      "file": "scripts/pve-tiny-search.test.mjs",
+      "label": "Tiny authored and native Skirmish: fog, paid production, exact replay and reset",
+      "status": "failed",
+      "exitCode": 1,
+      "batchSummaries": [
+        "ℹ tests 4",
+        "ℹ pass 2",
+        "ℹ fail 2",
+        "ℹ skipped 0",
+        "ℹ duration_ms 179835.564468"
+      ],
+      "caseOutcomes": [
+        "✖ Tiny native authored, configured Skirmish seeds 20260925,0: paid fogged match and reset exactly replay (40723.120897ms)",
+        "✔ Tiny native authored, configured Skirmish seeds 0,20260925: paid fogged match and reset exactly replay (50080.378774ms)",
+        "✖ Tiny native skirmish, configured Skirmish seeds 20260925,0: paid fogged match and reset exactly replay (38746.914966ms)",
+        "✔ Tiny native skirmish, configured Skirmish seeds 0,20260925: paid fogged match and reset exactly replay (49997.337966ms)",
+        "✖ failing tests:"
+      ],
+      "terminalSummaries": [
+        {
+          "seeds": [
+            0,
+            20260925
+          ],
+          "seconds": 2711,
+          "winner": 1,
+          "reason": "elimination",
+          "metrics": [
+            {
+              "producerPurchase": 450,
+              "producerComplete": 1110,
+              "buildingAssault": 51180,
+              "maxMilitary": 12,
+              "maxWorkers": 4,
+              "spentFood": 1330,
+              "spentWood": 915
+            },
+            {
+              "producerPurchase": 420,
+              "producerComplete": 1170,
+              "buildingAssault": 12660,
+              "maxMilitary": 12,
+              "maxWorkers": 5,
+              "spentFood": 2195,
+              "spentWood": 1700
+            }
+          ],
+          "nativeIdentity": "authored@1",
+          "policyIdentity": "skirmish@1"
+        },
+        {
+          "seeds": [
+            0,
+            20260925
+          ],
+          "seconds": 2711,
+          "winner": 1,
+          "reason": "elimination",
+          "metrics": [
+            {
+              "producerPurchase": 450,
+              "producerComplete": 1110,
+              "buildingAssault": 51180,
+              "maxMilitary": 12,
+              "maxWorkers": 4,
+              "spentFood": 1330,
+              "spentWood": 915
+            },
+            {
+              "producerPurchase": 420,
+              "producerComplete": 1170,
+              "buildingAssault": 12660,
+              "maxMilitary": 12,
+              "maxWorkers": 5,
+              "spentFood": 2195,
+              "spentWood": 1700
+            }
+          ],
+          "nativeIdentity": "skirmish@1",
+          "policyIdentity": "skirmish@1"
+        }
+      ]
+    },
+    {
+      "file": "scripts/pve-fog-restart.test.mjs",
+      "label": "PvE publication control and immediate off-phase fresh-foundation recovery",
+      "status": "unrun",
+      "exitCode": null,
+      "batchSummaries": [],
+      "caseOutcomes": [],
+      "terminalSummaries": []
+    },
+    {
+      "file": "scripts/elimination-scenario.mjs",
+      "label": "Terminal elimination and reconnect",
+      "status": "unrun",
+      "exitCode": null,
+      "batchSummaries": [],
+      "caseOutcomes": [],
+      "terminalSummaries": []
+    }
+  ],
+  "failurePackets": {
+    "source": "67295aef1a744bde9000ce2c3d12e00b78a922e0",
+    "evidenceLog": "/workspace/cpu-qualification-67295aef/suite.log",
+    "scope": "default full attempt",
+    "tinyBatchStarted": true,
+    "retainedActualFailurePackets": 2,
+    "packets": [
+      {
+        "name": "tiny-authored-20260925-0",
+        "source": {
+          "revision": "67295aef1a744bde9000ce2c3d12e00b78a922e0",
+          "dirty": false
+        },
+        "nativeIdentity": {
+          "matchModeId": "authored",
+          "matchModeVersion": 1
+        },
+        "policyIdentity": {
+          "matchModeId": "skirmish",
+          "matchModeVersion": 1
+        },
+        "seeds": [
+          20260925,
+          0
+        ],
+        "winner": -1,
+        "terminalStateClock": {
+          "tickNumber": 108000,
+          "matchWinner": -1,
+          "matchWinnerTriggerId": null,
+          "matchWinnerReason": null
+        },
+        "lastDecisionTicks": [
+          107970,
+          107970
+        ],
+        "traceEntries": 968,
+        "finalTraceTick": 107520,
+        "rawDecodedBytes": 783867,
+        "rawDecodedSha256": "602d80fba8c612eb9d2a2725d230b3725c7974b67b7c153cb08eadcd8cd08dcb",
+        "compressedBytes": 49873,
+        "evidenceDirectory": "/workspace/cpu-qualification-67295aef/tiny-failure-evidence/tiny-authored-20260925-0",
+        "envelopeVerified": true,
+        "diagnosis": "not established"
+      },
+      {
+        "name": "tiny-skirmish-20260925-0",
+        "source": {
+          "revision": "67295aef1a744bde9000ce2c3d12e00b78a922e0",
+          "dirty": false
+        },
+        "nativeIdentity": {
+          "matchModeId": "skirmish",
+          "matchModeVersion": 1
+        },
+        "policyIdentity": {
+          "matchModeId": "skirmish",
+          "matchModeVersion": 1
+        },
+        "seeds": [
+          20260925,
+          0
+        ],
+        "winner": -1,
+        "terminalStateClock": {
+          "tickNumber": 108000,
+          "matchWinner": -1,
+          "matchWinnerTriggerId": null,
+          "matchWinnerReason": null
+        },
+        "lastDecisionTicks": [
+          107970,
+          107970
+        ],
+        "traceEntries": 968,
+        "finalTraceTick": 107520,
+        "rawDecodedBytes": 783867,
+        "rawDecodedSha256": "71051569ed484063dc3068deb92a6d586fd14e23b396ff54148cc0987e363d34",
+        "compressedBytes": 49875,
+        "evidenceDirectory": "/workspace/cpu-qualification-67295aef/tiny-failure-evidence/tiny-skirmish-20260925-0",
+        "envelopeVerified": true,
+        "diagnosis": "not established"
+      }
+    ],
+    "provenance": "Extracted from complete retained stdout/stderr of the named exact-source execution; no extra simulations or production changes during extraction."
+  },
+  "priorNarrowCheckpointEvidence": {
+    "reportedByParent": "PR428 retained-checkpoint paid Infantry spawn in 22.03 seconds with cold restore and exact replay",
+    "scope": "existing narrower checkpoint success; never contributes to this full result"
+  },
+  "priorEvidenceUnchanged": true,
+  "constraints": {
+    "sourceChangesDuringRun": 0,
+    "retriesOfThisFullAttempt": 0,
+    "manualHostedDispatch": false,
+    "authenticationRetry": false,
+    "changedRegistryFloorsAssertionsBudgets": false,
+    "newDependencies": false,
+    "browserRenderedOrDeploymentAcceptanceClaim": false
+  },
+  "independentReview": {
+    "schemaVersion": 1,
+    "reviewer": "/root/audio_quality_review",
+    "source": "67295aef1a744bde9000ce2c3d12e00b78a922e0",
+    "status": "passed",
+    "scope": "Closed normal full report/console/terminal consistency, both actual failure envelopes and components, exact endpoint witness, original registry/floors/budgets, 11 preserved prior hashes, publication scan, README and standard-library verifier.",
+    "conclusion": "No blockers to sealing and delivering. Full result remains failed; narrow Infantry controls passed but Tiny complete-match noncompletion persists. No gameplay cause established.",
+    "verifiedConsoleBytes": 654051,
+    "verifiedFailurePacketBytes": [
+      783867,
+      783867
+    ],
+    "verifiedTraceEntries": [
+      968,
+      968
+    ],
+    "verifiedLastDecisionTicks": [
+      107970,
+      107970
+    ],
+    "nativeTestsSourceEditsOrProcessActionsPerformed": false,
+    "archiveVerification": "Final ZIP/member checks are recorded separately in delivery receipt."
+  },
+  "ownership": {
+    "tinyFailure": {
+      "owner": "AI 01a10297",
+      "artifact": "https://github.com/lbeezr/thousand-unit-skirmish/pull/428",
+      "nextAction": "Diagnose this new exact-source endpoint from full terminal checkpoints, accepted command/notice trace and filtered views; the narrow paid-unit recovery success does not establish full Tiny completion."
+    },
+    "fullQualification": {
+      "owner": "CI 01a10378",
+      "nextAction": "Retain this failed result and qualify a new immutable source after a substantive owned fix; do not stitch this attempt’s unrun contracts with prior passes."
+    },
+    "downstreamRuntime": {
+      "owner": "AI 01a10297 for policy changes",
+      "status": "Ordinary-game/release/staging acceptance is not established by CPU qualification."
+    }
+  }
+}
