@@ -105,16 +105,16 @@ user's visual-direction hold. Its public-source registration, 48 reused poses,
 provenance and runtime admission remain preserved, but the gold costume/round
 shield is not the established Human identity. The corrective default restores
 Infantry v3; Archer v3 PR230 and blocky Spearman v2 PR241 remain unmerged drafts.
-The [5 October Spearman West increment](qa-spearman-west-walk-2026-10-05.md)
-adds four local poses from its own established public seed to default v1 pack0.9.0,
-preserving all52 previous poses and31 other clips. Page dimensions/encoded mask
-remain unchanged; prior RGBA outside four declared new cells and every old frame
-record/calibration stay exact. The family retains57 genuine source gaps
-(Spearman15, Infantry21, Archer21); all63 original native/deployed cells remain
-unverified. Foot art retains production, clean release and ordinary contact/pace/
-readability acceptance through transport owner `01a10378`; animation-state owner
-`01a103d4` retains clocks/selectors, with parent delivery support. Mac testing stays
-stopped. No paid generation, private inputs or held art are used.
+The [5 October Spearman Northwest increment](qa-spearman-north-west-walk-2026-10-05.md)
+adds four occlusion-aware own-view poses to default v1 pack0.10.0, preserving all56
+previous poses and31 other clips. Spearman source walks are8/8. Page dimensions
+and encoded mask stay unchanged; former RGBA outside four declared cells and old
+records/calibration remain exact. The family retains56 genuine source gaps
+(Spearman14 attack/defeat, Infantry21, Archer21); all63 original native/deployed
+cells remain unverified. Foot art retains production, clean release and ordinary
+contact/pace/readability acceptance through transport owner `01a10378`; animation
+owner `01a103d4` retains clocks/selectors, with parent delivery support. Mac testing
+stays stopped. No paid generation, private inputs or held art are used.
 
 Package paths are under `assets/` unless linked otherwise. Release inclusion
 comes from an actual clean `release:pack` at follow-up `1757064`: 1,113 files,

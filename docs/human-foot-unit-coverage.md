@@ -33,6 +33,23 @@ N/NE/E/S/SW/W/NW: **21 cells per role, 63 total**. Different-identity source key
 do not close that goal. All 63 original deployed/native cells remain unverified.
 Restoring the default is a source correction, not a live bug or appearance claim.
 
+## Spearman complete source walks — 5 October 2026
+
+The [Northwest walk increment](qa-spearman-north-west-walk-2026-10-05.md) adds four
+occlusion-aware own-view keys to default v1 pack0.10.0, preserving all56 prior
+poses and31 other clips. Spearman now has **8/8 genuine own-facing source walks**.
+The60 registered poses retain32 original frames and28 newly authored walk keys.
+Page dimensions/encoded mask remain unchanged; old RGBA outside four declared
+cells, registrations and calibration stay exact. Independent source review found
+no blockers, with zero reconstructed pixels and a retained foreground cuff bridge.
+
+Exact remaining Spearman source cells: attack and defeat × N/NE/E/S/SW/W/NW,
+**14**. Infantry/Archer retain21 each: **56 military source gaps**. All63 original
+native/deployed cells and identified ordinary-game planting/pace/readability
+remain unverified. Current ranked production backlog: own-view thrust/recovery,
+matching terminal defeat, then established Infantry/Archer gaps. Foot art retains
+appearance acceptance through the permitted identified-release capture route.
+
 ## Spearman West source increment — 5 October 2026
 
 The [West walk increment](qa-spearman-west-walk-2026-10-05.md) adds four own-view
@@ -44,7 +61,7 @@ stay unchanged; every old page RGBA outside four declared new slots, frame recor
 and calibration stays exact. Independent source review found no blockers.
 All63 original native/deployed cells remain unverified.
 
-Current ready backlog: occlusion-aware own-seed Northwest walk, then matched
+At the West checkpoint, the ready backlog was occlusion-aware own-seed Northwest walk, then matched
 attack and terminal defeat; actual appearance acceptance remains owned through
 the permitted identified-release capture route.
 
@@ -185,6 +202,6 @@ A release/hash/CPU pass is a milestone. Review, deployed identity and actual in-
 
 The [bounded Worker/Spearman ordinary capture adapter](qa-worker-spearman-animation-capture-2026-10-04.md)
 owns the next rendered gait/work/Stop acceptance through CI's shared hosted transport.
-It authors zero art frames. Worker source gait is8/8; the West source increment makes
-Spearman gait7/8, with NW explicitly incomplete. The57 military source
+It authors zero art frames. Worker source gait is8/8; the Northwest source increment makes
+Spearman gait8/8, with zero source walk gaps. The56 military source
 action-heading gaps and all identified-build ordinary/deployed acceptance remain open.
