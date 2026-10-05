@@ -26,7 +26,7 @@ test('all 21 approved regional pages have exact fixed-view state bindings and sh
   }
 });
 
-test('normal Bellweather forest consumes its registered atlas from the real release inventory', async () => {
+test('normal Bellweather forest consumes its registered atlas from the real release inventory', async t => {
   const THREE = await import('three');
   const { setActiveTerrain } = await import('../src/terrain-height.mjs');
   const moduleUrl = new URL('../src/environment-art.mjs', import.meta.url);
@@ -46,6 +46,7 @@ test('normal Bellweather forest consumes its registered atlas from the real rele
   };
   const release = JSON.parse(execFileSync(process.execPath, ['scripts/pack-railway-release.mjs', '--allow-dirty'],
     { cwd: fileURLToPath(root), encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 }));
+  t.after(() => rm(release.directory, { recursive: true, force: true }));
   const manifestPath = 'assets/environment/frontier-v1/bellweather-lifecycle-atlas.json';
   const pack = await readPack('bellweather');
   const descriptor = forestLifecycleAtlasDescriptor(pack, 'bellweather');
@@ -128,7 +129,6 @@ test('normal Bellweather forest consumes its registered atlas from the real rele
     for (const key of ['fetch', 'document', 'Image', 'location']) {
       if (original[key] === undefined) delete globalThis[key]; else globalThis[key] = original[key];
     }
-    await rm(release.directory, { recursive: true, force: true });
   }
 });
 
