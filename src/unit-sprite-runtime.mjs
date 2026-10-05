@@ -99,15 +99,22 @@ function atlasPath(role, version) {
   return `${SPRITE_ROOT}/${spriteDirectory(role, version)}/sprite-atlas-pack-v1.json`;
 }
 
-function loadJson(url) {
-  return fetch(url).then((response) => {
-    if (!response.ok) throw new Error(`Could not load ${url} (${response.status})`);
+function loadJson(url, recordFailure) {
+  let stage = 'manifest-request';
+  const result = fetch(url).then((response) => {
+    if (!response.ok) {
+      recordFailure(stage, 'http');
+      throw new Error(`Could not load ${url} (${response.status})`);
+    }
+    stage = 'manifest-decode';
     return response.json();
   });
+  result.then(undefined, () => recordFailure(stage, 'rejected'));
+  return result;
 }
 
-function loadTexture(THREE, loader, url, colorSpace) {
-  return new Promise((resolve, reject) => {
+function loadTexture(THREE, loader, url, colorSpace, recordFailure, stage) {
+  const result = new Promise((resolve, reject) => {
     const texture = loader.load(url, resolve, undefined, reject);
     texture.flipY = false;
     texture.generateMipmaps = false;
@@ -117,6 +124,10 @@ function loadTexture(THREE, loader, url, colorSpace) {
     texture.wrapT = THREE.ClampToEdgeWrapping;
     texture.colorSpace = colorSpace;
   });
+  // Observe the actual promise outcome. A synchronous load callback can resolve
+  // before a later executor exception; that fulfilled promise remains valid.
+  result.then(undefined, () => recordFailure(stage, 'rejected'));
+  return result;
 }
 
 function frameRectFor(frame, pageId, layerId) {
@@ -218,19 +229,28 @@ function makeTextureUrl(role, version, file) {
   return `${SPRITE_ROOT}/${spriteDirectory(role, version)}/${file}`;
 }
 
-function loadRolePack(THREE, loader, role, version) {
-  return loadJson(atlasPath(role, version)).then(async (pack) => {
+function loadRolePack(THREE, loader, role, version, recordFailure) {
+  let stage = 'manifest-shape';
+  const result = loadJson(atlasPath(role, version), recordFailure).then(async (pack) => {
     const asset = pack.assets?.find((candidate) => candidate.id === role && candidate.kind === 'unit');
-    if (!asset) throw new Error(`Sprite pack ${role} has no unit asset`);
+    if (!asset) {
+      recordFailure(stage, 'invalid');
+      throw new Error(`Sprite pack ${role} has no unit asset`);
+    }
     const page = pack.pages?.find((candidate) => candidate.id === asset.frames?.[0]?.fallbackRectPx?.pageId)
       || pack.pages?.[0];
     const colorFile = pack.files?.find((file) => file.id === page?.runtimeFileId);
     const maskFile = pack.files?.find((file) => file.id === page?.maskFileId);
-    if (!page || !colorFile || !maskFile) throw new Error(`Sprite pack ${role} has incomplete page files`);
+    if (!page || !colorFile || !maskFile) {
+      recordFailure(stage, 'invalid');
+      throw new Error(`Sprite pack ${role} has incomplete page files`);
+    }
+    stage = 'texture-load';
     const [map, mask] = await Promise.all([
-      loadTexture(THREE, loader, makeTextureUrl(role, version, colorFile.path), THREE.SRGBColorSpace),
-      loadTexture(THREE, loader, makeTextureUrl(role, version, maskFile.path), THREE.NoColorSpace),
+      loadTexture(THREE, loader, makeTextureUrl(role, version, colorFile.path), THREE.SRGBColorSpace, recordFailure, 'color-texture'),
+      loadTexture(THREE, loader, makeTextureUrl(role, version, maskFile.path), THREE.NoColorSpace, recordFailure, 'mask-texture'),
     ]);
+    stage = 'pack-setup';
     const frameById = new Map(asset.frames.map((frame) => [frame.id, frame]));
     const clipByKey = new Map(asset.clips.map((clip) => [`${clip.stateId}|${clip.directionId}`, clip]));
     const durationByState = new Map();
@@ -252,6 +272,8 @@ function loadRolePack(THREE, loader, role, version) {
       worldPerPixel: asset.heightWorld / maxAlphaHeight,
     };
   });
+  result.then(undefined, () => recordFailure(stage, 'exception'));
+  return result;
 }
 
 // Shift toward the camera without moving the sprite on screen. A camera-facing
@@ -280,6 +302,20 @@ export function createUnitSpriteRuntime({
   const towardCamera = new THREE.Vector3();
   let visible = false;
   let ready = false;
+  let loadState = 'pending';
+  let loadFailure = null;
+
+  function recordLoadFailure(stage, cause) {
+    if (loadState === 'pending' && !loadFailure) loadFailure = { stage, cause };
+  }
+
+  function observeLoad() {
+    // Fixed-size static-loader evidence only; no error payload, entity data or
+    // history. Aggregate failure stays terminal even when a sibling finishes.
+    return { state: loadState,
+      stage: loadState === 'ready' ? 'complete' : loadState === 'failed' ? loadFailure.stage : 'loading',
+      cause: loadState === 'failed' ? loadFailure.cause : null };
+  }
 
   function setCount(team, count) {
     pendingCounts[team] = count;
@@ -390,7 +426,7 @@ export function createUnitSpriteRuntime({
 
   const zeroMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
   const readyPromise = Promise.all(roles.map((role) => loadRolePack(
-    THREE, loader, role, roleSpriteVersions[role] || 'v1',
+    THREE, loader, role, roleSpriteVersions[role] || 'v1', recordLoadFailure,
   )))
     .then((packs) => {
       for (const pack of packs) rolePacks.set(pack.role, pack);
@@ -428,9 +464,12 @@ export function createUnitSpriteRuntime({
       }
       ready = true;
       setVisible(visible);
+      loadState = 'ready';
       return true;
     })
     .catch((error) => {
+      recordLoadFailure('batch-admission', 'exception');
+      loadState = 'failed';
       console.warn('Unit sprite atlases unavailable; keeping current unit renderer.', error);
       return false;
     });
@@ -443,6 +482,7 @@ export function createUnitSpriteRuntime({
     durationMs,
     roleForUnit,
     observeAction,
+    observeLoad,
     update,
   };
 }
