@@ -8,6 +8,10 @@ import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { buildingRepairStep } from '../src/base-lifecycle.mjs';
 import { FOREST_GATHER_SOURCE_KIND, isAreaGatherResource, activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent } from '../src/work-intent.mjs';
 import { gatherWorkArea } from '../src/gather-work-area.mjs';
+import { constructionMovementActive } from '../src/construction-work-intent.mjs';
+import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
+import { createOrdinaryMilitaryEndpointAvailability } from '../src/simulation/movement/military-endpoint-availability.mjs';
+import { canTraverseStaticBodySegment, createMoveGoalPoint, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 function fn(name) {
@@ -30,6 +34,12 @@ function fixture() {
   const journal = createWorkerPerformingActions();
   const context = vm.createContext({ units: [unit], tickNumber: 1, dirty: false, workerEconomyRouteScope: null,
     workerPerformingActions: journal, BUILDING_DEFINITIONS, buildingRepairStep,
+    constructionMovementActive, activeWallBuildOrder, createOrdinaryMilitaryEndpointAvailability,
+    canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE,
+    // Receipt-only open ground; endpoint admission still uses production policy.
+    MAP_WIDTH: 64, MAP_HEIGHT: 64, MAX_UNITS: 2000,
+    isWalkable: cell => Number.isInteger(cell) && cell >= 0 && cell < 64 * 64,
+    palisadeConstructionRetries: new WeakMap(), movePlanningEpoch: 0, navigationRevision: 0, TICK_RATE: 30,
     FOREST_GATHER_SOURCE_KIND, isAreaGatherResource, activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent, gatherWorkArea,
     // This receipt fixture has no reachable replacement area. Full authority
     // resource-job tests exercise continuation; these check confirmed grants.
@@ -56,7 +66,9 @@ function fixture() {
   vm.runInContext(['compatibleWorkerPerformingAction', 'workerPerformingAction',
     'snapshotUnits', 'workerTaskStatus', 'stopGathering', 'ensureGatherWorkIntent',
     'continueAreaGathering', 'updateForestWorkerEconomy',
-    'updateWorkerEconomy'].map(fn).join('\n') + '\n' + construction, context);
+    'updateWorkerEconomy', 'constructionEndpointSnapshotGetter', 'constructionPoseAvailable',
+    'currentConstructionAccessRetry', 'retainConstructionAccessWait',
+    'updateConstructionAccess'].map(fn).join('\n') + '\n' + construction, context);
   context.flushPendingForestClears = () => {};
   journal.beginStep(context.tickNumber);
   return { unit, node, building, journal, context,
@@ -194,4 +206,32 @@ test('a positive repair request with no representable HP increase has no activit
   const hp = f.building.hp; f.next(); f.build();
   assert.equal(f.building.hp, hp); assert.equal(f.context.teamWood[0], 0);
   assert.equal(f.action(), null); assert.equal(f.finish(), true);
+});
+
+for (const team of [0, 1]) for (const repairing of [false, true])
+test(`seat ${team}: a pending friendly endpoint withholds ${repairing ? 'repair' : 'build'} receipts until released`, () => {
+  const f = fixture(); f.unit.team = team; f.building.team = team;
+  f.unit.gatherNodeId = null; f.unit.gatherPhase = ''; f.unit.buildingTargetId = 1;
+  f.unit.repairing = repairing; f.building.complete = repairing;
+  const military = { ...f.unit, id: 1, kind: 'infantry', x: 8, z: 8,
+    buildingTargetId: null, repairing: false, moveGoalCell: 32 * 64 + 32,
+    movePlanningPending: true };
+  military.moveGoalPoint = createMoveGoalPoint(military, 0, 0, military.moveGoalCell, 64, 64);
+  f.context.units.push(military);
+  const before = { hp: f.building.hp, progress: f.building.progress, wood: f.context.teamWood[team] };
+  f.build();
+  assert.equal(f.action(), null, 'accepted unpublished military endpoints prevent confirmed work');
+  assert.equal(f.building.hp, before.hp); assert.equal(f.building.progress, before.progress);
+  assert.equal(f.context.teamWood[team], before.wood); assert.equal(f.unit.buildingTargetId, 1);
+  assert.equal(military.movePlanningPending, true); assert.deepEqual(military.path, []);
+  military.moveGoalCell = 40 * 64 + 40;
+  military.moveGoalPoint = createMoveGoalPoint(military, 8, 8, military.moveGoalCell, 64, 64);
+  f.next(); f.build();
+  assert.equal(f.action(), repairing ? 'repair' : 'build');
+  assert.equal(military.movePlanningPending, true); assert.deepEqual(military.path, []);
+  if (repairing) {
+    assert.ok(f.building.hp > before.hp); assert.ok(f.context.teamWood[team] < before.wood);
+  } else {
+    assert.ok(f.building.progress > before.progress); assert.equal(f.context.teamWood[team], before.wood);
+  }
 });
