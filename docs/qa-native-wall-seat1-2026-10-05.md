@@ -679,3 +679,128 @@ construction owned. Fresh source-derived inputs/results stay outside git; the
 separately denied drafts and pending private bundle are neither accessed nor
 published. No new PR/main event or full-suite rerun until a substantive qualified
 fix. Source/pack/provider/served/render proofs stay separate; art backing N/A.
+
+
+## Return admission and executed service accounting — diagnostic rejection
+
+This continuation reuses the preceding actor110 serial-pose input and the exact
+`c719377c`48/96-tick controls, including their21 harmed-neighbor controls. It adds
+only disposable diagnostic admission hooks and a read-only receipt ledger;
+production steering, position writes, Stop/order priority, endpoint publication,
+repair and construction consumer `c8aa92c8` remain unchanged. The input SHA-256 is
+`cfd1082efd5e12d7d621195780a96fb44331e6d13dbb56a301a9510d24305333`.
+These are cold source reconstructions with the same planning drain, not a warm
+native continuation or a new benchmark.
+
+### Assessment before another motion heuristic
+
+Twenty of the original21 harmed actors already lose more than `.01` with only
+actor110's first retreat. Fourteen have exactly the same loss with one or two
+retreats. None of those21 show that seed-only loss at sampled ticks0–15; four do
+at24 and20 at48. Thus the apparent early gain conceals later transferred loss,
+and repairing only the second retreat cannot account for most of it. Desired-step
+blockers outside the declared77/81/87/110 frontier are75/76/83/93/103. This is
+specific evidence that this four-actor episode omits relevant dependencies; it
+does not prove a particular global coordinator is necessary or establish a
+64-body causal component from proximity alone.
+
+The [receipt ledger](../scripts/crowd-service-ledger.mjs) accounts for at most64
+original moving actors and128 admitted substeps per consecutive tick. It validates
+identity, accepted goal/queue/revision, full original path fingerprint, serial
+receipt chain and current live endpoint before crediting any substep. Publication,
+phase change, missing receipts, overflow or unreceipted movement refuses credit.
+The retained input declares1,839 route cells, bounding fingerprint work per frame;
+the workload has at most52 receipts per frame and no rejected frames. Individual
+route changes still invalidate their records. Its service clock starts at retained
+tick3120; no earlier native service history is imported. A new `.15` executed
+high-water gain pays service once; returning to an old peak cannot pay again.
+Each admitted substep peak is retained, including a peak lost within the same tick.
+This is observed route service, not a predictor of counterfactual opportunity loss.
+
+### Three admission variants and retained controls
+
+The [admission wrapper](../scripts/crowd-service-admission-probe.mjs) adds no heading,
+priority, hold, grant, peer write or room promise. The intervention remains four
+actors/two nonoverlapping finite maneuvers, with the original128-visit/64-neighbor
+queries and actual own-call movement budgets.
+
+* **Return:** after110's nine-tick retreat, ordinary movement continues while the
+  second planning attempt waits up to12 ticks for `.15` actual seed recovery. At
+  tick14 that condition and the previous executed return-leg capsule pass: margin
+  `+.219646`. Actor77 still retreats toward81;87 closes its corridor after two
+  admitted steps totaling `.173333`. The next proposed margin is `-.029954`, so
+  the original body guard aborts before contact. The gate changes the closing
+  body from110 to87 without producing fair recovery.
+* **Return plus debt:** the same selected own call also checks current queried
+  active bodies for valid receipts, service age at most12 and backslide at most
+  `.15`. Twelve boundary records veto the second maneuver at tick14, including
+  only four of the original21 harmed controls. The full trajectory exactly
+  reproduces seed-only retreat at both windows; it cannot undo that first
+  maneuver's transferred losses.
+* **Entry:** at110's first own call, active neighbors75/76/83 are outside the
+  declared intervention frontier, so it refuses the episode once. No retreat
+  executes, and the full trajectory exactly matches baseline at both windows.
+  This conservative seed-entry coverage check is not continuing closure or a
+  recovery witness: the baseline still stalls.
+
+| Diagnostic mode | Affected actors losing >`.01` at48 | Original21 losing >`.01` at48 | Affected actors losing >`.01` at96 | Original21 losing >`.01` at96 |
+| --- | ---: | ---: | ---: | ---: |
+| Seed only |26|20|25|13|
+| Original frontier |21|21|27|12|
+| Return |22|14|26|13|
+| Return plus debt |26|20|25|13|
+| Entry refusal |0|0|0|0|
+
+All comparisons remain unqualified under the original `.15` sustained-progress
+and `.01` transferred-loss test. At96 the return variant's last24-tick gains are
+`-.028861`, `+.032035`, `-.077442`, `+.000748` for77/81/87/110 respectively;
+none reaches `.15`. At48,16 of18 still-valid original harmed frontier records
+have service age greater than12, but a recently served actor still loses `.431832`
+against baseline. Receipt age therefore exposes starvation without perfectly
+identifying transferred loss. Invalid route records are never counted as valid
+fairness witnesses.
+
+The six modes each repeat exactly at48 and96, including the complete unit
+trajectory and coordinator/ledger reports. The original baseline, seed-only and
+frontier traces exactly match `c719377c`, confirming observation does not change
+movement. Across24 runs,74,220 selected admitted substeps have zero static/body
+contacts with original terrain/elevation admissions;72 inactive actors retain
+position, health and accepted intent in every run. Entry's zero added losses are
+zero-intervention equality, not an improvement. Focused controls total92 tests;
+the two new suites cover receipt gaps/overflow/phase and route mutation, within-tick
+peaks/revisits, return capsule geometry, stale admission and boundary debt/coverage.
+They are registered in the existing CI lane without changing workflow triggers.
+Art backing is N/A for this internal diagnostic.
+
+Run only against authorized local source inputs and retained controls:
+
+```sh
+node scripts/crowd-service-admission-diagnostic.mjs --input=LOCAL_CHECKPOINT --control-48=LOCAL_CONTROL_48 --control-96=LOCAL_CONTROL_96 --ticks=48
+node scripts/crowd-service-admission-diagnostic.mjs --input=LOCAL_CHECKPOINT --control-48=LOCAL_CONTROL_48 --control-96=LOCAL_CONTROL_96 --ticks=96
+```
+
+### Different bounded coordination contract remains open
+
+Crowd rejects this retreat-ranking/admission family as a production candidate;
+adding another angle or stacking these vetoes has no qualified fairness result.
+The next smallest investigation is a **bounded passage/cohort admission and
+service handoff**, using executed boundary receipts before starting the first
+maneuver, not merely waiting for one owner to return. Specify a disposable
+four-actor episode with at most two finite maneuvers, a finite expiration and a
+single current service recipient. Require actual boundary service/handoff before
+switching recipients; an uncovered or invalid boundary cancels the episode and
+normal accepted orders continue. First establish whether any such episode can be
+admitted at the retained knot without excluding a relevant neighbor. If none can,
+record that scope failure rather than expanding a production controller or
+inventing a future-space promise. This contract is unimplemented and unqualified;
+the cold case motivates testing it but does not prove its sufficiency.
+
+Crowd owns this disjoint diagnostic and the same48/96 windows/all21 controls.
+Core retains the host receipts, original executor budgets/admissions/position
+writes and repair; caller/construction retain accepted endpoint publication.
+Only a concrete overlapping interface decision requires further coordination.
+Original both-seat gate/forest/bridge/Stop/native acceptance remains open for any
+future production candidate. No new PR/main event or full-suite rerun occurs for
+this rejection; raw source-derived inputs/results stay outside git and separately
+denied drafts/private bundles remain untouched. Exact source, clean pack,
+provider/served identity and rendered/deployed proof are separate obligations.

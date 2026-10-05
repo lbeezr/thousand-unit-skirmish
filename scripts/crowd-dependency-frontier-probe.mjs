@@ -69,7 +69,7 @@ export function chooseFrontierCandidate(ctx, frames, attemptedOwners, stats) {
   return null;
 }
 
-export function createFiniteRoomProbe(config) {
+export function createFiniteRoomProbe(config, { admitFirst, admitSecond, admitSelected } = {}) {
   assert.ok(['baseline', 'single', 'frontier'].includes(config.mode));
   assert.ok(config.origins.length >= 2 && config.origins.length <= 4);
   const ids = config.origins.map(o => o.id).toSorted((a, b) => a - b);
@@ -130,12 +130,23 @@ export function createFiniteRoomProbe(config) {
       if (own.projection.status !== 'projected') { cancel(ctx.tick, own.projection.status); return ctx.normal; }
       if (config.mode !== 'frontier') return first.select(ctx);
       const firstEnd = first.report.events.find(e => e.type === 'finish' || e.type === 'abort' || e.type === 'refused');
-      if (!firstEnd) return first.select(ctx);
+      if (!firstEnd) {
+        if (ctx.tick >= config.startTick && ctx.unit.id === config.ownerId && !first.report.events.length && admitFirst) {
+          const decision = admitFirst(ctx);
+          if (decision.status !== 'admit') { cancel(ctx.tick, decision.reason); return ctx.normal; }
+        }
+        return first.select(ctx);
+      }
       if (firstEnd.type !== 'finish') { cancel(ctx.tick, 'seed-not-completed'); return ctx.normal; }
       // Begin at a later tick; no overlapping retreat and no repeated planning
       // for an unchanged dependency. There is just one additional attempt.
       if (ctx.tick <= firstEnd.tick) return ctx.normal;
       if (second) return second.select(ctx);
+      if (!planned && admitSecond) {
+        const decision = admitSecond(ctx, firstEnd);
+        if (decision.status === 'wait') return ctx.normal;
+        if (decision.status !== 'admit') { cancel(ctx.tick, decision.reason); return ctx.normal; }
+      }
       if (!planned || pending?.ownerId === ctx.unit.id) {
         const frames = ids.map(id => id === ctx.unit.id ? own : frame(ctx, id));
         if (frames.some(f => f.projection.status !== 'projected')) { cancel(ctx.tick, 'frontier-query-refused'); return ctx.normal; }
@@ -151,6 +162,10 @@ export function createFiniteRoomProbe(config) {
           const fresh = chooseFrontierCandidate(ctx, frames, attemptedOwners, stats);
           if (!fresh || fresh.ownerId !== pending.ownerId || fresh.recipientId !== pending.recipientId || fresh.angle !== pending.angle) {
             cancel(ctx.tick, 'changed-selected-candidate'); return ctx.normal;
+          }
+          if (admitSelected) {
+            const decision = admitSelected(ctx, fresh);
+            if (decision.status !== 'admit') { cancel(ctx.tick, decision.reason); return ctx.normal; }
           }
           attemptedOwners.add(pending.ownerId);
           second = createRetreat({ ownerId: pending.ownerId, peerIds: ids.filter(id => id !== pending.ownerId),

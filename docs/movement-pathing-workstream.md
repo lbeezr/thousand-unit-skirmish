@@ -1012,6 +1012,34 @@ unchanged-dependency retry. Keep transferred-loss holdout and original
 gate/forest/bridge/Stop/native acceptance. No full-suite/PR/main event until a
 qualified substantive fix; private denied drafts/bundle remain untouched.
 
+5 October return-admission/service continuation: the
+[retained assessment and rejected variants](qa-native-wall-seat1-2026-10-05.md#return-admission-and-executed-service-accounting--diagnostic-rejection)
+show20 of21 original harmed neighbors already lose under the first retreat alone;
+14 losses are unchanged by the second. Desired-step blockers extend outside the
+four controlled actors. The bounded return gate delays77's second retreat until
+110 has actual recovery, but87 then closes it; the debt veto exactly reproduces
+harmful seed-only movement, and seed-entry refusal exactly reproduces stalled
+baseline. All48/96 comparisons remain unqualified. Read-only high-water service
+accounting starts at the retained episode, rejects changed routes and cannot
+claim warm history or perfectly predict relative opportunity loss. Production
+files and endpoint/Stop/admission contracts remain unchanged.
+
+Crowd owner `01a10933-c2b0` retires this retreat/admission heuristic family from
+production candidacy. Next scope is a disposable bounded passage/cohort admission
+and actual boundary service handoff contract: at most four controlled actors/two
+finite maneuvers, one current recipient, finite expiration, executed boundary
+service before changing recipient, and cancellation to normal accepted orders
+when the boundary is uncovered/invalid. First test whether that scope admits any
+safe episode at the retained knot; refusal alone is not recovery. Do not grow a
+production controller from rejected experiments or promise future room. Retain
+the48/96 windows, all21 harmed-neighbor controls and existing both-seat
+forest/gate/bridge/Stop acceptance. Core owns host receipts and original budgets,
+admissions/position writes/repair; caller/construction own endpoint publication.
+The pure diagnostic seam is agreed; only actual overlapping edits need a decision.
+No qualified fix, new PR/main event, full-suite retry, or served/rendered completion
+is claimed. The linked QA owns source/pack evidence; private denied material stays
+untouched.
+
 ### U5 construction endpoint availability — agreed bounded interface
 
 The [core/caller agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/443#issuecomment-5989678024)

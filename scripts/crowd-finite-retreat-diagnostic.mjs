@@ -43,7 +43,7 @@ function getMoveVector(unit, remainingStep, allowLocalDetour){
     let adapter = await readFile(path.join(root, 'scripts/pathing-replay-fixture.mjs'), 'utf8');
     adapter = replaceOnce(adapter, "const root = fileURLToPath(new URL('..', import.meta.url));", `const root = ${JSON.stringify(root)};`);
     adapter = replaceOnce(adapter, "const original = await readFile(new URL('../server.mjs', import.meta.url), 'utf8');", `const original = ${JSON.stringify(source)};`);
-    adapter = replaceOnce(adapter, '  get units() { return units; },', '  get finiteRoomReport(){ return structuredClone(finiteRoomProbe.report); },\n  get units() { return units; },');
+    adapter = replaceOnce(adapter, '  get units() { return units; },', '  get finiteRoomReport(){ return structuredClone(finiteRoomProbe.report); },\n  observeFiniteRoomSteps(steps){finiteRoomProbe.observeExecuted?.({steps,units,tick:tickNumber,navigationRevision,epoch:movePlanningEpoch});},\n  get units() { return units; },');
     const adapterPath = path.join(directory, 'fixture.mjs');
     await writeFile(adapterPath, adapter);
     const { createPathingReplayFixture } = await import(pathToFileURL(adapterPath).href);
