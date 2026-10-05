@@ -1,4 +1,5 @@
 import { GAMEPLAY_RULESET_REVISION } from '../src/gameplay-definitions.mjs';
+import './patrol-travel-journeys.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';

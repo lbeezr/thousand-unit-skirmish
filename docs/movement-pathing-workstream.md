@@ -47,9 +47,9 @@ actual journey coverage and rendered acceptance are separate.
 | Gather, Farm, shore fish, drop-off, Return, return to work | `routeWorker`, `routeForestWorker`, `routeWorkerToDropoff`, `updateWorkerEconomy`; cached cardinal flow fields → land executor | PR395 is merged: land economy reduction/rejoin, route steps and gathering separation consume the static Worker profile. Selected `path.at(-1)`, original cost/raw `path.length` scoring, ranges and cargo/job remain resource-owned. Broad dynamic/long-soak/rendered coverage stays open; water adapters keep their policy. |
 | Forest group / region intent | `assignForestGather`, gather-work-area selection, `updateForestWorkerEconomy` → resource routes | Forest owner `01a1072a-4c42-7791-9dab-77b88425a021` owns the returning-forester/interior-click fix. A clicked interior tree names its selected forest group; choose its nearest reachable frontier. Distinguish exhausted, temporarily obstructed and unreachable. No unrelated global fallback or hidden-resource reveal. |
 | Build, repair, palisade sequence, site evacuation | Building access assignment → A* / land executor; construction and wall continuation | PR399's bounded construction travel adopter consumes the shared static Worker profile through existing planner/publication/land admissions. Preserve paid site IDs, revision, legal edge range and actual productive-work receipts. Stationary construction separation and evacuation remain explicit follow-ups; movement completion does not mean work completion. |
-| Attack-move and interrupted-route resume | Formation A* plus `prepareAttackMovePaths`, `getUnitAttackPath`, `clearAttackTarget` → land executor | Target-free explicit objective PR405 is merged, including fractional target-loss resume. Active pursuit/automatic combat remains a separate adopter; retain objective/acquisition/stance rules. |
+| Attack-move and interrupted-route resume | Formation A* plus `prepareAttackMovePaths`, `getUnitAttackPath`, `clearAttackTarget` → land executor | Target-free explicit objective PR405 and explicit acquired unit-target pursuit PR417 are merged, including fractional target-loss resume and unchanged anchor bounds. Automatic stance and persistent pursuit remain separate; retain objective/acquisition/stance rules. |
 | Focused unit/building attack, pursuit, range positioning | `assignAttack`, `assignAttackBuilding`, cached flow / range goals → land executor | PR410 is merged at `6ced82cb`: explicit military unit-target Attack and moving-target/rejected-prefix recovery. Building targets, automatic range routes and same-cell closure remain uncovered. Combat retains target/range/damage policy. |
-| Patrol, Follow, stance return, production rally | `assignPatrolOrder`, `assignFollowOrder`, `updatePersistentOrders`, `enqueueRouteRepairs`; rally reuses Move | Caller adoption follows focused Attack; no universal static-circle claim. Actual Patrol remains a negative control with 17 unsafe corner substeps per seat. Preserve cycling, leash/manual priority and pending continuations. Rally issuing ordinary Move inherits that contract; direct placements need separate audit. |
+| Patrol, Follow, stance return, production rally | `assignPatrolOrder`, `assignFollowOrder`, `updatePersistentOrders`, `enqueueRouteRepairs`; rally reuses Move | PR418 adopts target-free military Patrol through the existing profile/planner/rejoin/executor: the recorded corner travel changes from 17 unsafe steps to zero per seat while preserving endpoint cells, cycling and pending continuations. Acquired Patrol pursuit, Worker Patrol, Follow and stance return remain separate; no universal static-circle claim. Rally issuing ordinary Move inherits that contract; direct placements need separate audit. |
 | AI and scenario-issued movement | Existing command dispatch plus mode/AI decision loop; scenario actions / reinforcement placement | Enumerate emitted commands and direct relocations; AI uses the same movement contracts and its disclosed observation. Fixed planning work alone does not make async intake or AI decisions deterministic. |
 | Idle/work/combat interaction separation | `spreadInteractingUnits`; same-cell combat closure inside `simulateTick` | Gathering separation is adopted by PR395. Construction separation uses the economy-only selector; the new bounded command probes below find no static failure and do not qualify it generally. Military interaction and same-cell combat remain separately owned adoption gaps. |
 | Skiff Move, queued Move, fishing, Dock return | `water-unit-runtime`, `skiff-group-orders`, `skiff-waypoints`, `skiff-fishing` | Adapt route status/identity/diagnostics; preserve cardinal water, static shore clearance, 0.4-cell hull reservations, atomic group admission and retry budgets. Unsupported attack-move/Patrol/Follow remain explicit rejection. |
@@ -57,6 +57,47 @@ actual journey coverage and rendered acceptance are separate.
 | Spawn, checkpoint restore, evacuation / relocation | Spawn rules, `restoreMatchCheckpoint`, construction relocation | These are placement/restore policies, not ordinary travel. Validate clearance and identity, record relocation reason, rebuild transient routes without silently changing job intent. |
 
 ### Shared semantics, domain policies
+
+Caller [PR418](https://github.com/lbeezr/thousand-unit-skirmish/pull/418), after
+merged acquired-AttackMove PR417, implements **target-free military Patrol travel**.
+The audit confirms its existing
+revision-safe planner, selected-route rejoin publisher and executor already
+consume `activeLandMovementBodyRadius`: only an additive pure Patrol predicate
+and existing profile fallback are needed. There is **no host edit** or duplicate
+route/admissibility algorithm. [Core's live-publication boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/416#issuecomment-5986613546)
+and ordinary crowd's active-Move-only classifier remain disjoint. Live XL
+reservation/retry, aggregate save bounds and 320 admission stay core/map-owned.
+
+The [real-command baseline](qa-evidence/patrol-travel-2026-10-05/baseline.json)
+at `b8028375` admits 17 unsafe static-body substeps per seat from `(.75,.95)`
+beside the stone corner. The
+[pre-review candidate](qa-evidence/patrol-travel-2026-10-05/candidate.json)
+admits zero, using the already shared current-cell prefix and selected tail.
+Both continue repeated outbound/return legs with original endpoint cells.
+Patrol still returns to the start **cell center** `(.5,.5)`, not the original
+fractional pose; leg polling remains unchanged. The safe initial detour misses
+one existing polling opportunity in seat 1: first reversal moves from tick 71
+to 101, with later recorded reversals shifted by the same 30 ticks. Seat 0's
+recorded reversal ticks stay unchanged. These are bounded workload timings,
+not universal arrival/capacity or rendered qualification.
+
+The 37 new registered real-command checks exercise both-seat pending/outbound/
+return-pending/return-active recovery, repeated cell cycling, Stop/Hold/manual
+and queued Move, actual acquisition/legal damage and saved-leg restoration,
+live-target leash loss, paid endpoint blockage/cancellation, Follow and Worker
+negative controls, plus a validator-accepted saved Patrol with `attackMove:false`
+whose persistent travel and unchanged flag survive cycling. Existing recovery
+requeues a pending saved goal once under
+one new revision, then the unchanged persistent controller resumes its leg;
+queued Move cancels persistent intent at **admission** and keeps the existing
+queued-route contract. The earlier objective/Patrol control now expects the
+new separate Patrol profile while retaining objective exclusion and cycling.
+Automatic idle stance/return, acquired Patrol pursuit, Follow, Worker/water,
+building targets, same-cell closure and body-pair steering remain separate.
+Final independent exact-head source/types/package/native/normal-merge evidence
+belongs to this caller increment. The deployment verifier owns current staging
+follow-through; actual rendered acceptance stays open under the retained
+sandbox/storage capability failure with zero frames and no retry.
 
 After focused Attack PR410 normally merged at `6ced82cb`, the coordinator
 allocated explicit military AttackMove **acquired unit-target pursuit** to
@@ -891,7 +932,7 @@ travel probes are not grounds for a speculative selector change.
 | Rank / status | Outcome and next action | Write boundary / dependency | Acceptance |
 | --- | --- | --- | --- |
 | U4/U6 · next shared interface; runtime pending | Bound live publication including rejoin growth, after XL checkpoint PR407/414. Source-bound characterization is complete; agree reservation and deferred continuation before installing a guard. | Core publisher/rejoin/planner service; map owns save quota/admission. Worker/combat/naval/wildlife writers adopt in separate vertical changes. | No lost goal/job, truncation or stranded pending assignment; quota/growth/alias boundaries, fair retry/cancellation/recovery. ≤256 compatibility and closed ordinary 320 remain explicit. |
-| U4 · next caller allocation | Focused unit Attack PR410 is merged after construction PR399 and target-free AttackMove PR405. Allocate building-target range routes, Patrol/Follow/stance and same-cell/interaction writers separately. | [Caller adoption owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/410) retains adoption; agree the next exact functions without duplicating its merged hooks. | Both-seat accepted commands, retained selected route, productive legal-range damage, interruption/recovery and zero new static contact. Old visibility fixture failures remain separate. |
+| U4 · bounded caller adoption | Construction PR399, objective AttackMove PR405, focused Attack PR410 and acquired AttackMove PR417 are merged. PR418 implements target-free military Patrol travel without host edits; acquired Patrol pursuit, building-target range routes, Follow/stance and same-cell/interaction writers remain separate allocations. | [Caller adoption owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/418) retains adoption; agree future overlapping functions without duplicating merged hooks. | Both-seat accepted commands, original endpoint cycling, retained selected route, productive legal-range damage, interruption/recovery and zero new static contact in the adopted domain. Old visibility fixture failures remain separate. |
 | U5 · active crowd | PR400 qualifies ordinary military Move groups, opposing traffic and queued topology before integration. | [Crowd owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/400); allocated query/steering/wait only. | Retain failures/timeouts, safe sweeps, immovable parked actors, stable slots and finite forward progress; no combat/Worker adoption claim. |
 | 1 · complete | Clock-independent service work merged in [PR #193](https://github.com/lbeezr/thousand-unit-skirmish/pull/193), `331df72`; [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#integration-and-remaining-evidence) pass. | Planning constants, queue-slice helper and diagnostics only. | 209 postmerge checks; nine route pairs preserve hashes; native large routes and recovery. Atomic-search overshoot remains explicit. |
 | 2 · complete | The parked-formation stall reproduces with a one/two-tick older Move. Bounded repulsion merged in [PR #209](https://github.com/lbeezr/thousand-unit-skirmish/pull/209), `64cc391`; independent review and [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#4-october-postmerge-acceptance) pass. | Only `getMoveVector`'s final force combination and focused tests/tools. Combat-owner targeting/stances remain untouched. | 235 postmerge checks; all eight headings on both seats; four large parked cases twice; nine terrain route pairs; native parked controls and active/idle restarts at the exact merge source. |
