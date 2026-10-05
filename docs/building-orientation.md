@@ -47,7 +47,7 @@ Mill, Farm and Dock now use their admitted economy lifecycle packs. Palisades re
 
 At main `446d5a99374b3aaf06d30948ad9c01cb3f6080e5`, eleven families had default registered views, but the original eight-family rotation list still excluded Mill, Farm and Dock. This hid their buttons, ignored rotation keys, and rejected paid nonzero facing. The fix admits all eleven explicitly; a registry-parity guard catches another art-only admission. The existing key/button, pending request, camera and editing guards serve every admitted family.
 
-| Family | Footprint | Registered headings per state | Placement facing before → after | Available captured states |
+| Family | Footprint | Registered headings per state | Placement facing before → after | States in default registered manifest |
 | --- | --- | --- | --- | --- |
 | Town Center | 5×5 | 0,45,90,135,180,225,270,315° | four → four | Complete |
 | House | 3×3 | same eight | four → four | Complete |
