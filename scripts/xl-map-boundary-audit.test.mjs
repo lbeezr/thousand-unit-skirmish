@@ -107,6 +107,7 @@ test('draft restore dimension evidence follows the bound helper and actual recov
   } });
   assert.match(report.sourceInputSha256['src/authoring/map-studio-draft-store.mjs'], /^[a-f0-9]{64}$/);
   assert.match(report.sourceInputSha256['src/authoring/map-studio/draft/v1/contract.mjs'], /^[a-f0-9]{64}$/);
+  assert.match(report.sourceInputSha256['src/world/scenario-event-chain.mjs'], /^[a-f0-9]{64}$/);
   for (const row of report.dimensions.boundaryMatrix) {
     const definition = { width: row.width, height: row.height, obstacles: [], spawnPoints: [] };
     const draft = { version: MAP_STUDIO_DRAFT_VERSION, sourceMapId: 'audit', editor: { definition } };

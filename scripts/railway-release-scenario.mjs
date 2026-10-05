@@ -178,6 +178,29 @@ try {
         404, `image-loading admission remains exact (${method}): ${filename}`);
     }
   }
+  // The extracted world contract and old map API retain exact packed HTTP bytes.
+  for (const filename of ['src/map-utils.mjs', 'src/world/scenario-event-chain.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+      assert.equal(response.status, 200, `${method}: ${filename}`);
+      assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
+      assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+      assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+      const bytes = Buffer.from(await response.arrayBuffer());
+      if (method === 'HEAD') assert.equal(bytes.length, 0, filename);
+      else {
+        assert.deepEqual(bytes, await readFile(path.join(root, filename)), filename);
+        assert.deepEqual(bytes, await readFile(path.join(sourceRoot, filename)), filename);
+      }
+    }
+  }
+  for (const filename of ['src/world/', 'src/world/unknown.mjs',
+    'src/world/scenario-event-chain.mjs/extra', 'src//world/scenario-event-chain.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
+        404, `world admission remains exact (${method}): ${filename}`);
+    }
+  }
   // Preserve exact shipped audio bytes at both the canonical and legacy paths.
   for (const helper of ['audio-decoded-cache', 'audio-shipped-response']) {
     for (const filename of [`src/${helper}.mjs`, `src/client/audio/${helper}.mjs`]) {
