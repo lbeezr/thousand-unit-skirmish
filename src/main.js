@@ -56,10 +56,11 @@ import {
 import {
   addObstacleEnvironmentSprites, groundBaseMaterial, createConstructionGroundInstances, createConnectedPalisadeGround,
   createEnvironmentSprite, createEnvironmentSpriteInstances, createWoodResourceInstances, regionalWoodResourceProfile, createFoodResourceInstances, regionalFoodResourceProfile,
-  createGroundSurfaces, setEnvironmentSpriteInstance, setForestSpriteStock,
+  createGroundSurfaces, createSettlementGround, setEnvironmentSpriteInstance, setForestSpriteStock,
   TERRAIN_MATERIALS, updateConstructionGroundInstances, updateLandVegetationOccupation,
   RESOURCE_STATE_ASSETS_AVAILABLE, RESOURCE_STATE_ASSET_STATUS, resourceStateAssetsReady,
 } from './environment-art.mjs';
+import { createSettlementWearCache, updateSettlementWearMesh } from './settlement-wear.mjs';
 import { planPalisadeConstructionGround, updatePalisadeConstructionGroundMesh } from './palisade-construction-ground.mjs';
 import { createEnvironmentInstancePicker } from './environment-instance-picking.mjs';
 import {
@@ -601,6 +602,8 @@ const woodTreeStageCounts = new Map();
 const berryNodeSlots = new Map();
 const berryNodeStages = new Map();
 const berryStageCounts = new Map();
+let settlementWearCache = null;
+let settlementWearMesh = null;
 const constructionGroundMeshes = new Map();
 const palisadeGroundMeshes = new Map();
 const constructionGroundSignatures = new Map();
@@ -1711,6 +1714,9 @@ function reconcileBuildings(buildings = [], initial = false) {
     updateBuildingCombatFeedback(visual, building);
   }
   updateConstructionGroundBatches(rows);
+  if (settlementWearMesh && settlementWearCache) {
+    updateSettlementWearMesh(settlementWearMesh, settlementWearCache.update(rows, localTeam));
+  }
   updateLandVegetationOccupation(mapObjects, rows.map(building => ({
     x: building.x, z: building.z,
     width: buildingFootprint(building.type), depth: buildingFootprint(building.type),
@@ -2348,6 +2354,8 @@ function buildMap(definition) {
   terrainSurface=null;
   fogTexture?.dispose();
   clearMapObjects();
+  settlementWearMesh = null;
+  settlementWearCache = null;
   constructionGroundMeshes.clear();
   palisadeGroundMeshes.clear();
   constructionGroundSignatures.clear();
@@ -2395,6 +2403,9 @@ function buildMap(definition) {
     if (surface.userData.waterStudy?.quality === 'study') waterStudyFishBinding = createWaterStudyFishBinding(definition, surface);
     addMapObject(surface);
   }
+  settlementWearCache = createSettlementWearCache(definition, BUILDING_DEFINITIONS);
+  settlementWearMesh = createSettlementGround(definition);
+  addMapObject(settlementWearMesh);
   buildConstructionGroundBatches();
 
   forestTreeSlots = addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);

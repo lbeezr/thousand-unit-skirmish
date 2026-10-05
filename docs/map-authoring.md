@@ -259,6 +259,88 @@ all other map fields remain unchanged and new wear excludes blocked cells.
 This starting-site pass does not add settlement structures, change placement
 rules, or generate paths for buildings constructed during a match.
 
+### Building-cluster wear — 5 October 2026
+
+Owner: settlement-ground workstream (`01a0f784-c5d7-72e0-82e8-1747b4c840c1`),
+retaining default integration, release, identified staging and rendered acceptance.
+The bounded first slice adds cosmetic soft entrance aprons when a live owned
+Complete building has at least two other approved structures within nine world
+units at the same logical ground level. The eight existing rotatable building
+roles contribute; Workshop represents the user's nearby blacksmith without
+adding a building role. Other roles still exclude their occupied footprints.
+This is local wear, not inferred routes to a Town Center.
+
+| Approach | Benefit | Boundary / decision |
+| --- | --- | --- |
+| Entrance-connected paths | Strong route read for three houses opposite a hall and nearby workshop; rotation supplies front thresholds. | A straight connector can cross a footprint, water or local cliff. Needs bounded disclosed routing and a separate composition review; defer. |
+| Soft local cluster wear | A shared worn yard emerges where nearby entrance aprons overlap; no promise of a traversable route. | Selected small default slice. Single buildings and pairs remain unchanged. The yard can remain disconnected where aprons do not overlap. |
+| Traffic-informed wear | Could describe actual frequently used worker journeys. | Requires bounded history, decay/reset and disclosure rules; hidden traffic must never leak. Defer rather than adding simulation or per-frame pair work. |
+
+Art backing: the existing [painted ground pack](environment-pack-v1.md) and
+[terrain variety treatment](terrain-variety.md) retain quiet, painterly texture
+sampling. The inspected [Frontier village exploration](art-direction/civilization-settlements-v1/frontier-village-v1.png)
+supplies the limited shared-yard composition cue: connected subdued earth around
+nearby thresholds, grass surviving toward outer margins. Selecting that cue does
+not approve the board's building designs, flags, density or full street network.
+No new art, generation, external service or private source is introduced.
+
+`src/settlement-wear.mjs` uses a spatial bucket search, stops neighbor search at
+two matches, and creates at most an 81-cell neighborhood per contributing
+building under the existing 128-building budget. One cached plan/mesh is rebuilt
+on snapshot membership, type, owner, position, footprint, facing or completion
+change; HP/progress-only snapshots reuse it. Nothing runs in the animation loop.
+Seed/site variation survives input ordering and reconstruction. Beyond the budget,
+wear clears conservatively. Demolition/ownership loss clears obsolete wear.
+
+Aprons combine into one bounded opacity field, capped at 0.7, rather than drawing
+overlapping stamps. Half-cell triangles follow the terrain's actual diagonal and
+interpolation. All disclosed building occupancy (including historical explicit
+footprints), authored obstacles/water, different logical levels and map edges
+exclude paint and feather alpha to zero at their boundaries. This conservative
+slice excludes ramps as well as cliffs; no path is invented across either.
+Regional dirt and its existing atlas/fallback, tint, slope shading and stochastic
+sampling remain. Ground draws after terrain/haze at order -0.75, before construction
+paint, props, buildings and units, with depth testing, no depth writes or picking.
+Fog is applied by the existing renderer. No movement, collision, speed, economy,
+map serialization, authoritative fog or traffic state changes.
+
+Exact acceptance commands:
+
+```sh
+node --test scripts/settlement-wear.test.mjs
+node --test scripts/construction-ground-composition.test.mjs scripts/palisade-construction-ground.test.mjs scripts/building-fog-composition.test.mjs scripts/painted-material-atlas-runtime.test.mjs scripts/check-runtime-imports.test.mjs scripts/check-client-imports.test.mjs scripts/ci-lanes.test.mjs
+node scripts/landscape-authoring-scenario.mjs
+node scripts/settlement-authoring-scenario.mjs
+npm run architecture:check
+npm run check:types
+npm run docs:check
+node scripts/railway-release-scenario.mjs
+```
+
+The six new CPU contracts check three/pair/single/distant/enemy/incomplete cases,
+four facings, removal and owner changes, deterministic seed/reordering, immutable
+snapshots, cache/upload reuse, shared-vertex continuity, alpha bounds, explicit
+footprints, water/blocker/height/edge exclusions, actual raised contact, budget
+refusal and ground layer/picking ownership. Independent review found and corrected
+a cliff-boundary world-sampling error; the new regression checks actual triangle
+centroids on both sides of a discontinuity against owning-cell ground contact. These and packaging establish source
+contracts only. The initial [cloud capability receipt](qa-evidence/settlement-cluster-wear-2026-10-05/renderer-capability.json)
+ran on the clean checkout baseline before implementation: exit 1,
+`sandbox-unavailable` / `storage-unavailable`, zero readbacks, screenshots or game
+frames. No relaunch, sandbox bypass, Mac execution or appearance claim follows.
+
+Next action, retained by the settlement owner: on a supported sandboxed cloud
+renderer, identify a clean containing release and actual served source/digest;
+create three paid Houses in a row facing an opposite Town Center, plus a paid
+Workshop, through ordinary gameplay. Capture before two/after three/completed
+cluster, rotate a new House, demolish one, and repeat beside water and a raised
+ledge at ordinary and strategic zoom on both seats. Inspect original full frames
+and ground crops for smooth joins, painterly detail, actor layering, clipping and
+cleanup; retain errors/frame metadata and deliver any private preview through
+supported Library. A preview/capability report alone cannot close normal-game
+acceptance. Deployment identity and rendered acceptance remain unverified until
+those receipts exist; the existing cloud testing owner supplies renderer capability.
+
 This is a first composition pass. Individual shore steps, reflected layouts,
 repeated regional layout templates and sparse scenery are still visible. A
 connected woodland is better than rounded isolated rectangles, but it does not
