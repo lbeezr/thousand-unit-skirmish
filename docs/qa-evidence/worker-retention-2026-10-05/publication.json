@@ -1,0 +1,776 @@
+{
+  "sourceRevision": "665957545a0d8157f15137a00361a980ec3ebf0b",
+  "sourceDirty": false,
+  "inputSha256": {
+    "workerFlowPath": "eaef291541c9fe71fb2434ac59f7d4b20146e0335d6d0eedfa1ca08ddb56156d",
+    "applyWorkerFlowRoute": "2f20d2f041c9394790de4a149c62ade7d9d6e69236d0bba2eb98d49db02091be",
+    "routeWorkerToDropoff": "8bd507ec26504c417f13e8f5500635e49cf146235acc9fffc5b791051ae63b14",
+    "assignReturnCargo": "91a519ef5aba160d0534325f65a621621ce5791752f4c7302f99898bddbfaf8c",
+    "clearAttackMoveOrder": "8594ffeb860130c2646e71e99859316b018e0f5d606d115aa0faccb3e22d6334"
+  },
+  "scope": "Unchanged production Worker route/reduction/drop-off/land Return bodies with controlled selectors and synthetic saved-field pressure; real checkpoint route leaf only. No full checkpoint, ordinary XL admission, CPU capacity, served or rendered claim.",
+  "cases": [
+    {
+      "mode": "flat",
+      "width": 320,
+      "height": 160,
+      "command": "flow",
+      "count": 1,
+      "before": 1048571,
+      "after": 1048572,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "accepted",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25765,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 320,
+      "height": 160,
+      "command": "flow",
+      "count": 1,
+      "before": 1048575,
+      "after": 1048576,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "accepted",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25765,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 320,
+      "height": 160,
+      "command": "flow",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048577,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25765,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "weighted",
+      "width": 320,
+      "height": 160,
+      "command": "flow",
+      "count": 1,
+      "before": 1048571,
+      "after": 1048576,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "accepted",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25765,
+          "originalLength": 5,
+          "originalCost": 515,
+          "executionLength": 5,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "weighted",
+      "width": 320,
+      "height": 160,
+      "command": "flow",
+      "count": 1,
+      "before": 1048575,
+      "after": 1048580,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25765,
+          "originalLength": 5,
+          "originalCost": 515,
+          "executionLength": 5,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "weighted",
+      "width": 320,
+      "height": 160,
+      "command": "flow",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048581,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25765,
+          "originalLength": 5,
+          "originalCost": 515,
+          "executionLength": 5,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 320,
+      "height": 160,
+      "command": "Return",
+      "count": 2,
+      "before": 1048576,
+      "after": 1048578,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": false,
+          "revision": 7,
+          "selectedGoal": 25765,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        },
+        {
+          "liveActor": false,
+          "revision": 7,
+          "selectedGoal": 25765,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": [
+        "RETURN CARGO ORDER · 2 WORKERS"
+      ]
+    },
+    {
+      "mode": "flat-replacement",
+      "width": 320,
+      "height": 160,
+      "command": "flow",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048574,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "accepted",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25765,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 160,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048571,
+      "after": 1048572,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "accepted",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25685,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 160,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048575,
+      "after": 1048576,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "accepted",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25685,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 160,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048577,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25685,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "weighted",
+      "width": 160,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048571,
+      "after": 1048576,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "accepted",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25685,
+          "originalLength": 5,
+          "originalCost": 515,
+          "executionLength": 5,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "weighted",
+      "width": 160,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048575,
+      "after": 1048580,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25685,
+          "originalLength": 5,
+          "originalCost": 515,
+          "executionLength": 5,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "weighted",
+      "width": 160,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048581,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25685,
+          "originalLength": 5,
+          "originalCost": 515,
+          "executionLength": 5,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 160,
+      "height": 320,
+      "command": "Return",
+      "count": 2,
+      "before": 1048576,
+      "after": 1048578,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": false,
+          "revision": 7,
+          "selectedGoal": 25685,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        },
+        {
+          "liveActor": false,
+          "revision": 7,
+          "selectedGoal": 25685,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": [
+        "RETURN CARGO ORDER · 2 WORKERS"
+      ]
+    },
+    {
+      "mode": "flat-replacement",
+      "width": 160,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048574,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "accepted",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 25685,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 320,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048571,
+      "after": 1048572,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "accepted",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 51365,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 320,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048575,
+      "after": 1048576,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "accepted",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 51365,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 320,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048577,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 51365,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "weighted",
+      "width": 320,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048571,
+      "after": 1048576,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "accepted",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 51365,
+          "originalLength": 5,
+          "originalCost": 515,
+          "executionLength": 5,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "weighted",
+      "width": 320,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048575,
+      "after": 1048580,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 51365,
+          "originalLength": 5,
+          "originalCost": 515,
+          "executionLength": 5,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "weighted",
+      "width": 320,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048581,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 51365,
+          "originalLength": 5,
+          "originalCost": 515,
+          "executionLength": 5,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "flat",
+      "width": 320,
+      "height": 320,
+      "command": "Return",
+      "count": 2,
+      "before": 1048576,
+      "after": 1048578,
+      "quota": 1048576,
+      "exceedsQuota": true,
+      "checkpointLeaf": "aggregate-refused",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": false,
+          "revision": 7,
+          "selectedGoal": 51365,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        },
+        {
+          "liveActor": false,
+          "revision": 7,
+          "selectedGoal": 51365,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": [
+        "RETURN CARGO ORDER · 2 WORKERS"
+      ]
+    },
+    {
+      "mode": "flat-replacement",
+      "width": 320,
+      "height": 320,
+      "command": "flow",
+      "count": 1,
+      "before": 1048576,
+      "after": 1048574,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "accepted",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 51365,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "legacy",
+      "width": 16,
+      "height": 17,
+      "command": "flow",
+      "count": 1,
+      "before": 0,
+      "after": 1,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "legacy-bypass",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 157,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "legacy",
+      "width": 160,
+      "height": 160,
+      "command": "flow",
+      "count": 1,
+      "before": 0,
+      "after": 1,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "legacy-bypass",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 12885,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    },
+    {
+      "mode": "legacy",
+      "width": 256,
+      "height": 256,
+      "command": "flow",
+      "count": 1,
+      "before": 0,
+      "after": 1,
+      "quota": 1048576,
+      "exceedsQuota": false,
+      "checkpointLeaf": "legacy-bypass",
+      "selectedTailPreserved": true,
+      "originalScorePreserved": true,
+      "cargoPreserved": true,
+      "publications": [
+        {
+          "liveActor": true,
+          "revision": 7,
+          "selectedGoal": 32901,
+          "originalLength": 5,
+          "originalCost": 500,
+          "executionLength": 1,
+          "status": "ready"
+        }
+      ],
+      "notices": []
+    }
+  ]
+}

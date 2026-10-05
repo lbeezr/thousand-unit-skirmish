@@ -1190,6 +1190,80 @@ milestone (art N/A). The shared owner retains exact-head review, integration,
 packaging and existing deployment/capture follow-through; no source test closes
 served identity or actual normal-game pixels.
 
+### Worker retention preparation and live land Return admission
+
+The next writer is justified by the read-only
+[Worker characterization](qa-evidence/worker-retention-2026-10-05/publication.mjs),
+not by missing coverage alone. The clean `66595754`
+[historical baseline](qa-evidence/worker-retention-2026-10-05/publication.json)
+consumed unchanged `workerFlowPath`,
+`applyWorkerFlowRoute`, `routeWorkerToDropoff` and land `assignReturnCargo`
+bodies with controlled flat/weighted selectors and synthetic saved-field pressure.
+Of 27 rectangular/square/legacy cases, 12 exceed the aggregate envelope after
+publication, including all three two-Worker explicit Return cases. The actual
+checkpoint route leaf refuses those overshoots. Three replacement controls fit;
+all cases preserve the selected raw tail (distinct from `field.goal`), original
+weighted cost, raw drop-off length scoring and cargo. This is not a full XL save,
+admitted match or gameplay/capacity failure witness.
+
+Explicit land Return is the first bounded adopter: its existing
+selection publishes onto temporary clones, then the command copies their paths
+into live actors. A guard treating those clones as saved units is incorrect, and
+the existing deliveries array can retain a selected route for every recipient.
+Core owns only live command publication/retained-field reservation and
+bounded per-recipient staging at the land branch of `assignReturnCargo`;
+resource retains drop-off selection, raw scoring, original reduction, cargo,
+rates and work continuation. Water Return and the Worker flow helper stay separate.
+The implementation must credit each actually replaced/cleared saved field,
+including any active/resume aliases, preserve unreachable rejection, retain an
+accepted selected goal/drop-off under capacity deferral and use guarded existing
+service/recovery rather than execute the old work leg. No saved ledger flag.
+
+Acceptance for that separate slice includes quota boundaries and alias credit,
+pre-copy admission/finite staging, selected-tail/raw-score controls, pending
+Return cancellation/replacement and real both-seat cargo delivery/queued
+continuation/cold recovery on existing admitted grids. General Worker flow and
+topology retries remain further adopters; no all-writer completion is implied.
+The live implementation streams XL recipients, reserving against the actual
+Worker before linking its selected route. An explicit ledger `clearResume`
+option credits both fields that this accepted command clears; default callers
+keep active-field-only credit. Other active/resume/herd aliases stay charged.
+Refusal accepts Return at normal command priority, clears previous work/route,
+retains cargo and the chosen drop-off/goal, and enqueues an empty guarded repair
+assignment through the existing service. It never reports arrival, loses the
+job or executes the old work leg. Retry replans toward that same selected
+endpoint with current A* policy; full raw route payloads are released rather
+than stored per waiting recipient. No new saved state or scheduling hook.
+The <=256 branch retains its previous select-all-then-publish behavior. Water
+Return, resource helper reduction/selection, cargo rates and jobs are unchanged.
+
+The registered [land Return journeys](../scripts/land-return-admission-journeys.mjs)
+consume the actual command, selection/reduction, queue/service/publication,
+checkpoint recovery tail, physical phase and deposit bodies. Synthetic XL
+quota edges, path-length refusal, active/resume alias credit and 24-recipient
+streaming retain raw selected tails/cost/scoring. Both seats and both scheduler
+modes preserve pending cargo/queued travel through refusal, cold metadata
+recovery and field release, then deposit once before later travel. Stop/Hold,
+death, recycled actors, replaced matches and unreachable rejection are controls.
+Two genuine 160-map both-seat journeys separately harvest finite Food, accept
+Return, cold-load a complete checkpoint in a new module, deposit and finish a
+queued fractional Move with actual static-body substeps. They do not establish
+native XL save admission. Per-recipient source staging is bounded by existing
+cell-count flow loops plus one reduction/prefix copy (conservatively <=3N
+logical route entries); no M-recipient route payload list on XL. This is not
+a measured heap/RSS bound, resumable-search proof or CPU/crowd capacity result.
+
+The repeat reporter now observes capacity-repair requests at the service
+boundary. Its unchanged historical baseline still contains three explicit
+Return overshoots; current Return has zero. Nine general Worker flow overshoots
+remain visible, so shared flow/topology retry adoption is still open. The
+no-detour physical diagnostic census correction is a separate small slice.
+Core retains exact-head review, fresh-main integration, clean packaging and
+identified-release normal-game acceptance. Existing deployment verifier and
+CI capture owners supply their interfaces; a source merge does not close
+served identity or pixels. Ordinary320 remains closed. Art backing N/A for
+this internal retention change; rejected art holds remain intact.
+
 Stationary construction is another uncovered core consumer, with no runtime
 patch selected. Twelve real-command probes at the same clean source stage two
 or four Workers from each seat, pay 75 Wood for a House and observe actual work.

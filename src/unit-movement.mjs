@@ -179,17 +179,21 @@ export function createUnitRoutePublicationLedger(width, height, units, nodes, li
       }
     }
   }
-  const check = (unit, pathEntries) => {
+  const check = (unit, pathEntries, { clearResume = false } = {}) => {
     const oldEntries = Array.isArray(unit?.path) ? unit.path.length : NaN;
-    const prospectiveEntries = routeEntries - oldEntries + pathEntries;
-    const reason = !valid || !Number.isSafeInteger(oldEntries) ? 'invalid-live-route-envelope'
+    // Credit a second saved field only when this synchronous caller actually
+    // clears it. Aliased active/resume arrays remain two serialized fields.
+    const oldResumeEntries = !clearResume || unit?.attackMoveResumePath === null ? 0
+      : Array.isArray(unit?.attackMoveResumePath) ? unit.attackMoveResumePath.length : NaN;
+    const prospectiveEntries = routeEntries - oldEntries - oldResumeEntries + pathEntries;
+    const reason = !valid || !Number.isSafeInteger(oldEntries) || !Number.isSafeInteger(oldResumeEntries) ? 'invalid-live-route-envelope'
       : !Number.isSafeInteger(pathEntries) || pathEntries < 0 || pathEntries > cellCount ? 'path-entry-limit'
       : prospectiveEntries > maxEntries ? 'aggregate-entry-limit' : null;
     return { status: reason ? 'deferred' : 'ready', reason, routeEntries, prospectiveEntries,
       pathEntries, fieldVisits, maxEntries };
   };
-  return { check, commit(unit, pathEntries) {
-    const outcome = check(unit, pathEntries);
+  return { check, commit(unit, pathEntries, options) {
+    const outcome = check(unit, pathEntries, options);
     if (outcome.status !== 'ready') throw new Error('unreserved route publication');
     routeEntries = outcome.prospectiveEntries;
     return outcome;
