@@ -47,10 +47,11 @@ import { deflateRawSync, inflateRawSync, constants as zlibConstants } from 'node
 import { encodeWebSocketFrame, websocketFrameBytes } from './src/networking/websocket-frame.mjs';
 import { hasCompatiblePerMessageDeflateOffer } from './src/networking/websocket-deflate-offer.mjs';
 import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
+import { capturePrerequisiteIds, findInvalidCapturePrerequisite } from './src/world/capture-prerequisites.mjs';
+import { findInvalidScenarioEventChain, scenarioEventSourceIds } from './src/world/scenario-event-chain.mjs';
 import {
-  buildElevationGrid, capturePrerequisiteIds, findInvalidCapturePrerequisite,
-  findInvalidScenarioEventChain, findUnreachableCaptureZone, findUnreachableResourceNode,
-  scenarioEventSourceIds, validateElevationPatches,
+  buildElevationGrid, findUnreachableCaptureZone, findUnreachableResourceNode,
+  validateElevationPatches,
 } from './src/map-utils.mjs';
 import {
   BASE_ELEVATION_PATH_COST, canTraverseElevation, elevationPathCost, hasElevation,
