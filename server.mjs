@@ -84,7 +84,7 @@ import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoin
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
-import { focusedUnitAttackMovementActive, attackMoveAcquiredMovementActive, patrolAcquiredMovementActive } from './src/combat-movement.mjs';
+import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, patrolAcquiredMovementActive } from './src/combat-movement.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const BUILD_IDENTITY = await loadBuildIdentity(ROOT);
@@ -7204,7 +7204,17 @@ function assignAttackBuilding(player, command) {
     unit.attackBuildingTargetId = target.id;
     unit.repathTimer = 0.6;
     unit.lastAttackCell = targetCell;
-    unit.path = path;
+    if (focusedBuildingAttackMovementActive(unit)) {
+      const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
+      const rejoined = rejoinSelectedUnitRoute({ path }, {
+        position: unit, startCell, firstPoint: cellToWorld(path[0] ?? startCell), radius,
+        width: MAP_WIDTH, height: MAP_HEIGHT, isWalkable, cellToWorld,
+        acceptPrefix: center => canTraverseStaticBodySegment(unit, center, radius,
+          MAP_WIDTH, MAP_HEIGHT, isWalkable),
+      });
+      unit.path = rejoined.rejoin === 'rejected' ? [] : rejoined.route.path;
+      if (rejoined.rejoin === 'rejected') unit.repathTimer = STEP_SECONDS;
+    } else unit.path = path;
     unit.pathIndex = 0;
   }
   sendOrderNotice(player, command, `ATTACK BUILDING ORDER · ${assignments.length} UNITS`);
@@ -8333,15 +8343,28 @@ function simulateTick() {
           unit.repathTimer = STEP_SECONDS;
           continue;
         }
-        unit.path = pathFromAttackFlow(start, field);
+        const path = pathFromAttackFlow(start, field);
+        unit.path = path;
         if (unit.path.length === 0 && !field.goals.has(start)) {
           unit.repathTimer = STEP_SECONDS;
           continue;
         }
+        let rejoinRejected = false;
+        if (focusedBuildingAttackMovementActive(unit)) {
+          const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
+          const rejoined = rejoinSelectedUnitRoute({ path }, {
+            position: unit, startCell, firstPoint: cellToWorld(path[0] ?? startCell), radius,
+            width: MAP_WIDTH, height: MAP_HEIGHT, isWalkable, cellToWorld,
+            acceptPrefix: center => canTraverseStaticBodySegment(unit, center, radius,
+              MAP_WIDTH, MAP_HEIGHT, isWalkable),
+          });
+          rejoinRejected = rejoined.rejoin === 'rejected';
+          unit.path = rejoinRejected ? [] : rejoined.route.path;
+        }
         unit.pathIndex = 0;
-        unit.moveGoalCell = unit.path.at(-1) ?? start;
+        unit.moveGoalCell = path.at(-1) ?? start;
         unit.lastAttackCell = targetCell;
-        unit.repathTimer = 0.6;
+        unit.repathTimer = rejoinRejected ? STEP_SECONDS : 0.6;
       }
     }
 

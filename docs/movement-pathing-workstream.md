@@ -48,7 +48,7 @@ actual journey coverage and rendered acceptance are separate.
 | Forest group / region intent | `assignForestGather`, gather-work-area selection, `updateForestWorkerEconomy` → resource routes | Forest owner `01a1072a-4c42-7791-9dab-77b88425a021` owns the returning-forester/interior-click fix. A clicked interior tree names its selected forest group; choose its nearest reachable frontier. Distinguish exhausted, temporarily obstructed and unreachable. No unrelated global fallback or hidden-resource reveal. |
 | Build, repair, palisade sequence, site evacuation | Building access assignment → A* / land executor; construction and wall continuation | PR399's bounded construction travel adopter consumes the shared static Worker profile through existing planner/publication/land admissions. Preserve paid site IDs, revision, legal edge range and actual productive-work receipts. Stationary construction separation and evacuation remain explicit follow-ups; movement completion does not mean work completion. |
 | Attack-move and interrupted-route resume | Formation A* plus `prepareAttackMovePaths`, `getUnitAttackPath`, `clearAttackTarget` → land executor | Target-free explicit objective PR405 and explicit acquired unit-target pursuit PR417 are merged, including fractional target-loss resume and unchanged anchor bounds. Automatic stance and persistent pursuit remain separate; retain objective/acquisition/stance rules. |
-| Focused unit/building attack, pursuit, range positioning | `assignAttack`, `assignAttackBuilding`, cached flow / range goals → land executor | PR410 is merged at `6ced82cb`: explicit military unit-target Attack and moving-target/rejected-prefix recovery. Building targets, automatic range routes and same-cell closure remain uncovered. Combat retains target/range/damage policy. |
+| Focused unit/building attack, pursuit, range positioning | `assignAttack`, `assignAttackBuilding`, cached flow / range goals → land executor | PR410 is merged at `6ced82cb`: explicit military unit-target Attack and moving-target/rejected-prefix recovery. The bounded building-target adopter below consumes the same shared contract at two separately allocated publications. Automatic range routes and same-cell closure remain uncovered. Combat retains target/range/damage policy. |
 | Patrol, Follow, stance return, production rally | `assignPatrolOrder`, `assignFollowOrder`, `updatePersistentOrders`, `enqueueRouteRepairs`; rally reuses Move | PR418 adopts target-free military Patrol through the existing profile/planner/rejoin/executor: the recorded corner travel changes from 17 unsafe steps to zero per seat while preserving endpoint cells, cycling and pending continuations. PR421 adopts acquired military Patrol unit-target pursuit through the existing combat rejoin hooks; Worker Patrol, Follow and stance return remain separate; no universal static-circle claim. Rally issuing ordinary Move inherits that contract; direct placements need separate audit. |
 | AI and scenario-issued movement | Existing command dispatch plus mode/AI decision loop; scenario actions / reinforcement placement | Enumerate emitted commands and direct relocations; AI uses the same movement contracts and its disclosed observation. Fixed planning work alone does not make async intake or AI decisions deterministic. |
 | Idle/work/combat interaction separation | `spreadInteractingUnits`; same-cell combat closure inside `simulateTick` | Gathering separation is adopted by PR395. Construction separation uses the economy-only selector; the new bounded command probes below find no static failure and do not qualify it generally. Military interaction and same-cell combat remain separately owned adoption gaps. |
@@ -57,6 +57,44 @@ actual journey coverage and rendered acceptance are separate.
 | Spawn, checkpoint restore, evacuation / relocation | Spawn rules, `restoreMatchCheckpoint`, construction relocation | These are placement/restore policies, not ordinary travel. Validate clearance and identity, record relocation reason, rebuild transient routes without silently changing job intent. |
 
 ### Shared semantics, domain policies
+
+Focused military **building-target Attack** now consumes the merged selected-route
+rejoin at `assignAttackBuilding`'s final accepted publication and `simulateTick`'s
+active building repath, after their original target/revision/range-goal decisions.
+[Exact hook allocation](https://github.com/lbeezr/thousand-unit-skirmish/pull/416#issuecomment-5987148807)
+keeps shared planner/publisher/live bounds and Follow recovery with core, and
+ordinary-only steering/body-pair admission with crowd. The pure
+`focusedBuildingAttackMovementActive` predicate selects the existing military
+circle. No new route algorithm, range truncation, checkpoint field, attack flow
+shortcut, target acquisition or damage rule is introduced. Static rejection
+keeps the selected durable goal and accepted target, with the existing retry.
+Empty in-range routes and unreachable range goals retain their original policy.
+
+The [baseline](qa-evidence/focused-building-attack-2026-10-05/baseline.json)
+uses unchanged `172c53f3` runtime with only the new probe present; dirty status is
+explicit. Real paid/completed Palisade and House targets and legitimately trained
+Archers expose four unsafe fractional-corner steps for both kinds on both seats.
+The [pre-review candidate](qa-evidence/focused-building-attack-2026-10-05/candidate.json)
+finds zero in all eight cases, preserving the entire selected suffix, range goal,
+target footprint and HP after 500 ticks. Safe travel changes Infantry first damage
+from 48→55 ticks (Palisade) and 59→67 (House); Archer changes 26→26 and 26→30.
+These bounded measurements do not claim timing identity or general crowd safety.
+
+Registered `focused-building-attack-journeys.mjs` checks both-seat accepted/travel/
+firing recovery for Infantry and paid/trained Archer against both footprint sizes,
+productive original edge-range/armor damage, real destruction, queued continuation,
+owner cancellation, Stop/Hold/Move, pending Move supersession, selected-suffix
+repath, rejected inherited overlap, empty in-range routes, paid dynamic obstruction
+and selection/generation rejection. Native `focused-building-attack-scenario.mjs`
+uses both real WebSocket seats, paid unfinished targets, actual Infantry damage,
+travel/firing cold restarts and owner cancellation into the saved queued point.
+Exact-head review/checks/clean-pack receipts belong to its PR. Follow remains
+deferred to the documented core pending-goal contract; PR418's observed 30-tick
+seat1 reversal shift and the two old seat0 geometry/visibility failures remain
+retained. Automatic building attacks, Worker/Sheep, stance return and same-cell
+closure are excluded. Art backing is N/A. Deployment verifier owns current
+staging follow-through; identified served and real rendered acceptance remain
+open, with the historical zero-frame capability block retained without retry.
 
 Caller [PR421](https://github.com/lbeezr/thousand-unit-skirmish/pull/421) consumes the merged PR411
 selected-route rejoin contract in the two already caller-owned `simulateTick`
