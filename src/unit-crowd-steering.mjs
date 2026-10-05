@@ -17,8 +17,7 @@ function steeringState(unit, tick, navigationRevision) {
   if (!state || state.generation !== unit.generation || state.revision !== unit.orderRevision
     || state.navigationRevision !== navigationRevision || state.path !== unit.path || state.pathIndex !== unit.pathIndex) {
     state = { generation: unit.generation, revision: unit.orderRevision, navigationRevision,
-      path: unit.path, pathIndex: unit.pathIndex, detour: null, recovery: null, recoveryCooldown: -Infinity,
-      lastProgressTick: tick, bestDistance: Infinity };
+      path: unit.path, pathIndex: unit.pathIndex, detour: null, lastProgressTick: tick, bestDistance: Infinity };
     steeringStates.set(unit, state);
   }
   return state;
@@ -100,7 +99,6 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   const remaining = Math.hypot(progressTarget.x - unit.x, progressTarget.z - unit.z);
   if (remaining < state.bestDistance - .02) { state.bestDistance = remaining; state.lastProgressTick = tick; }
   const noProgressTicks = tick - state.lastProgressTick;
-  if (state.recovery && tick >= state.recovery.until) state.recovery = null;
   if (neighbors.some(other => !ordinaryCrowdBodyRadius(other)
     && Math.hypot(target.x - other.x, target.z - other.z)
       < radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] - EPSILON))
@@ -143,17 +141,12 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     const other = blocking.toSorted((a, b) => Math.hypot(a.x - unit.x, a.z - unit.z)
       - Math.hypot(b.x - unit.x, b.z - unit.z) || a.id - b.id)[0];
     const clearance = radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] + .12;
-    const parked = neighbors.filter(p => !ordinaryCrowdBodyRadius(p)).toSorted((a, b) =>
-      Math.hypot(a.x - unit.x, a.z - unit.z) - Math.hypot(b.x - unit.x, b.z - unit.z) || a.id - b.id).slice(0, 8);
-    const gaps = parked.flatMap((a, i) => parked.slice(i + 1).map(b => ({ x: (a.x + b.x) / 2, z: (a.z + b.z) / 2 })))
-      .filter(p => (p.x - unit.x) * headingX + (p.z - unit.z) * headingZ > 0)
-      .toSorted((a, b) => Math.hypot(a.x - unit.x, a.z - unit.z) - Math.hypot(b.x - unit.x, b.z - unit.z));
     const sides = [90, -90, 135, -135, 45, -45].map(angle => {
       const radians = angle * Math.PI / 180;
       return { x: other.x + (headingX * Math.cos(radians) - headingZ * Math.sin(radians)) * clearance,
         z: other.z + (headingZ * Math.cos(radians) + headingX * Math.sin(radians)) * clearance };
     });
-    const legal = [...gaps, ...sides].filter(p => pointAllowed(p)
+    const legal = sides.filter(p => pointAllowed(p)
       && canTraverseCrowdBodySegment(p, p, radius, neighbors));
     if (legal.length) state.detour = { ...legal[0], alternatives: legal.slice(1), distance,
       bestDistance: Infinity, lastProgressTick: tick };
@@ -187,8 +180,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     const laneProgress = opposed && lane !== null
       ? Math.abs(unit[laneAxis] - lane) - Math.abs(to[laneAxis] - lane) : 0;
     const directed = (to.x - unit.x) * preferredX + (to.z - unit.z) * preferredZ;
-    const score = state.recovery ? (to.x - unit.x) * state.recovery.x + (to.z - unit.z) * state.recovery.z
-      : state.detour ? .1 * progress + .9 * directed : progress + laneProgress + (cross > 0 ? 1e-7 : 0);
+    const score = state.detour ? .1 * progress + .9 * directed : progress + laneProgress + (cross > 0 ? 1e-7 : 0);
     if (score > bestScore) {
       bestScore = score;
       best = { x: (to.x - unit.x) / length, z: (to.z - unit.z) / length, target, stepDistance: length };
@@ -238,27 +230,17 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   // claimant blocks every forward/lateral candidate. Parked actors never yield.
   // The tie uses durable actor identity; each retreat is still a short physical
   // admission and leaves route/order/queue unchanged.
-  const bestProgress = best ? remaining - Math.hypot(progressTarget.x - unit.x - best.x * best.stepDistance,
-    progressTarget.z - unit.z - best.z * best.stepDistance) : -Infinity;
-  const boxedRecovery = !opposed && !state.detour && noProgressTicks >= 30
-    && bestProgress < stepDistance * .25 && tick >= state.recoveryCooldown
-    && [{ x: unit.x + stepDistance, z: unit.z }, { x: unit.x - stepDistance, z: unit.z },
-      { x: unit.x, z: unit.z + stepDistance }, { x: unit.x, z: unit.z - stepDistance }].some(p => !pointAllowed(p));
-  const yieldingToPeer = noProgressTicks >= 30 && !clear(direct)
-    && neighbors.some(other => other.id < unit.id && finitePoint(targetOf(other))
+  const yieldingToPeer = noProgressTicks >= 30 && neighbors.some(other => other.id < unit.id && finitePoint(targetOf(other))
     && (targetOf(other).x - other.x) * routeX + (targetOf(other).z - other.z) * routeZ
       < 0
     && Math.hypot(other.x - unit.x, other.z - unit.z)
       < radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] + stepDistance + .1);
-  if (!best || yieldingToPeer || boxedRecovery || state.recovery || (state.detour && noProgressTicks >= 30)) {
-    if (yieldingToPeer || boxedRecovery) { best = null; bestScore = -Infinity; }
+  if (!best || yieldingToPeer || (state.detour && noProgressTicks >= 30)) {
+    if (yieldingToPeer) { best = null; bestScore = -Infinity; }
     for (const scale of [1, .5]) for (const angle of [105, -105, 135, -135, 180]) {
       const radians = angle * Math.PI / 180, length = stepDistance * scale;
       consider({ x: unit.x + (headingX * Math.cos(radians) - headingZ * Math.sin(radians)) * length,
         z: unit.z + (headingZ * Math.cos(radians) + headingX * Math.sin(radians)) * length });
-    }
-    if (boxedRecovery && best) {
-      state.recovery = { x: best.x, z: best.z, until: tick + 12 }; state.recoveryCooldown = tick + 90;
     }
     if (best) best.yieldingForCrowd = true;
   }
