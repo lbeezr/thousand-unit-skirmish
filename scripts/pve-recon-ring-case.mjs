@@ -5,6 +5,7 @@ import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pv
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
 import { economyRulesetRevision } from '../src/economy-profile.mjs';
 import { migrateFoodToolsCheckpoint, PRE_FOOD_TOOLS_RULESETS } from '../src/server/worker-food-tools.mjs';
+import { migrateVoluntaryEndingCheckpoint } from '../src/server/voluntary-endings.mjs';
 
 const seeds = [20260925, 0], identity = { matchModeId: 'skirmish', matchModeVersion: 1 };
 const bytes = mask => atob(mask.data);
@@ -23,10 +24,13 @@ export async function replayRememberedScoutRing({ cold = false, disableScout = f
   const trace = [], samples = [];
   try {
     assert.equal(initial.rulesetRevision, PRE_FOOD_TOOLS_RULESETS[initial.economyProfileId]);
-    assert.throws(() => r.restore(initial), /economy profile or gameplay ruleset revision mismatch/,
+    const currentSchema = structuredClone(initial);
+    assert.equal(migrateVoluntaryEndingCheckpoint(currentSchema), true);
+    assert.deepEqual(currentSchema.state.voluntaryEndings, { version: 0, generation: 1, revision: 0, result: null });
+    assert.throws(() => r.restore(currentSchema), /economy profile or gameplay ruleset revision mismatch/,
       'strict restore still rejects the historical content pin before startup migration');
-    const migrated = migrateFoodToolsCheckpoint(structuredClone(initial));
-    const expected = structuredClone(initial);
+    const migrated = migrateFoodToolsCheckpoint(structuredClone(currentSchema));
+    const expected = structuredClone(currentSchema);
     expected.rulesetRevision = economyRulesetRevision(initial.economyProfileId);
     expected.state.teamUpgrades = initial.state.teamUpgrades.map(upgrades => ({ ...upgrades, foodTools: false }));
     assert.deepEqual(migrated, expected, 'production migration changes only the content pin and unpurchased Food Tools flags');

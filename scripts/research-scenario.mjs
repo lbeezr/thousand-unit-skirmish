@@ -537,7 +537,7 @@ try {
   await crashServer(child);
   child = null;
   const legacyCheckpoint = JSON.parse(await readFile(checkpointPath, 'utf8'));
-  legacyCheckpoint.schemaVersion = 6;
+  legacyCheckpoint.schemaVersion = 6; delete legacyCheckpoint.state.voluntaryEndings;
   delete legacyCheckpoint.economyProfileId; delete legacyCheckpoint.state.teamStone;
   delete legacyCheckpoint.state.teamUpgrades;
   delete legacyCheckpoint.state.teamResearch;

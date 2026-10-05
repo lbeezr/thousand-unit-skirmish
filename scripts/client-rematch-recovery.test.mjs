@@ -65,7 +65,7 @@ function fixture(team) {
     close() {}
   }
   const noop = () => {};
-  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS, fixedMatchArmySize, renderMatchRecap,
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS, fixedMatchArmySize, renderMatchRecap, matchDecisions: { update() {}, disconnect() {}, feedback() {}, close() {} },
     applyLobby() {}, applyWaypointQueueCounts() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
@@ -622,6 +622,21 @@ test('terminal recap missing fields are unavailable; recorded zeroes are real ze
     const invalid = matchRecap({ winner: 0, matchElapsedSeconds: value, food: [value], wood: [value], stone: [value] }, 0);
     assert.equal(invalid.duration, 'Duration unavailable');
     assert.equal(invalid.resources, 'Your remaining resources: unavailable Food · unavailable Wood · unavailable Stone');
+  }
+});
+
+for (const team of [0, 1]) test(`seat ${team}: real result binding labels agreed draw and resignation without invented destruction`, () => {
+  const f = fixture(team);
+  const draw = { ...recapSnapshot(team), winner: 2, winnerReason: 'agreed-draw' };
+  f.connections[0].message(draw);
+  assert.equal(f.element('#match-result-title').textContent, 'DRAW');
+  assert.equal(f.element('#match-result-detail').textContent, 'BOTH PLAYERS AGREED TO A DRAW');
+  assert.equal(f.element('#match-recap').hidden, false);
+  for (const winner of [team, 1 - team]) {
+    const resigned = { ...recapSnapshot(team), winner, winnerReason: 'resignation' };
+    f.welcome(f.connect(), resigned);
+    assert.equal(f.element('#match-result-detail').textContent, winner === team ? 'YOUR OPPONENT RESIGNED' : 'YOU RESIGNED');
+    assert.equal(f.element('#match-recap').hidden, false);
   }
 });
 

@@ -14,7 +14,7 @@ Allow 30 minutes of play plus five minutes of questions, announced before starti
 
 Observe the first two minutes: can each newcomer identify their team, the Skirmish objective, an actionable Worker/army, a route and how to issue an order? During ordinary play record the first gather/deposit, building choice and placement, completed producer/recruit, enemy contact and post contest. Do not instruct a build order. Record which visible alternative they considered and why. For each naturally failed command note expected action, actual feedback, whether they understood the reason and their next step; do not manufacture a failure or teach the fix during this opening.
 
-At an actual result, let players find the winner/reason, recap and next step without prompts. Record whether they distinguish remaining bank from total income, survivors from losses and bonus posts from victory. Observe host rematch and guest waiting, then usable orders. If time expires with a living hidden survivor or an open match, record **ongoing at session stop**, survivor knowledge from each player's lawful view, continued meaningful options and any request to resign/draw. Do not invent a winner, reveal enemy positions, force surrender, or run an hour-long cleanup to obtain a success.
+At an actual result, let players find the winner/reason, recap and next step without prompts. Record whether they distinguish remaining bank from total income, survivors from losses and bonus posts from victory. Observe host rematch and guest waiting, then usable orders. If time expires with a living hidden survivor or an open match, record **ongoing at session stop**, survivor knowledge from each player's lawful view, continued meaningful options and whether they independently find/use the approved Match actions. Observe the confirmation, offer/accept/decline/withdraw feedback and both-seat result without teaching those controls. A pending offer or disconnect is ongoing, never a draw. Do not invent a winner, reveal enemy positions, force surrender, or run an hour-long cleanup to obtain a success.
 
 Ask afterwards: “What were you trying to do?”, “Why did you choose that building?”, “What happened when an order failed, and what could you do next?”, “What changed the match most?”, “What does the recap tell you, and what is missing?”, “What would you do now?” Preserve player explanations separately from observer interpretation and server facts. Do not label a player's claimed decisive moment as an authoritative event. Record no-results as no-results.
 
@@ -36,6 +36,7 @@ First gather-deposit / chosen building / completion / recruit / contact / post t
 Building choice: player's goal / visible alternative / player explanation:
 Failed command: time / expected / actual feedback / next attempt / help needed:
 Activity after setback: lawful visible options / attempted comeback / hiding:
+Voluntary actions: found unaided? / confirmation understood? / offer-response-feedback / accepted by both?
 Ending: actual winner/reason on both seats OR ongoing at session stop:
 Recap: found unaided? / understood bank-survivors-posts? / missing facts requested:
 Decisive moment: player's explanation / observer interpretation / recorded fact:

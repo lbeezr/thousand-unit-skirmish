@@ -130,6 +130,7 @@ export const replay = {
     migrateMatchModeCheckpoint(migrated);
     migrateWildlifeHerdCheckpoint(migrated);
     migrateWildlifeHeadingCheckpoint(migrated);
+    migrateVoluntaryEndingCheckpoint(migrated);
     restoreMatchCheckpoint(migrated);
   },
   validate(snapshot) {
@@ -140,6 +141,7 @@ export const replay = {
     migrateMatchModeCheckpoint(migrated);
     migrateWildlifeHerdCheckpoint(migrated);
     migrateWildlifeHeadingCheckpoint(migrated);
+    migrateVoluntaryEndingCheckpoint(migrated);
     return validateMatchCheckpoint(migrated);
   },
   get tick() { return tickNumber; }, get navigationRevision() { return navigationRevision; },
