@@ -1,3 +1,4 @@
+import { createMapImportValidator } from '../src/authoring/map-import-validator.mjs';
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
@@ -16,9 +17,9 @@ import { validWildlifeNodeDefinition } from '../src/wildlife-state.mjs';
 
 const map = JSON.parse(await readFile(new URL('../maps/stone-defense-field.json', import.meta.url), 'utf8'));
 const source = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
-const importer = source.slice(source.indexOf('function validateImportedMap('), source.indexOf('\nasync function importEditorMap('));
+const importer = source.slice(source.indexOf('const mapImportValidator ='), source.indexOf('\nasync function importEditorMap('));
 const constants = Object.fromEntries([...source.matchAll(/^const (MAX_[A-Z_]+|MIN_[A-Z_]+) = (\d+);/gm)].map(match => [match[1], Number(match[2])]));
-const context = vm.createContext({ ...mapUtils, ...scenarioRegions, ...constants, MAX_PER_TEAM: 1000,
+const context = vm.createContext({ createMapImportValidator, ...mapUtils, ...scenarioRegions, ...constants, MAX_PER_TEAM: 1000,
   validateMapRegion, validateMapAudioReference, findInvalidResourceVariant, validWildlifeNodeDefinition, TERRAIN_MATERIALS,
   economyResources, EDITOR_MATERIALS: ['stone', 'forest', 'water'],
   UNIT_DEFINITIONS: GAMEPLAY_DEFINITIONS.units, TECHNOLOGY_DEFINITIONS: GAMEPLAY_DEFINITIONS.technologies });
