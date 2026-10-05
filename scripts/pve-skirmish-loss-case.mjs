@@ -75,6 +75,14 @@ export async function replayPaidSkirmishLoss(id, team, initial = null, options =
   for(let i=0;i<1800;i++)r.step();
   await order(enemy,commandFor(view(enemy).units.friendly.filter(u=>u.hp>0&&livingGuards.some(first=>first.id===u.id)),'holdPosition'));
   assert.equal(view(team).units.friendly.filter(u=>u.hp>0&&u.kind==='worker').length,4);
+  if(options.recoveryPhase!==undefined) {
+   assert.ok([1,2].includes(options.recoveryPhase),'off-phase recovery setup requires phase 1 or 2');
+   // Natural combat may end on a publication tick. Establish the requested
+   // fixture phase with ordinary simulation before the fresh recovery policy.
+   const steps=(options.recoveryPhase-r.observe(team).tick%3+3)%3;
+   for(let i=0;i<steps;i++)r.step();
+   assert.equal(r.observe(team).tick%3,options.recoveryPhase);
+  }
   let policy=createDeterministicPolicy(20260925,identity),restarted=false,firstPressure=null,spentFood=0,spentWood=175;
   stages.recoveryStart=r.observe(team).tick;
   for(let i=0;i<18000;i++) {

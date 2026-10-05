@@ -32,7 +32,7 @@ test('native snapshot boundary advances at most two ticks and preserves both sea
 
 for (const team of [0, 1]) {
   test(`Tiny seat ${team}: off-phase legal foundation recovery strictly replays in a fresh fixture without time advance`, async () => {
-    const options = { nativeIdentity: skirmish };
+    const options = { nativeIdentity: skirmish, recoveryPhase: team + 1 };
     const first = await replayPaidSkirmishLoss(id, team, null, options);
     const second = await replayPaidSkirmishLoss(id, team, first.initial, options);
     assert.deepEqual(first, second, 'losses, fresh foundation restore, commands, notices and final checkpoint repeat');
@@ -40,6 +40,7 @@ for (const team of [0, 1]) {
     assert.equal(stages.restart, stages.foundationObservation);
     assert.equal(stages.restart, stages.replacementPurchase + 30);
     assert.notEqual(stages.restart % 3, 0, 'immediate recovery covers a tick between routine publications');
+    assert.equal(stages.restart % 3, options.recoveryPhase, 'both phases between routine publications are exercised');
     assert.equal(final.matchModeId, 'skirmish', 'Tiny uses the admitted actual native identity');
     assert.equal(final.state.matchWinner, -1);
     assert.equal(final.state.units.filter(unit => unit.team === team && unit.kind === 'worker' && unit.hp > 0).length, 4);
