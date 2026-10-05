@@ -84,6 +84,10 @@ after original anchor/target creation, and existing caller-owned unit-target
 repath publication change. Core retains the helper/planner/Worker publisher and
 live-publication bounds; crowd retains `getMoveVector`, body pairs and its
 ordinary-only wait/repair policy. All three executor admissions remain intact.
+The implementation is [PR417](https://github.com/lbeezr/thousand-unit-skirmish/pull/417).
+Core's [PR416 boundary reconciliation](https://github.com/lbeezr/thousand-unit-skirmish/pull/416#issuecomment-5986530945)
+leaves its XL-only live reservation/deferred continuation pending and disjoint;
+this adopter does not qualify aggregate live/save bounds or open 320.
 
 The [real-command baseline](qa-evidence/attackmove-acquired-2026-10-05/baseline.json)
 at `86bd3506` moves a selected actor to `(.75,.95)`, accepts AttackMove, then
