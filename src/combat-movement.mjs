@@ -94,6 +94,19 @@ export function workerFollowTravelMovementActive(unit) {
     && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
 }
 
+// Patrol cancellation retains its target-free AttackMove objective. Derive
+// the Worker body from that same existing intent, including direct objectives;
+// acquired pursuit and productive work retain their separate policies.
+export function workerPatrolObjectiveMovementActive(unit) {
+  return unit.kind === 'worker' && unit.hp > 0
+    && (unit.persistentOrder?.type === 'patrol' || (unit.attackMove === true && !unit.persistentOrder))
+    && unit.movementDomain !== 'water' && !unit.holdingPosition
+    && !(unit.attackTargetId >= 0) && !(unit.attackBuildingTargetId >= 0)
+    && !unit.stanceCombat && !unit.stanceReturning
+    && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0) && !unit.gatherPhase
+    && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
+}
+
 // Patrol's acquired unit-target leg uses its original acquisition anchor and
 // bounded approach. Automatic stance and friendly Follow remain separate.
 export function patrolAcquiredMovementActive(unit) {

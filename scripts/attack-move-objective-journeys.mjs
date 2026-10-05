@@ -12,7 +12,7 @@ test('explicit target-free AttackMove clearance activates while pending, includi
     movePlanningPending: true, attackMoveRouteReady: false, path: [], gatherNodeId: null, gatherForestCell: -1 };
   assert.equal(attackMoveObjectiveMovementActive(unit), true);
   for (const [kind, radius] of Object.entries(LAND_CLEARANCE_PROFILE.radiusByKind)) {
-    assert.equal(activeLandMovementBodyRadius({ ...unit, kind }), kind === 'worker' ? 0 : radius);
+    assert.equal(activeLandMovementBodyRadius({ ...unit, kind }), radius);
   }
   for (const override of [{ kind: 'worker' }, { kind: 'skiff' }, { kind: 'sheep' }, { kind: 'unknown' },
     { hp: 0 }, { movementDomain: 'water' }, { attackMove: false }, { attackMove: undefined },
@@ -22,7 +22,7 @@ test('explicit target-free AttackMove clearance activates while pending, includi
     { gatherPhase: 'to-base' }, { buildingTargetId: 0 }]) {
     assert.equal(attackMoveObjectiveMovementActive({ ...unit, ...override }), false, JSON.stringify(override));
     assert.equal(activeLandMovementBodyRadius({ ...unit, ...override }), override.attackTargetId === 0 || override.persistentOrder?.type === 'patrol'
-      ? LAND_CLEARANCE_PROFILE.radiusByKind.infantry : 0, JSON.stringify(override));
+      ? LAND_CLEARANCE_PROFILE.radiusByKind.infantry : override.kind === 'worker' ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0, JSON.stringify(override));
   }
 });
 

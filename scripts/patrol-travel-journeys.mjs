@@ -13,7 +13,7 @@ test('Patrol travel derives from target-free military persistent intent, includi
   assert.equal(patrolTravelMovementActive(unit), true);
   assert.equal(patrolTravelMovementActive({ ...unit, attackMove: false }), true, 'persistent intent owns travel even in a validator-accepted older flag combination');
   for (const [kind, radius] of Object.entries(LAND_CLEARANCE_PROFILE.radiusByKind)) {
-    assert.equal(activeLandMovementBodyRadius({ ...unit, kind }), kind === 'worker' ? 0 : radius);
+    assert.equal(activeLandMovementBodyRadius({ ...unit, kind }), radius);
   }
   for (const override of [{ kind: 'worker' }, { kind: 'skiff' }, { kind: 'sheep' }, { kind: 'unknown' },
     { hp: 0 }, { movementDomain: 'water' }, { holdingPosition: true }, { persistentOrder: null },
@@ -198,11 +198,11 @@ for (const team of [0, 1]) test(`seat ${team}: actual Follow retains its separat
   });
 });
 
-for (const team of [0, 1]) test(`seat ${team}: actual Worker Patrol remains excluded and retains endpoint cycling/recovery`, async () => {
+for (const team of [0, 1]) test(`seat ${team}: actual Worker Patrol uses its own body policy and retains endpoint cycling/recovery`, async () => {
   await journey(team, ({ actor, until, recover, patrol, switches }) => {
     patrol(); recover(); until(() => switches() >= 2);
     assert.equal(actor().persistentOrder.type, 'patrol'); assert.equal(patrolTravelMovementActive(actor()), false);
-    assert.equal(activeLandMovementBodyRadius(actor()), 0);
+    assert.equal(activeLandMovementBodyRadius(actor()), LAND_CLEARANCE_PROFILE.radiusByKind.worker);
   }, 'worker');
 });
 

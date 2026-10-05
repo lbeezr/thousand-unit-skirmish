@@ -184,7 +184,7 @@ for (const team of [0, 1]) {
       assert.equal(activeLandMovementBodyRadius(actor()), .18); assert.deepEqual(actor().queuedWaypoints, [{ destination: 1308, attackMove: true }]);
       await recover(); until(() => actor().attackMove);
       assert.equal(actor().queuedWaypoints.length, 0); assert.equal(actor().moveGoalPoint, null);
-      assert.equal(activeLandMovementBodyRadius(actor()), 0, 'this slice does not adopt Worker AttackMove');
+      assert.equal(activeLandMovementBodyRadius(actor()), .18, 'the separately adopted target-free Worker objective retains its original policy');
       command('stop'); await recover(); assert.equal(actor().persistentOrder, null);
     });
   });
