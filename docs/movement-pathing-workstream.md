@@ -74,6 +74,47 @@ land executor, not command admission or whole journeys.
 
 ### Shared semantics, domain policies
 
+After focused Attack PR410 normally merged at `6ced82cb`, the coordinator
+allocated explicit military AttackMove **acquired unit-target pursuit** to
+caller owner `01a10933-e913-766b-b5de-3aa5a17c7038`. Exact interfaces are recorded
+against [core's live publication ownership](https://github.com/lbeezr/thousand-unit-skirmish/pull/411#issuecomment-5986410973)
+and [ordinary crowd ownership](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5986411719).
+Only the pure acquired-intent predicate/profile fallback, acquisition publication
+after original anchor/target creation, and existing caller-owned unit-target
+repath publication change. Core retains the helper/planner/Worker publisher and
+live-publication bounds; crowd retains `getMoveVector`, body pairs and its
+ordinary-only wait/repair policy. All three executor admissions remain intact.
+
+The [real-command baseline](qa-evidence/attackmove-acquired-2026-10-05/baseline.json)
+at `86bd3506` moves a selected actor to `(.75,.95)`, accepts AttackMove, then
+enables Aggressive stance with a real command so acquisition happens before
+objective travel conceals the gap. Both-seat Infantry admits four unsafe static
+substeps; a legitimately trained Archer admits three. The
+[pre-review candidate](qa-evidence/attackmove-acquired-2026-10-05/candidate.json)
+reduces each to zero, preserves the complete already range/stance-selected
+route behind one current-cell prefix, and kills at the same 263/461 fixed ticks.
+
+Both allocated publications consume actual `rejoinSelectedUnitRoute`.
+`acceptPrefix` passes unchanged `automaticPositionAllowed` **and** the shared
+actor-to-center static sweep, evaluated after the original anchor exists.
+Rejected prefixes publish an empty route for existing repath without discarding
+target, anchor, durable objective or saved resume path. Null/unreachable and
+in-range empty routes retain existing semantics; no range/stance/anti-reversal
+selection, acquisition/damage, checkpoint schema or global flow changes.
+The 31 new registered command checks cover both seats, Infantry/trained Archer,
+complete selected-route inputs, actual damage, acquired/damage/resumed recovery,
+moving-target repath, target-loss resume, Stop/Hold/queue/No Attack, in-range
+Stand Ground, static rejection and a body-clear prefix outside the unchanged
+Defensive travel circle. Test-only rejoin tracing delegates to the actual API;
+it does not substitute a route or admissibility algorithm. Existing objective
+and focused checks now expect the acquired body policy while preserving their
+original objective resume/range/queue assertions. Final exact-head independent
+review, release/native/merge evidence belongs to the caller PR. Automatic idle
+stance/return, persistent Patrol/Follow, Worker/building targets, same-cell
+closure and steering/body-pair clearance remain separate. The retained
+sandbox/storage capability block has zero frames; rendered/served acceptance
+stays open, and PR410 staging verification is separately coordinator-owned.
+
 The next coordinator allocation at `bd7f2915` is explicit focused military
 unit-target Attack only, recorded on
 [PR395](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5986006185).

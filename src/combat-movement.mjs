@@ -22,3 +22,14 @@ export function focusedUnitAttackMovementActive(unit) {
     && !unit.persistentOrder && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0)
     && !unit.gatherPhase && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
 }
+
+// Explicit AttackMove's acquired unit-target leg, under its existing anchor
+// and stance bounds. Automatic stance and persistent orders remain separate.
+export function attackMoveAcquiredMovementActive(unit) {
+  return unit.attackMove === true && militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind]) === true && unit.hp > 0
+    && unit.movementDomain !== 'water' && !unit.holdingPosition
+    && Number.isSafeInteger(unit.attackTargetId) && unit.attackTargetId >= 0
+    && !(unit.attackBuildingTargetId >= 0) && !unit.stanceCombat && !unit.stanceReturning
+    && !unit.persistentOrder && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0)
+    && !unit.gatherPhase && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
+}

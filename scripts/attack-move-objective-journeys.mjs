@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { attackMoveObjectiveMovementActive } from '../src/combat-movement.mjs';
+import { attackMoveObjectiveMovementActive, attackMoveAcquiredMovementActive } from '../src/combat-movement.mjs';
 import { activeLandMovementBodyRadius, canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { combatDamage } from '../src/combat-rules.mjs';
@@ -21,7 +21,8 @@ test('explicit target-free AttackMove clearance activates while pending, includi
     { persistentOrder: { type: 'follow' } }, { gatherNodeId: 'berry' }, { gatherForestCell: 0 },
     { gatherPhase: 'to-base' }, { buildingTargetId: 0 }]) {
     assert.equal(attackMoveObjectiveMovementActive({ ...unit, ...override }), false, JSON.stringify(override));
-    assert.equal(activeLandMovementBodyRadius({ ...unit, ...override }), 0, JSON.stringify(override));
+    assert.equal(activeLandMovementBodyRadius({ ...unit, ...override }), override.attackTargetId === 0
+      ? LAND_CLEARANCE_PROFILE.radiusByKind.infantry : 0, JSON.stringify(override));
   }
 });
 
@@ -165,7 +166,9 @@ for (const team of [0, 1]) for (const targetPoint of [{ x: 3.5, z: 2.5 }, { x: 2
         const before = structuredClone(actor()), hp = target().hp;
         r.step();
         if (actor().attackTargetId === targetId) {
-          acquired = true; assert.equal(activeLandMovementBodyRadius(actor()), 0, 'pursuit deactivates objective clearance');
+          acquired = true; assert.equal(attackMoveObjectiveMovementActive(actor()), false);
+          assert.equal(attackMoveAcquiredMovementActive(actor()), true);
+          assert.equal(activeLandMovementBodyRadius(actor()), radius, 'acquired pursuit now has its own body policy');
           assert.ok(actor().attackMoveResumePath);
           savedPath ??= [...actor().attackMoveResumePath]; savedIndex ??= actor().attackMoveResumePathIndex;
           if (recovery === 'pursuit' && !restored) {
