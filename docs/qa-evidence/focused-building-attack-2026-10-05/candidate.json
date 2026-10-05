@@ -1,0 +1,379 @@
+{
+  "source": "172c53f3669b3564503cdbdfae2c83637517d235",
+  "dirty": true,
+  "records": [
+    {
+      "team": 0,
+      "kind": "infantry",
+      "buildingType": "palisade-wall",
+      "id": 4,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK BUILDING ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "initial": {
+        "position": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1569,
+          1570,
+          1571,
+          1572,
+          1573
+        ],
+        "goal": 1573,
+        "revision": 3,
+        "targetId": 1,
+        "footprint": [
+          1574
+        ],
+        "hp": 300
+      },
+      "contacts": 0,
+      "steps": 60,
+      "firstDamage": 55,
+      "hpAfter500": 273,
+      "final": {
+        "x": 4.7518851596173235,
+        "z": 0.5,
+        "goal": 1573,
+        "targetId": 1,
+        "revision": 3
+      }
+    },
+    {
+      "team": 0,
+      "kind": "infantry",
+      "buildingType": "house",
+      "id": 4,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK BUILDING ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "initial": {
+        "position": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1569,
+          1570,
+          1571,
+          1572,
+          1573,
+          1574
+        ],
+        "goal": 1574,
+        "revision": 3,
+        "targetId": 1,
+        "footprint": [
+          1511,
+          1512,
+          1513,
+          1575,
+          1576,
+          1577,
+          1639,
+          1640,
+          1641
+        ],
+        "hp": 800
+      },
+      "contacts": 0,
+      "steps": 73,
+      "firstDamage": 67,
+      "hpAfter500": 774.5,
+      "final": {
+        "x": 5.791885159617326,
+        "z": 0.5,
+        "goal": 1574,
+        "targetId": 1,
+        "revision": 3
+      }
+    },
+    {
+      "team": 0,
+      "kind": "archer",
+      "buildingType": "palisade-wall",
+      "id": 16,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK BUILDING ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "initial": {
+        "position": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1569
+        ],
+        "goal": 1569,
+        "revision": 3,
+        "targetId": 2,
+        "footprint": [
+          1574
+        ],
+        "hp": 300
+      },
+      "contacts": 0,
+      "steps": 19,
+      "firstDamage": 26,
+      "hpAfter500": 287.1999999999998,
+      "final": {
+        "x": 1.5,
+        "z": 0.5,
+        "goal": 1569,
+        "targetId": 2,
+        "revision": 3
+      }
+    },
+    {
+      "team": 0,
+      "kind": "archer",
+      "buildingType": "house",
+      "id": 16,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK BUILDING ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "initial": {
+        "position": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1569,
+          1570
+        ],
+        "goal": 1570,
+        "revision": 3,
+        "targetId": 2,
+        "footprint": [
+          1511,
+          1512,
+          1513,
+          1575,
+          1576,
+          1577,
+          1639,
+          1640,
+          1641
+        ],
+        "hp": 800
+      },
+      "contacts": 0,
+      "steps": 32,
+      "firstDamage": 30,
+      "hpAfter500": 787.2000000000007,
+      "final": {
+        "x": 2.5,
+        "z": 0.5,
+        "goal": 1570,
+        "targetId": 2,
+        "revision": 3
+      }
+    },
+    {
+      "team": 1,
+      "kind": "infantry",
+      "buildingType": "palisade-wall",
+      "id": 12,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK BUILDING ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "initial": {
+        "position": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1569,
+          1570,
+          1571,
+          1572,
+          1573
+        ],
+        "goal": 1573,
+        "revision": 3,
+        "targetId": 1,
+        "footprint": [
+          1574
+        ],
+        "hp": 300
+      },
+      "contacts": 0,
+      "steps": 60,
+      "firstDamage": 55,
+      "hpAfter500": 273,
+      "final": {
+        "x": 4.7518851596173235,
+        "z": 0.5,
+        "goal": 1573,
+        "targetId": 1,
+        "revision": 3
+      }
+    },
+    {
+      "team": 1,
+      "kind": "infantry",
+      "buildingType": "house",
+      "id": 12,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK BUILDING ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "initial": {
+        "position": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1569,
+          1570,
+          1571,
+          1572,
+          1573,
+          1574
+        ],
+        "goal": 1574,
+        "revision": 3,
+        "targetId": 1,
+        "footprint": [
+          1511,
+          1512,
+          1513,
+          1575,
+          1576,
+          1577,
+          1639,
+          1640,
+          1641
+        ],
+        "hp": 800
+      },
+      "contacts": 0,
+      "steps": 73,
+      "firstDamage": 67,
+      "hpAfter500": 774.5,
+      "final": {
+        "x": 5.791885159617326,
+        "z": 0.5,
+        "goal": 1574,
+        "targetId": 1,
+        "revision": 3
+      }
+    },
+    {
+      "team": 1,
+      "kind": "archer",
+      "buildingType": "palisade-wall",
+      "id": 16,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK BUILDING ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "initial": {
+        "position": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1569
+        ],
+        "goal": 1569,
+        "revision": 3,
+        "targetId": 2,
+        "footprint": [
+          1574
+        ],
+        "hp": 300
+      },
+      "contacts": 0,
+      "steps": 19,
+      "firstDamage": 26,
+      "hpAfter500": 287.1999999999998,
+      "final": {
+        "x": 1.5,
+        "z": 0.5,
+        "goal": 1569,
+        "targetId": 2,
+        "revision": 3
+      }
+    },
+    {
+      "team": 1,
+      "kind": "archer",
+      "buildingType": "house",
+      "id": 16,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "ATTACK BUILDING ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "initial": {
+        "position": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1569,
+          1570
+        ],
+        "goal": 1570,
+        "revision": 3,
+        "targetId": 2,
+        "footprint": [
+          1511,
+          1512,
+          1513,
+          1575,
+          1576,
+          1577,
+          1639,
+          1640,
+          1641
+        ],
+        "hp": 800
+      },
+      "contacts": 0,
+      "steps": 32,
+      "firstDamage": 30,
+      "hpAfter500": 787.2000000000007,
+      "final": {
+        "x": 2.5,
+        "z": 0.5,
+        "goal": 1570,
+        "targetId": 2,
+        "revision": 3
+      }
+    }
+  ],
+  "provenance": "Pre-review observation. Baseline runtime unchanged at 172c53f3; dirty solely for new probe. Candidate includes uncommitted adopter. Neither is an exact-head pack or native receipt."
+}
