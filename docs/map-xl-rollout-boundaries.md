@@ -86,10 +86,10 @@ the audit allocates
 only one witness array. The earlier grid-cost projection uses the smaller
 simple-route `cells−1` bound and excludes resume paths.
 
-Capture clones both paths and any wildlife herd path, then `JSON.stringify` serializes the entire snapshot.
+At PR345/403, capture cloned both paths and any wildlife herd path, then `JSON.stringify` serialized the entire snapshot.
 The writer atomically writes/fsyncs/renames; recovery reads the whole UTF-8 file
-then parses it. Neither side has an explicit checkpoint byte envelope in the
-audited source. Public snapshots exclude these paths. 320 fog alone is 25,600
+then parsed it. Neither side had a whole-checkpoint byte envelope at those
+revisions; the XL-only guard below addresses that separate finding. Public snapshots exclude these paths. 320 fog alone is 25,600
 packed bytes / 34,136 base64 characters per seat; checkpoint explored grids are
 273,072 base64 characters across two seats. Current outbound frame/queued bytes
 are bounded to 4 MiB per peer. The map's compact publication fit does **not** prove
@@ -158,12 +158,95 @@ lost durable goal. A finite `cellCount` alone is not a memory/latency budget.
 Avoid a second global smoothing/flow/planning service alongside U2–U7. The
 map-size owner retains this integrated outcome and the other admission sites.
 Checkpoint file reads still allocate the whole UTF-8 file before JSON parsing;
-neither the entire persisted state nor those allocations has a byte envelope.
-Adding a global read cap could reject older valid saves and is not this slice.
+the original PR403 slice did not bound the entire persisted state or parser.
+The next XL-only envelope below preserves the absence of a global legacy cap.
 An over-budget XL capture fails through existing checkpoint failure handling
 and preserves the last good file; it does not halt accepted gameplay. Therefore
 live publication must establish a bounded outcome that preserves durable intent
-before ordinary XL admission. This prerequisite alone does not complete XL.
+before ordinary XL admission. These prerequisites do not complete XL.
+
+### Whole-file, parser and state volume
+
+The [private reader](../src/server/checkpoint-file-reader.mjs) keeps the existing
+JSON format and schema29. Its first pass uses a32KiB buffer, incremental UTF-8
+decoding, at most16 shallow metadata frames and an80-character key prefix.
+The [lexical inspector](../src/server/checkpoint-json-scan.mjs) finds the final
+effective root `mapDefinition`, supporting arbitrary property order, escaped
+keys and last duplicate values. Nested/string lookalikes cannot choose the
+compatibility branch. Dimension approximation classifies valid integer ≤256
+versus ≥257 with a half-unit margin; it never accepts a map or replaces exact
+`JSON.parse`/authority validation.
+
+Admitted ≤256 files retain the prior unbounded byte/shape/parser contract,
+including valid reordered/duplicate metadata and large ignored values or
+whitespace. The complete classification pass is required: an early320 value
+may be overwritten by a later256 value. Thus classification work on rejected
+or legacy files is **linear in file bytes**, with bounded auxiliary memory.
+The descriptor is pinned across inspection/read; size/mtime changes reject
+rather than parsing a different file. Atomic replacement preserves the pinned
+old contents. This is not a constant-time rejection or a global I/O quota.
+
+For XL and other non-legacy candidates, raw files must fit **32MiB** before
+whole-buffer/string allocation and snapshot parsing. Lexical limits also cap
+4,194,304 values,262,144 containers, depth16,102,400 entries per array,128 members
+and key code units per object,262,144 decoded code units per string and64 units
+per scalar token. Actual JSON syntax remains checked by the native parser.
+The second bounded read verifies content volume and stable size/mtime before
+parsing; byte/structure failures enter the existing rejected-file preservation
+path. No new persisted flag, framing format, migration or route field is added.
+
+The [state inspector](../src/server/checkpoint-json-budget.mjs) accounts exact
+compact UTF-8 JSON bytes without constructing the serialization. It limits
+record families before traversal, rejects cycles/sparse arrays/nonfinite or
+unsupported values, and caps the same state volume. Capture checks live
+clone-bearing records and map metadata before copying/`structuredClone`;
+serialization checks the complete captured DTO before `JSON.stringify`;
+recovery checks the parsed current XL shape before migrations and full
+validation checks it before map/grid allocation. The existing route guard
+still precedes route payload scanning; all semantic checks remain in place.
+Every new guard is a no-op for admitted ≤256 shapes. Art backing: N/A.
+
+Run the [repeatable sizing audit](../scripts/checkpoint-json-budget-audit.mjs):
+
+```sh
+node scripts/checkpoint-json-budget-audit.mjs --native
+node --test scripts/checkpoint-json-budget.test.mjs
+```
+
+It reads actual source limits (2,000 actors,128 buildings/resources/sites,
+eight waypoints, five production slots,25 maximum footprint cells) and records
+input hashes. The actual admitted256² roster checkpoint measures2,178,138
+compact bytes,100,117 values,6,037 containers, depth5 and48 actor fields. A
+declared supported-field combination adds both route kinds to their1,048,576
+aggregate,128×64 herd paths, all site/waypoint slots,128 buildings/resources,
+102,400 fractional-stock rows and both320 exploration grids:19,450,422 bytes,
+2,104,047 values,154,704 containers and depth7; actor non-route payload is at
+most4,482 bytes. It fits the quotas without expanding them. This synthetic
+combination is an allocation witness, not a semantically valid320 world/save.
+
+The explicit canonical sizing allowance is29,066,026 bytes: route digits,
+8KiB non-route actor allowance, finite stock rows, buildings/resources, the
+current1,000,000-byte map-publication envelope, generation counters, exploration
+and fixed controls. The32MiB quota leaves headroom. These allowances use
+canonical IDs/pins and supported field combinations; previously unconstrained
+custom metadata can exceed them and is explicitly restricted for new XL.
+They do not impose any new limit on old ≤256 saves.
+
+Boundary tests cover byte/value/container quotas at and around their limits,
+2,000 seeded JSON trees, scientific/long-zero integer dimensions, UTF-8 and
+escaped/surrogate strings, distributed arrays, sparse/cyclic state and all
+meaningful malformed routes. Actual paid Large256 native process recovery
+admits a32MiB+1 file whose persisted state is untouched, restores both seats and
+their paid Houses/banks, and retains bad XL files byte-for-byte. Existing full
+Large entry, cold recovery, storage-failure and legacy migration checks remain
+the regression floor. These checks enter the existing checkpoint CPU lane.
+
+Per-file buffers/strings and parser/state allocation counts are bounded for
+accepted XL; total process RSS, collector/container overhead, coalesced save
+copies and live route/search retention remain separate. Diagnostic timing and
+Node memory samples do not establish match capacity or comparable performance.
+Ordinary320 admission still waits for the movement-owned live publication/search
+outcome and actual320 cold recovery, playability, performance and rendered proof.
 
 Then change all relevant 320 dimension consumers together, keeping wall command
 waypoints 256 and other non-geometric quotas unchanged. Admit one canonical
