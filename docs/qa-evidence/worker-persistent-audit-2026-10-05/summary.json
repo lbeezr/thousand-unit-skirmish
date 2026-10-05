@@ -1,0 +1,992 @@
+{
+  "source": "f1336896bacb58df7703076684bcdc88ac7aebbb",
+  "dirty": false,
+  "runtimeHashes": {
+    "server.mjs": "359e761c6f7d9d6ee01c94fec6cf0bff96bf7f598ca8053f14f82ad2d8c590d4",
+    "src/unit-movement.mjs": "614852a5ad446de950fa54946850afff67341d64f901fb9249e502d39c062fa8",
+    "src/combat-movement.mjs": "590054e9cf7d3c635aaffed2c13de95448005b1498aa0fd87d3c7284f8e86b50"
+  },
+  "limits": [
+    "Actual commands/full valid checkpoints/separate production modules; no runtime/pose/HP/route patch",
+    "Static Worker circle probe only; no body-pair or rendered acceptance",
+    "Collector completion does not imply geometry acceptance"
+  ],
+  "records": [
+    {
+      "team": 0,
+      "type": "patrol",
+      "turns": 0,
+      "continuation": "live",
+      "id": 0,
+      "accepted": {
+        "goal": 1574,
+        "point": null,
+        "revision": 3,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 330
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 7,
+      "final": {
+        "x": 4.853333333333329,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 10,
+        "radius": 0,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 0,
+          "status": "active",
+          "nextTick": 991
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 0,
+      "type": "patrol",
+      "turns": 0,
+      "continuation": "cold",
+      "id": 0,
+      "accepted": {
+        "goal": 1574,
+        "point": null,
+        "revision": 3,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 330
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 7,
+      "final": {
+        "x": 4.853333333333329,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 11,
+        "radius": 0,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 0,
+          "status": "active",
+          "nextTick": 991
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 0,
+      "type": "patrol",
+      "turns": 0,
+      "continuation": "queuedCold",
+      "id": 0,
+      "accepted": {
+        "goal": 1574,
+        "point": null,
+        "revision": 3,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 330
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 0,
+      "final": {
+        "x": -3.5,
+        "z": -3.5,
+        "goal": 1308,
+        "revision": 5,
+        "radius": 0.18,
+        "persistent": null,
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": true
+      }
+    },
+    {
+      "team": 0,
+      "type": "patrol",
+      "turns": 1,
+      "continuation": "live",
+      "id": 0,
+      "accepted": {
+        "goal": 1574,
+        "point": null,
+        "revision": 3,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 330
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 7,
+      "final": {
+        "x": 4.853333333333329,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 10,
+        "radius": 0,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 0,
+          "status": "active",
+          "nextTick": 991
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 0,
+      "type": "patrol",
+      "turns": 1,
+      "continuation": "cold",
+      "id": 0,
+      "accepted": {
+        "goal": 1574,
+        "point": null,
+        "revision": 3,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 330
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 7,
+      "final": {
+        "x": 4.853333333333329,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 11,
+        "radius": 0,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 0,
+          "status": "active",
+          "nextTick": 991
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 0,
+      "type": "patrol",
+      "turns": 1,
+      "continuation": "queuedCold",
+      "id": 0,
+      "accepted": {
+        "goal": 1574,
+        "point": null,
+        "revision": 3,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 330
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 0,
+      "final": {
+        "x": -3.5,
+        "z": -3.5,
+        "goal": 1308,
+        "revision": 5,
+        "radius": 0.18,
+        "persistent": null,
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": true
+      }
+    },
+    {
+      "team": 0,
+      "type": "follow",
+      "turns": 0,
+      "continuation": "live",
+      "id": 0,
+      "accepted": {
+        "goal": 1576,
+        "point": null,
+        "revision": 4,
+        "persistent": {
+          "type": "follow",
+          "targetId": 1,
+          "targetGeneration": 3922974902,
+          "status": "following",
+          "nextTick": 387,
+          "lastTargetCell": 1574
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 0,
+      "final": {
+        "x": 3.2990633271158774,
+        "z": 0.8035566151488787,
+        "goal": 1576,
+        "revision": 5,
+        "radius": 0,
+        "persistent": {
+          "type": "follow",
+          "targetId": 1,
+          "targetGeneration": 3922974902,
+          "status": "following",
+          "nextTick": 1017,
+          "lastTargetCell": 1574
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 0,
+      "type": "follow",
+      "turns": 0,
+      "continuation": "cold",
+      "id": 0,
+      "accepted": {
+        "goal": 1576,
+        "point": null,
+        "revision": 4,
+        "persistent": {
+          "type": "follow",
+          "targetId": 1,
+          "targetGeneration": 1607038532,
+          "status": "following",
+          "nextTick": 387,
+          "lastTargetCell": 1574
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 0,
+      "final": {
+        "x": 3.2990633271158774,
+        "z": 0.8035566151488787,
+        "goal": 1576,
+        "revision": 6,
+        "radius": 0,
+        "persistent": {
+          "type": "follow",
+          "targetId": 1,
+          "targetGeneration": 1607038532,
+          "status": "following",
+          "nextTick": 1017,
+          "lastTargetCell": 1574
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 0,
+      "type": "follow",
+      "turns": 0,
+      "continuation": "queuedCold",
+      "id": 0,
+      "accepted": {
+        "goal": 1576,
+        "point": null,
+        "revision": 4,
+        "persistent": {
+          "type": "follow",
+          "targetId": 1,
+          "targetGeneration": 3922293532,
+          "status": "following",
+          "nextTick": 387,
+          "lastTargetCell": 1574
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 0,
+      "final": {
+        "x": -3.5,
+        "z": -3.5,
+        "goal": 1308,
+        "revision": 6,
+        "radius": 0.18,
+        "persistent": null,
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": true
+      }
+    },
+    {
+      "team": 0,
+      "type": "follow",
+      "turns": 1,
+      "continuation": "live",
+      "id": 0,
+      "accepted": {
+        "goal": 1576,
+        "point": null,
+        "revision": 4,
+        "persistent": {
+          "type": "follow",
+          "targetId": 1,
+          "targetGeneration": 104229378,
+          "status": "following",
+          "nextTick": 388,
+          "lastTargetCell": 1574
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 0,
+      "final": {
+        "x": 3.2990633271158774,
+        "z": 0.8035566151488787,
+        "goal": 1576,
+        "revision": 5,
+        "radius": 0,
+        "persistent": {
+          "type": "follow",
+          "targetId": 1,
+          "targetGeneration": 104229378,
+          "status": "following",
+          "nextTick": 1018,
+          "lastTargetCell": 1574
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 0,
+      "type": "follow",
+      "turns": 1,
+      "continuation": "cold",
+      "id": 0,
+      "accepted": {
+        "goal": 1576,
+        "point": null,
+        "revision": 4,
+        "persistent": {
+          "type": "follow",
+          "targetId": 1,
+          "targetGeneration": 3919967945,
+          "status": "following",
+          "nextTick": 388,
+          "lastTargetCell": 1574
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 0,
+      "final": {
+        "x": 3.2990633271158774,
+        "z": 0.8035566151488787,
+        "goal": 1576,
+        "revision": 6,
+        "radius": 0,
+        "persistent": {
+          "type": "follow",
+          "targetId": 1,
+          "targetGeneration": 3919967945,
+          "status": "following",
+          "nextTick": 1018,
+          "lastTargetCell": 1574
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 0,
+      "type": "follow",
+      "turns": 1,
+      "continuation": "queuedCold",
+      "id": 0,
+      "accepted": {
+        "goal": 1576,
+        "point": null,
+        "revision": 4,
+        "persistent": {
+          "type": "follow",
+          "targetId": 1,
+          "targetGeneration": 3912340712,
+          "status": "following",
+          "nextTick": 388,
+          "lastTargetCell": 1574
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 0,
+      "final": {
+        "x": -3.5,
+        "z": -3.5,
+        "goal": 1308,
+        "revision": 6,
+        "radius": 0.18,
+        "persistent": null,
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": true
+      }
+    },
+    {
+      "team": 1,
+      "type": "patrol",
+      "turns": 0,
+      "continuation": "live",
+      "id": 8,
+      "accepted": {
+        "goal": 1574,
+        "point": null,
+        "revision": 3,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 390
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 7,
+      "final": {
+        "x": 2.8599999999999905,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 10,
+        "radius": 0,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 0,
+          "status": "active",
+          "nextTick": 1050
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 1,
+      "type": "patrol",
+      "turns": 0,
+      "continuation": "cold",
+      "id": 8,
+      "accepted": {
+        "goal": 1574,
+        "point": null,
+        "revision": 3,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 390
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 7,
+      "final": {
+        "x": 2.8599999999999905,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 11,
+        "radius": 0,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 0,
+          "status": "active",
+          "nextTick": 1050
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 1,
+      "type": "patrol",
+      "turns": 0,
+      "continuation": "queuedCold",
+      "id": 8,
+      "accepted": {
+        "goal": 1574,
+        "point": null,
+        "revision": 3,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 390
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 0,
+      "final": {
+        "x": -3.5,
+        "z": -3.5,
+        "goal": 1308,
+        "revision": 5,
+        "radius": 0.18,
+        "persistent": null,
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": true
+      }
+    },
+    {
+      "team": 1,
+      "type": "patrol",
+      "turns": 1,
+      "continuation": "live",
+      "id": 8,
+      "accepted": {
+        "goal": 1574,
+        "point": null,
+        "revision": 3,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 390
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 7,
+      "final": {
+        "x": 2.8599999999999905,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 10,
+        "radius": 0,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 0,
+          "status": "active",
+          "nextTick": 1050
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 1,
+      "type": "patrol",
+      "turns": 1,
+      "continuation": "cold",
+      "id": 8,
+      "accepted": {
+        "goal": 1574,
+        "point": null,
+        "revision": 3,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 390
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 7,
+      "final": {
+        "x": 2.8599999999999905,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 11,
+        "radius": 0,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 0,
+          "status": "active",
+          "nextTick": 1050
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 1,
+      "type": "patrol",
+      "turns": 1,
+      "continuation": "queuedCold",
+      "id": 8,
+      "accepted": {
+        "goal": 1574,
+        "point": null,
+        "revision": 3,
+        "persistent": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 390
+        },
+        "radius": 0
+      },
+      "contacts": 16,
+      "newContacts": 1,
+      "cycles": 0,
+      "final": {
+        "x": -3.5,
+        "z": -3.5,
+        "goal": 1308,
+        "revision": 5,
+        "radius": 0.18,
+        "persistent": null,
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": true
+      }
+    },
+    {
+      "team": 1,
+      "type": "follow",
+      "turns": 0,
+      "continuation": "live",
+      "id": 8,
+      "accepted": {
+        "goal": 1640,
+        "point": null,
+        "revision": 4,
+        "persistent": {
+          "type": "follow",
+          "targetId": 9,
+          "targetGeneration": 1120813978,
+          "status": "following",
+          "nextTick": 420,
+          "lastTargetCell": 1574
+        },
+        "radius": 0
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "cycles": 0,
+      "final": {
+        "x": 5.042631231780206,
+        "z": 1.0678289039725257,
+        "goal": 1640,
+        "revision": 5,
+        "radius": 0,
+        "persistent": {
+          "type": "follow",
+          "targetId": 9,
+          "targetGeneration": 1120813978,
+          "status": "following",
+          "nextTick": 1050,
+          "lastTargetCell": 1574
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 1,
+      "type": "follow",
+      "turns": 0,
+      "continuation": "cold",
+      "id": 8,
+      "accepted": {
+        "goal": 1640,
+        "point": null,
+        "revision": 4,
+        "persistent": {
+          "type": "follow",
+          "targetId": 9,
+          "targetGeneration": 3533683412,
+          "status": "following",
+          "nextTick": 420,
+          "lastTargetCell": 1574
+        },
+        "radius": 0
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "cycles": 0,
+      "final": {
+        "x": 5.042631231780206,
+        "z": 1.0678289039725257,
+        "goal": 1640,
+        "revision": 6,
+        "radius": 0,
+        "persistent": {
+          "type": "follow",
+          "targetId": 9,
+          "targetGeneration": 3533683412,
+          "status": "following",
+          "nextTick": 1050,
+          "lastTargetCell": 1574
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 1,
+      "type": "follow",
+      "turns": 0,
+      "continuation": "queuedCold",
+      "id": 8,
+      "accepted": {
+        "goal": 1640,
+        "point": null,
+        "revision": 4,
+        "persistent": {
+          "type": "follow",
+          "targetId": 9,
+          "targetGeneration": 2802578669,
+          "status": "following",
+          "nextTick": 420,
+          "lastTargetCell": 1574
+        },
+        "radius": 0
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "cycles": 0,
+      "final": {
+        "x": -3.5,
+        "z": -3.5,
+        "goal": 1308,
+        "revision": 6,
+        "radius": 0.18,
+        "persistent": null,
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": true
+      }
+    },
+    {
+      "team": 1,
+      "type": "follow",
+      "turns": 1,
+      "continuation": "live",
+      "id": 8,
+      "accepted": {
+        "goal": 1640,
+        "point": null,
+        "revision": 4,
+        "persistent": {
+          "type": "follow",
+          "targetId": 9,
+          "targetGeneration": 3838974009,
+          "status": "following",
+          "nextTick": 420,
+          "lastTargetCell": 1574
+        },
+        "radius": 0
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "cycles": 0,
+      "final": {
+        "x": 5.042631231780206,
+        "z": 1.0678289039725257,
+        "goal": 1640,
+        "revision": 5,
+        "radius": 0,
+        "persistent": {
+          "type": "follow",
+          "targetId": 9,
+          "targetGeneration": 3838974009,
+          "status": "following",
+          "nextTick": 1050,
+          "lastTargetCell": 1574
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 1,
+      "type": "follow",
+      "turns": 1,
+      "continuation": "cold",
+      "id": 8,
+      "accepted": {
+        "goal": 1640,
+        "point": null,
+        "revision": 4,
+        "persistent": {
+          "type": "follow",
+          "targetId": 9,
+          "targetGeneration": 1169937479,
+          "status": "following",
+          "nextTick": 420,
+          "lastTargetCell": 1574
+        },
+        "radius": 0
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "cycles": 0,
+      "final": {
+        "x": 5.042631231780206,
+        "z": 1.0678289039725257,
+        "goal": 1640,
+        "revision": 6,
+        "radius": 0,
+        "persistent": {
+          "type": "follow",
+          "targetId": 9,
+          "targetGeneration": 1169937479,
+          "status": "following",
+          "nextTick": 1050,
+          "lastTargetCell": 1574
+        },
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": false
+      }
+    },
+    {
+      "team": 1,
+      "type": "follow",
+      "turns": 1,
+      "continuation": "queuedCold",
+      "id": 8,
+      "accepted": {
+        "goal": 1640,
+        "point": null,
+        "revision": 4,
+        "persistent": {
+          "type": "follow",
+          "targetId": 9,
+          "targetGeneration": 1465676541,
+          "status": "following",
+          "nextTick": 420,
+          "lastTargetCell": 1574
+        },
+        "radius": 0
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "cycles": 0,
+      "final": {
+        "x": -3.5,
+        "z": -3.5,
+        "goal": 1308,
+        "revision": 6,
+        "radius": 0.18,
+        "persistent": null,
+        "hp": 100,
+        "cargo": 0,
+        "queue": [],
+        "queuedComplete": true
+      }
+    }
+  ]
+}
