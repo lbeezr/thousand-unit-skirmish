@@ -6,6 +6,13 @@ import { combatDamage } from '../src/combat-rules.mjs';
 import { activeLandMovementBodyRadius, canTraverseStaticBodySegment, canTraverseUnitStep, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 
+function assertSelectedRoutePreserved(published, selected, currentCell) {
+  const prefixLength = published.length - selected.length;
+  assert.ok(prefixLength === 0 || (selected.length > 0 && prefixLength === 1), 'only a necessary current-cell rejoin may be added');
+  if (prefixLength) assert.equal(published[0], currentCell);
+  assert.deepEqual(published.slice(prefixLength), selected, 'the entire selected route survives publication unchanged');
+}
+
 test('focused Attack clearance derives from explicit military unit-target intent, including noAttack', () => {
   const unit = { kind: 'infantry', hp: 100, attackMove: false, attackTargetId: 7,
     attackBuildingTargetId: -1, buildingTargetId: null, combatStance: 'noAttack',
@@ -104,15 +111,21 @@ async function journey(team, kind, action) {
 
 for (const team of [0, 1]) for (const kind of ['infantry', 'archer']) for (const recovery of ['none', 'accepted', 'active', 'damage']) {
   test(`seat ${team}: explicit noAttack ${kind} keeps its full selected route and kills through ${recovery} recovery`, async () => {
-    await journey(team, kind, ({ r, actor, target, attack, step, recover, finish, radius, counts }) => {
+    await journey(team, kind, ({ r, id, targetId, actor, target, attack, step, recover, finish, radius, counts }) => {
       const revision = actor().orderRevision;
+      const selected = r.attackApproach(id, targetId), startCell = r.cell(actor().x, actor().z);
+      assert.ok(selected.reachable);
       assert.ok(attack().some(n => /ATTACK ORDER/.test(n.message)));
+      assertSelectedRoutePreserved(actor().path, selected.path, startCell);
       const acceptedRevision = actor().orderRevision, goal = actor().moveGoalCell;
       assert.equal(acceptedRevision, revision + 1); assert.equal(goal, r.cell(target().x, target().z));
       assert.equal(actor().path.at(-1), goal, 'full selected focused route is retained, including ranged target-cell tail');
       assert.equal(actor().movePlanningPending, false); assert.equal(activeLandMovementBodyRadius(actor()), radius);
       if (recovery === 'active') { step(); step(); }
-      if (recovery === 'damage') for (let t = 0; t < 100 && !counts().receipts; t++) step();
+      if (recovery === 'damage') {
+        for (let t = 0; t < 100 && !counts().receipts; t++) step();
+        assert.ok(counts().receipts > 0, 'damage recovery requires an actual productive receipt before checkpointing');
+      }
       if (recovery !== 'none') { recover(); assert.equal(actor().attackTargetId, target().id); }
       finish(); assert.ok(counts().steps > 0);
       assert.equal(actor().orderRevision, acceptedRevision, 'repath/recovery keeps accepted focused order identity');
@@ -140,10 +153,12 @@ for (const team of [0, 1]) test(`seat ${team}: moving-target repath retains the 
       const next = actor().path[actor().pathIndex], cell = r.cell(actor().x, actor().z);
       const targetCell = r.cell(target().x, target().z), priorTargetCell = actor().lastAttackCell;
       const retained = actor().pathIndex < actor().path.length && canTraverseUnitStep(cell, next, 64, r.levels, r.isWalkable);
+      const selected = r.attackApproach(id, targetId, true);
       step();
       if (actor().attackTargetId === targetId && actor().lastAttackCell !== priorTargetCell && retained) {
         witnessed++;
         assert.ok(actor().path.slice(0, 2).includes(next), 'rejoin can prefix but cannot discard the intentional retained waypoint');
+        assertSelectedRoutePreserved(actor().path, selected.path, cell);
         assert.equal(actor().path.at(-1), targetCell, 'repath still publishes the full target-selected route');
       }
       assert.equal(actor().moveGoalCell, goal); assert.equal(actor().orderRevision, revision);
