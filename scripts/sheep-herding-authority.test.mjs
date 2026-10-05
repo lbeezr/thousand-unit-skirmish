@@ -34,7 +34,7 @@ async function fixtureFor(t, stock) {
   t.after(() => fixture.dispose());
   const r = fixture.replay;
   for (let index = 0; index < 4; index++) r.step();
-  assert.equal(r.checkpoint().schemaVersion, 29);
+  assert.equal(r.checkpoint().schemaVersion, 30);
   assert.ok(ids.every((id, team) => r.resources.get(id).wildlifeTeam === team), 'living nearby Workers naturally claim both Sheep');
   return { r, map, sourceSha256: fixture.sourceSha256 };
 }
@@ -212,12 +212,12 @@ for (const schemaVersion of [26, 27]) test(`exact schema${schemaVersion} migrati
   until(r, () => worker.cargo > .25 && r.resources.get(ids[0]).wildlifeState === 'carcass', 'real partial harvest');
   notice(unitOrder(r, 0, 'stop', [worker]), /^STOP ORDER/);
   until(r, () => r.resources.get(ids[1]).wildlifeMotion.activity === 'wandering', 'live saved grazing leg');
-  const legacy = r.checkpoint(); legacy.schemaVersion = schemaVersion;
+  const legacy = r.checkpoint(); legacy.schemaVersion = schemaVersion; delete legacy.state.voluntaryEndings;
   if (schemaVersion === 26) { delete legacy.matchModeId; delete legacy.matchModeVersion; }
   for (const node of legacy.state.resourceNodes) { delete node.wildlifeHerd; delete node.wildlifeGrazeAnchor;
     node.wildlifeMotion.heading = legacyNoseHeadingFromBody(node.wildlifeMotion.heading); }
   const before = structuredClone(legacy), migrated = structuredClone(legacy);
-  r.validate(migrated); assert.equal(migrated.schemaVersion, 29);
+  r.validate(migrated); assert.equal(migrated.schemaVersion, 30);
   assert.equal(migrated.matchModeId, 'authored'); assert.equal(migrated.matchModeVersion, 1);
   for (const field of ['units', 'teamFood', 'teamWood', 'teamStone', 'unitGenerationCounters']) {
     assert.deepEqual(migrated.state[field], before.state[field], `migration retains ${field}`);

@@ -74,7 +74,7 @@ test('exact schema29 identity migration preserves old food, cargo, orders, banks
   for (const [id, stock] of stockById) nodeIn(saved, id).stock = stock;
   const before = structuredClone(saved), shippedBefore = structuredClone(map);
   assert.equal(migrateTerracedValeSheepCheckpoint(saved, map, hash), true);
-  assert.equal(saved.schemaVersion, 29); assert.equal(saved.mapHash, hash(map)); assert.deepEqual(saved.mapDefinition, map);
+  assert.equal(saved.schemaVersion, 30); assert.equal(saved.mapHash, hash(map)); assert.deepEqual(saved.mapDefinition, map);
   assert.deepEqual(ordinary(saved.state.resourceNodes), before.state.resourceNodes);
   assert.deepEqual({ ...saved, mapDefinition: before.mapDefinition, mapHash: before.mapHash,
     state: { ...saved.state, resourceNodes: before.state.resourceNodes } }, before);

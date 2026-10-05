@@ -54,6 +54,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'simulation/movement/formation-assignment',
     'millrace-sheep', 'skiff-fishing', 'skiff-group-orders', 'skiff-waypoints',
     'snapshot-private-production', 'terraced-vale-sheep', 'unit-movement',
+    'server/voluntary-endings',
     'server/worker-food-tools', // Productive food labor and exact prior-content recovery; no route planning.
     'unit-obstacle-detour', 'unit-path-line', 'wall-build-order',
     'wall-construction-draft', 'wall-line-planner', 'water-unit-runtime',
@@ -87,7 +88,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'worker-fishing-contact',
   ],
   client: [
-    'client/hud/match-recap',
+    'client/hud/match-recap', 'client/hud/match-decisions',
     'client/hud/resource-format', 'client/hud/population-readout', 'client/hud/objective-summary',
     'client/audio/audio-decoded-cache', 'client/audio/audio-shipped-response',
     'audio', 'audio-assets', 'audio-composer', 'audio-composition',

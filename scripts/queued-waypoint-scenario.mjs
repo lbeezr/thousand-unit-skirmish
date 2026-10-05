@@ -294,7 +294,7 @@ try {
   await Promise.allSettled(clients.map(closeClient));
   clients = [];
   const schemaTwoCheckpoint = JSON.parse(await readFile(checkpointPath, 'utf8'));
-  schemaTwoCheckpoint.schemaVersion = 2;
+  schemaTwoCheckpoint.schemaVersion = 2; delete schemaTwoCheckpoint.state.voluntaryEndings;
   // Schema 2 predates pinned definitions, economy profiles and match modes.
   // Retaining modern mode fields intentionally blocks the schema-26 migration.
   delete schemaTwoCheckpoint.rulesetRevision; delete schemaTwoCheckpoint.factionId;

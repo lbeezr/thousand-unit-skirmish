@@ -80,8 +80,10 @@ Economy, terrain, opening and canonical map files are unchanged.
 
 The server continues using its existing recovery-aware elimination predicate.
 Workers and paid land queues preserve survival; a destroyed Town Center is not
-defeat while land units or affordable legal production remain. No resignation,
-inactivity draw, new clock behavior or minimum-duration guarantee is added.
+defeat while land units or affordable legal production remain. The mode identities add no inactivity draw, new clock behavior or minimum-duration guarantee.
+The separately approved [voluntary-ending version1 contract](match-endings-and-recaps.md#mode-specific-termination-rules)
+adds confirmed Resign and mutually agreed Draw in fresh human PvP matches. It preserves automatic
+victory policies and disables those actions in recovered legacy version0, Practice and PvE.
 
 ## Runtime protocol
 

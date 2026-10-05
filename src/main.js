@@ -1,3 +1,4 @@
+import { createMatchDecisions } from './client/hud/match-decisions.mjs';
 import { createGateTimbers, updateGateTimbers } from './palisade-gate-visual.mjs';
 import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
@@ -736,6 +737,7 @@ let pageLeaving = false;
 let connectionAttempt = 0;
 let socketStartedAt = 0;
 const browserStateRecovery = new BrowserStateRecovery({ visible: document.visibilityState === 'visible' });
+const matchDecisions = createMatchDecisions(document, sendCommand);
 const SESSION_STORAGE_KEY = 'thousand-unit-skirmish-session';
 const ROOM_SESSION_STORAGE_KEY = `${SESSION_STORAGE_KEY}:${ROOM_ID || 'default'}`;
 const ROOM_INSTANCE_STORAGE_KEY = `${SESSION_STORAGE_KEY}:instance:${location.host}:${ROOM_ID || 'default'}`;
@@ -4361,7 +4363,7 @@ function syncMatchResultActions() {
 
 function updateMatchResult(winner, triggerId = null, reason = null) {
   const previousWinner = matchWinner;
-  const isDraw = winner === 2 && ['capture-hold', 'elimination', 'timed-control', 'stronghold-destruction'].includes(reason);
+  const isDraw = winner === 2 && ['capture-hold', 'elimination', 'timed-control', 'stronghold-destruction', 'agreed-draw'].includes(reason);
   matchWinner = Number.isInteger(winner) && ([0, 1].includes(winner) || isDraw) ? winner : -1;
   if (previousWinner < 0 && matchWinner >= 0) {
     audio.playEvent({ cue: matchWinner === 2 ? 'draw' : matchWinner === localTeam ? 'victory' : 'defeat' });
@@ -4387,7 +4389,8 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
   if (isDraw) {
     matchResult.dataset.team = 'neutral';
     outcome = 'DRAW';
-    if (reason === 'timed-control') {
+    if (reason === 'agreed-draw') detail = 'BOTH PLAYERS AGREED TO A DRAW';
+    else if (reason === 'timed-control') {
       const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
       detail = `${objectiveName.toUpperCase()} UNCLAIMED AT DEADLINE`;
     } else if (reason === 'stronghold-destruction') detail = 'BOTH ORIGINAL TOWN CENTERS DESTROYED ON THE SAME COMBAT TICK';
@@ -4397,7 +4400,9 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
     const teamName = TEAM_NAMES[matchWinner].toUpperCase();
     matchResult.dataset.team = TEAM_NAMES[matchWinner].toLowerCase();
     outcome = localTeam === null ? `${teamName} WINS` : localTeam === matchWinner ? 'VICTORY' : 'DEFEAT';
-    if (reason === 'elimination') detail = localTeam === matchWinner ? 'ENEMY HAS NO LAND UNITS OR RECOVERABLE LAND PRODUCTION'
+    if (reason === 'resignation') detail = localTeam === null ? `${TEAM_NAMES[1 - matchWinner].toUpperCase()} RESIGNED`
+      : localTeam === matchWinner ? 'YOUR OPPONENT RESIGNED' : 'YOU RESIGNED';
+    else if (reason === 'elimination') detail = localTeam === matchWinner ? 'ENEMY HAS NO LAND UNITS OR RECOVERABLE LAND PRODUCTION'
       : localTeam === null ? `${teamName} WINS · ENEMY HAS NO LAND UNITS OR RECOVERABLE LAND PRODUCTION`
         : 'YOU HAVE NO LAND UNITS OR RECOVERABLE LAND PRODUCTION';
     else if (reason === 'stronghold-destruction') detail = `${teamName} WINS · ENEMY ORIGINAL TOWN CENTER DESTROYED`;
@@ -4593,6 +4598,7 @@ function applyState(state, initial = false, resuming = false) {
     return;
   }
   if (!state || (mapDefinition && state.mapId && state.mapId !== mapDefinition.id)) return;
+  matchDecisions.update(state, localTeam);
   const practiceStatus = document.querySelector('#practice-status');
   soloPracticeActive = state.practice === true;
   const identity = { ...(Object.hasOwn(state, 'matchModeId') ? { matchModeId: state.matchModeId } : {}),
@@ -9166,6 +9172,7 @@ document.addEventListener('fullscreenchange', () => {
 document.addEventListener('fullscreenerror', syncFullscreenToggle);
 
 function closeHudPanels({ restoreFocus = false } = {}) {
+  matchDecisions.close();
   const trigger = !matchMenu.hidden ? matchMenuToggle : !helpPanel.hidden ? helpToggle : null;
   matchMenu.hidden = true;
   helpPanel.hidden = true;
@@ -10639,6 +10646,7 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
       showToast(message.message, 3600);
       return;
     }
+    if (message.type === 'matchDecisionFeedback') { matchDecisions.feedback(message); return; }
     if (message.type === 'victory') {
       if (!canPresentLiveFeedback()) return;
       updateMatchResult(message.team, message.triggerId, message.reason);
@@ -10708,6 +10716,7 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
     if (socket !== connection) return;
     socket = null;
     browserStateRecovery.disconnect();
+    matchDecisions.disconnect();
     waterStudyFishBinding?.clear();
     roomLobby.disconnect();
     audio.stopWork(); orderAudioGate.reset();
@@ -10741,6 +10750,7 @@ function releasePageConnection() {
   if (pageLeaving) return;
   pageLeaving = true;
   browserStateRecovery.disconnect();
+  matchDecisions.disconnect();
   connectionAttempt++;
   if (reconnectTimer !== null) window.clearTimeout(reconnectTimer);
   reconnectTimer = null;

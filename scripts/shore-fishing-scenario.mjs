@@ -52,7 +52,7 @@ try {
   const schemaVersion = (await fixture.checkpoint(snapshot => snapshot.mapDefinition.id === 'open-field')).schemaVersion;
   await fixture.stop();
   const legacy = JSON.parse(await readFile(fixture.checkpointPath, 'utf8'));
-  legacy.schemaVersion = 20;
+  legacy.schemaVersion = 20; delete legacy.state.voluntaryEndings;
   delete legacy.matchModeId; delete legacy.matchModeVersion;
   delete legacy.economyProfileId; delete legacy.state.teamStone;
   await writeFile(fixture.checkpointPath, JSON.stringify(legacy));

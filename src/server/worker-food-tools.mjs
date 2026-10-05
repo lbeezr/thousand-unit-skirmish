@@ -28,7 +28,7 @@ export function migrateFoodToolsCheckpoint(snapshot) {
   const priorKeys = Object.keys(emptyTechnologyCompletions()).filter(key => key !== 'foodTools');
   if (!Object.hasOwn(PRE_FOOD_TOOLS_RULESETS, profile)
     || snapshot.rulesetRevision !== PRE_FOOD_TOOLS_RULESETS[profile]
-    || ![22, 23, 24, 25, 26, 27, 28, 29].includes(snapshot.schemaVersion)
+    || ![22, 23, 24, 25, 26, 27, 28, 29, 30].includes(snapshot.schemaVersion)
     || (snapshot.mapDefinition?.economyProfileId ?? DEFAULT_ECONOMY_PROFILE_ID) !== profile
     || !Array.isArray(snapshot.state?.teamUpgrades) || snapshot.state.teamUpgrades.length !== 2
     || !snapshot.state.teamUpgrades.every(upgrades => upgrades && typeof upgrades === 'object'
