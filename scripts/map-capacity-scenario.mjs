@@ -302,7 +302,10 @@ async function runLoad(count) {
   } finally {
     record.tickRows = [...tickRows.values()];
     record.tickAttribution = capturedTickAttribution(record.tickRows, map.id);
-    try { await finishAttribution(); }
+    try {
+      await finishAttribution();
+      if (adapter) record.innerAttribution = capturedInnerAttribution(record.attributionRuns, record.tickRows, map.id);
+    }
     finally { await Promise.all(clients.map(c => c.close())); await stop(child); await adapter?.dispose(); }
     await writeFile(path.join(output, `${count}-server.log`), logs);
   }
