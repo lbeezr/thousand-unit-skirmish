@@ -43,6 +43,7 @@ import { catalogBarracksObservation } from './catalog-barracks-observation.mjs';
 import { farmHarvestNode } from './farm-harvest.mjs';
 import { isPalisade } from './palisade-gate.mjs';
 import { attachBuildingSprite } from './building-sprites.mjs';
+import { clearOwnedBuildingFog } from './building-fog-composition.mjs';
 import { frontierBuildingManifestUrl } from './frontier-building-preview.mjs';
 import { buildingCanRotate, buildingOrientationAngle, turnBuildingOrientation } from './building-orientation.mjs';
 import { createBuildingPlacementPreview } from './building-placement-preview.mjs';
@@ -2260,6 +2261,7 @@ function updateFogFromState(state) {
       minimapPixels[minimapOffset + channel] = colorValue[channel];
     }
   }
+  clearOwnedBuildingFog(texturePixels, fogCells, state.buildings, localTeam, MAP_WIDTH, MAP_HEIGHT);
   fogTexture.needsUpdate = true;
   minimapFogContext.putImageData(minimapFogImage, 0, 0);
   latestFogCells = fogCells;

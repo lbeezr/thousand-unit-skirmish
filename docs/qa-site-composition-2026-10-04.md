@@ -169,3 +169,25 @@ checks. No source conflict required a substantive resolution. The next actual
 appearance action remains CI-owned case admission/authorized dispatch, then
 rendering-owner inspection of real baseline/candidate PNGs. No containing
 deployment or staging appearance is inferred from these merges.
+
+## Owned-building fog composition — 5 October 2026
+
+Building sight comes from its access perimeter, while its occupied cells block
+rays into the interior. Previously explored interior cells can therefore become
+fog state 1. Fog's late color pass blends that dark cell across the already
+owned building artwork. A real paid Barracks retained this state during
+construction and after natural completion; this establishes state, not pixels.
+
+The renderer now omits remembered fog alpha only inside live owned paid
+footprints from the current snapshot. Authoritative visibility, minimap fog,
+unexplored cells, enemy footprints, terrain/forest rules and depth settings stay
+unchanged. Each update restores the mask before applying the exemption, so
+removal or ownership loss cannot leave a clearing. Home centers retain their
+existing offset-footprint behavior. The approved [Barracks capture](../assets/buildings/frontier-civilization-military-models-v1/captures/barracks-complete-view-01.png)
+and other building art remain unchanged.
+
+The focused fog tests cover both teams, construction/completion/damage/repair,
+adjacency, disclosure/removal and flat/raised terrain. Independent source review
+and native/CPU/package checks establish only those scopes. Actual rendered
+before/after and identified deployed appearance remain open; no screenshot
+match or visual pass is claimed.

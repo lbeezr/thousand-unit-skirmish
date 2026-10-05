@@ -42,8 +42,17 @@ export async function renderCompositionWav(composition, sourceBlobs, {OfflineCon
     const blob = sourceBlobs?.[event.sourceId];
     if (!(blob instanceof Blob)) throw new Error(`Missing recording for source ${event.sourceId}`);
     if (!cache.has(event.sourceId)) {
-      try { cache.set(event.sourceId, await context.decodeAudioData(await blob.arrayBuffer())); }
-      catch { throw new Error(`Could not decode recording ${event.sourceId}`); }
+      let bytes;
+      try { bytes = await blob.arrayBuffer(); }
+      catch (error) {
+        if (!(error instanceof DOMException) || !['NotFoundError', 'NotReadableError', 'SecurityError'].includes(error.name)) throw error;
+        throw new Error(`Could not read recording ${event.sourceId}. Reopen the library and retry.`, {cause: error});
+      }
+      try { cache.set(event.sourceId, await context.decodeAudioData(bytes)); }
+      catch (error) {
+        if (!(error instanceof DOMException) || error.name !== 'EncodingError') throw error;
+        throw new Error(`Could not decode recording ${event.sourceId}`, {cause: error});
+      }
     }
     const buffer = cache.get(event.sourceId);
     if (event.offsetSeconds >= buffer.duration) throw new Error(`Clip offset exceeds recording ${event.sourceId}`);
