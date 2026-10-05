@@ -14,6 +14,7 @@ import { createWaterRouteGraph } from '../src/water-route-graph.mjs';
 import { buildElevationGrid } from '../src/map-utils.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { runCheckpointJsonBudgetAudit } from './checkpoint-json-budget-audit.mjs';
+import { createMapStudioDraftStore } from '../src/authoring/map-studio-draft-store.mjs';
 import { preflightXlCheckpointRoutes, XL_CHECKPOINT_ROUTE_MAX_ENTRIES,
   XL_CHECKPOINT_ROUTE_MAX_SIDE, XL_CHECKPOINT_ROUTE_LEGACY_SIDE,
   XL_CHECKPOINT_ROUTE_SLOT_BYTES } from '../src/server/checkpoint-route-budget.mjs';
@@ -146,6 +147,7 @@ export async function nativeAdmissionProbe(map) {
 
 export async function runXlBoundaryAudit({ native = false } = {}) {
   const files = ['server.mjs', 'room-supervisor.mjs', 'index.html', 'src/main.js',
+    'src/authoring/map-studio-draft-store.mjs',
     'src/wall-line-planner.mjs', 'src/water-route-graph.mjs', 'src/map-size-policy.mjs',
     'src/match-modes.mjs', 'src/server/vision-coverage-cache.mjs',
     'src/server/checkpoint-route-budget.mjs',
@@ -203,9 +205,18 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
   const inbound = Number(inboundLiteral[1].replaceAll('_', ''));
   const outgoing = source.match(/const MAX_PEER_QUEUED_BYTES = (\d+) \* 1024 \* 1024;/);
   if (!outgoing) throw new Error('Outbound frame/queue envelope moved.');
+  const draftRestoreBody = extractFunction(inputs['src/main.js'], 'restoreMapStudioDraft');
+  if (!inputs['src/main.js'].includes('const mapStudioDraftStore = createMapStudioDraftStore({ getStorage: () => localStorage });')
+    || !draftRestoreBody.includes('const { state, definition } = mapStudioDraftStore.requireRecovery(draft, editorDraftSourceMapId);')
+    || !draftRestoreBody.includes('populateMapEditor(')
+    || draftRestoreBody.indexOf('requireRecovery(') > draftRestoreBody.indexOf('populateMapEditor('))
+    throw new Error('Map Studio draft recovery guard binding/order moved; update the audit.');
+  const draftStore = createMapStudioDraftStore({ getStorage: () => {
+    throw new Error('The dimension audit must not access browser storage.');
+  } });
   const limits = {
     server: sourceNumber(source, /definition\.width > (\d+) \|\| definition\.height >/),
-    studioRestore: sourceNumber(extractFunction(inputs['src/main.js'], 'restoreMapStudioDraft'), /definition\.width > (\d+)/),
+    studioRestore: sourceNumber(draftStore.requireRecovery.toString(), /definition\.width > (\d+)/),
     studioImport: sourceNumber(extractFunction(inputs['src/main.js'], 'validateImportedMap'), /definition\.width > (\d+)/),
     studioResize: sourceNumber(extractFunction(inputs['src/main.js'], 'resizeEditorMap'), /width > (\d+)/),
     studioHtml: [...inputs['index.html'].matchAll(/id="studio-(?:width|height)"[^>]*max="(\d+)"/g)].map(m => Number(m[1])),
