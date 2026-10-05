@@ -11,6 +11,8 @@ const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SERVER_PATH = path.join(ROOT, 'server.mjs');
 const READY_TIMEOUT_MS = 10_000;
 const MESSAGE_TIMEOUT_MS = 30_000;
+// Match the existing PvE fixture's client-close allowance, with explicit failure.
+const CLIENT_CLOSE_TIMEOUT_MS = 500;
 let stage = 'initialization';
 
 async function reservePort() {
@@ -143,10 +145,32 @@ function send(client, message) {
 
 async function closeClient(client) {
   if (!client || client.socket.readyState === WebSocket.CLOSED) return;
-  await new Promise((resolve) => {
-    client.socket.addEventListener('close', resolve, { once: true });
-    client.socket.close(1000, 'timed event scenario complete');
+  const socket = client.socket;
+  await new Promise((resolve, reject) => {
+    const finish = (error) => {
+      clearTimeout(timeout);
+      socket.removeEventListener('close', closed);
+      if (error) reject(error); else resolve();
+    };
+    const closed = () => finish();
+    const timeout = setTimeout(() => finish(new Error(
+      `Completion event client did not close within ${CLIENT_CLOSE_TIMEOUT_MS} ms (readyState ${socket.readyState}).`,
+    )), CLIENT_CLOSE_TIMEOUT_MS);
+    socket.addEventListener('close', closed, { once: true });
+    try { socket.close(1000, 'timed event scenario complete'); }
+    catch (error) { finish(error); }
   });
+}
+
+async function cleanupScenario(clients, server, tempRoot, scenarioError = null) {
+  const errors = scenarioError ? [scenarioError] : [];
+  const results = await Promise.allSettled(clients.map(closeClient));
+  errors.push(...results.filter(result => result.status === 'rejected').map(result => result.reason));
+  // A failed client close must not strand the owned server or its temporary data.
+  try { await stopServer(server); } catch (error) { errors.push(error); }
+  try { await rm(tempRoot, { recursive: true, force: true }); } catch (error) { errors.push(error); }
+  if (errors.length === 1) throw errors[0];
+  if (errors.length) throw new AggregateError(errors, 'Completion event scenario or cleanup failed.');
 }
 
 function eventFired(state, id, fired = true) {
@@ -169,6 +193,7 @@ const customMapDirectory = path.join(tempRoot, 'custom-maps');
 const checkpointPath = path.join(tempRoot, 'match-state.json');
 const clients = [];
 let server;
+let scenarioError = null;
 try {
   server = await startServer(port, customMapDirectory, checkpointPath);
   let azure = createClient(port); clients.push(azure); await azure.opened;
@@ -217,5 +242,5 @@ try {
   const invalid=structuredClone(map);invalid.id='invalid-completion';invalid.scenarioEvents[1].trigger.technologyId='unknown-tech';
   send(azure,{type:'publishMap',map:invalid});await rejected;
   console.log(JSON.stringify({scenario:'completion conditions',result:'pass',checks:['both seats','initial completed state','technology awards qualify','pending checkpoint','one-shot exact rewards','rematch','host-only trace','invalid registry ID']}));
-} catch(error) {throw new Error(`${stage}: ${error.message}`,{cause:error});}
-finally {await Promise.all(clients.map(closeClient));await stopServer(server);await rm(tempRoot,{recursive:true,force:true});}
+} catch(error) {scenarioError = new Error(`${stage}: ${error.message}`,{cause:error});}
+finally {await cleanupScenario(clients, server, tempRoot, scenarioError);}
