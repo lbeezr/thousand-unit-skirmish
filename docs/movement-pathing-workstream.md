@@ -58,15 +58,19 @@ actual journey coverage and rendered acceptance are separate.
 
 ### Shared semantics, domain policies
 
-The [next automatic-stance caller audit](qa-automatic-stance-pursuit-2026-10-05.md)
-on unchanged `a0bd7761` records four unsafe Infantry pursuit substeps per
-Aggressive/Defensive stance on each seat, with real commands and unchanged
-legal-range damage. StandGround/NoAttack controls stay fixed and safe. A separate
-24-case defensive-return sample has no unsafe return steps, so no unnecessary
-return change is proposed. Only the two existing automatic acquisition/repath
-conditionals are requested at the linked core interface; no host edit or
-range/game-policy change is made pending allocation. Same-cell range closure
-remains a separately owned endpoint contract.
+The [automatic-stance pursuit adoption](qa-automatic-stance-pursuit-2026-10-05.md)
+in [PR432](https://github.com/lbeezr/thousand-unit-skirmish/pull/432) consumes
+shared static-circle clearance and the unchanged selected-route rejoin at
+[the two allocated acquisition/repath conditions](https://github.com/lbeezr/thousand-unit-skirmish/pull/425#issuecomment-5987896694).
+Its real-command Infantry witness changes four unsafe steps per stance/seat to
+zero, while preserving the selected suffix, fixed anchors and legal-range damage.
+Both-seat Infantry/paid Archer journeys cover cold recovery, moving targets,
+manual/queued priority, paid blockage and rejected prefixes. StandGround/NoAttack,
+Worker/water, building/persistent targets, return and same-cell writer remain
+excluded. The separate 24-case Defensive return controls stay safe without a
+return patch. Same-cell range closure remains a combat endpoint contract.
+Exact reviewed source, clean pack and process results are recorded on the PR;
+provider identity and rendered acceptance remain OPEN.
 
 The separate **target-free military Follow candidate** consumes core PR422's
 durable accepted pending-goal contract at merged building-target source `032eea7d`.
