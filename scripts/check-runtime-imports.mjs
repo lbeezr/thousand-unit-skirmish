@@ -87,6 +87,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'worker-fishing-contact',
   ],
   client: [
+    'client/hud/match-recap',
     'client/hud/resource-format', 'client/hud/population-readout', 'client/hud/objective-summary',
     'client/audio/audio-decoded-cache', 'client/audio/audio-shipped-response',
     'audio', 'audio-assets', 'audio-composer', 'audio-composition',
@@ -112,7 +113,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'networking/websocket-deflate-offer', 'networking/websocket-frame',
     'pve-model-proposal', 'room-launch-options', 'room-lobby-chat', 'room-pregame',
     'server/build-identity', 'server/client-asset-paths', 'server/pve-model-proposal',
-    'server/vision-coverage-cache',
+    'server/vision-coverage-cache', 'server/checkpoint-route-budget',
   ],
   // Legacy map-validation entry also exports playback policy. Preserve existing
   // host consumers while new lower-domain consumers use the world validator.

@@ -1,0 +1,144 @@
+{
+  "scope": "command-only fixed-tick production-body construction regression",
+  "sourceRevision": "13b13e82efe19d37ef3972907c8335a460fd041d",
+  "productionSourceDirty": false,
+  "commandSequence": [
+    {
+      "type": "move",
+      "x": 0.79,
+      "z": 0.95
+    },
+    {
+      "type": "build",
+      "buildingType": "house",
+      "x": 6.5,
+      "z": 0.5
+    }
+  ],
+  "map": {
+    "width": 64,
+    "height": 48,
+    "obstacle": {
+      "column": 33,
+      "row": 25,
+      "width": 1,
+      "height": 1
+    }
+  },
+  "radiusProfile": "land-static-circle-v1",
+  "workerRadius": 0.18,
+  "seats": [
+    {
+      "team": 0,
+      "contacts": 13,
+      "first": {
+        "from": {
+          "x": 0.79,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8760360880289078,
+          "z": 0.9395643558994586
+        },
+        "reason": "steering"
+      },
+      "worker": [
+        4.5,
+        0.5,
+        null
+      ],
+      "building": {
+        "id": 1,
+        "team": 0,
+        "type": "house",
+        "x": 6.5,
+        "z": 0.5,
+        "orientation": 0,
+        "footprint": [
+          1509,
+          1510,
+          1511,
+          1573,
+          1574,
+          1575,
+          1637,
+          1638,
+          1639
+        ],
+        "hp": 800,
+        "progress": 1,
+        "complete": true,
+        "queue": 0,
+        "productionQueue": [],
+        "trainingRemaining": 0,
+        "productionBlocked": false,
+        "rallyCell": -1
+      },
+      "wood": [
+        925,
+        1000
+      ]
+    },
+    {
+      "team": 1,
+      "contacts": 13,
+      "first": {
+        "from": {
+          "x": 0.79,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8760360880289078,
+          "z": 0.9395643558994586
+        },
+        "reason": "steering"
+      },
+      "worker": [
+        4.5,
+        0.5,
+        null
+      ],
+      "building": {
+        "id": 1,
+        "team": 1,
+        "type": "house",
+        "x": 6.5,
+        "z": 0.5,
+        "orientation": 0,
+        "footprint": [
+          1509,
+          1510,
+          1511,
+          1573,
+          1574,
+          1575,
+          1637,
+          1638,
+          1639
+        ],
+        "hp": 800,
+        "progress": 1,
+        "complete": true,
+        "queue": 0,
+        "productionQueue": [],
+        "trainingRemaining": 0,
+        "productionBlocked": false,
+        "rallyCell": -1
+      },
+      "wood": [
+        1000,
+        925
+      ]
+    }
+  ],
+  "newRegressionTests": {
+    "pass": 0,
+    "fail": 8,
+    "existingConstructionTestsPass": 13
+  },
+  "limits": [
+    "Replay adapter calls actual command bodies but has no network admission or real process restart.",
+    "Every physical substep is observed; completion/payment does not establish static clearance.",
+    "No game pixels, served-release or deployment acceptance."
+  ]
+}

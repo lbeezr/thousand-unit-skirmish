@@ -509,14 +509,24 @@ receivers; gameplay, selection, actions, placement, editor and renderer bodies
 stay with their feature owners. No server import enters the active movement
 window.
 
-The current tracked-runtime audit now finds **three compatibility imports in one
-consumer file**, `server.mjs`: validator, base lifecycle and formation assignment.
-Only those three paths have runtime callers; all eleven remain supported while
-fixture/public/type/external and identified-release reload-safety obligations
-remain. Neither zero tracked runtime callers nor a successful source pack alone
-authorizes alias retirement. The validator forwarding export still serves the
-server; the containing playback/profile library remains needed. No alias, test,
-type, HTTP entry or registration is removed.
+At the PR370 checkpoint the tracked-runtime audit finds **three compatibility
+imports in one consumer file**, `server.mjs`: validator, base lifecycle and
+formation assignment. [PR404](https://github.com/lbeezr/thousand-unit-skirmish/pull/404)
+changes just those three import literals to their established canonical homes.
+The same four function values and every other host/import byte remain. Fresh
+main `82a66766` already includes movement PR395, construction PR399, checkpoint
+PR403 and the HUD/recap PR402/401; their implementation and imports stay intact.
+The exact-hunk notes are recorded on the movement/construction/crowd artifacts,
+and PR404 owns implemented-head independent review and consumer/type/import/
+clean-pack/actual packed-HTTP evidence.
+
+There are now **zero tracked-runtime consumers through the ten forwarding
+modules and the validator compatibility export**. All eleven surfaces remain
+supported while fixture/public/type/external and identified-release reload-safety
+obligations remain. Zero runtime callers or a successful source pack alone does
+not authorize retirement. The audio profile/playback library remains needed by
+its real audio consumers; only its validator export is a compatibility surface.
+No alias, test, type, HTTP entry or registration is removed.
 
 The audit parses imports/re-exports/literal dynamic imports, then inspects
 fixture/file-path references separately. Intentional export-identity tests,
@@ -528,10 +538,10 @@ after the image-loading extraction.
 
 | Retained compatibility surface / owner | Actual runtime callers | Tool/fixture work before retirement |
 | --- | --- | --- |
-| `audio-event-profile.mjs`'s **validator export only** / audio-world boundary owner | `server.mjs`; the loader uses the canonical world validator after PR349 and `src/main.js` after PR370 | Validator imports in `audio-runtime-scenario`, `audio-shipped-loader.test`, `stone-map-profile.test` and `wildlife-import-parity.test`; retain canonical/legacy parity while the alias is supported. Playback/profile consumers still need this module, so retirement removes only `validateMapAudioReference`'s forwarding export. |
+| `audio-event-profile.mjs`'s **validator export only** / audio-world boundary owner | None after PR404; server uses the canonical world validator, joining the loader after PR349 and `src/main.js` after PR370 | Validator imports in `audio-runtime-scenario`, `audio-shipped-loader.test`, `stone-map-profile.test` and `wildlife-import-parity.test`; retain canonical/legacy parity while the alias is supported. Playback/profile consumers still need this module, so retirement removes only `validateMapAudioReference`'s forwarding export. |
 | `gameplay-action-rules.mjs` / rules owner | None after PR336; `src/production-actions.mjs` and `src/research-actions.mjs` use the canonical rules leaf | The action contract already exercises canonical values and deliberately checks the legacy namespace. Preserve its two JSDoc type names while supported. Rejection order, affordability, production/research UI and native payment/recovery checks remain required. |
-| `base-lifecycle.mjs` / rules owner with server/Worker/naval receivers | `server.mjs` | `base-lifecycle.test`, Worker performing-action test/scenario/probe, `skiff-contracts.test` and `wall-construction-draft.test`. Retarget injected fixture bindings with their owners; preserve real refunds/repair/reservation scenarios and both old/canonical HTTP denials. |
-| `formation-assignment.mjs` / movement owner | `server.mjs` | `formation-assignment-scenario` still exercises the legacy import plus explicit canonical binding identity. Keep formation pairing/ties and real pathing/native command consumers; both helper paths remain HTTP-private. |
+| `base-lifecycle.mjs` / rules owner with server/Worker/naval receivers | None after PR404; server uses canonical rules | `base-lifecycle.test`, Worker performing-action test/scenario/probe, `skiff-contracts.test` and `wall-construction-draft.test`. Retarget injected fixture bindings with their owners; preserve real refunds/repair/reservation scenarios and both old/canonical HTTP denials. |
+| `formation-assignment.mjs` / movement owner | None after PR404; server uses canonical simulation helper | `formation-assignment-scenario` still exercises the legacy import plus explicit canonical binding identity. Keep formation pairing/ties and real pathing/native command consumers; both helper paths remain HTTP-private. |
 | HUD aliases `resource-format`, `population-readout`, `objective-summary` / HUD integration owner | None after PR370; `src/main.js` uses all three canonical helpers, joining the PR349 selection/wall/match-mode consumers | Matching canonical/legacy contracts; contextual HUD, construction/wildlife client fixtures, roster/shore-fishing checks, population browser runner and Practice/Bannerfall entry checks. `contextual-hud.test` already imports canonical objective summary while still using legacy resource/population helpers; do not revert or rename it. |
 | Authoring aliases `scenario-authoring`, `map-resize` / authoring owner | None after PR370; `src/main.js` uses both canonical leaves | `scenario-authoring.test` retains both binding identities; server-hardening and packed-release checks intentionally exercise exact compatibility HTTP paths. Map persistence already imports canonical resize. Reconcile the owning authoring/saga links with their owners rather than changing unrelated historical receipts. |
 | Audio aliases `audio-decoded-cache`, `audio-shipped-response` / audio boundary owner | None after PR349; `src/audio.mjs` and `src/audio-shipped-loader.mjs` use canonical leaves | Matching contracts already use canonical implementations plus legacy identity; shared-decode/loader/lifecycle checks reach the same canonical functions through the real runtime. Canonical reader coverage is registered. Preserve both-path HTTP bytes and playback/cache/error/cancellation checks until alias deletion is justified. |
@@ -557,11 +567,11 @@ checks above; no source or test is renamed solely to make a path look tidy.
    preserving actual contextual/construction/selection consumers. These three
    leaf callers no longer traverse aliases; the main composition host does.
 4. Main-client PR370 migrates its six imports without changing host behavior or
-   any compatibility contract. The remaining server, movement, rules and
-   validator owners agree the three counterparts in `server.mjs` in a separate
-   owned integration window; they remain outside PR370 and the active movement
-   edits. Use exact import hunks and retain feature work in those hosts. Do not
-   mix order, path, editor, renderer or economy implementation changes.
+   any compatibility contract. Server PR404 follows the completed PR395 movement
+   integration and changes only its three counterparts, preserving all four
+   imported function values and the peer-owned host/module implementations.
+   The completed runtime caller queue does not retire aliases or authorize order,
+   path, editor, renderer or economy body changes.
 5. Retarget remaining behavioral fixture bindings, source/HTTP helpers and
    current owning-guide links per domain. A legacy export-identity assertion
    stays while the alias is supported; retire that assertion only with the
@@ -656,8 +666,9 @@ canonical CLI behavior, clean source-identified packs and actual packed HTTP
 pass through those consumers. This slice does not change those registries or
 release/deployment policy. Further smoke, browser, authoring, asset, scenario
 and performance-tool responsibilities remain in the purpose-based queue above;
-no bulk test rename, measurement rerun or workload change is implied. The three
-server compatibility imports remain outside the movement owner's active window.
+no bulk test rename, measurement rerun or workload change is implied. At this
+PR373 checkpoint the three server compatibility imports remained outside the
+movement owner's active window; PR404 later migrates those literals only.
 
 ### Release verification tooling boundary
 
@@ -723,8 +734,8 @@ choose its smallest meaningful implementation; keep unrelated feature work movin
 
 | Next slice / exact candidate scope | Input and owning boundary | Semantic acceptance and retirement limit |
 | --- | --- | --- |
-| Three server caller imports in `server.mjs`: base lifecycle, map-audio validator and formation assignment | Movement owner `01a107ba` and server/rules receivers agree the reserved three import hunks. Use `src/rules/base-lifecycle.mjs`, `src/world/map-audio-reference.mjs` and `src/simulation/movement/formation-assignment.mjs`; do not touch accepted orders, tick/pathing or economy bodies. | Same four imported bindings and every other host byte; existing lifecycle/formation/validator, paid native command/recovery, strict types, source/served/packed guards and private-path denial. All eleven compatibility surfaces remain until their separate criteria are met. This is the next concrete integration proposal, pending that owner window. |
-| Checkpoint validation seam in `server.mjs`; affected `economy-server-fixture.mjs` binding only if extraction replaces its existing slice | Server/simulation and building-action owner `01a107c9` agree `validateMatchCheckpoint`'s actual state inputs, validation/error order and return contract before code moves. Validation, version migration and atomic storage remain separate responsibilities. | Existing `economy-checkpoint.test.mjs`, `fog-checkpoint-boundary.test.mjs`, `match-mode-checkpoint.test.mjs` and `checkpoint-storage-recovery-scenario.mjs`, preserving malformed-input rejection, resources, visibility, version handling and cold recovery. No host-state catch-all parameter or behavior rewrite. |
+| Server caller slice [PR404](https://github.com/lbeezr/thousand-unit-skirmish/pull/404): the three `server.mjs` lifecycle, map-audio validator and formation literals | Fresh-main integration after PR395; exact scope retains construction/crowd and XL checkpoint imports/bodies. Canonical entries are `src/rules/base-lifecycle.mjs`, `src/world/map-audio-reference.mjs` and `src/simulation/movement/formation-assignment.mjs`. | Four identical bindings and every other host byte; actual consumer/native, types/imports, clean pack and packed HTTP/private-path checks plus implemented-head independent review belong to PR404. Zero tracked-runtime compatibility callers; all eleven surfaces and every existing fixture/admission remain. |
+| Checkpoint validation seam in `server.mjs`; affected `economy-server-fixture.mjs` binding only if extraction replaces its existing slice | Server/simulation, building-action owner `01a107c9` and the map-size owner of [PR403](https://github.com/lbeezr/thousand-unit-skirmish/pull/403) agree `validateMatchCheckpoint`'s actual inputs, validation/error order, route-preflight hook and return contract before code moves. Preserve PR403's capture/validation consumers; validation, version migration and atomic storage remain separate responsibilities. | Existing `economy-checkpoint.test.mjs`, `fog-checkpoint-boundary.test.mjs`, `match-mode-checkpoint.test.mjs` and `checkpoint-storage-recovery-scenario.mjs`, preserving malformed-input rejection, resources, visibility, version handling and cold recovery. No host-state catch-all parameter or behavior rewrite. |
 | Map Studio draft/form state in `src/main.js`; actual `map-studio-draft-scenario.mjs` consumer | Authoring/client owner agrees the draft/history/form-storage API and publish boundary to the running match. Use the already canonical authoring leaves; preserve existing gesture, menu and persistence entrypoints. | Real draft edit/save/reopen/publish checks plus current authoring contracts. Source/CPU results do not close the retained normal-sandbox browser-startup gap; that rendered acceptance stays with its owner. |
 | Root tool commands and test/fixture homes: current `package.json`, workflows and `docs/testing.md` consumers | Testing-strategy/command owners own registration migration, discovery and supported commands. Authoring/assets/scenario/performance owners first select an actual workload/API boundary from the purpose-based stage above. | Preserve every existing case, fixed input/seed, coverage floor, command and release consumer; root entries retire only after external/fixture/identified-release obligations clear. Those registries and broad tool/test moves are outside this lane's current write scope. |
 

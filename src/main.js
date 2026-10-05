@@ -34,6 +34,7 @@ import { roomPresence } from './room-presence.mjs';
 import { BrowserStateRecovery } from './browser-state-recovery.mjs';
 import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
+import { renderMatchRecap } from './client/hud/match-recap.mjs';
 import { mountAssetReadability } from './asset-readability.mjs';
 import { catalogBarracksObservation } from './catalog-barracks-observation.mjs';
 import { farmHarvestNode } from './farm-harvest.mjs';
@@ -4359,7 +4360,7 @@ function syncMatchResultActions() {
 
 function updateMatchResult(winner, triggerId = null, reason = null) {
   const previousWinner = matchWinner;
-  const isDraw = winner === 2 && ['capture-hold', 'elimination', 'timed-control'].includes(reason);
+  const isDraw = winner === 2 && ['capture-hold', 'elimination', 'timed-control', 'stronghold-destruction'].includes(reason);
   matchWinner = Number.isInteger(winner) && ([0, 1].includes(winner) || isDraw) ? winner : -1;
   if (previousWinner < 0 && matchWinner >= 0) {
     audio.playEvent({ cue: matchWinner === 2 ? 'draw' : matchWinner === localTeam ? 'victory' : 'defeat' });
@@ -4374,6 +4375,7 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
   if (!matchResult) return;
   matchResult.hidden = matchWinner < 0;
   if (matchWinner < 0) {
+    renderMatchRecap(document, null, localTeam);
     document.querySelector('#match-result-title').textContent = '';
     document.querySelector('#match-result-detail').textContent = '';
     updateCommandUI();
@@ -4389,13 +4391,14 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
       detail = `${objectiveName.toUpperCase()} UNCLAIMED AT DEADLINE`;
     } else if (reason === 'stronghold-destruction') detail = 'BOTH ORIGINAL TOWN CENTERS DESTROYED ON THE SAME COMBAT TICK';
     else if (reason === 'capture-hold') detail = 'BOTH TEAMS COMPLETED THE VICTORY HOLD';
-    else detail = 'BOTH ARMIES ELIMINATED';
+    else detail = 'NEITHER TEAM HAS LAND UNITS OR RECOVERABLE LAND PRODUCTION';
   } else {
     const teamName = TEAM_NAMES[matchWinner].toUpperCase();
     matchResult.dataset.team = TEAM_NAMES[matchWinner].toLowerCase();
     outcome = localTeam === null ? `${teamName} WINS` : localTeam === matchWinner ? 'VICTORY' : 'DEFEAT';
-    if (reason === 'elimination') detail = localTeam === matchWinner ? 'ENEMY ELIMINATED'
-      : localTeam === null ? `${teamName} WINS · ENEMY ELIMINATED` : 'YOUR ARMY ELIMINATED';
+    if (reason === 'elimination') detail = localTeam === matchWinner ? 'ENEMY HAS NO LAND UNITS OR RECOVERABLE LAND PRODUCTION'
+      : localTeam === null ? `${teamName} WINS · ENEMY HAS NO LAND UNITS OR RECOVERABLE LAND PRODUCTION`
+        : 'YOU HAVE NO LAND UNITS OR RECOVERABLE LAND PRODUCTION';
     else if (reason === 'stronghold-destruction') detail = `${teamName} WINS · ENEMY ORIGINAL TOWN CENTER DESTROYED`;
     else if (reason === 'timed-control') {
       const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
@@ -4785,6 +4788,7 @@ function applyState(state, initial = false, resuming = false) {
   }
   if (Number.isInteger(state.winner)) {
     updateMatchResult(state.winner, state.winnerTriggerId, state.winnerReason);
+    renderMatchRecap(document, state, localTeam);
   }
   if (Number.isInteger(state.connected)) updateRoomUI(state.connected);
   if (Array.isArray(state.population)) latestPopulation = state.population;

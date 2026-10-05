@@ -19,18 +19,19 @@ import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
 import { forestGatherGroups, visibleForestCandidates } from './src/forest-gather-group.mjs';
 import { exploredForestFringe } from './src/forest-fringe.mjs';
 import { VisionCoverageCache } from './src/server/vision-coverage-cache.mjs';
+import { preflightXlCheckpointRoutes } from './src/server/checkpoint-route-budget.mjs';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
 import { creditResourceBalance } from './src/economy-ledger.mjs';
 import { STONE_ECONOMY_PROFILE_ID, resolveEconomyProfileId, economyResources, economyRulesetRevision, constructionCostForProfile, acceptsProfileDropoff, debitEconomyCost, proportionalEconomyRefund, creditEconomyRefund } from './src/economy-profile.mjs';
 import { migrateEconomyCheckpoint, validateEconomyCheckpoint } from './src/economy-checkpoint.mjs';
 import { workerFoodGatherMultiplier, migrateFoodToolsCheckpoint } from './src/server/worker-food-tools.mjs';
-import { unfinishedRefund, buildingRepairStep } from './src/base-lifecycle.mjs';
+import { unfinishedRefund, buildingRepairStep } from './src/rules/base-lifecycle.mjs';
 import { productionAction } from './src/production-actions.mjs';
 import { teamPopulation } from './src/population.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION, DEFAULT_FACTION_ID, UNIT_WIRE_IDS, missingGameplayPrerequisites } from './src/gameplay-definitions.mjs';
 import { validBuildingOrientation, orderedBuildingExitCells, legalBuildingExitCells, nearbyBuildingExitCell } from './src/building-orientation.mjs';
-import { validateMapAudioReference } from './src/audio-event-profile.mjs';
+import { validateMapAudioReference } from './src/world/map-audio-reference.mjs';
 import { createServer } from 'node:http';
 import { createHash, randomBytes } from 'node:crypto';
 import { mkdir, open, readFile, readdir, rename, stat, unlink, writeFile } from 'node:fs/promises';
@@ -50,7 +51,7 @@ import {
 import {
   BASE_ELEVATION_PATH_COST, canTraverseElevation, elevationPathCost, hasElevation,
 } from './src/elevation.mjs';
-import { orderUnitsForFormation } from './src/formation-assignment.mjs';
+import { orderUnitsForFormation } from './src/simulation/movement/formation-assignment.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from './src/pve-opponent.mjs';
 import { readPveLaunchOptions } from './src/pve-match.mjs';
 import { townCenterSpawnPosition, townCenterFootprintCells } from './src/town-center-spawn.mjs';
@@ -2797,6 +2798,8 @@ function matchMapHash(definition) {
 }
 
 function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
+  preflightXlCheckpointRoutes(authoredMapDefinition, { units, resourceNodes: resourceNodeStates },
+    { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES });
   ensureVisionMasks();
   const savedSessions = [];
   for (const session of sessions.values()) {
@@ -2888,6 +2891,8 @@ function validCellPath(value, cellCount) {
 
 function validateMatchCheckpoint(snapshot) {
   assertSnapshot(snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot), 'expected an object');
+  preflightXlCheckpointRoutes(snapshot.mapDefinition, snapshot.state,
+    { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES });
   assertSnapshot(snapshot.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION, 'unsupported schema version');
   validateEconomyCheckpoint(snapshot);
   assertSnapshot(snapshot.factionId === DEFAULT_FACTION_ID, 'unsupported faction');

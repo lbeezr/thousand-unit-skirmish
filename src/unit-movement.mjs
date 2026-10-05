@@ -1,5 +1,6 @@
 import { BASE_ELEVATION_PATH_COST, canTraverseElevation, elevationPathCost } from './elevation.mjs';
 import { visitGridSegmentCells } from './unit-path-line.mjs';
+import { constructionMovementActive } from './construction-work-intent.mjs';
 
 // Static land circles, in tiles/world units. Adopters are explicit: ordinary
 // single-unit Move/queued points and Worker economy; other domains follow.
@@ -156,7 +157,8 @@ export function workerEconomyBodyRadius(unit) {
     ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0;
 }
 export function activeLandMovementBodyRadius(unit) {
-  return ordinaryMoveBodyRadius(unit) || workerEconomyBodyRadius(unit);
+  return ordinaryMoveBodyRadius(unit) || workerEconomyBodyRadius(unit)
+    || (constructionMovementActive(unit) ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0);
 }
 
 export function activeMoveGoalPoint(unit) {

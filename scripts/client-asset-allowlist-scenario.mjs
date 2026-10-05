@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SCOUT_PORTRAITS, RIDER_PORTRAITS, SPEARMAN_PORTRAITS, BARRACKS_PORTRAIT, FARM_PORTRAIT, FARM_PORTRAITS, farmSelectionPortrait } from '../src/selection-portrait.mjs';
+import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SCOUT_PORTRAITS, RIDER_PORTRAITS, SIEGE_ENGINE_PORTRAITS, SPEARMAN_PORTRAITS, BARRACKS_PORTRAIT, FARM_PORTRAIT, FARM_PORTRAITS, farmSelectionPortrait } from '../src/selection-portrait.mjs';
 import { buildingSpriteUrl } from '../src/building-sprites.mjs';
 import { moduleImports } from './module-imports.mjs';
 import { BROWSER_ENTRYPOINTS } from './check-runtime-imports.mjs';
@@ -92,10 +92,12 @@ for (const [role, source, sha256] of [
   ['boughward-scout', 'docs/art-direction/boughward-roster-v1/extracted/scout/00.png', '024fded2661ed621fc045f3882e5b646ae15ccf4af2842c4d0043c0b95e0b079'],
   ['rider', 'docs/art-direction/human-mounted-v1/extracted/rider/00.png', '1e8f9cbecbcdbbb6e918bd195822c782dcd86815aa8f7d971d4a0b6d18b85d1a'],
   ['boughward-rider', 'docs/art-direction/boughward-roster-v1/extracted/rider/00.png', '5ee0db0d065ab004b15fb2846dd2c7a90ca2d0ed32d952a256dd58938c32a535'],
+  ['siege-engine', 'docs/art-direction/human-mounted-v1/extracted/siege-engine/00.png', 'e0c84809f1e95b6f71d9f9f96f8e7996a16871a7a9e1222f18a9073d7d3a9d8c'],
+  ['boughward-siege-engine', 'docs/art-direction/boughward-roster-v1/extracted/siege-engine/00.png', '050bd12752a64b8855600845c64a0bb7bfbfe3b03ede3cf119c3d3b1a7964eb7'],
   ['spearman', 'docs/art-direction/human-roster-v1/extracted/spearman/idle/02.png', 'a1ec9294586ed22bfad9e27d1fa1fd5432bd2d4723d5532e7d0a9b188eae010e'],
   ['boughward-spearman', 'docs/art-direction/boughward-roster-v1/extracted/spearman/00.png', 'f31d37ddc28bec1aa5dc7dfd17eaa20f9ea5a9f2abc776ba8e9c248a9559cc8d'],
 ]) {
-  const portrait = WORKER_PORTRAITS[role] || INFANTRY_PORTRAITS[role] || ARCHER_PORTRAITS[role] || SCOUT_PORTRAITS[role] || RIDER_PORTRAITS[role] || SPEARMAN_PORTRAITS[role], resource = portrait.asset.slice(1);
+  const portrait = WORKER_PORTRAITS[role] || INFANTRY_PORTRAITS[role] || ARCHER_PORTRAITS[role] || SCOUT_PORTRAITS[role] || RIDER_PORTRAITS[role] || SIEGE_ENGINE_PORTRAITS[role] || SPEARMAN_PORTRAITS[role], resource = portrait.asset.slice(1);
   assert.ok(allowedUi.has(resource), `portrait must be served: ${resource}`);
   const image = readFileSync(path.join(root, resource));
   assert.equal(createHash('sha256').update(image).digest('hex'), sha256, 'portrait reuses inspected source bytes');
@@ -104,9 +106,10 @@ for (const [role, source, sha256] of [
   if (portrait.contain) {
     assert.equal(image.readUInt32BE(20), portrait.sourceHeight, 'whole-image equipment framing uses exact dimensions');
   } else {
-    assert.ok(portrait.cropX >= 0 && portrait.cropY >= 0 && portrait.cropSize > 0);
-    assert.ok(portrait.cropX + portrait.cropSize <= portrait.sourceWidth);
-    assert.ok(portrait.cropY + portrait.cropSize <= image.readUInt32BE(20));
+    const width = portrait.cropWidth || portrait.cropSize, height = portrait.cropHeight || portrait.cropSize;
+    assert.ok(portrait.cropX >= 0 && portrait.cropY >= 0 && width > 0 && height > 0);
+    assert.ok(portrait.cropX + width <= portrait.sourceWidth);
+    assert.ok(portrait.cropY + height <= image.readUInt32BE(20));
   }
 }
 const barracksRoot = 'assets/buildings/barracks-sprite-test-v1';

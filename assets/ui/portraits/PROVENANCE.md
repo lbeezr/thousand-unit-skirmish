@@ -175,3 +175,38 @@ The existing steel-capped rider, upright spear, shield and horse; Boughward orc,
 [Human direction](../../../docs/art-direction/human-mounted-v1/README.md), [Boughward direction](../../../docs/art-direction/boughward-roster-v1/README.md) and both documented [Human](../../../docs/art-direction/human-mounted-v1/extracted/rider/extraction.json)/[Boughward](../../../docs/art-direction/boughward-roster-v1/extracted/rider/extraction.json) extractions retain selected initial appearances and current default associations. Runtime manifests remain `runtime-candidate`: this reuse does not accept motion, heading fidelity, anatomy/root calibration or native HUD recognition.
 
 Original and private actual-size color/grayscale comparisons were independently inspected. At 52px, mount family and equipment survive. At 20px, similar Human mounted silhouettes lose detail; complete written role names, both costs and availability reasons remain primary. No generation, source-pixel edit, private publication or held/rejected art is introduced. Native compact appearance/keyboard and containing hosted delivery remain separately open in the [capture recipe](../../../docs/hud-art-integration.md#ordinary-game-capture-recipe-and-remaining-evidence).
+
+## Siege Engine reuse — 4 October 2026
+
+The established timber Human ballista and bark/copper Boughward ballista supply
+equipment identity without inventing a crew portrait. Both 768×512 PNGs are
+byte-identical existing isolated idle cells. The existing 52px Selection and
+decorative 20px training frames contain centered rectangular source viewports,
+using CSS sizing/position and `clip-path`; no image pixels are edited.
+
+| Runtime source | Inspected original | SHA-256 | Viewport (x, y, width, height) |
+| --- | --- | --- | --- |
+| [Human Siege Engine](human-siege-engine-source.png) | [Established idle](../../../docs/art-direction/human-mounted-v1/extracted/siege-engine/00.png) | `e0c84809f1e95b6f71d9f9f96f8e7996a16871a7a9e1222f18a9073d7d3a9d8c` | 80, 28, 598, 442 |
+| [Boughward Siege Engine](boughward-siege-engine-source.png) | [Established idle](../../../docs/art-direction/boughward-roster-v1/extracted/siege-engine/00.png) | `050bd12752a64b8855600845c64a0bb7bfbfe3b03ede3cf119c3d3b1a7964eb7` | 51, 14, 683, 446 |
+
+The [Human initial direction](../../../docs/art-direction/human-mounted-v1/README.md),
+[Boughward direction](../../../docs/art-direction/boughward-roster-v1/README.md)
+and documented [Human](../../../docs/art-direction/human-mounted-v1/extracted/siege-engine/extraction.json)/[Boughward](../../../docs/art-direction/boughward-roster-v1/extracted/siege-engine/extraction.json)
+source bounds retain the existing default equipment family. Manifests remain
+`runtime-candidate`; no final motion/directional/scale acceptance is inferred.
+
+The whole Boughward cell includes a 178-pixel alpha≥9 fragment of the next pose
+at x297..334/y505..512. Its deliberate rectangle omits that fragment with a
+45px gap, preserving every meaningful main-device pixel and a 3px margin on
+all sides. Human has the same 3px margin. Original, actual-size color/grayscale
+and independent CSS-algebra/subpixel CPU studies support the framing; brown RGB
+beneath transparent pixels is not a painted backdrop. Stable nodes clear clipping
+when returning to contained units or square-cropped Worker/building portraits.
+
+Complete wheels, bow arms, rope and bolt remain visible at 52px; fine detail
+diminishes at 20px, where the full Siege Engine name, costs and reasons remain
+primary. Role notes retain registered structure damage, defense multiplier,
+three population and required SIEGE ENGINEERING research. No generation,
+private-study publication, held source or source-pixel cleanup is introduced.
+Native pixel/resampling/keyboard/recognition and containing hosted delivery
+remain open in the [ordinary paid recipe](../../../docs/hud-art-integration.md#ordinary-game-capture-recipe-and-remaining-evidence).
