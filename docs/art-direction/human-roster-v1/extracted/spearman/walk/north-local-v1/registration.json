@@ -1,0 +1,122 @@
+{
+  "baselineRegisteredPoseSHA256": "b88097cec481a9b2d36b29edfc550c1d7134c9b716641c265602045a843c8783",
+  "baselineUnchangedClipsSHA256": "29e4e60ee7e45c635324d91b71daade57220afd1f8b5036fa6b8dcaec07973c7",
+  "baselineAssetMetadataSHA256": "0494af4603627b42502777172d5275538ec54e2d76f325095d0f763d1ec9b814",
+  "baselinePageMetadataSHA256": "e84dd4e499de1e56ed102f8b66daeeb910cb25881817f95da7fba3aee657b5ad",
+  "baselineMaskSHA256": "e7e746011b4aa5eb384e36b062d5d0689172afe30d3a2e0a40cd35696ea12d0b",
+  "heightWorld": 1.6722564697265625,
+  "worldPerPixel": 0.0052421832906788795,
+  "baselineManifestSHA256": "305aa23a7229ed543776595efbfc768917351af90e10b47d6e004fc1d9b34b76",
+  "baselineRuntimeSHA256": "55eb4a5efd6328dcc0a9f1413292f75d0703719a8133aa3c6b6dd9d42c6c8a87",
+  "historicalClipsWithoutNEEastNorthSHA256": "bb70acf010bbeef44739f810c8fba83e19f0e49273256965bd3fdc97441335ef",
+  "historicalClipsWithoutEastNorthSHA256": "36e1210303eb4bb8fc10b8fff516f6b33d3dab1a33e60f14804d2dc354a8ff2d",
+  "identitySource": {
+    "path": "docs/art-direction/human-roster-v1/extracted/spearman/idle/03.png",
+    "sha256": "8c1644b67eeca87c4dda337110e195cb7b4345f62c1bd85e17cd6b23244c4229",
+    "registeredFrameId": "idle-north-0",
+    "registeredSeedSHA256": "996f23a35b98a858e3210478a13570f455e9d8a4e3cc397e58fb6b53fbff6c68"
+  },
+  "schemaVersion": 1,
+  "sourceRevision": "90cbae99ae75b0c87ae003422ad3439a59f658b7",
+  "directionId": "north",
+  "baselinePackVersion": "0.5.0",
+  "packVersion": "0.6.0",
+  "sourceKind": "new camera-frozen 2D leg poses from own public North identity seed; no matching 3D master claimed",
+  "authoringTool": "Blender 4.3.2 Cycles CPU, fixed orthographic public-source UV planes",
+  "canvasPx": {
+    "width": 320,
+    "height": 352
+  },
+  "groundPivotPx": {
+    "x": 142,
+    "y": 295
+  },
+  "paddingPx": {
+    "x": 44,
+    "y": 24
+  },
+  "atlasSlotsPx": [
+    [
+      1316,
+      1240
+    ],
+    [
+      1644,
+      1240
+    ],
+    [
+      1316,
+      1600
+    ],
+    [
+      1644,
+      1600
+    ]
+  ],
+  "maximumAlphaHeightPx": 319,
+  "reusedPriorRegisteredPoses": 40,
+  "newlyAuthoredPoses": 4,
+  "mirroredPoses": 0,
+  "borrowedDirectionPoses": 0,
+  "generationProviderCalls": 0,
+  "paidJobs": 0,
+  "privateInputs": 0,
+  "durationMs": 800,
+  "loop": true,
+  "sourceTiming": "four explicit 200ms keys; authoring fps20 is not runtime playback fps",
+  "shaftSeparation": {
+    "sourceSamples": 781,
+    "reconstructedSamples": 0,
+    "partition": "x < 228-.9*y, y >= 190; original transparent shaft/leg gap"
+  },
+  "processRetention": "all source scene/scripts/masks, previews and all failed/corrected iterations retained privately; selected source derivatives only published",
+  "ordinaryGameAcceptance": "pending",
+  "supportFootVelocityAcceptance": "pending",
+  "matching3DMaster": "not located; own-direction public 2D seed permits this free source slice",
+  "poses": [
+    {
+      "file": "00.png",
+      "pose": "contact-left",
+      "durationMs": 200,
+      "sha256": "c1abb769a0e8bac8bd24931ca894e3f81436639de013bf154df4d3732e414f11",
+      "rawCPUOutputSHA256": "c9bfc62ff8f92fa8746ae8e3588c1d2a1dfbe21fdeb943f251a0362043ae7582",
+      "transparentRGBPixelsNormalized": 107
+    },
+    {
+      "file": "01.png",
+      "pose": "passing-right",
+      "durationMs": 200,
+      "sha256": "071df4e8ab5d1a5471b979f27121188ce7429c76efefb5cb92f25371f84e7d01",
+      "rawCPUOutputSHA256": "3cf6f7925c8a7f70e5ba978d530d1e1d756daa2d8355a8480cf24d74acf5736f",
+      "transparentRGBPixelsNormalized": 116
+    },
+    {
+      "file": "02.png",
+      "pose": "contact-right",
+      "durationMs": 200,
+      "sha256": "1aa3a3dcefcff7139c92fb1fa9d17f98ed2c232236c2fd9715933d8b3513ec9a",
+      "rawCPUOutputSHA256": "93040ffdc18df910af8ea46770e48089b25982315d6c13feb0afef4997060482",
+      "transparentRGBPixelsNormalized": 109
+    },
+    {
+      "file": "03.png",
+      "pose": "passing-left",
+      "durationMs": 200,
+      "sha256": "f28ddb73578aba8112bd770ca30746322cfa7386adfd45d15e93507604f976be",
+      "rawCPUOutputSHA256": "7bdb891fadf7988b0223e07d7f6486b665f3de85e3c853bfee10a32b15edfdb6",
+      "transparentRGBPixelsNormalized": 115
+    }
+  ],
+  "normalization": "zero RGB only under alpha0; every visible RGBA and alpha sample preserved from selected CPU output",
+  "independentSourceReview": {
+    "reviewer": "independent_foot_art_review",
+    "selectedIteration": "04-complete-shaft-and-boot",
+    "status": "no blocking source findings",
+    "positivePoseTriangleInstances": 65072,
+    "ordinaryGameAcceptance": "pending",
+    "reconstructedSourceSamples": 0,
+    "minimumSignedAreaRatio": 0.5034001668294271
+  },
+  "packProvenanceNote": "Four new locally authored North walk poses retain the established own-view public painted identity; all 40 prior registered poses and 31 other clips are unchanged. Four walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance.",
+  "packReadme": "# Human Spearman partial animation pack\n\nPack 0.6.0 preserves all 40 existing registered poses and adds four locally authored North walk keys from the already-public painted North seed. SE/NE/East walks, SE attack/defeat and all eight idle facings are retained unchanged. North uses four 200ms contact/passing keys, one 800ms loop, the existing body calibration and padded original pivot. Four walk headings, seven attack and seven defeat headings remain missing (18 cells). Page dimensions and the zero team mask are unchanged. No matching 3D master, provider job, held v2 art or state/simulation change is involved.\n\nSelected sources and provenance: `docs/art-direction/human-roster-v1/extracted/spearman/walk/north-local-v1/registration.json`. The full `scripts/build-human-spearman-preview.py` builder replays baseline, NE, East and North stages; individual older append scripts intentionally guard their reviewed construction stage. Independent North source review and exact integration evidence are retained in the owning North slice guide. Ordinary GPU gait, support-foot speed, normal/strategic/crowded appearance and deployed acceptance remain pending. The private process and all iterations are retained by the Human foot art owner.\n"
+}
