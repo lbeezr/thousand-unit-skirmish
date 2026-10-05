@@ -1040,6 +1040,32 @@ No qualified fix, new PR/main event, full-suite retry, or served/rendered comple
 is claimed. The linked QA owns source/pack evidence; private denied material stays
 untouched.
 
+5 October passage-admission/service-handoff feasibility: the
+[executable contract and retained scope failure](qa-native-wall-seat1-2026-10-05.md#bounded-passage-admission-and-executed-service-handoff--scope-feasibility)
+incorporate main `b5b4dd49` (Worker receipt test only; runtime remains construction
+consumer `c8aa92c8`). Crowd's disjoint read-only witness has one first admission,
+≤4 cohort actors, two≤12-tick actual service windows/≤24-tick episode, deterministic
+receipt-based ranking, fresh selected own-call revalidation and actual new
+high-water/retained service for every cohort actor before handoff. All64 affected
+actors retain receipt/service/loss/route guards; historical completion cannot
+qualify after final receipt invalidation. All normal executor vectors remain
+unchanged. This is a feasibility contract, not a production motion controller.
+
+The same48/96 input/control windows and all21 harmed-neighbor controls produce
+zero covered rounds, no admitted episode and exact stalled-baseline traces.
+One first refusal occurs on3122; later census is observation, not renewal.
+The conservative queried-neighbor scope excludes13–21 active outside IDs per
+round, while actual later desired-step blockers include75/76. Zero added loss
+therefore proves no intervention, not useful recovery or global-coordination
+necessity. Crowd owner `01a10933-c2b0` retains the next physically justified bounded
+influence-boundary witness, separating incidental proximity from current serial
+dependencies while preserving whole-set loss/service guards and finite entering-
+dependency cancellation. Do not expand the cohort or add another retreat heuristic
+without such evidence. Core's agreed diagnostic seam remains; host receipts,
+original budgets/admissions/position writes/repair and caller/construction endpoint
+publication stay with their owners. No qualified production fix/full-suite/PR/main
+event or deployed/rendered completion is claimed; the linked QA owns evidence.
+
 ### U5 construction endpoint availability — agreed bounded interface
 
 The [core/caller agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/443#issuecomment-5989678024)

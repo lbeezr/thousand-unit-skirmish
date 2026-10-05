@@ -65,6 +65,7 @@ export function createCrowdServiceLedger({ origins, startTick, serviceDistance =
         const u = frame.units[id], o = r.origin;
         if (!u || u.generation !== o.generation || u.orderRevision !== o.orderRevision
           || u.pathIndex !== o.pathIndex || u.moveGoalCell !== o.goal
+          || ('goalPoint' in o && JSON.stringify(u.moveGoalPoint ?? null) !== JSON.stringify(o.goalPoint))
           || JSON.stringify(u.queuedWaypoints.map(q => q.destination)) !== JSON.stringify(o.queue)) {
           invalid(r, 'accepted-route-change'); continue;
         }

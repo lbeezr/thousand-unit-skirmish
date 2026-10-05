@@ -804,3 +804,143 @@ future production candidate. No new PR/main event or full-suite rerun occurs for
 this rejection; raw source-derived inputs/results stay outside git and separately
 denied drafts/private bundles remain untouched. Exact source, clean pack,
 provider/served identity and rendered/deployed proof are separate obligations.
+
+
+## Bounded passage admission and executed service handoff — scope feasibility
+
+Crowd's next source-only investigation incorporates main `b5b4dd49`/PR449,
+whose delta from construction consumer `c8aa92c8` changes only the Worker receipt
+test. The retained runtime and physical serial input therefore remain the same.
+This continues the finding that20/21 neighbor losses arise under the first
+retreat; it adds no second-retreat heuristic or production controller. Art N/A.
+The [passage witness](../scripts/crowd-passage-service-probe.mjs),
+[whole-set runner](../scripts/crowd-passage-service-diagnostic.mjs) and
+[focused controls](../scripts/crowd-passage-service-probe.test.mjs) establish a
+finite executable admission/service contract **before any new motion policy**.
+Every returned vector is the original normal executor vector, by reference.
+There is no hold, retreat, grant, peer write or reservation, including after
+refusal. The result is admission-scope feasibility, not an ordinary-game fix.
+
+### Finite admission and service contract
+
+The declared cohort remains77/81/87/110, at most four actors. At the lowest-ID
+actor's actual serial call, one census per tick queries each cohort actor against
+the same current world, under the original128-visit/64-body query bounds. Current
+strict desired-step terrain/body checks distinguish legal projections from
+blocked steps; cell gaps, soft separation and inherited-contact escape do not
+establish physical clearance. The conservative boundary includes every queried
+active ordinary body. An uncovered body, query refusal, changed original actor/
+path reference, identity, accepted order/queue/route/point endpoint or phase
+prevents admission. Parked bodies remain physical obstacles and are never moved.
+Other caller policies stay ineligible and retain their normal executor handling.
+
+The sole admission attempt occurs after the first consecutive executed receipt
+frame, at tick3122 in this reconstruction; a missing first captain call terminates
+the armed witness at that receipt deadline. All64 conservatively affected actors
+must have valid unchanged-route receipts, observed service age at most12 and
+backslide at most `.15`. Deterministic candidate ranking uses oldest observed
+service, then least executed high-water progress, then ID. A strict current
+step is required. The selected actor must revalidate the whole current boundary
+at its own call; other actors' future-turn projections spend no budget.
+
+An admitted witness expires after at most24 ticks and admits at most two service
+windows of at most12 ticks each, with one current recipient. A recipient must
+produce a new `.15` executed high-water gain **and** retain `.15` net progress
+since that window began, with a matching increase in receipt-earned service.
+Every declared cohort actor must also earn new `.15` high-water and retained net
+service since episode entry before a handoff. Selected handoff previews and
+actual selected own-call transitions are counted separately. The first recipient
+keeps normal movement while others are unserved; there is no held gap. Unserved
+boundary, expired deadline, missing selected call or changed fresh coverage
+cancels finitely without renewal. The ongoing64-actor receipt floor rejects
+route/point changes, invalid chains, phase discontinuity, excessive observed debt
+or loss greater than `.15` from either the episode entry or a recorded peak.
+
+These are diagnostic acceptance bounds, **not a guarantee that normal movement
+cannot incur a loss**. The observer cancels after a failing receipt; it does not
+undo, teleport or suppress normal orders. Service clocks start at retained
+3120, without warm native history. Local completion remains historical evidence
+only: final qualification additionally requires valid receipts for every actor,
+no ledger failure, recorded maximum service age/backslide within the bounds,
+and the unchanged48/96 whole-set `.15` sustained-progress/
+`.01` relative-loss test. Post-completion endpoint/reference/receipt/phase changes
+cannot leave a witness qualified. Two passing local windows alone never qualify
+fairness, native liveness or production adoption.
+
+### Retained scope fails at both windows
+
+The existing local input and `c719377c` controls are reused unchanged; all21
+original harmed-neighbor controls remain explicit. The comparison always measures
+**all64** originally selected actors, including actors outside every cohort query.
+No counterfactual baseline is available to the admission mechanism; relative
+opportunity loss is assessed offline against the retained control.
+
+| Same retained input |48 ticks|96 ticks|
+| --- | ---: | ---: |
+| Read-only census rounds |48|96|
+| Fully covered rounds |0|0|
+| Outside active IDs per round |13–20|13–21|
+| Distinct outside IDs over window |21|22|
+| Selected admitted substeps per repeat |2,059|4,050|
+| Whole-set sustained-progress failures |55/64|59/64|
+| Changed/invalid original routes at end |5|7|
+| Valid records with service age >12 |52/59|55/57|
+| Valid records with current backslide >`.15` |9/59|25/57|
+| Added losses >`.01` against baseline |0|0|
+
+At the first serial census,77/81/110 have strict-clear current desired steps,
+while87 is blocked by110. Thirteen queried active actors are outside the declared
+cohort. At the sole admission call on3122, the outside set has15 actors, so the
+episode refuses before any service window. Subsequent censuses are read-only
+observations, not repeated admission attempts. Later physical desired-step
+blockers include outside75 and76. Thus initial short-step legality does not
+establish a continuing service boundary, but query proximity alone also does not
+prove a minimum physical dependency component of17 or require global coordination.
+The coverage rule is deliberately conservative; its rejection is specific to
+this contract and cohort, not a proof that every bounded method must fail.
+
+Each48/96 run repeats with exact whole-unit trajectory and full contract/ledger
+reports. The four runs total12,218 admitted selected substeps, zero static/body
+contacts and original cell/elevation admission, with72 inactive position/health/
+accepted intents preserved per run. All traces exactly match their retained
+baseline. Zero added losses is **zero-intervention equality**; original service
+failure remains. No admission, handoff, successful cohort witness or recovery
+qualifies. Positive source controls show two genuine service windows and handoff
+in a covered small fixture; they test the contract and do not replace this native
+scope failure. Negative controls cover missing boundary service, serial selected
+call changes, overflow, actual loss, unreceipted poses, endpoint/path/reference/
+Stop changes and later receipt invalidation or accumulated service debt. The focused set totals107 tests;
+the new suite is registered without changing workflow triggers.
+
+Run against authorized local source inputs only:
+
+```sh
+node scripts/crowd-passage-service-diagnostic.mjs --input=LOCAL_CHECKPOINT --control-48=LOCAL_CONTROL_48 --control-96=LOCAL_CONTROL_96 --ticks=48
+node scripts/crowd-passage-service-diagnostic.mjs --input=LOCAL_CHECKPOINT --control-48=LOCAL_CONTROL_48 --control-96=LOCAL_CONTROL_96 --ticks=96
+```
+
+### Decision and next unresolved boundary
+
+The finite admission/service **witness contract is implemented**; a passage motion
+policy remains unimplemented and unqualified. This conservative four-actor scope
+admits no episode at the retained knot. Do not grow the cohort, waive outside-body
+accounting or stack another retreat guard on that result. Crowd's next useful
+question is whether a physically justified, bounded influence boundary can
+separate incidental queried proximity from actual serial dependencies while
+retaining whole-set receipt/service/loss accounting. It needs an executable
+current-body witness plus a finite cancellation rule for an entering dependency;
+a short clear segment or future route preview cannot promise a whole passage.
+Without that witness there is no justified new intervention at this scope.
+
+Crowd `01a10933-c2b0` retains this diagnostic and the48/96/all21 controls. Core
+retains host receipt trust, original budgets/admissions/position writes/repair;
+caller/construction retain accepted endpoint publication. The source-copy seam
+is already agreed; no shared executor integration or global gate is added.
+Existing both-seat gate/forest/bridge/Stop/native requirements remain intact.
+The earlier exact-head observer-only gate successes at `d885aa98` are reused as
+unchanged-runtime controls, not rerun or converted into recovery evidence.
+No production adoption, new PR/main event or full-suite retry follows this
+scope failure. Raw authorized local inputs/results remain outside git; denied
+drafts and pending private bundles remain untouched. Source/clean pack, provider/
+served identity and rendered/deployed proof remain separate and incomplete where
+not observed.

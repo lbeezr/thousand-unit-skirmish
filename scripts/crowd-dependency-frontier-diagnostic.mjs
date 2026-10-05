@@ -13,7 +13,7 @@ const intent = u => JSON.stringify([u.id, u.generation, u.x, u.z, u.hp, u.orderR
   u.moveGoalPoint, u.pathIndex, u.path, u.queuedWaypoints, u.holdingPosition, u.persistentOrder,
   u.combatStance, u.gatherPhase, u.gatherNodeId, u.gatherForestCell, u.buildingTargetId, u.workIntent]);
 
-export async function runFrontierTrial({ input, frontierIds = [77, 81, 87, 110], mode, ticks = 48, serviceAccounting = false }) {
+export async function runFrontierTrial({ input, frontierIds = [77, 81, 87, 110], mode, ticks = 48, serviceAccounting = false, probeModuleUrl }) {
   assert.ok(Number.isInteger(ticks) && ticks >= 24 && ticks <= 120);
   assert.ok(frontierIds.length >= 2 && frontierIds.length <= 4 && new Set(frontierIds).size === frontierIds.length);
   configureLandBodyReplay();
@@ -21,13 +21,14 @@ export async function runFrontierTrial({ input, frontierIds = [77, 81, 87, 110],
     z: Math.floor(c / input.mapDefinition.width) - input.mapDefinition.height / 2 + .5 });
   const origin = u => ({ id: u.id, x: u.x, z: u.z, raw: point(u.path[u.pathIndex] ?? u.moveGoalCell),
     generation: u.generation, orderRevision: u.orderRevision, pathIndex: u.pathIndex,
-    pathSha256: hash(u.path), pathLength: u.path.length, goal: u.moveGoalCell, queue: u.queuedWaypoints.map(q => q.destination) });
+    pathSha256: hash(u.path), pathLength: u.path.length, goal: u.moveGoalCell,
+    goalPoint: u.moveGoalPoint ?? null, queue: u.queuedWaypoints.map(q => q.destination) });
   const origins = frontierIds.map(id => origin(input.state.units[id]));
   const serviceOrigins = serviceAccounting ? input.state.units
     .filter(u => u.team === input.state.units[110].team && u.kind === 'infantry').map(origin) : undefined;
   const fixture = await createFiniteRoomFixture(input.mapDefinition,
     { mode, ownerId: 110, angle: -90, startTick: input.state.tickNumber + 1, origins, serviceOrigins },
-    { probeModuleUrl: new URL(serviceAccounting ? './crowd-service-admission-probe.mjs'
+    { probeModuleUrl: probeModuleUrl ?? new URL(serviceAccounting ? './crowd-service-admission-probe.mjs'
       : './crowd-dependency-frontier-probe.mjs', import.meta.url).href });
   const r = fixture.replay;
   try {
