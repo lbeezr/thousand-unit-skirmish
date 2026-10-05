@@ -4,6 +4,7 @@ import './route-publication-map-journeys.mjs';
 import './local-detour-route-budget-journeys.mjs';
 import './worker-economy-route-admission-journeys.mjs';
 import './military-endpoint-availability-journeys.mjs';
+import './military-next-leg-claims-journeys.mjs';
 import './worker-gather-route-admission-journeys.mjs';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
