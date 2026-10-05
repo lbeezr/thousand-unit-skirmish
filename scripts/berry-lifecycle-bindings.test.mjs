@@ -38,8 +38,8 @@ function assertRegisteredRoot(mesh, modelCanvas = false) {
   }
   assert.equal(rootVertices.length, 2, 'the root row spans the two card edges');
   for (const index of rootVertices) {
-    assert.equal(positions.getY(index), 0, 'registered root lies at local ground height');
-    assert.equal(positions.getZ(index), 0, 'registered root stays on the slot plane');
+    assert(Math.abs(positions.getY(index)) < 1e-6, 'registered root lies at local ground height (Float32)');
+    assert.equal(Math.abs(positions.getZ(index)), 0, 'registered root stays on the slot plane');
   }
   const width = mesh.geometry.parameters.width;
   assert.deepEqual(rootVertices.map(index => positions.getX(index)), [Math.fround(-width / 2), Math.fround(width / 2)]);
