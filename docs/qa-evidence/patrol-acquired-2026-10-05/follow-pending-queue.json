@@ -1,0 +1,126 @@
+{
+  "source": "dcb96cefdeedb46b7c49282c6a151a2b453dbe11",
+  "dirty": true,
+  "records": [
+    {
+      "team": 0,
+      "id": 4,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "WAYPOINT QUEUED \u00b7 1 UNITS"
+        }
+      ],
+      "pendingGoal": -1,
+      "afterRestore": {
+        "pending": false,
+        "goal": -1,
+        "persistentOrder": null,
+        "queued": [
+          {
+            "destination": 1308,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 1804400727,
+              "revision": 4,
+              "requestedX": -3.5,
+              "requestedZ": -3.5,
+              "cell": 1308,
+              "x": -3.5,
+              "z": -3.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ]
+      },
+      "final": {
+        "x": 0.75,
+        "z": 0.95,
+        "goal": -1,
+        "pending": false,
+        "queued": [
+          {
+            "destination": 1308,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 1804400727,
+              "revision": 4,
+              "requestedX": -3.5,
+              "requestedZ": -3.5,
+              "cell": 1308,
+              "x": -3.5,
+              "z": -3.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ],
+        "path": []
+      },
+      "queuedMoveCompleted": false
+    },
+    {
+      "team": 1,
+      "id": 12,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "WAYPOINT QUEUED \u00b7 1 UNITS"
+        }
+      ],
+      "pendingGoal": -1,
+      "afterRestore": {
+        "pending": false,
+        "goal": -1,
+        "persistentOrder": null,
+        "queued": [
+          {
+            "destination": 1308,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 871957982,
+              "revision": 4,
+              "requestedX": -3.5,
+              "requestedZ": -3.5,
+              "cell": 1308,
+              "x": -3.5,
+              "z": -3.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ]
+      },
+      "final": {
+        "x": 0.75,
+        "z": 0.95,
+        "goal": -1,
+        "pending": false,
+        "queued": [
+          {
+            "destination": 1308,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 871957982,
+              "revision": 4,
+              "requestedX": -3.5,
+              "requestedZ": -3.5,
+              "cell": 1308,
+              "x": -3.5,
+              "z": -3.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ],
+        "path": []
+      },
+      "queuedMoveCompleted": false
+    }
+  ]
+}

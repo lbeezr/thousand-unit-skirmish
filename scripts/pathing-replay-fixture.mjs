@@ -26,7 +26,7 @@ export async function createPathingReplayFixture(map, { traceLandSteps = false, 
     source = replaceExactly(source, "process.on('SIGTERM', () => shutdown('SIGTERM'));", '');
     source = replaceExactly(source, "process.on('SIGINT', () => shutdown('SIGINT'));", '');
     if (traceRouteRejoins) {
-      source = replaceExactly(source, 'rejoinSelectedUnitRoute(', 'recordReplayRouteRejoin(', 4);
+      source = replaceExactly(source, 'rejoinSelectedUnitRoute(', 'recordReplayRouteRejoin(', 6);
     }
     if (traceLandSteps) {
       // Observe admitted substeps before their unchanged position assignments.
@@ -143,6 +143,7 @@ export const replay = {
   get wood() { return teamWood; },
   get food() { return teamFood; }, get resources() { return resourceNodeStates; },
   snapshot(team) { return roomPayload(team); },
+  buildingDistance(position, buildingId) { return distanceToBuildingEdge(position, buildingsById.get(buildingId)); },
   attackApproach(id, targetId, continueWaypoint = false) {
     const approach = getUnitAttackPath(units[id], units[targetId], null, continueWaypoint);
     return approach && { ...approach, path: [...approach.path] };

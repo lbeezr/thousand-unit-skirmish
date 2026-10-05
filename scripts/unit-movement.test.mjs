@@ -1,11 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import './route-publication-map-journeys.mjs';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent,
   activeLandMovementBodyRadius, workerEconomyBodyRadius, LAND_CLEARANCE_PROFILE,
-  canTraverseStaticBodySegment, createClearanceMoveGoalPoint, activeMoveGoalPoint, createMoveGoalPoint, rejoinSelectedUnitRoute } from '../src/unit-movement.mjs';
+  canTraverseStaticBodySegment, createClearanceMoveGoalPoint, activeMoveGoalPoint, createMoveGoalPoint,
+  rejoinSelectedUnitRoute, unitRouteRejoinDecision, createUnitRoutePublicationLedger } from '../src/unit-movement.mjs';
+import { XL_CHECKPOINT_ROUTE_MAX_ENTRIES } from '../src/server/checkpoint-route-budget.mjs';
 import { canTraverseFlatUnitSegment, shortcutFlatUnitPath } from '../src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from '../src/unit-obstacle-detour.mjs';
 import { ordinaryCrowdBodyRadius, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT } from '../src/unit-crowd-steering.mjs';
@@ -14,6 +17,78 @@ import { farmHarvestNode, farmBuildingId } from '../src/farm-harvest.mjs';
 import { workerFlowRouteBindings } from './economy-server-fixture.mjs';
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+
+const routeBudgetLimits = { maxUnits: 2000, maxResourceNodes: 128, maxEntries: XL_CHECKPOINT_ROUTE_MAX_ENTRIES };
+const routeActor = (path=[],resume=null) => ({path,attackMoveResumePath:resume,pathIndex:path.length});
+function savedRouteEnvelope(extra=0) {
+  const shared=Array(65536);Object.defineProperty(shared,0,{get(){throw new Error('no route payload scan');}});
+  const units=Array.from({length:5},()=>routeActor(shared,shared));
+  const nodes=new Map(Array.from({length:6},(_,id)=>[id,{wildlifeHerd:{path:shared}}]));
+  if(extra)nodes.set(5,{wildlifeHerd:{path:Array(65536+extra)}});
+  return {units,nodes,shared};
+}
+
+test('publication ledger counts full saved fields including aliases/exhausted paths at the actual XL quota',()=>{
+  for(const extra of [-1,0,1]){
+    const {units,nodes}=savedRouteEnvelope(extra),unit=routeActor();units.push(unit);
+    const ledger=createUnitRoutePublicationLedger(320,320,units,nodes,routeBudgetLimits);
+    const report=ledger.check(unit,0);
+    assert.equal(report.routeEntries,XL_CHECKPOINT_ROUTE_MAX_ENTRIES+extra);
+    assert.equal(report.fieldVisits,units.length+5+nodes.size);
+    assert.equal(report.status,extra>0?'deferred':'ready');
+    assert.equal(ledger.check(unit,1).status,extra<0?'ready':'deferred');
+    assert.deepEqual(unit,routeActor(),'census/reservation never mutates an actor');
+  }
+});
+
+test('replacement reservation releases only the replaced saved field, without deduplicating its other aliases',()=>{
+  const {units,nodes,shared}=savedRouteEnvelope(),unit=units[0];
+  const ledger=createUnitRoutePublicationLedger(320,320,units,nodes,routeBudgetLimits);
+  assert.equal(ledger.check(unit,1).prospectiveEntries,XL_CHECKPOINT_ROUTE_MAX_ENTRIES-65536+1);
+  ledger.commit(unit,1);unit.path=[9];
+  assert.equal(unit.attackMoveResumePath,shared);assert.equal(units[1].path,shared);
+  assert.equal(ledger.check(unit,1).routeEntries,XL_CHECKPOINT_ROUTE_MAX_ENTRIES-65536+1);
+  assert.equal(ledger.check(unit,65536).status,'ready');
+  assert.equal(ledger.check(unit,65537).status,'deferred');
+});
+
+test('per-array limits include final-center/rejoin growth and refuse before reading any stored route cells',()=>{
+  for(const [width,height] of [[320,160],[160,320],[320,320]]){
+    const actor=routeActor(),ledger=createUnitRoutePublicationLedger(width,height,[actor],[],routeBudgetLimits),cells=width*height;
+    for(const entries of [cells-1,cells,cells+1]){
+      const result=ledger.check(actor,entries);
+      assert.equal(result.status,entries>cells?'deferred':'ready');
+      assert.equal(result.reason,entries>cells?'path-entry-limit':null);
+    }
+    assert.throws(()=>ledger.commit(actor,cells+1),/unreserved route publication/);
+    assert.deepEqual(actor,routeActor());
+  }
+});
+
+test('legacy publication bypasses the census without reading any state or quota configuration',()=>{
+  const unread=new Proxy({}, {get(){throw new Error('legacy state must not be read');}});
+  for(const [width,height] of [[16,17],[160,160],[256,256]])
+    assert.equal(createUnitRoutePublicationLedger(width,height,unread,unread,unread),null);
+});
+
+test('metadata envelope visits are bounded by actor/node limits and malformed XL routes fail closed',()=>{
+  const units=Array.from({length:2000},()=>routeActor([],[])),nodes=Array.from({length:128},()=>({wildlifeHerd:{path:[]}}));
+  const ledger=createUnitRoutePublicationLedger(320,320,units,nodes,routeBudgetLimits);
+  assert.equal(ledger.check(units[0],1).fieldVisits,4128);
+  for(const [actors,resources] of [[units.concat(routeActor()),nodes],[units,nodes.concat({})],
+    [[{path:[],attackMoveResumePath:undefined}],[]],[[routeActor(new Uint32Array(1))],[]],[[routeActor(Array(102401))],[]],
+    [[routeActor()], [{wildlifeHerd:{path:null}}]]]){
+    const invalid=createUnitRoutePublicationLedger(320,320,actors,resources,routeBudgetLimits);
+    assert.equal(invalid.check(routeActor(),1).reason,'invalid-live-route-envelope');
+  }
+});
+
+test('rejoin decision previews the existing immutable route without allocating/iterating its selected payload',()=>{
+  const {route,options}=selectedRouteFixture();
+  const path=route.path.slice();Object.defineProperty(path,Symbol.iterator,{value(){throw new Error('no execution copy');}});
+  assert.equal(unitRouteRejoinDecision({...route,path},options),'prefixed');
+  assert.equal(path.length,route.path.length);assert.deepEqual(path.slice(),route.path);
+});
 
 function selectedRouteFixture() {
   const width=64,height=48,startCell=1568,path=Object.freeze([1572,1508,1507,1506,1505,1569]);
@@ -427,6 +502,22 @@ test('internal route repair preserves an active palisade sequence revision', () 
   assert.equal(activeWallBuildOrder(f.mover),order);
   f.mover.orderRevision++;
   assert.equal(activeWallBuildOrder(f.mover),null,'a later player revision still invalidates the sequence');
+});
+
+test('cell-only route repair records its accepted destination before any route publishes', () => {
+  for (const previousGoal of [-1, 27]) {
+    const f = fixture({ cliff: false, realRepairs: true });
+    f.mover.moveGoalCell = previousGoal;
+    f.context.enqueueRouteRepairs([{ unit: f.mover, destination: 29 }]);
+    const assignment = f.context.movePlanningQueue[0].assignments[0];
+    assert.equal(f.mover.moveGoalCell, assignment.destination);
+    assert.equal(f.mover.moveGoalCell, 29);
+    assert.equal(f.mover.movePlanningPending, true);
+    assert.equal(f.mover.path.length, 0);
+    assert.equal(f.mover.moveGoalPoint, undefined);
+    assert.equal(f.mover.buildingTargetId, null);
+    assert.equal(f.mover.orderRevision, 1);
+  }
 });
 
 test('the shared land step contract rejects malformed grids before querying occupancy', () => {

@@ -61,6 +61,7 @@ run(['scripts/site-composition-scene-scenario.mjs'], 'Real paid both-seat site c
 run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
 run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authoring contracts');
 run(['scripts/completion-event-scenario.mjs'], 'Completion event recovery and host diagnostics');
+run(['--test', 'scripts/completion-event-cleanup.test.mjs'], 'Completion event bounded fixture cleanup');
 run(['scripts/region-event-scenario.mjs'], 'Region event recovery and rematch');
 run(['scripts/regional-ambience-scenario.mjs'], 'Regional ambience bus and lifecycle');
 run(['scripts/audio-shore-profile-scenario.mjs'], 'Ordinary Shore Fishing regional audio selection and lifecycle');

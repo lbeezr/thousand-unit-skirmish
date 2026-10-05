@@ -1,43 +1,27 @@
 # Movement and pathing workstream
 
-Updated 4 October 2026. This is the ranked execution backlog for the user-owned
+Updated 5 October 2026 against main `dbc83db3`. This is the ranked execution backlog for the user-owned
 movement lane; the [roadmap](roadmap.md) remains the product priority source.
 Each slice owns its regression, review, normal authorized merge and acceptance.
 Evidence must name the source/workload and preserve failures.
 
 ## Write boundaries
 
-This lane owns `src/unit-movement.mjs`, `src/unit-obstacle-detour.mjs`, formation
-assignment and path-planning helpers, and their focused diagnostics/tests.
-The planning slice touched only `processMovePlanningSlice`, its constants and
-diagnostic record in `server.mjs`. The crowd slice touches only `getMoveVector`'s
-force combination, plus pathing tests/tools. Target acquisition,
-`getUnitAttackPath`, attack completion, stances, damage and `simulateTick` remain
-with the combat owner. The parent allocated planner service helpers and one
-pre-`simulateTick` call in `runSimulationTick` for the bounded tick-budget
-experiment. Broader command-intake integration still needs its shared contract.
-Water commands remain with the Skiff owner; art, rendering and map rules remain
-with their respective lanes.
-U3's corrective review owns only the terminal-step guard before
-`simulateTick`'s `reachedWaypoint` assignment; it reuses existing route repair
-and combat invalidation without changing acquisition, range or damage policy.
-U4's first physical study owns only `scripts/land-body-clearance*`, the opt-in
-private substep observer in `scripts/pathing-replay-fixture.mjs`, its new QA
-records and this guide. It consumes the forest owner's gap map without editing
-forest jobs/frontiers, the existing 42-case cell-gap records or their fixture.
-Production movement, map admission, benchmark/report formats and renderer/CI
-interfaces remain outside this diagnostic slice.
-The following U4 runtime slice owns only static geometry/profile and ordinary
-Move points in `src/unit-movement.mjs`, the matching planner/publication/queue/
-repair sections and three existing land position admissions in `server.mjs`.
-It adapts existing registered fixtures. Combat acquisition/range/damage,
-Worker job/rate/scoring, group slots, interaction separation, map admission,
-wire tuples, benchmark formats and renderer/CI interfaces remain with their
-existing owners. Food Tools' productive-food grant/migration is disjoint, as
-recorded on [PR377](https://github.com/lbeezr/thousand-unit-skirmish/pull/377#issuecomment-5984362722).
-The parent allocated only `snapshotUnits`' base-row literal for the measured
-allocation experiment; its private fields, filters and visibility contract stay
-unchanged.
+Function/subsection contracts, rather than whole-file locks, keep these lanes independent.
+Historical experimental allocations and receipts remain in the dated sections below.
+
+| Owner / active artifact | Exact movement boundary |
+| --- | --- |
+| Shared movement · merged [PR411](https://github.com/lbeezr/thousand-unit-skirmish/pull/411) | `src/unit-movement.mjs`, `src/unit-obstacle-detour.mjs`, formation/planning helpers, `applyPlannedMoveAssignment`, `processMovePlanningSlice`, `enqueueRouteRepairs`, and the three land position admissions. Own the consumed contracts, private observation and this guide; coordinate changes to caller-owned hooks. |
+| Caller adoption · merged [PR410](https://github.com/lbeezr/thousand-unit-skirmish/pull/410) | Explicit focused unit Attack predicate and its profile fallback; `assignAttack` publication after accepted revision and active focused repath after null/unreachable handling. Shared rejoin API is merged. Building targets, automatic combat, persistent orders and same-cell closure require separate function allocations. |
+| Ordinary crowd · [PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400) | Pure crowd module, bounded current-serial neighbor query, ordinary military `getMoveVector` branch and allocated wait hook. Preserve existing shared pre-write admissions. Workers, combat, water, planner and command admission are excluded; queued topology/counterflow qualification is active. |
+| Resource · [PR330](https://github.com/lbeezr/thousand-unit-skirmish/pull/330); forest · [PR341](https://github.com/lbeezr/thousand-unit-skirmish/pull/341) | Selected flow goals, raw drop-off scoring, jobs/frontiers/rates/cargo and dynamic forest masks. PR330 reduction is adopted; core must preserve its raw selected tail and score. No global attack/Sheep flow reduction. |
+| Map/XL · merged [PR407](https://github.com/lbeezr/thousand-unit-skirmish/pull/407), [PR414](https://github.com/lbeezr/thousand-unit-skirmish/pull/414) | Checkpoint byte/parser/state/route preflight and all map admission/index sites. Core owns the remaining live publication/search contract. Ordinary 320 stays disabled. |
+| Benchmark; cloud capture · [PR323](https://github.com/lbeezr/thousand-unit-skirmish/pull/323); module organization · [architecture](architecture.md) | Existing validity reports, cloud capture interfaces and module relocations respectively. Movement supplies scenarios and retains ordinary-game acceptance; no competing formats/services or relocation patch. |
+
+Naval and wildlife retain their route/execution adapters. Combat acquisition,
+range/damage and match-ending work retain their active owners. This reconciliation
+changes no runtime, caller hook, checkpoint policy or dimension admission.
 
 ## Universal movement contract and rollout
 
@@ -50,29 +34,240 @@ different endpoint, clearance and execution policies where the domain requires t
 Universal completion is open until every row below has command, journey,
 interruption, recovery and ordinary rendered evidence.
 
-### Caller coverage at inspection source `32b71795`
+### Caller coverage reconciled at `dbc83db3`
 
-The native parent audit identifies two land route families and additional direct
-position writers. Function names are the ownership boundary; line numbers drift.
-The first regression slice exercises injected accepted state in the production
-land executor, not command admission or whole journeys.
+The native parent audit at `32b71795` identified two land route families and
+additional direct position writers. Its inventory is retained below with current
+adoption status; function names remain the ownership boundary. Source adoption,
+actual journey coverage and rendered acceptance are separate.
 
 | Caller / intent | Existing route / execution surface | Policy and evidence still required |
 | --- | --- | --- |
-| Manual Move, queued Move, formation slots | `assignFormationMove`, `advanceQueuedWaypoints`, sliced `findPathAStar` → `applyPlannedMoveAssignment` → `getMoveVector` / `simulateTick` | U3 adds legal fractional points; U4's bounded ordinary single-unit adopter adds explicit static-circle projection/sweeps. Groups keep distinct slots and reachable-component projection; physical group adoption remains open. [Retained Direct Move checks](qa-direct-open-ground-move-2026-10-04.md) document the historical cell-center milestone. |
-| Gather, Farm, shore fish, drop-off, Return, return to work | `routeWorker`, `routeForestWorker`, `routeWorkerToDropoff`, `updateWorkerEconomy`; cached cardinal flow fields → land executor | The bounded land-Worker economy adopter shares the static profile through reduction/rejoin, route steps and gathering separation. Interaction ranges, selected `path.at(-1)`, original cost/raw `path.length` scoring and cargo/job remain resource-owned. Dynamic masks and actual journey/recovery/rendered coverage remain explicit below; water adapters keep their policy. |
+| Manual Move, queued Move, formation slots | `assignFormationMove`, `advanceQueuedWaypoints`, sliced `findPathAStar` → `applyPlannedMoveAssignment` → `getMoveVector` / `simulateTick` | Fractional endpoints PR364 and single-unit static circles PR385 are merged; shared rejoin PR411 is merged. Group physical avoidance/compression/reform remains PR400 work. [Retained Direct Move checks](qa-direct-open-ground-move-2026-10-04.md) document the historical cell-center milestone. |
+| Gather, Farm, shore fish, drop-off, Return, return to work | `routeWorker`, `routeForestWorker`, `routeWorkerToDropoff`, `updateWorkerEconomy`; cached cardinal flow fields → land executor | PR395 is merged: land economy reduction/rejoin, route steps and gathering separation consume the static Worker profile. Selected `path.at(-1)`, original cost/raw `path.length` scoring, ranges and cargo/job remain resource-owned. Broad dynamic/long-soak/rendered coverage stays open; water adapters keep their policy. |
 | Forest group / region intent | `assignForestGather`, gather-work-area selection, `updateForestWorkerEconomy` → resource routes | Forest owner `01a1072a-4c42-7791-9dab-77b88425a021` owns the returning-forester/interior-click fix. A clicked interior tree names its selected forest group; choose its nearest reachable frontier. Distinguish exhausted, temporarily obstructed and unreachable. No unrelated global fallback or hidden-resource reveal. |
 | Build, repair, palisade sequence, site evacuation | Building access assignment → A* / land executor; construction and wall continuation | PR399's bounded construction travel adopter consumes the shared static Worker profile through existing planner/publication/land admissions. Preserve paid site IDs, revision, legal edge range and actual productive-work receipts. Stationary construction separation and evacuation remain explicit follow-ups; movement completion does not mean work completion. |
-| Attack-move and interrupted-route resume | Formation A* plus `prepareAttackMovePaths`, `getUnitAttackPath`, `clearAttackTarget` → land executor | Preserve manual objective, acquisition/stance rules and resume. Normalize only after weapon-range and stance-travel selection. |
-| Focused unit/building attack, pursuit, range positioning | `assignAttack`, `assignAttackBuilding`, cached flow / range goals → land executor | Range and target validity are independent of route exhaustion. Moving-target continuity and unreachable firing positions need both-seat journeys. Combat retains targeting/damage ownership. |
-| Patrol, Follow, stance return, production rally | `assignPatrolOrder`, `assignFollowOrder`, `updatePersistentOrders`, `enqueueRouteRepairs`; rally reuses Move | Preserve endpoint cycling, catch-up/leash and manual replacement; test active and pending continuations. |
+| Attack-move and interrupted-route resume | Formation A* plus `prepareAttackMovePaths`, `getUnitAttackPath`, `clearAttackTarget` → land executor | Target-free explicit objective PR405 and explicit acquired unit-target pursuit PR417 are merged, including fractional target-loss resume and unchanged anchor bounds. Automatic stance and persistent pursuit remain separate; retain objective/acquisition/stance rules. |
+| Focused unit/building attack, pursuit, range positioning | `assignAttack`, `assignAttackBuilding`, cached flow / range goals → land executor | PR410 is merged at `6ced82cb`: explicit military unit-target Attack and moving-target/rejected-prefix recovery. The bounded building-target adopter below consumes the same shared contract at two separately allocated publications. Automatic range routes and same-cell closure remain uncovered. Combat retains target/range/damage policy. |
+| Patrol, Follow, stance return, production rally | `assignPatrolOrder`, `assignFollowOrder`, `updatePersistentOrders`, `enqueueRouteRepairs`; rally reuses Move | PR418 adopts target-free military Patrol through the existing profile/planner/rejoin/executor: the recorded corner travel changes from 17 unsafe steps to zero per seat while preserving endpoint cells, cycling and pending continuations. PR421 adopts acquired military Patrol unit-target pursuit through the existing combat rejoin hooks; Worker Patrol, Follow and stance return remain separate; no universal static-circle claim. Rally issuing ordinary Move inherits that contract; direct placements need separate audit. |
 | AI and scenario-issued movement | Existing command dispatch plus mode/AI decision loop; scenario actions / reinforcement placement | Enumerate emitted commands and direct relocations; AI uses the same movement contracts and its disclosed observation. Fixed planning work alone does not make async intake or AI decisions deterministic. |
-| Idle/work/combat interaction separation | `spreadInteractingUnits`; same-cell combat closure inside `simulateTick` | These write positions outside ordinary route following. Retain range, terrain, speed and stationary-order protections; keep them explicitly covered during integrator adoption. |
+| Idle/work/combat interaction separation | `spreadInteractingUnits`; same-cell combat closure inside `simulateTick` | Gathering separation is adopted by PR395. Construction separation uses the economy-only selector; the new bounded command probes below find no static failure and do not qualify it generally. Military interaction and same-cell combat remain separately owned adoption gaps. |
 | Skiff Move, queued Move, fishing, Dock return | `water-unit-runtime`, `skiff-group-orders`, `skiff-waypoints`, `skiff-fishing` | Adapt route status/identity/diagnostics; preserve cardinal water, static shore clearance, 0.4-cell hull reservations, atomic group admission and retry budgets. Unsupported attack-move/Patrol/Follow remain explicit rejection. |
 | Sheep herd, grazing, wildlife motion | Shared `pathFromAttackFlow` supplies `wildlife-herding`; wildlife owns direct stepping/final point | Cardinal route validator and continuous final endpoint are intentional. A global flow-path shortcut would violate this consumer. Audit grazing and topology retry separately. |
 | Spawn, checkpoint restore, evacuation / relocation | Spawn rules, `restoreMatchCheckpoint`, construction relocation | These are placement/restore policies, not ordinary travel. Validate clearance and identity, record relocation reason, rebuild transient routes without silently changing job intent. |
 
 ### Shared semantics, domain policies
+
+The separate **target-free military Follow candidate** consumes core PR422's
+durable accepted pending-goal contract at merged building-target source `032eea7d`.
+It adds `followTravelMovementActive` and the caller-owned body-profile fallback;
+existing shared publication/rejoin/executor do the work. The separately allocated
+queue-append subsection below preserves that clearance when Follow converts to
+ordinary travel. No persistent controller, checkpoint field, planner, quota or
+crowd algorithm changes are included. [Initial disjoint boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/425#issuecomment-5987365194)
+retains PR425's live-publication/retry functions with core.
+
+The [baseline](qa-evidence/follow-travel-2026-10-05/baseline.json) on unchanged
+`032eea7d` runtime finds 16/6 unsafe Infantry corner substeps on seats 0/1;
+paid/trained Archer controls already have zero. The
+[pre-review candidate](qa-evidence/follow-travel-2026-10-05/candidate.json)
+reduces Infantry to zero and retains Archer's zero, the original ID-derived
+two-cell offset goals and friendly leader identity. Safe Infantry travel changes
+the observed stop from `(3.2454,.6505)` / `(3.0942,.0436)` to the selected cell
+centers `(4.5,.5)` / `(4.5,-.5)`, and final revision 5→4: the unchanged 30-tick
+controller no longer cancels an active path inside the four-cell deadband in
+this witness. No timing, exact stop-position or revision-identity claim is made.
+The original four-cell deadband, two-cell offset, poll/retry/cap, leader
+generation/death, selected goals and cancellation policy remain controller-owned.
+
+The new strict command journeys expose a **remaining coupled transition gap**:
+queued Move before the first Follow path publication clears persistent intent
+while retaining its accepted cell goal, but leaves `moveGoalPoint:null`.
+`ordinaryMoveBodyRadius` then yields zero during recovery's rebuilt first leg.
+Both the [unchanged baseline](qa-evidence/follow-travel-2026-10-05/queued-clearance-baseline.json)
+and [candidate](qa-evidence/follow-travel-2026-10-05/queued-clearance-candidate.json)
+execute that durable leg and reach the queued fractional point, yet retain
+16/6 unsafe corner steps. Baseline runtime hashes are verified against the
+merged source; archive and dirty-checkout provenance are explicit. The reporter
+`follow-queued-clearance-probe.mjs` exits successfully for collection, **not**
+physical acceptance. Core PR422 fixed liveness; it did not adopt this cancelled,
+cell-only ordinary leg's body policy.
+
+The initial 49 registered candidate checks retained six strict physical failures
+for that pending/queued/cold transition; independent review confirmed them and
+identified a planning-mode harness gap, which was corrected before the host fix.
+The cold cases now set actual callback/tick planner modes before both module
+imports and complete the catch-up and queue through their shared hooks, without
+draining active legs. Independent state-only projection through the existing API
+validated and reduced 16/6 contacts to zero in both modes.
+
+[Core's exact allocation](https://github.com/lbeezr/thousand-unit-skirmish/pull/425#issuecomment-5987591555)
+then assigns caller PR429 only the additive accepted queue-append subsection of
+`assignFormationMove`. It captures target-free military land Follow with a valid
+accepted cell and pending or unconsumed catch-up. After clearing Follow, it
+preserves an already-valid ordinary point or creates the selected cell-center
+v2 point through `createClearanceMoveGoalPoint` at the same generation/revision.
+The selected cell, raw path/reference/index, pending job, incoming waypoint and
+accepted intent stay intact. Idle/exhausted Follow, Worker, water, acquired
+combat, Patrol and AttackMove policies remain outside this conversion. No new
+saved flag or leader revival is introduced. This deliberately activates the
+existing ordinary classifier; [crowd's receiving boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5987594116)
+retains its steering and actual branch qualification.
+
+The [adopted queued witness](qa-evidence/follow-travel-2026-10-05/queued-clearance-adopted.json)
+records both seats executing the first accepted leg and completing the queued
+fractional point with radius .22 and zero unsafe steps; dirty pre-review source
+and runtime hashes are explicit. Sixty-three registered journeys include the
+six original regression cases plus pending/active queued AttackMove, preservation
+of an API-authored existing point after Follow clears, idle/exhausted immediate
+replacement and excluded Worker queue controls. Other real-command cases cover
+both-seat Infantry and paid/trained Archer, accepted/pending/active recovery,
+Stop/Hold/Move, moving leader, actual leader death, validated generation
+replacement, close leader deadband, existing bounded monotone legacy escape,
+paid obstruction and selection/cycle rejection. Exact-head review/checks/clean
+package receipts belong to PR429; default integration remains open until its
+normal merge. Native active-Follow/active-queued-leg restart evidence is separate
+from traced first-pending geometry. Rendered and identified served acceptance
+remain open; the historical zero-frame block is retained without retry. Art
+backing is N/A.
+
+Focused military **building-target Attack** now consumes the merged selected-route
+rejoin at `assignAttackBuilding`'s final accepted publication and `simulateTick`'s
+active building repath, after their original target/revision/range-goal decisions.
+[Exact hook allocation](https://github.com/lbeezr/thousand-unit-skirmish/pull/416#issuecomment-5987148807)
+keeps shared planner/publisher/live bounds and Follow recovery with core, and
+ordinary-only steering/body-pair admission with crowd. The pure
+`focusedBuildingAttackMovementActive` predicate selects the existing military
+circle. No new route algorithm, range truncation, checkpoint field, attack flow
+shortcut, target acquisition or damage rule is introduced. Static rejection
+keeps the selected durable goal and accepted target, with the existing retry.
+Empty in-range routes and unreachable range goals retain their original policy.
+
+The [baseline](qa-evidence/focused-building-attack-2026-10-05/baseline.json)
+uses unchanged `172c53f3` runtime with only the new probe present; dirty status is
+explicit. Real paid/completed Palisade and House targets and legitimately trained
+Archers expose four unsafe fractional-corner steps for both kinds on both seats.
+The [pre-review candidate](qa-evidence/focused-building-attack-2026-10-05/candidate.json)
+finds zero in all eight cases, preserving the entire selected suffix, range goal,
+target footprint and HP after 500 ticks. Safe travel changes Infantry first damage
+from 48→55 ticks (Palisade) and 59→67 (House); Archer changes 26→26 and 26→30.
+These bounded measurements do not claim timing identity or general crowd safety.
+
+Registered `focused-building-attack-journeys.mjs` checks both-seat accepted/travel/
+firing recovery for Infantry and paid/trained Archer against both footprint sizes,
+productive original edge-range/armor damage, real destruction, queued continuation,
+owner cancellation, Stop/Hold/Move, pending Move supersession, selected-suffix
+repath, rejected inherited overlap, empty in-range routes, paid dynamic obstruction
+and selection/generation rejection. Native `focused-building-attack-scenario.mjs`
+uses both real WebSocket seats, paid unfinished targets, actual Infantry damage,
+travel/firing cold restarts and owner cancellation into the saved queued point.
+Exact-head review/checks/clean-pack receipts belong to its PR. Core's pending-goal
+correction lands in PR422; Follow clearance remains a separate caller slice
+requiring the readiness witness below. PR418's observed 30-tick
+seat1 reversal shift and the two old seat0 geometry/visibility failures remain
+retained. Automatic building attacks, Worker/Sheep, stance return and same-cell
+closure are excluded. Art backing is N/A. Deployment verifier owns current
+staging follow-through; identified served and real rendered acceptance remain
+open, with the historical zero-frame capability block retained without retry.
+
+Caller [PR421](https://github.com/lbeezr/thousand-unit-skirmish/pull/421) consumes the merged PR411
+selected-route rejoin contract in the two already caller-owned `simulateTick`
+unit-target acquisition/repath hooks. A pure `patrolAcquiredMovementActive`
+predicate selects the existing military profile only for persistent Patrol,
+`attackMove:true` and an active unit target. The original acquisition anchor,
+`boundedAutomaticApproach` range/stance-selected suffix and
+`automaticPositionAllowed` plus static prefix sweep remain unchanged. No
+shared planner/publisher/rejoin/executor, checkpoint schema, target acquisition,
+damage, persistent-order controller or crowd algorithm is rewritten.
+[Exact ownership and the Follow dependency](https://github.com/lbeezr/thousand-unit-skirmish/pull/416#issuecomment-5986939658)
+retain core's live-publication/XL contract and crowd's ordinary-only admissions.
+
+The [baseline](qa-evidence/patrol-acquired-2026-10-05/baseline.json), using unchanged
+`dcb96cef` runtime with only new observation scripts present (dirty checkout
+explicitly recorded), finds four unsafe acquired-pursuit substeps for Infantry
+and a legitimately trained Archer on **each seat**. The
+[pre-review candidate](qa-evidence/patrol-acquired-2026-10-05/candidate.json)
+finds zero, while both retain their original leg and kill at the same recorded
+263/461 tick offsets. These are bounded witnesses, not universal timing,
+capacity or rendered claims. PR418's target-free detour still has the observed
+seat1 30-tick reversal shift documented below; this slice does not erase it.
+
+The new registered real-command journeys exercise both-seat melee/ranged
+acquisition, complete selected suffixes, productive legal-range damage,
+acquired/damage/resumed recovery, continued original endpoint cycles,
+Stop/Hold/manual/queued Move/noAttack, target repath/leash loss, empty in-range
+Stand Ground routes, static overlap rejection and prefix rejection outside the
+unchanged anchor travel bound. Earlier Patrol acquisition expectations now use
+this separate acquired profile while still excluding explicit AttackMove's
+predicate. Worker, building-target, Follow, automatic stance/return and same-cell
+closure remain separate; body-pair steering is not claimed. Exact-head
+independent review, source/types/package/native and normal-merge receipts belong
+to this incremental PR. Deployment verifier retains staging follow-through;
+rendered acceptance remains open with the retained zero-frame capability block.
+Art backing is N/A for this movement-contract change.
+
+Follow was audited first because a pure profile could consume its existing
+planner/rejoin. Its queue/recovery contract has a genuine readiness dependency:
+the retained baseline's first pending catch-up has `moveGoalCell:-1`. Queued Move
+cancels leader intent at admission; recovery cannot reconstruct that transient
+catch-up, leaving the saved queued point present but unexecuted after 600 ticks
+on both seats. [Recorded reproduction](qa-evidence/patrol-acquired-2026-10-05/follow-pending-queue.json)
+is produced by `node scripts/follow-pending-queue-probe.mjs`; reporter success
+means observations were collected, **not** that recovery passed. Core owns the
+pending publication/recovery goal decision. The core correction now records
+every accepted `enqueueRouteRepairs` destination in `moveGoalCell` before
+publication, including cell-only repair and persistent legs. Fractional goal
+projection still preserves its requested point under the accepted revision.
+Registered native journeys issue real Follow then queued Move before first
+publication on both seats, using callback and tick planner modes. They check
+the durable first goal, actual first-leg travel and queued fractional arrival;
+cold cases serialize and validate the complete checkpoint, restore it in a
+separate native module, then execute both legs within 600 ticks. This fixes the
+core recovery dependency without adopting Follow's body profile or pursuit.
+Caller adoption remains separately owned; XL live route reservation/retry,
+all-writer admission and rendered acceptance remain open. Art backing is N/A.
+
+
+Caller [PR418](https://github.com/lbeezr/thousand-unit-skirmish/pull/418), after
+merged acquired-AttackMove PR417, implements **target-free military Patrol travel**.
+The audit confirms its existing
+revision-safe planner, selected-route rejoin publisher and executor already
+consume `activeLandMovementBodyRadius`: only an additive pure Patrol predicate
+and existing profile fallback are needed. There is **no host edit** or duplicate
+route/admissibility algorithm. [Core's live-publication boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/416#issuecomment-5986613546)
+and ordinary crowd's active-Move-only classifier remain disjoint. Live XL
+reservation/retry, aggregate save bounds and 320 admission stay core/map-owned.
+
+The [real-command baseline](qa-evidence/patrol-travel-2026-10-05/baseline.json)
+at `b8028375` admits 17 unsafe static-body substeps per seat from `(.75,.95)`
+beside the stone corner. The
+[pre-review candidate](qa-evidence/patrol-travel-2026-10-05/candidate.json)
+admits zero, using the already shared current-cell prefix and selected tail.
+Both continue repeated outbound/return legs with original endpoint cells.
+Patrol still returns to the start **cell center** `(.5,.5)`, not the original
+fractional pose; leg polling remains unchanged. The safe initial detour misses
+one existing polling opportunity in seat 1: first reversal moves from tick 71
+to 101, with later recorded reversals shifted by the same 30 ticks. Seat 0's
+recorded reversal ticks stay unchanged. These are bounded workload timings,
+not universal arrival/capacity or rendered qualification.
+
+The 37 new registered real-command checks exercise both-seat pending/outbound/
+return-pending/return-active recovery, repeated cell cycling, Stop/Hold/manual
+and queued Move, actual acquisition/legal damage and saved-leg restoration,
+live-target leash loss, paid endpoint blockage/cancellation, Follow and Worker
+negative controls, plus a validator-accepted saved Patrol with `attackMove:false`
+whose persistent travel and unchanged flag survive cycling. Existing recovery
+requeues a pending saved goal once under
+one new revision, then the unchanged persistent controller resumes its leg;
+queued Move cancels persistent intent at **admission** and keeps the existing
+queued-route contract. The earlier objective/Patrol control now expects the
+new separate Patrol profile while retaining objective exclusion and cycling.
+Automatic idle stance/return, acquired Patrol pursuit, Follow, Worker/water,
+building targets, same-cell closure and body-pair steering remain separate.
+Final independent exact-head source/types/package/native/normal-merge evidence
+belongs to this caller increment. The deployment verifier owns current staging
+follow-through; actual rendered acceptance stays open under the retained
+sandbox/storage capability failure with zero frames and no retry.
 
 After focused Attack PR410 normally merged at `6ced82cb`, the coordinator
 allocated explicit military AttackMove **acquired unit-target pursuit** to
@@ -210,8 +405,10 @@ Endpoint, queued intent, one repair and pending-service assertions remain.
 The [pre-review native witness](qa-evidence/attack-move-objective-2026-10-05/pre-review-native.json)
 names its dirty source honestly: both WebSocket seats complete explicit
 `noAttack` objectives after actual process cold restart, retaining HP/intent.
-Exact reviewed-head checks/types/clean pack and independent review remain
-integration dependencies until recorded on the increment's PR.
+Independent review and normal merge completed in
+[PR405](https://github.com/lbeezr/thousand-unit-skirmish/pull/405) at `bd7f2915`.
+The PR retains exact-head/merged checks, native cold restart and clean release
+evidence. Source adoption is complete; identified served/rendered acceptance is open.
 
 Two baseline failures are distinct from this change: untouched main `82a66766`
 fails `wildlife-motion.test.mjs`'s extracted checkpoint-capture test because its
@@ -405,12 +602,12 @@ runtime, crowd, clearance, release/deployed identity and rendered matrix stay op
 
 ### U4 first vertical slice: measured land body contracts
 
-This is a consumed diagnostic contract, before production radius adoption.
+This dated milestone is a consumed diagnostic contract, before production radius adoption.
 The study helper and real-simulation runner measure swept circles centered on
 authoritative x/z; one world unit equals one tile. Authored candidate radii are
 Worker 0.18, Infantry/Spearman/Archer 0.22, Scout/Rider 0.28 and Siege Engine 0.35.
-They are hypotheses, independent of sprite bounds and the current 0.56 soft
-separation. No production caller imports the study profile. Naval hull and
+At this milestone they are hypotheses, independent of sprite bounds and the 0.56 soft
+separation. Later PR385 adopts a separate authoritative profile; production never imports the study profile. Naval hull and
 Sheep policies remain with their existing adapters.
 
 The private observer records each admitted waypoint, steering, fallback,
@@ -576,8 +773,11 @@ and [travel/heading/idle reference](qa-direct-open-ground-move-2026-10-04.md)
 support the same visible treatment: accepted click, safe approach, legal arrival
 then queue handoff. No art, heading, gait or velocity curve changes. These
 sources and CPU trajectories are design backing, not actual gameplay frames.
-Movement owner `01a107ba` retains independent review, normal merge, clean
-packaging, identified deployment and ordinary-game rendered acceptance.
+Independent review and normal merge completed in
+[PR385](https://github.com/lbeezr/thousand-unit-skirmish/pull/385) at `08e1df1c`;
+281 integration checks and 122 merged checks, types/imports/docs and clean
+1,365-file packed startup passed. The movement owner retains identified
+served/deployed and ordinary-game rendered acceptance.
 The [cloud capability attempt](qa-evidence/ordinary-move-static-clearance-2026-10-04/renderer-capability.json)
 at that clean source is blocked: the Linux browser sandbox/profile storage
 cannot start, so it produced no WebGL readback, game frame or screenshot.
@@ -853,8 +1053,12 @@ the real movement exports supplied by the separately merged construction-fixture
 shared 16×16 geometry and retain every existing economy assertion. An additional
 real-helper control checks all cell centers, rejects the stone-grazing shortcut,
 preserves its raw path and still reduces the open route. No runtime predicate is
-weakened to satisfy a fixture. Re-review and exact-head checks include all three
-affected registered paths and the construction consumer before normal merge.
+weakened to satisfy a fixture. Re-review approved `dcc0d766`; fresh-main
+integration merged PR395 at `452d043f`. Exact merged source passed 365 focused
+checks, three native journeys, types/imports/docs, clean packaging and startup
+smoke. The clean 1,371-file digest is
+`sha256:4938e2be3e2d3d4e1e24fd0b6b40bcfd3ff88a2d0bfcd32ba072234bc2222388`.
+Those receipts are source/process/package evidence, with served/pixels still open.
 
 ### Shared selected-route start rejoin — 5 October 2026
 
@@ -889,12 +1093,112 @@ Combat acquisition, weapon range/damage, `getUnitAttackPath`/
 `boundedAutomaticApproach`, global attack/Sheep flows and crowd-owned steering/
 wait hooks remain outside this slice. Existing endpoint/travel storyboards are
 unchanged design backing. Source/release/deployment/rendered acceptance stay
-separate; shared owner retains independent review, merge and remaining delivery.
+separate. Independent review approved `4dcfb968`; fresh-main integration at
+`a6b74cd0` was byte-identical for the five owned non-server files and publisher.
+Normal merge [PR411](https://github.com/lbeezr/thousand-unit-skirmish/pull/411)
+at `93d45c73` passed 393 focused checks, types/imports/docs, native both-seat
+cold restart and clean packed startup. The 1,381-file package digest is
+`sha256:2c9acd9801b20a6769ea11cb568be15845268b229df8131c7b74c38752f71fc3`.
+The [merged API handoff](https://github.com/lbeezr/thousand-unit-skirmish/pull/410#issuecomment-5986257931)
+serves PR410; source adoption does not close deployed or ordinary rendered acceptance.
+
+### Bounded live publication increment
+
+The map owner handed off this dependency after checkpoint PR407/414 reached
+clean `f2931a41`: XL-only saves have a 32 MiB file/parser/state envelope and
+1,048,576 route entries across active/resume/herd arrays, each at most `cellCount`.
+Legacy ≤256 saves remain compatible; ordinary 320 is still closed. The
+[accounting agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/407#issuecomment-5986579976)
+counts every saved field at its full length, including aliases and exhausted
+routes, while physically distinct in-flight arrays have a separate staging bound.
+
+The read-only [publisher characterization](qa-evidence/live-publication-2026-10-05/publication.json)
+executes the actual publisher and actual checkpoint path leaf at clean
+`f2931a41`. At 16×17, 64×48, 160², 256² and both rectangular/square planned320
+dimensions, a synthetic `cellCount−1` selected array gains one rejoin and fits;
+a `cellCount` array gains one and exceeds the saved path leaf. All fourteen
+preserve the selected tail, raw length/cost, revision, goal and site ID. Repeated
+cells deliberately exercise the leaf envelope; they are not legitimate planner
+paths, full checkpoints, admitted 320 maps or a gameplay/capacity failure witness.
+Repeat from the repository root with
+`node docs/qa-evidence/live-publication-2026-10-05/publication.mjs /tmp/publication.json`.
+
+The first consumed runtime slice stays in `applyPlannedMoveAssignment`, shared
+rejoin and the existing planner service. For dimensions above 256, one synchronous
+goal group takes a metadata-only census bounded by 2,000 actors and 128 nodes:
+at most 4,128 saved path-field visits, without indexing stored route cells.
+Replacement credits only the replaced active field; its resume/other aliases
+remain charged. Base route length and predicted final-center/rejoin growth are
+checked together before execution copies or projected endpoint publication.
+Selected tails, original weighted costs/raw lengths and accepted goals/jobs
+remain intact. The ledger is discarded with the synchronous group; there is no
+global mutable quota registry or saved ledger field.
+
+Per selected publication, physically distinct raw, optional final-center and
+optional rejoin arrays total at most `3*cellCount` entries, separately from live
+saved fields. The existing resident search workspace has nine 32-bit and one
+16-bit grid arrays (`38*cellCount` bytes); direct search can stage two candidates
+of at most `cellCount−1` entries, and A* reverses its one selected array in place.
+These are source slot/workspace bounds, not GC, total heap/RSS or capacity
+measurements. Prior assignees' published arrays become live fields and are
+charged in the same ledger; no queued assignment retains a selected payload
+after an attempt. Single-search latency and resumability remain separate U6 work.
+
+Refused assignments retain only existing actor/goal/revision references and
+bounded scalar outcomes. The job reports `WAITING` once for explicit commands,
+rotates behind other ready work, and retries no earlier than the next authoritative
+tick. A blocked goal rotates behind later goals and original start groups; actual
+poses, current navigation and original requested points are recomputed at retry.
+The scheduler scans at most eight queued job records per selection and keeps
+callback retries out of a busy loop. Stop/replacement, actor/generation and epoch
+guards cancel stale work. Completed private planning samples disclose deferrals
+and maximum staged entries; silent internal jobs retain their counters without
+sending player notices. Pending saves rebuild through the existing durable goal
+and repair intake, consuming the pending-goal correction in PR422. No transient
+budget state is added to units or the checkpoint schema.
+
+Registered controls cover quota−1/quota/quota+1, alias/resume/herd accounting,
+per-path growth, no selected payload read on base refusal/no execution copy on
+growth refusal, preserved points/jobs, fair release/retry, cancellation and the
+actual restore continuation tail. The pressure arrays are metadata-only synthetic
+envelopes; they do not qualify a legitimate XL match or full save/recovery through
+the unchanged dimension gate. Six new native both-seat queued fractional Move
+journeys validate full serialized checkpoints and restore separate modules at
+16×17, 160² and 256²; existing 64/256-unit planner journeys retain crowd coverage
+on their disclosed 96×64 fixtures. These are CPU/source compatibility witnesses,
+not complete match/crowd/playability qualification at each grid size.
+The adapted characterization reporter exposes XL
+deferrals and leaves its retained `f2931a41` baseline unchanged.
+
+This covers the sliced A* publisher family only. Worker economy, direct combat,
+resume transfers, naval and wildlife retention writers still need vertical
+adopters before any all-writer aggregate claim. Exhausted route retirement must
+preserve resume/queue references and durable endpoints; this slice relies on
+actual replacement/Stop/caller release rather than inventing retirement.
+Map owns final 320 admission/performance/playability; caller pursuit, crowd PR400,
+checkpoint and match-ending hooks remain disjoint. Source/native/package,
+served identity and real rendered acceptance stay separate. Art backing N/A.
+
+Stationary construction is another uncovered core consumer, with no runtime
+patch selected. Twelve real-command probes at the same clean source stage two
+or four Workers from each seat, pay 75 Wood for a House and observe actual work.
+Approach cases never execute separation; legal access/corner-access cases
+execute 54 separation substeps altogether with zero new static contacts/illegal
+centers, productive completion and unchanged unselected actors. The
+[full inputs, commands and substeps](qa-evidence/live-publication-2026-10-05/construction-probes.json.gz)
+and [repeat driver](qa-evidence/live-publication-2026-10-05/construction.mjs)
+retain those bounded outcomes. No repeated-run determinism or general construction
+separation/evacuation/body-pair acceptance is claimed. The smallest further step
+is a real-command obstruction/recovery reproduction; the earlier unexercised
+travel probes are not grounds for a speculative selector change.
 
 ## Ranked backlog
 
 | Rank / status | Outcome and next action | Write boundary / dependency | Acceptance |
 | --- | --- | --- | --- |
+| U4/U6 · bounded runtime increment | XL sliced-planner publication reserves saved-field replacement and rejoin/final-center growth, releases staged payloads after refusal and retries from accepted goals through existing service. PR422 supplies durable pending goals; checkpoint PR407/414 supplies the quota. | Core publisher/rejoin/planner service; map owns save quota/admission. Other direct retention writers adopt separately. | Quota/growth/alias controls, fair release/retry/cancellation and restore-tail checks; real ≤256 compatibility. All-writer bounds, complete XL recovery, search resumability and ordinary 320 remain open. |
+| U4 · bounded caller adoption | Construction PR399, objective AttackMove PR405, focused Attack PR410 and acquired AttackMove PR417 are merged. PR418 implements target-free military Patrol travel without host edits; PR421 adopts acquired Patrol unit-target pursuit at the existing combat hooks. Follow needs the pending-goal recovery decision recorded above; building-target range routes, stance and same-cell/interaction writers remain separate allocations. | [Caller adoption owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/421) retains adoption; agree future overlapping functions without duplicating merged hooks. | Both-seat accepted commands, original endpoint cycling, retained selected route, productive legal-range damage, interruption/recovery and zero new static contact in the adopted domain. Old visibility fixture failures remain separate. |
+| U5 · active crowd | PR400 qualifies ordinary military Move groups, opposing traffic and queued topology before integration. | [Crowd owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/400); allocated query/steering/wait only. | Retain failures/timeouts, safe sweeps, immovable parked actors, stable slots and finite forward progress; no combat/Worker adoption claim. |
 | 1 · complete | Clock-independent service work merged in [PR #193](https://github.com/lbeezr/thousand-unit-skirmish/pull/193), `331df72`; [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#integration-and-remaining-evidence) pass. | Planning constants, queue-slice helper and diagnostics only. | 209 postmerge checks; nine route pairs preserve hashes; native large routes and recovery. Atomic-search overshoot remains explicit. |
 | 2 · complete | The parked-formation stall reproduces with a one/two-tick older Move. Bounded repulsion merged in [PR #209](https://github.com/lbeezr/thousand-unit-skirmish/pull/209), `64cc391`; independent review and [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#4-october-postmerge-acceptance) pass. | Only `getMoveVector`'s final force combination and focused tests/tools. Combat-owner targeting/stances remain untouched. | 235 postmerge checks; all eight headings on both seats; four large parked cases twice; nine terrain route pairs; native parked controls and active/idle restarts at the exact merge source. |
 | 3 · qualification complete | The [1/4/8 comparison](qa-move-planning-tick-budget-2026-10-04.md) recommended four turns, but [paid whole-tick qualification](qa-paid-battle-tick-budget-2026-10-04.md) failed the 33.333 ms maximum at 2,000 units. Retain callback default; 1/4/8 remain reproduction controls. This decision is complete. | Movement planner plus the single allocated outer-tick hook; inner combat/Worker/wildlife/mode bodies stay with their owners. Any later default proposal first needs evidence addressing the recorded non-planning tail. | Four native paid battle/economy/recovery runs pass functionally. Four's two budget overruns have zero planning turns. Repeated candidate traces, Stop/replacement, FIFO fairness, topology and recovery remain covered. This does not complete the all-command pipeline. |
@@ -913,12 +1217,12 @@ the same function binding. Both paths remain private to authoritative consumers.
 This relocation changes no pathing algorithm, planner budget, command queue,
 force combination or server import.
 
-The two tracked old-path importers are `server.mjs` and
-`scripts/formation-assignment-scenario.mjs`. Keep them on the compatibility path
-for this slice; new consumers use the canonical path. A later movement-owned
-consumer migration must list all tracked runtime/tool/test/doc references and
-confirm whether any supported external imports or commands still use the old
-path. Retire the shim only after that inventory is clear, the affected owner
+At the original relocation, the two tracked old-path importers were `server.mjs`
+and `scripts/formation-assignment-scenario.mjs`. Architecture PR404 merged at
+`1309e588` moved the server to the canonical path with value identity preserved;
+the scenario still uses the shim. New consumers use the canonical path. Shim
+retirement still needs all tracked runtime/tool/test/doc references and any
+supported external imports/commands inventoried. Retire only after that is clear, the affected owner
 confirms compatibility, and formation/replay, source admission and actual packed
 GET/HEAD privacy checks pass without it. Both paths must remain packaged and
 HTTP-private while the shim exists.

@@ -8,6 +8,7 @@ import { palisadeConnections } from '../src/palisade-profile.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { clearWorkIntent, createConstructionWorkIntent } from '../src/work-intent.mjs';
 import { createClearanceMoveGoalPoint } from '../src/unit-movement.mjs';
+import { followTravelMovementActive } from '../src/combat-movement.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const renderer = source.slice(source.indexOf('function createPalisadeVisual('), source.indexOf('function createArcheryRangeVisual('));
@@ -62,7 +63,7 @@ for (const type of ['move', 'attackMove']) test(`accepted queued ${type} interru
     queuedWaypoints: [], persistentOrder: null, gatherNodeId: null, gatherForestCell: -1,
     movePlanningPending: true, path: [8, 9], pathIndex: 0, attackTargetId: -1, attackBuildingTargetId: -1, attackMove: false,
     x: 0, z: 0, workIntent: createConstructionWorkIntent(3, [1, 2], { minX: 0, maxX: 2, minZ: 0, maxZ: 2 }) };
-  const context = vm.createContext({ clearWorkIntent, createClearanceMoveGoalPoint, isWalkable: () => true, performance, MAP_WIDTH: 16, MAP_HEIGHT: 16, MAX_QUEUED_WAYPOINTS: 16, dirty: false,
+  const context = vm.createContext({ clearWorkIntent, createClearanceMoveGoalPoint, followTravelMovementActive, isWalkable: () => true, performance, MAP_WIDTH: 16, MAP_HEIGHT: 16, MAX_QUEUED_WAYPOINTS: 16, dirty: false,
     commandUnits: () => [unit], unitHasCapability: () => true, worldToCell: () => 22,
     nearestOpenCell: cell => cell, walkableComponents: new Int32Array(256), buildingsById: new Map(),
     buildFormationSlots: () => ({ slots: [22] }), orderUnitsForFormation: units => units,
@@ -81,4 +82,10 @@ for (const type of ['move', 'attackMove']) test(`accepted queued ${type} interru
   context.assignFormationMove({ team: 0 }, { type, ids: [0], x: 1, z: 1, queue: true });
   assert.equal(unit.wallBuildOrder, retained, 'a rejected full queue must not interrupt the work');
   assert.equal(unit.workIntent, retainedIntent, 'rejected full queue preserves durable construction intent');
+  unit.queuedWaypoints = [];
+  const beforeMissingBinding = structuredClone(unit);
+  delete context.followTravelMovementActive;
+  assert.throws(() => context.assignFormationMove({ team: 0 }, { type, ids: [0], x: 1, z: 1, queue: true }),
+    { name: 'ReferenceError', message: 'followTravelMovementActive is not defined' });
+  assert.deepEqual(unit, beforeMissingBinding, 'missing production binding fails before mutating wall work or queued intent');
 });

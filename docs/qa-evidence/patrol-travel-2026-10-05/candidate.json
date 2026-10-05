@@ -1,0 +1,186 @@
+{
+  "source": "b8028375b70a27e7acbdf91c7a999676e6776406",
+  "dirty": true,
+  "records": [
+    {
+      "team": 0,
+      "id": 4,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING PATROL \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "PATROL ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "initial": {
+        "position": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1574
+        ],
+        "goal": 1574,
+        "order": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 323
+        },
+        "revision": 3
+      },
+      "contacts": 0,
+      "steps": 323,
+      "transitions": [
+        {
+          "tick": 93,
+          "from": 1,
+          "to": 0,
+          "position": {
+            "x": 6.5,
+            "z": 0.5
+          },
+          "goal": 1574,
+          "pending": true,
+          "revision": 4
+        },
+        {
+          "tick": 183,
+          "from": 0,
+          "to": 1,
+          "position": {
+            "x": 0.5,
+            "z": 0.5
+          },
+          "goal": 1568,
+          "pending": true,
+          "revision": 5
+        },
+        {
+          "tick": 273,
+          "from": 1,
+          "to": 0,
+          "position": {
+            "x": 6.5,
+            "z": 0.5
+          },
+          "goal": 1574,
+          "pending": true,
+          "revision": 6
+        },
+        {
+          "tick": 363,
+          "from": 0,
+          "to": 1,
+          "position": {
+            "x": 0.5,
+            "z": 0.5
+          },
+          "goal": 1568,
+          "pending": true,
+          "revision": 7
+        }
+      ],
+      "hp": 100
+    },
+    {
+      "team": 1,
+      "id": 12,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING PATROL \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "PATROL ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "initial": {
+        "position": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1574
+        ],
+        "goal": 1574,
+        "order": {
+          "type": "patrol",
+          "start": 1568,
+          "end": 1574,
+          "leg": 1,
+          "status": "active",
+          "nextTick": 402
+        },
+        "revision": 3
+      },
+      "contacts": 0,
+      "steps": 315,
+      "transitions": [
+        {
+          "tick": 101,
+          "from": 1,
+          "to": 0,
+          "position": {
+            "x": 6.5,
+            "z": 0.5
+          },
+          "goal": 1574,
+          "pending": true,
+          "revision": 4
+        },
+        {
+          "tick": 191,
+          "from": 0,
+          "to": 1,
+          "position": {
+            "x": 0.5,
+            "z": 0.5
+          },
+          "goal": 1568,
+          "pending": true,
+          "revision": 5
+        },
+        {
+          "tick": 281,
+          "from": 1,
+          "to": 0,
+          "position": {
+            "x": 6.5,
+            "z": 0.5
+          },
+          "goal": 1574,
+          "pending": true,
+          "revision": 6
+        },
+        {
+          "tick": 371,
+          "from": 0,
+          "to": 1,
+          "position": {
+            "x": 0.5,
+            "z": 0.5
+          },
+          "goal": 1568,
+          "pending": true,
+          "revision": 7
+        }
+      ],
+      "hp": 100
+    }
+  ],
+  "workload": "real selected Infantry Move (.75,.95), then noAttack Patrol to (6.5,.5), 400 fixed ticks, map64x48 seed881, stone [1,2]x[1,2]",
+  "limits": [
+    "Baseline host/profile unmodified at b8028375; candidate is historical dirty pre-review source evidence.",
+    "Only target-free military Patrol travel is adopted; acquired pursuit, Worker/Follow/stance and body pairs are separate.",
+    "No native or rendered witness in these traced records."
+  ]
+}

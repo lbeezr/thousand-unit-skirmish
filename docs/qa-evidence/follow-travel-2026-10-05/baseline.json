@@ -1,0 +1,191 @@
+{
+  "source": "032eea7d37bf61b882a814afa0759295991157f3",
+  "dirty": true,
+  "records": [
+    {
+      "team": 0,
+      "kind": "infantry",
+      "id": 4,
+      "leaderId": 0,
+      "leaderGeneration": 140255528,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "FOLLOW ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "contacts": 16,
+      "steps": 29,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8360493260021999,
+          "z": 0.9396740808797359
+        },
+        "reason": "steering"
+      },
+      "pendingGoal": 1572,
+      "selected": [
+        1572
+      ],
+      "published": [
+        1572
+      ],
+      "rejoin": "unchanged",
+      "stoppedTick": 33,
+      "final": {
+        "x": 3.2454304540637984,
+        "z": 0.6505483455123441,
+        "goal": 1572,
+        "revision": 5,
+        "hp": 100,
+        "persistentOrder": {
+          "type": "follow",
+          "targetId": 0,
+          "targetGeneration": 140255528,
+          "status": "following",
+          "nextTick": 987,
+          "lastTargetCell": 1574
+        },
+        "distance": 3.2580496825051455
+      }
+    },
+    {
+      "team": 0,
+      "kind": "archer",
+      "id": 16,
+      "leaderId": 0,
+      "leaderGeneration": 1392891638,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "FOLLOW ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "contacts": 0,
+      "steps": 60,
+      "pendingGoal": 1640,
+      "selected": [
+        1640
+      ],
+      "published": [
+        1568,
+        1640
+      ],
+      "rejoin": "prefixed",
+      "stoppedTick": 75,
+      "final": {
+        "x": 5.063041242142831,
+        "z": 1.0703801552678538,
+        "goal": 1640,
+        "revision": 5,
+        "hp": 70,
+        "persistentOrder": {
+          "type": "follow",
+          "targetId": 0,
+          "targetGeneration": 1392891638,
+          "status": "following",
+          "nextTick": 1822,
+          "lastTargetCell": 1574
+        },
+        "distance": 1.546021989916637
+      }
+    },
+    {
+      "team": 1,
+      "kind": "infantry",
+      "id": 12,
+      "leaderId": 8,
+      "leaderGeneration": 1887802675,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "FOLLOW ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "contacts": 6,
+      "steps": 29,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8308342673704516,
+          "z": 0.9187440832834253
+        },
+        "reason": "steering"
+      },
+      "pendingGoal": 1508,
+      "selected": [
+        1508
+      ],
+      "published": [
+        1508
+      ],
+      "rejoin": "unchanged",
+      "stoppedTick": 41,
+      "final": {
+        "x": 3.0941937537431,
+        "z": 0.04357841521933522,
+        "goal": 1508,
+        "revision": 5,
+        "hp": 100,
+        "persistentOrder": {
+          "type": "follow",
+          "targetId": 8,
+          "targetGeneration": 1887802675,
+          "status": "following",
+          "nextTick": 1002,
+          "lastTargetCell": 1574
+        },
+        "distance": 3.4362533157635813
+      }
+    },
+    {
+      "team": 1,
+      "kind": "archer",
+      "id": 16,
+      "leaderId": 8,
+      "leaderGeneration": 744997576,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "FOLLOW ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "contacts": 0,
+      "steps": 60,
+      "pendingGoal": 1640,
+      "selected": [
+        1640
+      ],
+      "published": [
+        1568,
+        1640
+      ],
+      "rejoin": "prefixed",
+      "stoppedTick": 75,
+      "final": {
+        "x": 5.063041242142831,
+        "z": 1.0703801552678538,
+        "goal": 1640,
+        "revision": 5,
+        "hp": 70,
+        "persistentOrder": {
+          "type": "follow",
+          "targetId": 8,
+          "targetGeneration": 744997576,
+          "status": "following",
+          "nextTick": 2038,
+          "lastTargetCell": 1574
+        },
+        "distance": 1.546021989916637
+      }
+    }
+  ],
+  "provenance": "Pre-review witness at032eea7d. Baseline has unchanged runtime with only new probe present; candidate has uncommitted pure Follow profile. Dirty source status is explicit. Neither is an exact-head/native/pack receipt."
+}

@@ -20,7 +20,7 @@ import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
 import { forestGatherGroups, visibleForestCandidates } from './src/forest-gather-group.mjs';
 import { exploredForestFringe } from './src/forest-fringe.mjs';
 import { VisionCoverageCache } from './src/server/vision-coverage-cache.mjs';
-import { preflightXlCheckpointRoutes } from './src/server/checkpoint-route-budget.mjs';
+import { preflightXlCheckpointRoutes, XL_CHECKPOINT_ROUTE_MAX_ENTRIES } from './src/server/checkpoint-route-budget.mjs';
 import { preflightXlCheckpointCloneInputs, preflightXlCheckpointState } from './src/server/checkpoint-json-budget.mjs';
 import { readMatchCheckpointFile } from './src/server/checkpoint-file-reader.mjs';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
@@ -80,12 +80,12 @@ import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition 
 import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoint, activeMoveGoalPoint, validMoveGoalPoint, unitRoutePathCost,
   activeLandMovementBodyRadius, workerEconomyBodyRadius, LAND_CLEARANCE_PROFILE, canTraverseStaticBodySegment,
-  unitRouteResultIsCurrent, rejoinSelectedUnitRoute } from './src/unit-movement.mjs';
+  unitRouteResultIsCurrent, rejoinSelectedUnitRoute, unitRouteRejoinDecision, createUnitRoutePublicationLedger } from './src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { ordinaryCrowdBodyRadius, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT } from './src/unit-crowd-steering.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
-import { focusedUnitAttackMovementActive, attackMoveAcquiredMovementActive } from './src/combat-movement.mjs';
+import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, patrolAcquiredMovementActive, followTravelMovementActive } from './src/combat-movement.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const BUILD_IDENTITY = await loadBuildIdentity(ROOT);
@@ -4085,9 +4085,19 @@ function cancelMovePlanningJobs(reason = null) {
   activeMovePlanningJob = null;
 }
 
-function scheduleNextMovePlanning() {
+function scheduleNextMovePlanning(serviceTick = movePlanningServiceTick ?? tickNumber) {
   if (activeMovePlanningJob || movePlanningQueue.length === 0) return;
-  activeMovePlanningJob = movePlanningQueue.shift();
+  // Capacity-deferred work yields its place without callback busy retry. Scan
+  // at most one existing work-turn's metadata; normal FIFO still selects first.
+  const candidates = Math.min(movePlanningQueue.length, MOVE_PLANNING_MAX_WORK_ITEMS_PER_SLICE);
+  for (let visited = 0; visited < candidates; visited++) {
+    const candidate = movePlanningQueue.shift();
+    if (candidate.publicationRetryTick > serviceTick) { movePlanningQueue.push(candidate); continue; }
+    activeMovePlanningJob = candidate;
+    if (candidate.publicationRetryTick !== undefined) candidate.publicationRetryServiceTick = serviceTick;
+    break;
+  }
+  if (!activeMovePlanningJob) return;
   const job = activeMovePlanningJob;
   if (!job.planningStarted) {
     job.queueWaitMs = Math.max(0, performance.now() - (job.queueEnteredAt ?? job.startedAt));
@@ -4097,7 +4107,11 @@ function scheduleNextMovePlanning() {
 }
 
 function serviceMovePlanningForTick(stepTick) {
-  if (MOVE_PLANNING_TURNS_PER_TICK === 0) return null;
+  if (MOVE_PLANNING_TURNS_PER_TICK === 0) {
+    // Reuse the allocated tick hook to wake deferred callback-mode work.
+    scheduleNextMovePlanning(stepTick);
+    return null;
+  }
   const startedAt = performance.now();
   const work = { turns: 0, workItems: 0, expandedCells: 0, durationMs: 0 };
   movePlanningServiceTick = stepTick;
@@ -4117,26 +4131,38 @@ function serviceMovePlanningForTick(stepTick) {
   return work;
 }
 
-function applyPlannedMoveAssignment(job, assignment) {
+function applyPlannedMoveAssignment(job, assignment, publicationLedger = null) {
   const { unit, revision } = assignment;
   const result = assignment.routeResult;
   if (!result || result.status === 'deferred' || unit.orderRevision !== revision
+    || (assignment.routePublicationGeneration !== undefined && unit.generation !== assignment.routePublicationGeneration)
     || units[unit.id] !== unit || unit.hp <= 0
     || job.epoch !== movePlanningEpoch
     || !unitRouteResultIsCurrent(result, unit, movePlanningEpoch, navigationRevision)) return false;
   const destination = nearestOpenCell(assignment.destination);
   let path = result.path;
+  if (MAP_WIDTH > 256 || MAP_HEIGHT > 256) {
+    assignment.routePublicationGeneration ??= result.identity.generation;
+    publicationLedger ??= createUnitRoutePublicationLedger(MAP_WIDTH, MAP_HEIGHT, units, resourceNodeStates,
+      { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES, maxEntries: XL_CHECKPOINT_ROUTE_MAX_ENTRIES });
+    assignment.routePublicationOutcome = publicationLedger.check(unit, path.length);
+    // Lengths only: refuse base retention before reading selected endpoints.
+    if (assignment.routePublicationOutcome.status === 'deferred') return false;
+  }
   const alreadyInDestinationCell = result.originalPathLength === 0
     && nearestOpenCell(worldToCell(unit.x, unit.z)) === destination;
   const start = worldToCell(unit.x, unit.z);
   let point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
   if (point) {
     point = createClearanceMoveGoalPoint(unit, point.requestedX, point.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable);
-    unit.moveGoalPoint = point;
-    unit.moveGoalCell = destination;
+    if (!publicationLedger) {
+      unit.moveGoalPoint = point;
+      unit.moveGoalCell = destination;
+    }
   }
   const radius = activeLandMovementBodyRadius(unit);
   const goal = point || cellToWorld(destination);
+  let appendFinalCenter = false;
   if (point && path.length > 0) {
     const center = cellToWorld(destination);
     const previous = path.length === 1 ? unit : cellToWorld(path.at(-2));
@@ -4147,23 +4173,41 @@ function applyPlannedMoveAssignment(job, assignment) {
       && (!canTraverseFlatUnitSegment(previous.x + MAP_HALF_X, previous.z + MAP_HALF_Z,
         point.x + MAP_HALF_X, point.z + MAP_HALF_Z, MAP_WIDTH, elevationLevelByCell,
         isWalkable, WALK_SPEED * STEP_SECONDS)
-        || !canTraverseStaticBodySegment(previous, point, radius, MAP_WIDTH, MAP_HEIGHT, isWalkable))) path = [...path, destination];
+        || !canTraverseStaticBodySegment(previous, point, radius, MAP_WIDTH, MAP_HEIGHT, isWalkable))) appendFinalCenter = true;
   }
-  const firstGoal = path.length === 1 ? goal : cellToWorld(path[0] ?? destination);
+  const firstGoal = path.length + Number(appendFinalCenter) === 1 ? goal : cellToWorld(path[0] ?? destination);
   const distantFirstWaypoint = path.length > 0
     && Math.abs(start % MAP_WIDTH - path[0] % MAP_WIDTH)
       + Math.abs(Math.floor(start / MAP_WIDTH) - Math.floor(path[0] / MAP_WIDTH)) > 1;
   // A shared cell-center route can graze an obstacle from one assignee's
   // fractional position, even on an adjacent first leg. Rejoin its start
   // center whenever the adopted body cannot safely enter that route.
-  const rejoined = rejoinSelectedUnitRoute(path === result.path ? result : { ...result, path }, {
+  const rejoinOptions = {
     position: unit, startCell: start, firstPoint: firstGoal, radius,
     width: MAP_WIDTH, height: MAP_HEIGHT, isWalkable, cellToWorld,
     requiresRejoin: distantFirstWaypoint && !canTraverseFlatUnitSegment(
       unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z, firstGoal.x + MAP_HALF_X, firstGoal.z + MAP_HALF_Z,
       MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS),
-  });
+  };
+  if (publicationLedger) {
+    const decision = unitRouteRejoinDecision(result, rejoinOptions);
+    if (decision === 'rejected') return false;
+    assignment.routePublicationOutcome = publicationLedger.check(unit,
+      path.length + Number(appendFinalCenter) + Number(decision === 'prefixed'));
+    // Reserve both transforms together, before either execution-array copy or
+    // projected goal publication. Refusal keeps the accepted intent untouched.
+    if (assignment.routePublicationOutcome.status === 'deferred') return false;
+  }
+  if (appendFinalCenter) path = [...path, destination];
+  const rejoined = rejoinSelectedUnitRoute(path === result.path ? result : { ...result, path }, rejoinOptions);
   if (rejoined.rejoin === 'rejected') return false;
+  if (publicationLedger) {
+    assignment.routePublicationOutcome = publicationLedger.commit(unit, rejoined.route.path.length);
+    const staged = new Set([result.path, path, rejoined.route.path]);
+    job.maxRoutePublicationStagedEntries = Math.max(job.maxRoutePublicationStagedEntries ?? 0,
+      [...staged].reduce((sum, selected) => sum + selected.length, 0));
+    if (point) unit.moveGoalPoint = point;
+  }
   unit.path = rejoined.route.path;
   unit.pathIndex = 0;
   unit.movePlanningPending = false;
@@ -4245,6 +4289,11 @@ function completeMovePlanningJob(job) {
       unitCount: appliedCount, uniqueStartCells: job.groups.length,
       uniqueDestinationCells: job.reservedDestinations.size, nonEmptyPaths,
       alreadyInDestinationCell, routeFailures, routeStatuses, originalRouteCost, originalRouteWaypoints,
+      ...(job.maxRoutePublicationStagedEntries !== undefined ? {
+        routeBudgetDeferrals: job.routeBudgetDeferrals ?? 0,
+        maxRoutePublicationStagedEntries: job.maxRoutePublicationStagedEntries,
+        routePublicationStagedEntryLimit: 3 * CELL_COUNT,
+      } : {}),
       searchCount: job.diagnostics.searchCount, expandedCells: job.diagnostics.expandedCells,
       discoveredCells: job.diagnostics.discoveredCells, elapsedMs,
       planningWorkMs: Number(job.planningWorkMs.toFixed(3)),
@@ -4363,17 +4412,38 @@ function processMovePlanningSlice(job) {
     expandedCellsAtStart = job.diagnostics.expandedCells;
     // Whole searches remain atomic. An oversized search finishes, then this
     // job yields; clock observations measure work but never select assignments.
-    while ((job.currentGoalGroup || job.nextGroup < job.groups.length)
+    while ((job.currentGoalGroup || job.nextGroup < job.groups.length || job.routeBudgetDeferredAssignments?.length > 0)
       && workItems < MOVE_PLANNING_MAX_WORK_ITEMS_PER_SLICE
       && job.diagnostics.expandedCells - expandedCellsAtStart
         < MOVE_PLANNING_MAX_EXPANDED_CELLS_PER_SLICE) {
       workItems++;
       if (!job.currentGoalGroup) {
-        const [startCell, group] = job.groups[job.nextGroup++];
+        let startCell, group;
+        if (job.nextGroup < job.groups.length) {
+          [startCell, group] = job.groups[job.nextGroup++];
+        } else {
+          // Deferred references contain no selected arrays. Rebuild one start
+          // group from actual poses, retaining FIFO among surviving requests.
+          const pending = job.routeBudgetDeferredAssignments.filter(assignment => {
+            const { unit, revision } = assignment;
+            return !assignment.applied && units[unit.id] === unit && unit.hp > 0
+              && unit.orderRevision === revision && unit.generation === assignment.routePublicationGeneration;
+          });
+          job.routeBudgetDeferredAssignments = [];
+          if (!pending.length) continue;
+          startCell = nearestOpenCell(worldToCell(pending[0].unit.x, pending[0].unit.z));
+          group = [];
+          for (const assignment of pending) {
+            const actorStart = nearestOpenCell(worldToCell(assignment.unit.x, assignment.unit.z));
+            if (actorStart === startCell) group.push(assignment);
+            else job.routeBudgetDeferredAssignments.push(assignment);
+          }
+        }
         const assignmentsByDestination = new Map();
         for (const assignment of group) {
           const { unit, revision } = assignment;
-          if (unit.orderRevision !== revision || units[unit.id] !== unit || unit.hp <= 0) continue;
+          if (unit.orderRevision !== revision || units[unit.id] !== unit || unit.hp <= 0
+            || (assignment.routePublicationGeneration !== undefined && unit.generation !== assignment.routePublicationGeneration)) continue;
           const destination = nearestOpenCell(assignment.destination);
           const assignments = assignmentsByDestination.get(destination) || [];
           assignments.push(assignment);
@@ -4386,24 +4456,41 @@ function processMovePlanningSlice(job) {
 
       const currentGroup = job.currentGoalGroup;
       const [destination, assignments] = currentGroup.goals[currentGroup.nextGoal++];
-      const activeAssignments = assignments.filter(({ unit, revision }) => (
+      const activeAssignments = assignments.filter(({ unit, revision, routePublicationGeneration }) => (
         unit.orderRevision === revision && units[unit.id] === unit && unit.hp > 0
+        && (routePublicationGeneration === undefined || unit.generation === routePublicationGeneration)
       ));
       if (activeAssignments.length > 0) {
         const startCell = nearestOpenCell(currentGroup.startCell);
         const clearanceRadius = Math.max(...activeAssignments.map(({ unit }) => activeLandMovementBodyRadius(unit)));
         const path = findPathAStar(startCell, destination, job.diagnostics, clearanceRadius);
         if (path == null) { currentGroup.nextGoal--; break; }
+        const publicationLedger = MAP_WIDTH > 256 || MAP_HEIGHT > 256
+          ? createUnitRoutePublicationLedger(MAP_WIDTH, MAP_HEIGHT, units, resourceNodeStates,
+            { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES, maxEntries: XL_CHECKPOINT_ROUTE_MAX_ENTRIES }) : null;
+        if (publicationLedger) job.maxRoutePublicationStagedEntries = Math.max(job.maxRoutePublicationStagedEntries ?? 0, path.length);
+        const publicationAssignments = publicationLedger ? activeAssignments.filter(assignment => {
+          assignment.routePublicationGeneration ??= assignment.unit.generation;
+          assignment.routePublicationOutcome = publicationLedger.check(assignment.unit, path.length);
+          return assignment.routePublicationOutcome.status === 'ready';
+        }) : activeAssignments;
         const centerGoal = cellToWorld(destination);
-        const originalCost = unitRoutePathCost(startCell, path, MAP_WIDTH, elevationLevelByCell);
-        for (const assignment of activeAssignments) {
+        // If base retention is impossible for everyone, release this selected
+        // payload without even scanning its weighted cost or selected tail.
+        const originalCost = publicationAssignments.length
+          ? unitRoutePathCost(startCell, path, MAP_WIDTH, elevationLevelByCell) : null;
+        for (const assignment of publicationAssignments) {
           const livePoint = assignment.unit.moveGoalPoint && activeMoveGoalPoint(assignment.unit);
+          let plannedPoint = livePoint;
           if (livePoint) {
-            assignment.unit.moveGoalPoint = createClearanceMoveGoalPoint(assignment.unit,
+            plannedPoint = createClearanceMoveGoalPoint(assignment.unit,
               livePoint.requestedX, livePoint.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable);
-            assignment.unit.moveGoalCell = destination;
+            if (!publicationLedger) {
+              assignment.unit.moveGoalPoint = plannedPoint;
+              assignment.unit.moveGoalCell = destination;
+            }
           }
-          const goal = assignment.unit.moveGoalPoint && activeMoveGoalPoint(assignment.unit) || centerGoal;
+          const goal = plannedPoint || centerGoal;
           assignment.path = path;
           assignment.plannedNavigationRevision = navigationRevision;
           assignment.routeResult = createUnitRouteResult({ unit: assignment.unit, revision: assignment.revision,
@@ -4411,7 +4498,43 @@ function processMovePlanningSlice(job) {
             startIsGoal: nearestOpenCell(worldToCell(assignment.unit.x, assignment.unit.z)) === destination,
             arrived: Math.hypot(assignment.unit.x - goal.x, assignment.unit.z - goal.z) < 0.02,
             originalCost });
-          applyPlannedMoveAssignment(job, assignment);
+          applyPlannedMoveAssignment(job, assignment, publicationLedger);
+        }
+        if (publicationLedger) {
+          for (const assignment of activeAssignments) {
+            // Only the synchronous current goal retains selected payloads:
+            // raw, optional final-center copy and optional rejoin copy, ≤3N.
+            assignment.path = [];
+            assignment.routeResult = null;
+          }
+        }
+        const deferred = publicationLedger
+          ? activeAssignments.filter(assignment => assignment.routePublicationOutcome?.status === 'deferred') : [];
+        if (deferred.length) {
+          // Detach every remaining goal before rotating this job. No actor is
+          // inserted twice and later original start groups can receive a turn.
+          currentGroup.nextGoal--;
+          job.routeBudgetDeferredAssignments ??= [];
+          // A blocked goal rotates behind later goals in this start group;
+          // shorter requests or replacements can free capacity on the retry.
+          const remainingGoals = currentGroup.goals.slice(currentGroup.nextGoal + 1);
+          remainingGoals.push([destination, deferred]);
+          for (const [, remaining] of remainingGoals) {
+            for (const assignment of remaining) {
+              if (assignment.applied) continue;
+              assignment.routePublicationGeneration ??= assignment.unit.generation;
+              job.routeBudgetDeferredAssignments.push(assignment);
+            }
+          }
+          job.currentGoalGroup = null;
+          job.routeBudgetDeferrals = (job.routeBudgetDeferrals ?? 0) + deferred.length;
+          job.publicationRetryTick = Math.max(movePlanningServiceTick ?? tickNumber,
+            job.publicationRetryServiceTick ?? tickNumber) + 1;
+          if (!job.silent && !job.routeBudgetNoticeSent) {
+            job.routeBudgetNoticeSent = true;
+            sendOrderNotice(job.player, job.clientOrderToken, `${job.orderLabel} WAITING`);
+          }
+          break;
         }
       }
       if (currentGroup.nextGoal >= currentGroup.goals.length) job.currentGoalGroup = null;
@@ -4426,7 +4549,7 @@ function processMovePlanningSlice(job) {
     job.maxPlanningSliceMs = Math.max(job.maxPlanningSliceMs, sliceDurationMs);
     job.planningSliceCount++;
 
-    if (!job.currentGoalGroup && job.nextGroup >= job.groups.length) {
+    if (!job.currentGoalGroup && job.nextGroup >= job.groups.length && !(job.routeBudgetDeferredAssignments?.length > 0)) {
       completeMovePlanningJob(job);
     } else {
       activeMovePlanningJob = null;
@@ -5718,8 +5841,10 @@ function enqueueRouteRepairs(repairs, { mode = 'blocked-route-repair', orderLabe
     const point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
     const wallOrder = activeWallBuildOrder(unit);
     unit.orderRevision++;
+    // Accepted repair/persistent destinations must survive before publication:
+    // queued orders and checkpoint recovery consume this durable first leg.
+    unit.moveGoalCell = destination;
     if (point) {
-      unit.moveGoalCell = destination;
       unit.moveGoalPoint = createClearanceMoveGoalPoint(unit, point.requestedX, point.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable);
     }
     if (wallOrder) wallOrder.revision = unit.orderRevision;
@@ -6733,9 +6858,20 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     if (destination < 0) return;
     reservedDestinations.add(destination);
     if (queueWaypoint && canQueueBehindCurrentRoute(unit)) {
+      const retainFollowCatchUp = followTravelMovementActive(unit)
+        && (unit.movePlanningPending || unit.pathIndex < unit.path.length)
+        && Number.isInteger(unit.moveGoalCell) && unit.moveGoalCell >= 0 && unit.moveGoalCell < CELL_COUNT;
       clearWorkIntent(unit);
       unit.wallBuildOrder = null;
       unit.persistentOrder = null;
+      // The accepted catch-up becomes ordinary travel without changing its job,
+      // route or revision. Ordinary point validity is meaningful after Follow clears.
+      if (retainFollowCatchUp && !(activeMoveGoalPoint(unit)
+        && validMoveGoalPoint(unit.moveGoalPoint, unit, MAP_WIDTH, MAP_HEIGHT))) {
+        const point = cellToWorld(unit.moveGoalCell);
+        unit.moveGoalPoint = createClearanceMoveGoalPoint(unit, point.x, point.z,
+          unit.moveGoalCell, MAP_WIDTH, MAP_HEIGHT, isWalkable);
+      }
       unit.queuedWaypoints.push({ destination, attackMove,
         ...(precisePoint ? { point: createClearanceMoveGoalPoint(unit, centerX, centerZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable) } : {}) });
       queuedCount++;
@@ -7205,7 +7341,17 @@ function assignAttackBuilding(player, command) {
     unit.attackBuildingTargetId = target.id;
     unit.repathTimer = 0.6;
     unit.lastAttackCell = targetCell;
-    unit.path = path;
+    if (focusedBuildingAttackMovementActive(unit)) {
+      const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
+      const rejoined = rejoinSelectedUnitRoute({ path }, {
+        position: unit, startCell, firstPoint: cellToWorld(path[0] ?? startCell), radius,
+        width: MAP_WIDTH, height: MAP_HEIGHT, isWalkable, cellToWorld,
+        acceptPrefix: center => canTraverseStaticBodySegment(unit, center, radius,
+          MAP_WIDTH, MAP_HEIGHT, isWalkable),
+      });
+      unit.path = rejoined.rejoin === 'rejected' ? [] : rejoined.route.path;
+      if (rejoined.rejoin === 'rejected') unit.repathTimer = STEP_SECONDS;
+    } else unit.path = path;
     unit.pathIndex = 0;
   }
   sendOrderNotice(player, command, `ATTACK BUILDING ORDER · ${assignments.length} UNITS`);
@@ -8366,7 +8512,7 @@ function simulateTick() {
             continue;
           }
           let rejoinRejected = false;
-          if (focusedUnitAttackMovementActive(unit) || attackMoveAcquiredMovementActive(unit)) {
+          if (focusedUnitAttackMovementActive(unit) || attackMoveAcquiredMovementActive(unit) || patrolAcquiredMovementActive(unit)) {
             const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
             const rejoined = rejoinSelectedUnitRoute(approach, {
               position: unit, startCell, firstPoint: cellToWorld(approach.path[0] ?? startCell), radius,
@@ -8425,15 +8571,28 @@ function simulateTick() {
           unit.repathTimer = STEP_SECONDS;
           continue;
         }
-        unit.path = pathFromAttackFlow(start, field);
+        const path = pathFromAttackFlow(start, field);
+        unit.path = path;
         if (unit.path.length === 0 && !field.goals.has(start)) {
           unit.repathTimer = STEP_SECONDS;
           continue;
         }
+        let rejoinRejected = false;
+        if (focusedBuildingAttackMovementActive(unit)) {
+          const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
+          const rejoined = rejoinSelectedUnitRoute({ path }, {
+            position: unit, startCell, firstPoint: cellToWorld(path[0] ?? startCell), radius,
+            width: MAP_WIDTH, height: MAP_HEIGHT, isWalkable, cellToWorld,
+            acceptPrefix: center => canTraverseStaticBodySegment(unit, center, radius,
+              MAP_WIDTH, MAP_HEIGHT, isWalkable),
+          });
+          rejoinRejected = rejoined.rejoin === 'rejected';
+          unit.path = rejoinRejected ? [] : rejoined.route.path;
+        }
         unit.pathIndex = 0;
-        unit.moveGoalCell = unit.path.at(-1) ?? start;
+        unit.moveGoalCell = path.at(-1) ?? start;
         unit.lastAttackCell = targetCell;
-        unit.repathTimer = 0.6;
+        unit.repathTimer = rejoinRejected ? STEP_SECONDS : 0.6;
       }
     }
 
@@ -8454,7 +8613,7 @@ function simulateTick() {
           unit.attackTargetId = target.id;
           unit.repathTimer = 0.6;
           unit.lastAttackCell = movePath.targetCell;
-          if (attackMoveAcquiredMovementActive(unit)) {
+          if (attackMoveAcquiredMovementActive(unit) || patrolAcquiredMovementActive(unit)) {
             const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
             const rejoined = rejoinSelectedUnitRoute(movePath, {
               position: unit, startCell, firstPoint: cellToWorld(movePath.path[0] ?? startCell), radius,
