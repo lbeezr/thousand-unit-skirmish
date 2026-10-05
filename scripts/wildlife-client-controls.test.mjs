@@ -12,6 +12,28 @@ const own = (team,map=controlsMap) => map.resourceNodes.find(row=>row.id===`shee
 async function fixture(t,team=0,options={}) {
   const f=await wildlifeControlsFixture(team,options);t.after(()=>f.close());return f;
 }
+
+test('shared input fixture renders terminal recap with seat privacy and clears it on result reset', async t => {
+  for (const team of [0, 1, null]) {
+    const f = await fixture(t, team), document = f.w.document;
+    const terminal = controlsState(f.map, { winner: 2, winnerReason: 'stronghold-destruction',
+      matchElapsedSeconds: 123, food: [12, 98], wood: [34, 76], alive: [2, 2], objectives: [] });
+    const before = structuredClone(terminal);
+    f.w.applyState(terminal, false);
+    assert.equal(document.querySelector('#match-result-title').textContent, 'DRAW');
+    assert.equal(document.querySelector('#match-recap').hidden, false);
+    assert.equal(document.querySelector('#match-recap-duration').textContent, 'Duration 2:03');
+    const resources = document.querySelector('#match-recap-resources');
+    assert.equal(resources.textContent, team === null ? ''
+      : `Your remaining resources: ${terminal.food[team]} Food · ${terminal.wood[team]} Wood`);
+    assert.equal(resources.hidden, team === null, 'spectators receive no player bank recap');
+    assert.deepEqual(terminal, before, 'recap rendering does not mutate the accepted DTO');
+    f.w.updateMatchResult(-1);
+    assert.equal(document.querySelector('#match-recap').hidden, true);
+    assert.equal(resources.textContent, '');
+  }
+});
+
 function selected(f,id) {
   assert.equal(f.w.selectedWildlifeId,id);
   assert.equal(f.w.selectedBuildingId,null);
