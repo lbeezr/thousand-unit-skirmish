@@ -233,7 +233,7 @@ export function farmSelectionFacts(building, coarsePointer = false) {
       : 'Food plot under construction · no food available yet.',
     instruction: !complete ? `${assign} to finish construction.` : stock > 0
       ? `${assign} to harvest. Build another Farm to plant more.`
-      : 'Clear exhausted Farm, then select Workers and build a new Farm. No regrowth.',
+      : 'Select idle Workers, then select this plot and choose Replant · 60 wood. Workers harvest after construction. Clear exhausted Farm remains available with no refund. No regrowth.',
     artLabel: farmSelectionPortrait(building)?.label || FARM_SYMBOL_LABEL,
   };
 }

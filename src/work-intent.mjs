@@ -59,7 +59,11 @@ export function validWorkIntent(intent, unit, map, { buildings = [], nextBuildin
     && (intent.resource !== 'food' || intent.sourceKind === PLAIN_FOOD_SOURCE_KIND)
     && (intent.resource !== 'stone' || map.economyProfileId === STONE_ECONOMY_PROFILE_ID)
     && keys(intent.anchor, ['x', 'z']) && onMap(intent.anchor, map);
-  if (intent.kind !== 'construction' || !keys(intent, ['version', 'kind', 'generation', 'siteIds', 'area'])) return false;
+  if (intent.kind !== 'construction' || !keys(intent, ['version', 'kind', 'generation', 'siteIds', 'area',
+    ...(intent.resumeFarmHarvest !== undefined ? ['resumeFarmHarvest'] : [])])) return false;
+  if (intent.resumeFarmHarvest !== undefined && (intent.resumeFarmHarvest !== true
+    || !Array.isArray(intent.siteIds) || intent.siteIds.length !== 1
+    || buildings.some(building => building.id === intent.siteIds[0] && building.type !== 'farm'))) return false;
   const area = intent.area;
   if (!keys(area, ['minX', 'maxX', 'minZ', 'maxZ']) || !Object.values(area).every(Number.isFinite)
     || area.minX < -map.width / 2 || area.maxX > map.width / 2 || area.minX > area.maxX

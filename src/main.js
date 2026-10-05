@@ -4998,7 +4998,7 @@ function updateBuildingLifecycleActions() {
   const choices = !building ? [] : [
     ...(!building.complete ? [{ type: 'cancelConstruction', label: 'Cancel construction · refund unfinished work' }] : []),
     ...(building.type === 'farm' && building.complete && building.harvestStock === 0
-      ? [{ type: 'cancelConstruction', label: 'Clear exhausted Farm · no refund' }] : []),
+      ? [{ type: 'replantFarm', label: 'Replant · 60 wood' }, { type: 'cancelConstruction', label: 'Clear exhausted Farm · no refund' }] : []),
     ...(building.complete && getBuildingQueueLength(building) > 0 ? [{ type: 'cancelTraining', label: 'Cancel last queued unit' }] : []),
     ...(building.complete && building.type === 'palisade-gate' ? [{ type: 'setGateOpen', label: building.gateOpen ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass' }] : []),
     ...(active ? [{ type: 'cancelResearch', label: 'Cancel research · refund unfinished work' }] : []),
@@ -5019,6 +5019,11 @@ function updateBuildingLifecycleActions() {
           const current = latestBuildings.find(row => row.id === building.id && row.team === localTeam);
           if (!current || !current.complete || current.type !== 'palisade-gate' || matchWinner >= 0) return;
           command.open = !current.gateOpen;
+        }
+        if (choice.type === 'replantFarm') {
+          const ids = selectedWorkerIds();
+          if (!ids.length) { showToast('SELECT IDLE WORKERS, THEN SELECT THIS EXHAUSTED PLOT · REPLANT COSTS 60 WOOD'); return; }
+          sendTrackedOrder({ ...command, ids }, 'REPLANT · 60 WOOD', ids.length, 'WORKERS'); return;
         }
         if (choice.type === 'repairBuilding') {
           command.ids = teamUnits[localTeam].filter((unit) => unit.hp > 0 && unit.kind === 'worker').map((unit) => unit.id);
@@ -7158,7 +7163,7 @@ function applyOrderNotice(token, message) {
   if (/^(SHEEP STOP ORDER|HERD ORDER|STOP ORDER|HOLD POSITION ORDER|PATROL ORDER|FOLLOW ORDER|REPAIR ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|RETURN CARGO ORDER|BUILD ORDER|BUILD RESUME ORDER) · /.test(message)
     || message === 'SHEEP STOP ORDER'
     || message.startsWith('WAYPOINT QUEUED · ') || message.startsWith('PALISADE LINE PLACED ·')
-    || message === 'WALL ALREADY PLACED · NO CHARGE') {
+    || message === 'WALL ALREADY PLACED · NO CHARGE' || message.startsWith('FARM REPLANTED · ')) {
     finishOrderStatus(token, message, 'applied');
     return true;
   }
@@ -7434,7 +7439,10 @@ function pickBuildingAt(x, y, predicate = (building) => building.team === localT
 
 function selectBuilding(building) {
   clearWildlifeSelection();
+  const retainedWorkers = building.team === localTeam && building.type === 'farm'
+    && building.complete && building.harvestStock === 0 ? selectedWorkerIds() : [];
   selected.clear();
+  for (const id of retainedWorkers) selected.add(id);
   clearActiveControlGroup({ clearBuilding: false });
   selectedBuildingId = building.id;
   lastFriendlyUnitClick = null;

@@ -171,3 +171,15 @@ Identified containing staged delivery remains with the release delivery owner;
 actual rendered ordinary gameplay remains with the cloud testing owner. Both
 remain open until their identified evidence is recorded; no deployment or
 browser-control claim is inferred from source checks or merge.
+
+
+### Manual Farm renewal continuation — 5 October 2026
+
+[Farm owner and active queue](farm-finite-planting.md#manual-renewal-ownership-and-active-queue--5-october-2026)
+adds optional `resumeFarmHarvest: true` only to a generation-bound construction
+intent with exactly one Farm site. It resumes normal Gather on that exact fresh
+paid identity after safe construction completion. Busy unrelated work is
+ineligible; cargo is preserved. Stop/Move/Return and a new assignment supersede
+it; destroyed/cancelled site IDs cannot transfer to later buildings. Generic
+construction sequencing, neutral-food/forest intent and crowd/access policy
+remain unchanged. Current saves without the optional field remain valid.

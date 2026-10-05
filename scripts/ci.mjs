@@ -308,7 +308,8 @@ run(['--test', 'scripts/underbough-gathering-evidence.test.mjs'], 'Rootways gath
 run(['--test', 'scripts/base-lifecycle.test.mjs'], 'Cancel refunds and proportional repair');
 run(['--test', 'scripts/storehouse-routing.test.mjs'], 'Reachable drop-off route selection');
 run(['--test', 'scripts/mill-contract.test.mjs'], 'Food-only Mill routing, menu and placeholder contracts');
-run(['--test', 'scripts/farm-harvest.test.mjs', 'scripts/farm-client.test.mjs'], 'Finite Farm stock, identity, ownership and controls');
+run(['scripts/farm-replant-scenario.mjs'], 'Manual paid Farm renewal through sockets and recovery');
+run(['--test', 'scripts/farm-harvest.test.mjs', 'scripts/farm-client.test.mjs', 'scripts/farm-replant.test.mjs'], 'Finite Farm stock, identity, ownership and controls');
 run(['--test', 'scripts/economy-profile.test.mjs'], 'Explicit Stone profile and typed price/refund contracts');
 run(['--test', 'scripts/economy-checkpoint.test.mjs', 'scripts/economy-server.test.mjs'], 'Typed economy payment, deposit and checkpoint conservation');
 run(['--test', 'scripts/economy-client.test.mjs'], 'Typed economy client profile, cargo and affordability');
