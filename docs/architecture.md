@@ -884,16 +884,18 @@ The return is exactly `{ definition: canonicalDefinition, state, explored,
 savedMatchMode }`: normalized canonical authored map, the original saved-state
 object by identity, two newly decoded Node Buffers and normalized mode identity.
 Validation uses an effective map internally but returns the canonical authored
-one. Input serialization and the live match remain unchanged. Restore's separate
-shipped-map veto is not moved into this return contract.
+one. The tested normalized checkpoints retain their input serialization and the
+live match remains unchanged. Preserve the existing map validator's defaulting
+of `victoryMode` and `fogOfWar` before checksum validation; it can normalize the
+input map. Restore's separate shipped-map veto stays outside this return contract.
 
 The first proposed extraction is only that envelope/preflight responsibility,
 before domain-state validation. Its explicit inputs would be the existing
 schema/rules and three record limits, the existing map-validation/hash adapters,
 and launch mode/Practice values. Import current pure economy/mode definitions and
 the private preflights directly; no host-state catch-all, catalog, persistence,
-movement writer or public HTTP admission. Agree whether limits/launch values are
-factory inputs or per-call values with their owning callers before implementation.
+movement writer or public HTTP admission. XL has agreed the per-call inputs
+below; the core owner's host-write handoff remains pending.
 Full-state validation remains host-owned until its separate domain interfaces
 are established; copying all 514 lines behind dozens of injected bindings is
 not the selected first step.
@@ -905,8 +907,104 @@ restore parity, two-fault first-error cases, XL preflight codes and the separate
 catalog veto are executable through the actual production functions. Existing
 fog/route/JSON/match-mode and native cold-recovery checks remain required for a
 later runtime extraction. No source extraction, deployed revision or playable
-acceptance is claimed by preparing these tests. The pending owner agreement is
-the next action, not a completed migration.
+acceptance is claimed by preparing these tests. Host integration after the core
+owner's containing refresh or handoff is the next action, not a completed migration.
+
+#### Envelope dependency and write-allocation checkpoint
+
+The follow-up audit is pinned to [PR495](https://github.com/lbeezr/thousand-unit-skirmish/pull/495)
+merge `a2bdd041`. Its proposed cut is the 23 existing physical lines from the
+object guard through `const state = snapshot.state` (24 lines including the
+original function header), immediately before
+`validatePregameCheckpoint`. Those lines reference ten host bindings and seven
+imported bindings from six existing modules, excluding standard JavaScript
+builtins. This is an ordered validation responsibility, not a size target; the
+remaining domain-state validator and its final return stay in the host.
+
+| Actual dependency | Proposed input or direct dependency | Retained owner and limit |
+| --- | --- | --- |
+| `MATCH_CHECKPOINT_SCHEMA_VERSION`, `MATCH_RULES_VERSION`, `MAX_UNITS`, `MAX_BUILDINGS`, `MAX_RESOURCE_NODES` | Agreed per-call values `checkpointSchemaVersion`, `gameRulesVersion`, `maxUnits`, `maxBuildings`, `maxResourceNodes`, supplied from the existing host constants (30, 6, 2000, 128, 128 at this source). | XL has confirmed these inputs. Do not duplicate constants or introduce fallback/default limits. Preserve `[1, 2, 3, 4, gameRulesVersion]` and all existing rejection positions. |
+| `assertSnapshot` | The private module retains the same three-line assertion implementation, error prefix and timing. It is not an injected input. | The original host helper and all its other callers/fixture markers remain intact; this slice creates no common error-policy module or wrapper. |
+| `validateMapDefinition`, `matchMapHash` | Existing host callbacks with the same map diagnostic label and canonical JSON hash. | Map validation is a separate 311-line host body with additional policy dependencies; it is not moved here. Keep its current defaults, property/hash order, <=256 admission and errors. The hash adapter remains unchanged. |
+| `pveLaunchOptions`, `soloPractice` | Per-call `launchMode: pveLaunchOptions ? 'pve' : 'pvp'` and `practice: soloPractice`, supplied from the existing host values. | XL has confirmed this interface. The module receives neither the launch object nor environment access; the PvE launch-map veto remains in restore. |
+| `preflightXlCheckpointRoutes`, `preflightXlCheckpointState` | Direct imports from the existing private route/JSON-budget modules. | XL retains both implementations and quotas. Route then state preflight still precede schema/economy/map checks. Capture, clone, write/read/parser and live-route calls stay where they are. |
+| `validateEconomyCheckpoint`, `DEFAULT_FACTION_ID`, `validateMatchModeCheckpoint`, `assertMatchModeCompatibility`, `effectiveMapForMatchMode` | Direct imports from their four current modules, without barrels or policy copies. | Existing economy and mode owners retain their contracts. Canonical versus effective definitions remain distinct and no migration moves into validation. |
+
+The agreed canonical entry is [validateCheckpointEnvelope](../src/server/checkpoint-envelope.mjs),
+with signature `validateCheckpointEnvelope(snapshot, { checkpointSchemaVersion,
+gameRulesVersion, maxUnits, maxBuildings, maxResourceNodes, validateMapDefinition,
+matchMapHash, launchMode, practice })`. These are nine explicit inputs; no new
+configuration check precedes the existing object/route/state rejection order.
+It returns `{ canonicalDefinition, effectiveDefinition, state, savedMatchMode }`:
+authored normalized map, effective mode projection, original state by identity
+and normalized mode. Future host wiring aliases `effectiveDefinition` to the
+existing local `definition` before continuing with domain-state checks.
+This private intermediate result is not a new persisted or public checkpoint
+shape. The host still decodes exploration Buffers and returns its original
+`{ definition: canonicalDefinition, state, explored, savedMatchMode }` only after
+all existing domain-state checks succeed. Preserve the original state-object
+predicate rather than tightening it as part of organization.
+
+One actual-consumer probe sets the existing `victoryMode` key to null on a
+captured valid Skirmish checkpoint. Validation defaults it to `any`, accepts the
+canonical hash and retains state identity without changing the live match. That
+is existing normalization, not an input-immutability guarantee for arbitrary
+maps. The [envelope parity tests](../scripts/checkpoint-envelope.test.mjs) retain
+both accepted/defaulted and rejected-checksum controls against the actual host,
+alongside canonical/effective map, first-error, domain-handoff and XL-code checks.
+They use the real host map/hash adapters and limits through the existing headless
+fixture; no validator policy is replaced. Existing normalized-input preservation
+checks and source serialization remain unchanged.
+
+XL owner `01a103e8` has agreed the exact envelope/rejection/preflight interface;
+the coordinating parent relayed that agreement. Core `01a107ba` still owns active
+queued-claim edits in `server.mjs`. The remaining decision is **which containing
+core refresh or handoff allows architecture to replace this prefix and add its
+one import, and who owns the two XL audit-consumer updates?** The parent relays
+that question when cross-task messaging is unavailable. Only the disjoint module,
+parity tests/fixture observation, private-domain membership and this plan are
+prepared now. The production host, existing preflights and audit bodies are
+unchanged; default consumer integration remains pending the named allocations.
+
+The smallest implementation follows that dependency order:
+
+1. XL has agreed the cut, nine inputs and intermediate result; obtain core's
+   containing refresh or host handoff and the audit allocation. Keep the
+   named `validateMatchCheckpoint` host entry and both replay fixtures intact;
+   there is no legacy module path needing a shim or new browser admission.
+2. The canonical private module and its `server` membership in
+   `scripts/check-runtime-imports.mjs` are prepared. Add the approved host wiring
+   only after core's containing refresh or handoff. The current
+   browser closure must never reach it. Existing imports used by capture,
+   migrations or other host callers remain; remove only newly unused bindings.
+3. Update `scripts/xl-map-boundary-audit.mjs` to follow the actual host binding to
+   the canonical envelope and retain its route-before-map/limit checks. It
+   currently demands literal preflight calls inside the host body, so ignoring
+   that consumer would break an existing contract. Both it and
+   `scripts/checkpoint-json-budget-audit.mjs` must include the new canonical file
+   in their input hashes. XL owns or explicitly allocates these writes; neither
+   audit may widen admission or reinterpret synthetic upper witnesses as saves.
+4. `scripts/checkpoint-envelope.test.mjs` adds six parity/handoff cases; the
+   existing economy job imports them without CI/package registration changes.
+   Preserve all existing economy, match-mode, fog,
+   route/JSON, XL-audit, Farm and native checkpoint/storage-recovery assertions,
+   fixture identities and test names. Run the affected consumers plus configured
+   types, import guards and documentation checks; no package/CI/type-registration
+   change is included in this proposed scope.
+5. Run the existing allowlist and packed-release scenarios. Docker already copies
+   `src/`; server-domain membership makes the existing packed loop require the
+   new file on disk while GET and HEAD return 404. Keep `CLIENT_ASSET_PATHS`
+   unchanged. Independently review the exact source union, then record the clean
+   package digest, containing deployment and recovery observation separately.
+
+The audited baseline is 223 modules, 415 local edges, 140 browser/94 server/34
+shared and zero cycles. The prepared private module adds six direct edges but
+is not reached by the production host: 224 modules/421 edges, with host closures
+unchanged. Default host integration would add the seventh edge and make the
+server closure 95 modules; browser/shared closures must not grow. Verify that
+implemented graph and host responsibility reduction at the approved wiring
+head. Preparation does not remove the original host prefix or establish runtime
+adoption, a containing deployment or recovery acceptance.
 
 ### Coupling and size ratchets
 
