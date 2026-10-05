@@ -10,6 +10,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/client/hud/objective-summary.mjs',
   'src/client/hud/match-recap.mjs', 'src/client/hud/match-decisions.mjs',
   'src/frontier-building-preview.mjs',
+  'src/building-fog-composition.mjs',
   'src/building-orientation.mjs', 'src/building-placement-preview.mjs', 'src/building-rotation-controls.mjs',
   'src/palisade-construction-ground.mjs',
   'src/asset-readability.mjs', 'src/catalog-barracks-observation.mjs', 'docs/art-direction/human-roster-v1/infantry-production-contract.json', 'assets/ui/icons/actions/manifest.json',
