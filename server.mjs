@@ -5717,8 +5717,10 @@ function enqueueRouteRepairs(repairs, { mode = 'blocked-route-repair', orderLabe
     const point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
     const wallOrder = activeWallBuildOrder(unit);
     unit.orderRevision++;
+    // Accepted repair/persistent destinations must survive before publication:
+    // queued orders and checkpoint recovery consume this durable first leg.
+    unit.moveGoalCell = destination;
     if (point) {
-      unit.moveGoalCell = destination;
       unit.moveGoalPoint = createClearanceMoveGoalPoint(unit, point.requestedX, point.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable);
     }
     if (wallOrder) wallOrder.revision = unit.orderRevision;
