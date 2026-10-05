@@ -1,0 +1,338 @@
+{
+  "source": "032eea7d37bf61b882a814afa0759295991157f3",
+  "checkoutDirty": true,
+  "serverSha256": "77d361de86c6c96707ec5690bc1d05851fb9715a70cfe2d3ff1e4121c2ccc338",
+  "unitMovementSha256": "9c2ba5168c549d54d52c836c077618ab762f5b387a0c03b9b42af871f10c1cc3",
+  "combatMovementSha256": "d67bbf852a3ce9f7f34dc9da752e280fb579afaa37db73cf06a0d85b51f12346",
+  "records": [
+    {
+      "team": 0,
+      "id": 4,
+      "beforeQueueRadius": 0,
+      "afterRestore": {
+        "goal": 1572,
+        "point": null,
+        "persistentOrder": null,
+        "radius": 0,
+        "queue": [
+          {
+            "destination": 1308,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 427348840,
+              "revision": 4,
+              "requestedX": -3.5,
+              "requestedZ": -3.5,
+              "cell": 1308,
+              "x": -3.5,
+              "z": -3.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ]
+      },
+      "firstLegExecuted": true,
+      "contacts": 16,
+      "first": {
+        "id": 4,
+        "generation": 427348840,
+        "revision": 5,
+        "team": 0,
+        "kind": "infantry",
+        "tick": 388,
+        "navigationRevision": 0,
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8360493260021999,
+          "z": 0.9396740808797359
+        },
+        "reason": "steering",
+        "neighbours": [
+          {
+            "id": 0,
+            "generation": 427348840,
+            "kind": "worker",
+            "x": 6.5,
+            "z": 0.5
+          },
+          {
+            "id": 1,
+            "generation": 427348840,
+            "kind": "worker",
+            "x": -18.9,
+            "z": -16.9
+          },
+          {
+            "id": 2,
+            "generation": 427348840,
+            "kind": "worker",
+            "x": -21.1,
+            "z": -15.1
+          },
+          {
+            "id": 3,
+            "generation": 427348840,
+            "kind": "worker",
+            "x": -18.9,
+            "z": -15.1
+          },
+          {
+            "id": 5,
+            "generation": 427348840,
+            "kind": "infantry",
+            "x": -20.44,
+            "z": -15.56
+          },
+          {
+            "id": 6,
+            "generation": 427348840,
+            "kind": "infantry",
+            "x": -19.56,
+            "z": -15.56
+          },
+          {
+            "id": 7,
+            "generation": 427348840,
+            "kind": "infantry",
+            "x": -18.68,
+            "z": -15.56
+          },
+          {
+            "id": 8,
+            "generation": 427348840,
+            "kind": "worker",
+            "x": 18.9,
+            "z": 15.1
+          },
+          {
+            "id": 9,
+            "generation": 427348840,
+            "kind": "worker",
+            "x": 21.1,
+            "z": 15.1
+          },
+          {
+            "id": 10,
+            "generation": 427348840,
+            "kind": "worker",
+            "x": 18.9,
+            "z": 16.9
+          },
+          {
+            "id": 11,
+            "generation": 427348840,
+            "kind": "worker",
+            "x": 20.5,
+            "z": 15.5
+          },
+          {
+            "id": 12,
+            "generation": 427348840,
+            "kind": "infantry",
+            "x": 18.68,
+            "z": 16.44
+          },
+          {
+            "id": 13,
+            "generation": 427348840,
+            "kind": "infantry",
+            "x": 19.56,
+            "z": 16.44
+          },
+          {
+            "id": 14,
+            "generation": 427348840,
+            "kind": "infantry",
+            "x": 19.5,
+            "z": 15.5
+          },
+          {
+            "id": 15,
+            "generation": 427348840,
+            "kind": "infantry",
+            "x": 22.5,
+            "z": 15.5
+          }
+        ]
+      },
+      "queuedMoveCompleted": true,
+      "final": {
+        "x": -3.5,
+        "z": -3.5,
+        "goal": 1308,
+        "pending": false,
+        "queue": []
+      }
+    },
+    {
+      "team": 1,
+      "id": 12,
+      "beforeQueueRadius": 0,
+      "afterRestore": {
+        "goal": 1508,
+        "point": null,
+        "persistentOrder": null,
+        "radius": 0,
+        "queue": [
+          {
+            "destination": 1308,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 2654534226,
+              "revision": 4,
+              "requestedX": -3.5,
+              "requestedZ": -3.5,
+              "cell": 1308,
+              "x": -3.5,
+              "z": -3.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ]
+      },
+      "firstLegExecuted": true,
+      "contacts": 6,
+      "first": {
+        "id": 12,
+        "generation": 2654534226,
+        "revision": 5,
+        "team": 1,
+        "kind": "infantry",
+        "tick": 403,
+        "navigationRevision": 0,
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8308342673704516,
+          "z": 0.9187440832834253
+        },
+        "reason": "steering",
+        "neighbours": [
+          {
+            "id": 0,
+            "generation": 2654534226,
+            "kind": "worker",
+            "x": -22.5,
+            "z": -15.5
+          },
+          {
+            "id": 1,
+            "generation": 2654534226,
+            "kind": "worker",
+            "x": -18.9,
+            "z": -16.9
+          },
+          {
+            "id": 2,
+            "generation": 2654534226,
+            "kind": "worker",
+            "x": -21.1,
+            "z": -15.1
+          },
+          {
+            "id": 3,
+            "generation": 2654534226,
+            "kind": "worker",
+            "x": -18.9,
+            "z": -15.1
+          },
+          {
+            "id": 4,
+            "generation": 2654534226,
+            "kind": "infantry",
+            "x": -21.32,
+            "z": -15.56
+          },
+          {
+            "id": 5,
+            "generation": 2654534226,
+            "kind": "infantry",
+            "x": -20.44,
+            "z": -15.56
+          },
+          {
+            "id": 6,
+            "generation": 2654534226,
+            "kind": "infantry",
+            "x": -19.56,
+            "z": -15.56
+          },
+          {
+            "id": 7,
+            "generation": 2654534226,
+            "kind": "infantry",
+            "x": -18.68,
+            "z": -15.56
+          },
+          {
+            "id": 8,
+            "generation": 2654534226,
+            "kind": "worker",
+            "x": 6.5,
+            "z": 0.5
+          },
+          {
+            "id": 9,
+            "generation": 2654534226,
+            "kind": "worker",
+            "x": 21.1,
+            "z": 15.1
+          },
+          {
+            "id": 10,
+            "generation": 2654534226,
+            "kind": "worker",
+            "x": 18.9,
+            "z": 16.9
+          },
+          {
+            "id": 11,
+            "generation": 2654534226,
+            "kind": "worker",
+            "x": 20.5,
+            "z": 15.5
+          },
+          {
+            "id": 13,
+            "generation": 2654534226,
+            "kind": "infantry",
+            "x": 19.56,
+            "z": 16.44
+          },
+          {
+            "id": 14,
+            "generation": 2654534226,
+            "kind": "infantry",
+            "x": 19.5,
+            "z": 15.5
+          },
+          {
+            "id": 15,
+            "generation": 2654534226,
+            "kind": "infantry",
+            "x": 22.5,
+            "z": 15.5
+          }
+        ]
+      },
+      "queuedMoveCompleted": true,
+      "final": {
+        "x": -3.5,
+        "z": -3.5,
+        "goal": 1308,
+        "pending": false,
+        "queue": []
+      }
+    }
+  ],
+  "provenance": "Baseline executes isolated reviewed d2f25c1e snapshot, tree-identical to032eea7d; all three runtime hashes verified against032eea7d git objects. Candidate executes unchanged server plus uncommitted pure Follow selector. Shared checkout dirty is not baseline-runtime dirtiness. Reporter success is collection, not physical acceptance."
+}

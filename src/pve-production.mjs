@@ -306,12 +306,19 @@ export function createProductionPolicy(seed) {
           return [{ type: 'trainUnit', kind, buildingId: stable.id }];
         }
       }
-      if (observation.resources.food < limits.infantryFoodCost + limits.foodReserve) return [];
+      const infantryOption = barracks.productionOptions?.find((option) => option.kind === 'infantry');
+      // An empty army with no Worker producer cannot replenish this reserve.
+      // Buy one explicitly affordable Infantry; living or queued units restore
+      // the ordinary budget, and any surviving Worker producer keeps priority.
+      const infantryFoodReserve = friendly.length === 0 && queued === 0 && workerQueue === 0
+        && infantryOption?.available === true
+        && !observation.buildings.friendly.some(building => building.hp > 0
+          && BUILDING_DEFINITIONS[building.type]?.products.includes('worker')) ? 0 : limits.foodReserve;
+      if (observation.resources.food < limits.infantryFoodCost + infantryFoodReserve) return [];
       const infantry = friendly.filter((unit) => unit.kind === 'infantry').length;
       const spearmen = friendly.filter((unit) => unit.kind === 'spearman').length;
       const spear = UNIT_DEFINITIONS.spearman;
       const spearOption = barracks.productionOptions?.find((option) => option.kind === spear.id);
-      const infantryOption = barracks.productionOptions?.find((option) => option.kind === 'infantry');
       const wantsSpear = spearOption?.available !== false && spearmen < Math.max(Math.ceil(infantry / 3), visibleMounted)
         && BUILDING_DEFINITIONS[barracks.type].products.includes(spear.id)
         && observation.resources.food >= spear.cost.food + limits.foodReserve

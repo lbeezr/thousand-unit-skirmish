@@ -57,6 +57,18 @@ export function patrolTravelMovementActive(unit) {
     && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
 }
 
+// Friendly Follow's target-free catch-up. The existing persistent controller
+// owns leader generation, offset, deadband and replanning; publication is shared.
+export function followTravelMovementActive(unit) {
+  return unit.persistentOrder?.type === 'follow'
+    && militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind]) === true && unit.hp > 0
+    && unit.movementDomain !== 'water' && !unit.holdingPosition && !unit.attackMove
+    && !(unit.attackTargetId >= 0) && !(unit.attackBuildingTargetId >= 0)
+    && !unit.stanceCombat && !unit.stanceReturning
+    && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0) && !unit.gatherPhase
+    && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
+}
+
 // Patrol's acquired unit-target leg uses its original acquisition anchor and
 // bounded approach. Automatic stance and friendly Follow remain separate.
 export function patrolAcquiredMovementActive(unit) {
