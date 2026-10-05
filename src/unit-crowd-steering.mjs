@@ -115,7 +115,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     const goal = targetOf(other);
     if (!finitePoint(goal) || Math.hypot(other.x - unit.x, other.z - unit.z) > 2) return false;
     const ox = goal.x - other.x, oz = goal.z - other.z;
-    return ox * routeX + oz * routeZ < 0;
+    return ox * routeX + oz * routeZ < -.5 * Math.hypot(ox, oz);
   });
   const laneAxis = Math.abs(routeX) >= Math.abs(routeZ) ? 'z' : 'x';
   const laneSign = laneAxis === 'z' ? Math.sign(routeX) : -Math.sign(routeZ);
@@ -134,15 +134,18 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   preferredX /= preferredLength; preferredZ /= preferredLength;
   const directLength = Math.min(stepDistance, distance);
   const direct = { x: unit.x + headingX * directLength, z: unit.z + headingZ * directLength };
-  const blocking = neighbors.filter(other => (!ordinaryCrowdBodyRadius(other) || noProgressTicks >= 30)
+  const blocking = neighbors.filter(other => !ordinaryCrowdBodyRadius(other)
     && (other.x - unit.x) * headingX + (other.z - unit.z) * headingZ > 0
     && !canTraverseCrowdBodySegment(unit, direct, radius, [other], { allowEscape: true }));
   if (blocking.length && !state.detour) {
     const other = blocking.toSorted((a, b) => Math.hypot(a.x - unit.x, a.z - unit.z)
       - Math.hypot(b.x - unit.x, b.z - unit.z) || a.id - b.id)[0];
     const clearance = radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] + .12;
-    const sides = [1, -1].map(side => ({ x: other.x - side * headingZ * clearance,
-      z: other.z + side * headingX * clearance }));
+    const sides = [90, -90, 135, -135, 45, -45].map(angle => {
+      const radians = angle * Math.PI / 180;
+      return { x: other.x + (headingX * Math.cos(radians) - headingZ * Math.sin(radians)) * clearance,
+        z: other.z + (headingZ * Math.cos(radians) + headingX * Math.sin(radians)) * clearance };
+    });
     const legal = sides.filter(p => pointAllowed(p)
       && canTraverseCrowdBodySegment(p, p, radius, neighbors));
     if (legal.length) state.detour = { ...legal[0], alternatives: legal.slice(1), distance,
@@ -227,12 +230,13 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   // claimant blocks every forward/lateral candidate. Parked actors never yield.
   // The tie uses durable actor identity; each retreat is still a short physical
   // admission and leaves route/order/queue unchanged.
-  if (!best || (noProgressTicks >= 30 && neighbors.some(other => other.id < unit.id && finitePoint(targetOf(other))
-    && radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] > .5
-    && (targetOf(other).x - other.x) * routeX + (targetOf(other).z - other.z) * routeZ < 0
+  const yieldingToPeer = noProgressTicks >= 30 && neighbors.some(other => other.id < unit.id && finitePoint(targetOf(other))
+    && (targetOf(other).x - other.x) * routeX + (targetOf(other).z - other.z) * routeZ
+      < -.5 * Math.hypot(targetOf(other).x - other.x, targetOf(other).z - other.z)
     && Math.hypot(other.x - unit.x, other.z - unit.z)
-      < radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] + stepDistance + .1))) {
-    if (noProgressTicks >= 30) { best = null; bestScore = -Infinity; }
+      < radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] + stepDistance + .1);
+  if (!best || yieldingToPeer || (state.detour && noProgressTicks >= 30)) {
+    if (yieldingToPeer) { best = null; bestScore = -Infinity; }
     for (const scale of [1, .5]) for (const angle of [105, -105, 135, -135, 180]) {
       const radians = angle * Math.PI / 180, length = stepDistance * scale;
       consider({ x: unit.x + (headingX * Math.cos(radians) - headingZ * Math.sin(radians)) * length,

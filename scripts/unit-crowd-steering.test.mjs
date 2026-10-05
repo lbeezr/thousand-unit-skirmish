@@ -7,6 +7,20 @@ import { LAND_CLEARANCE_PROFILE, segmentRectangleDistanceSquared } from '../src/
 const actor = (extra = {}) => ({ id: 1, generation: 17, orderRevision: 8, kind: 'infantry',
   x: 0, z: .5, hp: 100, path: [1], pathIndex: 0, moveGoalCell: 1, ...extra });
 
+test('a distant perpendicular final goal does not force a same-route front actor to retreat into its follower', () => {
+  const front = actor({ id: 66, x: -.22, z: 3.057, target: { x: 18.5, z: 3.5 } });
+  const rear = actor({ id: 64, x: -.22, z: 3.498, target: { x: 16.5, z: 3.5 } });
+  const target = { x: -.22, z: 1.999 };
+  const moveAt = tick => selectCrowdStep({ unit: front, target, progressTarget: { x: -.5, z: 1.5 },
+    travelDirection: { x: 0, z: -1 }, tick, stepDistance: .043333333333333,
+    neighbors: [rear], cellCenter: { x: -.5, z: 3.5 }, canTraverse: p => p.x <= -.22 + 1e-9 });
+  moveAt(0);
+  const move = moveAt(40);
+  assert.ok(!move.waitingForCrowd && move.z < -.9 && !move.yieldingForCrowd);
+  assert.ok(canTraverseCrowdBodySegment(front,
+    { x: front.x + move.x * move.stepDistance, z: front.z + move.z * move.stepDistance }, .22, [rear]));
+});
+
 test('parked-body detour chooses the physically open side beside a wall', () => {
   const u = actor({ x: -1 }), parked = actor({ id: 2, x: .5, path: [], pathIndex: 0, holdingPosition: true });
   const initial = structuredClone(parked), target = { x: 2, z: .5 };
