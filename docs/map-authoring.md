@@ -81,8 +81,10 @@ and assigns only string values to other controls. It dispatches no edit events
 and retains existing DOM setter exceptions.
 
 `main.js` creates one controller and uses it from its real draft capture/restore
-callers. Draft validation, source-map/storage keys, the 160 ms save debounce,
-history, selection, gestures, import/export and room publishing stay in the host.
+callers. At PR406, draft validation and source-map/storage keys remained in the
+host; PR412 extracts the storage/preflight boundary below. The 160 ms save
+debounce, history, selection, gestures, import/export and room publishing stay
+in the host.
 The two former private form functions had no public imports and need no shim;
 all eleven established compatibility surfaces remain supported. The exact new
 browser path joins the existing manifest; authoring cannot enter server or
@@ -93,6 +95,44 @@ GET/HEAD headers and sibling/malformed-path denial. Rendered draft recovery
 acceptance remains with the architecture/authoring owner until normal-sandbox
 cloud browser capability supports the existing draft scenario; CPU evidence
 does not establish that browser outcome.
+
+### Versioned local draft storage and recovery
+
+[PR412](https://github.com/lbeezr/thousand-unit-skirmish/pull/412) gives
+[`authoring/map-studio-draft-store.mjs`](../src/authoring/map-studio-draft-store.mjs)
+the existing version-1 constant, key format, JSON storage and recovery preflight.
+`createMapStudioDraftStore({ getStorage })` returns `key`, `read`, `write`,
+`remove` and `requireRecovery`. Key inputs are explicit session prefix, origin,
+room and source map; the existing `default` room fallback and key bytes remain.
+The storage getter stays deferred until an operation, preserving denied-browser
+getter failures inside their existing host catches and access-before-serialization
+order. Read returns parsed JSON or `null` for missing/unparseable/unreadable data;
+it does not filter old versions, remove corrupt data or create a migration.
+Write serializes the same draft with `JSON.stringify`; write/remove errors still
+reach the host's existing failure messages.
+
+`requireRecovery(draft, sourceMapId)` preserves the existing envelope preflight,
+16–256 integer dimensions, obstacle/spawn arrays and exact error. It returns
+the cached `{ state, definition }` references after validation, without cloning,
+repairing, deep map validation or a new save format. Restore still rereads storage
+at the user's choice, and full map validation remains required for import/export.
+The host retains debounce, dirty state, last-save time, status/recovery prompts,
+capture, population, history, close/cancel/pagehide flushes and publish handling.
+
+The purpose-specific [draft fixture](../scripts/fixtures/map-studio-draft-fixture.mjs)
+executes those actual host handlers plus map population, compression, validation,
+import and download functions against JSDOM WebStorage and controlled timers.
+Rendering, audio, subpanel synchronization and browser platform APIs are stubbed;
+these checks do not claim rendered usability. The existing registered brush/form
+suite retains every case and adds corrupt/old/foreign draft rejection, interrupted
+close/cancel/restore, pagehide, storage failures, portable JSON parity and invalid
+field recovery/export rejection. Native saved-map restart recovery and packed
+HTTP remain separate checks. All eleven compatibility surfaces remain supported;
+the new authoring path has exact browser admission and no module dependencies.
+Rendered draft acceptance remains open at the recorded cloud sandbox/profile
+startup failure; the architecture/authoring owner retains the existing browser
+scenario when capability becomes available. No dispatch retry or new storage
+service belongs to this extraction.
 
 ## Coordinates and terrain
 
