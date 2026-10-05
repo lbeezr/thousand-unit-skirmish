@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
 import {
-  buildElevationGrid, capturePrerequisiteIds, findInvalidCapturePrerequisite,
+  buildElevationGrid,
   findUnreachableCaptureZone, findUnreachableResourceNode, validateElevationPatches,
 } from '../src/map-utils.mjs';
 import * as legacyMapUtils from '../src/map-utils.mjs';
 import { scenarioEventSourceIds, findInvalidScenarioEventChain } from '../src/world/scenario-event-chain.mjs';
 import * as eventChain from '../src/world/scenario-event-chain.mjs';
+import { capturePrerequisiteIds, findInvalidCapturePrerequisite } from '../src/world/capture-prerequisites.mjs';
+import * as capturePrerequisites from '../src/world/capture-prerequisites.mjs';
 import {
   canTraverseElevation, elevationPathCost, hasElevation,
 } from '../src/elevation.mjs';
@@ -209,5 +211,43 @@ for (const event of immutableEvents) {
 Object.freeze(immutableEvents);
 assert.equal(findInvalidScenarioEventChain(immutableEvents), null, 'validation accepts immutable authored input');
 assert.deepEqual(immutableEvents, joinedEvents, 'validation does not rewrite event dependencies or provenance');
+
+assert.deepEqual(Object.keys(capturePrerequisites), ['capturePrerequisiteIds', 'findInvalidCapturePrerequisite']);
+for (const name of Object.keys(capturePrerequisites)) assert.equal(legacyMapUtils[name], capturePrerequisites[name], name);
+assert.equal(capturePrerequisiteIds(gateGraph[2]), gateGraph[2].requiresAll,
+  'ordered prerequisites retain the authored array identity');
+assert.deepEqual(capturePrerequisiteIds(null), []);
+
+const prerequisiteRoots = Array.from({ length: 32 }, (_, index) => ({ id: `gate-${index}` }));
+assert.equal(findInvalidCapturePrerequisite([...prerequisiteRoots,
+  { id: 'child', requiresAll: prerequisiteRoots.slice(0, 31).map(trigger => trigger.id) }]), null,
+  '31 ordered prerequisites are accepted at the existing format limit');
+assert.deepEqual(findInvalidCapturePrerequisite([...prerequisiteRoots,
+  { id: 'child', requiresAll: prerequisiteRoots.map(trigger => trigger.id) }]),
+{ triggerId: 'child', reason: 'shape' }, '32 prerequisites retain the existing shape rejection');
+assert.equal(findInvalidCapturePrerequisite([...prerequisiteRoots,
+  { id: 'child', requires: undefined, requiresAll: ['gate-0', 'gate-1'] }]), null,
+  'an undefined legacy field does not conflict with defined multi-gate prerequisites');
+const inheritedPrerequisites = Object.assign(Object.create({ requiresAll: ['gate-0', 'gate-1'] }), { id: 'inherited' });
+assert.equal(capturePrerequisiteIds(inheritedPrerequisites), Object.getPrototypeOf(inheritedPrerequisites).requiresAll);
+assert.equal(findInvalidCapturePrerequisite([...prerequisiteRoots, inheritedPrerequisites]), null,
+  'the existing reader and validator retain inherited-field semantics');
+assert.deepEqual(findInvalidCapturePrerequisite([
+  { id: 'first', requiresAll: ['missing', 'missing'] }, { id: 'second', requires: 'second' },
+]), { triggerId: 'first', reason: 'duplicate' }, 'input order and duplicate-before-missing rejection remain stable');
+assert.deepEqual(findInvalidCapturePrerequisite([{ id: 'child', requires: 7 }]),
+  { triggerId: 'child', requires: 7, reason: 'missing' }, 'invalid legacy values retain the requires result key and value');
+assert.deepEqual(findInvalidCapturePrerequisite([{ id: 'child', requiresAll: ['child', 'missing'] }]),
+  { triggerId: 'child', reason: 'self' }, 'the first prerequisite retains self-before-missing rejection');
+assert.deepEqual(findInvalidCapturePrerequisite([{ id: 'child', requiresAll: ['missing', 'child'] }]),
+  { triggerId: 'child', requires: 'missing', reason: 'missing' }, 'reversing prerequisite order retains first-source rejection');
+const immutablePrerequisites = structuredClone(gateGraph);
+for (const trigger of immutablePrerequisites) {
+  if (trigger.requiresAll) Object.freeze(trigger.requiresAll);
+  Object.freeze(trigger);
+}
+Object.freeze(immutablePrerequisites);
+assert.equal(findInvalidCapturePrerequisite(immutablePrerequisites), null, 'validation accepts immutable authored triggers');
+assert.deepEqual(immutablePrerequisites, gateGraph, 'validation does not rewrite prerequisite order or values');
 
 console.log('Map connectivity, elevation patches, capture prerequisites, and scenario-event dependency utilities passed.');
