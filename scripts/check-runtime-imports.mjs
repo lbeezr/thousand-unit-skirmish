@@ -111,6 +111,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'authoring/scenario-authoring', 'authoring/map-resize',
     'authoring/map-studio-form-state',
     'authoring/map-studio-draft-store',
+    'authoring/map-studio/draft/v1/contract',
     'landscape-authoring', 'map-resize', 'map-studio-viewport',
     'resource-brush-authoring', 'resource-brush-controls', 'resource-cluster-authoring',
     'scenario-authoring', 'settlement-authoring', 'terrain-authoring',
