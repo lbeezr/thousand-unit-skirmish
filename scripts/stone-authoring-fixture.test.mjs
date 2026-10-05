@@ -89,7 +89,7 @@ test('legacy migration conserves fractional banks/cargo and depletion; unsupport
   const room = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 15000 });
   t.after(() => room.dispose()); await room.start(); await room.checkpoint(); await room.stop();
   const legacy = JSON.parse(await readFile(room.checkpointPath, 'utf8'));
-  legacy.schemaVersion = 11; delete legacy.rulesetRevision; delete legacy.factionId;
+  legacy.schemaVersion = 11; delete legacy.state.voluntaryEndings; delete legacy.rulesetRevision; delete legacy.factionId;
   delete legacy.matchModeId; delete legacy.matchModeVersion;
   delete legacy.economyProfileId; delete legacy.state.teamStone;
   legacy.state.teamFood = [137.25, 91.5]; legacy.state.teamWood = [203.75, 44.25];

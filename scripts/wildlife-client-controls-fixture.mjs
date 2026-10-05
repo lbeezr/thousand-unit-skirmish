@@ -105,7 +105,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
   const query = selector => w.document.querySelector(selector);
   Object.assign(w, {...browserRecoveryBindings(),...selection,...economyProfile,...economyClient,...audioPolicy,...wildlifeClientBindings(),
     THREE,UNIT_DEFINITIONS,BUILDING_DEFINITIONS,TECHNOLOGY_DEFINITIONS,farmHarvestNode,isShoreFish,applyUnitStances,fixedMatchArmySize,
-    rememberNotice,classifyOrderNotice,formatResourceStock,readWorkerPerformingAction,renderMatchRecap,TextEncoder,WebSocket:WireSocket,
+    rememberNotice,classifyOrderNotice,formatResourceStock,readWorkerPerformingAction,renderMatchRecap,matchDecisions:{update(){}},TextEncoder,WebSocket:WireSocket,
     mapDefinition:map,MAP_WIDTH:map.width,MAP_HEIGHT:map.height,MAP_HALF_X:map.width/2,MAP_HALF_Z:map.height/2,
     localTeam:team,cameraSeatTeam:team,isHost:false,matchWinner:-1,matchWinnerReason:null,
     activeMatchMode:{},soloPracticeActive:false,knownMaps:[],matchModeView:{update:noop},

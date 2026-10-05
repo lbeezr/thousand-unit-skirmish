@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 import { createMapStudioFormState } from '../../src/authoring/map-studio-form-state.mjs';
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from '../../src/authoring/map-studio-draft-store.mjs';
-import { ScenarioEditHistory } from '../../src/authoring/scenario-authoring.mjs';
+import { ScenarioEditHistory, createScenarioEditCoordinator } from '../../src/authoring/scenario-authoring.mjs';
 import * as mapUtils from '../../src/map-utils.mjs';
 import * as scenarioRegions from '../../src/scenario-regions.mjs';
 import * as definitions from '../../src/gameplay-definitions.mjs';
@@ -47,7 +47,7 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {} } = {}) {
     MIN_SCENARIO_EVENT_REPEAT_SECONDS: 5, MAX_OBJECTIVE_FOOD_REWARD: 10000, MAX_TRIGGER_UNIT_REWARD: 25,
     editorDraftSourceMapId: null, editorDraftStorageKey: null, editorDraftDirty: false, editorDraftWriteTimer: 0,
     editorDefinition: null, editorTool: 'stone', editorDrag: null, editorPanDrag: null,
-    scenarioEditHistory: new ScenarioEditHistory(64), scenarioHistoryApplying: false,
+    scenarioEditHistory: new ScenarioEditHistory(64), createScenarioEditCoordinator,
     selectedEditorRegionId: null, resourceBrushControls: null, redraws: 0,
     groundBaseMaterial: () => { throw new Error('Fixture maps must specify terrainBase'); },
     selectedStudioAudio: () => w.editorDefinition?.audio,
@@ -76,14 +76,14 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {} } = {}) {
   w.eval([
     between('const MAP_STUDIO_DRAFT_DEBOUNCE_MS', 'function getSelectedEditorTrigger('),
     between('function selectedEditorPrerequisiteIds(', 'function setEditorTriggerPrerequisites('),
-    between('function scenarioEditorState(', 'function restoreScenarioEdit('),
-    between('function syncEditorRegionControls(', 'function writeEditorRegions('),
+    between('function scenarioEditorState(', 'let editorDraftSourceMapId'),
     between('function readEditorRegions(', 'function getSelectedEditorScenarioEvent('),
     between('function saveEditorStartingResourcesFields(', 'function syncEditorTriggerControls('),
     between('function populateMapEditor(', 'function isGroundEditorTool('),
     between('function compressEditorGround(', 'function showToast('),
     between('ui.mapStudioOpen.addEventListener(', "document.querySelector('#studio-import').addEventListener("),
     between("ui.mapStudio.addEventListener('close'", "window.addEventListener('resize'"),
+    between("document.querySelector('#studio-scenario-undo').addEventListener(", 'for (const field of [ui.studioEventRegion,'),
     'window.draftStore = mapStudioDraftStore; window.lastDraftSavedAt = () => editorDraftLastSavedAt;',
   ].join('\n'));
   return { w, d, timers, downloads, copy,

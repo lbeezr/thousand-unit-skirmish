@@ -117,6 +117,10 @@ export const replay = {
   get wood() { return teamWood; },
   get food() { return teamFood; }, get resources() { return resourceNodeStates; },
   snapshot(team) { return roomPayload(team); },
+  attackApproach(id, targetId, continueWaypoint = false) {
+    const approach = getUnitAttackPath(units[id], units[targetId], null, continueWaypoint);
+    return approach && { ...approach, path: [...approach.path] };
+  },
   checkpoint() { return captureMatchCheckpoint(1); },
   restore(snapshot) {
     const migrated = migrateEconomyCheckpoint(migrateMatchCheckpoint(migrateFoodToolsCheckpoint(snapshot)));
@@ -126,6 +130,7 @@ export const replay = {
     migrateMatchModeCheckpoint(migrated);
     migrateWildlifeHerdCheckpoint(migrated);
     migrateWildlifeHeadingCheckpoint(migrated);
+    migrateVoluntaryEndingCheckpoint(migrated);
     restoreMatchCheckpoint(migrated);
   },
   validate(snapshot) {
@@ -136,6 +141,7 @@ export const replay = {
     migrateMatchModeCheckpoint(migrated);
     migrateWildlifeHerdCheckpoint(migrated);
     migrateWildlifeHeadingCheckpoint(migrated);
+    migrateVoluntaryEndingCheckpoint(migrated);
     return validateMatchCheckpoint(migrated);
   },
   get tick() { return tickNumber; }, get navigationRevision() { return navigationRevision; },

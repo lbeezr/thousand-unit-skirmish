@@ -122,7 +122,7 @@ test('validation rejects non-objects and unsupported schema or rules versions', 
   for (const value of [undefined, null, [], 'snapshot', 27]) {
     assert.throws(() => validateMatchModeCheckpoint(value), /Invalid match checkpoint: expected an object/);
   }
-  for (const schemaVersion of [undefined, null, 26, 30, '27']) {
+  for (const schemaVersion of [undefined, null, 26, 31, '27']) {
     assert.throws(() => validateMatchModeCheckpoint({ ...legacy(), schemaVersion,
       matchModeId: 'authored', matchModeVersion: 1 }), /Invalid match checkpoint:.*schema version/);
   }
@@ -132,7 +132,7 @@ test('validation rejects non-objects and unsupported schema or rules versions', 
   }
 });
 
-for (const schemaVersion of [28, 29]) test(`Herd/heading schema ${schemaVersion} retains strict explicit match mode validation`, () => {
+for (const schemaVersion of [28, 29, 30]) test(`Herd/heading schema ${schemaVersion} retains strict explicit match mode validation`, () => {
   for (const matchModeId of ['authored', 'objective-control', 'skirmish']) {
     const snapshot = { ...legacy(), schemaVersion, matchModeId, matchModeVersion: 1 };
     const before = structuredClone(snapshot);

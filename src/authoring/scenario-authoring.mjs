@@ -29,3 +29,23 @@ export function regionGestureZone(drag, width, height) {
   return {column,row,width:clamp(Math.abs(start.column-current.column)+1,1,width-column),
     height:clamp(Math.abs(start.row-current.row)+1,1,height-row)};
 }
+
+// Keep applying/recording coordination beside the bounded scenario history.
+// The client supplies its snapshot, state application and availability callbacks.
+export function createScenarioEditCoordinator({ history, canRecord, capture, apply, onRecord }) {
+  let applying = false;
+  function record() {
+    if (!applying && canRecord()) history.record(capture());
+    onRecord();
+  }
+  function restore(direction) {
+    const state = history[direction]();
+    if (!state) return false;
+    applying = true;
+    apply(state);
+    applying = false;
+    record();
+    return true;
+  }
+  return { record, restore };
+}

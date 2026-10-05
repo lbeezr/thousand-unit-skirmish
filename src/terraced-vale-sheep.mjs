@@ -28,7 +28,7 @@ export function seedTerracedValeSheep(nodes) {
 // preceding shipped Tiny map with these four identity additions; never restock
 // or repair an old ordinary food node, motion, order, cargo or bank.
 export function migrateTerracedValeSheepCheckpoint(snapshot, shipped, hashMap) {
-  if (snapshot?.schemaVersion !== 29 || snapshot.mapDefinition?.id !== MAP_ID
+  if (![29, 30].includes(snapshot?.schemaVersion) || snapshot.mapDefinition?.id !== MAP_ID
     || shipped?.id !== MAP_ID || typeof hashMap !== 'function'
     || snapshot.mapHash !== TERRACED_VALE_PRE_SHEEP_MAP_HASH
     || hashMap(snapshot.mapDefinition) !== TERRACED_VALE_PRE_SHEEP_MAP_HASH
