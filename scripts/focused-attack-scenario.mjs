@@ -61,7 +61,7 @@ try {
   const report = { sourceHead: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
     sourceDirty: execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim() !== '', observations,
     limits: ['Real native authoritative process, both WebSocket seats and actual cold restart during focused pursuit.',
-      'Static body/range/damage admission is qualified by the separate physical command regressions.',
+      'Physical static body admission and exact damage/range rules require the separate traced command regressions.',
       'No rendered frames; identified served staging/production acceptance remains open.'] };
   if (process.env.FOCUSED_ATTACK_RECORD) await writeFile(process.env.FOCUSED_ATTACK_RECORD, JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report));
