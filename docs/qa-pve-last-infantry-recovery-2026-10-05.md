@@ -64,7 +64,9 @@ each, with compressed and decoded SHA256 checks. No authority field is edited.
 [Native recovery helper](../scripts/pve-last-infantry-case.mjs) strictly restores
 each whole checkpoint, uses the normal policy, checks hidden-bank/unit projection,
 and cold-restores the real paid queue in a new fixture with both-seat snapshot
-equality. It compares every repeated command, notice and final checkpoint.
+equality under the existing Worker transient row17 clearing contract. All
+authority fields remain equal. It compares every repeated command, notice and
+final checkpoint.
 
 The nine [focused regressions](../scripts/pve-last-infantry.test.mjs) cover both
 seats and three policy seeds at budget boundaries, preserved Worker/queue/
