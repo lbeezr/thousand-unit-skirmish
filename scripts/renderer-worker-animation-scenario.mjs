@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { normalizedDirection, spriteActionClip, spriteGroundDepthBias } from '../src/unit-sprite-runtime.mjs';
+import { normalizedDirection, spriteActionClip, spriteActionProvenance, spriteGroundDepthBias } from '../src/unit-sprite-runtime.mjs';
 import { decodeRgba8 } from './sprite-pixel-bounds.mjs';
 import { decodeRegisteredUnitFrames, unitArtDirections } from './unit-art-production-contract.mjs';
 import { validateCaptureContext } from './renderer-capture-context.mjs';
@@ -35,8 +35,11 @@ export function observeRenderedUnits() {
   try {
     const probe=window.__rtsUnitAnimation;
     if(!probe)return false;
-    const selectedUnits=units.filter(u=>u&&u.hp>0&&u.team===localTeam&&['worker','spearman'].includes(u.kind));
-    const observed=selectedUnits.map(u=>{
+    const selectedUnits=units.filter(u=>u&&u.hp>0&&u.team===localTeam&&u.visible!==false&&['worker','spearman'].includes(u.kind));
+    // At most eight explicit targets, or 32 opening observations per frame.
+    // Preserve the existing roster snapshot; provenance does no normal-frame work.
+    const selectionTargets=probe.targets.slice(0,8);
+    const observed=selectedUnits.map((u,index)=>{
       const role=unitSpriteRuntime.roleForUnit(u);
       const meshes=scene.children.filter(m=>m.geometry?.attributes?.instanceAtlasRect
         &&m.material?.map?.image?.src&&new URL(m.material.map.image.src,location.href).pathname
@@ -54,6 +57,8 @@ export function observeRenderedUnits() {
         visibleScale:u.scale*(u.spawnStartedAt>0?.28+.72*Math.min(1,Math.max(0,(now-u.spawnStartedAt)/SPAWN_POSE_MS)):1),
         cargoType:u.cargoType??null,workResourceVariant:u.workResourceVariant??null,
         clockState:u.spriteClockState,clockAction:u.spriteClockAction,clockStartedAt:u.spriteClockStartedAt,
+        actionSelection:(selectionTargets.length?selectionTargets.includes(u.id):index<32)
+          ?unitSpriteRuntime.observeAction(u,now,localTeam):null,
         uv:rect?Array.from(rect.array.slice(u.slot*4,u.slot*4+4)):null,matrix,
         atlasPath:mesh?new URL(mesh.material.map.image.src,location.href).pathname:null,
         actorDraw:Boolean(actorDraw),inView:Math.abs(foot.x)<.88&&Math.abs(foot.y)<.8&&Math.abs(foot.z)<1,
@@ -141,10 +146,14 @@ export function identifyUnitFrame(unit,pack,cells,time) {
   while(index<clip.sequence.length-1&&phase>=clip.sequence[index].durationMs){phase-=clip.sequence[index].durationMs;index++;}
   const expected=clip.sequence[index].frameId;
   assert.ok(matches.some(f=>f.id===expected),'drawn UV must agree with the actual elapsed animation clock');
+  assert.deepEqual(unit.actionSelection,{role:unit.role,version:directories[unit.role].split('-').at(-1),
+    ...spriteActionProvenance(new Map(asset.clips.map(c=>[`${c.stateId}|${c.directionId}`,c])),
+      state,direction,unit.cargoType,unit.role,true)},'action selection provenance must match the retained selector and pack');
   const frame=matches.find(f=>f.id===expected),pixel=cells[frame.id];
   assert.ok(pixel,'registered visible source pixels are required');
   const drawnRoot=registeredSpriteRoot(unit,asset,frame,page);
   return {frameId:frame.id,rgbaSha256:pixel.rgba,alphaSha256:pixel.alpha,state,direction,
+    actionSelection:unit.actionSelection??null,
     clipState:clip.stateId,clipDirection:clip.directionId,clipLoop:clip.loop,clipDurationMs:duration,elapsedMs:elapsed,index,drawnRoot};
 }
 

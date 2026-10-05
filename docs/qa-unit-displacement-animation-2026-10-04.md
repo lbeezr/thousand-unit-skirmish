@@ -57,3 +57,62 @@ same state. The initial cloud Chromium sandbox/Firefox download blocker is
 separate. The parent cloud browser owner retains native temporal acceptance;
 the path owner retains PR #285 trajectory evidence. No new art or runtime
 behavior changes are included here.
+
+## Gameplay diagnostics lane — 5 October 2026
+
+The audit at `b5b4dd49` found a reproducible reporting gap: Spearman v1
+resolves all eight walk clip keys, but seven keys reference exact-facing idle
+frames. The existing post-render `worker-animations` probe exposed clocks and
+UVs without the action/direction selection provenance. Fourteen of sixteen
+both-seat heading cases therefore need an explicit idle-placeholder signal;
+the two SE cases have eight distinct frame IDs. This is source/CPU evidence.
+
+The existing runtime now offers read-only `observeAction(unit, now, localTeam)`.
+It reports role/version, requested and selected action/direction, frame counts,
+independent fallback flags and a reason (`exact`, `idle-placeholder`,
+`direction-fallback`, `action-fallback`, `missing-clip`). Typed Food/Wood gather
+is treated as its requested resource action. A static authored action or ordinary
+idle is not labelled an idle placeholder. Distinct IDs do not certify distinct
+pixels, anatomical motion or GPU drawing; the existing decoded-cell/UV checks
+remain authoritative for their own scope.
+
+The existing post-render probe calls it only for local, visible Worker/Spearman
+records, retaining at most eight explicitly targeted provenance observations
+or 32 opening observations per frame. Existing samples remain capped at 180.
+The new method has no history and does no work during ordinary rendering;
+clock, state selector, sprite update, artwork, matrices, geometry, admission and
+server/public session contracts are unchanged. Enemy and retained fog records
+are rejected before role lookup. No coordinates, unit identities, targets or
+session fields are added to the provenance value.
+
+`identifyUnitFrame` consumes the captured provenance, checks it against the
+retained manifest/selector alongside actual UV/clock checks, and retains it in
+heading/Stop evidence. CPU tests drive the real runtime through the actual
+serialized post-render observer, verify unchanged units/matrices, reject false
+completeness/borrowed-heading/missing signals, and test opening/target limits,
+privacy and the existing sample cap. The tests run through existing registered
+`unit-animation-runtime` and `registered-foot-sprites` checks; no new framework
+or standalone unused utility is introduced.
+
+Owner: gameplay diagnostics lane. Foot-art owner `01a10469` retains default art
+coverage/held PR230/241; shadow-renderer owner `01a10c3c` retains geometry and
+render work. Read-only ownership inspection found clean main and only held art
+PR25/230/241 open. This slice changes no art/default/version/selector/update or
+shadow hook, and introduces only the additive observation method and existing
+animation-domain adapter evidence. Their implementation scopes remain separate.
+
+The one normal-sandbox cloud capability attempt in this executor returned
+`sandbox-unavailable` and `storage-unavailable`, zero WebGL readbacks, game
+frames or screenshots. Do not retry that launch or any denied hosted dispatch.
+The diagnostics owner retains ordinary packed/staging observation through the
+existing shared capture adapter on a capable authorized cloud runtime; no Mac
+work, access changes or new diagnostic platform are requested. Source/package,
+served/deployed identity and actual rendered acceptance remain separate.
+
+### Ranked next diagnostics slices
+
+| Rank | Measured risk / next action | Owned scope and acceptance |
+| --- | --- | --- |
+| 1 — current slice; rendered use open | Clip labels conceal seven Spearman idle walk placeholders. Integrate and retain provenance in existing animation capture evidence. | Read-only runtime observation and animation-domain adapter/tests. Both-seat 14 placeholder / 2 exact controls; false provenance rejected; no selector/art changes. Identified deployed/GPU consumer use still requires the existing capable capture owner. |
+| 2 — audit before implementation | Runtime pack-load failure only warns and keeps the procedural renderer; a null observation alone cannot distinguish pending versus failed loading. Measure one loader failure through the existing capture probe before adding bounded load-status evidence. | Read-only loaded/pending/failed scalar status and existing adapter only; no URLs/errors/session payloads. Positive load and rejected-file controls, unchanged fallback buffers. Coordinate an actual shared loader overlap with the renderer owner first. |
+| 3 — deferred to movement interface agreement | A held owned unit can lack motion for legitimate Stop/work/wait reasons. Audit existing movement wait/repair signals before choosing a concrete silent-stall gap. | Disclosed local units only, existing diagnostic consumer and bounded observation window; no hidden-enemy census, movement policy change or generic tracing framework. Movement owners retain runtime arrival failures. |
