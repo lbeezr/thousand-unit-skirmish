@@ -14,7 +14,9 @@ import { unfinishedRefund, buildingRepairStep } from '../src/base-lifecycle.mjs'
 import { canTraverseElevation } from '../src/elevation.mjs';
 import { buildElevationGrid } from '../src/map-utils.mjs';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
-import { unfinishedConstructionSites } from '../src/construction-work-intent.mjs';
+import { unfinishedConstructionSites, constructionMovementActive } from '../src/construction-work-intent.mjs';
+import { createOrdinaryMilitaryEndpointAvailability } from '../src/simulation/movement/military-endpoint-availability.mjs';
+import { canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
 import { planWallLine } from '../src/wall-line-planner.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
@@ -38,7 +40,7 @@ const functions = [
   ['reservedResourceNodes', 'rejectBuild'], ['pendingMoveAssignmentsByUnit', 'pathIntersectsCells'],
   ['creditRefund', 'cancelTraining'], ['destroyBuilding', 'pendingMoveAssignmentsByUnit'],
   ['palisadeConstructionIntent', 'preparePalisadeBuilderAssignments'], ['distanceToBuildingEdge', 'destroyBuilding'],
-  ['updateWallBuildOrders', 'updateTeamResearch'],
+  ['constructionEndpointSnapshotGetter', 'updateTeamResearch'],
 ].map(([a, b]) => extract(a, b)).join('\n');
 
 function fixture(team = 0) {
@@ -59,6 +61,8 @@ function fixture(team = 0) {
       { ...GAMEPLAY_DEFINITIONS, buildings: definitions }),
     unitHasCapability: (u, capability) => UNIT_DEFINITIONS[u.kind].capabilities.includes(capability),
     activeWallBuildOrder, unfinishedConstructionSites, isPalisade, palisadeConstructionRetries: new WeakMap(),
+    constructionMovementActive, createOrdinaryMilitaryEndpointAvailability, canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE,
+    MAX_UNITS: 2000, movePlanningEpoch: 0, tickNumber: 0, TICK_RATE: 30,
     navigationRevision: 0, attackFlowFields: new Map(), dirty: false,
     broadcastGameplayNotice() {}, sendOrderNotice() {}, clearAttackTarget() {},
   });

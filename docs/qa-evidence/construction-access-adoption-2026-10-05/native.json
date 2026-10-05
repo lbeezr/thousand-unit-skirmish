@@ -1,0 +1,914 @@
+{
+  "source": "51e3d0382f21a5c7a9e53c268d1a3127217f5986",
+  "dirty": true,
+  "serverSha256": "590c98e9a1d9e0d5a65b38249f73434706f120e1c2d8b3ec5f25d028ead25385",
+  "scope": "real native WebSocket command handlers, both seats and two process restarts; no rendered acceptance",
+  "commands": [
+    {
+      "team": 0,
+      "type": "stop",
+      "ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "clientOrderToken": 4400
+    },
+    {
+      "team": 0,
+      "type": "setStance",
+      "stance": "noAttack",
+      "ids": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "clientOrderToken": 4401
+    },
+    {
+      "team": 1,
+      "type": "stop",
+      "ids": [
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "clientOrderToken": 4402
+    },
+    {
+      "team": 1,
+      "type": "setStance",
+      "stance": "noAttack",
+      "ids": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "clientOrderToken": 4403
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        0
+      ],
+      "x": 2.5,
+      "z": 0.5,
+      "clientOrderToken": 4404
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        4
+      ],
+      "x": 4.5,
+      "z": -1.5,
+      "clientOrderToken": 4405
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        5
+      ],
+      "x": 5.5,
+      "z": -1.5,
+      "clientOrderToken": 4406
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        6
+      ],
+      "x": 6.5,
+      "z": -1.5,
+      "clientOrderToken": 4407
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        7
+      ],
+      "x": 7.5,
+      "z": -1.5,
+      "clientOrderToken": 4408
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        8
+      ],
+      "x": 8.5,
+      "z": -1.5,
+      "clientOrderToken": 4409
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        9
+      ],
+      "x": 4.5,
+      "z": -0.5,
+      "clientOrderToken": 4410
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        10
+      ],
+      "x": 8.5,
+      "z": -0.5,
+      "clientOrderToken": 4411
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        11
+      ],
+      "x": 4.5,
+      "z": 0.5,
+      "clientOrderToken": 4412
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        12
+      ],
+      "x": 8.5,
+      "z": 0.5,
+      "clientOrderToken": 4413
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        13
+      ],
+      "x": 4.5,
+      "z": 1.5,
+      "clientOrderToken": 4414
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        14
+      ],
+      "x": 8.5,
+      "z": 1.5,
+      "clientOrderToken": 4415
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        15
+      ],
+      "x": 4.5,
+      "z": 2.5,
+      "clientOrderToken": 4416
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        16
+      ],
+      "x": 5.5,
+      "z": 2.5,
+      "clientOrderToken": 4417
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        17
+      ],
+      "x": 6.5,
+      "z": 2.5,
+      "clientOrderToken": 4418
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        18
+      ],
+      "x": 7.5,
+      "z": 2.5,
+      "clientOrderToken": 4419
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        19
+      ],
+      "x": 8.5,
+      "z": 2.5,
+      "clientOrderToken": 4420
+    },
+    {
+      "team": 0,
+      "type": "build",
+      "ids": [
+        0
+      ],
+      "buildingType": "house",
+      "x": 6.5,
+      "z": 0.5,
+      "clientOrderToken": 4421
+    },
+    {
+      "team": 0,
+      "type": "move",
+      "ids": [
+        4
+      ],
+      "x": -16.5,
+      "z": -8.5,
+      "clientOrderToken": 4422
+    },
+    {
+      "team": 0,
+      "type": "stop",
+      "ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "clientOrderToken": 4423
+    },
+    {
+      "team": 0,
+      "type": "setStance",
+      "stance": "noAttack",
+      "ids": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "clientOrderToken": 4424
+    },
+    {
+      "team": 1,
+      "type": "stop",
+      "ids": [
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "clientOrderToken": 4425
+    },
+    {
+      "team": 1,
+      "type": "setStance",
+      "stance": "noAttack",
+      "ids": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "clientOrderToken": 4426
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        20
+      ],
+      "x": 2.5,
+      "z": 0.5,
+      "clientOrderToken": 4427
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        24
+      ],
+      "x": 4.5,
+      "z": -1.5,
+      "clientOrderToken": 4428
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        25
+      ],
+      "x": 5.5,
+      "z": -1.5,
+      "clientOrderToken": 4429
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        26
+      ],
+      "x": 6.5,
+      "z": -1.5,
+      "clientOrderToken": 4430
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        27
+      ],
+      "x": 7.5,
+      "z": -1.5,
+      "clientOrderToken": 4431
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        28
+      ],
+      "x": 8.5,
+      "z": -1.5,
+      "clientOrderToken": 4432
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        29
+      ],
+      "x": 4.5,
+      "z": -0.5,
+      "clientOrderToken": 4433
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        30
+      ],
+      "x": 8.5,
+      "z": -0.5,
+      "clientOrderToken": 4434
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        31
+      ],
+      "x": 4.5,
+      "z": 0.5,
+      "clientOrderToken": 4435
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        32
+      ],
+      "x": 8.5,
+      "z": 0.5,
+      "clientOrderToken": 4436
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        33
+      ],
+      "x": 4.5,
+      "z": 1.5,
+      "clientOrderToken": 4437
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        34
+      ],
+      "x": 8.5,
+      "z": 1.5,
+      "clientOrderToken": 4438
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        35
+      ],
+      "x": 4.5,
+      "z": 2.5,
+      "clientOrderToken": 4439
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        36
+      ],
+      "x": 5.5,
+      "z": 2.5,
+      "clientOrderToken": 4440
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        37
+      ],
+      "x": 6.5,
+      "z": 2.5,
+      "clientOrderToken": 4441
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        38
+      ],
+      "x": 7.5,
+      "z": 2.5,
+      "clientOrderToken": 4442
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        39
+      ],
+      "x": 8.5,
+      "z": 2.5,
+      "clientOrderToken": 4443
+    },
+    {
+      "team": 1,
+      "type": "build",
+      "ids": [
+        20
+      ],
+      "buildingType": "house",
+      "x": 6.5,
+      "z": 0.5,
+      "clientOrderToken": 4444
+    },
+    {
+      "team": 1,
+      "type": "move",
+      "ids": [
+        24
+      ],
+      "x": -16.5,
+      "z": -8.5,
+      "clientOrderToken": 4445
+    }
+  ],
+  "observations": [
+    {
+      "team": 0,
+      "builder": 0,
+      "army": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "siteId": 1,
+      "coldBothSeats": true,
+      "acceptedTick": 420,
+      "waitTick": 510,
+      "doneTick": 1020,
+      "savedIntent": {
+        "version": 1,
+        "kind": "construction",
+        "generation": 919098741,
+        "siteIds": [
+          1
+        ],
+        "area": {
+          "minX": 3,
+          "maxX": 10,
+          "minZ": -3,
+          "maxZ": 4
+        }
+      },
+      "revision": 3,
+      "waitingGoal": -1,
+      "wood": 425,
+      "parked": {
+        "x": 2.5,
+        "z": 0.5
+      },
+      "finalPose": {
+        "x": 4.652379961589333,
+        "z": -1.8848627080202214
+      },
+      "retainedMilitaryEndpoints": [
+        [
+          2933,
+          5.5,
+          -1.5,
+          [],
+          919098741
+        ],
+        [
+          2934,
+          6.5,
+          -1.5,
+          [],
+          919098741
+        ],
+        [
+          2935,
+          7.5,
+          -1.5,
+          [],
+          919098741
+        ],
+        [
+          2936,
+          8.5,
+          -1.5,
+          [],
+          919098741
+        ],
+        [
+          3028,
+          4.5,
+          -0.5,
+          [],
+          919098741
+        ],
+        [
+          3032,
+          8.5,
+          -0.5,
+          [],
+          919098741
+        ],
+        [
+          3124,
+          4.5,
+          0.5,
+          [],
+          919098741
+        ],
+        [
+          3128,
+          8.5,
+          0.5,
+          [],
+          919098741
+        ],
+        [
+          3220,
+          4.5,
+          1.5,
+          [],
+          919098741
+        ],
+        [
+          3224,
+          8.5,
+          1.5,
+          [],
+          919098741
+        ],
+        [
+          3316,
+          4.5,
+          2.5,
+          [],
+          919098741
+        ],
+        [
+          3317,
+          5.5,
+          2.5,
+          [],
+          919098741
+        ],
+        [
+          3318,
+          6.5,
+          2.5,
+          [],
+          919098741
+        ],
+        [
+          3319,
+          7.5,
+          2.5,
+          [],
+          919098741
+        ],
+        [
+          3320,
+          8.5,
+          2.5,
+          [],
+          919098741
+        ]
+      ]
+    },
+    {
+      "team": 1,
+      "builder": 20,
+      "army": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "siteId": 2,
+      "coldBothSeats": true,
+      "acceptedTick": 1440,
+      "waitTick": 1530,
+      "doneTick": 2010,
+      "savedIntent": {
+        "version": 1,
+        "kind": "construction",
+        "generation": 919098742,
+        "siteIds": [
+          2
+        ],
+        "area": {
+          "minX": 3,
+          "maxX": 10,
+          "minZ": -3,
+          "maxZ": 4
+        }
+      },
+      "revision": 3,
+      "waitingGoal": -1,
+      "wood": 425,
+      "parked": {
+        "x": 2.5,
+        "z": 0.5
+      },
+      "finalPose": {
+        "x": 4.5,
+        "z": -1.5
+      },
+      "retainedMilitaryEndpoints": [
+        [
+          2933,
+          5.5,
+          -1.5,
+          [],
+          919098742
+        ],
+        [
+          2934,
+          6.5,
+          -1.5,
+          [],
+          919098742
+        ],
+        [
+          2935,
+          7.5,
+          -1.5,
+          [],
+          919098742
+        ],
+        [
+          2936,
+          8.5,
+          -1.5,
+          [],
+          919098742
+        ],
+        [
+          3028,
+          4.5,
+          -0.5,
+          [],
+          919098742
+        ],
+        [
+          3032,
+          8.5,
+          -0.5,
+          [],
+          919098742
+        ],
+        [
+          3124,
+          4.5,
+          0.5,
+          [],
+          919098742
+        ],
+        [
+          3128,
+          8.5,
+          0.5,
+          [],
+          919098742
+        ],
+        [
+          3220,
+          4.5,
+          1.5,
+          [],
+          919098742
+        ],
+        [
+          3224,
+          8.5,
+          1.5,
+          [],
+          919098742
+        ],
+        [
+          3316,
+          4.5,
+          2.5,
+          [],
+          919098742
+        ],
+        [
+          3317,
+          5.5,
+          2.5,
+          [],
+          919098742
+        ],
+        [
+          3318,
+          6.5,
+          2.5,
+          [],
+          919098742
+        ],
+        [
+          3319,
+          7.5,
+          2.5,
+          [],
+          919098742
+        ],
+        [
+          3320,
+          8.5,
+          2.5,
+          [],
+          919098742
+        ]
+      ]
+    }
+  ]
+}
