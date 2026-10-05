@@ -65,12 +65,12 @@ test('all eight existing Worker gaits require changing registered pixels and sil
     assert.equal(result.status,'animated');assert.ok(result.distinctCells>=2&&result.distinctSilhouettes>=2);
     assert.equal(result.samples[0].direction,heading);}
 });
-test('Spearman plays SE, NE, East, North, South and Southwest while preserving two explicit same-facing idle walk gaps',()=>{
+test('Spearman plays SE, NE, East, North, South, Southwest and West while preserving one explicit same-facing idle walk gaps',()=>{
   let animated=0,missing=0;
   for(const heading of unitArtDirections){const f=fixture('spearman',heading),result=validateHeadingSamples(f.samples,f.options);
-    if(['south-east','north-east','east','north','south','south-west'].includes(heading)){assert.equal(result.status,'animated');animated++;}
+    if(['south-east','north-east','east','north','south','south-west','west'].includes(heading)){assert.equal(result.status,'animated');animated++;}
     else{assert.equal(result.status,'incomplete-art-correct-facing');assert.equal(result.distinctCells,1);missing++;}}
-  assert.deepEqual({animated,missing},{animated:6,missing:2});
+  assert.deepEqual({animated,missing},{animated:7,missing:1});
 });
 test('translation with a frozen pose or clock cannot pass Worker gait',()=>{
   const f=fixture('worker','north');
@@ -81,7 +81,7 @@ test('translation with a frozen pose or clock cannot pass Worker gait',()=>{
   const tooShort=fixture('worker','north',{times:[0,100,200]});
   assert.throws(()=>validateHeadingSamples(tooShort.samples,tooShort.options),/usable gait interval/);
 });
-test('final heading aggregation accepts all six genuine Spearman walks and rejects stale or misplaced gaps',()=>{
+test('final heading aggregation accepts all seven genuine Spearman walks and rejects stale or misplaced gaps',()=>{
   const rows=[];
   for(const kind of ['worker','spearman'])for(const heading of unitArtDirections){
     const f=fixture(kind,heading);
@@ -89,10 +89,10 @@ test('final heading aggregation accepts all six genuine Spearman walks and rejec
   }
   const report={rows,expectedMissingWalkDirections:missingWalkDirections(inputs.spearman)};
   assert.doesNotThrow(()=>validateHeadingCoverage(report));
-  assert.equal(rows.filter(r=>r.status==='animated').length,14);
+  assert.equal(rows.filter(r=>r.status==='animated').length,15);
   assert.throws(()=>validateHeadingCoverage({...report,expectedMissingWalkDirections:[...report.expectedMissingWalkDirections,'north-east']}));
   const misplaced=structuredClone(rows);
-  misplaced.find(r=>r.kind==='spearman'&&r.heading==='west').kind='worker';
+  misplaced.find(r=>r.kind==='spearman'&&r.heading==='north-west').kind='worker';
   assert.throws(()=>validateHeadingCoverage({...report,rows:misplaced}));
 });
 test('missing draw, offscreen target, wrong texture, clock and actual displacement are rejected',()=>{
@@ -169,9 +169,9 @@ test('adapter probe leaves normal menu and room URLs unchanged; diagnostics stay
 });
 
 test('actual capture consumer retains fallback provenance and rejects false completeness or missing signals',()=>{
-  const f=fixture('spearman','west'),result=validateHeadingSamples(f.samples,f.options);
+  const f=fixture('spearman','north-west'),result=validateHeadingSamples(f.samples,f.options);
   assert.ok(result.samples.every(s=>s.actionSelection.reason==='idle-placeholder'
-    &&s.actionSelection.requestedDirection==='west'&&s.actionSelection.selectedDirection==='west'));
+    &&s.actionSelection.requestedDirection==='north-west'&&s.actionSelection.selectedDirection==='north-west'));
   for(const change of [unit=>{unit.actionSelection.reason='exact';},
     unit=>{unit.actionSelection.selectedDirection='south-east';},unit=>{delete unit.actionSelection;}]) {
     const changed=structuredClone(f.samples);change(changed[0].units[0]);
@@ -190,7 +190,7 @@ test('post-render hook consumes the real read-only runtime and bounds provenance
     const runtime=createUnitSpriteRuntime({THREE:{...THREE,TextureLoader},scene,capacity:1,
       teamHex:[0x5aa7d7,0xe67a5e],cameraQuaternion:new THREE.Quaternion(),roles:['spearman']});
     runtime.setCount(0,1);runtime.setVisible(true);assert.equal(await runtime.ready,true);
-    const unit={id:42,generation:3,team:0,slot:0,kind:'spearman',hp:35,angle:3*Math.PI/2,walking:true,
+    const unit={id:42,generation:3,team:0,slot:0,kind:'spearman',hp:35,angle:7*Math.PI/4,walking:true,
       renderX:0,renderZ:0,scale:1,visible:true,attackStartedAt:0,defeatStartedAt:0};
     runtime.update(unit,1000,1);
     const before=JSON.stringify(unit),buffers=scene.children.map(m=>Array.from(m.instanceMatrix.array));
@@ -209,7 +209,7 @@ test('post-render hook consumes the real read-only runtime and bounds provenance
     observe();assert.equal(probe.errors.length,0);assert.equal(reads,1);assert.equal(loadReads,1);
     assertUnitLoadReady(probe.last.unitLoad);assertUnitLoadReady(probe.samples[0].unitLoad);
     assert.equal(probe.last.units.length,1);assert.equal(probe.last.units[0].actionSelection.reason,'idle-placeholder');
-    assert.equal(probe.samples[0].units[0].actionSelection.selectedDirection,'west');
+    assert.equal(probe.samples[0].units[0].actionSelection.selectedDirection,'north-west');
     assert.equal(JSON.stringify(unit),before);assert.deepEqual(scene.children.map(m=>Array.from(m.instanceMatrix.array)),buffers);
     context.units=Array.from({length:40},(_,id)=>({...unit,id}));
     probe.targets=[];reads=0;loadReads=0;observe();assert.equal(reads,32);assert.equal(loadReads,1);
