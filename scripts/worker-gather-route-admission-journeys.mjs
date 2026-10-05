@@ -151,6 +151,27 @@ test('rejected/stale commands and naval delegation remain census-free without to
   assert.equal(f.censuses.length, 0); assert.equal(f.context.workerEconomyRouteScope, null);
 });
 
+for (const team of [0, 1]) test(`seat ${team}: Farm Gather retains its owned multi-goal approach without acquiring plain-Food area intent`, () => {
+  const f = fixture({ team, weighted: true, count: 4, total: QUOTA }), c = f.context;
+  Object.assign(f.node, { sourceBuildingId: 20, team });
+  const footprint = f.start + 6;
+  c.buildingsById.set(20, { id: 20, team, complete: true, footprint: [footprint], ...f.point(footprint) });
+  const walkable = c.isWalkable;
+  c.isWalkable = cell => cell !== footprint && walkable(cell);
+  vm.runInContext(body('buildingAccessCells'), c);
+  const original = c.getAttackFlowFieldForGoals;
+  c.getAttackFlowFieldForGoals = (goals, key) => key.startsWith('farm:')
+    ? { goal: f.start + 7, goals: new Set(goals), path: f.raw } : original(goals, key);
+  f.command(); f.drain();
+  assert.equal(f.censuses.length, 1); assert.equal(entries(f), QUOTA);
+  for (const u of f.actors) {
+    assert.equal(u.gatherNodeId, f.node.id); assert.equal(u.gatherPhase, 'to-node');
+    assert.equal(u.moveGoalCell, f.raw.at(-1)); assert.notEqual(u.moveGoalCell, f.start + 7);
+    assert.equal(u.workIntent, null); assert.equal(u.movePlanningPending, true); assert.equal(u.path.length, 0);
+  }
+  assert.equal(f.node.stock, 100);
+});
+
 test('separate Gather operations take fresh censuses, and scope return/failure never leaks into the next command', () => {
   const f = fixture({ total: QUOTA }); f.command(); f.drain();
   f.command(); f.drain(); assert.equal(f.censuses.length, 2);
