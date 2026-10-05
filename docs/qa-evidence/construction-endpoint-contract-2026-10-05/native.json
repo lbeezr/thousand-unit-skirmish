@@ -1,0 +1,114 @@
+{
+  "source": "8030aff3c180f4a7a6fec9c5311c3b74411c44c9",
+  "scope": "real WebSocket command handlers and two native process restarts; no geometry or rendered claim",
+  "observations": [
+    {
+      "team": 0,
+      "builder": 0,
+      "soldier": 4,
+      "accepted": {
+        "goal": 3124,
+        "point": {
+          "version": 2,
+          "generation": 2313677650,
+          "revision": 3,
+          "requestedX": 4.5,
+          "requestedZ": 0.5,
+          "cell": 3124,
+          "x": 4.5,
+          "z": 0.5,
+          "clearanceProfile": "land-static-circle-v1",
+          "arrivalPolicy": "exact"
+        },
+        "queue": [
+          {
+            "destination": 3879,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 2313677650,
+              "revision": 3,
+              "requestedX": -8.5,
+              "requestedZ": 8.5,
+              "cell": 3879,
+              "x": -8.5,
+              "z": 8.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ],
+        "generation": 2313677650,
+        "revision": 3
+      },
+      "parked": {
+        "x": 4.5,
+        "z": 0.5
+      },
+      "coldBothSeats": true,
+      "blockedPose": {
+        "x": 2.4666666666665877,
+        "z": 0.5
+      },
+      "queuedEndpoint": {
+        "x": -8.5,
+        "z": 8.5
+      },
+      "wood": 425
+    },
+    {
+      "team": 1,
+      "builder": 8,
+      "soldier": 12,
+      "accepted": {
+        "goal": 3124,
+        "point": {
+          "version": 2,
+          "generation": 2313677651,
+          "revision": 3,
+          "requestedX": 4.5,
+          "requestedZ": 0.5,
+          "cell": 3124,
+          "x": 4.5,
+          "z": 0.5,
+          "clearanceProfile": "land-static-circle-v1",
+          "arrivalPolicy": "exact"
+        },
+        "queue": [
+          {
+            "destination": 3879,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 2313677651,
+              "revision": 3,
+              "requestedX": -8.5,
+              "requestedZ": 8.5,
+              "cell": 3879,
+              "x": -8.5,
+              "z": 8.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ],
+        "generation": 2313677651,
+        "revision": 3
+      },
+      "parked": {
+        "x": 4.5,
+        "z": 0.5
+      },
+      "coldBothSeats": true,
+      "blockedPose": {
+        "x": 2.4666666666665877,
+        "z": 0.5
+      },
+      "queuedEndpoint": {
+        "x": -8.5,
+        "z": 8.5
+      },
+      "wood": 425
+    }
+  ]
+}
