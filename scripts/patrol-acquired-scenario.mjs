@@ -75,8 +75,10 @@ try {
       acceptedRevision: active.state.units[id].orderRevision, resumedRevision: u.orderRevision,
       endpoints, anchor, sameEndpointCycleContinues: true, nextOutboundPosition: { x: u.x, z: u.z } });
     // Keep the next seat's fractional start independent of this completed actor.
-    await order(team, { type: 'move', ids: [id], unitGenerations: [row(team, id)[8]], x: -5.5, z: -5.5 }, /MOVE ORDER/);
-    await clients[team].state(s => { const moved = s.units.find(u => u[0] === id); return Math.hypot(moved[2] + 5.5, moved[3] + 5.5) < .02; }, 'park completed attacker');
+    const park = { x: team ? 8.5 : -5.5, z: -5.5 };
+    await order(team, { type: 'stop', ids: [id] }, /STOP ORDER/);
+    await order(team, { type: 'move', ids: [id], unitGenerations: [row(team, id)[8]], ...park }, /MOVE ORDER/);
+    await clients[team].state(s => { const moved = s.units.find(u => u[0] === id); return Math.hypot(moved[2] - park.x, moved[3] - park.z) < .02; }, 'park completed attacker');
   }
   const report = { sourceHead: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
     sourceDirty: execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim() !== '', observations,
