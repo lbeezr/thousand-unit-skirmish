@@ -45,7 +45,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   ],
   world: [
     'building-orientation', 'dock-placement', 'elevation', 'map-size-policy', 'map-utils', 'regions',
-    'world/map-audio-reference',
+    'world/map-audio-reference', 'world/scenario-event-chain',
     'practice-entry-catalog', 'scenario-regions', 'shore-fishing', 'shore-fishing-placement', 'terrain-materials',
     'town-center-spawn', 'unit-heading', 'water-contours', 'water-route-graph',
   ],

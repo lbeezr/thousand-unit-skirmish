@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import {
-  buildElevationGrid, capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
-  scenarioEventSourceIds,
+  buildElevationGrid, capturePrerequisiteIds, findInvalidCapturePrerequisite,
   findUnreachableCaptureZone, findUnreachableResourceNode, validateElevationPatches,
 } from '../src/map-utils.mjs';
+import * as legacyMapUtils from '../src/map-utils.mjs';
+import { scenarioEventSourceIds, findInvalidScenarioEventChain } from '../src/world/scenario-event-chain.mjs';
+import * as eventChain from '../src/world/scenario-event-chain.mjs';
 import {
   canTraverseElevation, elevationPathCost, hasElevation,
 } from '../src/elevation.mjs';
@@ -163,5 +165,49 @@ for (const [events, reason, label] of [
 ]) {
   assert.equal(findInvalidScenarioEventChain(events)?.reason, reason, `${label} should be rejected`);
 }
+
+assert.deepEqual(Object.keys(legacyMapUtils), [
+  'MAX_ELEVATION_PATCHES', 'buildElevationGrid', 'capturePrerequisiteIds',
+  'findInvalidCapturePrerequisite', 'findInvalidScenarioEventChain', 'findUnreachableCaptureZone',
+  'findUnreachableFoodNode', 'findUnreachableResourceNode', 'scenarioEventSourceIds', 'validateElevationPatches',
+]);
+assert.deepEqual(Object.keys(eventChain), ['findInvalidScenarioEventChain', 'scenarioEventSourceIds']);
+for (const name of Object.keys(eventChain)) assert.equal(legacyMapUtils[name], eventChain[name], name);
+assert.equal(legacyMapUtils.findUnreachableFoodNode, legacyMapUtils.findUnreachableResourceNode);
+assert.equal(scenarioEventSourceIds(joinedEvents[3].trigger), joinedEvents[3].trigger.eventIds,
+  'ordered all-of dependencies retain their original array identity');
+assert.deepEqual(scenarioEventSourceIds(null), []);
+assert.deepEqual(scenarioEventSourceIds({ type: 'capture', eventIds: ['ignored'] }), []);
+assert.deepEqual(scenarioEventSourceIds({ type: 'event', eventId: 'legacy' }), ['legacy']);
+
+const sourceEvents = Array.from({ length: 32 }, (_, index) => ({ id: `clock-${index}`, trigger: { type: 'time' } }));
+assert.equal(findInvalidScenarioEventChain([...sourceEvents,
+  { id: 'join', trigger: { type: 'event', eventIds: sourceEvents.slice(0, 31).map(event => event.id) } }]), null,
+  '31 ordered sources are accepted at the existing format limit');
+for (const trigger of [
+  { type: 'event', eventId: undefined, eventIds: ['clock-0', 'clock-1'] },
+  { type: 'event', eventIds: [] }, { type: 'event', eventIds: ['clock-0'] },
+  { type: 'event', eventIds: sourceEvents.map(event => event.id) },
+  { type: 'event', eventIds: 'clock-0' }, { type: 'event' },
+]) {
+  assert.deepEqual(findInvalidScenarioEventChain([...sourceEvents, { id: 'join', trigger }]),
+    { eventId: 'join', reason: 'shape' }, 'mixed own fields and invalid source counts keep their exact shape rejection');
+}
+assert.deepEqual(findInvalidScenarioEventChain([
+  { id: 'first', trigger: { type: 'event', eventIds: ['missing', 'missing'] } },
+  { id: 'second', trigger: { type: 'event' } },
+]), { eventId: 'first', reason: 'duplicate' }, 'input order and duplicate-before-missing rejection remain stable');
+assert.deepEqual(findInvalidScenarioEventChain([
+  { id: 'join', trigger: { type: 'event', eventIds: [7, 'missing'] } },
+]), { eventId: 'join', sourceId: 7, reason: 'missing' }, 'the first invalid source retains its original value');
+
+const immutableEvents = structuredClone(joinedEvents);
+for (const event of immutableEvents) {
+  if (event.trigger.eventIds) Object.freeze(event.trigger.eventIds);
+  Object.freeze(event.trigger); Object.freeze(event);
+}
+Object.freeze(immutableEvents);
+assert.equal(findInvalidScenarioEventChain(immutableEvents), null, 'validation accepts immutable authored input');
+assert.deepEqual(immutableEvents, joinedEvents, 'validation does not rewrite event dependencies or provenance');
 
 console.log('Map connectivity, elevation patches, capture prerequisites, and scenario-event dependency utilities passed.');
