@@ -45,6 +45,20 @@ export function attackMoveAcquiredMovementActive(unit) {
     && !unit.gatherPhase && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
 }
 
+// Automatic Aggressive/Defensive unit pursuit keeps combat's selected range
+// route and fixed anchor. Return, stationary stances and persistent orders
+// retain their policies; this only selects the shared military land body.
+export function stanceAcquiredMovementActive(unit) {
+  return unit.stanceCombat === true && unit.attackMove === true && !unit.stanceReturning
+    && ['aggressive', 'defensive'].includes(unit.combatStance)
+    && militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind]) === true && unit.hp > 0
+    && unit.movementDomain !== 'water' && !unit.holdingPosition
+    && Number.isSafeInteger(unit.attackTargetId) && unit.attackTargetId >= 0
+    && !(unit.attackBuildingTargetId >= 0) && !unit.persistentOrder
+    && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0) && !unit.gatherPhase
+    && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
+}
+
 // Persistent Patrol's target-free travel/continuation. The existing controller
 // chooses each leg's cell; acquired pursuit and Follow have separate predicates.
 export function patrolTravelMovementActive(unit) {

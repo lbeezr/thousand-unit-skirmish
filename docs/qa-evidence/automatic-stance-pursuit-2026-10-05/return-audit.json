@@ -1,0 +1,1065 @@
+{
+  "source": "a0bd77617dd23f2c6ea7387bb6307c6c653d26a9",
+  "dirty": true,
+  "runtimeHashes": {
+    "server": "b03b66d6be58353dd7cd09414b6c2918ac3d0f3993dc5a679449f8e1c9d7ca0d",
+    "combatMovement": "4fde308e230f97fb3c2c5efa2997a4e46160a96ff9208e820156add9e1d65172",
+    "unitMovement": "d493487ffa31075f85e8fa0efc205b61e1ac0b931fb451bc1724e0f2f4f2bb39"
+  },
+  "records": [
+    {
+      "team": 0,
+      "anchor": [
+        3.5,
+        0.5
+      ],
+      "target": [
+        1.1,
+        0.5
+      ],
+      "flee": [
+        0.5,
+        1.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 263,
+        "x": 1.2466666666666628,
+        "z": 0.5,
+        "goal": 1571,
+        "anchor": [
+          3.5,
+          0.5
+        ],
+        "target": 0,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 26,
+      "maxTravel": 2.2533333333333374,
+      "damage": [
+        {
+          "t": 29,
+          "hp": 90
+        },
+        {
+          "t": 55,
+          "hp": 80
+        },
+        {
+          "t": 81,
+          "hp": 70
+        },
+        {
+          "t": 107,
+          "hp": 60
+        },
+        {
+          "t": 133,
+          "hp": 50
+        },
+        {
+          "t": 159,
+          "hp": 40
+        },
+        {
+          "t": 185,
+          "hp": 30
+        },
+        {
+          "t": 211,
+          "hp": 20
+        },
+        {
+          "t": 237,
+          "hp": 10
+        },
+        {
+          "t": 263,
+          "hp": 0
+        }
+      ],
+      "final": {
+        "x": 3.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 0
+      }
+    },
+    {
+      "team": 0,
+      "anchor": [
+        3.5,
+        0.5
+      ],
+      "target": [
+        1.1,
+        0.5
+      ],
+      "flee": [
+        -5.5,
+        2.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 24,
+        "x": 1.4199999999999962,
+        "z": 0.5,
+        "goal": 1571,
+        "anchor": [
+          3.5,
+          0.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 24,
+      "maxTravel": 2.0800000000000036,
+      "damage": [],
+      "final": {
+        "x": 3.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 0,
+      "anchor": [
+        2.5,
+        0.5
+      ],
+      "target": [
+        0.75,
+        0.95
+      ],
+      "flee": [
+        -5.5,
+        2.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 30,
+        "x": 0.5466666666666666,
+        "z": 0.5,
+        "goal": 1570,
+        "anchor": [
+          2.5,
+          0.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 23,
+      "maxTravel": 1.9533333333333334,
+      "damage": [],
+      "final": {
+        "x": 2.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 0,
+      "anchor": [
+        2.5,
+        0.5
+      ],
+      "target": [
+        0.75,
+        0.95
+      ],
+      "flee": [
+        0.5,
+        8.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 38,
+        "x": 0.5,
+        "z": 1.1466666666666667,
+        "goal": 1570,
+        "anchor": [
+          2.5,
+          0.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 32,
+      "maxTravel": 2.101946188126085,
+      "damage": [],
+      "final": {
+        "x": 2.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 0,
+      "anchor": [
+        2.5,
+        0.5
+      ],
+      "target": [
+        0.75,
+        0.95
+      ],
+      "flee": [
+        -5.5,
+        0.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 31,
+        "x": 0.45999999999999996,
+        "z": 0.5,
+        "goal": 1570,
+        "anchor": [
+          2.5,
+          0.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 24,
+      "maxTravel": 2.04,
+      "damage": [],
+      "final": {
+        "x": 2.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 0,
+      "anchor": [
+        2.5,
+        0.5
+      ],
+      "target": [
+        0.75,
+        0.95
+      ],
+      "flee": [
+        6.5,
+        3.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 85,
+        "x": 4.5,
+        "z": 0.5,
+        "goal": 1570,
+        "anchor": [
+          2.5,
+          0.5
+        ],
+        "target": 90,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 24,
+      "maxTravel": 2,
+      "damage": [
+        {
+          "t": 29,
+          "hp": 90
+        }
+      ],
+      "final": {
+        "x": 2.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 90
+      }
+    },
+    {
+      "team": 0,
+      "anchor": [
+        2.5,
+        2.5
+      ],
+      "target": [
+        0.75,
+        1.5
+      ],
+      "flee": [
+        -5.5,
+        0.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 19,
+        "x": 1.5,
+        "z": 2.5,
+        "goal": 1698,
+        "anchor": [
+          2.5,
+          2.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 12,
+      "maxTravel": 1,
+      "damage": [],
+      "final": {
+        "x": 2.5,
+        "z": 2.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 0,
+      "anchor": [
+        0.5,
+        2.5
+      ],
+      "target": [
+        2.5,
+        2.5
+      ],
+      "flee": [
+        4.5,
+        -5.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 38,
+        "x": 2.5,
+        "z": 1.8533333333333313,
+        "goal": 1696,
+        "anchor": [
+          0.5,
+          2.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 33,
+      "maxTravel": 2.1019461881260852,
+      "damage": [],
+      "final": {
+        "x": 0.5,
+        "z": 2.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 0,
+      "anchor": [
+        2.5,
+        0.5
+      ],
+      "target": [
+        0.5,
+        2.5
+      ],
+      "flee": [
+        -5.5,
+        2.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 19,
+        "x": 2.5,
+        "z": 2.1466666666666665,
+        "goal": 1570,
+        "anchor": [
+          2.5,
+          0.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 19,
+      "maxTravel": 1.6466666666666665,
+      "damage": [],
+      "final": {
+        "x": 2.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 0,
+      "anchor": [
+        0.75,
+        0.95
+      ],
+      "target": [
+        2.5,
+        0.5
+      ],
+      "flee": [
+        7.5,
+        0.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 30,
+        "x": 2.453333333333334,
+        "z": 0.5,
+        "goal": 1568,
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 23,
+      "maxTravel": 1.7617730967535081,
+      "damage": [],
+      "final": {
+        "x": 0.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 0,
+      "anchor": [
+        0.5,
+        3.5
+      ],
+      "target": [
+        0.5,
+        1.5
+      ],
+      "flee": [
+        3.5,
+        0.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 38,
+        "x": 0.5,
+        "z": 1.5,
+        "goal": 1760,
+        "anchor": [
+          0.5,
+          3.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 24,
+      "maxTravel": 2,
+      "damage": [],
+      "final": {
+        "x": 0.5,
+        "z": 3.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 0,
+      "anchor": [
+        3.5,
+        0.5
+      ],
+      "target": [
+        1.5,
+        0.75
+      ],
+      "flee": [
+        -4.5,
+        3.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 32,
+        "x": 1.3733333333333322,
+        "z": 0.5,
+        "goal": 1571,
+        "anchor": [
+          3.5,
+          0.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 25,
+      "maxTravel": 2.126666666666668,
+      "damage": [],
+      "final": {
+        "x": 3.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 1,
+      "anchor": [
+        3.5,
+        0.5
+      ],
+      "target": [
+        1.1,
+        0.5
+      ],
+      "flee": [
+        0.5,
+        1.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 263,
+        "x": 1.2466666666666628,
+        "z": 0.5,
+        "goal": 1571,
+        "anchor": [
+          3.5,
+          0.5
+        ],
+        "target": 0,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 26,
+      "maxTravel": 2.2533333333333374,
+      "damage": [
+        {
+          "t": 29,
+          "hp": 90
+        },
+        {
+          "t": 55,
+          "hp": 80
+        },
+        {
+          "t": 81,
+          "hp": 70
+        },
+        {
+          "t": 107,
+          "hp": 60
+        },
+        {
+          "t": 133,
+          "hp": 50
+        },
+        {
+          "t": 159,
+          "hp": 40
+        },
+        {
+          "t": 185,
+          "hp": 30
+        },
+        {
+          "t": 211,
+          "hp": 20
+        },
+        {
+          "t": 237,
+          "hp": 10
+        },
+        {
+          "t": 263,
+          "hp": 0
+        }
+      ],
+      "final": {
+        "x": 3.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 0
+      }
+    },
+    {
+      "team": 1,
+      "anchor": [
+        3.5,
+        0.5
+      ],
+      "target": [
+        1.1,
+        0.5
+      ],
+      "flee": [
+        -5.5,
+        2.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 24,
+        "x": 1.4199999999999962,
+        "z": 0.5,
+        "goal": 1571,
+        "anchor": [
+          3.5,
+          0.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 24,
+      "maxTravel": 2.0800000000000036,
+      "damage": [],
+      "final": {
+        "x": 3.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 1,
+      "anchor": [
+        2.5,
+        0.5
+      ],
+      "target": [
+        0.75,
+        0.95
+      ],
+      "flee": [
+        -5.5,
+        2.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 30,
+        "x": 0.5466666666666666,
+        "z": 0.5,
+        "goal": 1570,
+        "anchor": [
+          2.5,
+          0.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 23,
+      "maxTravel": 1.9533333333333334,
+      "damage": [],
+      "final": {
+        "x": 2.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 1,
+      "anchor": [
+        2.5,
+        0.5
+      ],
+      "target": [
+        0.75,
+        0.95
+      ],
+      "flee": [
+        0.5,
+        8.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 38,
+        "x": 0.5,
+        "z": 1.1466666666666667,
+        "goal": 1570,
+        "anchor": [
+          2.5,
+          0.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 32,
+      "maxTravel": 2.101946188126085,
+      "damage": [],
+      "final": {
+        "x": 2.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 1,
+      "anchor": [
+        2.5,
+        0.5
+      ],
+      "target": [
+        0.75,
+        0.95
+      ],
+      "flee": [
+        -5.5,
+        0.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 31,
+        "x": 0.45999999999999996,
+        "z": 0.5,
+        "goal": 1570,
+        "anchor": [
+          2.5,
+          0.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 24,
+      "maxTravel": 2.04,
+      "damage": [],
+      "final": {
+        "x": 2.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 1,
+      "anchor": [
+        2.5,
+        0.5
+      ],
+      "target": [
+        0.75,
+        0.95
+      ],
+      "flee": [
+        6.5,
+        3.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 85,
+        "x": 4.5,
+        "z": 0.5,
+        "goal": 1570,
+        "anchor": [
+          2.5,
+          0.5
+        ],
+        "target": 90,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 24,
+      "maxTravel": 2,
+      "damage": [
+        {
+          "t": 29,
+          "hp": 90
+        }
+      ],
+      "final": {
+        "x": 2.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 90
+      }
+    },
+    {
+      "team": 1,
+      "anchor": [
+        2.5,
+        2.5
+      ],
+      "target": [
+        0.75,
+        1.5
+      ],
+      "flee": [
+        -5.5,
+        0.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 19,
+        "x": 1.5,
+        "z": 2.5,
+        "goal": 1698,
+        "anchor": [
+          2.5,
+          2.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 12,
+      "maxTravel": 1,
+      "damage": [],
+      "final": {
+        "x": 2.5,
+        "z": 2.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 1,
+      "anchor": [
+        0.5,
+        2.5
+      ],
+      "target": [
+        2.5,
+        2.5
+      ],
+      "flee": [
+        4.5,
+        -5.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 38,
+        "x": 2.5,
+        "z": 1.8533333333333313,
+        "goal": 1696,
+        "anchor": [
+          0.5,
+          2.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 33,
+      "maxTravel": 2.1019461881260852,
+      "damage": [],
+      "final": {
+        "x": 0.5,
+        "z": 2.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 1,
+      "anchor": [
+        2.5,
+        0.5
+      ],
+      "target": [
+        0.5,
+        2.5
+      ],
+      "flee": [
+        -5.5,
+        2.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 19,
+        "x": 2.5,
+        "z": 2.1466666666666665,
+        "goal": 1570,
+        "anchor": [
+          2.5,
+          0.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 19,
+      "maxTravel": 1.6466666666666665,
+      "damage": [],
+      "final": {
+        "x": 2.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 1,
+      "anchor": [
+        0.75,
+        0.95
+      ],
+      "target": [
+        2.5,
+        0.5
+      ],
+      "flee": [
+        7.5,
+        0.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 30,
+        "x": 2.453333333333334,
+        "z": 0.5,
+        "goal": 1568,
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 23,
+      "maxTravel": 1.7617730967535081,
+      "damage": [],
+      "final": {
+        "x": 0.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 1,
+      "anchor": [
+        0.5,
+        3.5
+      ],
+      "target": [
+        0.5,
+        1.5
+      ],
+      "flee": [
+        3.5,
+        0.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 38,
+        "x": 0.5,
+        "z": 1.5,
+        "goal": 1760,
+        "anchor": [
+          0.5,
+          3.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 24,
+      "maxTravel": 2,
+      "damage": [],
+      "final": {
+        "x": 0.5,
+        "z": 3.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    },
+    {
+      "team": 1,
+      "anchor": [
+        3.5,
+        0.5
+      ],
+      "target": [
+        1.5,
+        0.75
+      ],
+      "flee": [
+        -4.5,
+        3.5
+      ],
+      "acquired": true,
+      "firstReturn": {
+        "t": 32,
+        "x": 1.3733333333333322,
+        "z": 0.5,
+        "goal": 1571,
+        "anchor": [
+          3.5,
+          0.5
+        ],
+        "target": 100,
+        "path": []
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 25,
+      "maxTravel": 2.126666666666668,
+      "damage": [],
+      "final": {
+        "x": 3.5,
+        "z": 0.5,
+        "returning": false,
+        "hp": 100,
+        "enemyHp": 100
+      }
+    }
+  ],
+  "runtimeHashesVerifiedAgainstSource": true,
+  "acceptance": "collected baseline observations; not clearance adoption acceptance"
+}

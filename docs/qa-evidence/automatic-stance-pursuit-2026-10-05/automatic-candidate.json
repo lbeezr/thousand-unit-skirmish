@@ -1,0 +1,527 @@
+{
+  "runtimeHashes": {
+    "server": "8b16a4053b883cd4010d39f8d04f01875450f5e9e8b1389053963a6cd1213277",
+    "combatMovement": "590054e9cf7d3c635aaffed2c13de95448005b1498aa0fd87d3c7284f8e86b50",
+    "unitMovement": "b2b356a1458ac7a8b973df0e97bc4b015426a0e0fc65b72696c4e5cd03f6c259"
+  },
+  "source": "62c1dc4ab23c8f14a9b1510b34c58da1cdf0b085",
+  "dirty": true,
+  "records": [
+    {
+      "team": 0,
+      "stance": "aggressive",
+      "id": 4,
+      "enemyId": 8,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 aggressive \u00b7 1 UNITS"
+        }
+      ],
+      "acquired": {
+        "t": 0,
+        "path": [
+          1568,
+          1569
+        ],
+        "targetId": 8,
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "attackAnchor": [
+          0.75,
+          0.95
+        ]
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 16,
+      "damage": [
+        {
+          "t": 29,
+          "hp": 90,
+          "attackTick": 349,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 55,
+          "hp": 80,
+          "attackTick": 375,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 81,
+          "hp": 70,
+          "attackTick": 401,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 107,
+          "hp": 60,
+          "attackTick": 427,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 133,
+          "hp": 50,
+          "attackTick": 453,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 159,
+          "hp": 40,
+          "attackTick": 479,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 185,
+          "hp": 30,
+          "attackTick": 505,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 211,
+          "hp": 20,
+          "attackTick": 531,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 237,
+          "hp": 10,
+          "attackTick": 557,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 263,
+          "hp": 0,
+          "attackTick": 583,
+          "distance": 1.21478150704935
+        }
+      ],
+      "final": {
+        "x": 1.28521849295065,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 2,
+        "hp": 100,
+        "enemyHp": 0,
+        "returning": false,
+        "stanceCombat": true
+      }
+    },
+    {
+      "team": 0,
+      "stance": "defensive",
+      "id": 4,
+      "enemyId": 8,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 defensive \u00b7 1 UNITS"
+        }
+      ],
+      "acquired": {
+        "t": 0,
+        "path": [
+          1568,
+          1569
+        ],
+        "targetId": 8,
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "attackAnchor": [
+          0.75,
+          0.95
+        ]
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 16,
+      "damage": [
+        {
+          "t": 29,
+          "hp": 90,
+          "attackTick": 349,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 55,
+          "hp": 80,
+          "attackTick": 375,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 81,
+          "hp": 70,
+          "attackTick": 401,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 107,
+          "hp": 60,
+          "attackTick": 427,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 133,
+          "hp": 50,
+          "attackTick": 453,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 159,
+          "hp": 40,
+          "attackTick": 479,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 185,
+          "hp": 30,
+          "attackTick": 505,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 211,
+          "hp": 20,
+          "attackTick": 531,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 237,
+          "hp": 10,
+          "attackTick": 557,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 263,
+          "hp": 0,
+          "attackTick": 583,
+          "distance": 1.21478150704935
+        }
+      ],
+      "final": {
+        "x": 0.5,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 3,
+        "hp": 100,
+        "enemyHp": 0,
+        "returning": false,
+        "stanceCombat": true
+      }
+    },
+    {
+      "team": 0,
+      "stance": "standGround",
+      "id": 4,
+      "enemyId": 8,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 standGround \u00b7 1 UNITS"
+        }
+      ],
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 0,
+      "damage": [],
+      "final": {
+        "x": 0.75,
+        "z": 0.95,
+        "goal": 1568,
+        "revision": 2,
+        "hp": 100,
+        "enemyHp": 100,
+        "returning": false,
+        "stanceCombat": true
+      }
+    },
+    {
+      "team": 0,
+      "stance": "noAttack",
+      "id": 4,
+      "enemyId": 8,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 noAttack \u00b7 1 UNITS"
+        }
+      ],
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 0,
+      "damage": [],
+      "final": {
+        "x": 0.75,
+        "z": 0.95,
+        "goal": 1568,
+        "revision": 2,
+        "hp": 100,
+        "enemyHp": 100,
+        "returning": false,
+        "stanceCombat": false
+      }
+    },
+    {
+      "team": 1,
+      "stance": "aggressive",
+      "id": 12,
+      "enemyId": 0,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 aggressive \u00b7 1 UNITS"
+        }
+      ],
+      "acquired": {
+        "t": 0,
+        "path": [
+          1568,
+          1569
+        ],
+        "targetId": 0,
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "attackAnchor": [
+          0.75,
+          0.95
+        ]
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 16,
+      "damage": [
+        {
+          "t": 29,
+          "hp": 90,
+          "attackTick": 420,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 55,
+          "hp": 80,
+          "attackTick": 446,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 81,
+          "hp": 70,
+          "attackTick": 472,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 107,
+          "hp": 60,
+          "attackTick": 498,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 133,
+          "hp": 50,
+          "attackTick": 524,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 159,
+          "hp": 40,
+          "attackTick": 550,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 185,
+          "hp": 30,
+          "attackTick": 576,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 211,
+          "hp": 20,
+          "attackTick": 602,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 237,
+          "hp": 10,
+          "attackTick": 628,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 263,
+          "hp": 0,
+          "attackTick": 654,
+          "distance": 1.21478150704935
+        }
+      ],
+      "final": {
+        "x": 1.28521849295065,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 2,
+        "hp": 100,
+        "enemyHp": 0,
+        "returning": false,
+        "stanceCombat": true
+      }
+    },
+    {
+      "team": 1,
+      "stance": "defensive",
+      "id": 12,
+      "enemyId": 0,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 defensive \u00b7 1 UNITS"
+        }
+      ],
+      "acquired": {
+        "t": 0,
+        "path": [
+          1568,
+          1569
+        ],
+        "targetId": 0,
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "attackAnchor": [
+          0.75,
+          0.95
+        ]
+      },
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 16,
+      "damage": [
+        {
+          "t": 29,
+          "hp": 90,
+          "attackTick": 420,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 55,
+          "hp": 80,
+          "attackTick": 446,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 81,
+          "hp": 70,
+          "attackTick": 472,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 107,
+          "hp": 60,
+          "attackTick": 498,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 133,
+          "hp": 50,
+          "attackTick": 524,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 159,
+          "hp": 40,
+          "attackTick": 550,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 185,
+          "hp": 30,
+          "attackTick": 576,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 211,
+          "hp": 20,
+          "attackTick": 602,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 237,
+          "hp": 10,
+          "attackTick": 628,
+          "distance": 1.21478150704935
+        },
+        {
+          "t": 263,
+          "hp": 0,
+          "attackTick": 654,
+          "distance": 1.21478150704935
+        }
+      ],
+      "final": {
+        "x": 0.5,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 3,
+        "hp": 100,
+        "enemyHp": 0,
+        "returning": false,
+        "stanceCombat": true
+      }
+    },
+    {
+      "team": 1,
+      "stance": "standGround",
+      "id": 12,
+      "enemyId": 0,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 standGround \u00b7 1 UNITS"
+        }
+      ],
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 0,
+      "damage": [],
+      "final": {
+        "x": 0.75,
+        "z": 0.95,
+        "goal": 1568,
+        "revision": 2,
+        "hp": 100,
+        "enemyHp": 100,
+        "returning": false,
+        "stanceCombat": true
+      }
+    },
+    {
+      "team": 1,
+      "stance": "noAttack",
+      "id": 12,
+      "enemyId": 0,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 noAttack \u00b7 1 UNITS"
+        }
+      ],
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 0,
+      "damage": [],
+      "final": {
+        "x": 0.75,
+        "z": 0.95,
+        "goal": 1568,
+        "revision": 2,
+        "hp": 100,
+        "enemyHp": 100,
+        "returning": false,
+        "stanceCombat": false
+      }
+    }
+  ]
+}

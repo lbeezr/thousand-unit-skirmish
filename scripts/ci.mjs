@@ -179,6 +179,7 @@ run(['--test', 'scripts/stationary-command.test.mjs'], 'Stationary command tasks
 run(['--test', 'scripts/army-attack-continuation.test.mjs'], 'Focused military attack continuation and ordinary attack-move input');
 run(['--test', 'scripts/military-stance.test.mjs'], 'Military stances, idle defense, bounded return and command precedence');
 run(['scripts/military-stance-native-scenario.mjs'], 'Native two-seat stance commands and defensive return recovery');
+run(['scripts/automatic-stance-pursuit-native.mjs'], 'Native two-seat automatic pursuit and active cold recovery');
 run(['--test', 'scripts/waypoint-backpressure.test.mjs'], 'Waypoint metadata under backpressure');
 run(['--experimental-test-coverage', '--test-coverage-include=src/networking/websocket-frame.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
