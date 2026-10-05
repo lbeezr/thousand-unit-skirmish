@@ -159,7 +159,8 @@ manifest identity and atlas/mask dependencies from the release inventory. Its
 existing 11 missing action cells and rendered/deployed acceptance remain unchanged.
 The [specific foot-art coordination](https://github.com/lbeezr/thousand-unit-skirmish/pull/489#issuecomment-6003884705)
 reserves no asset, builder, clip, runtime or Infantry qualification changes.
-Fixture owner `01a1085f` now takes the disjoint three-family economy audit using
+Fixture owner `01a1085f` completed the disjoint three-family economy audit in
+[PR496](https://github.com/lbeezr/thousand-unit-skirmish/pull/496), using
 the existing building probe. Default renderer and packed HTTP tests already
 consume those assets; the adoption registry now records all three real selectors
 and their declared Complete/lifecycle files. New controls reject turning off
@@ -169,6 +170,22 @@ The [specific economy owner coordination](https://github.com/lbeezr/thousand-uni
 retains its existing served/rendered acceptance. There is no new runtime, art,
 lifecycle, rotation, HTTP admission or gameplay policy here.
 
+The next disjoint consumer check addresses Bellweather's normal maple factory.
+At clean main `24802184`, omitting its lifecycle JSON/page from the actual pack
+or changing the normal selector to generic field-maple leaves all 16 adoption
+records green. Existing flora tests validate all 21 descriptors and Underbough's
+production binding; [berry PR494](https://github.com/lbeezr/thousand-unit-skirmish/pull/494)
+covers its separate berry factory. The appended Bellweather test keeps all three
+earlier forest test bodies intact, loads the complete current environment module
+with real production imports and no art options, and uses the authored Millrace
+theme on a bounded forest fixture. All image/metadata loads read only files
+admitted by a real release inventory. It checks the registered family, actual
+page hash, full/worked/low/depleted/reset UVs and stable slot matrices; missing
+JSON/page and wrong-family controls must fail those same checks. This proves
+CPU default registration/package consumption, not decoded pixels or a game.
+The [specific flora coordination](https://github.com/lbeezr/thousand-unit-skirmish/pull/490#issuecomment-6004266572)
+preserves the descriptor, art, pine activation and served/rendered ownership.
+
 | Slice / owner | Next step | Dependency / evidence |
 | --- | --- | --- |
 | Construction shared fixture / `01a1085f` | Completed in [PR453](https://github.com/lbeezr/thousand-unit-skirmish/pull/453); retain production-root contracts during future extraction. | All original 22 receipt and 15 paid-wall test bodies stay byte-identical. Seven loader controls cover inserted helpers, import forms, labels/computed values, setup failures and isolated retries. |
@@ -177,8 +194,9 @@ lifecycle, rotation, HTTP admission or gameplay policy here.
 | Diagnostic VM identity / `01a1085f` | Completed in [PR469](https://github.com/lbeezr/thousand-unit-skirmish/pull/469); retain identity/privacy and original detour checks. | Exact public CI/base/main reproduction; real production initializer and truthful synthetic map metadata. Diagnostics owner `01a10c49-2cac` retains its separate replay consumer. |
 | Inspectable wildlife fixture adoption / `01a1085f` | Completed in [PR488](https://github.com/lbeezr/thousand-unit-skirmish/pull/488); retain exact Farm/carcass/fog consumers. | Exact main `bbc8ac54` public/local failure; PR482's renamed option and real selection predicate. Sheep owner `01a10d83-3a7d` retains runtime/served/rendered acceptance; original expected values stay unchanged. |
 | Spearman default registration guard / `01a1085f` | Completed in [PR492](https://github.com/lbeezr/thousand-unit-skirmish/pull/492); retain registration regressions independently of action completeness. | Reproduced missing-role, wrong-version and missing-release false greens; established v1 registration and real constructor/role consumer, not complete action coverage. Foot-art owner retains art/served/rendered acceptance. |
-| Economy default consumer / `01a1085f` | Review/qualify and normally integrate existing Mill/Farm/Dock registrations and selector/release omission controls. | Demonstrated economy-family omission false green; reuse existing building probe and preserve lifecycle/fallback/packed-HTTP assertions. Economy art/renderer owner retains actual appearance acceptance. |
-| Continuing delivery-quality audit / `01a1085f` | Inspect remaining Worker/trees consumer boundaries after economy integration; select only another demonstrated registration/release regression. | Worker normal v3 and Infantry485 already have guards; flora490's strict descriptors and prepared-unbound pine remain separate. Preserve expected missing source/render cells, reject coverage inflation, and avoid duplicate suites or source-only delivery claims. |
+| Economy default consumer / `01a1085f` | Completed in [PR496](https://github.com/lbeezr/thousand-unit-skirmish/pull/496); retain existing Mill/Farm/Dock selector/release controls. | Demonstrated economy-family omission false green; unchanged building probe and lifecycle/fallback/packed-HTTP assertions. Economy art/renderer owner retains actual appearance acceptance. |
+| Bellweather default forest consumer / `01a1085f` | Qualify, independently review and normally integrate the production-family/real-pack guard; then inspect remaining uncovered consumers. | Main24802184 selector and actual-pack omission false greens; four-state registered page and stable slot/reset controls. Flora owner retains current ordinary-game appearance and matching source-art dependencies. |
+| Continuing delivery-quality audit / `01a1085f` | After Bellweather integration inspect remaining default resource-family release boundaries; select only another demonstrated disjoint regression. | Worker normal v3, Infantry485, oak depletion and flora490/494 already have guards. Preserve expected missing source/render cells, reject coverage inflation, and avoid duplicate suites or source-only delivery claims. |
 | Next reliability audit / `01a1085f` | Check new reported extraction failures against exact containing source before selecting another bounded migration. | Passing fixtures need no rewrite. Core/modularization owners retain runtime roots; crowd owner retains formation/native-wall liveness; CPU owner retains the known-red full suite. No further production write reserved. |
 | Production modularization owner | Preserve or explicitly replace these construction roots when extracting them into an exported runtime module; then replace only the affected fixture slice. | No production host/module/path changes in this slice. Architecture owner retains import/domain guards. |
 | Checked-type owner | Retain strict project membership, negative contracts and ambient isolation; assess the fixture interface in the dedicated type lane. | No tsconfig, runtime type-contract or coverage-floor edits here. Existing type gates remain required. |
