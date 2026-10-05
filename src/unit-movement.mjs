@@ -116,6 +116,26 @@ export function unitRouteResultIsCurrent(result, unit, epoch, navigationRevision
     && identity.navigationRevision === navigationRevision;
 }
 
+// Rejoin an already selected route from an actual fractional position. Preserve
+// every selected waypoint and opaque metadata; this never selects/shortens a
+// route or publishes intent. The caller retains terrain and prefix admissibility.
+export function rejoinSelectedUnitRoute(route, { position, startCell, firstPoint, radius,
+  width, height, isWalkable, cellToWorld, requiresRejoin = false, acceptPrefix = () => true }) {
+  if (route == null || route.path == null || route.path.length === 0
+    || (route.status != null && route.status !== 'ready')) return { route, rejoin: 'unchanged' };
+  if (!Array.isArray(route.path)) throw new TypeError('selected route path must be an array');
+  if (!finitePoint(position) || !finitePoint(firstPoint) || !Number.isFinite(radius) || radius < 0 || radius > .5
+    || !Number.isInteger(width) || !Number.isInteger(height) || width <= 0 || height <= 0
+    || !Number.isInteger(startCell) || startCell < 0 || startCell >= width * height)
+    return { route, rejoin: 'rejected' };
+  const needed = requiresRejoin || (radius > 0
+    && !canTraverseStaticBodySegment(position, firstPoint, radius, width, height, isWalkable));
+  if (!needed) return { route, rejoin: 'unchanged' };
+  const center = cellToWorld(startCell);
+  if (!finitePoint(center) || !acceptPrefix(center, startCell)) return { route, rejoin: 'rejected' };
+  return { route: { ...route, path: [startCell, ...route.path] }, rejoin: 'prefixed' };
+}
+
 // Ordinary single-unit Move keeps the requested point apart from its legal
 // arrival. Reprojection may change the cell without changing the user's intent.
 export function createMoveGoalPoint(unit, requestedX, requestedZ, cell, width, height) {
