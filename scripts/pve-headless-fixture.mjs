@@ -33,6 +33,7 @@ export async function createPveHeadlessFixture(map, identity = {}) {
     const original = await readFile(new URL('../server.mjs', import.meta.url), 'utf8');
     let source = original.replace(/from '(\.\/?[^']+)'/g,
       (_, name) => `from '${pathToFileURL(path.resolve(root, name)).href}'`);
+    source = `import { validateCheckpointEnvelope } from ${JSON.stringify(new URL('../src/server/checkpoint-envelope.mjs', import.meta.url).href)};\n` + source;
     source = replaceExactly(source, 'const ROOT = path.dirname(fileURLToPath(import.meta.url));', `const ROOT = ${JSON.stringify(root)};`);
     // Replay controls process identity as an input, rather than stripping packet
     // fields during equality checks. Native restart uses the unchanged entropy.
@@ -73,6 +74,13 @@ export const replay = {
   observe(team) { return roomPayload(team); },
   checkpoint() { return captureMatchCheckpoint(1, 1); },
   validateCheckpoint(snapshot) { return validateMatchCheckpoint(snapshot); },
+  checkpointEnvelope(snapshot) {
+    return validateCheckpointEnvelope(snapshot, {
+      checkpointSchemaVersion: MATCH_CHECKPOINT_SCHEMA_VERSION, gameRulesVersion: MATCH_RULES_VERSION,
+      maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES,
+      validateMapDefinition, matchMapHash, launchMode: pveLaunchOptions ? 'pve' : 'pvp', practice: soloPractice,
+    });
+  },
   visionCacheMetrics() { return visionCoverageBySourceCell.metrics(); },
   restore(snapshot) { restoreMatchCheckpoint(snapshot); },
   dispose() { clearInterval(heartbeatTimer); if (pveOpponentTimer) clearInterval(pveOpponentTimer); }
