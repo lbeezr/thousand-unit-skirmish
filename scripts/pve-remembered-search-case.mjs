@@ -6,6 +6,7 @@ import { toOpponentObservation } from '../src/pve-opponent.mjs';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 import { economyRulesetRevision } from '../src/economy-profile.mjs';
 import { migrateFoodToolsCheckpoint, PRE_FOOD_TOOLS_RULESETS } from '../src/server/worker-food-tools.mjs';
+import { migrateVoluntaryEndingCheckpoint } from '../src/server/voluntary-endings.mjs';
 
 // Retained normal Medium checkpoints use the production startup migration on a
 // clone. Seeds exercise remembered-to-unknown candidate order without edited fog/casualties.
@@ -30,10 +31,17 @@ export async function replayRememberedSearch(team, factory = createSkirmishTarge
   try {
     const initial = data.checkpoint;
     assert.equal(initial.rulesetRevision, PRE_FOOD_TOOLS_RULESETS[initial.economyProfileId]);
-    assert.throws(() => r.restore(initial), /economy profile or gameplay ruleset revision mismatch/,
+    assert.throws(() => r.restore(initial), /unsupported schema version/,
+      'strict restore rejects the historical schema before startup migration');
+    const currentSchema = structuredClone(initial);
+    assert.equal(migrateVoluntaryEndingCheckpoint(currentSchema), true);
+    assert.deepEqual(currentSchema, { ...initial, schemaVersion: 30,
+      state: { ...initial.state, voluntaryEndings: { version: 0, generation: 1, revision: 0, result: null } } },
+    'production schema migration preserves all captured state and adds only legacy voluntary state');
+    assert.throws(() => r.restore(currentSchema), /economy profile or gameplay ruleset revision mismatch/,
       'strict restore still rejects the historical content pin before startup migration');
-    const migrated = migrateFoodToolsCheckpoint(structuredClone(initial));
-    const expected = structuredClone(initial);
+    const migrated = migrateFoodToolsCheckpoint(structuredClone(currentSchema));
+    const expected = structuredClone(currentSchema);
     expected.rulesetRevision = economyRulesetRevision(initial.economyProfileId);
     expected.state.teamUpgrades = initial.state.teamUpgrades.map(upgrades => ({ ...upgrades, foodTools: false }));
     assert.deepEqual(migrated, expected, 'production migration changes only the content pin and unpurchased Food Tools flags');
