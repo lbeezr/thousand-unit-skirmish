@@ -338,8 +338,25 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
         && finitePoint(direction) && direction.x * routeX + direction.z * routeZ
           > .9 * Math.hypot(direction.x, direction.z);
     });
+  // Crowd deflection can leave the actor beside the accepted segment. A peer's
+  // far goal may then look opposed to that segment while both current waypoints
+  // lead the same way. Keep already admitted progress in that shared direction;
+  // a different opposing claimant still retains its ordinary priority.
+  const advancingWaypoint = !state.detour && best && directionLength
+    && unit.pathIndex < unit.path.length - 1 && finitePoint(progressTarget)
+    && (progressTarget.x - unit.x) * routeX + (progressTarget.z - unit.z) * routeZ < -EPSILON
+    && Math.abs(best.x * routeX + best.z * routeZ) < .1
+    && Math.hypot(progressTarget.x - unit.x - best.x * best.stepDistance,
+      progressTarget.z - unit.z - best.z * best.stepDistance) < remaining - EPSILON;
+  const parallelWaypointStep = other => {
+    if (!advancingWaypoint || !ordinaryCrowdBodyRadius(other)) return false;
+    const direction = directionOf(other);
+    return finitePoint(direction) && direction.x * best.x + direction.z * best.z
+      > .9 * Math.hypot(direction.x, direction.z);
+  };
   const yieldingToPeer = noProgressTicks >= 30 && neighbors.some(other => other.id < unit.id && finitePoint(targetOf(other))
     && (targetOf(other).x - other.x) * routeX + (targetOf(other).z - other.z) * routeZ < 0
+    && !parallelWaypointStep(other)
     // A same-segment follower behind us cannot claim a clear forward step
     // merely because its distant final goal lies across the current segment.
     && !((other.x - unit.x) * routeX + (other.z - unit.z) * routeZ <= 0
