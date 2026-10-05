@@ -14,7 +14,7 @@ function replaceExactly(source, before, after, count = 1) {
   return source.split(before).join(after);
 }
 export async function createPathingReplayFixture(map, { traceLandSteps = false, traceRouteRejoins = false,
-  traceCrowdSteps = false, traceActorIds = [] } = {}) {
+  traceCrowdSteps = false, traceActorIds = [], observeMovement = false } = {}) {
   assert.ok(Array.isArray(traceActorIds) && traceActorIds.length <= 64 && traceActorIds.every(Number.isInteger));
   const directory = await mkdtemp(path.join(tmpdir(), 'rts-pathing-replay-'));
   try {
@@ -48,7 +48,7 @@ export async function createPathingReplayFixture(map, { traceLandSteps = false, 
     if (traceActorIds.length) source = replaceExactly(source,
       '  for (const { unit, destination: requestedDestination } of repairs) {',
       '  for (const { unit, destination: requestedDestination } of repairs) {\n    recordReplayActorTrace(unit, "repair", { mode, requestedDestination });');
-    if (traceCrowdSteps || traceActorIds.length) source = replaceExactly(source,
+    if (traceCrowdSteps || traceActorIds.length || observeMovement) source = replaceExactly(source,
       'const move = getMoveVector(unit, remainingStep, allowLocalDetour);',
       'const move = recordReplayCrowdStep(unit, remainingStep, allowLocalDetour);');
     const listen = source.lastIndexOf('\nserver.listen(PORT, HOST, () => {');
@@ -60,6 +60,19 @@ const replayCrowdSteps = [];
 const replayActorTrace = [];
 const replayTraceActorIds = new Set(${JSON.stringify(traceActorIds)});
 const replayRouteRejoins = [];
+let replayMovementTeam = null;
+const replayMovementActors = new Map();
+const replayMovementDecisions = new Map();
+function observeReplayMovementDecision(unit, result) {
+  // Ownership precedes movement/identity reads; never inspect enemy internals.
+  if (!unit || unit.team !== replayMovementTeam) return;
+  const binding = replayMovementActors.get(unit.id);
+  if (!binding || binding.unit !== unit || binding.generation !== unit.generation) return;
+  replayMovementDecisions.set(unit.id, { unit, generation: unit.generation,
+    revision: unit.orderRevision, tick: tickNumber, navigationRevision,
+    cause: !result ? 'no-vector-proposal' : result.waitingForCrowd ? 'vector-wait'
+      : result.rejectedStaticProposal ? 'static-proposal-rejected' : 'vector-proposal' });
+}
 function recordReplayRouteRejoin(route, options) {
   const result = rejoinSelectedUnitRoute(route, options);
   replayRouteRejoins.push({ id: options.position.id, radius: options.radius,
@@ -81,8 +94,9 @@ function recordReplayActorTrace(unit, type, extra = {}) {
 }
 function recordReplayCrowdStep(unit, remainingStep, allowLocalDetour) {
   const result = getMoveVector(unit, remainingStep, allowLocalDetour);
-  recordReplayActorTrace(unit, "vector", { remainingStep, result: structuredClone(result) });
-  if (result?.crowd) replayCrowdSteps.push({ id: unit.id, tick: tickNumber,
+  if (${observeMovement}) observeReplayMovementDecision(unit, result);
+  if (replayTraceActorIds.has(unit.id)) recordReplayActorTrace(unit, "vector", { remainingStep, result: structuredClone(result) });
+  if (${Boolean(traceCrowdSteps || traceActorIds.length)} && result?.crowd) replayCrowdSteps.push({ id: unit.id, tick: tickNumber,
     ...result.crowd, ...result.crowdControl, complete: Boolean(result.crowdControl) });
   return result;
 }
@@ -96,6 +110,7 @@ function recordReplayLandStep(unit, x, z, reason) {
 }
 export const replay = {
   prepare(map) {
+    replayMovementActors.clear(); replayMovementDecisions.clear(); replayMovementTeam = null;
     replayLandSteps.length = 0;
     replayCrowdSteps.length = 0;
     replayActorTrace.length = 0;
@@ -146,6 +161,7 @@ export const replay = {
     return true;
   },
   step({ planningTurns } = {}) {
+    replayMovementDecisions.clear();
     replayLandSteps.length = 0;
     replayCrowdSteps.length = 0;
     replayActorTrace.length = 0;
@@ -166,6 +182,34 @@ export const replay = {
   get wood() { return teamWood; },
   get food() { return teamFood; }, get resources() { return resourceNodeStates; },
   snapshot(team) { return roomPayload(team); },
+  observeMovement(team, ids) {
+    if (!${observeMovement}) throw new Error('movement observation must be explicitly enabled');
+    if (!([0, 1].includes(team) && Array.isArray(ids) && ids.length <= 8
+      && ids.every(id => Number.isSafeInteger(id) && id >= 0) && new Set(ids).size === ids.length))
+      throw new Error('movement observation requires a seat and at most eight distinct actor IDs');
+    replayMovementActors.clear(); replayMovementDecisions.clear(); replayMovementTeam = team;
+    for (const id of ids) {
+      const unit = units[id];
+      if (!unit || unit.team !== team || unit.hp <= 0) continue;
+      replayMovementActors.set(id, { unit, generation: unit.generation });
+    }
+  },
+  movementObservations() {
+    const rows = [];
+    for (const [id, binding] of replayMovementActors) {
+      const unit = units[id];
+      if (!unit || unit.team !== replayMovementTeam || unit.hp <= 0
+        || unit !== binding.unit || unit.generation !== binding.generation) continue;
+      const decision = replayMovementDecisions.get(id);
+      const current = decision && decision.unit === unit && decision.generation === unit.generation
+        && decision.revision === unit.orderRevision && decision.tick === tickNumber
+        && decision.navigationRevision === navigationRevision;
+      rows.push({ id, holding: unit.holdingPosition === true, planningPending: unit.movePlanningPending === true,
+        performingAction: unit.kind === 'worker' ? workerPerformingAction(unit) : null,
+        routeActive: unit.pathIndex < unit.path.length, decision: current ? decision.cause : 'unobserved' });
+    }
+    return rows;
+  },
   buildingDistance(position, buildingId) { return distanceToBuildingEdge(position, buildingsById.get(buildingId)); },
   attackApproach(id, targetId, continueWaypoint = false) {
     const approach = getUnitAttackPath(units[id], units[targetId], null, continueWaypoint);
@@ -178,6 +222,7 @@ export const replay = {
   },
   checkpoint() { return captureMatchCheckpoint(1); },
   restore(snapshot) {
+    replayMovementActors.clear(); replayMovementDecisions.clear(); replayMovementTeam = null;
     const migrated = migrateEconomyCheckpoint(migrateMatchCheckpoint(migrateFoodToolsCheckpoint(snapshot)));
     migrateWildlifeMotionCheckpoint(migrated);
     migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS);
