@@ -100,15 +100,18 @@ does not identify deployed bytes.
    source observation does not close complete-match qualification.
    CPU/full-qualification owner `01a10378` retains expensive full matches; this
    lane does not launch duplicates or change that owner's scheduling interface.
-2. Measure remaining wrapper/memory/GC overhead with a bounded production-server
-   checkpoint control before interpreting inner simulation tails as optimization
-   targets. The [matched startup control](qa-crownroads-profiler-startup-2026-10-05.md)
-   now retains identical-input profile/observer/observer/profile forks,60 native
-   ticks and57 continuous clocks per fork. Startup37.149/38.123 ms occupies the
-   recorded next-tick gap; observer-only still has instrumentation overhead.
-   The previous36.237 ms lag failure and first cold-tick inner cause remain open.
-   Finer subcost experiments retain movement/crowd ownership and the rejected
-   zero-force arithmetic result. Scoped pressure/RSS peaks remain unmeasured.
+2. Preserve the original checkpoint and first recovery tick-start clocks when
+   the already-owned qualification next fails; no additional match is scheduled.
+   The [historical attribution limit](qa-crownroads-profiler-startup-2026-10-05.md#historical-failure-attribution-limit)
+   places 37.275 ms of profiler startup inside the failed tick-start gap, but the
+   original input is missing. Fresh-input production/observer controls cannot
+   distinguish the cause of that 36.237 ms lag failure, so no further control ran
+   and the unconditional overhead experiment is deferred. The retained matched
+   forks use another input/anchor; observer-only still has instrumentation cost.
+   Evidence is insufficient for gameplay optimization. Keep the failed repeat,
+   first cold-tick cause, wrapper/memory/GC overhead and scoped pressure/RSS peaks
+   open; never subtract profiler startup from qualification lag. Finer subcost
+   work retains movement/crowd ownership and the rejected zero-force result.
 3. Establish ordinary256 rendered timing and device/viewport/backend identity
    through the existing cloud renderer owner. Retained hosted sandboxed SwiftShader
    Open Field frames prove selected pixels, not Crownroads GPU performance.

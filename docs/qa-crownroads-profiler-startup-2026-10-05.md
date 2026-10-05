@@ -92,6 +92,39 @@ qualification or establish capacity. All four first recovery ticks occur before
 profiler startup and take 15.341/16.112/15.906/15.867 ms. Their inner cold-simulation
 cause is not captured by the later observer window.
 
+## Historical failure attribution limit
+
+Read-only analysis of the unchanged failed repeat places a concrete measurement
+cost inside its tick-start gap. Worker 2's first cold health window contains only
+ticks 1083/1084, hence one start-lag sample: 36.237 ms and one skipped slot. Adding
+the unchanged 1000/30 ms period gives an approximately 69.570 ms start-to-start gap.
+At measured source `ebcd7bf98093cb2fe81ad36955d99436697036a7`, the observer's
+first active row is tick 1084: wrapper entry 350.629782 ms, exit 356.378531 ms and
+production duration 5.600160 ms. Entry precedes production start; exit follows
+production end. Thus tick 1084 started in [350.629782,350.778371] ms. Accounting
+conservatively for Float32 lag storage and three-decimal rounding (±0.000502 ms),
+the previous tick started in [281.058946,281.208540] ms, rounded outward.
+These are inferred bounds, not retained production start clocks.
+
+The historical `Profiler.start` request at 312.384510 ms and completion at
+349.659242 ms lie entirely within that gap: **37.274732 ms of off-production
+measurement elapsed time**. This is actionable when interpreting profiler runs:
+retain startup boundaries, keep profiles opt-in and outside production timing
+qualification, and never subtract this elapsed time from lag or relax the budget.
+It does not prove how much historical lag profiling caused; other recovery work
+and host scheduling also occupy the gap. No instrumentation was optimized to
+make the failure disappear.
+
+The original failed recovery checkpoint was not retained: its report contains
+clock/army aggregates, not the input state, and the driver deletes its temporary
+checkpoint directory. The matched control above uses a different match/input and
+starts at tick 1085; the historical profile request occurred at tick 1083. A new
+production-server fork cannot replay that missing input or distinguish the cause
+of this particular 36.237 ms failure. **No further control was run.** Evidence is
+insufficient for a gameplay optimization or a causal partition of that failure;
+the failed repeat remains a failed qualification. No new benchmark document,
+measurement framework, runtime change or budget change follows from this limit.
+
 ## Identity, checks and next action
 
 Baseline source is `4102741d9463a89a48d52255824daf16e442ef6a`; clean measured
@@ -121,9 +154,12 @@ node scripts/map-capacity-scenario.mjs --map veyrholds-crownroads --loads 24 --s
 node scripts/map-capacity-report-check.mjs /tmp/crownroads-startup/report.json
 ```
 
-Next: add a bounded production-server checkpoint control to measure the
-remaining wrapper/memory/GC overhead before interpreting inner simulation tails
-as an optimization target. Keep the prior failed repeat and cold tick cost open.
+Next evidence must come from an actual failure with its original checkpoint
+and first recovery tick-start clocks retained in the already-owned qualification.
+Only then can a same-input production/observer/profile control distinguish that
+failure. Another fresh-input control would not resolve this one, so the previous
+unconditional wrapper/memory/GC experiment is deferred. Inner cold-tick causes,
+wrapper/memory/GC overhead and scoped pressure/RSS peaks remain unmeasured.
 CPU owner 01a10378 retains full qualification, crowd owner 01a10933-c2b0 retains
 steering/choke policy, and no full CPU/crowd match was duplicated. Planned320
 stays closed; ordinary256 supported capacity and 2,000-unit readiness are unproven.
