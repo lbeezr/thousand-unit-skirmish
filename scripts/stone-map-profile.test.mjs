@@ -333,7 +333,7 @@ test('internal Practice selects shipped Stone and both seats naturally pay, refu
   assert.ok(paid.state.teamStone.every((value, team) => Math.abs(value - expectedBank[team] + 50) < 1e-7));
   await room.start(); clients = [await room.connect(0, tokens[0]), await room.connect(1, tokens[1])];
   const recovered = await room.checkpoint(snapshot => snapshot.sequence > paid.sequence); conserved(recovered);
-  assert.equal(recovered.matchId, paid.matchId); assert.equal(recovered.schemaVersion, 29);
+  assert.equal(recovered.matchId, paid.matchId); assert.equal(recovered.schemaVersion, 30);
   for (const key of ['teamFood', 'teamWood', 'teamStone', 'resourceNodes', 'buildings']) assert.deepEqual(recovered.state[key], paid.state[key]);
   for (const [team, client] of clients.entries()) {
     assert.ok(client.welcome.recoveredFromCheckpoint);

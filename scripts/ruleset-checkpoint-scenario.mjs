@@ -127,9 +127,9 @@ try {
   await checkpointWith(checkpointPath, snapshot => snapshot.state.workerProduction.every(production => production.queue === 1));
   await stop();
   const original = JSON.parse(await readFile(checkpointPath, 'utf8'));
-  assert.equal(original.schemaVersion, 29); assert.equal(original.rulesetRevision, GAMEPLAY_RULESET_REVISION);
+  assert.equal(original.schemaVersion, 30); assert.equal(original.rulesetRevision, GAMEPLAY_RULESET_REVISION);
   assert.equal(original.factionId, DEFAULT_FACTION_ID);
-  const legacy = structuredClone(original); legacy.schemaVersion = 11; delete legacy.rulesetRevision; delete legacy.factionId;
+  const legacy = structuredClone(original); legacy.schemaVersion = 11; delete legacy.state.voluntaryEndings; delete legacy.rulesetRevision; delete legacy.factionId;
   delete legacy.matchModeId; delete legacy.matchModeVersion;
   legacy.state.seatSessions = [];
   delete legacy.economyProfileId; delete legacy.state.teamStone;
@@ -138,7 +138,7 @@ try {
   assert.equal(restored.matchId, original.matchId, 'supported legacy saves migrate without replacing the match');
   assert.equal(restored.rulesetRevision, GAMEPLAY_RULESET_REVISION);
   const priorContent = structuredClone(restored);
-  priorContent.schemaVersion = 12;
+  priorContent.schemaVersion = 12; delete priorContent.state.voluntaryEndings;
   delete priorContent.matchModeId; delete priorContent.matchModeVersion;
   delete priorContent.economyProfileId; delete priorContent.state.teamStone;
   priorContent.rulesetRevision = 'v1:4a8f7db2ce7f694407489bee0923c19c20c52126176f57f972906aa1dd1dc254';

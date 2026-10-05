@@ -42,7 +42,7 @@ async function restored(snapshot, launchId) {
   await writeFile(fixture.checkpointPath, JSON.stringify(saved));
   launchMode(launchId);
   await fixture.start(); await connect();
-  assert.ok(clients.every(client => client.welcome.recoveredFromCheckpoint));
+  assert.ok(clients.every(client => client.welcome.recoveredFromCheckpoint), fixture.logs);
   assert.ok(clients.every(client => client.welcome.matchId === saved.matchId));
   await fixture.checkpoint(value => value.state.tickNumber >= saved.state.tickNumber + 12);
   await fixture.stop();
@@ -74,7 +74,7 @@ try {
   clients.forEach(assertSkirmish);
   const fresh = await fixture.checkpoint();
   assertIdentity(fresh, 'skirmish');
-  assert.equal(fresh.schemaVersion, 29);
+  assert.equal(fresh.schemaVersion, 30);
   assert.deepEqual(fresh.mapDefinition, authored.mapDefinition);
   assert.equal(fresh.mapHash, authored.mapHash);
   records.push({ name: 'Fresh Skirmish projects client rules and preserves canonical map/checksum', mapHash: fresh.mapHash });
@@ -144,6 +144,7 @@ try {
   const legacy = structuredClone(authored);
   // Mode identity was added after military stance; retain that prior state shape.
   legacy.schemaVersion = 26;
+  delete legacy.state.voluntaryEndings;
   delete legacy.matchModeId; delete legacy.matchModeVersion;
   // Schema28 added herd state. A real schema26 fixture cannot claim it while
   // testing the unchanged authored mode migration.

@@ -2,6 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { preflightXlCheckpointRoutes } from '../src/server/checkpoint-route-budget.mjs';
+import { preflightXlCheckpointCloneInputs } from '../src/server/checkpoint-json-budget.mjs';
+import { freshVoluntaryEndings, savedVoluntaryEndings } from '../src/server/voluntary-endings.mjs';
 import { createResourceNodeState, activateWildlifeHarvest, markWildlifeDepleted } from '../src/wildlife-state.mjs';
 import { migrateWildlifeMotionCheckpoint, sameWildlifeCell, wildlifeCell, wildlifeStepUnoccupied,
   stepWildlifeMotion, validWildlifeMotion, SHEEP_WANDER_SPEED } from '../src/wildlife-motion.mjs';
@@ -85,7 +88,10 @@ test('actual checkpoint capture copies private motion before deferred serializat
   const capture = source.slice(source.indexOf('function captureMatchCheckpoint('), source.indexOf('function assertSnapshot('));
   const node = createResourceNodeState(definition);
   let visionChecks = 0;
-  const defaults = { MATCH_CHECKPOINT_SCHEMA_VERSION: 25, MATCH_RULES_VERSION: 6,
+  const defaults = { MATCH_CHECKPOINT_SCHEMA_VERSION: 30, MATCH_RULES_VERSION: 6,
+    preflightXlCheckpointRoutes, preflightXlCheckpointCloneInputs,
+    MAX_UNITS: 2000, MAX_BUILDINGS: 128, MAX_RESOURCE_NODES: 128,
+    voluntaryEndings: freshVoluntaryEndings(), savedVoluntaryEndings,
     sessions: new Map(), resourceNodeStates: new Map([[node.id, node]]), units: [], buildings: [],
     teamUpgrades: [{}, {}], teamResearch: [null, null], workerProduction: [{}, {}], homeTownCenters: [{}, {}],
     triggerStates: new Map(), scenarioEventStates: new Map(), victoryHoldState: { activeTeams: [], progressSeconds: [], triggerIds: [] },

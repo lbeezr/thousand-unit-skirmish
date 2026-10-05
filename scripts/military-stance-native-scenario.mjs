@@ -63,7 +63,7 @@ try {
   }));
   const sessions = clients.map(c => c.welcome.player.sessionToken);
   await fixture.stop(); const saved = await fixture.checkpoint();
-  assert.equal(saved.schemaVersion, 29);
+  assert.equal(saved.schemaVersion, 30);
   assert.ok(lanes.every(l => saved.state.units[l.unit[0]].stanceReturning));
   await fixture.start(); clients = [await fixture.connect(0, sessions[0]), await fixture.connect(1, sessions[1])];
   assert.ok(clients.every(c => c.welcome.recoveredFromCheckpoint));
@@ -71,7 +71,7 @@ try {
     const u = s.state.units[l.unit[0]];
     return !u.stanceReturning && !u.movePlanningPending && Math.hypot(u.x + 3.5 * l.side, u.z - l.z) < .02;
   }));
-  assert.equal(back.schemaVersion, 29);
+  assert.equal(back.schemaVersion, 30);
   for (const l of lanes) {
     records.push({ team: l.team, unit: l.unit[0], returnCheckpointTick: saved.state.tickNumber,
       restoredAtTick: saved.state.tickNumber, returnedAtTick: back.state.tickNumber,

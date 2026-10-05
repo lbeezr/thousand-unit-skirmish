@@ -100,7 +100,7 @@ test('exact schema29 identity migration preserves old food, cargo, orders, banks
 
 test('migration rejects corrupt selected legacy state atomically and never infers another map revision', () => {
   for (const mutate of [
-    ...[undefined, 28, 30, '29'].map(schemaVersion => saved => { saved.schemaVersion = schemaVersion; }),
+    ...[undefined, 28, 31, '29'].map(schemaVersion => saved => { saved.schemaVersion = schemaVersion; }),
     saved => { saved.mapHash = 'forged'; },
     saved => { saved.mapDefinition.id = 'other'; saved.mapHash = hash(saved.mapDefinition); },
     saved => { saved.mapDefinition.terrainSeed++; saved.mapHash = hash(saved.mapDefinition); },

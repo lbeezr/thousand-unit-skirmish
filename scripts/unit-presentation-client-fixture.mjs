@@ -74,7 +74,7 @@ export async function createUnitPresentationClientFixture({ localTeam = 0, maxUn
   const noop = () => {};
   const elements = new Map();
   const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), THREE, applyUnitStances, UNIT_DEFINITIONS,
-    readWorkerPerformingAction, workerWorkAction, fixedMatchArmySize, renderMatchRecap, updateLobbyHostControls: noop,
+    readWorkerPerformingAction, workerWorkAction, fixedMatchArmySize, renderMatchRecap, matchDecisions: { update() {} }, updateLobbyHostControls: noop,
     mapDefinition: { id: 'unit-presentation-fixture' }, localTeam, isHost: false,
     activeMatchMode: {}, knownMaps: [], matchModeView: { update: noop }, setMapCatalog: noop,
     document: { querySelectorAll: () => [], querySelector(id) {

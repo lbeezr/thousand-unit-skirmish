@@ -45,7 +45,7 @@ const sheepOrder = (team, type, nodeId, value = {}, pattern = type === 'herd' ? 
   command(team, { type, nodeId, resourceEpoch: clients[team].latest.forestEpoch, ...value }, pattern);
 
 function conserved(saved) {
-  assert.equal(saved.schemaVersion, 29);
+  assert.equal(saved.schemaVersion, 30);
   assert.deepEqual(saved.state.resourceNodes.map(node => node.id).sort(), map.resourceNodes.map(node => node.id).sort());
   for (const resource of ['food', 'wood']) {
     const initial = map.startingResources[resource] * 2
