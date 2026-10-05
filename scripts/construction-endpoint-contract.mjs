@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 import { pathingBaselineMap } from './pathing-baseline-cases.mjs';
 import { canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
+import { sweptBodyPairMargin } from './land-body-clearance.mjs';
 
 // Commands and observations only. No pose, route, intent, HP or planner mutation.
 export async function constructionEndpointContract({ team, direction, parkOrder = null }) {
@@ -27,7 +28,8 @@ export async function constructionEndpointContract({ team, direction, parkOrder 
         LAND_CLEARANCE_PROFILE.radiusByKind[s.kind], map.width, map.height, r.isWalkable),
       `static contact: ${JSON.stringify(s)}`);
       const other = s.neighbours.find(u => u.id === (s.id === builderId ? soldierId : builderId));
-      if (other && Math.hypot(s.to.x - other.x, s.to.z - other.z) < .4 - 1e-9) contacts++;
+      if (other && sweptBodyPairMargin(s, LAND_CLEARANCE_PROFILE.radiusByKind[s.kind],
+        other, LAND_CLEARANCE_PROFILE.radiusByKind[other.kind]) < -1e-9) contacts++;
     }
   };
   const intent = u => ({ goal: u.moveGoalCell, point: structuredClone(u.moveGoalPoint),
@@ -96,6 +98,7 @@ export async function constructionEndpointContract({ team, direction, parkOrder 
     assert.deepEqual({ x: r.units[builderId].x, z: r.units[builderId].z,
       holding: r.units[builderId].holdingPosition, revision: r.units[builderId].orderRevision }, parked);
     // Only this accepted, selected-builder command opens the original endpoint.
+    originalPointReached = false;
     order(builderId, 'move', { x: 2.5, z: 8.5 }); r.drain();
     assert.deepEqual(intent(r.units[soldierId]), accepted, 'builder departure does not rewrite military intent');
     let reachedFirst = false;

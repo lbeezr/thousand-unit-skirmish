@@ -1,7 +1,8 @@
 # Parked construction and exact military endpoints
 
-This caller-owned audit records the existing contract on main
-`252abb29cc0a8638ec7a68844f4f631bc01123dc`, including crowd PR443. It changes
+This caller-owned audit first reproduced the existing contract on main
+`252abb29cc0a8638ec7a68844f4f631bc01123dc`, including crowd PR443, then qualified
+it with merged core PR438 on `16047ce2e8885b84275589578da2f037ef918c3e`. It changes
 no runtime behavior. The [crowd finding](qa-crowd-forward-yield-2026-10-05.md#parked-builder-and-exact-endpoint-contract)
 and [core's proposed seam](https://github.com/lbeezr/thousand-unit-skirmish/pull/443#issuecomment-5989473200)
 describe a physical conflict, distinct from remaining crowd final-approach stalls.
@@ -34,9 +35,11 @@ the site is neither repaid nor refunded.
 
 [Full commands and observations](qa-evidence/construction-endpoint-contract-2026-10-05/commands.json)
 retain all eight cases. The collector records source revision/dirty state and
-the production server hash; the initial collection adds only audit/test/docs
-files over the named runtime source. All 10,532 observed builder/infantry
-substeps pass shared static-body admission and have zero observed pair contact.
+the production server hash; collection adds only audit/test/docs files over
+the named runtime source. All 10,532 observed builder/infantry substeps pass
+shared static-body admission and have zero swept pair contacts using the
+existing `sweptBodyPairMargin` oracle. The exact-point observation resets at
+builder departure, so setup cannot satisfy the resumed-arrival assertion.
 These are command-body/tick and separate-module cold-recovery witnesses, not
 native WebSocket/process or rendered evidence.
 

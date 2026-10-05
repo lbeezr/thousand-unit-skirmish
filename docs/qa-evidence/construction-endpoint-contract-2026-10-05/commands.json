@@ -1,6 +1,6 @@
 {
   "status": "existing-contract-verified",
-  "sourceRevision": "252abb29cc0a8638ec7a68844f4f631bc01123dc",
+  "sourceRevision": "fd3f84ac28570f27b8a06518bdae376c79b99177",
   "sourceDirty": true,
   "scope": "real production command/tick bodies, physical substeps and separate-module checkpoint recovery; no native transport or rendered claim",
   "policy": "retain parked Worker pose and accepted exact military point/queue until independently commanded builder departure",
@@ -11,12 +11,12 @@
       "parkOrder": null,
       "builderId": 0,
       "soldierId": 4,
-      "runtimeServerSha256": "98f8c456b4f9c531113e5b49c2b0d2501bbc1691b7ee029017d778e8c7ad3d1e",
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
       "accepted": {
         "goal": 3124,
         "point": {
           "version": 2,
-          "generation": 2305570696,
+          "generation": 857291709,
           "revision": 3,
           "requestedX": 4.5,
           "requestedZ": 0.5,
@@ -32,7 +32,7 @@
             "attackMove": false,
             "point": {
               "version": 2,
-              "generation": 2305570696,
+              "generation": 857291709,
               "revision": 3,
               "requestedX": -8.5,
               "requestedZ": 8.5,
@@ -44,7 +44,7 @@
             }
           }
         ],
-        "generation": 2305570696,
+        "generation": 857291709,
         "revision": 3
       },
       "blocked": {
@@ -129,7 +129,7 @@
             0
           ],
           "unitGenerations": [
-            2305570696
+            857291709
           ],
           "x": 2.5,
           "z": 0.5
@@ -142,7 +142,7 @@
             4
           ],
           "unitGenerations": [
-            2305570696
+            857291709
           ],
           "x": -20.5,
           "z": 0.5
@@ -155,7 +155,7 @@
             4
           ],
           "unitGenerations": [
-            2305570696
+            857291709
           ],
           "x": 4.5,
           "z": 0.5
@@ -168,7 +168,7 @@
             4
           ],
           "unitGenerations": [
-            2305570696
+            857291709
           ],
           "x": -8.5,
           "z": 8.5,
@@ -182,7 +182,7 @@
             0
           ],
           "unitGenerations": [
-            2305570696
+            857291709
           ],
           "buildingType": "house",
           "x": 6.5,
@@ -196,7 +196,7 @@
             0
           ],
           "unitGenerations": [
-            2305570696
+            857291709
           ],
           "x": 2.5,
           "z": 8.5
@@ -214,12 +214,12 @@
       "parkOrder": null,
       "builderId": 0,
       "soldierId": 4,
-      "runtimeServerSha256": "98f8c456b4f9c531113e5b49c2b0d2501bbc1691b7ee029017d778e8c7ad3d1e",
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
       "accepted": {
         "goal": 3124,
         "point": {
           "version": 2,
-          "generation": 1639400147,
+          "generation": 1360303351,
           "revision": 3,
           "requestedX": 4.5,
           "requestedZ": 0.5,
@@ -235,7 +235,7 @@
             "attackMove": false,
             "point": {
               "version": 2,
-              "generation": 1639400147,
+              "generation": 1360303351,
               "revision": 3,
               "requestedX": -8.5,
               "requestedZ": 8.5,
@@ -247,7 +247,7 @@
             }
           }
         ],
-        "generation": 1639400147,
+        "generation": 1360303351,
         "revision": 3
       },
       "blocked": {
@@ -332,7 +332,7 @@
             0
           ],
           "unitGenerations": [
-            1639400147
+            1360303351
           ],
           "x": 2.5,
           "z": 0.5
@@ -345,7 +345,7 @@
             4
           ],
           "unitGenerations": [
-            1639400147
+            1360303351
           ],
           "x": -20.5,
           "z": 0.5
@@ -358,7 +358,7 @@
             0
           ],
           "unitGenerations": [
-            1639400147
+            1360303351
           ],
           "buildingType": "house",
           "x": 6.5,
@@ -372,7 +372,7 @@
             4
           ],
           "unitGenerations": [
-            1639400147
+            1360303351
           ],
           "x": 4.5,
           "z": 0.5
@@ -385,7 +385,7 @@
             4
           ],
           "unitGenerations": [
-            1639400147
+            1360303351
           ],
           "x": -8.5,
           "z": 8.5,
@@ -399,7 +399,7 @@
             0
           ],
           "unitGenerations": [
-            1639400147
+            1360303351
           ],
           "x": 2.5,
           "z": 8.5
@@ -417,12 +417,12 @@
       "parkOrder": "stop",
       "builderId": 0,
       "soldierId": 4,
-      "runtimeServerSha256": "98f8c456b4f9c531113e5b49c2b0d2501bbc1691b7ee029017d778e8c7ad3d1e",
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
       "accepted": {
         "goal": 3124,
         "point": {
           "version": 2,
-          "generation": 645509052,
+          "generation": 3464824755,
           "revision": 3,
           "requestedX": 4.5,
           "requestedZ": 0.5,
@@ -438,7 +438,7 @@
             "attackMove": false,
             "point": {
               "version": 2,
-              "generation": 645509052,
+              "generation": 3464824755,
               "revision": 3,
               "requestedX": -8.5,
               "requestedZ": 8.5,
@@ -450,7 +450,7 @@
             }
           }
         ],
-        "generation": 645509052,
+        "generation": 3464824755,
         "revision": 3
       },
       "blocked": {
@@ -535,7 +535,7 @@
             0
           ],
           "unitGenerations": [
-            645509052
+            3464824755
           ],
           "x": 2.5,
           "z": 0.5
@@ -548,7 +548,7 @@
             4
           ],
           "unitGenerations": [
-            645509052
+            3464824755
           ],
           "x": -20.5,
           "z": 0.5
@@ -561,7 +561,7 @@
             4
           ],
           "unitGenerations": [
-            645509052
+            3464824755
           ],
           "x": 4.5,
           "z": 0.5
@@ -574,7 +574,7 @@
             4
           ],
           "unitGenerations": [
-            645509052
+            3464824755
           ],
           "x": -8.5,
           "z": 8.5,
@@ -588,7 +588,7 @@
             0
           ],
           "unitGenerations": [
-            645509052
+            3464824755
           ],
           "buildingType": "house",
           "x": 6.5,
@@ -602,7 +602,7 @@
             0
           ],
           "unitGenerations": [
-            645509052
+            3464824755
           ]
         },
         {
@@ -613,7 +613,7 @@
             0
           ],
           "unitGenerations": [
-            645509052
+            3464824755
           ],
           "x": 2.5,
           "z": 8.5
@@ -631,12 +631,12 @@
       "parkOrder": "holdPosition",
       "builderId": 0,
       "soldierId": 4,
-      "runtimeServerSha256": "98f8c456b4f9c531113e5b49c2b0d2501bbc1691b7ee029017d778e8c7ad3d1e",
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
       "accepted": {
         "goal": 3124,
         "point": {
           "version": 2,
-          "generation": 2403579843,
+          "generation": 3660510726,
           "revision": 3,
           "requestedX": 4.5,
           "requestedZ": 0.5,
@@ -652,7 +652,7 @@
             "attackMove": false,
             "point": {
               "version": 2,
-              "generation": 2403579843,
+              "generation": 3660510726,
               "revision": 3,
               "requestedX": -8.5,
               "requestedZ": 8.5,
@@ -664,7 +664,7 @@
             }
           }
         ],
-        "generation": 2403579843,
+        "generation": 3660510726,
         "revision": 3
       },
       "blocked": {
@@ -749,7 +749,7 @@
             0
           ],
           "unitGenerations": [
-            2403579843
+            3660510726
           ],
           "x": 2.5,
           "z": 0.5
@@ -762,7 +762,7 @@
             4
           ],
           "unitGenerations": [
-            2403579843
+            3660510726
           ],
           "x": -20.5,
           "z": 0.5
@@ -775,7 +775,7 @@
             4
           ],
           "unitGenerations": [
-            2403579843
+            3660510726
           ],
           "x": 4.5,
           "z": 0.5
@@ -788,7 +788,7 @@
             4
           ],
           "unitGenerations": [
-            2403579843
+            3660510726
           ],
           "x": -8.5,
           "z": 8.5,
@@ -802,7 +802,7 @@
             0
           ],
           "unitGenerations": [
-            2403579843
+            3660510726
           ],
           "buildingType": "house",
           "x": 6.5,
@@ -816,7 +816,7 @@
             0
           ],
           "unitGenerations": [
-            2403579843
+            3660510726
           ]
         },
         {
@@ -827,7 +827,7 @@
             0
           ],
           "unitGenerations": [
-            2403579843
+            3660510726
           ],
           "x": 2.5,
           "z": 8.5
@@ -845,12 +845,12 @@
       "parkOrder": null,
       "builderId": 8,
       "soldierId": 12,
-      "runtimeServerSha256": "98f8c456b4f9c531113e5b49c2b0d2501bbc1691b7ee029017d778e8c7ad3d1e",
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
       "accepted": {
         "goal": 3124,
         "point": {
           "version": 2,
-          "generation": 2742976519,
+          "generation": 1985988042,
           "revision": 3,
           "requestedX": 4.5,
           "requestedZ": 0.5,
@@ -866,7 +866,7 @@
             "attackMove": false,
             "point": {
               "version": 2,
-              "generation": 2742976519,
+              "generation": 1985988042,
               "revision": 3,
               "requestedX": -8.5,
               "requestedZ": 8.5,
@@ -878,7 +878,7 @@
             }
           }
         ],
-        "generation": 2742976519,
+        "generation": 1985988042,
         "revision": 3
       },
       "blocked": {
@@ -963,7 +963,7 @@
             8
           ],
           "unitGenerations": [
-            2742976519
+            1985988042
           ],
           "x": 2.5,
           "z": 0.5
@@ -976,7 +976,7 @@
             12
           ],
           "unitGenerations": [
-            2742976519
+            1985988042
           ],
           "x": -20.5,
           "z": 0.5
@@ -989,7 +989,7 @@
             12
           ],
           "unitGenerations": [
-            2742976519
+            1985988042
           ],
           "x": 4.5,
           "z": 0.5
@@ -1002,7 +1002,7 @@
             12
           ],
           "unitGenerations": [
-            2742976519
+            1985988042
           ],
           "x": -8.5,
           "z": 8.5,
@@ -1016,7 +1016,7 @@
             8
           ],
           "unitGenerations": [
-            2742976519
+            1985988042
           ],
           "buildingType": "house",
           "x": 6.5,
@@ -1030,7 +1030,7 @@
             8
           ],
           "unitGenerations": [
-            2742976519
+            1985988042
           ],
           "x": 2.5,
           "z": 8.5
@@ -1048,12 +1048,12 @@
       "parkOrder": null,
       "builderId": 8,
       "soldierId": 12,
-      "runtimeServerSha256": "98f8c456b4f9c531113e5b49c2b0d2501bbc1691b7ee029017d778e8c7ad3d1e",
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
       "accepted": {
         "goal": 3124,
         "point": {
           "version": 2,
-          "generation": 2579439994,
+          "generation": 1561288500,
           "revision": 3,
           "requestedX": 4.5,
           "requestedZ": 0.5,
@@ -1069,7 +1069,7 @@
             "attackMove": false,
             "point": {
               "version": 2,
-              "generation": 2579439994,
+              "generation": 1561288500,
               "revision": 3,
               "requestedX": -8.5,
               "requestedZ": 8.5,
@@ -1081,7 +1081,7 @@
             }
           }
         ],
-        "generation": 2579439994,
+        "generation": 1561288500,
         "revision": 3
       },
       "blocked": {
@@ -1166,7 +1166,7 @@
             8
           ],
           "unitGenerations": [
-            2579439994
+            1561288500
           ],
           "x": 2.5,
           "z": 0.5
@@ -1179,7 +1179,7 @@
             12
           ],
           "unitGenerations": [
-            2579439994
+            1561288500
           ],
           "x": -20.5,
           "z": 0.5
@@ -1192,7 +1192,7 @@
             8
           ],
           "unitGenerations": [
-            2579439994
+            1561288500
           ],
           "buildingType": "house",
           "x": 6.5,
@@ -1206,7 +1206,7 @@
             12
           ],
           "unitGenerations": [
-            2579439994
+            1561288500
           ],
           "x": 4.5,
           "z": 0.5
@@ -1219,7 +1219,7 @@
             12
           ],
           "unitGenerations": [
-            2579439994
+            1561288500
           ],
           "x": -8.5,
           "z": 8.5,
@@ -1233,7 +1233,7 @@
             8
           ],
           "unitGenerations": [
-            2579439994
+            1561288500
           ],
           "x": 2.5,
           "z": 8.5
@@ -1251,12 +1251,12 @@
       "parkOrder": "stop",
       "builderId": 8,
       "soldierId": 12,
-      "runtimeServerSha256": "98f8c456b4f9c531113e5b49c2b0d2501bbc1691b7ee029017d778e8c7ad3d1e",
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
       "accepted": {
         "goal": 3124,
         "point": {
           "version": 2,
-          "generation": 1942603498,
+          "generation": 690865304,
           "revision": 3,
           "requestedX": 4.5,
           "requestedZ": 0.5,
@@ -1272,7 +1272,7 @@
             "attackMove": false,
             "point": {
               "version": 2,
-              "generation": 1942603498,
+              "generation": 690865304,
               "revision": 3,
               "requestedX": -8.5,
               "requestedZ": 8.5,
@@ -1284,7 +1284,7 @@
             }
           }
         ],
-        "generation": 1942603498,
+        "generation": 690865304,
         "revision": 3
       },
       "blocked": {
@@ -1369,7 +1369,7 @@
             8
           ],
           "unitGenerations": [
-            1942603498
+            690865304
           ],
           "x": 2.5,
           "z": 0.5
@@ -1382,7 +1382,7 @@
             12
           ],
           "unitGenerations": [
-            1942603498
+            690865304
           ],
           "x": -20.5,
           "z": 0.5
@@ -1395,7 +1395,7 @@
             12
           ],
           "unitGenerations": [
-            1942603498
+            690865304
           ],
           "x": 4.5,
           "z": 0.5
@@ -1408,7 +1408,7 @@
             12
           ],
           "unitGenerations": [
-            1942603498
+            690865304
           ],
           "x": -8.5,
           "z": 8.5,
@@ -1422,7 +1422,7 @@
             8
           ],
           "unitGenerations": [
-            1942603498
+            690865304
           ],
           "buildingType": "house",
           "x": 6.5,
@@ -1436,7 +1436,7 @@
             8
           ],
           "unitGenerations": [
-            1942603498
+            690865304
           ]
         },
         {
@@ -1447,7 +1447,7 @@
             8
           ],
           "unitGenerations": [
-            1942603498
+            690865304
           ],
           "x": 2.5,
           "z": 8.5
@@ -1465,12 +1465,12 @@
       "parkOrder": "holdPosition",
       "builderId": 8,
       "soldierId": 12,
-      "runtimeServerSha256": "98f8c456b4f9c531113e5b49c2b0d2501bbc1691b7ee029017d778e8c7ad3d1e",
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
       "accepted": {
         "goal": 3124,
         "point": {
           "version": 2,
-          "generation": 1438843095,
+          "generation": 4118063164,
           "revision": 3,
           "requestedX": 4.5,
           "requestedZ": 0.5,
@@ -1486,7 +1486,7 @@
             "attackMove": false,
             "point": {
               "version": 2,
-              "generation": 1438843095,
+              "generation": 4118063164,
               "revision": 3,
               "requestedX": -8.5,
               "requestedZ": 8.5,
@@ -1498,7 +1498,7 @@
             }
           }
         ],
-        "generation": 1438843095,
+        "generation": 4118063164,
         "revision": 3
       },
       "blocked": {
@@ -1583,7 +1583,7 @@
             8
           ],
           "unitGenerations": [
-            1438843095
+            4118063164
           ],
           "x": 2.5,
           "z": 0.5
@@ -1596,7 +1596,7 @@
             12
           ],
           "unitGenerations": [
-            1438843095
+            4118063164
           ],
           "x": -20.5,
           "z": 0.5
@@ -1609,7 +1609,7 @@
             12
           ],
           "unitGenerations": [
-            1438843095
+            4118063164
           ],
           "x": 4.5,
           "z": 0.5
@@ -1622,7 +1622,7 @@
             12
           ],
           "unitGenerations": [
-            1438843095
+            4118063164
           ],
           "x": -8.5,
           "z": 8.5,
@@ -1636,7 +1636,7 @@
             8
           ],
           "unitGenerations": [
-            1438843095
+            4118063164
           ],
           "buildingType": "house",
           "x": 6.5,
@@ -1650,7 +1650,7 @@
             8
           ],
           "unitGenerations": [
-            1438843095
+            4118063164
           ]
         },
         {
@@ -1661,7 +1661,7 @@
             8
           ],
           "unitGenerations": [
-            1438843095
+            4118063164
           ],
           "x": 2.5,
           "z": 8.5
