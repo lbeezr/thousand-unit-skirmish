@@ -114,6 +114,14 @@ export function createSettlementWearCache(definition, definitions) {
       }
       for (const [cell, local] of [...cells].sort((a, b) => a[0] - b[0])) {
         const x0 = cell % width - width / 2, z0 = Math.floor(cell / width) - height / 2;
+        const [nw, ne, sw, se] = field.corners(cell % width, Math.floor(cell / width));
+        // Boundary vertices belong to this cell. World sampling at an exact
+        // cliff edge can choose its discontinuous neighbor's height instead.
+        const contact = (x, z) => {
+          const u = x - x0, v = z - z0;
+          return u >= v ? nw + (ne - nw) * u + (se - ne) * v
+            : nw + (se - sw) * u + (sw - nw) * v;
+        };
         let emitted = false;
         for (let v = 0; v < 2; v++) for (let u = 0; u < 2; u++) {
           const points = [[u, v], [u + 1, v], [u, v + 1], [u + 1, v + 1]]
@@ -122,7 +130,7 @@ export function createSettlementWearCache(definition, definitions) {
           if (!alphas.some(a => a > .001)) continue;
           const first = result.vertices.length / 3;
           points.forEach(([x, z], i) => {
-            result.vertices.push(x, field.sample(x, z) + .001, z);
+            result.vertices.push(x, contact(x, z) + .001, z);
             result.uvs.push((x + width / 2) / 12, (z + height / 2) / 12);
             result.colors.push(1, 1, 1, alphas[i]);
           });

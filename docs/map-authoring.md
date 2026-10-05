@@ -317,11 +317,13 @@ npm run docs:check
 node scripts/railway-release-scenario.mjs
 ```
 
-The five new CPU contracts check three/pair/single/distant/enemy/incomplete cases,
+The six new CPU contracts check three/pair/single/distant/enemy/incomplete cases,
 four facings, removal and owner changes, deterministic seed/reordering, immutable
 snapshots, cache/upload reuse, shared-vertex continuity, alpha bounds, explicit
 footprints, water/blocker/height/edge exclusions, actual raised contact, budget
-refusal and ground layer/picking ownership. These and packaging establish source
+refusal and ground layer/picking ownership. Independent review found and corrected
+a cliff-boundary world-sampling error; the new regression checks actual triangle
+centroids on both sides of a discontinuity against owning-cell ground contact. These and packaging establish source
 contracts only. The initial [cloud capability receipt](qa-evidence/settlement-cluster-wear-2026-10-05/renderer-capability.json)
 ran on the clean checkout baseline before implementation: exit 1,
 `sandbox-unavailable` / `storage-unavailable`, zero readbacks, screenshots or game

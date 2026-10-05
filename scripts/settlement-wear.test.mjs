@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
+import { terrainHeightField } from '../src/terrain-height.mjs';
 import { createSettlementWearCache, createSettlementWearMesh, updateSettlementWearMesh } from '../src/settlement-wear.mjs';
 
 const definitions = { house: { footprint: 3 }, 'town-center': { footprint: 5 }, workshop: { footprint: 3 }, 'palisade-wall': { footprint: 1 } };
@@ -101,4 +102,21 @@ test('flat/raised geometry follows the actual terrain triangles, budget fails cl
   assert.match(main, /settlementWearCache\.update\(rows, localTeam\)/);
   assert.match(main, /settlementWearMesh = createSettlementGround\(definition\)/);
   mesh.geometry.dispose(); mesh.material.dispose();
+});
+
+// Check actual triangle interiors against the ground, not just zero-alpha edges.
+test('both sides of a discontinuous cliff retain owning-cell triangle contact', () => {
+  const definition = { ...map, elevationPatches: [{ column: 24, row: 0, width: 16, height: 40, level: 2 }] };
+  const field = terrainHeightField(definition);
+  for (const buildings of [row, [house(1, -5.5), house(2, -1.5), house(3, 2.5)],
+    [house(1, 5.5), house(2, 9.5), house(3, 13.5)]]) {
+    const plan = run(buildings, definition);
+    assert.ok(plan.indices.length);
+    for (let i = 0; i < plan.indices.length; i += 3) {
+      const triangle = plan.indices.slice(i, i + 3);
+      const centroid = [0, 1, 2].map(axis => triangle.reduce((sum, index) => sum + plan.vertices[index * 3 + axis] / 3, 0));
+      assert.ok(Math.abs(centroid[1] - field.sample(centroid[0], centroid[2]) - .001) < 1e-6,
+        `triangle contact at ${centroid}`);
+    }
+  }
 });
