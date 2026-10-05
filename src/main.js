@@ -83,9 +83,9 @@ import { readWorkerPerformingAction, workerWorkAction } from './worker-work-pres
 import { createNeutralWildlifeRenderer } from './neutral-wildlife-renderer.mjs';
 import { readDisclosedWildlife, selectInspectableWildlife, reconcileWildlifeSelection,
   createWildlifeCommand, updateWildlifePositionMemory } from './wildlife-client-state.mjs';
-import {
-  MAX_ELEVATION_PATCHES, buildElevationGrid, capturePrerequisiteIds, scenarioEventSourceIds,
-} from './map-utils.mjs';
+import { capturePrerequisiteIds } from './world/capture-prerequisites.mjs';
+import { scenarioEventSourceIds } from './world/scenario-event-chain.mjs';
+import { MAX_ELEVATION_PATCHES, buildElevationGrid } from './map-utils.mjs';
 import { townCenterSpawnPosition } from './town-center-spawn.mjs';
 import { resizeWorldMarkers } from './authoring/map-resize.mjs';
 import {

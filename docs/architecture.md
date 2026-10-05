@@ -1055,7 +1055,8 @@ the full suite or weaken those assertions as part of this source boundary.
 
 #### Authoring validator world-helper caller slice
 
-The next documented compatibility-caller step selects the architecture-owned
+The [PR510](https://github.com/lbeezr/thousand-unit-skirmish/pull/510)
+compatibility-caller step selects the architecture-owned
 `src/authoring/map-import-validator.mjs`, with its real calls to
 `findInvalidCapturePrerequisite` and `findInvalidScenarioEventChain`.
 Only these two import bindings move from `map-utils` forwarding exports to the
@@ -1066,8 +1067,8 @@ parking, save, format, fixture, manifest or CI/package registration changes.
 
 The runtime caller inventory at `6c5dde0f` retains the corresponding `main.js`
 and `server.mjs` compatibility bindings, alongside tool/test/HTTP consumers.
-Those callers require their own owner agreement. This slice has one existing
-architecture/authoring caller and does not remove any of the four `map-utils`
+Those callers required their own owner agreement at that checkpoint. This slice
+has one existing architecture/authoring caller and does not remove any of the four `map-utils`
 forwarding exports, their identity checks or their public paths; supported
 external imports and containing-release reload evidence remain retirement inputs.
 The world implementations and all eleven compatibility surfaces stay supported.
@@ -1090,6 +1091,41 @@ files, 859 directly at its root, 323 `*.test.mjs` files and 238 filenames contai
 dated measurements remain historical. Host responsibility contracts and the
 testing/tool owners' purpose-based queue remain the substantive work after these
 small caller migrations.
+
+#### Main/server world-helper caller allocation
+
+After PR510 merged as `34e9beab`, the parent explicitly allocated the remaining
+world-helper import bindings to this architecture owner. The existing plan and
+runtime inventory above identify these actual consumers: `src/main.js` uses
+`capturePrerequisiteIds` and `scenarioEventSourceIds`; `server.mjs` uses both plus
+`findInvalidCapturePrerequisite` and `findInvalidScenarioEventChain` for validation,
+capture authority and scenario evaluation/recovery. These six bindings now come
+directly from the two existing canonical world leaves. Elevation/topology remain
+in `map-utils`. Every other import and every byte after the hosts' import blocks
+are preserved, including construction body admission, parking and Patrol symbols
+and functions owned by the active core/caller lanes.
+
+No canonical implementation, compatibility export, fixture/assertion, save/rules
+version, admission, protocol, public path, manifest, package/CI/AGENTS/testing
+registration or art changes. The ten-export `map-utils` namespace and its four
+forwarding identities remain supported; its topology/elevation implementation is
+still consumed. Existing tool/test and draft fixture imports remain intentional
+compatibility consumers, so zero runtime forwarding callers do not retire an API.
+Exact-head graph/types, real authoring/validation/persistence/recovery consumers,
+clean packed canonical/old-path bytes and private GET/HEAD denial, then independent
+review and actual containing deployment establish their separate milestones.
+
+The base `f33c3a1a` contains PR509 and PR510, with staging SUCCESS `42e85b27`
+at that source and one healthy replica. PR510's CI ended with all three shards
+failing: formation reservation, paid-wall formation destinations and a native-wall
+checkpoint timeout, leaving 320 selected checks unrun. No full-suite success or
+ordinary-game acceptance is inferred. The earlier proxy-denied public route
+remains unretried.
+This header-only slice adds four composition edges: 224 modules/428 local edges,
+140 browser/95 server/34 shared modules and zero cycles. Main's distinct local
+dependencies become 78 and server's 76; all existing imported names remain.
+Further host extraction still needs a useful interface and concrete write scope;
+this allocation does not authorize construction/Patrol or a broad host refactor.
 
 ### Coupling and size ratchets
 
