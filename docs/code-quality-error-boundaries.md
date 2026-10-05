@@ -17,11 +17,11 @@ the current write scope. The shipped-audio reader already has its own owner.
 
 | Rank/status | Reproduction and outcome | Write boundary | Next action/dependency | Acceptance owner |
 | --- | --- | --- | --- | --- |
-| 1 — local source slice; unpublished | At main `b5b4dd49`, actual Map Studio file import classified unreadable files and reader programmer faults as invalid JSON and discarded their causes. The bounded read/parse fix distinguishes expected platform read failures, retains syntax/read causes and propagates unexpected faults. | Only `importEditorMap`, existing registered brush cases and their production-hook fixture, this record | Exact local review and source checks precede the separate validator extraction. External publication requires later authorization; no PR, push or deployment is part of this slice. | Error-handling with architecture/authoring owns source and subsequent identified-release native acceptance. |
+| 1 — source integration tracked | At main `b5b4dd49`, actual Map Studio file import classified unreadable files and reader programmer faults as invalid JSON and discarded their causes. The bounded read/parse fix distinguishes expected platform read failures, retains syntax/read causes and propagates unexpected faults. | Only `importEditorMap`, existing registered brush cases and their production-hook fixture, this record | Current-head review and source/release checks precede integration and the separate validator extraction. Native browser acceptance remains incomplete. | Error-handling with architecture/authoring owns source and subsequent identified-release native acceptance. |
 | 2 — integration tracked | [PR #190](https://github.com/lbeezr/thousand-unit-skirmish/pull/190) fixes missing-parent raw stacks and malformed JSON excerpts in visual-pack input loading. Real invalid/valid CLI, repair/retry, programmer-fault and unchanged symlink checks pass. | Validator, existing visual-pack path-safety scenario, this note | The linked PR retains exact reviewed head, merge and fresh-main tool acceptance. | Error-handling owner; tooling only, no production deployment. |
 | 3 — native acceptance blocked | Audio open and import source fixes have merged in PRs #166 and #172. The actual browser launch failed with `sandbox-unavailable`; no deployed revision has been identified for native Audio Studio retry/import observation. | No further source edit is justified by this blocker. | Parent identifies the coordinated runtime release; resume normal/blocked-open/import retry observation in a provider runtime with a working browser sandbox. | Parent owns coordinated release; error-handling owner retains native acceptance in the linked audio PRs below. |
 
-## Local Map Studio import boundary — 5 October 2026
+## Map Studio import boundary — 5 October 2026
 
 Read and parse are separate phases after the unchanged 900 KB admission check.
 The [File API read error contract](https://w3c.github.io/FileAPI/#errors)
@@ -40,7 +40,7 @@ unchanged draft-listener scheduling from the import operation. Prior dialog
 cancel cases remain. A real File positive control retains defaults and the current map.
 The fixture stubs platform/rendering/audio and authoring subpanel/save callbacks
 and tool selection; these source controls do not
-claim native browser file behavior, rendering, deployed identity or publication.
+claim native browser file behavior, rendering or deployed identity.
 
 ## Completed evidence
 
@@ -122,7 +122,7 @@ remaining issue, and state the concrete condition. Never invent work or expand
 spending, access, publication rights or repository permissions to continue.
 
 Once PR #190 is integrated, every reproduced source candidate in the original
-ranked set has shipped. The newly reproduced local Map Studio boundary above
+ranked set has shipped. The newly reproduced Map Studio boundary above
 is a separate candidate; it does not broaden the original audit or close audio
 acceptance. Remaining native/deployed audio acceptance is blocked by the actual
 browser launch failure and the unidentified coordinated runtime release above.
