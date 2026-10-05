@@ -1,0 +1,239 @@
+{
+  "baselineRegisteredPoseSHA256": "3ed0925abf698c1a0e9a0c57566f1d6e134c8bb36242ed78f1dd72d20781dffd",
+  "baselineUnchangedClipsSHA256": "2ba298933e48368b24a819a8d0f47845db2017ce90ad00cf8646cd80f53ebd17",
+  "baselineAssetMetadataSHA256": "0494af4603627b42502777172d5275538ec54e2d76f325095d0f763d1ec9b814",
+  "baselinePageMetadataSHA256": "3af4142ef00d4cccb38005246687ccbbd0a402e67d5c6115dd719e1bab8d1b7d",
+  "registeredPageMetadataSHA256": "c863c8678f34ab8b05ca3a3f21fcd7122c5ff6c33aec492602e32191c4cc3a0f",
+  "baselineMaskSHA256": "eda032b76b64eabe3b282a8882756ddad49f8ab392afce878d001e2f317982e4",
+  "registeredMaskSHA256": "49fa08b8b1ddf451ffd0430f3a5753fd40468e870466f68af728b132f5a96a90",
+  "heightWorld": 1.6722564697265625,
+  "worldPerPixel": 0.0052421832906788795,
+  "baselineManifestSHA256": "ff233fc1157ecf1760fdd099f2d70d8db6228f9239c0e615174c2cf883145669",
+  "baselineRuntimeSHA256": "9eaa23737c052bbd92ef14b2e0848b0cf5c20ae2e0306ff387d7ede9087f6bb4",
+  "baselineDecodedAtlasSHA256": "d0c32a42b1cbaf92bc59e1b157226a34eae50e56d4a174c6492163ba4a39b7f3",
+  "historicalClipSubsetSHA256": {
+    "ne": "b7151446271b58f146608ad6a1cd396f7e8e4f9cd6fb129f3a5116cf8cb42ec6",
+    "east": "432621cd667f378aa31f04696c3727953d828232c7ccb674c93e41bbcd0fbddd",
+    "north": "3becf5d9445c05894b5bfddac80920d68e183db9cd2d5a97a0e52d866944dc53",
+    "south": "bb7734076cdcce38d570d2bfac776db823a6cce3f1b29201bda62c80d34f5c6c",
+    "south-west": "94d119b1f0f7519d1e43bebe89b91dc713638235ee5e47fb0597717824f2a905",
+    "west": "6e2e21d25cecd3ac4a11cb20d4a6aa457feaa1eec1de2a182c7661c577713224",
+    "north-west": "8540b9c37fcd8975b1c34e73341c22d89e27398d8b2dad3bc694d9fe0d66bf5a"
+  },
+  "identitySource": {
+    "path": "docs/art-direction/human-roster-v1/extracted/spearman/idle/02.png",
+    "sha256": "a1ec9294586ed22bfad9e27d1fa1fd5432bd2d4723d5532e7d0a9b188eae010e",
+    "registeredFrameId": "idle-north-east-0",
+    "registeredSeedSHA256": "0f049b4ed4ceb11132fa45211c995bbfd529e25de0e9ac8bb3b6e53a9bf70a21"
+  },
+  "canvasPx": {
+    "width": 416,
+    "height": 352
+  },
+  "groundPivotPx": {
+    "x": 168,
+    "y": 297
+  },
+  "atlasSlotsPx": [
+    [
+      4,
+      3204
+    ],
+    [
+      428,
+      3204
+    ],
+    [
+      852,
+      3204
+    ]
+  ],
+  "baselineDimensionsPx": {
+    "width": 2048,
+    "height": 3200
+  },
+  "registeredDimensionsPx": {
+    "width": 2048,
+    "height": 3584
+  },
+  "sequence": [
+    {
+      "frameId": "idle-north-east-0",
+      "durationMs": 120
+    },
+    {
+      "frameId": "attack-north-east-0",
+      "durationMs": 200
+    },
+    {
+      "frameId": "attack-north-east-1",
+      "durationMs": 160
+    },
+    {
+      "frameId": "attack-north-east-2",
+      "durationMs": 400
+    }
+  ],
+  "schemaVersion": 1,
+  "sourceRevision": "446d5a99374b3aaf06d30948ad9c01cb3f6080e5",
+  "stateId": "attack",
+  "directionId": "north-east",
+  "baselinePackVersion": "0.10.0",
+  "packVersion": "0.11.0",
+  "baselineBounds": {
+    "artBoundsWorld": {
+      "min": [
+        -0.55,
+        0,
+        -0.55
+      ],
+      "max": [
+        0.55,
+        1.7722564697265626,
+        0.55
+      ]
+    },
+    "cullingBoundsWorld": {
+      "min": [
+        -0.6,
+        0,
+        -0.6
+      ],
+      "max": [
+        0.6,
+        1.8722564697265625,
+        0.6
+      ]
+    }
+  },
+  "registeredBounds": {
+    "artBoundsWorld": {
+      "min": [
+        -1.2602186561554762,
+        0,
+        -1.3751289401003934
+      ],
+      "max": [
+        0.8065036409420865,
+        1.7722564697265626,
+        0.55
+      ]
+    },
+    "cullingBoundsWorld": {
+      "min": [
+        -1.2602186561554762,
+        0,
+        -1.3751289401003934
+      ],
+      "max": [
+        0.8065036409420865,
+        1.8722564697265625,
+        0.6
+      ]
+    }
+  },
+  "registeredAssetMetadataSHA256": "ccf2650c95cc1eb2ebbd86892c6d5618e549110c87a069f9e3a2cf109739365f",
+  "registeredDecodedAtlasSHA256": "4aaf3664ca74be2ce6bf68f99e47739197c4e97fb3cb77629c04a041bedc2905",
+  "poses": [
+    {
+      "file": "00-ready.png",
+      "pose": "ready",
+      "sha256": "b514b84729b495edce0779898a0f276d60c1dfb17e7f11ef9f44e7bb0b2197ef",
+      "durationMs": 200,
+      "spearAngleDeltaDegrees": 25,
+      "spearDeltaPx": [
+        0,
+        -6
+      ],
+      "upperBodyDeltaPx": [
+        0,
+        0
+      ]
+    },
+    {
+      "file": "01-thrust.png",
+      "pose": "thrust",
+      "sha256": "82bdad294c58a7ed90cf49203d44305b48ff1c2c030ccca4f007d7b0039350bb",
+      "durationMs": 160,
+      "spearAngleDeltaDegrees": 25,
+      "spearDeltaPx": [
+        24,
+        -18
+      ],
+      "upperBodyDeltaPx": [
+        6,
+        -2
+      ]
+    },
+    {
+      "file": "02-recovery.png",
+      "pose": "recovery",
+      "sha256": "db4317718090498bed2b36c96c4b15843fb7adabc13bb5ec9c01b0f4182058fd",
+      "durationMs": 400,
+      "spearAngleDeltaDegrees": 12,
+      "spearDeltaPx": [
+        5,
+        -5
+      ],
+      "upperBodyDeltaPx": [
+        2,
+        -1
+      ]
+    }
+  ],
+  "reusedPriorRegisteredPoses": 60,
+  "reusedOpeningPoses": 1,
+  "newlyAuthoredPoses": 3,
+  "registeredTotalPoses": 63,
+  "loop": false,
+  "durationMs": 880,
+  "mirroredPoses": 0,
+  "borrowedDirectionPoses": 0,
+  "generationProviderCalls": 0,
+  "paidJobs": 0,
+  "sourceKind": "same approved public Northeast 2D seed; fixed camera, split arm planes and rigid complete spear/grips; no matching 3D master inferred",
+  "reconstruction": {
+    "sourceSHA256": "0f049b4ed4ceb11132fa45211c995bbfd529e25de0e9ac8bb3b6e53a9bf70a21",
+    "restoredBodyPixels": 1985,
+    "authoredFarArmUnderlapPixels": 337,
+    "totalDonorPixels": 2322,
+    "nearElbowExactSourceOverlapPixels": 375,
+    "unfilledInteriorPixels": 0,
+    "method": "bounded material-selected exact own-seed body and cream-arm donors; explicit near elbow overlap",
+    "outsideSources": 0
+  },
+  "processReceiptSHA256": {
+    "camera-scale-check.json": "c0f0d87594994eae6205392bffa9b5d50427149cf449e1a44699f1c7250d7d11",
+    "geometry-check.json": "78095c695099c0c7f7289b26c382a11cfcdc27144a759ca3923d3f1b4ff3d301",
+    "donor-coordinate-map.json": "98c1d042c47a288b80fbbaac658175d6cee6a1ccff896f7e125dcca22dd91c4c",
+    "rig-input.json": "5dbe4b6ad6b979c11c8fa29a9cde11fde4d3232064abde05810a79b7fb16f04b",
+    "render_arm_study.py": "fa8310d5c6947811176296244a6439971e78c52dc328f110174135dd7ef4c325"
+  },
+  "sourceReview": "independent-source-clear; normalized zero-alpha RGB, visible RGBA exact; native pending",
+  "ordinaryGameReview": "pending-identified-game-capture",
+  "packProvenanceNote": "NE attack reuses the exact own idle opening and three newly authored free CPU source-UV keys: ready, shaft-aligned thrust, recovery,880ms one-shot. Original60 poses/31 other clips/pivots/body calibration remain exact; page extends below3200px and rooted bounds expand for the weapon.2322 exact own-seed donor pixels (1985 body,337 far-arm underlap),375 existing elbow overlap pixels, no other-facing pixels/provider jobs. Native contact/readability pending.",
+  "packReadme": "# Human Spearman preview\n\nDefault v1 pack0.11.0 retains all60 prior poses and adds three own-Northeast ready/thrust/recovery poses, using the exact existing idle opening. All8 source walk headings remain; NE attack plays once in880ms. Existing pivots/body scale and31 other clips are unchanged. The complete prior2048x3200 pixel/mask prefix remains, with the page extended to2048x3584 and rooted weapon bounds expanded.\n\nThere are63 registered poses:32 originals,28 previously authored walks and3 newly authored attack poses. Own-seed reconstruction is explicit:1985 body donor pixels plus337 hidden far-arm donor pixels,2322 total;375 existing source elbow pixels overlap on attached planes. All derived source keys and receipts remain in the Human roster source tree; every private trial/scene/script is retained separately. No paid/provider job, private input, borrowed facing or held replacement identity.\n\nSource gaps: Spearman13 (attack N/E/S/SW/W/NW; defeat N/NE/E/S/SW/W/NW), Infantry21, Archer21:55 military source cells. All63 original native/deployed cells and identified ordinary-game contact/readability remain unverified. The full builder replays public NE/E/N/S/SW/W/NW walk stages and this NE action stage deterministically.\n",
+  "normalization": [
+    {
+      "file": "00-ready.png",
+      "rawSHA256": "cc240553f1e34cbf326a816074753fb633b7b294792bec5d3aee53b4b358c120",
+      "normalizedSHA256": "b514b84729b495edce0779898a0f276d60c1dfb17e7f11ef9f44e7bb0b2197ef",
+      "zeroAlphaRGBPixelsCleared": 224,
+      "allAlphaPositiveRGBAExact": true
+    },
+    {
+      "file": "01-thrust.png",
+      "rawSHA256": "c3fc888db7027c98f3e8152f0ebff45599739f6f930ec4f76364977614472d35",
+      "normalizedSHA256": "82bdad294c58a7ed90cf49203d44305b48ff1c2c030ccca4f007d7b0039350bb",
+      "zeroAlphaRGBPixelsCleared": 190,
+      "allAlphaPositiveRGBAExact": true
+    },
+    {
+      "file": "02-recovery.png",
+      "rawSHA256": "2120d2d8b6d05a278115ba03dbc71d3e84bd3d144cfe5021d099adae56e8e4ae",
+      "normalizedSHA256": "db4317718090498bed2b36c96c4b15843fb7adabc13bb5ec9c01b0f4182058fd",
+      "zeroAlphaRGBPixelsCleared": 205,
+      "allAlphaPositiveRGBAExact": true
+    }
+  ]
+}

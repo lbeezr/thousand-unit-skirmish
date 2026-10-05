@@ -33,6 +33,25 @@ N/NE/E/S/SW/W/NW: **21 cells per role, 63 total**. Different-identity source key
 do not close that goal. All 63 original deployed/native cells remain unverified.
 Restoring the default is a source correction, not a live bug or appearance claim.
 
+## Spearman Northeast source attack — 5 October 2026
+
+The [Northeast attack increment](qa-spearman-ne-attack-2026-10-05.md) reuses its
+exact existing idle opening and adds three own-facing ready/thrust/recovery keys
+to default v1 pack0.11.0. It preserves all60 prior frame records/pixels,31 other
+clips and body calibration. The old2048×3200 page/mask prefix remains exact;
+new keys extend the page to2048×3584 and rooted weapon bounds expand.
+The63 registered frames contain32 originals,28 earlier authored walks and3 new
+attack poses. Independent source review clears the rough functional slice;
+2,322 own-seed donor pixels and375 existing elbow overlap pixels are explicit.
+
+Spearman has8/8 source walks and attacks atSE/NE. Remaining source cells are
+attack×N/E/S/SW/W/NW and defeat×N/NE/E/S/SW/W/NW: **13**. Infantry/Archer retain21
+each: **55 military source gaps**. All63 original native/deployed cells and
+identified ordinary-game contact, reach, timing and readability remain open.
+Ranked ongoing backlog: own-view East attack, remaining attack headings, matched
+terminal defeat, then established Infantry/Archer gaps. Foot art retains
+appearance acceptance through the permitted identified-release capture route.
+
 ## Spearman complete source walks — 5 October 2026
 
 The [Northwest walk increment](qa-spearman-north-west-walk-2026-10-05.md) adds four
