@@ -953,6 +953,20 @@ author-owned merge authority remain intact. Source/pack/provider/served/render
 proof stays separate, with the existing CI/capture interface and no private
 archive access/publication or denied capability/auth retries.
 
+5 October grant-trace continuation at `5f2c82f1`: the
+[extended native record](qa-native-wall-seat1-2026-10-05.md#grant-eligibility-continuation-at-5f2c82f1)
+records zero native grant creations, all 63 central actors excluded by the
+multi-peer/parked-seed boundary, and 57 stalled actors without recent repair
+revision resets. Passing gates also create zero pair leases; their seat-1
+contours recover around parked spawn Workers, not the moving-only choke.
+Serial blocker edges require fresh revalidation after a peer's own deflection.
+The smallest next scope is a read-only peer-step/usable-room observation at one
+retained dependency and one discarded candidate before another heuristic.
+[Hosted exact-source failures](qa-native-wall-seat1-2026-10-05.md#fresh-public-hosted-failures-at-the-same-source)
+retain native timeout, paid-house physical arrivals and dynamic-wall deficits;
+no full-suite retry until a substantive fix. Caller/core's endpoint consumer
+stays separate, and no runtime correction or completion is claimed here.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
