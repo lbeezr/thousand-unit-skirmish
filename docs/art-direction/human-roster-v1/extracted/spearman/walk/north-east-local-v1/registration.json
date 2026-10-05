@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "b5b4dd49139b86dbe6ad0d299469f6b193df81b1",
+  "identitySource": {
+    "path": "docs/art-direction/human-roster-v1/extracted/spearman/idle/02.png",
+    "sha256": "a1ec9294586ed22bfad9e27d1fa1fd5432bd2d4723d5532e7d0a9b188eae010e",
+    "runtimeFrameId": "idle-north-east-0",
+    "runtimeCropSHA256": "0f049b4ed4ceb11132fa45211c995bbfd529e25de0e9ac8bb3b6e53a9bf70a21"
+  },
+  "sourceKind": "four newly authored camera-frozen 2D poses using the already-public painted NE seed as texture; no matching 3D body/master reused or inferred",
+  "authoringTool": "Blender 4.3.2, CPU Cycles, independent source-UV leg planes",
+  "publicationScope": "selected derivatives of already-public repository/runtime pixels; no private inputs, provider upload or paid job",
+  "canvasPx": {
+    "width": 320,
+    "height": 352
+  },
+  "groundPivotPx": {
+    "x": 140,
+    "y": 297
+  },
+  "seedPaddingPx": {
+    "x": 52,
+    "y": 24
+  },
+  "worldPerPixel": 0.0052421832906788795,
+  "heightWorld": 1.6722564697265625,
+  "priorMaxAlphaHeight": 319,
+  "poses": [
+    {
+      "file": "00.png",
+      "pose": "contact-left",
+      "durationMs": 200,
+      "sha256": "b5136cfa16a6e54aebbe98035f2e3d6a7b05c8dd40beb4a27fb59b1984af777d",
+      "rawCPUOutputSHA256": "8680799cc3e964e5692f7121ebe2178096ae41903478282efc042185b453edbc",
+      "transparentRGBPixelsNormalized": 105
+    },
+    {
+      "file": "01.png",
+      "pose": "passing-right",
+      "durationMs": 200,
+      "sha256": "7b195fa5c104ea44cc11c61c807ead82dc034958cab52b1821272ab7473e6ce6",
+      "rawCPUOutputSHA256": "4d59ce3d0bc2a2d69d99d3faf6ddbdb4058acdbc9b015b06dd05433082824bfc",
+      "transparentRGBPixelsNormalized": 113
+    },
+    {
+      "file": "02.png",
+      "pose": "contact-right",
+      "durationMs": 200,
+      "sha256": "6b96b81a0ce7c1ebbe8b1a761fcf9ea3ae31c0316bbc04109852b540593495c4",
+      "rawCPUOutputSHA256": "9b1a9861ee145bab2fcb1c64de703b71a9f86c2e990bdce619655cd8b5ae8fee",
+      "transparentRGBPixelsNormalized": 114
+    },
+    {
+      "file": "03.png",
+      "pose": "passing-left",
+      "durationMs": 200,
+      "sha256": "bb87e78ab8ef47a73ddaf46180321a5c9441ada4751d8bc8c5b253d77c854a78",
+      "rawCPUOutputSHA256": "94de6ed9999ddd84b1fd03c6c120dceab0270eb9d2bc142b97f945babaa8550d",
+      "transparentRGBPixelsNormalized": 114
+    }
+  ],
+  "loop": true,
+  "durationMs": 800,
+  "sourceTiming": "explicit four 200ms keys; render fps20 is authoring timeline only",
+  "reusedPriorRegisteredPoses": 32,
+  "newlyAuthoredPoses": 4,
+  "mirroredPoses": 0,
+  "borrowedDirectionPoses": 0,
+  "generationProviderCalls": 0,
+  "paidJobs": 0,
+  "matching3DMaster": "not located in selected source inventory; this source does not need one for the NE 2D test",
+  "processRetention": "all Blender sources, logs, failed and corrected iterations remain private with the Human foot art owner",
+  "independentSourceReview": {
+    "reviewer": "independent_foot_art_review",
+    "selectedIteration": "09-natural-leg-gap",
+    "status": "no blocking source defects; corrected mesh fold and opaque-cloth seam",
+    "ordinaryGameAcceptance": "pending",
+    "supportFootVelocityAcceptance": "pending",
+    "shaftEdgeLimit": "main shaft pieces rigid; handful of shaft-edge pixels move0.05\u20131.18source px (<.1ordinary CSSpx), non-blocking for this rough source slice"
+  },
+  "baselineManifestSHA256": "b685d5c489157a70ae9b8a33084be133b1d201dc43a2408df28a788ebd13419b",
+  "baselineRuntimeSHA256": "5ba337c0a3a0a5804076f449234e43005d9c98d1d6d8f5882be8902444fe960a",
+  "baselineRegisteredPoseSHA256": "760733b9cd32a64e51a10040e5b187143ac270b36b29566414b94a4f9c36c408",
+  "baselineUnchangedClipsSHA256": "03289a89e3fd27bc9d85e152a6b5bef761eb6a7c391447e90c2dfe22851b815f",
+  "normalization": "zero RGB only under alpha0; every visible RGBA/alpha sample preserved from reviewed private CPU output"
+}

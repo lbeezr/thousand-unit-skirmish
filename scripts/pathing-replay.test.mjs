@@ -273,12 +273,15 @@ for(const team of [0,1])test(`seat ${team}: opted-in pause projection preserves 
       assert.deepEqual(r.units,off.replay.units);assert.deepEqual(r.snapshot(team).units,off.replay.snapshot(team).units);
       assert.deepEqual(r.actorTrace,[]);assert.deepEqual(r.crowdSteps,[]);
       const rows=r.movementObservations();assert.ok(rows.length<=4);
-      assert.ok(rows.every(row=>Object.keys(row).join('|')==='id|holding|planningPending|performingAction|routeActive|decision'));
+      assert.ok(rows.every(row=>Object.keys(row).join('|')==='id|holding|planningPending|performingAction|routeActive|decision|admission|positionChanged'));
     }
     assert.ok(r.movementObservations().some(row=>row.decision==='vector-proposal'));
+    assert.ok(r.movementObservations().some(row=>['waypoint-admitted','steering-admitted','fallback-admitted'].includes(row.admission)
+      &&row.positionChanged===true),'actual replay consumes admitted physical movement');
     const saved=r.checkpoint();r.restore(saved);assert.deepEqual(r.movementObservations(),[]);
     const actor=r.units.find(u=>u.id===own[0].id);r.observeMovement(team,[actor.id]);
     assert.equal(r.movementObservations()[0].decision,'unobserved');
+    assert.equal(r.movementObservations()[0].admission,'unobserved');assert.equal(r.movementObservations()[0].positionChanged,null);
     r.order(team,{type:'holdPosition',ids:[actor.id]});assert.equal(r.movementObservations()[0].holding,true);
     r.step();assert.equal(r.movementObservations()[0].holding,true);
     r.order(team,{type:'stop',ids:[actor.id]});assert.equal(r.movementObservations()[0].routeActive,false);
@@ -298,6 +301,28 @@ for(const team of [0,1])test(`seat ${team}: productive work receipt remains sepa
     assert.equal(row.performingAction,'gather-food');assert.ok(worker.cargo>0);
     r.step();row=r.movementObservations()[0];
     assert.equal(row.performingAction,'gather-food');assert.equal(row.decision,'unobserved');
+    assert.equal(row.admission,'unobserved');assert.equal(row.positionChanged,null);
     assert.equal(row.routeActive,false);assert.equal(row.holding,false);assert.equal(row.planningPending,false);
   } finally {await f.dispose();}
+});
+
+for(const team of [0,1])test(`seat ${team}: finite admission hooks preserve existing rich trace observations`,async()=>{
+  const map=pathingBaselineMap({group:4}),ids=[team*8+4];
+  const options={traceLandSteps:true,traceCrowdSteps:true,traceActorIds:ids};
+  const off=await createPathingReplayFixture(map,options),on=await createPathingReplayFixture(map,{...options,observeMovement:true});
+  try{
+    const r=on.replay;r.restore(off.replay.checkpoint());
+    const own=r.units.filter(u=>u.team===team&&u.kind==='infantry');
+    // IDs depend on this authored map's worker/military ordering, not a client contract.
+    assert.ok(own.some(u=>ids.includes(u.id)));
+    r.observeMovement(team,ids);
+    for(const fixture of [off,on])fixture.replay.order(team,{type:'move',ids:own.map(u=>u.id),x:16.5,z:.5});
+    let traced=false;
+    for(let tick=0;tick<15;tick++){
+      off.replay.step();r.step();assert.deepEqual(r.units,off.replay.units);
+      for(const key of ['landSteps','actorTrace','crowdSteps'])assert.deepEqual(r[key],off.replay[key],key);
+      traced ||= r.actorTrace.length>0;
+    }
+    assert.equal(traced,true);assert.equal(r.movementObservations().length,1);
+  }finally{await off.dispose();await on.dispose();}
 });

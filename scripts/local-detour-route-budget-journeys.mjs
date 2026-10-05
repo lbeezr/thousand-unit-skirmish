@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
 import { createUnitRoutePublicationLedger, activeLandMovementBodyRadius, canTraverseUnitStep,
   canTraverseStaticBodySegment, createClearanceMoveGoalPoint } from '../src/unit-movement.mjs';
 import { findStationaryWorkerDetour } from '../src/unit-obstacle-detour.mjs';
@@ -11,6 +12,8 @@ import { clearWorkIntent } from '../src/work-intent.mjs';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+const matchIdentityInitialization = source.match(/^let matchId = .+;$/m)?.[0];
+assert.ok(matchIdentityInitialization, 'production match identity initializer remains discoverable');
 const start = source.indexOf('  const blockedRouteRepairs = [];');
 const endMarker = '  advanceQueuedWaypoints();';
 const end = source.indexOf(endMarker, start);
@@ -29,6 +32,7 @@ const record = path => ({ hp: 0, kind: 'infantry', path, pathIndex: path.length,
 function fixture({ width = 320, height = 320, total = 0, diagnostics = true } = {}) {
   const cell = (x, z) => Math.floor(z + height / 2) * width + Math.floor(x + width / 2);
   const point = c => ({ x: c % width - width / 2 + .5, z: Math.floor(c / width) - height / 2 + .5 });
+  const mapDefinition = { id: `local-detour-metadata-${width}-${height}`, width, height };
   const levels = new Uint8Array(width * height), blocked = new Set();
   const isWalkable = c => c >= 0 && c < levels.length && !blocked.has(c);
   const path = [cell(-.5, -.5), cell(.5, -.5), cell(1.5, -.5)];
@@ -52,7 +56,7 @@ function fixture({ width = 320, height = 320, total = 0, diagnostics = true } = 
     units.push(record(unread)); remaining -= entries;
   }
   const proposal = u => findStationaryWorkerDetour(u, blocker, width, levels, isWalkable, point, cell);
-  const context = vm.createContext({ units, resourceNodeStates: nodes, UNIT_DEFINITIONS,
+  const context = vm.createContext({ mapDefinition, units, resourceNodeStates: nodes, UNIT_DEFINITIONS,
     MAP_WIDTH: width, MAP_HEIGHT: height, MAP_HALF_X: width / 2, MAP_HALF_Z: height / 2,
     MAX_UNITS: 2000, MAX_RESOURCE_NODES: 128, XL_CHECKPOINT_ROUTE_MAX_ENTRIES: QUOTA,
     tickDiagnosticSamples: diagnostics ? [] : null, landRouteRetentionTick: null,
@@ -69,7 +73,7 @@ function fixture({ width = 320, height = 320, total = 0, diagnostics = true } = 
   });
   vm.runInContext(body('advanceQueuedWaypoints'), context);
   vm.runInContext(`function physicalPhase(){${phase}}`, context);
-  return { actor, blocker, units, nodes, levels, blocked, point, cell, context, proposal,
+  return { mapDefinition, actor, blocker, units, nodes, levels, blocked, point, cell, context, proposal,
     phase() { context.landRouteRetentionTick = null; context.physicalPhase(); context.tickNumber++; },
     get censusCalls() { return censusCalls; }, get proposals() { return proposals; } };
 }
@@ -277,9 +281,11 @@ test('actual Stop/Hold cancels a refused detour; Stop of another actor releases 
   }
 });
 
-test('existing whole-tick diagnostic exposes bounded scalar retention outcomes and drops them on early return', () => {
-  const f = fixture({ total: QUOTA }), samples = []; let clock = 0;
-  Object.assign(f.context, { performance: { now: () => ++clock }, process: { cpuUsage: () => ({ user: 0, system: 0 }) },
+// This identity belongs to synthetic metadata pressure, not an admitted XL map.
+// Evaluate the real production initializer with crypto; never substitute a fixed ID.
+function diagnosticTickFixture(options = { total: QUOTA }) {
+  const f = fixture(options), samples = []; let clock = 0;
+  Object.assign(f.context, { randomBytes, performance: { now: () => ++clock }, process: { cpuUsage: () => ({ user: 0, system: 0 }) },
     lastSimulationTickStartedAt: null, TICK_RATE: 30, recordTickStartLag() {}, serviceMovePlanningForTick() {},
     simulateTick: () => f.phase(), workerPerformingActions: { finishStep: () => false, beginStep() {} },
     compatibleWorkerPerformingAction() {}, visionMasksUpdatedTick: 0, recordSeparationWorkSample() {},
@@ -288,7 +294,12 @@ test('existing whole-tick diagnostic exposes bounded scalar retention outcomes a
     simulationDeadlineMs: 1000, TICK_INTERVAL_MS: 1000 / 30,
     advanceTickDeadline: () => ({ skippedTickSlots: 0, nextDeadlineMs: 1000 }), scheduleSimulationTick() {},
   });
-  vm.runInContext(body('runSimulationTick'), f.context); f.context.runSimulationTick();
+  vm.runInContext(matchIdentityInitialization + '\n' + body('runSimulationTick'), f.context);
+  return { f, samples, matchId: vm.runInContext('matchId', f.context) };
+}
+
+test('existing whole-tick diagnostic exposes bounded scalar retention outcomes and drops them on early return', () => {
+  const { f, samples } = diagnosticTickFixture(); f.context.runSimulationTick();
   const first = samples[0].landRouteRetention;
   assert.equal(first.deferred, 1); assert.equal(first.maxStagedEntries, 3);
   assert.ok(Object.values(first).every(Number.isSafeInteger), 'no route/unit references in the diagnostic');
@@ -302,6 +313,36 @@ test('existing whole-tick diagnostic exposes bounded scalar retention outcomes a
   vm.runInContext(body('simulateTick'), f.context); f.context.runSimulationTick();
   assert.equal(f.context.landRouteRetentionTick, null);
   assert.equal(samples[3].landRouteRetention, undefined);
+});
+
+test('whole-tick diagnostic identity follows the actual generated match and current fixture map', () => {
+  const { f, samples, matchId } = diagnosticTickFixture();
+  assert.match(matchId, /^[A-Za-z0-9_-]{22}$/);
+  assert.equal(f.context.mapDefinition, f.mapDefinition);
+  assert.deepEqual([f.mapDefinition.width, f.mapDefinition.height], [f.context.MAP_WIDTH, f.context.MAP_HEIGHT]);
+  f.context.runSimulationTick();
+  assert.equal(samples[0].matchId, matchId); assert.equal(samples[0].mapId, f.mapDefinition.id);
+  const previous = JSON.stringify(samples[0]);
+  const next = diagnosticTickFixture();
+  next.f.mapDefinition.id += '-replacement';
+  assert.match(next.matchId, /^[A-Za-z0-9_-]{22}$/);
+  next.f.context.runSimulationTick();
+  assert.equal(next.samples[0].matchId, next.matchId);
+  assert.equal(next.samples[0].mapId, next.f.mapDefinition.id);
+  f.context.mapDefinition = next.f.mapDefinition;
+  f.context.runSimulationTick();
+  assert.equal(samples[1].matchId, matchId); assert.equal(samples[1].mapId, next.f.mapDefinition.id);
+  assert.equal(JSON.stringify(samples[0]), previous, 'earlier diagnostic row retains its original association');
+  assert.ok(Object.values(samples[0].landRouteRetention).every(Number.isSafeInteger),
+    'match/map identity cannot enter the scalar-only retention projection');
+});
+
+test('diagnostic-off whole ticks emit no identity or route projection and never read map metadata', () => {
+  const { f, samples } = diagnosticTickFixture({ total: QUOTA, diagnostics: false });
+  Object.defineProperty(f.context, 'mapDefinition', { get() { throw new Error('disabled diagnostic read map identity'); } });
+  f.context.runSimulationTick();
+  assert.deepEqual(samples, [null]);
+  assert.equal(f.context.landRouteRetentionTick, null);
 });
 
 test('legacy grids retain the same local proposal without reading saved-route payloads or diagnostics', () => {

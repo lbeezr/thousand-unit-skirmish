@@ -647,6 +647,7 @@ for (const [label, kind, policy] of landExecutionPolicies) {
 // Execute the actual serialized replay observer/wrapper over the existing real
 // getMoveVector fixture. These controls validate observation, never policy.
 const replaySource=readFileSync(new URL('./pathing-replay-fixture.mjs',import.meta.url),'utf8');
+const {instrumentReplayMovementAdmissions}=await import('./pathing-replay-fixture.mjs');
 function attachPauseObserver(f) {
   Object.assign(f.context,{assert,replayMovementTeam:null,replayMovementActors:new Map(),
     replayMovementDecisions:new Map(),workerPerformingAction:()=>null,replayTraceActorIds:new Set(),replayCrowdSteps:[]});
@@ -658,6 +659,12 @@ function attachPauseObserver(f) {
   const methods=replaySource.slice(replaySource.indexOf('  observeMovement(team, ids) {'),
     replaySource.indexOf('  attackApproach(')).replace('${observeMovement}','true');
   vm.runInContext(recording+wrapper+'\nconst pauseObserver={'+methods+'};',f.context);
+  const instrumented=instrumentReplayMovementAdmissions(server);
+  const start=instrumented.indexOf('  const blockedRouteRepairs = [];');
+  const end=instrumented.indexOf('  advanceQueuedWaypoints();',start)+'  advanceQueuedWaypoints();'.length;
+  vm.runInContext(`function moveOneTick(){${instrumented.slice(start,end).replace(
+    'const move = getMoveVector(unit, remainingStep, allowLocalDetour);',
+    'const move = recordReplayCrowdStep(unit, remainingStep, allowLocalDetour);')}}`,f.context);
   return {configure:(team,ids)=>vm.runInContext('pauseObserver.observeMovement(team,ids)',
     Object.assign(f.context,{team,ids})),read:()=>JSON.parse(vm.runInContext('JSON.stringify(pauseObserver.movementObservations())',f.context)),
     vector:()=>f.context.recordReplayCrowdStep(f.mover,.1,true)};
@@ -674,7 +681,7 @@ for(const team of [0,1])test(`seat ${team}: owned pause observation consumes a r
   f.context.getMoveVector=(...args)=>{calls++;return result=original(...args);};
   const before=structuredClone(f.units),value=observer.vector();
   assert.equal(calls,1);assert.equal(value,result);assert.equal(value.waitingForCrowd,true);
-  assert.deepEqual(observer.read(),[{id:0,holding:false,planningPending:false,performingAction:null,routeActive:true,decision:'vector-wait'}]);
+  assert.deepEqual(observer.read(),[{id:0,holding:false,planningPending:false,performingAction:null,routeActive:true,decision:'vector-wait',admission:'unobserved',positionChanged:null}]);
   assert.deepEqual(f.units,before);assert.equal(f.repairs.length,0);assert.deepEqual(f.context.replayCrowdSteps,[]);
   assert.equal(f.context.replayMovementDecisions.size,1);
   f.mover.holdingPosition=true;assert.equal(observer.read()[0].holding,true);
@@ -690,14 +697,22 @@ for(const team of [0,1])test(`seat ${team}: owned pause observation consumes a r
 test('pause observer rejects enemies before private reads, bounds requests and rejects replaced identities',()=>{
   const f=fixture({cliff:false}),o=attachPauseObserver(f);
   Object.assign(f.mover,{generation:1});const enemy=f.units[1];enemy.team=1;
-  for(const key of ['generation','path','pathIndex','movePlanningPending','holdingPosition','orderRevision'])
+  for(const key of ['generation','path','pathIndex','movePlanningPending','holdingPosition','orderRevision','x','z'])
     Object.defineProperty(enemy,key,{get(){throw Error('private enemy field');},configurable:true});
-  o.configure(0,[enemy.id,f.mover.id,9999]);assert.deepEqual(o.read(),[{id:0,holding:false,planningPending:false,performingAction:null,routeActive:true,decision:'unobserved'}]);
+  o.configure(0,[enemy.id,f.mover.id,9999]);assert.deepEqual(o.read(),[{id:0,holding:false,planningPending:false,performingAction:null,routeActive:true,decision:'unobserved',admission:'unobserved',positionChanged:null}]);
   f.context.observeReplayMovementDecision(enemy,{get waitingForCrowd(){throw Error('private result');}});
+  f.context.observeReplayMovementAdmission(enemy,'steering-admitted');
   for(const [team,ids] of [[null,[0]],[2,[0]],[0,[0,0]],[0,Array.from({length:9},(_,i)=>i)],[0,[-1]]])
     assert.throws(()=>o.configure(team,ids),/at most eight/);
   const read=o.read();read[0].decision='private';assert.equal(o.read()[0].decision,'unobserved');
   f.units[0]={...f.mover};assert.deepEqual(o.read(),[]);
+  const unbound=f.units[2];for(const key of ['x','z','generation'])
+    Object.defineProperty(unbound,key,{get(){throw Error('unbound private field');},configurable:true});
+  f.context.observeReplayMovementDecision(unbound,{get waitingForCrowd(){throw Error('unbound result');}});
+  f.context.observeReplayMovementAdmission(unbound,'steering-admitted');
+  f.mover.hp=0;for(const key of ['x','z','generation'])
+    Object.defineProperty(f.mover,key,{get(){throw Error('dead private field');},configurable:true});
+  f.context.observeReplayMovementDecision(f.mover,null);f.context.observeReplayMovementAdmission(f.mover,'steering-admitted');
 });
 
 test('pause proposal classification returns original null/positive/rejected values and no admission claims',()=>{
@@ -706,5 +721,89 @@ test('pause proposal classification returns original null/positive/rejected valu
     [{rejectedStaticProposal:true},'static-proposal-rejected']]) {
     let calls=0;f.context.getMoveVector=()=>{calls++;return result;};
     assert.equal(o.vector(),result);assert.equal(calls,1);assert.equal(o.read()[0].decision,cause);
+  }
+});
+
+for(const team of [0,1])test(`seat ${team}: final admission separates real wait/rejection/fallback/zero-distance and preserves executor calls`,()=>{
+  const cases=[
+    ['crowd-wait',{x:.05,z:.5,cliff:false,blocked:[35]},f=>{
+      Object.assign(f.mover,{gatherNodeId:null,gatherPhase:'',path:[36],moveGoalCell:36});
+      f.mover.moveGoalPoint=createMoveGoalPoint(f.mover,.12,.5,36,width,width);
+      for(const u of f.units.slice(1))u.hp=0;Object.assign(f.units[1],{hp:100,x:.5,z:.5});
+    },false,'vector-wait'],
+    ['static-rejected',{cliff:false},f=>f.blockedCells.add(28),false,'vector-proposal'],
+    ['fallback-admitted',{},()=>{},true,'vector-proposal'],
+    ['waypoint-admitted',{x:-.5,z:-.5,cliff:false},f=>{
+      f.mover.path=[27];f.mover.moveGoalCell=27;for(const u of f.units.slice(1))u.hp=0;
+    },false,'vector-proposal'],
+    ['steering-admitted',{cliff:false},f=>{for(const u of f.units.slice(1))u.hp=0;},true,'vector-proposal'],
+    ['fallback-rejected',{x:-.01,z:.001,cliff:false},f=>{
+      f.context.ordinaryCrowdBodyRadius=()=>0;f.levels[27]=1;f.levels[35]=2;
+      for(const u of f.units.slice(1))u.hp=0;
+    },false,'vector-proposal'],
+    ['detour-deferred',{x:-.6,z:-.5,cliff:false},f=>{
+      f.mover.path=[27,28,29];Object.assign(f.units[1],{kind:'worker',x:-.5,z:-.5});
+      f.units[2].hp=0;f.units[3].hp=0;f.context.XL_CHECKPOINT_ROUTE_MAX_ENTRIES=1;
+      // The existing small-grid fixture bypasses the XL ledger. Feed the real
+      // ledger its XL envelope while retaining this controlled executor grid.
+      for(const u of f.units)u.attackMoveResumePath=null;
+      f.context.createUnitRoutePublicationLedger=(_width,height,units,nodes,limits)=>
+        createUnitRoutePublicationLedger(320,height,units,nodes,limits);
+    },false,'vector-proposal'],
+  ];
+  for(const [admission,options,configure,changed,decision] of cases){
+    const off=fixture(options),on=fixture(options);
+    for(const f of [off,on]){for(const u of f.units)u.team=team;f.mover.generation=17;configure(f);}
+    const o=attachPauseObserver(on);o.configure(team,[0]);
+    const counts=[];
+    for(const f of [off,on]){
+      const count={};for(const name of ['getMoveVector','isWalkable','automaticPositionAllowed','canTraverseUnitStep','canTraverseStaticBodySegment']){
+        const original=f.context[name];count[name]=0;
+        f.context[name]=(...args)=>{count[name]++;return original(...args);};
+      }
+      f.move();counts.push(count);
+    }
+    assert.deepEqual(on.units,off.units,admission);assert.deepEqual(counts[1],counts[0],admission);
+    assert.equal(counts[1].getMoveVector,1,admission);assert.equal(on.repairs.length,off.repairs.length);
+    const row=o.read()[0];assert.equal(row.decision,decision,admission);
+    assert.equal(row.admission,admission);assert.equal(row.positionChanged,changed,admission);
+    assert.equal(o.read().length,1);assert.equal(on.context.replayMovementDecisions.size,1);
+    assert.deepEqual(on.context.replayCrowdSteps,[]);
+    if(admission==='waypoint-admitted')assert.equal(on.mover.pathIndex,1,'zero-distance admission advances the waypoint');
+    on.context.navigationRevision++;assert.equal(o.read()[0].admission,'unobserved');assert.equal(o.read()[0].positionChanged,null);
+    on.context.observeReplayMovementAdmission(on.mover,'steering-admitted');
+    assert.equal(o.read()[0].positionChanged,null,'stale callback cannot revive an observation');
+  }
+});
+
+for(const team of [0,1])test(`seat ${team}: admission uses final clamped pose and only the last vector evaluation`,()=>{
+  const f=fixture({x:3.5,z:-.5,cliff:false});for(const u of f.units.slice(1))u.hp=0;
+  Object.assign(f.mover,{team,generation:1});const o=attachPauseObserver(f);o.configure(team,[0]);
+  // Executor-boundary control: legal target but proposed step beyond the map.
+  f.context.getMoveVector=()=>({x:1,z:0,stepDistance:.1,target:{x:3.5,z:-.5},reachedWaypoint:false});
+  f.context.canTraverseUnitStep=()=>true;f.context.activeLandMovementBodyRadius=()=>0;
+  f.move();assert.equal(o.read()[0].admission,'steering-admitted');assert.equal(o.read()[0].positionChanged,false);
+  f.mover.x=-.5;f.mover.path=[27,28];f.mover.pathIndex=0;
+  let calls=0;f.context.getMoveVector=()=>++calls===1
+    ? {target:{x:-.49,z:-.5},reachedWaypoint:true,stepDistance:.01}
+    : {waitingForCrowd:true};
+  f.move();assert.equal(calls,2);assert.equal(f.mover.x,-.49,'earlier admission did move');
+  assert.equal(o.read()[0].decision,'vector-wait');assert.equal(o.read()[0].admission,'crowd-wait');
+  assert.equal(o.read()[0].positionChanged,false,'last evaluation is not whole-tick progress');
+  f.context.getMoveVector=()=>null;f.move();assert.equal(o.read()[0].admission,'no-proposal');
+  assert.equal(o.read()[0].positionChanged,false);
+  f.mover.orderRevision++;assert.equal(o.read()[0].admission,'unobserved');assert.equal(o.read()[0].positionChanged,null);
+});
+
+for(const team of [0,1])test(`seat ${team}: automatic rejection observes the executed guard without evaluating it again`,()=>{
+  for(const waypoint of [false,true]){
+    const f=fixture({cliff:false,x:waypoint?.49:-.5,z:-.5});
+    for(const u of f.units.slice(1))u.hp=0;
+    Object.assign(f.mover,{team,generation:1,stanceReturning:true});
+    const o=attachPauseObserver(f);o.configure(team,[0]);let guards=0,abandoned=0;
+    f.context.automaticPositionAllowed=()=>{guards++;return false;};
+    f.context.abandonBlockedStanceReturn=()=>abandoned++;
+    f.move();assert.equal(guards,1);assert.equal(abandoned,1);
+    assert.equal(o.read()[0].admission,'automatic-rejected');assert.equal(o.read()[0].positionChanged,false);
   }
 });

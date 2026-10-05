@@ -12,7 +12,7 @@ import { unitArtDirections } from './unit-art-production-contract.mjs';
 import { validateCaptureAdapter } from './renderer-capture-context.mjs';
 import { id, contextVersion, run, mapId, directories, loadUnitInputs, identifyUnitFrame,
   validateHeadingSamples, validateStoppedSamples, postRenderLine, observeRenderedUnits,
-  installUnitProbe, assertUnitLoadReady } from './renderer-worker-animation-scenario.mjs';
+  installUnitProbe, assertUnitLoadReady, missingWalkDirections, validateHeadingCoverage } from './renderer-worker-animation-scenario.mjs';
 
 const localFetch=async url=>{
   const bytes=await readFile(new URL(`..${new URL(url).pathname}`,import.meta.url));
@@ -65,12 +65,12 @@ test('all eight existing Worker gaits require changing registered pixels and sil
     assert.equal(result.status,'animated');assert.ok(result.distinctCells>=2&&result.distinctSilhouettes>=2);
     assert.equal(result.samples[0].direction,heading);}
 });
-test('Spearman preserves exactly seven explicitly incomplete correct-facing idle walk cells',()=>{
+test('Spearman plays SE and new NE while preserving six explicit same-facing idle walk gaps',()=>{
   let animated=0,missing=0;
   for(const heading of unitArtDirections){const f=fixture('spearman',heading),result=validateHeadingSamples(f.samples,f.options);
-    if(heading==='south-east'){assert.equal(result.status,'animated');animated++;}
+    if(['south-east','north-east'].includes(heading)){assert.equal(result.status,'animated');animated++;}
     else{assert.equal(result.status,'incomplete-art-correct-facing');assert.equal(result.distinctCells,1);missing++;}}
-  assert.deepEqual({animated,missing},{animated:1,missing:7});
+  assert.deepEqual({animated,missing},{animated:2,missing:6});
 });
 test('translation with a frozen pose or clock cannot pass Worker gait',()=>{
   const f=fixture('worker','north');
@@ -80,6 +80,20 @@ test('translation with a frozen pose or clock cannot pass Worker gait',()=>{
   assert.throws(()=>validateHeadingSamples(reset,f.options),/continuous movement cannot restart/);
   const tooShort=fixture('worker','north',{times:[0,100,200]});
   assert.throws(()=>validateHeadingSamples(tooShort.samples,tooShort.options),/usable gait interval/);
+});
+test('final heading aggregation accepts both genuine Spearman walks and rejects stale or misplaced gaps',()=>{
+  const rows=[];
+  for(const kind of ['worker','spearman'])for(const heading of unitArtDirections){
+    const f=fixture(kind,heading);
+    rows.push({...validateHeadingSamples(f.samples,f.options),kind,heading});
+  }
+  const report={rows,expectedMissingWalkDirections:missingWalkDirections(inputs.spearman)};
+  assert.doesNotThrow(()=>validateHeadingCoverage(report));
+  assert.equal(rows.filter(r=>r.status==='animated').length,10);
+  assert.throws(()=>validateHeadingCoverage({...report,expectedMissingWalkDirections:[...report.expectedMissingWalkDirections,'north-east']}));
+  const misplaced=structuredClone(rows);
+  misplaced.find(r=>r.kind==='spearman'&&r.heading==='north').kind='worker';
+  assert.throws(()=>validateHeadingCoverage({...report,rows:misplaced}));
 });
 test('missing draw, offscreen target, wrong texture, clock and actual displacement are rejected',()=>{
   const f=fixture('worker','east');
