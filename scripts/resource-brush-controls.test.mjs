@@ -4,6 +4,7 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { mountResourceBrushControls } from '../src/resource-brush-controls.mjs';
 import { previewResourceBrush } from '../src/resource-brush-authoring.mjs';
+import { createMapStudioFormState } from '../src/authoring/map-studio-form-state.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
@@ -19,7 +20,7 @@ function fixture(t) {
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) {
     (w.ui ??= {})[name] = d.querySelector(selector);
   }
-  Object.assign(w, { mountResourceBrushControls, resourceBrushControls: null,
+  Object.assign(w, { mountResourceBrushControls, createMapStudioFormState, resourceBrushControls: null,
     editorDefinition: { id: 'brush-ui', name: 'BRUSH UI', width: 64, height: 64,
       terrainBase: 'meadow', terrainPatches: [{ column: 0, row: 0, width: 64, height: 64, material: 'dirt' }],
       obstacles: [], spawnPoints: [{ team: 0, x: -20.5, z: 0.5 }, { team: 1, x: 20.5, z: 0.5 }] },
@@ -36,8 +37,8 @@ function fixture(t) {
   w.ui.mapStudio.open = true;
   w.eval(between('function getSelectedEditorResourceNode(', 'function saveSelectedEditorResourceStock('));
   w.eval(between('function setEditorTool(', 'function mapStudioViewportSize('));
-  w.eval(between('function captureMapStudioFormValues(', 'function restoreMapStudioFormValues('));
-  w.eval(between('function restoreMapStudioFormValues(', 'function captureMapStudioDraft('));
+  w.eval(between('const mapStudioFormState = createMapStudioFormState(', 'let editorDraftLastSavedAt')
+    + 'window.mapStudioFormState = mapStudioFormState; window.captureMapStudioFormValues = mapStudioFormState.capture; window.restoreMapStudioFormValues = mapStudioFormState.restore;');
   w.eval(between('resourceBrushControls = mountResourceBrushControls({', "ui.studioResourceStock.addEventListener('input'"));
   w.eval(between("ui.studioGrid.addEventListener('pointerdown'", "ui.studioGrid.addEventListener('pointermove'"));
   const panel = d.querySelector('.resource-node-fields details'); assert.equal(panel.open, true);
@@ -235,4 +236,97 @@ test('same-map reload resets session; closing or changing tools clears overlays 
   f.w.selectedEditorResourceId = null;
   f.w.setEditorTool('resource-food'); assert.equal(f.w.ui.studioResourceStock.value, '300');
   f.w.setEditorTool('resource-wood'); assert.equal(f.w.ui.studioResourceStock.value, '500');
+});
+
+test('form snapshots include live studio controls and round-trip through draft JSON', t => {
+  const dom = new JSDOM(`<input id="studio-outside" value="outside"><dialog id="studio">
+    <input id="studio-name" value="Map"><input id="studio-fog" type="checkbox" checked>
+    <select id="studio-terrain"><option value="dirt" selected>Dirt</option></select>
+    <section><textarea id="studio-notes">First\nSecond</textarea></section>
+    <input id="studio-import" type="file"><input id="unrelated" value="ignored">
+  </dialog>`);
+  t.after(() => dom.window.close());
+  const document = dom.window.document, root = document.getElementById('studio');
+  const controller = createMapStudioFormState({ root, document });
+  const first = controller.capture();
+  assert.deepEqual(first, {
+    'studio-name': { value: 'Map' }, 'studio-fog': { checked: true },
+    'studio-terrain': { value: 'dirt' }, 'studio-notes': { value: 'First\nSecond' },
+  });
+  const dynamic = document.createElement('input'); dynamic.id = 'studio-brush-seed'; dynamic.value = '93000';
+  root.append(dynamic);
+  const draft = copy(controller.capture());
+  assert.deepEqual(draft['studio-brush-seed'], { value: '93000' });
+  assert.equal(first['studio-brush-seed'], undefined);
+  document.getElementById('studio-name').value = 'Changed';
+  document.getElementById('studio-fog').checked = false; dynamic.value = '2';
+  controller.restore(draft);
+  assert.equal(document.getElementById('studio-name').value, 'Map');
+  assert.equal(document.getElementById('studio-fog').checked, true);
+  assert.equal(dynamic.value, '93000');
+  assert.deepEqual(controller.capture(), draft);
+});
+
+test('form restore stays dialog-scoped, preserves setter errors and emits no edit events', t => {
+  const dom = new JSDOM(`<input id="studio-outside" value="outside"><dialog id="studio">
+    <input id="studio-name" value="Map"><input id="studio-fog" type="checkbox" checked>
+    <input id="studio-import" type="file">
+  </dialog><dialog id="other"><input id="studio-other" value="other"></dialog>`);
+  t.after(() => dom.window.close());
+  const document = dom.window.document, root = document.getElementById('studio');
+  const controller = createMapStudioFormState({ root, document });
+  let events = 0;
+  for (const type of ['input', 'change']) root.addEventListener(type, () => events++);
+  controller.restore({
+    'studio-name': { value: 7 }, 'studio-fog': { checked: 'true' },
+    'studio-outside': { value: 'overwritten' }, 'studio-missing': { value: 'missing' },
+    'studio-other': { value: 'overwritten' },
+  });
+  assert.equal(document.getElementById('studio-name').value, 'Map');
+  assert.equal(document.getElementById('studio-fog').checked, false);
+  assert.equal(document.getElementById('studio-outside').value, 'outside');
+  assert.equal(document.getElementById('studio-other').value, 'other');
+  controller.restore({ 'studio-name': { value: 'Restored' }, 'studio-fog': { checked: true } });
+  assert.equal(document.getElementById('studio-name').value, 'Restored');
+  assert.equal(document.getElementById('studio-fog').checked, true);
+  assert.equal(events, 0);
+  assert.doesNotThrow(() => controller.restore());
+  assert.throws(() => controller.restore(null), TypeError);
+  assert.throws(() => controller.restore({ 'studio-import': { value: 'forged.json' } }),
+    { name: 'InvalidStateError' });
+  const other = createMapStudioFormState({ root: document.getElementById('other'), document });
+  other.restore({ 'studio-other': { value: 'independent' }, 'studio-name': { value: 'overwritten' } });
+  assert.equal(document.getElementById('studio-other').value, 'independent');
+  assert.equal(document.getElementById('studio-name').value, 'Restored');
+});
+
+test('actual draft capture uses the form controller after committing selected editor fields', t => {
+  const f = fixture(t), commits = [];
+  const commitNames = ['saveSelectedEditorTriggerFields', 'saveSelectedEditorScenarioEventFields',
+    'saveEditorTimedVictoryFields', 'saveEditorVictoryHoldFields', 'saveEditorStartingResourcesFields',
+    'saveSelectedEditorResourceStock'];
+  Object.assign(f.w, {
+    MAP_STUDIO_DRAFT_VERSION: 1, editorDraftSourceMapId: 'source-map',
+    editorTriggers: [{ id: 'trigger' }], editorScenarioEvents: [{ id: 'event' }],
+    selectedEditorTriggerId: 'trigger', selectedEditorScenarioEventId: 'event',
+    readEditorRegions: () => [], selectedStudioAudio: () => undefined,
+    selectedEditorPrerequisiteIds: () => ['before'],
+  });
+  for (const name of commitNames) f.w[name] = () => commits.push(name);
+  f.w.saveEditorStartingResourcesFields = () => {
+    commits.push('saveEditorStartingResourcesFields'); f.w.ui.studioName.value = 'Committed';
+  };
+  f.set('seed', '1701');
+  const draft = f.w.captureMapStudioDraft();
+  assert.deepEqual(commits, commitNames);
+  assert.equal(draft.version, 1); assert.equal(draft.sourceMapId, 'source-map');
+  assert.ok(Number.isFinite(draft.savedAt));
+  assert.equal(draft.editor.definition.name, 'Committed');
+  assert.deepEqual(copy(draft.editor.formValues), f.w.mapStudioFormState.capture());
+  assert.deepEqual(draft.editor.formValues['studio-brush-seed'], { value: '1701' });
+  assert.equal(draft.editor.formValues['studio-import'], undefined);
+  assert.equal(draft.editor.selectedResourceId, 'old');
+  assert.deepEqual(copy(draft.editor.definition.resourceNodes), copy(f.w.editorResourceNodes));
+  f.w.editorResourceNodes[0].stock = 1;
+  assert.equal(draft.editor.definition.resourceNodes[0].stock, 13.5);
 });
