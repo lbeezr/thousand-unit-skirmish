@@ -13,6 +13,33 @@ function replaceExactly(source, before, after, count = 1) {
   assert.equal(source.split(before).length - 1, count, `server entrypoint changed: ${before}`);
   return source.split(before).join(after);
 }
+// Observe only executed land-admission branches in the private replay copy.
+// The focused executor controls use this same instrumentation as the consumer.
+export function instrumentReplayMovementAdmissions(source) {
+  const start = source.indexOf('  const blockedRouteRepairs = [];');
+  const end = source.indexOf('  enqueueRouteRepairs(blockedRouteRepairs);', start);
+  assert.ok(start >= 0 && end > start, 'land admission observation boundaries changed');
+  let movement = source.slice(start, end);
+  for (const [before, after, count = 1] of [
+    ['if (!move) break;', "if (!move) { observeReplayMovementAdmission(unit, 'no-proposal'); break; }"],
+    ['if (move.waitingForCrowd) break;', "if (move.waitingForCrowd) { observeReplayMovementAdmission(unit, 'crowd-wait'); break; }"],
+    ['break; // Keep this route/pose/intent;', "observeReplayMovementAdmission(unit, 'detour-deferred');\n          break; // Keep this route/pose/intent;"],
+    ['        || (move.reachedWaypoint && clearanceRadius && !canTraverseStaticBodySegment(unit, move.target,\n          clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {',
+      "        || (move.reachedWaypoint && clearanceRadius && !canTraverseStaticBodySegment(unit, move.target,\n          clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {\n        observeReplayMovementAdmission(unit, 'static-rejected');"],
+    ['if (!automaticPositionAllowed(unit, move.target.x, move.target.z)) {',
+      "if (!automaticPositionAllowed(unit, move.target.x, move.target.z)) {\n          observeReplayMovementAdmission(unit, 'automatic-rejected');"],
+    ['if (!automaticPositionAllowed(unit, nextX, nextZ)) {',
+      "if (!automaticPositionAllowed(unit, nextX, nextZ)) {\n        observeReplayMovementAdmission(unit, 'automatic-rejected');"],
+    ['        unit.pathIndex++;', "        unit.pathIndex++;\n        observeReplayMovementAdmission(unit, 'waypoint-admitted');"],
+    ['        unit.z = nextZ;', "        unit.z = nextZ;\n        observeReplayMovementAdmission(unit, 'steering-admitted', false);"],
+    ['          unit.z = fallbackZ;', "          unit.z = fallbackZ;\n          observeReplayMovementAdmission(unit, 'fallback-admitted', false);"],
+    ['          // A legal crowd deflection can leave the old next waypoint behind',
+      "          observeReplayMovementAdmission(unit, 'fallback-rejected');\n          // A legal crowd deflection can leave the old next waypoint behind"],
+    ['      unit.z = Math.max(-MAP_HALF_Z + 0.5, Math.min(MAP_HALF_Z - 0.5, unit.z));',
+      '      unit.z = Math.max(-MAP_HALF_Z + 0.5, Math.min(MAP_HALF_Z - 0.5, unit.z));\n      observeReplayMovementAdmission(unit);'],
+  ]) movement = replaceExactly(movement, before, after, count);
+  return source.slice(0, start) + movement + source.slice(end);
+}
 export async function createPathingReplayFixture(map, { traceLandSteps = false, traceRouteRejoins = false,
   traceCrowdSteps = false, traceActorIds = [], observeMovement = false } = {}) {
   assert.ok(Array.isArray(traceActorIds) && traceActorIds.length <= 64 && traceActorIds.every(Number.isInteger));
@@ -51,6 +78,7 @@ export async function createPathingReplayFixture(map, { traceLandSteps = false, 
     if (traceCrowdSteps || traceActorIds.length || observeMovement) source = replaceExactly(source,
       'const move = getMoveVector(unit, remainingStep, allowLocalDetour);',
       'const move = recordReplayCrowdStep(unit, remainingStep, allowLocalDetour);');
+    if (observeMovement) source = instrumentReplayMovementAdmissions(source);
     const listen = source.lastIndexOf('\nserver.listen(PORT, HOST, () => {');
     assert.ok(listen > 0 && source.slice(listen).endsWith('});\n'), 'server listen entrypoint changed');
     source = source.slice(0, listen) + `
@@ -65,13 +93,26 @@ const replayMovementActors = new Map();
 const replayMovementDecisions = new Map();
 function observeReplayMovementDecision(unit, result) {
   // Ownership precedes movement/identity reads; never inspect enemy internals.
-  if (!unit || unit.team !== replayMovementTeam) return;
+  if (!unit || unit.team !== replayMovementTeam || unit.hp <= 0) return;
   const binding = replayMovementActors.get(unit.id);
   if (!binding || binding.unit !== unit || binding.generation !== unit.generation) return;
   replayMovementDecisions.set(unit.id, { unit, generation: unit.generation,
     revision: unit.orderRevision, tick: tickNumber, navigationRevision,
+    x: unit.x, z: unit.z, admission: 'unobserved', positionChanged: null,
     cause: !result ? 'no-vector-proposal' : result.waitingForCrowd ? 'vector-wait'
       : result.rejectedStaticProposal ? 'static-proposal-rejected' : 'vector-proposal' });
+}
+function observeReplayMovementAdmission(unit, admission, finalized = true) {
+  if (!unit || unit.team !== replayMovementTeam || unit.hp <= 0) return;
+  const binding = replayMovementActors.get(unit.id);
+  if (!binding || binding.unit !== unit || binding.generation !== unit.generation) return;
+  const decision = replayMovementDecisions.get(unit.id);
+  if (!decision || decision.unit !== unit || decision.generation !== unit.generation
+    || decision.revision !== unit.orderRevision || decision.tick !== tickNumber
+    || decision.navigationRevision !== navigationRevision) return;
+  if (admission) decision.admission = admission;
+  if (finalized && decision.admission !== 'unobserved')
+    decision.positionChanged = unit.x !== decision.x || unit.z !== decision.z;
 }
 function recordReplayRouteRejoin(route, options) {
   const result = rejoinSelectedUnitRoute(route, options);
@@ -206,7 +247,9 @@ export const replay = {
         && decision.navigationRevision === navigationRevision;
       rows.push({ id, holding: unit.holdingPosition === true, planningPending: unit.movePlanningPending === true,
         performingAction: unit.kind === 'worker' ? workerPerformingAction(unit) : null,
-        routeActive: unit.pathIndex < unit.path.length, decision: current ? decision.cause : 'unobserved' });
+        routeActive: unit.pathIndex < unit.path.length, decision: current ? decision.cause : 'unobserved',
+        admission: current ? decision.admission : 'unobserved',
+        positionChanged: current ? decision.positionChanged : null });
     }
     return rows;
   },
