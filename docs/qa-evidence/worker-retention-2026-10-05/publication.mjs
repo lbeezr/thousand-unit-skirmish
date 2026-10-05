@@ -45,9 +45,10 @@ function fixture(width, height, mode, beforeEntries, count = 1, oldLength = 0) {
     { goal: longer.at(-1), goals: new Set([longer.at(-1)]), path: longer },
   ];
   const candidates = [{ id: 10, goals: [...fields[0].goals] }, { id: 11, goals: [...fields[1].goals] }];
-  const notices = [], publications = [];
+  const notices = [], publications = [], pendingRepairs = [];
   const context = vm.createContext({ ...movement, shortcutFlatUnitPath, clearWorkIntent,
     MAP_WIDTH: width, MAP_HEIGHT: height, MAP_HALF_X: width / 2, MAP_HALF_Z: height / 2,
+    MAX_UNITS: 2000, MAX_RESOURCE_NODES: 128, XL_CHECKPOINT_ROUTE_MAX_ENTRIES: QUOTA,
     units, resourceNodeStates: nodes, elevationLevelByCell: levels,
     worldToCell: cell, cellToWorld: point, isWalkable: c => c >= 0 && c < levels.length,
     WALK_SPEED: 4, STEP_SECONDS: 1 / 30, WORKER_INTERACTION_RANGE: 1.4,
@@ -56,6 +57,7 @@ function fixture(width, height, mode, beforeEntries, count = 1, oldLength = 0) {
     unitHasCapability: (u, capability) => u.kind === 'worker' && capability === 'gather',
     economyResources: () => ['food', 'wood'], matchEconomyProfileId: () => 'classic',
     sendOrderNotice: (_p, _c, message) => notices.push(message),
+    enqueueRouteRepairs: repairs => pendingRepairs.push(...repairs.map(r => ({ id: r.unit.id, destination: r.destination }))),
     nearestOpenCell: c => c, walkableComponents: new Int32Array(width * height),
     workerDropoffCandidates: () => candidates,
     getAttackFlowFieldForGoals: (_goals, key) => key.includes(':10:') ? fields[0] : fields[1],
@@ -71,7 +73,7 @@ function fixture(width, height, mode, beforeEntries, count = 1, oldLength = 0) {
     return result;
   };
   assert.equal(savedEntries(units, nodes), beforeEntries);
-  return { actors, units, nodes, context, raw, fields, start, levels, notices, publications, width, height };
+  return { actors, units, nodes, context, raw, fields, start, levels, notices, publications, pendingRepairs, width, height };
 }
 
 function outcome(f, command) {
@@ -86,7 +88,10 @@ function outcome(f, command) {
   }
   for (const actor of f.actors) {
     assert.equal(actor.dropoffBuildingId, 10, 'original raw length five beats six before reduction');
-    assert.equal(actor.moveGoalCell, f.raw.at(-1)); assert.equal(actor.path.at(-1), f.raw.at(-1));
+    assert.equal(actor.moveGoalCell, f.raw.at(-1));
+    if (command === 'Return' && actor.path.length === 0) {
+      assert.ok(f.pendingRepairs.some(r => r.id === actor.id && r.destination === f.raw.at(-1)));
+    } else assert.equal(actor.path.at(-1), f.raw.at(-1));
     assert.equal(actor.cargo, 10); assert.equal(actor.cargoType, 'food');
   }
   assert.equal(f.actors.reduce((sum, u) => sum + u.cargo, 0), cargo);
@@ -101,7 +106,7 @@ function outcome(f, command) {
   return { width: f.width, height: f.height, command, count: f.actors.length, before, after,
     quota: QUOTA, exceedsQuota: after > QUOTA, checkpointLeaf,
     selectedTailPreserved: true, originalScorePreserved: true, cargoPreserved: true,
-    publications: f.publications, notices: f.notices };
+    publications: f.publications, pendingRepairRequests: f.pendingRepairs, notices: f.notices };
 }
 
 const cases = [];
@@ -113,7 +118,8 @@ for (const [width, height] of [[320, 160], [160, 320], [320, 320]]) {
   }
   const returns = outcome(fixture(width, height, 'flat', QUOTA, 2), 'Return');
   assert.ok(returns.publications.every(p => !p.liveActor), 'real Return selects on clones before live copy');
-  assert.equal(returns.after, QUOTA + 2); cases.push({ mode: 'flat', ...returns });
+  assert.equal(returns.after, QUOTA); assert.equal(returns.pendingRepairRequests.length, 2);
+  cases.push({ mode: 'flat', ...returns });
   const replacement = outcome(fixture(width, height, 'flat', QUOTA, 1, 3), 'flow');
   assert.equal(replacement.after, QUOTA - 2); cases.push({ mode: 'flat-replacement', ...replacement });
 }
@@ -124,7 +130,7 @@ for (const [width, height] of [[16, 17], [160, 160], [256, 256]]) {
 const report = { sourceRevision: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
   sourceDirty: Boolean(execFileSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).trim()),
   inputSha256: Object.fromEntries(names.map(name => [name, createHash('sha256').update(bodies[name]).digest('hex')])),
-  scope: 'Unchanged production Worker route/reduction/drop-off/land Return bodies with controlled selectors and synthetic saved-field pressure; real checkpoint route leaf only. No full checkpoint, ordinary XL admission, CPU capacity, served or rendered claim.',
+  scope: 'Production Worker route/reduction/drop-off/land Return bodies with controlled selectors and synthetic saved-field pressure; repair requests observed at the service boundary, real checkpoint route leaf only. Baseline JSON remains historical; registered Return journeys separately consume the actual service/recovery/physical/deposit bodies. No full XL checkpoint, ordinary XL admission, CPU capacity, served or rendered claim.',
   cases };
 if (process.argv[2]) writeFileSync(process.argv[2], JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify({ source: report.sourceRevision, dirty: report.sourceDirty, cases: cases.length,

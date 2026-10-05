@@ -4796,7 +4796,6 @@ function assignReturnCargo(player, command) {
     sendOrderNotice(player, command, 'RETURN CARGO REJECTED · SELECT YOUR CARRYING WORKERS');
     return;
   }
-  const deliveries = [];
   const selectedWater = commandUnits(command).filter(unit => unit.hp > 0 && unit.team === player.team && unit.movementDomain === 'water');
   if (selectedWater.length) {
     const selectedOwn = commandUnits(command).filter(unit => unit.hp > 0 && unit.team === player.team);
@@ -4810,19 +4809,23 @@ function assignReturnCargo(player, command) {
     for (const { unit, route, nodeId, phase } of plan.assignments) skiffFishingContext.start(unit, nodeId, phase, route);
     dirty = true; sendOrderNotice(player, command, `RETURN CARGO ORDER · ${plan.assignments.length} SKIFFS TO OWNED DOCK`); return;
   }
-  for (const unit of commandUnits(command)) {
-    if (unit.hp <= 0 || unit.team !== player.team || !unitHasCapability(unit, 'gather')
-      || !(unit.cargo > 0) || !economyResources(matchEconomyProfileId()).includes(unit.cargoType)) continue;
-    // Reuse the existing route selection without changing a rejected unit's order.
-    const route = { ...unit };
-    routeWorkerToDropoff(route);
-    if (route.moveGoalCell >= 0) deliveries.push({ unit, route });
-  }
-  if (!deliveries.length) {
-    sendOrderNotice(player, command, 'RETURN CARGO REJECTED · NO CARRYING WORKERS WITH A REACHABLE DROP-OFF');
-    return;
-  }
-  for (const { unit, route } of deliveries) {
+  const publicationLedger = MAP_WIDTH > 256 || MAP_HEIGHT > 256
+    ? createUnitRoutePublicationLedger(MAP_WIDTH, MAP_HEIGHT, units, resourceNodeStates,
+      { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES, maxEntries: XL_CHECKPOINT_ROUTE_MAX_ENTRIES }) : null;
+  const pendingReturns = [];
+  let accepted = 0;
+  const acceptReturn = (unit, route) => {
+    const reservation = publicationLedger?.check(unit, route.path.length, { clearResume: true });
+    const deferred = reservation?.status === 'deferred';
+    if (publicationLedger) {
+      if (!deferred) publicationLedger.commit(unit, route.path.length, { clearResume: true });
+      else if (publicationLedger.check(unit, 0, { clearResume: true }).status === 'ready') {
+        publicationLedger.commit(unit, 0, { clearResume: true });
+      }
+      // A pre-existing invalid/overfull envelope can conservatively retain its
+      // charge until the service's fresh census. Accepted Return still releases
+      // its old route/resume and never executes the previous work leg.
+    }
     clearWorkIntent(unit);
     unit.orderRevision++;
     unit.queuedWaypoints.length = 0;
@@ -4832,13 +4835,38 @@ function assignReturnCargo(player, command) {
     unit.attackTargetId = -1; unit.attackBuildingTargetId = -1;
     unit.repathTimer = 0; unit.lastAttackCell = -1;
     unit.gatherNodeId = null; unit.gatherForestCell = -1;
-      unit.gatherPhase = 'to-base';
-    for (const key of ['dropoffBuildingId', 'dropoffNavigationRevision', 'moveGoalCell', 'path', 'pathIndex']) {
+    unit.gatherPhase = 'to-base';
+    for (const key of ['dropoffBuildingId', 'dropoffNavigationRevision', 'moveGoalCell']) {
       unit[key] = route[key];
     }
+    unit.path = deferred ? [] : route.path;
+    unit.pathIndex = deferred ? 0 : route.pathIndex;
+    if (deferred) {
+      pendingReturns.push({ unit, destination: unit.moveGoalCell });
+    }
+    accepted++;
+  };
+  const deliveries = [];
+  for (const unit of commandUnits(command)) {
+    if (unit.hp <= 0 || unit.team !== player.team || !unitHasCapability(unit, 'gather')
+      || !(unit.cargo > 0) || !economyResources(matchEconomyProfileId()).includes(unit.cargoType)) continue;
+    // Resource selection and raw scoring remain unchanged. XL stages only this
+    // recipient's clone; capacity is charged against the live actor, not it.
+    const route = { ...unit };
+    routeWorkerToDropoff(route);
+    if (route.moveGoalCell < 0) continue;
+    if (publicationLedger) acceptReturn(unit, route);
+    else deliveries.push({ unit, route });
   }
+  for (const { unit, route } of deliveries) acceptReturn(unit, route);
+  if (!accepted) {
+    sendOrderNotice(player, command, 'RETURN CARGO REJECTED · NO CARRYING WORKERS WITH A REACHABLE DROP-OFF');
+    return;
+  }
+  if (pendingReturns.length) enqueueRouteRepairs(pendingReturns, { mode: 'return-cargo-capacity', orderLabel: 'RETURN CARGO' });
   dirty = true;
-  sendOrderNotice(player, command, `RETURN CARGO ORDER · ${deliveries.length} WORKERS`);
+  sendOrderNotice(player, command, `RETURN CARGO ORDER · ${accepted} WORKERS`
+    + (pendingReturns.length ? ` · ${pendingReturns.length} WAITING FOR ROUTE CAPACITY` : ''));
 }
 
 function assignSkiffGather(player, command, selectedUnits) {
