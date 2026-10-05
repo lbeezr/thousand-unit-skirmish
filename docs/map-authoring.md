@@ -134,6 +134,30 @@ startup failure; the architecture/authoring owner retains the existing browser
 scenario when capability becomes available. No dispatch retry or new storage
 service belongs to this extraction.
 
+### Scenario history coordination
+
+[PR415](https://github.com/lbeezr/thousand-unit-skirmish/pull/415) adds
+`createScenarioEditCoordinator({ history, canRecord, capture, apply, onRecord })`
+to the existing canonical scenario-authoring module. It owns the applying flag,
+record gating and restore order alongside the existing bounded history class.
+`record()` captures only when active and outside application, then always updates
+availability. `restore(direction)` applies a retained snapshot, records the
+result after application and returns whether restoration happened; the host
+schedules its existing draft save only after a successful restoration.
+An exhausted direction does nothing. Existing application exceptions propagate
+with recording suppression retained, rather than adding a new recovery policy.
+
+The real host record/Undo/Redo callers use this coordinator. Snapshot fields,
+DOM assignments, region/event selections, redraw/synchronization callbacks,
+history limits, branching and all clear/reset sites remain unchanged. The old
+`ScenarioEditHistory` and `regionGestureZone` bodies and the legacy module's
+two named exports remain; the added coordinator is available only through the
+canonical entry. No new module or public admission is needed. Direct contracts
+cover reentrant capture/ordering and failures; actual template controls in the
+existing draft fixture cover region/event restoration, branching, local save,
+no running-match mutation and resets after recovery/import. Architecture/authoring
+retains rendered recovery acceptance at the existing cloud capability gap.
+
 ## Coordinates and terrain
 
 ### Organic landscape composition
