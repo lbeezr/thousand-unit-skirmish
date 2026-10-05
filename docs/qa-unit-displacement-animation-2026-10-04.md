@@ -116,6 +116,7 @@ served/deployed identity and actual rendered acceptance remain separate.
 | 1 — current slice; rendered use open | Clip labels conceal seven Spearman idle walk placeholders. Integrate and retain provenance in existing animation capture evidence. | Read-only runtime observation and animation-domain adapter/tests. Both-seat 14 placeholder / 2 exact controls; false provenance rejected; no selector/art changes. Identified deployed/GPU consumer use still requires the existing capable capture owner. |
 | 2 — implemented; review/integration and rendered use tracked in its PR | Pending and seven representative loader failure paths originally produced the same null action observation. The existing animation probe now retains bounded aggregate load state and finite failure provenance, including failure before any capture. | Read-only `observeLoad()` and existing adapter/report only; no roles, URLs, error payloads, identifiers, counts or timestamps. Promise outcomes, warning identity/count, all-or-nothing admission and late sibling controls remain unchanged. Shadow no-overlap confirmation and precise foot-art supported-version-only patch inspection cover the allocated loader boundary. |
 | 3 — finite replay observation implemented; exact review/integration tracked in PR464 | On both seats, a production crowd wait, Hold and planning-pending state produce identical ordinary unit rows. Finite observations are consumed in the existing private queued-gate report; do not infer a deadlock from missing motion. | Requested owned actors only, at most eight current-step observations; no paths, targets, neighbors or public/session transport changes. Crowd/core approved the finite replay observer; repair instrumentation remains unchanged. Rich native instrumentation and movement policy stay with their owners. |
+| 4 — final-admission ambiguity reproduced; exact hook agreement pending | A positive vector can be rejected, admitted with changed position, or admitted at a zero-distance waypoint. The current finite report cannot distinguish these outcomes. | Reuse the same at-most-eight owned-actor observer and queued-gate report. Observe existing executor branch exits/assignments without re-evaluating predicates or changing calls, policy, deadlines or assertions; keep admission separate from last-evaluation physical position change. Core/crowd retain executor policy. |
 
 ### Pending versus failed loader provenance — 5 October 2026
 
@@ -246,3 +247,59 @@ opponents/unknown/dead/replaced actors produce no rows. Original commands,
 Stop priority, simulation, repair, 2700-tick deadlines and arrival assertions
 remain intact. This projection is private source replay evidence, not normal
 browser or deployment acceptance.
+
+
+### Final-admission observation audit — 5 October 2026
+
+At merged source `1e3245c6`, the controlled production vector/executor bodies
+reproduce the following four controls. Every control calls the existing vector
+function exactly once; no shared hook or movement policy has changed.
+
+| Control | Last vector | Position changed | Waypoint advanced | Repair attempts |
+| --- | --- | --- | --- | --- |
+| Inherited static escape blocked by the existing body admission | wait | no | no | 0 |
+| Newly blocked route waypoint | proposal | no | no | 1 |
+| Existing accepted fallback at an elevation edge | proposal | yes | no | 0 |
+| Existing admitted zero-distance waypoint | proposal | no | yes | 0 |
+
+The first three reuse the existing `scripts/unit-movement.test.mjs` controls;
+the zero-distance control places the current waypoint at the actor's existing
+legal center with inactive neighbors. This is a bounded CPU contract audit,
+not new crowd algorithm research, native scheduling, player-session or rendered
+evidence. A repair attempt is not an accepted repair. Advancing a zero-distance
+waypoint is an executor admission without physical position change. Neither a
+positive vector nor a movement-tick marker alone establishes physical progress.
+
+The prior private queued-gate report at reviewed `60fb23da` retained four
+unfinished own actors at the unchanged 2700-tick deadline and 60/64 arrivals:
+two last observed vector proposals and two vector waits. Held/completed controls
+remain distinct. Proposal provenance cannot tell which final executor branch
+was taken; it must not infer a rejected admission or an algorithmic deadlock.
+
+The precise proposed shared boundary is the existing `observeMovement` copy
+instrumentation in `scripts/pathing-replay-fixture.mjs`: read-only callbacks at
+the original land executor's waypoint/steering/fallback assignments and existing
+static-target/automatic/fallback rejection or detour-deferral branch exits.
+The original predicates, vector calls and writes must execute once in their
+original order; no predicate re-evaluation, cloned result, global crowd record
+or rich trace is needed. Capture the selected owned actor's preceding position
+privately after the existing vector evaluation, and compare only after the
+actual executor branch. Waypoint observation follows its path-index advance;
+steering/fallback position comparison follows the existing coordinate clamping.
+Same-cell combat, water and later separation remain outside this interval.
+Export a finite admission outcome and changed/unchanged position status for that same last evaluation; no coordinates or whole-tick/net
+progress claim. Missing/stale outcome stays unobserved and position change
+stays null, never a false no-progress claim. Multiple evaluations in one tick
+reset the stored outcome and preceding pose for each new evaluation.
+
+Reuse the existing explicit team, at-most-eight requests, ownership-before-
+movement-read boundary, identity/generation/order/step/navigation freshness and
+reset/restore clearing. Keep Hold, productive work and planning flags separate.
+No normal player rows, public health/session data, paths, targets, neighbor or
+enemy internals may be exposed. The existing queued-gate report remains the
+actual consumer and retains its commands, deadlines and arrival assertions.
+Exact core `01a107ba` / crowd `01a10933-c2b0` hook coordination was requested
+through parent relay because cloud-thread messaging is unavailable here;
+response is pending. This audit does not implement or release the new hook.
+Art backing N/A; source/tool, package, deployment and rendered states remain
+separate. Prior baseline-matched movement failures remain open.
