@@ -5,6 +5,8 @@ import { JSDOM } from 'jsdom';
 import { mountResourceBrushControls } from '../src/resource-brush-controls.mjs';
 import { previewResourceBrush } from '../src/resource-brush-authoring.mjs';
 import { createMapStudioFormState } from '../src/authoring/map-studio-form-state.mjs';
+import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from '../src/authoring/map-studio-draft-store.mjs';
+import { mapStudioDraftFixture } from './fixtures/map-studio-draft-fixture.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
@@ -329,4 +331,134 @@ test('actual draft capture uses the form controller after committing selected ed
   assert.deepEqual(copy(draft.editor.definition.resourceNodes), copy(f.w.editorResourceNodes));
   f.w.editorResourceNodes[0].stock = 1;
   assert.equal(draft.editor.definition.resourceNodes[0].stock, 13.5);
+});
+
+test('draft store preserves version-1 keys and raw reads; recovery rejects old/corrupt shapes without migrating', () => {
+  const storage = new Map();
+  const store = createMapStudioDraftStore({ getStorage: () => ({
+    getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value),
+    removeItem: key => storage.delete(key),
+  }) });
+  const key = store.key({ sessionStorageKey: 'session', origin: 'https://example.test', roomId: null, sourceMapId: 'source' });
+  assert.equal(key, 'session:map-studio-draft:https://example.test:default:source');
+  assert.equal(store.key({ sessionStorageKey: 'session', origin: 'https://example.test', roomId: 'room', sourceMapId: 'source' }),
+    'session:map-studio-draft:https://example.test:room:source');
+  const draft = { version: MAP_STUDIO_DRAFT_VERSION, sourceMapId: 'source', savedAt: 123,
+    editor: { definition: { width: 16, height: 256, obstacles: [], spawnPoints: [] }, formValues: {} } };
+  store.write(key, draft); assert.equal(storage.get(key), JSON.stringify(draft));
+  const recovered = store.read(key); assert.deepEqual(recovered, draft);
+  const recovery = store.requireRecovery(recovered, 'source');
+  assert.equal(recovery.state, recovered.editor); assert.equal(recovery.definition, recovered.editor.definition);
+  for (const raw of ['', '{corrupt']) { storage.set(key, raw); assert.equal(store.read(key), null); }
+  for (const raw of ['0', 'false', 'null']) { storage.set(key, raw); assert.equal(store.read(key), JSON.parse(raw)); }
+  for (const invalid of [null, {}, { ...draft, version: 0 }, { ...draft, version: 2 }, { ...draft, sourceMapId: 'other' },
+    ...[{ width: 15 }, { height: 257 }, { width: 16.5 }, { obstacles: null }, { spawnPoints: null }]
+      .map(change => ({ ...draft, editor: { definition: { ...draft.editor.definition, ...change } } }))]) {
+    assert.throws(() => store.requireRecovery(invalid, 'source'),
+      { message: 'The saved draft could not be read. Discard it to start a fresh map.' });
+  }
+  store.remove(key); assert.equal(store.read(key), null);
+});
+
+test('draft storage getter and serialization failures keep their existing catch boundaries and access order', () => {
+  let accesses = 0;
+  const failure = new Error('storage denied');
+  const store = createMapStudioDraftStore({ getStorage: () => { accesses++; throw failure; } });
+  assert.equal(accesses, 0); assert.equal(store.read(null), null); assert.equal(accesses, 0);
+  assert.equal(store.read('key'), null); assert.equal(accesses, 1);
+  const circular = {}; circular.self = circular;
+  assert.throws(() => store.write('key', circular), error => error === failure);
+  assert.equal(accesses, 2); assert.throws(() => store.remove('key'), error => error === failure);
+  let writes = 0;
+  const available = createMapStudioDraftStore({ getStorage: () => ({ setItem() { writes++; } }) });
+  assert.throws(() => available.write('key', circular), TypeError); assert.equal(writes, 0);
+});
+
+test('real draft debounce, interrupted close, cancel and pagehide preserve the last edits without changing the match', t => {
+  const f = mapStudioDraftFixture(t), match = f.copy(f.w.mapDefinition);
+  f.open(); f.edit('studio-name', 'First'); f.edit('studio-name', 'Interrupted');
+  assert.equal(f.timers.size, 1); assert.equal([...f.timers.values()][0].delay, 160);
+  f.click('map-studio-close');
+  const key = Object.keys(f.saved())[0], draft = JSON.parse(f.saved()[key]);
+  assert.equal(draft.version, 1); assert.equal(draft.editor.definition.name, 'Interrupted');
+  assert.equal(f.timers.size, 0); assert.equal(f.w.editorDefinition, null);
+  f.open(); assert.equal(f.w.ui.studioDraftRecovery.hidden, false);
+  assert.equal(f.w.ui.mapStudioLayout.inert, true); f.cancel();
+  assert.equal(f.saved()[key], JSON.stringify(draft), 'canceling recovery does not overwrite the saved draft');
+  f.open(); f.click('studio-draft-restore');
+  assert.equal(f.w.ui.studioName.value, 'Interrupted'); assert.equal(f.w.ui.studioDraftRecovery.hidden, true);
+  f.edit('studio-name', 'Page hidden'); f.w.ui.mapStudio.open = false;
+  f.w.dispatchEvent(new f.w.Event('pagehide'));
+  assert.equal(JSON.parse(f.saved()[key]).editor.definition.name, 'Page hidden');
+  assert.equal(f.timers.size, 0); assert.deepEqual(f.copy(f.w.mapDefinition), match);
+});
+
+test('real restore rereads storage, reports old drafts, and discard keeps failures recoverable', t => {
+  const f = mapStudioDraftFixture(t); f.open(); f.edit('studio-name', 'Recovered'); f.flush();
+  const key = f.w.editorDraftStorageKey, raw = f.w.localStorage.getItem(key);
+  f.click('map-studio-close');
+  const old = JSON.parse(raw); old.version = 0; f.w.localStorage.setItem(key, JSON.stringify(old));
+  f.open(); f.click('studio-draft-restore');
+  assert.match(f.w.ui.studioDraftRecoveryMessage.textContent, /saved draft could not be read/);
+  assert.equal(f.w.ui.studioDraftRecovery.hidden, false); assert.equal(f.w.ui.mapStudioLayout.inert, true);
+  assert.equal(f.w.ui.studioName.value, 'DRAFT SOURCE CUSTOM'); assert.equal(f.timers.size, 0);
+  f.w.localStorage.setItem(key, raw); f.click('studio-draft-restore');
+  assert.equal(f.w.ui.studioName.value, 'Recovered'); assert.equal(f.w.ui.studioDraftRecovery.hidden, true);
+  assert.equal(f.w.scenarioEditHistory.canUndo, false); f.click('map-studio-close'); f.open();
+  const remove = f.w.Storage.prototype.removeItem;
+  f.w.Storage.prototype.removeItem = () => { throw new Error('storage denied'); };
+  f.click('studio-draft-discard');
+  assert.equal(f.w.ui.studioDraftRecovery.hidden, false);
+  assert.match(f.w.ui.studioDraftRecoveryMessage.textContent, /could not clear/);
+  assert.match(f.w.ui.studioDraftStatus.textContent, /COULD NOT BE CLEARED/);
+  assert.ok(f.w.localStorage.getItem(key));
+  f.w.Storage.prototype.removeItem = remove; f.click('studio-draft-discard');
+  assert.equal(f.w.ui.studioDraftRecovery.hidden, true); assert.equal(f.w.localStorage.getItem(key), null);
+  assert.equal(f.w.ui.studioDraftStatus.textContent, 'NO LOCAL DRAFT');
+  f.click('map-studio-close'); f.open(); assert.equal(f.w.ui.studioDraftRecovery.hidden, true);
+});
+
+test('corrupt JSON and storage write failures retain data and existing dialog status without automatic retries', t => {
+  const f = mapStudioDraftFixture(t); f.open(); const key = f.w.editorDraftStorageKey;
+  f.click('map-studio-close'); f.w.localStorage.setItem(key, '{corrupt'); f.open();
+  assert.equal(f.w.ui.studioDraftRecovery.hidden, true); assert.equal(f.w.localStorage.getItem(key), '{corrupt');
+  const set = f.w.Storage.prototype.setItem; let attempts = 0;
+  f.w.Storage.prototype.setItem = () => { attempts++; throw new Error('quota'); };
+  f.edit('studio-name', 'Quota failure'); f.flush();
+  assert.equal(f.w.ui.studioDraftStatus.textContent, 'LOCAL SAVE FAILED · DOWNLOAD JSON');
+  assert.equal(f.w.lastDraftSavedAt(), null); assert.equal(f.timers.size, 0); assert.equal(attempts, 1);
+  assert.equal(f.w.localStorage.getItem(key), '{corrupt'); f.flush(); assert.equal(attempts, 1);
+  f.w.Storage.prototype.setItem = set; f.edit('studio-name', 'Next edit'); f.flush();
+  assert.equal(JSON.parse(f.w.localStorage.getItem(key)).editor.definition.name, 'Next edit');
+});
+
+test('actual draft recovery preserves portable import/export through real map validation and population', async t => {
+  const f = mapStudioDraftFixture(t); f.open();
+  f.edit('studio-name', 'Portable recovery'); f.edit('studio-starting-food', '750'); f.edit('studio-fog-of-war', true);
+  f.flush(); f.w.downloadEditorMap();
+  const first = JSON.parse(await f.downloads.at(-1).blob.text());
+  assert.equal(f.downloads.at(-1).filename, `${first.id}.json`);
+  const saved = f.saved(); f.click('map-studio-close');
+  const recovered = mapStudioDraftFixture(t, { saved }); recovered.open(); recovered.click('studio-draft-restore');
+  recovered.w.downloadEditorMap();
+  const second = JSON.parse(await recovered.downloads.at(-1).blob.text());
+  assert.deepEqual(second, first); assert.equal(second.startingResources.food, 750); assert.equal(second.fogOfWar, true);
+  const text = JSON.stringify(second);
+  await recovered.w.importEditorMap({ name: 'roundtrip.json', size: text.length, text: async () => text });
+  assert.deepEqual(recovered.copy(recovered.w.collectEditorMap()), first);
+  assert.equal(recovered.timers.size, 2, 'one draft timer plus the export URL cleanup timer');
+  await assert.rejects(recovered.w.importEditorMap({ name: 'broken.json', size: 1, text: async () => '{' }),
+    { message: 'That file is not valid JSON.' });
+  assert.deepEqual(recovered.copy(recovered.w.collectEditorMap()), first);
+});
+
+test('recovery preserves unfinished authoring fields while actual export still requires a valid map', t => {
+  const f = mapStudioDraftFixture(t); f.open(); f.edit('studio-name', ''); f.flush();
+  const key = f.w.editorDraftStorageKey;
+  assert.equal(JSON.parse(f.w.localStorage.getItem(key)).editor.formValues['studio-name'].value, '');
+  f.click('map-studio-close'); f.open(); f.click('studio-draft-restore');
+  assert.equal(f.w.ui.studioName.value, ''); assert.equal(f.w.ui.studioDraftRecovery.hidden, true);
+  f.w.downloadEditorMap(); assert.equal(f.downloads.length, 0);
+  assert.equal(f.w.ui.studioMessage.textContent, 'Map name must be between 1 and 48 characters.');
+  assert.ok(f.w.localStorage.getItem(key), 'export rejection retains the local draft');
 });
