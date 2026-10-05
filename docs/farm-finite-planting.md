@@ -281,13 +281,15 @@ The next disjoint authority evidence is now implemented in
 naturally exhausts its first crop, gathers real wood, Stops that carrying Worker,
 and explicitly selects it with a busy Hold Worker. Replant assigns only the
 carrying idle Worker. Before simulation advances, the selected busy and every
-unselected Worker retain exact authoritative records. Cold recovery preserves
+unselected Worker retain exact authoritative records. Checkpoint restore preserves
 construction/wood cargo; the renewed Worker deposits its real wood before any
 renewed food, then resumes crop harvest. Both-seat stock + food cargo + bank
 conservation totals 400 food across the two paid crops, with one additional
 60-wood debit and exactly one return of the naturally gathered wood. No bank,
 stock, cargo or checkpoint fields are injected in these controls. Seven Farm
-authority tests pass; independent review/integration is the remaining source step.
+authority tests pass. Independent review found no test-code defects and corrected
+this slice's recovery label to checkpoint restore; a fresh-process wood-cargo
+restart is not claimed. Source integration retains the Farm owner.
 
 The default pointer recipe is source-integrated by [PR497](https://github.com/lbeezr/thousand-unit-skirmish/pull/497),
 with no independent-review findings and nine passing contracts. Its real GPU
