@@ -15,7 +15,7 @@
     {
       "width": 16,
       "height": 17,
-      "ordinaryAdmission": true,
+      "withinCurrentDimensionCeiling": true,
       "synthetic": true,
       "selectedEntries": 271,
       "published": true,
@@ -29,7 +29,7 @@
     {
       "width": 16,
       "height": 17,
-      "ordinaryAdmission": true,
+      "withinCurrentDimensionCeiling": true,
       "synthetic": true,
       "selectedEntries": 272,
       "published": true,
@@ -43,7 +43,7 @@
     {
       "width": 64,
       "height": 48,
-      "ordinaryAdmission": true,
+      "withinCurrentDimensionCeiling": true,
       "synthetic": true,
       "selectedEntries": 3071,
       "published": true,
@@ -57,7 +57,7 @@
     {
       "width": 64,
       "height": 48,
-      "ordinaryAdmission": true,
+      "withinCurrentDimensionCeiling": true,
       "synthetic": true,
       "selectedEntries": 3072,
       "published": true,
@@ -71,7 +71,7 @@
     {
       "width": 160,
       "height": 160,
-      "ordinaryAdmission": true,
+      "withinCurrentDimensionCeiling": true,
       "synthetic": true,
       "selectedEntries": 25599,
       "published": true,
@@ -85,7 +85,7 @@
     {
       "width": 160,
       "height": 160,
-      "ordinaryAdmission": true,
+      "withinCurrentDimensionCeiling": true,
       "synthetic": true,
       "selectedEntries": 25600,
       "published": true,
@@ -99,7 +99,7 @@
     {
       "width": 256,
       "height": 256,
-      "ordinaryAdmission": true,
+      "withinCurrentDimensionCeiling": true,
       "synthetic": true,
       "selectedEntries": 65535,
       "published": true,
@@ -113,7 +113,7 @@
     {
       "width": 256,
       "height": 256,
-      "ordinaryAdmission": true,
+      "withinCurrentDimensionCeiling": true,
       "synthetic": true,
       "selectedEntries": 65536,
       "published": true,
@@ -127,7 +127,7 @@
     {
       "width": 320,
       "height": 256,
-      "ordinaryAdmission": false,
+      "withinCurrentDimensionCeiling": false,
       "synthetic": true,
       "selectedEntries": 81919,
       "published": true,
@@ -141,7 +141,7 @@
     {
       "width": 320,
       "height": 256,
-      "ordinaryAdmission": false,
+      "withinCurrentDimensionCeiling": false,
       "synthetic": true,
       "selectedEntries": 81920,
       "published": true,
@@ -155,7 +155,7 @@
     {
       "width": 256,
       "height": 320,
-      "ordinaryAdmission": false,
+      "withinCurrentDimensionCeiling": false,
       "synthetic": true,
       "selectedEntries": 81919,
       "published": true,
@@ -169,7 +169,7 @@
     {
       "width": 256,
       "height": 320,
-      "ordinaryAdmission": false,
+      "withinCurrentDimensionCeiling": false,
       "synthetic": true,
       "selectedEntries": 81920,
       "published": true,
@@ -183,7 +183,7 @@
     {
       "width": 320,
       "height": 320,
-      "ordinaryAdmission": false,
+      "withinCurrentDimensionCeiling": false,
       "synthetic": true,
       "selectedEntries": 102399,
       "published": true,
@@ -197,7 +197,7 @@
     {
       "width": 320,
       "height": 320,
-      "ordinaryAdmission": false,
+      "withinCurrentDimensionCeiling": false,
       "synthetic": true,
       "selectedEntries": 102400,
       "published": true,

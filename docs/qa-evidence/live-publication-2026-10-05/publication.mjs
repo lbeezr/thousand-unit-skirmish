@@ -49,7 +49,7 @@ for(const [width,height] of [[16,17],[64,48],[160,160],[256,256],[320,256],[256,
     assert.equal(result.originalPathLength,length);assert.equal(result.originalCost,900);
     assert.equal(unit.buildingTargetId,34);assert.equal(unit.orderRevision,7);assert.equal(unit.moveGoalCell,destination);
     if(accepted){assert.equal(unit.path.at(-1),destination);assert.deepEqual([...unit.path].slice(-length),raw);}
-    cases.push({width,height,ordinaryAdmission:width<=256&&height<=256,synthetic:true,
+    cases.push({width,height,withinCurrentDimensionCeiling:width<=256&&height<=256,synthetic:true,
       selectedEntries:length,published:accepted,publishedEntries:unit.path.length,
       publicationGrowth:unit.path.length-length,checkpointPathLeafAcceptsPublished:validCellPath(unit.path,cells),
       acceptedGoalRetained:true,constructionSiteRetained:true,originalLengthAndCostRetained:true});
