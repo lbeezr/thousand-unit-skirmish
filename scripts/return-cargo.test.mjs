@@ -1,4 +1,5 @@
 import { economyServerBindings, economyServerFunctions, workerFlowRouteBindings } from './economy-server-fixture.mjs';
+import './land-return-admission-journeys.mjs';
 import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
