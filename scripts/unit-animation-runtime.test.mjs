@@ -169,7 +169,7 @@ test('all shipped headings resolve available frames without resetting continuous
   });
 });
 
-test('read-only action provenance exposes five Spearman idle walk gaps plus genuine SE, NE and East on both seats', async () => {
+test('read-only action provenance exposes four Spearman idle walk gaps plus genuine SE, NE, East and North on both seats', async () => {
   await withRuntime((runtime, scene) => {
     let placeholders = 0, authored = 0;
     for (const team of [0, 1]) for (const [index, direction] of directions.entries()) {
@@ -185,14 +185,14 @@ test('read-only action provenance exposes five Spearman idle walk gaps plus genu
         Array.from(mesh.geometry.attributes.instanceAtlasRect.array)]), beforeBuffers);
       assert.equal(value.selectedDirection, direction);
       assert.equal(value.directionFallback, false);
-      if (['south-east','north-east','east'].includes(direction)) {
+      if (['south-east','north-east','east','north'].includes(direction)) {
         assert.equal(value.reason, 'exact'); assert.equal(value.distinctFrameIds, direction==='south-east'?8:4); authored++;
       } else {
         assert.equal(value.reason, 'idle-placeholder'); assert.equal(value.distinctFrameIds, 1); placeholders++;
         assert.equal(value.selectedAction, 'walk', 'clip label alone cannot certify motion');
       }
     }
-    assert.deepEqual({ placeholders, authored }, { placeholders: 10, authored: 6 });
+    assert.deepEqual({ placeholders, authored }, { placeholders: 8, authored: 8 });
   }, 'spearman', 'v1');
 });
 
