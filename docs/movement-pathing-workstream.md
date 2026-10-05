@@ -857,9 +857,13 @@ and [QA record](qa-ordinary-crowd-steering-2026-10-05.md) retain the historical
 failures, retired recovery variants, full inputs/finals and independent review.
 All 152 registered movement/body/controller/journey checks, 63 Follow/cold/queue
 controls and 49 independent focused controls pass. The clean 1,386-file pack
-and local served HTTP scenario pass. Owner remains `01a10933-c2b0`; next action
-is normal author merge and existing deployment identity readback, then ordinary
-rendered verification through CI/capture owner `01a10378`. No open interface
+and local served HTTP scenario pass. PR400 merged at `8c28773c`, whose runtime
+hashes match the qualification; its 49 focused checks and clean pack also pass.
+The [delivery receipt](qa-evidence/ordinary-crowd-steering-2026-10-05/controller-continuation/source-delivery.json)
+records staging terminal SUCCESS at 05:13:04 UTC for that exact source and the distinct served-health block
+(cloud outbound CONNECT proxy 403; injected auth absent). Owner remains
+`01a10933-c2b0`; next action is served identity and ordinary rendered
+verification through CI/capture owner `01a10378`. No open interface
 approval or parent merge gate remains. The recorded browser sandbox/storage
 failure produced zero frames and stays separate from source qualification.
 Worker/combat/naval/wildlife movement remains with its existing owners; this
@@ -875,8 +879,8 @@ owner `01a10933-e913-766b-b5de-3aa5a17c7038` retains paid construction travel.
 The [exact hook proposal](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5985549187)
 requests a bounded ordinary-Move branch in `getMoveVector`, current serial-body
 queries and a crowd-wait break. Shared position admissions remain core-owned;
-no executor edit precedes that agreement. This is an interface dependency,
-not a global merge or rendered-acceptance hold.
+the recorded agreement was resolved before integration. Further shared writer
+changes require a concrete allocation with that owner.
 
 Reuse the existing forest-gap maps and retained land-body-clearance inputs.
 The first bounded policy proposes only the moving actor's candidate, using the
@@ -889,14 +893,13 @@ Crowd waits do not classify a static route as unreachable or generate repair
 storms. Finite opposing/group deadlines, repair/progress/fairness records and
 actual physical contacts remain explicit acceptance requirements.
 
-Twelve standalone module checks pass for sweeps, monotone inherited-overlap
+The initial reservation passed twelve standalone module checks for sweeps, monotone inherited-overlap
 escape, terminal contact, bounded overflow, both serial orders and mixed-circle
 throat progress. These analytic controls are not the real-game journey proof.
 The 14 existing real land-body study regressions pass before the consumer;
-historical penetration records remain unchanged. Next: integrate only the
-agreed hooks, run both-seat forest/gate/bridge and opposing/group journeys,
-review the exact head, package and normally merge. Crowd owns source/default
-integration and separate identified-release deployment/ordinary rendered proof;
+historical penetration records remain unchanged. The qualified integrated
+journeys and current verification next step are recorded above. Crowd retains
+separate identified-release deployment/ordinary rendered proof;
 CI `01a10378` supplies its existing capture interface. No new benchmark,
 map-admission change, auth retry, denied dispatch or browser-security change.
 
@@ -1374,7 +1377,7 @@ travel probes are not grounds for a speculative selector change.
 | --- | --- | --- | --- |
 | U4/U6 · bounded runtime increment | XL sliced-planner publication reserves saved-field replacement and rejoin/final-center growth, releases staged payloads after refusal and retries from accepted goals through existing service. PR422 supplies durable pending goals; checkpoint PR407/414 supplies the quota. | Core publisher/rejoin/planner service; map owns save quota/admission. Other direct retention writers adopt separately. | Quota/growth/alias controls, fair release/retry/cancellation and restore-tail checks; real ≤256 compatibility. All-writer bounds, complete XL recovery, search resumability and ordinary 320 remain open. |
 | U4 · bounded caller adoption | Construction PR399 and scoped military objective PR405, unit Attack PR410, acquired AttackMove PR417, Patrol PR418/421, building Attack PR424, Follow/queued catch-up PR429 and automatic stance pursuit PR432 are merged. Next measured Worker Follow boundary is requested above; Worker Patrol/objective, rally and direct interaction/placement remain separately scoped. Safe return/same-cell controls do not justify speculative patches. | [Caller adoption owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/432) retains adoption; agree future overlapping functions without duplicating merged hooks. | Both-seat accepted commands, original endpoint cycling, retained selected route, productive legal-range damage, interruption/recovery and zero new static contact in the adopted domain. Old visibility fixture failures remain separate. |
-| U5 · active crowd | PR400 qualifies ordinary military Move groups, opposing traffic and queued topology before integration. | [Crowd owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/400); allocated query/steering/wait only. | Retain failures/timeouts, safe sweeps, immovable parked actors, stable slots and finite forward progress; no combat/Worker adoption claim. |
+| U5 · source merged; verification retained | PR400 ordinary military Move groups, opposing traffic and queued topology are source-qualified and merged at `8c28773c`; retain identified staging/served/rendered verification. | [Crowd owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/400); allocated query/steering/wait only. | Retain failures/timeouts, safe sweeps, immovable parked actors, stable slots and finite forward progress; no combat/Worker adoption claim. |
 | 1 · complete | Clock-independent service work merged in [PR #193](https://github.com/lbeezr/thousand-unit-skirmish/pull/193), `331df72`; [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#integration-and-remaining-evidence) pass. | Planning constants, queue-slice helper and diagnostics only. | 209 postmerge checks; nine route pairs preserve hashes; native large routes and recovery. Atomic-search overshoot remains explicit. |
 | 2 · complete | The parked-formation stall reproduces with a one/two-tick older Move. Bounded repulsion merged in [PR #209](https://github.com/lbeezr/thousand-unit-skirmish/pull/209), `64cc391`; independent review and [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#4-october-postmerge-acceptance) pass. | Only `getMoveVector`'s final force combination and focused tests/tools. Combat-owner targeting/stances remain untouched. | 235 postmerge checks; all eight headings on both seats; four large parked cases twice; nine terrain route pairs; native parked controls and active/idle restarts at the exact merge source. |
 | 3 · qualification complete | The [1/4/8 comparison](qa-move-planning-tick-budget-2026-10-04.md) recommended four turns, but [paid whole-tick qualification](qa-paid-battle-tick-budget-2026-10-04.md) failed the 33.333 ms maximum at 2,000 units. Retain callback default; 1/4/8 remain reproduction controls. This decision is complete. | Movement planner plus the single allocated outer-tick hook; inner combat/Worker/wildlife/mode bodies stay with their owners. Any later default proposal first needs evidence addressing the recorded non-planning tail. | Four native paid battle/economy/recovery runs pass functionally. Four's two budget overruns have zero planning turns. Repeated candidate traces, Stop/replacement, FIFO fairness, topology and recovery remain covered. This does not complete the all-command pipeline. |

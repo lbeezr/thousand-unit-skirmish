@@ -1,0 +1,43 @@
+{
+  "status": "merged source; identified staging provider deployment succeeded; served/rendered verification incomplete",
+  "pullRequest": "https://github.com/lbeezr/thousand-unit-skirmish/pull/400",
+  "qualifiedRuntimeHead": "1fa2c46df86c6c743baf8943f1b4301933be249b",
+  "sealedReviewedHead": "b84b4529639e4b4a1f9e9d0b6cea23b622e25f55",
+  "mergedSource": "8c28773cb912e525bfc7a4e88d649516719f444d",
+  "mergedRuntimeMatchesQualifiedHashes": true,
+  "postmergeFocused": {
+    "passed": 49,
+    "failed": 0
+  },
+  "cleanPack": {
+    "sourceRevision": "8c28773cb912e525bfc7a4e88d649516719f444d",
+    "sourceDirty": false,
+    "digest": "sha256:0a6e611395501188dcc4b593935c47f7bb914cfe565187e2d5cc26edb0d2e31f",
+    "files": 1386,
+    "localPackedHttp": "pass"
+  },
+  "stagingDeployment": {
+    "id": "2a29a592-b7ea-49d1-86f9-b1e1f78abb39",
+    "providerSource": "8c28773cb912e525bfc7a4e88d649516719f444d",
+    "status": "SUCCESS",
+    "observedAtUtc": "2026-10-05T05:13:27Z",
+    "providerStatusUpdatedAt": "2026-10-05T05:13:04.193Z"
+  },
+  "productionDeployment": {
+    "status": "SUCCESS",
+    "providerSource": "67b166748f6cc82c0a76319478f4475da1ab9083",
+    "containsCrowdChange": false
+  },
+  "servedHealth": {
+    "verified": false,
+    "blocker": "Cloud outbound CONNECT proxy rejects the existing staging public route with HTTP403; injected Basic Auth credentials are absent. No login, protection change or network bypass attempted."
+  },
+  "renderedProof": {
+    "verified": false,
+    "frames": 0,
+    "blocker": "Existing retained Linux browser sandbox/profile-storage capability failure; no retry."
+  },
+  "owner": "01a10933-c2b0-70f1-991d-761518eb5010",
+  "captureInterfaceOwner": "01a10378",
+  "nextAction": "Verify served source and ordinary military journeys through the approved cloud HTTP/render interface when its actual capability is available. Preserve source/pack/provider/served/rendered distinctions; no Mac/auth retry/security weakening."
+}

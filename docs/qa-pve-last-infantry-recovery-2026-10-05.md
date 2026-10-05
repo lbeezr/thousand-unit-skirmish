@@ -86,13 +86,14 @@ The [sealed124member evidence](https://raw.githubusercontent.com/lbeezr/thousand
 retains exact source, original packets, matched controls, independent review and
 validation; a scoped pass is not a full CPU-suite pass.
 
-Next: AI `01a10297` owns unchanged full-match completion diagnosis. The parent
-reports CI `01a10378` is running fresh immutable full qualification containing
-this fix and separate fixture corrections, with complete failure evidence;
-the exact frozen revision/result receipt is pending here. Do not duplicate its
-full Tiny match run. Resume diagnosis from any resulting failure packet, using
-checkpoint, accepted ledger and filtered views before bounded controls. Paid
-Infantry recovery succeeds; full-match completion remains unestablished.
+Next: AI `01a10297` owns unchanged full-match completion diagnosis. CI's
+normal immutable full qualification at `67295aef` completed1105passed/1failed/
+217unrun: original seeds remain ongoing3600s in both modes, reversed seeds
+complete and exactly repeat at2711s. Paid Infantry recovery succeeds; full-match
+completion remains unestablished. The [subsequent defender receipt](qa-pve-defender-assault-2026-10-05.md)
+consumes both verified new packets and isolates a separate visible military
+priority weakness through bounded native controls. CI `01a10378` retains the
+next normal qualification after that correction; no duplicate full attempt.
 Movement `01a107ba` retains route/clearance work;
 no movement dependency or cause was established by this fix. Ordinary served
 Tiny recovery acceptance remains with AI and shared staging/capture owners;
