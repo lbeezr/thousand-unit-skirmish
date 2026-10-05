@@ -65,7 +65,7 @@ function fixture() {
   vm.runInContext(['compatibleWorkerPerformingAction', 'workerPerformingAction',
     'snapshotUnits', 'workerTaskStatus', 'stopGathering', 'ensureGatherWorkIntent',
     'continueAreaGathering', 'updateForestWorkerEconomy',
-    'updateWorkerEconomy'].map(fn).join('\n') + '\n' + constructionServerFunctions + construction, context);
+    'updateWorkerEconomy', 'finishFarmReplantHarvest'].map(fn).join('\n') + '\n' + constructionServerFunctions + construction, context);
   context.flushPendingForestClears = () => {};
   journal.beginStep(context.tickNumber);
   return { unit, node, building, journal, context,
