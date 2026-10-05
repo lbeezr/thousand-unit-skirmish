@@ -66,6 +66,23 @@ if 'baselineDecodedAtlasSHA256' in receipt:
     prefix = atlas.crop((0, 0, baseline_dimensions['width'], baseline_dimensions['height']))
     if hashlib.sha256(prefix.tobytes()).hexdigest() != receipt['baselineDecodedAtlasSHA256']:
         raise ValueError('Reviewed entire prior atlas prefix changed')
+
+def registered_frame(index, image):
+    x, y = receipt['atlasSlotsPx'][index]
+    b = image.getchannel('A').point(lambda a: 255 if a >= 8 else 0).getbbox()
+    if not b or min(b[0], b[1], 320 - b[2], 352 - b[3]) < 4:
+        raise ValueError('Source pose lacks complete padded clearance')
+    frame = copy.deepcopy(asset['frames'][0])
+    frame['id'] = own_ids[index]
+    frame['canvasPx'] = receipt['canvasPx']
+    frame['groundPivotPx'] = receipt['groundPivotPx']
+    frame['alphaBoundsPx'] = {'x': b[0], 'y': b[1], 'width': b[2] - b[0], 'height': b[3] - b[1]}
+    rect = {'x': x, 'y': y, 'width': 320, 'height': 352}
+    frame['fallbackRectPx']['rectPx'] = rect
+    frame['frameRectsPx'][0]['rectPx'] = rect
+    frame['frameRectsPx'][0]['offsetPx'] = {'x': 0, 'y': 0}
+    return frame
+
 if already:
     if len(already) != 4 or pack['packVersion'] != receipt['packVersion']:
         raise ValueError('Unexpected production revision; run the full builder')
@@ -75,6 +92,8 @@ if already:
         raise ValueError('Registered own-direction timing changed')
     for index, image in enumerate(images):
         frame = next(f for f in already if f['id'] == f'walk-{direction}-{index}')
+        if frame != registered_frame(index, image):
+            raise ValueError('Registered own-direction frame metadata changed')
         r = frame['frameRectsPx'][0]['rectPx']
         if atlas.crop((r['x'], r['y'], r['x'] + 320, r['y'] + 352)).tobytes() != image.tobytes():
             raise ValueError('Registered pixels differ from reviewed source')
@@ -110,25 +129,12 @@ else:
         page_sha = hashlib.sha256(json.dumps(pack['pages'][0], separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
         if page_sha != receipt['registeredPageMetadataSHA256']:
             raise ValueError('Extended page differs from reviewed metadata receipt')
-    template = copy.deepcopy(asset['frames'][0])
     for index, image in enumerate(images):
         x, y = receipt['atlasSlotsPx'][index]
         if x < 0 or y < 0 or x + 320 > atlas.width or y + 352 > atlas.height or atlas.crop((x, y, x + 320, y + 352)).getbbox():
             raise ValueError('New slot is outside the atlas or overlaps existing pixels')
         atlas.alpha_composite(image, (x, y))
-        b = image.getchannel('A').point(lambda a: 255 if a >= 8 else 0).getbbox()
-        if not b or min(b[0], b[1], 320 - b[2], 352 - b[3]) < 4:
-            raise ValueError('Source pose lacks complete padded clearance')
-        frame = copy.deepcopy(template)
-        frame['id'] = f'walk-{direction}-{index}'
-        frame['canvasPx'] = receipt['canvasPx']
-        frame['groundPivotPx'] = receipt['groundPivotPx']
-        frame['alphaBoundsPx'] = {'x': b[0], 'y': b[1], 'width': b[2] - b[0], 'height': b[3] - b[1]}
-        rect = {'x': x, 'y': y, 'width': 320, 'height': 352}
-        frame['fallbackRectPx']['rectPx'] = rect
-        frame['frameRectsPx'][0]['rectPx'] = rect
-        frame['frameRectsPx'][0]['offsetPx'] = {'x': 0, 'y': 0}
-        asset['frames'].append(frame)
+        asset['frames'].append(registered_frame(index, image))
     for frame in asset['frames'][:prior]:
         r = frame['frameRectsPx'][0]['rectPx']; box = (r['x'], r['y'], r['x'] + r['width'], r['y'] + r['height'])
         if atlas.crop(box).tobytes() != old_pixels.crop(box).tobytes():
