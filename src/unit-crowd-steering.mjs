@@ -3,7 +3,9 @@ import { crowdWaitLease } from './crowd-wait-lease.mjs';
 import { crowdParkedContour } from './crowd-parked-contour.mjs';
 
 // The host supplies current serial-executor neighbours and its terrain/static
-// admission predicate. This module never moves a neighbour or changes an order.
+// admission predicate. An explicit radius admits another host-owned movement
+// policy without changing ordinary military activation. This module never moves
+// a neighbour or changes an order.
 export const CROWD_NEIGHBOR_LIMIT = 64;
 export const CROWD_PROPOSAL_LIMIT = 128;
 export const CROWD_POINT_PROPOSAL_LIMIT = 64;
@@ -49,9 +51,10 @@ export function stationaryCrowdObstacle(unit) {
     && !unit.gatherPhase && unit.buildingTargetId == null;
 }
 
-export function crowdPassagePoint(center, direction, unit, neighbors, pointAllowed, diagnostics = null) {
+export function crowdPassagePoint(center, direction, unit, neighbors, pointAllowed, diagnostics = null,
+  radius = ordinaryCrowdBodyRadius(unit)) {
   const observePoint = p => { if (diagnostics) diagnostics.passageProposals++; return pointAllowed(p); };
-  const radius = ordinaryCrowdBodyRadius(unit), inset = .5 - radius;
+  const inset = .5 - radius;
   const horizontal = Math.abs(direction.x) >= Math.abs(direction.z);
   const forward = horizontal ? Math.sign(direction.x) : Math.sign(direction.z);
   const preferred = horizontal ? { x: center.x, z: center.z + forward * inset }
@@ -112,9 +115,9 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   directionOf = other => { const goal = targetOf(other); return finitePoint(goal)
     ? { x: goal.x - other.x, z: goal.z - other.z } : null; },
   escapeAllowed = canTraverse, detourAllowed = () => true,
-  travelDirection = null, tick = 0, navigationRevision = 0, epoch = 0, overflow = false, diagnostics = null }) {
-  const radius = ordinaryCrowdBodyRadius(unit);
-  if (!radius || !finitePoint(target) || !(stepDistance > 0 && stepDistance <= .25)) {
+  travelDirection = null, tick = 0, navigationRevision = 0, epoch = 0, overflow = false, diagnostics = null,
+  radius = ordinaryCrowdBodyRadius(unit) }) {
+  if (!(radius > 0 && radius <= .5) || !finitePoint(target) || !(stepDistance > 0 && stepDistance <= .25)) {
     steeringStates.delete(unit); return null;
   }
   const state = steeringState(unit, tick, navigationRevision, epoch);

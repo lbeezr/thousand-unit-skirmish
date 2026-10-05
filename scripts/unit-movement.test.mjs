@@ -6,6 +6,7 @@ import './worker-economy-route-admission-journeys.mjs';
 import './military-endpoint-availability-journeys.mjs';
 import './military-next-leg-claims-journeys.mjs';
 import './worker-gather-route-admission-journeys.mjs';
+import './construction-body-admission-journeys.mjs';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
@@ -342,16 +343,25 @@ function constructionBodyFixture({ x=.07827, z=-.29949, team=0 } = {}) {
   return f;
 }
 
+function legacyConstructionProposal(f) {
+  // Characterize the original Worker vector before construction selection.
+  // Restore the real predicate before executing any body admission/write.
+  const predicate=f.context.constructionMovementActive;
+  try {f.context.constructionMovementActive=()=>false;return f.context.getMoveVector(f.mover);}
+  finally {f.context.constructionMovementActive=predicate;}
+}
+
 for(const team of [0,1]) test(`seat ${team}: attributed construction steering rejects a new stationary-body contact`,()=>{
   // Translate the reported tick-954 pair by (-14,0), preserving its geometry.
   // This is an injected executor control, not a replay of the original native run.
   const f=constructionBodyFixture({team}),before=structuredClone(f.mover),other=structuredClone(f.units[1]);
-  const proposal=f.context.getMoveVector(f.mover),to={x:f.mover.x+proposal.x*proposal.stepDistance,
+  const proposal=legacyConstructionProposal(f),to={x:f.mover.x+proposal.x*proposal.stepDistance,
     z:f.mover.z+proposal.z*proposal.stepDistance};
   assert.ok(Math.abs(to.x-.15654)<.00002&&Math.abs(to.z+.33671)<.00002,JSON.stringify(to));
   assert.ok(canTraverseUnitStep(cell(before.x,before.z),cell(to.x,to.z),width,f.levels,f.walkable));
   assert.ok(canTraverseStaticBodySegment(before,to,.18,width,width,f.walkable,{allowEscape:true}));
   assert.equal(canTraverseCrowdBodySegment(before,to,.18,[other],{allowEscape:true}),false);
+  f.context.getMoveVector=()=>proposal;
   for(let tick=0;tick<8;tick++) {f.move();assert.deepEqual(f.mover,before);}
   assert.deepEqual(f.units[1],other,'no displacement of a stationary body');
   assert.equal(f.repairs.length,0,'body-only wait cannot consume static repair');
@@ -373,6 +383,7 @@ for(const mode of ['escape','deeper','new-body']) test(`construction inherited o
   if(mode!=='deeper') {f.mover.path=[27];f.mover.moveGoalCell=27;}
   if(mode==='new-body') Object.assign(f.units[2],{hp:100,kind:'infantry',x:-.23,z:-.5});
   const before=structuredClone(f.mover);
+  f.context.getMoveVector=()=>({target:point(f.mover.path[0]),x:mode==='deeper'?1:-1,z:0,stepDistance:2.6/30});
   const stationary=structuredClone(f.units.slice(1));f.move();
   if(mode==='escape') {
     assert.ok(f.mover.x<before.x);
@@ -384,6 +395,7 @@ for(const mode of ['escape','deeper','new-body']) test(`construction inherited o
 
 test('construction body-only wait resumes on physical release without navigation/order/route replacement',()=>{
   const f=constructionBodyFixture(),before=structuredClone(f.mover),path=f.mover.path,queue=f.mover.queuedWaypoints;
+  const proposal=legacyConstructionProposal(f);f.context.getMoveVector=()=>proposal;
   f.move();assert.deepEqual(f.mover,before);f.units[1].hp=0;f.context.tickNumber++;
   f.move();assert.ok(f.mover.x>before.x);assert.equal(f.mover.path,path);assert.equal(f.mover.queuedWaypoints,queue);
   assert.equal(f.mover.orderRevision,before.orderRevision);assert.equal(f.context.navigationRevision,0);
@@ -457,9 +469,35 @@ test('construction guard excludes other domains without querying or granting dis
 
 test('private construction admission witness identifies body-only wait without claiming a write',()=>{
   const f=constructionBodyFixture(),observer=attachPauseObserver(f);
+  const proposal=legacyConstructionProposal(f);f.context.getMoveVector=()=>proposal;
   observer.configure(0,[f.mover.id]);f.move();const row=observer.read()[0];
   assert.equal(row.decision,'vector-proposal');assert.equal(row.admission,'body-wait');
   assert.equal(row.positionChanged,false);assert.equal(f.repairs.length,0);
+});
+
+for(const side of [-1,1]) test(`construction body admission uses the actual clamped boundary sweep, side=${side}`,()=>{
+  const f=constructionBodyFixture({x:side*3.5,z:0});f.mover.path=[cell(side*3.5,.5)];f.mover.moveGoalCell=f.mover.path[0];
+  Object.assign(f.units[1],{team:1,x:side*3.104,z:.09});rebuildBodyFixtureBuckets(f);
+  const before=structuredClone(f.mover),proposal=legacyConstructionProposal(f),raw={
+    x:before.x+proposal.x*proposal.stepDistance,z:before.z+proposal.z*proposal.stepDistance};
+  const actual={x:side*3.5,z:raw.z};
+  assert.ok(Math.abs(raw.x)>3.5);assert.ok(canTraverseStaticBodySegment(before,raw,.18,width,width,f.walkable));
+  assert.equal(canTraverseCrowdBodySegment(before,raw,.18,[f.units[1]],{allowEscape:true}),true);
+  assert.equal(canTraverseCrowdBodySegment(before,actual,.18,[f.units[1]],{allowEscape:true}),false);
+  f.context.getMoveVector=()=>proposal;
+  const stationary=structuredClone(f.units[1]),observer=attachPauseObserver(f);observer.configure(0,[0]);f.move();
+  assert.deepEqual(f.mover,before);assert.deepEqual(f.units[1],stationary);assert.equal(f.repairs.length,0);
+  assert.equal(observer.read()[0].admission,'body-wait');assert.equal(observer.read()[0].positionChanged,false);
+});
+
+for(const team of [0,1]) test(`seat ${team}: construction selects a safe own step around a stationary body on its route`,()=>{
+  const f=constructionBodyFixture({team}),before=structuredClone(f.mover),other=structuredClone(f.units[1]);
+  f.mover.path=[29];f.mover.moveGoalCell=29;before.path=[29];before.moveGoalCell=29;
+  f.move();assert.ok(Math.hypot(f.mover.x-before.x,f.mover.z-before.z)>0);
+  assert.ok(canTraverseCrowdBodySegment(before,f.mover,.18,[other],{allowEscape:true}));
+  assert.deepEqual(f.units[1],other);assert.equal(f.repairs.length,0);
+  assert.deepEqual(f.mover.path,before.path);assert.equal(f.mover.pathIndex,before.pathIndex);
+  assert.deepEqual(f.mover.workIntent,before.workIntent);assert.deepEqual(f.mover.queuedWaypoints,before.queuedWaypoints);
 });
 
 test('crowd static handoff is rejected before writes and preserves the selected goal and queue', () => {
