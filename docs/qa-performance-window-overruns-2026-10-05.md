@@ -100,14 +100,15 @@ does not identify deployed bytes.
    source observation does not close complete-match qualification.
    CPU/full-qualification owner `01a10378` retains expensive full matches; this
    lane does not launch duplicates or change that owner's scheduling interface.
-2. Isolate profiler startup versus cold-recovery start lag using existing profile
-   boundary witnesses in a bounded 24-unit diagnostic. The
-   [inner Crownroads observer](qa-crownroads-inner-attribution-2026-10-05.md)
-   identifies recurring inclusive `getMoveVector` cost in two same-source repeats,
-   but preserves the second run's36.237 ms lag-p95 failure and one skipped slot.
-   This is measurement, not cause or optimization. Finer subcost/call observations
-   retain movement/crowd ownership and the rejected zero-force arithmetic result.
-   Scoped pressure and RSS peaks between samples remain unmeasured.
+2. Measure remaining wrapper/memory/GC overhead with a bounded production-server
+   checkpoint control before interpreting inner simulation tails as optimization
+   targets. The [matched startup control](qa-crownroads-profiler-startup-2026-10-05.md)
+   now retains identical-input profile/observer/observer/profile forks,60 native
+   ticks and57 continuous clocks per fork. Startup37.149/38.123 ms occupies the
+   recorded next-tick gap; observer-only still has instrumentation overhead.
+   The previous36.237 ms lag failure and first cold-tick inner cause remain open.
+   Finer subcost experiments retain movement/crowd ownership and the rejected
+   zero-force arithmetic result. Scoped pressure/RSS peaks remain unmeasured.
 3. Establish ordinary256 rendered timing and device/viewport/backend identity
    through the existing cloud renderer owner. Retained hosted sandboxed SwiftShader
    Open Field frames prove selected pixels, not Crownroads GPU performance.
