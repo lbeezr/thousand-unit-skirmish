@@ -50,6 +50,15 @@ test('necessary admitted retreat remains selectable and recovery remains availab
   }
 });
 
+test('nonperpendicular projection retains its target score and a close endpoint remains exact',()=>{
+  const a=setup(),b=setup();
+  a.target=b.target={x:1,z:.2}; b.progressTarget={x:0,z:30};
+  assert.deepEqual(selectCrowdStep(a),selectCrowdStep(b), 'raw distance cannot change scoring outside the projection gate');
+  const cfg=setup(); cfg.target={x:.01,z:0};
+  const r=selectCrowdStep(cfg);
+  assert.equal(r.reachedWaypoint,true); assert.deepEqual(r.target,cfg.target); assert.equal(r.stepDistance,.01);
+});
+
 test('blocked admission waits and Hold/planning ownership remain intact',()=>{
   const blocked=setup(); blocked.canTraverse=()=>false;
   const before=structuredClone(blocked.unit), r=selectCrowdStep(blocked);
