@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
+import { assertTinySearchCompletion } from './pve-tiny-failure-evidence.mjs';
 
 export const TINY_POLICY_IDENTITY = { matchModeId: 'skirmish', matchModeVersion: 1 };
 // Native identity is explicit: authored elimination can test the configured
@@ -12,6 +13,7 @@ export async function replayTinySearch(seeds, nativeIdentity, initial = null) {
   assert.ok(map.triggers.every(post => !post.victory));
   assert.equal(map.victoryHoldSeconds, undefined); assert.equal(map.timedVictory, undefined);
   const fixture = await createPveHeadlessFixture(map, nativeIdentity), r = fixture.replay, trace = [];
+  const lastDecisionViews = [null, null];
   const metrics = [0, 1].map(() => ({ producerPurchase: null, producerComplete: null,
     buildingAssault: null, maxMilitary: 8, maxWorkers: 4, spentFood: 0, spentWood: 0 }));
   const view = team => toOpponentObservation(r.observe(team), team, map);
@@ -45,6 +47,7 @@ export async function replayTinySearch(seeds, nativeIdentity, initial = null) {
         }
         for (const team of [0, 1]) {
           const observation = view(team), metric = metrics[team];
+          lastDecisionViews[team] = structuredClone(observation);
           const living = observation.units.friendly.filter(unit => unit.hp > 0);
           metric.maxMilitary = Math.max(metric.maxMilitary, living.filter(unit => unit.kind !== 'worker').length);
           metric.maxWorkers = Math.max(metric.maxWorkers, living.filter(unit => unit.kind === 'worker').length);
@@ -70,7 +73,8 @@ export async function replayTinySearch(seeds, nativeIdentity, initial = null) {
       r.step();
     }
     const final = r.checkpoint();
-    assert.notEqual(final.state.matchWinner, -1, 'configured Tiny match must complete within 3,600 seconds');
+    assertTinySearchCompletion({ initial, final, trace, metrics, lastDecisionViews,
+      seeds, nativeIdentity, policyIdentity: TINY_POLICY_IDENTITY });
     assert.equal(final.state.matchWinnerReason, 'elimination');
     for (const metric of metrics) {
       assert.ok(metric.producerPurchase !== null && metric.producerComplete !== null);
