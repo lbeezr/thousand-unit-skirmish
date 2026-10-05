@@ -96,6 +96,7 @@ export function mountAudioComposer(container, {pack, sourceBlobs = {}, onChange}
   let context = null;
   let player = null;
   let previewToken = 0;
+  let exportRequest = null;
   const root = document.createElement('section');
   root.className = 'audio-composer';
   container.append(root);
@@ -103,7 +104,11 @@ export function mountAudioComposer(container, {pack, sourceBlobs = {}, onChange}
   const getClip = () => getTrack()?.clips.find(clip => clip.id === selectedClipId);
   const setStatus = (message, error = false) => { const status = root.querySelector('.audio-composer__status'); if (status) { status.textContent = message; status.dataset.error = String(error); } };
   const sources = () => currentPack.sources;
-  const stop = () => { previewToken++; player?.stop(); };
+  const stop = () => {
+    previewToken++;
+    if (exportRequest) { exportRequest = null; setStatus(''); }
+    player?.stop();
+  };
   function render(message = '') {
     if (disposed) return;
     const track = getTrack();
@@ -175,7 +180,11 @@ export function mountAudioComposer(container, {pack, sourceBlobs = {}, onChange}
     if (action === 'duplicate') { const clip = getClip(); const copy = {...clip,id:id('clip'),startBeat:Math.min(Math.round(clip.startBeat + clip.durationBeats),draft.lengthBars*draft.beatsPerBar-clip.durationBeats)}; getTrack().clips.push(copy); selectedClipId = copy.id; updated(); return; }
     if (action === 'remove-clip') { getTrack().clips = getTrack().clips.filter(item => item.id !== selectedClipId); selectedClipId = null; updated(); return; }
     if (action === 'stop') { stop(); setStatus('Preview stopped.'); return; }
-    if (action === 'save') { save().catch(error => setStatus(error.message,true)); return; }
+    if (action === 'save') {
+      if (exportRequest) { exportRequest = null; setStatus(''); }
+      save().catch(error => setStatus(error.message,true));
+      return;
+    }
     if (action === 'play') {
       const pending = play();
       const token = previewToken;
@@ -185,14 +194,22 @@ export function mountAudioComposer(container, {pack, sourceBlobs = {}, onChange}
       return;
     }
     if (action === 'export') {
+      const request = {filename: `${draft.name.replace(/[^a-z0-9_-]+/gi,'-')}.wav`};
+      exportRequest = request;
       setStatus('Rendering WAV…');
       renderCompositionWav(draft, sourceBlobs).then(blob => {
-        if (disposed) return;
+        if (disposed || exportRequest !== request) return;
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a'); link.href = url; link.download = `${draft.name.replace(/[^a-z0-9_-]+/gi,'-')}.wav`; link.click();
+        const link = document.createElement('a'); link.href = url; link.download = request.filename; link.click();
         setTimeout(() => URL.revokeObjectURL(url), 60000);
         setStatus('WAV exported.');
-      }).catch(error => setStatus(error.message,true));
+        exportRequest = null;
+      }).catch(error => {
+        if (!disposed && exportRequest === request) {
+          setStatus(error.message,true);
+          exportRequest = null;
+        }
+      });
     }
   }
   const click = event => {
@@ -230,6 +247,7 @@ export function mountAudioComposer(container, {pack, sourceBlobs = {}, onChange}
       }
       const key = element.dataset.field;
       if (!key) return;
+      exportRequest = null;
       const target = key.startsWith('track.') ? getTrack() : key.startsWith('clip.') ? getClip() : draft;
       const property = key.split('.').at(-1);
       target[property] = element.type === 'checkbox' ? element.checked : element.type === 'number' ? Number(element.value) : element.value;
