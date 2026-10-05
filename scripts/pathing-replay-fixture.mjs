@@ -41,7 +41,8 @@ export function instrumentReplayMovementAdmissions(source) {
   return source.slice(0, start) + movement + source.slice(end);
 }
 export async function createPathingReplayFixture(map, { traceLandSteps = false, traceRouteRejoins = false,
-  traceCrowdSteps = false, traceActorIds = [], observeMovement = false } = {}) {
+  traceCrowdSteps = false, traceActorIds = [], observeMovement = false, tracePatrolAcquiredSteps = false } = {}) {
+  assert.equal(typeof tracePatrolAcquiredSteps, 'boolean');
   assert.ok(Array.isArray(traceActorIds) && traceActorIds.length <= 64 && traceActorIds.every(Number.isInteger));
   const directory = await mkdtemp(path.join(tmpdir(), 'rts-pathing-replay-'));
   try {
@@ -183,6 +184,11 @@ function recordReplayLandStep(unit, x, z, reason) {
   replayLandSteps.push({ id: unit.id, generation: unit.generation, revision: unit.orderRevision,
     team: unit.team, kind: unit.kind, tick: tickNumber, navigationRevision,
     from: { x: unit.x, z: unit.z }, to: { x, z }, reason,
+    ...(${tracePatrolAcquiredSteps} ? { patrolAcquired: unit.kind === 'worker'
+      && unit.persistentOrder?.type === 'patrol' && unit.attackMove === true && unit.attackTargetId >= 0,
+      attackTargetId: unit.attackTargetId, bodyRadius: activeLandMovementBodyRadius(unit),
+      patrol: structuredClone(unit.persistentOrder), stance: unit.combatStance,
+      anchor: { x: unit.attackMoveAnchorX, z: unit.attackMoveAnchorZ } } : {}),
     neighbours: units.filter(other => other !== unit && other.hp > 0 && other.movementDomain !== 'water')
       .map(other => ({ id: other.id, generation: other.generation, kind: other.kind, x: other.x, z: other.z })) });
 }

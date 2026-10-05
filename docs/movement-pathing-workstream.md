@@ -61,6 +61,8 @@ actual journey coverage and rendered acceptance are separate.
 
 ### Remaining caller steps after PR432
 
+The [Patrol-only acquired Worker characterization](qa-worker-patrol-acquired-clearance-2026-10-05.md) observes actual pre-write acquired substeps and preserves original policy/recovery controls. The canceled acquired-AttackMove handoff remains untouched; any acquired Patrol adoption stays a distinct measured increment.
+
 Construction travel/approach and the scoped military Move-objective, explicit
 unit/building Attack, acquired AttackMove, Patrol travel/pursuit, Follow and
 Aggressive/Defensive pursuit adopters are source-integrated. This does not mean

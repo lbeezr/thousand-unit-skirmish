@@ -1,0 +1,800 @@
+{
+  "source": "e75a887577f9f37f70b3c1d7360d90f1b4493c15",
+  "dirty": false,
+  "serverSha256": "b9e0a1426aa08815d309f5a1152f1ea26f8610f62840b6c4a46e7040dcf65a56",
+  "records": [
+    {
+      "team": 0,
+      "ending": "kill",
+      "nearStone": false,
+      "cold": true,
+      "orders": [
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            1307944894
+          ],
+          "x": -8.5,
+          "z": -5.5
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1307944894
+          ],
+          "x": -5.5,
+          "z": -4.5
+        },
+        {
+          "tick": 514,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1307944894
+          ]
+        },
+        {
+          "tick": 514,
+          "seat": 0,
+          "type": "patrol",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            1307944894
+          ],
+          "x": 6.5,
+          "z": 0.5
+        }
+      ],
+      "acquiredSteps": 34,
+      "unsafeSteps": 0,
+      "newContacts": 0,
+      "hits": 25,
+      "restored": true,
+      "patrolCells": [
+        1175,
+        1574
+      ],
+      "samples": [],
+      "traceSha256": "baca4b72789f2262f0cac72510dbadeb2cf95c7aade3e5729389a14a42cbebff",
+      "outcome": "original policy/retention conditions met; clearance measured separately"
+    },
+    {
+      "team": 0,
+      "ending": "loss",
+      "nearStone": false,
+      "cold": true,
+      "orders": [
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            1584957457
+          ],
+          "x": -8.5,
+          "z": -5.5
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1584957457
+          ],
+          "x": -5.5,
+          "z": -4.5
+        },
+        {
+          "tick": 514,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1584957457
+          ]
+        },
+        {
+          "tick": 514,
+          "seat": 0,
+          "type": "patrol",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            1584957457
+          ],
+          "x": 6.5,
+          "z": 0.5
+        },
+        {
+          "tick": 515,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1584957457
+          ],
+          "x": 24.5,
+          "z": 16.5
+        }
+      ],
+      "acquiredSteps": 63,
+      "unsafeSteps": 0,
+      "newContacts": 0,
+      "hits": 0,
+      "restored": true,
+      "patrolCells": [
+        1175,
+        1574
+      ],
+      "samples": [],
+      "traceSha256": "a42c38f00c9ff9bad1e088e93ecad6455462af383a9d276d703ca8bbadd7d126",
+      "outcome": "original policy/retention conditions met; clearance measured separately"
+    },
+    {
+      "team": 0,
+      "ending": "kill",
+      "nearStone": true,
+      "cold": true,
+      "orders": [
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            2883766499
+          ],
+          "x": 0.79,
+          "z": 0.95
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            2883766499
+          ],
+          "x": 5.5,
+          "z": 0.5
+        },
+        {
+          "tick": 330,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            2883766499
+          ]
+        },
+        {
+          "tick": 330,
+          "seat": 0,
+          "type": "patrol",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            2883766499
+          ],
+          "x": 6.5,
+          "z": 0.5
+        }
+      ],
+      "acquiredSteps": 45,
+      "unsafeSteps": 3,
+      "newContacts": 1,
+      "hits": 25,
+      "restored": true,
+      "patrolCells": [
+        1568,
+        1574
+      ],
+      "samples": [
+        {
+          "tick": 331,
+          "revision": 3,
+          "from": {
+            "x": 0.79,
+            "z": 0.95
+          },
+          "to": {
+            "x": 0.8632021143731489,
+            "z": 0.9036042937071591
+          },
+          "reason": "steering",
+          "bodyRadius": 0,
+          "patrol": {
+            "type": "patrol",
+            "start": 1568,
+            "end": 1574,
+            "leg": 1,
+            "status": "active",
+            "nextTick": 361
+          },
+          "stance": null,
+          "anchor": {
+            "x": 0.79,
+            "z": 0.95
+          },
+          "unsafe": true,
+          "contact": true
+        },
+        {
+          "tick": 332,
+          "revision": 3,
+          "from": {
+            "x": 0.8632021143731489,
+            "z": 0.9036042937071591
+          },
+          "to": {
+            "x": 0.9364042287462977,
+            "z": 0.8572085874143183
+          },
+          "reason": "steering",
+          "bodyRadius": 0,
+          "patrol": {
+            "type": "patrol",
+            "start": 1568,
+            "end": 1574,
+            "leg": 1,
+            "status": "active",
+            "nextTick": 361
+          },
+          "stance": null,
+          "anchor": {
+            "x": 0.79,
+            "z": 0.95
+          },
+          "unsafe": true,
+          "contact": false
+        },
+        {
+          "tick": 333,
+          "revision": 3,
+          "from": {
+            "x": 0.9364042287462977,
+            "z": 0.8572085874143183
+          },
+          "to": {
+            "x": 1.0096063431194466,
+            "z": 0.8108128811214774
+          },
+          "reason": "steering",
+          "bodyRadius": 0,
+          "patrol": {
+            "type": "patrol",
+            "start": 1568,
+            "end": 1574,
+            "leg": 1,
+            "status": "active",
+            "nextTick": 361
+          },
+          "stance": null,
+          "anchor": {
+            "x": 0.79,
+            "z": 0.95
+          },
+          "unsafe": true,
+          "contact": false
+        }
+      ],
+      "traceSha256": "111d226ef152c00899078404b877881d60ddc2ab8273f80ef8645add6c35b43c",
+      "outcome": "original policy/retention conditions met; clearance measured separately"
+    },
+    {
+      "team": 0,
+      "ending": "loss",
+      "nearStone": true,
+      "cold": true,
+      "orders": [
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            3115240567
+          ],
+          "x": 0.79,
+          "z": 0.95
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            3115240567
+          ],
+          "x": 5.5,
+          "z": 0.5
+        },
+        {
+          "tick": 330,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            3115240567
+          ]
+        },
+        {
+          "tick": 330,
+          "seat": 0,
+          "type": "patrol",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            3115240567
+          ],
+          "x": 6.5,
+          "z": 0.5
+        },
+        {
+          "tick": 331,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            3115240567
+          ],
+          "x": 24.5,
+          "z": 16.5
+        }
+      ],
+      "acquiredSteps": 42,
+      "unsafeSteps": 3,
+      "newContacts": 1,
+      "hits": 0,
+      "restored": true,
+      "patrolCells": [
+        1568,
+        1574
+      ],
+      "samples": [
+        {
+          "tick": 331,
+          "revision": 3,
+          "from": {
+            "x": 0.79,
+            "z": 0.95
+          },
+          "to": {
+            "x": 0.8632021143731489,
+            "z": 0.9036042937071591
+          },
+          "reason": "steering",
+          "bodyRadius": 0,
+          "patrol": {
+            "type": "patrol",
+            "start": 1568,
+            "end": 1574,
+            "leg": 1,
+            "status": "active",
+            "nextTick": 361
+          },
+          "stance": null,
+          "anchor": {
+            "x": 0.79,
+            "z": 0.95
+          },
+          "unsafe": true,
+          "contact": true
+        },
+        {
+          "tick": 332,
+          "revision": 3,
+          "from": {
+            "x": 0.8632021143731489,
+            "z": 0.9036042937071591
+          },
+          "to": {
+            "x": 0.9364042287462977,
+            "z": 0.8572085874143183
+          },
+          "reason": "steering",
+          "bodyRadius": 0,
+          "patrol": {
+            "type": "patrol",
+            "start": 1568,
+            "end": 1574,
+            "leg": 1,
+            "status": "active",
+            "nextTick": 361
+          },
+          "stance": null,
+          "anchor": {
+            "x": 0.79,
+            "z": 0.95
+          },
+          "unsafe": true,
+          "contact": false
+        },
+        {
+          "tick": 333,
+          "revision": 3,
+          "from": {
+            "x": 0.9364042287462977,
+            "z": 0.8572085874143183
+          },
+          "to": {
+            "x": 1.0096063431194466,
+            "z": 0.8108128811214774
+          },
+          "reason": "steering",
+          "bodyRadius": 0,
+          "patrol": {
+            "type": "patrol",
+            "start": 1568,
+            "end": 1574,
+            "leg": 1,
+            "status": "active",
+            "nextTick": 361
+          },
+          "stance": null,
+          "anchor": {
+            "x": 0.79,
+            "z": 0.95
+          },
+          "unsafe": true,
+          "contact": false
+        }
+      ],
+      "traceSha256": "d850047e27af89676ccdcf455e02b93c2101744585475acfee48b25070c5602b",
+      "outcome": "original policy/retention conditions met; clearance measured separately"
+    },
+    {
+      "team": 1,
+      "ending": "kill",
+      "nearStone": false,
+      "cold": true,
+      "orders": [
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            4029167073
+          ],
+          "x": -8.5,
+          "z": -5.5
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            4029167073
+          ],
+          "x": -5.5,
+          "z": -4.5
+        },
+        {
+          "tick": 560,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            4029167073
+          ]
+        },
+        {
+          "tick": 560,
+          "seat": 1,
+          "type": "patrol",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            4029167073
+          ],
+          "x": 6.5,
+          "z": 0.5
+        }
+      ],
+      "acquiredSteps": 34,
+      "unsafeSteps": 0,
+      "newContacts": 0,
+      "hits": 25,
+      "restored": true,
+      "patrolCells": [
+        1175,
+        1574
+      ],
+      "samples": [],
+      "traceSha256": "0ed914b8f4315a657727c5dca04fd2bd3803d3ff2472ce870362d483002cad17",
+      "outcome": "original policy/retention conditions met; clearance measured separately"
+    },
+    {
+      "team": 1,
+      "ending": "loss",
+      "nearStone": false,
+      "cold": true,
+      "orders": [
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1317374974
+          ],
+          "x": -8.5,
+          "z": -5.5
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            1317374974
+          ],
+          "x": -5.5,
+          "z": -4.5
+        },
+        {
+          "tick": 560,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            1317374974
+          ]
+        },
+        {
+          "tick": 560,
+          "seat": 1,
+          "type": "patrol",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1317374974
+          ],
+          "x": 6.5,
+          "z": 0.5
+        },
+        {
+          "tick": 562,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            1317374974
+          ],
+          "x": 24.5,
+          "z": 16.5
+        }
+      ],
+      "acquiredSteps": 64,
+      "unsafeSteps": 0,
+      "newContacts": 0,
+      "hits": 0,
+      "restored": true,
+      "patrolCells": [
+        1175,
+        1574
+      ],
+      "samples": [],
+      "traceSha256": "cec93614dfe9172e1aef5d17fa7fa62755fe61b5b1fa27f92045c093cb688a7a",
+      "outcome": "original policy/retention conditions met; clearance measured separately"
+    },
+    {
+      "team": 1,
+      "ending": "kill",
+      "nearStone": true,
+      "cold": true,
+      "orders": [
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            2173817516
+          ],
+          "x": 0.79,
+          "z": 0.95
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            2173817516
+          ],
+          "x": 5.5,
+          "z": 0.5
+        },
+        {
+          "tick": 382,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            2173817516
+          ]
+        },
+        {
+          "tick": 382,
+          "seat": 1,
+          "type": "patrol",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            2173817516
+          ],
+          "x": 6.5,
+          "z": 0.5
+        }
+      ],
+      "acquiredSteps": 45,
+      "unsafeSteps": 0,
+      "newContacts": 0,
+      "hits": 25,
+      "restored": true,
+      "patrolCells": [
+        1568,
+        1574
+      ],
+      "samples": [],
+      "traceSha256": "8354b845ddcf234a3917ec477a84a826ad236f282b726cd82d4b565ff28f475f",
+      "outcome": "original policy/retention conditions met; clearance measured separately"
+    },
+    {
+      "team": 1,
+      "ending": "loss",
+      "nearStone": true,
+      "cold": true,
+      "orders": [
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            2658677755
+          ],
+          "x": 0.79,
+          "z": 0.95
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            2658677755
+          ],
+          "x": 5.5,
+          "z": 0.5
+        },
+        {
+          "tick": 382,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            2658677755
+          ]
+        },
+        {
+          "tick": 382,
+          "seat": 1,
+          "type": "patrol",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            2658677755
+          ],
+          "x": 6.5,
+          "z": 0.5
+        },
+        {
+          "tick": 384,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            2658677755
+          ],
+          "x": 24.5,
+          "z": 16.5
+        }
+      ],
+      "acquiredSteps": 42,
+      "unsafeSteps": 0,
+      "newContacts": 0,
+      "hits": 0,
+      "restored": true,
+      "patrolCells": [
+        1568,
+        1574
+      ],
+      "samples": [],
+      "traceSha256": "cf21d66e09a0de199f81d7144865250cc368e21f71b5dd635a2dc02650720026",
+      "outcome": "original policy/retention conditions met; clearance measured separately"
+    }
+  ],
+  "limits": [
+    "eight public-source Patrol-only command journeys, no synthetic state/route/HP patches",
+    "fresh-server fixed-tick recovery; native process, full suite and rendered acceptance OPEN",
+    "all acquired steps classified at actual pre-write state; diagnostic exit0 is not clearance acceptance"
+  ]
+}
