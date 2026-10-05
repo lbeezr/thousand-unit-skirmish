@@ -83,6 +83,8 @@ test('bounded coarse current index accounts for collection work and fails on bod
   assert.throws(() => regionCandidates([], region, Infinity));
   assert.throws(() => regionCandidates([], region, 3));
   assert.throws(() => regionCandidates([], { ...region, maxX: 100 }, 1));
+  assert.throws(() => regionCandidates([], region, 1, { offset: { x: 1e20, z: 0 } }));
+  assert.throws(() => regionCandidates([], { minX: 1e20, maxX: 1e20, minZ: 0, maxZ: 1 }, 1));
 });
 test('one tile can physically fit two infantry lanes; full body transit still needs17 ticks', () => {
   const width = 8, height = 8, blocked = c => c % width === 4 && Math.floor(c / width) !== 4;

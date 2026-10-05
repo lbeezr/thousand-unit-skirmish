@@ -1161,3 +1161,8 @@ not retained, so no automatic-review rejection reason is inferred. No retry or
 alternate external write was attempted. Source and sanitized evidence are on
 the non-main branch; updating the external record remains blocked. The source
 milestone does not qualify production recovery or deployed/rendered acceptance.
+
+Final bounded-work review also found that finite but non-safe-integer bucket
+coordinates could prevent loop increments from advancing. Region collection now
+refuses those bounds before iteration; large finite offset/rectangle negatives
+cover this case. The retained `(48,32)` offset and all measurements are unaffected.

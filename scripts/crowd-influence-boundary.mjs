@@ -93,6 +93,9 @@ export function regionCandidates(bodies, region, reach, { offset = { x: 0, z: 0 
   let visits = 0, bucketHeads = 0; const neighbors = [];
   const [minX, minZ] = bucket({ x: region.minX - reach - padding, z: region.minZ - reach - padding });
   const [maxX, maxZ] = bucket({ x: region.maxX + reach + padding, z: region.maxZ + reach + padding });
+  // Finite world coordinates can still exceed integer precision: at those
+  // bucket indices x++/z++ may not advance, defeating the loop work bound.
+  assert.ok([minX, minZ, maxX, maxZ].every(Number.isSafeInteger));
   for (let z = minZ; z <= maxZ; z++) for (let x = minX; x <= maxX; x++) {
     bucketHeads++;
     for (const b of buckets.get(`${x},${z}`) ?? []) {
