@@ -23,6 +23,17 @@ export function focusedUnitAttackMovementActive(unit) {
     && !unit.gatherPhase && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
 }
 
+// Accepted focused building-target Attack. The building footprint and weapon
+// policy keep their selected goal; only travel uses the shared military body.
+export function focusedBuildingAttackMovementActive(unit) {
+  return militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind]) === true && unit.hp > 0
+    && unit.movementDomain !== 'water' && !unit.attackMove && !unit.holdingPosition
+    && Number.isSafeInteger(unit.attackBuildingTargetId) && unit.attackBuildingTargetId >= 0
+    && !(unit.attackTargetId >= 0) && !unit.stanceCombat && !unit.stanceReturning
+    && !unit.persistentOrder && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0)
+    && !unit.gatherPhase && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
+}
+
 // Explicit AttackMove's acquired unit-target leg, under its existing anchor
 // and stance bounds. Automatic stance and persistent orders remain separate.
 export function attackMoveAcquiredMovementActive(unit) {

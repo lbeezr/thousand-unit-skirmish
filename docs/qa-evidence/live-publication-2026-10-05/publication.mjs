@@ -16,6 +16,7 @@ const files=Object.fromEntries(await Promise.all(inputs.map(async name=>[name,aw
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const movement=await import(pathToFileURL(resolve(root,'src/unit-movement.mjs')));
 const lines=await import(pathToFileURL(resolve(root,'src/unit-path-line.mjs')));
+const {XL_CHECKPOINT_ROUTE_MAX_ENTRIES}=await import(pathToFileURL(resolve(root,'src/server/checkpoint-route-budget.mjs')));
 const source=files['server.mjs'], begin=source.indexOf('\nfunction applyPlannedMoveAssignment('), end=source.indexOf('\nfunction takeMoveStartBroadcastRequest(',begin);
 assert.ok(begin>0&&end>begin);
 const leafBegin=source.indexOf('\nfunction validCellPath('), leafEnd=source.indexOf('\nfunction ',leafBegin+1);
@@ -35,14 +36,15 @@ for(const [width,height] of [[16,17],[64,48],[160,160],[256,256],[320,256],[256,
       x:center.x-.25,z:center.z+.45,path:[],pathIndex:0,movePlanningPending:true,
       moveGoalCell:destination,moveGoalPoint:null,buildingTargetId:34,repairing:false,
       attackTargetId:-1,attackBuildingTargetId:-1,gatherNodeId:null,gatherForestCell:-1,gatherPhase:'',
-      attackMove:false,holdingPosition:false,stanceCombat:false,stanceReturning:false,persistentOrder:null};
+      attackMove:false,attackMoveResumePath:null,holdingPosition:false,stanceCombat:false,stanceReturning:false,persistentOrder:null};
     const result=movement.createUnitRouteResult({unit,epoch:3,navigationRevision:4,startCell,path:raw,originalCost:900});
     const assignment={unit,revision:7,destination,routeResult:result},job={epoch:3,buildingTargetId:34};
     const context={...movement,...lines,units:[unit],MAP_WIDTH:width,MAP_HEIGHT:height,MAP_HALF_X:width/2,MAP_HALF_Z:height/2,
       elevationLevelByCell:new Uint8Array(cells),isWalkable:c=>c>=0&&c<cells&&c!==startCell+width+1,
       worldToCell,cellToWorld,nearestOpenCell:c=>c,movePlanningEpoch:3,navigationRevision:4,
       WALK_SPEED:2.6,STEP_SECONDS:1/30,TICK_RATE:30,tickNumber:10,movePlanningServiceTick:null,
-      pendingMoveStartBroadcasts:new Set(),dirty:false};
+      CELL_COUNT:cells,MAX_UNITS:2000,MAX_RESOURCE_NODES:128,XL_CHECKPOINT_ROUTE_MAX_ENTRIES,
+      resourceNodeStates:new Map(),pendingMoveStartBroadcasts:new Set(),dirty:false};
     const publish=runInNewContext(`(${source.slice(begin,end)})`,context);
     const accepted=publish(job,assignment);
     assert.equal(raw.length,length);assert.equal(raw.at(-1),destination);
@@ -51,7 +53,8 @@ for(const [width,height] of [[16,17],[64,48],[160,160],[256,256],[320,256],[256,
     if(accepted){assert.equal(unit.path.at(-1),destination);assert.deepEqual([...unit.path].slice(-length),raw);}
     cases.push({width,height,withinCurrentDimensionCeiling:width<=256&&height<=256,synthetic:true,
       selectedEntries:length,published:accepted,publishedEntries:unit.path.length,
-      publicationGrowth:unit.path.length-length,checkpointPathLeafAcceptsPublished:validCellPath(unit.path,cells),
+      publicationGrowth:accepted?unit.path.length-length:0,checkpointPathLeafAcceptsPublished:validCellPath(unit.path,cells),
+      ...(assignment.routePublicationOutcome?{publicationOutcome:assignment.routePublicationOutcome}:{}),
       acceptedGoalRetained:true,constructionSiteRetained:true,originalLengthAndCostRetained:true});
   }
 }
