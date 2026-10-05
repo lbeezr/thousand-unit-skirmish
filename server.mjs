@@ -75,7 +75,8 @@ import { isAreaGatherResource, isPlainNeutralFoodSource, FOREST_GATHER_SOURCE_KI
 import { WORKER_PERFORMING_ACTION_VERSION, createWorkerPerformingActions } from './src/worker-performing-action.mjs';
 import { preparePaidWallLine } from './src/wall-construction-draft.mjs';
 import { activeWallBuildOrder } from './src/wall-build-order.mjs';
-import { constructionWorkArea, constructionAssignment, unfinishedConstructionSites, validConstructionWorkArea } from './src/construction-work-intent.mjs';
+import { constructionMovementActive, constructionWorkArea, constructionAssignment, unfinishedConstructionSites, validConstructionWorkArea } from './src/construction-work-intent.mjs';
+import { createOrdinaryMilitaryEndpointAvailability } from './src/simulation/movement/military-endpoint-availability.mjs';
 import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition } from './src/palisade-gate.mjs';
 import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoint, activeMoveGoalPoint, validMoveGoalPoint, unitRoutePathCost,
@@ -6057,7 +6058,7 @@ function finishPalisadeBuilderAssignments(assignments, targetId) {
     unit.workIntent = createConstructionWorkIntent(unit.generation, assignment.siteIds, assignment.area);
     unit.wallBuildOrder = assignment.siteIds.every(id => isPalisade(buildingsById.get(id)?.type))
       ? { ids: [...assignment.siteIds], generation: unit.generation, revision: unit.orderRevision } : null;
-    palisadeConstructionRetries.delete(unit);
+    if (!currentConstructionAccessRetry(unit, buildingsById.get(targetId))) palisadeConstructionRetries.delete(unit);
   }
 }
 
@@ -6584,7 +6585,76 @@ function routeProducedUnitToBuildingRally(unit, building) {
 }
 
 const palisadeConstructionRetries = new WeakMap();
-function updateWallBuildOrders() {
+function constructionEndpointSnapshotGetter() {
+  let snapshot;
+  return () => snapshot ||= createOrdinaryMilitaryEndpointAvailability({ units,
+    width: MAP_WIDTH, height: MAP_HEIGHT, maxUnits: MAX_UNITS });
+}
+
+function constructionPoseAvailable(unit, position, endpoints) {
+  const radius = LAND_CLEARANCE_PROFILE.radiusByKind.worker;
+  return canTraverseStaticBodySegment(position, position, radius, MAP_WIDTH, MAP_HEIGHT, isWalkable)
+    && endpoints.check({ team: unit.team, position, radius }).status === 'available';
+}
+
+function currentConstructionAccessRetry(unit, building) {
+  const retry = palisadeConstructionRetries.get(unit);
+  return retry?.accessBlocked && retry.siteId === building?.id && retry.epoch === movePlanningEpoch
+    && retry.generation === unit.generation && retry.revision === unit.orderRevision ? retry : null;
+}
+
+function retainConstructionAccessWait(unit, building, suspendRoute = false, resetStaticAttempts = false) {
+  if (suspendRoute) {
+    const order = activeWallBuildOrder(unit);
+    unit.orderRevision++;
+    if (order) order.revision = unit.orderRevision;
+    unit.path = []; unit.pathIndex = 0; unit.movePlanningPending = false;
+    unit.moveGoalCell = -1; unit.moveGoalPoint = null;
+    dirty = true;
+  }
+  const previous = palisadeConstructionRetries.get(unit);
+  const sameStaticTarget = previous?.siteId === building.id && previous.navigationRevision === navigationRevision;
+  const retry = { navigationRevision, siteId: building.id,
+    attempts: !resetStaticAttempts && sameStaticTarget ? previous.attempts : 0,
+    nextTick: tickNumber + TICK_RATE, accessBlocked: true,
+    epoch: movePlanningEpoch, generation: unit.generation, revision: unit.orderRevision };
+  palisadeConstructionRetries.set(unit, retry);
+  return retry;
+}
+
+// Dynamic endpoint occupancy is independent of the three static route attempts.
+// Saved target/work intent reconstructs this transient wait after cold recovery.
+function updateConstructionAccess(unit, building, getEndpoints) {
+  if (!constructionMovementActive(unit)) return false;
+  const activeRoute = unit.movePlanningPending || unit.pathIndex < unit.path.length;
+  let retry = currentConstructionAccessRetry(unit, building);
+  if (retry && !activeRoute && tickNumber < retry.nextTick) return true;
+  const endpoints = getEndpoints();
+  const poseAvailable = constructionPoseAvailable(unit, unit, endpoints);
+  const goalAvailable = unit.moveGoalCell >= 0
+    && constructionPoseAvailable(unit, cellToWorld(unit.moveGoalCell), endpoints);
+  if (activeRoute && goalAvailable) return false; // An accepted safe approach may continue.
+  if (!retry && ((activeRoute && !goalAvailable) || !poseAvailable || unit.moveGoalCell < 0)) {
+    retry = retainConstructionAccessWait(unit, building, activeRoute || unit.moveGoalCell >= 0);
+  }
+  if (!retry) return false;
+  if (poseAvailable && distanceToBuildingEdge(unit, building) <= BUILDER_INTERACTION_RANGE) {
+    retry.accessBlocked = false;
+    return true; // Work can legally finish before an approach is exhausted.
+  }
+  if (tickNumber < retry.nextTick) return true;
+  retry.nextTick = tickNumber + TICK_RATE;
+  const component = walkableComponents[nearestOpenCell(worldToCell(unit.x, unit.z))];
+  const destination = nearestBuilderAccessCell(unit, component,
+    buildingAccessCells(building.footprint), new Set(), endpoints);
+  if (destination >= 0) {
+    retry.accessBlocked = false;
+    enqueueRouteRepairs([{ unit, destination }], { mode: 'construction-access', orderLabel: 'CONSTRUCTION ACCESS' });
+  }
+  return true;
+}
+
+function updateWallBuildOrders(getEndpoints = constructionEndpointSnapshotGetter()) {
   for (const unit of units) {
     const intent = palisadeConstructionIntent(unit);
     if (!intent) {
@@ -6605,8 +6675,20 @@ function updateWallBuildOrders() {
       order.ids = [...intent.siteIds];
     }
     const building = sites[0];
+    if (unit.buildingTargetId === building.id && updateConstructionAccess(unit, building, getEndpoints)) continue;
     if (unit.buildingTargetId === building.id && (unit.movePlanningPending || unit.pathIndex < unit.path.length
       || distanceToBuildingEdge(unit, building) <= BUILDER_INTERACTION_RANGE)) continue;
+    const access = buildingAccessCells(building.footprint);
+    const availableAccess = access.filter(cell => constructionPoseAvailable(unit, cellToWorld(cell), getEndpoints()));
+    if (access.length && !availableAccess.length) {
+      // Retain the remembered sequence without charging a static route attempt.
+      const point = cellToWorld(access[0]);
+      assignFormationMove({ team: unit.team, sendJson() {} }, {
+        type: 'move', ids: [unit.id], unitGenerations: [unit.generation], x: point.x, z: point.z,
+      }, building.id, 'WALL BUILD SEQUENCE', false);
+      if (order) order.revision = unit.orderRevision;
+      continue;
+    }
     const retry = palisadeConstructionRetries.get(unit);
     const sameRetryTarget = retry?.navigationRevision === navigationRevision && retry.siteId === building.id;
     if (sameRetryTarget && (retry.attempts >= 3 || tickNumber < retry.nextTick)) continue;
@@ -6614,7 +6696,7 @@ function updateWallBuildOrders() {
     // not guarantee that its later formation route will succeed.
     palisadeConstructionRetries.set(unit, { navigationRevision, siteId: building.id,
       nextTick: tickNumber + TICK_RATE, attempts: sameRetryTarget ? retry.attempts + 1 : 1 });
-    const approach = findBuildingAttackApproachCell(unit, buildingAccessCells(building.footprint));
+    const approach = findBuildingAttackApproachCell(unit, availableAccess);
     if (!approach) {
       unit.buildingTargetId = null;
       unit.orderRevision++; if (order) order.revision = unit.orderRevision;
@@ -6631,17 +6713,26 @@ function updateWallBuildOrders() {
 }
 
 function updateBuildingAndProduction() {
-  updateWallBuildOrders();
+  const getEndpoints = constructionEndpointSnapshotGetter();
+  updateWallBuildOrders(getEndpoints);
   for (const unit of units) {
     if (unit.hp <= 0 || !unitHasCapability(unit, unit.repairing ? 'repair' : 'build') || unit.buildingTargetId === null) continue;
     const building = buildingsById.get(unit.buildingTargetId);
-    if (!building || (building.complete && !unit.repairing) || (unit.repairing && !building.complete)) {
+    if (!building || (unit.repairing && !building.complete)) {
       unit.buildingTargetId = null; unit.repairing = false;
+      continue;
+    }
+    updateConstructionAccess(unit, building, getEndpoints);
+    if (building.complete && !unit.repairing) {
+      // A cooperative completion must not park another active builder inside
+      // an accepted endpoint. Finish its own safe work approach first.
+      if (constructionPoseAvailable(unit, unit, getEndpoints())) unit.buildingTargetId = null;
       continue;
     }
     const dx = Math.max(0, Math.abs(unit.x - building.x) - BUILDING_DEFINITIONS[building.type].footprint / 2);
     const dz = Math.max(0, Math.abs(unit.z - building.z) - BUILDING_DEFINITIONS[building.type].footprint / 2);
     if (dx * dx + dz * dz > BUILDER_INTERACTION_RANGE * BUILDER_INTERACTION_RANGE) continue;
+    if (!constructionPoseAvailable(unit, unit, getEndpoints())) continue;
     if (unit.repairing) {
       const repair = buildingRepairStep(building, teamWood[unit.team], STEP_SECONDS);
       if (repair.hp > 0) {
@@ -6665,7 +6756,9 @@ function updateBuildingAndProduction() {
       building.complete = true;
       if (building.type === 'farm') building.harvestStock = BUILDING_DEFINITIONS.farm.harvest.stock;
       for (const builder of units) {
-        if (builder.buildingTargetId === building.id) builder.buildingTargetId = null;
+        if (builder.buildingTargetId === building.id && constructionPoseAvailable(builder, builder, getEndpoints())) {
+          builder.buildingTargetId = null;
+        }
       }
       broadcastGameplayNotice(building.team, building.x, building.z,
         `${rules.label} COMPLETE${rules.trainLabel ? ` · TRAIN ${rules.trainLabel}` : ''}`);
@@ -6853,7 +6946,7 @@ function buildFormationSlots(selectedUnits, centerCell, formation) {
   return { slots, columns, rows, direction: { x: directionX, z: directionZ }, side: { x: sideX, z: sideZ } };
 }
 
-function nearestBuilderAccessCell(unit, componentId, accessCells, reservedCells) {
+function nearestBuilderAccessCell(unit, componentId, accessCells, reservedCells, endpoints) {
   let nearestOpen = -1;
   let nearestOpenDistance = Infinity;
   let nearestShared = -1;
@@ -6861,6 +6954,7 @@ function nearestBuilderAccessCell(unit, componentId, accessCells, reservedCells)
   for (const cell of accessCells) {
     if (walkableComponents[cell] !== componentId) continue;
     const point = cellToWorld(cell);
+    if (!constructionPoseAvailable(unit, point, endpoints)) continue;
     const distance = (unit.x - point.x) ** 2 + (unit.z - point.z) ** 2;
     if (distance < nearestSharedDistance || (distance === nearestSharedDistance && cell < nearestShared)) {
       nearestShared = cell;
@@ -6875,7 +6969,7 @@ function nearestBuilderAccessCell(unit, componentId, accessCells, reservedCells)
   return nearestOpen >= 0 ? nearestOpen : nearestShared;
 }
 
-function assignFormationMove(player, command, buildingTargetId = null, orderLabel = null) {
+function assignFormationMove(player, command, buildingTargetId = null, orderLabel = null, resetConstructionAttempts = true) {
   if (player.team === null || !Array.isArray(command.ids)) {
     sendOrderNotice(player, command, 'MOVE REJECTED · NO VALID UNITS');
     return;
@@ -6938,6 +7032,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     return;
   }
   const buildingAccess = targetBuilding ? buildingAccessCells(targetBuilding.footprint) : null;
+  const constructionEndpoints = buildingAccess ? constructionEndpointSnapshotGetter()() : null;
   const formationLayout = buildingAccess ? null : buildFormationSlots(selectedUnits, center, formation);
   const orderedUnits = buildingAccess ? selectedUnits : orderUnitsForFormation(selectedUnits, formationLayout);
   const unitCells = orderedUnits.map((unit) => nearestOpenCell(worldToCell(unit.x, unit.z)));
@@ -6947,12 +7042,13 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
   const assignments = [];
   const assignmentsByStart = new Map();
   let queuedCount = 0;
+  let waitingBuilders = 0;
 
   orderedUnits.forEach((unit, index) => {
     const requestedCell = buildingAccess ? -1 : formationLayout.slots[index];
     const componentId = unitComponents[index];
     let destination = buildingAccess
-      ? nearestBuilderAccessCell(unit, componentId, buildingAccess, reservedDestinations)
+      ? nearestBuilderAccessCell(unit, componentId, buildingAccess, reservedDestinations, constructionEndpoints)
       : findAvailableCellNear(requestedCell, componentId, reservedDestinations);
     if (destination < 0 && !buildingAccess) {
       fallbackPools ||= buildMoveFallbackPools(unitComponents, centerColumn, centerRow);
@@ -6962,8 +7058,8 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
       destination = candidates[cursor] ?? candidates[0] ?? unitCells[index];
       fallbackPools.cursors.set(componentId, cursor + 1);
     }
-    if (destination < 0) return;
-    reservedDestinations.add(destination);
+    if (destination < 0 && !buildingAccess) return;
+    if (destination >= 0) reservedDestinations.add(destination);
     if (queueWaypoint && canQueueBehindCurrentRoute(unit)) {
       const retainFollowCatchUp = (followTravelMovementActive(unit) || workerFollowTravelMovementActive(unit))
         && (unit.movePlanningPending || unit.pathIndex < unit.path.length)
@@ -6994,7 +7090,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     unit.repairing = command.type === 'repairBuilding' && buildingTargetId !== null;
     unit.attackTargetId = -1;
     unit.attackBuildingTargetId = -1;
-    unit.movePlanningPending = true;
+    unit.movePlanningPending = destination >= 0;
     unit.repathTimer = 0;
     unit.lastAttackCell = -1;
     unit.holdingPosition = false;
@@ -7011,6 +7107,12 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     unit.moveGoalPoint = precisePoint ? createClearanceMoveGoalPoint(unit, centerX, centerZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable) : null;
     unit.path = [];
     unit.pathIndex = 0;
+    if (destination < 0) {
+      retainConstructionAccessWait(unit, targetBuilding, false, resetConstructionAttempts);
+      waitingBuilders++;
+      dirty = true;
+      return;
+    }
     const assignment = { unit, destination, revision: unit.orderRevision, path: [] };
     assignments.push(assignment);
     const startCell = unitCells[index];
@@ -7020,6 +7122,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
   });
 
   if (queuedCount > 0) sendOrderNotice(player, command, `WAYPOINT QUEUED · ${queuedCount} UNITS`);
+  if (waitingBuilders > 0) sendOrderNotice(player, command, `${orderLabel || 'BUILD ORDER'} · ${waitingBuilders} WORKERS WAITING FOR ACCESS`);
   if (assignments.length === 0) return;
 
   const setupMs = performance.now() - planningStartedAt;

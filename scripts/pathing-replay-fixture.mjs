@@ -123,6 +123,8 @@ export const replay = {
     else if (command.type === 'gather') assignGatherWithRouteAdmission(player, command);
     else if (command.type === 'returnCargo') assignReturnCargo(player, command);
     else if (command.type === 'build') buildBuilding(player, command);
+    else if (command.type === 'resumeConstruction') resumeBuildingConstruction(player, command);
+    else if (command.type === 'repairBuilding') repairBuilding(player, command);
     else if (command.type === 'buildWall') buildWallLine(player, command);
     else if (command.type === 'setGateOpen') setGateOpen(player, command);
     else if (command.type === 'stop' || command.type === 'holdPosition') assignStationaryOrder(player, command);

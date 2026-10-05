@@ -1,5 +1,11 @@
 # Parked construction and exact military endpoints
 
+This page preserves the historical pre-consumer receipts. The separately
+integrated [construction access adopter](qa-construction-access-adoption-2026-10-05.md)
+now prevents a new military-first construction conflict; current repeat commands
+verify that prevention while retaining the builder-first idle/Stop/Hold wait
+contract. The historical measurements below are unchanged.
+
 This caller-owned audit first reproduced the existing contract on main
 `252abb29cc0a8638ec7a68844f4f631bc01123dc`, including crowd PR443, then qualified
 it with merged core PR438 on `16047ce2e8885b84275589578da2f037ef918c3e`. It changes

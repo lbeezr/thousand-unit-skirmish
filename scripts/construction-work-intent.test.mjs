@@ -12,15 +12,48 @@ import { constructionMovementActive, constructionWorkArea, constructionAssignmen
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 import { canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
 import { constructionEndpointContract } from './construction-endpoint-contract.mjs';
+import { createOrdinaryMilitaryEndpointAvailability } from '../src/simulation/movement/military-endpoint-availability.mjs';
+import { constructionAccessJourney, constructionWorkPoseJourney, constructionRepairAccessJourney } from './construction-access-journeys.mjs';
+
+for (const team of [0, 1]) for (const cold of [false, true]) {
+  test(`seat ${team}: actual construction work pose is checked before approach exhaustion, cold=${cold}`, async () => {
+    await constructionWorkPoseJourney(team, { cold });
+  });
+  test(`seat ${team}: cooperative completion retains another builder's safe approach until legal parking, cold=${cold}`, async () => {
+    await constructionWorkPoseJourney(team, { cold, cooperative: true });
+  });
+}
+
+for (const team of [0, 1]) for (const scenario of ['initial-reservation', 'late-reservation']) {
+  for (const cold of [false, true]) test(`seat ${team}: ${scenario} retains paid construction, then releases at unchanged navigation, cold=${cold}`, async () => {
+    await constructionAccessJourney(team, scenario, { cold });
+  });
+}
+for (const team of [0, 1]) for (const scenario of ['stop', 'holdPosition', 'queuedMove', 'cancelConstruction']) {
+  test(`seat ${team}: ${scenario} supersedes dynamically blocked paid work without stale retry`, async () => {
+    await constructionAccessJourney(team, scenario, { cold: true });
+  });
+}
+for (const team of [0, 1]) {
+  test(`seat ${team}: real repair retains its paid target through occupied access and cold release`, async () => {
+    await constructionRepairAccessJourney(team);
+  });
+  test(`seat ${team}: deferred endpoint availability retains paid work through cold restore and release`, async () => {
+    await constructionAccessJourney(team, 'query-deferred', { cold: true });
+  });
+  test(`seat ${team}: real-tick planning retains blocked construction and resumes its safe replacement`, async () => {
+    await constructionAccessJourney(team, 'initial-reservation', { cold: true, planningTurns: 1 });
+  });
+}
 
 for (const team of [0, 1]) for (const direction of ['military-first', 'builder-first']) {
-  test(`seat ${team}: ${direction} retains a parked builder and the blocked exact military point through cold recovery`, async () => {
+  test(`seat ${team}: ${direction} ${direction === 'military-first' ? 'prevents a new endpoint conflict' : 'retains the parked builder and blocked exact point'} through cold recovery`, async () => {
     await constructionEndpointContract({ team, direction });
   });
 }
 for (const team of [0, 1]) for (const parkOrder of ['stop', 'holdPosition']) {
   test(`seat ${team}: builder ${parkOrder} keeps military exact arrival pending until selected departure`, async () => {
-    await constructionEndpointContract({ team, direction: 'military-first', parkOrder });
+    await constructionEndpointContract({ team, direction: 'builder-first', parkOrder });
   });
 }
 
@@ -261,6 +294,8 @@ function sequenceFixture(sites = [wall(1, .5, .5, { footprint: [5] })]) {
     buildingTargetId: null, path: [3, 4], pathIndex: 0, movePlanningPending: true, moveGoalCell: 4, x: -10.5, z: .5 };
   let searches = 0, reachable = false;
   const c = vm.createContext({ ...workerFlowRouteBindings(), units: [unit], activeWallBuildOrder, activeWorkIntent, clearWorkIntent,
+    createOrdinaryMilitaryEndpointAvailability, constructionMovementActive, canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE,
+    MAX_UNITS: 2000, movePlanningEpoch: 0, isWalkable: () => true,
     constructionWorkArea, unfinishedConstructionSites, BUILDING_DEFINITIONS, BUILDER_INTERACTION_RANGE: 1.4,
     isPalisade, buildingsById: lookup(sites), mapDefinition: map, navigationRevision: 1, tickNumber: 0, TICK_RATE: 30,
     nearestOpenCell: cell => cell, worldToCell: () => 3, MAP_WIDTH: 64, MAP_HEIGHT: 64, MAP_HALF_X: 32, MAP_HALF_Z: 32,
@@ -327,4 +362,39 @@ test('repeated actual empty route failures consume the bounded budget even when 
   assert.equal(f.searches, 3, 'three automatic routes, rather than one every tick');
   assert.deepEqual(unit.workIntent.siteIds, [1]); assert.equal(unit.buildingTargetId, 1);
   c.navigationRevision++; c.updateWallBuildOrders(); assert.equal(f.searches, 4);
+});
+
+test('automatic endpoint occupancy preserves the spent static construction budget; explicit admission resets it', () => {
+  const f = sequenceFixture(), { c, unit, sites: [site] } = f;
+  for (let tick = 0; tick <= 100; tick++) { c.tickNumber = tick; c.updateWallBuildOrders(); }
+  const retry = () => vm.runInContext('palisadeConstructionRetries.get(units[0])', c);
+  assert.equal(f.searches, 3); assert.equal(retry().attempts, 3);
+  const area = structuredClone(unit.workIntent.area);
+  Object.assign(unit, { queuedWaypoints: [], gatherNodeId: null, gatherForestCell: -1 });
+  // Controlled occupancy drives the actual automatic update and admission bodies.
+  // No planner/search is needed while every otherwise legal access is blocked.
+  Object.assign(c, { performance, commandUnits: () => [unit], sendOrderNotice() {},
+    unitHasCapability: () => true, cancelGatherOrder() {}, clearGatherWorkIntent() {},
+    ATTACK_MOVE_SCAN_INTERVAL_TICKS: 15, CELL_COUNT: 4096, walkableComponents: new Int32Array(4096),
+    createOrdinaryMilitaryEndpointAvailability: () => ({ check: () => ({ status: 'blocked', visited: 1 }) }) });
+  const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+  const admission = server.slice(server.indexOf('function nearestBuilderAccessCell('),
+    server.indexOf('// Persistent intent rides'));
+  vm.runInContext(admission, c);
+  c.tickNumber = 101; c.updateWallBuildOrders();
+  assert.equal(retry().accessBlocked, true); assert.equal(retry().attempts, 3);
+  assert.equal(retry().siteId, site.id); assert.equal(retry().navigationRevision, 1);
+  assert.equal(unit.buildingTargetId, site.id); assert.equal(unit.movePlanningPending, false);
+  assert.equal(unit.moveGoalCell, -1); assert.deepEqual(unit.workIntent.area, area);
+  const automaticRevision = unit.orderRevision;
+  for (let tick = 102; tick <= 200; tick++) { c.tickNumber = tick; c.updateWallBuildOrders(); }
+  assert.equal(f.searches, 3); assert.equal(retry().attempts, 3);
+  assert.equal(unit.orderRevision, automaticRevision);
+  c.assignFormationMove({ team: unit.team, sendJson() {} }, {
+    type: 'move', ids: [unit.id], unitGenerations: [unit.generation], x: .5, z: -.5,
+  }, site.id, 'BUILD ORDER');
+  assert.equal(unit.orderRevision, automaticRevision + 1);
+  assert.equal(retry().accessBlocked, true); assert.equal(retry().attempts, 0);
+  assert.equal(retry().navigationRevision, 1); assert.equal(unit.buildingTargetId, site.id);
+  assert.deepEqual(unit.workIntent.area, area);
 });

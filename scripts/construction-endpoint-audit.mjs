@@ -10,7 +10,7 @@ if (!output || process.argv.length !== 3) throw new Error('Usage: node scripts/c
 const cases = [];
 for (const team of [0, 1]) {
   for (const direction of ['military-first', 'builder-first']) cases.push({ team, direction });
-  for (const parkOrder of ['stop', 'holdPosition']) cases.push({ team, direction: 'military-first', parkOrder });
+  for (const parkOrder of ['stop', 'holdPosition']) cases.push({ team, direction: 'builder-first', parkOrder });
 }
 const results = [];
 for (const scenario of cases) results.push(await constructionEndpointContract(scenario));
@@ -19,7 +19,7 @@ const evidence = {
   sourceRevision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   sourceDirty: execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim() !== '',
   scope: 'real production command/tick bodies, physical substeps and separate-module checkpoint recovery; no native transport or rendered claim',
-  policy: 'retain parked Worker pose and accepted exact military point/queue until independently commanded builder departure',
+  policy: 'new construction avoids accepted military endpoints; already parked Workers retain pose and exact military point/queue until independently commanded departure',
   results,
 };
 await writeFile(output, JSON.stringify(evidence, null, 2) + '\n');
