@@ -105,17 +105,16 @@ user's visual-direction hold. Its public-source registration, 48 reused poses,
 provenance and runtime admission remain preserved, but the gold costume/round
 shield is not the established Human identity. The corrective default restores
 Infantry v3; Archer v3 PR230 and blocky Spearman v2 PR241 remain unmerged drafts.
-The [5 October Spearman South increment](qa-spearman-south-walk-2026-10-05.md) adds
-four local poses from its established public South seed to default v1 pack0.7.0,
-preserving all44 previous poses including NE/East/North and31 other clips.
-The page/mask extend2048×2048→2048×3200 while retaining the full old pixel prefix,
-all frame rectangles/pivots and body calibration; encoded hashes/storage grow.
-The family retains59 genuine source gaps (Spearman17, Infantry21, Archer21);
-all63 original deployed/native cells remain unverified. Art owner retains
-production, clean release and ordinary NE/East/North/South contact/readability
-acceptance through shared cloud transport owner `01a10378`; animation-state owner
-`01a103d4` retains clocks/selectors, with parent delivery support.
-Mac testing stays stopped. No paid generation, private inputs or held art are used.
+The [5 October Spearman Southwest increment](qa-spearman-south-west-walk-2026-10-05.md)
+adds four local poses from its own established public seed to default v1 pack0.8.0,
+preserving all48 previous poses and31 other clips. Page dimensions/encoded mask
+remain unchanged; the prior RGBA outside four declared new cells and every old
+frame rectangle/pivot/calibration stay exact. The family retains58 genuine source
+gaps (Spearman16, Infantry21, Archer21); all63 original native/deployed cells stay
+unverified. Foot art retains production, clean release and ordinary contact/pace/
+readability acceptance through shared transport owner `01a10378`; animation-state
+owner `01a103d4` retains clocks/selectors, with parent delivery support. Mac testing
+stays stopped. No paid generation, private inputs or held art are used.
 
 Package paths are under `assets/` unless linked otherwise. Release inclusion
 comes from an actual clean `release:pack` at follow-up `1757064`: 1,113 files,

@@ -64,6 +64,14 @@ if atlas.size != (expected_dimensions['width'], expected_dimensions['height']):
     raise ValueError('Expected retained atlas dimensions')
 if 'baselineDecodedAtlasSHA256' in receipt:
     prefix = atlas.crop((0, 0, baseline_dimensions['width'], baseline_dimensions['height']))
+    # Later stages occupy formerly empty slots within the existing page. Remove
+    # only this stage's declared slots to recover every byte of its old page.
+    if already:
+        for x, y in receipt['atlasSlotsPx']:
+            left, top = max(0, x), max(0, y)
+            right, bottom = min(prefix.width, x + 320), min(prefix.height, y + 352)
+            if right > left and bottom > top:
+                prefix.paste((0, 0, 0, 0), (left, top, right, bottom))
     if hashlib.sha256(prefix.tobytes()).hexdigest() != receipt['baselineDecodedAtlasSHA256']:
         raise ValueError('Reviewed entire prior atlas prefix changed')
 
@@ -131,7 +139,7 @@ else:
             raise ValueError('Extended page differs from reviewed metadata receipt')
     for index, image in enumerate(images):
         x, y = receipt['atlasSlotsPx'][index]
-        if x < 0 or y < 0 or x + 320 > atlas.width or y + 352 > atlas.height or atlas.crop((x, y, x + 320, y + 352)).getbbox():
+        if x < 0 or y < 0 or x + 320 > atlas.width or y + 352 > atlas.height or atlas.crop((x, y, x + 320, y + 352)).tobytes() != bytes(320 * 352 * 4):
             raise ValueError('New slot is outside the atlas or overlaps existing pixels')
         atlas.alpha_composite(image, (x, y))
         asset['frames'].append(registered_frame(index, image))
