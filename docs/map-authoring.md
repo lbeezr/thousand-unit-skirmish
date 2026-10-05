@@ -12,6 +12,10 @@
 6. **Download JSON** for a portable copy; import and reopen it to check the round trip.
 
 Publishing resets the match. Use a disposable room when testing authoring.
+If the connection is offline or the client is waiting for current server state,
+Map Studio reports that the map was not published and keeps Save & Play enabled.
+Draft edits remain available; reconnect or wait for current state, then retry.
+Recovery does not automatically publish the draft.
 Imported files must be under the editor's 900 KB limit. Saved IDs cannot overwrite
 shipped maps; each room loads up to 16 custom maps. Remove a saved JSON and restart
 the room to remove it from that catalog.
