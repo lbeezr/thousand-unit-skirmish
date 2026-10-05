@@ -99,7 +99,8 @@ test('census and local-query overflow fail closed instead of reporting a clear p
 });
 
 test('invalid or incomplete records and query arguments never yield an available result', () => {
-  for (const extra of [{ id: 99 }, { generation: -1 }, { orderRevision: -1 }, { kind: 'unknown' },
+  for (const extra of [{ id: 99 }, { generation: -1 }, { generation: 0 }, { generation: 2 ** 32 },
+    { orderRevision: -1 }, { kind: 'unknown' },
     { moveGoalCell: 256 }, { moveGoalCell: NaN }]) {
     assert.equal(at(snapshot([actor(0, extra)]), .5, .5).status, 'deferred', JSON.stringify(extra));
   }

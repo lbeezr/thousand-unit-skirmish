@@ -36,7 +36,7 @@ export function createOrdinaryMilitaryEndpointAvailability(input) {
       if (!ordinaryMilitaryIntent(unit) || unit.moveGoalCell === -1) continue;
       if (!teamIndex(unit.team)) { incomplete = true; continue; }
       const radius = LAND_CLEARANCE_PROFILE.radiusByKind[unit.kind];
-      if (unit.id !== index || !Number.isSafeInteger(unit.generation) || unit.generation < 0
+      if (unit.id !== index || !Number.isInteger(unit.generation) || unit.generation < 1 || unit.generation > 0xffffffff
         || !Number.isSafeInteger(unit.orderRevision) || unit.orderRevision < 0
         || !Number.isFinite(radius) || !(radius > 0 && radius <= .5)
         || !Number.isInteger(unit.moveGoalCell) || unit.moveGoalCell < 0 || unit.moveGoalCell >= width * height) {
