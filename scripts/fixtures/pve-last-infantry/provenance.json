@@ -1,0 +1,40 @@
+{
+  "source": "172c53f3669b3564503cdbdfae2c83637517d235",
+  "archiveUrl": "https://raw.githubusercontent.com/lbeezr/thousand-unit-skirmish/206e6edd2cc50686adc82d41747cab6e75691def/evidence/cpu-qualification-172c53f3.zip",
+  "archiveSha256": "99838b932bec32f05cf464bd8d92f711bc77199384147e9356ff82c6343f18f0",
+  "seeds": [
+    20260925,
+    0
+  ],
+  "team": 0,
+  "terminalTick": 108000,
+  "note": "Exact decoded final objects from the two retained unchanged Tiny failures. JSON whitespace compacted and gzip mtime zero; no checkpoint field edited. Strict native restore required. These fixtures establish paid empty-army recovery only, never whole-match completion or seat1 native equivalence.",
+  "checkpoints": [
+    {
+      "mode": "authored",
+      "filename": "tiny-authored-172c53f3.json.gz",
+      "compressedBytes": 19971,
+      "compressedSha256": "4be7b779f9b60ae708642c969bb6e89a68ac9fb5ce2bda70bc63fc40e4dee2e9",
+      "checkpointBytes": 285053,
+      "checkpointSha256": "5a57cfda1a46577a61b2f1e5e521ceefddb351d07feb3e9765762db0527a062e",
+      "recordSha256": "7b0620f1b56ec9230a56352bc5935c91ed4da776ff9ac16c14f12c436c5e6add",
+      "nativeIdentity": {
+        "matchModeId": "authored",
+        "matchModeVersion": 1
+      }
+    },
+    {
+      "mode": "skirmish",
+      "filename": "tiny-skirmish-172c53f3.json.gz",
+      "compressedBytes": 19980,
+      "compressedSha256": "82b2f694d6e342ee1337f68574be1d6044228d8d81472b1b568e4a274661ec5b",
+      "checkpointBytes": 285053,
+      "checkpointSha256": "875abaa137ddf199f71a3b4a32ae704fecf4c91dc843101a53a443b0dc1a1dff",
+      "recordSha256": "4bcdd44b31f899e492b74e079df7e59c6994168d9d691fd3ebd79700e82ce9e5",
+      "nativeIdentity": {
+        "matchModeId": "skirmish",
+        "matchModeVersion": 1
+      }
+    }
+  ]
+}
