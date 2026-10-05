@@ -216,6 +216,21 @@ test('canonical authoring leaves retain the editor boundary through compatibilit
   }
 });
 
+test('Map Studio form controller has no module dependencies and cannot enter authority or server closures', async () => {
+  const target = 'src/authoring/map-studio-form-state.mjs';
+  for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+    'src/simulation/movement/formation-assignment.mjs', 'src/pve-regroup.mjs']) {
+    const relative = path.posix.relative(path.posix.dirname(root), target);
+    assert.throws(() => check({ [target]: '', [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
+      /(?:rules|world|simulation|ai) domain cannot reach authoring domain/);
+  }
+  for (const host of ['server.mjs', 'room-supervisor.mjs']) {
+    assert.throws(() => check({ [target]: '', [host]: `import './${target}';` },
+      { serverEntrypoints: [host] }), /server host reaches authoring domain/);
+  }
+  assert.deepEqual(moduleImports(await readFile(new URL(`../${target}`, import.meta.url), 'utf8'), target), []);
+});
+
 test('domain membership rejects duplicate ownership and supports exact canonical migration paths', () => {
   assert.throws(() => check({}, { runtimeDomains: { rules: ['src/a.mjs'], world: ['src/a.mjs'] } }),
     /duplicate runtime domain membership: src\/a.mjs/);
