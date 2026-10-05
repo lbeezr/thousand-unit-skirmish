@@ -884,9 +884,16 @@ wall/gate controls pass 7/8; the remaining queued-wall case reaches 54/64 versus
 the original selector's 0/64, still below the unchanged 2,700-tick completion
 contract. Retained actor 120 waits at an exact goal occupied by idle Worker 68;
 caller/construction `01a10933-e913` owns that endpoint/access dependency and core
-`01a107ba` retains shared admission/repair. Preserve the idle pose. Next independent
-crowd scope is a productive-versus-oscillating nonterminal proposal witness
-before another bounded increment. Existing capture/authentication
+`01a107ba` retains shared admission/repair. Preserve the idle pose. The retained
+crowd classification now finds eight progressing actors and actor 121
+oscillating beside actor 120; the direct projected-target step is body-blocked by
+actor 120 in all twenty retained calls. This does not qualify an independent cause.
+Caller `01a10933-e913` owns the single queued-first palisade real-command chronology
+regression; current endpoint queries deliberately omit future queued goals and
+the exact activation chronology remains unknown. Crowd is **waiting on that
+dependency or a new independent ordinary witness**, with no runtime increment
+ready. Do not expand future claims, replace goals or move parked actors.
+Existing capture/authentication
 blocks retain their owners and next actions; no held dispatch or login retry.
 
 ### U5 crowd owner reservation — 4 October 2026
