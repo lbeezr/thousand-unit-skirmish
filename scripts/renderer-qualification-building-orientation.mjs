@@ -13,6 +13,14 @@ export const BUILDING_ORIENTATION_CAPTURE_MAP = Object.freeze({
 });
 export const BUILDING_ORIENTATION_CAPTURE_FAMILIES = Object.freeze(['house', 'mill', 'farm', 'dock']);
 
+export function dockOrientationCaptureMap(map, position) {
+  const column = Math.floor(map.width / 2 + position[0]), row = Math.floor(map.height / 2 + position[2]);
+  return { ...map, id: `${map.id}-shore`, obstacles: [
+    { column: column - 1, row: row + 2, width: 8, height: 8, material: 'water' },
+    { column: column + 2, row: row - 1, width: 8, height: 3, material: 'water' },
+  ] };
+}
+
 export function validatePlacementMatch(ghost, rotated, placed) {
   assert.equal(ghost.active, true); assert.equal(ghost.valid, true); assert.equal(ghost.visible, true);
   assert.equal(ghost.art?.visible, true); assert.equal(ghost.orientation, 0);
@@ -57,11 +65,7 @@ async function captureBuildingFamily(page, evidenceDirectory, { type, onStage })
     // sampled real pointer site has two legal shores, so a quarter turn can
     // retain the site while testing the strict front-berth contract.
     assert.equal(ghost.visible, true);
-    const column = Math.floor(map.width / 2 + ghost.position[0]), row = Math.floor(map.height / 2 + ghost.position[2]);
-    map = { ...map, id: `${map.id}-shore`, obstacles: [
-      { column: column - 1, row: row + 2, width: 8, height: 8, material: 'water' },
-      { column: column + 2, row: row - 1, width: 8, height: 8, material: 'water' },
-    ] };
+    map = dockOrientationCaptureMap(map, ghost.position);
     onStage('building-map');
     assert.equal(await page.cdp.evaluate(`window.__rtsEnvironmentCaptureCommand(${JSON.stringify({ type: 'publishMap', map })})`), true);
     await page.wait(`window.__rtsEnvironmentStateSnapshot?.mapId === '${map.id}'`, 'applied disclosed two-shore map');
