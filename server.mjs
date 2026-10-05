@@ -1144,6 +1144,10 @@ function tickTimingPayload(includeSamples = false) {
     budgetMs: Number((1000 / TICK_RATE).toFixed(3)),
     p50Ms: valueAt(0.5),
     p95Ms: valueAt(0.95),
+    p99Ms: valueAt(0.99),
+    // Use unrounded durations and the actual scheduler period, not budgetMs's
+    // display precision. This is a count in this rolling window, not a total.
+    overBudgetTickCount: samples.filter(durationMs => durationMs > 1000 / TICK_RATE).length,
     maxMs: count ? Number(samples[count - 1].toFixed(3)) : null,
     startLagP95Ms: lagAt(0.95),
     startLagMaxMs: lagCount ? Number(lags[lagCount - 1].toFixed(3)) : null,

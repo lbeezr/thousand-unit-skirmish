@@ -220,6 +220,12 @@ async function runLoad(count) {
         skippedSlotDelta: after.health.tickTiming.scheduler.skippedTickSlotsTotal - before.health.tickTiming.scheduler.skippedTickSlotsTotal };
       record.waves.push(wave);
       assert.equal(plans.length, 2); assert.equal(after.health.tickTiming.sampleCount, 300);
+      assert.ok(Number.isFinite(after.health.tickTiming.p99Ms)
+        && after.health.tickTiming.p95Ms <= after.health.tickTiming.p99Ms
+        && after.health.tickTiming.p99Ms <= after.health.tickTiming.maxMs);
+      assert.ok(Number.isInteger(after.health.tickTiming.overBudgetTickCount)
+        && after.health.tickTiming.overBudgetTickCount >= 0
+        && after.health.tickTiming.overBudgetTickCount <= after.health.tickTiming.sampleCount);
       assert.ok(clients[0].current.tick - acceptedWindowStart.tick >= 300, 'Each wave must include 300 game ticks after acceptance');
       assert.equal(after.health.connected, 2); assert.equal(after.health.checkpoint.failures, 0);
       for (const p of plans) { assert.equal(p.unitCount, count / 2); assert.equal(p.routeFailures, 0);
@@ -229,7 +235,9 @@ async function runLoad(count) {
       assert.ok(after.health.tickTiming.startLagP95Ms <= 1000 / 30 && after.health.tickTiming.startLagMaxMs <= 100);
       record.capturedBudgetEnvelope = capturedBudgetEnvelope(record.samples, record.waves.flatMap(w => w.planning));
       assert.ok(record.capturedBudgetEnvelope.passed, 'All captured windows and planning slices must meet the diagnostic budgets');
-      console.log(JSON.stringify({ armySize: count, targetRegion: name, movedBySeat: counts, tickP95Ms: after.health.tickTiming.p95Ms, skippedSlotDelta: wave.skippedSlotDelta }));
+      console.log(JSON.stringify({ armySize: count, targetRegion: name, movedBySeat: counts,
+        tickP95Ms: after.health.tickTiming.p95Ms, tickP99Ms: after.health.tickTiming.p99Ms,
+        overBudgetTickCount: after.health.tickTiming.overBudgetTickCount, skippedSlotDelta: wave.skippedSlotDelta }));
     }
     const tokens = clients.map(c => c.welcome.player.sessionToken), matchId = clients[0].current.matchId;
     await Promise.all(clients.map(c => c.close())); clients = []; await stop(child); await launch();
