@@ -44,6 +44,23 @@ CPU checks and pack admission do not establish actual identified-build playback.
 Capture owner01a10378 retains that test; Spearman art/attack owner01a10469 is
 unchanged. No art/runtime changes or held assets are adopted.
 
+## Spearman East source attack — 5 October 2026
+
+The [East attack increment](qa-spearman-east-attack-2026-10-05.md) reuses one exact
+existing idle opening and adds three own-facing ready/thrust/recovery keys to
+default v1 pack0.12.0,880ms one-shot. All63 preceding frames/pixels and31 other
+clips remain exact. The complete2048×3584 page/mask prefix is retained; three new
+slots extend the page to2048×3968 and rooted weapon bounds expand. Explicit own
+seed donors total2,830;377 original joint overlaps are counted separately.
+
+Spearman source walks are8/8; attacksSE/NE/E. Exact remaining cells: attack×
+N/S/SW/W/NW and defeat×N/NE/E/S/SW/W/NW: **12**. At inspected revision c3a2fe77,
+Infantry and Archer retain21 each: **54 military source gaps**. All63 original
+native/deployed cells remain unverified. Current ranked backlog is remaining
+Spearman attacks, matched terminal defeats, then established Archer coverage.
+Infantry v3 walks belong to separate task01a10d9c; foot art retains exact-release
+appearance acceptance through the permitted parent/capture route.
+
 ## Spearman Northeast source attack — 5 October 2026
 
 The [Northeast attack increment](qa-spearman-ne-attack-2026-10-05.md) reuses its

@@ -236,3 +236,5 @@ test('a canonically valid shortened attack crop cannot silently remove retained 
     assert.match(report.errors.join('\n'), /registered source pixels changed/);
   } finally { rmSync(root,{recursive:true,force:true}); }
 });
+
+import './registered-spearman-east-attack.test.mjs';

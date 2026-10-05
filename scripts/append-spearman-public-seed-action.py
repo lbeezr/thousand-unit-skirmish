@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Register the reviewed own-seed NE attack stage; preserve preceding production keys."""
+"""Register a reviewed own-seed attack stage; preserve preceding production keys."""
 from pathlib import Path
 from PIL import Image
 import copy, hashlib, io, json, subprocess, sys
 from foot_sprite_world_bounds import placed_sprite_bounds
 
-if len(sys.argv) != 1:
-    raise ValueError('The reviewed NE attack stage takes no arguments')
-direction = 'north-east'
+if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in ['north-east', 'east']):
+    raise ValueError('Expected the reviewed north-east or east attack stage')
+direction = sys.argv[1] if len(sys.argv) == 2 else 'north-east'
 root = Path(__file__).resolve().parents[1]
 source = root / f'docs/art-direction/human-roster-v1/extracted/spearman/attack/{direction}-local-v1'
 out = root / 'assets/units/spearman-sprite-v1'
@@ -18,17 +18,19 @@ asset = pack['assets'][0]
 own_ids = [f'attack-{direction}-{i}' for i in range(3)]
 width, height = receipt['canvasPx']['width'], receipt['canvasPx']['height']
 expected_sequence = [
-    {'frameId': 'idle-north-east-0', 'durationMs': 120},
-    {'frameId': 'attack-north-east-0', 'durationMs': 200},
-    {'frameId': 'attack-north-east-1', 'durationMs': 160},
-    {'frameId': 'attack-north-east-2', 'durationMs': 400},
+    {'frameId': f'idle-{direction}-0', 'durationMs': 120},
+    {'frameId': f'attack-{direction}-0', 'durationMs': 200},
+    {'frameId': f'attack-{direction}-1', 'durationMs': 160},
+    {'frameId': f'attack-{direction}-2', 'durationMs': 400},
 ]
-idle = next(f for f in asset['frames'] if f['id'] == 'idle-north-east-0')
+idle = next(f for f in asset['frames'] if f['id'] == f'idle-{direction}-0')
 if (width, height) != (416, 352) or receipt['stateId'] != 'attack' or receipt['sequence'] != expected_sequence:
-    raise ValueError('Reviewed NE action canvas or one-shot cadence changed')
+    raise ValueError('Reviewed action canvas or one-shot cadence changed')
 if receipt['groundPivotPx'] != {'x': idle['groundPivotPx']['x'] + 80, 'y': idle['groundPivotPx']['y'] + 24}:
-    raise ValueError('Reviewed NE action root changed')
-if receipt['atlasSlotsPx'] != [[4, 3204], [428, 3204], [852, 3204]]:
+    raise ValueError('Reviewed action root changed')
+slots = {'north-east': [[4, 3204], [428, 3204], [852, 3204]],
+         'east': [[4, 3588], [428, 3588], [852, 3588]]}
+if receipt['atlasSlotsPx'] != slots[direction]:
     raise ValueError('Reviewed disjoint action slots changed')
 already = [f for f in asset['frames'] if f['id'] in own_ids]
 baseline_dimensions = receipt.get('baselineDimensionsPx', {'width': 2048, 'height': 2048})
