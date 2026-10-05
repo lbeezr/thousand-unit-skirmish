@@ -816,6 +816,28 @@ dependencies; a format-only helper or a broad editor parameter bag is not a next
 step. Keep the active server/movement/match-ending contracts separate and do not
 turn this local evidence dependency into a global hold.
 
+The portable-map validation slice based on main `fec90d44` selects an actual
+298-line host responsibility with two callers. Its byte-preserved implementation
+lives in [`authoring/map-import-validator.mjs`](../src/authoring/map-import-validator.mjs).
+`createMapImportValidator` takes the existing eight scalar policy limits and
+obstacle material list, and imports the same 17 pure bindings from nine existing
+modules. Main retains the named `validateImportedMap` entry with its import and
+collection/export/publish callers; storage, file reading, DOM, rendering, timers,
+server authority and live-match state stay outside the factory.
+This format has no new version namespace, schema change or migration.
+
+The existing draft fixture and Stone/wildlife importer fixtures consume the
+canonical implementation; the XL source audit follows and hashes its binding
+without widening 16–256 dimensions or parser/file/route budgets. One exact
+browser-module path and authoring membership are added; all eleven compatibility
+surfaces stay supported. Main falls from 11,036 to 10,746 physical lines, a
+290-line responsibility reduction; the canonical module is 320 lines. These
+measurements do not certify size or quality by themselves. Architecture/authoring
+owns independent local review, source/served/packed checks and subsequent
+identified-release browser acceptance. The lifecycle/publish observation below
+remains separate. This source candidate preserves current file-read/error behavior
+and all unrelated host bytes; it does not incorporate an error-handling change.
+
 | Checkpoint / next scoped slice | Input and owning boundary | Semantic acceptance and retirement limit |
 | --- | --- | --- |
 | Server caller slice [PR404](https://github.com/lbeezr/thousand-unit-skirmish/pull/404): the three `server.mjs` lifecycle, map-audio validator and formation literals | Fresh-main integration after PR395; exact scope retains construction/crowd and XL checkpoint imports/bodies. Canonical entries are `src/rules/base-lifecycle.mjs`, `src/world/map-audio-reference.mjs` and `src/simulation/movement/formation-assignment.mjs`. | Four identical bindings and every other host byte; actual consumer/native, types/imports, clean pack and packed HTTP/private-path checks plus implemented-head independent review belong to PR404. Zero tracked-runtime compatibility callers; all eleven surfaces and every existing fixture/admission remain. |

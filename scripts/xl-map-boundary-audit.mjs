@@ -148,6 +148,7 @@ export async function nativeAdmissionProbe(map) {
 
 export async function runXlBoundaryAudit({ native = false } = {}) {
   const files = ['server.mjs', 'room-supervisor.mjs', 'index.html', 'src/main.js',
+    'src/authoring/map-import-validator.mjs',
     'src/authoring/map-studio-draft-store.mjs',
     'src/authoring/map-studio/draft/v1/contract.mjs',
     'src/wall-line-planner.mjs', 'src/water-route-graph.mjs', 'src/map-size-policy.mjs',
@@ -220,10 +221,14 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     "import { requireRecovery as requireDraftRecovery } from './map-studio/draft/v1/contract.mjs';")
     || !draftStore.requireRecovery.toString().includes('return requireDraftRecovery(draft, sourceMapId);'))
     throw new Error('Map Studio draft version contract binding moved; update the audit.');
+  if (!inputs['src/main.js'].includes("import { createMapImportValidator } from './authoring/map-import-validator.mjs';")
+    || !inputs['src/main.js'].includes('const mapImportValidator = createMapImportValidator({')
+    || !extractFunction(inputs['src/main.js'], 'validateImportedMap').includes('return mapImportValidator(value);'))
+    throw new Error('Map Studio portable validation binding moved; update the audit.');
   const limits = {
     server: sourceNumber(source, /definition\.width > (\d+) \|\| definition\.height >/),
     studioRestore: sourceNumber(requireDraftRecovery.toString(), /definition\.width > (\d+)/),
-    studioImport: sourceNumber(extractFunction(inputs['src/main.js'], 'validateImportedMap'), /definition\.width > (\d+)/),
+    studioImport: sourceNumber(inputs['src/authoring/map-import-validator.mjs'], /definition\.width > (\d+)/),
     studioResize: sourceNumber(extractFunction(inputs['src/main.js'], 'resizeEditorMap'), /width > (\d+)/),
     studioHtml: [...inputs['index.html'].matchAll(/id="studio-(?:width|height)"[^>]*max="(\d+)"/g)].map(m => Number(m[1])),
   };

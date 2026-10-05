@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
+import { createMapImportValidator } from '../../src/authoring/map-import-validator.mjs';
 import { createMapStudioFormState } from '../../src/authoring/map-studio-form-state.mjs';
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from '../../src/authoring/map-studio-draft-store.mjs';
 import { ScenarioEditHistory, createScenarioEditCoordinator } from '../../src/authoring/scenario-authoring.mjs';
@@ -37,7 +38,7 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {} } = {}) {
     (w.ui ??= {})[name] = d.querySelector(selector);
   }
   Object.assign(w, mapUtils, scenarioRegions, definitions, {
-    createMapStudioFormState, MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore,
+    createMapImportValidator, createMapStudioFormState, MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore,
     economyResources, validateMapAudioReference, validateMapRegion, validWildlifeNodeDefinition,
     findInvalidResourceVariant, TERRAIN_MATERIALS, ROOM_ID: roomId,
     SESSION_STORAGE_KEY: 'thousand-unit-skirmish-session', isHost: true, knownMaps: [],
