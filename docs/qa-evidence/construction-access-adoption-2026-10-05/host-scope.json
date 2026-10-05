@@ -1,0 +1,19 @@
+{
+  "base": "51e3d0382f21a5c7a9e53c268d1a3127217f5986",
+  "serverSha256": "590c98e9a1d9e0d5a65b38249f73434706f120e1c2d8b3ec5f25d028ead25385",
+  "changed": [
+    "./src/construction-work-intent.mjs",
+    "finishPalisadeBuilderAssignments",
+    "updateWallBuildOrders",
+    "updateBuildingAndProduction",
+    "nearestBuilderAccessCell",
+    "assignFormationMove",
+    "./src/simulation/movement/military-endpoint-availability.mjs",
+    "constructionEndpointSnapshotGetter",
+    "constructionPoseAvailable",
+    "currentConstructionAccessRetry",
+    "retainConstructionAccessWait",
+    "updateConstructionAccess"
+  ],
+  "otherTopLevelBodiesByteIdentical": true
+}

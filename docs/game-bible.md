@@ -365,6 +365,14 @@ their building footprint. Gate state and movement behavior survive checkpoints.
 
 ## Cancellation and repair
 
+New Worker construction and repair approaches avoid friendly ordinary military
+accepted destinations. If all access is reserved, the Worker keeps the paid job
+and resumes when safe access becomes available. Productive work and completion
+also require a safe actual Worker pose. A builder already parked after finishing
+keeps its pose until another order; a later military exact destination there
+still waits. [Construction access evidence](qa-construction-access-adoption-2026-10-05.md)
+records both order directions and cold recovery.
+
 Canceling unfinished construction refunds the unbuilt fraction of its food/wood
 cost and removes the footprint. Canceling a pending training entry refunds its
 full cost; canceling the active entry refunds its remaining training fraction.

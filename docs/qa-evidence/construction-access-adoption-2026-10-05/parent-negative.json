@@ -1,0 +1,46 @@
+{
+  "runtimeSource": "80999c542790b258fab9eae138334e6c5f029231",
+  "scope": "isolated current journey adapters with exact parent server body; intentional assertion failures, no candidate runtime mutation",
+  "results": [
+    {
+      "team": 0,
+      "scenario": "initial-reservation",
+      "message": "Expected values to be strictly equal:\n\n3124 !== -1\n"
+    },
+    {
+      "team": 0,
+      "scenario": "late-reservation",
+      "message": "the newly unsafe terminal route is invalidated once\n\n3 !== 4\n"
+    },
+    {
+      "team": 0,
+      "scenario": "work-pose",
+      "message": "a safe assigned access cell cannot authorize unsafe current-pose work\n+ actual - expected\n\n+ 0.0044444444444444444\n- 0.0022222222222222222\n      ^\n"
+    },
+    {
+      "team": 0,
+      "scenario": "cooperative",
+      "message": "another builder completing the site cannot silently park this active worker\n\nnull !== 1\n"
+    },
+    {
+      "team": 1,
+      "scenario": "initial-reservation",
+      "message": "Expected values to be strictly equal:\n\n3124 !== -1\n"
+    },
+    {
+      "team": 1,
+      "scenario": "late-reservation",
+      "message": "the newly unsafe terminal route is invalidated once\n\n3 !== 4\n"
+    },
+    {
+      "team": 1,
+      "scenario": "work-pose",
+      "message": "a safe assigned access cell cannot authorize unsafe current-pose work\n+ actual - expected\n\n+ 0.0044444444444444444\n- 0.0022222222222222222\n      ^\n"
+    },
+    {
+      "team": 1,
+      "scenario": "cooperative",
+      "message": "another builder completing the site cannot silently park this active worker\n\nnull !== 1\n"
+    }
+  ]
+}

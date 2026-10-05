@@ -62,6 +62,7 @@ export async function constructionEndpointContract({ team, direction, parkOrder 
       r.drain();
     };
     const move = () => {
+      originalPointReached = false;
       order(soldierId, 'move', { x: 4.5, z: .5 });
       order(soldierId, 'move', { x: -8.5, z: 8.5, queue: true }); r.drain();
     };
@@ -74,6 +75,31 @@ export async function constructionEndpointContract({ team, direction, parkOrder 
     const accepted = intent(r.units[soldierId]);
     assert.deepEqual([accepted.point.x, accepted.point.z, accepted.point.arrivalPolicy], [4.5, .5, 'exact']);
     assert.equal(accepted.queue.length, 1);
+    if (direction === 'military-first') {
+      const selectedAccess = r.units[builderId].moveGoalCell;
+      assert.notEqual(selectedAccess, accepted.goal, 'new construction selects a different available access cell');
+      const access = r.point(selectedAccess);
+      assert.ok(Math.hypot(access.x - accepted.point.x, access.z - accepted.point.z) >= .4);
+      for (let n = 0; n < 700; n++) step();
+      assert.ok(r.buildings[0].complete);
+      const soldier = r.units[soldierId], builder = r.units[builderId];
+      assert.ok(originalPointReached, 'the accepted original military point is physically reached');
+      assert.deepEqual([soldier.x, soldier.z, soldier.queuedWaypoints.length], [-8.5, 8.5, 0]);
+      assert.ok(Math.hypot(builder.x - accepted.point.x, builder.z - accepted.point.z) >= .4);
+      const parked = { x: builder.x, z: builder.z };
+      const saved = r.checkpoint(); assert.ok(r.validate(structuredClone(saved)));
+      await fixture.dispose(); fixture = await createPathingReplayFixture(map, { traceLandSteps: true }); r = fixture.replay;
+      assert.ok(r.validate(structuredClone(saved))); r.restore(structuredClone(saved));
+      for (let n = 0; n < 100; n++) step();
+      assert.deepEqual({ x: r.units[builderId].x, z: r.units[builderId].z }, parked);
+      assert.deepEqual([r.units[soldierId].x, r.units[soldierId].z], [-8.5, 8.5]);
+      assert.equal(contacts, 0); assert.deepEqual(r.units.map(u => u.hp), hp);
+      assert.equal(r.wood[team], wood - 75); assert.deepEqual(untouched(), otherActors);
+      return { team, direction, parkOrder, builderId, soldierId, runtimeServerSha256, accepted,
+        selectedAccess, parked, policy: 'prevent-new-conflict', completedTick: r.tick, paidWood: 75,
+        substeps, contacts, originalPointReached, commands, coldRecovery: 'separate production module',
+        originalQueuedEndpoint: { x: r.units[soldierId].x, z: r.units[soldierId].z } };
+    }
     for (let n = 0; n < 700; n++) step();
     assert.ok(r.buildings[0].complete);
     assert.deepEqual([r.units[builderId].x, r.units[builderId].z,
