@@ -19,12 +19,12 @@ const cells=decodeRegisteredUnitFrames(asset,page,pixels);
 
 test('Spearman NE preserves all 32 prior registered poses, clips and body calibration',()=>{
   const laterIds=new Set(["walk-north-east-0","walk-north-east-1","walk-north-east-2","walk-north-east-3","walk-east-0","walk-east-1","walk-east-2","walk-east-3","walk-north-0","walk-north-1","walk-north-2","walk-north-3","walk-south-0","walk-south-1","walk-south-2","walk-south-3","walk-south-west-0","walk-south-west-1","walk-south-west-2","walk-south-west-3","walk-west-0","walk-west-1","walk-west-2","walk-west-3","walk-north-west-0","walk-north-west-1","walk-north-west-2","walk-north-west-3"]);
-  const legacy=asset.frames.filter(f=>!laterIds.has(f.id)&&!/^attack-north-east-\d+$/.test(f.id));
-  assert.equal(legacy.length,32);assert.equal(asset.frames.length,63);
+  const legacy=asset.frames.filter(f=>!laterIds.has(f.id)&&!/^attack-(?:north-east|east)-\d+$/.test(f.id));
+  assert.equal(legacy.length,32);assert.equal(asset.frames.length,66);
   assert.equal(sha(JSON.stringify(legacy.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
   // Pin actual retained clips; later own-view replacements are separately checked.
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&c.directionId==='north-east')&&!(c.stateId==='walk'&&["north-east","east","north","south","south-west","west","north-west"].includes(c.directionId)));
-  assert.equal(asset.clips.length,32);assert.equal(unchanged.length,24);assert.equal(sha(JSON.stringify(unchanged)),'b7151446271b58f146608ad6a1cd396f7e8e4f9cd6fb129f3a5116cf8cb42ec6');
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['north-east','east'].includes(c.directionId))&&!(c.stateId==='walk'&&["north-east","east","north","south","south-west","west","north-west"].includes(c.directionId)));
+  assert.equal(asset.clips.length,32);assert.equal(unchanged.length,23);assert.equal(sha(JSON.stringify(unchanged)),'6579bf8229a84243ed8f04d7ce390b58cf8366125c3ccb88c7c1cdccd57d4192');
   assert.equal(asset.heightWorld/Math.max(...asset.frames.map(f=>f.alphaBoundsPx.height)),receipt.worldPerPixel);
   assert.equal(asset.heightWorld,receipt.heightWorld);
   assert.equal(sha(read(receipt.identitySource.path)),receipt.identitySource.sha256);
@@ -32,7 +32,7 @@ test('Spearman NE preserves all 32 prior registered poses, clips and body calibr
   for(const key of ['mirroredPoses','borrowedDirectionPoses','generationProviderCalls','paidJobs'])assert.equal(receipt[key],0);
 });
 
-test('Spearman NE contains four exact source poses and leaves the other 13 cells incomplete',()=>{
+test('Spearman NE contains four exact source poses and leaves the other 12 cells incomplete',()=>{
   const clip=asset.clips.find(c=>c.stateId==='walk'&&c.directionId==='north-east');
   assert.equal(clip.loop,true);assert.equal(clip.sequence.reduce((n,k)=>n+k.durationMs,0),800);
   for(let index=0;index<4;index++){
@@ -47,7 +47,7 @@ test('Spearman NE contains four exact source poses and leaves the other 13 cells
     for(let y=0;y<352;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+320)*4),original.pixels.subarray(y*320*4,(y+1)*320*4));
   }
   const report=analyzeUnitArtCoverage(asset,cells);
-  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,13);
+  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,12);
   const ne=report.rows.find(r=>r.key==='walk|north-east');assert.equal(ne.status,'authored');assert.equal(ne.distinctFrames,4);assert.equal(ne.distinctSilhouettes,4);
   assert.deepEqual(missingWalkDirections({pack,cells}),[]);
   assert.equal(report.missingCells.includes('attack|north-east'),false);assert.ok(report.missingCells.includes('defeat|north-east'));

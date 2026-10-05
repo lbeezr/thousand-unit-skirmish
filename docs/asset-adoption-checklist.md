@@ -115,6 +115,18 @@ The [actual default Infantry qualification](qa-default-infantry-walk-2026-10-05.
 records one SE walk and seven idle placeholders, with a separate registered
 ordinary capture case. Missing faithful source keys/rig and identified rendered
 playback remain owned by the delegated Infantry lane and capture owner01a10378.
+
+The [5 October Spearman East attack increment](qa-spearman-east-attack-2026-10-05.md)
+adds three own-facing keys and reuses its exact idle opening in default v1
+pack0.12.0, preserving63 previous frames/pixels and31 other clips. Complete prior
+2048×3584 page/mask prefix remains; three slots extend to2048×3968 with rooted
+weapon bounds expanded. Explicit2,830 own-seed donors and377 original joint
+overlaps are separate. Spearman12, Infantry/Archer21 each at inspected c3a2fe77
+leave54 military source gaps. All63 original native/deployed cells remain open.
+Foot art owns source/default/release and appearance acceptance; animation01a103d4
+owns clocks/selectors; permitted parent delivery/capture01a10378 supports the
+identified containing-game verification. Infantry walk task01a10d9c remains separate.
+
 The [5 October Spearman Northeast attack increment](qa-spearman-ne-attack-2026-10-05.md)
 adds three own-facing ready/thrust/recovery keys to default v1 pack0.11.0 and
 reuses the exact original idle opening. All60 prior frames,31 other clips and
