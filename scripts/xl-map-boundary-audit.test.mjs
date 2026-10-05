@@ -115,7 +115,9 @@ test('source-bound route/save/wire envelope distinguishes finite validation from
   assert.equal(preflight.acceptedBoundary.validatedEntries, 1048576);
   assert.equal(preflight.oversizedRejectedBeforeIndexReads.indexReads, 0);
   assert.equal(preflight.remaining.ordinary320Admission, 'closed');
-  assert.equal(preflight.remaining.fileReadAndJsonParseByteEnvelope, 'pending');
+  assert.equal(preflight.remaining.fileReadAndJsonParseByteEnvelope, 'XL bounded; legacy classification remains linear in file bytes');
+  assert.equal(report.checkpoint.xlJsonEnvelope.limits.bytes, 33554432);
+  assert.equal(report.checkpoint.xlJsonEnvelope.inspectionChunkBytes, 32768);
   assert.equal(report.transport.inboundFrameBytes, 1000000);
   assert.equal(report.transport.outboundQueuedAndFrameBytes, 4194304);
   assert.equal(report.transport.packedFogBytesPerSeat, 25600);

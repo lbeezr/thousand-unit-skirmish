@@ -20,6 +20,8 @@ import { forestGatherGroups, visibleForestCandidates } from './src/forest-gather
 import { exploredForestFringe } from './src/forest-fringe.mjs';
 import { VisionCoverageCache } from './src/server/vision-coverage-cache.mjs';
 import { preflightXlCheckpointRoutes } from './src/server/checkpoint-route-budget.mjs';
+import { preflightXlCheckpointCloneInputs, preflightXlCheckpointState } from './src/server/checkpoint-json-budget.mjs';
+import { readMatchCheckpointFile } from './src/server/checkpoint-file-reader.mjs';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
 import { creditResourceBalance } from './src/economy-ledger.mjs';
@@ -2799,6 +2801,8 @@ function matchMapHash(definition) {
 function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
   preflightXlCheckpointRoutes(authoredMapDefinition, { units, resourceNodes: resourceNodeStates },
     { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES });
+  preflightXlCheckpointCloneInputs(authoredMapDefinition, { units, buildings, resourceNodes: resourceNodeStates, bannerfall: bannerfallState },
+    { maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES });
   ensureVisionMasks();
   const savedSessions = [];
   for (const session of sessions.values()) {
@@ -2892,6 +2896,8 @@ function validateMatchCheckpoint(snapshot) {
   assertSnapshot(snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot), 'expected an object');
   preflightXlCheckpointRoutes(snapshot.mapDefinition, snapshot.state,
     { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES });
+  preflightXlCheckpointState(snapshot,
+    { maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES });
   assertSnapshot(snapshot.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION, 'unsupported schema version');
   validateEconomyCheckpoint(snapshot);
   assertSnapshot(snapshot.factionId === DEFAULT_FACTION_ID, 'unsupported faction');
@@ -3819,6 +3825,8 @@ async function drainMatchCheckpointWrites() {
         setImmediate(() => {
           const serializeStartedAt = performance.now();
           try {
+            preflightXlCheckpointState(next.snapshot,
+              { maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES });
             serialized = JSON.stringify(next.snapshot);
             lastCheckpointSerializeMs = Number((performance.now() - serializeStartedAt).toFixed(3));
             resolve(serialized);
@@ -3898,18 +3906,16 @@ async function initializeMatchFromCheckpoint() {
     initializeCleanMatch();
     return;
   }
-  let serialized;
+  let serialized, readCompleted = false;
   try {
-    serialized = await readFile(MATCH_STATE_PATH, 'utf8');
-  } catch (error) {
-    if (error?.code !== 'ENOENT') {
-      console.warn('Match checkpoint could not be read; starting a fresh match:', String(error?.message || error));
-    }
-    initializeCleanMatch();
-    return;
-  }
-  try {
-    const snapshot = migrateEconomyCheckpoint(migrateMatchCheckpoint(migrateFoodToolsCheckpoint(JSON.parse(serialized))));
+    serialized = await readMatchCheckpointFile(MATCH_STATE_PATH);
+    readCompleted = true;
+    const parsed = JSON.parse(serialized);
+    preflightXlCheckpointRoutes(parsed?.mapDefinition, parsed?.state,
+      { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES });
+    preflightXlCheckpointState(parsed,
+      { maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES });
+    const snapshot = migrateEconomyCheckpoint(migrateMatchCheckpoint(migrateFoodToolsCheckpoint(parsed)));
     migrateWildlifeMotionCheckpoint(snapshot);
     migrateCombatStanceCheckpoint(snapshot, UNIT_DEFINITIONS);
     migrateWildlifeClaimsCheckpoint(snapshot);
@@ -3919,6 +3925,13 @@ async function initializeMatchFromCheckpoint() {
     restoreMatchCheckpoint(snapshot);
     console.log(`Restored match ${matchId} from checkpoint ${checkpointSequence} at tick ${tickNumber}.`);
   } catch (error) {
+    if (!readCompleted && error?.code !== 'CHECKPOINT_REJECTED') {
+      if (error?.code !== 'ENOENT') {
+        console.warn('Match checkpoint could not be read; starting a fresh match:', String(error?.message || error));
+      }
+      initializeCleanMatch();
+      return;
+    }
     console.warn('Match checkpoint was rejected; starting a fresh match:', String(error?.message || error));
     const rejectedPath = `${MATCH_STATE_PATH}.rejected-${Date.now()}-${randomBytes(3).toString('hex')}`;
     await rename(MATCH_STATE_PATH, rejectedPath);
