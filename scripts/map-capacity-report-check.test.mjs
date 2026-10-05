@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { capturedBudgetEnvelope, capturedTickAttribution } from './map-capacity-report-check.mjs';
+import { capturedBudgetEnvelope, capturedTickAttribution, capturedInnerAttribution } from './map-capacity-report-check.mjs';
 const sample = (maxMs, lag = 1) => ({ health: { tickTiming: { p95Ms: 2, maxMs, startLagP95Ms: 1, startLagMaxMs: lag } } });
 test('a recovered final window cannot conceal a captured planning-phase duration or lag spike', () => {
   assert.equal(capturedBudgetEnvelope([sample(120), sample(3)]).passed, false);
@@ -71,4 +71,30 @@ test('gaps and exact boundary flags remain explicit instead of fabricating missi
   const interrupted = capturedTickAttribution([row(1), row(2, { mapId: 'probe' }), row(3)], 'crownroads');
   assert.equal(interrupted.coverage[0].knownOtherMapTicksWithinObservedRange, 1);
   assert.equal(interrupted.coverage[0].missingTicksWithinObservedRange, 0, 'a known other-map tick is not lost capture');
+});
+
+const innerRow = (tickNumber, extra = {}) => ({ ...row(tickNumber), startedMs: tickNumber * 20, endedMs: tickNumber * 20 + 11,
+  simulateTickCalls: 1, simulateTickMs: 6, getMoveVectorCalls: 2, getMoveVectorMs: 4,
+  heapBeforeBytes: 100, heapAfterBytes: 110, netHeapDeltaBytes: 10, rssBytes: 1000, externalBytes: 20, arrayBufferBytes: 10, ...extra });
+const innerRun = (rows, extra = {}) => ({ workerRun: 1, droppedRows: 0, rowWindow: { start: { monotonicMs: 0 }, end: { monotonicMs: 100 } },
+  rows, gc: [{ startMs: 25, durationMs: 2, kind: 1 }], ...extra });
+test('inner consumer joins exact identities and keeps nested timing and GC overlap separate', () => {
+  const result = capturedInnerAttribution([innerRun([innerRow(1), innerRow(2)])], [row(1)], 'crownroads');
+  assert.equal(result.status, 'valid-observations'); assert.equal(result.joinedNativeTicks, 1); assert.equal(result.innerOnlyTicks, 1);
+  assert.equal(result.functions.simulateTick.activeTickMs.meanMs, 6); assert.equal(result.functions.getMoveVector.calls, 4);
+  assert.equal(result.gc.observedEvents, 1); assert.equal(result.gc.overlappingTickIdentities.length, 1);
+  assert.equal(result.gc.overlappingOverBudgetTicks, 0);
+  const restarted = capturedInnerAttribution([innerRun([innerRow(1)]), innerRun([innerRow(1)], { workerRun: 2 })], [row(1)], 'crownroads');
+  assert.equal(restarted.ticks.uniqueObservedTicks, 2); assert.equal(restarted.joinedNativeTicks, 1);
+});
+test('inner consumer rejects truncation, duplicate identities, mismatched timing and invalid windows', () => {
+  for (const run of [innerRun([innerRow(1)], { droppedRows: 1 }), innerRun([innerRow(1), innerRow(1)]),
+    innerRun([innerRow(1, { endedMs: 101 })]), innerRun([innerRow(1, { getMoveVectorCalls: 1.5 })]),
+    innerRun([innerRow(1, { simulateTickCalls: undefined })]), innerRun([innerRow(1)], { gc: [{ startMs: 101, durationMs: 1 }] })]) {
+    assert.equal(capturedInnerAttribution([run], [row(1)], 'crownroads').status, 'invalid-observations');
+  }
+  assert.equal(capturedInnerAttribution([innerRun([innerRow(1)])], [row(1, { durationMs: 11 })], 'crownroads').status, 'invalid-observations');
+  assert.equal(capturedInnerAttribution([innerRun([innerRow(1, { simulationMs: 5, broadcastMs: 3 })])], [row(1)], 'crownroads').status,
+    'invalid-observations', 'redistributing outer phases cannot masquerade as the independently observed tick');
+  assert.equal(capturedInnerAttribution(undefined, [], 'crownroads').status, 'unavailable');
 });
