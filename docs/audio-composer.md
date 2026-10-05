@@ -26,4 +26,14 @@ another Play attempt. `node --test scripts/audio-composer-preview.test.mjs`
 checks these controls through the mounted editor with deferred audio promises;
 it does not establish native browser playback.
 
+An export belongs to the composition state and filename that started it. Editing,
+switching or creating a composition, Stop, Save, Play and a newer export discard
+the prior export's eventual download/status publication. Browser offline work
+already underway can finish, but obsolete results allocate no download URL and
+cannot replace the current status. An active export retains normal WAV output,
+errors and URL revocation; another export can retry the current draft. Selecting
+a track or clip without editing does not cancel export. Mounted-editor delayed
+completion controls run in `scripts/audio-composer-export-lifecycle.test.mjs`;
+native browser rendering and actual download acceptance remain separate.
+
 Run `node scripts/audio-composer-scenario.mjs` for timing, validation, two-track save/reopen and WAV scheduling checks. The browser fixture at `scripts/audio-composer-browser.html` loads two generated quarter-second WAVs. On 27 September 2026, a browser pass created two tracks, looped the first source, placed the second source at beat four, saved and reopened the composition, then rendered a four-second stereo WAV. Preview uses the runtime player after that module lands in the integrated tree.
