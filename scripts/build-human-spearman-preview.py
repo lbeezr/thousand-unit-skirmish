@@ -53,3 +53,6 @@ if (source/'extracted/spearman/walk/south-local-v1/registration.json').exists():
 
 if (source/'extracted/spearman/walk/south-west-local-v1/registration.json').exists():
  subprocess.run([sys.executable,str(root/'scripts/append-spearman-public-seed-walk.py'),'south-west'],check=True)
+
+if (source/'extracted/spearman/walk/west-local-v1/registration.json').exists():
+ subprocess.run([sys.executable,str(root/'scripts/append-spearman-public-seed-walk.py'),'west'],check=True)
