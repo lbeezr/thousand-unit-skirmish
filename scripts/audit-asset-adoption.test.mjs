@@ -105,3 +105,34 @@ test('enabling a default family cannot use its exception to conceal omitted rele
     releaseFiles: release.files.filter(file => file !== record.manifest) }),
   /frontier-stable: default runtime dependency omitted from release/);
 });
+
+test('normal Spearman constructor rejects an omitted role, wrong version and swapped civilization', async () => {
+  const main = await readFile(path.join(root, 'src/main.js'), 'utf8');
+  const record = registry.records.find(row => row.id === 'human-spearman-default');
+  const selected = { ...registry, records: [record] };
+  assert.equal((await audit({ registry: selected })).results[0].defaultBound, true);
+  for (const [from, to] of [
+    ["['human', 'infantry', 'spearman', 'archer'", "['human', 'infantry', 'archer'"],
+    ["spearman: 'v1', archer:", "spearman: 'v2', archer:"],
+    ["teamCivilizations: humanRosterPreview ? ['human', 'boughward'] : null,", "teamCivilizations: ['boughward', 'human'],"],
+  ]) {
+    assert.ok(main.includes(from), 'negative control must mutate the actual constructor input');
+    await assert.rejects(audit({ registry: selected, main: main.replace(from, to) }),
+      /human-spearman-default: approved runtime asset is not default-bound/);
+  }
+});
+
+test('registered Spearman atlas, mask and manifest must reach the actual release inventory', async () => {
+  const record = registry.records.find(row => row.id === 'human-spearman-default');
+  const selected = { ...registry, records: [record] };
+  for (const file of ['sprite-atlas-pack-v1.json', 'spearman-atlas-runtime.png', 'team-accent-mask.png']) {
+    const target = path.join(path.dirname(record.manifest), file);
+    assert.ok(release.files.includes(target), 'negative control removes an actual packaged dependency');
+    await assert.rejects(audit({ registry: selected, releaseFiles: release.files.filter(file => file !== target) }),
+      /human-spearman-default: default runtime dependency omitted from release/);
+  }
+  const manifest = JSON.parse(await readFile(path.join(root, record.manifest)));
+  manifest.files = manifest.files.filter(file => file.usage !== 'team-mask');
+  await assert.rejects(audit({ registry: selected, loadManifest: async () => manifest }),
+    /declared runtime atlas and team mask required/);
+});
