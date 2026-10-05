@@ -1,0 +1,138 @@
+{
+  "baselineRegisteredPoseSHA256": "fab30fe0aee03a790500d1ac1a5078ae6536970564c6bbf9cd9c2652fd59f2a4",
+  "baselineUnchangedClipsSHA256": "8699d5b3d2d1762c1b5b216907a114ec2d94d1f8d91abcf0e1586e7599b5f027",
+  "baselineAssetMetadataSHA256": "0494af4603627b42502777172d5275538ec54e2d76f325095d0f763d1ec9b814",
+  "baselinePageMetadataSHA256": "e84dd4e499de1e56ed102f8b66daeeb910cb25881817f95da7fba3aee657b5ad",
+  "registeredPageMetadataSHA256": "3af4142ef00d4cccb38005246687ccbbd0a402e67d5c6115dd719e1bab8d1b7d",
+  "baselineMaskSHA256": "e7e746011b4aa5eb384e36b062d5d0689172afe30d3a2e0a40cd35696ea12d0b",
+  "heightWorld": 1.6722564697265625,
+  "worldPerPixel": 0.0052421832906788795,
+  "baselineManifestSHA256": "eba8de40cdde80dc6e5acffe400a9e592eb018e30257e6648ad73f15976eb2bc",
+  "baselineRuntimeSHA256": "44ba4b95c387f2cd954eb7e2f806fdc35091c7c99829c55fe41930885fda549d",
+  "baselineDecodedAtlasSHA256": "be5a0bfb1b3daea080b68e69609c19307dcb5a8799c40943d979a81bcf0af47d",
+  "historicalClipSubsetSHA256": {
+    "ne": "2b8eba52b7391b0bd53dd3f569109e6f9fb6c832c68b0968108498bfd235d34e",
+    "east": "7ec4b9a8e193a8774edb6b4f1a4963367ec34465b220393a00ad6a462f2d4f0e",
+    "north": "472f8004794130f3c234acc84466ad18893a3720b4ae2afcc87934b509ab2393"
+  },
+  "identitySource": {
+    "path": "docs/art-direction/human-roster-v1/extracted/spearman/idle/07.png",
+    "sha256": "130947b20e1d083adfb17d8f940a1f0ed18f1238782d84c9afb6fa578a593c68",
+    "registeredFrameId": "idle-south-0",
+    "registeredSeedSHA256": "c0920ec34bfe51065c50953dde2f5a4a54809a56087f38836ace8b2cc3e2a837"
+  },
+  "schemaVersion": 1,
+  "sourceRevision": "dcbbea857097db2b7bd9e24801ec3bcbcf624db9",
+  "directionId": "south",
+  "baselinePackVersion": "0.6.0",
+  "packVersion": "0.7.0",
+  "baselineDimensionsPx": {
+    "width": 2048,
+    "height": 2048
+  },
+  "registeredDimensionsPx": {
+    "width": 2048,
+    "height": 3200
+  },
+  "registeredMaskSHA256": "eda032b76b64eabe3b282a8882756ddad49f8ab392afce878d001e2f317982e4",
+  "sourceKind": "new fixed-camera 2D leg poses from own public South identity seed; no matching 3D master claimed",
+  "authoringTool": "Blender 4.3.2 Cycles CPU, fixed orthographic public-source UV planes",
+  "canvasPx": {
+    "width": 320,
+    "height": 352
+  },
+  "groundPivotPx": {
+    "x": 172,
+    "y": 309
+  },
+  "paddingPx": {
+    "x": 40,
+    "y": 24
+  },
+  "atlasSlotsPx": [
+    [
+      4,
+      2052
+    ],
+    [
+      332,
+      2052
+    ],
+    [
+      660,
+      2052
+    ],
+    [
+      988,
+      2052
+    ]
+  ],
+  "maximumAlphaHeightPx": 319,
+  "reusedPriorRegisteredPoses": 44,
+  "newlyAuthoredPoses": 4,
+  "mirroredPoses": 0,
+  "borrowedDirectionPoses": 0,
+  "generationProviderCalls": 0,
+  "paidJobs": 0,
+  "privateInputs": 0,
+  "durationMs": 800,
+  "loop": true,
+  "sourceTiming": "four explicit 200ms keys; authoring fps20 is not runtime playback fps",
+  "shaftSeparation": {
+    "sourceAlphaPositiveSamples": 550,
+    "sourceAlpha255Samples": 19,
+    "reconstructedSamples": 0,
+    "partition": "x > 23+.9*y, y >= 190; original transparent shaft/leg gap"
+  },
+  "processRetention": "all source scene/scripts/masks, previews and all iterations retained privately; selected public-seed derivatives only published",
+  "ordinaryGameAcceptance": "pending",
+  "supportFootVelocityAcceptance": "pending",
+  "matching3DMaster": "not located; own-direction public 2D seed permits this free source slice",
+  "normalization": "zero RGB only under alpha0; every visible RGBA and alpha sample preserved from selected CPU output",
+  "sourceSampling": "packed source textures/UV/masks exact; rendered upper pixels frozen across keys, CPU transparent-material sampling differs from seed RGBA",
+  "independentSourceReview": {
+    "reviewer": "independent_foot_art_review",
+    "selectedIteration": "02-own-seed-leg-study",
+    "status": "no blocking source findings",
+    "positivePoseTriangleInstances": 69632,
+    "minimumSignedAreaRatio": 0.4887186686197917,
+    "ordinaryGameAcceptance": "pending",
+    "reconstructedSourceSamples": 0
+  },
+  "poses": [
+    {
+      "file": "00.png",
+      "pose": "contact-left",
+      "durationMs": 200,
+      "sha256": "64d89695d5e88bbbd9ef5519edec68d2a3aac0e52c51bbd32ea3a6bb7f43a031",
+      "rawCPUOutputSHA256": "4d023c161f4fb33970b0add27d0d5ade4f41b76e1707b69434c295c63d702cc9",
+      "transparentRGBPixelsNormalized": 97
+    },
+    {
+      "file": "01.png",
+      "pose": "passing-right",
+      "durationMs": 200,
+      "sha256": "7dc221cde4c86c23286198363688316280b1a36f5a4780f34740bda0413f41a4",
+      "rawCPUOutputSHA256": "d55779ccb7275467d29c7637167a2158086627cf367f1951651405ce68378606",
+      "transparentRGBPixelsNormalized": 105
+    },
+    {
+      "file": "02.png",
+      "pose": "contact-right",
+      "durationMs": 200,
+      "sha256": "b9fa6a87a9d4263bbaabd0b6f65aa4b6efb39ddf4825a5de36c64764c43bb0e9",
+      "rawCPUOutputSHA256": "f25f9d133f2e854d0edd86f2d6cbce70e5dded4e54e928f50a33a3164c028e17",
+      "transparentRGBPixelsNormalized": 97
+    },
+    {
+      "file": "03.png",
+      "pose": "passing-left",
+      "durationMs": 200,
+      "sha256": "b41a88543a46e435bee44a09dd779afb6833c9d7dbd9a0cb7f598d0e27306393",
+      "rawCPUOutputSHA256": "96bf06e1a58525ffd01a20c8fb3aee14d1a6628dd2cd7da90a896d0621200319",
+      "transparentRGBPixelsNormalized": 95
+    }
+  ],
+  "packProvenanceNote": "Four new locally authored South walk poses retain the established own-view public painted identity; all 44 prior registered poses and 31 other clips are unchanged. The full prior 2048x2048 RGBA page and mask pixels survive a downward extension to 2048x3200. Three walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance.",
+  "packReadme": "# Human Spearman partial animation pack\n\nPack 0.7.0 preserves all 44 existing registered poses and adds four locally authored South walk keys from the already-public painted South seed. SE/NE/East/North walks, SE attack/defeat and all eight idle facings remain unchanged. South uses four 200ms contact/passing keys, one 800ms loop, existing body calibration and padded original pivot. Three walk headings, seven attack and seven defeat headings remain missing (17 cells).\n\nThe page and zero team mask extend downward from 2048x2048 to 2048x3200; the entire previous page RGBA and grayscale mask pixels remain exact. Existing frame rectangles and calibration stay fixed; normalized UVs use the new page dimensions. Encoded PNG/hash/storage and decoded texture memory increase. This leaves reserved transparent slots for Southwest/West/Northwest without moving any old registration. No matching 3D master, provider job, held v2 art or state/simulation change is involved.\n\nSelected sources and provenance: `docs/art-direction/human-roster-v1/extracted/spearman/walk/south-local-v1/registration.json`. The full `scripts/build-human-spearman-preview.py` builder replays baseline, NE, East, North and South stages; individual older append scripts intentionally guard their reviewed construction stage. Packed original source textures/UVs are exact; CPU sampling changes rendered seed RGBA, while the upper rendering is frozen between new keys. Independent review and integration evidence are retained in the owning South guide. Ordinary GPU gait, support-foot speed, normal/strategic/crowded appearance and deployed acceptance remain pending. All private process and art iterations remain retained.\n"
+}
