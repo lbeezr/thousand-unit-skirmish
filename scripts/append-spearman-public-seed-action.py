@@ -5,8 +5,8 @@ from PIL import Image
 import copy, hashlib, io, json, subprocess, sys
 from foot_sprite_world_bounds import placed_sprite_bounds
 
-if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in ['north-east', 'east', 'north', 'south', 'south-west']):
-    raise ValueError('Expected a reviewed north-east, east, north, south or south-west attack stage')
+if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in ['north-east', 'east', 'north', 'south', 'south-west', 'west']):
+    raise ValueError('Expected a reviewed north-east, east, north, south, south-west or west attack stage')
 direction = sys.argv[1] if len(sys.argv) == 2 else 'north-east'
 root = Path(__file__).resolve().parents[1]
 source = root / f'docs/art-direction/human-roster-v1/extracted/spearman/attack/{direction}-local-v1'
@@ -34,7 +34,8 @@ slots = {'north-east': [[4, 3204], [428, 3204], [852, 3204]],
          'east': [[4, 3588], [428, 3588], [852, 3588]],
          'north': [[1316, 2772], [1316, 3204], [1316, 3588]],
          'south': [[2052, 4], [2052, 364], [2052, 724]],
-         'south-west': [[2052, 1084], [2052, 1516], [2052, 1948]]}
+         'south-west': [[2052, 1084], [2052, 1516], [2052, 1948]],
+         'west': [[2052, 2388], [2052, 2748], [2052, 3108]]}
 if receipt['atlasSlotsPx'] != slots[direction]:
     raise ValueError('Reviewed disjoint action slots changed')
 already = [f for f in asset['frames'] if f['id'] in own_ids]
