@@ -100,11 +100,14 @@ does not identify deployed bytes.
    source observation does not close complete-match qualification.
    CPU/full-qualification owner `01a10378` retains expensive full matches; this
    lane does not launch duplicates or change that owner's scheduling interface.
-2. Attribute a reproduced simulation tail to bounded function/GC/resource
-   observations before proposing an optimization; reuse the existing disposable
-   profiler and resource observer with a real ordinary256 consumer. Current
-   RSS samples do not provide allocation/GC, peak-between-samples or scoped
-   pressure attribution. Agree workload identity before any timing comparison.
+2. Isolate profiler startup versus cold-recovery start lag using existing profile
+   boundary witnesses in a bounded 24-unit diagnostic. The
+   [inner Crownroads observer](qa-crownroads-inner-attribution-2026-10-05.md)
+   identifies recurring inclusive `getMoveVector` cost in two same-source repeats,
+   but preserves the second run's36.237 ms lag-p95 failure and one skipped slot.
+   This is measurement, not cause or optimization. Finer subcost/call observations
+   retain movement/crowd ownership and the rejected zero-force arithmetic result.
+   Scoped pressure and RSS peaks between samples remain unmeasured.
 3. Establish ordinary256 rendered timing and device/viewport/backend identity
    through the existing cloud renderer owner. Retained hosted sandboxed SwiftShader
    Open Field frames prove selected pixels, not Crownroads GPU performance.

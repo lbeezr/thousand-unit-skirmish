@@ -366,6 +366,12 @@ rows once by worker/match/map/tick, reports observed phase means/tails, and keep
 known map-probe interruptions separate from capture gaps. Exact per-row overrun
 flags survive display rounding; attribution is observational, not a causal claim.
 
+The opt-in [bounded inner observer](qa-crownroads-inner-attribution-2026-10-05.md)
+uses `--attribution on` only for Crownroads, 24 units and ten-second waves. Its
+existing report checker joins exact identities/phases, reports inclusive function
+timing and GC overlap, and keeps profile boundaries separate. Diagnostic startup
+overhead can fail the existing lag budget; retain that failure without a waiver.
+
 The [core tranche profile](core-playtest-tranche.md#scale-measurement-profile--proposed)
 documents the bounded hosted movement ladder and per-seat tagged-order intervals.
 Its success status asserts protocol liveness, not the broader scale budgets.
