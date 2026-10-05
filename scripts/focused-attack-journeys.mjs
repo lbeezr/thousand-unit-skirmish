@@ -220,7 +220,7 @@ for (const team of [0, 1]) test(`seat ${team}: actual AttackMove-acquired pursui
     for (let t = 0; t < 20 && actor().attackTargetId < 0; t++) r.step();
     assert.equal(actor().attackTargetId, target().id); assert.ok(actor().attackMoveResumePath);
     assert.equal(focusedUnitAttackMovementActive(actor()), false);
-    assert.equal(activeLandMovementBodyRadius(actor()), 0);
+    assert.equal(activeLandMovementBodyRadius(actor()), LAND_CLEARANCE_PROFILE.radiusByKind.infantry);
   });
 });
 

@@ -13,7 +13,7 @@ function replaceExactly(source, before, after, count = 1) {
   assert.equal(source.split(before).length - 1, count, `server entrypoint changed: ${before}`);
   return source.split(before).join(after);
 }
-export async function createPathingReplayFixture(map, { traceLandSteps = false } = {}) {
+export async function createPathingReplayFixture(map, { traceLandSteps = false, traceRouteRejoins = false } = {}) {
   const directory = await mkdtemp(path.join(tmpdir(), 'rts-pathing-replay-'));
   try {
     const original = await readFile(new URL('../server.mjs', import.meta.url), 'utf8');
@@ -24,6 +24,9 @@ export async function createPathingReplayFixture(map, { traceLandSteps = false }
     source = replaceExactly(source, 'scheduleSimulationTick();', '/* fixed-tick replay driver */', 2);
     source = replaceExactly(source, "process.on('SIGTERM', () => shutdown('SIGTERM'));", '');
     source = replaceExactly(source, "process.on('SIGINT', () => shutdown('SIGINT'));", '');
+    if (traceRouteRejoins) {
+      source = replaceExactly(source, 'rejoinSelectedUnitRoute(', 'recordReplayRouteRejoin(', 4);
+    }
     if (traceLandSteps) {
       // Observe admitted substeps before their unchanged position assignments.
       // Tick chords can miss a turn when the executor consumes two waypoints.
@@ -45,6 +48,14 @@ export async function createPathingReplayFixture(map, { traceLandSteps = false }
     source = source.slice(0, listen) + `
 const replayPlanningCallbacks = [];
 const replayLandSteps = [];
+const replayRouteRejoins = [];
+function recordReplayRouteRejoin(route, options) {
+  const result = rejoinSelectedUnitRoute(route, options);
+  replayRouteRejoins.push({ id: options.position.id, radius: options.radius,
+    position: { x: options.position.x, z: options.position.z },
+    selected: [...route.path], path: [...result.route.path], rejoin: result.rejoin });
+  return result;
+}
 function recordReplayLandStep(unit, x, z, reason) {
   if (unit.movementDomain === 'water' || (unit.x === x && unit.z === z)) return;
   replayLandSteps.push({ id: unit.id, generation: unit.generation, revision: unit.orderRevision,
@@ -56,6 +67,7 @@ function recordReplayLandStep(unit, x, z, reason) {
 export const replay = {
   prepare(map) {
     replayLandSteps.length = 0;
+    replayRouteRejoins.length = 0;
     // Custom trusted replay maps exercise their authored simulation rules;
     // ordinary default Skirmish admission is covered by the launch fixtures.
     matchMode = normalizeMatchMode({ matchModeId: 'authored', matchModeVersion: 1 });
@@ -101,6 +113,7 @@ export const replay = {
   },
   step({ planningTurns } = {}) {
     replayLandSteps.length = 0;
+    replayRouteRejoins.length = 0;
     if (planningTurns === undefined && MOVE_PLANNING_TURNS_PER_TICK === 0) this.drain();
     else if (planningTurns === undefined) { /* candidate uses the real tick hook */ }
     else {
@@ -119,6 +132,11 @@ export const replay = {
   snapshot(team) { return roomPayload(team); },
   attackApproach(id, targetId, continueWaypoint = false) {
     const approach = getUnitAttackPath(units[id], units[targetId], null, continueWaypoint);
+    return approach && { ...approach, path: [...approach.path] };
+  },
+  automaticAttackApproach(id, targetId, continueWaypoint = false) {
+    const approach = boundedAutomaticApproach(units[id], units[targetId],
+      getUnitAttackPath(units[id], units[targetId], null, continueWaypoint));
     return approach && { ...approach, path: [...approach.path] };
   },
   checkpoint() { return captureMatchCheckpoint(1); },
@@ -156,6 +174,8 @@ export const replay = {
   get separation() { return separationWorkPayload(); },
   get landSteps() { return replayLandSteps.map(step => ({ ...step, from: { ...step.from }, to: { ...step.to },
     neighbours: step.neighbours.map(other => ({ ...other })) })); },
+  get routeRejoins() { return replayRouteRejoins.map(join => ({ ...join, position: { ...join.position },
+    selected: [...join.selected], path: [...join.path] })); },
   dispose() { clearInterval(heartbeatTimer); if (pveOpponentTimer) clearInterval(pveOpponentTimer); }
 };
 `;
