@@ -13,12 +13,53 @@ const body = (text, name) => {
   assert.ok(start >= 0 && end > start, name); return text.slice(start, end);
 };
 test('disposable observer keeps real gameplay, fog, payload, framing and tick bodies intact', () => {
-  const adapted = attributionSource(source);
+  const adapted = attributionSource(source, { simulation: true });
   for (const name of ['simulateTick','runSimulationTick','roomPayload','prepareJsonFrame','recordTickDuration',
-    'ensureVisionMasks','updateVisionMasks','markVisionFrom','captureMatchCheckpoint','broadcastState']) {
+    'ensureVisionMasks','updateVisionMasks','markVisionFrom','captureMatchCheckpoint','broadcastState',
+    'rebuildSpatialBuckets','getMoveVector','spreadInteractingUnits']) {
     assert.equal(body(adapted, name), body(source, name), name);
   }
   assert.throws(() => attributionSource(source.replace("  if (url.pathname === '/health') {", '')), /Attribution seam changed/);
+});
+
+test('inner function wrappers preserve receiver, result and thrown errors while retaining tick identity', async () => {
+  let observer, clock = 0;
+  const failure = new Error('production failure'), receiver = { marker: 7 };
+  const functions = { roomPayload() {}, deflateRawSync() {}, encodeWebSocketFrame() {}, prepareJsonFrame() {},
+    updateVisionMasks() {}, markVisionFrom() {}, captureMatchCheckpoint() {}, ensureVisionMasks() {}, recordTickDuration() {},
+    simulateTick() {
+      assert.equal(observer.wrapped.getMoveVector.call(receiver, 3), 10);
+      assert.throws(() => observer.wrapped.spreadInteractingUnits(), error => error === failure);
+    },
+    getMoveVector(value) { return this.marker + value; }, spreadInteractingUnits() { throw failure; },
+    runSimulationTick() {
+      observer.wrapped.simulateTick();
+      observer.wrapped.recordTickDuration(10, { tickNumber: 1, matchId: 'match-a', mapId: 'crownroads', budgetMs: 1000 / 30,
+        overBudget: false, cpuMs: 5, simulationMs: 8, visionMs: 1, scenarioMs: 0, broadcastMs: 1, checkpointMs: 0 });
+    } };
+  observer = createTickAttribution({ functions, context: () => ({ tickNumber: 0 }), visionContext: () => ({}), profiles: false,
+    now: () => ++clock });
+  assert.equal(observer.wrapped.getMoveVector.call(receiver, 3), 10, 'inactive wrapper preserves behavior');
+  await observer.start(); observer.wrapped.runSimulationTick(); const report = await observer.stop();
+  const row = report.rows[0];
+  assert.equal(row.matchId, 'match-a'); assert.equal(row.mapId, 'crownroads'); assert.equal(row.budgetMs, 1000 / 30);
+  for (const name of ['simulateTick', 'getMoveVector', 'spreadInteractingUnits']) {
+    assert.equal(row[`${name}Calls`], 1); assert.ok(row[`${name}Ms`] > 0);
+  }
+  assert.equal(report.droppedRows, 0);
+});
+
+test('bounded observer reports expired rows rather than implying complete capture', async () => {
+  let observer, tick = 0;
+  const functions = { roomPayload() {}, deflateRawSync() {}, encodeWebSocketFrame() {}, prepareJsonFrame() {},
+    updateVisionMasks() {}, markVisionFrom() {}, captureMatchCheckpoint() {}, ensureVisionMasks() {}, recordTickDuration() {},
+    runSimulationTick() { observer.wrapped.recordTickDuration(1, { tickNumber: ++tick }); } };
+  observer = createTickAttribution({ functions, context: () => ({ tickNumber: tick }), visionContext: () => ({}), profiles: false });
+  await observer.start(); for (let i = 0; i < 2001; i++) observer.wrapped.runSimulationTick();
+  const report = await observer.stop();
+  assert.equal(report.droppedRows, 1); assert.equal(report.rows.length, 2000); assert.equal(report.rows[0].tickNumber, 2);
+  await observer.start(); observer.wrapped.runSimulationTick();
+  assert.equal((await observer.stop()).droppedRows, 0, 'drop count resets for the next window');
 });
 for (const compressed of [false, true]) test(`observed production framing preserves exact ${compressed ? 'compressed' : 'plain'} private wire bytes`, async () => {
   const payload = { type: 'state', units: Array.from({length: 250}, (_, i) => [i, i % 2, i / 10, -i / 20, 100, 'worker']),
