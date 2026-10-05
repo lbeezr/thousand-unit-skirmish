@@ -48,9 +48,12 @@ stays private; the admitted cutout uses no paint donors, job, mirror or held art
 
 Owner: delegated default Infantry lane; capture01a10378 supports identified
 ordinary playback while Infantry retains default/release/appearance completion.
-Next disjoint step: own-East restrained source-UV trial is under independent
-review after actual source/occlusion inspection; it is not admitted. Dependency: own-facing source and
-independent pixel review. Source/default/package/deployed/playable evidence stay
+Next disjoint step: four own-East restrained source-UV keys have independent
+source approval after phase-order and cuff corrections; they remain private and
+are not admitted or counted. The Infantry lane owns a separate East default
+increment after NE's normal PR delivery; GitHub PR access is the current dependency.
+East needs its own projected contact-depth gait check and complete preservation/
+frame/UV/time/package qualification. Source/default/package/deployed/playable evidence stay
 distinct; NE acceptance needs a containing exact build. Spearman01a10469 is unchanged.
 
 ## Spearman North source attack — 5 October 2026

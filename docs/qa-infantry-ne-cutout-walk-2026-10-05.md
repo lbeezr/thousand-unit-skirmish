@@ -97,7 +97,7 @@ build, then qualify a containing exact build. No browser retry/bypass or Mac wor
 | --- | --- | --- |
 | NE default/source/release | Infantry lane / four reviewed public-seed poses | Exact-head source, actual frame/UV/time/gait, old-pose preservation, pack HTTP |
 | NE playable/served | Infantry retains outcome; capture01a10378 supports an identified containing release | Ordinary paid Infantry, both teams, start/Stop/resume, planted contact and normal/crowded readability |
-| Next disjoint source: East | Infantry lane / own-East idle, exposed and occluded leg surfaces | Faithful bounded contact/passing trial with independent review, or exact missing input; no borrowed NE/SE facing/job |
+| Next disjoint increment: East default | Infantry lane / four privately reviewed own-East keys, after NE's normal PR delivery | Separate small default append; preserve all preceding poses and calibration, own-depth gait/frame/UV/time tests, independent integration review and pack HTTP |
 | Remaining walks | Infantry lane / N/S/SW/W/NW after the next assessed heading | One own-facing reviewed slice at a time; source/package/deployment/playable stages stay distinct |
 
 For wider NE poses, the smallest extra source is two complete articulated NE
@@ -105,10 +105,25 @@ leg layers with overlap under the existing sash/shield/cuffs and exposed inner/
 sole surfaces. A full equipped rig with fixed camera/root is a larger alternative.
 This narrow reviewed cutout required neither new private input nor paid permission.
 
-Continuation is active: the own-East registered idle and equipment/leg overlaps
-were inspected at source size. Independent feasibility review allows a restrained
-private trial with separate anatomical masks, frozen foreground spear and
-cloth/shield edges, and distinct per-leg contact depths. Four local source-UV keys
-are under independent pixel review; they are not admitted or counted as a walk.
-NE's common floor-row gait test cannot qualify this oblique view. No additional
-provider job, paid credits, mirrored facing or painted surface was used.
+Continuation progressed beyond feasibility: four corrected own-East source-UV
+poses received independent source/half-size approval as a restrained lower-leg
+walk study. The first trial's phase order and shaft-side cuff seam were rejected;
+the corrected contact/support order and frozen full near cuff resolve both.
+The near leg articulates only below y201, preserving the occluded upper surfaces.
+All equipment remains frozen; exact rest recomposition accounts for
+12,572 body, 1,270 right-leg and 1,661 left-leg alpha-positive source samples.
+Each leg retains its own projected contact contour: right row243 and left218,
+with passing contours237 and212, respectively. NE's common floor-row gait test
+cannot qualify this oblique view. No provider job, credits, mirrored facing,
+painted surface or private source publication was used.
+
+Those four reviewed East poses and source studies remain private and are not
+admitted or counted in the candidate default's two walks. Their next dependency
+is normal NE PR delivery through the currently restricted GitHub path, followed
+by a separate complete East default/release increment. The Infantry lane owns
+that continuation and its independent integration/gait qualification. Exact
+rendered acceptance still belongs to an identified containing build; source
+pose review did not play the GIF or a game. A larger East knee/hip or sole turn
+would need matching own-East near-leg artwork behind the shaft, far thigh under
+the cloth/shield, or the exact equipped articulated master; the reviewed narrow
+envelope did not require those additional inputs.

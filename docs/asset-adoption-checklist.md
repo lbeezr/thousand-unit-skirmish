@@ -118,7 +118,9 @@ adds four keys to candidate default v3 pack0.6.0, retaining all32 original poses
 clips and calibration. Two source walks leave six walk gaps/20 action cells.
 Branch push and source/package checks passed; draft PR creation returned
 `Forbidden`, so PR/merge and deployed adoption remain incomplete. Infantry owns
-normal PR delivery and the own-East private trial under independent review;
+normal PR delivery and the next separate own-East default increment. Four East
+keys have independent private source approval, with default/package admission
+still pending; they do not increase the candidate default's two-walk count.
 capture01a10378 supports an identified containing build. Source/pack checks do
 not close planted feet, actual playback or normal/crowded appearance.
 
