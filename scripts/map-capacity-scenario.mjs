@@ -7,7 +7,7 @@ import { createServer } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { capturedBudgetEnvelope } from './map-capacity-report-check.mjs';
+import { capturedBudgetEnvelope, capturedTickAttribution } from './map-capacity-report-check.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const options = { map: 'veyrholds-threefold-basin', loads: '24,250,500,1000', seconds: '10', 'rss-stop-mib': '512' };
@@ -29,6 +29,8 @@ const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const report = { schemaVersion: 1, sourceCommit: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim(),
   sourceDirty: Boolean(execFileSync('git', ['status', '--porcelain'], { cwd: ROOT, encoding: 'utf8' }).trim()),
   mapId: map.id, mapSHA256: hash(mapBytes), scriptSHA256: hash(await readFile(fileURLToPath(import.meta.url))),
+  reportCheckSHA256: hash(await readFile(new URL('./map-capacity-report-check.mjs', import.meta.url))),
+  serverSHA256: hash(await readFile(path.join(ROOT, 'server.mjs'))),
   startedAt: new Date().toISOString(), host: { platform: process.platform, arch: process.arch, cpus: os.cpus().length,
     cpuModel: os.cpus()[0]?.model, memoryBytes: os.totalmem(), loadBefore: os.loadavg(), isolated: false },
   workload: { loads, wavesPerLoad: 3, minimumWallSecondsPerWave: seconds, minimumGameTicksAfterAcceptance: 300, fog: true, opening: '4 Workers per seat plus Infantry; existing selectArmySize diagnostics above 24',
@@ -105,6 +107,7 @@ async function checkGridBoundaries(clients, health) {
 }
 async function runLoad(count) {
   const record = { armySize: count, waves: [], samples: [], passed: false }; report.loads.push(record);
+  const tickRows = new Map(); let workerRun = 0;
   const checkpoint = path.join(temp, String(count), 'match.json'), portNumber = await port();
   const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('RTS_')));
   Object.assign(env, { PORT: String(portNumber), RTS_HOST: '127.0.0.1', RTS_MAP: `maps/${map.id}.json`,
@@ -112,6 +115,7 @@ async function runLoad(count) {
     RTS_TICK_DIAGNOSTICS: '1', RTS_SEPARATION_DIAGNOSTICS: '1' });
   let child, clients = [], logs = '';
   const launch = async () => {
+    workerRun++;
     child = spawn(process.execPath, ['server.mjs'], { cwd: ROOT, env, stdio: ['ignore', 'pipe', 'pipe'] });
     child.stdout.on('data', chunk => { logs += chunk; }); child.stderr.on('data', chunk => { logs += chunk; });
     for (let attempt = 0; attempt < 150; attempt++) {
@@ -120,17 +124,27 @@ async function runLoad(count) {
     }
     throw new Error('Server readiness timeout');
   };
-  const health = async () => { const response = await fetch(`http://127.0.0.1:${portNumber}/health`, { signal: AbortSignal.timeout(5000) });
+  const health = async () => { const response = await fetch(`http://127.0.0.1:${portNumber}/health?tickSamples=1`, { signal: AbortSignal.timeout(5000) });
     assert.equal(response.status, 200); return response.json(); };
   const capture = async () => {
     const data = await health(), rss = await processRss(child.pid);
+    assert.ok(Array.isArray(data.tickTiming.samples), 'Opt-in raw tick diagnostics must be available');
+    for (const diagnostic of data.tickTiming.samples) {
+      const row = { workerRun, ...diagnostic };
+      const key = JSON.stringify([workerRun, row.matchId, row.mapId, row.tickNumber]);
+      assert.ok(!tickRows.has(key) || JSON.stringify(tickRows.get(key)) === JSON.stringify(row),
+        'Repeated diagnostic tick identity must preserve its values');
+      tickRows.set(key, row);
+    }
+    // Preserve unique rows once, rather than duplicating rolling arrays in every sample.
+    delete data.tickTiming.samples;
     let clock = null, pathStorage = null;
     try { const saved = JSON.parse(await readFile(checkpoint, 'utf8')); clock = { tick: saved.state.tickNumber,
       gameSeconds: saved.state.matchElapsedSeconds, savedAt: saved.savedAt, sequence: saved.sequence, armySize: saved.state.currentArmySize };
       const paths = saved.state.units.flatMap(u => [u.path, ...(u.attackMoveResumePath ? [u.attackMoveResumePath] : [])]);
       pathStorage = { totalIndices: paths.reduce((sum, p) => sum + p.length, 0), maxPathIndices: Math.max(0, ...paths.map(p => p.length)) };
     } catch {}
-    const sample = { observedAt: new Date().toISOString(), serverRssBytes: rss, collectorRssBytes: process.memoryUsage().rss, health: data, clock, pathStorage };
+    const sample = { observedAt: new Date().toISOString(), workerRun, serverRssBytes: rss, collectorRssBytes: process.memoryUsage().rss, health: data, clock, pathStorage };
     record.samples.push(sample);
     if (rss !== null) assert.ok(Number.isFinite(rss) && rss <= rssStop, `Server RSS ${rss} exceeds probe stop ${rssStop}`);
     return sample;
@@ -248,8 +262,15 @@ async function runLoad(count) {
     await capture(); record.coldRecovery = true;
     record.capturedBudgetEnvelope = capturedBudgetEnvelope(record.samples, record.waves.flatMap(w => w.planning));
     assert.ok(record.capturedBudgetEnvelope.passed, 'All captured windows, including cold recovery, must meet the diagnostic budgets');
+    record.tickRows = [...tickRows.values()];
+    record.tickAttribution = capturedTickAttribution(record.tickRows, map.id);
+    assert.equal(record.tickAttribution.status, 'valid-observations', 'Raw tick attribution must be complete and consistent');
+    console.log(JSON.stringify({ armySize: count, uniqueAttributedTicks: record.tickAttribution.uniqueObservedTicks,
+      overBudgetTicks: record.tickAttribution.overBudgetTicks, dominantPhaseCounts: record.tickAttribution.overrunDominantPhaseCounts }));
     record.peakServerRssBytes = Math.max(...record.samples.map(s => s.serverRssBytes ?? 0)); record.passed = true;
   } finally {
+    record.tickRows = [...tickRows.values()];
+    record.tickAttribution = capturedTickAttribution(record.tickRows, map.id);
     await Promise.all(clients.map(c => c.close())); await stop(child);
     await writeFile(path.join(output, `${count}-server.log`), logs);
   }
