@@ -5161,16 +5161,17 @@ function updateForestWorkerEconomy(unit, continuations) {
       unit.pathIndex = 0;
       unit.movePlanningPending = false;
       unit.moveGoalCell = -1;
-    } else if (unit.pathIndex >= unit.path.length) {
+    } else if (unit.pathIndex >= unit.path.length
+      && (!workerEconomyRouteScope || !unit.movePlanningPending)) {
+      // A scoped pending path still owns its selected-goal repair, including
+      // outside access cells. It is not a completed or failed arrival.
       // A flow goal is a cell, while harvesting checks the actual position.
       // Retargeting can start inside an access cell but outside harvest range;
       // finish at that cell's legal center through ordinary movement.
       const current = worldToCell(unit.x, unit.z);
       if (forestOpenAccessCells(cell).includes(current)) {
         if (workerEconomyRouteScope) {
-          // A refused flow/center route already owns an explicit selected-goal
-          // repair. Keep it pending rather than replacing it every work tick.
-          if (!unit.movePlanningPending) publishWorkerEconomyRoute(unit, [current], current);
+          publishWorkerEconomyRoute(unit, [current], current);
         } else {
           unit.path = [current];
           unit.pathIndex = 0;

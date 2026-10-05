@@ -1420,20 +1420,28 @@ but cannot create optimistic reuse. Refusal keeps the selected goal/resource
 job, cargo and queue, releases refused arrays and explicitly hands off to the
 existing silent `worker-economy-capacity` repair. Drop-off navigation is already
 refreshed before publication, so the next work tick cannot be relied on to
-reselect/retry. A waiting forest Worker retains that accepted flow/center goal
-instead of republishing a center and accumulating repairs each tick. Actual
+reselect/retry. A waiting forest Worker retains that accepted flow/center goal,
+including when outside all access cells. An empty pending route cannot be
+classified as a failed arrival or enter frontier continuation, which would
+reselect every tick or cancel a remembered job while its tree is out of sight.
+A completed nonpending route keeps the original continuation and queue policy. Actual
 interaction range still controls deposits/harvesting; refusal never supplies
 arrival or executes the old leg. Actor identity/generation/revision/epoch guard
 the handoff; existing planner navigation checks guard retry. Stop/new manual
 intent, depletion and continuation retain their existing priority and policy.
 
 The registered [economy admission journeys](../scripts/worker-economy-route-admission-journeys.mjs)
-consume the actual economy, both publication slots, repair/service, physical
-phase and recovery tail with synthetic XL pressure and controlled selectors/A*.
+consume the actual economy, both publication slots, forest target/continuation
+bodies, repair/service, physical phase and recovery tail with synthetic XL
+pressure and controlled flow/A*/visibility.
 Quota/weighted/raw-score controls, mixed flow/center ordering, active/resume alias
 accounting, one pending center repair, both-seat field-release/deposit-once,
 safe physical displacements, productive forest recovery, stale actors/orders,
-navigation/epoch changes and legacy bypass are source contracts. Metadata cold
+navigation/epoch changes and legacy bypass are source contracts. Off-access
+post-deposit waits cover both seats, visible/out-of-sight remembered trees,
+no-pressure controls and safe productive recovery after release. The optional
+queued-plus-forest-job fixture is an accepted-state control, not a normal Shift
+Move journey: that command clears the work intent. Metadata cold
 recovery is separate from a complete native XL checkpoint. Existing real-command
 Food/Wood/Stone, forest, paid Farm, depletion/continuation and untouched-checkpoint
 journeys remain compatibility acceptance on admitted grids. Water/wildlife keep

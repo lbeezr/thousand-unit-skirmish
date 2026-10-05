@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 import * as movement from '../src/unit-movement.mjs';
 import * as workIntent from '../src/work-intent.mjs';
+import { forestGatherGroups, visibleForestCandidates } from '../src/forest-gather-group.mjs';
 import { shortcutFlatUnitPath, canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
@@ -18,6 +19,7 @@ function body(name) {
 const names = ['workerFlowPath', 'applyWorkerFlowRoute', 'publishWorkerEconomyRoute',
   'updateWorkerEconomyWithRouteAdmission', 'routeWorkerToDropoff', 'workerAtDropoff', 'routeWorker',
   'forestOpenAccessCells', 'routeForestWorker', 'updateForestWorkerEconomy', 'updateWorkerEconomy',
+  'forestGroupTarget', 'continueForestGroupGathering', 'continueAreaGathering',
   'ensureGatherWorkIntent', 'depositWorkerCargo', 'stopGathering', 'cancelGatherOrder',
   'clearAttackMoveOrder', 'assignStationaryOrder', 'pendingMoveAssignmentsByUnit', 'enqueueRouteRepairs',
   'applyPlannedMoveAssignment', 'completeMovePlanningJob', 'processMovePlanningSlice',
@@ -61,7 +63,7 @@ function fixture({ width = 320, height = 320, total = 0, weighted = false, count
   const callbacks = [], censuses = [], selections = [], notices = [], searches = [], samples = [];
   const forestCellMask = new Uint8Array(levels.length), forestWoodRemaining = new Float64Array(levels.length);
   const context = vm.createContext({ ...movement, ...workIntent, shortcutFlatUnitPath, canTraverseFlatUnitSegment,
-    activeWallBuildOrder, UNIT_DEFINITIONS, creditResourceBalance,
+    activeWallBuildOrder, UNIT_DEFINITIONS, creditResourceBalance, visibleForestCandidates,
     MAP_WIDTH: width, MAP_HEIGHT: height, MAP_HALF_X: width / 2, MAP_HALF_Z: height / 2, CELL_COUNT: levels.length,
     MAX_UNITS: 2000, MAX_RESOURCE_NODES: 128, XL_CHECKPOINT_ROUTE_MAX_ENTRIES: QUOTA,
     units, resourceNodeStates: nodes, elevationLevelByCell: levels, forestCellMask, forestWoodRemaining,
@@ -82,7 +84,7 @@ function fixture({ width = 320, height = 320, total = 0, weighted = false, count
     acceptsProfileDropoff: () => true, distanceToBuildingEdge: (u, b) => Math.hypot(u.x - b.x, u.z - b.z),
     teamFood: [100, 100], teamWood: [100, 100], teamStone: [0, 0],
     cellVisibleToTeam: () => true, forestStockChangedCells: new Set(), pendingForestClears: new Set(),
-    continueAreaGathering: () => false, flushPendingForestClears() {}, harvestNodeById: id => nodes.get(id),
+    flushPendingForestClears() {}, harvestNodeById: id => nodes.get(id),
     activateWildlifeHarvest: () => false, markWildlifeDepleted() {},
     activeMovePlanningJob: null, movePlanningQueue: [], nextMoveOrderId: 1, tickNumber: 0,
     MOVE_PLANNING_SLICE_BUDGET_MS: 5, MOVE_PLANNING_MAX_WORK_ITEMS_PER_SLICE: 8,
@@ -138,11 +140,84 @@ function fixture({ width = 320, height = 320, total = 0, weighted = false, count
         workIntent: workIntent.createForestGatherWorkIntent(u.generation, point(tree)),
         path: [], pathIndex: 0, moveGoalCell: current, movePlanningPending: false });
       forestCellMask[tree] = 1; forestWoodRemaining[tree] = 100;
+      context.forestWorkGroups = forestGatherGroups(forestCellMask, width);
       return { current, tree, job: structuredClone(u.workIntent) };
     },
   };
   assert.equal(entries(f), total); return f;
 }
+
+function offAccessForestResume({ team, turns, queued, total, visible = true }) {
+  const f = fixture({ team, turns, total }), u = f.actors[0], forest = f.forestActor();
+  Object.assign(u, f.point(f.start), { gatherPhase: 'to-base', dropoffNavigationRevision: 4,
+    dropoffBuildingId: 10, moveGoalCell: f.start });
+  Object.assign(f.context.buildingsById.get(10), f.point(f.start));
+  // Controlled disclosure: an invisible remembered tree at the drop-off
+  // becomes visible during the real physical approach. No hidden target choice.
+  f.context.cellVisibleToTeam = () => visible
+    || Math.hypot(u.x - f.point(forest.tree).x, u.z - f.point(forest.tree).z) <= 3;
+  // This optional queued+work-intent combination is a synthetic accepted-state
+  // control. An ordinary Shift Move clears workIntent and is tested elsewhere.
+  if (queued) u.queuedWaypoints.push({ destination: forest.current + 4, attackMove: false, point: null });
+  const original = f.context.getAttackFlowFieldForGoals;
+  f.forestSelections = 0;
+  f.context.getAttackFlowFieldForGoals = (goals, key) => {
+    if (!key.startsWith('forest:')) return original(goals, key);
+    f.forestSelections++;
+    return { goal: forest.tree + 1, goals: new Set(goals),
+      path: Array.from({ length: forest.current - f.start }, (_, i) => f.start + i + 1) };
+  };
+  return { f, u, forest };
+}
+
+for (const team of [0, 1]) for (const turns of [1, 2]) for (const queued of [false, true])
+test(`seat ${team}, scheduler ${turns}, queued-state ${queued}: off-access forest resume retains its job and selected repair`, () => {
+  for (const visible of [false, true]) for (const total of [0, QUOTA]) {
+    const { f, u, forest } = offAccessForestResume({ team, turns, queued, total, visible });
+    f.economy(); f.drain();
+    const revision = u.orderRevision, job = structuredClone(u.workIntent), queue = structuredClone(u.queuedWaypoints);
+    const pending = f.context.pendingMoveAssignmentsByUnit().get(u.id);
+    assert.equal(f.context.teamWood[team], 105); assert.equal(u.cargo, 0);
+    assert.equal(u.gatherPhase, 'to-node'); assert.equal(u.moveGoalCell, forest.current);
+    assert.equal(u.movePlanningPending, total === QUOTA); assert.equal(f.forestSelections, 1);
+    assert.equal(revision, total === QUOTA ? 9 : 8);
+    for (let i = 0; i < 4; i++) { f.tick(); f.economy(); }
+    assert.equal(u.orderRevision, revision, 'pending off-access leg is not a failed arrival');
+    assert.deepEqual(u.workIntent, job); assert.deepEqual(u.queuedWaypoints, queue);
+    assert.equal(u.gatherPhase, 'to-node'); assert.equal(u.moveGoalCell, forest.current);
+    assert.equal(f.forestSelections, 1, 'waiting does not rerun forest selection');
+    assert.equal(f.context.teamWood[team], 105, 'the completed deposit is credited once');
+    if (total === QUOTA) {
+      assert.equal(f.context.pendingMoveAssignmentsByUnit().get(u.id), pending);
+      assert.equal(u.path.length, 0); assert.ok(f.checkpointLeaf()); f.release(); f.tick();
+      assert.equal(u.movePlanningPending, false); assert.equal(u.path.at(-1), forest.current);
+      for (let i = 0; i < 180 && u.cargo === 0; i++) { f.tick(); f.physical(); f.economy(); }
+      assert.equal(u.gatherPhase, 'gathering'); assert.ok(u.cargo > 0);
+      assert.deepEqual(u.workIntent, job); assert.deepEqual(u.queuedWaypoints, queue);
+      assert.equal(f.context.teamWood[team], 105);
+      assert.ok(Math.abs(f.forestWoodRemaining[forest.tree] + u.cargo + f.context.teamWood[team] - 205) < 1e-8);
+      assert.ok(entries(f) <= QUOTA);
+    }
+  }
+});
+
+test('completed off-access forest failure retains the original queued/unqueued continuation policy', () => {
+  for (const queued of [false, true]) {
+    const { f, u, forest } = offAccessForestResume({ team: 0, turns: 1, queued, total: QUOTA });
+    Object.assign(u, { cargo: 0, gatherPhase: 'to-node', movePlanningPending: false });
+    f.economy();
+    if (queued) {
+      assert.equal(u.workIntent, null); assert.equal(u.gatherPhase, '');
+      assert.equal(u.queuedWaypoints.length, 1); assert.equal(u.movePlanningPending, false);
+      assert.equal(f.forestSelections, 0);
+    } else {
+      assert.ok(u.workIntent); assert.equal(u.gatherPhase, 'to-node');
+      assert.equal(u.moveGoalCell, forest.current); assert.equal(u.movePlanningPending, true);
+      assert.equal(f.forestSelections, 2, 'actual failed arrival still selects and routes through original continuation');
+    }
+    assert.equal(f.context.teamWood[0], 100);
+  }
+});
 
 for (const [width, height] of [[320, 160], [160, 320], [320, 320]]) {
   test(`Worker economy ${width}x${height}: stale navigation retains raw selection under quota deferral`, () => {
