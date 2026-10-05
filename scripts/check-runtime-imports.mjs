@@ -84,7 +84,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'regional-ground-kits', 'resource-visual-state', 'sheep-static-preview',
     'shore-bank-shade', 'shore-fishing-placeholder', 'shore-vegetation',
     'sunbloom-crown-pack', 'sunbloom-low-pack', 'sunbloom-view-pack', 'sunbloom-worked-pack',
-    'terrain-atmosphere', 'terrain-blend', 'terrain-cliff-faces', 'terrain-height', 'terrain-texture-sampling',
+    'settlement-wear', 'terrain-atmosphere', 'terrain-blend', 'terrain-cliff-faces', 'terrain-height', 'terrain-texture-sampling',
     'unit-lod-state', 'unit-sprite-runtime', 'unit-visual-state', 'veilcap-view-pack',
     'veilcap-worked-pack', 'wall-placement-ghost', 'water-study-fish-binding',
     'water-study-state', 'water-surface-geometry', 'water-surface-study',

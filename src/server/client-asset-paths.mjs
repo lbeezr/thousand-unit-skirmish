@@ -12,7 +12,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/frontier-building-preview.mjs',
   'src/building-fog-composition.mjs',
   'src/building-orientation.mjs', 'src/building-placement-preview.mjs', 'src/building-rotation-controls.mjs',
-  'src/palisade-construction-ground.mjs',
+  'src/palisade-construction-ground.mjs', 'src/settlement-wear.mjs',
   'src/asset-readability.mjs', 'src/catalog-barracks-observation.mjs', 'docs/art-direction/human-roster-v1/infantry-production-contract.json', 'assets/ui/icons/actions/manifest.json',
   'src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/wildlife-motion.mjs', 'src/wildlife-heading.mjs', 'src/wildlife-herding.mjs', 'src/wildlife-client-state.mjs', 'src/sheep-static-preview.mjs',
   'environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs',

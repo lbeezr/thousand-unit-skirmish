@@ -8,6 +8,7 @@ import { RESOURCE_VISUAL_STAGES, resourceVisualStage } from './resource-visual-s
 import { createGroundMistStudy, groundMistEnabled } from './terrain-atmosphere.mjs';
 import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
 import { createTerrainCliffFaces } from './terrain-cliff-faces.mjs';
+import { createSettlementWearMesh } from './settlement-wear.mjs';
 import { createPalisadeConstructionGroundMesh } from './palisade-construction-ground.mjs';
 import { groundTextureName, loadPaintedMaterialAtlas } from './painted-material-atlas-runtime.mjs';
 import { loadOakDepletionAtlas, oakDepletionStage, applyOakDepletionSampling } from './oak-depletion-atlas-runtime.mjs';
@@ -1236,4 +1237,13 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
     }
   }
   return forestTreeSlots;
+}
+
+// Use the same admitted regional dirt and stochastic painterly sampling as terrain.
+export function createSettlementGround(definition) {
+  const material = applyTerrainTextureSampling(new THREE.MeshBasicMaterial({
+    map: groundTexture('dirt', definition), color: 0xd2d4bd, vertexColors: true,
+    transparent: true, depthTest: true, depthWrite: false,
+  }), definition.terrainSeed || 0, true, false, groundTexture('dirt', definition, true));
+  return createSettlementWearMesh(material);
 }

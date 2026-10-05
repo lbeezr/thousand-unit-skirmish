@@ -208,6 +208,14 @@ Recent gameplay regressions also cover [Scout affordability](qa-ai-scout-afforda
 and [Rootways retreat/resumption](qa-rootways-scout-retreat-2026-10-01.md).
 They establish bounded automated behavior, with contested play still to observe.
 
+The [building-cluster wear slice](map-authoring.md#building-cluster-wear--5-october-2026)
+selects soft local entrance wear over speculative paths or traffic history.
+Settlement-ground owner `01a0f784` retains the small default integration and
+source/package checks; next action is exact-release cloud/staging rendered
+acceptance for three Houses opposite a Town Center and nearby Workshop.
+The recorded cloud sandbox/storage failure leaves appearance and served identity
+unverified; existing construction/palisade composition ownership is unchanged.
+
 ### Continuing work areas
 
 | Area | Useful next outcome | Record |
