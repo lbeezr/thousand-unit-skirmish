@@ -16,6 +16,7 @@ test('leaving/back navigation closes once, cancels reconnect and restores the ex
   vm.runInContext(block, context);
   listeners.get('beforeunload')(); listeners.get('pagehide')();
   assert.equal(closed.length, 1); assert.deepEqual(cleared, [7]);
+  assert.equal(context.matchDecisions.disconnectCount, 1, 'leaving clears pending consent once');
   assert.equal(context.pageLeaving, true); assert.equal(context.reconnectTimer, null);
   listeners.get('pageshow')({ persisted: false }); assert.equal(connections.length, 0);
   listeners.get('pageshow')({ persisted: true });
