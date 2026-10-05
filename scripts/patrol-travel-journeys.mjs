@@ -187,13 +187,14 @@ for (const team of [0, 1]) test(`seat ${team}: paid endpoint blockage preserves 
   });
 });
 
-for (const team of [0, 1]) test(`seat ${team}: actual Follow retains its separate deadband and zero Patrol body policy`, async () => {
+for (const team of [0, 1]) test(`seat ${team}: actual Follow retains its separate deadband and military Follow body policy`, async () => {
   await journey(team, ({ r, actor, command, until, recover }) => {
     const leader = r.units.find(u => u.team === team && u.kind === 'worker');
     command('follow', { targetId: leader.id, targetGeneration: leader.generation }); recover();
     until(() => Math.hypot(actor().x - leader.x, actor().z - leader.z) <= 4);
     assert.equal(actor().persistentOrder.type, 'follow'); assert.equal(patrolTravelMovementActive(actor()), false);
-    assert.equal(activeLandMovementBodyRadius(actor()), 0); assert.equal(actor().attackTargetId, -1);
+    assert.equal(activeLandMovementBodyRadius(actor()), LAND_CLEARANCE_PROFILE.radiusByKind.infantry);
+    assert.equal(actor().attackTargetId, -1);
   });
 });
 

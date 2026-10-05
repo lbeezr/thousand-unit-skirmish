@@ -58,6 +58,56 @@ actual journey coverage and rendered acceptance are separate.
 
 ### Shared semantics, domain policies
 
+The separate **target-free military Follow candidate** consumes core PR422's
+durable accepted pending-goal contract at merged building-target source `032eea7d`.
+It adds only `followTravelMovementActive` and the caller-owned body-profile
+fallback; existing shared publication/rejoin/executor do the work. No host,
+persistent controller, queue admission, checkpoint, planner, quota or crowd
+algorithm changes are included. [Disjoint boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/425#issuecomment-5987365194)
+retains PR425's live-publication/retry functions with core.
+
+The [baseline](qa-evidence/follow-travel-2026-10-05/baseline.json) on unchanged
+`032eea7d` runtime finds 16/6 unsafe Infantry corner substeps on seats 0/1;
+paid/trained Archer controls already have zero. The
+[pre-review candidate](qa-evidence/follow-travel-2026-10-05/candidate.json)
+reduces Infantry to zero and retains Archer's zero, the original ID-derived
+two-cell offset goals and friendly leader identity. Safe Infantry travel changes
+the observed stop from `(3.2454,.6505)` / `(3.0942,.0436)` to the selected cell
+centers `(4.5,.5)` / `(4.5,-.5)`, and final revision 5→4: the unchanged 30-tick
+controller no longer cancels an active path inside the four-cell deadband in
+this witness. No timing, exact stop-position or revision-identity claim is made.
+The original four-cell deadband, two-cell offset, poll/retry/cap, leader
+generation/death, selected goals and cancellation policy remain controller-owned.
+
+The new strict command journeys expose a **remaining coupled transition gap**:
+queued Move before the first Follow path publication clears persistent intent
+while retaining its accepted cell goal, but leaves `moveGoalPoint:null`.
+`ordinaryMoveBodyRadius` then yields zero during recovery's rebuilt first leg.
+Both the [unchanged baseline](qa-evidence/follow-travel-2026-10-05/queued-clearance-baseline.json)
+and [candidate](qa-evidence/follow-travel-2026-10-05/queued-clearance-candidate.json)
+execute that durable leg and reach the queued fractional point, yet retain
+16/6 unsafe corner steps. Baseline runtime hashes are verified against the
+merged source; archive and dirty-checkout provenance are explicit. The reporter
+`follow-queued-clearance-probe.mjs` exits successfully for collection, **not**
+physical acceptance. Core PR422 fixed liveness; it did not adopt this cancelled,
+cell-only ordinary leg's body policy.
+
+Forty-nine registered candidate checks currently retain six strict physical
+failures for that pending/queued/cold transition, rather than suppressing them.
+Other real-command cases cover both-seat Infantry and paid/trained Archer,
+accepted/pending/active recovery, Stop/Hold/Move, active queue cancellation,
+moving leader, actual leader death, validated generation replacement, close
+leader deadband, existing bounded monotone legacy escape, paid obstruction,
+selection/cycle rejection and excluded Worker policy. The candidate remains
+unmerged while the [exact queue-admission boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/425#issuecomment-5987460101)
+is coordinated with core/crowd. A possible existing-API cell-center goal point
+for the accepted catch-up must preserve its selected goal/revision across
+cancellation and recovery; no new saved flag, leader revival or duplicate
+planner is implemented here. Native active-Follow/active-queued-leg restart
+evidence is separate from the failing first-pending geometry. Rendered and
+identified served acceptance remain open; the historical zero-frame block is
+retained without retry. Art backing is N/A.
+
 Focused military **building-target Attack** now consumes the merged selected-route
 rejoin at `assignAttackBuilding`'s final accepted publication and `simulateTick`'s
 active building repath, after their original target/revision/range-goal decisions.
