@@ -17,7 +17,8 @@ function body(name) {
   assert.ok(start > 0 && end > start, name); return source.slice(start, end);
 }
 const names = ['workerFlowPath', 'applyWorkerFlowRoute', 'publishWorkerEconomyRoute',
-  'updateWorkerEconomyWithRouteAdmission', 'routeWorkerToDropoff', 'workerAtDropoff', 'routeWorker',
+  'withWorkerRouteAdmission', 'updateWorkerEconomyWithRouteAdmission', 'assignGatherWithRouteAdmission',
+  'assignGather', 'assignForestGather', 'routeWorkerToDropoff', 'workerAtDropoff', 'routeWorker',
   'forestOpenAccessCells', 'routeForestWorker', 'updateForestWorkerEconomy', 'updateWorkerEconomy',
   'forestGroupTarget', 'continueForestGroupGathering', 'continueAreaGathering',
   'ensureGatherWorkIntent', 'depositWorkerCargo', 'stopGathering', 'cancelGatherOrder',
@@ -146,6 +147,8 @@ function fixture({ width = 320, height = 320, total = 0, weighted = false, count
   };
   assert.equal(entries(f), total); return f;
 }
+
+export { fixture as workerRouteAdmissionFixture };
 
 function offAccessForestResume({ team, turns, queued, total, visible = true }) {
   const f = fixture({ team, turns, total }), u = f.actors[0], forest = f.forestActor();

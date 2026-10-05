@@ -4686,16 +4686,16 @@ function publishWorkerEconomyRoute(unit, path, destination) {
   return { ...outcome, status: 'ready' };
 }
 
-function updateWorkerEconomyWithRouteAdmission() {
-  if (MAP_WIDTH <= 256 && MAP_HEIGHT <= 256) return updateWorkerEconomy();
+function withWorkerRouteAdmission(operation, mode) {
+  if (MAP_WIDTH <= 256 && MAP_HEIGHT <= 256) return operation();
   const scope = { ledger: null, pending: null, epoch: movePlanningEpoch };
-  if (workerEconomyRouteScope) throw new Error('Nested Worker economy route scope');
+  if (workerEconomyRouteScope) throw new Error('Nested Worker route publication scope');
   workerEconomyRouteScope = scope;
   try {
-    updateWorkerEconomy();
+    return operation();
   } finally {
     // Later planner callbacks take their own fresh reservation. No scope or
-    // refused route array escapes this synchronous economy operation.
+    // refused route array escapes this synchronous Worker operation.
     workerEconomyRouteScope = null;
     if (scope.pending && scope.epoch === movePlanningEpoch) {
       const repairs = [];
@@ -4704,9 +4704,17 @@ function updateWorkerEconomyWithRouteAdmission() {
           && unit.orderRevision === pending.revision && unit.movePlanningPending
           && unit.moveGoalCell === pending.destination) repairs.push({ unit, destination: pending.destination });
       }
-      enqueueRouteRepairs(repairs, { mode: 'worker-economy-capacity', orderLabel: 'WORKER ROUTE REPAIR' });
+      enqueueRouteRepairs(repairs, { mode, orderLabel: 'WORKER ROUTE REPAIR' });
     }
   }
+}
+
+function updateWorkerEconomyWithRouteAdmission() {
+  return withWorkerRouteAdmission(updateWorkerEconomy, 'worker-economy-capacity');
+}
+
+function assignGatherWithRouteAdmission(player, command) {
+  return withWorkerRouteAdmission(() => assignGather(player, command), 'worker-gather-command-capacity');
 }
 
 function routeWorkerToDropoff(unit) {
@@ -7778,7 +7786,7 @@ async function handleCommand(player, command) {
   if (command.type === 'attackMove') assignFormationMove(player, command);
   if (command.type === 'attack') assignAttack(player, command);
   if (command.type === 'attackBuilding') assignAttackBuilding(player, command);
-  if (command.type === 'gather') assignGather(player, command);
+  if (command.type === 'gather') assignGatherWithRouteAdmission(player, command);
   if (command.type === 'returnCargo') assignReturnCargo(player, command);
   if (command.type === 'trainUnit') trainUnit(player, command);
   if (command.type === 'train') trainInfantry(player, command);
