@@ -30,7 +30,7 @@ for(const team of [0,1])test(`seat ${team}: paid obstruction relocates blocked f
       assert.equal(r.components[r.cell(u.x,u.z)],r.components[u.moveGoalCell]);
       if(!footprint.has(oldGoals[i]))assert.equal(u.moveGoalCell,oldGoals[i],'valid player destinations stay fixed');
     }
-    for(let tick=0;tick<1000&&army.some(u=>u.pathIndex<u.path.length);tick++)r.step();
+    for(let tick=0;tick<1000&&army.some(u=>u.movePlanningPending||u.pathIndex<u.path.length);tick++)r.step();
     for(const u of army) {
       const p=r.point(u.moveGoalCell);
       assert.equal(u.pathIndex,u.path.length);assert.ok(Math.hypot(u.x-p.x,u.z-p.z)<.02);
@@ -95,7 +95,7 @@ for(const team of [0,1])test(`seat ${team}: consecutive paid footprints reserve 
     r.drain();
     assert.equal(new Set(army.map(u=>u.moveGoalCell)).size,64);
     for(const u of army)assert.equal(r.components[r.cell(u.x,u.z)],r.components[u.moveGoalCell]);
-    for(let tick=0;tick<1000&&army.some(u=>u.pathIndex<u.path.length);tick++)r.step();
+    for(let tick=0;tick<1000&&army.some(u=>u.movePlanningPending||u.pathIndex<u.path.length);tick++)r.step();
     for(const u of army) {
       const p=r.point(u.moveGoalCell);
       assert.equal(u.pathIndex,u.path.length);assert.ok(Math.hypot(u.x-p.x,u.z-p.z)<.02);
