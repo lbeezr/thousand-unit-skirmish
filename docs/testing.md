@@ -372,6 +372,12 @@ existing report checker joins exact identities/phases, reports inclusive functio
 timing and GC overlap, and keeps profile boundaries separate. Diagnostic startup
 overhead can fail the existing lag budget; retain that failure without a waiver.
 
+Use `--recovery-profile-control on` with that bounded inner mode for the
+[matched startup control](qa-crownroads-profiler-startup-2026-10-05.md). It restores
+one checkpoint in profile/observer/observer/profile order and retains fixed
+first60 tick windows with57 continuous post-startup clocks. Observer-only still
+contains wrapper/memory/GC overhead; retain earlier failures and exact identities.
+
 The [core tranche profile](core-playtest-tranche.md#scale-measurement-profile--proposed)
 documents the bounded hosted movement ladder and per-seat tagged-order intervals.
 Its success status asserts protocol liveness, not the broader scale budgets.

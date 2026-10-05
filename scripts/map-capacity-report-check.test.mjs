@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { capturedBudgetEnvelope, capturedTickAttribution, capturedInnerAttribution } from './map-capacity-report-check.mjs';
+import { capturedBudgetEnvelope, capturedTickAttribution, capturedInnerAttribution, capturedRecoveryProfileControl } from './map-capacity-report-check.mjs';
 const sample = (maxMs, lag = 1) => ({ health: { tickTiming: { p95Ms: 2, maxMs, startLagP95Ms: 1, startLagMaxMs: lag } } });
 test('a recovered final window cannot conceal a captured planning-phase duration or lag spike', () => {
   assert.equal(capturedBudgetEnvelope([sample(120), sample(3)]).passed, false);
@@ -97,4 +97,36 @@ test('inner consumer rejects truncation, duplicate identities, mismatched timing
   assert.equal(capturedInnerAttribution([innerRun([innerRow(1, { simulationMs: 5, broadcastMs: 3 })])], [row(1)], 'crownroads').status,
     'invalid-observations', 'redistributing outer phases cannot masquerade as the independently observed tick');
   assert.equal(capturedInnerAttribution(undefined, [], 'crownroads').status, 'unavailable');
+});
+
+function recoveryFixture() {
+  const cases = [true, false, false, true].map((profiles, i) => ({ ordinal: i + 1, profiles, workerRun: i + 2,
+    checkpointSHA256: 'a'.repeat(64), checkpointTick: 0, firstTick: 1, lastTick: 60,
+    beforeStartup: { workerRun: i + 2, health: { map: 'crownroads', tickTiming: { sampleCount: 3, startLagP95Ms: 1 } } },
+    afterStartup: { workerRun: i + 2, health: { map: 'crownroads', tickTiming: { sampleCount: 4, startLagP95Ms: 40 } } } }));
+  const ticks = cases.flatMap(c => Array.from({ length: 60 }, (_, i) => row(i + 1, { workerRun: c.workerRun })));
+  const runs = cases.map(c => ({ workerRun: c.workerRun, profiles: c.profiles, droppedStartupRows: 0,
+    startupWindow: { startRequest: { tickNumber: 3, monotonicMs: 160 }, startCompletion: { tickNumber: 3, monotonicMs: 190 } },
+    profileWindows: c.profiles ? { cpu: {} } : {}, cpuProfile: c.profiles ? {} : null, allocationProfile: c.profiles ? {} : null,
+    startupRows: [], rows: Array.from({ length: 57 }, (_, i) => ({ ...row(i + 4, { workerRun: c.workerRun }),
+      tickStartedMs: (i + 4) * 50, previousTickStartedMs: (i + 3) * 50, startLagMs: 50 - 1000 / 30 })) }));
+  return { cases, ticks, runs };
+}
+test('matched recovery control preserves fixed sixty-tick identity and reports startup adjacency without waiver', () => {
+  const f = recoveryFixture(), r = capturedRecoveryProfileControl(f.cases, f.runs, f.ticks, 'crownroads');
+  assert.equal(r.status, 'valid-observations'); assert.equal(r.observations.length, 4);
+  for (const o of r.observations) { assert.equal(o.timing.uniqueObservedTicks, 60); assert.equal(o.startupMs, 30);
+    assert.equal(o.afterStartupTiming.startLagP95Ms, 40); assert.equal(o.startupAdjacentRows[0].tickNumber, 4); }
+});
+test('recovery controls reject changed input, wrong startup anchor, missing ticks, profiler leakage and clock corruption', () => {
+  for (const corrupt of [f => f.cases[1].checkpointSHA256 = 'b'.repeat(64), f => f.cases[1].workerRun = 2,
+    f => f.ticks.pop(), f => f.runs[1].cpuProfile = {}, f => f.runs[1].startupWindow.startRequest.tickNumber = 4,
+    f => f.runs[0].rows[0].startLagMs = 0, f => f.runs[0].rows[0].simulationMs = 4,
+    f => f.runs[0].droppedStartupRows = 1, f => f.runs[0].startupRows.push(f.runs[0].rows[0]),
+    f => f.runs[0].rows.splice(10, 1), f => f.runs[0].rows.shift(),
+    f => { f.runs[0].rows[10].tickStartedMs += 5; f.runs[0].rows[10].previousTickStartedMs += 5; }]) {
+    const f = recoveryFixture(); corrupt(f);
+    assert.equal(capturedRecoveryProfileControl(f.cases, f.runs, f.ticks, 'crownroads').status, 'invalid-observations');
+  }
+  assert.equal(capturedRecoveryProfileControl(undefined, undefined, undefined, 'crownroads').status, 'unavailable');
 });

@@ -3,10 +3,11 @@ import { Session } from 'node:inspector/promises';
 import { PerformanceObserver } from 'node:perf_hooks';
 
 export function createTickAttribution({ functions, context, visionContext, memory = () => process.memoryUsage(),
-  now = () => performance.now(), profiles = true }) {
+  now = () => performance.now(), profiles = true, createSession = () => new Session() }) {
   const wrapped = { ...functions }, stringify = JSON.stringify;
   let active = false, current = null, frameDepth = 0, vision = null, session;
-  let rowWindow = null, profileWindows = null;
+  let rowWindow = null, profileWindows = null, startupWindow = null, starting = false, startupCurrent = null;
+  const startupRows = []; let droppedStartupRows = 0;
   const rows = [], gc = []; let droppedRows = 0;
   const captureGc = entries => {
     for (const e of entries) if (rowWindow && e.startTime >= rowWindow.start.monotonicMs
@@ -80,20 +81,36 @@ export function createTickAttribution({ functions, context, visionContext, memor
     return functions.markVisionFrom.call(this, team, x, z, sight);
   };
   wrapped.runSimulationTick = function (...args) {
-    if (!active) return functions.runSimulationTick.apply(this, args);
+    if (!active) {
+      if (!starting) return functions.runSimulationTick.apply(this, args);
+      startupCurrent = { previousTickStartedMs: context().tickStartedMs };
+      try { return functions.runSimulationTick.apply(this, args); }
+      finally { startupCurrent = null; }
+    }
     const before = memory();
-    current = { tickNumber: context().tickNumber + 1, startedMs: now(), heapBeforeBytes: before.heapUsed };
+    current = { tickNumber: context().tickNumber + 1, startedMs: now(), heapBeforeBytes: before.heapUsed,
+      previousTickStartedMs: context().tickStartedMs };
     const metrics = context().cacheMetrics;
     if (metrics) current.visionCacheBefore = metrics;
     try { return functions.runSimulationTick.apply(this, args); }
     finally { current = null; }
   };
   wrapped.recordTickDuration = function (duration, diagnostic, ...args) {
+    const clockFields = row => {
+      const tickStartedMs = context().tickStartedMs;
+      return Number.isFinite(tickStartedMs) ? { tickStartedMs,
+        startLagMs: Number.isFinite(row.previousTickStartedMs)
+          ? Math.max(0, tickStartedMs - row.previousTickStartedMs - diagnostic.budgetMs) : null } : {};
+    };
+    if (startupCurrent) {
+      startupRows.push({ ...startupCurrent, ...diagnostic, ...clockFields(startupCurrent), durationMs: duration });
+      if (startupRows.length > 2000) { startupRows.shift(); droppedStartupRows++; }
+    }
     if (current) {
       const after = memory();
       const metrics = context().cacheMetrics;
       if (metrics) current.visionCacheAfter = metrics;
-      Object.assign(current, diagnostic, { endedMs: now(), durationMs: duration,
+      Object.assign(current, diagnostic, clockFields(current), { endedMs: now(), durationMs: duration,
         heapAfterBytes: after.heapUsed, netHeapDeltaBytes: after.heapUsed - current.heapBeforeBytes,
         rssBytes: after.rss, externalBytes: after.external, arrayBufferBytes: after.arrayBuffers });
       rows.push(current);
@@ -104,11 +121,13 @@ export function createTickAttribution({ functions, context, visionContext, memor
   return {
     wrapped,
     async start() {
-      if (active) throw new Error('Attribution already active');
+      if (active || starting) throw new Error('Attribution already active');
       rows.length = 0; gc.length = 0; droppedRows = 0;
-      rowWindow = null; profileWindows = {};
+      rowWindow = null; profileWindows = {}; startupRows.length = 0; droppedStartupRows = 0;
+      startupWindow = { startRequest: boundary() }; starting = true;
+      try {
       if (profiles) {
-        session = new Session(); session.connect();
+        session = createSession(); session.connect();
         await session.post('Profiler.enable');
         await session.post('Profiler.setSamplingInterval', { interval: 1000 });
         profileWindows.cpu = { startRequest: boundary() };
@@ -119,10 +138,14 @@ export function createTickAttribution({ functions, context, visionContext, memor
           includeObjectsCollectedByMajorGC: true, includeObjectsCollectedByMinorGC: true });
         profileWindows.allocation.startCompletion = boundary();
       }
+      startupWindow.startCompletion = boundary(); starting = false;
       rowWindow = { start: boundary() };
       gcObserver.observe({ entryTypes: ['gc'] }); active = true;
       return { tickNumber: rowWindow.start.tickNumber, rowStart: rowWindow.start,
-        samplingIntervalBytes: profiles ? 65536 : null };
+        startupWindow, profiles, samplingIntervalBytes: profiles ? 65536 : null };
+      } catch (error) {
+        starting = false; session?.disconnect(); session = null; throw error;
+      }
     },
     async stop() {
       if (!active) throw new Error('Attribution is not active');
@@ -141,7 +164,8 @@ export function createTickAttribution({ functions, context, visionContext, memor
       // Drain notifications for GC that began within the frozen row window.
       await new Promise(resolve => setImmediate(resolve));
       captureGc(gcObserver.takeRecords()); gcObserver.disconnect();
-      return { endTick: rowWindow.end.tickNumber, rowWindow, profileWindows,
+      return { endTick: rowWindow.end.tickNumber, rowWindow, profileWindows, startupWindow,
+        startupRows: [...startupRows], droppedStartupRows, profiles,
         rows: [...rows], droppedRows, gc: [...gc], cpuProfile, allocationProfile,
         limits: ['inclusive function timings overlap; do not add nested timings',
           'heap deltas are net live-heap change, not allocated bytes; sampled allocation estimates include collected objects',

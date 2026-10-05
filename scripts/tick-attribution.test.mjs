@@ -154,3 +154,29 @@ test('vision instrumentation observes bounded cache without promoting entries or
   coverage.set(2, 8, { visible: [], fringe: [] });
   assert.equal(coverage.has(0, 8), false, 'observer hit does not alter LRU ordering');
 });
+
+test('startup captures queued production clocks before active rows and observer-only excludes all profiler commands', async () => {
+  for (const profiles of [true, false]) {
+    let observer, clock = 0, tickNumber = 0, tickStartedMs = null;
+    const posts = [], functions = { roomPayload() {}, deflateRawSync() {}, encodeWebSocketFrame() {}, prepareJsonFrame() {},
+      updateVisionMasks() {}, markVisionFrom() {}, captureMatchCheckpoint() {}, ensureVisionMasks() {}, recordTickDuration() {},
+      runSimulationTick() {
+        tickStartedMs = clock += 50; tickNumber++;
+        observer.wrapped.recordTickDuration(5, { tickNumber, matchId: 'match-a', mapId: 'crownroads', budgetMs: 1000 / 30, overBudget: false });
+      } };
+    observer = createTickAttribution({ functions, context: () => ({ tickNumber, tickStartedMs }), visionContext: () => ({}),
+      profiles, now: () => clock, createSession: () => ({ connect() {}, disconnect() {}, async post(name) {
+        posts.push(name);
+        if (name === 'Profiler.start') await new Promise(resolve => setImmediate(() => { observer.wrapped.runSimulationTick(); resolve(); }));
+        return { profile: { samples: [] } };
+      } }) });
+    const start = await observer.start(); observer.wrapped.runSimulationTick(); const report = await observer.stop();
+    assert.equal(start.profiles, profiles); assert.equal(report.profiles, profiles); assert.equal(report.droppedStartupRows, 0);
+    assert.equal(report.startupRows.length, profiles ? 1 : 0); assert.equal(report.rows.length, 1);
+    assert.equal(report.startupWindow.startRequest.monotonicMs, 0);
+    assert.equal(report.startupWindow.startCompletion.monotonicMs, profiles ? 50 : 0);
+    if (profiles) { assert.equal(report.rows[0].previousTickStartedMs, 50); assert.equal(report.rows[0].tickStartedMs, 100);
+      assert.equal(report.rows[0].startLagMs, 50 - 1000 / 30); }
+    else { assert.deepEqual(posts, []); assert.equal(report.cpuProfile, null); assert.equal(report.allocationProfile, null); }
+  }
+});
