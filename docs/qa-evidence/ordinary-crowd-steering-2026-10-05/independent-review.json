@@ -1,0 +1,31 @@
+{
+  "head": "eb43a9767de76dfbd1bfc21bdcde26c04668fa73",
+  "moduleSha256": "42b73f18de3094aaaa1c0405fcaa93755fca9d6244a30bc0bb4bb6db4fc24836",
+  "serverSha256": "cc6bd7d2abc06602f91a4cf014d4e2c9b8ce848245acbb59e605445082d3c0e4",
+  "reviewScope": "Independent read-only exact-source review; no repository edits or merge approval",
+  "independentlyRun": {
+    "module": {
+      "pass": 17,
+      "fail": 1,
+      "failedTest": "a distant perpendicular final goal does not force a same-route front actor to retreat into its follower"
+    },
+    "journeys": {
+      "pass": 12,
+      "fail": 0,
+      "log": "/tmp/crowd-review-eb43-journeys.tap"
+    }
+  },
+  "criticalNewPhysicalOrScopeIssues": [],
+  "blockingFindings": [
+    {
+      "file": "src/unit-crowd-steering.mjs",
+      "line": 233,
+      "issue": "Global final-goal dot product misclassifies same-route traffic; after30 ticks legal forward best is discarded and rear-only proposals can all fail. Exact retained regression is red."
+    },
+    {
+      "evidence": "docs/qa-evidence/ordinary-crowd-steering-2026-10-05/queued-gate-seat-1.json",
+      "issue": "Pinned retained production replay records60/64 at2700 ticks, unfinished94/102/103/104. Existing spawn-cluster boxing/oscillation and parked-body gate-detour liveness remain unresolved; 32-unit passing controls do not discharge this failure."
+    }
+  ],
+  "qualification": "No merge/pack readiness approval; source/fixed-tick evidence separate from native/rendered/deployed proof."
+}

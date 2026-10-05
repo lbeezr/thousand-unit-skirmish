@@ -444,9 +444,15 @@ Denied hosted dispatch and cancelled authentication remain paused.
 now consumes the [agreed hooks](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5985598359).
 The [crowd acceptance record](qa-ordinary-crowd-steering-2026-10-05.md) retains
 both the 32-unit zero-contact narrow-passage results and the wider 64-unit
-queue/counterflow failures under qualification. Owner remains
-`01a10933-c2b0`; next step is finish those existing controls, exact-head review,
-checks/clean pack and normal merge. Worker ordinary/economy movement stays with
+queue/counterflow failures under qualification. Clean source `eb43a976` retains
+32-unit arrivals in 417–438 ticks, at most eight repairs and zero contacts;
+the existing 64-unit seat-1 return case is 60/64 at 2,700 ticks, and the new
+perpendicular-goal module control remains red. Owner remains
+`01a10933-c2b0`; next step is resolve those liveness cases. A [concrete extension
+decision](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5986484334)
+with core owner `01a107ba` precedes integration of any new passage arbitration
+beyond the agreed local-only hooks. Then retain fresh exact-head review,
+affected checks/clean pack and normal merge. Worker ordinary/economy movement stays with
 its existing source policy in this first military slice. No new position
 admission/planner edit or rendered-acceptance claim is included.
 
