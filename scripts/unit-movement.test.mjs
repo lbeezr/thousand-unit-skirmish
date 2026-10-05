@@ -11,7 +11,7 @@ import { canTraverseUnitStep, createUnitRouteResult, unitRoutePathCost, unitRout
 import { XL_CHECKPOINT_ROUTE_MAX_ENTRIES } from '../src/server/checkpoint-route-budget.mjs';
 import { canTraverseFlatUnitSegment, shortcutFlatUnitPath } from '../src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from '../src/unit-obstacle-detour.mjs';
-import { ordinaryCrowdBodyRadius, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT } from '../src/unit-crowd-steering.mjs';
+import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, canTraverseCrowdBodySegment } from '../src/unit-crowd-steering.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { farmHarvestNode, farmBuildingId } from '../src/farm-harvest.mjs';
 import { workerFlowRouteBindings } from './economy-server-fixture.mjs';
@@ -290,7 +290,7 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     spatialBucketColumn:x=>Math.max(0,Math.min(bucketColumns-1,Math.floor((x+half)/bucketSize))),
     spatialBucketRow:z=>Math.max(0,Math.min(bucketColumns-1,Math.floor((z+half)/bucketSize))),
     elevationLevelByCell:levels,canTraverseUnitStep,activeLandMovementBodyRadius,workerEconomyBodyRadius,LAND_CLEARANCE_PROFILE,canTraverseStaticBodySegment,createClearanceMoveGoalPoint,activeMoveGoalPoint,rejoinSelectedUnitRoute,
-    ordinaryCrowdBodyRadius, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, navigationRevision: 0, movePlanningEpoch: 0,
+    ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, navigationRevision: 0, movePlanningEpoch: 0,
     canTraverseFlatUnitSegment,findStationaryWorkerDetour,SEPARATION_DIAGNOSTICS_ENABLED:false,
     tickNumber:1,dirty:false,worldToCell:cell,cellToWorld:point,isWalkable:walkable,
     resourceNodeStates:new Map([['berries',{x,z:-1,hp:1}]]),buildingsById:new Map(),farmHarvestNode,farmBuildingId,
@@ -336,6 +336,48 @@ test('crowd static handoff is rejected before writes and preserves the selected 
   assert.equal(f.mover.pathIndex, before.pathIndex); assert.deepEqual(f.mover.path, before.path);
   assert.deepEqual(f.mover.queuedWaypoints, before.queuedWaypoints);
   assert.equal(f.repairs.length, 1); assert.equal(f.repairs[0].destination, 37);
+});
+function retainedCornerFixture(z = -.0243263632693783) {
+  // Translate retained actor113's gate-corner repair into this existing grid.
+  // The closed gate's northeast corner(17,1) becomes(0,0).
+  const f = fixture({ x: .5048335008102818, z, cliff: false, blocked: [27] });
+  Object.assign(f.mover, { generation: 17, gatherNodeId: null, gatherPhase: '', path: [35, 34, 33],
+    moveGoalCell: 33, queuedWaypoints: [{ destination: 32, attackMove: false }] });
+  [[.5, .5], [-.5, .5], [.5, -.5]].forEach(([x, z], i) => Object.assign(f.units[i + 1], { x, z }));
+  // Rebuild only test bucket observations after diagnostic staging.
+  f.context.spatialBucketHeads.fill(-1); f.context.spatialBucketNext.fill(-1);
+  for (const u of f.units) {
+    const b = f.context.spatialBucketRow(u.z) * bucketColumns + f.context.spatialBucketColumn(u.x);
+    f.context.spatialBucketNext[u.id] = f.context.spatialBucketHeads[b]; f.context.spatialBucketHeads[b] = u.id;
+  }
+  return f;
+}
+
+test('retained gate approach rejects a terrain-stranding parked-body detour', () => {
+  const f = retainedCornerFixture(.0260869880010786);
+  f.mover.x = .5753289270085982;
+  const before = structuredClone(f.mover), parked = structuredClone(f.units.slice(1));
+  assert.ok(canTraverseUnitStep(cell(before.x, before.z), 35, width, f.levels, f.walkable));
+  const move = f.context.getMoveVector(f.mover);
+  assert.ok(!move.rejectedStaticProposal && !move.waitingForCrowd && !move.reachedWaypoint);
+  const to = { x: before.x + move.x * move.stepDistance, z: before.z + move.z * move.stepDistance };
+  assert.ok(canTraverseUnitStep(cell(to.x, to.z), 35, width, f.levels, f.walkable));
+  assert.ok(canTraverseStaticBodySegment(before, to, .22, width, width, f.walkable));
+  assert.ok(canTraverseCrowdBodySegment(before, to, .22, parked));
+  assert.ok(move.crowd.parkedWaypointProbes <= CROWD_NEIGHBOR_LIMIT);
+  assert.ok(move.crowdControl.detourTerrainProbes <= 8);
+  f.move(); assert.equal(f.repairs.length, 0); assert.deepEqual(f.units.slice(1), parked);
+  assert.equal(f.mover.pathIndex, before.pathIndex); assert.deepEqual(f.mover.path, before.path);
+  assert.equal(f.mover.orderRevision, before.orderRevision); assert.equal(f.mover.moveGoalCell, before.moveGoalCell);
+  assert.deepEqual(f.mover.queuedWaypoints, before.queuedWaypoints);
+});
+
+for (const overflow of [false, true]) test(`already broken gate-corner join keeps the original static repair, overflow=${overflow}`, () => {
+  const f = retainedCornerFixture(), before = structuredClone(f.mover);
+  f.context.crowdNeighborsNear = () => ({ visits: 128, neighbors: f.units.slice(1), overflow });
+  const move = f.context.getMoveVector(f.mover);
+  assert.equal(move.rejectedStaticProposal, true); assert.equal(move.stepDistance, 0);
+  f.move(); assert.equal(f.repairs.length, 1); assert.deepEqual(f.mover, before);
 });
 
 test('an inherited static escape that the core could admit is still subject to body admission', () => {

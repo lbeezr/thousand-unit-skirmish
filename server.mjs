@@ -83,7 +83,7 @@ import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoin
   unitRouteResultIsCurrent, rejoinSelectedUnitRoute, unitRouteRejoinDecision, createUnitRoutePublicationLedger } from './src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
-import { ordinaryCrowdBodyRadius, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT } from './src/unit-crowd-steering.mjs';
+import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT } from './src/unit-crowd-steering.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
 import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, patrolAcquiredMovementActive, followTravelMovementActive } from './src/combat-movement.mjs';
 
@@ -7978,6 +7978,17 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
     const query = crowdNeighborsNear(unit);
     const progressTarget = target;
     const diagnostics = { visits: query.visits, neighbors: query.neighbors.length, overflow: query.overflow };
+    let parkedWaypointProbes = 0;
+    // A parked body at the raw waypoint can make a local tangent attractive
+    // even when its far side rejoins through a gate corner. Preview terrain
+    // for this bounded detour only; every executed step still checks all bodies.
+    const parkedRawWaypoint = adjacent && !query.overflow && query.neighbors.some(other => {
+      parkedWaypointProbes++;
+      const radius = LAND_CLEARANCE_PROFILE.radiusByKind[other.kind];
+      return stationaryCrowdObstacle(other) && radius > 0
+        && Math.hypot(other.x - progressTarget.x, other.z - progressTarget.z) < crowdRadius + radius;
+    });
+    diagnostics.parkedWaypointProbes = parkedWaypointProbes;
     if (query.overflow) return { ...selectCrowdStep({ unit, target,
       stepDistance: Math.min(remainingStep, .25), neighbors: query.neighbors,
       tick: tickNumber, navigationRevision, epoch: movePlanningEpoch, overflow: true }), crowd: diagnostics };
@@ -7999,6 +8010,8 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
       pointAllowed: to => to.x >= -MAP_HALF_X + .5 && to.x <= MAP_HALF_X - .5
         && to.z >= -MAP_HALF_Z + .5 && to.z <= MAP_HALF_Z - .5
         && canTraverseStaticBodySegment(to, to, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable),
+      detourAllowed: to => !parkedRawWaypoint || canTraverseStaticBodySegment(to, progressTarget,
+        crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable),
       targetOf: other => ordinaryCrowdBodyRadius(other)
         ? activeMoveGoalPoint(other) ?? cellToWorld(other.moveGoalCell) : null,
       directionOf: other => {

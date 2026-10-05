@@ -111,14 +111,14 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   pointAllowed = canTraverse, progressTarget = target, targetOf = other => other.target,
   directionOf = other => { const goal = targetOf(other); return finitePoint(goal)
     ? { x: goal.x - other.x, z: goal.z - other.z } : null; },
-  escapeAllowed = canTraverse,
+  escapeAllowed = canTraverse, detourAllowed = () => true,
   travelDirection = null, tick = 0, navigationRevision = 0, epoch = 0, overflow = false, diagnostics = null }) {
   const radius = ordinaryCrowdBodyRadius(unit);
   if (!radius || !finitePoint(target) || !(stepDistance > 0 && stepDistance <= .25)) {
     steeringStates.delete(unit); return null;
   }
   const state = steeringState(unit, tick, navigationRevision, epoch);
-  const stats = { proposals: 0, pointProposals: 0, escapeProposals: 0, bodyVisits: 0, arbitrationVisits: 0, leaseAge: 0, contourAge: 0, waitAge: 0, ...diagnostics };
+  const stats = { proposals: 0, pointProposals: 0, escapeProposals: 0, bodyVisits: 0, arbitrationVisits: 0, leaseAge: 0, contourAge: 0, waitAge: 0, detourTerrainProbes: 0, ...diagnostics };
   if (overflow || neighbors.length > CROWD_NEIGHBOR_LIMIT) {
     state.lease = null; state.contour = null; state.offer = null;
     return { target, waitingForCrowd: true, stepDistance: 0, crowdControl: stats };
@@ -148,6 +148,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     if (stats.pointProposals >= CROWD_POINT_PROPOSAL_LIMIT) return false;
     stats.pointProposals++; return pointAllowed(to) && sweep(to, to, neighbors);
   };
+  const detourClear = to => { stats.detourTerrainProbes++; return detourAllowed(to); };
   if (!state.lease && !state.contour && distance <= stepDistance && clear(target)) return { target, reachedWaypoint: true, stepDistance: distance, noProgressTicks, crowdControl: stats };
   const headingX = dx / distance, headingZ = dz / distance;
   const directionLength = finitePoint(travelDirection) && Math.hypot(travelDirection.x, travelDirection.z);
@@ -189,7 +190,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
       return { x: other.x + (headingX * Math.cos(radians) - headingZ * Math.sin(radians)) * clearance,
         z: other.z + (headingZ * Math.cos(radians) + headingX * Math.sin(radians)) * clearance };
     });
-    const legal = sides.filter(pointClear);
+    const legal = sides.filter(pointClear).filter(detourClear);
     if (legal.length) state.detour = { ...legal[0], alternatives: legal.slice(1), distance,
       bestDistance: Infinity, lastProgressTick: tick };
   }
@@ -198,9 +199,9 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     if (detourDistance < state.detour.bestDistance - .02) {
       state.detour.bestDistance = detourDistance; state.detour.lastProgressTick = tick;
     }
-    if (!pointAllowed(state.detour) || tick - state.detour.lastProgressTick >= 30) {
+    if (!pointAllowed(state.detour) || !detourClear(state.detour) || tick - state.detour.lastProgressTick >= 30) {
       const alternative = state.detour.alternatives.shift();
-      if (alternative && pointAllowed(alternative)) Object.assign(state.detour, alternative,
+      if (alternative && pointAllowed(alternative) && detourClear(alternative)) Object.assign(state.detour, alternative,
         { bestDistance: Infinity, lastProgressTick: tick });
       else state.detour = null;
     }

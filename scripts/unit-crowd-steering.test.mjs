@@ -38,6 +38,27 @@ test('parked-body detour chooses the physically open side beside a wall', () => 
   assert.deepEqual([u.x, u.z], [target.x, target.z]);
 });
 
+test('a retained parked-body detour revalidates its terrain continuation before selecting an alternative', () => {
+  const u = actor(), parked = actor({ id: 2, x: .49, path: [], holdingPosition: true });
+  const before = structuredClone(parked), calls = [];
+  let lowerOnly = false;
+  const select = tick => selectCrowdStep({ unit: u, target: { x: 2, z: .5 },
+    stepDistance: .09, tick, neighbors: [parked], canTraverse: () => true,
+    pointAllowed: () => true, detourAllowed: p => {
+      calls.push({ x: p.x, z: p.z }); return !lowerOnly || p.z < .5;
+    } });
+  const first = select(1);
+  assert.ok(first.z > 0); assert.equal(first.crowdControl.detourTerrainProbes, calls.length);
+  assert.ok(calls.length <= 8);
+  calls.length = 0; lowerOnly = true;
+  const next = select(2);
+  assert.ok(calls[0].z > .5 && calls[1].z < .5, 'the retained side is rejected before its alternative is admitted');
+  assert.ok(next.z < 0); assert.equal(next.crowdControl.detourTerrainProbes, calls.length);
+  assert.ok(canTraverseCrowdBodySegment(u,
+    { x: u.x + next.x * next.stepDistance, z: u.z + next.z * next.stepDistance }, .22, [parked]));
+  assert.deepEqual(parked, before);
+});
+
 for (const reverse of [false, true]) test(`two Scouts yield serially through a finite passage, reverse=${reverse}`, () => {
   const units = [-2, 2].map((x, id) => actor({ id, kind: 'scout', x, target: { x: x < 0 ? 3 : -3, z: .5 } }));
   const walls = [{ minX: -1.5, maxX: 1.5, minZ: -10, maxZ: 0 },

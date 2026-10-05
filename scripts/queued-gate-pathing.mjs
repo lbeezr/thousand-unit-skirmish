@@ -12,9 +12,9 @@ import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 process.env.RTS_MAP='maps/open-field.json';process.env.RTS_GAME_MODE='pvp';process.env.RTS_PREGAME='0';
 delete process.env.RTS_MATCH_STATE_PATH;
 export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true,parkOrder=null,
-  tracePhysical=false,captureInput,captureFinal}={}) {
+  tracePhysical=false,captureInput,captureFinal,traceActorIds=[],captureActorTrace}={}) {
   const map=pathingBaselineMap({group:64}),fixture=await createPathingReplayFixture(map,
-    {traceLandSteps:tracePhysical,traceCrowdSteps:tracePhysical}),r=fixture.replay;
+    {traceLandSteps:tracePhysical,traceCrowdSteps:tracePhysical,traceActorIds}),r=fixture.replay;
   try {
     for(const seat of [0,1]) {
       const passive=r.units.filter(u=>u.team===seat&&u.kind==='infantry');
@@ -75,11 +75,12 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
     const inactiveBefore=inactive.map(passiveIntent);
     const input=r.checkpoint();captureInput?.(structuredClone(input));
     const inputSha256=createHash('sha256').update(JSON.stringify(input)).digest('hex');
+    const actorTrace=[];
     const trace=createHash('sha256');let invalidSteps=0,unreachableGoals=0,maxPathLength=0;
     const capsuleTrace=createHash('sha256'),actorIds=new Set(ids);
     let staticContactSteps=0,pairContactSteps=0,selectedSubsteps=0,worstPairMargin=null;
     const controlMax={visits:0,neighbors:0,proposals:0,pointProposals:0,escapeProposals:0,
-      bodyVisits:0,arbitrationVisits:0,leaseAge:0,contourAge:0,waitAge:0,passageProposals:0,passageBodyVisits:0};
+      bodyVisits:0,arbitrationVisits:0,leaseAge:0,contourAge:0,waitAge:0,passageProposals:0,passageBodyVisits:0,parkedWaypointProbes:0,detourTerrainProbes:0};
     let missingControlRecords=0;
     const handoffs=new Map(army.map(u=>[u.id,{id:u.id,firstGoalReachedTick:null,queuedLegStartTick:null,arrivalTick:null}]));
     const progress=new Map(army.map(u=>[u.id,{goal:u.moveGoalCell,remaining:Infinity,tick:r.tick,max:0}]));
@@ -87,6 +88,7 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
       &&Math.hypot(u.x-r.point(u.moveGoalCell).x,u.z-r.point(u.moveGoalCell).z)<.02;
     while(r.tick-startTick<2700&&!army.every(done)) {
       const previous=army.map(u=>r.cell(u.x,u.z)),queued=army.map(u=>u.queuedWaypoints.length);r.step();
+      if(traceActorIds.length)actorTrace.push(...r.actorTrace);
       if(tracePhysical) {
         for(const step of r.landSteps.filter(s=>actorIds.has(s.id))) {
           selectedSubsteps++;const radius=LAND_CLEARANCE_PROFILE.radiusByKind[step.kind];
@@ -136,6 +138,7 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
     assert.equal(unblockedDestinationsPreserved,true);
     assert.ok(goals.every(c=>!gate.footprint.includes(c)));
     captureFinal?.(r.checkpoint());
+    captureActorTrace?.(actorTrace);
     return {team,group:64,sourceSha256:fixture.sourceSha256,inputSha256,ticks:r.tick-startTick,arrived,
       handoffs:[...handoffs.values()],physical:tracePhysical?{selectedSubsteps,staticContactSteps,pairContactSteps,
         worstPairMargin,capsuleTraceSha256:capsuleTrace.digest('hex'),controlMax,missingControlRecords}:null,
