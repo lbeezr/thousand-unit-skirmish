@@ -99,9 +99,13 @@ distinct military cell reservations do not reserve a physical endpoint against
 a parked Worker. With both intents preserved, this independently prevents all
 64 exact endpoint arrivals. It does not explain the 63 mid-route choke stops.
 
-Caller `01a10933-e913` is auditing this access/destination contract with core
-`01a107ba`. Crowd does not duplicate that implementation, move the parked
-builder, accept overlap or silently change actor 120's destination.
+Caller `01a10933-e913` and core `01a107ba` retain the
+[agreed access/destination contract](qa-construction-endpoint-contract-2026-10-05.md#existing-semantics-and-the-next-interface),
+merged as the source audit in [PR444](https://github.com/lbeezr/thousand-unit-skirmish/pull/444).
+It preserves already parked conflicts as waits; the operation-local endpoint
+query and construction consumer are separate next increments. Crowd does not
+duplicate that implementation, move the parked builder, accept overlap or
+silently change actor 120's destination.
 
 ## Retired experiments and next bounded slice
 
@@ -127,7 +131,8 @@ existing gate/forest/bridge/Stop controls. Endpoint resolution remains a
 separate caller/core dependency; it cannot substitute for choke progress.
 
 The diagnosis delivery incorporates main `16047ce2`, including the separate
-Worker-retention PR438. Its retained unchanged paid-gate controls complete
+Worker-retention PR438; the delivery also incorporates caller audit PR444
+without runtime changes. Its retained unchanged paid-gate controls complete
 64/64 on both seats at 992/2,615 ticks. Across 141,624 observed selected
 substeps there are zero static/body contacts, zero missing control records,
 and 72 preserved inactive actors per seat. These passing gate controls do not
