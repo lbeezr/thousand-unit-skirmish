@@ -1,5 +1,6 @@
 // Opt-in normal live-room proof. Commands use the game's socket; no state/asset injection.
 import assert from 'node:assert/strict';
+import {runFarmRenewalCaptureStep} from './farm-renewal-capture-step.mjs';
 import {createHash} from 'node:crypto';
 import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {createFortifiedBrowser} from './fortified-browser-fixture.mjs';
@@ -103,12 +104,8 @@ async function liveProof({browser,origin,headers={},evidenceDirectory,sourceRevi
   await pages[0].wait(`${snapshot}.buildings.find(b=>b.id===${JSON.stringify(farm.id)})?.harvestStock===0`,'real finite Farm depletion',150000);
   await pages[0].wait(`${snapshot}.buildings.find(b=>b.id===${JSON.stringify(farm.id)})?.capture?.state==='exhausted' && ${snapshot}.buildings.find(b=>b.id===${JSON.stringify(farm.id)})?.capture?.decoded`,'decoded exhausted field');
   await capture(0,'farm-exhausted');
-  await command(0,{type:'cancelConstruction',buildingId:farm.id});
-  await pages[0].wait(`${snapshot}.buildings.every(b=>b.id!==${JSON.stringify(farm.id)})`,'cleared exhausted plot');
-  await command(0,{type:'build',buildingType:'farm',ids:workers[0],x:farm.x,z:farm.z});
-  await pages[0].wait(`${snapshot}.buildings.some(b=>b.team===0&&b.type==='farm'&&b.id!==${JSON.stringify(farm.id)}&&b.complete&&b.harvestStock===200&&b.capture?.state==='complete'&&b.capture.decoded)`,'real paid replant',40000);
-  assert.equal((await pages[0].cdp.evaluate(snapshot)).bank.wood,705,'replant pays another 60 wood without an exhausted refund');
-  await capture(0,'farm-replanted');
+  report.renewal=await runFarmRenewalCaptureStep({page:pages[0],team:0,plotId:farm.id,
+   workerIds:workers[0],capture:name=>capture(0,name)});
   for(let team=0;team<2;team++){
    await pages[team].cdp.call('Page.bringToFront');
    await pages[team].cdp.call('Input.dispatchMouseEvent',{type:'mouseWheel',x:600,y:330,deltaX:0,deltaY:420});
@@ -129,7 +126,7 @@ async function liveProof({browser,origin,headers={},evidenceDirectory,sourceRevi
   for(const page of pages){assert.deepEqual(page.errors,[]);assert.deepEqual(await page.cdp.evaluate('window.__frontierProof.errors'),[]);}
   assert.ok(report.frames.at(-1).number>report.frames[0].number);
   assert.notEqual(report.frames.at(-1).canvasSHA256,report.frames[0].canvasSHA256);
-  report.checks=['two-live-teams','paid-construction','paid-completion','registered-default-views','live-ownership-standards','shared-depth','farm-body-selection','finite-harvest-exhaustion','paid-clear-and-replant','served-frame-hashes','advancing-webgl2-frames','no-browser-errors'];
+  report.checks=['two-live-teams','paid-construction','paid-completion','registered-default-views','live-ownership-standards','shared-depth','farm-body-selection','finite-harvest-exhaustion','explicit-selected-worker-replant','renewed-first-food-delivery','served-frame-hashes','advancing-webgl2-frames','no-browser-errors'];
   report.status='passed';return report;
  }catch(error){report.failure=error.message;report.diagnostics=[];for(const page of pages)report.diagnostics.push(await page.cdp.evaluate('({probeErrors:window.__frontierProof?.errors,frame:window.__frontierProof?.number,team:window.__rtsEnvironmentStateSnapshot?.team,workers:window.__rtsEnvironmentStateSnapshot?.workers,buildings:window.__rtsEnvironmentStateSnapshot?.buildings,notice:document.querySelector("#toast")?.textContent})').catch(()=>null));throw error;}
  finally{await writeFile(path.join(evidenceDirectory,'game-proof.json'),JSON.stringify(report,null,2)+'\n');for(const page of pages)await page.dispose();}
