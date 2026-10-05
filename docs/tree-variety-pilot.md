@@ -63,14 +63,19 @@ That is a local package, not Railway's built image digest. Staging deployment
 `b508e1c2-d06a-4c63-88b4-57cf962678f8` for merge source `1e75f6a8` was
 **BUILDING** at the read-only platform check; it is not recorded as delivered.
 Exact served identity and current game pixels remain incomplete.
+The cloud served-build request to staging `/health` was refused by its network
+proxy with CONNECT 403 (no HTTP response from the game). No alternate route or
+retry was attempted. The release/cloud access owner must provide an authorized
+working served-identity path; platform metadata does not close that denial.
 
 The next disjoint slice is [berry production binding validation](../scripts/berry-lifecycle-bindings.test.mjs),
 registered through the existing forest-age CI entry. It runs the actual
 `buildBerryNodeInstances` and `setBerryNodeStage` bodies read from the current
 client host, with the normal generic and Underbough factories. No host or art
 bytes are changed. It checks hashes/URLs, geometry registration, four stages,
-same-slot matrices, unaffected neighboring state counts and same-position
-rebuild/full-view UV identity. Generic full retains the v3 5×5 canvas and baked
+same-slot matrices, registered geometry root rows/baked slope, unaffected
+neighboring state counts, unchanged full-view UVs during every transition/reset,
+and same-position rebuild identity. Generic full retains the v3 5×5 canvas and baked
 root; older states retain their 2.55×1.56 registration. This test cannot prove
 matching silhouettes, anatomical direction, shader output or productive Gather.
 The two focused tests and the existing nine-test forest-age entry pass locally.

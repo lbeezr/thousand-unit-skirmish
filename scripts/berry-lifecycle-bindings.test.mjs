@@ -23,6 +23,29 @@ const runtimeFiles = interactive.files.filter(file => file.role === 'runtime-ima
 const byPath = new Map(runtimeFiles.map(file => [file.path, file]));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 
+function assertRegisteredRoot(mesh, modelCanvas = false) {
+  const positions = mesh.geometry.attributes.position, uvs = mesh.geometry.attributes.uv;
+  // V3 pixel root (320,480) on a 640-square canvas; painted states use bottom-centre.
+  const pivotV = modelCanvas ? .25 : 0;
+  const rootVertices = [];
+  for (let index = 0; index < positions.count; index++) {
+    if (uvs.getY(index) === pivotV) rootVertices.push(index);
+    if (modelCanvas) {
+      const y = positions.getY(index);
+      const expectedZ = -Math.min(0, y) * Math.hypot(.78, .78) / 1.12;
+      assert(Math.abs(positions.getZ(index) - expectedZ) < 1e-6, 'baked below-root slope stays registered');
+    }
+  }
+  assert.equal(rootVertices.length, 2, 'the root row spans the two card edges');
+  for (const index of rootVertices) {
+    assert.equal(positions.getY(index), 0, 'registered root lies at local ground height');
+    assert.equal(positions.getZ(index), 0, 'registered root stays on the slot plane');
+  }
+  const width = mesh.geometry.parameters.width;
+  assert.deepEqual(rootVertices.map(index => positions.getX(index)), [Math.fround(-width / 2), Math.fround(width / 2)]);
+  assert.equal(uvs.getX(rootVertices[0]), 0); assert.equal(uvs.getX(rootVertices[1]), 1);
+}
+
 test('thornberry preserves the exact four registered public derivatives and one shared crop', async () => {
   assert.deepEqual(registration.states.map(state => state.stage), RESOURCE_VISUAL_STAGES);
   assert.deepEqual(registration.directions, ['fixed-painted-oblique']);
@@ -84,6 +107,7 @@ test('ordinary berry production binds the right four states with stable roots, s
       const full = context.berrySpriteMeshes.get('full');
       const fullMatrix = new THREE.Matrix4(); full.getMatrixAt(0, fullMatrix);
       const rect = full.userData.resourceDirections?.rects.array.slice(0, 4);
+      assertRegisteredRoot(full, !region);
       if (region) {
         assert.equal(full.userData.resourceFoodFamily, 'underbough-thornberry');
         assert.equal(full.geometry.parameters.width, registration.worldWidth);
@@ -97,7 +121,10 @@ test('ordinary berry production binds the right four states with stable roots, s
       for (const stock of [66, 33, 0, 100]) {
         const stage = resourceVisualStage(stock, 100); context.setBerryNodeStage('picked', stage);
         const mesh = context.berrySpriteMeshes.get(stage), matrix = new THREE.Matrix4();
+        assertRegisteredRoot(mesh, !region && stage === 'full');
         mesh.getMatrixAt(0, matrix); assert.deepEqual(matrix.toArray(), fullMatrix.toArray());
+        if (!region) assert.deepEqual(full.userData.resourceDirections.rects.array.slice(0, 4), rect,
+          'the existing full-view UV is retained during depletion and reset before any rebuild');
         assert.equal(context.berryNodeStages.get('neighbor'), 'full');
         assert.equal(context.berryStageCounts.get('full'), stage === 'full' ? 2 : 1);
         if (region) {
@@ -119,6 +146,7 @@ test('ordinary berry production binds the right four states with stable roots, s
       }
       context.buildBerryNodeInstances(nodes);
       const rebuilt = context.berrySpriteMeshes.get('full'), matrix = new THREE.Matrix4(); rebuilt.getMatrixAt(0, matrix);
+      assertRegisteredRoot(rebuilt, !region);
       assert.deepEqual(matrix.toArray(), fullMatrix.toArray());
       if (!region) assert.deepEqual(rebuilt.userData.resourceDirections.rects.array.slice(0, 4), rect);
       assert.equal(JSON.stringify(nodes), before, 'presentation never changes authoritative stock/identity');
