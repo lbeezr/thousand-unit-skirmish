@@ -5,6 +5,10 @@ import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opp
 import { replayRememberedSearch } from './pve-remembered-search-case.mjs';
 import { replayProgressSearch } from './pve-progress-search-case.mjs';
 import { createContactMemoryCase, replayContactMemory } from './pve-contact-memory-case.mjs';
+import { assertTinySearchCompletion, encodeTinyFailureEvidence, decodeTinyFailureEvidence,
+  TINY_FAILURE_PREFIX } from './pve-tiny-failure-evidence.mjs';
+import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
+import { readFile } from 'node:fs/promises';
 
 const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
 for (const cold of [false, true]) test(`real Medium progressing route: ${cold ? 'cold restart during extension' : 'warm policy'} retains discovery past sixty seconds`, async () => {
@@ -447,4 +451,65 @@ test('current native Tiny contact inspection is useful, bounded and forgotten by
  assert.equal(cold.stages.restart,data.tick+30);assert.notDeepEqual(point(cold.trace.find(t=>t.tick===cold.stages.restart).command),[data.contact.x,data.contact.z]);
  for(const result of [baseline,candidate,cold]){assert.equal(result.metrics.rejected,0);assert.equal(result.final.state.matchWinner,-1);assert.equal(result.final.state.units.find(u=>u.id===data.enemyId).hp,100);}
  assert.deepEqual(await replayContactMemory(data),candidate,'complete controlled result repeats exactly');
+});
+
+test('Tiny noncompletion evidence: failure preserves exact payload and hidden-view boundary', () => {
+  const record = { final: { state: { matchWinner: -1, teamFood: [150, 250],
+    units: [{ id: 90, team: 1, x: 20, z: 20, generation: 7, hp: 12 }] } },
+    trace: [{ tick: 108000, team: 0, command: { type: 'attackMove', ids: [4], unitGenerations: [1], x: 0, z: 0 } }],
+    lastDecisionViews: [{ tick: 107970, units: { friendly: [], visibleEnemies: [] } }, null],
+    seeds: [20260925, 0], nativeIdentity: skirmish, policyIdentity: skirmish };
+  const before = structuredClone(record), lines = [];
+  assert.throws(() => assertTinySearchCompletion(record, line => lines.push(line)),
+    error => error.code === 'ERR_ASSERTION' && error.actual === -1 && /3,600 seconds/.test(error.message));
+  assert.deepEqual(record, before, 'retention cannot mutate borrowed authority or policy inputs');
+  assert.equal(lines.length, 1);
+  const decoded = decodeTinyFailureEvidence(JSON.parse(lines[0].slice(TINY_FAILURE_PREFIX.length)));
+  const { schemaVersion, source, ...payload } = decoded;
+  assert.equal(schemaVersion, 1); assert.match(source.revision, /^[a-f0-9]{40}$/);
+  assert.deepEqual(payload, before, 'all native fields, command generations and filtered views survive');
+  assert.deepEqual(decoded.lastDecisionViews[0].units.visibleEnemies, [], 'hidden authority never fills a disclosed view');
+});
+
+test('Tiny noncompletion evidence: corruption and broken sinks cannot erase the qualification failure', () => {
+  const record = { final: { state: { matchWinner: -1 } } }, envelope = encodeTinyFailureEvidence(record);
+  assert.throws(() => decodeTinyFailureEvidence({ ...envelope, sha256: '0'.repeat(64) }), /checksum/);
+  assert.throws(() => decodeTinyFailureEvidence({ ...envelope, bytes: envelope.bytes + 1 }), /length/);
+  assert.throws(() => assertTinySearchCompletion(record, () => { throw new Error('sink unavailable'); }),
+    error => error.code === 'ERR_ASSERTION' && error.actual === -1);
+});
+
+test('Tiny noncompletion evidence: successful terminal input emits no packet', () => {
+  const record = { final: { state: { matchWinner: 0 } } }, before = structuredClone(record);
+  assertTinySearchCompletion(record, () => assert.fail('successful qualification must not emit failure evidence'));
+  assert.deepEqual(record, before);
+});
+
+for (const matchModeId of ['authored', 'skirmish']) test(`Tiny noncompletion evidence: ${matchModeId} short native packet restores exact authority`, async () => {
+  // Five-second transport/recovery probe, not a truncated completion qualification.
+  const map = JSON.parse(await readFile(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  const nativeIdentity = { matchModeId, matchModeVersion: 1 };
+  const fixture = await createPveHeadlessFixture(map, nativeIdentity), r = fixture.replay;
+  let recovered;
+  try {
+    const initial = r.checkpoint(), own = toOpponentObservation(r.observe(0), 0, map).units.friendly[0];
+    const command = { type: 'move', ids: [own.id], unitGenerations: [own.generation], x: own.x + 2, z: own.z };
+    const notices = await r.order(0, command); r.drain();
+    assert(!notices.some(n => /REJECTED|FAILED|UNREACHABLE/.test(n.message || '')));
+    for (let step = 0; step < 150; step++) r.step();
+    const final = r.checkpoint(), views = [r.observe(0), r.observe(1)];
+    const record = { initial, final, nativeIdentity, policyIdentity: skirmish, seeds: [20260925, 0],
+      trace: [{ tick: 0, team: 0, command, notices }], metrics: [],
+      lastDecisionViews: views.map((v, team) => toOpponentObservation(v, team, map)),
+      scope: 'five-second diagnostic transport probe; not a qualification attempt' };
+    const lines = [], before = JSON.stringify(record);
+    assert.throws(() => assertTinySearchCompletion(record, line => lines.push(line)), /3,600 seconds/);
+    assert.equal(JSON.stringify(record), before);
+    const decoded = decodeTinyFailureEvidence(JSON.parse(lines[0].slice(TINY_FAILURE_PREFIX.length)));
+    assert.deepEqual(decoded.final, JSON.parse(JSON.stringify(final)));
+    assert.deepEqual(r.checkpoint(), final, 'serialization never advances or changes native state');
+    recovered = await createPveHeadlessFixture(map, nativeIdentity); recovered.replay.restore(decoded.final);
+    for (const team of [0, 1]) assertRecoveredWorkerObservation(
+      JSON.parse(JSON.stringify(recovered.replay.observe(team))), JSON.parse(JSON.stringify(views[team])));
+  } finally { await recovered?.dispose(); await fixture.dispose(); }
 });
