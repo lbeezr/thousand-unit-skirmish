@@ -16,16 +16,17 @@ const pack=JSON.parse(read(`${dir}/sprite-atlas-pack-v1.json`)),asset=pack.asset
 const pixels=decodeRgba8(read(`${dir}/spearman-atlas-runtime.png`));
 const cells=decodeRegisteredUnitFrames(asset,page,pixels);
 // Recover historical pages by removing only the later North stage's pinned empty cells.
-const historicalPixels=Buffer.from(pixels.pixels);
+const historicalPixels=Buffer.alloc(2048*pixels.height*4);
+for(let row=0;row<pixels.height;row++)historicalPixels.set(pixels.pixels.subarray(row*pixels.width*4,(row*pixels.width+2048)*4),row*2048*4);
 for(const [x,y] of [[1316,2772],[1316,3204],[1316,3588]])for(let row=y;row<y+352;row++)historicalPixels.fill(0,(row*2048+x)*4,(row*2048+x+416)*4);
 const ownIds=new Set(['attack-east-0','attack-east-1','attack-east-2']);
 
-test('East attack preserves all 63 prior complete frame records, pixels, 30 unaffected clips and calibration',()=>{
-  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^attack-north-\d+$/.test(f.id));
-  assert.equal(prior.length,63);assert.equal(asset.frames.length,69);
+test('East attack preserves all 63 prior complete frame records, pixels, 29 unaffected clips and calibration',()=>{
+  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^attack-(?:north|south)-\d+$/.test(f.id));
+  assert.equal(prior.length,63);assert.equal(asset.frames.length,72);
   assert.equal(sha(JSON.stringify(prior.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['east','north'].includes(c.directionId)));
-  assert.equal(unchanged.length,30);assert.equal(sha(JSON.stringify(unchanged)),'e8e72a421d8e693458ec398d2470823c98066da0794bff6372c0181b09ab3f59');
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['east','north','south'].includes(c.directionId)));
+  assert.equal(unchanged.length,29);assert.equal(sha(JSON.stringify(unchanged)),'4b0b66fb3443229a155138b396ddae39d02bdd54fc1e4e9d7851ec9b093979cc');
   const {frames,clips,...metadata}=asset;
   assert.equal(sha(JSON.stringify({...metadata,...receipt.registeredBounds})),receipt.registeredAssetMetadataSHA256);
   for(const key of ['artBoundsWorld','cullingBoundsWorld'])for(let axis=0;axis<3;axis++){
@@ -41,7 +42,7 @@ test('East attack preserves all 63 prior complete frame records, pixels, 30 unaf
 });
 
 test('East attack reuses its exact idle key then plays three own-view keys with an explicit 880 ms cadence',()=>{
-  const clip=asset.clips.find(c=>c.stateId==='attack'&&['east','north'].includes(c.directionId));
+  const clip=asset.clips.find(c=>c.stateId==='attack'&&c.directionId==='east');
   assert.equal(clip.loop,false);assert.deepEqual(clip.sequence,receipt.sequence);
   assert.deepEqual(clip.sequence.map(k=>k.durationMs),[120,200,160,400]);
   assert.equal(clip.sequence[0].frameId,'idle-east-0');
@@ -54,22 +55,22 @@ test('East attack reuses its exact idle key then plays three own-view keys with 
     for(let y=0;y<352;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+416)*4),original.pixels.subarray(y*416*4,(y+1)*416*4));
   }
   const report=analyzeUnitArtCoverage(asset,cells),row=report.rows.find(r=>r.key==='attack|east');
-  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,11);
+  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,10);
   assert.equal(row.status,'authored');assert.equal(row.distinctFrames,4);assert.equal(row.distinctSilhouettes,4);
   assert.ok(!report.missingCells.some(c=>c.startsWith('walk|')));assert.ok(report.missingCells.includes('defeat|east'));
-  const frozen=structuredClone(asset);frozen.clips.find(c=>c.stateId==='attack'&&['east','north'].includes(c.directionId)).sequence.forEach(k=>{k.frameId='idle-east-0';});
+  const frozen=structuredClone(asset);frozen.clips.find(c=>c.stateId==='attack'&&c.directionId==='east').sequence.forEach(k=>{k.frameId='idle-east-0';});
   assert.equal(analyzeUnitArtCoverage(frozen,cells).rows.find(r=>r.key==='attack|east').status,'idle-fallback');
   const selection=spriteActionProvenance(new Map(asset.clips.map(c=>[`${c.stateId}|${c.directionId}`,c])),'attack','east',null,'spearman',true);
   assert.equal(selection.reason,'exact');assert.equal(selection.selectedDirection,'east');
 });
 
 test('East attack keeps the complete previous page prefix and appends only the reviewed three slots',()=>{
-  assert.deepEqual(page.dimensionsPx,{width:2048,height:3968});
+  assert.deepEqual(page.dimensionsPx,{width:2560,height:3968});
   assert.equal(sha(historicalPixels.subarray(0,2048*3584*4)),receipt.baselineDecodedAtlasSHA256);
   const appended=Buffer.from(historicalPixels.subarray(2048*3584*4));
   for(const [x,y] of receipt.atlasSlotsPx)for(let row=y;row<y+352;row++)appended.fill(0,((row-3584)*2048+x)*4,((row-3584)*2048+x+416)*4);
   assert.equal(sha(appended),sha(Buffer.alloc(2048*384*4)));
-  assert.equal(sha(read(`${dir}/team-accent-mask.png`)),receipt.registeredMaskSHA256);
+  assert.equal(sha(read(`${dir}/team-accent-mask.png`)),'45d8a78af8c0d9ad3bda7626a7e6dc76a83ff9c87b5499f96efb915b6540c001');
   assert.equal(sha(read(`${dir}/spearman-atlas-source.png`)),sha(read(`${dir}/spearman-atlas-runtime.png`)));
 });
 

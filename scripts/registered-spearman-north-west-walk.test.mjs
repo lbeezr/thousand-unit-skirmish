@@ -17,16 +17,17 @@ const pack=JSON.parse(read(`${directory}/sprite-atlas-pack-v1.json`)),asset=pack
 const pixels=decodeRgba8(read(`${directory}/spearman-atlas-runtime.png`));
 const cells=decodeRegisteredUnitFrames(asset,page,pixels);
 // Remove only the later North attack's three independently pinned former empty cells.
-const historicalPixels=Buffer.from(pixels.pixels);
+const historicalPixels=Buffer.alloc(2048*pixels.height*4);
+for(let row=0;row<pixels.height;row++)historicalPixels.set(pixels.pixels.subarray(row*pixels.width*4,(row*pixels.width+2048)*4),row*2048*4);
 for(const [x,y] of [[1316,2772],[1316,3204],[1316,3588]])for(let row=y;row<y+352;row++)historicalPixels.fill(0,(row*2048+x)*4,(row*2048+x+416)*4);
 
 test('Spearman Northwest preserves all 56 prior registered poses, clips and body calibration',()=>{
-  const legacy=asset.frames.filter(f=>!/^walk-north-west-\d+$/.test(f.id)&&!/^attack-(?:north-east|east|north)-\d+$/.test(f.id));
-  assert.equal(legacy.length,56);assert.equal(asset.frames.length,69);
+  const legacy=asset.frames.filter(f=>!/^walk-north-west-\d+$/.test(f.id)&&!/^attack-(?:north-east|east|north|south)-\d+$/.test(f.id));
+  assert.equal(legacy.length,56);assert.equal(asset.frames.length,72);
   assert.equal(sha(JSON.stringify(legacy.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['north-east','east','north'].includes(c.directionId))&&!(c.stateId==='walk'&&c.directionId==='north-west'));
-  assert.equal(asset.clips.length,32);assert.equal(unchanged.length,28);
-  assert.equal(sha(JSON.stringify(unchanged)),'0057f38879aeeefe1960df41b026899f9d61894686de400be466c9a44d211113');
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['north-east','east','north','south'].includes(c.directionId))&&!(c.stateId==='walk'&&c.directionId==='north-west'));
+  assert.equal(asset.clips.length,32);assert.equal(unchanged.length,27);
+  assert.equal(sha(JSON.stringify(unchanged)),'30c7006bcf862abd40719dc39b64eb3c97ff032f8108a447bb80f3634efc42ba');
   assert.equal(asset.heightWorld/Math.max(...asset.frames.map(f=>f.alphaBoundsPx.height)),receipt.worldPerPixel);
   assert.equal(asset.heightWorld,receipt.heightWorld);
   assert.equal(sha(read(receipt.identitySource.path)),receipt.identitySource.sha256);
@@ -34,7 +35,7 @@ test('Spearman Northwest preserves all 56 prior registered poses, clips and body
   for(const key of ['mirroredPoses','borrowedDirectionPoses','generationProviderCalls','paidJobs'])assert.equal(receipt[key],0);
 });
 
-test('Spearman Northwest contains four exact source poses and leaves the other 11 cells incomplete',()=>{
+test('Spearman Northwest contains four exact source poses and leaves the other 10 cells incomplete',()=>{
   const clip=asset.clips.find(c=>c.stateId==='walk'&&c.directionId==='north-west');
   assert.equal(clip.loop,true);assert.equal(clip.sequence.reduce((n,k)=>n+k.durationMs,0),800);
   for(let index=0;index<4;index++){
@@ -49,7 +50,7 @@ test('Spearman Northwest contains four exact source poses and leaves the other 1
     for(let y=0;y<352;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+320)*4),original.pixels.subarray(y*320*4,(y+1)*320*4));
   }
   const report=analyzeUnitArtCoverage(asset,cells);
-  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,11);
+  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,10);
   const ne=report.rows.find(r=>r.key==='walk|north-west');assert.equal(ne.status,'authored');assert.equal(ne.distinctFrames,4);assert.equal(ne.distinctSilhouettes,4);
   assert.deepEqual(missingWalkDirections({pack,cells}),[]);
   assert.ok(report.missingCells.includes('attack|north-west'));assert.ok(report.missingCells.includes('defeat|north-west'));
@@ -94,12 +95,12 @@ test('real Spearman runtime advances Northwest keys, loops, stops and resumes fo
 
 // Restore only the four previously empty slots to check every old page byte.
 test('Northwest preserves prior page RGBA outside declared empty slots and the encoded mask',()=>{
-  assert.deepEqual(page.dimensionsPx,{width:2048,height:3968});
+  assert.deepEqual(page.dimensionsPx,{width:2560,height:3968});
   const restored=Buffer.from(historicalPixels.subarray(0,2048*3200*4));
   for(const [x,y] of receipt.atlasSlotsPx)for(let row=y;row<y+352;row++)
-    restored.fill(0,(row*pixels.width+x)*4,(row*pixels.width+x+320)*4);
+    restored.fill(0,(row*2048+x)*4,(row*2048+x+320)*4);
   assert.equal(sha(restored),receipt.baselineDecodedAtlasSHA256);
-  assert.equal(sha(read(`${directory}/team-accent-mask.png`)),'4d721612b9d43b681b237191c6c17fbf00ac171783eff80d28eb64fef688c186');
+  assert.equal(sha(read(`${directory}/team-accent-mask.png`)),'45d8a78af8c0d9ad3bda7626a7e6dc76a83ff9c87b5499f96efb915b6540c001');
   assert.equal(receipt.registeredMaskSHA256,receipt.baselineMaskSHA256);
   assert.equal(sha(read(`${directory}/spearman-atlas-source.png`)),sha(read(`${directory}/spearman-atlas-runtime.png`)));
 });
