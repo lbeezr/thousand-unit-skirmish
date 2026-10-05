@@ -2,7 +2,7 @@
 """Register one reviewed own-seed walk stage; the full builder replays stages."""
 from pathlib import Path
 from PIL import Image
-import copy, hashlib, json, subprocess, sys
+import copy, hashlib, io, json, subprocess, sys
 
 if len(sys.argv) != 2 or sys.argv[1] not in ['north', 'south', 'south-west', 'west', 'north-west']:
     raise ValueError('Expected one reviewed Spearman walk direction')
@@ -14,13 +14,21 @@ receipt = json.loads((source / 'registration.json').read_text())
 manifest_path = out / 'sprite-atlas-pack-v1.json'
 pack = json.loads(manifest_path.read_text())
 asset = pack['assets'][0]
+own_ids = [f'walk-{direction}-{i}' for i in range(4)]
+already = [f for f in asset['frames'] if f['id'] in own_ids]
+baseline_dimensions = receipt.get('baselineDimensionsPx', {'width': 2048, 'height': 2048})
+registered_dimensions = receipt.get('registeredDimensionsPx', baseline_dimensions)
+expected_dimensions = registered_dimensions if already else baseline_dimensions
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 if receipt['directionId'] != direction or sha(root / receipt['identitySource']['path']) != receipt['identitySource']['sha256']:
     raise ValueError('Approved own-direction identity source changed')
-if sha(out / 'team-accent-mask.png') != receipt['baselineMaskSHA256']:
+expected_mask = receipt.get('registeredMaskSHA256', receipt['baselineMaskSHA256']) if already else receipt['baselineMaskSHA256']
+if sha(out / 'team-accent-mask.png') != expected_mask:
     raise ValueError('Retained team mask changed')
+if not already and (sha(out / 'spearman-atlas-runtime.png') != receipt['baselineRuntimeSHA256'] or sha(out / 'spearman-atlas-source.png') != receipt['baselineRuntimeSHA256']):
+    raise ValueError('Reviewed prior atlas bytes changed')
 images = []
 for pose in receipt['poses']:
     path = source / pose['file']
@@ -45,14 +53,19 @@ console.log(JSON.stringify({poses:sha(frames.filter(f=>!ownIds.has(f.id)).map(f=
 clips:sha(clips.filter(c=>!(c.stateId==='walk'&&c.directionId===direction))),metadata:sha(metadata),page:sha(p.pages[0])}));
 '''
 actual = json.loads(subprocess.run(['node', '--input-type=module', '-e', verify, str(manifest_path), direction], cwd=root, capture_output=True, text=True, check=True).stdout)
-for key, expected in [('poses', 'baselineRegisteredPoseSHA256'), ('clips', 'baselineUnchangedClipsSHA256'), ('metadata', 'baselineAssetMetadataSHA256'), ('page', 'baselinePageMetadataSHA256')]:
+for key, expected in [('poses', 'baselineRegisteredPoseSHA256'), ('clips', 'baselineUnchangedClipsSHA256'), ('metadata', 'baselineAssetMetadataSHA256')]:
     if actual[key] != receipt[expected]:
         raise ValueError('Prior registered identity/geometry/pixels/clips/calibration changed: ' + key)
-own_ids = [f'walk-{direction}-{i}' for i in range(4)]
-already = [f for f in asset['frames'] if f['id'] in own_ids]
+expected_page = receipt.get('registeredPageMetadataSHA256', receipt['baselinePageMetadataSHA256']) if already else receipt['baselinePageMetadataSHA256']
+if actual['page'] != expected_page:
+    raise ValueError('Reviewed page metadata changed')
 atlas = Image.open(out / 'spearman-atlas-runtime.png').convert('RGBA')
-if atlas.size != (2048, 2048):
+if atlas.size != (expected_dimensions['width'], expected_dimensions['height']):
     raise ValueError('Expected retained atlas dimensions')
+if 'baselineDecodedAtlasSHA256' in receipt:
+    prefix = atlas.crop((0, 0, baseline_dimensions['width'], baseline_dimensions['height']))
+    if hashlib.sha256(prefix.tobytes()).hexdigest() != receipt['baselineDecodedAtlasSHA256']:
+        raise ValueError('Reviewed entire prior atlas prefix changed')
 if already:
     if len(already) != 4 or pack['packVersion'] != receipt['packVersion']:
         raise ValueError('Unexpected production revision; run the full builder')
@@ -71,6 +84,32 @@ else:
     if pack['packVersion'] != receipt['baselinePackVersion'] or len(asset['frames']) != prior or max(f['alphaBoundsPx']['height'] for f in asset['frames']) != 319:
         raise ValueError('Expected the reviewed prior pose/calibration baseline')
     old_pixels = atlas.copy()
+    mask_bytes = None
+    new_size = (registered_dimensions['width'], registered_dimensions['height'])
+    if new_size != atlas.size:
+        if new_size[0] != atlas.width or new_size[1] <= atlas.height:
+            raise ValueError('Only reviewed downward transparent page extension is supported')
+        grown = Image.new('RGBA', new_size)
+        grown.paste(atlas, (0, 0))
+        if grown.crop((0, 0, atlas.width, atlas.height)).tobytes() != atlas.tobytes():
+            raise ValueError('Page extension changed retained atlas pixels')
+        old_mask = Image.open(out / 'team-accent-mask.png')
+        if old_mask.mode != 'L' or old_mask.size != atlas.size:
+            raise ValueError('Expected the reviewed grayscale mask dimensions')
+        grown_mask = Image.new('L', new_size, 0)
+        grown_mask.paste(old_mask, (0, 0))
+        if grown_mask.crop((0, 0, atlas.width, atlas.height)).tobytes() != old_mask.tobytes():
+            raise ValueError('Page extension changed retained mask pixels')
+        encoded = io.BytesIO(); grown_mask.save(encoded, format='PNG'); mask_bytes = encoded.getvalue()
+        if hashlib.sha256(mask_bytes).hexdigest() != receipt['registeredMaskSHA256']:
+            raise ValueError('Extended mask differs from reviewed zero-padding receipt')
+        atlas = grown
+        pack['pages'][0]['dimensionsPx'] = registered_dimensions
+        for file in pack['files']:
+            file['dimensionsPx'] = registered_dimensions
+        page_sha = hashlib.sha256(json.dumps(pack['pages'][0], separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+        if page_sha != receipt['registeredPageMetadataSHA256']:
+            raise ValueError('Extended page differs from reviewed metadata receipt')
     template = copy.deepcopy(asset['frames'][0])
     for index, image in enumerate(images):
         x, y = receipt['atlasSlotsPx'][index]
@@ -103,8 +142,10 @@ else:
     pack['provenance']['notes'] += ' ' + receipt['packProvenanceNote']
     for filename in ['spearman-atlas-source.png', 'spearman-atlas-runtime.png']:
         atlas.save(out / filename)
+    if mask_bytes is not None:
+        (out / 'team-accent-mask.png').write_bytes(mask_bytes)
     for file in pack['files']:
         file['sha256'] = sha(out / file['path'])
     manifest_path.write_text(json.dumps(pack, indent=2) + '\n')
     (out / 'README.md').write_text(receipt['packReadme'])
-    print(f'Appended four {direction} keys; preserved {prior} prior poses, page, mask and body calibration')
+    print(f'Appended four {direction} keys; preserved {prior} prior poses/mask pixels/calibration; page {atlas.width}x{atlas.height}')

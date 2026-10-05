@@ -3,6 +3,7 @@ import './renderer-worker-animation-scenario.test.mjs';
 import './registered-spearman-ne-walk.test.mjs';
 import './registered-spearman-east-walk.test.mjs';
 import './registered-spearman-north-walk.test.mjs';
+import './registered-spearman-south-walk.test.mjs';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
