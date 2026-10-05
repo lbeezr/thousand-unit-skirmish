@@ -74,6 +74,30 @@ land executor, not command admission or whole journeys.
 
 ### Shared semantics, domain policies
 
+The next coordinator allocation at `bd7f2915` is explicit focused military
+unit-target Attack only, recorded on
+[PR395](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5986006185).
+Caller owner `01a10933-e913-766b-b5de-3aa5a17c7038` owns the pure active-intent
+predicate/profile fallback, `assignAttack`'s path publication after accepted
+order revision, and active focused pursuit/repath publication after existing
+null/unreachable handling. Core owner `01a107ba-7977-7764-9574-17cb0c3a102e`
+supplies the actual kind-radius-aware selected-route **rejoin-only** API.
+The Worker publisher is not a generic substitute: keep durable `moveGoalCell`.
+Preserve the full route chosen by `getUnitAttackPath`, including an intentional
+retained legal waypoint; do not newly truncate focused Attack at weapon range
+or shorten its whole route. Preserve in-range `reachable:true/path:[]`, null
+budget defer, unreachable results and accepted-order identity. Explicit
+Attack under `noAttack` still travels. Exclude Worker, buildings, automatic
+stance/return, persistent Patrol/Follow, same-cell closure and AttackMove-acquired
+pursuit. The latter needs a later prefix policy that passes unchanged
+`automaticPositionAllowed` after anchor creation. No allocated host hook is
+edited until core's API exists; actual command regressions are prepared while
+waiting only on that dependency. Both-seat Infantry and a legitimately trained
+Archer baseline each admit four unsafe static substeps at the authored corner,
+despite legal-range damage and successful target kills. The
+[retained baseline](qa-evidence/focused-attack-2026-10-05/baseline.json) preserves
+the full Archer route to its target cell and physical/damage evidence.
+
 After PR399 merged at `50d2e99e`, the project coordinator allocated a narrow
 target-free explicit AttackMove objective increment at main `82a66766` to
 caller-adoption owner `01a10933-e913-766b-b5de-3aa5a17c7038`, recorded on
