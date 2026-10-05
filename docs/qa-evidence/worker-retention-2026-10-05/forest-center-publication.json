@@ -1,0 +1,75 @@
+{
+  "sourceRevision": "091450fae3cf27f7eef93a1f2add3ea0390dc4a6",
+  "sourceDirty": false,
+  "inputSha256": {
+    "forestOpenAccessCells": "1a4b581175b8a6ad0a2946fb15072b591673e8aa5fb959136cd7cbd2a3e5ec9b",
+    "updateForestWorkerEconomy": "02d08e6ab6933f39f28eb3542de382d9ed8d5eb1e5a05c04d1cd66c35776afbe"
+  },
+  "scope": "Actual forest access-cell/final-approach bodies and real active work intent with controlled visibility/walkability and synthetic saved-field pressure. Shows a positive publication bypassing the shared flow helper; no route selector is invoked. No complete checkpoint, paid work lifecycle, movement execution, native XL admission, timing, served or rendered claim.",
+  "cases": [
+    {
+      "width": 320,
+      "height": 160,
+      "before": 1048576,
+      "after": 1048577,
+      "quota": 1048576,
+      "checkpointLeaf": "aggregate-refused",
+      "writer": "updateForestWorkerEconomy exhausted-route access-cell center publication",
+      "destination": 25760,
+      "tree": 25761,
+      "distanceBefore": 1.4832734070291962,
+      "distanceAtCenter": 1,
+      "unchangedJobCargoQueueRevisionGenerationAndPose": true,
+      "unchangedStock": true,
+      "routeSelectorOrFlowHelperCalled": false
+    },
+    {
+      "width": 160,
+      "height": 320,
+      "before": 1048576,
+      "after": 1048577,
+      "quota": 1048576,
+      "checkpointLeaf": "aggregate-refused",
+      "writer": "updateForestWorkerEconomy exhausted-route access-cell center publication",
+      "destination": 25680,
+      "tree": 25681,
+      "distanceBefore": 1.4832734070291962,
+      "distanceAtCenter": 1,
+      "unchangedJobCargoQueueRevisionGenerationAndPose": true,
+      "unchangedStock": true,
+      "routeSelectorOrFlowHelperCalled": false
+    },
+    {
+      "width": 320,
+      "height": 320,
+      "before": 1048576,
+      "after": 1048577,
+      "quota": 1048576,
+      "checkpointLeaf": "aggregate-refused",
+      "writer": "updateForestWorkerEconomy exhausted-route access-cell center publication",
+      "destination": 51360,
+      "tree": 51361,
+      "distanceBefore": 1.4832734070291962,
+      "distanceAtCenter": 1,
+      "unchangedJobCargoQueueRevisionGenerationAndPose": true,
+      "unchangedStock": true,
+      "routeSelectorOrFlowHelperCalled": false
+    },
+    {
+      "width": 16,
+      "height": 17,
+      "before": 0,
+      "after": 1,
+      "quota": 1048576,
+      "checkpointLeaf": "legacy-bypass",
+      "writer": "updateForestWorkerEconomy exhausted-route access-cell center publication",
+      "destination": 136,
+      "tree": 137,
+      "distanceBefore": 1.4832734070291962,
+      "distanceAtCenter": 1,
+      "unchangedJobCargoQueueRevisionGenerationAndPose": true,
+      "unchangedStock": true,
+      "routeSelectorOrFlowHelperCalled": false
+    }
+  ]
+}

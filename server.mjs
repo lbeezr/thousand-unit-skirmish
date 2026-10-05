@@ -1072,6 +1072,7 @@ let separationTickCloseNeighborContributions = 0;
 let separationTickMoveVectorCalls = 0;
 let separationTickMaxCandidatesPerCall = 0;
 let landRouteRetentionTick = null;
+let workerEconomyRouteScope = null;
 let lastSimulationTickStartedAt = null;
 const movePlanningSamples = [];
 const movePlanningQueue = [];
@@ -4640,10 +4641,72 @@ function applyWorkerFlowRoute(unit, startCell, field, path, arrived) {
     || result.status === 'deferred') return result;
   // Score and describe the original route before the resource-owned reduction.
   result.path = workerFlowPath(unit, result.path);
+  if ((MAP_WIDTH > 256 || MAP_HEIGHT > 256) && workerEconomyRouteScope
+    && units[unit.id] === unit && unit.movementDomain !== 'water') {
+    result.publicationOutcome = publishWorkerEconomyRoute(unit, result.path, result.selectedGoalCell);
+    if (result.publicationOutcome.status === 'deferred') {
+      result.status = 'deferred';
+      result.path = [];
+    }
+    return result;
+  }
   unit.moveGoalCell = result.selectedGoalCell;
   unit.path = result.path;
   unit.pathIndex = 0;
   return result;
+}
+
+function publishWorkerEconomyRoute(unit, path, destination) {
+  const scope = workerEconomyRouteScope;
+  if (units[unit.id] !== unit || unit.hp <= 0) return { status: 'deferred', reason: 'stale-worker-route' };
+  if (!scope.ledger && path.length > 0) scope.ledger = createUnitRoutePublicationLedger(
+    MAP_WIDTH, MAP_HEIGHT, units, resourceNodeStates,
+    { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES, maxEntries: XL_CHECKPOINT_ROUTE_MAX_ENTRIES });
+  const outcome = scope.ledger?.check(unit, path.length) ?? { status: 'ready' };
+  if (path.length > 0 && outcome.status === 'deferred') {
+    // Release only the refused payload; retain the selected work destination.
+    // Drop-off selection has already refreshed its navigation revision, so an
+    // explicit guarded repair is required even without another topology retry.
+    if (scope.ledger.check(unit, 0).status === 'ready') scope.ledger.commit(unit, 0);
+    unit.path = [];
+    unit.pathIndex = 0;
+    unit.moveGoalCell = destination;
+    unit.movePlanningPending = true;
+    scope.pending ??= new Map();
+    scope.pending.set(unit, { generation: unit.generation, revision: unit.orderRevision, destination });
+    return outcome;
+  }
+  // Clears may conservatively retain a charge when the original envelope was
+  // already invalid. They never justify optimistic capacity for another writer.
+  if (scope.ledger && outcome.status === 'ready') scope.ledger.commit(unit, path.length);
+  scope.pending?.delete(unit);
+  unit.moveGoalCell = destination;
+  unit.path = path;
+  unit.pathIndex = 0;
+  return { ...outcome, status: 'ready' };
+}
+
+function updateWorkerEconomyWithRouteAdmission() {
+  if (MAP_WIDTH <= 256 && MAP_HEIGHT <= 256) return updateWorkerEconomy();
+  const scope = { ledger: null, pending: null, epoch: movePlanningEpoch };
+  if (workerEconomyRouteScope) throw new Error('Nested Worker economy route scope');
+  workerEconomyRouteScope = scope;
+  try {
+    updateWorkerEconomy();
+  } finally {
+    // Later planner callbacks take their own fresh reservation. No scope or
+    // refused route array escapes this synchronous economy operation.
+    workerEconomyRouteScope = null;
+    if (scope.pending && scope.epoch === movePlanningEpoch) {
+      const repairs = [];
+      for (const [unit, pending] of scope.pending) {
+        if (units[unit.id] === unit && unit.hp > 0 && unit.generation === pending.generation
+          && unit.orderRevision === pending.revision && unit.movePlanningPending
+          && unit.moveGoalCell === pending.destination) repairs.push({ unit, destination: pending.destination });
+      }
+      enqueueRouteRepairs(repairs, { mode: 'worker-economy-capacity', orderLabel: 'WORKER ROUTE REPAIR' });
+    }
+  }
 }
 
 function routeWorkerToDropoff(unit) {
@@ -5098,15 +5161,22 @@ function updateForestWorkerEconomy(unit, continuations) {
       unit.pathIndex = 0;
       unit.movePlanningPending = false;
       unit.moveGoalCell = -1;
-    } else if (unit.pathIndex >= unit.path.length) {
+    } else if (unit.pathIndex >= unit.path.length
+      && (!workerEconomyRouteScope || !unit.movePlanningPending)) {
+      // A scoped pending path still owns its selected-goal repair, including
+      // outside access cells. It is not a completed or failed arrival.
       // A flow goal is a cell, while harvesting checks the actual position.
       // Retargeting can start inside an access cell but outside harvest range;
       // finish at that cell's legal center through ordinary movement.
       const current = worldToCell(unit.x, unit.z);
       if (forestOpenAccessCells(cell).includes(current)) {
-        unit.path = [current];
-        unit.pathIndex = 0;
-        unit.moveGoalCell = current;
+        if (workerEconomyRouteScope) {
+          publishWorkerEconomyRoute(unit, [current], current);
+        } else {
+          unit.path = [current];
+          unit.pathIndex = 0;
+          unit.moveGoalCell = current;
+        }
       } else if (groupJob) continuations.add(unit);
     }
   }
@@ -8708,7 +8778,7 @@ function simulateTick() {
     }
   }
 
-  updateWorkerEconomy();
+  updateWorkerEconomyWithRouteAdmission();
   updateBuildingAndProduction();
   updateTeamResearch();
 

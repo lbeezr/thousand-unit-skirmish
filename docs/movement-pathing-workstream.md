@@ -1386,6 +1386,92 @@ CI capture owners supply their interfaces; a source merge does not close
 served identity or pixels. Ordinary320 remains closed. Art backing N/A for
 this internal retention change; rejected art holds remain intact.
 
+### Worker economy operation publication
+
+The [clean-source navigation retry witnesses](qa-evidence/worker-retention-2026-10-05/navigation-retry.json)
+and reporter additionally consume the actual `workerAtDropoff` stale-navigation
+branch at `231d5e00`. Six synthetic flat/weighted quota cases on 320×160,
+160×320 and 320² preserve live cargo, phase, raw selected tail/score/cost, but
+increase saved entries beyond quota after reselecting a drop-off. The checkpoint
+leaf refuses those overshoots. These are source writer witnesses with controlled
+drop-off/flow selectors and policy, not paid-building lifecycle, native XL
+checkpoint/admission, timing or rendered acceptance.
+
+The resource owner [approved the exact allocation](https://github.com/lbeezr/thousand-unit-skirmish/pull/330#issuecomment-5988874272):
+core owns reservation at the live `applyWorkerFlowRoute` publication slot and
+a bounded operation-local ledger/repair handoff. Real actors are distinct from
+Return's temporary clones; Return remains charged by its merged command adopter.
+Selection, raw scoring, chosen tail, reduction, cargo, rates, depletion and
+continuation stay resource-owned. The actual consumed writes are that
+subsection of `applyWorkerFlowRoute`, a private synchronous wrapper at the
+existing `simulateTick` call to unchanged `updateWorkerEconomy`, and only the
+path/index/goal publication triplet in `updateForestWorkerEconomy`'s existing
+access-cell center approach. No scope argument forwarding or helper-signature
+change is needed. Resource retains every surrounding selection, validity,
+visibility, harvest and continuation condition. The lazy operation census
+begins at its first positive publication and ends before returning to the tick;
+legacy grids bypass it and Return clones remain outside its live charging.
+The wrapper unwinds in `finally`, before handing empty assignments to existing
+guarded service, which takes its own current reservation. No saved scope/ledger
+flag or new asynchronous planner is introduced.
+
+The read-only [forest center publication witness](qa-evidence/worker-retention-2026-10-05/forest-center-publication.mjs)
+and [clean-source report](qa-evidence/worker-retention-2026-10-05/forest-center-publication.json)
+consume the actual access-cell and economy bodies. At synthetic saved-route
+quota on each of the three XL shapes, this direct one-cell publication grows
+Q to Q+1 without invoking a flow helper, while preserving the active job,
+partial Wood cargo, stock, pose, queue, generation and order revision. The
+existing selected access center is within unchanged harvesting range, while
+the initial fractional pose is outside it. This establishes the missing writer
+in the operation; it is not execution, productive harvesting, full
+checkpoint, native XL or rendered acceptance. A small legacy case bypasses
+the XL checkpoint leaf unchanged.
+The default tick adopter charges every positive Worker route write within its
+scope, including automatic drop-off/resumption and navigation reselection.
+Reusing one phase ledger while leaving other growing Worker writers uncharged
+would undercount; independently rescanning all actors per recipient instead
+would add repeated census work. Both flow publication and the one-entry center
+approach consume one lazy ledger; idle operations never materialize it.
+
+The operation is unchanged `updateWorkerEconomy` and its actual forest/drop-off
+helper calls. Manual Gather/forest command groups and paid-footprint repair
+callers remain explicit next adopters; the historical reporters invoke helpers
+outside this tick scope and retain their overshoot controls. The ledger ends
+with the operation. Clears can conservatively delay credit until a fresh scope
+but cannot create optimistic reuse. Refusal keeps the selected goal/resource
+job, cargo and queue, releases refused arrays and explicitly hands off to the
+existing silent `worker-economy-capacity` repair. Drop-off navigation is already
+refreshed before publication, so the next work tick cannot be relied on to
+reselect/retry. A waiting forest Worker retains that accepted flow/center goal,
+including when outside all access cells. An empty pending route cannot be
+classified as a failed arrival or enter frontier continuation, which would
+reselect every tick or cancel a remembered job while its tree is out of sight.
+A completed nonpending route keeps the original continuation and queue policy. Actual
+interaction range still controls deposits/harvesting; refusal never supplies
+arrival or executes the old leg. Actor identity/generation/revision/epoch guard
+the handoff; existing planner navigation checks guard retry. Stop/new manual
+intent, depletion and continuation retain their existing priority and policy.
+
+The registered [economy admission journeys](../scripts/worker-economy-route-admission-journeys.mjs)
+consume the actual economy, both publication slots, forest target/continuation
+bodies, repair/service, physical phase and recovery tail with synthetic XL
+pressure and controlled flow/A*/visibility.
+Quota/weighted/raw-score controls, mixed flow/center ordering, active/resume alias
+accounting, one pending center repair, both-seat field-release/deposit-once,
+safe physical displacements, productive forest recovery, stale actors/orders,
+navigation/epoch changes and legacy bypass are source contracts. Off-access
+post-deposit waits cover both seats, visible/out-of-sight remembered trees,
+no-pressure controls and safe productive recovery after release. The optional
+queued-plus-forest-job fixture is an accepted-state control, not a normal Shift
+Move journey: that command clears the work intent. Metadata cold
+recovery is separate from a complete native XL checkpoint. Existing real-command
+Food/Wood/Stone, forest, paid Farm, depletion/continuation and untouched-checkpoint
+journeys remain compatibility acceptance on admitted grids. Water/wildlife keep
+separate adapters. Return and census diagnostics remain separate merged slices;
+independent exact-head review, release/native qualification and normal merge
+belong to this economy increment. Source, package, deployed identity and real
+normal-game pixels remain distinct. Ordinary320 and universal completion stay open.
+
 Stationary construction is another uncovered core consumer, with no runtime
 patch selected. Twelve real-command probes at the same clean source stage two
 or four Workers from each seat, pay 75 Wood for a House and observe actual work.
@@ -1404,7 +1490,7 @@ travel probes are not grounds for a speculative selector change.
 | Rank / status | Outcome and next action | Write boundary / dependency | Acceptance |
 | --- | --- | --- | --- |
 | U4/U6 · bounded runtime increment | XL sliced-planner publication reserves saved-field replacement and rejoin/final-center growth, releases staged payloads after refusal and retries from accepted goals through existing service. PR422 supplies durable pending goals; checkpoint PR407/414 supplies the quota. | Core publisher/rejoin/planner service; map owns save quota/admission. Other direct retention writers adopt separately. | Quota/growth/alias controls, fair release/retry/cancellation and restore-tail checks; real ≤256 compatibility. All-writer bounds, complete XL recovery, search resumability and ordinary 320 remain open. |
-| U4 · bounded caller adoption | Construction PR399 and scoped military objective PR405, unit Attack PR410, acquired AttackMove PR417, Patrol PR418/421, building Attack PR424, Follow/queued catch-up PR429 and automatic stance pursuit PR432 are merged. Next measured Worker Follow boundary is requested above; Worker Patrol/objective, rally and direct interaction/placement remain separately scoped. Safe return/same-cell controls do not justify speculative patches. | [Caller adoption owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/432) retains adoption; agree future overlapping functions without duplicating merged hooks. | Both-seat accepted commands, original endpoint cycling, retained selected route, productive legal-range damage, interruption/recovery and zero new static contact in the adopted domain. Old visibility fixture failures remain separate. |
+| U4 · bounded caller adoption | Construction PR399 and scoped military objective PR405, unit Attack PR410, acquired AttackMove PR417, Patrol PR418/421, building Attack PR424, Follow/queued catch-up PR429 and automatic stance pursuit PR432 are merged. Next measured Worker Follow boundary is allocated above; Worker Patrol/objective, rally and direct interaction/placement remain separately scoped. Safe return/same-cell controls do not justify speculative patches. | [Caller adoption owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/432) retains adoption; agree future overlapping functions without duplicating merged hooks. | Both-seat accepted commands, original endpoint cycling, retained selected route, productive legal-range damage, interruption/recovery and zero new static contact in the adopted domain. Old visibility fixture failures remain separate. |
 | U5 · source merged; verification retained | PR400 ordinary military Move groups, opposing traffic and queued topology are source-qualified and merged at `8c28773c`; retain identified staging/served/rendered verification. | [Crowd owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/400); allocated query/steering/wait only. | Retain failures/timeouts, safe sweeps, immovable parked actors, stable slots and finite forward progress; no combat/Worker adoption claim. |
 | 1 · complete | Clock-independent service work merged in [PR #193](https://github.com/lbeezr/thousand-unit-skirmish/pull/193), `331df72`; [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#integration-and-remaining-evidence) pass. | Planning constants, queue-slice helper and diagnostics only. | 209 postmerge checks; nine route pairs preserve hashes; native large routes and recovery. Atomic-search overshoot remains explicit. |
 | 2 · complete | The parked-formation stall reproduces with a one/two-tick older Move. Bounded repulsion merged in [PR #209](https://github.com/lbeezr/thousand-unit-skirmish/pull/209), `64cc391`; independent review and [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#4-october-postmerge-acceptance) pass. | Only `getMoveVector`'s final force combination and focused tests/tools. Combat-owner targeting/stances remain untouched. | 235 postmerge checks; all eight headings on both seats; four large parked cases twice; nine terrain route pairs; native parked controls and active/idle restarts at the exact merge source. |

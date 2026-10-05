@@ -98,7 +98,7 @@ function fixture({ width = 320, height = 320, total = 0, count = 1, team = 0,
     },
     recordMovePlanningSample: sample => samples.push(sample),
     console: { error(message, error) { throw new Error(message, { cause: error }); } },
-    tickDiagnosticSamples: null, landRouteRetentionTick: null, automaticPositionAllowed: () => true,
+    tickDiagnosticSamples: null, landRouteRetentionTick: null, workerEconomyRouteScope: null, automaticPositionAllowed: () => true,
     spreadInteractingUnits() {}, flushPendingForestClears() {},
     getMoveVector(u, distance) {
       const target = point(u.path[u.pathIndex]), dx = target.x - u.x, dz = target.z - u.z;
