@@ -9,6 +9,7 @@ import { assertTinySearchCompletion, encodeTinyFailureEvidence, decodeTinyFailur
   TINY_FAILURE_PREFIX } from './pve-tiny-failure-evidence.mjs';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 import { readFile } from 'node:fs/promises';
+import './pve-defender-assault.test.mjs';
 
 const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
 for (const cold of [false, true]) test(`real Medium progressing route: ${cold ? 'cold restart during extension' : 'warm policy'} retains discovery past sixty seconds`, async () => {

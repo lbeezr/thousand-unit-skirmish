@@ -1,0 +1,56 @@
+{
+  "source": "67295aef1a744bde9000ce2c3d12e00b78a922e0",
+  "archiveUrl": "https://raw.githubusercontent.com/lbeezr/thousand-unit-skirmish/0e88c68b0f8b66eba35804c40e97ff04341d8ed0/evidence/cpu-qualification-67295aef.zip",
+  "archiveSha256": "6c9c9030e1b19d4dd7ded618e18a7e81251fc0335af6a63d0b3b8ce8d1ee1b4b",
+  "seeds": [
+    20260925,
+    0
+  ],
+  "team": 1,
+  "terminalTick": 108000,
+  "frontlineIds": [
+    80,
+    82,
+    86,
+    92
+  ],
+  "defenderId": 95,
+  "townCenterId": 1000000000,
+  "note": "Exact decoded final objects from both unchanged Tiny failures; compact JSON and gzip mtime zero, no authority field edited. This bounded post-deadline assault regression does not establish full-match completion, a seat0 native equivalent or rendered acceptance.",
+  "checkpoints": [
+    {
+      "mode": "authored",
+      "filename": "tiny-authored-67295aef.json.gz",
+      "compressedBytes": 21725,
+      "compressedSha256": "08402987ddd06bc2f40a0f7c8946f98838d8e2ac09b2da94b94bb174b8545f82",
+      "checkpointBytes": 288913,
+      "checkpointSha256": "a90371e7071930e1a3fc385499f06e56acec3d7eb8b8b08b9e31f9a50eebfce1",
+      "recordSha256": "602d80fba8c612eb9d2a2725d230b3725c7974b67b7c153cb08eadcd8cd08dcb",
+      "nativeIdentity": {
+        "matchModeId": "authored",
+        "matchModeVersion": 1
+      },
+      "policyIdentity": {
+        "matchModeId": "skirmish",
+        "matchModeVersion": 1
+      }
+    },
+    {
+      "mode": "skirmish",
+      "filename": "tiny-skirmish-67295aef.json.gz",
+      "compressedBytes": 21726,
+      "compressedSha256": "952b3ee3c6cce0450143f265c395dd827a2149038ce0e4e67760c6119ac78e67",
+      "checkpointBytes": 288913,
+      "checkpointSha256": "edd39dea307ff19e4883585a08c8f4b3db55155dc2f8ef3f72d02623527c3744",
+      "recordSha256": "71051569ed484063dc3068deb92a6d586fd14e23b396ff54148cc0987e363d34",
+      "nativeIdentity": {
+        "matchModeId": "skirmish",
+        "matchModeVersion": 1
+      },
+      "policyIdentity": {
+        "matchModeId": "skirmish",
+        "matchModeVersion": 1
+      }
+    }
+  ]
+}
