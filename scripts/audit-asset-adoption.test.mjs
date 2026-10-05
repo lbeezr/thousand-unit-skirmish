@@ -136,3 +136,35 @@ test('registered Spearman atlas, mask and manifest must reach the actual release
   await assert.rejects(audit({ registry: selected, loadManifest: async () => manifest }),
     /declared runtime atlas and team mask required/);
 });
+
+test('normal economy families retain their own registered default selectors', async () => {
+  const records = ['mill', 'farm', 'dock'].map(type => registry.records.find(row => row.id === `frontier-${type}`));
+  assert.ok(records.every(Boolean), 'all three already-default families must enter the adoption guard');
+  const report = await audit({ registry: { ...registry, records } });
+  assert.deepEqual(report.results.map(row => [row.id, row.defaultBound, row.releaseIncluded]),
+    records.map(record => [record.id, true, true]));
+  for (const record of records) {
+    const selected = { ...registry, records: [record] };
+    await assert.rejects(audit({ registry: selected, main: await mainWithBuildingMode('0') }),
+      new RegExp(`${record.id}: approved runtime asset is not default-bound`));
+    const wrong = { ...record, manifest: records.find(other => other.id !== record.id).manifest };
+    await assert.rejects(audit({ registry: { ...registry, records: [wrong] } }), /selector\/manifest disagreement/);
+  }
+});
+
+test('each default economy manifest, Complete frame and later lifecycle frame must enter the real pack', async () => {
+  for (const type of ['mill', 'farm', 'dock']) {
+    const record = registry.records.find(row => row.id === `frontier-${type}`);
+    const manifest = JSON.parse(await readFile(path.join(root, record.manifest)));
+    const targets = [record.manifest,
+      path.join(path.dirname(record.manifest), manifest.completeState.views[0].path),
+      path.join(path.dirname(record.manifest), manifest.states.at(-1).views[0].path)];
+    assert.equal(new Set(targets).size, 3, 'the later lifecycle control must remove a distinct real state');
+    for (const target of targets) {
+      assert.ok(release.files.includes(target), 'negative control removes an actual packaged dependency');
+      await assert.rejects(audit({ registry: { ...registry, records: [record] },
+        releaseFiles: release.files.filter(file => file !== target) }),
+      new RegExp(`${record.id}: default runtime dependency omitted from release`));
+    }
+  }
+});

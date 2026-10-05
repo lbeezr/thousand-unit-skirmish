@@ -226,7 +226,7 @@ pixels, source publication, paid generation or rejected art is admitted.
 | Explicit manual renewal / Farm owner | Merged [PR491](https://github.com/lbeezr/thousand-unit-skirmish/pull/491) as `d5c12fb1`; retain default outcome through the next delivery/ordinary acceptance rows. `farm-harvest`, optional construction intent validation, narrow server admission/completion hooks and existing lifecycle/selection UI only. | Existing crowd/access routing and architecture boundary stay owned by Crowd01a10933 and architecture; no steering, renderer or shared state schema replacement. Both seats, exactly-once debit, first food delivery, stale generations, invalid plot/funds, interruption, destroy/replacement and cold recovery must pass. |
 | Default release and containing staging / Farm owner with existing public staging delivery owner | Pack clean exact merged source and verify server/client modules; identify an actually containing authorized staging build and smoke it. | Source, release digest and served/deployed source stay separate. No private-art publication or production promotion follows from this code scope. See [deployment guide](deployment.md). |
 | Ordinary Farm renewal acceptance / Farm owner | Execute normal Tiny paid build → Gather → depletion → select Workers/plot → Replant → first depot credit on both seats, desktop/touch and normal/strategic zoom. | Cloud probe at base `6ee1cce4` failed `sandbox-unavailable` and `storage-unavailable`, zero frames/screenshots. Supported browser provider configuration is required; no security bypass or stopped Mac dependency. Record exact build, buttons/state, food/wood/cargo and rendered frames using [qualification](renderer-qualification.md). |
-| Next disjoint readiness slice / Farm owner | Extend the owner-run ordinary Farm capture adapter to select actual Workers and use explicit Replant after depletion, with stock/cargo/bank assertions and no injected food/stock. | Now implemented in the existing [paid-economy recipe](../scripts/frontier-economy-game-capture.mjs) through a [pointer renewal step](../scripts/farm-renewal-capture-step.mjs); obtain independent review and integrate its nine refusal/receipt controls. Existing HUD novice/carcass/body pickers remain intact; only the Farm recipe and its controls change. Actual rendered execution still depends on the qualified cloud renderer. |
+| Next disjoint readiness slice / Farm owner | Extend the owner-run ordinary Farm capture adapter to select actual Workers and use explicit Replant after depletion, with stock/cargo/bank assertions and no injected food/stock. | Now implemented in the existing [paid-economy recipe](../scripts/frontier-economy-game-capture.mjs) through a [pointer renewal step](../scripts/farm-renewal-capture-step.mjs); Independent review passed and [PR497](https://github.com/lbeezr/thousand-unit-skirmish/pull/497) merged as `40cbe5e0`; retain actual execution/inspection at the qualified-renderer boundary. Existing HUD novice/carcass/body pickers remain intact; only the Farm recipe and its controls change. Actual rendered execution still depends on the qualified cloud renderer. |
 
 
 ### Reviewed source and delivery checkpoint
@@ -272,3 +272,49 @@ through renewal and delivering retained wood before first renewed food. Farm
 owner retains the existing authority-test fixture only; Crowd/architecture/HUD
 runtime writes are not reserved by that follow-on. In parallel, delivery and
 ordinary-renderer blockers stay active under their named rows above.
+
+
+### Natural mixed-selection cargo controls and precise remaining blockers
+
+The next disjoint authority evidence is now implemented in
+[`farm-replant.test.mjs`](../scripts/farm-replant.test.mjs): each seat buys and
+naturally exhausts its first crop, gathers real wood, Stops that carrying Worker,
+and explicitly selects it with a busy Hold Worker. Replant assigns only the
+carrying idle Worker. Before simulation advances, the selected busy and every
+unselected Worker retain exact authoritative records. Checkpoint restore preserves
+construction/wood cargo; the renewed Worker deposits its real wood before any
+renewed food, then resumes crop harvest. Both-seat stock + food cargo + bank
+conservation totals 400 food across the two paid crops, with one additional
+60-wood debit and exactly one return of the naturally gathered wood. No bank,
+stock, cargo or checkpoint fields are injected in these controls. Seven Farm
+authority tests pass. Independent review found no test-code defects and corrected
+this slice's recovery label to checkpoint restore; a fresh-process wood-cargo
+restart is not claimed. Source integration retains the Farm owner.
+
+The default pointer recipe is source-integrated by [PR497](https://github.com/lbeezr/thousand-unit-skirmish/pull/497),
+with no independent-review findings and nine passing contracts. Its real GPU
+execution is **incomplete**. A source helper or mocked pointer/wait test is not a
+rendered result. The broader recipe still retains its existing one-seat renewal
+sequence; full ordinary acceptance requires both seats, desktop/touch and
+normal/strategic zoom at one identified containing build.
+
+Actual execution denial on 5 October: direct staging `/ready` and `/health`
+requests to the existing `game-staging-21f9.up.railway.app` fail at the cloud
+proxy with **CONNECT tunnel 403**. Farm owner will not retry that denied access
+through another route. The cloud browser probe separately failed
+`sandbox-unavailable`/`storage-unavailable`, with zero rendered frames. Existing
+Railway OAuth read access succeeds and can establish provider deployment metadata;
+it cannot establish denied served bytes or game rendering. No existing smoke
+password is available to this executor, and no new credential/publication/access
+scope is requested or inferred. Provider-supported staging navigation, existing
+authorized smoke credentials and a sandbox-capable renderer are the exact next
+inputs for the retained served/ordinary acceptance rows.
+
+Containing provider deliveries remain active: the runtime merge deployment
+`d7615114-9232-49ba-9ad5-4e5128d7e66f` (`d5c12fb1`) was **BUILDING**, while the
+recipe merge deployment `5975928b-3b1e-4484-9398-6538bcee1a1a` (`40cbe5e0`)
+was **QUEUED**, at the last read. Neither is counted as successful delivery.
+After the mixed-selection regression integrates, next work is to inspect the
+terminal containing staging build, then execute the existing pointer recipe when
+its actual access/renderer dependencies are available. There is no additional
+unowned runtime refactor or generation job justified by this Farm outcome.
