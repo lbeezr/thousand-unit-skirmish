@@ -52,6 +52,16 @@ test('canonical validation and effective rules precede the restore consumer ship
     assert.equal(result.definition.victoryHoldSeconds, 12);
     assert.equal(result.state, candidate.state);
     assert.deepEqual(result.state.victoryHoldState.progressSeconds, [0, 0]);
+    const advancing = structuredClone(candidate);
+    advancing.state.victoryHoldState.activeTeams[0] = true;
+    advancing.state.victoryHoldState.progressSeconds[0] = 1;
+    advancing.matchModeId = 'authored';
+    assert.equal(replay.validateCheckpoint(advancing).state, advancing.state, 'the authored twelve-second hold admits one second of progress');
+    advancing.matchModeId = 'skirmish';
+    const advancingBytes = JSON.stringify(advancing);
+    assert.throws(() => replay.validateCheckpoint(advancing), { message: 'Invalid match checkpoint: invalid victory hold state' },
+      'the same progress is invalid under effective Skirmish rules');
+    assert.equal(JSON.stringify(advancing), advancingBytes);
     assert.throws(() => replay.restore(candidate), { message: 'Invalid match checkpoint: shipped map changed since checkpoint' });
     assert.equal(JSON.stringify(candidate), bytes);
     assert.deepEqual(replay.checkpoint(), world, 'catalog compatibility belongs to restore, before activation');
