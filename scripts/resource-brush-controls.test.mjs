@@ -462,3 +462,44 @@ test('recovery preserves unfinished authoring fields while actual export still r
   assert.equal(f.w.ui.studioMessage.textContent, 'Map name must be between 1 and 48 characters.');
   assert.ok(f.w.localStorage.getItem(key), 'export rejection retains the local draft');
 });
+
+test('actual scenario Undo/Redo restores region/event selections, retains branching and saves only the editor', t => {
+  const f = mapStudioDraftFixture(t); f.open(); const match = f.copy(f.w.mapDefinition);
+  const undo = f.d.getElementById('studio-scenario-undo'), redo = f.d.getElementById('studio-scenario-redo');
+  assert.equal(undo.disabled, true); assert.equal(redo.disabled, true);
+  const region = { id: 'pass', name: 'Pass', zone: { column: 4, row: 5, width: 2, height: 3 } };
+  const event = { id: 'supply', name: 'Supply', type: 'timed-supply', afterSeconds: 5, team: '0', foodReward: 10 };
+  f.w.editorScenarioEvents = [event]; f.w.selectedEditorRegionId = 'pass'; f.w.selectedEditorScenarioEventId = 'supply';
+  f.w.writeEditorRegions([region]);
+  f.w.editorScenarioEvents = [{ ...event, afterSeconds: 20 }]; f.w.selectedEditorRegionId = null;
+  f.w.selectedEditorScenarioEventId = null; f.w.writeEditorRegions([{ ...region, name: 'Edited pass' }]);
+  assert.equal(undo.disabled, false); f.click('studio-scenario-undo');
+  assert.deepEqual(f.copy(f.w.readEditorRegions()), [region]); assert.deepEqual(f.copy(f.w.editorScenarioEvents), [event]);
+  assert.equal(f.w.selectedEditorRegionId, 'pass'); assert.equal(f.w.selectedEditorScenarioEventId, 'supply');
+  assert.equal(redo.disabled, false); assert.equal(f.timers.size, 1);
+  f.click('studio-scenario-redo');
+  assert.equal(f.w.readEditorRegions()[0].name, 'Edited pass'); assert.equal(f.w.editorScenarioEvents[0].afterSeconds, 20);
+  assert.equal(f.w.selectedEditorRegionId, null); assert.equal(f.w.selectedEditorScenarioEventId, null);
+  f.click('studio-scenario-undo'); f.w.writeEditorRegions([{ ...region, name: 'New branch' }]);
+  assert.equal(redo.disabled, true); f.flush();
+  const saved = JSON.parse(f.w.localStorage.getItem(f.w.editorDraftStorageKey));
+  assert.equal(saved.editor.definition.regions[0].name, 'New branch');
+  assert.deepEqual(saved.editor.definition.scenarioEvents, [event]);
+  assert.deepEqual(f.copy(f.w.mapDefinition), match);
+});
+
+test('actual scenario history resets on draft recovery and portable import', async t => {
+  const f = mapStudioDraftFixture(t); f.open();
+  const region = { id: 'pass', name: 'Pass', zone: { column: 4, row: 5, width: 2, height: 3 } };
+  f.w.writeEditorRegions([region]); f.flush(); assert.equal(f.w.scenarioEditHistory.canUndo, true);
+  const portable = JSON.stringify(f.w.collectEditorMap());
+  f.click('map-studio-close'); f.open(); f.click('studio-draft-restore');
+  assert.deepEqual(f.copy(f.w.readEditorRegions()), [region]);
+  assert.equal(f.w.scenarioEditHistory.canUndo, false); assert.equal(f.w.scenarioEditHistory.canRedo, false);
+  assert.equal(f.d.getElementById('studio-scenario-undo').disabled, true);
+  f.w.writeEditorRegions([{ ...region, name: 'Changed' }]); assert.equal(f.w.scenarioEditHistory.canUndo, true);
+  await f.w.importEditorMap({ name: 'scenario.json', size: portable.length, text: async () => portable });
+  assert.deepEqual(f.copy(f.w.readEditorRegions()), [region]);
+  assert.equal(f.w.scenarioEditHistory.canUndo, false); assert.equal(f.w.scenarioEditHistory.canRedo, false);
+  assert.equal(f.d.getElementById('studio-scenario-redo').disabled, true);
+});
