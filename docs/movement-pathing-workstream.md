@@ -1,6 +1,6 @@
 # Movement and pathing workstream
 
-Updated 5 October 2026 against main `2c230f66`. This is the ranked execution backlog for the user-owned
+Updated 5 October 2026 against main `dbc83db3`. This is the ranked execution backlog for the user-owned
 movement lane; the [roadmap](roadmap.md) remains the product priority source.
 Each slice owns its regression, review, normal authorized merge and acceptance.
 Evidence must name the source/workload and preserve failures.
@@ -34,7 +34,7 @@ different endpoint, clearance and execution policies where the domain requires t
 Universal completion is open until every row below has command, journey,
 interruption, recovery and ordinary rendered evidence.
 
-### Caller coverage reconciled at `2c230f66`
+### Caller coverage reconciled at `dbc83db3`
 
 The native parent audit at `32b71795` identified two land route families and
 additional direct position writers. Its inventory is retained below with current
@@ -1017,14 +1017,15 @@ cold restart and clean packed startup. The 1,381-file package digest is
 The [merged API handoff](https://github.com/lbeezr/thousand-unit-skirmish/pull/410#issuecomment-5986257931)
 serves PR410; source adoption does not close deployed or ordinary rendered acceptance.
 
-### Next core dependency: bounded live publication
+### Bounded live publication increment
 
 The map owner handed off this dependency after checkpoint PR407/414 reached
 clean `f2931a41`: XL-only saves have a 32 MiB file/parser/state envelope and
 1,048,576 route entries across active/resume/herd arrays, each at most `cellCount`.
 Legacy ≤256 saves remain compatible; ordinary 320 is still closed. The
-[proposed accounting boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/407#issuecomment-5986402653)
-is the smallest shared decision needed before a runtime quota can ship.
+[accounting agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/407#issuecomment-5986579976)
+counts every saved field at its full length, including aliases and exhausted
+routes, while physically distinct in-flight arrays have a separate staging bound.
 
 The read-only [publisher characterization](qa-evidence/live-publication-2026-10-05/publication.json)
 executes the actual publisher and actual checkpoint path leaf at clean
@@ -1037,29 +1038,61 @@ paths, full checkpoints, admitted 320 maps or a gameplay/capacity failure witnes
 Repeat from the repository root with
 `node docs/qa-evidence/live-publication-2026-10-05/publication.mjs /tmp/publication.json`.
 
-Choose the first runtime increment only after fixing the accounting/continuation
-contract. Core owns `applyPlannedMoveAssignment`, its shared rejoin and planner
-service; callers retain all selected-goal/range/job decisions. An XL-only
-pre-publication reservation must count each active/resume/herd saved slot even
-when arrays alias, separately account shared in-flight storage and prospective
-prefix/final-center growth, and inspect those lengths before
-any copy or goal mutation. Never truncate a route, erase cost/waypoints or clear
-accepted intent to fit. Capacity refusal must be an observable temporary
-deferral, with deterministic fair retry and Stop/revision/nav cancellation.
-Returning false alone leaves an unapplied assignment that job completion does
-not retry; a quota guard without owned continuation is not a safe slice.
+The first consumed runtime slice stays in `applyPlannedMoveAssignment`, shared
+rejoin and the existing planner service. For dimensions above 256, one synchronous
+goal group takes a metadata-only census bounded by 2,000 actors and 128 nodes:
+at most 4,128 saved path-field visits, without indexing stored route cells.
+Replacement credits only the replaced active field; its resume/other aliases
+remain charged. Base route length and predicted final-center/rejoin growth are
+checked together before execution copies or projected endpoint publication.
+Selected tails, original weighted costs/raw lengths and accepted goals/jobs
+remain intact. The ledger is discarded with the synchronous group; there is no
+global mutable quota registry or saved ledger field.
 
-The smallest executable step is a bounded ordinary-planner publication/retry
-increment after that interface agreement, with exact tests for quota−1/quota/
-quota+1, aliased routes, retained resumes/herds, growth, no payload scan/copy on
-refusal, accepted job/point preservation, fair progress after release and pending
-checkpoint rebuild. Follow with Worker, combat/persistent and naval/wildlife
-retention adapters; do not claim an aggregate bound while those writers remain
-uncovered. Exhausted arrays can still be retained: release/retirement semantics
-must preserve any resume/queue references and durable endpoints before relying
-on freed capacity. Search resumability is a separate U6 increment. Map owns final
-320 admission/performance/playability; caller-owned Attack PR410, live crowd PR400,
-checkpoint and match-ending hooks are outside this first core allocation.
+Per selected publication, physically distinct raw, optional final-center and
+optional rejoin arrays total at most `3*cellCount` entries, separately from live
+saved fields. The existing resident search workspace has nine 32-bit and one
+16-bit grid arrays (`38*cellCount` bytes); direct search can stage two candidates
+of at most `cellCount−1` entries, and A* reverses its one selected array in place.
+These are source slot/workspace bounds, not GC, total heap/RSS or capacity
+measurements. Prior assignees' published arrays become live fields and are
+charged in the same ledger; no queued assignment retains a selected payload
+after an attempt. Single-search latency and resumability remain separate U6 work.
+
+Refused assignments retain only existing actor/goal/revision references and
+bounded scalar outcomes. The job reports `WAITING` once for explicit commands,
+rotates behind other ready work, and retries no earlier than the next authoritative
+tick. A blocked goal rotates behind later goals and original start groups; actual
+poses, current navigation and original requested points are recomputed at retry.
+The scheduler scans at most eight queued job records per selection and keeps
+callback retries out of a busy loop. Stop/replacement, actor/generation and epoch
+guards cancel stale work. Completed private planning samples disclose deferrals
+and maximum staged entries; silent internal jobs retain their counters without
+sending player notices. Pending saves rebuild through the existing durable goal
+and repair intake, consuming the pending-goal correction in PR422. No transient
+budget state is added to units or the checkpoint schema.
+
+Registered controls cover quota−1/quota/quota+1, alias/resume/herd accounting,
+per-path growth, no selected payload read on base refusal/no execution copy on
+growth refusal, preserved points/jobs, fair release/retry, cancellation and the
+actual restore continuation tail. The pressure arrays are metadata-only synthetic
+envelopes; they do not qualify a legitimate XL match or full save/recovery through
+the unchanged dimension gate. Six new native both-seat queued fractional Move
+journeys validate full serialized checkpoints and restore separate modules at
+16×17, 160² and 256²; existing 64/256-unit planner journeys retain crowd coverage
+on their disclosed 96×64 fixtures. These are CPU/source compatibility witnesses,
+not complete match/crowd/playability qualification at each grid size.
+The adapted characterization reporter exposes XL
+deferrals and leaves its retained `f2931a41` baseline unchanged.
+
+This covers the sliced A* publisher family only. Worker economy, direct combat,
+resume transfers, naval and wildlife retention writers still need vertical
+adopters before any all-writer aggregate claim. Exhausted route retirement must
+preserve resume/queue references and durable endpoints; this slice relies on
+actual replacement/Stop/caller release rather than inventing retirement.
+Map owns final 320 admission/performance/playability; caller pursuit, crowd PR400,
+checkpoint and match-ending hooks remain disjoint. Source/native/package,
+served identity and real rendered acceptance stay separate. Art backing N/A.
 
 Stationary construction is another uncovered core consumer, with no runtime
 patch selected. Twelve real-command probes at the same clean source stage two
@@ -1078,7 +1111,7 @@ travel probes are not grounds for a speculative selector change.
 
 | Rank / status | Outcome and next action | Write boundary / dependency | Acceptance |
 | --- | --- | --- | --- |
-| U4/U6 · next shared interface; runtime pending | Bound live publication including rejoin growth, after XL checkpoint PR407/414. Source-bound characterization is complete; agree reservation and deferred continuation before installing a guard. | Core publisher/rejoin/planner service; map owns save quota/admission. Worker/combat/naval/wildlife writers adopt in separate vertical changes. | No lost goal/job, truncation or stranded pending assignment; quota/growth/alias boundaries, fair retry/cancellation/recovery. ≤256 compatibility and closed ordinary 320 remain explicit. |
+| U4/U6 · bounded runtime increment | XL sliced-planner publication reserves saved-field replacement and rejoin/final-center growth, releases staged payloads after refusal and retries from accepted goals through existing service. PR422 supplies durable pending goals; checkpoint PR407/414 supplies the quota. | Core publisher/rejoin/planner service; map owns save quota/admission. Other direct retention writers adopt separately. | Quota/growth/alias controls, fair release/retry/cancellation and restore-tail checks; real ≤256 compatibility. All-writer bounds, complete XL recovery, search resumability and ordinary 320 remain open. |
 | U4 · bounded caller adoption | Construction PR399, objective AttackMove PR405, focused Attack PR410 and acquired AttackMove PR417 are merged. PR418 implements target-free military Patrol travel without host edits; PR421 adopts acquired Patrol unit-target pursuit at the existing combat hooks. Follow needs the pending-goal recovery decision recorded above; building-target range routes, stance and same-cell/interaction writers remain separate allocations. | [Caller adoption owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/421) retains adoption; agree future overlapping functions without duplicating merged hooks. | Both-seat accepted commands, original endpoint cycling, retained selected route, productive legal-range damage, interruption/recovery and zero new static contact in the adopted domain. Old visibility fixture failures remain separate. |
 | U5 · active crowd | PR400 qualifies ordinary military Move groups, opposing traffic and queued topology before integration. | [Crowd owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/400); allocated query/steering/wait only. | Retain failures/timeouts, safe sweeps, immovable parked actors, stable slots and finite forward progress; no combat/Worker adoption claim. |
 | 1 · complete | Clock-independent service work merged in [PR #193](https://github.com/lbeezr/thousand-unit-skirmish/pull/193), `331df72`; [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#integration-and-remaining-evidence) pass. | Planning constants, queue-slice helper and diagnostics only. | 209 postmerge checks; nine route pairs preserve hashes; native large routes and recovery. Atomic-search overshoot remains explicit. |

@@ -121,21 +121,78 @@ export function unitRouteResultIsCurrent(result, unit, epoch, navigationRevision
 // Rejoin an already selected route from an actual fractional position. Preserve
 // every selected waypoint and opaque metadata; this never selects/shortens a
 // route or publishes intent. The caller retains terrain and prefix admissibility.
-export function rejoinSelectedUnitRoute(route, { position, startCell, firstPoint, radius,
+export function unitRouteRejoinDecision(route, { position, startCell, firstPoint, radius,
   width, height, isWalkable, cellToWorld, requiresRejoin = false, acceptPrefix = () => true }) {
   if (route == null || route.path == null || route.path.length === 0
-    || (route.status != null && route.status !== 'ready')) return { route, rejoin: 'unchanged' };
+    || (route.status != null && route.status !== 'ready')) return 'unchanged';
   if (!Array.isArray(route.path)) throw new TypeError('selected route path must be an array');
   if (!finitePoint(position) || !finitePoint(firstPoint) || !Number.isFinite(radius) || radius < 0 || radius > .5
     || !Number.isInteger(width) || !Number.isInteger(height) || width <= 0 || height <= 0
     || !Number.isInteger(startCell) || startCell < 0 || startCell >= width * height)
-    return { route, rejoin: 'rejected' };
+    return 'rejected';
   const needed = requiresRejoin || (radius > 0
     && !canTraverseStaticBodySegment(position, firstPoint, radius, width, height, isWalkable));
-  if (!needed) return { route, rejoin: 'unchanged' };
+  if (!needed) return 'unchanged';
   const center = cellToWorld(startCell);
-  if (!finitePoint(center) || !acceptPrefix(center, startCell)) return { route, rejoin: 'rejected' };
-  return { route: { ...route, path: [startCell, ...route.path] }, rejoin: 'prefixed' };
+  if (!finitePoint(center) || !acceptPrefix(center, startCell)) return 'rejected';
+  return 'prefixed';
+}
+
+export function rejoinSelectedUnitRoute(route, options) {
+  const rejoin = unitRouteRejoinDecision(route, options);
+  return { route: rejoin === 'prefixed' ? { ...route, path: [options.startCell, ...route.path] } : route, rejoin };
+}
+
+// One synchronous publication group only: metadata census, not a live registry.
+// Count every saved field, including aliases and exhausted arrays. The host
+// supplies the checkpoint quota. Legacy routes never read this census.
+export function createUnitRoutePublicationLedger(width, height, units, nodes, limits) {
+  if (Number.isInteger(width) && Number.isInteger(height) && width > 0 && height > 0
+    && width <= 256 && height <= 256) return null;
+  const { maxUnits, maxResourceNodes, maxEntries } = limits;
+  const cellCount = width * height;
+  let valid = Number.isInteger(width) && Number.isInteger(height) && width > 0 && height > 0
+    && width <= 320 && height <= 320
+    && Number.isSafeInteger(maxUnits) && maxUnits >= 0
+    && Number.isSafeInteger(maxResourceNodes) && maxResourceNodes >= 0
+    && Number.isSafeInteger(maxEntries) && maxEntries >= 0
+    && Array.isArray(units) && units.length <= maxUnits
+    && (Array.isArray(nodes) ? nodes.length <= maxResourceNodes : nodes instanceof Map && nodes.size <= maxResourceNodes);
+  let routeEntries = 0, fieldVisits = 0;
+  const count = path => {
+    fieldVisits++;
+    if (!Array.isArray(path) || path.length > cellCount) { valid = false; return; }
+    routeEntries += path.length;
+  };
+  if (valid) {
+    for (const actor of units) {
+      if (!actor || typeof actor !== 'object' || Array.isArray(actor)) { valid = false; break; }
+      count(actor.path);
+      if (actor.attackMoveResumePath !== null) count(actor.attackMoveResumePath);
+    }
+    for (const node of nodes instanceof Map ? nodes.values() : nodes) {
+      if (!node || typeof node !== 'object' || Array.isArray(node)) { valid = false; break; }
+      if (node.wildlifeHerd != null) {
+        if (typeof node.wildlifeHerd !== 'object' || Array.isArray(node.wildlifeHerd)) { valid = false; break; }
+        count(node.wildlifeHerd.path);
+      }
+    }
+  }
+  const check = (unit, pathEntries) => {
+    const oldEntries = Array.isArray(unit?.path) ? unit.path.length : NaN;
+    const prospectiveEntries = routeEntries - oldEntries + pathEntries;
+    const reason = !valid || !Number.isSafeInteger(oldEntries) ? 'invalid-live-route-envelope'
+      : !Number.isSafeInteger(pathEntries) || pathEntries < 0 || pathEntries > cellCount ? 'path-entry-limit'
+      : prospectiveEntries > maxEntries ? 'aggregate-entry-limit' : null;
+    return { status: reason ? 'deferred' : 'ready', reason, routeEntries, prospectiveEntries,
+      pathEntries, fieldVisits, maxEntries };
+  };
+  return { check, commit(unit, pathEntries) {
+    const outcome = check(unit, pathEntries);
+    if (outcome.status !== 'ready') throw new Error('unreserved route publication');
+    routeEntries = outcome.prospectiveEntries;
+    return outcome;
+  } };
 }
 
 // Ordinary single-unit Move keeps the requested point apart from its legal
