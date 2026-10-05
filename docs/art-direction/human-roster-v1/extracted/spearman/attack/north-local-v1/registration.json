@@ -1,0 +1,247 @@
+{
+  "baselineRegisteredPoseSHA256": "95af27bab9e31f05816b34434472c71e29cd5218cbd0d4b22c0cfeada3420efd",
+  "baselineUnchangedClipsSHA256": "d5704340f70879de21b29bfbb1580041df7b7fbb852e20b15a9aec3d31c8eee1",
+  "baselineAssetMetadataSHA256": "c5f54a20bea1c33f940d14f16b387392446d462604bc53a8692d97ba85310652",
+  "baselinePageMetadataSHA256": "74f3ba63e0faf2a2177582a03470581dcf0f08b495d2d872eafb3c54a53fc021",
+  "registeredPageMetadataSHA256": "74f3ba63e0faf2a2177582a03470581dcf0f08b495d2d872eafb3c54a53fc021",
+  "baselineMaskSHA256": "4d721612b9d43b681b237191c6c17fbf00ac171783eff80d28eb64fef688c186",
+  "registeredMaskSHA256": "4d721612b9d43b681b237191c6c17fbf00ac171783eff80d28eb64fef688c186",
+  "heightWorld": 1.6722564697265625,
+  "worldPerPixel": 0.0052421832906788795,
+  "baselineManifestSHA256": "5ccf052194937cf926fe11bf38d0c2814df37d9ce0e4af2e52fa682aab337c3d",
+  "baselineRuntimeSHA256": "84bf49cd1c3f59a20d73c76fd89031376a878c21047ac57f8e90d47d7dd48ea3",
+  "baselineDecodedAtlasSHA256": "32827827c9748b3701f57f9b3c84e1a87ffff3df7d0da3e3d79bbaf53374ca39",
+  "historicalClipSubsetSHA256": {
+    "ne": "f5ffbc406713a7c063ca680b602159a08b95962a96881f51d5d930bc26615056",
+    "east": "d110e801d0f5e01c2c7f325c6c8de418a34d92431cd990a7e35df02efa5f09a9",
+    "north": "a10b06b6aa1cdbdc90be9ee62cbb24780acbbd3d5c08c06603209f8e4409de97",
+    "south": "2ef769403104e8b94b3e2ca2d37ae55cdcf76c2222a72a828d0c6782deb8dc57",
+    "south-west": "586f7a02cf54da9cc18d6a5a20260f1476bb45c9f442cece0cfaba4f2579f6d4",
+    "west": "719de3f9ff5cde1ab053747c6b3b7e23157d0f18cb29c7874db1044450ddc991",
+    "north-west": "5a059617c9e82486cbd825eff7fa22bdba0dba85d99824411c5836761457544e"
+  },
+  "identitySource": {
+    "path": "docs/art-direction/human-roster-v1/extracted/spearman/idle/03.png",
+    "sha256": "8c1644b67eeca87c4dda337110e195cb7b4345f62c1bd85e17cd6b23244c4229",
+    "registeredFrameId": "idle-north-0",
+    "registeredSeedSHA256": "996f23a35b98a858e3210478a13570f455e9d8a4e3cc397e58fb6b53fbff6c68"
+  },
+  "canvasPx": {
+    "width": 416,
+    "height": 352
+  },
+  "groundPivotPx": {
+    "x": 178,
+    "y": 295
+  },
+  "atlasSlotsPx": [
+    [
+      1316,
+      2772
+    ],
+    [
+      1316,
+      3204
+    ],
+    [
+      1316,
+      3588
+    ]
+  ],
+  "baselineDimensionsPx": {
+    "width": 2048,
+    "height": 3968
+  },
+  "registeredDimensionsPx": {
+    "width": 2048,
+    "height": 3968
+  },
+  "sequence": [
+    {
+      "frameId": "idle-north-0",
+      "durationMs": 120
+    },
+    {
+      "frameId": "attack-north-0",
+      "durationMs": 200
+    },
+    {
+      "frameId": "attack-north-1",
+      "durationMs": 160
+    },
+    {
+      "frameId": "attack-north-2",
+      "durationMs": 400
+    }
+  ],
+  "allNewSlotsRGBAZeroBeforeAppend": true,
+  "allNewSlotRectanglesDisjointFrom66OldFrameRects": true,
+  "schemaVersion": 1,
+  "sourceRevision": "bbc8ac5418fa3de0a73e49c77ee0a6622b13a012",
+  "stateId": "attack",
+  "directionId": "north",
+  "baselinePackVersion": "0.12.0",
+  "packVersion": "0.13.0",
+  "baselineBounds": {
+    "artBoundsWorld": {
+      "min": [
+        -1.2602186561554762,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.7722564697265626,
+        0.55
+      ]
+    },
+    "cullingBoundsWorld": {
+      "min": [
+        -1.2602186561554762,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.8722564697265625,
+        0.6
+      ]
+    }
+  },
+  "registeredBounds": {
+    "artBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.7722564697265626,
+        0.6828955364727002
+      ]
+    },
+    "cullingBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.8722564697265625,
+        0.6828955364727002
+      ]
+    }
+  },
+  "registeredAssetMetadataSHA256": "856e6cf9c24e1a18b46d978a6e47e632f0f6bc5da586e547500c6d77698647d6",
+  "registeredDecodedAtlasSHA256": "abc707a125feda0d1629cf9f67b8ba5560994badb4d9f751b92d42809a6419e3",
+  "poses": [
+    {
+      "file": "00-ready.png",
+      "pose": "ready",
+      "sha256": "e241818258fa0c92da5f7643dcc8525ad82276bc464ef2b890ac4fb8584d0434",
+      "durationMs": 200,
+      "spearAngleDeltaDegrees": -90,
+      "spearDeltaPx": [
+        -8,
+        -34
+      ],
+      "upperBodyDeltaPx": [
+        0,
+        5
+      ]
+    },
+    {
+      "file": "01-thrust.png",
+      "pose": "thrust",
+      "sha256": "6430fd6850325f96e32d2ee6e081fd10ab23804c9abea4eeae3307b8f0b7d7c3",
+      "durationMs": 160,
+      "spearAngleDeltaDegrees": -92,
+      "spearDeltaPx": [
+        -15,
+        -38
+      ],
+      "upperBodyDeltaPx": [
+        -6,
+        1
+      ]
+    },
+    {
+      "file": "02-recovery.png",
+      "pose": "recovery",
+      "sha256": "3a7c54769df39ee8087f329eabb20c51bd80ef1ea66768069063c6341270dd2a",
+      "durationMs": 400,
+      "spearAngleDeltaDegrees": -5,
+      "spearDeltaPx": [
+        0,
+        -2
+      ],
+      "upperBodyDeltaPx": [
+        0,
+        1
+      ]
+    }
+  ],
+  "reusedPriorRegisteredPoses": 66,
+  "reusedOpeningPoses": 1,
+  "newlyAuthoredPoses": 3,
+  "registeredTotalPoses": 69,
+  "loop": false,
+  "durationMs": 880,
+  "mirroredPoses": 0,
+  "borrowedDirectionPoses": 0,
+  "generationProviderCalls": 0,
+  "paidJobs": 0,
+  "sourceKind": "same approved public North2D seed; fixed camera, own split arm planes and complete rigid spear/grips; no3D master inferred",
+  "reconstruction": {
+    "sourceSHA256": "996f23a35b98a858e3210478a13570f455e9d8a4e3cc397e58fb6b53fbff6c68",
+    "restoredBodyPixels": 1643,
+    "bodyMaterialCounts": {
+      "vest": 902,
+      "belt-pouch": 569,
+      "apron-cream": 23,
+      "source-left-trousers": 149
+    },
+    "authoredHiddenArmPixels": 211,
+    "totalDonorPixels": 1854,
+    "existingJointOverlapPixels": 749,
+    "jointOverlapCounts": {
+      "near": 377,
+      "far": 372
+    },
+    "originalOwnershipTransfers": 13,
+    "outsideSources": 0,
+    "method": "bounded own-North body material domains and explicitly authored nominal near-upper sleeve underlap; exact original RGBA donors; original joint overlaps and original ownership transfers counted separately; no recovered hidden anatomy"
+  },
+  "processReceiptSHA256": {
+    "camera-scale-check.json": "3d25fd73ac88d47c1cfcb1094354e8ffd061a48b7852c0b649f20e3e5d946b27",
+    "geometry-check.json": "798d5d34e35d04b0f7880879404e695fbce8a3656e8032d2aab2464e8d9caa70",
+    "donor-coordinate-map.json": "cc6eb1e6ebb17b9210963bc0827496802c62e9fc2f0fbed7a084c76970df5039",
+    "rig-input.json": "1f641cc167234cf06db5be4983bdd17690617319ed59336b9767dd1e54b01bac",
+    "render_arm_study.py": "988d2bf19288b95e41aaf7b959a0b2641203b6185e4dcfd5e4a83abbf319f64b",
+    "prepare_own_north_masks.py": "b8c5a5de9260f7dd7ad6aebc6c908497135a1658625805631e80fcc9bab44afd",
+    "normalization-receipt.json": "8a1d1cc51f1a6dbd998659a811f97987068542880700378aeaad3d585ec071b8",
+    "ownership-map.json": "d103456f366d61a6c727a10f58f220d668617546727acd2458b929d4c1c82e04",
+    "applied-source-ownership-transfers.json": "0155ef85726285328b52e0183216dad5873b6167d1b7f37db5fe32bbe06d70be",
+    "authoring-plan-snapshot.json": "2b15a24fc89dd23f996409e855520ebecb6898eeba2fd48cd0aa89400a8aa985",
+    "ownership-correction-snapshot.json": "cd34182ddfffc955767cf0aa9bf8b66d87046485342da24796ca05b2f718911a"
+  },
+  "sourceReview": "independently-cleared-rough-functional-source",
+  "ordinaryGameReview": "pending-identified-game-capture",
+  "packProvenanceNote": "North attack reuses exact own idle opening and three newly authored free CPU source-UV ready/thrust/recovery keys,880ms one-shot. All66 prior frames/31 other clips/pivots/body calibration remain exact. Three formerly empty416x352 cells admit the keys without changing2048x3968 page allocation or encoded team mask. Explicit1854 exact own-North donor pixels and749 original joint overlap pixels; no provider/paid jobs, other-facing or private pixels. Native appearance pending.",
+  "packReadme": "# Human Spearman preview\n\nDefault v1 pack0.13.0 preserves all66 prior poses and31 other clips and adds three own-North ready/thrust/recovery keys, reusing one exact existing idle opening for an880ms one-shot. All8 source walks and SE/NE/E attacks remain. The69 frame records contain32 originals,28 earlier authored walks and9 own-facing attack poses (NE/E/N).\n\nThe same2048x3968 page and encoded zero team mask remain. Three proven empty416x352 slots contain this slice; every prior decoded RGBA byte outside those slots, every old crop/registration/pivot and body calibration remain exact. Conservative rooted bounds admit the weapon. Explicit own-seed donors:1854; original joint overlaps:749, counted separately. All source scripts/scenes/raw trials and normalized exports remain retained. No paid/provider jobs, private source, mirrored/borrowed facing or held identity.\n\nSource gaps at inspected bbc8ac54 plus this slice: Spearman11 (attack S/SW/W/NW; defeat N/NE/E/S/SW/W/NW), Infantry21, Archer21:53 military source cells. All63 original native/deployed cells remain unverified. The full builder replays seven directional walk stages then NE/E/N attack stages. Last-stage repeat: append-spearman-public-seed-action.py north.\n",
+  "independentSourceReview": {
+    "reviewer": "independent agent /root/independent_foot_art_review",
+    "verdict": "Usable rough own-view North ready/thrust/recovery source slice; no blocking source findings. Exact selected normalized PNG hashes above are the reviewed registration inputs.",
+    "receiptSHA256": "9e04ed60c780afd8c1a4f92dd9b1eb997174030a3e8758c11042108f9237dcbc",
+    "reviewMarkdownSHA256": "d17d0aee8108fa54ff681f3b13dd76637015b3b59c6478ec199370875dbc5d3a",
+    "triangleInstances": 254448,
+    "minimumSignedTriangleAreaPx2": 0.999990724005329,
+    "allDonorsExactOwnSeedRGBAAndDestinations": true,
+    "actualOriginalPixelTransfers": 13,
+    "authoredHiddenNearSleevePixels": 211,
+    "originalPivotStatus": "unreviewed-estimate",
+    "ordinaryGameReview": "pending-identified-containing-build"
+  }
+}

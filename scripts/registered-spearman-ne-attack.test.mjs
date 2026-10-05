@@ -15,15 +15,18 @@ const dir='assets/units/spearman-sprite-v1';
 const pack=JSON.parse(read(`${dir}/sprite-atlas-pack-v1.json`)),asset=pack.assets[0],page=pack.pages[0];
 const pixels=decodeRgba8(read(`${dir}/spearman-atlas-runtime.png`));
 const cells=decodeRegisteredUnitFrames(asset,page,pixels);
+// Recover historical pages by removing only the later North stage's pinned empty cells.
+const historicalPixels=Buffer.from(pixels.pixels);
+for(const [x,y] of [[1316,2772],[1316,3204],[1316,3588]])for(let row=y;row<y+352;row++)historicalPixels.fill(0,(row*2048+x)*4,(row*2048+x+416)*4);
 const ownIds=new Set(['attack-north-east-0','attack-north-east-1','attack-north-east-2']);
 
-test('NE attack preserves all 60 prior complete frame records, pixels, 30 unaffected clips and calibration',()=>{
-  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^attack-east-\d+$/.test(f.id));
-  assert.equal(prior.length,60);assert.equal(asset.frames.length,66);
+test('NE attack preserves all 60 prior complete frame records, pixels, 29 unaffected clips and calibration',()=>{
+  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^attack-(?:east|north)-\d+$/.test(f.id));
+  assert.equal(prior.length,60);assert.equal(asset.frames.length,69);
   assert.equal(sha(JSON.stringify(prior.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
-  // East attack is verified separately; every other retained clip stays exact.
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['north-east','east'].includes(c.directionId)));
-  assert.equal(unchanged.length,30);assert.equal(sha(JSON.stringify(unchanged)),'d584042dc5215a210d569a2dd2b0cc92edb831bfdeb8ea4f5f7ca9e2da2d3820');
+  // Later East/North attacks are independently verified; pin all remaining clips.
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['north-east','east','north'].includes(c.directionId)));
+  assert.equal(unchanged.length,29);assert.equal(sha(JSON.stringify(unchanged)),'a996c4a8a4a1a7f7f6d96f7a99fb49015ecec76c5b831691b85eb626b0a0a0f1');
   const {frames,clips,...metadata}=asset;
   assert.equal(sha(JSON.stringify({...metadata,...receipt.registeredBounds})),receipt.registeredAssetMetadataSHA256);
   for(const key of ['artBoundsWorld','cullingBoundsWorld'])for(let axis=0;axis<3;axis++){
@@ -52,7 +55,7 @@ test('NE attack reuses its exact idle key then plays three own-view keys with an
     for(let y=0;y<352;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+416)*4),original.pixels.subarray(y*416*4,(y+1)*416*4));
   }
   const report=analyzeUnitArtCoverage(asset,cells),row=report.rows.find(r=>r.key==='attack|north-east');
-  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,12);
+  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,11);
   assert.equal(row.status,'authored');assert.equal(row.distinctFrames,4);assert.equal(row.distinctSilhouettes,4);
   assert.ok(!report.missingCells.some(c=>c.startsWith('walk|')));assert.ok(report.missingCells.includes('defeat|north-east'));
   const frozen=structuredClone(asset);frozen.clips.find(c=>c.stateId==='attack'&&c.directionId==='north-east').sequence.forEach(k=>{k.frameId='idle-north-east-0';});
@@ -63,9 +66,9 @@ test('NE attack reuses its exact idle key then plays three own-view keys with an
 
 test('NE attack keeps the complete previous page prefix and appends only the reviewed three slots',()=>{
   assert.deepEqual(page.dimensionsPx,{width:2048,height:3968});
-  assert.equal(sha(pixels.pixels.subarray(0,2048*3200*4)),receipt.baselineDecodedAtlasSHA256);
-  assert.equal(sha(pixels.pixels.subarray(0,2048*3584*4)),receipt.registeredDecodedAtlasSHA256);
-  const appended=Buffer.from(pixels.pixels.subarray(2048*3200*4,2048*3584*4));
+  assert.equal(sha(historicalPixels.subarray(0,2048*3200*4)),receipt.baselineDecodedAtlasSHA256);
+  assert.equal(sha(historicalPixels.subarray(0,2048*3584*4)),receipt.registeredDecodedAtlasSHA256);
+  const appended=Buffer.from(historicalPixels.subarray(2048*3200*4,2048*3584*4));
   for(const [x,y] of receipt.atlasSlotsPx)for(let row=y;row<y+352;row++)appended.fill(0,((row-3200)*2048+x)*4,((row-3200)*2048+x+416)*4);
   assert.equal(sha(appended),sha(Buffer.alloc(2048*384*4)));
   assert.equal(sha(read(`${dir}/team-accent-mask.png`)),'4d721612b9d43b681b237191c6c17fbf00ac171783eff80d28eb64fef688c186');

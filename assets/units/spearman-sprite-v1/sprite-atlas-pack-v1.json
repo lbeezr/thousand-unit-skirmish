@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "packId": "spearman-sprite",
-  "packVersion": "0.12.0",
+  "packVersion": "0.13.0",
   "maturity": "runtime-candidate",
   "provenance": {
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
     "source": "Vaelora Human roster role and action sheets",
-    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; Blender CPU 2D source-UV NE leg articulation; Blender CPU 2D source-UV East leg articulation; Blender CPU 2D source-UV north leg articulation; Blender CPU 2D source-UV south leg articulation; Blender CPU 2D source-UV south-west leg articulation; Blender CPU 2D source-UV west leg articulation; Blender CPU 2D source-UV north-west leg articulation; Blender CPU 2D source-UV north-east arm and rigid spear articulation; Blender CPU 2D source-UV east arm and rigid spear articulation",
-    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four new locally authored NE walk poses retain the established public painted identity; all 32 prior registered poses are unchanged. Six walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored East walk poses retain the established public painted identity; all 36 prior registered poses are unchanged. Five walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored North walk poses retain the established own-view public painted identity; all 40 prior registered poses and 31 other clips are unchanged. Four walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored South walk poses retain the established own-view public painted identity; all 44 prior registered poses and 31 other clips are unchanged. The full prior 2048x2048 RGBA page and mask pixels survive a downward extension to 2048x3200. Three walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored Southwest walk poses retain the established own-view public painted identity; all 48 prior registered poses and 31 other clips are unchanged. The page dimensions and encoded zero mask remain unchanged; all previous page RGBA outside the four previously empty new slots stays exact. Two walk headings, seven attack and seven defeat headings remain missing. Source review is separate from ordinary rendered gait/contact acceptance. Four new locally authored West walk poses retain the established own-view public painted identity; all 52 prior registered poses and 31 other clips are unchanged. The page dimensions and encoded zero mask remain unchanged; all previous page RGBA outside the four previously empty new slots stays exact. One walk heading, seven attack and seven defeat headings remain missing. Source review is separate from ordinary rendered gait/contact acceptance. Four new locally authored Northwest walk poses retain the established own-view public painted identity; all 56 prior registered poses and 31 other clips are unchanged. The page dimensions and encoded zero mask remain unchanged; all previous page RGBA outside the four previously empty new slots stays exact. All eight walk headings are now authored; seven attack and seven defeat headings remain missing. Source review is separate from ordinary rendered gait/contact acceptance. NE attack reuses the exact own idle opening and three newly authored free CPU source-UV keys: ready, shaft-aligned thrust, recovery,880ms one-shot. Original60 poses/31 other clips/pivots/body calibration remain exact; page extends below3200px and rooted bounds expand for the weapon.2322 exact own-seed donor pixels (1985 body,337 far-arm underlap),375 existing elbow overlap pixels, no other-facing pixels/provider jobs. Native contact/readability pending. East attack reuses exact own idle opening and three newly authored free CPU source-UV ready/thrust/recovery keys,880ms one-shot. Original63 poses/31 other clips/pivots/body calibration remain exact; page extends below3584px and rooted bounds expand for the weapon.2830 exact own-seed donor pixels (2399 body,321 far upper,110 far cuff),377 original joint overlap pixels; no other-facing pixels or provider jobs. Native contact/readability pending."
+    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; Blender CPU 2D source-UV NE leg articulation; Blender CPU 2D source-UV East leg articulation; Blender CPU 2D source-UV north leg articulation; Blender CPU 2D source-UV south leg articulation; Blender CPU 2D source-UV south-west leg articulation; Blender CPU 2D source-UV west leg articulation; Blender CPU 2D source-UV north-west leg articulation; Blender CPU 2D source-UV north-east arm and rigid spear articulation; Blender CPU 2D source-UV east arm and rigid spear articulation; Blender CPU 2D source-UV north arm and rigid spear articulation",
+    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four new locally authored NE walk poses retain the established public painted identity; all 32 prior registered poses are unchanged. Six walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored East walk poses retain the established public painted identity; all 36 prior registered poses are unchanged. Five walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored North walk poses retain the established own-view public painted identity; all 40 prior registered poses and 31 other clips are unchanged. Four walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored South walk poses retain the established own-view public painted identity; all 44 prior registered poses and 31 other clips are unchanged. The full prior 2048x2048 RGBA page and mask pixels survive a downward extension to 2048x3200. Three walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored Southwest walk poses retain the established own-view public painted identity; all 48 prior registered poses and 31 other clips are unchanged. The page dimensions and encoded zero mask remain unchanged; all previous page RGBA outside the four previously empty new slots stays exact. Two walk headings, seven attack and seven defeat headings remain missing. Source review is separate from ordinary rendered gait/contact acceptance. Four new locally authored West walk poses retain the established own-view public painted identity; all 52 prior registered poses and 31 other clips are unchanged. The page dimensions and encoded zero mask remain unchanged; all previous page RGBA outside the four previously empty new slots stays exact. One walk heading, seven attack and seven defeat headings remain missing. Source review is separate from ordinary rendered gait/contact acceptance. Four new locally authored Northwest walk poses retain the established own-view public painted identity; all 56 prior registered poses and 31 other clips are unchanged. The page dimensions and encoded zero mask remain unchanged; all previous page RGBA outside the four previously empty new slots stays exact. All eight walk headings are now authored; seven attack and seven defeat headings remain missing. Source review is separate from ordinary rendered gait/contact acceptance. NE attack reuses the exact own idle opening and three newly authored free CPU source-UV keys: ready, shaft-aligned thrust, recovery,880ms one-shot. Original60 poses/31 other clips/pivots/body calibration remain exact; page extends below3200px and rooted bounds expand for the weapon.2322 exact own-seed donor pixels (1985 body,337 far-arm underlap),375 existing elbow overlap pixels, no other-facing pixels/provider jobs. Native contact/readability pending. East attack reuses exact own idle opening and three newly authored free CPU source-UV ready/thrust/recovery keys,880ms one-shot. Original63 poses/31 other clips/pivots/body calibration remain exact; page extends below3584px and rooted bounds expand for the weapon.2830 exact own-seed donor pixels (2399 body,321 far upper,110 far cuff),377 original joint overlap pixels; no other-facing pixels or provider jobs. Native contact/readability pending. North attack reuses exact own idle opening and three newly authored free CPU source-UV ready/thrust/recovery keys,880ms one-shot. All66 prior frames/31 other clips/pivots/body calibration remain exact. Three formerly empty416x352 cells admit the keys without changing2048x3968 page allocation or encoded team mask. Explicit1854 exact own-North donor pixels and749 original joint overlap pixels; no provider/paid jobs, other-facing or private pixels. Native appearance pending."
   },
   "files": [
     {
@@ -19,7 +19,7 @@
         "width": 2048,
         "height": 3968
       },
-      "sha256": "84bf49cd1c3f59a20d73c76fd89031376a878c21047ac57f8e90d47d7dd48ea3"
+      "sha256": "5fc22808b401d615e8dac14bdbfa342dfafef59ad01865fd5a6c9a6f9a2bc072"
     },
     {
       "id": "spearman-atlas-runtime",
@@ -30,7 +30,7 @@
         "width": 2048,
         "height": 3968
       },
-      "sha256": "84bf49cd1c3f59a20d73c76fd89031376a878c21047ac57f8e90d47d7dd48ea3"
+      "sha256": "5fc22808b401d615e8dac14bdbfa342dfafef59ad01865fd5a6c9a6f9a2bc072"
     },
     {
       "id": "spearman-team-mask",
@@ -76,14 +76,14 @@
       "kind": "unit",
       "artBoundsWorld": {
         "min": [
-          -1.2602186561554762,
+          -1.3787337270092317,
           0,
           -1.4213949566697694
         ],
         "max": [
           0.9201959478428509,
           1.7722564697265626,
-          0.55
+          0.6828955364727002
         ]
       },
       "heightWorld": 1.6722564697265625,
@@ -94,14 +94,14 @@
       ],
       "cullingBoundsWorld": {
         "min": [
-          -1.2602186561554762,
+          -1.3787337270092317,
           0,
           -1.4213949566697694
         ],
         "max": [
           0.9201959478428509,
           1.8722564697265625,
-          0.6
+          0.6828955364727002
         ]
       },
       "selectionBoundsWorld": {
@@ -2961,6 +2961,135 @@
             }
           ],
           "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "attack-north-0",
+          "groundPivotPx": {
+            "x": 178,
+            "y": 295
+          },
+          "canvasPx": {
+            "width": 416,
+            "height": 352
+          },
+          "alphaBoundsPx": {
+            "x": 16,
+            "y": 6,
+            "width": 247,
+            "height": 297
+          },
+          "fallbackRectPx": {
+            "pageId": "spearman-color",
+            "rectPx": {
+              "x": 1316,
+              "y": 2772,
+              "width": 416,
+              "height": 352
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "spearman-color",
+              "rectPx": {
+                "x": 1316,
+                "y": 2772,
+                "width": 416,
+                "height": 352
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "attack-north-1",
+          "groundPivotPx": {
+            "x": 178,
+            "y": 295
+          },
+          "canvasPx": {
+            "width": 416,
+            "height": 352
+          },
+          "alphaBoundsPx": {
+            "x": 5,
+            "y": 8,
+            "width": 255,
+            "height": 295
+          },
+          "fallbackRectPx": {
+            "pageId": "spearman-color",
+            "rectPx": {
+              "x": 1316,
+              "y": 3204,
+              "width": 416,
+              "height": 352
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "spearman-color",
+              "rectPx": {
+                "x": 1316,
+                "y": 3204,
+                "width": 416,
+                "height": 352
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "attack-north-2",
+          "groundPivotPx": {
+            "x": 178,
+            "y": 295
+          },
+          "canvasPx": {
+            "width": 416,
+            "height": 352
+          },
+          "alphaBoundsPx": {
+            "x": 88,
+            "y": 10,
+            "width": 206,
+            "height": 293
+          },
+          "fallbackRectPx": {
+            "pageId": "spearman-color",
+            "rectPx": {
+              "x": 1316,
+              "y": 3588,
+              "width": 416,
+              "height": 352
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "spearman-color",
+              "rectPx": {
+                "x": 1316,
+                "y": 3588,
+                "width": 416,
+                "height": 352
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
         }
       ],
       "clips": [
@@ -3340,11 +3469,23 @@
         {
           "stateId": "attack",
           "directionId": "north",
-          "loop": true,
+          "loop": false,
           "sequence": [
             {
               "frameId": "idle-north-0",
-              "durationMs": 1000
+              "durationMs": 120
+            },
+            {
+              "frameId": "attack-north-0",
+              "durationMs": 200
+            },
+            {
+              "frameId": "attack-north-1",
+              "durationMs": 160
+            },
+            {
+              "frameId": "attack-north-2",
+              "durationMs": 400
             }
           ]
         },
