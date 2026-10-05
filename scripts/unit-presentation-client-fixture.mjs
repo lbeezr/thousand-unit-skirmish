@@ -13,6 +13,7 @@ import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.
 import { shouldUpdateUnitTransformForFrame } from '../src/unit-lod-state.mjs';
 import { readWorkerPerformingAction, workerWorkAction } from '../src/worker-work-presentation.mjs';
 import { fixedMatchArmySize } from '../src/match-mode-controls.mjs';
+import { renderMatchRecap } from '../src/client/hud/match-recap.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 function slice(startText, endText, from = 0) {
@@ -73,7 +74,7 @@ export async function createUnitPresentationClientFixture({ localTeam = 0, maxUn
   const noop = () => {};
   const elements = new Map();
   const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), THREE, applyUnitStances, UNIT_DEFINITIONS,
-    readWorkerPerformingAction, workerWorkAction, fixedMatchArmySize, matchDecisions: { update() {} }, updateLobbyHostControls: noop,
+    readWorkerPerformingAction, workerWorkAction, fixedMatchArmySize, renderMatchRecap, matchDecisions: { update() {} }, updateLobbyHostControls: noop,
     mapDefinition: { id: 'unit-presentation-fixture' }, localTeam, isHost: false,
     activeMatchMode: {}, knownMaps: [], matchModeView: { update: noop }, setMapCatalog: noop,
     document: { querySelectorAll: () => [], querySelector(id) {

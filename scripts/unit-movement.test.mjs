@@ -5,7 +5,7 @@ import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent,
   activeLandMovementBodyRadius, workerEconomyBodyRadius, LAND_CLEARANCE_PROFILE,
-  canTraverseStaticBodySegment, createClearanceMoveGoalPoint } from '../src/unit-movement.mjs';
+  canTraverseStaticBodySegment, createClearanceMoveGoalPoint, rejoinSelectedUnitRoute } from '../src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, shortcutFlatUnitPath } from '../src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from '../src/unit-obstacle-detour.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
@@ -13,6 +13,72 @@ import { farmHarvestNode, farmBuildingId } from '../src/farm-harvest.mjs';
 import { workerFlowRouteBindings } from './economy-server-fixture.mjs';
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+
+function selectedRouteFixture() {
+  const width=64,height=48,startCell=1568,path=Object.freeze([1572,1508,1507,1506,1505,1569]);
+  const position=Object.freeze({x:.25,z:.95}),identity=Object.freeze({unit:position,generation:9,revision:7,epoch:3,navigationRevision:4});
+  const route=Object.freeze({status:'ready',path,selectedGoalCell:path.at(-1),goal:path.at(-1),
+    originalPathLength:path.length,originalCost:900,identity,policy: 'retained-approach'});
+  const cellToWorld=c=>({x:c%width-width/2+.5,z:Math.floor(c/width)-height/2+.5});
+  return {route,options:{position,startCell,firstPoint:cellToWorld(path[0]),radius:.22,width,height,
+    isWalkable:c=>c>=0&&c<width*height&&c!==1633,cellToWorld}};
+}
+
+test('selected-route rejoin retains anti-reversal waypoints, selected tail and every opaque metadata value for explicit kind radii',()=>{
+  for(const radius of new Set(Object.values(LAND_CLEARANCE_PROFILE.radiusByKind))){
+    const {route,options}=selectedRouteFixture();
+    assert.ok(canTraverseStaticBodySegment(options.position,options.position,radius,options.width,options.height,options.isWalkable));
+    assert.equal(canTraverseStaticBodySegment(options.position,options.firstPoint,radius,options.width,options.height,options.isWalkable),false);
+    const result=rejoinSelectedUnitRoute(route,{...options,radius});
+    assert.equal(result.rejoin,'prefixed');assert.notEqual(result.route,route);
+    assert.deepEqual(result.route.path,[options.startCell,...route.path]);
+    assert.deepEqual(result.route.path.slice(1),route.path,'no retained leading or reversal waypoint is reduced');
+    assert.equal(result.route.path.at(-1),route.selectedGoalCell);
+    for(const key of Object.keys(route))if(key!=='path')assert.equal(result.route[key],route[key],key);
+    assert.deepEqual(route.path,[1572,1508,1507,1506,1505,1569]);
+    assert.deepEqual(Object.keys(result.route),Object.keys(route),'no target/order/objective fields are introduced');
+  }
+});
+
+test('selected-route rejoin preserves a safe fractional first approach and lets caller policy reject only a proposed prefix',()=>{
+  const {route,options}=selectedRouteFixture();let policyCalls=0;
+  const safe=rejoinSelectedUnitRoute(route,{...options,position:{x:.25,z:.5},acceptPrefix(){policyCalls++;return false;}});
+  assert.equal(safe.rejoin,'unchanged');assert.equal(safe.route,route);assert.equal(policyCalls,0);
+  const rejected=rejoinSelectedUnitRoute(route,{...options,acceptPrefix(point,cell){
+    policyCalls++;assert.deepEqual(point,options.cellToWorld(options.startCell));assert.equal(cell,options.startCell);
+    return false; // The caller retains its range/stance admissibility decision.
+  }});
+  assert.equal(rejected.rejoin,'rejected');assert.equal(rejected.route,route);assert.equal(policyCalls,1);
+  assert.equal(rejected.route.path,route.path,'rejection is distinct from an empty or failed selected path');
+});
+
+test('caller-requested terrain rejoin works without a body policy and preserves an existing leading start cell',()=>{
+  const {route,options}=selectedRouteFixture();
+  const result=rejoinSelectedUnitRoute(route,{...options,radius:0,position:{x:.25,z:.5},requiresRejoin:true});
+  assert.equal(result.rejoin,'prefixed');assert.deepEqual(result.route.path,[options.startCell,...route.path]);
+  const retained={...route,path:[options.startCell,...route.path]};
+  const again=rejoinSelectedUnitRoute(retained,{...options,radius:0,requiresRejoin:true});
+  assert.deepEqual(again.route.path,[options.startCell,...retained.path],'existing leading waypoints are not filtered');
+});
+
+test('rejoin keeps null, empty, deferred, unreachable and arrived outcomes distinct without querying geometry or policy',()=>{
+  const options={cellToWorld(){throw new Error('no synthesized center');},isWalkable(){throw new Error('no geometry');},
+    acceptPrefix(){throw new Error('no prefix policy');},requiresRejoin:true};
+  for(const route of [null,undefined,{path:null,originalPathLength:null},{path:undefined},{path:[]},
+    {status:'ready',path:[]},{status:'deferred',path:[1],originalCost:null},
+    {status:'unreachable',path:[],selectedGoalCell:-1},{status:'arrived',path:[],selectedGoalCell:7}]){
+    const result=rejoinSelectedUnitRoute(route,options);assert.equal(result.rejoin,'unchanged');assert.equal(result.route,route);
+  }
+});
+
+test('malformed rejoin geometry rejects without altering the selected route or querying occupancy',()=>{
+  const {route,options}=selectedRouteFixture();
+  for(const change of [{radius:NaN},{radius:-1},{radius:.51},{width:0},{height:1.5},{height:undefined},
+    {startCell:-1},{startCell:3072},{position:{x:NaN,z:0}},{firstPoint:{x:0,z:Infinity}}]){
+    const result=rejoinSelectedUnitRoute(route,{...options,...change,isWalkable(){throw new Error('invalid geometry');}});
+    assert.equal(result.rejoin,'rejected');assert.equal(result.route,route);
+  }
+});
 
 test('shared economy route fixture binds real clearance with centered geometry and rejects a body-unsafe shortcut',()=>{
   const bindings=workerFlowRouteBindings();
@@ -147,7 +213,7 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     spatialBucketTeamNext:teamNext,spatialBucketOfUnit:bucketOf,
     spatialBucketColumn:x=>Math.max(0,Math.min(bucketColumns-1,Math.floor((x+half)/bucketSize))),
     spatialBucketRow:z=>Math.max(0,Math.min(bucketColumns-1,Math.floor((z+half)/bucketSize))),
-    elevationLevelByCell:levels,canTraverseUnitStep,activeLandMovementBodyRadius,workerEconomyBodyRadius,LAND_CLEARANCE_PROFILE,canTraverseStaticBodySegment,createClearanceMoveGoalPoint,
+    elevationLevelByCell:levels,canTraverseUnitStep,activeLandMovementBodyRadius,workerEconomyBodyRadius,LAND_CLEARANCE_PROFILE,canTraverseStaticBodySegment,createClearanceMoveGoalPoint,rejoinSelectedUnitRoute,
     canTraverseFlatUnitSegment,findStationaryWorkerDetour,SEPARATION_DIAGNOSTICS_ENABLED:false,
     tickNumber:1,dirty:false,worldToCell:cell,cellToWorld:point,isWalkable:walkable,
     resourceNodeStates:new Map([['berries',{x,z:-1,hp:1}]]),buildingsById:new Map(),farmHarvestNode,farmBuildingId,

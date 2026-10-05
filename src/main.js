@@ -7,6 +7,7 @@ import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
 import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { mountResourceBrushControls } from './resource-brush-controls.mjs';
 import { createMapStudioFormState } from './authoring/map-studio-form-state.mjs';
+import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from './authoring/map-studio-draft-store.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS, validateMapRegion } from './regions.mjs';
 import { regionGestureZone, ScenarioEditHistory } from './authoring/scenario-authoring.mjs';
@@ -5371,22 +5372,8 @@ const ELEVATION_LEVEL_COLORS = [null, 'rgba(255, 211, 109, .34)', 'rgba(246, 140
 const ELEVATION_EDITOR_TOOLS = new Set([
   'elevation:raise', 'elevation:lower', 'elevation:smooth', 'elevation:0', 'elevation:1', 'elevation:2',
 ]);
-const MAP_STUDIO_DRAFT_VERSION = 1;
 const MAP_STUDIO_DRAFT_DEBOUNCE_MS = 160;
-
-function mapStudioDraftKey(sourceMapId) {
-  return `${SESSION_STORAGE_KEY}:map-studio-draft:${location.origin}:${ROOM_ID || 'default'}:${sourceMapId}`;
-}
-
-function readMapStudioDraft(storageKey) {
-  if (!storageKey) return null;
-  try {
-    const raw = localStorage.getItem(storageKey);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
+const mapStudioDraftStore = createMapStudioDraftStore({ getStorage: () => localStorage });
 
 function setMapStudioDraftRecoveryPrompt(visible, message = '') {
   ui.studioDraftRecovery.hidden = !visible;
@@ -5406,7 +5393,7 @@ function showMapStudioDraftRecovery(draft) {
 function clearMapStudioDraft() {
   if (!editorDraftStorageKey) return true;
   try {
-    localStorage.removeItem(editorDraftStorageKey);
+    mapStudioDraftStore.remove(editorDraftStorageKey);
     editorDraftDirty = false;
     editorDraftLastSavedAt = null;
     ui.studioDraftStatus.textContent = 'NO LOCAL DRAFT';
@@ -5466,7 +5453,7 @@ function persistMapStudioDraft(force = false) {
   try {
     const draft = captureMapStudioDraft();
     if (!draft) return;
-    localStorage.setItem(editorDraftStorageKey, JSON.stringify(draft));
+    mapStudioDraftStore.write(editorDraftStorageKey, draft);
     editorDraftLastSavedAt = draft.savedAt;
     ui.studioDraftStatus.textContent = `SAVED LOCALLY · ${new Date(draft.savedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
   } catch {
@@ -5482,14 +5469,7 @@ function scheduleMapStudioDraftSave() {
 }
 
 function restoreMapStudioDraft(draft) {
-  const state = draft?.editor;
-  const definition = state?.definition;
-  if (draft?.version !== MAP_STUDIO_DRAFT_VERSION || draft.sourceMapId !== editorDraftSourceMapId
-    || !definition || !Number.isInteger(definition.width) || !Number.isInteger(definition.height)
-    || definition.width < 16 || definition.width > 256 || definition.height < 16 || definition.height > 256
-    || !Array.isArray(definition.obstacles) || !Array.isArray(definition.spawnPoints)) {
-    throw new Error('The saved draft could not be read. Discard it to start a fresh map.');
-  }
+  const { state, definition } = mapStudioDraftStore.requireRecovery(draft, editorDraftSourceMapId);
   populateMapEditor(definition, 'Recovered your unpublished map draft. Changes save locally as you edit.');
   editorTriggers = JSON.parse(JSON.stringify(definition.triggers || []));
   editorScenarioEvents = JSON.parse(JSON.stringify(definition.scenarioEvents || []));
@@ -5546,7 +5526,8 @@ function discardMapStudioDraft() {
 function openMapStudio() {
   if (!isHost || !mapDefinition) return;
   editorDraftSourceMapId = mapDefinition.id;
-  editorDraftStorageKey = mapStudioDraftKey(editorDraftSourceMapId);
+  editorDraftStorageKey = mapStudioDraftStore.key({ sessionStorageKey: SESSION_STORAGE_KEY,
+    origin: location.origin, roomId: ROOM_ID, sourceMapId: editorDraftSourceMapId });
   editorDraftDirty = false;
   editorDraftLastSavedAt = null;
   const draft = JSON.parse(JSON.stringify(mapDefinition));
@@ -5558,7 +5539,7 @@ function openMapStudio() {
   draft.id = candidateId;
   draft.name = `${mapDefinition.name} CUSTOM`.slice(0, 48);
   populateMapEditor(draft, 'Paint the battlefield, place both spawns, then select or add capture objectives.');
-  const savedDraft = readMapStudioDraft(editorDraftStorageKey);
+  const savedDraft = mapStudioDraftStore.read(editorDraftStorageKey);
   if (savedDraft) {
     showMapStudioDraftRecovery(savedDraft);
     ui.studioDraftStatus.textContent = 'UNPUBLISHED DRAFT FOUND';
@@ -9841,7 +9822,7 @@ ui.mapStudioOpen.addEventListener('click', openMapStudio);
 document.querySelector('#map-studio-close').addEventListener('click', () => ui.mapStudio.close());
 document.querySelector('#studio-draft-restore').addEventListener('click', () => {
   try {
-    restoreMapStudioDraft(readMapStudioDraft(editorDraftStorageKey));
+    restoreMapStudioDraft(mapStudioDraftStore.read(editorDraftStorageKey));
   } catch (error) {
     ui.studioDraftRecoveryMessage.textContent = error.message;
   }
