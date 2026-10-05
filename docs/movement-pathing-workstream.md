@@ -60,10 +60,11 @@ actual journey coverage and rendered acceptance are separate.
 
 The separate **target-free military Follow candidate** consumes core PR422's
 durable accepted pending-goal contract at merged building-target source `032eea7d`.
-It adds only `followTravelMovementActive` and the caller-owned body-profile
-fallback; existing shared publication/rejoin/executor do the work. No host,
-persistent controller, queue admission, checkpoint, planner, quota or crowd
-algorithm changes are included. [Disjoint boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/425#issuecomment-5987365194)
+It adds `followTravelMovementActive` and the caller-owned body-profile fallback;
+existing shared publication/rejoin/executor do the work. The separately allocated
+queue-append subsection below preserves that clearance when Follow converts to
+ordinary travel. No persistent controller, checkpoint field, planner, quota or
+crowd algorithm changes are included. [Initial disjoint boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/425#issuecomment-5987365194)
 retains PR425's live-publication/retry functions with core.
 
 The [baseline](qa-evidence/follow-travel-2026-10-05/baseline.json) on unchanged
@@ -92,25 +93,43 @@ merged source; archive and dirty-checkout provenance are explicit. The reporter
 physical acceptance. Core PR422 fixed liveness; it did not adopt this cancelled,
 cell-only ordinary leg's body policy.
 
-Forty-nine registered candidate checks currently retain six strict physical
-failures for that pending/queued/cold transition, rather than suppressing them.
-The cold cases set actual callback/tick planner modes before both module imports
-and complete the catch-up and queue through their shared hooks, without draining
-the active legs. Independent state-only projection through the existing API
-validates and reduces 16/6 contacts to zero in both modes; no host patch is made.
-Other real-command cases cover both-seat Infantry and paid/trained Archer,
-accepted/pending/active recovery, Stop/Hold/Move, active queue cancellation,
-moving leader, actual leader death, validated generation replacement, close
-leader deadband, existing bounded monotone legacy escape, paid obstruction,
-selection/cycle rejection and excluded Worker policy. The candidate remains
-unmerged while the [exact queue-admission boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/425#issuecomment-5987460101)
-is coordinated with core/crowd. A possible existing-API cell-center goal point
-for the accepted catch-up must preserve its selected goal/revision across
-cancellation and recovery; no new saved flag, leader revival or duplicate
-planner is implemented here. Native active-Follow/active-queued-leg restart
-evidence is separate from the failing first-pending geometry. Rendered and
-identified served acceptance remain open; the historical zero-frame block is
-retained without retry. Art backing is N/A.
+The initial 49 registered candidate checks retained six strict physical failures
+for that pending/queued/cold transition; independent review confirmed them and
+identified a planning-mode harness gap, which was corrected before the host fix.
+The cold cases now set actual callback/tick planner modes before both module
+imports and complete the catch-up and queue through their shared hooks, without
+draining active legs. Independent state-only projection through the existing API
+validated and reduced 16/6 contacts to zero in both modes.
+
+[Core's exact allocation](https://github.com/lbeezr/thousand-unit-skirmish/pull/425#issuecomment-5987591555)
+then assigns caller PR429 only the additive accepted queue-append subsection of
+`assignFormationMove`. It captures target-free military land Follow with a valid
+accepted cell and pending or unconsumed catch-up. After clearing Follow, it
+preserves an already-valid ordinary point or creates the selected cell-center
+v2 point through `createClearanceMoveGoalPoint` at the same generation/revision.
+The selected cell, raw path/reference/index, pending job, incoming waypoint and
+accepted intent stay intact. Idle/exhausted Follow, Worker, water, acquired
+combat, Patrol and AttackMove policies remain outside this conversion. No new
+saved flag or leader revival is introduced. This deliberately activates the
+existing ordinary classifier; [crowd's receiving boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5987594116)
+retains its steering and actual branch qualification.
+
+The [adopted queued witness](qa-evidence/follow-travel-2026-10-05/queued-clearance-adopted.json)
+records both seats executing the first accepted leg and completing the queued
+fractional point with radius .22 and zero unsafe steps; dirty pre-review source
+and runtime hashes are explicit. Sixty-three registered journeys include the
+six original regression cases plus pending/active queued AttackMove, preservation
+of an API-authored existing point after Follow clears, idle/exhausted immediate
+replacement and excluded Worker queue controls. Other real-command cases cover
+both-seat Infantry and paid/trained Archer, accepted/pending/active recovery,
+Stop/Hold/Move, moving leader, actual leader death, validated generation
+replacement, close leader deadband, existing bounded monotone legacy escape,
+paid obstruction and selection/cycle rejection. Exact-head review/checks/clean
+package receipts belong to PR429; default integration remains open until its
+normal merge. Native active-Follow/active-queued-leg restart evidence is separate
+from traced first-pending geometry. Rendered and identified served acceptance
+remain open; the historical zero-frame block is retained without retry. Art
+backing is N/A.
 
 Focused military **building-target Attack** now consumes the merged selected-route
 rejoin at `assignAttackBuilding`'s final accepted publication and `simulateTick`'s

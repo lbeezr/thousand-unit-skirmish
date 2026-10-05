@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { followTravelMovementActive } from '../src/combat-movement.mjs';
-import { activeLandMovementBodyRadius, canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
+import { activeLandMovementBodyRadius, activeMoveGoalPoint, createClearanceMoveGoalPoint,
+  canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 
 test('Follow clearance derives only from target-free military persistent intent', () => {
@@ -148,6 +149,55 @@ for (const team of [0, 1]) for (const turns of [0, 1]) test(`seat ${team}: ${tur
   }, 'infantry', { plannerTurns: turns });
 });
 
+for (const team of [0, 1]) for (const phaseName of ['pending', 'active']) {
+  test(`seat ${team}: queued AttackMove retains the ${phaseName} Follow catch-up before cold continuation`, async () => {
+    await journey(team, async ({ actor, command, follow, phase, recover, until }) => {
+      follow(); phase(phaseName);
+      const goal = actor().moveGoalCell, revision = actor().orderRevision, path = actor().path, index = actor().pathIndex;
+      command('attackMove', { x: -3.5, z: -3.5, queue: true });
+      assert.equal(actor().persistentOrder, null); assert.equal(actor().attackMove, false);
+      assert.equal(actor().moveGoalCell, goal); assert.equal(actor().orderRevision, revision);
+      assert.equal(actor().path, path); assert.equal(actor().pathIndex, index);
+      assert.equal(actor().moveGoalPoint.cell, goal); assert.equal(actor().moveGoalPoint.revision, revision);
+      assert.equal(activeLandMovementBodyRadius(actor()), .22);
+      assert.deepEqual(actor().queuedWaypoints, [{ destination: 1308, attackMove: true }]);
+      await recover(true);
+      until(() => actor().attackMove && !actor().movePlanningPending && actor().pathIndex >= actor().path.length
+        && Math.hypot(actor().x + 3.5, actor().z + 3.5) < .001);
+      assert.equal(actor().queuedWaypoints.length, 0); assert.equal(actor().persistentOrder, null);
+      assert.equal(actor().moveGoalPoint, null, 'queued AttackMove retains its existing cell objective policy');
+    });
+  });
+  test(`seat ${team}: ${phaseName} Follow queue conversion preserves an already valid ordinary point`, async () => {
+    await journey(team, async ({ r, actor, command, follow, phase, recover, finishPoint }) => {
+      follow(); phase(phaseName);
+      const goal = actor().moveGoalCell, x = goal % 64 - 32 + .5, z = Math.floor(goal / 64) - 24 + .5;
+      // Boundary state control: the real accepted leg carries an API-authored
+      // same-revision point. Follow masks it until queue admission clears intent.
+      const point = createClearanceMoveGoalPoint(actor(), x + .1, z, goal, 64, 48, r().isWalkable);
+      actor().moveGoalPoint = point; assert.equal(activeMoveGoalPoint(actor()), null);
+      command('move', { x: -3.5, z: -3.5, queue: true });
+      assert.equal(actor().moveGoalPoint, point); assert.equal(activeMoveGoalPoint(actor()), point);
+      await recover(true); finishPoint(); assert.equal(actor().persistentOrder, null);
+    });
+  });
+}
+
+for (const team of [0, 1]) for (const state of ['idle', 'exhausted']) {
+  test(`seat ${team}: queued Move replaces ${state} Follow without manufacturing a catch-up leg`, async () => {
+    await journey(team, async ({ actor, command, follow, settle, recover, finishPoint }) => {
+      follow(); if (state === 'exhausted') settle();
+      assert.equal(actor().movePlanningPending, false); assert.ok(actor().pathIndex >= actor().path.length);
+      const revision = actor().orderRevision;
+      command('move', { x: -3.5, z: -3.5, queue: true });
+      assert.equal(actor().persistentOrder, null); assert.equal(actor().orderRevision, revision + 1);
+      assert.equal(actor().moveGoalCell, 1308); assert.equal(actor().queuedWaypoints.length, 0);
+      assert.deepEqual([actor().moveGoalPoint.requestedX, actor().moveGoalPoint.requestedZ], [-3.5, -3.5]);
+      await recover(true); finishPoint(); assert.equal(actor().persistentOrder, null);
+    });
+  });
+}
+
 for (const team of [0, 1]) {
   test(`seat ${team}: actual leader death stops Follow safely through recovery`, async () => {
     await journey(team, async ({ r, actor, leader, leaderId, command, follow, phase, until, recover, step }) => {
@@ -231,6 +281,16 @@ for (const team of [0, 1]) {
   test(`seat ${team}: actual Worker Follow remains outside the military body adopter`, async () => {
     await journey(team, ({ actor, follow, settle }) => {
       follow(); settle(); assert.equal(followTravelMovementActive(actor()), false); assert.equal(activeLandMovementBodyRadius(actor()), 0);
+    }, 'worker');
+  });
+  test(`seat ${team}: queued Worker Follow retains its existing cell-only catch-up policy`, async () => {
+    await journey(team, async ({ actor, command, follow, phase, recover, finishPoint }) => {
+      follow(); phase('pending'); const goal = actor().moveGoalCell, revision = actor().orderRevision;
+      command('move', { x: -3.5, z: -3.5, queue: true });
+      assert.equal(actor().persistentOrder, null); assert.equal(actor().moveGoalCell, goal);
+      assert.equal(actor().orderRevision, revision); assert.equal(actor().moveGoalPoint, null);
+      assert.equal(activeLandMovementBodyRadius(actor()), 0);
+      await recover(true); finishPoint(); assert.equal(actor().queuedWaypoints.length, 0);
     }, 'worker');
   });
 }

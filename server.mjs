@@ -84,7 +84,7 @@ import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoin
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
-import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, patrolAcquiredMovementActive } from './src/combat-movement.mjs';
+import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, patrolAcquiredMovementActive, followTravelMovementActive } from './src/combat-movement.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const BUILD_IDENTITY = await loadBuildIdentity(ROOT);
@@ -6857,9 +6857,20 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     if (destination < 0) return;
     reservedDestinations.add(destination);
     if (queueWaypoint && canQueueBehindCurrentRoute(unit)) {
+      const retainFollowCatchUp = followTravelMovementActive(unit)
+        && (unit.movePlanningPending || unit.pathIndex < unit.path.length)
+        && Number.isInteger(unit.moveGoalCell) && unit.moveGoalCell >= 0 && unit.moveGoalCell < CELL_COUNT;
       clearWorkIntent(unit);
       unit.wallBuildOrder = null;
       unit.persistentOrder = null;
+      // The accepted catch-up becomes ordinary travel without changing its job,
+      // route or revision. Ordinary point validity is meaningful after Follow clears.
+      if (retainFollowCatchUp && !(activeMoveGoalPoint(unit)
+        && validMoveGoalPoint(unit.moveGoalPoint, unit, MAP_WIDTH, MAP_HEIGHT))) {
+        const point = cellToWorld(unit.moveGoalCell);
+        unit.moveGoalPoint = createClearanceMoveGoalPoint(unit, point.x, point.z,
+          unit.moveGoalCell, MAP_WIDTH, MAP_HEIGHT, isWalkable);
+      }
       unit.queuedWaypoints.push({ destination, attackMove,
         ...(precisePoint ? { point: createClearanceMoveGoalPoint(unit, centerX, centerZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable) } : {}) });
       queuedCount++;

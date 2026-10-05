@@ -52,6 +52,9 @@ try {
     const queued = await fixture.checkpoint(s => s.state.units[id].persistentOrder === null
       && s.state.units[id].moveGoalCell === goal && s.state.units[id].queuedWaypoints.length === 1
       && s.state.units[id].pathIndex < s.state.units[id].path.length);
+    assert.equal(queued.state.units[id].moveGoalPoint?.version, 2);
+    assert.equal(queued.state.units[id].moveGoalPoint.cell, goal);
+    assert.equal(queued.state.units[id].moveGoalPoint.revision, queued.state.units[id].orderRevision);
     await restart();
     const complete = await fixture.checkpoint(s => { const u = s.state.units[id]; return u.persistentOrder === null
       && u.queuedWaypoints.length === 0 && !u.movePlanningPending && Math.hypot(u.x + 3.5, u.z + 3.5) < .001; });
@@ -60,6 +63,7 @@ try {
     observations.push({ team, id, leaderId, leaderGeneration, notice, goal, acceptedRevision,
       activePosition: { x: active.state.units[id].x, z: active.state.units[id].z },
       queuedPosition: { x: queued.state.units[id].x, z: queued.state.units[id].z },
+      queuedCatchupPoint: queued.state.units[id].moveGoalPoint,
       activeFollowAndQueuedCatchupColdRestarts: true, recoveredBothSeats: true,
       queuedPointCompleted: true, persistentLeaderCancelled: true, actorHpUnchanged: true });
     for (const [selected, point] of [[id, { x: team ? 8.5 : -5.5, z: -5.5 }], [leaderId, { x: team ? 24.5 : 18.5, z: -10.5 }]]) {
