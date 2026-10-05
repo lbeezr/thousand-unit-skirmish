@@ -2,12 +2,66 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFile } from 'node:fs/promises';
 import { gunzipSync } from 'node:zlib';
-import { LAND_BODY_CASES, runLandBodyCase } from './land-body-clearance-fixture.mjs';
+import { LAND_BODY_CASES, runLandBodyCase, configureLandBodyReplay } from './land-body-clearance-fixture.mjs';
 import { runCrowdPassageJourney } from './crowd-body-journeys.mjs';
 import { forestGapMap } from './forest-gap-fixture.mjs';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
+import { pathingBaselineMap } from './pathing-baseline-cases.mjs';
 import { canTraverseCrowdBodySegment } from '../src/unit-crowd-steering.mjs';
-import { canTraverseStaticBodySegment } from '../src/unit-movement.mjs';
+import { canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
+import { sweptBodyPairMargin } from './land-body-clearance.mjs';
+
+test('paid-obstruction followers leave the reproduced choke deadlock within the original 1000 ticks', async () => {
+  configureLandBodyReplay();
+  const map = pathingBaselineMap({ group: 64, kind: 'dynamic-goal' });
+  const f = await createPathingReplayFixture(map, { traceLandSteps: true }), r = f.replay;
+  try {
+    const army = r.units.filter(u => u.team === 0 && u.kind === 'infantry');
+    const ids = new Set(army.map(u => u.id)), tail = army.slice(0, 3), tailIds = new Set(tail.map(u => u.id));
+    const worker = r.units.find(u => u.team === 0 && u.kind === 'worker');
+    r.order(0, { type: 'move', ids: [...ids], x: 16.5, z: .5 }); r.drain();
+    for (let tick = 0; tick < 15; tick++) r.step();
+    const intent = tail.map(u => ({ generation: u.generation, revision: u.orderRevision,
+      goal: u.moveGoalCell, queue: structuredClone(u.queuedWaypoints) }));
+    const inactive = r.units.filter(u => !ids.has(u.id) && u !== worker);
+    const poses = inactive.map(u => ({ x: u.x, z: u.z, hp: u.hp, generation: u.generation,
+      revision: u.orderRevision, goal: u.moveGoalCell, queue: structuredClone(u.queuedWaypoints) }));
+    const notices = r.order(0, { type: 'build', ids: [worker.id], buildingType: 'house', x: 16.5, z: .5 }); r.drain();
+    assert.ok(notices.some(n => n.message.startsWith('BUILD ORDER')), JSON.stringify(notices));
+    let observed = 0;
+    // Preserve the registered paid-obstruction journey's commands, roster and
+    // pending-aware deadline. This slice proves progress past the original
+    // choke deadlock; the unchanged full arrival assertions remain separate.
+    for (let tick = 0; tick < 1000 && army.some(u => u.movePlanningPending || u.pathIndex < u.path.length); tick++) {
+      r.step();
+      for (const step of r.landSteps.filter(s => tailIds.has(s.id))) {
+        observed++;
+        assert.ok(canTraverseStaticBodySegment(step.from, step.to, .22, map.width, map.height, r.isWalkable));
+        // The separately controlled builder can enter an actor's body before
+        // this write. Preserve the existing monotone inherited-contact escape;
+        // every previously clear pair must still have a clear swept segment.
+        const nearby = step.neighbours.filter(other => {
+          const radius = LAND_CLEARANCE_PROFILE.radiusByKind[other.kind];
+          assert.ok(Number.isFinite(radius));
+          const inherited = Math.hypot(step.from.x - other.x, step.from.z - other.z) < .22 + radius - 1e-9;
+          if (!inherited) assert.ok(sweptBodyPairMargin(step, .22, other, radius) >= -1e-9);
+          return Math.hypot(step.from.x - other.x, step.from.z - other.z) <= .25 + .22 + radius;
+        });
+        assert.ok(canTraverseCrowdBodySegment(step.from, step.to, .22, nearby, { allowEscape: true }));
+      }
+      assert.deepEqual(inactive.map(u => ({ x: u.x, z: u.z, hp: u.hp, generation: u.generation,
+        revision: u.orderRevision, goal: u.moveGoalCell, queue: structuredClone(u.queuedWaypoints) })), poses);
+    }
+    assert.ok(observed > 0, 'physical evidence observes the actual server position writes');
+    for (let i = 0; i < tail.length; i++) {
+      const u = tail[i];
+      assert.ok(u.x > 1.22, 'each original stalled actor crosses completely beyond the wall');
+      assert.equal(u.generation, intent[i].generation); assert.equal(u.moveGoalCell, intent[i].goal);
+      assert.deepEqual(u.queuedWaypoints, intent[i].queue);
+      assert.ok(u.orderRevision - intent[i].revision <= 10, 'existing static repairs remain bounded');
+    }
+  } finally { await f.dispose(); }
+});
 
 const retained = JSON.parse(gunzipSync(await readFile(new URL(
   '../docs/qa-evidence/ordinary-move-static-clearance-2026-10-04/substeps.json.gz', import.meta.url))));

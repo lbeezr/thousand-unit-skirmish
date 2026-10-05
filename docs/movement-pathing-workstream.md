@@ -87,7 +87,7 @@ not clearance acceptance. No positions, HP, routes, vision or algorithms are pat
 | Remaining domain | Smallest executable next step / owner | Decision against speculative changes |
 | --- | --- | --- |
 | Worker Follow and its cancelled queued catch-up | Caller: [allocated pure predicate/.18 fallback and existing PR429 queue-capture boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/434#issuecomment-5988456734); [current strict adoption evidence](qa-worker-follow-clearance-2026-10-05.md). Independent exact-head review, fresh-main/native/package qualification and normal merge are retained by caller. | Baseline 16 unsafe steps on seat 0, safe seat-1 controls and all eight successful queued audit endpoints remain explicit. Preserve leader/deadband/offset, goals, generation/revision, job/cargo and explicit command replacement; Worker Patrol stays separate. |
-| Worker Patrol / retained AttackMove objective | Caller, after separate objective/queue contract: actual body-clear cycle and cancelled-first-leg regression using this audit. | Patrol cancellation retains `attackMove:true`; an ordinary point alone cannot adopt that leg. Do not silently reset combat intent or widen the Follow slice. |
+| Worker Patrol / retained target-free AttackMove objective | Caller: [disjoint pure predicate/.18 fallback boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/438#issuecomment-5988970802) and [current actual-command qualification](qa-worker-patrol-clearance-2026-10-05.md). Core retains economy publication; no server/controller/queue edit. | Original baseline remains 16 unsafe steps/one new penetration in all12 Patrol cases and all8 successful mixed queued endpoints. Preserve `attackMove:true` on cancelled first legs, original endpoint cells, job/cargo, routes/queues and cold recovery. The same existing target-free state explicitly covers direct Worker AttackMove; acquired combat remains separate. |
 | Production rally | Caller diagnostic: pay/build/train, issue Set Rally and trace static body/recovery at the original selected goal. Agree the exact initializer only if a failure is measured. | Cell-only publication is a source gap, not proof of penetration. No duplicate route algorithm or new saved intent marker. |
 | Worker combat | Caller/combat owner: extend existing real Worker repath/unit-target/objective/acquired cases with .18 static observations before allocating hooks. | Existing productive native combat/recovery is not static-circle qualification. Do not alter Worker combat capability/range or recruit economy flow. |
 | Construction/combat stationary interaction and evacuation | Existing core/combat placement owners: real paid obstruction/recovery reproduction through the particular writer, then exact local agreement. | Retained 12 construction probes execute 54 separation steps with zero new static contacts and productive completion. They do not justify a selector patch or universal clearance claim. |
@@ -902,6 +902,28 @@ journeys and current verification next step are recorded above. Crowd retains
 separate identified-release deployment/ordinary rendered proof;
 CI `01a10378` supplies its existing capture interface. No new benchmark,
 map-admission change, auth retry, denied dispatch or browser-security change.
+
+### U5 forward-yield continuation — 5 October 2026
+
+Crowd owner `01a10933-c2b0` retains the narrow ordinary-Move correction in
+[the forward-yield record](qa-crowd-forward-yield-2026-10-05.md). Its retained
+source witnesses prove an admitted safe oblique step was discarded by follower
+arbitration and the three original paid-house choke actors can leave that
+deadlock within the unchanged 1,000-tick deadline. The exemption requires every
+queried body to be an active same-segment follower behind the mover; physical
+admission, selected goals/queues and Stop priority stay intact. A broader
+variant regressed the 64-unit gate and was retired; the narrower candidate
+preserves both 2,700-tick gate controls. Exact-head independent review and checks
+belong to its delivery PR, separately from served/rendered proof.
+
+PR442's pending-aware loops are integrated without relaxing arrival assertions;
+the full paid-house batch still has runtime failures. The same record identifies
+the pending lifecycle and parked-builder endpoint contracts by source location.
+Core `01a107ba` and construction `01a10933-e913` retain access/repair coordination;
+crowd's next action is a retained remaining-final-approach witness and a bounded
+reviewed fix. No neighbor shove, endpoint overlap or silent goal replacement is
+an acceptable test fix. CI `01a10378` retains the next fresh full CPU attempt and
+supported served/rendered interface. No private archive access or publication.
 
 ### Forest cell-gap characterization — 4 October 2026
 

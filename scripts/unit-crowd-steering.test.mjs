@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { canTraverseCrowdBodySegment, ordinaryCrowdBodyRadius, selectCrowdStep,
-  CROWD_NEIGHBOR_LIMIT } from '../src/unit-crowd-steering.mjs';
+  CROWD_NEIGHBOR_LIMIT, CROWD_PROPOSAL_LIMIT } from '../src/unit-crowd-steering.mjs';
 import { LAND_CLEARANCE_PROFILE, segmentRectangleDistanceSquared } from '../src/unit-movement.mjs';
 
 const actor = (extra = {}) => ({ id: 1, generation: 17, orderRevision: 8, kind: 'infantry',
@@ -20,6 +20,72 @@ test('a distant perpendicular final goal does not force a same-route front actor
   assert.ok(!move.waitingForCrowd && move.z < -.9 && !move.yieldingForCrowd);
   assert.ok(canTraverseCrowdBodySegment(front,
     { x: front.x + move.x * move.stepDistance, z: front.z + move.z * move.stepDistance }, .22, [rear]));
+});
+
+test('a safe oblique forward step is retained beside a wall with two same-route followers', () => {
+  // This is the three-body tail of the paid-obstruction choke: the route heads
+  // north before turning south toward distant formation goals. The lane score
+  // favours an oblique step, but the followers have no opposing route claim.
+  const front = actor({ id: 6, x: -.23, z: -.94, target: { x: 18.5, z: -3.5 } });
+  const followers = [actor({ id: 5, x: -.61, z: -1.18, target: { x: 17.5, z: -3.5 } }),
+    actor({ id: 4, x: -.82, z: -1.57, target: { x: 16.5, z: -3.5 } })];
+  const before = structuredClone([front, ...followers]), wall = { minX: 0, maxX: 1, minZ: -32, maxZ: 0 };
+  const allowed = p => Math.sqrt(segmentRectangleDistanceSquared(front, p, wall)) >= .22 - 1e-9;
+  const safeForward = { x: front.x, z: front.z + .043333333333333 };
+  assert.ok(allowed(safeForward));
+  assert.ok(canTraverseCrowdBodySegment(front, safeForward, .22, followers));
+  const moveAt = tick => selectCrowdStep({ unit: front, target: { x: front.x, z: .001 },
+    progressTarget: { x: -.5, z: .5 }, travelDirection: { x: 0, z: 1 }, tick,
+    stepDistance: .086666666666667, neighbors: followers, cellCenter: { x: -.5, z: -.5 },
+    directionOf: other => ({ x: -.5 - other.x, z: -.5 - other.z }), canTraverse: allowed });
+  moveAt(0);
+  const move = moveAt(40);
+  assert.ok(!move.waitingForCrowd && !move.yieldingForCrowd && move.z > 0,
+    'an admitted forward step must survive follower arbitration after the stall threshold');
+  assert.ok(move.z < .9, 'the witness exercises the previously discarded oblique proposal');
+  const to = { x: front.x + move.x * move.stepDistance, z: front.z + move.z * move.stepDistance };
+  assert.ok(allowed(to)); assert.ok(canTraverseCrowdBodySegment(front, to, .22, followers));
+  assert.ok(move.crowdControl.proposals <= CROWD_PROPOSAL_LIMIT);
+  assert.deepEqual([front, ...followers], before, 'selection never writes a pose or order');
+});
+
+test('oblique follower exemption is independent of neighbor order and excludes other body policies', () => {
+  const run = (extra = [], changeDirection = false, reverse = false) => {
+    const front = actor({ id: 6, x: -.23, z: -.94, target: { x: 18.5, z: -3.5 } });
+    const followers = [actor({ id: 5, x: -.61, z: -1.18, target: { x: 17.5, z: -3.5 } }),
+      actor({ id: 4, x: -.82, z: -1.57, target: { x: 16.5, z: -3.5 } }), ...extra];
+    const neighbors = reverse ? followers.toReversed() : followers;
+    const select = tick => selectCrowdStep({ unit: front, target: { x: front.x, z: .001 },
+      progressTarget: { x: -.5, z: .5 }, travelDirection: { x: 0, z: 1 }, tick,
+      stepDistance: .086666666666667, neighbors, cellCenter: { x: -.5, z: -.5 },
+      directionOf: other => changeDirection && other.id === 4 ? { x: 0, z: -1 }
+        : { x: -.5 - other.x, z: -.5 - other.z }, canTraverse: p => p.x <= -.22 });
+    select(0); return select(40);
+  };
+  const { crowdControl: a, ...forward } = run();
+  const { crowdControl: b, ...reordered } = run([], false, true);
+  assert.deepEqual(reordered, forward);
+  for (const parked of [actor({ id: 2, x: -1.7, z: -1.4, pathIndex: 1 }),
+    actor({ id: 2, x: -1.7, z: -1.4, holdingPosition: true })])
+    assert.ok(run([parked]).waitingForCrowd, 'parked and held bodies retain existing arbitration');
+  assert.ok(run([], true).waitingForCrowd, 'one opposing route retains existing arbitration');
+  assert.ok(run([actor({ id: 2, x: -1.7, z: .1 })]).waitingForCrowd,
+    'a body ahead cannot be classified as a follower');
+});
+
+for (const lateral of [false, true]) test(`following bodies never exempt a selected ${lateral ? 'lateral' : 'backward'} step from yielding`, () => {
+  const front = actor({ id: 6, x: -.78, z: -.94, target: { x: 18.5, z: -3.5 } });
+  const followers = [actor({ id: 5, x: -1.28, z: -1.1, target: { x: 17.5, z: -3.5 } }),
+    actor({ id: 4, x: -1.4, z: -1.65, target: { x: 16.5, z: -3.5 } })];
+  const select = tick => selectCrowdStep({ unit: front, target: lateral ? { x: -2, z: -.94 } : { x: -.78, z: -2 },
+    travelDirection: { x: 0, z: 1 }, tick, stepDistance: .086666666666667,
+    neighbors: followers, cellCenter: { x: -.5, z: -.5 }, directionOf: () => ({ x: 0, z: 1 }),
+    canTraverse: p => p.x <= -.22 });
+  const before = select(0);
+  if (lateral) assert.equal(before.z, 0, 'the pre-arbitration proposal has zero forward projection');
+  else assert.ok(before.z < 0, 'the pre-arbitration proposal heads backward on the segment');
+  const after = select(40);
+  assert.ok(after.waitingForCrowd || after.yieldingForCrowd);
 });
 
 test('parked-body detour chooses the physically open side beside a wall', () => {

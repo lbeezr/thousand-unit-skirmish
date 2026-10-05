@@ -1,7 +1,7 @@
 import { BASE_ELEVATION_PATH_COST, canTraverseElevation, elevationPathCost } from './elevation.mjs';
 import { visitGridSegmentCells } from './unit-path-line.mjs';
 import { constructionMovementActive } from './construction-work-intent.mjs';
-import { attackMoveObjectiveMovementActive, focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, stanceAcquiredMovementActive, patrolTravelMovementActive, patrolAcquiredMovementActive, followTravelMovementActive, workerFollowTravelMovementActive } from './combat-movement.mjs';
+import { attackMoveObjectiveMovementActive, focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, stanceAcquiredMovementActive, patrolTravelMovementActive, patrolAcquiredMovementActive, followTravelMovementActive, workerFollowTravelMovementActive, workerPatrolObjectiveMovementActive } from './combat-movement.mjs';
 
 // Static land circles, in tiles/world units. Adopters are explicit: ordinary
 // single-unit Move/queued points, Worker economy/construction and target-free
@@ -247,7 +247,7 @@ export function workerEconomyBodyRadius(unit) {
 }
 export function activeLandMovementBodyRadius(unit) {
   return ordinaryMoveBodyRadius(unit) || workerEconomyBodyRadius(unit)
-    || (constructionMovementActive(unit) || workerFollowTravelMovementActive(unit) ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0)
+    || (constructionMovementActive(unit) || workerFollowTravelMovementActive(unit) || workerPatrolObjectiveMovementActive(unit) ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0)
     || (attackMoveObjectiveMovementActive(unit) || focusedUnitAttackMovementActive(unit) || focusedBuildingAttackMovementActive(unit) || attackMoveAcquiredMovementActive(unit)
       || stanceAcquiredMovementActive(unit) || patrolTravelMovementActive(unit) || patrolAcquiredMovementActive(unit) || followTravelMovementActive(unit)
       ? LAND_CLEARANCE_PROFILE.radiusByKind[unit.kind] ?? 0 : 0);
