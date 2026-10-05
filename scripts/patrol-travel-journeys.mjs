@@ -11,6 +11,7 @@ test('Patrol travel derives from target-free military persistent intent, includi
     attackMove: true, attackTargetId: -1, attackBuildingTargetId: -1, buildingTargetId: null,
     combatStance: 'noAttack', movePlanningPending: true, gatherNodeId: null, gatherForestCell: -1 };
   assert.equal(patrolTravelMovementActive(unit), true);
+  assert.equal(patrolTravelMovementActive({ ...unit, attackMove: false }), true, 'persistent intent owns travel even in a validator-accepted older flag combination');
   for (const [kind, radius] of Object.entries(LAND_CLEARANCE_PROFILE.radiusByKind)) {
     assert.equal(activeLandMovementBodyRadius({ ...unit, kind }), kind === 'worker' ? 0 : radius);
   }
@@ -201,4 +202,16 @@ for (const team of [0, 1]) test(`seat ${team}: actual Worker Patrol remains excl
     assert.equal(actor().persistentOrder.type, 'patrol'); assert.equal(patrolTravelMovementActive(actor()), false);
     assert.equal(activeLandMovementBodyRadius(actor()), 0);
   }, 'worker');
+});
+
+for (const team of [0, 1]) test(`seat ${team}: validated saved Patrol with attackMove disabled keeps its same travel intent and cell cycle`, async () => {
+  await journey(team, ({ r, id, actor, until, patrol, switches }) => {
+    patrol(); r.drain(); const saved = r.checkpoint(), order = structuredClone(actor().persistentOrder);
+    saved.state.units[id].attackMove = false;
+    assert.ok(r.validate(structuredClone(saved))); r.restore(structuredClone(saved));
+    assert.equal(patrolTravelMovementActive(actor()), true); until(() => switches() >= 2);
+    assert.equal(actor().persistentOrder.start, order.start); assert.equal(actor().persistentOrder.end, order.end);
+    assert.equal(actor().attackMove, false, 'the new selector does not rewrite a saved gameplay flag');
+    assert.equal(actor().attackTargetId, -1);
+  });
 });
