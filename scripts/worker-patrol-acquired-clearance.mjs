@@ -25,7 +25,7 @@ export async function observeWorkerPatrolAcquired({ team, ending, nearStone, col
   const targetId = r.units.find(u => u.team !== team && u.kind === 'worker').id;
   const actor = () => r.units[id], target = () => r.units[targetId];
   const orders = [], samples = [], trace = createHash('sha256');
-  let acquiredSteps = 0, unsafeSteps = 0, newContacts = 0, hits = 0, restored = false;
+  let acquiredSteps = 0, unsafeSteps = 0, admissionRejectedSteps = 0, newContacts = 0, hits = 0, restored = false;
   const clear = (from, to) => canTraverseStaticBodySegment(from, to, .18, map.width, map.height, r.isWalkable);
   const command = (actorId, type, fields = {}) => {
     const seat = r.units[actorId].team;
@@ -40,9 +40,14 @@ export async function observeWorkerPatrolAcquired({ team, ending, nearStone, col
     for (const s of r.landSteps.filter(s => s.id === id && s.patrolAcquired)) {
       assert.equal(s.attackTargetId, targetId); acquiredSteps++;
       const unsafe = !clear(s.from, s.to), contact = clear(s.from, s.from) && !clear(s.to, s.to);
+      // Strict clearance excludes inherited overlap escape; the production
+      // executor separately permits its existing monotone escape rule.
+      const admissionRejected = !canTraverseStaticBodySegment(s.from, s.to, .18,
+        map.width, map.height, r.isWalkable, { allowEscape: true });
+      admissionRejectedSteps += Number(admissionRejected);
       unsafeSteps += Number(unsafe); newContacts += Number(contact);
       const own = { tick: s.tick, revision: s.revision, from: s.from, to: s.to, reason: s.reason,
-        bodyRadius: s.bodyRadius, patrol: s.patrol, stance: s.stance, anchor: s.anchor, unsafe, contact };
+        bodyRadius: s.bodyRadius, patrol: s.patrol, stance: s.stance, anchor: s.anchor, unsafe, admissionRejected, contact };
       trace.update(JSON.stringify(own) + '\n');
       if ((unsafe || contact) && samples.length < 8) samples.push(own);
     }
@@ -106,7 +111,7 @@ export async function observeWorkerPatrolAcquired({ team, ending, nearStone, col
     assert.equal(activeLandMovementBodyRadius(actor()), .18); assert.equal(actor().hp, 100);
     assert.deepEqual(r.units.filter(u => ![id,targetId].includes(u.id)).map(u => [u.id,u.orderRevision,u.hp,u.cargo,u.x,u.z]), untouched);
     assert.ok(acquiredSteps > 0, 'observe actual acquired substeps, not only target-free travel');
-    return { team, ending, nearStone, cold, orders, acquiredSteps, unsafeSteps, newContacts, hits,
+    return { team, ending, nearStone, cold, orders, acquiredSteps, unsafeSteps, admissionRejectedSteps, newContacts, hits,
       restored, patrolCells: [patrol.start,patrol.end], samples, traceSha256: trace.digest('hex'),
       outcome: 'original policy/retention conditions met; clearance measured separately' };
   } finally { await f.dispose(); }

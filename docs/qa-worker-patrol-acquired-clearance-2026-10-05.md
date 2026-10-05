@@ -24,8 +24,12 @@ range/damage and unaffected actors remain checked. The near-stone start is
 `(.79,.95)` beside stone `(1,1)`, reached by ordinary Move; the independently
 commanded enemy Worker settles at `(5.5,.5)` before Patrol is accepted.
 
-Seat 0's near-stone kill/loss cases each execute 3 unsafe acquired substeps and
+Seat 0's near-stone kill/loss cases each execute 3 **strict-clearance failures** (`allowEscape:false`) and
 one new static contact. Both still meet their original policy/recovery outcomes.
+Two of those three steps also fail physical admission with the existing
+`allowEscape:true` rule; the third is a permitted monotone escape from the prior
+overlap. The baseline field `unsafeSteps` counts strict-clearance failures,
+not physical rejection counts. The observer now records both measures.
 Seat 1's corresponding cases and all four open-ground controls have zero unsafe
 substeps/contacts. This is an asymmetric, attributed sample; no general or
 symmetric acquired-pursuit failure is inferred. The existing four Patrol policy
