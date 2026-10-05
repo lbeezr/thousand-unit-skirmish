@@ -109,6 +109,37 @@ its private replay pause projection and crowd/core agreement remain separate.
 No production initializer, diagnostic payload, player row, replay hook, movement
 policy, deadline or CI registration changes here.
 
+## Farm versus inspectable wildlife fixture contract
+
+Public [CI run37371764428, shard 2](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37371764428/job/111970388093)
+executes clean main `bbc8ac5418fa3de0a73e49c77ee0a6622b13a012` and stops at
+354 passed / one failed / 109 unrun checks. The fishing contact fixture's line146
+expects null when excluding non-wildlife targets, but supplies the obsolete
+`ownedWildlifeOnly` option. [PR482](https://github.com/lbeezr/thousand-unit-skirmish/pull/482)
+intentionally replaced that option with `inspectableWildlifeOnly` to admit shared
+positive-food carcasses while retaining owned-live Sheep selection. The ignored
+old option enters ordinary resource picking; its exhausted Farm result is not a
+new depletion policy. The existing explicit stock-zero assertion confirms that
+ordinary Farm targeting retains authoritative refusal and exhausted-plot help.
+The same stale option fails both seats in the Farm context-order fixture.
+
+Only those fixture callers and their real `selectInspectableWildlife` binding
+change. Original null, stock-zero, fog, Worker payload and fishing assertions
+remain. Added both-seat production-picker controls exercise real Farm body rays
+outside the point radius and the generic point adapter, productive/exhausted Farm
+exclusion, current relocated carcasses with positive fractional Food regardless
+of former ownership, and owned-live Sheep inspection. Hidden/explored-only,
+omitted, marker-unavailable, vacated authored-position and depleted carcasses
+remain excluded. The existing real DOM Harvest and checkpoint-conservation checks
+remain separate consumers of the same production contract.
+
+Sheep interaction owner `01a10d83-3a7d` retains that production interface; the
+[specific coordination note](https://github.com/lbeezr/thousand-unit-skirmish/pull/482#issuecomment-6003329874)
+records the bounded fixture adoption. No production picker, Farm adapter,
+carcass authority, presentation, art, CI registration or deadline change is needed.
+This fixture qualification and clean pack do not claim a full-suite pass,
+identified deployment or ordinary rendered acceptance of Sheep interaction.
+
 ## Coordination and ongoing queue
 
 | Slice / owner | Next step | Dependency / evidence |
@@ -116,7 +147,8 @@ policy, deadline or CI registration changes here.
 | Construction shared fixture / `01a1085f` | Completed in [PR453](https://github.com/lbeezr/thousand-unit-skirmish/pull/453); retain production-root contracts during future extraction. | All original 22 receipt and 15 paid-wall test bodies stay byte-identical. Seven loader controls cover inserted helpers, import forms, labels/computed values, setup failures and isolated retries. |
 | Paid-economy shared construction adopter / `01a1085f` | Completed in [PR457](https://github.com/lbeezr/thousand-unit-skirmish/pull/457); retain typed payment and retry ownership. | Six real missing-helper failures; original 14 bodies plus four retry-ownership controls. Storehouse/Mill/return regressions remain unchanged. |
 | Paid Gate shared construction adopter / `01a1085f` | Completed in [PR460](https://github.com/lbeezr/thousand-unit-skirmish/pull/460); retain admission/paid-job controls. | Reproduced accepted-builder missing dependency despite green topology-only baseline; original assertions plus both-seat endpoint/paid-job controls. No production or CI edit. |
-| Diagnostic VM identity / `01a1085f` | Independently review exact source, qualify identity/privacy and original detour checks, then normally integrate one fixture PR. | Exact public CI/base/main reproduction; real production initializer and truthful synthetic map metadata. Diagnostics owner `01a10c49-2cac` retains its separate replay consumer. |
+| Diagnostic VM identity / `01a1085f` | Completed in [PR469](https://github.com/lbeezr/thousand-unit-skirmish/pull/469); retain identity/privacy and original detour checks. | Exact public CI/base/main reproduction; real production initializer and truthful synthetic map metadata. Diagnostics owner `01a10c49-2cac` retains its separate replay consumer. |
+| Inspectable wildlife fixture adoption / `01a1085f` | Independently review, qualify exact Farm/carcass/fog consumers and clean packaging, then normally merge one bounded fixture PR. | Exact main `bbc8ac54` public/local failure; PR482's renamed option and real selection predicate. Sheep owner `01a10d83-3a7d` retains runtime/served/rendered acceptance; original expected values stay unchanged. |
 | Next reliability audit / `01a1085f` | Check new reported extraction failures against exact containing source before selecting another bounded migration. | Passing fixtures need no rewrite. Core/modularization owners retain runtime roots; crowd owner retains formation/native-wall liveness; CPU owner retains the known-red full suite. No further production write reserved. |
 | Production modularization owner | Preserve or explicitly replace these construction roots when extracting them into an exported runtime module; then replace only the affected fixture slice. | No production host/module/path changes in this slice. Architecture owner retains import/domain guards. |
 | Checked-type owner | Retain strict project membership, negative contracts and ambient isolation; assess the fixture interface in the dedicated type lane. | No tsconfig, runtime type-contract or coverage-floor edits here. Existing type gates remain required. |
