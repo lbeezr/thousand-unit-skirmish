@@ -1146,3 +1146,18 @@ corrected portal chain validation and the four-unit transit minima (32/22 ticks)
 Exact source/check/clean-pack receipts are appended to existing PR445 after the
 source seal. No production adoption, new PR/main event, full-suite rerun or
 served/rendered proof is claimed. Private inputs/results remain outside git.
+
+
+Exact diagnostic seal: `810cbed4ca615d7822d021bc42b5b13e231e8cdd`, remote-verified
+on `codex/crowd-native-grant-trace`, with135/135 focused tests (15 new controls),
+independent46/46 review and identical48/96 repeats. The
+[sanitized verification receipt](qa-evidence/crowd-influence-boundary-2026-10-05/verification.json)
+retains counts/hashes and clean1,387-file pack digest
+`sha256:e7f3d8e167df56207b714c01193dda43bd9659f60a833d3f510798abdb3b39c1`.
+This focused invocation also exercised existing crowd journey controls; it was
+not the full suite. The existing PR445 metadata append returned a connector
+error; read-back confirms its body remains unchanged. The detailed reason was
+not retained, so no automatic-review rejection reason is inferred. No retry or
+alternate external write was attempted. Source and sanitized evidence are on
+the non-main branch; updating the external record remains blocked. The source
+milestone does not qualify production recovery or deployed/rendered acceptance.

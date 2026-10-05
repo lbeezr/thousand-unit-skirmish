@@ -1,0 +1,467 @@
+{
+  "scope": "Read-only retained crowd influence diagnostic; no production motion adoption",
+  "sourceRevision": "810cbed4ca615d7822d021bc42b5b13e231e8cdd",
+  "comparisonMain": "b5b4dd49139b86dbe6ad0d299469f6b193df81b1",
+  "focusedTests": {
+    "passed": 135,
+    "failed": 0,
+    "newBoundaryReceiptTests": 15
+  },
+  "independentReview": {
+    "passed": 46,
+    "blockers": 0,
+    "privateMeasurementsReviewed": false,
+    "resolved": [
+      "continuous valid portal chains",
+      "correct physical batch minima32/22"
+    ]
+  },
+  "docs": {
+    "markdownFiles": 660,
+    "localLinks": 5008
+  },
+  "runtime": {
+    "modules": 216,
+    "localEdges": 395,
+    "cycles": 0
+  },
+  "registeredChecksInventoryOnly": 1376,
+  "cleanPack": {
+    "sourceRevision": "810cbed4ca615d7822d021bc42b5b13e231e8cdd",
+    "sourceDirty": false,
+    "digest": "sha256:e7f3d8e167df56207b714c01193dda43bd9659f60a833d3f510798abdb3b39c1",
+    "fileCount": 1387,
+    "runtimeFileDeltaAgainstMain": []
+  },
+  "retainedWindows": [
+    {
+      "ticks": 48,
+      "repeats": 2,
+      "traceSha256": "4de7291873462963f3ab1e3044487e2d8f7f981d6e6ac75942ee998bfa81b33b",
+      "affectedActors": 64,
+      "retainedHarmedControls": 21,
+      "qualified": false,
+      "baselineEqual": true,
+      "sustainedProgressFailures": 55,
+      "selectedSubstepsPerRun": 2059,
+      "newStaticContacts": 0,
+      "newBodyContacts": 0,
+      "inactivePreserved": 72,
+      "work": {
+        "rounds": 48,
+        "oracleBodyVisits": 13056,
+        "currentIndexBuildVisits": 32640,
+        "corridorDistances": 32400,
+        "nominalSegmentDistances": 8196,
+        "rootPairDistances": 129600,
+        "graphPairDistances": 580608,
+        "graphEdgeVisits": 769784,
+        "portalReceiptBodyVisits": 810
+      },
+      "occupiedSnapshots": 48,
+      "emptySnapshots": 0,
+      "maximumIntersectingFootprints": 8,
+      "planeCrossingCandidates": 6,
+      "validPlaneCrossingCandidates": 6,
+      "oppositePortalFullTransits": 0,
+      "horizons": [
+        {
+          "horizon": 1,
+          "fixedPhysicalCount": {
+            "min": 2,
+            "max": 5
+          },
+          "rootEnvelopeCount": {
+            "min": 5,
+            "max": 8
+          },
+          "currentInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "possibleInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "allDecisionsRefuse": true,
+          "missingFromCurrentQuery": [],
+          "coarseVisits": {
+            "min": 25,
+            "max": 30
+          },
+          "coarseReturned": {
+            "min": 9,
+            "max": 12
+          },
+          "coarseEntrants": {
+            "min": 8,
+            "max": 10
+          },
+          "coarseOverflowRounds": 0,
+          "bothDirectionsRounds": 48
+        },
+        {
+          "horizon": 3,
+          "fixedPhysicalCount": {
+            "min": 3,
+            "max": 6
+          },
+          "rootEnvelopeCount": {
+            "min": 6,
+            "max": 11
+          },
+          "currentInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "possibleInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "allDecisionsRefuse": true,
+          "missingFromCurrentQuery": [],
+          "coarseVisits": {
+            "min": 34,
+            "max": 42
+          },
+          "coarseReturned": {
+            "min": 15,
+            "max": 17
+          },
+          "coarseEntrants": {
+            "min": 11,
+            "max": 14
+          },
+          "coarseOverflowRounds": 0,
+          "bothDirectionsRounds": 48
+        },
+        {
+          "horizon": 6,
+          "fixedPhysicalCount": {
+            "min": 4,
+            "max": 9
+          },
+          "rootEnvelopeCount": {
+            "min": 7,
+            "max": 17
+          },
+          "currentInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "possibleInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "allDecisionsRefuse": true,
+          "missingFromCurrentQuery": [],
+          "coarseVisits": {
+            "min": 48,
+            "max": 59
+          },
+          "coarseReturned": {
+            "min": 27,
+            "max": 33
+          },
+          "coarseEntrants": {
+            "min": 16,
+            "max": 19
+          },
+          "coarseOverflowRounds": 0,
+          "bothDirectionsRounds": 48
+        },
+        {
+          "horizon": 9,
+          "fixedPhysicalCount": {
+            "min": 4,
+            "max": 12
+          },
+          "rootEnvelopeCount": {
+            "min": 12,
+            "max": 22
+          },
+          "currentInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "possibleInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "allDecisionsRefuse": true,
+          "missingFromCurrentQuery": [],
+          "coarseVisits": {
+            "min": 49,
+            "max": 59
+          },
+          "coarseReturned": {
+            "min": 37,
+            "max": 45
+          },
+          "coarseEntrants": {
+            "min": 22,
+            "max": 25
+          },
+          "coarseOverflowRounds": 0,
+          "bothDirectionsRounds": 48
+        },
+        {
+          "horizon": 12,
+          "fixedPhysicalCount": {
+            "min": 5,
+            "max": 16
+          },
+          "rootEnvelopeCount": {
+            "min": 21,
+            "max": 26
+          },
+          "currentInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "possibleInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "allDecisionsRefuse": true,
+          "missingFromCurrentQuery": [],
+          "coarseVisits": {
+            "min": 59,
+            "max": 63
+          },
+          "coarseReturned": {
+            "min": 43,
+            "max": 56
+          },
+          "coarseEntrants": {
+            "min": 29,
+            "max": 35
+          },
+          "coarseOverflowRounds": 0,
+          "bothDirectionsRounds": 48
+        }
+      ]
+    },
+    {
+      "ticks": 96,
+      "repeats": 2,
+      "traceSha256": "4d695b5782543cfbb335040e0725d2536c0ae6b7faaf9570e7d845cbc184ae6a",
+      "affectedActors": 64,
+      "retainedHarmedControls": 21,
+      "qualified": false,
+      "baselineEqual": true,
+      "sustainedProgressFailures": 59,
+      "selectedSubstepsPerRun": 4050,
+      "newStaticContacts": 0,
+      "newBodyContacts": 0,
+      "inactivePreserved": 72,
+      "work": {
+        "rounds": 96,
+        "oracleBodyVisits": 26112,
+        "currentIndexBuildVisits": 65280,
+        "corridorDistances": 64800,
+        "nominalSegmentDistances": 18663,
+        "rootPairDistances": 259200,
+        "graphPairDistances": 1161216,
+        "graphEdgeVisits": 1529598,
+        "portalReceiptBodyVisits": 810
+      },
+      "occupiedSnapshots": 96,
+      "emptySnapshots": 0,
+      "maximumIntersectingFootprints": 8,
+      "planeCrossingCandidates": 6,
+      "validPlaneCrossingCandidates": 6,
+      "oppositePortalFullTransits": 0,
+      "horizons": [
+        {
+          "horizon": 1,
+          "fixedPhysicalCount": {
+            "min": 2,
+            "max": 5
+          },
+          "rootEnvelopeCount": {
+            "min": 5,
+            "max": 8
+          },
+          "currentInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "possibleInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "allDecisionsRefuse": true,
+          "missingFromCurrentQuery": [],
+          "coarseVisits": {
+            "min": 25,
+            "max": 30
+          },
+          "coarseReturned": {
+            "min": 9,
+            "max": 12
+          },
+          "coarseEntrants": {
+            "min": 8,
+            "max": 10
+          },
+          "coarseOverflowRounds": 0,
+          "bothDirectionsRounds": 96
+        },
+        {
+          "horizon": 3,
+          "fixedPhysicalCount": {
+            "min": 3,
+            "max": 6
+          },
+          "rootEnvelopeCount": {
+            "min": 6,
+            "max": 11
+          },
+          "currentInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "possibleInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "allDecisionsRefuse": true,
+          "missingFromCurrentQuery": [],
+          "coarseVisits": {
+            "min": 34,
+            "max": 42
+          },
+          "coarseReturned": {
+            "min": 15,
+            "max": 18
+          },
+          "coarseEntrants": {
+            "min": 9,
+            "max": 14
+          },
+          "coarseOverflowRounds": 0,
+          "bothDirectionsRounds": 96
+        },
+        {
+          "horizon": 6,
+          "fixedPhysicalCount": {
+            "min": 4,
+            "max": 10
+          },
+          "rootEnvelopeCount": {
+            "min": 7,
+            "max": 17
+          },
+          "currentInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "possibleInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "allDecisionsRefuse": true,
+          "missingFromCurrentQuery": [],
+          "coarseVisits": {
+            "min": 48,
+            "max": 59
+          },
+          "coarseReturned": {
+            "min": 27,
+            "max": 33
+          },
+          "coarseEntrants": {
+            "min": 16,
+            "max": 19
+          },
+          "coarseOverflowRounds": 0,
+          "bothDirectionsRounds": 96
+        },
+        {
+          "horizon": 9,
+          "fixedPhysicalCount": {
+            "min": 4,
+            "max": 13
+          },
+          "rootEnvelopeCount": {
+            "min": 12,
+            "max": 23
+          },
+          "currentInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "possibleInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "allDecisionsRefuse": true,
+          "missingFromCurrentQuery": [],
+          "coarseVisits": {
+            "min": 49,
+            "max": 59
+          },
+          "coarseReturned": {
+            "min": 37,
+            "max": 45
+          },
+          "coarseEntrants": {
+            "min": 22,
+            "max": 28
+          },
+          "coarseOverflowRounds": 0,
+          "bothDirectionsRounds": 96
+        },
+        {
+          "horizon": 12,
+          "fixedPhysicalCount": {
+            "min": 5,
+            "max": 16
+          },
+          "rootEnvelopeCount": {
+            "min": 21,
+            "max": 26
+          },
+          "currentInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "possibleInputComponent": {
+            "min": 63,
+            "max": 63
+          },
+          "allDecisionsRefuse": true,
+          "missingFromCurrentQuery": [],
+          "coarseVisits": {
+            "min": 56,
+            "max": 63
+          },
+          "coarseReturned": {
+            "min": 43,
+            "max": 56
+          },
+          "coarseEntrants": {
+            "min": 29,
+            "max": 35
+          },
+          "coarseOverflowRounds": 0,
+          "bothDirectionsRounds": 96
+        }
+      ]
+    }
+  ],
+  "nextExperiment": "Read-only resident accepted-exit capacity, swept blockers and valid occupancy receipts; retain four observed leaders and all64/21 controls",
+  "externalEvidenceRecord": {
+    "pullRequest": 445,
+    "operation": "append existing merged PR body",
+    "status": "failed; read-back unchanged",
+    "reason": "Connector returned isError; no detailed failure reason was retained. No retry or alternate external write attempted."
+  },
+  "acceptance": {
+    "productionRecovery": "unqualified",
+    "servedIdentity": "not observed",
+    "renderedProof": "not observed"
+  },
+  "privacy": "No raw local input, positions, packets or private paths included."
+}
