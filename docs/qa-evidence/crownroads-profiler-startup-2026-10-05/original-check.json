@@ -1,0 +1,4523 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "864113624d7edaab05439914d8059533e7b19dea",
+  "mapId": "veyrholds-crownroads",
+  "mapSHA256": "0b62a9f967ef42c967eb9121e07395b75549d52d4a73dd16eaf29aebf19e3727",
+  "measuredScriptSHA256": "c224e5ecb5c5b2234553badfcb72b0980489270f96f6191ee17d0f895cdacd17",
+  "loads": [
+    {
+      "armySize": 24,
+      "envelope": {
+        "sampledWindows": 214,
+        "tickP95PeakMs": 16.112,
+        "tickMaxMs": 16.112,
+        "startLagP95PeakMs": 15.601,
+        "startLagMaxMs": 15.601,
+        "maximumPlanningSliceMs": 3.704,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "tickAttribution": {
+        "status": "valid-observations",
+        "reasons": [],
+        "uniqueObservedTicks": 1325,
+        "excludedOtherMapTicks": 1,
+        "coverage": [
+          {
+            "workerRun": 1,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "firstTick": 1,
+            "lastTick": 1082,
+            "observedTicks": 1081,
+            "knownOtherMapTicksWithinObservedRange": 1,
+            "missingTicksWithinObservedRange": 0
+          },
+          {
+            "workerRun": 2,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "firstTick": 1083,
+            "lastTick": 1143,
+            "observedTicks": 61,
+            "knownOtherMapTicksWithinObservedRange": 0,
+            "missingTicksWithinObservedRange": 0
+          },
+          {
+            "workerRun": 3,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "firstTick": 1083,
+            "lastTick": 1143,
+            "observedTicks": 61,
+            "knownOtherMapTicksWithinObservedRange": 0,
+            "missingTicksWithinObservedRange": 0
+          },
+          {
+            "workerRun": 4,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "firstTick": 1083,
+            "lastTick": 1143,
+            "observedTicks": 61,
+            "knownOtherMapTicksWithinObservedRange": 0,
+            "missingTicksWithinObservedRange": 0
+          },
+          {
+            "workerRun": 5,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "firstTick": 1083,
+            "lastTick": 1143,
+            "observedTicks": 61,
+            "knownOtherMapTicksWithinObservedRange": 0,
+            "missingTicksWithinObservedRange": 0
+          }
+        ],
+        "totalTickMs": {
+          "count": 1325,
+          "meanMs": 2.0720445283018822,
+          "p50Ms": 1.545,
+          "p95Ms": 4.725,
+          "p99Ms": 8.232,
+          "maxMs": 16.112
+        },
+        "phases": {
+          "simulationMs": {
+            "count": 1325,
+            "meanMs": 1.5826241509433947,
+            "p50Ms": 1.208,
+            "p95Ms": 3.588,
+            "p99Ms": 6.846,
+            "maxMs": 14.952
+          },
+          "visionMs": {
+            "count": 1325,
+            "meanMs": 0.07945886792452829,
+            "p50Ms": 0,
+            "p95Ms": 0.317,
+            "p99Ms": 0.561,
+            "maxMs": 3.061
+          },
+          "scenarioMs": {
+            "count": 1325,
+            "meanMs": 0.006047547169811322,
+            "p50Ms": 0,
+            "p95Ms": 0.012,
+            "p99Ms": 0.045,
+            "maxMs": 0.687
+          },
+          "broadcastMs": {
+            "count": 1325,
+            "meanMs": 0.37997132075471485,
+            "p50Ms": 0.001,
+            "p95Ms": 1.398,
+            "p99Ms": 1.956,
+            "maxMs": 7.11
+          },
+          "checkpointMs": {
+            "count": 1325,
+            "meanMs": 0.023742641509433976,
+            "p50Ms": 0,
+            "p95Ms": 0.001,
+            "p99Ms": 0.665,
+            "maxMs": 2.273
+          }
+        },
+        "overBudgetTicks": 0,
+        "overrunDominantPhaseCounts": {
+          "simulationMs": 0,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "broadcastMs": 0,
+          "checkpointMs": 0
+        },
+        "overrunRows": [],
+        "slowestRows": [
+          {
+            "workerRun": 3,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "tickNumber": 1083,
+            "durationMs": 16.112,
+            "budgetMs": 33.333333333333336,
+            "overBudget": false,
+            "cpuMs": 25.06,
+            "simulationMs": 14.716,
+            "visionMs": 0.723,
+            "scenarioMs": 0.569,
+            "scenarioEvaluated": true,
+            "broadcastMs": 0.104,
+            "checkpointMs": 0.001
+          },
+          {
+            "workerRun": 4,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "tickNumber": 1083,
+            "durationMs": 15.906,
+            "budgetMs": 33.333333333333336,
+            "overBudget": false,
+            "cpuMs": 23.9,
+            "simulationMs": 14.258,
+            "visionMs": 0.958,
+            "scenarioMs": 0.615,
+            "scenarioEvaluated": true,
+            "broadcastMs": 0.075,
+            "checkpointMs": 0.001
+          },
+          {
+            "workerRun": 5,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "tickNumber": 1083,
+            "durationMs": 15.867,
+            "budgetMs": 33.333333333333336,
+            "overBudget": false,
+            "cpuMs": 25.075,
+            "simulationMs": 14.952,
+            "visionMs": 0.231,
+            "scenarioMs": 0.608,
+            "scenarioEvaluated": true,
+            "broadcastMs": 0.075,
+            "checkpointMs": 0.001
+          },
+          {
+            "workerRun": 2,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "tickNumber": 1083,
+            "durationMs": 15.341,
+            "budgetMs": 33.333333333333336,
+            "overBudget": false,
+            "cpuMs": 23.53,
+            "simulationMs": 13.872,
+            "visionMs": 0.701,
+            "scenarioMs": 0.687,
+            "scenarioEvaluated": true,
+            "broadcastMs": 0.08,
+            "checkpointMs": 0.001
+          },
+          {
+            "workerRun": 1,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "tickNumber": 31,
+            "durationMs": 13.29,
+            "budgetMs": 33.333333333333336,
+            "overBudget": false,
+            "cpuMs": 18.45,
+            "simulationMs": 10.591,
+            "visionMs": 0.191,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 2.508,
+            "checkpointMs": 0
+          },
+          {
+            "workerRun": 5,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "tickNumber": 1130,
+            "durationMs": 11.524,
+            "budgetMs": 33.333333333333336,
+            "overBudget": false,
+            "cpuMs": 16.273,
+            "simulationMs": 9.967,
+            "visionMs": 0.206,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 1.351,
+            "checkpointMs": 0
+          },
+          {
+            "workerRun": 4,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "tickNumber": 1131,
+            "durationMs": 11.166,
+            "budgetMs": 33.333333333333336,
+            "overBudget": false,
+            "cpuMs": 12.133,
+            "simulationMs": 9.948,
+            "visionMs": 0.099,
+            "scenarioMs": 0.008,
+            "scenarioEvaluated": true,
+            "broadcastMs": 1.11,
+            "checkpointMs": 0
+          },
+          {
+            "workerRun": 1,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "tickNumber": 33,
+            "durationMs": 11.071,
+            "budgetMs": 33.333333333333336,
+            "overBudget": false,
+            "cpuMs": 22.676,
+            "simulationMs": 9.53,
+            "visionMs": 0.128,
+            "scenarioMs": 0.022,
+            "scenarioEvaluated": true,
+            "broadcastMs": 1.391,
+            "checkpointMs": 0
+          },
+          {
+            "workerRun": 1,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "tickNumber": 32,
+            "durationMs": 10.99,
+            "budgetMs": 33.333333333333336,
+            "overBudget": false,
+            "cpuMs": 22.335,
+            "simulationMs": 9.18,
+            "visionMs": 0.105,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 1.705,
+            "checkpointMs": 0
+          },
+          {
+            "workerRun": 2,
+            "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+            "mapId": "veyrholds-crownroads",
+            "tickNumber": 1130,
+            "durationMs": 9.942,
+            "budgetMs": 33.333333333333336,
+            "overBudget": false,
+            "cpuMs": 19.152,
+            "simulationMs": 8.175,
+            "visionMs": 0.176,
+            "scenarioMs": 0,
+            "scenarioEvaluated": false,
+            "broadcastMs": 1.59,
+            "checkpointMs": 0
+          }
+        ],
+        "scope": "unique observed ticks for the requested map; process/worker, match and map identities are distinct",
+        "limits": [
+          "Observed-range coverage does not prove capture of earlier startup or later shutdown ticks.",
+          "Outer phases describe where elapsed time was recorded, not function, allocation, GC or scheduling cause.",
+          "Planning within simulation and process CPU time are not additional disjoint wall-time phases.",
+          "Raw durations are rounded; overBudget preserves the exact production duration comparison.",
+          "Collecting raw diagnostics adds polling/serialization overhead; no controlled hardware or causal speedup claim."
+        ]
+      },
+      "innerAttribution": {
+        "status": "valid-observations",
+        "reasons": [],
+        "ticks": {
+          "status": "valid-observations",
+          "reasons": [],
+          "uniqueObservedTicks": 1311,
+          "excludedOtherMapTicks": 1,
+          "coverage": [
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "firstTick": 4,
+              "lastTick": 1082,
+              "observedTicks": 1078,
+              "knownOtherMapTicksWithinObservedRange": 1,
+              "missingTicksWithinObservedRange": 0
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "firstTick": 1086,
+              "lastTick": 1143,
+              "observedTicks": 58,
+              "knownOtherMapTicksWithinObservedRange": 0,
+              "missingTicksWithinObservedRange": 0
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "firstTick": 1086,
+              "lastTick": 1144,
+              "observedTicks": 59,
+              "knownOtherMapTicksWithinObservedRange": 0,
+              "missingTicksWithinObservedRange": 0
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "firstTick": 1086,
+              "lastTick": 1143,
+              "observedTicks": 58,
+              "knownOtherMapTicksWithinObservedRange": 0,
+              "missingTicksWithinObservedRange": 0
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "firstTick": 1086,
+              "lastTick": 1143,
+              "observedTicks": 58,
+              "knownOtherMapTicksWithinObservedRange": 0,
+              "missingTicksWithinObservedRange": 0
+            }
+          ],
+          "totalTickMs": {
+            "count": 1311,
+            "meanMs": 2.0218835949656184,
+            "p50Ms": 1.5196580000010727,
+            "p95Ms": 4.697057000000086,
+            "p99Ms": 7.643280999999888,
+            "maxMs": 13.289520999999922
+          },
+          "phases": {
+            "simulationMs": {
+              "count": 1311,
+              "meanMs": 1.532221967963385,
+              "p50Ms": 1.204,
+              "p95Ms": 3.497,
+              "p99Ms": 5.934,
+              "maxMs": 10.591
+            },
+            "visionMs": {
+              "count": 1311,
+              "meanMs": 0.0780465293668955,
+              "p50Ms": 0,
+              "p95Ms": 0.316,
+              "p99Ms": 0.532,
+              "maxMs": 3.061
+            },
+            "scenarioMs": {
+              "count": 1311,
+              "meanMs": 0.0037208237986269964,
+              "p50Ms": 0,
+              "p95Ms": 0.011,
+              "p99Ms": 0.038,
+              "maxMs": 0.123
+            },
+            "broadcastMs": {
+              "count": 1311,
+              "meanMs": 0.38370175438596293,
+              "p50Ms": 0.001,
+              "p95Ms": 1.401,
+              "p99Ms": 1.956,
+              "maxMs": 7.11
+            },
+            "checkpointMs": {
+              "count": 1311,
+              "meanMs": 0.02398779557589627,
+              "p50Ms": 0,
+              "p95Ms": 0,
+              "p99Ms": 0.665,
+              "maxMs": 2.273
+            }
+          },
+          "overBudgetTicks": 0,
+          "overrunDominantPhaseCounts": {
+            "simulationMs": 0,
+            "visionMs": 0,
+            "scenarioMs": 0,
+            "broadcastMs": 0,
+            "checkpointMs": 0
+          },
+          "overrunRows": [],
+          "slowestRows": [
+            {
+              "tickNumber": 31,
+              "startedMs": 1272.411874,
+              "heapBeforeBytes": 25168568,
+              "previousTickStartedMs": 1239.233302,
+              "visionCacheBefore": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 7,
+                "reason": "forest-reset",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 48,
+                "payloadBytes": 48576,
+                "peakEntries": 48,
+                "peakPayloadBytes": 48576,
+                "hits": 432,
+                "misses": 48,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "rebuildSpatialBucketsCalls": 1,
+              "rebuildSpatialBucketsMs": 0.06679899999994632,
+              "getMoveVectorCalls": 8,
+              "getMoveVectorMs": 9.998265999999603,
+              "spreadInteractingUnitsCalls": 1,
+              "spreadInteractingUnitsMs": 0.014752000000044063,
+              "simulateTickCalls": 1,
+              "simulateTickMs": 10.564288000000033,
+              "visionSourceCalls": 64,
+              "visionApplications": 48,
+              "visionCoverageHits": 48,
+              "visionDuplicateSources": 16,
+              "updateVisionMasksCalls": 1,
+              "updateVisionMasksMs": 0.18695499999989806,
+              "ensureVisionCalls": 2,
+              "ensureVisionHits": 2,
+              "roomPayloadCalls": 2,
+              "roomPayloadMs": 0.5950670000001992,
+              "frameStringifyCalls": 2,
+              "frameStringifyMs": 1.4440270000000055,
+              "deflateRawSyncCalls": 2,
+              "deflateRawSyncMs": 0.2708580000000893,
+              "encodeWebSocketFrameCalls": 2,
+              "encodeWebSocketFrameMs": 0.013801000000285057,
+              "jsonPayloadBytes": 51088,
+              "jsonWireBytes": 3626,
+              "compressedFrames": 2,
+              "stateFrames": 2,
+              "statePayloadBytes": 51088,
+              "stateWireBytes": 3626,
+              "stateUnitRows": 24,
+              "prepareJsonFrameCalls": 2,
+              "prepareJsonFrameMs": 1.778349000000162,
+              "visionCacheAfter": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 7,
+                "reason": "forest-reset",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 48,
+                "payloadBytes": 48576,
+                "peakEntries": 48,
+                "peakPayloadBytes": 48576,
+                "hits": 480,
+                "misses": 48,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "durationMs": 13.289520999999922,
+              "budgetMs": 33.333333333333336,
+              "overBudget": false,
+              "cpuMs": 18.45,
+              "simulationMs": 10.591,
+              "visionMs": 0.191,
+              "scenarioMs": 0,
+              "scenarioEvaluated": false,
+              "broadcastMs": 2.508,
+              "checkpointMs": 0,
+              "tickStartedMs": 1272.415719,
+              "startLagMs": 0,
+              "endedMs": 1285.766841,
+              "heapAfterBytes": 28956496,
+              "netHeapDeltaBytes": 3787928,
+              "rssBytes": 123031552,
+              "externalBytes": 38158629,
+              "arrayBufferBytes": 34326419,
+              "workerRun": 1
+            },
+            {
+              "tickNumber": 1130,
+              "startedMs": 1927.710895,
+              "heapBeforeBytes": 25273632,
+              "previousTickStartedMs": 1893.556524,
+              "visionCacheBefore": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 2,
+                "reason": "map-activation",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 74,
+                "payloadBytes": 70912,
+                "peakEntries": 74,
+                "peakPayloadBytes": 70912,
+                "hits": 883,
+                "misses": 74,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "rebuildSpatialBucketsCalls": 1,
+              "rebuildSpatialBucketsMs": 0.04941299999995863,
+              "getMoveVectorCalls": 27,
+              "getMoveVectorMs": 9.669598999999607,
+              "spreadInteractingUnitsCalls": 1,
+              "spreadInteractingUnitsMs": 0.004277000000001863,
+              "simulateTickCalls": 1,
+              "simulateTickMs": 9.935120000000097,
+              "visionSourceCalls": 64,
+              "visionApplications": 55,
+              "visionCoverageHits": 54,
+              "visionDuplicateSources": 9,
+              "visionCoverageMisses": 1,
+              "updateVisionMasksCalls": 1,
+              "updateVisionMasksMs": 0.19722999999999047,
+              "ensureVisionCalls": 2,
+              "ensureVisionHits": 2,
+              "roomPayloadCalls": 2,
+              "roomPayloadMs": 0.5813160000000153,
+              "frameStringifyCalls": 2,
+              "frameStringifyMs": 0.10623699999973724,
+              "deflateRawSyncCalls": 2,
+              "deflateRawSyncMs": 0.3072420000000875,
+              "encodeWebSocketFrameCalls": 2,
+              "encodeWebSocketFrameMs": 0.011015999999926862,
+              "jsonPayloadBytes": 51108,
+              "jsonWireBytes": 4238,
+              "compressedFrames": 2,
+              "stateFrames": 2,
+              "statePayloadBytes": 51108,
+              "stateWireBytes": 4238,
+              "stateUnitRows": 24,
+              "prepareJsonFrameCalls": 2,
+              "prepareJsonFrameMs": 0.4672880000000532,
+              "visionCacheAfter": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 2,
+                "reason": "map-activation",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 75,
+                "payloadBytes": 71816,
+                "peakEntries": 75,
+                "peakPayloadBytes": 71816,
+                "hits": 937,
+                "misses": 75,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "durationMs": 11.523781000000099,
+              "budgetMs": 33.333333333333336,
+              "overBudget": false,
+              "cpuMs": 16.273,
+              "simulationMs": 9.967,
+              "visionMs": 0.206,
+              "scenarioMs": 0,
+              "scenarioEvaluated": false,
+              "broadcastMs": 1.351,
+              "checkpointMs": 0,
+              "tickStartedMs": 1927.715221,
+              "startLagMs": 0.8253636666665116,
+              "endedMs": 1939.291499,
+              "heapAfterBytes": 27240096,
+              "netHeapDeltaBytes": 1966464,
+              "rssBytes": 112648192,
+              "externalBytes": 21995779,
+              "arrayBufferBytes": 18163569,
+              "workerRun": 5
+            },
+            {
+              "tickNumber": 1131,
+              "startedMs": 1918.051688,
+              "heapBeforeBytes": 20211048,
+              "previousTickStartedMs": 1885.312655,
+              "visionCacheBefore": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 2,
+                "reason": "map-activation",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 75,
+                "payloadBytes": 71816,
+                "peakEntries": 75,
+                "peakPayloadBytes": 71816,
+                "hits": 937,
+                "misses": 75,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "rebuildSpatialBucketsCalls": 1,
+              "rebuildSpatialBucketsMs": 0.045577000000093904,
+              "getMoveVectorCalls": 25,
+              "getMoveVectorMs": 3.576744999999846,
+              "spreadInteractingUnitsCalls": 1,
+              "spreadInteractingUnitsMs": 0.004075999999940905,
+              "simulateTickCalls": 1,
+              "simulateTickMs": 9.922612999999956,
+              "visionSourceCalls": 64,
+              "visionApplications": 54,
+              "visionCoverageHits": 54,
+              "visionDuplicateSources": 10,
+              "updateVisionMasksCalls": 1,
+              "updateVisionMasksMs": 0.09706300000016199,
+              "ensureVisionCalls": 2,
+              "ensureVisionHits": 2,
+              "roomPayloadCalls": 2,
+              "roomPayloadMs": 0.5279269999998633,
+              "frameStringifyCalls": 2,
+              "frameStringifyMs": 0.10071799999991526,
+              "deflateRawSyncCalls": 2,
+              "deflateRawSyncMs": 0.2986199999998007,
+              "encodeWebSocketFrameCalls": 2,
+              "encodeWebSocketFrameMs": 0.011728000000175598,
+              "jsonPayloadBytes": 51105,
+              "jsonWireBytes": 4233,
+              "compressedFrames": 2,
+              "stateFrames": 2,
+              "statePayloadBytes": 51105,
+              "stateWireBytes": 4233,
+              "stateUnitRows": 24,
+              "prepareJsonFrameCalls": 2,
+              "prepareJsonFrameMs": 0.458554999999933,
+              "visionCacheAfter": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 2,
+                "reason": "map-activation",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 75,
+                "payloadBytes": 71816,
+                "peakEntries": 75,
+                "peakPayloadBytes": 71816,
+                "hits": 991,
+                "misses": 75,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "durationMs": 11.165703000000121,
+              "budgetMs": 33.333333333333336,
+              "overBudget": false,
+              "cpuMs": 12.133,
+              "simulationMs": 9.948,
+              "visionMs": 0.099,
+              "scenarioMs": 0.008,
+              "scenarioEvaluated": true,
+              "broadcastMs": 1.11,
+              "checkpointMs": 0,
+              "tickStartedMs": 1918.058959,
+              "startLagMs": 0,
+              "endedMs": 1929.286122,
+              "heapAfterBytes": 21960488,
+              "netHeapDeltaBytes": 1749440,
+              "rssBytes": 100065280,
+              "externalBytes": 22257955,
+              "arrayBufferBytes": 18425745,
+              "workerRun": 4
+            },
+            {
+              "tickNumber": 33,
+              "startedMs": 1338.961232,
+              "heapBeforeBytes": 26215096,
+              "previousTickStartedMs": 1304.281638,
+              "visionCacheBefore": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 7,
+                "reason": "forest-reset",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 48,
+                "payloadBytes": 48576,
+                "peakEntries": 48,
+                "peakPayloadBytes": 48576,
+                "hits": 528,
+                "misses": 48,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "rebuildSpatialBucketsCalls": 1,
+              "rebuildSpatialBucketsMs": 0.09793400000012298,
+              "getMoveVectorCalls": 24,
+              "getMoveVectorMs": 9.091691999999966,
+              "spreadInteractingUnitsCalls": 1,
+              "spreadInteractingUnitsMs": 0.002132999999957974,
+              "simulateTickCalls": 1,
+              "simulateTickMs": 9.507382000000007,
+              "visionSourceCalls": 64,
+              "visionApplications": 48,
+              "visionCoverageHits": 48,
+              "visionDuplicateSources": 16,
+              "updateVisionMasksCalls": 1,
+              "updateVisionMasksMs": 0.10055800000009185,
+              "ensureVisionCalls": 2,
+              "ensureVisionHits": 2,
+              "roomPayloadCalls": 2,
+              "roomPayloadMs": 0.7158649999998943,
+              "frameStringifyCalls": 2,
+              "frameStringifyMs": 0.10297199999968143,
+              "deflateRawSyncCalls": 2,
+              "deflateRawSyncMs": 0.3304270000000997,
+              "encodeWebSocketFrameCalls": 2,
+              "encodeWebSocketFrameMs": 0.03988900000013018,
+              "jsonPayloadBytes": 51107,
+              "jsonWireBytes": 3649,
+              "compressedFrames": 2,
+              "stateFrames": 2,
+              "statePayloadBytes": 51107,
+              "stateWireBytes": 3649,
+              "stateUnitRows": 24,
+              "prepareJsonFrameCalls": 2,
+              "prepareJsonFrameMs": 0.5213679999999385,
+              "visionCacheAfter": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 7,
+                "reason": "forest-reset",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 48,
+                "payloadBytes": 48576,
+                "peakEntries": 48,
+                "peakPayloadBytes": 48576,
+                "hits": 576,
+                "misses": 48,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "durationMs": 11.07149400000003,
+              "budgetMs": 33.333333333333336,
+              "overBudget": false,
+              "cpuMs": 22.676,
+              "simulationMs": 9.53,
+              "visionMs": 0.128,
+              "scenarioMs": 0.022,
+              "scenarioEvaluated": true,
+              "broadcastMs": 1.391,
+              "checkpointMs": 0,
+              "tickStartedMs": 1338.965428,
+              "startLagMs": 1.3504566666667088,
+              "endedMs": 1350.097972,
+              "heapAfterBytes": 27371880,
+              "netHeapDeltaBytes": 1156784,
+              "rssBytes": 121389056,
+              "externalBytes": 37611988,
+              "arrayBufferBytes": 33779778,
+              "workerRun": 1
+            },
+            {
+              "tickNumber": 32,
+              "startedMs": 1304.275209,
+              "heapBeforeBytes": 22115808,
+              "previousTickStartedMs": 1272.415719,
+              "visionCacheBefore": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 7,
+                "reason": "forest-reset",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 48,
+                "payloadBytes": 48576,
+                "peakEntries": 48,
+                "peakPayloadBytes": 48576,
+                "hits": 480,
+                "misses": 48,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "rebuildSpatialBucketsCalls": 1,
+              "rebuildSpatialBucketsMs": 0.06773999999995794,
+              "getMoveVectorCalls": 24,
+              "getMoveVectorMs": 8.689497000000074,
+              "spreadInteractingUnitsCalls": 1,
+              "spreadInteractingUnitsMs": 0.015452999999979511,
+              "simulateTickCalls": 1,
+              "simulateTickMs": 9.157645999999886,
+              "visionSourceCalls": 64,
+              "visionApplications": 48,
+              "visionCoverageHits": 48,
+              "visionDuplicateSources": 16,
+              "updateVisionMasksCalls": 1,
+              "updateVisionMasksMs": 0.10461400000008325,
+              "ensureVisionCalls": 2,
+              "ensureVisionHits": 2,
+              "roomPayloadCalls": 2,
+              "roomPayloadMs": 0.7200410000002648,
+              "frameStringifyCalls": 2,
+              "frameStringifyMs": 0.11792400000013004,
+              "deflateRawSyncCalls": 2,
+              "deflateRawSyncMs": 0.40035999999986416,
+              "encodeWebSocketFrameCalls": 2,
+              "encodeWebSocketFrameMs": 0.01343999999994594,
+              "jsonPayloadBytes": 51106,
+              "jsonWireBytes": 3650,
+              "compressedFrames": 2,
+              "stateFrames": 2,
+              "statePayloadBytes": 51106,
+              "stateWireBytes": 3650,
+              "stateUnitRows": 24,
+              "prepareJsonFrameCalls": 2,
+              "prepareJsonFrameMs": 0.7934179999999742,
+              "visionCacheAfter": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 7,
+                "reason": "forest-reset",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 48,
+                "payloadBytes": 48576,
+                "peakEntries": 48,
+                "peakPayloadBytes": 48576,
+                "hits": 528,
+                "misses": 48,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "durationMs": 10.99046599999997,
+              "budgetMs": 33.333333333333336,
+              "overBudget": false,
+              "cpuMs": 22.335,
+              "simulationMs": 9.18,
+              "visionMs": 0.105,
+              "scenarioMs": 0,
+              "scenarioEvaluated": false,
+              "broadcastMs": 1.705,
+              "checkpointMs": 0,
+              "tickStartedMs": 1304.281638,
+              "startLagMs": 0,
+              "endedMs": 1315.334116,
+              "heapAfterBytes": 26184488,
+              "netHeapDeltaBytes": 4068680,
+              "rssBytes": 121126912,
+              "externalBytes": 37480900,
+              "arrayBufferBytes": 33648690,
+              "workerRun": 1
+            },
+            {
+              "tickNumber": 1130,
+              "startedMs": 1849.97231,
+              "heapBeforeBytes": 25744624,
+              "previousTickStartedMs": 1817.366478,
+              "visionCacheBefore": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 2,
+                "reason": "map-activation",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 74,
+                "payloadBytes": 70912,
+                "peakEntries": 74,
+                "peakPayloadBytes": 70912,
+                "hits": 883,
+                "misses": 74,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "rebuildSpatialBucketsCalls": 1,
+              "rebuildSpatialBucketsMs": 0.04676800000015646,
+              "getMoveVectorCalls": 27,
+              "getMoveVectorMs": 7.102101999999832,
+              "spreadInteractingUnitsCalls": 1,
+              "spreadInteractingUnitsMs": 0.00751100000002225,
+              "simulateTickCalls": 1,
+              "simulateTickMs": 8.142040999999836,
+              "visionSourceCalls": 64,
+              "visionApplications": 55,
+              "visionCoverageHits": 54,
+              "visionDuplicateSources": 9,
+              "visionCoverageMisses": 1,
+              "updateVisionMasksCalls": 1,
+              "updateVisionMasksMs": 0.16789700000003904,
+              "ensureVisionCalls": 2,
+              "ensureVisionHits": 2,
+              "roomPayloadCalls": 2,
+              "roomPayloadMs": 0.8674580000001697,
+              "frameStringifyCalls": 2,
+              "frameStringifyMs": 0.10383299999966766,
+              "deflateRawSyncCalls": 2,
+              "deflateRawSyncMs": 0.4448660000000473,
+              "encodeWebSocketFrameCalls": 2,
+              "encodeWebSocketFrameMs": 0.012758999999959997,
+              "jsonPayloadBytes": 51108,
+              "jsonWireBytes": 4232,
+              "compressedFrames": 2,
+              "stateFrames": 2,
+              "statePayloadBytes": 51108,
+              "stateWireBytes": 4232,
+              "stateUnitRows": 24,
+              "prepareJsonFrameCalls": 2,
+              "prepareJsonFrameMs": 0.6124619999998231,
+              "visionCacheAfter": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 2,
+                "reason": "map-activation",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 75,
+                "payloadBytes": 71816,
+                "peakEntries": 75,
+                "peakPayloadBytes": 71816,
+                "hits": 937,
+                "misses": 75,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "durationMs": 9.941501000000017,
+              "budgetMs": 33.333333333333336,
+              "overBudget": false,
+              "cpuMs": 19.152,
+              "simulationMs": 8.175,
+              "visionMs": 0.176,
+              "scenarioMs": 0,
+              "scenarioEvaluated": false,
+              "broadcastMs": 1.59,
+              "checkpointMs": 0,
+              "tickStartedMs": 1849.976065,
+              "startLagMs": 0,
+              "endedMs": 1859.972156,
+              "heapAfterBytes": 27845424,
+              "netHeapDeltaBytes": 2100800,
+              "rssBytes": 109465600,
+              "externalBytes": 21995779,
+              "arrayBufferBytes": 18163569,
+              "workerRun": 2
+            },
+            {
+              "tickNumber": 1130,
+              "startedMs": 1885.307157,
+              "heapBeforeBytes": 26243304,
+              "previousTickStartedMs": 1850.864236,
+              "visionCacheBefore": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 2,
+                "reason": "map-activation",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 74,
+                "payloadBytes": 70912,
+                "peakEntries": 74,
+                "peakPayloadBytes": 70912,
+                "hits": 883,
+                "misses": 74,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "rebuildSpatialBucketsCalls": 1,
+              "rebuildSpatialBucketsMs": 0.04682900000011614,
+              "getMoveVectorCalls": 27,
+              "getMoveVectorMs": 7.43134699999996,
+              "spreadInteractingUnitsCalls": 1,
+              "spreadInteractingUnitsMs": 0.00559800000019095,
+              "simulateTickCalls": 1,
+              "simulateTickMs": 7.780817999999954,
+              "visionSourceCalls": 64,
+              "visionApplications": 55,
+              "visionCoverageHits": 54,
+              "visionDuplicateSources": 9,
+              "visionCoverageMisses": 1,
+              "updateVisionMasksCalls": 1,
+              "updateVisionMasksMs": 0.1636310000001231,
+              "ensureVisionCalls": 2,
+              "ensureVisionHits": 2,
+              "roomPayloadCalls": 2,
+              "roomPayloadMs": 0.5278169999999136,
+              "frameStringifyCalls": 2,
+              "frameStringifyMs": 0.1029110000001765,
+              "deflateRawSyncCalls": 2,
+              "deflateRawSyncMs": 0.29859899999974004,
+              "encodeWebSocketFrameCalls": 2,
+              "encodeWebSocketFrameMs": 0.043824000000086016,
+              "jsonPayloadBytes": 51108,
+              "jsonWireBytes": 4238,
+              "compressedFrames": 2,
+              "stateFrames": 2,
+              "statePayloadBytes": 51108,
+              "stateWireBytes": 4238,
+              "stateUnitRows": 24,
+              "prepareJsonFrameCalls": 2,
+              "prepareJsonFrameMs": 0.49636099999997896,
+              "visionCacheAfter": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 2,
+                "reason": "map-activation",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 75,
+                "payloadBytes": 71816,
+                "peakEntries": 75,
+                "peakPayloadBytes": 71816,
+                "hits": 937,
+                "misses": 75,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "durationMs": 9.242490999999973,
+              "budgetMs": 33.333333333333336,
+              "overBudget": false,
+              "cpuMs": 21.366,
+              "simulationMs": 7.818,
+              "visionMs": 0.17,
+              "scenarioMs": 0,
+              "scenarioEvaluated": false,
+              "broadcastMs": 1.254,
+              "checkpointMs": 0,
+              "tickStartedMs": 1885.312655,
+              "startLagMs": 1.1150856666667224,
+              "endedMs": 1894.654462,
+              "heapAfterBytes": 20110632,
+              "netHeapDeltaBytes": -6132672,
+              "rssBytes": 100065280,
+              "externalBytes": 22126867,
+              "arrayBufferBytes": 18294657,
+              "workerRun": 4
+            },
+            {
+              "tickNumber": 1128,
+              "startedMs": 1783.919772,
+              "heapBeforeBytes": 23751856,
+              "previousTickStartedMs": 1750.018327,
+              "visionCacheBefore": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 2,
+                "reason": "map-activation",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 72,
+                "payloadBytes": 69572,
+                "peakEntries": 72,
+                "peakPayloadBytes": 69572,
+                "hits": 831,
+                "misses": 72,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "rebuildSpatialBucketsCalls": 1,
+              "rebuildSpatialBucketsMs": 0.05004299999995965,
+              "getMoveVectorCalls": 24,
+              "getMoveVectorMs": 5.92613600000027,
+              "spreadInteractingUnitsCalls": 1,
+              "spreadInteractingUnitsMs": 0.00233299999990777,
+              "simulateTickCalls": 1,
+              "simulateTickMs": 6.156727000000046,
+              "visionSourceCalls": 64,
+              "visionApplications": 54,
+              "visionCoverageHits": 52,
+              "visionDuplicateSources": 10,
+              "visionCoverageMisses": 2,
+              "updateVisionMasksCalls": 1,
+              "updateVisionMasksMs": 0.42393399999991743,
+              "ensureVisionCalls": 2,
+              "ensureVisionHits": 2,
+              "roomPayloadCalls": 2,
+              "roomPayloadMs": 0.7899740000000293,
+              "frameStringifyCalls": 2,
+              "frameStringifyMs": 0.19177300000001196,
+              "deflateRawSyncCalls": 2,
+              "deflateRawSyncMs": 0.34132299999964744,
+              "encodeWebSocketFrameCalls": 2,
+              "encodeWebSocketFrameMs": 0.04332399999998415,
+              "jsonPayloadBytes": 51099,
+              "jsonWireBytes": 4234,
+              "compressedFrames": 2,
+              "stateFrames": 2,
+              "statePayloadBytes": 51099,
+              "stateWireBytes": 4234,
+              "stateUnitRows": 24,
+              "prepareJsonFrameCalls": 2,
+              "prepareJsonFrameMs": 0.6350460000001021,
+              "visionCacheAfter": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 2,
+                "reason": "map-activation",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 74,
+                "payloadBytes": 70912,
+                "peakEntries": 74,
+                "peakPayloadBytes": 70912,
+                "hits": 883,
+                "misses": 74,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "durationMs": 8.262306999999964,
+              "budgetMs": 33.333333333333336,
+              "overBudget": false,
+              "cpuMs": 10.694,
+              "simulationMs": 6.221,
+              "visionMs": 0.433,
+              "scenarioMs": 0.013,
+              "scenarioEvaluated": true,
+              "broadcastMs": 1.594,
+              "checkpointMs": 0,
+              "tickStartedMs": 1783.925962,
+              "startLagMs": 0.5743016666666918,
+              "endedMs": 1792.259294,
+              "heapAfterBytes": 24506920,
+              "netHeapDeltaBytes": 755064,
+              "rssBytes": 108064768,
+              "externalBytes": 21863815,
+              "arrayBufferBytes": 18031605,
+              "workerRun": 2
+            },
+            {
+              "tickNumber": 492,
+              "startedMs": 16638.730209,
+              "heapBeforeBytes": 26655912,
+              "previousTickStartedMs": 16605.428779,
+              "visionCacheBefore": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 7,
+                "reason": "forest-reset",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 230,
+                "payloadBytes": 232760,
+                "peakEntries": 230,
+                "peakPayloadBytes": 232760,
+                "hits": 8928,
+                "misses": 230,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "rebuildSpatialBucketsCalls": 1,
+              "rebuildSpatialBucketsMs": 0.051264999998238636,
+              "getMoveVectorCalls": 25,
+              "getMoveVectorMs": 0.7694829999854846,
+              "spreadInteractingUnitsCalls": 1,
+              "spreadInteractingUnitsMs": 0.0013719999988097697,
+              "simulateTickCalls": 1,
+              "simulateTickMs": 0.9984299999996438,
+              "visionSourceCalls": 64,
+              "visionApplications": 56,
+              "visionCoverageHits": 56,
+              "visionDuplicateSources": 8,
+              "updateVisionMasksCalls": 1,
+              "updateVisionMasksMs": 0.10209000000031665,
+              "ensureVisionCalls": 2,
+              "ensureVisionHits": 2,
+              "roomPayloadCalls": 2,
+              "roomPayloadMs": 6.356329999998707,
+              "frameStringifyCalls": 2,
+              "frameStringifyMs": 0.15103300000191666,
+              "deflateRawSyncCalls": 2,
+              "deflateRawSyncMs": 0.37474199999996927,
+              "encodeWebSocketFrameCalls": 2,
+              "encodeWebSocketFrameMs": 0.014600999998947373,
+              "jsonPayloadBytes": 51141,
+              "jsonWireBytes": 3962,
+              "compressedFrames": 2,
+              "stateFrames": 2,
+              "statePayloadBytes": 51141,
+              "stateWireBytes": 3962,
+              "stateUnitRows": 24,
+              "prepareJsonFrameCalls": 2,
+              "prepareJsonFrameMs": 0.5928029999995488,
+              "visionCacheAfter": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 7,
+                "reason": "forest-reset",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 230,
+                "payloadBytes": 232760,
+                "peakEntries": 230,
+                "peakPayloadBytes": 232760,
+                "hits": 8984,
+                "misses": 230,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "durationMs": 8.241065999998682,
+              "budgetMs": 33.333333333333336,
+              "overBudget": false,
+              "cpuMs": 8.242,
+              "simulationMs": 1.019,
+              "visionMs": 0.103,
+              "scenarioMs": 0.007,
+              "scenarioEvaluated": true,
+              "broadcastMs": 7.11,
+              "checkpointMs": 0,
+              "tickStartedMs": 16638.737851,
+              "startLagMs": 0,
+              "endedMs": 16647.021379,
+              "heapAfterBytes": 28896472,
+              "netHeapDeltaBytes": 2240560,
+              "rssBytes": 157458432,
+              "externalBytes": 15692207,
+              "arrayBufferBytes": 11859997,
+              "workerRun": 1
+            },
+            {
+              "tickNumber": 1140,
+              "startedMs": 2183.347406,
+              "heapBeforeBytes": 21135512,
+              "previousTickStartedMs": 2149.81896,
+              "visionCacheBefore": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 2,
+                "reason": "map-activation",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 79,
+                "payloadBytes": 75004,
+                "peakEntries": 79,
+                "peakPayloadBytes": 75004,
+                "hits": 1096,
+                "misses": 79,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "rebuildSpatialBucketsCalls": 1,
+              "rebuildSpatialBucketsMs": 0.06439499999987675,
+              "getMoveVectorCalls": 26,
+              "getMoveVectorMs": 5.657661000000644,
+              "spreadInteractingUnitsCalls": 1,
+              "spreadInteractingUnitsMs": 0.0038250000002335582,
+              "simulateTickCalls": 1,
+              "simulateTickMs": 5.913930000000164,
+              "visionSourceCalls": 64,
+              "visionApplications": 55,
+              "visionCoverageHits": 52,
+              "visionDuplicateSources": 9,
+              "visionCoverageMisses": 3,
+              "updateVisionMasksCalls": 1,
+              "updateVisionMasksMs": 0.3440370000002986,
+              "ensureVisionCalls": 3,
+              "ensureVisionHits": 3,
+              "roomPayloadCalls": 2,
+              "roomPayloadMs": 0.5852519999994001,
+              "frameStringifyCalls": 2,
+              "frameStringifyMs": 0.1126059999996869,
+              "deflateRawSyncCalls": 2,
+              "deflateRawSyncMs": 0.2976680000001579,
+              "encodeWebSocketFrameCalls": 2,
+              "encodeWebSocketFrameMs": 0.015683999999964726,
+              "jsonPayloadBytes": 51109,
+              "jsonWireBytes": 4220,
+              "compressedFrames": 2,
+              "stateFrames": 2,
+              "statePayloadBytes": 51109,
+              "stateWireBytes": 4220,
+              "stateUnitRows": 24,
+              "prepareJsonFrameCalls": 2,
+              "prepareJsonFrameMs": 0.47681199999988166,
+              "captureMatchCheckpointCalls": 1,
+              "captureMatchCheckpointMs": 0.6538120000000163,
+              "visionCacheAfter": {
+                "width": 256,
+                "height": 256,
+                "cells": 65536,
+                "generation": 2,
+                "reason": "map-activation",
+                "maxBytes": 8388608,
+                "maxEntries": 8192,
+                "indexBits": 32,
+                "entries": 82,
+                "payloadBytes": 77248,
+                "peakEntries": 82,
+                "peakPayloadBytes": 77248,
+                "hits": 1148,
+                "misses": 82,
+                "evictions": 0,
+                "uncached": 0,
+                "clears": 0
+              },
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "durationMs": 8.232372999999825,
+              "budgetMs": 33.333333333333336,
+              "overBudget": false,
+              "cpuMs": 9.332,
+              "simulationMs": 5.934,
+              "visionMs": 0.352,
+              "scenarioMs": 0.009,
+              "scenarioEvaluated": true,
+              "broadcastMs": 1.189,
+              "checkpointMs": 0.747,
+              "tickStartedMs": 2183.351512,
+              "startLagMs": 0.19921866666678767,
+              "endedMs": 2191.64818,
+              "heapAfterBytes": 29324320,
+              "netHeapDeltaBytes": 8188808,
+              "rssBytes": 110510080,
+              "externalBytes": 22656427,
+              "arrayBufferBytes": 18824217,
+              "workerRun": 2
+            }
+          ],
+          "scope": "unique observed ticks for the requested map; process/worker, match and map identities are distinct",
+          "limits": [
+            "Observed-range coverage does not prove capture of earlier startup or later shutdown ticks.",
+            "Outer phases describe where elapsed time was recorded, not function, allocation, GC or scheduling cause.",
+            "Planning within simulation and process CPU time are not additional disjoint wall-time phases.",
+            "Raw durations are rounded; overBudget preserves the exact production duration comparison.",
+            "Collecting raw diagnostics adds polling/serialization overhead; no controlled hardware or causal speedup claim."
+          ]
+        },
+        "joinedNativeTicks": 1310,
+        "innerOnlyTicks": 1,
+        "functions": {
+          "simulateTick": {
+            "activeTicks": 1311,
+            "calls": 1311,
+            "activeTickMs": {
+              "count": 1311,
+              "meanMs": 1.5120487597254577,
+              "p50Ms": 1.190121999999974,
+              "p95Ms": 3.4785729999998694,
+              "p99Ms": 5.913930000000164,
+              "maxMs": 10.564288000000033
+            }
+          },
+          "rebuildSpatialBuckets": {
+            "activeTicks": 1311,
+            "calls": 1311,
+            "activeTickMs": {
+              "count": 1311,
+              "meanMs": 0.05782047597257026,
+              "p50Ms": 0.05041499999970256,
+              "p95Ms": 0.092596999998932,
+              "p99Ms": 0.1530649999999696,
+              "maxMs": 1.0677519999999276
+            }
+          },
+          "getMoveVector": {
+            "activeTicks": 1223,
+            "calls": 31813,
+            "activeTickMs": {
+              "count": 1223,
+              "meanMs": 1.4180577007360289,
+              "p50Ms": 1.0679930000078457,
+              "p95Ms": 3.297495000000481,
+              "p99Ms": 5.657661000000644,
+              "maxMs": 9.998265999999603
+            }
+          },
+          "spreadInteractingUnits": {
+            "activeTicks": 1311,
+            "calls": 1311,
+            "activeTickMs": {
+              "count": 1311,
+              "meanMs": 0.0030916956521904976,
+              "p50Ms": 0.0016429999996034894,
+              "p95Ms": 0.00551800000005187,
+              "p99Ms": 0.024806000000126005,
+              "maxMs": 0.3317890000000716
+            }
+          }
+        },
+        "gc": {
+          "observedEvents": 431,
+          "observedDurationMs": 169.46520999539644,
+          "overlappingTickIdentities": [
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 32
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 33
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 34
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 35
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 36
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 37
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 38
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 39
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 40
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 41
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 42
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 50
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 53
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 54
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 55
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 56
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 59
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 60
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 61
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 63
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 64
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 67
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 70
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 73
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 75
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 77
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 79
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 86
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 102
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 115
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 128
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 138
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 148
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 158
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 171
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 193
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 206
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 219
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 229
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 239
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 252
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 262
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 278
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 285
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 298
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 308
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 312
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 319
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 323
+            },
+            {
+              "workerRun": 1,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1050
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1086
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1089
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1091
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1103
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1105
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1108
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1110
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1111
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1113
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1114
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1116
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1117
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1119
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1120
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1122
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1123
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1126
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1127
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1128
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1129
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1130
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1131
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1132
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1133
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1134
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1135
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1136
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1141
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1142
+            },
+            {
+              "workerRun": 2,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1143
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1086
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1088
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1095
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1103
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1105
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1108
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1111
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1114
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1117
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1118
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1120
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1121
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1123
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1124
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1127
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1128
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1129
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1130
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1131
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1132
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1133
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1134
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1135
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1136
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1137
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1141
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1142
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1143
+            },
+            {
+              "workerRun": 3,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1144
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1086
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1088
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1095
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1103
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1105
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1108
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1111
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1114
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1117
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1118
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1120
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1121
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1123
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1124
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1127
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1128
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1129
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1130
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1131
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1132
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1133
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1134
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1135
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1136
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1137
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1141
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1142
+            },
+            {
+              "workerRun": 4,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1143
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1086
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1088
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1095
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1103
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1105
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1108
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1110
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1111
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1113
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1114
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1116
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1117
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1119
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1120
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1122
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1123
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1126
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1127
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1128
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1129
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1130
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1131
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1132
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1133
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1134
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1135
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1136
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1141
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1142
+            },
+            {
+              "workerRun": 5,
+              "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+              "mapId": "veyrholds-crownroads",
+              "tickNumber": 1143
+            }
+          ],
+          "overlappingOverBudgetTicks": 0
+        },
+        "netHeapDeltaBytes": {
+          "min": -12455408,
+          "max": 8188808
+        },
+        "limits": [
+          "Inclusive function times overlap and do not sum to simulation time.",
+          "GC overlap uses the broader observer span (wrapper entry through diagnostic/memory capture), not only production duration; it is not proof of an overrun cause.",
+          "Net heap change and RSS/external occupancy are not allocated bytes or peak-between-sample measurements.",
+          "Inner-only rows lie outside the independent rolling-health capture; joins preserve worker/match/map/tick identity.",
+          "Diagnostic profiles and wrappers add overhead; no uninstrumented speedup or capacity claim."
+        ]
+      },
+      "recoveryProfileControl": {
+        "status": "valid-observations",
+        "reasons": [],
+        "observations": [
+          {
+            "ordinal": 1,
+            "profiles": true,
+            "workerRun": 2,
+            "checkpointSHA256": "69028ec16db7df5bc213a03a570400c4620b5ec53bbcfe1bf52fb572e2ad43b1",
+            "firstTick": 1083,
+            "lastTick": 1142,
+            "timing": {
+              "status": "valid-observations",
+              "reasons": [],
+              "uniqueObservedTicks": 60,
+              "excludedOtherMapTicks": 0,
+              "coverage": [
+                {
+                  "workerRun": 2,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "firstTick": 1083,
+                  "lastTick": 1142,
+                  "observedTicks": 60,
+                  "knownOtherMapTicksWithinObservedRange": 0,
+                  "missingTicksWithinObservedRange": 0
+                }
+              ],
+              "totalTickMs": {
+                "count": 60,
+                "meanMs": 4.212083333333334,
+                "p50Ms": 3.596,
+                "p95Ms": 8.232,
+                "p99Ms": 15.341,
+                "maxMs": 15.341
+              },
+              "phases": {
+                "simulationMs": {
+                  "count": 60,
+                  "meanMs": 3.5362333333333344,
+                  "p50Ms": 3.012,
+                  "p95Ms": 6.221,
+                  "p99Ms": 13.872,
+                  "maxMs": 13.872
+                },
+                "visionMs": {
+                  "count": 60,
+                  "meanMs": 0.16575000000000004,
+                  "p50Ms": 0,
+                  "p95Ms": 0.549,
+                  "p99Ms": 3.061,
+                  "maxMs": 3.061
+                },
+                "scenarioMs": {
+                  "count": 60,
+                  "meanMs": 0.016350000000000007,
+                  "p50Ms": 0,
+                  "p95Ms": 0.021,
+                  "p99Ms": 0.687,
+                  "maxMs": 0.687
+                },
+                "broadcastMs": {
+                  "count": 60,
+                  "meanMs": 0.45450000000000024,
+                  "p50Ms": 0.001,
+                  "p95Ms": 1.594,
+                  "p99Ms": 2.02,
+                  "maxMs": 2.02
+                },
+                "checkpointMs": {
+                  "count": 60,
+                  "meanMs": 0.03888333333333334,
+                  "p50Ms": 0,
+                  "p95Ms": 0.001,
+                  "p99Ms": 1.578,
+                  "maxMs": 1.578
+                }
+              },
+              "overBudgetTicks": 0,
+              "overrunDominantPhaseCounts": {
+                "simulationMs": 0,
+                "visionMs": 0,
+                "scenarioMs": 0,
+                "broadcastMs": 0,
+                "checkpointMs": 0
+              },
+              "overrunRows": [],
+              "slowestRows": [
+                {
+                  "workerRun": 2,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1083,
+                  "durationMs": 15.341,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 23.53,
+                  "simulationMs": 13.872,
+                  "visionMs": 0.701,
+                  "scenarioMs": 0.687,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 0.08,
+                  "checkpointMs": 0.001
+                },
+                {
+                  "workerRun": 2,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1130,
+                  "durationMs": 9.942,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 19.152,
+                  "simulationMs": 8.175,
+                  "visionMs": 0.176,
+                  "scenarioMs": 0,
+                  "scenarioEvaluated": false,
+                  "broadcastMs": 1.59,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 2,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1128,
+                  "durationMs": 8.262,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 10.694,
+                  "simulationMs": 6.221,
+                  "visionMs": 0.433,
+                  "scenarioMs": 0.013,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.594,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 2,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1140,
+                  "durationMs": 8.232,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 9.332,
+                  "simulationMs": 5.934,
+                  "visionMs": 0.352,
+                  "scenarioMs": 0.009,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.189,
+                  "checkpointMs": 0.747
+                },
+                {
+                  "workerRun": 2,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1089,
+                  "durationMs": 7.33,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 8.9,
+                  "simulationMs": 2.472,
+                  "visionMs": 3.061,
+                  "scenarioMs": 0.017,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.779,
+                  "checkpointMs": 0.001
+                },
+                {
+                  "workerRun": 2,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1129,
+                  "durationMs": 6.783,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 9.014,
+                  "simulationMs": 6.782,
+                  "visionMs": 0,
+                  "scenarioMs": 0,
+                  "scenarioEvaluated": false,
+                  "broadcastMs": 0,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 2,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1131,
+                  "durationMs": 6.288,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 7.279,
+                  "simulationMs": 4.947,
+                  "visionMs": 0.095,
+                  "scenarioMs": 0.009,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.236,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 2,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1110,
+                  "durationMs": 6.107,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 7.121,
+                  "simulationMs": 2.901,
+                  "visionMs": 0.436,
+                  "scenarioMs": 0.028,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.165,
+                  "checkpointMs": 1.578
+                },
+                {
+                  "workerRun": 2,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1133,
+                  "durationMs": 5.597,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 9.595,
+                  "simulationMs": 5.596,
+                  "visionMs": 0,
+                  "scenarioMs": 0,
+                  "scenarioEvaluated": false,
+                  "broadcastMs": 0,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 2,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1095,
+                  "durationMs": 5.401,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 7.011,
+                  "simulationMs": 3.547,
+                  "visionMs": 0.429,
+                  "scenarioMs": 0.018,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.407,
+                  "checkpointMs": 0
+                }
+              ],
+              "scope": "unique observed ticks for the requested map; process/worker, match and map identities are distinct",
+              "limits": [
+                "Observed-range coverage does not prove capture of earlier startup or later shutdown ticks.",
+                "Outer phases describe where elapsed time was recorded, not function, allocation, GC or scheduling cause.",
+                "Planning within simulation and process CPU time are not additional disjoint wall-time phases.",
+                "Raw durations are rounded; overBudget preserves the exact production duration comparison.",
+                "Collecting raw diagnostics adds polling/serialization overhead; no controlled hardware or causal speedup claim."
+              ]
+            },
+            "startupWindow": {
+              "startRequest": {
+                "tickNumber": 1085,
+                "monotonicMs": 357.032067
+              },
+              "startCompletion": {
+                "tickNumber": 1085,
+                "monotonicMs": 394.180945
+              }
+            },
+            "startupMs": 37.148878000000025,
+            "profileWindows": {
+              "cpu": {
+                "startRequest": {
+                  "tickNumber": 1085,
+                  "monotonicMs": 357.608626
+                },
+                "startCompletion": {
+                  "tickNumber": 1085,
+                  "monotonicMs": 394.060688
+                },
+                "stopRequest": {
+                  "tickNumber": 1143,
+                  "monotonicMs": 2307.172828
+                },
+                "stopCompletion": {
+                  "tickNumber": 1143,
+                  "monotonicMs": 2311.609145
+                }
+              },
+              "allocation": {
+                "startRequest": {
+                  "tickNumber": 1085,
+                  "monotonicMs": 394.076451
+                },
+                "startCompletion": {
+                  "tickNumber": 1085,
+                  "monotonicMs": 394.17774
+                },
+                "stopRequest": {
+                  "tickNumber": 1143,
+                  "monotonicMs": 2311.614904
+                },
+                "stopCompletion": {
+                  "tickNumber": 1143,
+                  "monotonicMs": 2322.229235
+                }
+              }
+            },
+            "observedClockRows": 57,
+            "startLagMs": {
+              "count": 57,
+              "meanMs": 0.5943290116959078,
+              "p50Ms": 0.10727366666666427,
+              "p95Ms": 1.8469306666665162,
+              "p99Ms": 12.618407666666634,
+              "maxMs": 12.618407666666634
+            },
+            "beforeStartupTiming": {
+              "sampleCount": 3,
+              "windowSeconds": 0.1,
+              "budgetMs": 33.333,
+              "p50Ms": 3.92,
+              "p95Ms": 15.341,
+              "p99Ms": 15.341,
+              "overBudgetTickCount": 0,
+              "maxMs": 15.341,
+              "startLagP95Ms": 0,
+              "startLagMaxMs": 0,
+              "scheduler": {
+                "policy": "drop-elapsed-slots",
+                "skippedTickSlotsTotal": 0,
+                "lastOverloadSkippedSlots": 0,
+                "lastOverloadTick": null
+              },
+              "slowestTick": {
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "tickNumber": 1083,
+                "durationMs": 15.341,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 23.53,
+                "simulationMs": 13.872,
+                "visionMs": 0.701,
+                "scenarioMs": 0.687,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.08,
+                "checkpointMs": 0.001
+              },
+              "scenarioTiming": {
+                "sampleCount": 1,
+                "p50Ms": 0.687,
+                "p95Ms": 0.687,
+                "maxMs": 0.687
+              }
+            },
+            "afterStartupTiming": {
+              "sampleCount": 4,
+              "windowSeconds": 0.1,
+              "budgetMs": 33.333,
+              "p50Ms": 3.92,
+              "p95Ms": 15.341,
+              "p99Ms": 15.341,
+              "overBudgetTickCount": 0,
+              "maxMs": 15.341,
+              "startLagP95Ms": 12.618,
+              "startLagMaxMs": 12.618,
+              "scheduler": {
+                "policy": "drop-elapsed-slots",
+                "skippedTickSlotsTotal": 0,
+                "lastOverloadSkippedSlots": 0,
+                "lastOverloadTick": null
+              },
+              "slowestTick": {
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "tickNumber": 1083,
+                "durationMs": 15.341,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 23.53,
+                "simulationMs": 13.872,
+                "visionMs": 0.701,
+                "scenarioMs": 0.687,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.08,
+                "checkpointMs": 0.001
+              },
+              "scenarioTiming": {
+                "sampleCount": 2,
+                "p50Ms": 0.021,
+                "p95Ms": 0.687,
+                "maxMs": 0.687
+              }
+            },
+            "afterWindowTiming": {
+              "sampleCount": 61,
+              "windowSeconds": 2,
+              "budgetMs": 33.333,
+              "p50Ms": 3.623,
+              "p95Ms": 8.232,
+              "p99Ms": 15.341,
+              "overBudgetTickCount": 0,
+              "maxMs": 15.341,
+              "startLagP95Ms": 1.815,
+              "startLagMaxMs": 12.618,
+              "scheduler": {
+                "policy": "drop-elapsed-slots",
+                "skippedTickSlotsTotal": 0,
+                "lastOverloadSkippedSlots": 0,
+                "lastOverloadTick": null
+              },
+              "slowestTick": {
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "tickNumber": 1083,
+                "durationMs": 15.341,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 23.53,
+                "simulationMs": 13.872,
+                "visionMs": 0.701,
+                "scenarioMs": 0.687,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.08,
+                "checkpointMs": 0.001
+              },
+              "scenarioTiming": {
+                "sampleCount": 21,
+                "p50Ms": 0.013,
+                "p95Ms": 0.045,
+                "maxMs": 0.687
+              }
+            },
+            "startupAdjacentRows": [
+              {
+                "tickNumber": 1086,
+                "startedMs": 394.94532,
+                "heapBeforeBytes": 23506704,
+                "previousTickStartedMs": 349.026588,
+                "visionCacheBefore": {
+                  "width": 256,
+                  "height": 256,
+                  "cells": 65536,
+                  "generation": 2,
+                  "reason": "map-activation",
+                  "maxBytes": 8388608,
+                  "maxEntries": 8192,
+                  "indexBits": 32,
+                  "entries": 54,
+                  "payloadBytes": 53876,
+                  "peakEntries": 54,
+                  "peakPayloadBytes": 53876,
+                  "hits": 54,
+                  "misses": 54,
+                  "evictions": 0,
+                  "uncached": 0,
+                  "clears": 0
+                },
+                "rebuildSpatialBucketsCalls": 1,
+                "rebuildSpatialBucketsMs": 0.13705199999998285,
+                "getMoveVectorCalls": 27,
+                "getMoveVectorMs": 4.5371550000002685,
+                "spreadInteractingUnitsCalls": 1,
+                "spreadInteractingUnitsMs": 0.010765999999989617,
+                "simulateTickCalls": 1,
+                "simulateTickMs": 4.93689999999998,
+                "visionSourceCalls": 64,
+                "visionApplications": 53,
+                "visionCoverageHits": 52,
+                "visionDuplicateSources": 11,
+                "visionCoverageMisses": 1,
+                "updateVisionMasksCalls": 1,
+                "updateVisionMasksMs": 0.32461799999998675,
+                "visionCacheAfter": {
+                  "width": 256,
+                  "height": 256,
+                  "cells": 65536,
+                  "generation": 2,
+                  "reason": "map-activation",
+                  "maxBytes": 8388608,
+                  "maxEntries": 8192,
+                  "indexBits": 32,
+                  "entries": 55,
+                  "payloadBytes": 54888,
+                  "peakEntries": 55,
+                  "peakPayloadBytes": 54888,
+                  "hits": 106,
+                  "misses": 55,
+                  "evictions": 0,
+                  "uncached": 0,
+                  "clears": 0
+                },
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "durationMs": 5.322058000000027,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 9.427,
+                "simulationMs": 4.969,
+                "visionMs": 0.33,
+                "scenarioMs": 0.021,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.002,
+                "checkpointMs": 0,
+                "tickStartedMs": 394.978329,
+                "startLagMs": 12.618407666666634,
+                "endedMs": 400.447313,
+                "heapAfterBytes": 20133920,
+                "netHeapDeltaBytes": -3372784,
+                "rssBytes": 103550976,
+                "externalBytes": 19914711,
+                "arrayBufferBytes": 16082501
+              }
+            ]
+          },
+          {
+            "ordinal": 2,
+            "profiles": false,
+            "workerRun": 3,
+            "checkpointSHA256": "69028ec16db7df5bc213a03a570400c4620b5ec53bbcfe1bf52fb572e2ad43b1",
+            "firstTick": 1083,
+            "lastTick": 1142,
+            "timing": {
+              "status": "valid-observations",
+              "reasons": [],
+              "uniqueObservedTicks": 60,
+              "excludedOtherMapTicks": 0,
+              "coverage": [
+                {
+                  "workerRun": 3,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "firstTick": 1083,
+                  "lastTick": 1142,
+                  "observedTicks": 60,
+                  "knownOtherMapTicksWithinObservedRange": 0,
+                  "missingTicksWithinObservedRange": 0
+                }
+              ],
+              "totalTickMs": {
+                "count": 60,
+                "meanMs": 3.261633333333332,
+                "p50Ms": 2.867,
+                "p95Ms": 4.941,
+                "p99Ms": 16.112,
+                "maxMs": 16.112
+              },
+              "phases": {
+                "simulationMs": {
+                  "count": 60,
+                  "meanMs": 2.6903833333333336,
+                  "p50Ms": 2.26,
+                  "p95Ms": 4.151,
+                  "p99Ms": 14.716,
+                  "maxMs": 14.716
+                },
+                "visionMs": {
+                  "count": 60,
+                  "meanMs": 0.10761666666666668,
+                  "p50Ms": 0,
+                  "p95Ms": 0.404,
+                  "p99Ms": 0.723,
+                  "maxMs": 0.723
+                },
+                "scenarioMs": {
+                  "count": 60,
+                  "meanMs": 0.01456666666666667,
+                  "p50Ms": 0,
+                  "p95Ms": 0.028,
+                  "p99Ms": 0.569,
+                  "maxMs": 0.569
+                },
+                "broadcastMs": {
+                  "count": 60,
+                  "meanMs": 0.41219999999999996,
+                  "p50Ms": 0.001,
+                  "p95Ms": 1.425,
+                  "p99Ms": 1.703,
+                  "maxMs": 1.703
+                },
+                "checkpointMs": {
+                  "count": 60,
+                  "meanMs": 0.03658333333333333,
+                  "p50Ms": 0,
+                  "p95Ms": 0.001,
+                  "p99Ms": 1.22,
+                  "maxMs": 1.22
+                }
+              },
+              "overBudgetTicks": 0,
+              "overrunDominantPhaseCounts": {
+                "simulationMs": 0,
+                "visionMs": 0,
+                "scenarioMs": 0,
+                "broadcastMs": 0,
+                "checkpointMs": 0
+              },
+              "overrunRows": [],
+              "slowestRows": [
+                {
+                  "workerRun": 3,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1083,
+                  "durationMs": 16.112,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 25.06,
+                  "simulationMs": 14.716,
+                  "visionMs": 0.723,
+                  "scenarioMs": 0.569,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 0.104,
+                  "checkpointMs": 0.001
+                },
+                {
+                  "workerRun": 3,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1086,
+                  "durationMs": 7.44,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 12.596,
+                  "simulationMs": 5.147,
+                  "visionMs": 0.561,
+                  "scenarioMs": 0.028,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.703,
+                  "checkpointMs": 0.001
+                },
+                {
+                  "workerRun": 3,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1130,
+                  "durationMs": 7.301,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 17.878,
+                  "simulationMs": 5.709,
+                  "visionMs": 0.168,
+                  "scenarioMs": 0,
+                  "scenarioEvaluated": false,
+                  "broadcastMs": 1.425,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 3,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1110,
+                  "durationMs": 4.941,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 5.788,
+                  "simulationMs": 2.074,
+                  "visionMs": 0.369,
+                  "scenarioMs": 0.027,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.252,
+                  "checkpointMs": 1.22
+                },
+                {
+                  "workerRun": 3,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1140,
+                  "durationMs": 4.602,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 5.592,
+                  "simulationMs": 2.305,
+                  "visionMs": 0.226,
+                  "scenarioMs": 0.009,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.093,
+                  "checkpointMs": 0.97
+                },
+                {
+                  "workerRun": 3,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1131,
+                  "durationMs": 4.577,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 5.904,
+                  "simulationMs": 3.365,
+                  "visionMs": 0.092,
+                  "scenarioMs": 0.008,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.112,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 3,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1128,
+                  "durationMs": 4.424,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 5.532,
+                  "simulationMs": 3.215,
+                  "visionMs": 0.189,
+                  "scenarioMs": 0.009,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.011,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 3,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1098,
+                  "durationMs": 4.249,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 7.456,
+                  "simulationMs": 2.234,
+                  "visionMs": 0.378,
+                  "scenarioMs": 0.023,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.612,
+                  "checkpointMs": 0.001
+                },
+                {
+                  "workerRun": 3,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1129,
+                  "durationMs": 4.152,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 6.241,
+                  "simulationMs": 4.151,
+                  "visionMs": 0,
+                  "scenarioMs": 0,
+                  "scenarioEvaluated": false,
+                  "broadcastMs": 0,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 3,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1095,
+                  "durationMs": 4.117,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 5.974,
+                  "simulationMs": 2.121,
+                  "visionMs": 0.331,
+                  "scenarioMs": 0.017,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.647,
+                  "checkpointMs": 0
+                }
+              ],
+              "scope": "unique observed ticks for the requested map; process/worker, match and map identities are distinct",
+              "limits": [
+                "Observed-range coverage does not prove capture of earlier startup or later shutdown ticks.",
+                "Outer phases describe where elapsed time was recorded, not function, allocation, GC or scheduling cause.",
+                "Planning within simulation and process CPU time are not additional disjoint wall-time phases.",
+                "Raw durations are rounded; overBudget preserves the exact production duration comparison.",
+                "Collecting raw diagnostics adds polling/serialization overhead; no controlled hardware or causal speedup claim."
+              ]
+            },
+            "startupWindow": {
+              "startRequest": {
+                "tickNumber": 1085,
+                "monotonicMs": 399.682799
+              },
+              "startCompletion": {
+                "tickNumber": 1085,
+                "monotonicMs": 399.69085
+              }
+            },
+            "startupMs": 0.008051000000023123,
+            "profileWindows": {},
+            "observedClockRows": 57,
+            "startLagMs": {
+              "count": 57,
+              "meanMs": 0.32256154970760065,
+              "p50Ms": 0,
+              "p95Ms": 1.2104616666665962,
+              "p99Ms": 1.702400666666712,
+              "maxMs": 1.702400666666712
+            },
+            "beforeStartupTiming": {
+              "sampleCount": 3,
+              "windowSeconds": 0.1,
+              "budgetMs": 33.333,
+              "p50Ms": 3.584,
+              "p95Ms": 16.112,
+              "p99Ms": 16.112,
+              "overBudgetTickCount": 0,
+              "maxMs": 16.112,
+              "startLagP95Ms": 0.582,
+              "startLagMaxMs": 0.582,
+              "scheduler": {
+                "policy": "drop-elapsed-slots",
+                "skippedTickSlotsTotal": 0,
+                "lastOverloadSkippedSlots": 0,
+                "lastOverloadTick": null
+              },
+              "slowestTick": {
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "tickNumber": 1083,
+                "durationMs": 16.112,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 25.06,
+                "simulationMs": 14.716,
+                "visionMs": 0.723,
+                "scenarioMs": 0.569,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.104,
+                "checkpointMs": 0.001
+              },
+              "scenarioTiming": {
+                "sampleCount": 1,
+                "p50Ms": 0.569,
+                "p95Ms": 0.569,
+                "maxMs": 0.569
+              }
+            },
+            "afterStartupTiming": {
+              "sampleCount": 3,
+              "windowSeconds": 0.1,
+              "budgetMs": 33.333,
+              "p50Ms": 3.584,
+              "p95Ms": 16.112,
+              "p99Ms": 16.112,
+              "overBudgetTickCount": 0,
+              "maxMs": 16.112,
+              "startLagP95Ms": 0.582,
+              "startLagMaxMs": 0.582,
+              "scheduler": {
+                "policy": "drop-elapsed-slots",
+                "skippedTickSlotsTotal": 0,
+                "lastOverloadSkippedSlots": 0,
+                "lastOverloadTick": null
+              },
+              "slowestTick": {
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "tickNumber": 1083,
+                "durationMs": 16.112,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 25.06,
+                "simulationMs": 14.716,
+                "visionMs": 0.723,
+                "scenarioMs": 0.569,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.104,
+                "checkpointMs": 0.001
+              },
+              "scenarioTiming": {
+                "sampleCount": 1,
+                "p50Ms": 0.569,
+                "p95Ms": 0.569,
+                "maxMs": 0.569
+              }
+            },
+            "afterWindowTiming": {
+              "sampleCount": 61,
+              "windowSeconds": 2,
+              "budgetMs": 33.333,
+              "p50Ms": 2.904,
+              "p95Ms": 4.941,
+              "p99Ms": 16.112,
+              "overBudgetTickCount": 0,
+              "maxMs": 16.112,
+              "startLagP95Ms": 1.204,
+              "startLagMaxMs": 1.702,
+              "scheduler": {
+                "policy": "drop-elapsed-slots",
+                "skippedTickSlotsTotal": 0,
+                "lastOverloadSkippedSlots": 0,
+                "lastOverloadTick": null
+              },
+              "slowestTick": {
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "tickNumber": 1083,
+                "durationMs": 16.112,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 25.06,
+                "simulationMs": 14.716,
+                "visionMs": 0.723,
+                "scenarioMs": 0.569,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.104,
+                "checkpointMs": 0.001
+              },
+              "scenarioTiming": {
+                "sampleCount": 21,
+                "p50Ms": 0.016,
+                "p95Ms": 0.068,
+                "maxMs": 0.569
+              }
+            },
+            "startupAdjacentRows": [
+              {
+                "tickNumber": 1086,
+                "startedMs": 424.26529,
+                "heapBeforeBytes": 23276152,
+                "previousTickStartedMs": 390.788521,
+                "visionCacheBefore": {
+                  "width": 256,
+                  "height": 256,
+                  "cells": 65536,
+                  "generation": 2,
+                  "reason": "map-activation",
+                  "maxBytes": 8388608,
+                  "maxEntries": 8192,
+                  "indexBits": 32,
+                  "entries": 54,
+                  "payloadBytes": 53876,
+                  "peakEntries": 54,
+                  "peakPayloadBytes": 53876,
+                  "hits": 108,
+                  "misses": 54,
+                  "evictions": 0,
+                  "uncached": 0,
+                  "clears": 0
+                },
+                "rebuildSpatialBucketsCalls": 1,
+                "rebuildSpatialBucketsMs": 0.05564199999997754,
+                "getMoveVectorCalls": 27,
+                "getMoveVectorMs": 4.761761999999976,
+                "spreadInteractingUnitsCalls": 1,
+                "spreadInteractingUnitsMs": 0.011175999999977648,
+                "simulateTickCalls": 1,
+                "simulateTickMs": 5.121061999999995,
+                "visionSourceCalls": 64,
+                "visionApplications": 53,
+                "visionCoverageHits": 52,
+                "visionDuplicateSources": 11,
+                "visionCoverageMisses": 1,
+                "updateVisionMasksCalls": 1,
+                "updateVisionMasksMs": 0.5521229999999946,
+                "ensureVisionCalls": 2,
+                "ensureVisionHits": 2,
+                "roomPayloadCalls": 2,
+                "roomPayloadMs": 1.0708669999999643,
+                "frameStringifyCalls": 2,
+                "frameStringifyMs": 0.08945199999999431,
+                "deflateRawSyncCalls": 2,
+                "deflateRawSyncMs": 0.2624460000000113,
+                "encodeWebSocketFrameCalls": 2,
+                "encodeWebSocketFrameMs": 0.019469000000015058,
+                "jsonPayloadBytes": 51096,
+                "jsonWireBytes": 4207,
+                "compressedFrames": 2,
+                "stateFrames": 2,
+                "statePayloadBytes": 51096,
+                "stateWireBytes": 4207,
+                "stateUnitRows": 24,
+                "prepareJsonFrameCalls": 2,
+                "prepareJsonFrameMs": 0.4375039999999899,
+                "visionCacheAfter": {
+                  "width": 256,
+                  "height": 256,
+                  "cells": 65536,
+                  "generation": 2,
+                  "reason": "map-activation",
+                  "maxBytes": 8388608,
+                  "maxEntries": 8192,
+                  "indexBits": 32,
+                  "entries": 55,
+                  "payloadBytes": 54888,
+                  "peakEntries": 55,
+                  "peakPayloadBytes": 54888,
+                  "hits": 160,
+                  "misses": 55,
+                  "evictions": 0,
+                  "uncached": 0,
+                  "clears": 0
+                },
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "durationMs": 7.44009600000004,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 12.596,
+                "simulationMs": 5.147,
+                "visionMs": 0.561,
+                "scenarioMs": 0.028,
+                "scenarioEvaluated": true,
+                "broadcastMs": 1.703,
+                "checkpointMs": 0.001,
+                "tickStartedMs": 424.277859,
+                "startLagMs": 0.15600466666663948,
+                "endedMs": 431.866414,
+                "heapAfterBytes": 19637192,
+                "netHeapDeltaBytes": -3638960,
+                "rssBytes": 103358464,
+                "externalBytes": 19882395,
+                "arrayBufferBytes": 16050185
+              }
+            ]
+          },
+          {
+            "ordinal": 3,
+            "profiles": false,
+            "workerRun": 4,
+            "checkpointSHA256": "69028ec16db7df5bc213a03a570400c4620b5ec53bbcfe1bf52fb572e2ad43b1",
+            "firstTick": 1083,
+            "lastTick": 1142,
+            "timing": {
+              "status": "valid-observations",
+              "reasons": [],
+              "uniqueObservedTicks": 60,
+              "excludedOtherMapTicks": 0,
+              "coverage": [
+                {
+                  "workerRun": 4,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "firstTick": 1083,
+                  "lastTick": 1142,
+                  "observedTicks": 60,
+                  "knownOtherMapTicksWithinObservedRange": 0,
+                  "missingTicksWithinObservedRange": 0
+                }
+              ],
+              "totalTickMs": {
+                "count": 60,
+                "meanMs": 3.6648499999999995,
+                "p50Ms": 2.957,
+                "p95Ms": 8.162,
+                "p99Ms": 15.906,
+                "maxMs": 15.906
+              },
+              "phases": {
+                "simulationMs": {
+                  "count": 60,
+                  "meanMs": 3.004183333333334,
+                  "p50Ms": 2.394,
+                  "p95Ms": 5.029,
+                  "p99Ms": 14.258,
+                  "maxMs": 14.258
+                },
+                "visionMs": {
+                  "count": 60,
+                  "meanMs": 0.11789999999999998,
+                  "p50Ms": 0,
+                  "p95Ms": 0.428,
+                  "p99Ms": 0.958,
+                  "maxMs": 0.958
+                },
+                "scenarioMs": {
+                  "count": 60,
+                  "meanMs": 0.015050000000000004,
+                  "p50Ms": 0,
+                  "p95Ms": 0.022,
+                  "p99Ms": 0.615,
+                  "maxMs": 0.615
+                },
+                "broadcastMs": {
+                  "count": 60,
+                  "meanMs": 0.4723,
+                  "p50Ms": 0.001,
+                  "p95Ms": 1.597,
+                  "p99Ms": 3.858,
+                  "maxMs": 3.858
+                },
+                "checkpointMs": {
+                  "count": 60,
+                  "meanMs": 0.05521666666666667,
+                  "p50Ms": 0,
+                  "p95Ms": 0.001,
+                  "p99Ms": 2.273,
+                  "maxMs": 2.273
+                }
+              },
+              "overBudgetTicks": 0,
+              "overrunDominantPhaseCounts": {
+                "simulationMs": 0,
+                "visionMs": 0,
+                "scenarioMs": 0,
+                "broadcastMs": 0,
+                "checkpointMs": 0
+              },
+              "overrunRows": [],
+              "slowestRows": [
+                {
+                  "workerRun": 4,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1083,
+                  "durationMs": 15.906,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 23.9,
+                  "simulationMs": 14.258,
+                  "visionMs": 0.958,
+                  "scenarioMs": 0.615,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 0.075,
+                  "checkpointMs": 0.001
+                },
+                {
+                  "workerRun": 4,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1131,
+                  "durationMs": 11.166,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 12.133,
+                  "simulationMs": 9.948,
+                  "visionMs": 0.099,
+                  "scenarioMs": 0.008,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.11,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 4,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1130,
+                  "durationMs": 9.242,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 21.366,
+                  "simulationMs": 7.818,
+                  "visionMs": 0.17,
+                  "scenarioMs": 0,
+                  "scenarioEvaluated": false,
+                  "broadcastMs": 1.254,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 4,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1128,
+                  "durationMs": 8.162,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 9.503,
+                  "simulationMs": 4.068,
+                  "visionMs": 0.227,
+                  "scenarioMs": 0.009,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 3.858,
+                  "checkpointMs": 0.001
+                },
+                {
+                  "workerRun": 4,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1110,
+                  "durationMs": 7.316,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 8.644,
+                  "simulationMs": 3.453,
+                  "visionMs": 0.353,
+                  "scenarioMs": 0.028,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.208,
+                  "checkpointMs": 2.273
+                },
+                {
+                  "workerRun": 4,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1086,
+                  "durationMs": 6.903,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 12.343,
+                  "simulationMs": 4.92,
+                  "visionMs": 0.408,
+                  "scenarioMs": 0.022,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.553,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 4,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1101,
+                  "durationMs": 5.472,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 5.836,
+                  "simulationMs": 3.168,
+                  "visionMs": 0.632,
+                  "scenarioMs": 0.019,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.652,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 4,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1132,
+                  "durationMs": 5.03,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 5.106,
+                  "simulationMs": 5.029,
+                  "visionMs": 0,
+                  "scenarioMs": 0,
+                  "scenarioEvaluated": false,
+                  "broadcastMs": 0,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 4,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1140,
+                  "durationMs": 4.812,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 5.578,
+                  "simulationMs": 2.432,
+                  "visionMs": 0.265,
+                  "scenarioMs": 0.01,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.069,
+                  "checkpointMs": 1.036
+                },
+                {
+                  "workerRun": 4,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1129,
+                  "durationMs": 4.795,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 6.476,
+                  "simulationMs": 4.794,
+                  "visionMs": 0,
+                  "scenarioMs": 0,
+                  "scenarioEvaluated": false,
+                  "broadcastMs": 0.001,
+                  "checkpointMs": 0
+                }
+              ],
+              "scope": "unique observed ticks for the requested map; process/worker, match and map identities are distinct",
+              "limits": [
+                "Observed-range coverage does not prove capture of earlier startup or later shutdown ticks.",
+                "Outer phases describe where elapsed time was recorded, not function, allocation, GC or scheduling cause.",
+                "Planning within simulation and process CPU time are not additional disjoint wall-time phases.",
+                "Raw durations are rounded; overBudget preserves the exact production duration comparison.",
+                "Collecting raw diagnostics adds polling/serialization overhead; no controlled hardware or causal speedup claim."
+              ]
+            },
+            "startupWindow": {
+              "startRequest": {
+                "tickNumber": 1085,
+                "monotonicMs": 391.949294
+              },
+              "startCompletion": {
+                "tickNumber": 1085,
+                "monotonicMs": 391.957607
+              }
+            },
+            "startupMs": 0.008312999999986914,
+            "profileWindows": {},
+            "observedClockRows": 57,
+            "startLagMs": {
+              "count": 57,
+              "meanMs": 0.3310122982456141,
+              "p50Ms": 0,
+              "p95Ms": 1.3191256666665723,
+              "p99Ms": 1.593409666666652,
+              "maxMs": 1.593409666666652
+            },
+            "beforeStartupTiming": {
+              "sampleCount": 3,
+              "windowSeconds": 0.1,
+              "budgetMs": 33.333,
+              "p50Ms": 3.787,
+              "p95Ms": 15.906,
+              "p99Ms": 15.906,
+              "overBudgetTickCount": 0,
+              "maxMs": 15.906,
+              "startLagP95Ms": 0.536,
+              "startLagMaxMs": 0.536,
+              "scheduler": {
+                "policy": "drop-elapsed-slots",
+                "skippedTickSlotsTotal": 0,
+                "lastOverloadSkippedSlots": 0,
+                "lastOverloadTick": null
+              },
+              "slowestTick": {
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "tickNumber": 1083,
+                "durationMs": 15.906,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 23.9,
+                "simulationMs": 14.258,
+                "visionMs": 0.958,
+                "scenarioMs": 0.615,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.075,
+                "checkpointMs": 0.001
+              },
+              "scenarioTiming": {
+                "sampleCount": 1,
+                "p50Ms": 0.615,
+                "p95Ms": 0.615,
+                "maxMs": 0.615
+              }
+            },
+            "afterStartupTiming": {
+              "sampleCount": 3,
+              "windowSeconds": 0.1,
+              "budgetMs": 33.333,
+              "p50Ms": 3.787,
+              "p95Ms": 15.906,
+              "p99Ms": 15.906,
+              "overBudgetTickCount": 0,
+              "maxMs": 15.906,
+              "startLagP95Ms": 0.536,
+              "startLagMaxMs": 0.536,
+              "scheduler": {
+                "policy": "drop-elapsed-slots",
+                "skippedTickSlotsTotal": 0,
+                "lastOverloadSkippedSlots": 0,
+                "lastOverloadTick": null
+              },
+              "slowestTick": {
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "tickNumber": 1083,
+                "durationMs": 15.906,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 23.9,
+                "simulationMs": 14.258,
+                "visionMs": 0.958,
+                "scenarioMs": 0.615,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.075,
+                "checkpointMs": 0.001
+              },
+              "scenarioTiming": {
+                "sampleCount": 1,
+                "p50Ms": 0.615,
+                "p95Ms": 0.615,
+                "maxMs": 0.615
+              }
+            },
+            "afterWindowTiming": {
+              "sampleCount": 61,
+              "windowSeconds": 2,
+              "budgetMs": 33.333,
+              "p50Ms": 2.985,
+              "p95Ms": 8.162,
+              "p99Ms": 15.906,
+              "overBudgetTickCount": 0,
+              "maxMs": 15.906,
+              "startLagP95Ms": 1.18,
+              "startLagMaxMs": 1.593,
+              "scheduler": {
+                "policy": "drop-elapsed-slots",
+                "skippedTickSlotsTotal": 0,
+                "lastOverloadSkippedSlots": 0,
+                "lastOverloadTick": null
+              },
+              "slowestTick": {
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "tickNumber": 1083,
+                "durationMs": 15.906,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 23.9,
+                "simulationMs": 14.258,
+                "visionMs": 0.958,
+                "scenarioMs": 0.615,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.075,
+                "checkpointMs": 0.001
+              },
+              "scenarioTiming": {
+                "sampleCount": 21,
+                "p50Ms": 0.01,
+                "p95Ms": 0.041,
+                "maxMs": 0.615
+              }
+            },
+            "startupAdjacentRows": [
+              {
+                "tickNumber": 1086,
+                "startedMs": 419.067302,
+                "heapBeforeBytes": 23353296,
+                "previousTickStartedMs": 384.21722,
+                "visionCacheBefore": {
+                  "width": 256,
+                  "height": 256,
+                  "cells": 65536,
+                  "generation": 2,
+                  "reason": "map-activation",
+                  "maxBytes": 8388608,
+                  "maxEntries": 8192,
+                  "indexBits": 32,
+                  "entries": 54,
+                  "payloadBytes": 53876,
+                  "peakEntries": 54,
+                  "peakPayloadBytes": 53876,
+                  "hits": 108,
+                  "misses": 54,
+                  "evictions": 0,
+                  "uncached": 0,
+                  "clears": 0
+                },
+                "rebuildSpatialBucketsCalls": 1,
+                "rebuildSpatialBucketsMs": 0.055121000000042386,
+                "getMoveVectorCalls": 27,
+                "getMoveVectorMs": 4.459565999999938,
+                "spreadInteractingUnitsCalls": 1,
+                "spreadInteractingUnitsMs": 0.011167000000000371,
+                "simulateTickCalls": 1,
+                "simulateTickMs": 4.887815999999987,
+                "visionSourceCalls": 64,
+                "visionApplications": 53,
+                "visionCoverageHits": 52,
+                "visionDuplicateSources": 11,
+                "visionCoverageMisses": 1,
+                "updateVisionMasksCalls": 1,
+                "updateVisionMasksMs": 0.4008999999999787,
+                "ensureVisionCalls": 2,
+                "ensureVisionHits": 2,
+                "roomPayloadCalls": 2,
+                "roomPayloadMs": 0.9351859999999874,
+                "frameStringifyCalls": 2,
+                "frameStringifyMs": 0.0895020000000386,
+                "deflateRawSyncCalls": 2,
+                "deflateRawSyncMs": 0.2727419999999938,
+                "encodeWebSocketFrameCalls": 2,
+                "encodeWebSocketFrameMs": 0.02087099999999964,
+                "jsonPayloadBytes": 51096,
+                "jsonWireBytes": 4211,
+                "compressedFrames": 2,
+                "stateFrames": 2,
+                "statePayloadBytes": 51096,
+                "stateWireBytes": 4211,
+                "stateUnitRows": 24,
+                "prepareJsonFrameCalls": 2,
+                "prepareJsonFrameMs": 0.455159999999978,
+                "visionCacheAfter": {
+                  "width": 256,
+                  "height": 256,
+                  "cells": 65536,
+                  "generation": 2,
+                  "reason": "map-activation",
+                  "maxBytes": 8388608,
+                  "maxEntries": 8192,
+                  "indexBits": 32,
+                  "entries": 55,
+                  "payloadBytes": 54888,
+                  "peakEntries": 55,
+                  "peakPayloadBytes": 54888,
+                  "hits": 160,
+                  "misses": 55,
+                  "evictions": 0,
+                  "uncached": 0,
+                  "clears": 0
+                },
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "durationMs": 6.902703000000031,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 12.343,
+                "simulationMs": 4.92,
+                "visionMs": 0.408,
+                "scenarioMs": 0.022,
+                "scenarioEvaluated": true,
+                "broadcastMs": 1.553,
+                "checkpointMs": 0,
+                "tickStartedMs": 419.080741,
+                "startLagMs": 1.5301876666666558,
+                "endedMs": 426.107547,
+                "heapAfterBytes": 19801136,
+                "netHeapDeltaBytes": -3552160,
+                "rssBytes": 97128448,
+                "externalBytes": 20144119,
+                "arrayBufferBytes": 16311909
+              }
+            ]
+          },
+          {
+            "ordinal": 4,
+            "profiles": true,
+            "workerRun": 5,
+            "checkpointSHA256": "69028ec16db7df5bc213a03a570400c4620b5ec53bbcfe1bf52fb572e2ad43b1",
+            "firstTick": 1083,
+            "lastTick": 1142,
+            "timing": {
+              "status": "valid-observations",
+              "reasons": [],
+              "uniqueObservedTicks": 60,
+              "excludedOtherMapTicks": 0,
+              "coverage": [
+                {
+                  "workerRun": 5,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "firstTick": 1083,
+                  "lastTick": 1142,
+                  "observedTicks": 60,
+                  "knownOtherMapTicksWithinObservedRange": 0,
+                  "missingTicksWithinObservedRange": 0
+                }
+              ],
+              "totalTickMs": {
+                "count": 60,
+                "meanMs": 4.17065,
+                "p50Ms": 3.522,
+                "p95Ms": 7.643,
+                "p99Ms": 15.867,
+                "maxMs": 15.867
+              },
+              "phases": {
+                "simulationMs": {
+                  "count": 60,
+                  "meanMs": 3.5540833333333333,
+                  "p50Ms": 2.836,
+                  "p95Ms": 7.405,
+                  "p99Ms": 14.952,
+                  "maxMs": 14.952
+                },
+                "visionMs": {
+                  "count": 60,
+                  "meanMs": 0.12741666666666665,
+                  "p50Ms": 0,
+                  "p95Ms": 0.515,
+                  "p99Ms": 0.71,
+                  "maxMs": 0.71
+                },
+                "scenarioMs": {
+                  "count": 60,
+                  "meanMs": 0.01536666666666667,
+                  "p50Ms": 0,
+                  "p95Ms": 0.028,
+                  "p99Ms": 0.608,
+                  "maxMs": 0.608
+                },
+                "broadcastMs": {
+                  "count": 60,
+                  "meanMs": 0.4399666666666668,
+                  "p50Ms": 0.001,
+                  "p95Ms": 1.561,
+                  "p99Ms": 1.956,
+                  "maxMs": 1.956
+                },
+                "checkpointMs": {
+                  "count": 60,
+                  "meanMs": 0.033666666666666664,
+                  "p50Ms": 0,
+                  "p95Ms": 0.001,
+                  "p99Ms": 1.335,
+                  "maxMs": 1.335
+                }
+              },
+              "overBudgetTicks": 0,
+              "overrunDominantPhaseCounts": {
+                "simulationMs": 0,
+                "visionMs": 0,
+                "scenarioMs": 0,
+                "broadcastMs": 0,
+                "checkpointMs": 0
+              },
+              "overrunRows": [],
+              "slowestRows": [
+                {
+                  "workerRun": 5,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1083,
+                  "durationMs": 15.867,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 25.075,
+                  "simulationMs": 14.952,
+                  "visionMs": 0.231,
+                  "scenarioMs": 0.608,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 0.075,
+                  "checkpointMs": 0.001
+                },
+                {
+                  "workerRun": 5,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1130,
+                  "durationMs": 11.524,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 16.273,
+                  "simulationMs": 9.967,
+                  "visionMs": 0.206,
+                  "scenarioMs": 0,
+                  "scenarioEvaluated": false,
+                  "broadcastMs": 1.351,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 5,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1133,
+                  "durationMs": 7.745,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 7.758,
+                  "simulationMs": 7.744,
+                  "visionMs": 0,
+                  "scenarioMs": 0,
+                  "scenarioEvaluated": false,
+                  "broadcastMs": 0.001,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 5,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1131,
+                  "durationMs": 7.643,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 8.839,
+                  "simulationMs": 5.915,
+                  "visionMs": 0.157,
+                  "scenarioMs": 0.01,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.561,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 5,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1129,
+                  "durationMs": 7.406,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 9.834,
+                  "simulationMs": 7.405,
+                  "visionMs": 0,
+                  "scenarioMs": 0,
+                  "scenarioEvaluated": false,
+                  "broadcastMs": 0.001,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 5,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1128,
+                  "durationMs": 6.171,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 7.849,
+                  "simulationMs": 4.566,
+                  "visionMs": 0.39,
+                  "scenarioMs": 0.009,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.206,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 5,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1110,
+                  "durationMs": 6.087,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 7.417,
+                  "simulationMs": 2.848,
+                  "visionMs": 0.476,
+                  "scenarioMs": 0.028,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.401,
+                  "checkpointMs": 1.335
+                },
+                {
+                  "workerRun": 5,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1086,
+                  "durationMs": 6.026,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 10.424,
+                  "simulationMs": 5.462,
+                  "visionMs": 0.532,
+                  "scenarioMs": 0.03,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 0.002,
+                  "checkpointMs": 0.001
+                },
+                {
+                  "workerRun": 5,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1089,
+                  "durationMs": 5.397,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 7.189,
+                  "simulationMs": 2.909,
+                  "visionMs": 0.515,
+                  "scenarioMs": 0.015,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.956,
+                  "checkpointMs": 0
+                },
+                {
+                  "workerRun": 5,
+                  "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                  "mapId": "veyrholds-crownroads",
+                  "tickNumber": 1140,
+                  "durationMs": 5.333,
+                  "budgetMs": 33.333333333333336,
+                  "overBudget": false,
+                  "cpuMs": 6.378,
+                  "simulationMs": 3.32,
+                  "visionMs": 0.261,
+                  "scenarioMs": 0.009,
+                  "scenarioEvaluated": true,
+                  "broadcastMs": 1.062,
+                  "checkpointMs": 0.68
+                }
+              ],
+              "scope": "unique observed ticks for the requested map; process/worker, match and map identities are distinct",
+              "limits": [
+                "Observed-range coverage does not prove capture of earlier startup or later shutdown ticks.",
+                "Outer phases describe where elapsed time was recorded, not function, allocation, GC or scheduling cause.",
+                "Planning within simulation and process CPU time are not additional disjoint wall-time phases.",
+                "Raw durations are rounded; overBudget preserves the exact production duration comparison.",
+                "Collecting raw diagnostics adds polling/serialization overhead; no controlled hardware or causal speedup claim."
+              ]
+            },
+            "startupWindow": {
+              "startRequest": {
+                "tickNumber": 1085,
+                "monotonicMs": 436.002914
+              },
+              "startCompletion": {
+                "tickNumber": 1085,
+                "monotonicMs": 474.125594
+              }
+            },
+            "startupMs": 38.12268,
+            "profileWindows": {
+              "cpu": {
+                "startRequest": {
+                  "tickNumber": 1085,
+                  "monotonicMs": 436.575858
+                },
+                "startCompletion": {
+                  "tickNumber": 1085,
+                  "monotonicMs": 474.005487
+                },
+                "stopRequest": {
+                  "tickNumber": 1143,
+                  "monotonicMs": 2390.647532
+                },
+                "stopCompletion": {
+                  "tickNumber": 1143,
+                  "monotonicMs": 2394.480317
+                }
+              },
+              "allocation": {
+                "startRequest": {
+                  "tickNumber": 1085,
+                  "monotonicMs": 474.020639
+                },
+                "startCompletion": {
+                  "tickNumber": 1085,
+                  "monotonicMs": 474.122419
+                },
+                "stopRequest": {
+                  "tickNumber": 1143,
+                  "monotonicMs": 2394.488929
+                },
+                "stopCompletion": {
+                  "tickNumber": 1143,
+                  "monotonicMs": 2404.295341
+                }
+              }
+            },
+            "observedClockRows": 57,
+            "startLagMs": {
+              "count": 57,
+              "meanMs": 0.5908595438596527,
+              "p50Ms": 0.18501566666660807,
+              "p95Ms": 1.421818666666617,
+              "p99Ms": 15.600908666666648,
+              "maxMs": 15.600908666666648
+            },
+            "beforeStartupTiming": {
+              "sampleCount": 3,
+              "windowSeconds": 0.1,
+              "budgetMs": 33.333,
+              "p50Ms": 4.765,
+              "p95Ms": 15.867,
+              "p99Ms": 15.867,
+              "overBudgetTickCount": 0,
+              "maxMs": 15.867,
+              "startLagP95Ms": 0,
+              "startLagMaxMs": 0,
+              "scheduler": {
+                "policy": "drop-elapsed-slots",
+                "skippedTickSlotsTotal": 0,
+                "lastOverloadSkippedSlots": 0,
+                "lastOverloadTick": null
+              },
+              "slowestTick": {
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "tickNumber": 1083,
+                "durationMs": 15.867,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 25.075,
+                "simulationMs": 14.952,
+                "visionMs": 0.231,
+                "scenarioMs": 0.608,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.075,
+                "checkpointMs": 0.001
+              },
+              "scenarioTiming": {
+                "sampleCount": 1,
+                "p50Ms": 0.608,
+                "p95Ms": 0.608,
+                "maxMs": 0.608
+              }
+            },
+            "afterStartupTiming": {
+              "sampleCount": 4,
+              "windowSeconds": 0.1,
+              "budgetMs": 33.333,
+              "p50Ms": 4.765,
+              "p95Ms": 15.867,
+              "p99Ms": 15.867,
+              "overBudgetTickCount": 0,
+              "maxMs": 15.867,
+              "startLagP95Ms": 15.601,
+              "startLagMaxMs": 15.601,
+              "scheduler": {
+                "policy": "drop-elapsed-slots",
+                "skippedTickSlotsTotal": 0,
+                "lastOverloadSkippedSlots": 0,
+                "lastOverloadTick": null
+              },
+              "slowestTick": {
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "tickNumber": 1083,
+                "durationMs": 15.867,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 25.075,
+                "simulationMs": 14.952,
+                "visionMs": 0.231,
+                "scenarioMs": 0.608,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.075,
+                "checkpointMs": 0.001
+              },
+              "scenarioTiming": {
+                "sampleCount": 2,
+                "p50Ms": 0.03,
+                "p95Ms": 0.608,
+                "maxMs": 0.608
+              }
+            },
+            "afterWindowTiming": {
+              "sampleCount": 61,
+              "windowSeconds": 2,
+              "budgetMs": 33.333,
+              "p50Ms": 3.688,
+              "p95Ms": 7.643,
+              "p99Ms": 15.867,
+              "overBudgetTickCount": 0,
+              "maxMs": 15.867,
+              "startLagP95Ms": 1.33,
+              "startLagMaxMs": 15.601,
+              "scheduler": {
+                "policy": "drop-elapsed-slots",
+                "skippedTickSlotsTotal": 0,
+                "lastOverloadSkippedSlots": 0,
+                "lastOverloadTick": null
+              },
+              "slowestTick": {
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "tickNumber": 1083,
+                "durationMs": 15.867,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 25.075,
+                "simulationMs": 14.952,
+                "visionMs": 0.231,
+                "scenarioMs": 0.608,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.075,
+                "checkpointMs": 0.001
+              },
+              "scenarioTiming": {
+                "sampleCount": 21,
+                "p50Ms": 0.015,
+                "p95Ms": 0.04,
+                "maxMs": 0.608
+              }
+            },
+            "startupAdjacentRows": [
+              {
+                "tickNumber": 1086,
+                "startedMs": 474.789582,
+                "heapBeforeBytes": 22755376,
+                "previousTickStartedMs": 425.948377,
+                "visionCacheBefore": {
+                  "width": 256,
+                  "height": 256,
+                  "cells": 65536,
+                  "generation": 2,
+                  "reason": "map-activation",
+                  "maxBytes": 8388608,
+                  "maxEntries": 8192,
+                  "indexBits": 32,
+                  "entries": 54,
+                  "payloadBytes": 53876,
+                  "peakEntries": 54,
+                  "peakPayloadBytes": 53876,
+                  "hits": 54,
+                  "misses": 54,
+                  "evictions": 0,
+                  "uncached": 0,
+                  "clears": 0
+                },
+                "rebuildSpatialBucketsCalls": 1,
+                "rebuildSpatialBucketsMs": 0.1530649999999696,
+                "getMoveVectorCalls": 27,
+                "getMoveVectorMs": 5.023105999999871,
+                "spreadInteractingUnitsCalls": 1,
+                "spreadInteractingUnitsMs": 0.00994500000001608,
+                "simulateTickCalls": 1,
+                "simulateTickMs": 5.432029,
+                "visionSourceCalls": 64,
+                "visionApplications": 53,
+                "visionCoverageHits": 52,
+                "visionDuplicateSources": 11,
+                "visionCoverageMisses": 1,
+                "updateVisionMasksCalls": 1,
+                "updateVisionMasksMs": 0.5237210000000232,
+                "visionCacheAfter": {
+                  "width": 256,
+                  "height": 256,
+                  "cells": 65536,
+                  "generation": 2,
+                  "reason": "map-activation",
+                  "maxBytes": 8388608,
+                  "maxEntries": 8192,
+                  "indexBits": 32,
+                  "entries": 55,
+                  "payloadBytes": 54888,
+                  "peakEntries": 55,
+                  "peakPayloadBytes": 54888,
+                  "hits": 106,
+                  "misses": 55,
+                  "evictions": 0,
+                  "uncached": 0,
+                  "clears": 0
+                },
+                "matchId": "Hvc8QMABLogoz-QclWvLXQ",
+                "mapId": "veyrholds-crownroads",
+                "durationMs": 6.025934000000007,
+                "budgetMs": 33.333333333333336,
+                "overBudget": false,
+                "cpuMs": 10.424,
+                "simulationMs": 5.462,
+                "visionMs": 0.532,
+                "scenarioMs": 0.03,
+                "scenarioEvaluated": true,
+                "broadcastMs": 0.002,
+                "checkpointMs": 0.001,
+                "tickStartedMs": 474.882619,
+                "startLagMs": 15.600908666666648,
+                "endedMs": 481.067326,
+                "heapAfterBytes": 19433080,
+                "netHeapDeltaBytes": -3322296,
+                "rssBytes": 107458560,
+                "externalBytes": 19914711,
+                "arrayBufferBytes": 16082501
+              }
+            ]
+          }
+        ],
+        "limits": [
+          "Same checkpoint bytes and fixed first60 game ticks, with no new gameplay commands; peer connection receipt times and host scheduling are not replayed.",
+          "Observer-only keeps function/memory/GC instrumentation; it isolates CPU/allocation profiler startup, not all observer overhead.",
+          "Profiler and observer startup precede active inner rows; native rolling health retains earlier recovery ticks.",
+          "Temporal overlap with a tick-start gap is not proof that all delay is caused by profiler startup; budgets remain unchanged."
+        ]
+      },
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "capacityClaim": false
+}
