@@ -1,3 +1,4 @@
+import { freshVoluntaryEndings, voluntaryCapability, decideVoluntaryEnding, cancelVoluntaryOffer, savedVoluntaryEndings, validSavedVoluntaryEndings, migrateVoluntaryEndingCheckpoint, VOLUNTARY_REASONS } from './src/server/voluntary-endings.mjs';
 import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } from './src/shore-fishing.mjs';
 import { farmHarvestNode, farmHarvestNodeId, farmBuildingId, validFarmStock } from './src/farm-harvest.mjs';
 import { createDockPlacementContext } from './src/dock-placement.mjs';
@@ -20,6 +21,8 @@ import { forestGatherGroups, visibleForestCandidates } from './src/forest-gather
 import { exploredForestFringe } from './src/forest-fringe.mjs';
 import { VisionCoverageCache } from './src/server/vision-coverage-cache.mjs';
 import { preflightXlCheckpointRoutes } from './src/server/checkpoint-route-budget.mjs';
+import { preflightXlCheckpointCloneInputs, preflightXlCheckpointState } from './src/server/checkpoint-json-budget.mjs';
+import { readMatchCheckpointFile } from './src/server/checkpoint-file-reader.mjs';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
 import { creditResourceBalance } from './src/economy-ledger.mjs';
@@ -77,11 +80,12 @@ import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition 
 import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoint, activeMoveGoalPoint, validMoveGoalPoint, unitRoutePathCost,
   activeLandMovementBodyRadius, workerEconomyBodyRadius, LAND_CLEARANCE_PROFILE, canTraverseStaticBodySegment,
-  unitRouteResultIsCurrent } from './src/unit-movement.mjs';
+  unitRouteResultIsCurrent, rejoinSelectedUnitRoute } from './src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { ordinaryCrowdBodyRadius, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT } from './src/unit-crowd-steering.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
+import { focusedUnitAttackMovementActive, attackMoveAcquiredMovementActive } from './src/combat-movement.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const BUILD_IDENTITY = await loadBuildIdentity(ROOT);
@@ -96,7 +100,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 29;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 30;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -787,6 +791,7 @@ let resourceNodeStates = new Map();
 let matchWinner = -1;
 let matchWinnerTriggerId = null;
 let matchWinnerReason = null;
+let voluntaryEndings = freshVoluntaryEndings();
 let bannerfallState = null;
 
 function resetHomeTownCenters(records = null) {
@@ -1834,6 +1839,7 @@ function resetArmy(count = currentArmySize) {
   matchWinner = -1;
   matchWinnerTriggerId = null;
   matchWinnerReason = null;
+  voluntaryEndings = freshVoluntaryEndings(1, voluntaryEndings.generation + 1);
   if (matchMode.matchModeId === 'bannerfall') count = BANNERFALL_RULES.openingArmySize;
   currentArmySize = Math.max(2, Math.min(MAX_UNITS, Math.floor(count / 2) * 2));
   bannerfallState = matchMode.matchModeId === 'bannerfall' ? createBannerfallState() : null;
@@ -2708,6 +2714,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     rosterSize: fogView ? actualAlive[viewTeam] : actualAlive[0] + actualAlive[1],
     mapId: mapDefinition.id, connected: connectedCount(), alive, winner: matchWinner,
     winnerTriggerId: matchWinnerTriggerId, winnerReason: matchWinnerReason,
+    voluntaryEndings: voluntaryCapability(voluntaryEndings, voluntaryContext(viewTeam)),
     fogOfWar: mapDefinition.fogOfWar,
     visibility: fogView ? snapshotVisibility(viewTeam) : null,
     persistentOrders: snapshotPersistentOrders(viewTeam),
@@ -2800,6 +2807,8 @@ function matchMapHash(definition) {
 function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
   preflightXlCheckpointRoutes(authoredMapDefinition, { units, resourceNodes: resourceNodeStates },
     { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES });
+  preflightXlCheckpointCloneInputs(authoredMapDefinition, { units, buildings, resourceNodes: resourceNodeStates, bannerfall: bannerfallState },
+    { maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES });
   ensureVisionMasks();
   const savedSessions = [];
   for (const session of sessions.values()) {
@@ -2871,6 +2880,7 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
       matchWinner,
       matchWinnerTriggerId,
       matchWinnerReason,
+      voluntaryEndings: savedVoluntaryEndings(voluntaryEndings),
       explored: exploredCellsByTeam.map((cells) => Buffer.from(cells).toString('base64')),
       nextPlayerId,
       seatSessions: savedSessions,
@@ -2893,6 +2903,8 @@ function validateMatchCheckpoint(snapshot) {
   assertSnapshot(snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot), 'expected an object');
   preflightXlCheckpointRoutes(snapshot.mapDefinition, snapshot.state,
     { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES });
+  preflightXlCheckpointState(snapshot,
+    { maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES });
   assertSnapshot(snapshot.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION, 'unsupported schema version');
   validateEconomyCheckpoint(snapshot);
   assertSnapshot(snapshot.factionId === DEFAULT_FACTION_ID, 'unsupported faction');
@@ -3280,7 +3292,8 @@ function validateMatchCheckpoint(snapshot) {
     && typeof state.scenarioClockStarted === 'boolean'
     && integerIn(state.matchWinner, -1, 2)
     && (state.matchWinnerTriggerId === null || typeof state.matchWinnerTriggerId === 'string')
-    && (state.matchWinnerReason === null || ['capture', 'capture-hold', 'elimination', 'timed-control', 'stronghold-destruction'].includes(state.matchWinnerReason)), 'invalid match result or clock');
+    && (state.matchWinnerReason === null || ['capture', 'capture-hold', 'elimination', 'timed-control', 'stronghold-destruction', ...VOLUNTARY_REASONS].includes(state.matchWinnerReason)), 'invalid match result or clock');
+  assertSnapshot(validSavedVoluntaryEndings(state.voluntaryEndings, { winner: state.matchWinner, reason: state.matchWinnerReason, triggerId: state.matchWinnerTriggerId, started: state.scenarioClockStarted, practice: soloPractice, pve: Boolean(pveLaunchOptions) }), 'invalid voluntary match ending');
   assertSnapshot(Array.isArray(state.explored) && state.explored.length === 2, 'invalid exploration data');
   const explored = state.explored.map((encoded) => {
     assertSnapshot(typeof encoded === 'string', 'invalid exploration data');
@@ -3380,9 +3393,11 @@ function validateMatchCheckpoint(snapshot) {
       && state.teamUpgrades.every(upgrades => Object.values(upgrades).every(value => value === false))
       && state.buildings.length === 0 && state.workerProduction.every(production => production.queue === 0),
     'invalid Bannerfall roster or economy');
-    assertSnapshot(state.matchWinner === bannerfallWinner(state.homeTownCenters.map(center => center.hp))
-      && state.matchWinnerTriggerId === null
-      && state.matchWinnerReason === (state.matchWinner < 0 ? null : 'stronghold-destruction'),
+    assertSnapshot((VOLUNTARY_REASONS.includes(state.matchWinnerReason)
+        ? bannerfallWinner(state.homeTownCenters.map(center => center.hp)) === -1
+        : state.matchWinner === bannerfallWinner(state.homeTownCenters.map(center => center.hp))
+          && state.matchWinnerReason === (state.matchWinner < 0 ? null : 'stronghold-destruction'))
+      && state.matchWinnerTriggerId === null,
     'invalid Bannerfall stronghold result');
     if (!state.scenarioClockStarted) assertSnapshot(state.matchElapsedSeconds === 0
       && state.bannerfall.nextWaveIndex === 1 && state.bannerfall.kills.every(kills => kills === 0)
@@ -3523,6 +3538,7 @@ function restoreMatchCheckpoint(snapshot) {
   matchWinner = state.matchWinner;
   matchWinnerTriggerId = state.matchWinnerTriggerId;
   matchWinnerReason = state.matchWinnerReason;
+  voluntaryEndings = { ...structuredClone(state.voluntaryEndings), offer: null };
   bannerfallState = matchMode.matchModeId === 'bannerfall'
     ? validateBannerfallState(state.bannerfall, { units: state.units, elapsed: state.matchElapsedSeconds, maxUnits: MAX_UNITS }) : null;
   exploredCellsByTeam = explored.map((cells) => Uint8Array.from(cells));
@@ -3623,7 +3639,7 @@ function migrateMatchCheckpoint(snapshot) {
   // A pin predating Farm still cannot claim a paid planting or harvest state.
   if (![GAMEPLAY_RULESET_REVISION, previousMovementPins[0]].includes(snapshot?.rulesetRevision)
     && snapshot?.state?.buildings?.some(building => building.type === 'farm' || building.harvestStock !== undefined)) return snapshot;
-  if ([22, 23, 24, 25, 26, 27, 28, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, 26, 27, 28, 29, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && previousMovementPins.includes(snapshot.rulesetRevision)
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
@@ -3764,7 +3780,7 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Mill only adds a food depot; retain existing palisades and paid work unchanged.
-  if ([22, 23, 24, 25, 26, 27, 28, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, 26, 27, 28, 29, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'mill')
@@ -3772,23 +3788,23 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // The gate is additive; accept only the exact preceding definition set, without invented gate state.
-  if ([22, 23, 24, 25, 26, 27, 28, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, 26, 27, 28, 29, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'palisade-gate' || Object.hasOwn(building, 'gateOpen'))) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Additive Dock content preserves the exact previous Mill roster and paid work.
-  if ([22, 23, 24, 25, 26, 27, 28, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, 26, 27, 28, 29, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2'
     && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   // Exact pre-Skiff Gate/Dock content retains its existing buildings, banks and work.
-  if ([22, 23, 24, 25, 26, 27, 28, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, 26, 27, 28, 29, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
 
   // Farm adds only new paid crop state; retain exact pre-Farm Skiff work unchanged.
-  if ([22, 23, 24, 25, 26, 27, 28, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, 26, 27, 28, 29, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -3796,7 +3812,7 @@ function migrateMatchCheckpoint(snapshot) {
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
     snapshot.rulesVersion = MATCH_RULES_VERSION;
   }
-  if ([22, 23, 24, 25, 26, 27, 28, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
+  if ([22, 23, 24, 25, 26, 27, 28, 29, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
     for (const unit of snapshot.state.units) if (unit && typeof unit === 'object') unit.persistentOrder ??= null;
   }
   // Earlier exact legacy migrations above predate this additive technology.
@@ -3820,6 +3836,8 @@ async function drainMatchCheckpointWrites() {
         setImmediate(() => {
           const serializeStartedAt = performance.now();
           try {
+            preflightXlCheckpointState(next.snapshot,
+              { maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES });
             serialized = JSON.stringify(next.snapshot);
             lastCheckpointSerializeMs = Number((performance.now() - serializeStartedAt).toFixed(3));
             resolve(serialized);
@@ -3899,27 +3917,33 @@ async function initializeMatchFromCheckpoint() {
     initializeCleanMatch();
     return;
   }
-  let serialized;
+  let serialized, readCompleted = false;
   try {
-    serialized = await readFile(MATCH_STATE_PATH, 'utf8');
-  } catch (error) {
-    if (error?.code !== 'ENOENT') {
-      console.warn('Match checkpoint could not be read; starting a fresh match:', String(error?.message || error));
-    }
-    initializeCleanMatch();
-    return;
-  }
-  try {
-    const snapshot = migrateEconomyCheckpoint(migrateMatchCheckpoint(migrateFoodToolsCheckpoint(JSON.parse(serialized))));
+    serialized = await readMatchCheckpointFile(MATCH_STATE_PATH);
+    readCompleted = true;
+    const parsed = JSON.parse(serialized);
+    preflightXlCheckpointRoutes(parsed?.mapDefinition, parsed?.state,
+      { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES });
+    preflightXlCheckpointState(parsed,
+      { maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES });
+    const snapshot = migrateEconomyCheckpoint(migrateMatchCheckpoint(migrateFoodToolsCheckpoint(parsed)));
     migrateWildlifeMotionCheckpoint(snapshot);
     migrateCombatStanceCheckpoint(snapshot, UNIT_DEFINITIONS);
     migrateWildlifeClaimsCheckpoint(snapshot);
     migrateMatchModeCheckpoint(snapshot);
     migrateWildlifeHerdCheckpoint(snapshot);
     migrateWildlifeHeadingCheckpoint(snapshot);
+    migrateVoluntaryEndingCheckpoint(snapshot);
     restoreMatchCheckpoint(snapshot);
     console.log(`Restored match ${matchId} from checkpoint ${checkpointSequence} at tick ${tickNumber}.`);
   } catch (error) {
+    if (!readCompleted && error?.code !== 'CHECKPOINT_REJECTED') {
+      if (error?.code !== 'ENOENT') {
+        console.warn('Match checkpoint could not be read; starting a fresh match:', String(error?.message || error));
+      }
+      initializeCleanMatch();
+      return;
+    }
     console.warn('Match checkpoint was rejected; starting a fresh match:', String(error?.message || error));
     const rejectedPath = `${MATCH_STATE_PATH}.rejected-${Date.now()}-${randomBytes(3).toString('hex')}`;
     await rename(MATCH_STATE_PATH, rejectedPath);
@@ -3963,7 +3987,7 @@ function broadcastState() {
       const key = `${team}:${peer.compressionEnabled}`;
       let frame = framesByView.get(key);
       if (!frame) {
-        if (!payloadsByTeam.has(team)) payloadsByTeam.set(team, {...privateProductionView(publicPayload, team), ...(team === 0 ? {scenarioTrace: scenarioDiagnosticTrace()} : {})});
+        if (!payloadsByTeam.has(team)) payloadsByTeam.set(team, {...privateProductionView(publicPayload, team), voluntaryEndings: voluntaryCapability(voluntaryEndings, voluntaryContext(team)), ...(team === 0 ? {scenarioTrace: scenarioDiagnosticTrace()} : {})});
         frame = prepareJsonFrame(payloadsByTeam.get(team), peer.compressionEnabled);
         framesByView.set(key, frame);
       }
@@ -4132,11 +4156,15 @@ function applyPlannedMoveAssignment(job, assignment) {
   // A shared cell-center route can graze an obstacle from one assignee's
   // fractional position, even on an adjacent first leg. Rejoin its start
   // center whenever the adopted body cannot safely enter that route.
-  const unsafeFirstApproach = path.length > 0 && ((distantFirstWaypoint && !canTraverseFlatUnitSegment(
-    unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z, firstGoal.x + MAP_HALF_X, firstGoal.z + MAP_HALF_Z,
-    MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS))
-    || (radius > 0 && !canTraverseStaticBodySegment(unit, firstGoal, radius, MAP_WIDTH, MAP_HEIGHT, isWalkable)));
-  unit.path = unsafeFirstApproach ? [start, ...path] : path;
+  const rejoined = rejoinSelectedUnitRoute(path === result.path ? result : { ...result, path }, {
+    position: unit, startCell: start, firstPoint: firstGoal, radius,
+    width: MAP_WIDTH, height: MAP_HEIGHT, isWalkable, cellToWorld,
+    requiresRejoin: distantFirstWaypoint && !canTraverseFlatUnitSegment(
+      unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z, firstGoal.x + MAP_HALF_X, firstGoal.z + MAP_HALF_Z,
+      MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS),
+  });
+  if (rejoined.rejoin === 'rejected') return false;
+  unit.path = rejoined.route.path;
   unit.pathIndex = 0;
   unit.movePlanningPending = false;
   unit.buildingTargetId = job.preserveAssignmentBuildingTarget
@@ -7091,7 +7119,19 @@ function assignAttack(player, command) {
     unit.attackBuildingTargetId = -1;
     unit.repathTimer = 0.6;
     unit.lastAttackCell = targetCell;
-    unit.path = path;
+    if (focusedUnitAttackMovementActive(unit)) {
+      const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
+      const rejoined = rejoinSelectedUnitRoute({ path }, {
+        position: unit, startCell, firstPoint: cellToWorld(path[0] ?? startCell), radius,
+        width: MAP_WIDTH, height: MAP_HEIGHT, isWalkable, cellToWorld,
+        acceptPrefix: center => canTraverseStaticBodySegment(unit, center, radius,
+          MAP_WIDTH, MAP_HEIGHT, isWalkable),
+      });
+      // Keep the accepted target/revision while existing repath waits for a
+      // legal join. Rejection never publishes the original unsafe approach.
+      unit.path = rejoined.rejoin === 'rejected' ? [] : rejoined.route.path;
+      if (rejoined.rejoin === 'rejected') unit.repathTimer = STEP_SECONDS;
+    } else unit.path = path;
     unit.pathIndex = 0;
   }
   const unreachableCount = selectedUnits.length - assignments.length;
@@ -7348,8 +7388,43 @@ async function publishMap(player, rawDefinition, persist = false) {
   }
 }
 
+function currentHumanSeat(team) {
+  return [...peers].some(peer => peer.team === team && !peer.closed && !peer.socket.destroyed
+    && peer.session?.peer === peer);
+}
+function voluntaryContext(team, player = null) {
+  return { team, humanSeat: player ? peers.has(player) && !player.closed && !player.socket.destroyed
+      && player.session?.peer === player : currentHumanSeat(team),
+    practice: soloPractice, pve: Boolean(pveLaunchOptions),
+    started: scenarioClockStarted && pregame?.phase !== 'lobby', winner: matchWinner,
+    bothHumans: currentHumanSeat(0) && currentHumanSeat(1) };
+}
+function handleMatchDecision(player, command) {
+  let feedback;
+  if (command.matchId !== matchId || command.serverInstanceId !== SERVER_INSTANCE_ID) {
+    feedback = { accepted: false, message: 'Match decision belongs to an earlier match or connection.' };
+  } else feedback = decideVoluntaryEnding(voluntaryEndings, command, voluntaryContext(player.team, player));
+  if (feedback.accepted) {
+    if (feedback.result && matchWinner < 0) {
+      matchWinner = feedback.result.winner;
+      matchWinnerReason = feedback.result.reason;
+      matchWinnerTriggerId = null;
+      cancelMovePlanningJobs('MATCH ENDED');
+      broadcast({ type: 'victory', team: matchWinner, reason: matchWinnerReason, triggerId: null });
+    }
+    if (command.action === 'offer') broadcast({ type: 'notice', message: 'DRAW OFFERED · OPEN MATCH MENU TO RESPOND' });
+    else if (['decline', 'withdraw'].includes(command.action)) broadcast({ type: 'notice', message: command.action === 'decline' ? 'DRAW OFFER DECLINED' : 'DRAW OFFER WITHDRAWN' });
+    dirty = true;
+    broadcastState();
+    void queueMatchCheckpoint();
+  }
+  player.sendJson({ type: 'matchDecisionFeedback', serverInstanceId: SERVER_INSTANCE_ID, matchId,
+    requestGeneration: command.generation, requestRevision: command.revision, accepted: feedback.accepted, message: feedback.message });
+}
+
 async function handleCommand(player, command) {
   if (shuttingDown || !command || typeof command.type !== 'string') return;
+  if (command.type === 'matchDecision') { handleMatchDecision(player, command); return; }
   if (command.type === 'stateRefresh') {
     if (!Number.isSafeInteger(command.stateRefreshId) || command.stateRefreshId <= 0) return;
     // A drain must not append an older same-tick replaceable projection after
@@ -8205,7 +8280,7 @@ function simulateTick() {
   if (matchWinner >= 0) return;
   if (!scenarioClockStarted && connectedCount() >= (soloPractice ? 1 : 2)) {
     scenarioClockStarted = true;
-    if (bannerfallState) dirty = true;
+    dirty = true; // Publish the started clock and newly available match actions in every mode.
   }
   if (bannerfallState && !scenarioClockStarted) return;
   if (scenarioClockStarted) matchElapsedSeconds += STEP_SECONDS;
@@ -8278,10 +8353,21 @@ function simulateTick() {
             dirty = true;
             continue;
           }
-          unit.path = approach.path;
+          let rejoinRejected = false;
+          if (focusedUnitAttackMovementActive(unit) || attackMoveAcquiredMovementActive(unit)) {
+            const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
+            const rejoined = rejoinSelectedUnitRoute(approach, {
+              position: unit, startCell, firstPoint: cellToWorld(approach.path[0] ?? startCell), radius,
+              width: MAP_WIDTH, height: MAP_HEIGHT, isWalkable, cellToWorld,
+              acceptPrefix: center => automaticPositionAllowed(unit, center.x, center.z)
+                && canTraverseStaticBodySegment(unit, center, radius, MAP_WIDTH, MAP_HEIGHT, isWalkable),
+            });
+            rejoinRejected = rejoined.rejoin === 'rejected';
+            unit.path = rejoinRejected ? [] : rejoined.route.path;
+          } else unit.path = approach.path;
           unit.pathIndex = 0;
           unit.lastAttackCell = targetCell;
-          unit.repathTimer = 0.6;
+          unit.repathTimer = rejoinRejected ? STEP_SECONDS : 0.6;
         }
       }
     }
@@ -8356,7 +8442,18 @@ function simulateTick() {
           unit.attackTargetId = target.id;
           unit.repathTimer = 0.6;
           unit.lastAttackCell = movePath.targetCell;
-          unit.path = movePath.path;
+          if (attackMoveAcquiredMovementActive(unit)) {
+            const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
+            const rejoined = rejoinSelectedUnitRoute(movePath, {
+              position: unit, startCell, firstPoint: cellToWorld(movePath.path[0] ?? startCell), radius,
+              width: MAP_WIDTH, height: MAP_HEIGHT, isWalkable, cellToWorld,
+              // Evaluate only after the original acquisition anchor exists.
+              acceptPrefix: center => automaticPositionAllowed(unit, center.x, center.z)
+                && canTraverseStaticBodySegment(unit, center, radius, MAP_WIDTH, MAP_HEIGHT, isWalkable),
+            });
+            unit.path = rejoined.rejoin === 'rejected' ? [] : rejoined.route.path;
+            if (rejoined.rejoin === 'rejected') unit.repathTimer = STEP_SECONDS;
+          } else unit.path = movePath.path;
           unit.pathIndex = 0;
           dirty = true;
         }
@@ -8626,6 +8723,10 @@ function releasePeer(peer, graceful = false) {
   peer.pendingState = null;
   peer.pendingWaypointCounts = null;
   peers.delete(peer);
+  if ([0, 1].includes(peer.team) && cancelVoluntaryOffer(voluntaryEndings)) {
+    broadcast({ type: 'notice', message: 'DRAW OFFER CANCELED · PLAYER DISCONNECTED' });
+    void queueMatchCheckpoint();
+  }
   if (peer.resumeWaitSession) {
     peer.resumeWaitSession.waitingPeers?.delete(peer);
     peer.resumeWaitSession = null;

@@ -129,7 +129,7 @@ try {
   const createFixture = () => { const f = structuredClone(base); f.state.seatSessions = []; return f; };
   const doomed = createFixture();
   // A deployed schema-10 save has counts but no product IDs. Recover its queues before combat.
-  doomed.schemaVersion = 10;
+  doomed.schemaVersion = 10; delete doomed.state.voluntaryEndings;
   delete doomed.matchModeId; delete doomed.matchModeVersion;
   delete doomed.economyProfileId; delete doomed.state.teamStone;
   for (const b of doomed.state.buildings) {
@@ -144,7 +144,7 @@ try {
   await start();
   const destroyed = await checkpointWith(checkpointPath, (s) => s.mapDefinition.id === map.id
     && s.state.tickNumber >= doomed.state.tickNumber + 30 && s.state.buildings.length === 0);
-  assert.equal(destroyed.schemaVersion, 29, 'legacy production checkpoint migrates');
+  assert.equal(destroyed.schemaVersion, 30, 'legacy production checkpoint migrates');
   assert.equal(destroyed.state.units.length, doomed.state.units.length, 'destruction before completion produces no ghost units');
   assert.deepEqual(destroyed.state.teamFood, doomed.state.teamFood, 'lost queues are not charged or refunded again');
   assert.deepEqual(destroyed.state.teamWood, doomed.state.teamWood);

@@ -13,6 +13,8 @@ import { planWallLine } from '../src/wall-line-planner.mjs';
 import { createWaterRouteGraph } from '../src/water-route-graph.mjs';
 import { buildElevationGrid } from '../src/map-utils.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
+import { runCheckpointJsonBudgetAudit } from './checkpoint-json-budget-audit.mjs';
+import { createMapStudioDraftStore } from '../src/authoring/map-studio-draft-store.mjs';
 import { preflightXlCheckpointRoutes, XL_CHECKPOINT_ROUTE_MAX_ENTRIES,
   XL_CHECKPOINT_ROUTE_MAX_SIDE, XL_CHECKPOINT_ROUTE_LEGACY_SIDE,
   XL_CHECKPOINT_ROUTE_SLOT_BYTES } from '../src/server/checkpoint-route-budget.mjs';
@@ -73,8 +75,9 @@ export function xlCheckpointRouteProbe({ width, height }, { maxUnits, maxResourc
     diagnostics: { preflightMilliseconds, memoryBytes: { before, allocated, validated, copied },
       scope: 'single-process bounded array witness; no GC normalization, quiet-host comparison, RSS guarantee or supported match capacity' },
     hooks: { beforeCaptureRouteCloning: true, beforeFullCheckpointValidationAllocations: true },
-    remaining: { liveRoutePublicationBudget: 'pending', fileReadAndJsonParseByteEnvelope: 'pending',
-      wholeCheckpointStateAndAllocationBudget: 'pending', ordinary320Admission: 'closed' } };
+    remaining: { liveRoutePublicationBudget: 'pending',
+      fileReadAndJsonParseByteEnvelope: 'XL bounded; legacy classification remains linear in file bytes',
+      wholeCheckpointStateAndAllocationBudget: 'XL volume guarded; total process RSS not claimed', ordinary320Admission: 'closed' } };
 }
 
 export function crossingTopology(map) {
@@ -144,15 +147,17 @@ export async function nativeAdmissionProbe(map) {
 
 export async function runXlBoundaryAudit({ native = false } = {}) {
   const files = ['server.mjs', 'room-supervisor.mjs', 'index.html', 'src/main.js',
+    'src/authoring/map-studio-draft-store.mjs',
     'src/wall-line-planner.mjs', 'src/water-route-graph.mjs', 'src/map-size-policy.mjs',
     'src/match-modes.mjs', 'src/server/vision-coverage-cache.mjs',
     'src/server/checkpoint-route-budget.mjs',
+    'src/server/checkpoint-json-budget.mjs', 'src/server/checkpoint-json-scan.mjs', 'src/server/checkpoint-file-reader.mjs',
     'src/gameplay-definitions.mjs', 'src/elevation.mjs', 'src/map-utils.mjs',
     'src/town-center-spawn.mjs', 'src/terrain-authoring.mjs', 'src/forest-fringe.mjs',
     'maps/veyrholds-slate-saddle.json', 'scripts/performance-run-evidence.mjs',
     'scripts/generate-far-marches.mjs', 'scripts/fixtures/xl-far-marches.json',
     'scripts/map-scale-audit.mjs', 'scripts/map-grid-cost-audit.mjs',
-    'scripts/pve-headless-fixture.mjs', 'scripts/xl-map-boundary-audit.mjs'];
+    'scripts/pve-headless-fixture.mjs', 'scripts/xl-map-boundary-audit.mjs', 'scripts/checkpoint-json-budget-audit.mjs'];
   const inputs = Object.fromEntries(await Promise.all(files.map(async file =>
     [file, await readFile(new URL(`../${file}`, import.meta.url), 'utf8')])));
   const source = inputs['server.mjs'], map = JSON.parse(inputs['scripts/fixtures/xl-far-marches.json']);
@@ -175,7 +180,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
   const saveSource = source.slice(source.indexOf('\nasync function drainMatchCheckpointWrites('),
     source.indexOf('\nfunction broadcast(', source.indexOf('\nasync function initializeMatchFromCheckpoint(')));
   if (!saveSource.includes('serialized = JSON.stringify(next.snapshot);')
-    || !saveSource.includes("serialized = await readFile(MATCH_STATE_PATH, 'utf8');")
+    || !saveSource.includes('serialized = await readMatchCheckpointFile(MATCH_STATE_PATH);')
     || !saveSource.includes('JSON.parse(serialized)')
     || !source.includes('path: [...unit.path]') || !source.includes('[...unit.attackMoveResumePath]'))
     throw new Error('Checkpoint capture/write/read contract moved; update the audit.');
@@ -193,15 +198,25 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     || !validationBody.includes('{ maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES }'))
     throw new Error('XL checkpoint preflight consumer/ordering changed; update its evidence.');
   const xlRoutePreflight = xlCheckpointRouteProbe(map, { maxUnits, maxResourceNodes });
+  const xlJsonEnvelope = await runCheckpointJsonBudgetAudit({ native });
   // The literal may use separators; parse separately without evaluating code.
   const inboundLiteral = source.match(/const MAX_INBOUND_FRAME_BYTES = ([\d_]+);/);
   if (!inboundLiteral) throw new Error('Inbound frame envelope moved.');
   const inbound = Number(inboundLiteral[1].replaceAll('_', ''));
   const outgoing = source.match(/const MAX_PEER_QUEUED_BYTES = (\d+) \* 1024 \* 1024;/);
   if (!outgoing) throw new Error('Outbound frame/queue envelope moved.');
+  const draftRestoreBody = extractFunction(inputs['src/main.js'], 'restoreMapStudioDraft');
+  if (!inputs['src/main.js'].includes('const mapStudioDraftStore = createMapStudioDraftStore({ getStorage: () => localStorage });')
+    || !draftRestoreBody.includes('const { state, definition } = mapStudioDraftStore.requireRecovery(draft, editorDraftSourceMapId);')
+    || !draftRestoreBody.includes('populateMapEditor(')
+    || draftRestoreBody.indexOf('requireRecovery(') > draftRestoreBody.indexOf('populateMapEditor('))
+    throw new Error('Map Studio draft recovery guard binding/order moved; update the audit.');
+  const draftStore = createMapStudioDraftStore({ getStorage: () => {
+    throw new Error('The dimension audit must not access browser storage.');
+  } });
   const limits = {
     server: sourceNumber(source, /definition\.width > (\d+) \|\| definition\.height >/),
-    studioRestore: sourceNumber(extractFunction(inputs['src/main.js'], 'restoreMapStudioDraft'), /definition\.width > (\d+)/),
+    studioRestore: sourceNumber(draftStore.requireRecovery.toString(), /definition\.width > (\d+)/),
     studioImport: sourceNumber(extractFunction(inputs['src/main.js'], 'validateImportedMap'), /definition\.width > (\d+)/),
     studioResize: sourceNumber(extractFunction(inputs['src/main.js'], 'resizeEditorMap'), /width > (\d+)/),
     studioHtml: [...inputs['index.html'].matchAll(/id="studio-(?:width|height)"[^>]*max="(\d+)"/g)].map(m => Number(m[1])),
@@ -256,10 +271,10 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
       aggregateRouteRetentionBudget: null,
       note: 'Legacy leaf-only upper bound excludes the new XL checkpoint aggregate preflight. Live route retention remains unbounded by an aggregate quota. A* can exhaust the finite grid within one atomic search; the callback threshold is not a per-search cap.' },
     checkpoint: { captureClonesActiveAndResumePaths: true, serialization: 'JSON.stringify whole captured snapshot',
-      write: 'atomic temporary write, fsync, rename', read: 'whole UTF-8 readFile then JSON.parse',
-      explicitByteEnvelope: null, xlRoutePreflight,
+      write: 'atomic temporary write, fsync, rename', read: 'stream effective dimensions; bounded XL volume before full read/JSON.parse; unchanged legacy read',
+      explicitByteEnvelope: null, xlRoutePreflight, xlJsonEnvelope,
       exploredBase64CharactersTwoSeats: grid.grids.at(-1).checkpointExploredBase64CharactersTwoSeats,
-      note: 'XL-only aggregate preflight bounds route cell visits and route cloning payload before capture/restore allocations. Whole-file read/JSON parsing and non-route checkpoint state remain separate, unbounded here. <=256 checkpoints retain the existing validator.' },
+      note: 'XL route and whole-JSON volume preflights precede cloning/serialization/restore grids. Accepted XL file allocation and parse work are capped; legacy classification requires one complete constant-memory pass and <=256 keeps its old byte/semantic acceptance. No global legacy byte quota or total process RSS bound is claimed.' },
     transport: { inboundFrameBytes: inbound, outboundQueuedAndFrameBytes: Number(outgoing[1]) * 1024 * 1024,
       routeArraysInOrdinarySnapshots: false, packedFogBytesPerSeat: grid.grids.at(-1).fogPerSeat.packedBytes,
       fogBase64CharactersPerSeat: grid.grids.at(-1).fogPerSeat.base64Characters,
@@ -269,7 +284,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     nativeProbeMatchesDimensionPolicy,
     nativeProbeScope: 'actual fixed-tick authority validation/activation and both-seat in-memory checkpoint restore; no process restart, wall clock or ordinary menu entry',
     gates: { visibilityIndexAndCache: 'integrated under256 admission in PR328',
-      routeAndSaveEnvelope: 'XL checkpoint route preflight integrated; live publication and whole-save/read envelope pending', allSiteAdmission: 'closed',
+      routeAndSaveEnvelope: 'XL route/file/state preflights integrated; live publication/search and actual320 recovery pending', allSiteAdmission: 'closed',
       ordinaryCreateJoinReadyLaunchRecovery: 'not-run; runtime rejects320',
       actualWorkerInfantryScoutJourneys: 'not-run', comparablePerformance: 'not-run; use PR325 validity contract',
       qualifiedRenderedAcceptance: 'not-run; reuse PR331 normal-entry capture interface',

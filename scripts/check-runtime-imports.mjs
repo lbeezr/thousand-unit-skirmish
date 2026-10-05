@@ -24,6 +24,7 @@ export const SERVER_ENTRYPOINTS = ['room-supervisor.mjs', 'server.mjs'];
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
 export const NODE_ONLY_MODULES = [
   'src/server/build-identity.mjs', // Reads only the private generated release declaration.
+  'src/server/checkpoint-file-reader.mjs', // Bounded private filesystem recovery adapter.
   'src/room-launch-options.mjs', // Node crypto-backed launch seeds.
   'src/pve-model-proposal.mjs', // Compatibility entry for the offline Node adapter.
   'src/server/pve-model-proposal.mjs', // Offline Node model-request implementation.
@@ -49,11 +50,12 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'town-center-spawn', 'unit-heading', 'water-contours', 'water-route-graph',
   ],
   simulation: [
-    'combat-stance', 'confluence-opening-compat', 'construction-work-intent', 'economy-checkpoint',
+    'combat-movement', 'combat-stance', 'confluence-opening-compat', 'construction-work-intent', 'economy-checkpoint',
     'forest-fringe', 'forest-gather-group', 'formation-assignment', 'gather-work-area', 'match-mode-checkpoint',
     'simulation/movement/formation-assignment',
     'millrace-sheep', 'skiff-fishing', 'skiff-group-orders', 'skiff-waypoints',
     'snapshot-private-production', 'terraced-vale-sheep', 'unit-movement', 'unit-crowd-steering',
+    'server/voluntary-endings',
     'server/worker-food-tools', // Productive food labor and exact prior-content recovery; no route planning.
     'unit-obstacle-detour', 'unit-path-line', 'wall-build-order',
     'wall-construction-draft', 'wall-line-planner', 'water-unit-runtime',
@@ -87,7 +89,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'worker-fishing-contact',
   ],
   client: [
-    'client/hud/match-recap',
+    'client/hud/match-recap', 'client/hud/match-decisions',
     'client/hud/resource-format', 'client/hud/population-readout', 'client/hud/objective-summary',
     'client/audio/audio-decoded-cache', 'client/audio/audio-shipped-response',
     'audio', 'audio-assets', 'audio-composer', 'audio-composition',
@@ -105,6 +107,8 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   ],
   authoring: [
     'authoring/scenario-authoring', 'authoring/map-resize',
+    'authoring/map-studio-form-state',
+    'authoring/map-studio-draft-store',
     'landscape-authoring', 'map-resize', 'map-studio-viewport',
     'resource-brush-authoring', 'resource-brush-controls', 'resource-cluster-authoring',
     'scenario-authoring', 'settlement-authoring', 'terrain-authoring',
@@ -114,6 +118,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'pve-model-proposal', 'room-launch-options', 'room-lobby-chat', 'room-pregame',
     'server/build-identity', 'server/client-asset-paths', 'server/pve-model-proposal',
     'server/vision-coverage-cache', 'server/checkpoint-route-budget',
+    'server/checkpoint-json-budget', 'server/checkpoint-json-scan', 'server/checkpoint-file-reader',
   ],
   // Legacy map-validation entry also exports playback policy. Preserve existing
   // host consumers while new lower-domain consumers use the world validator.

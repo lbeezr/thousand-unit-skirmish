@@ -64,7 +64,7 @@ try {
   const checkpointPath = path.join(fixture.directory, 'rooms', 'rooms', room.roomId, 'match-state.json');
   await fixture.stop();
   const saved = JSON.parse(await readFile(checkpointPath, 'utf8'));
-  assert.equal(saved.schemaVersion, 29); assert.equal(saved.rulesVersion, 6);
+  assert.equal(saved.schemaVersion, 30); assert.equal(saved.rulesVersion, 6);
   assert.deepEqual(identity(saved), NORMAL_HUMAN_MATCH_MODE);
   assert.equal(saved.mapDefinition.id, NORMAL_MATCH_MAP_ID);
   assert.ok(saved.state.buildings.some(building => building.team === 0 && building.type === 'house' && building.complete));

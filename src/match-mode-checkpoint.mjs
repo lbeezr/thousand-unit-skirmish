@@ -19,7 +19,7 @@ export function validateMatchModeCheckpoint(snapshot) {
   if (!snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot)) {
     throw new Error('Invalid match checkpoint: expected an object');
   }
-  if (![27, 28, 29].includes(snapshot.schemaVersion)) {
+  if (![27, 28, 29, 30].includes(snapshot.schemaVersion)) {
     throw new Error('Invalid match checkpoint: unsupported match mode schema version');
   }
   if (snapshot.rulesVersion !== 6) {

@@ -317,6 +317,7 @@ run(['--test', 'scripts/construction-targeting.test.mjs'], 'Owned unfinished con
 run(['scripts/construction-targeting-scenario.mjs'], 'Both-seat paid Palisade right-click construction and cold recovery');
 run(['scripts/construction-selection-scenario.mjs'], 'Both-seat selected builders and unselected work recovery');
 run(['--test', 'scripts/client-rematch-recovery.test.mjs'], 'Client roster and ownership after rematch');
+run(['--test', 'scripts/voluntary-endings.test.mjs', 'scripts/match-decisions-ui.test.mjs'], 'Voluntary match decisions and explicit player confirmation');
 run(['--test', 'scripts/client-camera-recovery.test.mjs'], 'Camera ownership through seat recovery');
 run(['--test', 'scripts/unit-health-visual.test.mjs'], 'Visible damaged-unit health indicators');
 run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation settings and controls');
@@ -361,6 +362,7 @@ const scenarios = [
   ['scripts/victory-elimination-native-scenario.mjs', 'Existing elimination recovery and clock boundaries'],
   ['scripts/match-mode-native-scenario.mjs', 'Skirmish rewards, defeat and versioned recovery'],
   ['scripts/bannerfall-native-scenario.mjs', 'Bannerfall human waves, evolution, strongholds and recovery'],
+  ['scripts/voluntary-endings-native-scenario.mjs', 'Human-seat resignation, mutual draw and recovery'],
   ['scripts/bannerfall-room-entry-scenario.mjs', 'Bannerfall real human/Practice room entry and fixed settings'],
   ['scripts/persistent-command-scenario.mjs', 'Patrol and Follow authority/recovery'],
   ['scripts/stationary-command-scenario.mjs', 'Stop and hold authority/recovery'],

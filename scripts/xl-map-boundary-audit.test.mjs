@@ -6,6 +6,7 @@ import { runXlBoundaryAudit, crossingTopology } from './xl-map-boundary-audit.mj
 import { buildElevationGrid, validateElevationPatches } from '../src/map-utils.mjs';
 import { planWallLine } from '../src/wall-line-planner.mjs';
 import { compressGroundLevels } from '../src/terrain-authoring.mjs';
+import { createMapStudioDraftStore, MAP_STUDIO_DRAFT_VERSION } from '../src/authoring/map-studio-draft-store.mjs';
 
 const map = JSON.parse(await readFile(new URL('./fixtures/xl-far-marches.json', import.meta.url)));
 const report = await runXlBoundaryAudit(), audit = report.candidate.geometry;
@@ -100,6 +101,19 @@ test('all current dimension consumers agree on256 and reject both320 rectangular
     points: Array.from({ length: 257 }, () => ({ column: 0, row: 0 })) }), TypeError);
 });
 
+test('draft restore dimension evidence follows the bound helper and actual recovery acceptance', () => {
+  const store = createMapStudioDraftStore({ getStorage: () => {
+    throw new Error('The guard must not access browser storage.');
+  } });
+  assert.match(report.sourceInputSha256['src/authoring/map-studio-draft-store.mjs'], /^[a-f0-9]{64}$/);
+  for (const row of report.dimensions.boundaryMatrix) {
+    const definition = { width: row.width, height: row.height, obstacles: [], spawnPoints: [] };
+    const draft = { version: MAP_STUDIO_DRAFT_VERSION, sourceMapId: 'audit', editor: { definition } };
+    if (row.studioRestoreDimensionGate) assert.equal(store.requireRecovery(draft, 'audit').definition, definition);
+    else assert.throws(() => store.requireRecovery(draft, 'audit'), /saved draft could not be read/);
+  }
+});
+
 test('source-bound route/save/wire envelope distinguishes finite validation from observed cost', () => {
   assert.equal(report.routes.validatedEntriesPerPath, 102400);
   assert.equal(report.routes.maxValidatedPathJsonBytes, 716801);
@@ -115,7 +129,9 @@ test('source-bound route/save/wire envelope distinguishes finite validation from
   assert.equal(preflight.acceptedBoundary.validatedEntries, 1048576);
   assert.equal(preflight.oversizedRejectedBeforeIndexReads.indexReads, 0);
   assert.equal(preflight.remaining.ordinary320Admission, 'closed');
-  assert.equal(preflight.remaining.fileReadAndJsonParseByteEnvelope, 'pending');
+  assert.equal(preflight.remaining.fileReadAndJsonParseByteEnvelope, 'XL bounded; legacy classification remains linear in file bytes');
+  assert.equal(report.checkpoint.xlJsonEnvelope.limits.bytes, 33554432);
+  assert.equal(report.checkpoint.xlJsonEnvelope.inspectionChunkBytes, 32768);
   assert.equal(report.transport.inboundFrameBytes, 1000000);
   assert.equal(report.transport.outboundQueuedAndFrameBytes, 4194304);
   assert.equal(report.transport.packedFogBytesPerSeat, 25600);

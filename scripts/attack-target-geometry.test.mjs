@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { canTraverseUnitStep } from '../src/unit-movement.mjs';
 import { runAttackQueueCase } from './attack-queue-case.mjs';
+import './focused-attack-journeys.mjs';
 
 const source=readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
 const start=source.indexOf('function getUnitAttackPath('),end=source.indexOf('\nfunction ',start+1);

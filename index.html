@@ -359,6 +359,20 @@
         </aside>
         <button id="hud-scrim" class="hud-scrim" type="button" aria-label="Close menu" hidden></button>
         <aside id="match-menu" class="match-menu" aria-label="Match menu" hidden>
+          <details id="match-decisions" class="notice-history">
+            <summary>Match actions</summary>
+            <p id="match-decisions-status" role="status" aria-live="polite"></p>
+            <button type="button" data-match-decision="resign" disabled>Resign</button>
+            <button type="button" data-match-decision="offer" disabled>Offer draw</button>
+            <button type="button" data-match-decision="accept" hidden>Accept draw</button>
+            <button type="button" data-match-decision="decline" hidden>Decline draw</button>
+            <button type="button" data-match-decision="withdraw" hidden>Withdraw offer</button>
+            <div id="match-decision-confirmation" role="group" aria-labelledby="match-decision-confirm-text" hidden>
+              <p id="match-decision-confirm-text"></p>
+              <button id="match-decision-cancel" type="button">Cancel</button>
+              <button id="match-decision-confirm" type="button">Confirm</button>
+            </div>
+          </details>
           <button id="match-menu-close" class="hud-panel-close" type="button" aria-label="Close match menu">×</button>
           <a id="return-main-menu" class="room-action" href="/">MAIN MENU</a>
           <p id="practice-status" role="status" hidden>Solo practice · no AI commander. Choose any Battlefield map below.</p>

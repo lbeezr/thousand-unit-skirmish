@@ -1,0 +1,347 @@
+{
+  "runtimeSource": "86bd35067c36c1d010afc9feb52657d6fc0e7dfd",
+  "sourceDirty": true,
+  "workload": "real both-seat selected Infantry and legitimately trained Archer; Move (.75,.95), AttackMove (6.5,.5), then real Aggressive stance enabling immediate acquisition beside stone [1,2]x[1,2]",
+  "records": [
+    {
+      "team": 0,
+      "kind": "infantry",
+      "acquisition": {
+        "tick": 0,
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1569
+        ],
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "resume": [
+          1568,
+          1574
+        ]
+      },
+      "contacts": 0,
+      "steps": 14,
+      "killtick": 263,
+      "damage": [
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        }
+      ],
+      "final": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "goal": 1574,
+      "revision": 3
+    },
+    {
+      "team": 0,
+      "kind": "archer",
+      "acquisition": {
+        "tick": 0,
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1569
+        ],
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "resume": [
+          1568,
+          1574
+        ]
+      },
+      "contacts": 0,
+      "steps": 13,
+      "killtick": 461,
+      "damage": [
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 2,
+          "range": 4.447605129181986
+        }
+      ],
+      "final": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "goal": 1574,
+      "revision": 3
+    },
+    {
+      "team": 1,
+      "kind": "infantry",
+      "acquisition": {
+        "tick": 0,
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1569
+        ],
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "resume": [
+          1568,
+          1574
+        ]
+      },
+      "contacts": 0,
+      "steps": 14,
+      "killtick": 263,
+      "damage": [
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        },
+        {
+          "amount": 10,
+          "range": 1.2238485976211684
+        }
+      ],
+      "final": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "goal": 1574,
+      "revision": 3
+    },
+    {
+      "team": 1,
+      "kind": "archer",
+      "acquisition": {
+        "tick": 0,
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "path": [
+          1568,
+          1569
+        ],
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "resume": [
+          1568,
+          1574
+        ]
+      },
+      "contacts": 0,
+      "steps": 13,
+      "killtick": 461,
+      "damage": [
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 7,
+          "range": 4.447605129181986
+        },
+        {
+          "amount": 2,
+          "range": 4.447605129181986
+        }
+      ],
+      "final": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "goal": 1574,
+      "revision": 3
+    }
+  ],
+  "limits": [
+    "Baseline retains original acquired publisher/profile; candidate is historical pre-review working tree evidence.",
+    "Kill ticks and damage receipts are traced authoritative CPU evidence, not rendered frames or native final-head qualification."
+  ]
+}

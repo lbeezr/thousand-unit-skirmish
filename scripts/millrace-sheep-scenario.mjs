@@ -84,7 +84,7 @@ try {
     const authored = legacy.mapDefinition.resourceNodes.find(row => row.id === node.id);
     return { ...node, x: authored.x, z: authored.z };
   });
-  legacy.schemaVersion = 23;
+  legacy.schemaVersion = 23; delete legacy.state.voluntaryEndings;
   delete legacy.matchModeId; delete legacy.matchModeVersion;
   legacy.mapHash = hash(legacy.mapDefinition);
   assert.equal(legacy.mapHash, MILLRACE_PRE_SHEEP_MAP_HASH);

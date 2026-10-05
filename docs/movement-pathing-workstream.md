@@ -74,6 +74,155 @@ land executor, not command admission or whole journeys.
 
 ### Shared semantics, domain policies
 
+After focused Attack PR410 normally merged at `6ced82cb`, the coordinator
+allocated explicit military AttackMove **acquired unit-target pursuit** to
+caller owner `01a10933-e913-766b-b5de-3aa5a17c7038`. Exact interfaces are recorded
+against [core's live publication ownership](https://github.com/lbeezr/thousand-unit-skirmish/pull/411#issuecomment-5986410973)
+and [ordinary crowd ownership](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5986411719).
+Only the pure acquired-intent predicate/profile fallback, acquisition publication
+after original anchor/target creation, and existing caller-owned unit-target
+repath publication change. Core retains the helper/planner/Worker publisher and
+live-publication bounds; crowd retains `getMoveVector`, body pairs and its
+ordinary-only wait/repair policy. All three executor admissions remain intact.
+The implementation is [PR417](https://github.com/lbeezr/thousand-unit-skirmish/pull/417).
+Core's [PR416 boundary reconciliation](https://github.com/lbeezr/thousand-unit-skirmish/pull/416#issuecomment-5986530945)
+leaves its XL-only live reservation/deferred continuation pending and disjoint;
+this adopter does not qualify aggregate live/save bounds or open 320.
+
+The [real-command baseline](qa-evidence/attackmove-acquired-2026-10-05/baseline.json)
+at `86bd3506` moves a selected actor to `(.75,.95)`, accepts AttackMove, then
+enables Aggressive stance with a real command so acquisition happens before
+objective travel conceals the gap. Both-seat Infantry admits four unsafe static
+substeps; a legitimately trained Archer admits three. The
+[pre-review candidate](qa-evidence/attackmove-acquired-2026-10-05/candidate.json)
+reduces each to zero, preserves the complete already range/stance-selected
+route behind one current-cell prefix, and kills at the same 263/461 fixed ticks.
+
+Both allocated publications consume actual `rejoinSelectedUnitRoute`.
+`acceptPrefix` passes unchanged `automaticPositionAllowed` **and** the shared
+actor-to-center static sweep, evaluated after the original anchor exists.
+Rejected prefixes publish an empty route for existing repath without discarding
+target, anchor, durable objective or saved resume path. Null/unreachable and
+in-range empty routes retain existing semantics; no range/stance/anti-reversal
+selection, acquisition/damage, checkpoint schema or global flow changes.
+The 31 new registered command checks cover both seats, Infantry/trained Archer,
+complete selected-route inputs, actual damage, acquired/damage/resumed recovery,
+moving-target repath, target-loss resume, Stop/Hold/queue/No Attack, in-range
+Stand Ground, static rejection and a body-clear prefix outside the unchanged
+Defensive travel circle. Test-only rejoin tracing delegates to the actual API;
+it does not substitute a route or admissibility algorithm. Existing objective
+and focused checks now expect the acquired body policy while preserving their
+original objective resume/range/queue assertions. Final exact-head independent
+review, release/native/merge evidence belongs to the caller PR. Automatic idle
+stance/return, persistent Patrol/Follow, Worker/building targets, same-cell
+closure and steering/body-pair clearance remain separate. The retained
+sandbox/storage capability block has zero frames; rendered/served acceptance
+stays open, and PR410 staging verification is separately coordinator-owned.
+
+The next coordinator allocation at `bd7f2915` is explicit focused military
+unit-target Attack only, recorded on
+[PR395](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5986006185).
+Caller owner `01a10933-e913-766b-b5de-3aa5a17c7038` owns the pure active-intent
+predicate/profile fallback, `assignAttack`'s path publication after accepted
+order revision, and active focused pursuit/repath publication after existing
+null/unreachable handling. Core owner `01a107ba-7977-7764-9574-17cb0c3a102e`
+supplies the actual kind-radius-aware selected-route **rejoin-only** API.
+The Worker publisher is not a generic substitute: keep durable `moveGoalCell`.
+Preserve the full route chosen by `getUnitAttackPath`, including an intentional
+retained legal waypoint; do not newly truncate focused Attack at weapon range
+or shorten its whole route. Preserve in-range `reachable:true/path:[]`, null
+budget defer, unreachable results and accepted-order identity. Explicit
+Attack under `noAttack` still travels. Exclude Worker, buildings, automatic
+stance/return, persistent Patrol/Follow, same-cell closure and AttackMove-acquired
+pursuit. The latter needs a later prefix policy that passes unchanged
+`automaticPositionAllowed` after anchor creation. No allocated host hook is
+edited until core's API exists; actual command regressions are prepared while
+waiting only on that dependency. Both-seat Infantry and a legitimately trained
+Archer baseline each admit four unsafe static substeps at the authored corner,
+despite legal-range damage and successful target kills. The
+[retained baseline](qa-evidence/focused-attack-2026-10-05/baseline.json) preserves
+the full Archer route to its target cell and physical/damage evidence.
+
+Core [PR411](https://github.com/lbeezr/thousand-unit-skirmish/pull/411) is now
+normally merged at `93d45c73`. Caller
+[PR410](https://github.com/lbeezr/thousand-unit-skirmish/pull/410) consumes its
+actual `rejoinSelectedUnitRoute` at the two allocated focused publications,
+after accepted revision and after existing reachable/null handling. Shared
+kind radii feed existing static-body execution checks. Prefix acceptance uses
+the shared static sweep to the current cell center; rejection publishes an
+empty path while preserving the accepted target/revision/goal for existing
+repath handling. It never republishes the unsafe original approach. Both-seat
+controlled prior-checkpoint overlaps prove rejection/recovery admits no new
+unsafe step or out-of-range damage, and unchanged in-range firing still works;
+legacy placement/stationary separation remain unqualified by that control.
+No `getUnitAttackPath`, selected-route reduction/truncation, global flow,
+same-cell closure, saved-goal/schema or automatic acquisition policy changes.
+
+The [pre-review candidate](qa-evidence/focused-attack-2026-10-05/candidate.json)
+records zero unsafe steps for both Infantry/Archer seats, with exactly one
+current-cell prefix and the complete selected suffix preserved. All four
+command workloads still kill at the same baseline ticks (263 Infantry,
+461 Archer). The 45 new registered checks compare complete authoritative
+selection against publication, require actual productive damage before damage
+recovery, and cover moving-target continuation, accepted-order identity,
+pending Move supersession, paid navigation changes, exclusions and rejection.
+Two broader seat-0 dead-target visibility fixtures reproduce with the old
+publisher; preserve those baseline failures separately from adoption checks.
+Final exact-head review/types/clean pack/native and author merge evidence
+belong to PR410; rendered/served acceptance remains open.
+
+After PR399 merged at `50d2e99e`, the project coordinator allocated a narrow
+target-free explicit AttackMove objective increment at main `82a66766` to
+caller-adoption owner `01a10933-e913-766b-b5de-3aa5a17c7038`, recorded on
+[PR395](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5985799879).
+It owns a pure `src/combat-movement.mjs` predicate, its import and final
+kind-radius fallback in `activeLandMovementBodyRadius`, the one simulation
+domain registration, and focused command journey regressions. Existing radius
+values remain in `unit-movement`; server/planner/attack helper bodies stay with
+their owners. The registry entry is disjoint from architecture's three
+server import-literal migrations; crowd PR400 remains ordinary Move only.
+Pending planning qualifies; explicit `noAttack` stance still travels. Worker,
+nonmilitary/dead/water/hold, either active target, automatic stance combat or
+return, persistent Patrol/Follow, gathering and construction are excluded.
+Acceptance requires both-seat physical commands, acquisition deactivation,
+safe finite saved-route resumption from fractional pursuit positions with
+bounded existing repair, unchanged range/damage, pending/active interruptions,
+queued replacement, checkpoint recovery, and navigation changes. Actual Patrol
+is a negative control, not an adopter. Baseline command-only AttackMove and
+Patrol each admit 17 unsafe static-circle substeps per seat beside the same
+authored corner. Any larger host change needed for resumption is reported
+before expanding. Weapon-range pursuit and Patrol/Follow/stance continuation
+remain the next separately allocated increments. Cloud rendered acceptance
+remains open under the retained capability failure below.
+
+The [retained before/after command record](qa-evidence/attack-move-objective-2026-10-05/baseline-and-candidate.json)
+keeps the 17 unsafe steps per seat at baseline and zero after objective adoption;
+actual Patrol still has 17 per seat. The
+[fractional target-loss probes](qa-evidence/attack-move-objective-2026-10-05/pre-review-resumption.json)
+retain eight real-command acquisition/kill/resume journeys with zero unsafe
+resumed steps and at most one existing repair. The registered attack-flow suite
+imports 39 new objective checks, including saved-route pursuit recovery,
+Stop/queued replacement and paid navigation changes during combat. Actual
+damage receipts use unchanged weapon range/armor/damage rules. The adjacent
+core rejoin regression now asserts route exhaustion rather than exactly two
+cells; the new adopter legitimately prefixes the shared current-cell rejoin.
+Endpoint, queued intent, one repair and pending-service assertions remain.
+The [pre-review native witness](qa-evidence/attack-move-objective-2026-10-05/pre-review-native.json)
+names its dirty source honestly: both WebSocket seats complete explicit
+`noAttack` objectives after actual process cold restart, retaining HP/intent.
+Exact reviewed-head checks/types/clean pack and independent review remain
+integration dependencies until recorded on the increment's PR.
+
+Two baseline failures are distinct from this change: untouched main `82a66766`
+fails `wildlife-motion.test.mjs`'s extracted checkpoint-capture test because its
+VM lacks the new `preflightXlCheckpointRoutes` binding, reported to the
+[XL owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/403#issuecomment-5985876523).
+The existing native `live-attack-move-repair-scenario.mjs` fails identically on
+untouched main and this candidate during close-spawn army isolation, before
+issuing AttackMove: the intended enemy Worker is already dead at tick 408.
+Neither failure is claimed green or repaired by caller adoption. The focused
+255-check regression selection passes; it does not claim the full CPU suite.
+
 Construction caller adoption owner `01a10933-e913-766b-b5de-3aa5a17c7038`
 reserves `constructionMovementActive` in `src/construction-work-intent.mjs`
 and the construction journey regressions in the existing registered
@@ -115,8 +264,10 @@ Worker build/repair fields, excludes interrupted/economy/combat/water states
 and introduces no saved state. Stationary construction interaction separation
 still uses the economy-only body selector and is **not** qualified by this
 travel/approach slice; site evacuation/legacy overlap and body-pair clearance
-remain explicit further work. Independent exact-head review and author normal
-merge are the current source-integration dependencies.
+remain explicit further work. Independent exact-head review approved
+`1bbf9d81`, author normal merge integrated PR399 at `50d2e99e`, and 99
+merged-source focused checks/types/imports/docs plus clean pack and startup
+smoke pass. Source integration is complete; served/rendered acceptance stays open.
 
 The [one cloud capability attempt](qa-evidence/construction-travel-2026-10-04/renderer-capability.json)
 is blocked by `sandbox-unavailable` and `storage-unavailable`, with zero game
@@ -693,6 +844,41 @@ real-helper control checks all cell centers, rejects the stone-grazing shortcut,
 preserves its raw path and still reduces the open route. No runtime predicate is
 weakened to satisfy a fixture. Re-review and exact-head checks include all three
 affected registered paths and the construction consumer before normal merge.
+
+### Shared selected-route start rejoin — 5 October 2026
+
+At `bd7f2915`, ordinary Move has an inline fractional-start rejoin and Worker
+economy has its radius-specific reduction/publication. Neither is a generic
+post-selection combat adapter. Shared owner `01a107ba` supplies only
+`rejoinSelectedUnitRoute` in `src/unit-movement.mjs` and consumes it in ordinary
+Move's existing `applyPlannedMoveAssignment` subsection. The
+[caller API](https://github.com/lbeezr/thousand-unit-skirmish/pull/405#issuecomment-5986027786)
+is allocated to combat caller `01a10933-e913` after its unchanged weapon-range,
+stance-travel and retained-waypoint policy selects/truncates an approach.
+
+The pure helper accepts the selected route, actual position, explicit radius,
+start cell, first physical point, dimensions/occupancy/center conversion, a
+caller-supplied terrain-rejoin decision and optional `acceptPrefix(center, cell)`.
+It returns the original route with `unchanged`, a shallow route copy with only
+`[startCell, ...path]` and `prefixed`, or the untouched route with `rejected` if
+geometry is malformed or the caller rejects the synthesized prefix. Those
+rejoin outcomes are transient and separate from route status. Empty/null paths
+and explicit non-ready route outcomes remain unchanged; they do not become
+arrival. Metadata, selected tail, original cost/length, identity, and every
+retained leading/anti-reversal waypoint survive. No whole-route reduction,
+target/order/objective publication or persisted field.
+
+Ordinary Move keeps its existing distant-leg terrain rule, adjacent body rule,
+fractional final-center handling and executor/recovery guards. Registered tests
+cover all explicit profile radii, immutable metadata/path, policy rejection,
+null/empty/failure distinctions and malformed geometry. Retained real-command
+corner/adjacent-leg liveness, queue/restart, weighted routes, Worker/construction
+and target-free AttackMove regressions establish the bounded consumer parity.
+Combat acquisition, weapon range/damage, `getUnitAttackPath`/
+`boundedAutomaticApproach`, global attack/Sheep flows and crowd-owned steering/
+wait hooks remain outside this slice. Existing endpoint/travel storyboards are
+unchanged design backing. Source/release/deployment/rendered acceptance stay
+separate; shared owner retains independent review, merge and remaining delivery.
 
 ## Ranked backlog
 

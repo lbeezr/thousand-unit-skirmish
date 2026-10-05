@@ -238,7 +238,7 @@ try {
   legacy.matchModeId = 'skirmish'; legacy.matchModeVersion = 1;
   assert.equal(old.validate(structuredClone(legacy)).definition.id, canonical.id);
   assert.equal(legacy.mapHash, TERRACED_VALE_PRE_SHEEP_MAP_HASH);
-  assert.equal(legacy.schemaVersion, 29);
+  assert.equal(legacy.schemaVersion, 30);
   await writeFile(fixture.checkpointPath, JSON.stringify(legacy));
   await fixture.start(); clients = [await fixture.connect(0), await fixture.connect(1)];
   assert.ok(clients.every(client => client.welcome.recoveredFromCheckpoint));

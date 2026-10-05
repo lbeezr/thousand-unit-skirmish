@@ -1,6 +1,6 @@
 // Derive a recap from one accepted terminal DTO. No observed deltas or storage:
 // fogged opponents and reused unit slots cannot establish lifetime totals.
-const DRAW_REASONS = ['capture-hold', 'elimination', 'timed-control', 'stronghold-destruction'];
+const DRAW_REASONS = ['capture-hold', 'elimination', 'timed-control', 'stronghold-destruction', 'agreed-draw'];
 const available = value => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 const amount = value => available(value) ? String(Math.floor(value)) : 'unavailable';
 
