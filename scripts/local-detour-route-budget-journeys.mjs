@@ -211,6 +211,40 @@ test('maximum actor/node census stays at 4128 visits and opt-out diagnostics lea
   }
 });
 
+test('no-detour XL phase reports its actual initial census at quota edges without reading payloads', () => {
+  for (const [width, height] of [[320, 160], [160, 320], [320, 320]]) {
+    for (const total of [QUOTA - 1, QUOTA, QUOTA + 1]) {
+      const on = fixture({ width, height, total }), off = fixture({ width, height, total, diagnostics: false });
+      on.context.getMoveVector = off.context.getMoveVector = () => null;
+      const before = JSON.stringify(on.actor), path = on.actor.path;
+      on.phase(); off.phase();
+      assert.equal(on.actor.path, path); assert.equal(JSON.stringify(on.actor), before);
+      assert.equal(JSON.stringify(on.actor), JSON.stringify(off.actor));
+      assert.equal(on.censusCalls, 1); assert.equal(off.censusCalls, 1); assert.equal(on.proposals, 0);
+      assert.equal(on.context.landRouteRetentionTick.fieldVisits, on.units.length);
+      assert.equal(on.context.landRouteRetentionTick.maxSavedEntries, total);
+      assert.equal(on.context.landRouteRetentionTick.attempts, 0);
+      assert.equal(on.context.landRouteRetentionTick.maxStagedEntries, 0);
+      assert.equal(off.context.landRouteRetentionTick, null);
+    }
+  }
+});
+
+test('initial census includes aliased active/resume/herd fields even with no live actors or proposals', () => {
+  const f = fixture({ total: QUOTA }); f.actor.hp = 0; f.blocker.hp = 0;
+  const shared = f.units[2].path;
+  f.units[2].attackMoveResumePath = shared;
+  f.nodes.set('alias', { wildlifeHerd: { path: shared } });
+  f.phase(); const first = f.context.landRouteRetentionTick;
+  assert.equal(first.fieldVisits, f.units.length + 2);
+  assert.equal(first.maxSavedEntries, QUOTA + shared.length * 2);
+  assert.equal(first.attempts, 0); assert.equal(f.proposals, 0); assert.equal(f.censusCalls, 1);
+  f.units[2].path = []; f.phase();
+  assert.equal(f.context.landRouteRetentionTick.maxSavedEntries, QUOTA + shared.length);
+  assert.equal(first.maxSavedEntries, QUOTA + shared.length * 2, 'earlier scalar sample stays unchanged');
+  assert.ok(Object.values(first).every(Number.isSafeInteger));
+});
+
 test('invalid saved envelope refuses before local execution copy instead of dropping accepted intent', () => {
   const f = fixture(); f.units.push({ ...record([]), attackMoveResumePath: undefined });
   protectCopies(f); const old = f.actor.path, before = JSON.stringify(f.actor);
@@ -260,10 +294,14 @@ test('existing whole-tick diagnostic exposes bounded scalar retention outcomes a
   assert.ok(Object.values(first).every(Number.isSafeInteger), 'no route/unit references in the diagnostic');
   f.units[2].path = []; f.context.runSimulationTick();
   assert.equal(samples[1].landRouteRetention.published, 1); assert.equal(first.published, 0);
+  f.context.getMoveVector = () => null; f.context.runSimulationTick();
+  assert.equal(samples[2].landRouteRetention.attempts, 0);
+  assert.equal(samples[2].landRouteRetention.fieldVisits, f.units.length);
+  assert.ok(samples[2].landRouteRetention.maxSavedEntries > 0);
   Object.assign(f.context, { SEPARATION_DIAGNOSTICS_ENABLED: false, pregame: { phase: 'lobby' } });
   vm.runInContext(body('simulateTick'), f.context); f.context.runSimulationTick();
   assert.equal(f.context.landRouteRetentionTick, null);
-  assert.equal(samples[2].landRouteRetention, undefined);
+  assert.equal(samples[3].landRouteRetention, undefined);
 });
 
 test('legacy grids retain the same local proposal without reading saved-route payloads or diagnostics', () => {

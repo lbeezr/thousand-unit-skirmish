@@ -8723,7 +8723,8 @@ function simulateTick() {
     { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES, maxEntries: XL_CHECKPOINT_ROUTE_MAX_ENTRIES });
   if (detourRouteLedger && tickDiagnosticSamples) landRouteRetentionTick = {
     attempts: 0, published: 0, deferred: 0, pathLimitDeferrals: 0, aggregateLimitDeferrals: 0,
-    invalidEnvelopeDeferrals: 0, fieldVisits: 0, maxSavedEntries: 0, maxStagedEntries: 0,
+    invalidEnvelopeDeferrals: 0, fieldVisits: detourRouteLedger.censusFieldVisits,
+    maxSavedEntries: detourRouteLedger.censusRouteEntries, maxStagedEntries: 0,
   };
   for (const unit of units) {
     if (unit.hp <= 0 || unit.movementDomain === 'water') continue;
