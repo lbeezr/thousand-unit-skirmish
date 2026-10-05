@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { generateFarMarches, XL_LAYOUT as layout } from './generate-far-marches.mjs';
-import { runXlBoundaryAudit, crossingTopology } from './xl-map-boundary-audit.mjs';
+import { runXlBoundaryAudit, crossingTopology, assertCheckpointEnvelopeConsumer } from './xl-map-boundary-audit.mjs';
 import { buildElevationGrid, validateElevationPatches } from '../src/map-utils.mjs';
 import { planWallLine } from '../src/wall-line-planner.mjs';
 import { compressGroundLevels } from '../src/terrain-authoring.mjs';
@@ -10,6 +11,8 @@ import { createMapStudioDraftStore, MAP_STUDIO_DRAFT_VERSION } from '../src/auth
 
 const map = JSON.parse(await readFile(new URL('./fixtures/xl-far-marches.json', import.meta.url)));
 const report = await runXlBoundaryAudit(), audit = report.candidate.geometry;
+const envelopeSource = await readFile(new URL('../src/server/checkpoint-envelope.mjs', import.meta.url), 'utf8');
+const authoritySource = await readFile(new URL('../server.mjs', import.meta.url), 'utf8');
 const side = layout.side, levels = buildElevationGrid(side, side, map.elevationPatches);
 const scenery = new Uint8Array(side * side);
 for (const o of map.obstacles) for (let y = o.row; y < o.row + o.height; y++) for (let x = o.column; x < o.column + o.width; x++) {
@@ -115,6 +118,25 @@ test('draft restore dimension evidence follows the bound helper and actual recov
     if (row.studioRestoreDimensionGate) assert.equal(store.requireRecovery(draft, 'audit').definition, definition);
     else assert.throws(() => store.requireRecovery(draft, 'audit'), /saved draft could not be read/);
   }
+});
+
+test('checkpoint audit follows the actual private envelope binding, limits and preflight order', () => {
+  assert.doesNotThrow(() => assertCheckpointEnvelopeConsumer(authoritySource, envelopeSource));
+  const route = '  preflightXlCheckpointRoutes(snapshot.mapDefinition, snapshot.state,\n    { maxUnits, maxResourceNodes });\n';
+  const state = '  preflightXlCheckpointState(snapshot,\n    { maxUnits, maxBuildings, maxResourceNodes });\n';
+  assert.ok(envelopeSource.includes(route + state));
+  for (const [source, envelope] of [
+    [authoritySource.replace("from './src/server/checkpoint-envelope.mjs'", "from './src/server/checkpoint-json-budget.mjs'"), envelopeSource],
+    [authoritySource.replace('maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES,\n    validateMapDefinition,', 'maxUnits: 1, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES,\n    validateMapDefinition,'), envelopeSource],
+    [authoritySource.replace('function validateMatchCheckpoint(snapshot) {', 'function validateMatchCheckpoint(snapshot) {\n  const savedPregame = validatePregameCheckpoint(state.pregame);'), envelopeSource],
+    [authoritySource, envelopeSource.replace(route + state, state + route)],
+  ]) assert.throws(() => assertCheckpointEnvelopeConsumer(source, envelope), /XL checkpoint preflight consumer\/ordering changed/);
+});
+
+test('both XL audit input hashes include the bound checkpoint envelope bytes', () => {
+  const expected = createHash('sha256').update(envelopeSource).digest('hex');
+  assert.equal(report.sourceInputSha256['src/server/checkpoint-envelope.mjs'], expected);
+  assert.equal(report.checkpoint.xlJsonEnvelope.sourceInputSha256['src/server/checkpoint-envelope.mjs'], expected);
 });
 
 test('source-bound route/save/wire envelope distinguishes finite validation from observed cost', () => {

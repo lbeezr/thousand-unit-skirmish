@@ -40,6 +40,32 @@ function accepts(call) {
   try { call(); return true; } catch { return false; }
 }
 
+export function assertCheckpointEnvelopeConsumer(source, envelopeSource) {
+  const body = extractFunction(source, 'validateMatchCheckpoint');
+  const call = body.indexOf('const { canonicalDefinition, effectiveDefinition: definition, state, savedMatchMode } = validateCheckpointEnvelope(snapshot, {');
+  const domain = body.indexOf('const savedPregame = validatePregameCheckpoint(state.pregame);');
+  const ordered = [
+    "assertSnapshot(snapshot && typeof snapshot === 'object'",
+    'preflightXlCheckpointRoutes(snapshot.mapDefinition, snapshot.state,',
+    'preflightXlCheckpointState(snapshot,',
+    'assertSnapshot(snapshot.schemaVersion === checkpointSchemaVersion,',
+    "validateMapDefinition(snapshot.mapDefinition, 'match checkpoint')",
+    'assertSnapshot(snapshot.mapHash === matchMapHash(canonicalDefinition),',
+    "assertSnapshot(typeof snapshot.state === 'object' && snapshot.state !== null,",
+  ].map(token => envelopeSource.indexOf(token));
+  if (!source.includes("import { validateCheckpointEnvelope } from './src/server/checkpoint-envelope.mjs';")
+    || call < 0 || domain <= call
+    || !body.includes('checkpointSchemaVersion: MATCH_CHECKPOINT_SCHEMA_VERSION, gameRulesVersion: MATCH_RULES_VERSION,')
+    || !body.includes('maxUnits: MAX_UNITS, maxBuildings: MAX_BUILDINGS, maxResourceNodes: MAX_RESOURCE_NODES,')
+    || !body.includes("validateMapDefinition, matchMapHash, launchMode: pveLaunchOptions ? 'pve' : 'pvp', practice: soloPractice,")
+    || !envelopeSource.includes("import { preflightXlCheckpointRoutes } from './checkpoint-route-budget.mjs';")
+    || !envelopeSource.includes("import { preflightXlCheckpointState } from './checkpoint-json-budget.mjs';")
+    || !envelopeSource.includes('{ maxUnits, maxResourceNodes });')
+    || !envelopeSource.includes('{ maxUnits, maxBuildings, maxResourceNodes });')
+    || ordered.some((position, i) => position < 0 || (i > 0 && position <= ordered[i - 1])))
+    throw new Error('XL checkpoint preflight consumer/ordering changed; update its evidence.');
+}
+
 // Bounded payload/operation witness, not a match or comparable performance run.
 // The real authority remains gated at256; do not widen it for this probe.
 export function xlCheckpointRouteProbe({ width, height }, { maxUnits, maxResourceNodes }) {
@@ -153,7 +179,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     'src/authoring/map-studio/draft/v1/contract.mjs',
     'src/wall-line-planner.mjs', 'src/water-route-graph.mjs', 'src/map-size-policy.mjs',
     'src/match-modes.mjs', 'src/server/vision-coverage-cache.mjs',
-    'src/server/checkpoint-route-budget.mjs',
+    'src/server/checkpoint-route-budget.mjs', 'src/server/checkpoint-envelope.mjs',
     'src/server/checkpoint-json-budget.mjs', 'src/server/checkpoint-json-scan.mjs', 'src/server/checkpoint-file-reader.mjs',
     'src/gameplay-definitions.mjs', 'src/elevation.mjs', 'src/map-utils.mjs',
     'src/world/scenario-event-chain.mjs',
@@ -194,14 +220,11 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
   const maxUnits = sourceNumber(source, /const MAX_UNITS = (\d+);/);
   const maxResourceNodes = sourceNumber(source, /const MAX_RESOURCE_NODES = (\d+);/);
   const captureBody = extractFunction(source, 'captureMatchCheckpoint');
-  const validationBody = extractFunction(source, 'validateMatchCheckpoint');
   if (!captureBody.includes('preflightXlCheckpointRoutes(authoredMapDefinition, { units, resourceNodes: resourceNodeStates },')
     || captureBody.indexOf('preflightXlCheckpointRoutes(') > captureBody.indexOf('ensureVisionMasks();')
-    || !validationBody.includes('preflightXlCheckpointRoutes(snapshot.mapDefinition, snapshot.state,')
-    || validationBody.indexOf('preflightXlCheckpointRoutes(') > validationBody.indexOf('validateMapDefinition(')
-    || !captureBody.includes('{ maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES }')
-    || !validationBody.includes('{ maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES }'))
+    || !captureBody.includes('{ maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES }'))
     throw new Error('XL checkpoint preflight consumer/ordering changed; update its evidence.');
+  assertCheckpointEnvelopeConsumer(source, inputs['src/server/checkpoint-envelope.mjs']);
   const xlRoutePreflight = xlCheckpointRouteProbe(map, { maxUnits, maxResourceNodes });
   const xlJsonEnvelope = await runCheckpointJsonBudgetAudit({ native });
   // The literal may use separators; parse separately without evaluating code.

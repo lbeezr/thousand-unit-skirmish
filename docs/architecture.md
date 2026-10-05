@@ -895,7 +895,8 @@ schema/rules and three record limits, the existing map-validation/hash adapters,
 and launch mode/Practice values. Import current pure economy/mode definitions and
 the private preflights directly; no host-state catch-all, catalog, persistence,
 movement writer or public HTTP admission. XL has agreed the per-call inputs
-below; the core owner's host-write handoff remains pending.
+below. The core handoff is now allocated at the containing PR504 refresh; the
+default-consumer integration checkpoint below records its narrow implementation.
 Full-state validation remains host-owned until its separate domain interfaces
 are established; copying all 514 lines behind dozens of injected bindings is
 not the selected first step.
@@ -956,25 +957,24 @@ They use the real host map/hash adapters and limits through the existing headles
 fixture; no validator policy is replaced. Existing normalized-input preservation
 checks and source serialization remain unchanged.
 
-XL owner `01a103e8` has agreed the exact envelope/rejection/preflight interface;
-the coordinating parent relayed that agreement. Core `01a107ba` still owns active
-queued-claim edits in `server.mjs`. The remaining decision is **which containing
-core refresh or handoff allows architecture to replace this prefix and add its
-one import, and who owns the two XL audit-consumer updates?** The parent relays
-that question when cross-task messaging is unavailable. Only the disjoint module,
-parity tests/fixture observation, private-domain membership and this plan are
-prepared now. The production host, existing preflights and audit bodies are
-unchanged; default consumer integration remains pending the named allocations.
+XL owner `01a103e8` agreed the exact envelope/rejection/preflight interface;
+the coordinating parent relayed that agreement. PR502 prepared the disjoint
+module, parity tests/fixture observation and private-domain membership without
+changing the production host. The parent subsequently confirmed core PR504
+`1a1f99b6` as the containing queued-claim API handoff and allocated architecture
+only the checkpoint import/prefix plus the XL binding/order and two audit-hash
+updates. Construction caller `01a10933-e913` retains active-construction parking;
+no parking, movement or domain-state section belongs to this extraction.
 
 The smallest implementation follows that dependency order:
 
-1. XL has agreed the cut, nine inputs and intermediate result; obtain core's
-   containing refresh or host handoff and the audit allocation. Keep the
+1. XL has agreed the cut, nine inputs and intermediate result; the parent has
+   allocated the containing PR504 host refresh and audit writes. Keep the
    named `validateMatchCheckpoint` host entry and both replay fixtures intact;
    there is no legacy module path needing a shim or new browser admission.
 2. The canonical private module and its `server` membership in
    `scripts/check-runtime-imports.mjs` are prepared. Add the approved host wiring
-   only after core's containing refresh or handoff. The current
+   against a current main containing that handoff. The current
    browser closure must never reach it. Existing imports used by capture,
    migrations or other host callers remain; remove only newly unused bindings.
 3. Update `scripts/xl-map-boundary-audit.mjs` to follow the actual host binding to
@@ -982,7 +982,7 @@ The smallest implementation follows that dependency order:
    currently demands literal preflight calls inside the host body, so ignoring
    that consumer would break an existing contract. Both it and
    `scripts/checkpoint-json-budget-audit.mjs` must include the new canonical file
-   in their input hashes. XL owns or explicitly allocates these writes; neither
+   in their input hashes. Architecture owns these explicitly allocated writes; neither
    audit may widen admission or reinterpret synthetic upper witnesses as saves.
 4. `scripts/checkpoint-envelope.test.mjs` adds six parity/handoff cases; the
    existing economy job imports them without CI/package registration changes.
@@ -1005,6 +1005,35 @@ server closure 95 modules; browser/shared closures must not grow. Verify that
 implemented graph and host responsibility reduction at the approved wiring
 head. Preparation does not remove the original host prefix or establish runtime
 adoption, a containing deployment or recovery acceptance.
+
+#### Default checkpoint-envelope consumer integration — 5 October 2026
+
+The narrow follow-up starts from PR502 merge `f9f329b0`, containing core PR504
+and incoming Spearman PR505. `validateMatchCheckpoint` now calls the reviewed
+private module with the nine existing host values and aliases its effective map
+to the old local `definition`. Only its ordered envelope prefix and one import
+change; two newly unused validator imports are removed while migration imports
+remain. The rest of domain validation, final canonical-map/state/two-Buffer return,
+restore, catalog veto, migrations, activation, pending rebuild, parking and
+movement retain their existing bodies. The canonical module is unchanged.
+
+The XL source audit follows the exact host import/call, current limit adapters
+and route/state/schema/map/checksum order before domain validation. Its capture
+preflight checks remain. Both XL and JSON-budget reports hash the canonical module;
+negative controls reject a redirected import, substituted host limit, premature
+domain validation and reversed preflights. Their supported-field upper witness
+still does not establish an accepted 320 map or save. No quota, admission, error
+code, checkpoint schema or browser path changes.
+
+The expected implemented graph is 224 modules/422 local edges, 140 browser/95
+server/34 shared and zero cycles: one composition edge makes the prepared leaf
+the default host dependency. The 18-line prefix reduction is a responsibility
+measurement, not a quality threshold. Actual authority/restore and native storage
+checks, XL audits, independent exact-head review and clean packed private HTTP
+checks establish this source integration. Record their final source/package
+identity in the owning PR. A merge or local package does not establish a containing
+deployment or ordinary-game recovery acceptance; architecture retains those
+remaining obligations with the receiving release owner.
 
 ### Coupling and size ratchets
 
