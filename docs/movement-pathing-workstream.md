@@ -859,6 +859,36 @@ then unchanged larger native qualification and deployed/served/rendered proof.
 The existing cloud capability/authentication blocks remain with their named
 owners; no held dispatch or cancelled login is retried.
 
+### U5 ordinary transverse rejoin — 5 October 2026
+
+Crowd `01a10933-c2b0` owns the pure-selector correction and
+[ordinary-source evidence](qa-crowd-transverse-rejoin-2026-10-05.md).
+The resident/exit admission experiment is parked as unqualified; its artificial
+gate waits are not ordinary-production evidence or correction targets.
+Fresh unchanged `bbc8ac54` native traffic passes seat0 and fails seat1 with
+0/64 arrivals,31 queues and no pending planning at the retained checkpoint.
+An actual cold-replay witness identifies safe transverse raw-waypoint progress
+discarded because a parallel peer's distant final goal looks opposed to the
+old route axis. The narrow per-claimant correction preserves that progress only
+for an intermediate waypoint already passed along the explicit route axis.
+The broader exemption regressed forest/bridge/gate groups and is rejected.
+
+All 47 standalone controls and 13 existing physical journeys pass for the narrow
+guard; its 160-tick ordinary-input replay preserves 64 inactive actors and admits
+6,826 selected writes with zero terrain/body contacts. Group service remains
+mixed and large native completion is open. Core `01a107ba` retains shared
+writes/repair/Worker economy; caller/construction retain endpoints. Art is N/A.
+The delivery PR owns exact-head review, regressions, clean pack and normal source
+merge; served/deployed/rendered evidence is separate. The unchanged fixed-tick
+wall/gate controls pass 7/8; the remaining queued-wall case reaches 54/64 versus
+the original selector's 0/64, still below the unchanged 2,700-tick completion
+contract. Retained actor 120 waits at an exact goal occupied by idle Worker 68;
+caller/construction `01a10933-e913` owns that endpoint/access dependency and core
+`01a107ba` retains shared admission/repair. Preserve the idle pose. Next independent
+crowd scope is a productive-versus-oscillating nonterminal proposal witness
+before another bounded increment. Existing capture/authentication
+blocks retain their owners and next actions; no held dispatch or login retry.
+
 ### U5 crowd owner reservation — 4 October 2026
 
 5 October source qualification: [PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400)
@@ -963,7 +993,7 @@ separating no physically admitted step from priority arbitration discarding a
 safe candidate, followed by a reviewed bounded correction and unchanged
 both-seat/gate/forest/bridge controls. The paid-house final-approach work remains
 open alongside this narrow native slice. Construction `01a10933-e913` and core
-`01a107ba` separately own Worker68 occupying actor120's accepted queued endpoint
+`01a107ba` separately own Worker 68 occupying actor 120's accepted queued endpoint
 `(18.5, 1.5)`; crowd does not duplicate that access contract or shove the builder.
 Original deadlines/endpoints, Stop priority, shared admissions and standing
 author-owned merge authority remain intact. Source/pack/provider/served/render
