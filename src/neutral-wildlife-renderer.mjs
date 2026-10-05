@@ -188,6 +188,22 @@ export function createNeutralWildlifeRenderer({
   }
   return {
     reset, reconcile, update,
+    pick(raycaster, eligible = () => false) {
+      let nearest = null;
+      for (const [id, record] of records) {
+        if (!record.group.visible || !record.snapshot || eligible(id) !== true) continue;
+        const object = record.state === 'carcass' ? record.carcass
+          : record.state === 'alive' ? record.art?.visible ? record.art : record.alive : null;
+        if (!object?.visible) continue;
+        object.updateWorldMatrix(true, true);
+        const hit = raycaster.intersectObject(object, true).find(candidate => {
+          for (let child = candidate.object; child; child = child.parent) if (!child.visible) return false;
+          return object !== record.art || template?.containsPixel?.(candidate.uv) === true;
+        });
+        if (hit && (!nearest || hit.distance < nearest.distance)) nearest = { id, distance: hit.distance };
+      }
+      return nearest?.id ?? null;
+    },
     isAvailable(id) {
       const record = records.get(id);
       return Boolean(record?.group.visible && ['alive', 'carcass'].includes(record.state));
