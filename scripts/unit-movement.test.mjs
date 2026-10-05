@@ -396,6 +396,22 @@ test('internal route repair preserves an active palisade sequence revision', () 
   assert.equal(activeWallBuildOrder(f.mover),null,'a later player revision still invalidates the sequence');
 });
 
+test('cell-only route repair records its accepted destination before any route publishes', () => {
+  for (const previousGoal of [-1, 27]) {
+    const f = fixture({ cliff: false, realRepairs: true });
+    f.mover.moveGoalCell = previousGoal;
+    f.context.enqueueRouteRepairs([{ unit: f.mover, destination: 29 }]);
+    const assignment = f.context.movePlanningQueue[0].assignments[0];
+    assert.equal(f.mover.moveGoalCell, assignment.destination);
+    assert.equal(f.mover.moveGoalCell, 29);
+    assert.equal(f.mover.movePlanningPending, true);
+    assert.equal(f.mover.path.length, 0);
+    assert.equal(f.mover.moveGoalPoint, undefined);
+    assert.equal(f.mover.buildingTargetId, null);
+    assert.equal(f.mover.orderRevision, 1);
+  }
+});
+
 test('the shared land step contract rejects malformed grids before querying occupancy', () => {
   for (const [width, count] of [[Infinity, 8], [-8, 8], [1.5, 8], [3, 8], [0, 8], [8, 0]]) {
     assert.equal(canTraverseUnitStep(0, 0, width, new Uint8Array(count), () => {
