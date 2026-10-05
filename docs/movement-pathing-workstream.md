@@ -134,14 +134,24 @@ Art backing is N/A for this movement-contract change.
 
 Follow was audited first because a pure profile could consume its existing
 planner/rejoin. Its queue/recovery contract has a genuine readiness dependency:
-real Follow's first pending catch-up still has `moveGoalCell:-1`. Queued Move
+the retained baseline's first pending catch-up has `moveGoalCell:-1`. Queued Move
 cancels leader intent at admission; recovery cannot reconstruct that transient
 catch-up, leaving the saved queued point present but unexecuted after 600 ticks
 on both seats. [Recorded reproduction](qa-evidence/patrol-acquired-2026-10-05/follow-pending-queue.json)
 is produced by `node scripts/follow-pending-queue-probe.mjs`; reporter success
 means observations were collected, **not** that recovery passed. Core owns the
-pending publication/recovery goal decision; Follow adoption stays deferred,
-with no duplicate planner, caller flag or silent queue workaround.
+pending publication/recovery goal decision. The core correction now records
+every accepted `enqueueRouteRepairs` destination in `moveGoalCell` before
+publication, including cell-only repair and persistent legs. Fractional goal
+projection still preserves its requested point under the accepted revision.
+Registered native journeys issue real Follow then queued Move before first
+publication on both seats, using callback and tick planner modes. They check
+the durable first goal, actual first-leg travel and queued fractional arrival;
+cold cases serialize and validate the complete checkpoint, restore it in a
+separate native module, then execute both legs within 600 ticks. This fixes the
+core recovery dependency without adopting Follow's body profile or pursuit.
+Caller adoption remains separately owned; XL live route reservation/retry,
+all-writer admission and rendered acceptance remain open. Art backing is N/A.
 
 
 Caller [PR418](https://github.com/lbeezr/thousand-unit-skirmish/pull/418), after
