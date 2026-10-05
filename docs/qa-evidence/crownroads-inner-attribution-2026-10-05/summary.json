@@ -1602,7 +1602,8 @@
           "overBudget": false,
           "netHeapDeltaBytes": 4266744,
           "startedMs": 1358.349885,
-          "endedMs": 1376.878402
+          "endedMs": 1376.878402,
+          "workerRun": 1
         },
         {
           "tickNumber": 98,
@@ -1619,7 +1620,8 @@
           "overBudget": false,
           "netHeapDeltaBytes": 2159512,
           "startedMs": 3557.956397,
-          "endedMs": 3571.128803
+          "endedMs": 3571.128803,
+          "workerRun": 1
         },
         {
           "tickNumber": 521,
@@ -1636,7 +1638,8 @@
           "overBudget": false,
           "netHeapDeltaBytes": 2101280,
           "startedMs": 17658.380847,
-          "endedMs": 17669.207766
+          "endedMs": 17669.207766,
+          "workerRun": 1
         },
         {
           "tickNumber": 539,
@@ -1653,7 +1656,8 @@
           "overBudget": false,
           "netHeapDeltaBytes": 2061320,
           "startedMs": 18258.63838,
-          "endedMs": 18268.413632
+          "endedMs": 18268.413632,
+          "workerRun": 1
         },
         {
           "tickNumber": 86,
@@ -1670,7 +1674,8 @@
           "overBudget": false,
           "netHeapDeltaBytes": -5678304,
           "startedMs": 3157.911783,
-          "endedMs": 3167.651877
+          "endedMs": 3167.651877,
+          "workerRun": 1
         }
       ],
       "peakSampledServerRssBytes": 155643904
@@ -3437,7 +3442,8 @@
           "overBudget": false,
           "netHeapDeltaBytes": 3169072,
           "startedMs": 22203.357573,
-          "endedMs": 22219.874378
+          "endedMs": 22219.874378,
+          "workerRun": 1
         },
         {
           "tickNumber": 32,
@@ -3454,7 +3460,8 @@
           "overBudget": false,
           "netHeapDeltaBytes": 4688832,
           "startedMs": 1302.234115,
-          "endedMs": 1317.988043
+          "endedMs": 1317.988043,
+          "workerRun": 1
         },
         {
           "tickNumber": 1075,
@@ -3471,7 +3478,8 @@
           "overBudget": false,
           "netHeapDeltaBytes": 2558216,
           "startedMs": 36071.500342,
-          "endedMs": 36084.065463
+          "endedMs": 36084.065463,
+          "workerRun": 1
         },
         {
           "tickNumber": 33,
@@ -3488,7 +3496,8 @@
           "overBudget": false,
           "netHeapDeltaBytes": -4714168,
           "startedMs": 1336.415629,
-          "endedMs": 1346.267242
+          "endedMs": 1346.267242,
+          "workerRun": 1
         },
         {
           "tickNumber": 36,
@@ -3505,7 +3514,8 @@
           "overBudget": false,
           "netHeapDeltaBytes": -5032280,
           "startedMs": 1436.005993,
-          "endedMs": 1444.089822
+          "endedMs": 1444.089822,
+          "workerRun": 1
         }
       ],
       "peakSampledServerRssBytes": 152502272
