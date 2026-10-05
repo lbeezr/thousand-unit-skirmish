@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "3c38364e8f90c374d01365e6d5f672c865120897",
+  "clean": true,
+  "scope": "Only the peer-eligibility guard and registered negative compared with a4cef75f; proposal reviewed conceptually, not implemented/qualified.",
+  "tests": 48,
+  "passed": 48,
+  "failed": 0,
+  "command": "node --test scripts/unit-crowd-steering.test.mjs scripts/crowd-wait-lease.test.mjs",
+  "tap": "/tmp/crowd-review-3c38364-focused.tap",
+  "sourceSha256": {
+    "src/unit-crowd-steering.mjs": "b843ce711fc749718b8ade9fc84a93a03321170b4e5aa0b838d4ccb4a3e064a0",
+    "scripts/crowd-wait-lease.test.mjs": "44a153e8e4b2bead4b7763f294d90939fc22cfb6a74eebad194948b03e9e0915"
+  },
+  "eligibilityFinding": "Resolved by checking ordinaryCrowdBodyRadius(other)>0 before consuming peer state."
+}

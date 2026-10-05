@@ -5,13 +5,16 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 import { pathingBaselineMap } from './pathing-baseline-cases.mjs';
-import { canTraverseUnitStep } from '../src/unit-movement.mjs';
+import { canTraverseUnitStep, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
+import { sweptStaticBodyContacts, sweptBodyPairMargin } from './land-body-clearance.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 process.env.RTS_MAP='maps/open-field.json';process.env.RTS_GAME_MODE='pvp';process.env.RTS_PREGAME='0';
 delete process.env.RTS_MATCH_STATE_PATH;
-export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true,parkOrder=null}={}) {
-  const map=pathingBaselineMap({group:64}),fixture=await createPathingReplayFixture(map),r=fixture.replay;
+export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true,parkOrder=null,
+  tracePhysical=false,captureInput,captureFinal,traceActorIds=[],captureActorTrace}={}) {
+  const map=pathingBaselineMap({group:64}),fixture=await createPathingReplayFixture(map,
+    {traceLandSteps:tracePhysical,traceCrowdSteps:tracePhysical,traceActorIds}),r=fixture.replay;
   try {
     for(const seat of [0,1]) {
       const passive=r.units.filter(u=>u.team===seat&&u.kind==='infantry');
@@ -62,15 +65,57 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
     r.drain();assert.equal(r.navigationRevision,beforeClose+1);assert.equal(gate.gateOpen,false);
     assert.deepEqual(army.map(u=>u.moveGoalCell),current);
     assert.deepEqual(army.map(u=>u.queuedWaypoints[0].destination),requested,'close preserves future queue intent');
+    const passiveIntent=u=>({id:u.id,generation:u.generation,x:u.x,z:u.z,hp:u.hp,
+      holdingPosition:u.holdingPosition,orderRevision:u.orderRevision,moveGoalCell:u.moveGoalCell,
+      moveGoalPoint:u.moveGoalPoint,path:[...u.path],pathIndex:u.pathIndex,queuedWaypoints:structuredClone(u.queuedWaypoints),
+      attackMove:u.attackMove,attackTargetId:u.attackTargetId,attackBuildingTargetId:u.attackBuildingTargetId,
+      persistentOrder:structuredClone(u.persistentOrder),gatherNodeId:u.gatherNodeId,gatherForestCell:u.gatherForestCell,
+      gatherPhase:u.gatherPhase,buildingTargetId:u.buildingTargetId});
+    const inactive=r.units.filter(u=>!ids.includes(u.id)&&u.hp>0&&!u.movePlanningPending&&u.pathIndex>=u.path.length);
+    const inactiveBefore=inactive.map(passiveIntent);
+    const input=r.checkpoint();captureInput?.(structuredClone(input));
+    const inputSha256=createHash('sha256').update(JSON.stringify(input)).digest('hex');
+    const actorTrace=[];
     const trace=createHash('sha256');let invalidSteps=0,unreachableGoals=0,maxPathLength=0;
+    const capsuleTrace=createHash('sha256'),actorIds=new Set(ids);
+    let staticContactSteps=0,pairContactSteps=0,selectedSubsteps=0,worstPairMargin=null;
+    const controlMax={visits:0,neighbors:0,proposals:0,pointProposals:0,escapeProposals:0,
+      bodyVisits:0,arbitrationVisits:0,leaseAge:0,contourAge:0,waitAge:0,passageProposals:0,passageBodyVisits:0,parkedWaypointProbes:0,detourTerrainProbes:0};
+    let missingControlRecords=0;
+    const handoffs=new Map(army.map(u=>[u.id,{id:u.id,firstGoalReachedTick:null,queuedLegStartTick:null,arrivalTick:null}]));
     const progress=new Map(army.map(u=>[u.id,{goal:u.moveGoalCell,remaining:Infinity,tick:r.tick,max:0}]));
     const done=u=>!u.queuedWaypoints.length&&!u.movePlanningPending&&u.pathIndex===u.path.length
       &&Math.hypot(u.x-r.point(u.moveGoalCell).x,u.z-r.point(u.moveGoalCell).z)<.02;
     while(r.tick-startTick<2700&&!army.every(done)) {
-      const previous=army.map(u=>r.cell(u.x,u.z));r.step();
+      const previous=army.map(u=>r.cell(u.x,u.z)),queued=army.map(u=>u.queuedWaypoints.length);r.step();
+      if(traceActorIds.length)actorTrace.push(...r.actorTrace);
+      if(tracePhysical) {
+        for(const step of r.landSteps.filter(s=>actorIds.has(s.id))) {
+          selectedSubsteps++;const radius=LAND_CLEARANCE_PROFILE.radiusByKind[step.kind];
+          staticContactSteps+=Number(sweptStaticBodyContacts(step.from,step.to,radius,map.width,map.height,r.isWalkable).contacts.length>0);
+          let contact=false;
+          for(const other of step.neighbours) {
+            const otherRadius=LAND_CLEARANCE_PROFILE.radiusByKind[other.kind];
+            assert.ok(Number.isFinite(otherRadius),'full physical observation requires every land-body profile');
+            const margin=sweptBodyPairMargin(step,radius,other,otherRadius);
+            worstPairMargin=Math.min(worstPairMargin??Infinity,margin);contact||=margin < -1e-9;
+          }
+          pairContactSteps+=Number(contact);capsuleTrace.update(JSON.stringify(step)+'\n');
+        }
+        for(const sample of r.crowdSteps.filter(s=>actorIds.has(s.id))) {
+          missingControlRecords+=Number(!sample.complete);
+          for(const key of Object.keys(controlMax)) if(Number.isFinite(sample[key])) controlMax[key]=Math.max(controlMax[key],sample[key]);
+        }
+      }
+      assert.ok(inactive.every((u,i)=>u.x===inactiveBefore[i].x&&u.z===inactiveBefore[i].z),'inactive bodies retain their serial position');
       if(!returnBuilder)assert.deepEqual(workerIntent(),parkedIntent,'parked Worker keeps position and command intent');
       for(let i=0;i<army.length;i++) {
         const u=army[i],cell=r.cell(u.x,u.z);
+        const handoff=handoffs.get(u.id);
+        if(queued[i]&&!u.queuedWaypoints.length) {
+          handoff.firstGoalReachedTick=r.tick-startTick;handoff.queuedLegStartTick=r.tick-startTick;
+        }
+        if(handoff.arrivalTick===null&&done(u))handoff.arrivalTick=r.tick-startTick;
         maxPathLength=Math.max(maxPathLength,u.path.length);
         if(!canTraverseUnitStep(previous[i],cell,map.width,r.levels,r.isWalkable))invalidSteps++;
         if(r.components[cell]!==r.components[u.moveGoalCell])unreachableGoals++;
@@ -81,17 +126,23 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
       }
       trace.update(JSON.stringify(army.map(u=>[u.id,u.x,u.z,u.moveGoalCell,u.pathIndex,u.path,u.orderRevision,u.movePlanningPending,u.queuedWaypoints]))+'\n');
     }
+    assert.deepEqual(inactive.map(passiveIntent),inactiveBefore,'inactive actors retain their command intent');
     const goals=army.map(u=>u.moveGoalCell),arrived=army.filter(done).length;
     assert.ok(army.every(u=>u.hp===100),'formation arrival excludes incidental combat');
     assert.equal(invalidSteps,0);assert.equal(unreachableGoals,0);
+    if(tracePhysical){assert.equal(staticContactSteps,0);assert.equal(pairContactSteps,0);}
     if(!observe)assert.equal(arrived,64);
     const unblockedDestinationsPreserved=army.every((u,i)=>u.queuedWaypoints.length
       ?u.queuedWaypoints[0].destination===requested[i]
       :gate.footprint.includes(requested[i])||u.moveGoalCell===requested[i]);
     assert.equal(unblockedDestinationsPreserved,true);
     assert.ok(goals.every(c=>!gate.footprint.includes(c)));
-    return {team,group:64,sourceSha256:fixture.sourceSha256,ticks:r.tick-startTick,arrived,
-      distinctGoals:new Set(goals).size,requested,goals,invalidSteps,unreachableGoals,maxPathLength,
+    captureFinal?.(r.checkpoint());
+    captureActorTrace?.(actorTrace);
+    return {team,group:64,sourceSha256:fixture.sourceSha256,inputSha256,ticks:r.tick-startTick,arrived,
+      handoffs:[...handoffs.values()],physical:tracePhysical?{selectedSubsteps,staticContactSteps,pairContactSteps,
+        worstPairMargin,capsuleTraceSha256:capsuleTrace.digest('hex'),controlMax,missingControlRecords}:null,
+      inactiveActorsPreserved:inactive.length,distinctGoals:new Set(goals).size,requested,goals,invalidSteps,unreachableGoals,maxPathLength,
       onlyNamedBuilder:true,builderReturned:returnBuilder,parkOrder,parkedIntentPreserved:!returnBuilder,
       maxNoProgressTicks:Math.max(...[...progress.values()].map(p=>p.max)),unblockedDestinationsPreserved,
       unfinished:army.filter(u=>!done(u)).map(u=>({id:u.id,x:u.x,z:u.z,goal:r.point(u.moveGoalCell),pathIndex:u.pathIndex,pathLength:u.path.length})),

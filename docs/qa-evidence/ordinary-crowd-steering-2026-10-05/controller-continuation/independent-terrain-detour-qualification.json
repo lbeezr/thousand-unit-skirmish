@@ -1,0 +1,86 @@
+{
+  "sourceCommit": "1fa2c46df86c6c743baf8943f1b4301933be249b",
+  "baseCommit": "51c3085fd486bddc6a23b9457c04fe3ce3e916c8",
+  "clean": true,
+  "command": "node --test scripts/unit-crowd-steering.test.mjs scripts/crowd-wait-lease.test.mjs",
+  "tests": 49,
+  "passed": 49,
+  "failed": 0,
+  "tap": "/tmp/crowd-review-1fa2c46-focused.tap",
+  "sourceSha256": {
+    "server.mjs": "c160faca67a17c6a40d31657bda789848ddf878c9358e7df8ad05cb48ddfd0ab",
+    "src/unit-crowd-steering.mjs": "ff74bdc28832f550f565a0210d2cfee6fe7be29f1f7b5a484b402da0f01f573d",
+    "src/crowd-wait-lease.mjs": "ddf971e93748761319c3ee1e752f593afa2a7dba205757fa09e7e1fa227b7721",
+    "src/crowd-parked-contour.mjs": "dbac12ec6c207e80df7f3a1f5146fa93637ab4465053854c8d3389224d4f6812"
+  },
+  "findings": [],
+  "incomingCoreReview": "Return Cargo ledger and clearResume opt-in only; ordinary crowd vector, physical radii/oracles, private modules and writer boundary unchanged. Default ledger caller behavior retained.",
+  "priorQualification": {
+    "source": "ede223ce86cabed54868913d65ec0780633b0a81",
+    "registered": {
+      "tests": 152,
+      "pass": 152
+    },
+    "bothSeat64": {
+      "seat0Ticks": 1141,
+      "seat1Ticks": 2600,
+      "substeps": 141567,
+      "staticContacts": 0,
+      "bodyContacts": 0
+    }
+  },
+  "remaining": "Identified deployed release and ordinary rendered gameplay proof remain separate and incomplete; source/CPU/local packed HTTP qualification does not establish them.",
+  "qualification": "Qualified for the reviewed source scope and retained deterministic ordinary military crowd workloads; no remaining source-review blocker.",
+  "completedChecks": {
+    "independentModuleLease": {
+      "tests": 49,
+      "pass": 49,
+      "tap": "/tmp/crowd-review-1fa2c46-focused.tap"
+    },
+    "registeredMovement": {
+      "tests": 152,
+      "pass": 152,
+      "tap": "/tmp/crowd-exact-boundaries.tap"
+    },
+    "FollowQueueCold": {
+      "tests": 63,
+      "pass": 63,
+      "tap": "/tmp/crowd-exact-follow.tap"
+    },
+    "types": "/tmp/crowd-exact-types.txt",
+    "imports": "/tmp/crowd-exact-imports.txt",
+    "localPackedHttp": "/tmp/crowd-exact-packed-http.txt"
+  },
+  "exactPhysical": {
+    "records": "/tmp/crowd-exact-64.json",
+    "seat0": {
+      "arrived": 64,
+      "ticks": 1141,
+      "substeps": 43486,
+      "inactivePreserved": 72
+    },
+    "seat1": {
+      "arrived": 64,
+      "ticks": 2600,
+      "substeps": 98081,
+      "inactivePreserved": 72
+    },
+    "totalSubsteps": 141567,
+    "staticContacts": 0,
+    "bodyContacts": 0,
+    "missingControlRecords": 0,
+    "maximumDetourTerrainProbes": 7,
+    "maximumParkedWaypointProbes": 38,
+    "actor113": {
+      "firstGoalTick": 2251,
+      "arrivalTick": 2555
+    }
+  },
+  "release": {
+    "sourceRevision": "1fa2c46df86c6c743baf8943f1b4301933be249b",
+    "sourceDirty": false,
+    "digest": "sha256:0a6e611395501188dcc4b593935c47f7bb914cfe565187e2d5cc26edb0d2e31f",
+    "localPackedHttpPass": true
+  },
+  "cleanAtQualification": true
+}

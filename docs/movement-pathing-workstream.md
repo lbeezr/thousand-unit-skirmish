@@ -841,6 +841,65 @@ separation, group formation movement, naval/wildlife adapters, dynamic forest
 cuts, gates/bridges and native all-caller recovery still need their own adoption.
 Denied hosted dispatch and cancelled authentication remain paused.
 
+### U5 crowd owner reservation — 4 October 2026
+
+5 October source qualification: [PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400)
+consumes the [agreed hooks](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5986553571).
+Clean `1fa2c46d`, containing fresh main `51c3085f`, completes both unchanged
+64-unit paid-gate returns at 1,141/2,600 ticks with zero terrain/body contacts
+across 141,567 selected substeps. Actor113's fourteen accepted static repairs
+were traced to a local detour stranding its route at the closed gate corner.
+A bounded terrain-continuation preview fixes that selection: actor113 reaches
+its first goal at 2,251 and returns at 2,555 with zero repairs. It leaves the
+original static handoffs, shared admissions and accepted goals/queues intact.
+The [exact source checkpoint](qa-evidence/ordinary-crowd-steering-2026-10-05/controller-continuation/terrain-detour-checkpoint.json)
+and [QA record](qa-ordinary-crowd-steering-2026-10-05.md) retain the historical
+failures, retired recovery variants, full inputs/finals and independent review.
+All 152 registered movement/body/controller/journey checks, 63 Follow/cold/queue
+controls and 49 independent focused controls pass. The clean 1,386-file pack
+and local served HTTP scenario pass. Owner remains `01a10933-c2b0`; next action
+is normal author merge and existing deployment identity readback, then ordinary
+rendered verification through CI/capture owner `01a10378`. No open interface
+approval or parent merge gate remains. The recorded browser sandbox/storage
+failure produced zero frames and stays separate from source qualification.
+Worker/combat/naval/wildlife movement remains with its existing owners; this
+slice adopts ordinary military Move only. Added preview/query work stays
+bounded at eight detour probes and 64 parked-waypoint observations. It never
+claims physical clearance from cell joins, point insets or soft separation.
+
+Crowd owner `01a10933-c2b0-70f1-991d-761518eb5010` reserves
+`src/unit-crowd-steering.mjs` and its own focused module/ordinary-journey tests.
+Core owner `01a107ba` retains [PR395](https://github.com/lbeezr/thousand-unit-skirmish/pull/395)
+Worker economy clearance and shared planner/executor contracts; construction
+owner `01a10933-e913-766b-b5de-3aa5a17c7038` retains paid construction travel.
+The [exact hook proposal](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5985549187)
+requests a bounded ordinary-Move branch in `getMoveVector`, current serial-body
+queries and a crowd-wait break. Shared position admissions remain core-owned;
+no executor edit precedes that agreement. This is an interface dependency,
+not a global merge or rendered-acceptance hold.
+
+Reuse the existing forest-gap maps and retained land-body-clearance inputs.
+The first bounded policy proposes only the moving actor's candidate, using the
+existing authored static profile and exact swept pair geometry. Fixed heading/
+neighbor budgets, a stable right-hand preference and exact inset candidates
+address the mixed-circle tangent fit; cell geometry proposes candidates but
+never substitutes for terrain/static/body admission. Parked/inactive neighbors,
+accepted order priority, Stop and selected final/group goals remain intact.
+Crowd waits do not classify a static route as unreachable or generate repair
+storms. Finite opposing/group deadlines, repair/progress/fairness records and
+actual physical contacts remain explicit acceptance requirements.
+
+Twelve standalone module checks pass for sweeps, monotone inherited-overlap
+escape, terminal contact, bounded overflow, both serial orders and mixed-circle
+throat progress. These analytic controls are not the real-game journey proof.
+The 14 existing real land-body study regressions pass before the consumer;
+historical penetration records remain unchanged. Next: integrate only the
+agreed hooks, run both-seat forest/gate/bridge and opposing/group journeys,
+review the exact head, package and normally merge. Crowd owns source/default
+integration and separate identified-release deployment/ordinary rendered proof;
+CI `01a10378` supplies its existing capture interface. No new benchmark,
+map-admission change, auth retry, denied dispatch or browser-security change.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5

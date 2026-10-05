@@ -1,0 +1,44 @@
+{
+  "sourceCommit": "a4cef75f1d6f0cd280c7679e40d1796f5dadc8a7",
+  "clean": true,
+  "command": "node --test scripts/unit-crowd-steering.test.mjs scripts/crowd-wait-lease.test.mjs",
+  "tests": 47,
+  "passed": 47,
+  "failed": 0,
+  "tap": "/tmp/crowd-review-a4cef75-focused.tap",
+  "sourceSha256": {
+    "src/unit-crowd-steering.mjs": "b0a0cfc582aaf76fd4308600a05b556d93dd19ce22a829991a92784c56a6bd90",
+    "src/crowd-wait-lease.mjs": "ddf971e93748761319c3ee1e752f593afa2a7dba205757fa09e7e1fa227b7721",
+    "src/crowd-parked-contour.mjs": "dbac12ec6c207e80df7f3a1f5146fa93637ab4465053854c8d3389224d4f6812",
+    "server.mjs": "2d1c3d6c725deaae5b93b7142a8607d1fd628eee1165d249bd888252498389ac"
+  },
+  "reviewScope": "Read-only exact-head source safety/interface/lifecycle/budget review. Broad retained liveness remains unqualified; no merge or rendered/deployed acceptance.",
+  "findings": [
+    {
+      "severity": "lifecycle/liveness",
+      "file": "src/unit-crowd-steering.mjs",
+      "line": 274,
+      "issue": "readState validates identity and freshness but not current ordinary eligibility; yieldedTo can observe an obsolete lease from a now-combat actor bypassing selectCrowdStep.",
+      "evidence": "/tmp/crowd-review-a4cef75-stale-peer.json",
+      "smallestFix": "Require ordinaryCrowdBodyRadius(other)>0 before consuming peer steering state (or specifically before yieldedTo observation), with a live-eligibility negative control.",
+      "physicalBypass": false
+    }
+  ],
+  "retainedRegressions": {
+    "removeBestForwardGuard": {
+      "seat0": 50,
+      "seat1": 55,
+      "retired": true
+    },
+    "earlyContour30": {
+      "seat1": 2,
+      "retired": true
+    },
+    "latestBeforeFreshMain": {
+      "seat0": 64,
+      "seat1": 63,
+      "actor113FirstLegIncomplete": true
+    }
+  },
+  "cleanAtCompletion": true
+}

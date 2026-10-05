@@ -1,0 +1,33 @@
+{
+  "sourceCommit": "1fa2c46df86c6c743baf8943f1b4301933be249b",
+  "baseCommit": "51c3085fd486bddc6a23b9457c04fe3ce3e916c8",
+  "clean": true,
+  "command": "node --test scripts/unit-crowd-steering.test.mjs scripts/crowd-wait-lease.test.mjs",
+  "tests": 49,
+  "passed": 49,
+  "failed": 0,
+  "tap": "/tmp/crowd-review-1fa2c46-focused.tap",
+  "sourceSha256": {
+    "server.mjs": "c160faca67a17c6a40d31657bda789848ddf878c9358e7df8ad05cb48ddfd0ab",
+    "src/unit-crowd-steering.mjs": "ff74bdc28832f550f565a0210d2cfee6fe7be29f1f7b5a484b402da0f01f573d",
+    "src/crowd-wait-lease.mjs": "ddf971e93748761319c3ee1e752f593afa2a7dba205757fa09e7e1fa227b7721",
+    "src/crowd-parked-contour.mjs": "dbac12ec6c207e80df7f3a1f5146fa93637ab4465053854c8d3389224d4f6812"
+  },
+  "findings": [],
+  "incomingCoreReview": "Return Cargo ledger and clearResume opt-in only; ordinary crowd vector, physical radii/oracles, private modules and writer boundary unchanged. Default ledger caller behavior retained.",
+  "priorQualification": {
+    "source": "ede223ce86cabed54868913d65ec0780633b0a81",
+    "registered": {
+      "tests": 152,
+      "pass": 152
+    },
+    "bothSeat64": {
+      "seat0Ticks": 1141,
+      "seat1Ticks": 2600,
+      "substeps": 141567,
+      "staticContacts": 0,
+      "bodyContacts": 0
+    }
+  },
+  "remaining": "Refresh retained both-seat64 full physical and registered152/Follow63 results at this server hash; source review conditional on those records. Rendered/deployed proof separate."
+}
