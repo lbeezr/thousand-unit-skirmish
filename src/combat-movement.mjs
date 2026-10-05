@@ -83,6 +83,17 @@ export function followTravelMovementActive(unit) {
     && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
 }
 
+// Explicit Worker Follow replaces productive work while retaining carried
+// cargo. Its original leader/offset controller uses the shared Worker body.
+export function workerFollowTravelMovementActive(unit) {
+  return unit.kind === 'worker' && unit.persistentOrder?.type === 'follow' && unit.hp > 0
+    && unit.movementDomain !== 'water' && !unit.holdingPosition && !unit.attackMove
+    && !(unit.attackTargetId >= 0) && !(unit.attackBuildingTargetId >= 0)
+    && !unit.stanceCombat && !unit.stanceReturning
+    && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0) && !unit.gatherPhase
+    && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
+}
+
 // Patrol's acquired unit-target leg uses its original acquisition anchor and
 // bounded approach. Automatic stance and friendly Follow remain separate.
 export function patrolAcquiredMovementActive(unit) {
