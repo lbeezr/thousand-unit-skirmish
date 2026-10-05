@@ -1,0 +1,4 @@
+{"armySize":24,"targetRegion":"north-pass","movedBySeat":[12,12],"tickP95Ms":2.781,"tickP99Ms":3.78,"overBudgetTickCount":0,"skippedSlotDelta":0}
+{"armySize":24,"targetRegion":"high-flank","movedBySeat":[12,12],"tickP95Ms":2.841,"tickP99Ms":3.61,"overBudgetTickCount":0,"skippedSlotDelta":0}
+{"armySize":24,"targetRegion":"causeway","movedBySeat":[12,12],"tickP95Ms":3.031,"tickP99Ms":3.552,"overBudgetTickCount":0,"skippedSlotDelta":0}
+{"output":"/tmp/performance-budget-candidate","passed":true,"error":null}

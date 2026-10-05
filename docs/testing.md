@@ -353,6 +353,13 @@ write map files. They are authoring tools, not read-only validation commands.
 Run one timed profile at a time. Record commit, hardware, browser, map, roster,
 workload duration, host load, and every budget override.
 
+Health timing includes `p99Ms` and `overBudgetTickCount` for its existing rolling
+up-to-300-tick window. Counts compare Float64 stored durations against the exact
+tick period; do not sum overlapping windows or confuse a late zero count with
+no earlier spikes or skipped slots. The [bounded Crownroads record](qa-performance-window-overruns-2026-10-05.md)
+retains baseline/candidate source identities and a real preparation overrun.
+Existing p95/max diagnostic budgets remain unchanged.
+
 The [core tranche profile](core-playtest-tranche.md#scale-measurement-profile--proposed)
 documents the bounded hosted movement ladder and per-seat tagged-order intervals.
 Its success status asserts protocol liveness, not the broader scale budgets.
