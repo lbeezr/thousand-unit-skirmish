@@ -7,6 +7,55 @@ and scale selection. The shared runtime binding awaits the terrain owner;
 same-design lifecycle captures require private source bytes that are absent.
 No generation, purchases, provider access, private upload or Mac work occurred.
 
+## Current flora delivery ownership — 5 October 2026
+
+Canonical main audited at `6ee1cce46d0ac4f4fcc4610a0d2b1a2bee928690`.
+The resumed flora owner retains default consistency, the berry/tree acceptance
+work below, and the next documented disjoint slice after review. The pilot's
+prepared selector remains unbound; the current integration increment validates
+the already selected regional lifecycle bindings. Terrain's generic oak
+depletion atlas and tree-targeting work remain separate owned outcomes.
+
+| Family / lane | Live default source behavior | Prepared / blocked input and next action |
+| --- | --- | --- |
+| Generic oak/pine forest | V3 eight physical full views. Positive stock retains the selected standing card; zero uses the existing generic stump path. | Same-design directional worked/low/depleted art is absent; pine alone lacks 24 cells. Flora owner needs exact approved source and matching registered public derivatives before selecting more lifecycle headings. No generation budget is authorized. |
+| Regional trees | 21 four-state families, one fixed-oblique view each; existing atlas or individual fallback. | Flora owner now validates exact state/clip identities, one common canvas/root, and safe nonoverlapping page cells before atlas binding. Approved valid pages remain unchanged. Next: identified cloud/staging full→worked→low→depleted/reset captures. |
+| Generic wood nodes | Full V3 oak eight-view atlas; worked/low/depleted use the terrain-owned single-view oak depletion atlas, with individual failure fallback. | Terrain integration retains its [deployment/root/zoom/fog/depth acceptance](qa-oak-depletion-atlas-adoption.md). This flora slice does not replace or duplicate that atlas. |
+| Generic berries | Full V3 eight-view atlas; worked/low/depleted remain the older single-view interactive family. | Flora owner next validates actual default stage URL/UV/root/scale bindings and same-position rebuild, without claiming matched eight-heading lifecycle art. Matching authored derivatives are the concrete art dependency. |
+| Underbough thornberry | Palette family binds four states at one view and one 1.8-wide registration. | The [historical Worker/gameplay proof](qa-underbough-gameplay-proof-2026-10-01.md) does not establish current deployed pixels. Flora owner next validates this normal regional factory, then captures actual Gather/depletion/reset on an identified cloud release. |
+| Pine seeded variety | Pure seed/cell yaw/scale policy and source sidecar are prepared. | Unbound; preserve existing selectors. Missing matched lifecycle art and the recorded renderer seam prevent safe activation; no popping-state yaw rollout. |
+| Oak painterly retexture | Approved public default identity remains unchanged. | Paid retexture candidate remains private on the stopped Mac path. Its source owner retains the transfer/publication decision. No private bytes, repaint, provider job or credits are authorized here. |
+
+The bounded correction is in [the regional descriptor](../src/forest-lifecycle-atlas.mjs)
+and the existing forest loader only. The preceding loader accepted duplicate
+frame IDs, mixed clip directions and changed pivots/canvases because it checked
+only whether each stage name occurred. Invalid pages now take the existing
+individual approved-state fallback. This is a binding consistency milestone,
+not a newly authored tree family or a claim of improved source aesthetics.
+Backing remains the approved regional atlas pixels and fixed-view registration
+in [the existing packer](../scripts/build-environment-lifecycle-atlases.py).
+
+[Focused production tests](../scripts/forest-lifecycle-atlas.test.mjs) cover all
+21 committed page contracts, 16 adverse mutations, actual forest slot stock
+changes through depletion/reset, and deterministic rebuild. They verify the
+actual state UV/matrix buffers and individual fallback, with CPU image stubs.
+The existing oak-depletion and tree-picking tests retain their own scopes.
+The new check runs through the existing forest-age CI entry; its pure runtime
+module receives only the required presentation-domain classification.
+
+Cloud renderer qualification at the audited head returned **blocked**, exit 1:
+`sandbox-unavailable` and `storage-unavailable`, zero game frames/screenshots.
+The cloud testing owner must supply a provider-provisioned browser sandbox and
+writable per-job profile/configuration storage. No bypass or Mac dependency is
+introduced. Source/package checks, containing deployment, exact served identity
+and actual game-pixel acceptance stay separate; deployment and current flora
+appearance are still unverified. No parked item counts as delivery.
+
+Continuing order: review/integrate this consistency slice; refresh canonical
+main; validate default generic/Underbough berry bindings in a disjoint flora
+test slice; then retain cloud acceptance and matching source-art dependencies
+above. Do not manufacture another selector, atlas or cleanup to fill a queue.
+
 ## Source audit
 
 Audit base: clean `e445d344bafe68823b51babe60ccdad6508ce8ad`. Read current
