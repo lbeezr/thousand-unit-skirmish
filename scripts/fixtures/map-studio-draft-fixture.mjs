@@ -82,6 +82,7 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {} } = {}) {
     between('function populateMapEditor(', 'function isGroundEditorTool('),
     between('function compressEditorGround(', 'function showToast('),
     between('ui.mapStudioOpen.addEventListener(', "document.querySelector('#studio-import').addEventListener("),
+    between("document.querySelector('#studio-import').addEventListener(", "document.querySelector('#studio-width').addEventListener("),
     between("ui.mapStudio.addEventListener('close'", "window.addEventListener('resize'"),
     between("document.querySelector('#studio-scenario-undo').addEventListener(", 'for (const field of [ui.studioEventRegion,'),
     'window.draftStore = mapStudioDraftStore; window.lastDraftSavedAt = () => editorDraftLastSavedAt;',

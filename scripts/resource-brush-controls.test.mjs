@@ -503,3 +503,133 @@ test('actual scenario history resets on draft recovery and portable import', asy
   assert.equal(f.w.scenarioEditHistory.canUndo, false); assert.equal(f.w.scenarioEditHistory.canRedo, false);
   assert.equal(f.d.getElementById('studio-scenario-redo').disabled, true);
 });
+
+test('portable map read failures retain native causes and leave the editor, match and timers unchanged', async t => {
+  const f = mapStudioDraftFixture(t); f.open(); f.edit('studio-name', 'Retained draft');
+  const editor = f.copy(f.w.collectEditorMap()), match = f.copy(f.w.mapDefinition);
+  const timers = [...f.timers], saved = f.saved(), status = f.w.ui.studioDraftStatus.textContent;
+  for (const name of ['NotFoundError', 'NotReadableError', 'SecurityError']) {
+    const cause = new f.w.DOMException('private file location and contents', name);
+    await assert.rejects(f.w.importEditorMap({ name: 'private.json', size: 12, text: async () => { throw cause; } }),
+      error => error.message === 'Map file could not be read. Choose the file again and retry.'
+        && error.cause === cause);
+    assert.deepEqual(f.copy(f.w.collectEditorMap()), editor);
+    assert.deepEqual(f.copy(f.w.mapDefinition), match);
+    assert.deepEqual([...f.timers], timers); assert.deepEqual(f.saved(), saved);
+    assert.equal(f.w.ui.studioDraftStatus.textContent, status);
+  }
+});
+
+test('malformed portable JSON retains its syntax cause without exposing input and valid File retry normalizes', async t => {
+  const f = mapStudioDraftFixture(t); f.open();
+  const editor = f.copy(f.w.collectEditorMap()), match = f.copy(f.w.mapDefinition);
+  const timers = [...f.timers], raw = '{"private-map-data":';
+  let syntaxCause;
+  try { f.w.JSON.parse(raw); } catch (error) { syntaxCause = error; }
+  const parse = f.w.JSON.parse;
+  f.w.JSON.parse = value => { if (value === raw) throw syntaxCause; return parse(value); };
+  try {
+    await assert.rejects(f.w.importEditorMap({ name: 'private.json', size: raw.length, text: async () => raw }),
+      error => error.message === 'That file is not valid JSON.' && error.cause === syntaxCause);
+  } finally { f.w.JSON.parse = parse; }
+  assert.deepEqual(f.copy(f.w.collectEditorMap()), editor); assert.deepEqual([...f.timers], timers);
+  const portable = { ...editor, id: 'valid-retry', name: 'VALID RETRY' };
+  delete portable.victoryMode; delete portable.fogOfWar; portable.terrainSeed = 'invalid';
+  const bytes = JSON.stringify(portable);
+  await f.w.importEditorMap(new File([bytes], 'retry.json', { type: 'application/json' }));
+  const normalized = f.copy(f.w.collectEditorMap());
+  assert.equal(normalized.id, 'valid-retry'); assert.equal(normalized.name, 'VALID RETRY');
+  assert.equal(normalized.victoryMode, 'any'); assert.equal(normalized.fogOfWar, false);
+  assert.equal(normalized.terrainSeed, 1); assert.deepEqual(f.copy(f.w.mapDefinition), match);
+  assert.equal(f.w.ui.studioMessage.textContent,
+    'Loaded retry.json. Review the map ID, then publish it to the room when ready.');
+  assert.equal([...f.timers.values()].filter(timer => timer.delay === 160).length, 1);
+});
+
+test('portable import propagates reader, parser and validation programmer failures by identity', async t => {
+  const f = mapStudioDraftFixture(t); f.open();
+  const editor = f.copy(f.w.collectEditorMap()), timers = [...f.timers];
+  for (const cause of [new f.w.TypeError('reader bug'), new f.w.ReferenceError('reader reference bug'),
+    new f.w.DOMException('unexpected reader state', 'InvalidStateError')]) {
+    await assert.rejects(f.w.importEditorMap({ size: 12, text: async () => { throw cause; } }), error => error === cause);
+  }
+  const parse = f.w.JSON.parse, parserCause = new f.w.TypeError('parser bug');
+  f.w.JSON.parse = () => { throw parserCause; };
+  try {
+    await assert.rejects(f.w.importEditorMap({ size: 2, text: async () => '{}' }), error => error === parserCause);
+  } finally { f.w.JSON.parse = parse; }
+  const validate = f.w.validateImportedMap, validationCause = new f.w.ReferenceError('validator bug');
+  f.w.validateImportedMap = () => { throw validationCause; };
+  try {
+    await assert.rejects(f.w.importEditorMap({ size: 2, text: async () => '{}' }), error => error === validationCause);
+  } finally { f.w.validateImportedMap = validate; }
+  assert.deepEqual(f.copy(f.w.collectEditorMap()), editor); assert.deepEqual([...f.timers], timers);
+});
+
+test('portable import preserves size then syntax then map rejection order without mutation', async t => {
+  const f = mapStudioDraftFixture(t); f.open();
+  const editor = f.copy(f.w.collectEditorMap()), timers = [...f.timers];
+  let reads = 0;
+  const text = async () => { reads++; return '[]'; };
+  await assert.rejects(f.w.importEditorMap({ size: 900_001, text }),
+    { message: 'Map JSON must be smaller than 900 KB so it can be sent safely.' });
+  assert.equal(reads, 0);
+  await assert.rejects(f.w.importEditorMap({ size: 900_000, text }), { message: 'JSON must contain a map object.' });
+  assert.equal(reads, 1);
+  await assert.rejects(f.w.importEditorMap({ size: 1, text: async () => '{' }),
+    error => error.message === 'That file is not valid JSON.' && error.cause instanceof f.w.SyntaxError);
+  await assert.rejects(f.w.importEditorMap({ size: 2, text: async () => '{}' }),
+    { message: 'Map ID must use lowercase letters, numbers, and hyphens.' });
+  assert.deepEqual(f.copy(f.w.collectEditorMap()), editor); assert.deepEqual([...f.timers], timers);
+});
+
+test('isolated actual import file control preserves empty selection, failure feedback and same-file retry', async t => {
+  const f = mapStudioDraftFixture(t); f.open();
+  const editor = f.copy(f.w.collectEditorMap()), match = f.copy(f.w.mapDefinition), timers = [...f.timers];
+  const input = f.w.ui.studioImportFile, importMap = f.w.importEditorMap;
+  let importing, calls = 0;
+  f.w.importEditorMap = file => { calls++; importing = importMap(file); return importing; };
+  const message = f.w.ui.studioMessage.textContent;
+  input.dispatchEvent(new f.w.Event('change'));
+  assert.equal(calls, 0); assert.equal(input.value, '');
+  assert.equal(f.w.ui.studioMessage.textContent, message);
+  assert.deepEqual([...f.timers], timers); assert.deepEqual(f.copy(f.w.collectEditorMap()), editor);
+  const cause = new f.w.DOMException('private source', 'NotReadableError');
+  const file = { name: 'same.json', size: 12, text: async () => { throw cause; } };
+  Object.defineProperty(input, 'files', { configurable: true, value: [file] });
+  input.dispatchEvent(new f.w.Event('change')); await importing.catch(() => {});
+  assert.equal(calls, 1); assert.equal(input.value, '');
+  assert.equal(f.w.ui.studioMessage.textContent, 'Map file could not be read. Choose the file again and retry.');
+  assert.deepEqual([...f.timers], timers); assert.deepEqual(f.copy(f.w.collectEditorMap()), editor);
+  file.text = async () => JSON.stringify({ ...editor, name: 'SAME FILE RETRY' });
+  input.dispatchEvent(new f.w.Event('change')); await importing;
+  assert.equal(calls, 2); assert.equal(input.value, '');
+  assert.equal(f.w.collectEditorMap().name, 'SAME FILE RETRY');
+  assert.deepEqual(f.copy(f.w.mapDefinition), match);
+  assert.equal(f.w.ui.studioMessage.textContent,
+    'Loaded same.json. Review the map ID, then publish it to the room when ready.');
+});
+
+test('bubbling file changes retain the existing draft listener for empty selection and failed reads', async t => {
+  const f = mapStudioDraftFixture(t); f.open();
+  const editor = f.copy(f.w.collectEditorMap()), match = f.copy(f.w.mapDefinition);
+  const input = f.w.ui.studioImportFile, importMap = f.w.importEditorMap;
+  let importing, calls = 0;
+  f.w.importEditorMap = file => { calls++; importing = importMap(file); return importing; };
+  input.dispatchEvent(new f.w.Event('change', { bubbles: true }));
+  assert.equal(calls, 0); assert.equal(f.w.ui.studioDraftStatus.textContent, 'SAVING DRAFT…');
+  assert.equal([...f.timers.values()].filter(timer => timer.delay === 160).length, 1);
+  f.flush();
+  const before = JSON.parse(f.w.localStorage.getItem(f.w.editorDraftStorageKey)).editor.definition;
+  const cause = new f.w.DOMException('private source', 'NotReadableError');
+  Object.defineProperty(input, 'files', { configurable: true,
+    value: [{ name: 'unreadable.json', size: 12, text: async () => { throw cause; } }] });
+  input.dispatchEvent(new f.w.Event('change', { bubbles: true })); await importing.catch(() => {});
+  assert.equal(calls, 1); assert.equal(f.w.ui.studioDraftStatus.textContent, 'SAVING DRAFT…');
+  assert.equal([...f.timers.values()].filter(timer => timer.delay === 160).length, 1);
+  assert.equal(f.w.ui.studioMessage.textContent, 'Map file could not be read. Choose the file again and retry.');
+  assert.deepEqual(f.copy(f.w.collectEditorMap()), editor); assert.deepEqual(f.copy(f.w.mapDefinition), match);
+  f.flush();
+  const saved = JSON.parse(f.w.localStorage.getItem(f.w.editorDraftStorageKey));
+  assert.deepEqual(f.copy(saved.editor.definition), f.copy(before));
+});
