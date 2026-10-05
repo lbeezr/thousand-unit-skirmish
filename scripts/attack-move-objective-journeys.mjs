@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { attackMoveObjectiveMovementActive, attackMoveAcquiredMovementActive } from '../src/combat-movement.mjs';
+import { attackMoveObjectiveMovementActive, attackMoveAcquiredMovementActive, patrolTravelMovementActive } from '../src/combat-movement.mjs';
 import { activeLandMovementBodyRadius, canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { combatDamage } from '../src/combat-rules.mjs';
@@ -21,7 +21,7 @@ test('explicit target-free AttackMove clearance activates while pending, includi
     { persistentOrder: { type: 'follow' } }, { gatherNodeId: 'berry' }, { gatherForestCell: 0 },
     { gatherPhase: 'to-base' }, { buildingTargetId: 0 }]) {
     assert.equal(attackMoveObjectiveMovementActive({ ...unit, ...override }), false, JSON.stringify(override));
-    assert.equal(activeLandMovementBodyRadius({ ...unit, ...override }), override.attackTargetId === 0
+    assert.equal(activeLandMovementBodyRadius({ ...unit, ...override }), override.attackTargetId === 0 || override.persistentOrder?.type === 'patrol'
       ? LAND_CLEARANCE_PROFILE.radiusByKind.infantry : 0, JSON.stringify(override));
   }
 });
@@ -135,17 +135,18 @@ for (const team of [0, 1]) test(`seat ${team}: a paid footprint changes navigati
   });
 });
 
-for (const team of [0, 1]) test(`seat ${team}: actual Patrol remains excluded and cycles with its existing static-body behavior`, async () => {
+for (const team of [0, 1]) test(`seat ${team}: actual Patrol uses its separate travel policy and retains endpoint cycling`, async () => {
   await journey(team, ({ r, id, actor, command, clear }) => {
     command('patrol', { x: 6.5, z: .5 }); r.drain();
     let contacts = 0; const legs = new Set();
     for (let t = 0; t < 200; t++) {
       assert.equal(attackMoveObjectiveMovementActive(actor()), false);
-      assert.equal(activeLandMovementBodyRadius(actor()), 0);
+      assert.equal(patrolTravelMovementActive(actor()), true);
+      assert.equal(activeLandMovementBodyRadius(actor()), LAND_CLEARANCE_PROFILE.radiusByKind.infantry);
       r.step(); legs.add(actor().persistentOrder.leg);
       for (const s of r.landSteps.filter(s => s.id === id)) if (!clear(s.from, s.to)) contacts++;
     }
-    assert.ok(contacts > 0, 'negative control still witnesses deferred Patrol body adoption');
+    assert.equal(contacts, 0, 'new separate Patrol travel adoption keeps every admitted static sweep clear');
     assert.deepEqual([...legs].sort(), [0, 1]); assert.equal(actor().persistentOrder.type, 'patrol');
   });
 });

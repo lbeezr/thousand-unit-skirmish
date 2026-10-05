@@ -1,11 +1,11 @@
 import { BASE_ELEVATION_PATH_COST, canTraverseElevation, elevationPathCost } from './elevation.mjs';
 import { visitGridSegmentCells } from './unit-path-line.mjs';
 import { constructionMovementActive } from './construction-work-intent.mjs';
-import { attackMoveObjectiveMovementActive, focusedUnitAttackMovementActive, attackMoveAcquiredMovementActive } from './combat-movement.mjs';
+import { attackMoveObjectiveMovementActive, focusedUnitAttackMovementActive, attackMoveAcquiredMovementActive, patrolTravelMovementActive } from './combat-movement.mjs';
 
 // Static land circles, in tiles/world units. Adopters are explicit: ordinary
 // single-unit Move/queued points, Worker economy/construction and target-free
-// explicit AttackMove objectives/acquired pursuit and focused unit-target Attack;
+// explicit AttackMove objectives/acquired pursuit, focused Attack and Patrol travel;
 // other domains follow.
 // These are authored collision sizes, not sprite bounds or soft-separation size.
 export const LAND_CLEARANCE_PROFILE = Object.freeze({ id: 'land-static-circle-v1',
@@ -183,6 +183,7 @@ export function activeLandMovementBodyRadius(unit) {
   return ordinaryMoveBodyRadius(unit) || workerEconomyBodyRadius(unit)
     || (constructionMovementActive(unit) ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0)
     || (attackMoveObjectiveMovementActive(unit) || focusedUnitAttackMovementActive(unit) || attackMoveAcquiredMovementActive(unit)
+      || patrolTravelMovementActive(unit)
       ? LAND_CLEARANCE_PROFILE.radiusByKind[unit.kind] ?? 0 : 0);
 }
 

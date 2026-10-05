@@ -33,3 +33,15 @@ export function attackMoveAcquiredMovementActive(unit) {
     && !unit.persistentOrder && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0)
     && !unit.gatherPhase && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
 }
+
+// Persistent Patrol's target-free travel/continuation. Acquisition and Follow
+// retain their own policies; the existing controller chooses each leg's cell.
+export function patrolTravelMovementActive(unit) {
+  return unit.persistentOrder?.type === 'patrol'
+    && militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind]) === true && unit.hp > 0
+    && unit.movementDomain !== 'water' && !unit.holdingPosition
+    && !(unit.attackTargetId >= 0) && !(unit.attackBuildingTargetId >= 0)
+    && !unit.stanceCombat && !unit.stanceReturning
+    && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0) && !unit.gatherPhase
+    && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
+}

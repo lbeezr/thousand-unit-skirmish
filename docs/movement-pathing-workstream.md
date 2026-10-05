@@ -74,6 +74,44 @@ land executor, not command admission or whole journeys.
 
 ### Shared semantics, domain policies
 
+The next caller increment after merged acquired-AttackMove PR417 is
+**target-free military Patrol travel**. The audit confirms its existing
+revision-safe planner, selected-route rejoin publisher and executor already
+consume `activeLandMovementBodyRadius`: only an additive pure Patrol predicate
+and existing profile fallback are needed. There is **no host edit** or duplicate
+route/admissibility algorithm. [Core's live-publication boundary](https://github.com/lbeezr/thousand-unit-skirmish/pull/416#issuecomment-5986613546)
+and ordinary crowd's active-Move-only classifier remain disjoint. Live XL
+reservation/retry, aggregate save bounds and 320 admission stay core/map-owned.
+
+The [real-command baseline](qa-evidence/patrol-travel-2026-10-05/baseline.json)
+at `b8028375` admits 17 unsafe static-body substeps per seat from `(.75,.95)`
+beside the stone corner. The
+[pre-review candidate](qa-evidence/patrol-travel-2026-10-05/candidate.json)
+admits zero, using the already shared current-cell prefix and selected tail.
+Both continue repeated outbound/return legs with original endpoint cells.
+Patrol still returns to the start **cell center** `(.5,.5)`, not the original
+fractional pose; leg polling remains unchanged. The safe initial detour misses
+one existing polling opportunity in seat 1: first reversal moves from tick 71
+to 101, with later recorded reversals shifted by the same 30 ticks. Seat 0's
+recorded reversal ticks stay unchanged. These are bounded workload timings,
+not universal arrival/capacity or rendered qualification.
+
+The 35 new registered real-command checks exercise both-seat pending/outbound/
+return-pending/return-active recovery, repeated cell cycling, Stop/Hold/manual
+and queued Move, actual acquisition/legal damage and saved-leg restoration,
+live-target leash loss, paid endpoint blockage/cancellation, Follow and Worker
+negative controls. Existing recovery requeues a pending saved goal once under
+one new revision, then the unchanged persistent controller resumes its leg;
+queued Move cancels persistent intent at **admission** and keeps the existing
+queued-route contract. The earlier objective/Patrol control now expects the
+new separate Patrol profile while retaining objective exclusion and cycling.
+Automatic idle stance/return, acquired Patrol pursuit, Follow, Worker/water,
+building targets, same-cell closure and body-pair steering remain separate.
+Final independent exact-head source/types/package/native/normal-merge evidence
+belongs to this caller increment. The deployment verifier owns current staging
+follow-through; actual rendered acceptance stays open under the retained
+sandbox/storage capability failure with zero frames and no retry.
+
 After focused Attack PR410 normally merged at `6ced82cb`, the coordinator
 allocated explicit military AttackMove **acquired unit-target pursuit** to
 caller owner `01a10933-e913-766b-b5de-3aa5a17c7038`. Exact interfaces are recorded
