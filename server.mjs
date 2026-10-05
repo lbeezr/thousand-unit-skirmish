@@ -1,6 +1,6 @@
 import { freshVoluntaryEndings, voluntaryCapability, decideVoluntaryEnding, cancelVoluntaryOffer, savedVoluntaryEndings, validSavedVoluntaryEndings, migrateVoluntaryEndingCheckpoint, VOLUNTARY_REASONS } from './src/server/voluntary-endings.mjs';
 import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } from './src/shore-fishing.mjs';
-import { farmHarvestNode, farmHarvestNodeId, farmBuildingId, validFarmStock } from './src/farm-harvest.mjs';
+import { farmHarvestNode, farmHarvestNodeId, farmBuildingId, validFarmStock, eligibleFarmReplantWorker } from './src/farm-harvest.mjs';
 import { createDockPlacementContext, dockBerthOrientation, validDockFacingState } from './src/dock-placement.mjs';
 import { createWaterUnitRuntime, waterUnitOccupiedCells } from './src/water-unit-runtime.mjs';
 import { createSkiffFishingContext } from './src/skiff-fishing.mjs';
@@ -5552,6 +5552,73 @@ function creditRefund(team, refund) {
   dirty = true;
 }
 
+function replantFarm(player, command) {
+  const plot = buildingsById.get(command.buildingId);
+  const reject = reason => sendOrderNotice(player, command, `REPLANT REJECTED · ${reason}`);
+  if (player.team === null || !plot || plot.team !== player.team || plot.type !== 'farm'
+    || plot.hp <= 0 || !plot.complete || plot.harvestStock !== 0) {
+    reject('SELECT YOUR COMPLETED EXHAUSTED FARM'); return;
+  }
+  if (mapDefinition.fogOfWar && plot.footprint.some(cell => !exploredCellsByTeam[player.team][cell])) {
+    reject('EXPLORE THE PLOT FIRST'); return;
+  }
+  if (!Array.isArray(command.ids) || !Array.isArray(command.unitGenerations)) {
+    reject('SELECT IDLE WORKERS, THEN SELECT THE EXHAUSTED PLOT'); return;
+  }
+  const access = buildingAccessCells(plot.footprint);
+  const homeComponent = walkableComponents[nearestOpenCell(worldToCell(spawnByTeam[player.team].x, spawnByTeam[player.team].z))];
+  const workers = commandUnits(command).filter(unit => eligibleFarmReplantWorker(unit, player.team, plot.id)
+    && unitHasCapability(unit, 'build') && unitHasCapability(unit, 'gather')
+    && homeComponent >= 0 && walkableComponents[nearestOpenCell(worldToCell(unit.x, unit.z))] === homeComponent
+    && access.some(cell => walkableComponents[cell] === homeComponent));
+  if (!workers.length) { reject('SELECT REACHABLE IDLE WORKERS · BUSY WORKERS KEEP THEIR ORDERS'); return; }
+  const profile = matchEconomyProfileId();
+  const cost = constructionCostForProfile('farm', profile);
+  const balance = debitEconomyCost(teamEconomyBalance(player.team), cost, profile);
+  if (!balance) { reject(`NEED ${cost.wood} WOOD`); return; }
+
+  // The footprint stays blocked throughout this synchronous replacement. All
+  // admission happens before mutation; a stale old ID cannot buy another crop.
+  const replacement = { ...plot, id: nextBuildingId++, hp: BUILDING_DEFINITIONS.farm.maxHp,
+    progress: 0, complete: false, harvestStock: 0 };
+  buildings[buildings.indexOf(plot)] = replacement;
+  buildingsById.delete(plot.id); buildingsById.set(replacement.id, replacement);
+  setTeamEconomyBalance(player.team, balance);
+  for (const unit of units) {
+    if (unit.gatherNodeId === farmHarvestNodeId(plot.id)) {
+      stopGathering(unit);
+      if (unit.hp > 0 && unit.cargo > 0 && !workers.includes(unit)) routeWorker(unit, 'to-base', null);
+    }
+    if (unit.attackBuildingTargetId === plot.id) clearAttackTarget(unit);
+    if (unit.buildingTargetId === plot.id) { unit.buildingTargetId = null; unit.repairing = false; }
+  }
+  navigationRevision++; invalidateVisionCoverage('farm-replant'); attackFlowFields.clear();
+  const assignments = preparePalisadeBuilderAssignments(workers, [replacement]);
+  assignFormationMove({ ...player, sendJson() {} }, { type: 'move',
+    ids: workers.map(unit => unit.id), unitGenerations: workers.map(unit => unit.generation),
+    x: replacement.x, z: replacement.z }, replacement.id, 'REPLANT ORDER');
+  finishPalisadeBuilderAssignments(assignments, replacement.id);
+  for (const unit of workers) if (unit.buildingTargetId === replacement.id) {
+    // One fresh site, never append an earlier construction sequence.
+    unit.workIntent = createConstructionWorkIntent(unit.generation, [replacement.id],
+      constructionAssignment(null, [replacement], unit.team, buildingsById, mapDefinition).area);
+    unit.workIntent.resumeFarmHarvest = true;
+  }
+  dirty = true;
+  sendOrderNotice(player, command, `FARM REPLANTED · ${cost.wood} WOOD · ${workers.length} WORKERS · HARVEST AFTER CONSTRUCTION`);
+}
+
+function finishFarmReplantHarvest(unit, building) {
+  const intent = activeWorkIntent(unit);
+  if (intent?.kind !== 'construction' || intent.resumeFarmHarvest !== true
+    || intent.siteIds[0] !== building.id || building.type !== 'farm') return;
+  clearWorkIntent(unit);
+  if (building.team === unit.team && building.hp > 0 && building.complete && building.harvestStock > 0) {
+    assignGather({ team: unit.team, sendJson() {} }, { ids: [unit.id],
+      unitGenerations: [unit.generation], nodeId: farmHarvestNodeId(building.id) });
+  }
+}
+
 function cancelConstruction(player, command) {
   const building = buildingsById.get(command.buildingId);
   if (player.team !== null && building?.team === player.team && building.type === 'farm'
@@ -6671,6 +6738,12 @@ function updateWallBuildOrders(getEndpoints = constructionEndpointSnapshotGetter
       if (unit.workIntent?.kind === 'construction') clearWorkIntent(unit);
       continue;
     }
+    // Cooperative completion can leave a renewal builder approaching its safe
+    // endpoint. Keep its paid harvest continuation until that approach settles.
+    if (intent.resumeFarmHarvest === true) {
+      const plot = buildingsById.get(intent.siteIds[0]);
+      if (plot?.complete && plot.team === unit.team && unit.buildingTargetId === plot.id) continue;
+    }
     const sites = unfinishedConstructionSites(intent, unit.team, buildingsById);
     if (sites.length !== intent.siteIds.length) { intent.siteIds = sites.map(site => site.id); dirty = true; }
     if (!sites.length) {
@@ -6735,7 +6808,9 @@ function updateBuildingAndProduction() {
     if (building.complete && !unit.repairing) {
       // A cooperative completion must not park another active builder inside
       // an accepted endpoint. Finish its own safe work approach first.
-      if (constructionPoseAvailable(unit, unit, getEndpoints())) unit.buildingTargetId = null;
+      if (constructionPoseAvailable(unit, unit, getEndpoints())) {
+        unit.buildingTargetId = null; finishFarmReplantHarvest(unit, building);
+      }
       continue;
     }
     const dx = Math.max(0, Math.abs(unit.x - building.x) - BUILDING_DEFINITIONS[building.type].footprint / 2);
@@ -6767,6 +6842,7 @@ function updateBuildingAndProduction() {
       for (const builder of units) {
         if (builder.buildingTargetId === building.id && constructionPoseAvailable(builder, builder, getEndpoints())) {
           builder.buildingTargetId = null;
+          finishFarmReplantHarvest(builder, building);
         }
       }
       broadcastGameplayNotice(building.team, building.x, building.z,
@@ -7882,7 +7958,7 @@ async function handleCommand(player, command) {
       return;
     }
   }
-  if (matchWinner >= 0 && ['herd', 'stopWildlife', 'setStance', 'stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'returnCargo', 'train', 'build', 'buildWall', 'setGateOpen', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
+  if (matchWinner >= 0 && ['herd', 'stopWildlife', 'setStance', 'stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'returnCargo', 'train', 'build', 'buildWall', 'setGateOpen', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'replantFarm', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
     sendOrderNotice(player, command, player.team === 0
       ? 'MATCH OVER · RESET BATTLEFIELD TO PLAY AGAIN'
       : 'MATCH OVER · WAIT FOR HOST TO RESET');
@@ -7909,6 +7985,7 @@ async function handleCommand(player, command) {
   if (command.type === 'trainArcher') trainArcher(player, command);
   if (command.type === 'setRallyPoint') setBuildingRallyPoint(player, command);
   if (command.type === 'researchUpgrade') researchUpgrade(player, command);
+  if (command.type === 'replantFarm') replantFarm(player, command);
   if (command.type === 'cancelConstruction') cancelConstruction(player, command);
   if (command.type === 'cancelTraining') cancelTraining(player, command);
   if (command.type === 'cancelResearch') cancelResearch(player, command);

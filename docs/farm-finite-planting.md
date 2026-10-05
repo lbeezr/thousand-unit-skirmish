@@ -44,8 +44,12 @@ idle. An obstruction replans a Farm approach against its perimeter, rather than
 an arbitrary open cell near the footprint's center.
 
 At zero stock the completed plot remains in place. Its selected-building action
-offers **Clear exhausted Farm · no refund**. Replanting is a fresh, paid build
-with a fresh building/source ID and another finite 200-food pool. No productive
+offers **Replant · 60 wood** and **Clear exhausted Farm · no refund**.
+Select idle Workers, then select the exhausted owned plot: only those selected
+Workers remain selected beside the building card. Replant replaces that plot
+with a fresh building/source ID, 15 Worker-seconds of construction and another
+finite 200-food pool. The original clear → paid Build Farm path remains available.
+A plot selected without Workers explains this selection sequence; it recruits nobody. No productive
 completed Farm can be canceled for a refund. Unfinished cancellation retains the
 ordinary proportional refund and creates no food stock. Destruction loses the
 remaining crop; already-carried food stays real cargo and routes to a friendly
@@ -176,3 +180,50 @@ one and three Workers against nearby plain neutral food on shipped Millrace,
 reversing seats and including construction, travel and first deliveries.
 Recorded deposits depend on the selected plots and finite pools; they do not
 settle contested balance or change the provisional planting values.
+
+## Manual renewal ownership and active queue — 5 October 2026
+
+Farm renewal owner: delegated task `01a0f784-c5d7-72e0-82e8-1747b4c840c1`,
+retaining default integration, review, packaging, containing staging identity and
+ordinary-game acceptance. All unfinished rows below remain active; a blocked row
+is not a completed milestone.
+
+Selected Worker semantics are settled before implementation: only explicitly
+selected, living friendly land Workers with build and Gather capabilities are
+candidates. They must be idle, or approaching/working this exact exhausted plot.
+Hold, Follow/Patrol, attack, another resource/construction intent, queued movement,
+active delivery and unrelated movement remain busy. Idle cargo is retained.
+Generation-stale selections are rejected; eligibility and reachability are
+rechecked by authority. With no eligible reachable Workers, the action refuses
+without a charge and explains that busy Workers keep their orders. In a mixed
+selection only eligible Workers join; all others keep their work and cargo.
+
+Authority admits only a living owned completed depleted explored plot and the
+existing typed 60-wood debit. All checks precede replacement or payment. Its
+footprint stays blocked, the old source ID dies, and a new unfinished ID contains
+zero food. Double/stale clicks, including replay after recovery, cannot reuse the
+old identity. Construction uses normal assigned Worker routing and existing
+approved foundation/frame/complete/exhausted art; there is no passive growth,
+new building, preview toggle or automatic spending. `workIntent` construction
+adds optional `resumeFarmHarvest: true` for exactly one owned Farm ID, bound to
+Worker generation. Existing saves without it remain valid. Cooperative builders
+retain continuation until their safe completion endpoint settles. Stop, Move,
+Return and replacement orders clear the continuation normally; destruction or
+cancellation cannot transfer it to another plot at the same location. Completion
+uses normal Gather and existing friendly food drop-offs, delivering retained
+incompatible/full cargo before harvesting. Unselected gatherers lose only the
+expired source and deliver carried food normally.
+
+Storyboard/backing: existing [admitted Farm lifecycle art](../assets/buildings/frontier-economy-models-v1/README.md)
+and [selection cue direction](ui-audio-direction.md#routine-commands). Select
+Workers → select bare exhausted plot → Replant · 60 wood → paid foundation/frame
+→ completed field → selected Workers carry food to existing depot. Rejection
+leaves bare soil, banks and orders intact with written guidance. No new/private
+pixels, source publication, paid generation or rejected art is admitted.
+
+| Active slice / owner | Next action and bounded scope | Dependencies and observable acceptance |
+| --- | --- | --- |
+| Explicit manual renewal / Farm owner | Finish independent review and exact-head client/authority/native controls, then normal authorized PR integration. `farm-harvest`, optional construction intent validation, narrow server admission/completion hooks and existing lifecycle/selection UI only. | Existing crowd/access routing and architecture boundary stay owned by Crowd01a10933 and architecture; no steering, renderer or shared state schema replacement. Both seats, exactly-once debit, first food delivery, stale generations, invalid plot/funds, interruption, destroy/replacement and cold recovery must pass. |
+| Default release and containing staging / Farm owner with existing public staging delivery owner | Pack clean exact merged source and verify server/client modules; identify an actually containing authorized staging build and smoke it. | Source, release digest and served/deployed source stay separate. No private-art publication or production promotion follows from this code scope. See [deployment guide](deployment.md). |
+| Ordinary Farm renewal acceptance / Farm owner | Execute normal Tiny paid build → Gather → depletion → select Workers/plot → Replant → first depot credit on both seats, desktop/touch and normal/strategic zoom. | Cloud probe at base `6ee1cce4` failed `sandbox-unavailable` and `storage-unavailable`, zero frames/screenshots. Supported browser provider configuration is required; no security bypass or stopped Mac dependency. Record exact build, buttons/state, food/wood/cargo and rendered frames using [qualification](renderer-qualification.md). |
+| Next disjoint readiness slice / Farm owner | Extend the owner-run ordinary Farm capture adapter to select actual Workers and use explicit Replant after depletion, with stock/cargo/bank assertions and no injected food/stock. | Do this after reviewed small source integration. Existing HUD novice/carcass/body pickers remain intact; modify only the Farm recipe and its controls. Actual rendered execution still depends on the qualified cloud renderer. |

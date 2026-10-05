@@ -41,6 +41,15 @@ body headings and normalized atlas candidates have also cleared independent
 source/pixel review; no new animal artwork is admitted to the game. The ranked backlog below
 owns publication, binding, collar fitting and delivered appearance.
 
+**5 October interaction follow-up:** [body picking](qa-sheep-body-picking-2026-10-05.md)
+fixes clicks on displayed approved Sheep art outside the fixed ground-root
+radius at ordinary zoom. The default inspection/Gather picker raycasts current
+art/proxy/marker geometry, rejects transparent atlas padding and retains current
+disclosure/fog/stock and owned-live selection rules. PR488's shared picker fixture
+adoption is consumed unchanged. Wildlife interaction task `01a10d83-3a7d` owns
+delivery and the next disjoint Tiny checkpoint/interruption/wandering audit;
+private action/collar exports remain with the canonical art owner below.
+
 ## Historical reference sources — 2 October 2026
 
 The [v1 reference](art-direction/bellweather-sheep-reference-v1/README.md),
