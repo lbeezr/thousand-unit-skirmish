@@ -58,6 +58,16 @@ actual journey coverage and rendered acceptance are separate.
 
 ### Shared semantics, domain policies
 
+The [next automatic-stance caller audit](qa-automatic-stance-pursuit-2026-10-05.md)
+on unchanged `a0bd7761` records four unsafe Infantry pursuit substeps per
+Aggressive/Defensive stance on each seat, with real commands and unchanged
+legal-range damage. StandGround/NoAttack controls stay fixed and safe. A separate
+24-case defensive-return sample has no unsafe return steps, so no unnecessary
+return change is proposed. Only the two existing automatic acquisition/repath
+conditionals are requested at the linked core interface; no host edit or
+range/game-policy change is made pending allocation. Same-cell range closure
+remains a separately owned endpoint contract.
+
 The separate **target-free military Follow candidate** consumes core PR422's
 durable accepted pending-goal contract at merged building-target source `032eea7d`.
 It adds `followTravelMovementActive` and the caller-owned body-profile fallback;
