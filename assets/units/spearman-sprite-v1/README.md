@@ -1,3 +1,5 @@
-# Human Spearman preview
+# Human Spearman partial animation pack
 
-Eight idle facings plus SE walk, attack and defeat candidates. Other action headings and team mask incomplete. Walk hand correction remains pending. Long weapon uses larger canvases without resizing by weapon extent. Body/root calibration remains provisional until game review.
+Pack 0.4.0 preserves all 32 existing registered poses and adds four locally authored NE walk keys from the already-public painted NE seed. SE walk/attack/defeat and all eight idle facings are retained unchanged. NE uses four 200ms contact/passing keys, one 800ms loop, the existing body calibration and padded original pivot. Six walk headings, seven attack and seven defeat headings remain missing (20 cells). The zero team mask is unchanged in pixels. No matching 3D master, provider job, held v2 art or state/simulation change is involved.
+
+Selected sources and provenance: `docs/art-direction/human-roster-v1/extracted/spearman/walk/north-east-local-v1/registration.json`. Source-size and computed-size review found no blocking defect after fold/cloth seam corrections. Ordinary GPU gait, support-foot speed, normal/strategic/crowded appearance and deployed acceptance remain pending. The private process and all iterations are retained by the Human foot art owner.
