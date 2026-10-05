@@ -108,6 +108,17 @@ test('Infantry playback rejects frozen UVs, reset clocks, duplicate gait pixels 
   assert.throws(()=>validateHeadingSamples(f.samples,{...f.options,cells}),/idle|distinct registered/);
 });
 
+test('another unit or pack cannot be relabelled as default Infantry coverage',async()=>{
+  const f=await runtimeSamples('south-east');
+  assert.throws(()=>validateHeadingSamples(f.samples,{...f.options,kind:'spearman'}),/actual default pack/);
+  const wrongActor=structuredClone(f.samples);wrongActor[0].units[0].kind='spearman';
+  assert.throws(()=>validateHeadingSamples(wrongActor,f.options),/actually observed actor/);
+  const wrongRole=structuredClone(f.samples);wrongRole[0].units[0].role='spearman';
+  assert.throws(()=>validateHeadingSamples(wrongRole,f.options),/actually observed actor/);
+  const wrongPack=structuredClone(f.options.pack);wrongPack.assets[0].id='spearman';
+  assert.throws(()=>validateHeadingSamples(f.samples,{...f.options,pack:wrongPack}),/actual default pack/);
+});
+
 test('actual post-render observer includes the default Infantry and reads its real buffers without mutation',async()=>{
   const f=await runtimeSamples('west'),probe={number:0,targets:[42],samples:[],pending:null,errors:[]};
   const unit={...f.unit,serverX:f.unit.renderX,serverZ:f.unit.renderZ};

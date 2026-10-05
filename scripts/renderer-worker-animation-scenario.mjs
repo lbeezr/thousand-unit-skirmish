@@ -168,6 +168,10 @@ export function registeredSpriteRoot(unit,asset,frame,page) {
   return {x:root[0],y:root[1],z:root[2],worldPerPixel:sx,visibleScale:unit.visibleScale};
 }
 export function identifyUnitFrame(unit,pack,cells,time) {
+  const expectedRole=unit.kind==='worker'?'human':unit.kind;
+  assert.ok(['human','infantry','spearman'].includes(expectedRole)
+    &&unit.role===expectedRole&&pack.assets[0].id===expectedRole,
+    'observed actor kind, role and default pack identity must agree');
   assert.ok(unit.actorDraw,'target actor must be in an active sprite draw');
   assert.ok(unit.inView,'target actor must be inside the useful viewport');
   assert.ok(Array.isArray(unit.uv)&&unit.uv.length===4,'actual instanced UV is required');
@@ -198,6 +202,10 @@ export function identifyUnitFrame(unit,pack,cells,time) {
 }
 
 export function validateHeadingSamples(samples,{unitId,heading,kind,pack,cells}) {
+  const expectedRole=kind==='worker'?'human':kind;
+  assert.equal(pack.assets[0].id,expectedRole,'qualified kind must match the actual default pack');
+  assert.ok(samples.every(s=>s.units.filter(u=>u.id===unitId).every(u=>u.kind===kind&&u.role===expectedRole)),
+    'qualified kind must match the actually observed actor');
   const moving=samples.flatMap(sample=>sample.units.filter(u=>u.id===unitId&&u.walking
     &&u.clockState==='walk'&&normalizedDirection(u.angle)===heading).map(unit=>({...sample,unit,
       identity:identifyUnitFrame(unit,pack,cells,sample.time)})));
