@@ -1,0 +1,1677 @@
+{
+  "status": "existing-contract-verified",
+  "sourceRevision": "fd3f84ac28570f27b8a06518bdae376c79b99177",
+  "sourceDirty": true,
+  "scope": "real production command/tick bodies, physical substeps and separate-module checkpoint recovery; no native transport or rendered claim",
+  "policy": "retain parked Worker pose and accepted exact military point/queue until independently commanded builder departure",
+  "results": [
+    {
+      "team": 0,
+      "direction": "military-first",
+      "parkOrder": null,
+      "builderId": 0,
+      "soldierId": 4,
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
+      "accepted": {
+        "goal": 3124,
+        "point": {
+          "version": 2,
+          "generation": 857291709,
+          "revision": 3,
+          "requestedX": 4.5,
+          "requestedZ": 0.5,
+          "cell": 3124,
+          "x": 4.5,
+          "z": 0.5,
+          "clearanceProfile": "land-static-circle-v1",
+          "arrivalPolicy": "exact"
+        },
+        "queue": [
+          {
+            "destination": 3879,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 857291709,
+              "revision": 3,
+              "requestedX": -8.5,
+              "requestedZ": 8.5,
+              "cell": 3879,
+              "x": -8.5,
+              "z": 8.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ],
+        "generation": 857291709,
+        "revision": 3
+      },
+      "blocked": {
+        "tick": 1059,
+        "builder": {
+          "x": 4.5,
+          "z": 0.5,
+          "holding": false,
+          "revision": 3
+        },
+        "soldier": {
+          "x": 2.4666666666665877,
+          "z": 0.5
+        },
+        "gap": 2.0333333333334123
+      },
+      "completedTick": 1364,
+      "paidWood": 75,
+      "substeps": 1077,
+      "contacts": 0,
+      "originalPointReached": true,
+      "commands": [
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            857291709
+          ],
+          "x": 2.5,
+          "z": 0.5
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            4
+          ],
+          "unitGenerations": [
+            857291709
+          ],
+          "x": -20.5,
+          "z": 0.5
+        },
+        {
+          "tick": 359,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            4
+          ],
+          "unitGenerations": [
+            857291709
+          ],
+          "x": 4.5,
+          "z": 0.5
+        },
+        {
+          "tick": 359,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            4
+          ],
+          "unitGenerations": [
+            857291709
+          ],
+          "x": -8.5,
+          "z": 8.5,
+          "queue": true
+        },
+        {
+          "tick": 359,
+          "seat": 0,
+          "type": "build",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            857291709
+          ],
+          "buildingType": "house",
+          "x": 6.5,
+          "z": 0.5
+        },
+        {
+          "tick": 1159,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            857291709
+          ],
+          "x": 2.5,
+          "z": 8.5
+        }
+      ],
+      "coldRecovery": "separate production module",
+      "originalQueuedEndpoint": {
+        "x": -8.5,
+        "z": 8.5
+      }
+    },
+    {
+      "team": 0,
+      "direction": "builder-first",
+      "parkOrder": null,
+      "builderId": 0,
+      "soldierId": 4,
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
+      "accepted": {
+        "goal": 3124,
+        "point": {
+          "version": 2,
+          "generation": 1360303351,
+          "revision": 3,
+          "requestedX": 4.5,
+          "requestedZ": 0.5,
+          "cell": 3124,
+          "x": 4.5,
+          "z": 0.5,
+          "clearanceProfile": "land-static-circle-v1",
+          "arrivalPolicy": "exact"
+        },
+        "queue": [
+          {
+            "destination": 3879,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 1360303351,
+              "revision": 3,
+              "requestedX": -8.5,
+              "requestedZ": 8.5,
+              "cell": 3879,
+              "x": -8.5,
+              "z": 8.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ],
+        "generation": 1360303351,
+        "revision": 3
+      },
+      "blocked": {
+        "tick": 1522,
+        "builder": {
+          "x": 4.5,
+          "z": 0.5,
+          "holding": false,
+          "revision": 3
+        },
+        "soldier": {
+          "x": 2.4666666666665877,
+          "z": 0.5
+        },
+        "gap": 2.0333333333334123
+      },
+      "completedTick": 1827,
+      "paidWood": 75,
+      "substeps": 1077,
+      "contacts": 0,
+      "originalPointReached": true,
+      "commands": [
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            1360303351
+          ],
+          "x": 2.5,
+          "z": 0.5
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            4
+          ],
+          "unitGenerations": [
+            1360303351
+          ],
+          "x": -20.5,
+          "z": 0.5
+        },
+        {
+          "tick": 359,
+          "seat": 0,
+          "type": "build",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            1360303351
+          ],
+          "buildingType": "house",
+          "x": 6.5,
+          "z": 0.5
+        },
+        {
+          "tick": 822,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            4
+          ],
+          "unitGenerations": [
+            1360303351
+          ],
+          "x": 4.5,
+          "z": 0.5
+        },
+        {
+          "tick": 822,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            4
+          ],
+          "unitGenerations": [
+            1360303351
+          ],
+          "x": -8.5,
+          "z": 8.5,
+          "queue": true
+        },
+        {
+          "tick": 1622,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            1360303351
+          ],
+          "x": 2.5,
+          "z": 8.5
+        }
+      ],
+      "coldRecovery": "separate production module",
+      "originalQueuedEndpoint": {
+        "x": -8.5,
+        "z": 8.5
+      }
+    },
+    {
+      "team": 0,
+      "direction": "military-first",
+      "parkOrder": "stop",
+      "builderId": 0,
+      "soldierId": 4,
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
+      "accepted": {
+        "goal": 3124,
+        "point": {
+          "version": 2,
+          "generation": 3464824755,
+          "revision": 3,
+          "requestedX": 4.5,
+          "requestedZ": 0.5,
+          "cell": 3124,
+          "x": 4.5,
+          "z": 0.5,
+          "clearanceProfile": "land-static-circle-v1",
+          "arrivalPolicy": "exact"
+        },
+        "queue": [
+          {
+            "destination": 3879,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 3464824755,
+              "revision": 3,
+              "requestedX": -8.5,
+              "requestedZ": 8.5,
+              "cell": 3879,
+              "x": -8.5,
+              "z": 8.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ],
+        "generation": 3464824755,
+        "revision": 3
+      },
+      "blocked": {
+        "tick": 1059,
+        "builder": {
+          "x": 4.5,
+          "z": 0.5,
+          "holding": false,
+          "revision": 4
+        },
+        "soldier": {
+          "x": 2.4666666666665877,
+          "z": 0.5
+        },
+        "gap": 2.0333333333334123
+      },
+      "completedTick": 1364,
+      "paidWood": 75,
+      "substeps": 1077,
+      "contacts": 0,
+      "originalPointReached": true,
+      "commands": [
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            3464824755
+          ],
+          "x": 2.5,
+          "z": 0.5
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            4
+          ],
+          "unitGenerations": [
+            3464824755
+          ],
+          "x": -20.5,
+          "z": 0.5
+        },
+        {
+          "tick": 359,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            4
+          ],
+          "unitGenerations": [
+            3464824755
+          ],
+          "x": 4.5,
+          "z": 0.5
+        },
+        {
+          "tick": 359,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            4
+          ],
+          "unitGenerations": [
+            3464824755
+          ],
+          "x": -8.5,
+          "z": 8.5,
+          "queue": true
+        },
+        {
+          "tick": 359,
+          "seat": 0,
+          "type": "build",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            3464824755
+          ],
+          "buildingType": "house",
+          "x": 6.5,
+          "z": 0.5
+        },
+        {
+          "tick": 1059,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            3464824755
+          ]
+        },
+        {
+          "tick": 1159,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            3464824755
+          ],
+          "x": 2.5,
+          "z": 8.5
+        }
+      ],
+      "coldRecovery": "separate production module",
+      "originalQueuedEndpoint": {
+        "x": -8.5,
+        "z": 8.5
+      }
+    },
+    {
+      "team": 0,
+      "direction": "military-first",
+      "parkOrder": "holdPosition",
+      "builderId": 0,
+      "soldierId": 4,
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
+      "accepted": {
+        "goal": 3124,
+        "point": {
+          "version": 2,
+          "generation": 3660510726,
+          "revision": 3,
+          "requestedX": 4.5,
+          "requestedZ": 0.5,
+          "cell": 3124,
+          "x": 4.5,
+          "z": 0.5,
+          "clearanceProfile": "land-static-circle-v1",
+          "arrivalPolicy": "exact"
+        },
+        "queue": [
+          {
+            "destination": 3879,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 3660510726,
+              "revision": 3,
+              "requestedX": -8.5,
+              "requestedZ": 8.5,
+              "cell": 3879,
+              "x": -8.5,
+              "z": 8.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ],
+        "generation": 3660510726,
+        "revision": 3
+      },
+      "blocked": {
+        "tick": 1059,
+        "builder": {
+          "x": 4.5,
+          "z": 0.5,
+          "holding": true,
+          "revision": 4
+        },
+        "soldier": {
+          "x": 2.4666666666665877,
+          "z": 0.5
+        },
+        "gap": 2.0333333333334123
+      },
+      "completedTick": 1364,
+      "paidWood": 75,
+      "substeps": 1077,
+      "contacts": 0,
+      "originalPointReached": true,
+      "commands": [
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            3660510726
+          ],
+          "x": 2.5,
+          "z": 0.5
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            4
+          ],
+          "unitGenerations": [
+            3660510726
+          ],
+          "x": -20.5,
+          "z": 0.5
+        },
+        {
+          "tick": 359,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            4
+          ],
+          "unitGenerations": [
+            3660510726
+          ],
+          "x": 4.5,
+          "z": 0.5
+        },
+        {
+          "tick": 359,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            4
+          ],
+          "unitGenerations": [
+            3660510726
+          ],
+          "x": -8.5,
+          "z": 8.5,
+          "queue": true
+        },
+        {
+          "tick": 359,
+          "seat": 0,
+          "type": "build",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            3660510726
+          ],
+          "buildingType": "house",
+          "x": 6.5,
+          "z": 0.5
+        },
+        {
+          "tick": 1059,
+          "seat": 0,
+          "type": "holdPosition",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            3660510726
+          ]
+        },
+        {
+          "tick": 1159,
+          "seat": 0,
+          "type": "move",
+          "ids": [
+            0
+          ],
+          "unitGenerations": [
+            3660510726
+          ],
+          "x": 2.5,
+          "z": 8.5
+        }
+      ],
+      "coldRecovery": "separate production module",
+      "originalQueuedEndpoint": {
+        "x": -8.5,
+        "z": 8.5
+      }
+    },
+    {
+      "team": 1,
+      "direction": "military-first",
+      "parkOrder": null,
+      "builderId": 8,
+      "soldierId": 12,
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
+      "accepted": {
+        "goal": 3124,
+        "point": {
+          "version": 2,
+          "generation": 1985988042,
+          "revision": 3,
+          "requestedX": 4.5,
+          "requestedZ": 0.5,
+          "cell": 3124,
+          "x": 4.5,
+          "z": 0.5,
+          "clearanceProfile": "land-static-circle-v1",
+          "arrivalPolicy": "exact"
+        },
+        "queue": [
+          {
+            "destination": 3879,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 1985988042,
+              "revision": 3,
+              "requestedX": -8.5,
+              "requestedZ": 8.5,
+              "cell": 3879,
+              "x": -8.5,
+              "z": 8.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ],
+        "generation": 1985988042,
+        "revision": 3
+      },
+      "blocked": {
+        "tick": 1301,
+        "builder": {
+          "x": 4.5,
+          "z": 0.5,
+          "holding": false,
+          "revision": 3
+        },
+        "soldier": {
+          "x": 2.4666666666665877,
+          "z": 0.5
+        },
+        "gap": 2.0333333333334123
+      },
+      "completedTick": 1606,
+      "paidWood": 75,
+      "substeps": 1556,
+      "contacts": 0,
+      "originalPointReached": true,
+      "commands": [
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1985988042
+          ],
+          "x": 2.5,
+          "z": 0.5
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            12
+          ],
+          "unitGenerations": [
+            1985988042
+          ],
+          "x": -20.5,
+          "z": 0.5
+        },
+        {
+          "tick": 601,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            12
+          ],
+          "unitGenerations": [
+            1985988042
+          ],
+          "x": 4.5,
+          "z": 0.5
+        },
+        {
+          "tick": 601,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            12
+          ],
+          "unitGenerations": [
+            1985988042
+          ],
+          "x": -8.5,
+          "z": 8.5,
+          "queue": true
+        },
+        {
+          "tick": 601,
+          "seat": 1,
+          "type": "build",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1985988042
+          ],
+          "buildingType": "house",
+          "x": 6.5,
+          "z": 0.5
+        },
+        {
+          "tick": 1401,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1985988042
+          ],
+          "x": 2.5,
+          "z": 8.5
+        }
+      ],
+      "coldRecovery": "separate production module",
+      "originalQueuedEndpoint": {
+        "x": -8.5,
+        "z": 8.5
+      }
+    },
+    {
+      "team": 1,
+      "direction": "builder-first",
+      "parkOrder": null,
+      "builderId": 8,
+      "soldierId": 12,
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
+      "accepted": {
+        "goal": 3124,
+        "point": {
+          "version": 2,
+          "generation": 1561288500,
+          "revision": 3,
+          "requestedX": 4.5,
+          "requestedZ": 0.5,
+          "cell": 3124,
+          "x": 4.5,
+          "z": 0.5,
+          "clearanceProfile": "land-static-circle-v1",
+          "arrivalPolicy": "exact"
+        },
+        "queue": [
+          {
+            "destination": 3879,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 1561288500,
+              "revision": 3,
+              "requestedX": -8.5,
+              "requestedZ": 8.5,
+              "cell": 3879,
+              "x": -8.5,
+              "z": 8.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ],
+        "generation": 1561288500,
+        "revision": 3
+      },
+      "blocked": {
+        "tick": 1764,
+        "builder": {
+          "x": 4.5,
+          "z": 0.5,
+          "holding": false,
+          "revision": 3
+        },
+        "soldier": {
+          "x": 2.4666666666665877,
+          "z": 0.5
+        },
+        "gap": 2.0333333333334123
+      },
+      "completedTick": 2069,
+      "paidWood": 75,
+      "substeps": 1556,
+      "contacts": 0,
+      "originalPointReached": true,
+      "commands": [
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1561288500
+          ],
+          "x": 2.5,
+          "z": 0.5
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            12
+          ],
+          "unitGenerations": [
+            1561288500
+          ],
+          "x": -20.5,
+          "z": 0.5
+        },
+        {
+          "tick": 601,
+          "seat": 1,
+          "type": "build",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1561288500
+          ],
+          "buildingType": "house",
+          "x": 6.5,
+          "z": 0.5
+        },
+        {
+          "tick": 1064,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            12
+          ],
+          "unitGenerations": [
+            1561288500
+          ],
+          "x": 4.5,
+          "z": 0.5
+        },
+        {
+          "tick": 1064,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            12
+          ],
+          "unitGenerations": [
+            1561288500
+          ],
+          "x": -8.5,
+          "z": 8.5,
+          "queue": true
+        },
+        {
+          "tick": 1864,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            1561288500
+          ],
+          "x": 2.5,
+          "z": 8.5
+        }
+      ],
+      "coldRecovery": "separate production module",
+      "originalQueuedEndpoint": {
+        "x": -8.5,
+        "z": 8.5
+      }
+    },
+    {
+      "team": 1,
+      "direction": "military-first",
+      "parkOrder": "stop",
+      "builderId": 8,
+      "soldierId": 12,
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
+      "accepted": {
+        "goal": 3124,
+        "point": {
+          "version": 2,
+          "generation": 690865304,
+          "revision": 3,
+          "requestedX": 4.5,
+          "requestedZ": 0.5,
+          "cell": 3124,
+          "x": 4.5,
+          "z": 0.5,
+          "clearanceProfile": "land-static-circle-v1",
+          "arrivalPolicy": "exact"
+        },
+        "queue": [
+          {
+            "destination": 3879,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 690865304,
+              "revision": 3,
+              "requestedX": -8.5,
+              "requestedZ": 8.5,
+              "cell": 3879,
+              "x": -8.5,
+              "z": 8.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ],
+        "generation": 690865304,
+        "revision": 3
+      },
+      "blocked": {
+        "tick": 1301,
+        "builder": {
+          "x": 4.5,
+          "z": 0.5,
+          "holding": false,
+          "revision": 4
+        },
+        "soldier": {
+          "x": 2.4666666666665877,
+          "z": 0.5
+        },
+        "gap": 2.0333333333334123
+      },
+      "completedTick": 1606,
+      "paidWood": 75,
+      "substeps": 1556,
+      "contacts": 0,
+      "originalPointReached": true,
+      "commands": [
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            690865304
+          ],
+          "x": 2.5,
+          "z": 0.5
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            12
+          ],
+          "unitGenerations": [
+            690865304
+          ],
+          "x": -20.5,
+          "z": 0.5
+        },
+        {
+          "tick": 601,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            12
+          ],
+          "unitGenerations": [
+            690865304
+          ],
+          "x": 4.5,
+          "z": 0.5
+        },
+        {
+          "tick": 601,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            12
+          ],
+          "unitGenerations": [
+            690865304
+          ],
+          "x": -8.5,
+          "z": 8.5,
+          "queue": true
+        },
+        {
+          "tick": 601,
+          "seat": 1,
+          "type": "build",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            690865304
+          ],
+          "buildingType": "house",
+          "x": 6.5,
+          "z": 0.5
+        },
+        {
+          "tick": 1301,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            690865304
+          ]
+        },
+        {
+          "tick": 1401,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            690865304
+          ],
+          "x": 2.5,
+          "z": 8.5
+        }
+      ],
+      "coldRecovery": "separate production module",
+      "originalQueuedEndpoint": {
+        "x": -8.5,
+        "z": 8.5
+      }
+    },
+    {
+      "team": 1,
+      "direction": "military-first",
+      "parkOrder": "holdPosition",
+      "builderId": 8,
+      "soldierId": 12,
+      "runtimeServerSha256": "a9b342a720095055d1e4095e8fe55978ba3d482ad0f8b19f77a6975cf1ee054b",
+      "accepted": {
+        "goal": 3124,
+        "point": {
+          "version": 2,
+          "generation": 4118063164,
+          "revision": 3,
+          "requestedX": 4.5,
+          "requestedZ": 0.5,
+          "cell": 3124,
+          "x": 4.5,
+          "z": 0.5,
+          "clearanceProfile": "land-static-circle-v1",
+          "arrivalPolicy": "exact"
+        },
+        "queue": [
+          {
+            "destination": 3879,
+            "attackMove": false,
+            "point": {
+              "version": 2,
+              "generation": 4118063164,
+              "revision": 3,
+              "requestedX": -8.5,
+              "requestedZ": 8.5,
+              "cell": 3879,
+              "x": -8.5,
+              "z": 8.5,
+              "clearanceProfile": "land-static-circle-v1",
+              "arrivalPolicy": "exact"
+            }
+          }
+        ],
+        "generation": 4118063164,
+        "revision": 3
+      },
+      "blocked": {
+        "tick": 1301,
+        "builder": {
+          "x": 4.5,
+          "z": 0.5,
+          "holding": true,
+          "revision": 4
+        },
+        "soldier": {
+          "x": 2.4666666666665877,
+          "z": 0.5
+        },
+        "gap": 2.0333333333334123
+      },
+      "completedTick": 1606,
+      "paidWood": 75,
+      "substeps": 1556,
+      "contacts": 0,
+      "originalPointReached": true,
+      "commands": [
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "stop",
+          "ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 0,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "stop",
+          "ids": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "setStance",
+          "stance": "noAttack",
+          "ids": [
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            4118063164
+          ],
+          "x": 2.5,
+          "z": 0.5
+        },
+        {
+          "tick": 0,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            12
+          ],
+          "unitGenerations": [
+            4118063164
+          ],
+          "x": -20.5,
+          "z": 0.5
+        },
+        {
+          "tick": 601,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            12
+          ],
+          "unitGenerations": [
+            4118063164
+          ],
+          "x": 4.5,
+          "z": 0.5
+        },
+        {
+          "tick": 601,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            12
+          ],
+          "unitGenerations": [
+            4118063164
+          ],
+          "x": -8.5,
+          "z": 8.5,
+          "queue": true
+        },
+        {
+          "tick": 601,
+          "seat": 1,
+          "type": "build",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            4118063164
+          ],
+          "buildingType": "house",
+          "x": 6.5,
+          "z": 0.5
+        },
+        {
+          "tick": 1301,
+          "seat": 1,
+          "type": "holdPosition",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            4118063164
+          ]
+        },
+        {
+          "tick": 1401,
+          "seat": 1,
+          "type": "move",
+          "ids": [
+            8
+          ],
+          "unitGenerations": [
+            4118063164
+          ],
+          "x": 2.5,
+          "z": 8.5
+        }
+      ],
+      "coldRecovery": "separate production module",
+      "originalQueuedEndpoint": {
+        "x": -8.5,
+        "z": 8.5
+      }
+    }
+  ]
+}
