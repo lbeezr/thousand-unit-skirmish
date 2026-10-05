@@ -117,7 +117,7 @@ served/deployed identity and actual rendered acceptance remain separate.
 | 2 — implemented; review/integration and rendered use tracked in its PR | Pending and seven representative loader failure paths originally produced the same null action observation. The existing animation probe now retains bounded aggregate load state and finite failure provenance, including failure before any capture. | Read-only `observeLoad()` and existing adapter/report only; no roles, URLs, error payloads, identifiers, counts or timestamps. Promise outcomes, warning identity/count, all-or-nothing admission and late sibling controls remain unchanged. Shadow no-overlap confirmation and precise foot-art supported-version-only patch inspection cover the allocated loader boundary. |
 | 3 — finite replay observation implemented; exact review/integration tracked in PR464 | On both seats, a production crowd wait, Hold and planning-pending state produce identical ordinary unit rows. Finite observations are consumed in the existing private queued-gate report; do not infer a deadlock from missing motion. | Requested owned actors only, at most eight current-step observations; no paths, targets, neighbors or public/session transport changes. Crowd/core approved the finite replay observer; repair instrumentation remains unchanged. Rich native instrumentation and movement policy stay with their owners. |
 | 4 — finite final admission implemented; exact review/integration tracked in PR468 | A positive vector can be rejected, admitted with changed position, or admitted at a zero-distance waypoint. The finite report now distinguishes these outcomes. | Reuse the same at-most-eight owned-actor observer and queued-gate report. Core agreed the precise fixture hook; original predicates, calls, policy, deadlines and assertions stay intact. Admission is separate from last-evaluation physical position change. Core/crowd retain executor policy. |
-| 5 — next bounded audit | Two unfinished actors in the controlled parked-Hold consumer were physically moving on their last admitted evaluation. That does not establish net journey progress or explain the unchanged arrival shortfall. | Use existing private replay checkpoints and no-progress measurements to distinguish continued advance from oscillation before proposing another diagnostic field. Retain this consumer and bounded own-actor scope; no movement-policy intervention or deadlock claim. |
+| 5 — fixed motion window implemented; exact review/integration tracked in PR473 | Two unfinished actors in the controlled parked-Hold consumer moved on their last admitted evaluation but traveled about 1.3 sampled units with near-zero net displacement over the final 30 ticks. | Same private finite report; at most eight bindings × 31 own poses, full 30 consecutive tick intervals. Report net displacement and sampled tick-chord travel separately from admission, goal progress and success. No executor hook or movement-policy experiment. |
 
 ### Pending versus failed loader provenance — 5 October 2026
 
@@ -363,3 +363,79 @@ is claimed. This hook is private
 source replay tooling, excluded from the game package; package identity,
 deployment and rendered acceptance remain separate. No renderer retry or art
 change is part of this slice.
+
+### Fixed-window net displacement audit and consumer — 5 October 2026
+
+At source `90cbae99`, the existing team-0 parked-Hold queued-gate consumer still
+fails its arrival condition: 60/64 at 2700 ticks, with unchanged trace
+`dabffbe8cde26eae2335b789a39ed749e3dad386a84c8dc1fdb0db0cfe6f1899`.
+A read-only audit of its final 30 whole-tick intervals measures:
+
+| Controlled owned actor | Net displacement | Sum of sampled tick-chord lengths | Opposing consecutive chords |
+| --- | --- | --- | --- |
+| Unfinished actor 14 | 0.004506799457089979 | 1.2999999999999987 | 29 |
+| Unfinished actor 15 | 4.125895361409781e-8 | 1.299999999999998 | 29 |
+| Waiting actors 20/35; held builder 0; completed actor 4 | 0 | 0 | 0 |
+
+Both unfinished moving actors still report admitted steering and a changed
+position on their last evaluation. The consecutive-chord audit shows repeated
+reversal in this controlled window. The former one-evaluation observation
+cannot show this. Sampled travel exceeding net displacement alone does not
+classify oscillation: ordinary curved movement can have that relationship too.
+Neither metric reads a destination or establishes goal progress or success.
+
+The existing opted-in replay observation now appends a pose-free `motionWindow`
+to the same rows and queued-gate report. A complete window reports
+`{ticks: 30, netDisplacement, sampledTravelDistance}` in simulation world units;
+an incomplete or stale window is null, never a false zero-displacement claim.
+It samples whole-tick end positions plus its initial pose, so travel is the sum
+of 30 sampled chords, not an exact substep trajectory. Whole-tick samples include
+separation and other tick effects independently of the land-admission outcome.
+No target-distance, arrival, stall/deadlock or success classification is added.
+
+Storage stays inside the existing at-most-eight actor bindings and retains at
+most 31 private poses each (248 total). Each opted-in replay step samples only
+current living requested owned actors after the unchanged simulation tick;
+ownership, reference and generation checks precede pose reads. Order or
+navigation changes, nonconsecutive ticks, invalid pose, death or replacement
+drop continuous coverage. Repeated calls at one tick do not advance a window.
+Report reads check current tick/order/navigation and final sampled pose.
+Subscription replacement, prepare and restore clear all window state with the
+existing bindings. No public/session fields, enemy/neighbor data, coordinates,
+targets, new executor anchors or crowd policy are changed. Observation off
+does not sample windows. Current-main/open-PR inspection found no overlapping
+fixture/report change; the shared executor hook remains the previously agreed
+PR468 hook.
+
+Positive/negative controls cover straight versus reversing samples, incomplete
+coverage, a rolling window beyond 30 ticks, all eight bindings/248-pose cap,
+duplicate/gapped/backwards ticks, order/navigation, stale pose, generation,
+replacement, subscription reset and invalid pose. Existing enemy/dead/unbound
+getter traps protect sampling too. Both-seat actual replay independently
+recomputes metrics from 31 own tick-end poses while comparing complete actor
+state and filtered snapshots with observation off. Existing rich traces retain
+parity. The actual failed consumer keeps identical arrival, deadlines, trace,
+goals, legality/path bounds and existing no-progress measurements off/on; its
+arrival failure is not diagnostic success evidence.
+
+The ordinary opt-in selects the first seven own army actors and builder. That
+selection need not include the unfinished actors. Use the existing private
+consumer's `unfinished` IDs in a bounded repeat; no new selector is required:
+
+```js
+const options = {team: 0, observe: true, returnBuilder: false, parkOrder: 'holdPosition'};
+const failed = await runQueuedGateCase(options);
+const requested = failed.unfinished.slice(0, 8).map(actor => actor.id);
+const observed = await runQueuedGateCase({...options, observePauses: true, pauseActorIds: requested});
+assert.equal(observed.traceSha256, failed.traceSha256);
+assert.equal(observed.arrived, failed.arrived); // still a failure when below 64
+```
+
+This closes the measured fixed-window observation gap in the existing consumer.
+The ranked remaining work is actual rendered consumption of the earlier
+animation/load signals when capability becomes available, and new finite
+diagnostics only for another reproduced consumer gap. Movement/transit policy
+and the 60/64 failure remain with core/crowd. Source tooling is excluded from
+the game package; package, deployed identity and rendered acceptance remain
+separate. No failed renderer/dispatch retry, held art or private archive action
+is part of this slice. Art backing N/A.

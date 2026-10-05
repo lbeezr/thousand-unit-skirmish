@@ -268,22 +268,33 @@ for(const team of [0,1])test(`seat ${team}: opted-in pause projection preserves 
     assert.deepEqual(r.movementObservations().map(row=>row.id),own.map(u=>u.id));
     for(const fixture of [off,on])fixture.replay.order(team,{type:'move',ids:own.map(u=>u.id),x:16.5,z:.5});
     assert.ok(r.movementObservations().every(row=>row.planningPending===true),'actual accepted sliced planning is pending');
-    for(let tick=0;tick<30;tick++) {
+    const poses=new Map(own.map(u=>[u.id,[]]));
+    for(let tick=0;tick<31;tick++) {
       off.replay.step();r.step();
       assert.deepEqual(r.units,off.replay.units);assert.deepEqual(r.snapshot(team).units,off.replay.snapshot(team).units);
       assert.deepEqual(r.actorTrace,[]);assert.deepEqual(r.crowdSteps,[]);
       const rows=r.movementObservations();assert.ok(rows.length<=4);
-      assert.ok(rows.every(row=>Object.keys(row).join('|')==='id|holding|planningPending|performingAction|routeActive|decision|admission|positionChanged'));
+      assert.ok(rows.every(row=>Object.keys(row).join('|')==='id|holding|planningPending|performingAction|routeActive|decision|admission|positionChanged|motionWindow'));
+      for(const u of own)poses.get(u.id).push({x:u.x,z:u.z});
+      if(tick<30)assert.ok(rows.every(row=>row.motionWindow===null),'new order warms a full continuous window');
     }
     assert.ok(r.movementObservations().some(row=>row.decision==='vector-proposal'));
     assert.ok(r.movementObservations().some(row=>['waypoint-admitted','steering-admitted','fallback-admitted'].includes(row.admission)
       &&row.positionChanged===true),'actual replay consumes admitted physical movement');
+    for(const row of r.movementObservations()){
+      const samples=poses.get(row.id),first=samples[0],last=samples[30];
+      assert.equal(row.motionWindow.ticks,30);
+      assert.equal(row.motionWindow.netDisplacement,Math.hypot(last.x-first.x,last.z-first.z));
+      const travel=samples.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p.x-samples[i].x,p.z-samples[i].z),0);
+      assert.equal(row.motionWindow.sampledTravelDistance,travel,'actual tick-end poses independently establish metric');
+    }
     const saved=r.checkpoint();r.restore(saved);assert.deepEqual(r.movementObservations(),[]);
     const actor=r.units.find(u=>u.id===own[0].id);r.observeMovement(team,[actor.id]);
     assert.equal(r.movementObservations()[0].decision,'unobserved');
     assert.equal(r.movementObservations()[0].admission,'unobserved');assert.equal(r.movementObservations()[0].positionChanged,null);
+    assert.equal(r.movementObservations()[0].motionWindow,null);
     r.order(team,{type:'holdPosition',ids:[actor.id]});assert.equal(r.movementObservations()[0].holding,true);
-    r.step();assert.equal(r.movementObservations()[0].holding,true);
+    r.step();assert.equal(r.movementObservations()[0].holding,true);assert.equal(r.movementObservations()[0].motionWindow,null);
     r.order(team,{type:'stop',ids:[actor.id]});assert.equal(r.movementObservations()[0].routeActive,false);
     r.prepare(map);assert.deepEqual(r.movementObservations(),[]);
   } finally {await off.dispose();await on.dispose();}
