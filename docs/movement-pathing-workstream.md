@@ -1258,6 +1258,50 @@ CI capture owners supply their interfaces; a source merge does not close
 served identity or pixels. Ordinary320 remains closed. Art backing N/A for
 this internal retention change; rejected art holds remain intact.
 
+### Next general Worker publication contract
+
+The retained reporter now additionally consumes the actual `workerAtDropoff`
+stale-navigation branch. Six synthetic flat/weighted quota cases on 320×160,
+160×320 and 320² preserve live cargo, phase, raw selected tail/score/cost, but
+increase saved entries beyond quota after reselecting a drop-off. The checkpoint
+leaf refuses those overshoots. These are source writer witnesses with controlled
+drop-off/flow selectors and policy, not paid-building lifecycle, native XL
+checkpoint/admission, timing or rendered acceptance.
+
+The next core/resource decision concerns live `applyWorkerFlowRoute` publication
+and its synchronous operation scope. A guard on this helper must distinguish
+real live actors from Return's temporary clones; Return remains charged by its
+merged command adopter. Selection, raw scoring, chosen tail, reduction, cargo,
+rates and continuation stay resource-owned. Core proposes only reservation at
+the live publication slot and a bounded operation-local ledger/repair handoff.
+The proposed shared writes are that subsection of `applyWorkerFlowRoute`,
+scope lifetime in `updateWorkerEconomy`, and minimal forwarding through
+`routeWorker`, `routeForestWorker`, `routeWorkerToDropoff`,
+`updateForestWorkerEconomy` and `workerAtDropoff`. Resource retains every
+surrounding selection, validity, harvest and continuation condition.
+The initial adopter must charge every positive Worker route write within its
+scope, including automatic drop-off/resumption and navigation reselection.
+Reusing one phase ledger while leaving other growing Worker writers uncharged
+would undercount; independently rescanning all actors per recipient instead
+would add repeated census work. This is the concrete scope decision to resolve,
+not an additional master plan or unused abstraction.
+
+The proposed first operation is existing `updateWorkerEconomy` and its actual
+forest/drop-off helper calls, followed by existing manual Gather/forest command
+groups and paid-footprint repair callers. The ledger must end with that operation;
+clears may conservatively delay credit until a fresh scope but cannot create
+optimistic reuse. Refusal keeps the selected goal/resource job, cargo and queue,
+releases refused arrays and hands off to the guarded service without phantom
+arrival or old-leg execution. Stop/new manual intent, generation, epoch and
+navigation changes retain their existing priority/identity checks. Acceptance
+requires mixed live-writer quota/alias controls, bounded census/staging, fresh
+field-release retry and both-seat real Food/Wood/Stone/forest/Farm conservation,
+continuation and cold recovery. Water and wildlife keep separate adapters.
+Core and resource agree exact host functions before implementation; Return and
+the independent census diagnostic PR remain separate reviewed slices. Source,
+package, deployed identity and real normal-game pixels remain distinct, and
+ordinary320 remains closed.
+
 Stationary construction is another uncovered core consumer, with no runtime
 patch selected. Twelve real-command probes at the same clean source stage two
 or four Workers from each seat, pay 75 Wood for a House and observe actual work.

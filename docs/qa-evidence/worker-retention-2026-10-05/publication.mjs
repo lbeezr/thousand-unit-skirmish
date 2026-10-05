@@ -13,7 +13,7 @@ import { preflightXlCheckpointRoutes, XL_CHECKPOINT_ROUTE_MAX_ENTRIES as QUOTA }
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const source = readFileSync(new URL('../../../server.mjs', import.meta.url), 'utf8');
-const names = ['workerFlowPath', 'applyWorkerFlowRoute', 'routeWorkerToDropoff', 'assignReturnCargo', 'clearAttackMoveOrder'];
+const names = ['workerFlowPath', 'applyWorkerFlowRoute', 'routeWorkerToDropoff', 'assignReturnCargo', 'clearAttackMoveOrder', 'workerAtDropoff'];
 function body(name) {
   const start = source.indexOf(`function ${name}(`), end = source.indexOf('\nfunction ', start + 1);
   assert.ok(start > 0 && end > start, name); return source.slice(start, end);
@@ -62,6 +62,8 @@ function fixture(width, height, mode, beforeEntries, count = 1, oldLength = 0) {
     workerDropoffCandidates: () => candidates,
     getAttackFlowFieldForGoals: (_goals, key) => key.includes(':10:') ? fields[0] : fields[1],
     pathFromAttackFlow: (_start, field) => field.path.slice(), distanceToBuildingEdge: () => Infinity,
+    buildingsById: new Map([[10, { id: 10, team: 0, complete: true, type: 'town-center' }]]),
+    acceptsProfileDropoff: () => true,
   });
   vm.runInContext(names.map(name => bodies[name]).join('\n'), context);
   const apply = context.applyWorkerFlowRoute;
@@ -79,6 +81,12 @@ function fixture(width, height, mode, beforeEntries, count = 1, oldLength = 0) {
 function outcome(f, command) {
   const before = savedEntries(f.units, f.nodes), cargo = f.actors.reduce((sum, u) => sum + u.cargo, 0);
   if (command === 'Return') f.context.assignReturnCargo({ team: 0 }, { type: 'returnCargo', ids: f.actors.map(u => u.id) });
+  else if (command === 'navigation-retry') {
+    Object.assign(f.actors[0], { dropoffBuildingId: 10, dropoffNavigationRevision: 3, gatherPhase: 'to-base' });
+    assert.equal(f.context.workerAtDropoff(f.actors[0]), false);
+    assert.equal(f.actors[0].orderRevision, 8); assert.equal(f.actors[0].gatherPhase, 'to-base');
+    assert.equal(f.actors[0].dropoffNavigationRevision, 4);
+  }
   else f.context.routeWorkerToDropoff(f.actors[0]);
   const after = savedEntries(f.units, f.nodes);
   const expectedCost = movement.unitRoutePathCost(f.start, f.raw, f.width, f.levels);
@@ -127,13 +135,20 @@ for (const [width, height] of [[16, 17], [160, 160], [256, 256]]) {
   const result = outcome(fixture(width, height, 'flat', 0), 'flow');
   assert.equal(result.checkpointLeaf, 'legacy-bypass'); cases.push({ mode: 'legacy', ...result });
 }
+for (const [width, height] of [[320, 160], [160, 320], [320, 320]]) for (const mode of ['flat', 'weighted']) {
+  const result = outcome(fixture(width, height, mode, QUOTA), 'navigation-retry');
+  assert.ok(result.publications.every(p => p.liveActor), 'actual stale-navigation branch publishes on the live carrying Worker');
+  assert.equal(result.after, QUOTA + (mode === 'flat' ? 1 : 5));
+  assert.equal(result.checkpointLeaf, 'aggregate-refused'); cases.push({ mode, ...result });
+}
 const report = { sourceRevision: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
   sourceDirty: Boolean(execFileSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).trim()),
   inputSha256: Object.fromEntries(names.map(name => [name, createHash('sha256').update(bodies[name]).digest('hex')])),
-  scope: 'Production Worker route/reduction/drop-off/land Return bodies with controlled selectors and synthetic saved-field pressure; repair requests observed at the service boundary, real checkpoint route leaf only. Baseline JSON remains historical; registered Return journeys separately consume the actual service/recovery/physical/deposit bodies. No full XL checkpoint, ordinary XL admission, CPU capacity, served or rendered claim.',
+  scope: 'Production Worker route/reduction/drop-off/land Return and workerAtDropoff stale-navigation bodies with controlled selectors/policy and synthetic saved-field pressure; repair requests observed at the service boundary, real checkpoint route leaf only. Baseline JSON remains historical; registered Return journeys separately consume the actual service/recovery/physical/deposit bodies. No full XL checkpoint, paid-building lifecycle, ordinary XL admission, CPU capacity, served or rendered claim.',
   cases };
 if (process.argv[2]) writeFileSync(process.argv[2], JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify({ source: report.sourceRevision, dirty: report.sourceDirty, cases: cases.length,
   aggregateOvershoots: cases.filter(c => c.exceedsQuota).length,
   cloneReturnOvershoots: cases.filter(c => c.command === 'Return' && c.exceedsQuota).length,
+  navigationRetryOvershoots: cases.filter(c => c.command === 'navigation-retry' && c.exceedsQuota).length,
   replacementControls: cases.filter(c => c.mode === 'flat-replacement').length }));
