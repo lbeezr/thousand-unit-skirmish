@@ -41,7 +41,8 @@ changes through depletion/reset, and deterministic rebuild. They verify the
 actual state UV/matrix buffers and individual fallback, with CPU image stubs.
 The existing oak-depletion and tree-picking tests retain their own scopes.
 The new check runs through the existing forest-age CI entry; its pure runtime
-module receives only the required presentation-domain classification.
+module receives the required presentation-domain classification and its exact
+public HTTP path. No folder admission or server-host behavior changes.
 
 Cloud renderer qualification at the audited head returned **blocked**, exit 1:
 `sandbox-unavailable` and `storage-unavailable`, zero game frames/screenshots.
