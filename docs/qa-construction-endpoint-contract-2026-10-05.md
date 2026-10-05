@@ -50,6 +50,15 @@ run passes 148/148, including construction selection/targeting, stationary
 orders, fractional endpoints and crowd module regressions. Exact-head review,
 types/imports and package receipts belong to the PR.
 
+The separate [native witness](qa-evidence/construction-endpoint-contract-2026-10-05/native.json)
+runs both actual WebSocket seats on `8030aff3c180f4a7a6fec9c5311c3b74411c44c9`
+with military-before-build commands and two cold process restarts. Each seat
+retains the completed builder pose, exact military point/revision and queue
+after reconnect and another 60 ticks, then completes the original queued
+endpoint after selecting and commanding only the builder away. Both sites
+retain the once-only 75 Wood debit and military HP. This transport/process
+witness supplements the CPU geometry observations; it records no game frames.
+
 ## Existing semantics and the next interface
 
 The game bible's [Stop/Hold contract](game-bible.md#stationary-army-orders)
@@ -71,15 +80,22 @@ establish a general no-new-conflict guarantee.
 [The exact allocation discussion](https://github.com/lbeezr/thousand-unit-skirmish/pull/443#issuecomment-5989535783)
 keeps core's operation-local accepted/pending military endpoint availability
 query separate from caller-owned construction access selection and actual work
-pose admission. Its callable contract and the existing bounded pending/retry
-mechanism for an all-reserved work area are still unresolved. Any future change
+pose admission. The subsequent [exact core proposal](https://github.com/lbeezr/thousand-unit-skirmish/pull/443#issuecomment-5989632712)
+and [caller agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/443#issuecomment-5989678024)
+define `createOrdinaryMilitaryEndpointAvailability` with operation-local census
+and `available/blocked/deferred` queries, plus a construction-owned dynamic
+occupancy extension of existing transient retries. Occupancy must retain paid
+intent, consume no static-failure attempts, enqueue no repair until a safe
+candidate exists, and resume on release without requiring a navigation revision.
+Core's query implementation and the separately reviewed construction consumer
+remain the next dependency and increment. Any future change
 must retain paid site/area intent, range/rate/cost, queue, replacement and cold
 recovery, including completion before approach exhaustion. It must preserve
 already parked conflicts as waits. No runtime edit precedes that agreement.
 
 The existing wait contract is verified; choosing a different new construction
-access/work pose to prioritize accepted military endpoints is a separately
-proposed policy. This audit does not enact that preference or infer consent.
+access/work pose to prioritize accepted military endpoints belongs to that
+separately agreed increment. This audit does not enact that preference.
 Worker economy publication stays with core PR438, and crowd yielding stays
 with the crowd owner. The full paid-house suite's three final-arrival failures
 and original deadlines remain open; this small witness neither removes those
