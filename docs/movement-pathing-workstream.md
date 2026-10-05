@@ -1587,6 +1587,41 @@ independent exact-head review, release/native qualification and normal merge
 belong to this economy increment. Source, package, deployed identity and real
 normal-game pixels remain distinct. Ordinary320 and universal completion stay open.
 
+### Bounded manual Gather publication adopter
+
+The clean `16047ce2` read-only command witness found twelve XL quota overshoots:
+four selected Workers add four flat or twenty weighted entries at quota on both
+seats and all three planned320 shapes; eight160/256 controls retain their bypass.
+This is synthetic route pressure, not native XL admission. The registered
+[Gather admission journeys](../scripts/worker-gather-route-admission-journeys.mjs)
+consume the actual production dispatch, command resolver, unchanged neutral/Farm
+Gather and forest delegation, selectors, publication, service, physical economy
+and recovery bodies. Their old-dispatch control fails all24 neutral/forest
+shape/seat/weight quota cases; the scoped dispatcher keeps the accepted envelope.
+
+Core reuses the economy operation's existing lazy ledger and finally-unwound
+guarded metadata handoff through `withWorkerRouteAdmission`. The sole Gather
+callee in `handleCommand` becomes `assignGatherWithRouteAdmission`; resource
+selectors/assignment, cargo, raw drop-off rank/tail/cost, reduction, rates,
+continuation, auth/resolver and planner bodies remain unchanged. One census
+serves all live recipients; refusals release arrays while retaining each newly
+accepted goal/job/cargo. New manual Gather still clears old Shift waypoints as
+before. Later retries use current metadata and fresh capacity through existing
+service. Cleared resume fields can conservatively retain charge until that
+fresh reservation; aliases remain charged per saved field. Legacy maps bypass
+the scope; rejected/stale commands and naval delegation are census-free.
+
+Callback and one/two-turn controls retain selected goals while waiting, conserve
+once-only finite Food deposits, recover productive forest work from cold metadata
+and preserve other typed cargo/new remembered work. These source controls do not
+close complete native XL saves, all remaining retention writers, renderer/GPU
+capacity or ordinary320. Paid-footprint/farm-destruction writers remain separate
+adopters; construction endpoint consumption stays with its agreed caller owner.
+Core retains exact-head review, normal merge, native/release and identified
+served/rendered follow-through for this command increment.
+
+### Stationary construction characterization
+
 Stationary construction is another uncovered core consumer, with no runtime
 patch selected. Twelve real-command probes at the same clean source stage two
 or four Workers from each seat, pay 75 Wood for a House and observe actual work.
