@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "scope": "Approved-runtime coverage: eight-view Sheep, Human Worker SE fishing, eight Frontier Complete families, eight painted ground materials with six authored mips and the scree terrace-face consumer, three generic oak depletion states with six authored mips. Concepts, unapproved candidates and other runtime families are outside this guard.",
+  "scope": "Approved-runtime coverage: eight-view Sheep, Human Worker SE fishing, established Human Spearman v1 default registration (action completeness is separate), eight Frontier Complete families, eight painted ground materials with six authored mips and the scree terrace-face consumer, three generic oak depletion states with six authored mips. Concepts, unapproved candidates and other runtime families are outside this guard.",
   "records": [
     {
       "id": "frontier-oak-depletion-atlas-v1",
@@ -27,6 +27,12 @@
       "owner": "Worker art/renderer owner",
       "probe": "human-worker-fishing",
       "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json"
+    },
+    {
+      "id": "human-spearman-default",
+      "owner": "Human foot-art integration owner",
+      "probe": "human-spearman",
+      "manifest": "assets/units/spearman-sprite-v1/sprite-atlas-pack-v1.json"
     },
     {
       "id": "frontier-town-center",

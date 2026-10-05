@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import { frontierBuildingManifestUrl, frontierBuildingPreviewUrl } from '../src/frontier-building-preview.mjs';
 import { WILDLIFE_RENDER_REGISTRY } from '../src/neutral-wildlife-renderer.mjs';
-import { activeState, spriteActionClip, spriteDirectory } from '../src/unit-sprite-runtime.mjs';
+import { activeState, civilizationSpriteRole, spriteActionClip, spriteDirectory } from '../src/unit-sprite-runtime.mjs';
 import { checkClientImports } from './check-client-imports.mjs';
 import { groundTextureName, PAINTED_MATERIAL_ATLAS_MANIFEST, PAINTED_MATERIAL_NAMES,
   paintedMaterialAtlasDescriptor } from '../src/painted-material-atlas-runtime.mjs';
@@ -142,6 +142,16 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null, 
         workResourceVariant: 'shore-fish', performingAction: 'gather-food' }, 1000);
       assert.equal(state, 'gather-fish');
       assert.equal(spriteActionClip(clips, state, 'south-east', 'food', 'human')?.stateId, 'gather-fish');
+    } else if (record.probe === 'human-spearman') {
+      module = 'src/unit-sprite-runtime.mjs';
+      const role = runtime.teamCivilizations ? civilizationSpriteRole('spearman', runtime.teamCivilizations[0]) : 'spearman';
+      defaultBound = role === 'spearman' && runtime.roles.includes(role) && runtime.roleSpriteVersions[role] === 'v1'
+        && `assets/units/${spriteDirectory('spearman', runtime.roleSpriteVersions.spearman)}/sprite-atlas-pack-v1.json` === record.manifest;
+      assert.equal(manifest.assets?.length, 1, `${record.id}: one established Spearman asset required`);
+      assert.equal(manifest.assets[0].id, 'spearman', `${record.id}: wrong unit identity`);
+      assert.deepEqual((manifest.files || []).filter(file => ['runtime', 'team-mask'].includes(file.usage))
+        .map(file => file.path).sort(), ['spearman-atlas-runtime.png', 'team-accent-mask.png'],
+      `${record.id}: declared runtime atlas and team mask required`);
     } else throw new Error(`${record.id}: unsupported default-binding probe ${record.probe}`);
     assert.ok(graph.has(module), `${record.id}: consumer not reachable from game entry`);
     for (const file of record.probe === 'painted-ground' ? [] : manifest.files || []) {
