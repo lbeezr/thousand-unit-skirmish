@@ -42,7 +42,8 @@ priority in team1's Skirmish selector: a disclosed living military land unit
 already within its public attack range of an available assault unit precedes
 producers. Workers and distant military units retain the existing priority.
 
-The candidate kills Infantry95 at tick108077 (2.57seconds), resumes Town Center
+Infantry95 is observed alive at108075 and dead at108078 (within2.6seconds). The
+candidate resumes Town Center
 orders at108090 and preserves all four frontline attackers through108000+1800.
 Their total remaining HP is304; Town Center damage is500.4HP. Both modes repeat
 complete command ledgers and terminal checkpoint hashes exactly. Every command
@@ -71,12 +72,15 @@ seats/three seeds for direct priority and generation contracts, public range
 boundaries for all six military kinds, excluded dead/friendly/Worker/water/unknown
 and distant targets, and preserved focused/recent combat protection. Four native
 cases cover the actual seat1 failure in both modes, warm and with fresh fixture
-and policy restore during combat at108030. Each whole replay repeats exactly;
+and policy restore during combat at108030. Health is sampled only on native
+three-tick publication boundaries: checkpoint capture refreshes vision, so the
+earlier per-tick sampling experiment is preserved as superseded methodology.
+Corrected controls witness the death window rather than an exact off-phase tick. Each whole replay repeats exactly;
 both-seat snapshots remain equal under the existing Worker transient row17
 clearing contract. No authority field is normalized away.
 
 On current main `b02ea4fa` plus this correction, all14 pass. Warm structure damage
-is500.4HP; cold damage is498.6HP. Both kill the defender at108077 and retain all
+is500.4HP; cold damage is498.6HP. Both observe defender death by108078 and retain all
 four attackers. They are imported by the existing registered Skirmish target
 check. The original whole-match3600second test and its seeds remain unchanged.
 Exact-head checks, independent review and postmerge receipts belong in the PR.

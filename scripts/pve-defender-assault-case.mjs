@@ -79,7 +79,12 @@ export async function replayDefenderAssault(input, { cold = false } = {}) {
         }
       }
       r.step();
-      if (r.checkpoint().state.units.find(unit => unit.id === defenderId).hp <= 0) stages.defenderDeath ??= r.observe(team).tick;
+      // Checkpoint capture refreshes vision. Inspect health only at the native
+      // three-tick publication boundary, never between publication ticks.
+      if ((i + 1) % 3 === 0 && stages.defenderDeath === undefined) {
+        if (r.checkpoint().state.units.find(unit => unit.id === defenderId).hp <= 0) stages.defenderDeath = loss.state.tickNumber + i + 1;
+        else stages.defenderLastAlive = loss.state.tickNumber + i + 1;
+      }
     }
     const final = r.checkpoint();
     assert.equal(stages.attack, loss.state.tickNumber, 'normal policy addresses the already disclosed immediate defender');
