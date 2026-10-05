@@ -1,0 +1,263 @@
+{
+  "baselineRegisteredPoseSHA256": "17849f0529bc50fb883f1847f347e56d17fb5258bc295160fb96985ecff8dd04",
+  "baselineUnchangedClipsSHA256": "a705b573b82d86cc2841ebee6c15fddb161adbcd44d7233f3e6fb92e55cf67d0",
+  "baselineAssetMetadataSHA256": "0494af4603627b42502777172d5275538ec54e2d76f325095d0f763d1ec9b814",
+  "baselinePageMetadataSHA256": "3af4142ef00d4cccb38005246687ccbbd0a402e67d5c6115dd719e1bab8d1b7d",
+  "registeredPageMetadataSHA256": "3af4142ef00d4cccb38005246687ccbbd0a402e67d5c6115dd719e1bab8d1b7d",
+  "baselineMaskSHA256": "eda032b76b64eabe3b282a8882756ddad49f8ab392afce878d001e2f317982e4",
+  "heightWorld": 1.6722564697265625,
+  "worldPerPixel": 0.0052421832906788795,
+  "baselineManifestSHA256": "1a9c239099cb75218307b7841596cf23457628739e858a4f3efd36773982f90f",
+  "baselineRuntimeSHA256": "da396980e23eff5c769f7a7a94b482d681f77b0b6f6ea2a8725dca3eab0cfa42",
+  "baselineDecodedAtlasSHA256": "fb66553f936bb1a2371f34774389531874f0bc34786b0ae1ed399ec78f3c9a91",
+  "historicalClipSubsetSHA256": {
+    "ne": "a906137e623e5d9b190e715f1b6e633034ebf9a7c72780b1fa3fd68caa1ccd7a",
+    "east": "74e4653294ae4f09332e9a67335dd6158d45e1de9826609ce4aa34aff1dd75d8",
+    "north": "d19c2a34c755434386af24e6cfb23d70787c724feb037adb2a6e36649cca8b3f",
+    "south": "c74890cc8794df062b2e134c51f3fd11cb59403c036d171a5e65faa66df0d59e",
+    "south-west": "aa57a05d24a57f0f60e0bc8c80fa23e0311c385c35800a89b3e969e6bedcd905",
+    "west": "d01c21e2ff738df65ad8f6c069673153d37938fe3ba44caa3acc943f6171cd2a"
+  },
+  "identitySource": {
+    "path": "docs/art-direction/human-roster-v1/extracted/spearman/idle/04.png",
+    "sha256": "fccf2fbdf579fee19d7bb68fc7b448a920fa2ec36217a27c1fed2479ecf9cdcc",
+    "registeredFrameId": "idle-north-west-0",
+    "registeredSeedSHA256": "a1512bc00a27ed920d0d73148d03ea1e6a8a2e57aad7f6c311273388bdad5e4f"
+  },
+  "schemaVersion": 1,
+  "sourceRevision": "7bc13b4190dd2160257281e66afab17fa0bc580d",
+  "directionId": "north-west",
+  "baselinePackVersion": "0.9.0",
+  "packVersion": "0.10.0",
+  "baselineDimensionsPx": {
+    "width": 2048,
+    "height": 3200
+  },
+  "registeredDimensionsPx": {
+    "width": 2048,
+    "height": 3200
+  },
+  "registeredMaskSHA256": "eda032b76b64eabe3b282a8882756ddad49f8ab392afce878d001e2f317982e4",
+  "sourceKind": "new fixed-camera 2D leg poses from own public Northwest identity seed; no matching 3D master claimed",
+  "authoringTool": "Blender 4.3.2 Cycles CPU, fixed orthographic public-source UV planes",
+  "canvasPx": {
+    "width": 320,
+    "height": 352
+  },
+  "groundPivotPx": {
+    "x": 157,
+    "y": 309
+  },
+  "paddingPx": {
+    "x": 56,
+    "y": 24
+  },
+  "atlasSlotsPx": [
+    [
+      4,
+      2772
+    ],
+    [
+      332,
+      2772
+    ],
+    [
+      660,
+      2772
+    ],
+    [
+      988,
+      2772
+    ]
+  ],
+  "maximumAlphaHeightPx": 319,
+  "reusedPriorRegisteredPoses": 56,
+  "newlyAuthoredPoses": 4,
+  "mirroredPoses": 0,
+  "borrowedDirectionPoses": 0,
+  "generationProviderCalls": 0,
+  "paidJobs": 0,
+  "privateInputs": 0,
+  "durationMs": 800,
+  "loop": true,
+  "sourceTiming": "four explicit 200ms keys; authoring fps20 is not runtime playback fps",
+  "shaftSeparation": {
+    "sourceAlphaPositiveSamples": 438,
+    "reconstructedSamples": 0,
+    "partition": "x > .8*y+7, y >=205; original transparent shaft/leg gap"
+  },
+  "processRetention": "all source scene/scripts/masks, previews and all iterations retained privately; selected public-seed derivatives only published",
+  "ordinaryGameAcceptance": "pending",
+  "supportFootVelocityAcceptance": "pending",
+  "matching3DMaster": "not located; own-direction public 2D seed permits this free source slice",
+  "normalization": "zero RGB only under alpha0; every visible RGBA and alpha sample preserved from selected CPU output",
+  "sourceSampling": "packed source textures/UV/masks exact; rendered upper pixels frozen across keys, CPU transparent-material sampling differs from seed RGBA",
+  "independentSourceReview": {
+    "reviewer": "independent_foot_art_review",
+    "selectedIteration": "02-occlusion-leg-study",
+    "status": "usable four-key rough Northwest source; no blocking findings",
+    "poseTriangleInstances": 82800,
+    "minimumSignedAreaRatio": 0.5647786458333334,
+    "foldedOrCollapsedTriangles": 0,
+    "ordinaryGameAcceptance": "pending"
+  },
+  "poses": [
+    {
+      "file": "00.png",
+      "pose": "contact-left",
+      "durationMs": 200,
+      "sha256": "115ff2823a3b50a4ffa2d966024168a525800deaf12e2eaad94dd21d56fc46d6",
+      "rawCPUOutputSHA256": "3a72a3ab54ce85dcfb39c9629fd03315b7bf5fada5baf1e42b2ee2fd608507ee",
+      "transparentRGBPixelsNormalized": 98
+    },
+    {
+      "file": "01.png",
+      "pose": "passing-right",
+      "durationMs": 200,
+      "sha256": "ae878d9f61cbe779ce6376cabdd433ebad1abaff511f8546bb27c28a049c6658",
+      "rawCPUOutputSHA256": "12df75d7cf0bcbbd91152c9824d92c30719c699e371e533314e78bceb7e8dd4e",
+      "transparentRGBPixelsNormalized": 100
+    },
+    {
+      "file": "02.png",
+      "pose": "contact-right",
+      "durationMs": 200,
+      "sha256": "7e6c4a3f8ed4142dbafdbd7fdd3c83c4b97002267c0f85b47477e60ab3b6510c",
+      "rawCPUOutputSHA256": "604884f1b772a127f85ef2565353995a5b85c0ebef55c0d576b997e73ffe1698",
+      "transparentRGBPixelsNormalized": 96
+    },
+    {
+      "file": "03.png",
+      "pose": "passing-left",
+      "durationMs": 200,
+      "sha256": "8831d8cc4ec82b6264eff615b51845903287892059e90b6bd144e0e2e2e0b861",
+      "rawCPUOutputSHA256": "103fbba14219e308f98e7347d1bd42ed735957255e477eb33eef2fe4a8502d00",
+      "transparentRGBPixelsNormalized": 93
+    }
+  ],
+  "packProvenanceNote": "Four new locally authored Northwest walk poses retain the established own-view public painted identity; all 56 prior registered poses and 31 other clips are unchanged. The page dimensions and encoded zero mask remain unchanged; all previous page RGBA outside the four previously empty new slots stays exact. All eight walk headings are now authored; seven attack and seven defeat headings remain missing. Source review is separate from ordinary rendered gait/contact acceptance.",
+  "packReadme": "# Human Spearman partial animation pack\n\nPack 0.10.0 preserves all 56 existing registered poses and adds four locally authored Northwest walk keys from the already-public painted Northwest seed. SE/NE/East/North/South/Southwest/West walks, SE attack/defeat and all eight idle facings remain unchanged. Northwest uses four 200ms contact/passing keys, one 800ms loop, existing body calibration and padded original pivot. Seven attack and seven defeat headings remain missing (14 cells).\n\nPage dimensions remain 2048x3200; the encoded zero team mask is unchanged. All prior page RGBA outside the four formerly empty Northwest slots stays exact; old frame rectangles/pivots and scale remain fixed. No matching 3D master, provider job, held v2 art or state/simulation change is involved.\n\nSelected source/provenance: `docs/art-direction/human-roster-v1/extracted/spearman/walk/north-west-local-v1/registration.json`. The full builder replays baseline, NE, East, North, South, Southwest, West and Northwest; older append scripts intentionally guard their construction stage. Exact original packed textures/UVs differ from CPU-resampled rendering, whose upper pixels stay frozen between keys. All private process and art iterations remain retained. Ordinary GPU gait, support-foot speed, normal/strategic/crowded appearance and deployed acceptance remain pending.\n",
+  "baselineSourceSHA256": "da396980e23eff5c769f7a7a94b482d681f77b0b6f6ea2a8725dca3eab0cfa42",
+  "occlusionPartition": {
+    "sourceSHA256": "a1512bc00a27ed920d0d73148d03ea1e6a8a2e57aad7f6c311273388bdad5e4f",
+    "fullWidthUpperThroughY": 204,
+    "lowerMaskCutControlPointsYLastNearX": [
+      [
+        205,
+        141
+      ],
+      [
+        206,
+        140
+      ],
+      [
+        207,
+        139
+      ],
+      [
+        208,
+        139
+      ],
+      [
+        209,
+        139
+      ],
+      [
+        210,
+        140
+      ],
+      [
+        211,
+        141
+      ],
+      [
+        212,
+        141
+      ],
+      [
+        213,
+        141
+      ],
+      [
+        214,
+        141
+      ],
+      [
+        215,
+        141
+      ],
+      [
+        216,
+        140
+      ],
+      [
+        217,
+        140
+      ],
+      [
+        218,
+        139
+      ],
+      [
+        219,
+        138
+      ],
+      [
+        220,
+        138
+      ],
+      [
+        221,
+        137
+      ],
+      [
+        222,
+        138
+      ],
+      [
+        223,
+        138
+      ],
+      [
+        224,
+        138
+      ],
+      [
+        225,
+        138
+      ],
+      [
+        226,
+        138
+      ],
+      [
+        227,
+        138
+      ],
+      [
+        228,
+        138
+      ],
+      [
+        229,
+        143
+      ],
+      [
+        284,
+        143
+      ]
+    ],
+    "sampleCounts": {
+      "near": 2453,
+      "far": 922,
+      "shaft": 438
+    },
+    "reconstructedSamples": 0,
+    "nearForegroundBridgeRows": [
+      205,
+      220
+    ],
+    "farDepth": "behind near plane",
+    "recombinationRGBAExact": true
+  }
+}
