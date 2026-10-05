@@ -65,6 +65,8 @@ not satisfy the served-release condition. No retirement is claimed here.
 
 ### Map Studio form snapshot controller
 
+[PR406](https://github.com/lbeezr/thousand-unit-skirmish/pull/406) extracts the
+existing private form functions and migrates both draft callers.
 [`authoring/map-studio-form-state.mjs`](../src/authoring/map-studio-form-state.mjs)
 exports `createMapStudioFormState({ root, document })`, returning `capture()` and
 `restore(values = {})`. The dependencies are the existing dialog root and its
