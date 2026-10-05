@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
-import { createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent, activeLandMovementBodyRadius } from '../src/unit-movement.mjs';
+import { createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent, activeLandMovementBodyRadius, rejoinSelectedUnitRoute } from '../src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
 
 const source=readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
@@ -28,8 +28,8 @@ test('a failed turn counts partial search work and serves the next job without l
     MOVE_PLANNING_MAX_WORK_ITEMS_PER_SLICE:8,MOVE_PLANNING_MAX_EXPANDED_CELLS_PER_SLICE:4096,
     TICK_RATE:30,tickNumber:0,navigationRevision:1,dirty:false,pendingMoveStartBroadcasts:new Set(),
     performance:{now:()=>1},nearestOpenCell:c=>c,worldToCell:()=>1,
-    MAP_WIDTH:96,MAP_HALF_X:0,MAP_HALF_Z:0,WALK_SPEED:4.5,STEP_SECONDS:1/30,elevationLevelByCell:new Uint8Array(96*96),
-    isWalkable:()=>true,canTraverseFlatUnitSegment,createUnitRouteResult,unitRoutePathCost,unitRouteResultIsCurrent,activeLandMovementBodyRadius,cellToWorld:c=>({x:c%96+.5,z:Math.floor(c/96)+.5}),
+    MAP_WIDTH:96,MAP_HEIGHT:96,MAP_HALF_X:0,MAP_HALF_Z:0,WALK_SPEED:4.5,STEP_SECONDS:1/30,elevationLevelByCell:new Uint8Array(96*96),
+    isWalkable:()=>true,canTraverseFlatUnitSegment,createUnitRouteResult,unitRoutePathCost,unitRouteResultIsCurrent,activeLandMovementBodyRadius,rejoinSelectedUnitRoute,cellToWorld:c=>({x:c%96+.5,z:Math.floor(c/96)+.5}),
     findPathAStar(_start,destination,diagnostics){
       searches++;diagnostics.searchCount++;diagnostics.expandedCells+=100;
       if(searches===2)throw new Error('controlled failed search');

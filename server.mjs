@@ -77,7 +77,7 @@ import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition 
 import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoint, activeMoveGoalPoint, validMoveGoalPoint, unitRoutePathCost,
   activeLandMovementBodyRadius, workerEconomyBodyRadius, LAND_CLEARANCE_PROFILE, canTraverseStaticBodySegment,
-  unitRouteResultIsCurrent } from './src/unit-movement.mjs';
+  unitRouteResultIsCurrent, rejoinSelectedUnitRoute } from './src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
@@ -4131,11 +4131,15 @@ function applyPlannedMoveAssignment(job, assignment) {
   // A shared cell-center route can graze an obstacle from one assignee's
   // fractional position, even on an adjacent first leg. Rejoin its start
   // center whenever the adopted body cannot safely enter that route.
-  const unsafeFirstApproach = path.length > 0 && ((distantFirstWaypoint && !canTraverseFlatUnitSegment(
-    unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z, firstGoal.x + MAP_HALF_X, firstGoal.z + MAP_HALF_Z,
-    MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS))
-    || (radius > 0 && !canTraverseStaticBodySegment(unit, firstGoal, radius, MAP_WIDTH, MAP_HEIGHT, isWalkable)));
-  unit.path = unsafeFirstApproach ? [start, ...path] : path;
+  const rejoined = rejoinSelectedUnitRoute(path === result.path ? result : { ...result, path }, {
+    position: unit, startCell: start, firstPoint: firstGoal, radius,
+    width: MAP_WIDTH, height: MAP_HEIGHT, isWalkable, cellToWorld,
+    requiresRejoin: distantFirstWaypoint && !canTraverseFlatUnitSegment(
+      unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z, firstGoal.x + MAP_HALF_X, firstGoal.z + MAP_HALF_Z,
+      MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS),
+  });
+  if (rejoined.rejoin === 'rejected') return false;
+  unit.path = rejoined.route.path;
   unit.pathIndex = 0;
   unit.movePlanningPending = false;
   unit.buildingTargetId = job.preserveAssignmentBuildingTarget
