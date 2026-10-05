@@ -7459,10 +7459,12 @@ function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
 
 function sendCommand(command) {
   if (browserStateRecovery.recovering || browserStateRecovery.status(performance.now()) === 'SERVER NOT ADVANCING') {
+    if (command.type === 'publishMap') ui.studioMessage.textContent = 'Map not published. Wait for current server state, then retry. Draft edits remain here.';
     showToast('WAITING FOR CURRENT SERVER STATE · ORDER NOT SENT');
     return false;
   }
   if (!socket || socket.readyState !== WebSocket.OPEN) {
+    if (command.type === 'publishMap') ui.studioMessage.textContent = 'Map not published. Reconnect, then retry. Draft edits remain here.';
     showToast('SERVER CONNECTION IS OFFLINE');
     audio.playEvent({ cue: 'reject' });
     return false;
