@@ -44,6 +44,10 @@ pins in an explicit reviewed revision, then adds the 36-pose/runtime pins. Its
 per-heading NE timing entry preserves SE's original eight100 ms cadence. Strict
 production qualification still refuses source completeness.
 
+The legacy 0.5.0 preview builder now fails before any writes when a later pack
+exists. It cannot silently reset the reviewed NE revision. The append tool admits
+only the four independently reviewed frame hashes against its pinned baseline.
+
 ## Qualification and acceptance boundary
 
 Focused checks read actual decoded runtime images: reviewed key hashes, original
