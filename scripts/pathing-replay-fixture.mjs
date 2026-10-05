@@ -114,6 +114,43 @@ function observeReplayMovementAdmission(unit, admission, finalized = true) {
   if (finalized && decision.admission !== 'unobserved')
     decision.positionChanged = unit.x !== decision.x || unit.z !== decision.z;
 }
+function sampleReplayMovementWindows() {
+  // At most eight bindings and 31 own poses: 30 consecutive whole-tick chords.
+  // These samples include all tick effects, independently of land admission.
+  for (const [id, binding] of replayMovementActors) {
+    const unit = units[id];
+    if (!unit || unit.team !== replayMovementTeam || unit.hp <= 0
+      || unit !== binding.unit || unit.generation !== binding.generation) {
+      binding.window = null; continue;
+    }
+    const x = unit.x, z = unit.z;
+    if (!Number.isFinite(x) || !Number.isFinite(z)) { binding.window = null; continue; }
+    let window = binding.window;
+    if (!window || window.revision !== unit.orderRevision || window.navigationRevision !== navigationRevision
+      || (window.tick !== tickNumber && window.tick + 1 !== tickNumber)) {
+      window = binding.window = { revision: unit.orderRevision, navigationRevision,
+        tick: tickNumber, poses: [] };
+    } else if (window.tick === tickNumber) continue;
+    window.poses.push({ x, z });
+    if (window.poses.length > 31) window.poses.shift();
+    window.tick = tickNumber;
+  }
+}
+function replayMovementWindow(unit, binding) {
+  const window = binding.window;
+  if (!window || window.poses.length !== 31 || window.tick !== tickNumber
+    || window.revision !== unit.orderRevision || window.navigationRevision !== navigationRevision) return null;
+  const first = window.poses[0], last = window.poses[30];
+  if (last.x !== unit.x || last.z !== unit.z) return null;
+  let sampledTravelDistance = 0;
+  for (let i = 1; i < 31; i++) {
+    const previous = window.poses[i - 1], current = window.poses[i];
+    sampledTravelDistance += Math.hypot(current.x - previous.x, current.z - previous.z);
+  }
+  const netDisplacement = Math.hypot(last.x - first.x, last.z - first.z);
+  if (!Number.isFinite(netDisplacement) || !Number.isFinite(sampledTravelDistance)) return null;
+  return { ticks: 30, netDisplacement, sampledTravelDistance };
+}
 function recordReplayRouteRejoin(route, options) {
   const result = rejoinSelectedUnitRoute(route, options);
   replayRouteRejoins.push({ id: options.position.id, radius: options.radius,
@@ -218,6 +255,7 @@ export const replay = {
       }
     }
     runSimulationTick();
+    if (${observeMovement}) sampleReplayMovementWindows();
   },
   get units() { return units; }, get buildings() { return buildings; },
   get wood() { return teamWood; },
@@ -232,8 +270,9 @@ export const replay = {
     for (const id of ids) {
       const unit = units[id];
       if (!unit || unit.team !== team || unit.hp <= 0) continue;
-      replayMovementActors.set(id, { unit, generation: unit.generation });
+      replayMovementActors.set(id, { unit, generation: unit.generation, window: null });
     }
+    sampleReplayMovementWindows();
   },
   movementObservations() {
     const rows = [];
@@ -249,7 +288,8 @@ export const replay = {
         performingAction: unit.kind === 'worker' ? workerPerformingAction(unit) : null,
         routeActive: unit.pathIndex < unit.path.length, decision: current ? decision.cause : 'unobserved',
         admission: current ? decision.admission : 'unobserved',
-        positionChanged: current ? decision.positionChanged : null });
+        positionChanged: current ? decision.positionChanged : null,
+        motionWindow: replayMovementWindow(unit, binding) });
     }
     return rows;
   },

@@ -681,7 +681,7 @@ for(const team of [0,1])test(`seat ${team}: owned pause observation consumes a r
   f.context.getMoveVector=(...args)=>{calls++;return result=original(...args);};
   const before=structuredClone(f.units),value=observer.vector();
   assert.equal(calls,1);assert.equal(value,result);assert.equal(value.waitingForCrowd,true);
-  assert.deepEqual(observer.read(),[{id:0,holding:false,planningPending:false,performingAction:null,routeActive:true,decision:'vector-wait',admission:'unobserved',positionChanged:null}]);
+  assert.deepEqual(observer.read(),[{id:0,holding:false,planningPending:false,performingAction:null,routeActive:true,decision:'vector-wait',admission:'unobserved',positionChanged:null,motionWindow:null}]);
   assert.deepEqual(f.units,before);assert.equal(f.repairs.length,0);assert.deepEqual(f.context.replayCrowdSteps,[]);
   assert.equal(f.context.replayMovementDecisions.size,1);
   f.mover.holdingPosition=true;assert.equal(observer.read()[0].holding,true);
@@ -699,7 +699,7 @@ test('pause observer rejects enemies before private reads, bounds requests and r
   Object.assign(f.mover,{generation:1});const enemy=f.units[1];enemy.team=1;
   for(const key of ['generation','path','pathIndex','movePlanningPending','holdingPosition','orderRevision','x','z'])
     Object.defineProperty(enemy,key,{get(){throw Error('private enemy field');},configurable:true});
-  o.configure(0,[enemy.id,f.mover.id,9999]);assert.deepEqual(o.read(),[{id:0,holding:false,planningPending:false,performingAction:null,routeActive:true,decision:'unobserved',admission:'unobserved',positionChanged:null}]);
+  o.configure(0,[enemy.id,f.mover.id,9999]);assert.deepEqual(o.read(),[{id:0,holding:false,planningPending:false,performingAction:null,routeActive:true,decision:'unobserved',admission:'unobserved',positionChanged:null,motionWindow:null}]);
   f.context.observeReplayMovementDecision(enemy,{get waitingForCrowd(){throw Error('private result');}});
   f.context.observeReplayMovementAdmission(enemy,'steering-admitted');
   for(const [team,ids] of [[null,[0]],[2,[0]],[0,[0,0]],[0,Array.from({length:9},(_,i)=>i)],[0,[-1]]])
@@ -713,6 +713,7 @@ test('pause observer rejects enemies before private reads, bounds requests and r
   f.mover.hp=0;for(const key of ['x','z','generation'])
     Object.defineProperty(f.mover,key,{get(){throw Error('dead private field');},configurable:true});
   f.context.observeReplayMovementDecision(f.mover,null);f.context.observeReplayMovementAdmission(f.mover,'steering-admitted');
+  f.context.sampleReplayMovementWindows();
 });
 
 test('pause proposal classification returns original null/positive/rejected values and no admission claims',()=>{
@@ -806,4 +807,55 @@ for(const team of [0,1])test(`seat ${team}: automatic rejection observes the exe
     f.move();assert.equal(guards,1);assert.equal(abandoned,1);
     assert.equal(o.read()[0].admission,'automatic-rejected');assert.equal(o.read()[0].positionChanged,false);
   }
+});
+
+for(const team of [0,1])test(`seat ${team}: own fixed motion window distinguishes straight displacement from reversing tick chords`,()=>{
+  for(const reversing of [false,true]){
+    const f=fixture({cliff:false,x:0,z:0});for(const u of f.units)u.team=team;
+    f.mover.generation=1;const o=attachPauseObserver(f);o.configure(team,[0]);
+    assert.equal(o.read()[0].motionWindow,null);
+    for(let tick=1;tick<=60;tick++){
+      f.context.tickNumber++;f.mover.x=reversing?tick%2*.1:tick*.1;
+      f.context.sampleReplayMovementWindows();
+      const binding=f.context.replayMovementActors.get(0);
+      assert.ok(binding.window.poses.length<=31);
+      const row=o.read()[0];
+      if(tick<30)assert.equal(row.motionWindow,null,'incomplete window is not zero displacement');
+      else{
+        assert.equal(row.motionWindow.ticks,30);assert.ok(Math.abs(row.motionWindow.sampledTravelDistance-3)<1e-12);
+        assert.ok(Math.abs(row.motionWindow.netDisplacement-(reversing?0:3))<1e-12);
+      }
+      const count=binding.window.poses.length;f.context.sampleReplayMovementWindows();
+      assert.equal(binding.window.poses.length,count,'duplicate tick does not advance the window');
+    }
+    const value=o.read();value[0].motionWindow.netDisplacement=999;
+    assert.notEqual(o.read()[0].motionWindow.netDisplacement,999,'returned metrics are fresh pose-free values');
+    assert.deepEqual(Object.keys(o.read()[0].motionWindow),['ticks','netDisplacement','sampledTravelDistance']);
+    assert.equal(o.read()[0].admission,'unobserved','whole-tick observation is independent of executor admission');
+  }
+});
+
+test('fixed own motion window caps every binding and invalidates discontinuous or changed identity/order/navigation samples',()=>{
+  const f=fixture({cliff:false,x:0,z:0});while(f.units.length<8)f.units.push({...f.mover,id:f.units.length});
+  for(const u of f.units){u.team=0;u.generation=1;}
+  const o=attachPauseObserver(f);o.configure(0,f.units.map(u=>u.id));
+  for(let tick=0;tick<40;tick++) {f.context.tickNumber++;f.context.sampleReplayMovementWindows();}
+  assert.equal(f.context.replayMovementActors.size,8);
+  assert.equal([...f.context.replayMovementActors.values()].reduce((n,b)=>n+b.window.poses.length,0),248);
+  assert.ok(o.read().every(row=>row.motionWindow.ticks===30&&row.motionWindow.netDisplacement===0&&row.motionWindow.sampledTravelDistance===0));
+  f.mover.x=.1;assert.equal(o.read()[0].motionWindow,null,'unrecorded pose change is stale');
+  f.mover.x=0;f.mover.orderRevision++;assert.equal(o.read()[0].motionWindow,null);
+  f.context.tickNumber++;f.context.sampleReplayMovementWindows();assert.equal(o.read()[0].motionWindow,null);
+  assert.equal(f.context.replayMovementActors.get(0).window.poses.length,1,'order change cannot bridge an old window');
+  f.context.navigationRevision++;assert.ok(o.read().every(row=>row.motionWindow===null));
+  f.context.sampleReplayMovementWindows();assert.ok([...f.context.replayMovementActors.values()].every(b=>b.window.poses.length===1));
+  f.context.tickNumber+=2;f.context.sampleReplayMovementWindows();
+  assert.ok([...f.context.replayMovementActors.values()].every(b=>b.window.poses.length===1),'tick gap resets coverage');
+  f.context.tickNumber--;f.context.sampleReplayMovementWindows();
+  assert.ok([...f.context.replayMovementActors.values()].every(b=>b.window.poses.length===1),'backwards tick resets coverage');
+  f.mover.x=NaN;f.context.tickNumber++;f.context.sampleReplayMovementWindows();assert.equal(f.context.replayMovementActors.get(0).window,null);
+  f.mover.x=0;f.mover.generation++;f.context.tickNumber++;f.context.sampleReplayMovementWindows();
+  assert.equal(f.context.replayMovementActors.get(0).window,null);assert.ok(!o.read().some(row=>row.id===0));
+  f.units[1]={...f.units[1]};f.context.sampleReplayMovementWindows();assert.equal(f.context.replayMovementActors.get(1).window,null);
+  o.configure(0,[2]);assert.equal(o.read()[0].motionWindow,null,'subscription replacement starts fresh');
 });
