@@ -1076,6 +1076,7 @@ source slot bound, not backing-store/GC/RSS or device capacity evidence.
 
 Existing opt-in whole-tick diagnostics expose only bounded scalar attempts,
 publications, refusal reasons, census visits and maximum retained/staged entries;
+staging includes the bounded proposal even when execution copying is refused.
 legacy grids omit these fields and never read the census. Registered controls
 cover quota−1/quota/quota+1, rectangular/square per-path growth, consumed prefixes,
 aliases/resume/herd fields, shared assignees, no copy on refusal, release/retry,

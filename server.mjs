@@ -8620,6 +8620,7 @@ function simulateTick() {
           landRouteRetentionTick.attempts++;
           landRouteRetentionTick.fieldVisits = reservation.fieldVisits;
           landRouteRetentionTick.maxSavedEntries = Math.max(landRouteRetentionTick.maxSavedEntries, reservation.routeEntries);
+          landRouteRetentionTick.maxStagedEntries = Math.max(landRouteRetentionTick.maxStagedEntries, move.detour.path.length);
         }
         if (reservation?.status === 'deferred') {
           if (landRouteRetentionTick) {

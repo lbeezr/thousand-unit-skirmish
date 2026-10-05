@@ -101,7 +101,7 @@ test('local detour quota−1/quota/quota+1 admission precedes execution copying 
     } else {
       assert.equal(f.actor.path, previous); assert.equal(JSON.stringify(f.actor), before);
       assert.equal(f.context.dirty, false); assert.equal(report.deferred, 1);
-      assert.equal(report.aggregateLimitDeferrals, 1); assert.equal(report.maxStagedEntries, 0);
+      assert.equal(report.aggregateLimitDeferrals, 1); assert.equal(report.maxStagedEntries, 3, 'bounded proposal exists without an execution copy');
     }
   }
 });
@@ -123,7 +123,7 @@ test('local detour path-entry admission counts consumed prefix and refuses N+1 g
         assert.equal(f.context.landRouteRetentionTick.published, 1);
       } else {
         assert.equal(f.actor.path, old); assert.equal(f.context.landRouteRetentionTick.pathLimitDeferrals, 1);
-        assert.equal(f.context.landRouteRetentionTick.maxStagedEntries, 0);
+        assert.equal(f.context.landRouteRetentionTick.maxStagedEntries, 3);
       }
     }
   }
@@ -216,7 +216,7 @@ test('invalid saved envelope refuses before local execution copy instead of drop
   protectCopies(f); const old = f.actor.path, before = JSON.stringify(f.actor);
   f.phase(); assert.equal(f.actor.path, old); assert.equal(JSON.stringify(f.actor), before);
   assert.equal(f.context.landRouteRetentionTick.invalidEnvelopeDeferrals, 1);
-  assert.equal(f.context.landRouteRetentionTick.maxStagedEntries, 0);
+  assert.equal(f.context.landRouteRetentionTick.maxStagedEntries, 3);
 });
 
 test('actual Stop/Hold cancels a refused detour; Stop of another actor releases capacity for existing travel', () => {
@@ -256,7 +256,7 @@ test('existing whole-tick diagnostic exposes bounded scalar retention outcomes a
   });
   vm.runInContext(body('runSimulationTick'), f.context); f.context.runSimulationTick();
   const first = samples[0].landRouteRetention;
-  assert.equal(first.deferred, 1); assert.equal(first.maxStagedEntries, 0);
+  assert.equal(first.deferred, 1); assert.equal(first.maxStagedEntries, 3);
   assert.ok(Object.values(first).every(Number.isSafeInteger), 'no route/unit references in the diagnostic');
   f.units[2].path = []; f.context.runSimulationTick();
   assert.equal(samples[1].landRouteRetention.published, 1); assert.equal(first.published, 0);
