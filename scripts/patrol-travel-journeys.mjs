@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { patrolTravelMovementActive, attackMoveAcquiredMovementActive } from '../src/combat-movement.mjs';
+import { patrolTravelMovementActive, attackMoveAcquiredMovementActive, patrolAcquiredMovementActive } from '../src/combat-movement.mjs';
 import { activeLandMovementBodyRadius, canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { combatDamage } from '../src/combat-rules.mjs';
@@ -130,14 +130,15 @@ for (const team of [0, 1]) for (const stage of ['pending', 'return']) for (const
   });
 }
 
-for (const team of [0, 1]) test(`seat ${team}: actual Patrol acquisition remains excluded, damages legally and restores its same leg through recovery`, async () => {
+for (const team of [0, 1]) test(`seat ${team}: actual Patrol acquisition uses its separate profile, damages legally and restores its same leg through recovery`, async () => {
   await journey(team, ({ r, id, actor, command, step, until, recover, patrol, switches }) => {
     const targetId = r.units.find(u => u.team !== team && u.kind === 'worker').id, target = () => r.units[targetId];
     command('move', { x: 2.25, z: .95 }, targetId); r.drain(); until(() => target().pathIndex >= target().path.length);
     patrol(); r.drain(); command('setStance', { stance: 'aggressive' }); step();
     assert.equal(actor().attackTargetId, targetId); assert.equal(actor().persistentOrder.leg, 1);
     assert.equal(patrolTravelMovementActive(actor()), false); assert.equal(attackMoveAcquiredMovementActive(actor()), false);
-    assert.equal(activeLandMovementBodyRadius(actor()), 0, 'Patrol acquired pursuit is explicitly deferred');
+    assert.equal(patrolAcquiredMovementActive(actor()), true);
+    assert.equal(activeLandMovementBodyRadius(actor()), LAND_CLEARANCE_PROFILE.radiusByKind.infantry);
     const resume = [...actor().attackMoveResumePath], index = actor().attackMoveResumePathIndex;
     const order = structuredClone(actor().persistentOrder); recover(); let damage = 0;
     for (let t = 0; t < 600 && actor().attackTargetId >= 0; t++) {

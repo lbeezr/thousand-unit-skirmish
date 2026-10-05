@@ -34,14 +34,26 @@ export function attackMoveAcquiredMovementActive(unit) {
     && !unit.gatherPhase && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
 }
 
-// Persistent Patrol's target-free travel/continuation. Acquisition and Follow
-// retain their own policies; the existing controller chooses each leg's cell.
+// Persistent Patrol's target-free travel/continuation. The existing controller
+// chooses each leg's cell; acquired pursuit and Follow have separate predicates.
 export function patrolTravelMovementActive(unit) {
   return unit.persistentOrder?.type === 'patrol'
     && militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind]) === true && unit.hp > 0
     && unit.movementDomain !== 'water' && !unit.holdingPosition
     && !(unit.attackTargetId >= 0) && !(unit.attackBuildingTargetId >= 0)
     && !unit.stanceCombat && !unit.stanceReturning
+    && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0) && !unit.gatherPhase
+    && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
+}
+
+// Patrol's acquired unit-target leg uses its original acquisition anchor and
+// bounded approach. Automatic stance and friendly Follow remain separate.
+export function patrolAcquiredMovementActive(unit) {
+  return unit.persistentOrder?.type === 'patrol' && unit.attackMove === true
+    && militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind]) === true && unit.hp > 0
+    && unit.movementDomain !== 'water' && !unit.holdingPosition
+    && Number.isSafeInteger(unit.attackTargetId) && unit.attackTargetId >= 0
+    && !(unit.attackBuildingTargetId >= 0) && !unit.stanceCombat && !unit.stanceReturning
     && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0) && !unit.gatherPhase
     && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
 }

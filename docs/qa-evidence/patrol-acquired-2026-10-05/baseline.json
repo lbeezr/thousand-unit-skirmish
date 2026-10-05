@@ -1,0 +1,182 @@
+{
+  "source": "dcb96cefdeedb46b7c49282c6a151a2b453dbe11",
+  "dirty": true,
+  "records": [
+    {
+      "team": 0,
+      "kind": "infantry",
+      "id": 4,
+      "targetId": 8,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING PATROL \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "PATROL ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "original": {
+        "type": "patrol",
+        "start": 1568,
+        "end": 1574,
+        "leg": 1,
+        "status": "active",
+        "nextTick": 323
+      },
+      "contacts": 4,
+      "steps": 5,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8243160535617539,
+          "z": 0.9054103678629477
+        },
+        "reason": "steering"
+      },
+      "killedAt": 263,
+      "anchor": [
+        0.75,
+        0.95
+      ],
+      "currentLeg": 1,
+      "hp": 100
+    },
+    {
+      "team": 0,
+      "kind": "archer",
+      "id": 16,
+      "targetId": 8,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING PATROL \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "PATROL ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "original": {
+        "type": "patrol",
+        "start": 1568,
+        "end": 1574,
+        "leg": 1,
+        "status": "active",
+        "nextTick": 1181
+      },
+      "contacts": 4,
+      "steps": 4,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8243160535617539,
+          "z": 0.9054103678629477
+        },
+        "reason": "steering"
+      },
+      "killedAt": 461,
+      "anchor": [
+        0.75,
+        0.95
+      ],
+      "currentLeg": 1,
+      "hp": 70
+    },
+    {
+      "team": 1,
+      "kind": "infantry",
+      "id": 12,
+      "targetId": 0,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING PATROL \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "PATROL ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "original": {
+        "type": "patrol",
+        "start": 1568,
+        "end": 1574,
+        "leg": 1,
+        "status": "active",
+        "nextTick": 402
+      },
+      "contacts": 4,
+      "steps": 5,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8243160535617539,
+          "z": 0.9054103678629477
+        },
+        "reason": "steering"
+      },
+      "killedAt": 263,
+      "anchor": [
+        0.75,
+        0.95
+      ],
+      "currentLeg": 1,
+      "hp": 100
+    },
+    {
+      "team": 1,
+      "kind": "archer",
+      "id": 16,
+      "targetId": 0,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "PLANNING PATROL \u00b7 1 UNITS"
+        },
+        {
+          "type": "notice",
+          "message": "PATROL ORDER \u00b7 1 UNITS"
+        }
+      ],
+      "original": {
+        "type": "patrol",
+        "start": 1568,
+        "end": 1574,
+        "leg": 1,
+        "status": "active",
+        "nextTick": 1419
+      },
+      "contacts": 4,
+      "steps": 4,
+      "first": {
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8243160535617539,
+          "z": 0.9054103678629477
+        },
+        "reason": "steering"
+      },
+      "killedAt": 461,
+      "anchor": [
+        0.75,
+        0.95
+      ],
+      "currentLeg": 1,
+      "hp": 70
+    }
+  ]
+}
