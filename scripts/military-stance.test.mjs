@@ -4,6 +4,7 @@ import { createStanceCase } from './military-stance-case.mjs';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 import { armyAttackMap } from './army-attack-continuation-case.mjs';
 import { legacyNoseHeadingFromBody } from '../src/wildlife-heading.mjs';
+import './automatic-stance-pursuit-journeys.mjs';
 
 for (const schemaVersion of [23, 24]) {
   test(`schema ${schemaVersion}: stance migration composes with wildlife and retains routes and food`, async () => {

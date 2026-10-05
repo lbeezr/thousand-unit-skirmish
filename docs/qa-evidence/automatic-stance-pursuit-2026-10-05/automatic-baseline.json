@@ -1,0 +1,1025 @@
+{
+  "runtimeHashes": {
+    "server": "b03b66d6be58353dd7cd09414b6c2918ac3d0f3993dc5a679449f8e1c9d7ca0d",
+    "combatMovement": "4fde308e230f97fb3c2c5efa2997a4e46160a96ff9208e820156add9e1d65172",
+    "unitMovement": "d493487ffa31075f85e8fa0efc205b61e1ac0b931fb451bc1724e0f2f4f2bb39"
+  },
+  "source": "a0bd77617dd23f2c6ea7387bb6307c6c653d26a9",
+  "dirty": true,
+  "records": [
+    {
+      "team": 0,
+      "stance": "aggressive",
+      "id": 4,
+      "enemyId": 8,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 aggressive \u00b7 1 UNITS"
+        }
+      ],
+      "acquired": {
+        "t": 0,
+        "path": [
+          1569
+        ],
+        "targetId": 8,
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "attackAnchor": [
+          0.75,
+          0.95
+        ]
+      },
+      "contacts": 4,
+      "newContacts": 1,
+      "steps": 7,
+      "first": {
+        "id": 4,
+        "generation": 2800083087,
+        "revision": 2,
+        "team": 0,
+        "kind": "infantry",
+        "tick": 320,
+        "navigationRevision": 0,
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8243160535617539,
+          "z": 0.9054103678629477
+        },
+        "reason": "steering",
+        "neighbours": [
+          {
+            "id": 0,
+            "generation": 2800083087,
+            "kind": "worker",
+            "x": -22.5,
+            "z": -15.5
+          },
+          {
+            "id": 1,
+            "generation": 2800083087,
+            "kind": "worker",
+            "x": -18.9,
+            "z": -16.9
+          },
+          {
+            "id": 2,
+            "generation": 2800083087,
+            "kind": "worker",
+            "x": -21.1,
+            "z": -15.1
+          },
+          {
+            "id": 3,
+            "generation": 2800083087,
+            "kind": "worker",
+            "x": -18.9,
+            "z": -15.1
+          },
+          {
+            "id": 5,
+            "generation": 2800083087,
+            "kind": "infantry",
+            "x": -20.44,
+            "z": -15.56
+          },
+          {
+            "id": 6,
+            "generation": 2800083087,
+            "kind": "infantry",
+            "x": -19.56,
+            "z": -15.56
+          },
+          {
+            "id": 7,
+            "generation": 2800083087,
+            "kind": "infantry",
+            "x": -18.68,
+            "z": -15.56
+          },
+          {
+            "id": 8,
+            "generation": 2800083087,
+            "kind": "worker",
+            "x": 2.5,
+            "z": 0.5
+          },
+          {
+            "id": 9,
+            "generation": 2800083087,
+            "kind": "worker",
+            "x": 21.1,
+            "z": 15.1
+          },
+          {
+            "id": 10,
+            "generation": 2800083087,
+            "kind": "worker",
+            "x": 18.9,
+            "z": 16.9
+          },
+          {
+            "id": 11,
+            "generation": 2800083087,
+            "kind": "worker",
+            "x": 20.5,
+            "z": 15.5
+          },
+          {
+            "id": 12,
+            "generation": 2800083087,
+            "kind": "infantry",
+            "x": 18.68,
+            "z": 16.44
+          },
+          {
+            "id": 13,
+            "generation": 2800083087,
+            "kind": "infantry",
+            "x": 19.56,
+            "z": 16.44
+          },
+          {
+            "id": 14,
+            "generation": 2800083087,
+            "kind": "infantry",
+            "x": 19.5,
+            "z": 15.5
+          },
+          {
+            "id": 15,
+            "generation": 2800083087,
+            "kind": "infantry",
+            "x": 22.5,
+            "z": 15.5
+          }
+        ]
+      },
+      "damage": [
+        {
+          "t": 29,
+          "hp": 90,
+          "attackTick": 349,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 55,
+          "hp": 80,
+          "attackTick": 375,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 81,
+          "hp": 70,
+          "attackTick": 401,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 107,
+          "hp": 60,
+          "attackTick": 427,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 133,
+          "hp": 50,
+          "attackTick": 453,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 159,
+          "hp": 40,
+          "attackTick": 479,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 185,
+          "hp": 30,
+          "attackTick": 505,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 211,
+          "hp": 20,
+          "attackTick": 531,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 237,
+          "hp": 10,
+          "attackTick": 557,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 263,
+          "hp": 0,
+          "attackTick": 583,
+          "distance": 1.2374919998602198
+        }
+      ],
+      "final": {
+        "x": 1.2702123749322767,
+        "z": 0.637872575040634,
+        "goal": 1568,
+        "revision": 2,
+        "hp": 100,
+        "enemyHp": 0,
+        "returning": false,
+        "stanceCombat": true
+      }
+    },
+    {
+      "team": 0,
+      "stance": "defensive",
+      "id": 4,
+      "enemyId": 8,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 defensive \u00b7 1 UNITS"
+        }
+      ],
+      "acquired": {
+        "t": 0,
+        "path": [
+          1569
+        ],
+        "targetId": 8,
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "attackAnchor": [
+          0.75,
+          0.95
+        ]
+      },
+      "contacts": 4,
+      "newContacts": 1,
+      "steps": 7,
+      "first": {
+        "id": 4,
+        "generation": 2382111660,
+        "revision": 2,
+        "team": 0,
+        "kind": "infantry",
+        "tick": 320,
+        "navigationRevision": 0,
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8243160535617539,
+          "z": 0.9054103678629477
+        },
+        "reason": "steering",
+        "neighbours": [
+          {
+            "id": 0,
+            "generation": 2382111660,
+            "kind": "worker",
+            "x": -22.5,
+            "z": -15.5
+          },
+          {
+            "id": 1,
+            "generation": 2382111660,
+            "kind": "worker",
+            "x": -18.9,
+            "z": -16.9
+          },
+          {
+            "id": 2,
+            "generation": 2382111660,
+            "kind": "worker",
+            "x": -21.1,
+            "z": -15.1
+          },
+          {
+            "id": 3,
+            "generation": 2382111660,
+            "kind": "worker",
+            "x": -18.9,
+            "z": -15.1
+          },
+          {
+            "id": 5,
+            "generation": 2382111660,
+            "kind": "infantry",
+            "x": -20.44,
+            "z": -15.56
+          },
+          {
+            "id": 6,
+            "generation": 2382111660,
+            "kind": "infantry",
+            "x": -19.56,
+            "z": -15.56
+          },
+          {
+            "id": 7,
+            "generation": 2382111660,
+            "kind": "infantry",
+            "x": -18.68,
+            "z": -15.56
+          },
+          {
+            "id": 8,
+            "generation": 2382111660,
+            "kind": "worker",
+            "x": 2.5,
+            "z": 0.5
+          },
+          {
+            "id": 9,
+            "generation": 2382111660,
+            "kind": "worker",
+            "x": 21.1,
+            "z": 15.1
+          },
+          {
+            "id": 10,
+            "generation": 2382111660,
+            "kind": "worker",
+            "x": 18.9,
+            "z": 16.9
+          },
+          {
+            "id": 11,
+            "generation": 2382111660,
+            "kind": "worker",
+            "x": 20.5,
+            "z": 15.5
+          },
+          {
+            "id": 12,
+            "generation": 2382111660,
+            "kind": "infantry",
+            "x": 18.68,
+            "z": 16.44
+          },
+          {
+            "id": 13,
+            "generation": 2382111660,
+            "kind": "infantry",
+            "x": 19.56,
+            "z": 16.44
+          },
+          {
+            "id": 14,
+            "generation": 2382111660,
+            "kind": "infantry",
+            "x": 19.5,
+            "z": 15.5
+          },
+          {
+            "id": 15,
+            "generation": 2382111660,
+            "kind": "infantry",
+            "x": 22.5,
+            "z": 15.5
+          }
+        ]
+      },
+      "damage": [
+        {
+          "t": 29,
+          "hp": 90,
+          "attackTick": 349,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 55,
+          "hp": 80,
+          "attackTick": 375,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 81,
+          "hp": 70,
+          "attackTick": 401,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 107,
+          "hp": 60,
+          "attackTick": 427,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 133,
+          "hp": 50,
+          "attackTick": 453,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 159,
+          "hp": 40,
+          "attackTick": 479,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 185,
+          "hp": 30,
+          "attackTick": 505,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 211,
+          "hp": 20,
+          "attackTick": 531,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 237,
+          "hp": 10,
+          "attackTick": 557,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 263,
+          "hp": 0,
+          "attackTick": 583,
+          "distance": 1.2374919998602198
+        }
+      ],
+      "final": {
+        "x": 0.5,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 3,
+        "hp": 100,
+        "enemyHp": 0,
+        "returning": false,
+        "stanceCombat": true
+      }
+    },
+    {
+      "team": 0,
+      "stance": "standGround",
+      "id": 4,
+      "enemyId": 8,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 standGround \u00b7 1 UNITS"
+        }
+      ],
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 0,
+      "damage": [],
+      "final": {
+        "x": 0.75,
+        "z": 0.95,
+        "goal": 1568,
+        "revision": 2,
+        "hp": 100,
+        "enemyHp": 100,
+        "returning": false,
+        "stanceCombat": true
+      }
+    },
+    {
+      "team": 0,
+      "stance": "noAttack",
+      "id": 4,
+      "enemyId": 8,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 noAttack \u00b7 1 UNITS"
+        }
+      ],
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 0,
+      "damage": [],
+      "final": {
+        "x": 0.75,
+        "z": 0.95,
+        "goal": 1568,
+        "revision": 2,
+        "hp": 100,
+        "enemyHp": 100,
+        "returning": false,
+        "stanceCombat": false
+      }
+    },
+    {
+      "team": 1,
+      "stance": "aggressive",
+      "id": 12,
+      "enemyId": 0,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 aggressive \u00b7 1 UNITS"
+        }
+      ],
+      "acquired": {
+        "t": 0,
+        "path": [
+          1569
+        ],
+        "targetId": 0,
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "attackAnchor": [
+          0.75,
+          0.95
+        ]
+      },
+      "contacts": 4,
+      "newContacts": 1,
+      "steps": 7,
+      "first": {
+        "id": 12,
+        "generation": 2637098159,
+        "revision": 2,
+        "team": 1,
+        "kind": "infantry",
+        "tick": 391,
+        "navigationRevision": 0,
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8243160535617539,
+          "z": 0.9054103678629477
+        },
+        "reason": "steering",
+        "neighbours": [
+          {
+            "id": 0,
+            "generation": 2637098159,
+            "kind": "worker",
+            "x": 2.5,
+            "z": 0.5
+          },
+          {
+            "id": 1,
+            "generation": 2637098159,
+            "kind": "worker",
+            "x": -18.9,
+            "z": -16.9
+          },
+          {
+            "id": 2,
+            "generation": 2637098159,
+            "kind": "worker",
+            "x": -21.1,
+            "z": -15.1
+          },
+          {
+            "id": 3,
+            "generation": 2637098159,
+            "kind": "worker",
+            "x": -18.9,
+            "z": -15.1
+          },
+          {
+            "id": 4,
+            "generation": 2637098159,
+            "kind": "infantry",
+            "x": -21.32,
+            "z": -15.56
+          },
+          {
+            "id": 5,
+            "generation": 2637098159,
+            "kind": "infantry",
+            "x": -20.44,
+            "z": -15.56
+          },
+          {
+            "id": 6,
+            "generation": 2637098159,
+            "kind": "infantry",
+            "x": -19.56,
+            "z": -15.56
+          },
+          {
+            "id": 7,
+            "generation": 2637098159,
+            "kind": "infantry",
+            "x": -18.68,
+            "z": -15.56
+          },
+          {
+            "id": 8,
+            "generation": 2637098159,
+            "kind": "worker",
+            "x": 18.9,
+            "z": 15.1
+          },
+          {
+            "id": 9,
+            "generation": 2637098159,
+            "kind": "worker",
+            "x": 21.1,
+            "z": 15.1
+          },
+          {
+            "id": 10,
+            "generation": 2637098159,
+            "kind": "worker",
+            "x": 18.9,
+            "z": 16.9
+          },
+          {
+            "id": 11,
+            "generation": 2637098159,
+            "kind": "worker",
+            "x": 20.5,
+            "z": 15.5
+          },
+          {
+            "id": 13,
+            "generation": 2637098159,
+            "kind": "infantry",
+            "x": 19.56,
+            "z": 16.44
+          },
+          {
+            "id": 14,
+            "generation": 2637098159,
+            "kind": "infantry",
+            "x": 19.5,
+            "z": 15.5
+          },
+          {
+            "id": 15,
+            "generation": 2637098159,
+            "kind": "infantry",
+            "x": 22.5,
+            "z": 15.5
+          }
+        ]
+      },
+      "damage": [
+        {
+          "t": 29,
+          "hp": 90,
+          "attackTick": 420,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 55,
+          "hp": 80,
+          "attackTick": 446,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 81,
+          "hp": 70,
+          "attackTick": 472,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 107,
+          "hp": 60,
+          "attackTick": 498,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 133,
+          "hp": 50,
+          "attackTick": 524,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 159,
+          "hp": 40,
+          "attackTick": 550,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 185,
+          "hp": 30,
+          "attackTick": 576,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 211,
+          "hp": 20,
+          "attackTick": 602,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 237,
+          "hp": 10,
+          "attackTick": 628,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 263,
+          "hp": 0,
+          "attackTick": 654,
+          "distance": 1.2374919998602198
+        }
+      ],
+      "final": {
+        "x": 1.2702123749322767,
+        "z": 0.637872575040634,
+        "goal": 1568,
+        "revision": 2,
+        "hp": 100,
+        "enemyHp": 0,
+        "returning": false,
+        "stanceCombat": true
+      }
+    },
+    {
+      "team": 1,
+      "stance": "defensive",
+      "id": 12,
+      "enemyId": 0,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 defensive \u00b7 1 UNITS"
+        }
+      ],
+      "acquired": {
+        "t": 0,
+        "path": [
+          1569
+        ],
+        "targetId": 0,
+        "anchor": [
+          0.75,
+          0.95
+        ],
+        "attackAnchor": [
+          0.75,
+          0.95
+        ]
+      },
+      "contacts": 4,
+      "newContacts": 1,
+      "steps": 7,
+      "first": {
+        "id": 12,
+        "generation": 2810682702,
+        "revision": 2,
+        "team": 1,
+        "kind": "infantry",
+        "tick": 391,
+        "navigationRevision": 0,
+        "from": {
+          "x": 0.75,
+          "z": 0.95
+        },
+        "to": {
+          "x": 0.8243160535617539,
+          "z": 0.9054103678629477
+        },
+        "reason": "steering",
+        "neighbours": [
+          {
+            "id": 0,
+            "generation": 2810682702,
+            "kind": "worker",
+            "x": 2.5,
+            "z": 0.5
+          },
+          {
+            "id": 1,
+            "generation": 2810682702,
+            "kind": "worker",
+            "x": -18.9,
+            "z": -16.9
+          },
+          {
+            "id": 2,
+            "generation": 2810682702,
+            "kind": "worker",
+            "x": -21.1,
+            "z": -15.1
+          },
+          {
+            "id": 3,
+            "generation": 2810682702,
+            "kind": "worker",
+            "x": -18.9,
+            "z": -15.1
+          },
+          {
+            "id": 4,
+            "generation": 2810682702,
+            "kind": "infantry",
+            "x": -21.32,
+            "z": -15.56
+          },
+          {
+            "id": 5,
+            "generation": 2810682702,
+            "kind": "infantry",
+            "x": -20.44,
+            "z": -15.56
+          },
+          {
+            "id": 6,
+            "generation": 2810682702,
+            "kind": "infantry",
+            "x": -19.56,
+            "z": -15.56
+          },
+          {
+            "id": 7,
+            "generation": 2810682702,
+            "kind": "infantry",
+            "x": -18.68,
+            "z": -15.56
+          },
+          {
+            "id": 8,
+            "generation": 2810682702,
+            "kind": "worker",
+            "x": 18.9,
+            "z": 15.1
+          },
+          {
+            "id": 9,
+            "generation": 2810682702,
+            "kind": "worker",
+            "x": 21.1,
+            "z": 15.1
+          },
+          {
+            "id": 10,
+            "generation": 2810682702,
+            "kind": "worker",
+            "x": 18.9,
+            "z": 16.9
+          },
+          {
+            "id": 11,
+            "generation": 2810682702,
+            "kind": "worker",
+            "x": 20.5,
+            "z": 15.5
+          },
+          {
+            "id": 13,
+            "generation": 2810682702,
+            "kind": "infantry",
+            "x": 19.56,
+            "z": 16.44
+          },
+          {
+            "id": 14,
+            "generation": 2810682702,
+            "kind": "infantry",
+            "x": 19.5,
+            "z": 15.5
+          },
+          {
+            "id": 15,
+            "generation": 2810682702,
+            "kind": "infantry",
+            "x": 22.5,
+            "z": 15.5
+          }
+        ]
+      },
+      "damage": [
+        {
+          "t": 29,
+          "hp": 90,
+          "attackTick": 420,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 55,
+          "hp": 80,
+          "attackTick": 446,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 81,
+          "hp": 70,
+          "attackTick": 472,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 107,
+          "hp": 60,
+          "attackTick": 498,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 133,
+          "hp": 50,
+          "attackTick": 524,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 159,
+          "hp": 40,
+          "attackTick": 550,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 185,
+          "hp": 30,
+          "attackTick": 576,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 211,
+          "hp": 20,
+          "attackTick": 602,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 237,
+          "hp": 10,
+          "attackTick": 628,
+          "distance": 1.2374919998602198
+        },
+        {
+          "t": 263,
+          "hp": 0,
+          "attackTick": 654,
+          "distance": 1.2374919998602198
+        }
+      ],
+      "final": {
+        "x": 0.5,
+        "z": 0.5,
+        "goal": 1568,
+        "revision": 3,
+        "hp": 100,
+        "enemyHp": 0,
+        "returning": false,
+        "stanceCombat": true
+      }
+    },
+    {
+      "team": 1,
+      "stance": "standGround",
+      "id": 12,
+      "enemyId": 0,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 standGround \u00b7 1 UNITS"
+        }
+      ],
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 0,
+      "damage": [],
+      "final": {
+        "x": 0.75,
+        "z": 0.95,
+        "goal": 1568,
+        "revision": 2,
+        "hp": 100,
+        "enemyHp": 100,
+        "returning": false,
+        "stanceCombat": true
+      }
+    },
+    {
+      "team": 1,
+      "stance": "noAttack",
+      "id": 12,
+      "enemyId": 0,
+      "notices": [
+        {
+          "type": "notice",
+          "message": "STANCE ORDER \u00b7 noAttack \u00b7 1 UNITS"
+        }
+      ],
+      "contacts": 0,
+      "newContacts": 0,
+      "steps": 0,
+      "damage": [],
+      "final": {
+        "x": 0.75,
+        "z": 0.95,
+        "goal": 1568,
+        "revision": 2,
+        "hp": 100,
+        "enemyHp": 100,
+        "returning": false,
+        "stanceCombat": false
+      }
+    }
+  ],
+  "runtimeHashesVerifiedAgainstSource": true,
+  "acceptance": "collected baseline observations; not clearance adoption acceptance"
+}
