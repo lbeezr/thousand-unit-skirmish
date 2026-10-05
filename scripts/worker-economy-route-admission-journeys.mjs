@@ -24,6 +24,14 @@ const names = ['workerFlowPath', 'applyWorkerFlowRoute', 'publishWorkerEconomyRo
   'scheduleNextMovePlanning', 'serviceMovePlanningForTick'];
 const record = path => ({ hp: 0, kind: 'infantry', path, pathIndex: path.length, attackMoveResumePath: null });
 const entries = f => f.units.reduce((n, u) => n + u.path.length + (u.attackMoveResumePath?.length ?? 0), 0);
+const phaseStart = source.indexOf('  const blockedRouteRepairs = [];');
+const phaseEnd = source.indexOf('  advanceQueuedWaypoints();', phaseStart);
+assert.ok(phaseStart > 0 && phaseEnd > phaseStart);
+const physicalPhase = source.slice(phaseStart, phaseEnd);
+const restoreStart = source.indexOf('  const pendingRepairs = [];', source.indexOf('function restoreMatchCheckpoint('));
+const restoreEnd = source.indexOf('  dirty = true;\n}', restoreStart);
+assert.ok(restoreStart > 0 && restoreEnd > restoreStart);
+const recoveryTail = source.slice(restoreStart, restoreEnd);
 
 // Synthetic XL route pressure and controlled flow/A* selection; real economy,
 // publication, repair/service and checkpoint-leaf bodies. Not native XL saves.
@@ -88,11 +96,18 @@ function fixture({ width = 320, height = 320, total = 0, weighted = false, count
     },
     recordMovePlanningSample: sample => samples.push(sample),
     console: { error(message, error) { throw new Error(message, { cause: error }); } },
+    tickDiagnosticSamples: null, landRouteRetentionTick: null, automaticPositionAllowed: () => true,
+    spreadInteractingUnits() {},
+    getMoveVector(u, distance) {
+      const target = point(u.path[u.pathIndex]), dx = target.x - u.x, dz = target.z - u.z;
+      const length = Math.hypot(dx, dz);
+      return { target, x: dx / length, z: dz / length, stepDistance: Math.min(distance, length), reachedWaypoint: length <= distance };
+    },
   });
   context.createUnitRoutePublicationLedger = (...args) => {
     const ledger = movement.createUnitRoutePublicationLedger(...args); censuses.push(ledger); return ledger;
   };
-  vm.runInContext(names.map(body).join('\n'), context);
+  vm.runInContext(names.map(body).join('\n') + `\nfunction physicalPhase(){${physicalPhase}}\nfunction recoverPendingTail(){${recoveryTail}}`, context);
   const apply = context.applyWorkerFlowRoute;
   context.applyWorkerFlowRoute = (...args) => {
     const result = apply(...args);
@@ -103,6 +118,11 @@ function fixture({ width = 320, height = 320, total = 0, weighted = false, count
   const f = { actors, units, nodes, context, raw, fields, start, point, cell, levels,
     censuses, selections, callbacks, notices, searches, samples, forestCellMask, forestWoodRemaining,
     economy: () => context.updateWorkerEconomyWithRouteAdmission(),
+    physical() {
+      const before = actors.map(u => ({ x: u.x, z: u.z })); context.physicalPhase();
+      for (const [i, u] of actors.entries()) assert.ok(movement.canTraverseStaticBodySegment(before[i], u, .18,
+        width, height, context.isWalkable), 'every actual physical displacement retains Worker clearance');
+    },
     drain() { let bound = 0; while (callbacks.length) { assert.ok(++bound <= 8, 'no capacity callback busy-loop'); callbacks.shift()(); } },
     tick() { context.tickNumber++; context.serviceMovePlanningForTick(context.tickNumber); f.drain(); },
     release() { units.at(-1).path = []; },
@@ -186,9 +206,8 @@ test(`seat ${team}, scheduler ${turns}: explicit selected-goal retry reserves fr
   assert.equal(u.orderRevision, revision); assert.equal(f.context.teamFood[team], 100); assert.equal(u.cargo, 10);
   f.release(); f.tick(); assert.equal(u.movePlanningPending, false); assert.equal(u.path.at(-1), destination);
   assert.ok(entries(f) <= QUOTA); assert.ok(f.censuses.length >= 2, 'asynchronous publication takes a fresh reservation');
-  // Controlled physical arrival isolates deposit accounting from execution;
-  // separate existing real journeys exercise physical movement/cold saves.
-  Object.assign(u, f.point(destination)); f.economy(); f.economy();
+  for (let i = 0; i < 120 && u.cargo > 0; i++) { f.tick(); f.physical(); f.economy(); }
+  assert.equal(u.movePlanningPending, false); f.economy();
   assert.equal(f.context.teamFood[team], 110); assert.equal(u.cargo, 0); assert.equal(u.gatherPhase, '');
 });
 
@@ -197,6 +216,34 @@ test('pending forest flow keeps its selected tail instead of replacing it with t
   u.movePlanningPending = true; u.moveGoalCell = forest.current - 1;
   const before = structuredClone(u); f.economy();
   assert.deepEqual(u, before); assert.equal(f.censuses.length, 0);
+});
+
+for (const team of [0, 1]) for (const turns of [1, 2])
+test(`seat ${team}, scheduler ${turns}: cold pending center recovers into safe productive forest work`, () => {
+  let f = fixture({ total: QUOTA, team, turns }), u = f.actors[0];
+  f.forestActor(); f.economy(); f.drain();
+  const saved = structuredClone(u), bytes = JSON.stringify(saved);
+  // Fresh VM and actual restore-tail contract; metadata pressure is synthetic,
+  // so this is explicitly separate from complete native checkpoint acceptance.
+  f = fixture({ total: QUOTA, team, turns }); u = f.actors[0]; const forest = f.forestActor();
+  Object.assign(u, structuredClone(saved)); f.context.recoverPendingTail(); f.drain();
+  assert.equal(JSON.stringify(saved), bytes); assert.deepEqual(u.workIntent, saved.workIntent);
+  assert.equal(u.moveGoalCell, forest.current); assert.equal(u.cargo, 5);
+  f.release(); f.tick();
+  for (let i = 0; i < 20 && u.cargo === 5; i++) { f.physical(); f.economy(); }
+  assert.equal(u.gatherPhase, 'gathering'); assert.ok(u.cargo > 5);
+  assert.equal(u.cargo + f.forestWoodRemaining[forest.tree], 105);
+  assert.deepEqual(u.workIntent, saved.workIntent); assert.equal(u.movePlanningPending, false);
+  assert.equal(f.context.workerEconomyRouteScope, null);
+});
+
+test('navigation changes during the operation keep explicit repair and acquire the current planner revision', () => {
+  const f = fixture({ total: QUOTA }), u = f.actors[0];
+  f.context.flushPendingForestClears = () => { f.context.navigationRevision++; };
+  f.economy(); f.drain(); assert.equal(u.dropoffNavigationRevision, 4);
+  assert.equal(f.context.navigationRevision, 5); assert.equal(u.moveGoalCell, f.raw.at(-1));
+  f.release(); f.tick(); assert.equal(u.movePlanningPending, false);
+  assert.equal(u.path.at(-1), f.raw.at(-1)); assert.ok(entries(f) <= QUOTA);
 });
 
 test('scope unwinds in finally and only current accepted actors reach repair handoff', () => {

@@ -39,7 +39,7 @@ function witness(width, height, beforeEntries) {
   const context = vm.createContext({ MAP_WIDTH: width, MAP_HEIGHT: height, CELL_COUNT: width * height,
     cellIndex: (column, row) => row * width + column, worldToCell: cell, cellToWorld: point,
     isWalkable: c => c >= 0 && c < width * height && c !== tree,
-    forestCellMask, forestWoodRemaining, activeWorkIntent, FOREST_GATHER_SOURCE_KIND,
+    forestCellMask, forestWoodRemaining, activeWorkIntent, FOREST_GATHER_SOURCE_KIND, workerEconomyRouteScope: null,
     cellVisibleToTeam: () => true, WORKER_INTERACTION_RANGE: 1.4, WORKER_CARRY_CAPACITY: 10 });
   vm.runInContext(names.map(name => bodies[name]).join('\n'), context);
   const before = structuredClone(actor), beforeJob = JSON.stringify(actor.workIntent);

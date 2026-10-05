@@ -1364,7 +1364,7 @@ CI capture owners supply their interfaces; a source merge does not close
 served identity or pixels. Ordinary320 remains closed. Art backing N/A for
 this internal retention change; rejected art holds remain intact.
 
-### Next general Worker publication contract
+### Worker economy operation publication
 
 The [clean-source navigation retry witnesses](qa-evidence/worker-retention-2026-10-05/navigation-retry.json)
 and reporter additionally consume the actual `workerAtDropoff` stale-navigation
@@ -1375,13 +1375,12 @@ leaf refuses those overshoots. These are source writer witnesses with controlled
 drop-off/flow selectors and policy, not paid-building lifecycle, native XL
 checkpoint/admission, timing or rendered acceptance.
 
-The next core/resource decision concerns live `applyWorkerFlowRoute` publication
-and its synchronous operation scope. A guard on this helper must distinguish
-real live actors from Return's temporary clones; Return remains charged by its
-merged command adopter. Selection, raw scoring, chosen tail, reduction, cargo,
-rates and continuation stay resource-owned. Core proposes only reservation at
-the live publication slot and a bounded operation-local ledger/repair handoff.
-The actual continuation call graph narrows the proposed shared writes to that
+The resource owner [approved the exact allocation](https://github.com/lbeezr/thousand-unit-skirmish/pull/330#issuecomment-5988874272):
+core owns reservation at the live `applyWorkerFlowRoute` publication slot and
+a bounded operation-local ledger/repair handoff. Real actors are distinct from
+Return's temporary clones; Return remains charged by its merged command adopter.
+Selection, raw scoring, chosen tail, reduction, cargo, rates, depletion and
+continuation stay resource-owned. The actual consumed writes are that
 subsection of `applyWorkerFlowRoute`, a private synchronous wrapper at the
 existing `simulateTick` call to unchanged `updateWorkerEconomy`, and only the
 path/index/goal publication triplet in `updateForestWorkerEconomy`'s existing
@@ -1390,9 +1389,9 @@ change is needed. Resource retains every surrounding selection, validity,
 visibility, harvest and continuation condition. The lazy operation census
 begins at its first positive publication and ends before returning to the tick;
 legacy grids bypass it and Return clones remain outside its live charging.
-The exact unresolved boundary is recorded with the
-[resource owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/330#issuecomment-5988773910).
-This preparation contains no Worker runtime patch.
+The wrapper unwinds in `finally`, before handing empty assignments to existing
+guarded service, which takes its own current reservation. No saved scope/ledger
+flag or new asynchronous planner is introduced.
 
 The read-only [forest center publication witness](qa-evidence/worker-retention-2026-10-05/forest-center-publication.mjs)
 and [clean-source report](qa-evidence/worker-retention-2026-10-05/forest-center-publication.json)
@@ -1402,31 +1401,46 @@ Q to Q+1 without invoking a flow helper, while preserving the active job,
 partial Wood cargo, stock, pose, queue, generation and order revision. The
 existing selected access center is within unchanged harvesting range, while
 the initial fractional pose is outside it. This establishes the missing writer
-in the proposed operation; it is not execution, productive harvesting, full
+in the operation; it is not execution, productive harvesting, full
 checkpoint, native XL or rendered acceptance. A small legacy case bypasses
 the XL checkpoint leaf unchanged.
-The initial adopter must charge every positive Worker route write within its
+The default tick adopter charges every positive Worker route write within its
 scope, including automatic drop-off/resumption and navigation reselection.
 Reusing one phase ledger while leaving other growing Worker writers uncharged
 would undercount; independently rescanning all actors per recipient instead
-would add repeated census work. This is the concrete scope decision to resolve,
-not an additional master plan or unused abstraction.
+would add repeated census work. Both flow publication and the one-entry center
+approach consume one lazy ledger; idle operations never materialize it.
 
-The proposed first operation is existing `updateWorkerEconomy` and its actual
-forest/drop-off helper calls, followed by existing manual Gather/forest command
-groups and paid-footprint repair callers. The ledger must end with that operation;
-clears may conservatively delay credit until a fresh scope but cannot create
-optimistic reuse. Refusal keeps the selected goal/resource job, cargo and queue,
-releases refused arrays and hands off to the guarded service without phantom
-arrival or old-leg execution. Stop/new manual intent, generation, epoch and
-navigation changes retain their existing priority/identity checks. Acceptance
-requires mixed live-writer quota/alias controls, bounded census/staging, fresh
-field-release retry and both-seat real Food/Wood/Stone/forest/Farm conservation,
-continuation and cold recovery. Water and wildlife keep separate adapters.
-Core and resource agree exact host functions before implementation; Return and
-the independent census diagnostic PR remain separate reviewed slices. Source,
-package, deployed identity and real normal-game pixels remain distinct, and
-ordinary320 remains closed.
+The operation is unchanged `updateWorkerEconomy` and its actual forest/drop-off
+helper calls. Manual Gather/forest command groups and paid-footprint repair
+callers remain explicit next adopters; the historical reporters invoke helpers
+outside this tick scope and retain their overshoot controls. The ledger ends
+with the operation. Clears can conservatively delay credit until a fresh scope
+but cannot create optimistic reuse. Refusal keeps the selected goal/resource
+job, cargo and queue, releases refused arrays and explicitly hands off to the
+existing silent `worker-economy-capacity` repair. Drop-off navigation is already
+refreshed before publication, so the next work tick cannot be relied on to
+reselect/retry. A waiting forest Worker retains that accepted flow/center goal
+instead of republishing a center and accumulating repairs each tick. Actual
+interaction range still controls deposits/harvesting; refusal never supplies
+arrival or executes the old leg. Actor identity/generation/revision/epoch guard
+the handoff; existing planner navigation checks guard retry. Stop/new manual
+intent, depletion and continuation retain their existing priority and policy.
+
+The registered [economy admission journeys](../scripts/worker-economy-route-admission-journeys.mjs)
+consume the actual economy, both publication slots, repair/service, physical
+phase and recovery tail with synthetic XL pressure and controlled selectors/A*.
+Quota/weighted/raw-score controls, mixed flow/center ordering, active/resume alias
+accounting, one pending center repair, both-seat field-release/deposit-once,
+safe physical displacements, productive forest recovery, stale actors/orders,
+navigation/epoch changes and legacy bypass are source contracts. Metadata cold
+recovery is separate from a complete native XL checkpoint. Existing real-command
+Food/Wood/Stone, forest, paid Farm, depletion/continuation and untouched-checkpoint
+journeys remain compatibility acceptance on admitted grids. Water/wildlife keep
+separate adapters. Return and census diagnostics remain separate merged slices;
+independent exact-head review, release/native qualification and normal merge
+belong to this economy increment. Source, package, deployed identity and real
+normal-game pixels remain distinct. Ordinary320 and universal completion stay open.
 
 Stationary construction is another uncovered core consumer, with no runtime
 patch selected. Twelve real-command probes at the same clean source stage two

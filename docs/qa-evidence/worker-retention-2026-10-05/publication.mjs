@@ -52,7 +52,7 @@ function fixture(width, height, mode, beforeEntries, count = 1, oldLength = 0) {
     units, resourceNodeStates: nodes, elevationLevelByCell: levels,
     worldToCell: cell, cellToWorld: point, isWalkable: c => c >= 0 && c < levels.length,
     WALK_SPEED: 4, STEP_SECONDS: 1 / 30, WORKER_INTERACTION_RANGE: 1.4,
-    movePlanningEpoch: 0, navigationRevision: 4, dirty: false, automaticTargetRejections: new WeakMap(),
+    movePlanningEpoch: 0, navigationRevision: 4, dirty: false, workerEconomyRouteScope: null, automaticTargetRejections: new WeakMap(),
     commandUnits: command => command.ids.map(id => units[id]),
     unitHasCapability: (u, capability) => u.kind === 'worker' && capability === 'gather',
     economyResources: () => ['food', 'wood'], matchEconomyProfileId: () => 'classic',

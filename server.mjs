@@ -4658,6 +4658,7 @@ function applyWorkerFlowRoute(unit, startCell, field, path, arrived) {
 
 function publishWorkerEconomyRoute(unit, path, destination) {
   const scope = workerEconomyRouteScope;
+  if (units[unit.id] !== unit || unit.hp <= 0) return { status: 'deferred', reason: 'stale-worker-route' };
   if (!scope.ledger && path.length > 0) scope.ledger = createUnitRoutePublicationLedger(
     MAP_WIDTH, MAP_HEIGHT, units, resourceNodeStates,
     { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES, maxEntries: XL_CHECKPOINT_ROUTE_MAX_ENTRIES });
