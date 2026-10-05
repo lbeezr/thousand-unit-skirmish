@@ -95,6 +95,7 @@ run(['--experimental-test-coverage', '--test-coverage-include=src/client/audio/a
   '--test', 'scripts/audio-shipped-response.test.mjs'], 'Shipped audio response coverage floor (100%)');
 run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio import provenance');
 run(['--test', 'scripts/audio-composer-preview.test.mjs'], 'Audio composer preview resume cancellation and retry');
+run(['--test', 'scripts/audio-composer-wav.test.mjs'], 'Audio composer WAV read/decode diagnostics and retry');
 run(['scripts/audio-shipped-serving-scenario.mjs'], 'Authoritative shipped audio serving');
 run(['scripts/audio-wall-order-scenario.mjs'], 'Applied wall-line audio acknowledgement');
 run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measurement integrity');
