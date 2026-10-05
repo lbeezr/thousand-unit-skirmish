@@ -3,6 +3,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 import { farmHarvestNode } from '../src/farm-harvest.mjs';
+import { selectInspectableWildlife } from '../src/wildlife-client-state.mjs';
 import { isShoreFish } from '../src/shore-fishing.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import * as THREE from 'three';
@@ -50,7 +51,7 @@ for (const team of [0, 1]) test(`seat ${team} harvests the Farm body through the
   const f = constructionTargetingFixture({ team, units, selection: [0, 1, 2, 3], buildings: [farm],
     ...(process.env.FARM_CLIENT_SOURCE ? { sourcePath: process.env.FARM_CLIENT_SOURCE } : {}) });
   Object.assign(f.context, { farmHarvestNode, isShoreFish, mapDefinition: { resourceNodes: [], fogOfWar: false },
-    selectOwnedWildlife: () => null, latestWildlifeView: null,
+    selectInspectableWildlife, latestWildlifeView: null,
     screenPoint: new THREE.Vector3(), groundHeight: () => 0 });
   f.buildingVisuals.get(farm.id).group.add(new THREE.Mesh(new THREE.BoxGeometry(3, 2, 3),
     new THREE.MeshBasicMaterial()));
@@ -63,7 +64,7 @@ for (const team of [0, 1]) test(`seat ${team} harvests the Farm body through the
   assert.deepEqual(f.payloads[0].ids, [0]);
   assert.deepEqual(f.payloads[0].unitGenerations, [7]);
   assert.deepEqual([...f.selected], [0, 1, 2, 3], 'ordering preserves the selection');
-  assert.equal(f.context.pickResourceNodeAt(body.x, body.y, { ownedWildlifeOnly: true }), null);
+  assert.equal(f.context.pickResourceNodeAt(body.x, body.y, { inspectableWildlifeOnly: true }), null);
   farm.harvestStock = 0;
   assert.equal(f.context.pickResourceNodeAt(body.x, body.y)?.stock, 0, 'exhaustion remains an explicit server refusal');
   farm.complete = false;

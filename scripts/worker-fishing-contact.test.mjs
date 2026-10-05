@@ -143,6 +143,6 @@ test('bank ring and water glyph pick the same land resource, retaining current f
     farm.complete = true; group.visible = false;
     assert.equal(context.pickResourceNodeAt(...body, { visibleOnly: true }), null);
     group.visible = true;
-    assert.equal(context.pickResourceNodeAt(...body, { ownedWildlifeOnly: true }), null);
+    assert.equal(context.pickResourceNodeAt(...body, { inspectableWildlifeOnly: true }), null);
   } finally { geometry.dispose(); material.dispose(); }
 });
