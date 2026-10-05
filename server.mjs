@@ -1070,6 +1070,7 @@ let separationTickDistanceChecks = 0;
 let separationTickCloseNeighborContributions = 0;
 let separationTickMoveVectorCalls = 0;
 let separationTickMaxCandidatesPerCall = 0;
+let landRouteRetentionTick = null;
 let lastSimulationTickStartedAt = null;
 const movePlanningSamples = [];
 const movePlanningQueue = [];
@@ -8322,6 +8323,7 @@ function updateBannerfallWaves() {
 }
 
 function simulateTick() {
+  landRouteRetentionTick = null;
   if (SEPARATION_DIAGNOSTICS_ENABLED) {
     separationTickCandidateVisits = 0;
     separationTickDistanceChecks = 0;
@@ -8570,6 +8572,15 @@ function simulateTick() {
   if (skiffFishingContext.update({ units, nodes: resourceNodeStates, buildings, teamFood }, STEP_SECONDS)) dirty = true;
   if (advanceSkiffWaypoints(waterUnitRuntime, units, STEP_SECONDS)) dirty = true;
   const blockedRouteRepairs = [];
+  // This synchronous phase grows retained routes only at the local detour
+  // splice below. Clears/resume transfers can leave conservative overcharge
+  // until the next tick's census; never keep a ledger across phases/ticks.
+  const detourRouteLedger = createUnitRoutePublicationLedger(MAP_WIDTH, MAP_HEIGHT, units, resourceNodeStates,
+    { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES, maxEntries: XL_CHECKPOINT_ROUTE_MAX_ENTRIES });
+  if (detourRouteLedger && tickDiagnosticSamples) landRouteRetentionTick = {
+    attempts: 0, published: 0, deferred: 0, pathLimitDeferrals: 0, aggregateLimitDeferrals: 0,
+    invalidEnvelopeDeferrals: 0, fieldVisits: 0, maxSavedEntries: 0, maxStagedEntries: 0,
+  };
   for (const unit of units) {
     if (unit.hp <= 0 || unit.movementDomain === 'water') continue;
     // A target can move within its current cell after the flow path ends.
@@ -8602,8 +8613,34 @@ function simulateTick() {
       const move = getMoveVector(unit, remainingStep, allowLocalDetour);
       if (!move) break;
       if (move.detour) {
-        unit.path = unit.path.slice(); // Planning can share identical routes.
-        unit.path.splice(unit.pathIndex, move.detour.replaceCount, ...move.detour.path);
+        const nextEntries = unit.path.length - Math.min(move.detour.replaceCount, unit.path.length - unit.pathIndex)
+          + move.detour.path.length;
+        const reservation = detourRouteLedger?.check(unit, nextEntries);
+        if (landRouteRetentionTick) {
+          landRouteRetentionTick.attempts++;
+          landRouteRetentionTick.fieldVisits = reservation.fieldVisits;
+          landRouteRetentionTick.maxSavedEntries = Math.max(landRouteRetentionTick.maxSavedEntries, reservation.routeEntries);
+        }
+        if (reservation?.status === 'deferred') {
+          if (landRouteRetentionTick) {
+            landRouteRetentionTick.deferred++;
+            if (reservation.reason === 'path-entry-limit') landRouteRetentionTick.pathLimitDeferrals++;
+            else if (reservation.reason === 'aggregate-entry-limit') landRouteRetentionTick.aggregateLimitDeferrals++;
+            else landRouteRetentionTick.invalidEnvelopeDeferrals++;
+          }
+          break; // Keep this route/pose/intent; the next tick retries normally.
+        }
+        const detouredPath = unit.path.slice(); // Planning can share identical routes.
+        detouredPath.splice(unit.pathIndex, move.detour.replaceCount, ...move.detour.path);
+        detourRouteLedger?.commit(unit, detouredPath.length);
+        if (landRouteRetentionTick) {
+          landRouteRetentionTick.published++;
+          landRouteRetentionTick.maxSavedEntries = Math.max(landRouteRetentionTick.maxSavedEntries, reservation.prospectiveEntries);
+          // New execution array + bounded 5x5 detour + discarded splice result.
+          landRouteRetentionTick.maxStagedEntries = Math.max(landRouteRetentionTick.maxStagedEntries,
+            Math.max(unit.path.length, detouredPath.length) + move.detour.path.length + move.detour.replaceCount);
+        }
+        unit.path = detouredPath;
         allowLocalDetour = false;
         dirty = true;
         continue;
@@ -9490,6 +9527,7 @@ function runSimulationTick() {
       scenarioMs: Number(scenarioMs.toFixed(3)), scenarioEvaluated,
       broadcastMs: Number((afterBroadcast - afterVision).toFixed(3)),
       checkpointMs: Number((tickEndedAt - afterBroadcast).toFixed(3)),
+      ...(landRouteRetentionTick ? { landRouteRetention: landRouteRetentionTick } : {}),
       ...(planningWork ? { planningMs: Number(planningWork.durationMs.toFixed(3)),
         planningTurns: planningWork.turns, planningWorkItems: planningWork.workItems,
         planningExpandedCells: planningWork.expandedCells } : {}),

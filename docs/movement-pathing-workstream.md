@@ -1035,6 +1035,14 @@ not complete match/crowd/playability qualification at each grid size.
 The adapted characterization reporter exposes XL
 deferrals and leaves its retained `f2931a41` baseline unchanged.
 
+Independent review approved `fe19c8b9`; fresh-main integration and normal
+[PR425](https://github.com/lbeezr/thousand-unit-skirmish/pull/425) merge at
+`f08ceb91` passed 359 focused checks, types/imports/docs, 4,032 complete publisher
+parity cases and the boundary reporter. Exact integration also passed actual
+persistent process restarts and packed-host checks. The fresh clean merged
+1,383-file release digest is
+`sha256:ef5fd1c1d578b5dbfae66893d428a5656e86c80a6686608ede664328ca99565b`.
+
 This covers the sliced A* publisher family only. Worker economy, direct combat,
 resume transfers, naval and wildlife retention writers still need vertical
 adopters before any all-writer aggregate claim. Exhausted route retirement must
@@ -1043,6 +1051,50 @@ actual replacement/Stop/caller release rather than inventing retirement.
 Map owns final 320 admission/performance/playability; caller pursuit, crowd PR400,
 checkpoint and match-ending hooks remain disjoint. Source/native/package,
 served identity and real rendered acceptance stay separate. Art backing N/A.
+
+### Local-detour retention adopter
+
+The next shared owner slice consumes the same ledger around the existing land
+physical phase's sole retained-route growth: the legacy stationary-Worker local
+detour splice. One synchronous XL census charges full active/resume/herd saved
+fields; the predicted splice length includes consumed prefixes and is reserved
+before the full execution copy/spread. A published copy retains the selected
+suffix, tail, path index, accepted goal/point, revision and queue, and leaves shared
+assignees and the parked blocker untouched. A refused proposal stops that actor's
+remaining movement for this tick with its existing path/reference/pose/intent;
+the existing next tick retries from current state. Stop/Hold still cancel normally.
+No saved retry flag, planner job, queue or new tick hook is introduced.
+
+The phase only grows paths at that splice. Its other route clears and resume
+transfers reduce retained entries; the scalar ledger can conservatively retain
+their old charge until the next phase census. This explicitly permits a one-tick
+delay in reusing a same-phase release. No asynchronous work runs inside the phase.
+The local search remains at most 25 cells with at most 24 detour waypoints and two
+replaced entries. New execution, proposal and discarded splice arrays stage at
+most `cellCount+26` logical entries separately from retained fields. This is a
+source slot bound, not backing-store/GC/RSS or device capacity evidence.
+
+Existing opt-in whole-tick diagnostics expose only bounded scalar attempts,
+publications, refusal reasons, census visits and maximum retained/staged entries;
+legacy grids omit these fields and never read the census. Registered controls
+cover quota−1/quota/quota+1, rectangular/square per-path growth, consumed prefixes,
+aliases/resume/herd fields, shared assignees, no copy on refusal, release/retry,
+same-phase conservative release, unchanged intents, actual Stop/Hold and diagnostic
+reset/opt-out parity. Six both-seat native 16×17/160²/256² accepted Move/queued
+fractional journeys exercise the actual parked-Worker detour, complete serialized
+checkpoint validation and separate-module recovery, including legal substeps.
+XL pressure remains synthetic; ordinary320/full XL recovery stays closed.
+
+Core owns the phase census/splice admission and this subsection only; crowd
+[PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400) owns its ordinary
+steering/wait controller, and caller [PR429](https://github.com/lbeezr/thousand-unit-skirmish/pull/429)
+owns the accepted Follow-to-queued-travel point transition allocated in the
+[shared decision](https://github.com/lbeezr/thousand-unit-skirmish/pull/425#issuecomment-5987591555).
+Worker flow/Return clone adoption, direct combat/acquisition, naval and wildlife
+writers remain separate positive-growth adopters. This is an internal source
+milestone (art N/A). The shared owner retains exact-head review, integration,
+packaging and existing deployment/capture follow-through; no source test closes
+served identity or actual normal-game pixels.
 
 Stationary construction is another uncovered core consumer, with no runtime
 patch selected. Twelve real-command probes at the same clean source stage two

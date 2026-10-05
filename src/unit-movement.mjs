@@ -142,7 +142,7 @@ export function rejoinSelectedUnitRoute(route, options) {
   return { route: rejoin === 'prefixed' ? { ...route, path: [options.startCell, ...route.path] } : route, rejoin };
 }
 
-// One synchronous publication group only: metadata census, not a live registry.
+// One synchronous publication group/executor phase: metadata census, not a live registry.
 // Count every saved field, including aliases and exhausted arrays. The host
 // supplies the checkpoint quota. Legacy routes never read this census.
 export function createUnitRoutePublicationLedger(width, height, units, nodes, limits) {
