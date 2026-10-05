@@ -105,11 +105,14 @@ user's visual-direction hold. Its public-source registration, 48 reused poses,
 provenance and runtime admission remain preserved, but the gold costume/round
 shield is not the established Human identity. The corrective default restores
 Infantry v3; Archer v3 PR230 and blocky Spearman v2 PR241 remain unmerged drafts.
-The established Infantry v3/Archer v2/Spearman v1 family retains 63 genuine
-action-heading source gaps, and all 63 deployed/native cells remain unverified.
-Art owner retains identity-preserving production; Mac task `01a106da-40ec` traces
-live state/facing separately, with parent Railway/environment support. No new
-generation, deletion, private-source publication or deployment is claimed.
+The [5 October Spearman NE slice](qa-spearman-ne-walk-2026-10-05.md) adds four
+local poses from its established public NE seed to the default v1 pack 0.4.0,
+preserving all 32 previous poses. The family now retains 62 genuine action-heading
+source gaps (Spearman20, Infantry21, Archer21); all 63 original deployed/native
+cells remain unverified. Art owner retains production, clean release and ordinary
+NE contact/readability acceptance through shared cloud transport owner `01a10378`;
+animation-state owner `01a103d4` retains clocks/selectors, with parent Railway support.
+Mac testing stays stopped. No paid generation, private inputs or held art are used.
 
 Package paths are under `assets/` unless linked otherwise. Release inclusion
 comes from an actual clean `release:pack` at follow-up `1757064`: 1,113 files,
