@@ -88,8 +88,9 @@ repath, rejected inherited overlap, empty in-range routes, paid dynamic obstruct
 and selection/generation rejection. Native `focused-building-attack-scenario.mjs`
 uses both real WebSocket seats, paid unfinished targets, actual Infantry damage,
 travel/firing cold restarts and owner cancellation into the saved queued point.
-Exact-head review/checks/clean-pack receipts belong to its PR. Follow remains
-deferred to the documented core pending-goal contract; PR418's observed 30-tick
+Exact-head review/checks/clean-pack receipts belong to its PR. Core's pending-goal
+correction lands in PR422; Follow clearance remains a separate caller slice
+requiring the readiness witness below. PR418's observed 30-tick
 seat1 reversal shift and the two old seat0 geometry/visibility failures remain
 retained. Automatic building attacks, Worker/Sheep, stance return and same-cell
 closure are excluded. Art backing is N/A. Deployment verifier owns current
