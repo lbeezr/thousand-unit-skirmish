@@ -202,7 +202,8 @@ try {
   // with the source bytes and the same exact-path GET/HEAD policy.
   for (const filename of ['src/scenario-authoring.mjs', 'src/map-resize.mjs',
     'src/authoring/scenario-authoring.mjs', 'src/authoring/map-resize.mjs',
-    'src/authoring/map-studio-form-state.mjs', 'src/authoring/map-studio-draft-store.mjs']) {
+    'src/authoring/map-studio-form-state.mjs', 'src/authoring/map-studio-draft-store.mjs',
+    'src/authoring/map-studio/draft/v1/contract.mjs']) {
     const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
     assert.equal(response.status, 200, filename);
     assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
@@ -213,6 +214,10 @@ try {
   }
   for (const filename of ['src/authoring/map-studio-form-state.mjs/extra',
     'src/authoring/map-studio-draft-store.mjs/extra',
+    'src/authoring/map-studio/draft/v1/contract.mjs/extra',
+    'src/authoring/map-studio/draft/v1/unknown.mjs',
+    'src/authoring/map-studio/draft/v2/contract.mjs',
+    'src/authoring/map-studio/draft/v1/',
     'src/authoring/unknown.mjs', 'src/authoring/', 'src/authoring//map-studio-form-state.mjs']) {
     for (const method of ['GET', 'HEAD']) {
       assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,

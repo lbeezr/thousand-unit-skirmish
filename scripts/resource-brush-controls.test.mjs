@@ -7,6 +7,7 @@ import { previewResourceBrush } from '../src/resource-brush-authoring.mjs';
 import { createMapStudioFormState } from '../src/authoring/map-studio-form-state.mjs';
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from '../src/authoring/map-studio-draft-store.mjs';
 import { mapStudioDraftFixture } from './fixtures/map-studio-draft-fixture.mjs';
+import * as draftV1 from '../src/authoring/map-studio/draft/v1/contract.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
@@ -73,6 +74,36 @@ test('actual client callbacks use live terrain; preview and overlay are read-onl
   assert.equal(f.w.ui.studioResourceStock.value, '13.5');
   f.set('seed', 93001); assert.equal(f.markers().length, 0); assert.notDeepEqual(f.preview(), a);
   assert.equal(f.w.captureMapStudioFormValues()['studio-brush-seed'].value, '93001');
+});
+
+test('versioned draft contract preserves the store API, per-store methods and reference recovery', async () => {
+  const legacy = await import('../src/authoring/map-studio-draft-store.mjs');
+  assert.deepEqual(Object.keys(legacy), ['MAP_STUDIO_DRAFT_VERSION', 'createMapStudioDraftStore']);
+  assert.deepEqual(Object.keys(draftV1), ['MAP_STUDIO_DRAFT_VERSION', 'requireRecovery']);
+  assert.equal(MAP_STUDIO_DRAFT_VERSION, draftV1.MAP_STUDIO_DRAFT_VERSION);
+  assert.equal(draftV1.MAP_STUDIO_DRAFT_VERSION, 1);
+  const unavailableStorage = () => { throw new Error('Recovery must not access storage.'); };
+  const a = createMapStudioDraftStore({ getStorage: unavailableStorage });
+  const b = createMapStudioDraftStore({ getStorage: unavailableStorage });
+  assert.deepEqual(Object.keys(a), ['key', 'read', 'write', 'remove', 'requireRecovery']);
+  assert.notEqual(a.requireRecovery, b.requireRecovery);
+  assert.equal(a.requireRecovery.name, 'requireRecovery');
+  assert.equal(a.requireRecovery.length, 2);
+  const draft = { version: 1, sourceMapId: 'source', editor: {
+    definition: { width: 16, height: 256, obstacles: [], spawnPoints: [] }, formValues: {} } };
+  const before = structuredClone(draft);
+  for (const validate of [draftV1.requireRecovery, a.requireRecovery, b.requireRecovery]) {
+    const recovered = validate(draft, 'source');
+    assert.equal(recovered.state, draft.editor);
+    assert.equal(recovered.definition, draft.editor.definition);
+    for (const version of [0, 2, '1', undefined]) {
+      assert.throws(() => validate({ ...draft, version }, 'source'),
+        { message: 'The saved draft could not be read. Discard it to start a fresh map.' });
+    }
+    const failure = new Error('unexpected draft getter');
+    assert.throws(() => validate({ get editor() { throw failure; } }, 'source'), error => error === failure);
+  }
+  assert.deepEqual(draft, before);
 });
 
 test('core falloff flows through preview, conserved budget, undo/redo and draft restoration', t => {

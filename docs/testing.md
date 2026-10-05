@@ -360,6 +360,12 @@ no earlier spikes or skipped slots. The [bounded Crownroads record](qa-performan
 retains baseline/candidate source identities and a real preparation overrun.
 Existing p95/max diagnostic budgets remain unchanged.
 
+The [identified tick-attribution consumer](qa-crownroads-tick-attribution-2026-10-05.md)
+uses `map-capacity-scenario.mjs` and its existing report-check CLI. It retains raw
+rows once by worker/match/map/tick, reports observed phase means/tails, and keeps
+known map-probe interruptions separate from capture gaps. Exact per-row overrun
+flags survive display rounding; attribution is observational, not a causal claim.
+
 The [core tranche profile](core-playtest-tranche.md#scale-measurement-profile--proposed)
 documents the bounded hosted movement ladder and per-seat tagged-order intervals.
 Its success status asserts protocol liveness, not the broader scale budgets.

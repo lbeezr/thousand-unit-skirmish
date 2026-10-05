@@ -1,0 +1,4 @@
+{"armySize":24,"targetRegion":"north-pass","movedBySeat":[12,12],"tickP95Ms":3.027,"tickP99Ms":5.447,"overBudgetTickCount":0,"skippedSlotDelta":0}
+{"armySize":24,"targetRegion":"high-flank","movedBySeat":[12,12],"tickP95Ms":2.808,"tickP99Ms":3.348,"overBudgetTickCount":0,"skippedSlotDelta":0}
+{"armySize":24,"targetRegion":"causeway","movedBySeat":[12,12],"tickP95Ms":2.993,"tickP99Ms":3.867,"overBudgetTickCount":0,"skippedSlotDelta":0}
+{"output":"/tmp/performance-attribution-baseline","passed":true,"error":null}

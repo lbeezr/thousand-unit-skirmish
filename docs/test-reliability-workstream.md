@@ -61,13 +61,35 @@ production module, shared route binding, CI registry or gameplay edit is allocat
 here. Their existing construction roots and drop-off scoring remain the consumed
 interface; production modularization can later replace the seam with exports.
 
+## Paid Gate consumer audit
+
+At main `231a5de6`, the unchanged Gate, depleted-resource, construction-intent
+and building-limit files pass 109 checks. This is a selected-source receipt,
+not a full-suite verdict or closure of the crowd-owned movement backlog.
+The Gate topology fixture's no-op `assignFormationMove` never changes the
+builder revision, so `finishPalisadeBuilderAssignments` skips the accepted actor.
+A temporary copy exercising that synchronous accepted-builder branch fails with
+`currentConstructionAccessRetry` undefined. This is an uncovered fixture
+dependency, not a demonstrated production movement failure.
+
+The Gate consumer shares the production-derived construction helper/import seam
+and fresh retry state. Its original assertions remain unchanged. Four new
+both-seat controls run real paid-wall and builder endpoint admission against real
+military reservations: free access captures one owned planning job; occupied
+access keeps the charged site, construction intent and current retry through 90
+ticks without admitting a route. Replaying the existing site neither charges nor
+queues another job. The planner scheduler and recovery-route submission are
+explicit captures; no physical execution, arrival or productive liveness is
+claimed. Crowd owner `01a10933` retains that runtime outcome.
+
 ## Coordination and ongoing queue
 
 | Slice / owner | Next step | Dependency / evidence |
 | --- | --- | --- |
 | Construction shared fixture / `01a1085f` | Completed in [PR453](https://github.com/lbeezr/thousand-unit-skirmish/pull/453); retain production-root contracts during future extraction. | All original 22 receipt and 15 paid-wall test bodies stay byte-identical. Seven loader controls cover inserted helpers, import forms, labels/computed values, setup failures and isolated retries. |
-| Paid-economy shared construction adopter / `01a1085f` | Independently review and qualify the exact integrated head, then normally merge; source and clean-pack identities belong in the slice PR. | Six real missing-helper failures; original 14 bodies plus four retry-ownership controls. Storehouse/Mill/return regressions remain unchanged. |
-| Next reliability audit / `01a1085f` | Read-only audit remaining paid construction consumers for real missing dependencies before selecting another bounded migration. | Shared economy/route bindings and core Farm/Worker owners; passing drop-off checks do not justify mass rewriting. No production write reserved. |
+| Paid-economy shared construction adopter / `01a1085f` | Completed in [PR457](https://github.com/lbeezr/thousand-unit-skirmish/pull/457); retain typed payment and retry ownership. | Six real missing-helper failures; original 14 bodies plus four retry-ownership controls. Storehouse/Mill/return regressions remain unchanged. |
+| Paid Gate shared construction adopter / `01a1085f` | Independently review and qualify the exact integrated head, then normally merge; exact source/pack identities belong in the slice PR. | Reproduced accepted-builder missing dependency despite green topology-only baseline; original assertions plus both-seat endpoint/paid-job controls. No production or CI edit. |
+| Next reliability audit / `01a1085f` | Check reported extraction setup failures against exact containing source before another bounded migration; passing remaining paid-construction consumers need no rewrite. | The selected 109 baseline checks pass. Core Farm/Worker and modularization owners retain runtime roots; crowd owner retains actual movement liveness. No further production write reserved. |
 | Production modularization owner | Preserve or explicitly replace these construction roots when extracting them into an exported runtime module; then replace only the affected fixture slice. | No production host/module/path changes in this slice. Architecture owner retains import/domain guards. |
 | Checked-type owner | Retain strict project membership, negative contracts and ambient isolation; assess the fixture interface in the dedicated type lane. | No tsconfig, runtime type-contract or coverage-floor edits here. Existing type gates remain required. |
 | CPU qualification owner `01a10378` | Qualify containing source through the existing full-suite workflow. | The existing receipt registration runs the new loader controls; labels, deadlines, shard selection and CI registry are unchanged. Focused checks are not a full-suite receipt. |

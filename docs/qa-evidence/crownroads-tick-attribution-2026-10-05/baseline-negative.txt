@@ -1,0 +1,38 @@
+✔ opt-in diagnostic samples preserve chronological wrapped ticks and actual whole-tick values (2.823588ms)
+✔ rare over-budget ticks remain visible even when p95 and p99 pass (2.115585ms)
+✔ budget count uses the exact tick period and raw durations before rounding (1.680695ms)
+✔ inactive ring slots and expired overruns do not leak into a new window (0.59789ms)
+✖ actual outer-tick diagnostics preserve match/map identity and the exact overrun flag before display rounding (2.349179ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 76.26713
+
+✖ failing tests:
+
+test at ../../tmp/performance-attribution-baseline-tick.test.mjs:65:1
+✖ actual outer-tick diagnostics preserve match/map identity and the exact overrun flag before display rounding (2.349179ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'current-match'
+  
+      at TestContext.<anonymous> (file:///tmp/performance-attribution-baseline-tick.test.mjs:86:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'current-match',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
