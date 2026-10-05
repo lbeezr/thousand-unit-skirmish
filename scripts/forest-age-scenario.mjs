@@ -13,3 +13,4 @@ assert.throws(()=>forestAgeFactors(points,0,0),RangeError);
 console.log(`Irregular ages: ${mature.length} separated mature points, all ${points.length} roots represented, stable ordering/seed and no mutation.`);
 // Source-side pine pilot regressions share this existing vegetation CI entry.
 await import('./tree-variety-pilot.test.mjs');
+await import('./forest-lifecycle-atlas.test.mjs');
