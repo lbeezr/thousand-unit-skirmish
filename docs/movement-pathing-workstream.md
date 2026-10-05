@@ -926,6 +926,33 @@ reviewed fix. No neighbor shove, endpoint overlap or silent goal replacement is
 an acceptable test fix. CI `01a10378` retains the next fresh full CPU attempt and
 supported served/rendered interface. No private archive access or publication.
 
+### U5 native wall seat-1 diagnosis — 5 October 2026
+
+Crowd owner `01a10933-c2b0` retains the separate
+[native wall diagnosis](qa-native-wall-seat1-2026-10-05.md) at `252abb29`.
+The unchanged public native program completes seat 0 and times out seat 1
+under its original 60-second/all-64 physical-arrival contract. At the last
+checkpoint, 63 unfinished actors are near the central choke: 28 first-leg
+westbound actors and 35 eastbound return actors. No pending planning explains
+the stop. A separate live observer records no lease/contour grants or overflow;
+the existing parked/single-peer recovery cannot cover that moving-only knot.
+A bounded restored-input trace preserves 72 inactive actors and has zero
+contacts across 6,496 selected substeps. This does not qualify native completion.
+
+Both a generalized lease and a current-cell lane variant failed the retained
+choke; the lane variant also regressed the seat-1 gate. Both are retired and
+no runtime correction is claimed. Next crowd scope is a retained source witness
+separating no physically admitted step from priority arbitration discarding a
+safe candidate, followed by a reviewed bounded correction and unchanged
+both-seat/gate/forest/bridge controls. The paid-house final-approach work remains
+open alongside this narrow native slice. Construction `01a10933-e913` and core
+`01a107ba` separately own Worker68 occupying actor120's accepted queued endpoint
+`(18.5, 1.5)`; crowd does not duplicate that access contract or shove the builder.
+Original deadlines/endpoints, Stop priority, shared admissions and standing
+author-owned merge authority remain intact. Source/pack/provider/served/render
+proof stays separate, with the existing CI/capture interface and no private
+archive access/publication or denied capability/auth retries.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
