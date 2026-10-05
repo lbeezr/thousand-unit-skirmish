@@ -2,12 +2,12 @@ import { readFileSync } from 'node:fs';
 import { parse } from 'acorn';
 import * as THREE from 'three';
 import { farmHarvestNode } from '../src/farm-harvest.mjs';
-import { selectOwnedWildlife } from '../src/wildlife-client-state.mjs';
+import { selectInspectableWildlife } from '../src/wildlife-client-state.mjs';
 
 // CPU production picker with real rays and stock adapters; callers supply their
 // camera, disclosed buildings/resources, fog and actual visible test geometry.
 export function resourcePickingBindings() {
-  return { farmHarvestNode, selectOwnedWildlife, latestWildlifeView: null,
+  return { farmHarvestNode, selectInspectableWildlife, latestWildlifeView: null,
     buildingVisuals: new Map(), pointerNdc: new THREE.Vector2(), raycaster: new THREE.Raycaster(),
     groundPlane: new THREE.Plane(new THREE.Vector3(0, 1, 0), 0),
     groundHit: new THREE.Vector3(), terrainSurface: null };

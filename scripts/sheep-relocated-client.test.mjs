@@ -88,3 +88,57 @@ test('relocated partial carcass remains gatherable; depletion removes its art an
   assert.equal(f.context.pickResourceNodeAt(...f.screen(actual)), null);
   f.paint(); assert.equal(f.arcs.length, 0);
 });
+
+for (const team of [0, 1]) test(`seat ${team}: inspection excludes Farm body/point but admits only current visible positive-food wildlife`, t => {
+  const f = fixture(t, team), inspect = { visibleOnly: true, inspectableWildlifeOnly: true };
+  f.context.camera.position.set(actual.x + 1.5, 20, actual.z);
+  f.context.camera.lookAt(actual.x + 1.5, 0, actual.z);
+  f.context.camera.zoom = 2; f.context.camera.updateProjectionMatrix(); f.context.camera.updateMatrixWorld();
+  const farm = { id: 77, type: 'farm', team, complete: true, hp: 600,
+    x: actual.x + 3.5, z: actual.z, harvestStock: 200 };
+  const geometry = new THREE.BoxGeometry(3, 2, 3), material = new THREE.MeshBasicMaterial();
+  const group = new THREE.Group(); group.position.set(farm.x, 1, farm.z);
+  group.add(new THREE.Mesh(geometry, material));
+  t.after(() => { geometry.dispose(); material.dispose(); });
+  f.context.latestBuildings.push(farm); f.context.buildingVisuals.set(farm.id, { group });
+  f.fog[cell(farm)] = 2; f.fog[cell(actual)] = 2;
+  const body = f.screen({ x: farm.x + 1.2, z: farm.z }), base = f.screen(farm);
+  assert.ok(Math.hypot(body[0] - base[0], body[1] - base[1]) > 26, 'real body hit lies outside point radius');
+  for (const stock of [200, 0]) {
+    farm.harvestStock = stock;
+    for (const point of [body, base]) {
+      const target = f.context.pickResourceNodeAt(...point);
+      assert.equal(target.id, 'farm:77'); assert.equal(target.stock, stock);
+      assert.equal(f.context.pickResourceNodeAt(...point, inspect), null, 'inspection cannot select a productive or exhausted Farm');
+    }
+  }
+  // Removing the body still exercises the generic point loop's Farm adapter.
+  group.visible = false;
+  assert.equal(f.context.pickResourceNodeAt(...base).stock, 0);
+  assert.equal(f.context.pickResourceNodeAt(...base, inspect), null);
+  group.visible = true;
+  const pick = () => f.context.pickResourceNodeAt(...f.screen(actual), inspect);
+  for (const owner of [null, 0, 1]) for (const stock of [40, .004]) {
+    f.disclose([{ ...actual, stock, wildlifeState: 'carcass', wildlifeActivity: undefined, wildlifeTeam: owner }]);
+    assert.equal(pick()?.id, authored.id, 'visible shared carcass is inspectable regardless of former ownership');
+    assert.equal(pick().stock, stock, 'fractional Food stays exact');
+    assert.equal(f.context.pickResourceNodeAt(...f.screen(authored), inspect), null, 'vacated authored pose cannot reveal relocated food');
+  }
+  for (const owner of [null, 0, 1]) {
+    f.disclose([{ ...actual, wildlifeTeam: owner }]);
+    assert.equal(pick()?.id ?? null, owner === team ? authored.id : null, 'live inspection retains owned Sheep authority');
+  }
+  for (const fog of [0, 1]) {
+    f.fog[cell(actual)] = fog;
+    f.disclose([{ ...actual, stock: 40, wildlifeState: 'carcass', wildlifeActivity: undefined, wildlifeTeam: team }]);
+    assert.equal(pick(), null, 'hidden/explored-only corpse is not inspectable');
+  }
+  f.fog[cell(actual)] = 2;
+  f.disclose([{ ...actual, stock: 40, wildlifeState: 'carcass', wildlifeActivity: undefined, wildlifeTeam: team }]);
+  f.context.wildlifeRenderer = { isAvailable: () => false };
+  assert.equal(pick(), null, 'disclosed corpse without an available marker cannot be inspected');
+  f.context.wildlifeRenderer = f.renderer;
+  f.disclose([]); assert.equal(pick(), null, 'omitted disclosure cannot fall back to authored stock');
+  f.disclose([{ ...actual, stock: 0, wildlifeState: 'depleted', wildlifeActivity: undefined, wildlifeTeam: team }]);
+  assert.equal(pick(), null, 'empty corpse stays uninspectable');
+});
