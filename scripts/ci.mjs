@@ -150,6 +150,7 @@ run(['--test', 'scripts/sheep-eight-view-runtime.test.mjs'], 'Admitted eight-vie
 run(['--test', 'scripts/sheep-directional-readiness.test.mjs'], 'Sheep directional source and anchor acceptance');
 run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife render lifecycle and fallback');
 run(['--test', 'scripts/sheep-relocated-client.test.mjs'], 'Relocated Sheep actual-cell rendering, picking and minimap fog');
+run(['--test', 'scripts/sheep-body-picking.test.mjs'], 'Approved Sheep body picking and transparent padding exclusion');
 run(['--test', 'scripts/wildlife-client-state.test.mjs', 'scripts/wildlife-client-controls.test.mjs', 'scripts/sheep-carcass-client.test.mjs', 'scripts/sheep-placement-client.test.mjs'], 'Owned Sheep selection, normal Herd/Stop input and actual food placement');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');
 run(['--test', 'scripts/terraced-vale.test.mjs', 'scripts/terraced-vale-sheep.test.mjs', 'scripts/terraced-vale-sheep-entry.test.mjs'], 'Tiny default Sheep balance, reachability, real entry and exact old-map recovery');
@@ -308,7 +309,8 @@ run(['--test', 'scripts/underbough-gathering-evidence.test.mjs'], 'Rootways gath
 run(['--test', 'scripts/base-lifecycle.test.mjs'], 'Cancel refunds and proportional repair');
 run(['--test', 'scripts/storehouse-routing.test.mjs'], 'Reachable drop-off route selection');
 run(['--test', 'scripts/mill-contract.test.mjs'], 'Food-only Mill routing, menu and placeholder contracts');
-run(['--test', 'scripts/farm-harvest.test.mjs', 'scripts/farm-client.test.mjs'], 'Finite Farm stock, identity, ownership and controls');
+run(['scripts/farm-replant-scenario.mjs'], 'Manual paid Farm renewal through sockets and recovery');
+run(['--test', 'scripts/farm-harvest.test.mjs', 'scripts/farm-client.test.mjs', 'scripts/farm-replant.test.mjs'], 'Finite Farm stock, identity, ownership and controls');
 run(['--test', 'scripts/economy-profile.test.mjs'], 'Explicit Stone profile and typed price/refund contracts');
 run(['--test', 'scripts/economy-checkpoint.test.mjs', 'scripts/economy-server.test.mjs'], 'Typed economy payment, deposit and checkpoint conservation');
 run(['--test', 'scripts/economy-client.test.mjs'], 'Typed economy client profile, cargo and affordability');

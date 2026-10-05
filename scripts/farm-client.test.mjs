@@ -36,7 +36,8 @@ for (const team of [0, 1]) test(`seat ${team} can target its completed Farm and 
   vm.runInContext(fn('updateBuildingLifecycleActions'), context);
   context.updateBuildingLifecycleActions(); assert.equal(container.children.length, 0, 'productive Farm cannot be cleared/refunded');
   farm.harvestStock = 0; context.updateBuildingLifecycleActions();
-  assert.match(container.children[0].textContent, /Clear exhausted Farm · no refund/);
+  assert.match(container.children[0].textContent, /Replant · 60 wood/);
+  assert.match(container.children[1].textContent, /Clear exhausted Farm · no refund/);
 });
 
 for (const team of [0, 1]) test(`seat ${team} harvests the Farm body through the normal context order`, () => {
@@ -179,4 +180,31 @@ for (const team of [0, 1]) test(`deterministic seat ${team} observes and harvest
   state.visibility.data = mask.toString('base64');
   assert.deepEqual(toOpponentObservation(state, team, map).resourceNodes.map(node => node.id),
     [`farm:${10 + team}`, neutral.id], 'a visible authored food source is admitted through the map adapter');
+});
+
+for (const team of [0, 1]) test(`seat ${team} explicitly selected Workers survive plot selection and Replant serializes only that selection`, () => {
+  const farm = { id: 10, type: 'farm', team, complete: true, hp: 600, harvestStock: 0 };
+  const units = [{ id: 0, team, kind: 'worker', hp: 100, generation: 7 },
+    { id: 1, team, kind: 'infantry', hp: 100, generation: 8 },
+    { id: 2, team: 1-team, kind: 'worker', hp: 100, generation: 9 }];
+  const f = constructionTargetingFixture({ team, units, selection: [0, 1, 2], buildings: [farm] });
+  const container = {dataset:{},children:[],replaceChildren(){this.children=[];},append(button){this.children.push(button);}};
+  Object.assign(f.context, {ui:{buildingLifecycleActions:container},latestTeamResearch:[{},{}],
+    getBuildingQueueLength:()=>0, document:{createElement:()=>({dataset:{},addEventListener(type,fn){this.click=fn;}})},
+    teamUnits:[[],[]],clearWildlifeSelection(){},clearActiveControlGroup(){},syncSelectionMesh(){},
+    updateSelectionUI(){},updateBuildingSelectionVisual(){},window:{matchMedia:()=>({matches:false})}});
+  vm.runInContext([fn('selectBuilding'),fn('updateBuildingLifecycleActions')].join('\n'),f.context);
+  f.context.selectBuilding(farm);
+  assert.deepEqual([...f.selected],[0],'exhausted owned plot retains only explicitly selected living friendly Workers');
+  f.context.updateBuildingLifecycleActions();
+  container.children[0].click();
+  assert.equal(f.payloads[0].type,'replantFarm');
+  assert.equal(f.payloads[0].buildingId,10);
+  assert.deepEqual(f.payloads[0].ids,[0]);
+  assert.deepEqual(f.payloads[0].unitGenerations,[7]);
+  f.selected.clear(); container.children[0].click();
+  assert.equal(f.payloads.length,1,'no selected Worker sends no order');
+  assert.match(f.toasts.at(-1),/SELECT IDLE WORKERS.*60 WOOD/);
+  farm.harvestStock=1; f.selected.add(0); f.context.selectBuilding(farm);
+  assert.equal(f.selected.size,0,'productive plot retains ordinary exclusive building selection');
 });

@@ -30,3 +30,19 @@ export function farmHarvestNode(building) {
     set stock(value) { building.harvestStock = value; },
   };
 }
+
+// Manual renewal never recruits unselected or busy Workers. Cargo alone is
+// eligible: construction retains it and normal Gather delivers it afterwards.
+export function eligibleFarmReplantWorker(unit, team, plotId) {
+  const ownPlotJob = unit?.gatherNodeId === farmHarvestNodeId(plotId)
+    && ['to-node', 'gathering'].includes(unit.gatherPhase);
+  return unit?.hp > 0 && unit.team === team && unit.kind === 'worker'
+    && unit.movementDomain !== 'water' && !unit.holdingPosition && !unit.persistentOrder
+    && !unit.attackMove && !unit.repairing && unit.buildingTargetId == null
+    && !(unit.attackTargetId >= 0) && !(unit.attackBuildingTargetId >= 0)
+    && !(unit.queuedWaypoints?.length > 0)
+    && (!unit.workIntent || ownPlotJob)
+    && (ownPlotJob || (!unit.gatherPhase && unit.gatherNodeId == null
+      && !(unit.gatherForestCell >= 0) && !unit.movePlanningPending
+      && !(unit.pathIndex < unit.path?.length)));
+}
