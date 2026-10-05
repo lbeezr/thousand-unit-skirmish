@@ -1,0 +1,11 @@
+{
+  "archive": "evidence/pve-last-infantry-recovery-67295aef.zip",
+  "bytes": 1857598,
+  "members": 124,
+  "sha256": "e2cc67c4afa62600405a731cc44025d4403b65b80eada3833165876235999a60",
+  "manifestSha256": "952857636ce112c1ab7414f92e4a1bdf8bf146557693a7d5645742ecaf5c2e08",
+  "reviewedHead": "fb73e908858bff6f92fcec938d52b8786c42f952",
+  "merge": "67295aef1a744bde9000ce2c3d12e00b78a922e0",
+  "pr": "https://github.com/lbeezr/thousand-unit-skirmish/pull/428",
+  "scope": "Sealed diagnostic/review/check evidence only; merged runtime source is67295aef; full Tiny completion and deployed/rendered acceptance remain open."
+}
