@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "packId": "spearman-sprite",
-  "packVersion": "0.4.0",
+  "packVersion": "0.5.0",
   "maturity": "runtime-candidate",
   "provenance": {
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
     "source": "Vaelora Human roster role and action sheets",
-    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; Blender CPU 2D source-UV NE leg articulation",
-    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four new locally authored NE walk poses retain the established public painted identity; all 32 prior registered poses are unchanged. Six walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance."
+    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; Blender CPU 2D source-UV NE leg articulation; Blender CPU 2D source-UV East leg articulation",
+    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four new locally authored NE walk poses retain the established public painted identity; all 32 prior registered poses are unchanged. Six walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance. Four new locally authored East walk poses retain the established public painted identity; all 36 prior registered poses are unchanged. Five walk headings, seven attack and seven defeat headings remain missing. Source review is separate from pending ordinary rendered gait/contact acceptance."
   },
   "files": [
     {
@@ -19,7 +19,7 @@
         "width": 2048,
         "height": 2048
       },
-      "sha256": "d987aa0efb12f4667879298f8f4811703554f5a7ac50a77388c2a8c92fc6c0d6"
+      "sha256": "55eb4a5efd6328dcc0a9f1413292f75d0703719a8133aa3c6b6dd9d42c6c8a87"
     },
     {
       "id": "spearman-atlas-runtime",
@@ -30,7 +30,7 @@
         "width": 2048,
         "height": 2048
       },
-      "sha256": "d987aa0efb12f4667879298f8f4811703554f5a7ac50a77388c2a8c92fc6c0d6"
+      "sha256": "55eb4a5efd6328dcc0a9f1413292f75d0703719a8133aa3c6b6dd9d42c6c8a87"
     },
     {
       "id": "spearman-team-mask",
@@ -1671,6 +1671,178 @@
             }
           ],
           "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-0",
+          "groundPivotPx": {
+            "x": 117,
+            "y": 297
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 352
+          },
+          "alphaBoundsPx": {
+            "x": 59,
+            "y": 24,
+            "width": 199,
+            "height": 281
+          },
+          "fallbackRectPx": {
+            "pageId": "spearman-color",
+            "rectPx": {
+              "x": 4,
+              "y": 1600,
+              "width": 320,
+              "height": 352
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "spearman-color",
+              "rectPx": {
+                "x": 4,
+                "y": 1600,
+                "width": 320,
+                "height": 352
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-1",
+          "groundPivotPx": {
+            "x": 117,
+            "y": 297
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 352
+          },
+          "alphaBoundsPx": {
+            "x": 59,
+            "y": 24,
+            "width": 199,
+            "height": 286
+          },
+          "fallbackRectPx": {
+            "pageId": "spearman-color",
+            "rectPx": {
+              "x": 332,
+              "y": 1600,
+              "width": 320,
+              "height": 352
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "spearman-color",
+              "rectPx": {
+                "x": 332,
+                "y": 1600,
+                "width": 320,
+                "height": 352
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-2",
+          "groundPivotPx": {
+            "x": 117,
+            "y": 297
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 352
+          },
+          "alphaBoundsPx": {
+            "x": 55,
+            "y": 24,
+            "width": 203,
+            "height": 291
+          },
+          "fallbackRectPx": {
+            "pageId": "spearman-color",
+            "rectPx": {
+              "x": 660,
+              "y": 1600,
+              "width": 320,
+              "height": 352
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "spearman-color",
+              "rectPx": {
+                "x": 660,
+                "y": 1600,
+                "width": 320,
+                "height": 352
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-3",
+          "groundPivotPx": {
+            "x": 117,
+            "y": 297
+          },
+          "canvasPx": {
+            "width": 320,
+            "height": 352
+          },
+          "alphaBoundsPx": {
+            "x": 59,
+            "y": 24,
+            "width": 199,
+            "height": 272
+          },
+          "fallbackRectPx": {
+            "pageId": "spearman-color",
+            "rectPx": {
+              "x": 988,
+              "y": 1600,
+              "width": 320,
+              "height": 352
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "spearman-color",
+              "rectPx": {
+                "x": 988,
+                "y": 1600,
+                "width": 320,
+                "height": 352
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
         }
       ],
       "clips": [
@@ -1768,8 +1940,20 @@
           "loop": true,
           "sequence": [
             {
-              "frameId": "idle-east-0",
-              "durationMs": 1000
+              "frameId": "walk-east-0",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-east-1",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-east-2",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-east-3",
+              "durationMs": 200
             }
           ]
         },

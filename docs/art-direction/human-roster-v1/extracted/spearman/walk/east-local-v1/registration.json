@@ -1,0 +1,95 @@
+{
+  "baselineRegisteredPoseSHA256": "2de8ff6c72dd18d163fcb30b37653f384c0cc5a1d5eb56b4bd2e88e7f7c0436a",
+  "baselineUnchangedClipsSHA256": "6a3d1df91c53d4fe39e6780e7c93608f3e13c55aff846fcbe607a2a0c079e10e",
+  "heightWorld": 1.6722564697265625,
+  "worldPerPixel": 0.0052421832906788795,
+  "baselineManifestSHA256": "a4841da15250831768f585971914de791f98a9243c0eab71a843289314695aba",
+  "baselineRuntimeSHA256": "d987aa0efb12f4667879298f8f4811703554f5a7ac50a77388c2a8c92fc6c0d6",
+  "identitySource": {
+    "path": "docs/art-direction/human-roster-v1/extracted/spearman/idle/00.png",
+    "sha256": "229b50d0636df36e93c2c1f69709031b5b9cccfdfa833c9bba3291a528535394",
+    "registeredFrameId": "idle-east-0",
+    "registeredSeedSHA256": "cecd99af80ebcf1eb30fb060b4ea1aab094dd5af7d914dacad2c4d0535ae6c3a"
+  },
+  "schemaVersion": 1,
+  "sourceRevision": "82eb2dfb162da233be101af248c35ad47cc15e25",
+  "sourceKind": "new camera-frozen2Dleg poses from approved public East identity seed; no matching3Dmaster claimed",
+  "authoringTool": "Blender4.3.2 CyclesCPU, fixed orthographic public-source UV planes",
+  "canvasPx": {
+    "width": 320,
+    "height": 352
+  },
+  "groundPivotPx": {
+    "x": 117,
+    "y": 297
+  },
+  "paddingPx": {
+    "x": 60,
+    "y": 24
+  },
+  "maximumAlphaHeightPx": 319,
+  "reusedPriorRegisteredPoses": 36,
+  "newlyAuthoredPoses": 4,
+  "mirroredPoses": 0,
+  "borrowedDirectionPoses": 0,
+  "generationProviderCalls": 0,
+  "paidJobs": 0,
+  "privateInputs": 0,
+  "durationMs": 800,
+  "loop": true,
+  "sourceTiming": "four explicit200ms keys; authoringfps20 is not runtime playbackfps",
+  "occlusionReconstruction": {
+    "interiorSamples": 272,
+    "separatedSourceShaftPixels": 922,
+    "method": "same-row adjacent public-seed donor RGBA behind source shaft; no new palette or outside pixels",
+    "shaftPlacement": "rigid original source corridor, x=197-0.74*y \u00b18 for y>=204"
+  },
+  "processRetention": "all source scene/scripts/masks, previews and iterations retained privately; selected source derivatives only published",
+  "ordinaryGameAcceptance": "pending",
+  "supportFootVelocityAcceptance": "pending",
+  "matching3DMaster": "not located; own-direction public2Dseed permits this free source slice",
+  "poses": [
+    {
+      "file": "00.png",
+      "pose": "contact-left",
+      "durationMs": 200,
+      "sha256": "e0aacff0f843033e158446da038728f86b502f2a496060072f8ff335f7afb524",
+      "rawCPUOutputSHA256": "694bd120b5f8e8ee4848317c84c1093214dd67e29d226b1a095d4af235849ec0",
+      "transparentRGBPixelsNormalized": 119
+    },
+    {
+      "file": "01.png",
+      "pose": "passing-right",
+      "durationMs": 200,
+      "sha256": "65ea07a21eb10cc3811d76ac21eff287d2a3d1f77c9d45217c44fdcd9090241d",
+      "rawCPUOutputSHA256": "0871a5d257fe9be2181ccc6a866a34a9056163411242edbd765db5897da09383",
+      "transparentRGBPixelsNormalized": 132
+    },
+    {
+      "file": "02.png",
+      "pose": "contact-right",
+      "durationMs": 200,
+      "sha256": "5f76fc80f07d72600bcfc3018bd1aa1f950d7357fdb080651304ce6e8d5201d7",
+      "rawCPUOutputSHA256": "8c2480e6805833e951051657a4535fe37af3ccd6a5831873f80473b1b5241ae7",
+      "transparentRGBPixelsNormalized": 125
+    },
+    {
+      "file": "03.png",
+      "pose": "passing-left",
+      "durationMs": 200,
+      "sha256": "9855cb16bf4549363ca1cd4f286a86f4b2d00bade4f18a7846b94ba2fca2f38b",
+      "rawCPUOutputSHA256": "6a4cf3fbe96652456d4e536765c9a7bf5073303ee12a0285ca688137ff24f748",
+      "transparentRGBPixelsNormalized": 126
+    }
+  ],
+  "normalization": "zero RGB only under alpha0; every visible RGBA and alpha sample preserved from reviewed CPU output",
+  "independentSourceReview": {
+    "reviewer": "independent_foot_art_review",
+    "selectedIteration": "02-independent-leg-study",
+    "status": "no blocking source findings",
+    "positivePoseTriangleInstances": 54912,
+    "minimumSignedAreaRatio": 0.435336,
+    "ordinaryGameAcceptance": "pending",
+    "sourceFillLimit": "272 reconstructed interior samples are documented same-row public-seed donors; hidden shin material is approximate, not recovered original art"
+  }
+}

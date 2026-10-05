@@ -10,39 +10,34 @@ import {missingWalkDirections} from './renderer-worker-animation-scenario.mjs';
 
 const read=p=>readFileSync(new URL(`../${p}`,import.meta.url));
 const sha=x=>createHash('sha256').update(x).digest('hex');
-const source='docs/art-direction/human-roster-v1/extracted/spearman/walk/north-east-local-v1';
+const source='docs/art-direction/human-roster-v1/extracted/spearman/walk/east-local-v1';
 const receipt=JSON.parse(read(`${source}/registration.json`));
 const directory='assets/units/spearman-sprite-v1';
 const pack=JSON.parse(read(`${directory}/sprite-atlas-pack-v1.json`)),asset=pack.assets[0],page=pack.pages[0];
 const pixels=decodeRgba8(read(`${directory}/spearman-atlas-runtime.png`));
 const cells=decodeRegisteredUnitFrames(asset,page,pixels);
 
-test('Spearman NE preserves all 32 prior registered poses, clips and body calibration',()=>{
-  const legacy=asset.frames.filter(f=>!f.id.startsWith('walk-north-east-')&&!f.id.startsWith('walk-east-')); // original0.3.0 receipt
-  assert.equal(legacy.length,32);assert.equal(asset.frames.length,40);
+test('Spearman East preserves all 36 prior registered poses, clips and body calibration',()=>{
+  const legacy=asset.frames.filter(f=>!f.id.startsWith('walk-east-'));
+  assert.equal(legacy.length,36);assert.equal(asset.frames.length,40);
   assert.equal(sha(JSON.stringify(legacy.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
-  // The East increment intentionally replaces its old placeholder. Pin the
-  // other 30 actual clips at merged NE source82eb2dfb; East's separate baseline
-  // test also pins all36 prior poses and the31 clips it does not replace.
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='walk'&&['north-east','east'].includes(c.directionId)));
-  assert.equal(unchanged.length,30);
-  assert.equal(sha(JSON.stringify(unchanged)),'2eeac7443858b34fbac5c8e8fea4f6c8475449959715175b7f7908db51325be3');
+  assert.equal(sha(JSON.stringify(asset.clips.filter(c=>!(c.stateId==='walk'&&c.directionId==='east')))),receipt.baselineUnchangedClipsSHA256);
   assert.equal(asset.heightWorld/Math.max(...asset.frames.map(f=>f.alphaBoundsPx.height)),receipt.worldPerPixel);
   assert.equal(asset.heightWorld,receipt.heightWorld);
   assert.equal(sha(read(receipt.identitySource.path)),receipt.identitySource.sha256);
-  assert.equal(receipt.newlyAuthoredPoses,4);assert.equal(receipt.reusedPriorRegisteredPoses,32);
+  assert.equal(receipt.newlyAuthoredPoses,4);assert.equal(receipt.reusedPriorRegisteredPoses,36);
   for(const key of ['mirroredPoses','borrowedDirectionPoses','generationProviderCalls','paidJobs'])assert.equal(receipt[key],0);
 });
 
-test('Spearman NE contains four exact source poses and leaves the other 19 cells incomplete',()=>{
-  const clip=asset.clips.find(c=>c.stateId==='walk'&&c.directionId==='north-east');
+test('Spearman East contains four exact source poses and leaves the other 19 cells incomplete',()=>{
+  const clip=asset.clips.find(c=>c.stateId==='walk'&&c.directionId==='east');
   assert.equal(clip.loop,true);assert.equal(clip.sequence.reduce((n,k)=>n+k.durationMs,0),800);
   for(let index=0;index<4;index++){
     const key=clip.sequence[index],frame=asset.frames.find(f=>f.id===key.frameId),input=receipt.poses[index];
-    assert.equal(key.frameId,`walk-north-east-${index}`);assert.equal(key.durationMs,200);
+    assert.equal(key.frameId,`walk-east-${index}`);assert.equal(key.durationMs,200);
     assert.equal(sha(read(`${source}/${input.file}`)),input.sha256);
     assert.deepEqual(frame.canvasPx,receipt.canvasPx);assert.deepEqual(frame.groundPivotPx,receipt.groundPivotPx);
-    // Retain the original provisional NE pivot. Existing depth correction
+    // Retain the original provisional East pivot. Existing depth correction
     // handles below-pivot artwork; anatomical support-foot review stays open.
     assertFrameUnclipped(pixels,frame,4,true);
     const original=decodeRgba8(read(`${source}/${input.file}`)),r=frame.frameRectsPx[0].rectPx;
@@ -50,20 +45,20 @@ test('Spearman NE contains four exact source poses and leaves the other 19 cells
   }
   const report=analyzeUnitArtCoverage(asset,cells);
   assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,19);
-  const ne=report.rows.find(r=>r.key==='walk|north-east');assert.equal(ne.status,'authored');assert.equal(ne.distinctFrames,4);assert.equal(ne.distinctSilhouettes,4);
+  const ne=report.rows.find(r=>r.key==='walk|east');assert.equal(ne.status,'authored');assert.equal(ne.distinctFrames,4);assert.equal(ne.distinctSilhouettes,4);
   assert.deepEqual(missingWalkDirections({pack,cells}),['north','south','south-west','west','north-west']);
-  assert.ok(report.missingCells.includes('attack|north-east'));assert.ok(report.missingCells.includes('defeat|north-east'));
-  const frozen=structuredClone(asset),walk=frozen.clips.find(c=>c.stateId==='walk'&&c.directionId==='north-east');
+  assert.ok(report.missingCells.includes('attack|east'));assert.ok(report.missingCells.includes('defeat|east'));
+  const frozen=structuredClone(asset),walk=frozen.clips.find(c=>c.stateId==='walk'&&c.directionId==='east');
   walk.sequence.forEach(k=>{k.frameId=walk.sequence[0].frameId;});
-  assert.equal(analyzeUnitArtCoverage(frozen,cells).rows.find(r=>r.key==='walk|north-east').status,'static-action');
+  assert.equal(analyzeUnitArtCoverage(frozen,cells).rows.find(r=>r.key==='walk|east').status,'static-action');
 });
 
-test('NE padded pivot keeps the inherited root and existing real-camera depth correction',()=>{
-  const idle=asset.frames.find(f=>f.id==='idle-north-east-0');
-  assert.deepEqual(receipt.groundPivotPx,{x:idle.groundPivotPx.x+52,y:idle.groundPivotPx.y+24});
+test('East padded pivot keeps the inherited root and existing real-camera depth correction',()=>{
+  const idle=asset.frames.find(f=>f.id==='idle-east-0');
+  assert.deepEqual(receipt.groundPivotPx,{x:idle.groundPivotPx.x+60,y:idle.groundPivotPx.y+24});
   const camera=new THREE.PerspectiveCamera();camera.position.set(.78,1.12,.78);camera.lookAt(0,0,0);camera.updateMatrixWorld(true);
   const right=new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion),up=new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion),toward=new THREE.Vector3(0,0,1).applyQuaternion(camera.quaternion);
-  for(const f of asset.frames.filter(f=>f.id.startsWith('walk-north-east-'))){
+  for(const f of asset.frames.filter(f=>f.id.startsWith('walk-east-'))){
     const b=f.alphaBoundsPx,p=f.groundPivotPx,scale=receipt.worldPerPixel;
     const bias=spriteGroundDepthBias(b,p,scale,up.y,toward.y);
     for(const x of [b.x,b.x+b.width])for(const y of [b.y,b.y+b.height]){
@@ -73,7 +68,7 @@ test('NE padded pivot keeps the inherited root and existing real-camera depth co
   }
 });
 
-test('real Spearman runtime advances NE keys, loops, stops and resumes for both teams and selection states',async()=>{
+test('real Spearman runtime advances East keys, loops, stops and resumes for both teams and selection states',async()=>{
   const previousFetch=globalThis.fetch;
   globalThis.fetch=async url=>({ok:true,json:async()=>JSON.parse(read(url.slice(1)))});
   class TextureLoader{load(_url,done){const texture=new THREE.Texture();queueMicrotask(()=>done(texture));return texture;}}
@@ -83,11 +78,11 @@ test('real Spearman runtime advances NE keys, loops, stops and resumes for both 
     const uv=(u,id)=>{const f=asset.frames.find(f=>f.id===id),r=f.frameRectsPx[0].rectPx,i=page.sampling.uvInsetPx;
       assert.deepEqual(Array.from(scene.children[u.team].geometry.attributes.instanceAtlasRect.array),Array.from(new Float32Array([(r.x+i)/page.dimensionsPx.width,(r.y+r.height-i)/page.dimensionsPx.height,(r.x+r.width-i)/page.dimensionsPx.width,(r.y+i)/page.dimensionsPx.height])));};
     for(const team of [0,1])for(const selected of [false,true]){
-      const u={id:team,team,slot:0,kind:'spearman',hp:100,task:'idle',angle:Math.PI/4,renderX:0,renderZ:0,selected};
-      runtime.update(u,1000,1);uv(u,'idle-north-east-0');u.walking=true;
-      for(let index=0;index<5;index++){runtime.update(u,1100+200*index,1);uv(u,`walk-north-east-${index%4}`);}
-      u.walking=false;runtime.update(u,2000,1);uv(u,'idle-north-east-0');
-      u.walking=true;runtime.update(u,2100,1);uv(u,'walk-north-east-0');
+      const u={id:team,team,slot:0,kind:'spearman',hp:100,task:'idle',angle:Math.PI/2,renderX:0,renderZ:0,selected};
+      runtime.update(u,1000,1);uv(u,'idle-east-0');u.walking=true;
+      for(let index=0;index<5;index++){runtime.update(u,1100+200*index,1);uv(u,`walk-east-${index%4}`);}
+      u.walking=false;runtime.update(u,2000,1);uv(u,'idle-east-0');
+      u.walking=true;runtime.update(u,2100,1);uv(u,'walk-east-0');
     }
   }finally{globalThis.fetch=previousFetch;}
 });
