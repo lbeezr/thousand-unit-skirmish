@@ -5,6 +5,7 @@ import { CAMERA_VIEW_DIRECTION } from './camera-controls.mjs';
 import * as THREE from 'three';
 import { fetchVerifiedRuntimeImage } from './presentation/assets/interactive-runtime-image.mjs';
 import { RESOURCE_VISUAL_STAGES, resourceVisualStage } from './resource-visual-state.mjs';
+import { forestLifecycleAtlasDescriptor } from './forest-lifecycle-atlas.mjs';
 import { createGroundMistStudy, groundMistEnabled } from './terrain-atmosphere.mjs';
 import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
 import { createTerrainCliffFaces } from './terrain-cliff-faces.mjs';
@@ -76,15 +77,8 @@ const forestAtlasPacks = new Map(await Promise.all(['bellweather', 'sereward', '
   try {
     const response = await fetch(`${ASSET_ROOT}${region}-lifecycle-atlas.json`);
     if (!response.ok) throw new Error(`atlas metadata HTTP ${response.status}`);
-    const pack = await response.json();
-    const asset = pack.assets[0], page = pack.pages[0];
-    const file = pack.files.find((entry) => entry.id === page.runtimeFileId);
-    if (file?.path !== `${region}-lifecycle-atlas.webp` || !page.sampling.generateMipmaps
-      || page.sampling.maxMipLevel !== 6 || page.gutterPx !== 64
-      || page.sampling.uvInsetPx !== 0.5 || !RESOURCE_VISUAL_STAGES.every((stage) => asset.frames.some((frame) => frame.id === stage))) {
-      throw new Error('unsupported forest atlas contract');
-    }
-    return [asset.id, { asset, page, file }];
+    const descriptor = forestLifecycleAtlasDescriptor(await response.json(), region);
+    return [descriptor.asset.id, descriptor];
   } catch (error) {
     console.warn(`Forest atlas ${region} unavailable; using individual state textures`, error.message);
     return [region, null];
