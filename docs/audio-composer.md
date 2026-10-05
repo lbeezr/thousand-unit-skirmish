@@ -8,6 +8,16 @@ Each clip starts on a beat, has a beat length and a source offset in seconds. Th
 
 The saved composition contains references and edit metadata only. A WAV export is a rendered copy; the original recording bytes are not modified. Portable backup and player distribution are handled by the audio library pack workflow. WAV export is limited to five minutes to bound browser memory use. The first version has no piano roll, note sampler, waveform editing or automatic tempo matching.
 
+WAV export keeps native recording read failures distinct from decode failures.
+Missing, inaccessible or unreadable Blob failures display a safe read/retry
+message; native decode `EncodingError` retains the existing recording-specific
+message. Each keeps its original exception as `cause`, without displaying native
+details. Unexpected faults pass through unchanged. A failed read never invokes
+the decoder; either failure prevents offline rendering. Retrying uses a fresh
+offline context and leaves source Blobs and saved compositions intact.
+`node --test scripts/audio-composer-wav.test.mjs` covers these contracts with
+injected offline audio failures and mounted-editor status checks.
+
 Stop, editing, selecting a composition, another Play attempt and disposal cancel
 pending preview startup, including the wait for the browser audio context to
 resume. A cancelled attempt cannot schedule clips or replace a newer status
