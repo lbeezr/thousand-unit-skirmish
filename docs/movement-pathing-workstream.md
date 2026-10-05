@@ -1164,6 +1164,12 @@ source slot bound, not backing-store/GC/RSS or device capacity evidence.
 Existing opt-in whole-tick diagnostics expose only bounded scalar attempts,
 publications, refusal reasons, census visits and maximum retained/staged entries;
 staging includes the bounded proposal even when execution copying is refused.
+The separate census diagnostic correction initializes visits and retained-entry
+high water from the ledger's already-computed scalar census, including phases
+with no proposal or live actors. It performs no second scan and changes no
+reservation or movement decision. No-detour quota edges on three XL shapes,
+active/resume/herd aliases, diagnostic opt-out parity and real whole-tick reset
+are registered controls; synthetic pressure is not admitted XL gameplay.
 legacy grids omit these fields and never read the census. Registered controls
 cover quota−1/quota/quota+1, rectangular/square per-path growth, consumed prefixes,
 aliases/resume/herd fields, shared assignees, no copy on refusal, release/retry,
