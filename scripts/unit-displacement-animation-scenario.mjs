@@ -11,6 +11,8 @@ import * as THREE from 'three';
 import { createUnitSpriteRuntime, normalizedDirection, spriteActionClip } from '../src/unit-sprite-runtime.mjs';
 import { workerWorkAction } from '../src/worker-work-presentation.mjs';
 import { shouldUpdateUnitTransformForFrame } from '../src/unit-lod-state.mjs';
+import { normalRoster } from './audit-asset-adoption.mjs';
+import { analyzeUnitArtCoverage } from './unit-art-production-contract.mjs';
 import { decodeAnimationCells } from './unit-animation-cells.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -32,7 +34,11 @@ const poseConstants = Object.fromEntries(['IDLE_POSE_INTERVAL_MS', 'ATTACK_POSE_
     return [name, Number(value[1])];
   }));
 const directions = ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west'];
-const directories = { human: 'cast-human-sprite-v3', spearman: 'spearman-sprite-v1' };
+const roster=normalRoster(source);
+const directories=Object.fromEntries(['human','infantry','spearman'].map(role=>{
+  assert.ok(roster.unitSpritePreviewRoles.includes(role),'actual no-option roster must include the qualified role');
+  return [role,`${role==='human'?'cast-human':role}-sprite-${roster.unitSpritePreviewVersions[role]}`];
+}));
 const packs = Object.fromEntries(Object.entries(directories).map(([role, dir]) =>
   [role, JSON.parse(readFileSync(path.join(root, 'assets/units', dir, 'sprite-atlas-pack-v1.json')))]));
 const pixels = decodeAnimationCells(root, packs, directories);
@@ -50,11 +56,14 @@ try {
   const scene = new THREE.Scene();
   const runtime = createUnitSpriteRuntime({ THREE: { ...THREE, TextureLoader }, scene, capacity: 1,
     teamHex: [0x5aa7d7, 0xe67a5e], cameraQuaternion: new THREE.Quaternion(), roles: Object.keys(directories),
-    roleSpriteVersions: { human: 'v3', spearman: 'v1' }, humanAppearancePreview: true, approximateActionDirections: true });
+    roleSpriteVersions: roster.unitSpritePreviewVersions, humanAppearancePreview: roster.humanRosterPreview, approximateActionDirections: true });
   runtime.setCount(0, 1); runtime.setCount(1, 1); runtime.setVisible(true);
   assert.equal(await runtime.ready, true);
   for (const [role, pack] of Object.entries(packs)) for (const team of [0, 1]) for (const lowDetail of [false, true]) {
-    const unit = { id: team, team, slot: 0, kind: role === 'human' ? 'worker' : 'spearman', hp: 100,
+    const coverage=analyzeUnitArtCoverage(pack.assets[0],Object.fromEntries(Object.entries(pixels[role].cells)
+      .map(([id,cell])=>[id,{rgba:cell.rgbaSha256,alpha:cell.alphaSha256}])),['idle','walk']);
+    assert.deepEqual(coverage.errors,[],'actual registered default cells must be valid');
+    const unit = { id: team, team, slot: 0, kind: role === 'human' ? 'worker' : role, hp: 100,
       task: 'idle', walking: false, angle: 0, targetAngle: 0, serverX: 0, serverZ: 0, renderX: 0, renderZ: 0,
       motionPhase: 0, attackStartedAt: 0, hitStartedAt: 0, spawnStartedAt: 0, defeatStartedAt: 0 };
     const mesh = scene.children[Object.keys(directories).indexOf(role) * 2 + team];
@@ -67,7 +76,7 @@ try {
         (r.y + i) / page.dimensionsPx.height])); };
     const context = vm.createContext({ THREE, units: [unit], frameDelta: 0.1, now: 900,
       ...poseConstants, lastIdlePoseStep: -1, unitLowDetailActive: lowDetail,
-      unitSpritePreviewActive: true, unitSpritePreviewRoleSet: new Set(['worker', 'spearman']), castPreview: true,
+      unitSpritePreviewActive: true, unitSpritePreviewRoleSet: new Set(['worker', 'infantry', 'spearman']), castPreview: roster.castPreview,
       unitSpriteRuntime: runtime, workerWorkAction, shouldUpdateUnitTransformForFrame, setUnitTint() {},
       updateUnitTransform(u, now) {
         const angle = u.angle;
@@ -121,13 +130,20 @@ try {
         row.distinctSilhouettes = new Set(keys.map(id => pixels[role].cells[id].alphaSha256)).size;
         row.duplicateCellGroups = [...new Set(keys.map(hashFor))].map(hash => keys.filter(id => hashFor(id) === hash))
           .filter(group => group.length > 1);
-        row.authoredWalk = clip.sequence.some(s => !s.frameId.startsWith('idle-'));
+        row.authoredWalk = coverage.rows.find(r=>r.state==='walk'&&r.direction===requestedHeading).status==='authored';
+        row.motionStatus=row.authoredWalk?'animated':'incomplete-art-correct-facing';
         if (row.authoredWalk) {
           assert.ok(row.distinctFrameKeys > 1, 'authored walk must advance UV/frame keys');
+          assert.ok(row.distinctSilhouettes > 1, 'walk must change its registered silhouette');
           assert.ok(row.distinctVisibleCells > 1, 'distinct walk keys must not disguise duplicate/static source pixels');
           assert.deepEqual(row.duplicateCellGroups, [], 'different walk keys must not alias identical visible source pixels');
-        } else if (!report.missingArt.some(m => m.role === role && m.direction === requestedHeading)) {
-          report.missingArt.push({ role, direction: requestedHeading, fallback: clip.sequence[0].frameId });
+        } else {
+          assert.ok(clip.sequence.every(s=>s.frameId.startsWith(`idle-${requestedHeading}-`)),
+            'missing gait must retain its explicit exact-facing idle placeholder');
+          assert.equal(row.distinctVisibleCells,1,'idle placeholders cannot qualify as gait');
+          if (!report.missingArt.some(m => m.role === role && m.direction === requestedHeading)) {
+            report.missingArt.push({ role, direction: requestedHeading, fallback: clip.sequence[0].frameId });
+          }
         }
         // Hold authoritative position as a Stop-equivalent snapshot. Residual
         // interpolation must settle before idle is expected; no teleport.
@@ -147,6 +163,7 @@ try {
     }
   }
 } finally { globalThis.fetch = savedFetch; }
+report.authoredWalkHeadings=Object.fromEntries(Object.keys(packs).map(role=>[role,report.rows.filter(r=>r.role===role&&r.team===0&&!r.lowDetail&&r.authoredWalk).length]));
 report.status = report.failures.length ? 'failed' : 'passed-with-art-gaps';
 writeFileSync(path.join(output, 'checks.json'), JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify({ status: report.status, rows: report.rows.length, failures: report.failures.length,

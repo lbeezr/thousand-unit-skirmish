@@ -13,7 +13,7 @@ import { validateCaptureContext } from './renderer-capture-context.mjs';
 export const id = 'worker-animations';
 export const contextVersion = 1;
 export const mapId = 'veyrholds-terraced-vale';
-export const directories = Object.freeze({human:'cast-human-sprite-v3',spearman:'spearman-sprite-v1'});
+export const directories = Object.freeze({human:'cast-human-sprite-v3',spearman:'spearman-sprite-v1',infantry:'infantry-sprite-v3'});
 // Source gaps come from the exact served/pinned manifest and decoded pixels.
 // Adding one faithful heading must not leave the capture claiming seven gaps.
 export function missingWalkDirections({pack,cells}) {
@@ -21,12 +21,21 @@ export function missingWalkDirections({pack,cells}) {
   assert.deepEqual(coverage.errors,[],'registered direction source must be valid');
   return coverage.rows.filter(r=>r.state==='walk'&&r.status!=='authored').map(r=>r.direction);
 }
-export function validateHeadingCoverage({rows,expectedMissingWalkDirections}) {
+export function validateHeadingCoverage({rows,expectedMissingWalkDirections,militaryKind='spearman'}) {
   const total=unitArtDirections.length*2;
+  assert.ok(['spearman','infantry'].includes(militaryKind),'registered military kind required');
+  assert.ok(expectedMissingWalkDirections.every(h=>unitArtDirections.includes(h))
+    &&new Set(expectedMissingWalkDirections).size===expectedMissingWalkDirections.length,'unique known art gaps required');
   assert.equal(rows.length,total);
+  for(const kind of ['worker',militaryKind])for(const heading of unitArtDirections) {
+    const matching=rows.filter(r=>r.kind===kind&&r.heading===heading);
+    assert.equal(matching.length,1,'each actual actor heading must be observed exactly once');
+    assert.equal(matching[0].status,kind===militaryKind&&expectedMissingWalkDirections.includes(heading)
+      ?'incomplete-art-correct-facing':'animated','idle placeholders cannot qualify as animated walks');
+  }
   assert.equal(rows.filter(r=>r.status==='animated').length,total-expectedMissingWalkDirections.length);
   assert.deepEqual(rows.filter(r=>r.status==='incomplete-art-correct-facing')
-    .map(r=>[r.kind,r.heading]),expectedMissingWalkDirections.map(heading=>['spearman',heading]));
+    .map(r=>[r.kind,r.heading]),expectedMissingWalkDirections.map(heading=>[militaryKind,heading]));
 }
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const pause = ms => new Promise(resolve => setTimeout(resolve,ms));
@@ -49,7 +58,7 @@ export function observeRenderedUnits() {
   try {
     const probe=window.__rtsUnitAnimation;
     if(!probe)return false;
-    const selectedUnits=units.filter(u=>u&&u.hp>0&&u.team===localTeam&&u.visible!==false&&['worker','spearman'].includes(u.kind));
+    const selectedUnits=units.filter(u=>u&&u.hp>0&&u.team===localTeam&&u.visible!==false&&['worker','spearman','infantry'].includes(u.kind));
     // At most eight explicit targets, or 32 opening observations per frame.
     // Preserve the existing roster snapshot; provenance does no normal-frame work.
     const selectionTargets=probe.targets.slice(0,8);
@@ -159,6 +168,10 @@ export function registeredSpriteRoot(unit,asset,frame,page) {
   return {x:root[0],y:root[1],z:root[2],worldPerPixel:sx,visibleScale:unit.visibleScale};
 }
 export function identifyUnitFrame(unit,pack,cells,time) {
+  const expectedRole=unit.kind==='worker'?'human':unit.kind;
+  assert.ok(['human','infantry','spearman'].includes(expectedRole)
+    &&unit.role===expectedRole&&pack.assets[0].id===expectedRole,
+    'observed actor kind, role and default pack identity must agree');
   assert.ok(unit.actorDraw,'target actor must be in an active sprite draw');
   assert.ok(unit.inView,'target actor must be inside the useful viewport');
   assert.ok(Array.isArray(unit.uv)&&unit.uv.length===4,'actual instanced UV is required');
@@ -183,12 +196,17 @@ export function identifyUnitFrame(unit,pack,cells,time) {
   const frame=matches.find(f=>f.id===expected),pixel=cells[frame.id];
   assert.ok(pixel,'registered visible source pixels are required');
   const drawnRoot=registeredSpriteRoot(unit,asset,frame,page);
-  return {frameId:frame.id,rgbaSha256:pixel.rgba,alphaSha256:pixel.alpha,state,direction,
+  return {kind:unit.kind,role:unit.role,assetId:asset.id,packVersion:pack.packVersion,
+    frameId:frame.id,rgbaSha256:pixel.rgba,alphaSha256:pixel.alpha,state,direction,
     actionSelection:unit.actionSelection??null,
     clipState:clip.stateId,clipDirection:clip.directionId,clipLoop:clip.loop,clipDurationMs:duration,elapsedMs:elapsed,index,drawnRoot};
 }
 
 export function validateHeadingSamples(samples,{unitId,heading,kind,pack,cells}) {
+  const expectedRole=kind==='worker'?'human':kind;
+  assert.equal(pack.assets[0].id,expectedRole,'qualified kind must match the actual default pack');
+  assert.ok(samples.every(s=>s.units.filter(u=>u.id===unitId).every(u=>u.kind===kind&&u.role===expectedRole)),
+    'qualified kind must match the actually observed actor');
   const moving=samples.flatMap(sample=>sample.units.filter(u=>u.id===unitId&&u.walking
     &&u.clockState==='walk'&&normalizedDirection(u.angle)===heading).map(unit=>({...sample,unit,
       identity:identifyUnitFrame(unit,pack,cells,sample.time)})));
@@ -201,9 +219,9 @@ export function validateHeadingSamples(samples,{unitId,heading,kind,pack,cells})
   assert.ok(moving.every(s=>s.unit.generation===first.unit.generation),'unit generation must remain stable');
   assert.ok(moving.every(s=>s.unit.clockStartedAt===first.unit.clockStartedAt),'continuous movement cannot restart its clock');
   const rgba=new Set(moving.map(s=>s.identity.rgbaSha256)),alpha=new Set(moving.map(s=>s.identity.alphaSha256));
-  const expectedGap=kind==='spearman'&&missingWalkDirections({pack,cells}).includes(heading);
+  const expectedGap=missingWalkDirections({pack,cells}).includes(heading);
   if(expectedGap) {
-    assert.ok(moving.every(s=>s.identity.frameId.startsWith(`idle-${heading}-`)),'missing Spearman gait must retain the correct-facing idle');
+    assert.ok(moving.every(s=>s.identity.frameId.startsWith(`idle-${heading}-`)),'missing gait must retain the correct-facing idle');
     assert.equal(rgba.size,1,'a retained idle fallback is not newly animated coverage');
   } else {
     assert.ok(rgba.size>=2&&alpha.size>=2,'translation alone cannot pass: distinct registered gait pixels and silhouettes are required');
@@ -255,9 +273,11 @@ async function focus(page,unitId) {
   await pause(250);
 }
 
-export async function loadUnitInputs(origin,{fetchImpl=fetch,read=readFile}={}) {
+export async function loadUnitInputs(origin,{fetchImpl=fetch,read=readFile,roles=['human','spearman']}={}) {
   const inputs={},assets=[];
-  for(const [role,directory] of Object.entries(directories)) {
+  for(const role of roles) {
+    const directory=directories[role];
+    assert.ok(directory,'only registered default unit inputs are permitted');
     const manifestPath=`assets/units/${directory}/sprite-atlas-pack-v1.json`;
     const local=await read(new URL(`../${manifestPath}`,import.meta.url));
     const response=await fetchImpl(`${origin}/${manifestPath}`);assert.equal(response.status,200,'ordinary manifest must be served');
@@ -279,13 +299,20 @@ export async function loadUnitInputs(origin,{fetchImpl=fetch,read=readFile}={}) 
 
 // Only this adapter's normal input and observation contract. The shared owner
 // supplies qualified browser/pages, clean release identity, captures and cleanup.
-export async function run(context) {
+export const run=context=>runUnitAnimation(context);
+
+// Separate registered Infantry case reuses the transport/observation contract;
+// the existing Worker/Spearman case and its report schema remain compatible.
+export async function runUnitAnimation(context,{adapterId=id,militaryKind='spearman'}={}) {
+  assert.ok(['spearman','infantry'].includes(militaryKind),'only the two registered military cases are permitted');
+  assert.equal(adapterId,militaryKind==='infantry'?'infantry-animations':id,'case identity must match its paid actor');
+  const cost=militaryKind==='infantry'?{food:50,wood:0}:{food:60,wood:20};
   const {page:host,openPage,origin,source,capture,evidenceDirectory}=validateCaptureContext(context);
-  const report={schemaVersion:1,adapterId:id,scope:'hosted-runner-local-packed-normal-game',
+  const report={schemaVersion:1,adapterId,scope:'hosted-runner-local-packed-normal-game',
     status:'failed',sourceRevision:source.revision,releaseDigest:source.digest,mapId,
     normalEntry:'Create Room / ordinary Tiny Skirmish / two connected seats',
     testedCivilization:'human',testedTeam:0,peerCivilization:'boughward',
-    defaultHumanRoles:{worker:'human/v3',spearman:'spearman/v1'},production:[],rows:[],captures:[],issues:[],
+    defaultHumanRoles:{worker:'human/v3',[militaryKind]:`${militaryKind}/${directories[militaryKind].split('-').at(-1)}`},militaryKind,production:[],rows:[],captures:[],issues:[],
     expectedMissingWalkDirections:[],
     captureAuthoredFrames:0,deployedRevision:null,stagingAcceptance:false,unitLoad:null};
   const checks=[],check=(id,passed)=>checks.push({id,passed:Boolean(passed)});
@@ -311,8 +338,8 @@ export async function run(context) {
   }
   try {
     const main=await readFile(new URL('../src/main.js',import.meta.url),'utf8');
-    const loaded=await loadUnitInputs(origin),inputs=loaded.inputs;report.assets=loaded.assets;
-    report.expectedMissingWalkDirections=missingWalkDirections(inputs.spearman);
+    const loaded=await loadUnitInputs(origin,{roles:['human',militaryKind]}),inputs=loaded.inputs;report.assets=loaded.assets;
+    report.expectedMissingWalkDirections=missingWalkDirections(inputs[militaryKind]);
     await preparePage(host,main,origin);await host.cdp.call('Page.navigate',{url:`${origin}/`});
     await host.wait("document.querySelector('#menu-create-room')&&!document.querySelector('#menu-create-room').disabled",'ordinary Create Room');
     await host.cdp.evaluate("document.querySelector('#menu-create-room').click()");
@@ -365,18 +392,18 @@ export async function run(context) {
     report.work=[identity,next];
     await host.wait(`window.__rtsUnitAnimation.last.buildings.some(b=>b.type==='barracks'&&b.complete&&!${JSON.stringify([...previousBuildings])}.includes(b.id))`,'paid Barracks completion',45000);
     check('productive-work-gait',true);
-    phase='paid-spearman';current=await snapshot(host);
+    phase=`paid-${militaryKind}`;current=await snapshot(host);
     const barracks=current.buildings.find(b=>b.type==='barracks'&&b.complete&&!previousBuildings.has(b.id));
-    const oldSpears=new Set(current.units.filter(u=>u.kind==='spearman').map(u=>u.id));
-    await order(host,{type:'trainUnit',kind:'spearman',buildingId:barracks.id});
-    await host.wait(`window.__rtsUnitAnimation.last.food===${current.food-60}&&window.__rtsUnitAnimation.last.wood===${current.wood-20}`,'paid Spearman reservation');
-    const paid=await snapshot(host);report.production.push({kind:'spearman',foodBefore:current.food,foodAfter:paid.food,
+    const oldMilitary=new Set(current.units.filter(u=>u.kind===militaryKind).map(u=>u.id));
+    await order(host,{type:'trainUnit',kind:militaryKind,buildingId:barracks.id});
+    await host.wait(`window.__rtsUnitAnimation.last.food===${current.food-cost.food}&&window.__rtsUnitAnimation.last.wood===${current.wood-cost.wood}`,`paid ${militaryKind} reservation`);
+    const paid=await snapshot(host);report.production.push({kind:militaryKind,foodBefore:current.food,foodAfter:paid.food,
       woodBefore:current.wood,woodAfter:paid.wood,command:'trainUnit',buildingId:barracks.id});
-    await host.wait(`window.__rtsUnitAnimation.last.units.some(u=>u.kind==='spearman'&&!${JSON.stringify([...oldSpears])}.includes(u.id))`,'paid Spearman spawn',30000);
-    const spear=(await snapshot(host)).units.find(u=>u.kind==='spearman'&&!oldSpears.has(u.id));
-    report.production.at(-1).unitId=spear.id;check('paid-spearman',true);
-    for(const actor of [worker,spear]) {
-      const role=actor.kind==='worker'?'human':'spearman';
+    await host.wait(`window.__rtsUnitAnimation.last.units.some(u=>u.kind===${JSON.stringify(militaryKind)}&&!${JSON.stringify([...oldMilitary])}.includes(u.id))`,`paid ${militaryKind} spawn`,30000);
+    const military=(await snapshot(host)).units.find(u=>u.kind===militaryKind&&!oldMilitary.has(u.id));
+    report.production.at(-1).unitId=military.id;check(`paid-${militaryKind}`,true);
+    for(const actor of [worker,military]) {
+      const role=actor.kind==='worker'?'human':militaryKind;
       await host.cdp.evaluate(`window.__rtsUnitAnimation.targets=[${actor.id}]`);
       for(const [index,heading] of unitArtDirections.entries()) {
         phase=`${actor.kind}-${heading}`;
@@ -387,7 +414,7 @@ export async function run(context) {
           await order(host,{type:'move',ids:[actor.id],...goal});
           await host.wait(`(()=>{const s=window.__rtsUnitAnimation.samples.filter(s=>s.units.some(u=>u.id===${actor.id}&&u.walking&&u.clockState==='walk'&&Math.abs(Math.atan2(Math.sin(u.angle-${bearing}),Math.cos(u.angle-${bearing})))<.2));return s.length>=3&&s.at(-1).time-s[0].time>=800;})()`,'settled actual gait interval',12000);
           const firstWalk=await checkpoint(`${phase}-walk-1`,actor.id,{state:'walk'});
-          const expectedGap=actor.kind==='spearman'&&report.expectedMissingWalkDirections.includes(heading);
+          const expectedGap=actor.kind===militaryKind&&report.expectedMissingWalkDirections.includes(heading);
           const walking=await checkpoint(`${phase}-walk-2`,actor.id,{state:'walk',minTime:firstWalk.time+200,
             ...(expectedGap?{}:{notUv:firstWalk.units[0].uv})});
           assert.ok(walking.units[0].walking,'Stop must interrupt actual travel');

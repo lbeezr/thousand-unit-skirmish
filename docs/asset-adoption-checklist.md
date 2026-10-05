@@ -111,6 +111,10 @@ user's visual-direction hold. Its public-source registration, 48 reused poses,
 provenance and runtime admission remain preserved, but the gold costume/round
 shield is not the established Human identity. The corrective default restores
 Infantry v3; Archer v3 PR230 and blocky Spearman v2 PR241 remain unmerged drafts.
+The [actual default Infantry qualification](qa-default-infantry-walk-2026-10-05.md)
+records one SE walk and seven idle placeholders, with a separate registered
+ordinary capture case. Missing faithful source keys/rig and identified rendered
+playback remain owned by the delegated Infantry lane and capture owner01a10378.
 The [5 October Spearman Northeast attack increment](qa-spearman-ne-attack-2026-10-05.md)
 adds three own-facing ready/thrust/recovery keys to default v1 pack0.11.0 and
 reuses the exact original idle opening. All60 prior frames,31 other clips and
