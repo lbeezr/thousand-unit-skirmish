@@ -94,6 +94,10 @@ cell-only ordinary leg's body policy.
 
 Forty-nine registered candidate checks currently retain six strict physical
 failures for that pending/queued/cold transition, rather than suppressing them.
+The cold cases set actual callback/tick planner modes before both module imports
+and complete the catch-up and queue through their shared hooks, without draining
+the active legs. Independent state-only projection through the existing API
+validates and reduces 16/6 contacts to zero in both modes; no host patch is made.
 Other real-command cases cover both-seat Infantry and paid/trained Archer,
 accepted/pending/active recovery, Stop/Hold/Move, active queue cancellation,
 moving leader, actual leader death, validated generation replacement, close

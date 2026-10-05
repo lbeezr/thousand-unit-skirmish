@@ -21,9 +21,9 @@ test('Follow clearance derives only from target-free military persistent intent'
   }
 });
 
-async function journey(team, action, kind = 'infantry') {
+async function journey(team, action, kind = 'infantry', { plannerTurns = 0 } = {}) {
   process.env.RTS_MAP = 'maps/open-field.json'; process.env.RTS_GAME_MODE = 'pvp'; process.env.RTS_PREGAME = '0';
-  process.env.RTS_MOVE_PLANNING_TURNS_PER_TICK = '0'; delete process.env.RTS_MATCH_STATE_PATH;
+  process.env.RTS_MOVE_PLANNING_TURNS_PER_TICK = String(plannerTurns); delete process.env.RTS_MATCH_STATE_PATH;
   const map = { id: 'follow-travel-journey', name: 'Follow Travel Journey', width: 64, height: 48,
     terrainSeed: 881, fogOfWar: false, startingArmySize: 16, startingResources: { food: 800, wood: 2000 },
     spawnPoints: [{ team: 0, x: -20, z: -16 }, { team: 1, x: 20, z: 16 }],
@@ -52,7 +52,7 @@ async function journey(team, action, kind = 'infantry') {
     const leaderId = r.units.find(u => u.team === team && u.kind === 'worker' && u.id !== id).id;
     const actor = () => r.units[id], leader = () => r.units[leaderId];
     command('move', { x: 6.5, z: .5 }, leaderId); command('move', { x: .75, z: .95 }); r.drain();
-    for (let t = 0; t < 800 && [actor(), leader()].some(u => u.pathIndex < u.path.length); t++) r.step();
+    for (let t = 0; t < 800 && [actor(), leader()].some(u => u.movePlanningPending || u.pathIndex < u.path.length); t++) r.step();
     assert.deepEqual([actor().x, actor().z], [.75, .95]);
     const untouched = r.units.filter(u => u.id !== id).map(u => [u.id, u.orderRevision, u.hp]);
     const radius = LAND_CLEARANCE_PROFILE.radiusByKind[kind]; let safeSteps = 0;
@@ -141,11 +141,11 @@ for (const team of [0, 1]) for (const turns of [0, 1]) test(`seat ${team}: ${tur
     command('move', { x: -3.5, z: -3.5, queue: true }); assert.equal(actor().persistentOrder, null);
     const queue = structuredClone(actor().queuedWaypoints); await recover(true);
     assert.deepEqual(actor().queuedWaypoints, queue); assert.equal(actor().moveGoalCell, firstGoal);
-    until(() => actor().path.length > 0, { planningTurns: turns || undefined });
+    until(() => actor().path.length > 0);
     assert.equal(actor().moveGoalCell, firstGoal, 'the durable accepted catch-up executes first');
-    assert.equal(actor().queuedWaypoints.length, 1); r().drain(); finishPoint();
+    assert.equal(actor().queuedWaypoints.length, 1); finishPoint();
     assert.equal(actor().queuedWaypoints.length, 0); assert.equal(actor().persistentOrder, null);
-  });
+  }, 'infantry', { plannerTurns: turns });
 });
 
 for (const team of [0, 1]) {
