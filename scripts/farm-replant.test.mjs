@@ -143,3 +143,45 @@ test('eligibility and persisted continuation reject busy intent and malformed id
     assert.equal(validWorkIntent({...intent,...bad},u,map,options),false);
   assert.equal(validWorkIntent(intent,u,map,{...options,buildings:[{id:7,type:'mill',team:0}]}),false);
 });
+for (const team of [0, 1]) test(`seat ${team} natural wood cargo survives renewal while busy and unselected orders stay exact`, async () => {
+  // Real gathering supplies retained cargo. No checkpoint bank/cargo/stock edits.
+  const timberMap={...map,id:`manual-farm-mixed-${team}`,resourceNodes:[{
+    id:'renewal-timber',type:'wood',x:team?24.5:-24.5,z:3.5,stock:100}]};
+  const f=await createPveHeadlessFixture(timberMap,{matchModeId:'authored',matchModeVersion:1}),r=f.replay;
+  try {
+    const workers=state(r).units.filter(u=>u.team===team&&u.kind==='worker');
+    await order(r,team,'build',workers,{buildingType:'farm',x:team?24.5:-24.5,z:7.5});
+    until(r,s=>s.buildings.length===1&&s.buildings[0].complete);
+    const old=state(r).buildings[0];
+    await order(r,team,'gather',workers.slice(0,2),{nodeId:farmHarvestNodeId(old.id)});
+    until(r,s=>s.buildings[0].harvestStock===0&&s.units.filter(u=>u.team===team).every(u=>u.cargo===0));
+    await order(r,team,'gather',workers.slice(0,1),{nodeId:'renewal-timber'});
+    until(r,s=>s.units[workers[0].id].cargo>2&&s.units[workers[0].id].cargoType==='wood');
+    await order(r,team,'stop',workers.slice(0,1));
+    await order(r,team,'holdPosition',workers.slice(1,2));
+    const before=state(r),carrying=before.units[workers[0].id];
+    assert.ok(carrying.cargo>0&&carrying.cargoType==='wood');
+    assert.ok(before.units[workers[1].id].holdingPosition);
+    const selected=workers.slice(0,2);
+    assert.ok((await order(r,team,'replantFarm',selected,{buildingId:old.id})).some(n=>/1 WORKERS/.test(n.message)));
+    const paid=state(r),fresh=paid.buildings[0];
+    for(const worker of workers.slice(1)) assert.deepEqual(paid.units[worker.id],before.units[worker.id],
+      'selected busy and unselected Workers keep exact authority fields before simulation advances');
+    assert.equal(paid.units[workers[0].id].cargo,carrying.cargo);
+    assert.equal(before.teamWood[team]-paid.teamWood[team],60);
+    r.restore(r.checkpoint());
+    until(r,s=>s.buildings[0].complete);
+    const completed=state(r);
+    assert.equal(completed.units[workers[0].id].cargoType,'wood','construction keeps incompatible real cargo');
+    until(r,s=>s.teamWood[team]>paid.teamWood[team]+1e-5);
+    const returned=state(r);
+    assert.equal(returned.teamFood[team],paid.teamFood[team],'wood delivers before renewed food');
+    assert.ok(Math.abs(returned.teamWood[team]-paid.teamWood[team]-carrying.cargo)<1e-5);
+    assert.ok(returned.units[workers[1].id].holdingPosition,'busy selected Worker keeps Hold through recovery and completion');
+    until(r,s=>s.teamFood[team]>paid.teamFood[team]+1e-5);
+    const delivered=state(r),crop=delivered.buildings.find(b=>b.id===fresh.id);
+    const foodCargo=delivered.units.filter(u=>u.team===team&&u.cargoType==='food').reduce((n,u)=>n+u.cargo,0);
+    assert.ok(Math.abs(delivered.teamFood[team]+crop.harvestStock+foodCargo-400)<1e-5);
+    assert.ok(Math.abs(delivered.teamWood[team]-paid.teamWood[team]-carrying.cargo)<1e-5,'one charge and one real wood return');
+  } finally {await f.dispose();}
+});
