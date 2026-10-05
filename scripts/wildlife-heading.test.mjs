@@ -121,7 +121,7 @@ test('malformed legacy headings or ambiguous identity cannot be repaired or part
   }
 });
 
-test('real server schema23→29 chain converts authored nose once and schema28 recovery retains in-flight Herd', async t => {
+test('real server schema23→30 chain converts authored nose once and schema28 recovery retains in-flight Herd', async t => {
   const base = JSON.parse(readFileSync(new URL('../maps/open-field.json', import.meta.url)));
   const map = { ...base, id: 'sheep-heading-replay', name: 'SHEEP HEADING REPLAY', width: 32, height: 24,
     terrainBase: 'meadow', startingArmySize: 8, fogOfWar: true, startingResources: { food: 150, wood: 250 },
@@ -161,8 +161,9 @@ test('real server schema23→29 chain converts authored nose once and schema28 r
   const inFlight = r.checkpoint(), old = structuredClone(inFlight); old.schemaVersion = 28; delete old.state.voluntaryEndings;
   for (const node of old.state.resourceNodes) node.wildlifeMotion.heading = legacyNoseHeadingFromBody(node.wildlifeMotion.heading);
   const expected = structuredClone(old); migrateWildlifeHeadingCheckpoint(expected);
+  expected.state.voluntaryEndings = { version: 0, generation: 1, revision: 0, result: null };
   r.restore(old);
-  assert.deepEqual(r.checkpoint().state, expected.state, 'real 28→29 restore keeps every field except the prescribed heading conversion');
+  assert.deepEqual(r.checkpoint().state, expected.state, 'real 28→30 restore keeps every prior field with the prescribed heading conversion and legacy termination contract');
   r.validate(structuredClone(r.checkpoint()));
   const current = r.checkpoint(); r.restore(structuredClone(current));
   assert.deepEqual(r.checkpoint().state, current.state, 'current restore is stable');
