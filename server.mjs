@@ -1048,7 +1048,8 @@ let tickNumber = 0;
 let dirty = true;
 const workerPerformingActions = createWorkerPerformingActions();
 const pendingMoveStartBroadcasts = new Set();
-const tickDurationsMs = new Float32Array(TICK_SAMPLE_WINDOW);
+// Preserve timer precision for comparisons against the exact scheduler period.
+const tickDurationsMs = new Float64Array(TICK_SAMPLE_WINDOW);
 const tickStartLagsMs = new Float32Array(TICK_SAMPLE_WINDOW);
 const tickDiagnosticSamples = TICK_DIAGNOSTICS_ENABLED ? new Array(TICK_SAMPLE_WINDOW).fill(null) : null;
 const separationWorkSamples = SEPARATION_DIAGNOSTICS_ENABLED ? {

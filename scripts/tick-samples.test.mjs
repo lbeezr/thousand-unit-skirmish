@@ -5,6 +5,7 @@ import vm from 'node:vm';
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const start = source.indexOf('function tickTimingPayload(');
 const body = source.slice(start, source.indexOf('\nfunction ', start + 1));
+const durationStorageDeclaration = source.match(/^const tickDurationsMs = .+;$/m)[0];
 test('opt-in diagnostic samples preserve chronological wrapped ticks and actual whole-tick values', () => {
   const rows = [3, 4, 1, 2].map(tickNumber => ({ tickNumber, durationMs: tickNumber * 10,
     scenarioEvaluated: false, planningTurns: 0 }));
@@ -25,11 +26,11 @@ test('opt-in diagnostic samples preserve chronological wrapped ticks and actual 
 
 function timingContext(values, { count = values.length, cursor = count, rate = 30 } = {}) {
   const context = vm.createContext({ tickDurationCount: count, tickDurationCursor: cursor,
-    TICK_SAMPLE_WINDOW: values.length, tickDiagnosticSamples: null, tickDurationsMs: values,
+    TICK_SAMPLE_WINDOW: values.length, tickDiagnosticSamples: null, inputDurations: values,
     tickStartLagCount: 0, tickStartLagCursor: 0, tickStartLagsMs: [], TICK_RATE: rate,
     skippedTickSlotsTotal: 0, lastOverloadSkippedSlots: 0, lastOverloadTick: null,
     MOVE_PLANNING_TURNS_PER_TICK: 0 });
-  vm.runInContext(body, context);
+  vm.runInContext(`${durationStorageDeclaration}\ntickDurationsMs.set(inputDurations);\n${body}`, context);
   return context;
 }
 
@@ -47,6 +48,9 @@ test('budget count uses the exact tick period and raw durations before rounding'
   assert.equal(report.budgetMs, 33.333); assert.equal(report.maxMs, 33.333);
   assert.equal(report.overBudgetTickCount, 1);
   assert.equal(timingContext([20, 20.00001], { rate: 50 }).tickTimingPayload().overBudgetTickCount, 1);
+  const justAbove = period + 1e-7;
+  assert.ok(new Float32Array([justAbove])[0] < period, 'the previous storage rounds this overrun below budget');
+  assert.equal(timingContext([justAbove]).tickTimingPayload().overBudgetTickCount, 1);
 });
 
 test('inactive ring slots and expired overruns do not leak into a new window', () => {
