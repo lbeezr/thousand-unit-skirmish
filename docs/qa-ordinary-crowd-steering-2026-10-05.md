@@ -3,8 +3,17 @@
 Owner `01a10933-c2b0-70f1-991d-761518eb5010` retains
 [PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400), its source
 integration, packaging, deployment identity and ordinary rendered acceptance.
-Source qualification is complete at clean `1fa2c46d`. Normal merge, identified
-deployment and ordinary rendered acceptance remain separate milestones.
+[PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400) merged at
+`8c28773c`. Its [delivery receipt](qa-evidence/ordinary-crowd-steering-2026-10-05/controller-continuation/source-delivery.json)
+separates qualified runtime, sealed review, clean merged pack and provider/served
+identities. Merged source passes 49 focused checks and the local packed HTTP
+scenario, with the same 1,386-file digest as the qualified candidate.
+Railway staging deployment `2a29a592` reached terminal **SUCCESS** at
+05:13:04 UTC for exact source `8c28773c`. This is provider-source deployment
+evidence; it does not establish a served health identity or rendered gameplay.
+Served health is blocked by the cloud outbound CONNECT proxy returning 403 and
+missing injected Basic Auth credentials. The existing browser capability failure
+still leaves zero rendered frames; no bypass, login or browser retry is attempted.
 
 ## Qualified terrain-aware crowd detour
 
