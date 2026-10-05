@@ -42,8 +42,14 @@ export function capturedTickAttribution(rows, mapId) {
   }
   const coverage = [...segments.values()].map(({ ticks, ...identity }) => {
     ticks.sort((a, b) => a - b);
+    const observed = new Set(ticks);
+    const otherMapTicks = new Set([...unique.values()].filter(row => row.workerRun === identity.workerRun
+      && row.matchId === identity.matchId && row.mapId !== identity.mapId
+      && row.tickNumber >= ticks[0] && row.tickNumber <= ticks.at(-1) && !observed.has(row.tickNumber))
+      .map(row => row.tickNumber));
     return { ...identity, firstTick: ticks[0], lastTick: ticks.at(-1), observedTicks: ticks.length,
-      missingTicksWithinObservedRange: ticks.at(-1) - ticks[0] + 1 - ticks.length };
+      knownOtherMapTicksWithinObservedRange: otherMapTicks.size,
+      missingTicksWithinObservedRange: ticks.at(-1) - ticks[0] + 1 - ticks.length - otherMapTicks.size };
   });
   const overruns = measured.filter(row => row.overBudget);
   const dominantPhase = row => tickPhases.reduce((best, key) => row[key] > row[best] ? key : best);

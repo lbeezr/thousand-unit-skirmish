@@ -68,4 +68,7 @@ test('gaps and exact boundary flags remain explicit instead of fabricating missi
   assert.equal(result.status, 'valid-observations'); assert.equal(result.overBudgetTicks, 1);
   assert.equal(result.coverage[0].missingTicksWithinObservedRange, 1);
   assert.equal(result.uniqueObservedTicks, 2);
+  const interrupted = capturedTickAttribution([row(1), row(2, { mapId: 'probe' }), row(3)], 'crownroads');
+  assert.equal(interrupted.coverage[0].knownOtherMapTicksWithinObservedRange, 1);
+  assert.equal(interrupted.coverage[0].missingTicksWithinObservedRange, 0, 'a known other-map tick is not lost capture');
 });

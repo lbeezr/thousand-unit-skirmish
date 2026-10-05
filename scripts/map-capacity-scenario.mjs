@@ -264,7 +264,7 @@ async function runLoad(count) {
     assert.ok(record.capturedBudgetEnvelope.passed, 'All captured windows, including cold recovery, must meet the diagnostic budgets');
     record.tickRows = [...tickRows.values()];
     record.tickAttribution = capturedTickAttribution(record.tickRows, map.id);
-    assert.equal(record.tickAttribution.status, 'valid-observations', 'Raw tick attribution must be complete and consistent');
+    assert.equal(record.tickAttribution.status, 'valid-observations', 'Retained raw ticks must have identified, consistent phase fields');
     console.log(JSON.stringify({ armySize: count, uniqueAttributedTicks: record.tickAttribution.uniqueObservedTicks,
       overBudgetTicks: record.tickAttribution.overBudgetTicks, dominantPhaseCounts: record.tickAttribution.overrunDominantPhaseCounts }));
     record.peakServerRssBytes = Math.max(...record.samples.map(s => s.serverRssBytes ?? 0)); record.passed = true;
