@@ -134,7 +134,8 @@ generation, revision, path index and raw waypoint; comparisons across a waypoint
 or queued-leg transition cannot diagnose oscillation. These observations cover
 only this window, not the actors' full histories or the unchanged arrival deadline.
 
-Actor 121 is the exception: it travels 0.82333 world units while losing 0.02196
+Actor 121 is the exception: its sampled poses span 0.82333 world units of travel
+while losing 0.02196
 distance to its unchanged raw waypoint, with no-progress age 58→77. Its twenty
 calls produce ordinary step proposals, not source crowd waits or priority yields.
 A pure swept-body check of the direct step toward each actual projected target
