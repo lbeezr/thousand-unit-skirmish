@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  readDisclosedWildlife, selectOwnedWildlife, reconcileWildlifeSelection,
+  readDisclosedWildlife, selectOwnedWildlife, selectInspectableWildlife, reconcileWildlifeSelection,
   createWildlifeCommand, updateWildlifePositionMemory,
 } from '../src/wildlife-client-state.mjs';
 
@@ -92,7 +92,7 @@ test('strict pose, lifecycle, food and public-field admission rejects forged row
   assert.equal(read(definition, [row(0, { wildlifeTeam: null })]).rows.size, 1);
 });
 
-test('positive carcasses and depleted rows validate but never become selected', () => {
+test('positive carcasses and depleted rows validate but never gain owned live controls', () => {
   const definition = map();
   for (const [wildlifeState, stock] of [['carcass', 130], ['carcass', 0.004], ['depleted', 0]]) {
     const animal = row(0, { wildlifeState, stock });
@@ -151,7 +151,7 @@ test('invalid map, epoch and seat contexts fail closed', () => {
   assert.equal(readDisclosedWildlife(definition, snapshot([], { resourceNodes: undefined }), 0, visible).rows.size, 0);
 });
 
-test('selection survives valid movement and clears on fog, omission, recapture, harvest or depletion', () => {
+test('selection survives valid movement and clears on fog, omission, live recapture or depletion', () => {
   const definition = map(), previous = read(definition);
   assert.equal(reconcileWildlifeSelection('azure-sheep', previous,
     read(definition, [row(0, { x: 3.75 })])), 'azure-sheep');
@@ -159,7 +159,7 @@ test('selection survives valid movement and clears on fog, omission, recapture, 
   const depleted = { ...carcass, wildlifeState: 'depleted', stock: 0 };
   for (const current of [read(definition, [], 0), read(definition, [row()], 0, {}, () => false),
     read(definition, [row(0, { wildlifeTeam: 1 })]), read(definition, [row(0, { wildlifeTeam: null })]),
-    read(definition, [carcass]), read(definition, [depleted]), null]) {
+    read(definition, [depleted]), null]) {
     assert.equal(reconcileWildlifeSelection('azure-sheep', previous, current), null);
     assert.equal(createWildlifeCommand('stopWildlife', 'azure-sheep', previous, current), null);
   }
@@ -247,4 +247,23 @@ test('memory clears across map/epoch/seat and releases visibly depleted food', (
   assert.equal(withCarcass.positions.size, 1);
   assert.equal(updateWildlifePositionMemory(withCarcass,
     read(definition, [{ ...carcass, wildlifeState: 'depleted', stock: 0 }])).positions.size, 0);
+});
+
+
+test('shared carcass inspection survives harvest updates without granting Herd/Stop authority', () => {
+  const definition = map(), previous = read(definition);
+  for (const wildlifeTeam of [null, 0, 1]) {
+    const carcass = row(0, { wildlifeState: 'carcass', wildlifeTeam, stock: 12.25 });
+    delete carcass.wildlifeActivity;
+    const view = read(definition, [carcass]);
+    assert.equal(selectInspectableWildlife(view, carcass.id), carcass.id);
+    assert.equal(reconcileWildlifeSelection(carcass.id, previous, view), carcass.id);
+    assert.equal(createWildlifeCommand('herd', carcass.id, view, view, target, legalTarget), null);
+    assert.equal(createWildlifeCommand('stopWildlife', carcass.id, view, view), null);
+    const partial = read(definition, [{ ...carcass, stock: 0.004 }]);
+    assert.equal(reconcileWildlifeSelection(carcass.id, view, partial), carcass.id);
+    const exhausted = read(definition, [{ ...carcass, stock: 0, wildlifeState: 'depleted' }]);
+    assert.equal(selectInspectableWildlife(exhausted, carcass.id), null);
+    assert.equal(reconcileWildlifeSelection(carcass.id, partial, exhausted), null);
+  }
 });
