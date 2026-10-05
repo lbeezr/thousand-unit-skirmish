@@ -230,3 +230,98 @@ test('runtime action observations suppress enemy, fog and unknown seat records b
     assert.equal(runtime.observeAction(null, 1000, 0), null);
   }, 'human', 'v3');
 });
+
+async function inspectSpriteLoad(fault, inspect) {
+  const originalFetch=globalThis.fetch,originalWarn=console.warn;
+  const secretError=new Error('fixture-private-url-token-stack-do-not-export');
+  let release,rejectRequest,requests=0,textureRequests=0;
+  const warnings=[],scene=new THREE.Scene(),pack=structuredClone(packs.spearman);
+  if(fault==='asset')pack.assets=[];
+  if(fault==='page')pack.files=[];
+  if(fault==='shape')pack.assets={};
+  if(fault==='pack')pack.assets[0].clips=null;
+  globalThis.fetch=()=>{requests++;return new Promise((resolve,reject)=>{release=resolve;rejectRequest=reject;});};
+  console.warn=(...args)=>warnings.push(args);
+  class TextureLoader { load(_url,done,_progress,failed) {
+    const index=textureRequests++;
+    if(fault==='texture-throw')throw secretError;
+    const texture=new THREE.Texture();
+    if(fault==='resolved-then-throw') {done(texture);throw secretError;}
+    queueMicrotask(()=>fault===(index===0?'color':'mask')?failed(secretError):done(texture));
+    return texture;
+  } }
+  const api={...THREE,TextureLoader};
+  if(fault==='batch')api.PlaneGeometry=class {constructor(){throw secretError;}};
+  try {
+    const runtime=createUnitSpriteRuntime({THREE:api,scene,capacity:1,roles:['spearman'],
+      teamHex:[0x5aa7d7,0xe67a5e],cameraQuaternion:new THREE.Quaternion(),
+      ...(fault==='visibility'?{fishingContact:{setVisible(){throw secretError;}}}:{})});
+    assert.deepEqual(runtime.observeLoad(),{state:'pending',stage:'loading',cause:null});
+    if(fault==='network')rejectRequest(secretError);
+    else release({ok:fault!=='http',status:fault==='http'?404:200,json:async()=>{
+      if(fault==='json')throw secretError;return pack;
+    }});
+    const result=await runtime.ready;
+    await inspect({runtime,result,scene,warnings,requests,textureRequests,secretError});
+  } finally {globalThis.fetch=originalFetch;console.warn=originalWarn;}
+}
+
+for(const [fault,stage,cause] of [
+  ['http','manifest-request','http'],['network','manifest-request','rejected'],
+  ['json','manifest-decode','rejected'],['asset','manifest-shape','invalid'],
+  ['page','manifest-shape','invalid'],['shape','manifest-shape','exception'],
+  ['color','color-texture','rejected'],['mask','mask-texture','rejected'],
+  ['texture-throw','color-texture','rejected'],['pack','pack-setup','exception'],
+  ['batch','batch-admission','exception'],['visibility','batch-admission','exception'],
+]) test(`bounded load provenance records ${fault} without changing admission or exporting errors`,async()=>{
+  await inspectSpriteLoad(fault,({runtime,result,scene,warnings,requests,secretError})=>{
+    assert.equal(result,false);assert.equal(requests,1);assert.equal(warnings.length,1);
+    assert.equal(warnings[0][0],'Unit sprite atlases unavailable; keeping current unit renderer.');
+    if(['network','json','color','mask','texture-throw','batch','visibility'].includes(fault))
+      assert.equal(warnings[0][1],secretError,'original rejection object reaches the existing warning');
+    const value=runtime.observeLoad();assert.deepEqual(value,{state:'failed',stage,cause});
+    assert.equal(JSON.stringify(value).includes('fixture-private'),false);
+    assert.deepEqual(Object.keys(value),['state','stage','cause']);
+    value.state='ready';value.stage='complete';value.cause=null;
+    assert.deepEqual(runtime.observeLoad(),{state:'failed',stage,cause},'fresh observation cannot mutate terminal status');
+    assert.equal(scene.children.length,fault==='visibility'?2:0,'original admission side effects retained');
+  });
+});
+
+for(const fault of ['none','resolved-then-throw'])test(`load success preserves actual fulfilled promise outcomes: ${fault}`,async()=>{
+  await inspectSpriteLoad(fault,({runtime,result,scene,warnings,requests,textureRequests})=>{
+    assert.equal(result,true);assert.equal(requests,1);assert.equal(textureRequests,2);assert.equal(warnings.length,0);
+    assert.equal(scene.children.length,2);assert.deepEqual(runtime.observeLoad(),{state:'ready',stage:'complete',cause:null});
+    const before=scene.children.map(mesh=>Array.from(mesh.instanceMatrix.array));
+    for(let i=0;i<10;i++)runtime.observeLoad();
+    assert.deepEqual(scene.children.map(mesh=>Array.from(mesh.instanceMatrix.array)),before);
+  });
+});
+
+test('synchronous manifest fetch throw still aborts the factory before returning a runtime',()=>{
+  const originalFetch=globalThis.fetch,error=new Error('private synchronous transport payload');
+  globalThis.fetch=()=>{throw error;};
+  try {
+    assert.throws(()=>createUnitSpriteRuntime({THREE,scene:new THREE.Scene(),capacity:1,roles:['spearman'],
+      teamHex:[0x5aa7d7,0xe67a5e],cameraQuaternion:new THREE.Quaternion()}),caught=>caught===error);
+  } finally {globalThis.fetch=originalFetch;}
+});
+
+test('late successful or failed sibling cannot overwrite the aggregate first load failure',async()=>{
+  const originalFetch=globalThis.fetch,originalWarn=console.warn;
+  for(const lateFailure of [false,true]) {
+    const pending=new Map(),warnings=[],scene=new THREE.Scene();let textures=0;
+    globalThis.fetch=url=>new Promise(resolve=>pending.set(url.includes('cast-human')?'human':'spearman',resolve));
+    console.warn=(...args)=>warnings.push(args);
+    class TextureLoader {load(_url,done){textures++;const t=new THREE.Texture();queueMicrotask(()=>done(t));return t;}}
+    try {
+      const runtime=createUnitSpriteRuntime({THREE:{...THREE,TextureLoader},scene,capacity:1,roles:['human','spearman'],
+        roleSpriteVersions:{human:'v3'},teamHex:[0x5aa7d7,0xe67a5e],cameraQuaternion:new THREE.Quaternion()});
+      pending.get('spearman')({ok:false,status:404});assert.equal(await runtime.ready,false);
+      pending.get('human')({ok:!lateFailure,status:503,json:async()=>packs.human});
+      for(let i=0;i<20;i++)await Promise.resolve();
+      assert.deepEqual(runtime.observeLoad(),{state:'failed',stage:'manifest-request',cause:'http'});
+      assert.equal(scene.children.length,0);assert.equal(warnings.length,1);assert.equal(textures,lateFailure?0:2);
+    } finally {globalThis.fetch=originalFetch;console.warn=originalWarn;}
+  }
+});
