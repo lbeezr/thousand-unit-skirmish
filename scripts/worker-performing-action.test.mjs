@@ -2,16 +2,18 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { workerFoodGatherMultiplier } from '../src/server/worker-food-tools.mjs';
 import { readFileSync } from 'node:fs';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import vm from 'node:vm';
 import { createWorkerPerformingActions } from '../src/worker-performing-action.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { buildingRepairStep } from '../src/base-lifecycle.mjs';
 import { FOREST_GATHER_SOURCE_KIND, isAreaGatherResource, activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent } from '../src/work-intent.mjs';
 import { gatherWorkArea } from '../src/gather-work-area.mjs';
-import { constructionMovementActive } from '../src/construction-work-intent.mjs';
-import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
-import { createOrdinaryMilitaryEndpointAvailability } from '../src/simulation/movement/military-endpoint-availability.mjs';
-import { canTraverseStaticBodySegment, createMoveGoalPoint, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
+import { createMoveGoalPoint } from '../src/unit-movement.mjs';
+import { constructionServerBindings, constructionServerFunctions, loadConstructionServerFixture } from './construction-server-fixture.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 function fn(name) {
@@ -32,14 +34,11 @@ function fixture() {
   const node = { id: 'node', type: 'food', x: 0, z: 0, stock: 10 };
   const building = { id: 1, type: 'farm', x: 0, z: 0, hp: 100, complete: false, progress: 0 };
   const journal = createWorkerPerformingActions();
-  const context = vm.createContext({ units: [unit], tickNumber: 1, dirty: false, workerEconomyRouteScope: null,
+  const context = vm.createContext({ ...constructionServerBindings(), units: [unit], tickNumber: 1, dirty: false, workerEconomyRouteScope: null,
     workerPerformingActions: journal, BUILDING_DEFINITIONS, buildingRepairStep,
-    constructionMovementActive, activeWallBuildOrder, createOrdinaryMilitaryEndpointAvailability,
-    canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE,
     // Receipt-only open ground; endpoint admission still uses production policy.
     MAP_WIDTH: 64, MAP_HEIGHT: 64, MAX_UNITS: 2000,
     isWalkable: cell => Number.isInteger(cell) && cell >= 0 && cell < 64 * 64,
-    palisadeConstructionRetries: new WeakMap(), movePlanningEpoch: 0, navigationRevision: 0, TICK_RATE: 30,
     FOREST_GATHER_SOURCE_KIND, isAreaGatherResource, activeWorkIntent, createGatherWorkIntent, clearGatherWorkIntent, gatherWorkArea,
     // This receipt fixture has no reachable replacement area. Full authority
     // resource-job tests exercise continuation; these check confirmed grants.
@@ -66,9 +65,7 @@ function fixture() {
   vm.runInContext(['compatibleWorkerPerformingAction', 'workerPerformingAction',
     'snapshotUnits', 'workerTaskStatus', 'stopGathering', 'ensureGatherWorkIntent',
     'continueAreaGathering', 'updateForestWorkerEconomy',
-    'updateWorkerEconomy', 'constructionEndpointSnapshotGetter', 'constructionPoseAvailable',
-    'currentConstructionAccessRetry', 'retainConstructionAccessWait',
-    'updateConstructionAccess'].map(fn).join('\n') + '\n' + construction, context);
+    'updateWorkerEconomy'].map(fn).join('\n') + '\n' + constructionServerFunctions + construction, context);
   context.flushPendingForestClears = () => {};
   journal.beginStep(context.tickNumber);
   return { unit, node, building, journal, context,
@@ -234,4 +231,101 @@ test(`seat ${team}: a pending friendly endpoint withholds ${repairing ? 'repair'
   } else {
     assert.ok(f.building.progress > before.progress); assert.equal(f.context.teamWood[team], before.wood);
   }
+});
+
+// These loader contracts share the existing receipt CI registration. They
+// exercise dependency drift without running or rewriting the server entrypoint.
+async function constructionFixtureSource(run) {
+  const directory = await mkdtemp(join(tmpdir(), 'rts-construction-imports-'));
+  const sourceURL = pathToFileURL(join(directory, 'server.mjs'));
+  const source = (imports = '', pose = 'return true;', extra = '') => `${imports}
+    function constructionEndpointSnapshotGetter() { return () => constructionPoseAvailable(); }
+    function constructionPoseAvailable() { ${pose} }
+    ${extra}
+    function updateConstructionAccess() { return constructionPoseAvailable(); }
+    function updateWallBuildOrders() { throw new Error('outside construction seam'); }
+    throw new Error('server startup must not execute');
+  `;
+  try { await run({ directory, sourceURL, source }); }
+  finally { await rm(directory, { recursive: true, force: true }); }
+}
+
+test('construction loader includes an inserted helper and binds aliased, default and namespace production imports', async () => {
+  await constructionFixtureSource(async ({ directory, sourceURL, source }) => {
+    await writeFile(join(directory, 'policy.mjs'), 'export default 2; export const bonus = 3; export const positive = value => value + 1;');
+    await writeFile(sourceURL, source(
+      "import amount, { positive as grant } from './policy.mjs'; import * as policy from './policy.mjs';",
+      'return insertedConstructionHelper();',
+      'function insertedConstructionHelper() { return grant(amount) + policy.bonus; }'));
+    const loaded = await loadConstructionServerFixture(sourceURL), context = vm.createContext(loaded.bindings);
+    const policy = await import(pathToFileURL(join(directory, 'policy.mjs')).href);
+    assert.equal(loaded.bindings.grant, policy.positive); assert.equal(loaded.bindings.policy, policy);
+    vm.runInContext(loaded.functions, context);
+    assert.equal(context.constructionEndpointSnapshotGetter()(), 6);
+    assert.equal(context.updateConstructionAccess(), 6);
+    assert.equal(context.updateWallBuildOrders, undefined);
+  });
+});
+
+test('construction loader ignores property labels, strings and comments instead of importing unrelated host modules', async () => {
+  await constructionFixtureSource(async ({ directory, sourceURL, source }) => {
+    await writeFile(join(directory, 'unused.mjs'), "throw new Error('unused module must not execute'); export const ignored = 0;");
+    await writeFile(sourceURL, source("import path from 'node:path'; import { ignored } from './unused.mjs';",
+      "const position = { path: 2 }; const text = 'ignored()'; /* ignored() */ return position.path + ({ ignored: 1 }).ignored;"));
+    const loaded = await loadConstructionServerFixture(sourceURL), context = vm.createContext(loaded.bindings);
+    assert.deepEqual(Object.keys(loaded.bindings), []);
+    vm.runInContext(loaded.functions, context); assert.equal(context.constructionPoseAvailable(), 3);
+  });
+});
+
+test('construction loader retains shorthand and computed property value dependencies', async () => {
+  await constructionFixtureSource(async ({ directory, sourceURL, source }) => {
+    await writeFile(join(directory, 'policy.mjs'), "export const key = 'value', value = 7;");
+    await writeFile(sourceURL, source("import { key, value } from './policy.mjs';", 'const record = { value }; return record[key];'));
+    const loaded = await loadConstructionServerFixture(sourceURL), context = vm.createContext(loaded.bindings);
+    vm.runInContext(loaded.functions, context); assert.equal(context.constructionPoseAvailable(), 7);
+  });
+});
+
+test('construction loader rejects changed boundaries and missing required helpers during fixture setup', async () => {
+  await constructionFixtureSource(async ({ sourceURL, source }) => {
+    for (const [before, after, message] of [
+      ['function constructionEndpointSnapshotGetter()', 'function renamedGetter()', /boundaries changed/],
+      ['function updateWallBuildOrders()', 'function renamedBoundary()', /boundaries changed/],
+      ['function constructionPoseAvailable()', 'function renamedPose()', /Missing production construction helper/],
+    ]) {
+      await writeFile(sourceURL, source().replace(before, after));
+      await assert.rejects(loadConstructionServerFixture(sourceURL), message);
+    }
+  });
+});
+
+test('construction loader rejects an absent production export before a scenario reaches the dependency', async () => {
+  await constructionFixtureSource(async ({ directory, sourceURL, source }) => {
+    await writeFile(join(directory, 'policy.mjs'), 'export const another = 1;');
+    await writeFile(sourceURL, source("import { missing } from './policy.mjs';", 'return missing();'));
+    await assert.rejects(loadConstructionServerFixture(sourceURL), /Missing production construction import: missing/);
+  });
+});
+
+test('construction loader rejects referenced host imports and conservatively rejects their local shadows', async () => {
+  await constructionFixtureSource(async ({ sourceURL, source }) => {
+    for (const pose of ['return path.sep;', "const path = 'local'; return path;"]) {
+      await writeFile(sourceURL, source("import path from 'node:path';", pose));
+      await assert.rejects(loadConstructionServerFixture(sourceURL), /require local production imports/);
+    }
+  });
+});
+
+test('shared construction fixtures retain separate retry state with identical production policies', () => {
+  const first = constructionServerBindings(), second = constructionServerBindings();
+  const unit = { generation: 1, orderRevision: 2 }, building = { id: 3 };
+  const retry = { accessBlocked: true, siteId: 3, epoch: 0, generation: 1, revision: 2 };
+  first.palisadeConstructionRetries.set(unit, retry);
+  const contexts = [first, second].map(bindings => {
+    const context = vm.createContext(bindings); vm.runInContext(constructionServerFunctions, context); return context;
+  });
+  assert.equal(contexts[0].currentConstructionAccessRetry(unit, building), retry);
+  assert.equal(contexts[1].currentConstructionAccessRetry(unit, building), null);
+  assert.equal(first.constructionMovementActive, second.constructionMovementActive);
 });
