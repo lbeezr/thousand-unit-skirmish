@@ -845,7 +845,7 @@ and all unrelated host bytes; it does not incorporate an error-handling change.
 | Checkpoint / next scoped slice | Input and owning boundary | Semantic acceptance and retirement limit |
 | --- | --- | --- |
 | Server caller slice [PR404](https://github.com/lbeezr/thousand-unit-skirmish/pull/404): the three `server.mjs` lifecycle, map-audio validator and formation literals | Fresh-main integration after PR395; exact scope retains construction/crowd and XL checkpoint imports/bodies. Canonical entries are `src/rules/base-lifecycle.mjs`, `src/world/map-audio-reference.mjs` and `src/simulation/movement/formation-assignment.mjs`. | Four identical bindings and every other host byte; actual consumer/native, types/imports, clean pack and packed HTTP/private-path checks plus implemented-head independent review belong to PR404. Zero tracked-runtime compatibility callers; all eleven surfaces and every existing fixture/admission remain. |
-| Checkpoint validation seam in `server.mjs`; contract preparation against `6ee1cce4` | Architecture owns the executable contract preparation below; server/simulation, building/action and XL owners must agree the bounded extraction before host edits. Preserve [PR403](https://github.com/lbeezr/thousand-unit-skirmish/pull/403)'s capture/validation consumers and [PR407](https://github.com/lbeezr/thousand-unit-skirmish/pull/407)'s bounded file/parser contracts. The host, movement and preflight bodies are unchanged in this preparation. | Existing economy/match-mode/fog/checkpoint recovery consumers plus [checkpoint-validator contracts](../scripts/checkpoint-validator-contract.test.mjs) exercise the actual authority body and restore path. Next: confirm the envelope/preflight interface and write allocation described below, then independently review a small extraction. Preparation is not an extracted runtime, package/deployment proof or ordinary-game acceptance. |
+| Checkpoint envelope [PR507](https://github.com/lbeezr/thousand-unit-skirmish/pull/507), integrated after contract preparation in PR495 and module preparation in PR502 | Architecture owns the default private envelope binding after the parent allocated the core PR504 handoff and XL audit writes. The nine inputs, domain-state return and existing capture/restore/file contracts are preserved; PR506 parking/movement bytes remain unchanged. | Actual merge `6c5dde0f` has the reviewed tree: 91 checkpoint/XL cases, 90 old/new authority/restore observations, native economy/storage and 11 native XL dimension rows pass. Clean package and private HTTP checks pass. Railway staging SUCCESS `422033b4` contains that source; the direct public read is proxy-blocked, so served identity and ordinary-game recovery remain open with architecture/public staging. Hosted CI retains formation/native-wall failures, separately from the passing scoped contracts. Next: the disjoint world-helper caller migration below; do not move the remaining domain-state validator behind a broad host parameter bag. |
 | Map Studio form snapshot controller [PR406](https://github.com/lbeezr/thousand-unit-skirmish/pull/406): `src/authoring/map-studio-form-state.mjs` with the two real draft callers in `src/main.js` | First small implementation of this row. Explicit `createMapStudioFormState({ root, document }) → { capture, restore }` owns only live dialog values; no host-state catch-all, storage, timer, rendering or simulation dependencies. The architecture/authoring owner retains the controller and source/browser acceptance. | Preserve old function bodies apart from closure identifiers/indentation, all draft JSON/version/storage/gesture/import/export/publish behavior and every prior brush case. Fixture uses production initialization; focused form/draft cases, import/privacy guard and exact served/packed bytes establish the source milestone. No new shim and all eleven existing surfaces retained. Normal-sandbox rendered draft acceptance remains incomplete. |
 | Versioned Map Studio draft storage/preflight [PR412](https://github.com/lbeezr/thousand-unit-skirmish/pull/412): `src/authoring/map-studio-draft-store.mjs` and real `main.js` callers | Explicit deferred storage getter, key identity inputs and cached recovery references. Preserve version 1 and old rejection/error ordering; no new file budget, migration, storage service or server checkpoint dependency. Architecture/authoring retains source and rendered recovery ownership. | Current registered brush/form cases plus malformed/old/foreign drafts, interruption/cancel/restore reread, storage failures, real portable import/export parity and native saved-map restart. Preserve every old host byte outside the bounded extraction/calls, all eleven compatibility surfaces and exact public/private packed HTTP policy. |
 | Scenario history coordination [PR415](https://github.com/lbeezr/thousand-unit-skirmish/pull/415): existing `src/authoring/scenario-authoring.mjs` and actual record/Undo/Redo host callers | Architecture/authoring owns the applying flag and operation ordering in the canonical module. DOM/state assignments remain explicit host callbacks; the existing bounded history instance and all old resets/callers remain. The new export is canonical-only; the legacy namespace retains its two original bindings. | Preserve active-state gating, availability updates, reentrant suppression, redo branching, exhausted restoration, error propagation/suppression and draft-save order. Direct contracts and real template controls exercise selections, no match mutation and recovery/import resets; actual packed bytes cover both old/canonical paths. No new admission, alias retirement, source-policy/registry edits or unrelated host changes. |
@@ -908,8 +908,9 @@ restore parity, two-fault first-error cases, XL preflight codes and the separate
 catalog veto are executable through the actual production functions. Existing
 fog/route/JSON/match-mode and native cold-recovery checks remain required for a
 later runtime extraction. No source extraction, deployed revision or playable
-acceptance is claimed by preparing these tests. Host integration after the core
-owner's containing refresh or handoff is the next action, not a completed migration.
+acceptance is claimed by preparing these tests. At that preparation checkpoint,
+host integration awaited the core handoff. PR507 subsequently completed the narrow
+default envelope binding below; remaining domain-state validation stays in the host.
 
 #### Envelope dependency and write-allocation checkpoint
 
@@ -1034,6 +1035,61 @@ checks establish this source integration. Record their final source/package
 identity in the owning PR. A merge or local package does not establish a containing
 deployment or ordinary-game recovery acceptance; architecture retains those
 remaining obligations with the receiving release owner.
+
+The actual [PR507](https://github.com/lbeezr/thousand-unit-skirmish/pull/507) merge
+`6c5dde0f` has tree `6a155b88`, identical to the independently reviewed head.
+Its clean package digest is
+`sha256:944021b946ba3a9bc0c545fe7f90a924dc602230481e70c611ef228d4e64d747`.
+Permitted Railway reads on 5 October report staging deployment
+`422033b4-af51-4a00-a2ca-9f683b8659fe` as SUCCESS at that exact source, with one
+healthy replica. Production remains at `67b16674`; no promotion was performed.
+The public `/ready` read is blocked by the execution network proxy with 403;
+that route is not retried or used to claim served identity. Public staging owner
+`01a10e00` retains the permitted served-identity path; architecture retains
+ordinary recovery observation at an identified containing release. Hosted run
+`37387225241` ended with all three shards failing: formation reservation, paid-wall
+formation destinations and a native queued-wall checkpoint timeout. The first
+formation failures match the earlier baseline reproduction; the latter two were
+not independently rerun here. CI stopped before 320 selected checks. Do not rerun
+the full suite or weaken those assertions as part of this source boundary.
+
+#### Authoring validator world-helper caller slice
+
+The next documented compatibility-caller step selects the architecture-owned
+`src/authoring/map-import-validator.mjs`, with its real calls to
+`findInvalidCapturePrerequisite` and `findInvalidScenarioEventChain`.
+Only these two import bindings move from `map-utils` forwarding exports to the
+existing canonical world leaves. Its elevation/topology imports remain in
+`map-utils`; all policy inputs, validation body, return/error ordering and actual
+`main.js` import/export/publish consumers remain byte-identical. No host, movement,
+parking, save, format, fixture, manifest or CI/package registration changes.
+
+The runtime caller inventory at `6c5dde0f` retains the corresponding `main.js`
+and `server.mjs` compatibility bindings, alongside tool/test/HTTP consumers.
+Those callers require their own owner agreement. This slice has one existing
+architecture/authoring caller and does not remove any of the four `map-utils`
+forwarding exports, their identity checks or their public paths; supported
+external imports and containing-release reload evidence remain retirement inputs.
+The world implementations and all eleven compatibility surfaces stay supported.
+Existing portable/draft/resource/Stone/wildlife consumers, direct canonical and
+old-path identity controls, import/type checks and actual packed public/private
+HTTP establish the source contract. Rendered editor acceptance remains separate.
+
+The two direct composition edges yield 224 modules/424 local edges, unchanged
+140 browser/95 server/34 shared modules and zero cycles. The authoring validator
+now declares eleven module dependencies instead of nine while retaining the same
+17 imported bindings; that explicit ownership is intentional, not a size score.
+
+The same checkpoint leaves the mixed hosts as the largest pressure: `src/main.js`
+has 10,829 physical lines and 76 direct local dependencies; `server.mjs` has
+10,080 and 74. `environment-art.mjs` has 1,243 and 28. The 242-line validated
+`gameplay-definitions.mjs` registry has 29 runtime importers; that intentional
+fan-in is not a reason to fragment its identity. Tracked `scripts/` now has 892
+files, 859 directly at its root, 323 `*.test.mjs` files and 238 filenames containing
+`scenario`; these are file counts, not CI jobs or independent workloads. Earlier
+dated measurements remain historical. Host responsibility contracts and the
+testing/tool owners' purpose-based queue remain the substantive work after these
+small caller migrations.
 
 ### Coupling and size ratchets
 
