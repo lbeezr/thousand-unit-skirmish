@@ -2,6 +2,20 @@ import { createWaterRouteGraph, canTraverseWaterEdge } from './water-route-graph
 import { waterRaster } from './water-contours.mjs';
 import { buildElevationGrid } from './map-utils.mjs';
 
+// Older fixed-facing Docks stored zero while choosing any cardinal shore.
+// Only explicitly facing-bound sites may constrain that historical berth.
+export function dockBerthOrientation(building) {
+  return building.dockFacingVersion === 1 ? building.orientation : undefined;
+}
+
+export function validDockFacingState(building) {
+  if (building.dockFacingVersion === undefined) {
+    return building.type !== 'dock' || building.orientation === undefined || building.orientation === 0;
+  }
+  return building.type === 'dock' && building.dockFacingVersion === 1
+    && Number.isInteger(building.orientation) && building.orientation >= 0 && building.orientation < 4;
+}
+
 // This land foundation reserves no pier or boat. Rebuild with current water
 // reservations before a future producer admits a vessel to the derived berth.
 export function createDockPlacementContext(definition, buildingDefinition, { reservedCells = [] } = {}) {
@@ -15,7 +29,10 @@ export function createDockPlacementContext(definition, buildingDefinition, { res
   const cellAt = (column, row) => column >= 0 && row >= 0 && column < graph.width && row < graph.height
     ? row * graph.width + column : -1;
   return Object.freeze({
-    accessAt(centerCell) {
+    accessAt(centerCell, orientation = undefined) {
+      if (orientation !== undefined && (!Number.isInteger(orientation) || orientation < 0 || orientation >= 4)) {
+        return { valid: false, reason: 'INVALID DOCK FACING' };
+      }
       if (!Number.isInteger(centerCell) || centerCell < 0 || centerCell >= graph.cellCount) {
         return { valid: false, reason: 'INVALID DOCK CENTER' };
       }
@@ -29,6 +46,9 @@ export function createDockPlacementContext(definition, buildingDefinition, { res
         }
       }
       for (const [side, dx, dz] of directions) {
+        // Registered front landing is +Z. A manual turn chooses that shore;
+        // unavailable water cannot silently move the berth to another side.
+        if (orientation !== undefined && side !== ['south', 'east', 'north', 'west'][orientation]) continue;
         const spawnCell = cellAt(column + dx * 3, row + dz * 3);
         const exitCell = cellAt(column + dx * 4, row + dz * 4);
         if (!graph.isNavigable(spawnCell) || !graph.isNavigable(exitCell)) continue;
@@ -41,7 +61,8 @@ export function createDockPlacementContext(definition, buildingDefinition, { res
         return { valid: true, side, spawnCell, exitCell, spawnFootprint,
           route: [spawnCell, exitCell], waterComponent: graph.componentAt(spawnCell) };
       }
-      return { valid: false, reason: 'DOCK NEEDS CLEAR WATER BERTH' };
+      return { valid: false, reason: orientation === undefined
+        ? 'DOCK NEEDS CLEAR WATER BERTH' : 'DOCK FRONT NEEDS CLEAR WATER · ROTATE THE SITE' };
     },
   });
 }

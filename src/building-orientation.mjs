@@ -3,6 +3,7 @@
 // supply a geometry contract before they can opt in here.
 export const ROTATABLE_BUILDINGS = Object.freeze([
   'town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower', 'barracks', 'archery-range',
+  'mill', 'farm', 'dock',
 ]);
 
 export function buildingCanRotate(type, definitions) {

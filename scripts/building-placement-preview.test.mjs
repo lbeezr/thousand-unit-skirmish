@@ -22,10 +22,7 @@ test('all approved final images share exact facing/scale/anchor/texture with the
     assert.fail('verified final image did not settle');
   };
   try {
-    const approvedFamilies = [
-      ...ROTATABLE_BUILDINGS.map(type => ({ type, orientations: [0, 1, 2, 3] })),
-      ...['mill', 'farm', 'dock'].map(type => ({ type, orientations: [0] })),
-    ];
+    const approvedFamilies = ROTATABLE_BUILDINGS.map(type => ({ type, orientations: [0, 1, 2, 3] }));
     for (const teamColor of [0x5aa7d7, 0xdb8664]) for (const { type, orientations } of approvedFamilies) for (const orientation of orientations) {
       const placement = { x: -10.5, z: 10.5, valid: true };
       preview.update({ type, size: type === 'town-center' ? 5 : 3, orientation, teamColor, camera, placement, height: 1.6 });

@@ -4,6 +4,21 @@ import { constructionClientFixture } from './construction-client-fixture.mjs';
 const units = [{ id: 0, team: 0, hp: 100, kind: 'worker', generation: 12 }];
 const setup = () => constructionClientFixture({ units, selection: [0] });
 
+for (const type of ['mill', 'farm', 'dock']) test(`${type} placement turns and serializes all four paid facings`, () => {
+  const f = setup();
+  for (let orientation = 0; orientation < 4; orientation++) {
+    f.context.beginBuildPlacement(type);
+    for (let turn = 0; turn < orientation; turn++) f.context.rotateBuildPlacement(1);
+    assert.equal(f.context.buildPlacementOrientation, orientation);
+    f.context.submitBuildPlacement(10, 20);
+    assert.equal(f.payloads.at(-1).buildingType, type);
+    assert.equal(f.payloads.at(-1).orientation, orientation);
+    f.context.rotateBuildPlacement(1);
+    assert.equal(f.context.buildPlacementOrientation, orientation, 'pending paid request freezes facing');
+    f.context.cancelBuildPlacement(false);
+  }
+});
+
 test('real placement functions serialize the chosen facing once and freeze it while pending', () => {
   const f = setup(); f.context.beginBuildPlacement('house');
   assert.equal(f.context.buildPlacementOrientation, 0);
@@ -27,6 +42,6 @@ test('UI capture, invalid sites and fixed-facing types cannot emit a rotated pai
   f.context.wallPointerCell = () => ({ column: 1, row: 1 });
   f.context.buildPlacementAt = () => ({ valid: false, blockedReason: 'Existing building' });
   f.context.submitBuildPlacement(0, 0); assert.equal(f.payloads.length, 0);
-  f.context.beginBuildPlacement('farm'); f.context.rotateBuildPlacement(1);
+  f.context.beginBuildPlacement('palisade-gate'); f.context.rotateBuildPlacement(1);
   assert.equal(f.context.buildPlacementOrientation, 0); assert.equal(f.context.buildPlacementPending, false);
 });
