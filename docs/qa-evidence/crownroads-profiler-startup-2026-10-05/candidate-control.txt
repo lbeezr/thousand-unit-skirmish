@@ -1,0 +1,1 @@
+PASS: observer-only startup boundaries retained; CPU/allocation profiles absent.

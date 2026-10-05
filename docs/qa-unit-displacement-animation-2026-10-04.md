@@ -114,5 +114,135 @@ served/deployed identity and actual rendered acceptance remain separate.
 | Rank | Measured risk / next action | Owned scope and acceptance |
 | --- | --- | --- |
 | 1 — current slice; rendered use open | Clip labels conceal seven Spearman idle walk placeholders. Integrate and retain provenance in existing animation capture evidence. | Read-only runtime observation and animation-domain adapter/tests. Both-seat 14 placeholder / 2 exact controls; false provenance rejected; no selector/art changes. Identified deployed/GPU consumer use still requires the existing capable capture owner. |
-| 2 — audit before implementation | Runtime pack-load failure only warns and keeps the procedural renderer; a null observation alone cannot distinguish pending versus failed loading. Measure one loader failure through the existing capture probe before adding bounded load-status evidence. | Read-only loaded/pending/failed scalar status and existing adapter only; no URLs/errors/session payloads. Positive load and rejected-file controls, unchanged fallback buffers. Coordinate an actual shared loader overlap with the renderer owner first. |
-| 3 — deferred to movement interface agreement | A held owned unit can lack motion for legitimate Stop/work/wait reasons. Audit existing movement wait/repair signals before choosing a concrete silent-stall gap. | Disclosed local units only, existing diagnostic consumer and bounded observation window; no hidden-enemy census, movement policy change or generic tracing framework. Movement owners retain runtime arrival failures. |
+| 2 — implemented; review/integration and rendered use tracked in its PR | Pending and seven representative loader failure paths originally produced the same null action observation. The existing animation probe now retains bounded aggregate load state and finite failure provenance, including failure before any capture. | Read-only `observeLoad()` and existing adapter/report only; no roles, URLs, error payloads, identifiers, counts or timestamps. Promise outcomes, warning identity/count, all-or-nothing admission and late sibling controls remain unchanged. Shadow no-overlap confirmation and precise foot-art supported-version-only patch inspection cover the allocated loader boundary. |
+| 3 — finite replay observation implemented; exact review/integration tracked in PR464 | On both seats, a production crowd wait, Hold and planning-pending state produce identical ordinary unit rows. Finite observations are consumed in the existing private queued-gate report; do not infer a deadlock from missing motion. | Requested owned actors only, at most eight current-step observations; no paths, targets, neighbors or public/session transport changes. Crowd/core approved the finite replay observer; repair instrumentation remains unchanged. Rich native instrumentation and movement policy stay with their owners. |
+
+### Pending versus failed loader provenance — 5 October 2026
+
+The bounded CPU audit at `c42a9b4b` reproduces HTTP, fetch rejection, JSON
+rejection, missing unit asset, missing page files and both color/mask texture
+failures. Every failure has the same null action observation as pending loading,
+false ready result, one warning and zero meshes. Success makes one manifest/two
+texture attempts and admits two meshes. A successfully loaded late sibling
+cannot admit the group after another role failed. These are controlled CPU
+inputs to the existing loader, not rendered or provider-deployment evidence.
+
+The additive `observeLoad()` returns a fresh, fixed-size `{state, stage, cause}`.
+Pending is `pending/loading/null`; aggregate success is `ready/complete/null`.
+Failure uses finite stages (`manifest-request`, `manifest-decode`,
+`manifest-shape`, `texture-load`, `color-texture`, `mask-texture`, `pack-setup`,
+`batch-admission`) and causes (`http`, `rejected`, `invalid`, `exception`).
+`rejected` identifies a promise rejection at that stage, not an inferred
+network/parser/provider reason from free-form text. No roles, URLs, HTTP status
+codes, error messages/stacks, entity data, identifiers, counts or timestamps are
+exported. The first recorded failure remains terminal despite late siblings.
+
+Failure observers attach to the actual existing promise outcomes. Returned
+promises/rejection objects, load order, role/texture Promise.all admission,
+warning and retry policy remain intact. A synchronous fetch throw still aborts
+the factory before a runtime exists; this interface cannot report that case.
+A texture callback that synchronously resolves before an executor exception
+retains its original success. Aggregate diagnostic readiness follows completed
+batch setup and setVisible; even a failure after the internal ready flag changed
+is reported as failed. Existing partial side effects in that exceptional case
+are preserved rather than silently changing renderer policy.
+
+The existing post-render animation probe reads once per frame outside its unit
+loop, retaining the existing 180-snapshot cap and action-observation limits.
+No new entity census/history, normal-render callback, retries or textures are
+added. The domain adapter checks readiness before animation acceptance, accepts
+a loader failure in the existing startup wait, and always writes its existing
+`unit-animation-acceptance.json` under the shared case evidence directory.
+Pending timeout and early failure therefore retain truthful loader status even
+with zero screenshots. Invalid/extra-field snapshots are discarded before
+retention, keeping arbitrary payloads out of the report.
+
+Boundary coordination: the parent relayed shadow owner `01a10c3c`'s no-overlap
+confirmation at merged `2b4a5246`. At `231a5de6`, the actual loader/probe files
+are unchanged since the audit. Read-only inspection of held PR230/241's exact
+`src/unit-sprite-runtime.mjs` patches shows only supported-version additions in
+`spriteDirectory`, which this increment leaves unchanged. The parent explicitly
+authorized proceeding after this precise non-overlap check while foot-art review
+remains pending. No foot-art approval or held art release is inferred. Diagnostics
+owns this implementation; art owners retain artwork and visual acceptance.
+
+Existing registered tests cover the real runtime-to-serialized-probe-to-report
+path, pending/success/failure, malformed shape and setup errors, sync promise
+outcomes, first failure/late siblings, fresh immutable observations, original
+warning objects and admission counts, one read per frame, and missing/false
+readiness or private extra-field rejection. The adapter's early-failure and
+pending-timeout report test is a CPU mock with no GPU or screenshot acceptance.
+The previously recorded cloud sandbox/storage failure remains blocked; no
+browser or denied hosted dispatch was retried. Source, clean release/local
+packed HTTP and actual deployed/rendered states remain separately recorded in
+the increment's PR. Art backing N/A for this internal diagnostic change.
+
+### Disclosed-local pause audit — 5 October 2026
+
+At source `e839f59d`, the existing production movement/snapshot bodies reproduce
+three distinct pause states on both seats with identical ordinary unit rows:
+`waitingForCrowd`, Hold, and `movePlanningPending`. The controlled inherited
+static-escape/body-admission fixture in `scripts/unit-movement.test.mjs` provides
+the crowd wait: its vector returns `waitingForCrowd`, actor state does not change,
+and no repair is queued. Hold also leaves the actor unchanged; pending planning
+has the same transmitted row. Opposing-seat hidden rows remain absent. This is
+a bounded CPU contract audit, not a new choke algorithm study, native scheduling
+result, actual player session or rendered observation.
+
+The existing animation probe sees position, walking, task and productive work,
+but receives neither the authoritative pending flag nor vector/repair outcomes.
+It therefore cannot truthfully derive a body wait or accepted repair from that
+row. A finite cause must come from the actual observation boundary; a timeout or
+missing animation alone must not become a stuck-unit claim.
+
+The smallest current consumer identified is `runQueuedGateCase()` in
+`scripts/queued-gate-pathing.mjs`. Its current report retains controller maxima,
+missing controller records and unfinished actors, but no finite pause observation
+for a selected owned actor. The proposed shared boundary is the existing
+`recordReplayCrowdStep` and repair-entry hooks in
+`scripts/pathing-replay-fixture.mjs`. The parent relayed crowd `01a10933-c2b0` and core `01a107ba` approval of
+this boundary at audited `5ec7394e`; both confirmed no additional ownership gate.
+The increment uses the vector hook only; the repair hook and algorithms stay
+unchanged. No repair-attempt or accepted-repair value is invented.
+
+Any implementation should opt in a valid team and at most eight requested owned
+actors before reading their movement fields, retain one current-step observation
+per actor, and return fresh finite projections in request order. It must not
+enable `traceActorIds` merely to obtain this projection: that richer existing
+trace records paths, goals, queues and neighbors. It must clear observations on
+step/reset/restore and reject stale generation/order revisions. A vector wait
+means the last observed vector evaluation waited, not that the whole tick had
+zero motion. A positive vector is a proposal, not admitted movement. The repair
+hook observes an attempt before validity/admission checks, so it cannot label
+repair accepted. Missing observations stay unobserved. Hold/work/planning controls
+must not be marked as unexplained stalls.
+
+This proposed increment is private replay/report tooling. It adds no normal
+player unit-row fields, public health/session data or browser cause claim, and
+does not expose enemy movement internals even when an enemy actor is visible.
+Source/tool consumption, packaged runtime, identified deployment and actual
+rendered acceptance remain distinct. Art backing N/A.
+
+
+The implemented opt-in `observeMovement` mode configures an explicit team and
+at most eight distinct requested IDs through `replay.observeMovement(team, ids)`.
+`movementObservations()` returns fresh fixed-size rows containing `id`, `holding`,
+`planningPending`, `performingAction`, `routeActive`, and `decision`. Existing
+productive-work receipts supply the optional action; Hold/planning/work/route
+flags remain separate from the last vector observation. Decisions are finite:
+`vector-wait`, `vector-proposal`, `static-proposal-rejected`,
+`no-vector-proposal`, or `unobserved`. They describe an evaluated proposal,
+not an admitted move, accepted repair or deadlock. Identity/generation/order,
+current step and navigation revision qualify the recorded decision. Requests
+and decisions clear on reset/restore; decisions clear before each step.
+
+Finite-only mode skips legacy result cloning and global crowd records, without
+enabling the rich actor trace. The original vector call executes exactly once
+and returns its unchanged result. The existing queued-gate consumer opts in with
+`observePauses` (CLI `--observe-pauses`) and retains at most eight terminal rows
+in its existing report. Its default requests name seven own Infantry and the
+own builder; `pauseActorIds` can select a smaller explicit set. Requests for
+opponents/unknown/dead/replaced actors produce no rows. Original commands,
+Stop priority, simulation, repair, 2700-tick deadlines and arrival assertions
+remain intact. This projection is private source replay evidence, not normal
+browser or deployment acceptance.

@@ -1,0 +1,54 @@
+✔ disposable observer keeps real gameplay, fog, payload, framing and tick bodies intact (10.935817ms)
+✖ inner function wrappers preserve receiver, result and thrown errors while retaining tick identity (3.83572ms)
+✖ bounded observer reports expired rows rather than implying complete capture (19.319475ms)
+✔ observed production framing preserves exact plain private wire bytes (4.729145ms)
+✔ observed production framing preserves exact compressed private wire bytes (2.706326ms)
+✔ vision observer distinguishes current masks, tick invalidation and geometry invalidation without changing context (0.881147ms)
+✔ stop freezes row capture before asynchronous shutdown can serve another simulation tick (0.907987ms)
+✔ vision instrumentation observes bounded cache without promoting entries or changing gameplay counters (2.934413ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 6
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 116.73915
+
+✖ failing tests:
+
+test at ../../tmp/performance-inner-baseline-observer.test.mjs:25:1
+✖ inner function wrappers preserve receiver, result and thrown errors while retaining tick identity (3.83572ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'match-a'
+  
+      at TestContext.<anonymous> (file:///tmp/performance-inner-baseline-observer.test.mjs:45:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'match-a',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../tmp/performance-inner-baseline-observer.test.mjs:52:1
+✖ bounded observer reports expired rows rather than implying complete capture (19.319475ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  undefined !== 1
+  
+      at TestContext.<anonymous> (file:///tmp/performance-inner-baseline-observer.test.mjs:60:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

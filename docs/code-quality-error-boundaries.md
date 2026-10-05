@@ -17,12 +17,47 @@ the current write scope. The shipped-audio reader already has its own owner.
 
 | Rank/status | Reproduction and outcome | Write boundary | Next action/dependency | Acceptance owner |
 | --- | --- | --- | --- | --- |
-| 1 — reproduced, source fix under review | Pending export of First mix downloaded as Second mix after selection/Stop, replacing the stopped status; late failure also replaced it. Reproduced at `2b4a5246`. | Mounted composer export completion, delayed lifecycle tests, CI and owning guides | Independent exact-head review, merge and clean package/serving proof. Native/deployed download remains open. | Error-handling owner; coordinated release owner retains deployment. |
-| 2 — source integrated, native acceptance blocked | [PR #455](https://github.com/lbeezr/thousand-unit-skirmish/pull/455) preserves WAV read/decode causes and unexpected fault identity. Merge `55860818ca95c41c454fb0ff9df05ac177464192`; independent review and fresh-source/package/serving checks pass. | No additional read/decode source edit justified | Observe native export failure/repair/retry on an identified release in a working provider browser. | Error-handling owner; coordinated release owner retains deployment. |
-| 2 — source integrated, native acceptance blocked | [PR #450](https://github.com/lbeezr/thousand-unit-skirmish/pull/450) cancels pending preview resume and obsolete status updates. Merge `70289cacc33065182e0c9a4ab7f36251e6178c07`; independent review found no blockers. Nine regressions, composer/player/library checks and clean package/serving pass. | No additional preview source edit is justified | Observe preview Stop/retry on an identified release in a working provider browser sandbox. Head `19e581cd` probe was blocked with sandbox/storage failures, zero frames/screenshots; do not retry unchanged capability. | Error-handling owner; coordinated release owner retains deployment. |
-| Historical — integration tracked | [PR #190](https://github.com/lbeezr/thousand-unit-skirmish/pull/190) fixes missing-parent raw stacks and malformed JSON excerpts in visual-pack input loading. Real invalid/valid CLI, repair/retry, programmer-fault and unchanged symlink checks pass. | Validator, existing visual-pack path-safety scenario, this note | The linked PR retains exact reviewed head, merge and fresh-main tool acceptance. | Error-handling owner; tooling only, no production deployment. |
-| 2 — native acceptance blocked | Audio open and import source fixes have merged in PRs #166 and #172. The actual browser launch failed with `sandbox-unavailable`; no deployed revision has been identified for native Audio Studio retry/import observation. | No further source edit is justified by this blocker. | Parent identifies the coordinated runtime release; resume normal/blocked-open/import retry observation in a provider runtime with a working browser sandbox. | Parent owns coordinated release; error-handling owner retains native acceptance in the linked audio PRs below. |
-| 3 — next bounded audit, unconfirmed | Check asynchronous Save completion after editing or selecting another composition while persistence is pending. | Read-only mounted-editor Save audit; no edits reserved | Reproduce lost edits or stale status before proposing any change and verify persistence ownership. Map import/validators remain with architecture; shipped-audio reader remains outside this lane. | Error-handling owner |
+| 1 — reproduced, source fix under review | Map Studio Publish leaves “Draft ready to publish” in its own status after offline/recovering/stalled transport rejection; nothing is sent. Reproduced at `a5639c06`. | Two existing rejection branches in `sendCommand`, mounted real Publish/sender tests, CI and owning guides | Independent exact-head review, merge, clean package/serving checks. Native editor/status observation requires a working browser and identified release. | Error-handling owner owns rejection feedback; architecture/authoring retains publishing lifecycle and import/validation. |
+| 2 — source integrated, native acceptance blocked | [PR #458](https://github.com/lbeezr/thousand-unit-skirmish/pull/458) discards obsolete export publication; merge `a5639c06e30306c42a7c64f7d69dab0a3a062b99`. [PR #455](https://github.com/lbeezr/thousand-unit-skirmish/pull/455) preserves WAV read/decode causes; merge `55860818ca95c41c454fb0ff9df05ac177464192`. [PR #450](https://github.com/lbeezr/thousand-unit-skirmish/pull/450) cancels obsolete preview startup/status; merge `70289cacc33065182e0c9a4ab7f36251e6178c07`. Each has independent exact-head review and clean merged-source/package/serving checks. | No further audio source edit justified by these acceptance dependencies | Observe preview Stop/retry, export failure/repair/retry and stale completion on an identified containing release. Head `19e581cd` browser probe failed sandbox/storage startup with zero frames/screenshots; do not retry unchanged capability. | Error-handling owner retains native acceptance; coordinated release owner retains deployment identity. |
+| 3 — source integrated, native acceptance blocked | Audio library opening/import fixes [PR #166](https://github.com/lbeezr/thousand-unit-skirmish/pull/166) and [PR #172](https://github.com/lbeezr/thousand-unit-skirmish/pull/172) retain their source proofs below. | No additional source edit justified | Working provider browser sandbox and identified coordinated runtime release before normal/blocked-open/import retry observation. | Error-handling owner retains native acceptance; coordinated release owner retains deployment identity. |
+| Parked — unconfirmed audio audit | Asynchronous composer Save completion after edit/selection while persistence is pending has not been reproduced in this lane. | Read-only only, no source edits reserved | Prefer reproduced game/editor/network failures. Revisit only with an actual race and current persistence ownership; map import/validators and diagnostic loaders remain outside this lane. | Error-handling owner |
+
+### Queue reconciliation and rejected publish audit — 5 October 2026
+
+Local and remote main matched `a5639c06e30306c42a7c64f7d69dab0a3a062b99`.
+PR #458 is merged, not awaiting source review. Its exact independent review
+and fresh merged-source checks cover 17 lifecycle controls (13 baseline failures),
+41 aggregate focused results, existing scheduling and packed serving. Clean
+1,388-file package digest:
+`sha256:2c356d9595381f67a68bb38490f1daad51e098915734bcfe30bd793e3d1ee2fd`.
+These establish source/package evidence, not a live deployment or native download.
+
+The new priority is editor/network rejection feedback. The actual main-client
+Publish callback and `sendCommand` were executed in a DOM fixture with no socket,
+closed socket, recovering state and a stalled server. Each sent nothing and
+kept Publish enabled, but left “Draft ready to publish” in the editor while only
+the existing general toast changed. No assertion about toast visibility in a
+native modal is made. The two early return branches now write safe, fixed
+not-published/retry messages to the existing editor status for `publishMap` only.
+
+Ten controls pass; unchanged baseline fails the four rejection/status cases and
+passes six compatibility controls. Explicit retry publishes the original payload
+once after recovery; recovery alone publishes nothing. Ordinary command status,
+serialization/generation identity, oversized map feedback, draft bytes and exact
+programmer error/cause identity remain. No catch, new asynchronous request,
+resend queue, protocol change or raw map/error content is added.
+
+Architecture/authoring retains the [draft/publish lifecycle seam](architecture.md#continuing-boundary-workstream),
+map import/validators and rendered recovery. At audit start, PR #451 concerned
+the draft format; refreshing main included that merge without conflict, and no
+active PR overlapped these two transport-rejection status writes.
+Diagnostic loaders and held art #25/#230/#241 are unchanged. The implementation
+adds no lifecycle or validation changes. Art backing: the existing
+[Save & Play status treatment](qa-evidence/studio-landscape-strokes-2026-09-30/save-play.png)
+is retained; only failure copy changes. CPU DOM tests do not prove native editor
+appearance. Browser sandbox/storage and denied CLI metadata routes were not
+retried. The owned PR retains exact review, merge and source/package/serving
+identity; deployed/native feedback acceptance stays open with this lane.
 
 ### Delayed export completion audit — 5 October 2026
 
@@ -176,9 +211,9 @@ missing authorization, unresolved overlap, unavailable execution or no justified
 remaining issue, and state the concrete condition. Never invent work or expand
 spending, access, publication rights or repository permissions to continue.
 
-Once PR #190 is integrated, every reproduced source candidate in this ranked
-set has shipped; there is no further confirmed disjoint source issue in this
-audit set. Remaining native/deployed audio acceptance is blocked by the actual
-browser launch failure and the unidentified coordinated runtime release above.
-Resume that acceptance when both dependencies are available, or select another
-source fix only after a new concrete reproduction establishes its scope.
+Historical input/capture fixes and PRs #450/#455/#458 have source integration
+evidence; they do not remain in the ready source queue. Current source work is
+limited to the reproduced Publish rejection feedback above. Native/deployed
+acceptance remains blocked by the recorded browser failure and unidentified
+coordinated release. Resume acceptance when both dependencies are available;
+select another source fix only after concrete reproduction and ownership checks.

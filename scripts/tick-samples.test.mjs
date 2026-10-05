@@ -61,3 +61,30 @@ test('inactive ring slots and expired overruns do not leak into a new window', (
   const empty = context.tickTimingPayload();
   assert.equal(empty.p99Ms, null); assert.equal(empty.overBudgetTickCount, 0);
 });
+
+test('actual outer-tick diagnostics preserve match/map identity and the exact overrun flag before display rounding', () => {
+  const tickStart = source.indexOf('function runSimulationTick(');
+  const tickBody = source.slice(tickStart, source.indexOf('\nfunction ', tickStart + 1));
+  const period = 1000 / 30;
+  for (const duration of [period - 1e-7, period, period + 1e-7]) {
+    let clockCall = 0, diagnostic;
+    const context = vm.createContext({
+      performance: { now: () => clockCall++ === 0 ? 0 : duration },
+      process: { cpuUsage: () => ({ user: 0, system: 0 }) }, tickDiagnosticSamples: [],
+      tickNumber: 30, matchId: 'current-match', mapDefinition: { id: 'crownroads' },
+      lastSimulationTickStartedAt: null, recordTickStartLag() {},
+      serviceMovePlanningForTick: () => null, simulateTick: () => { context.tickNumber++; },
+      visionMasksUpdatedTick: 0, workerPerformingActions: { finishStep: () => false },
+      compatibleWorkerPerformingAction() {}, recordSeparationWorkSample() {}, takeMoveStartBroadcastRequest: () => false,
+      STATE_EVERY_TICKS: 3, MATCH_CHECKPOINT_INTERVAL_TICKS: 30, TICK_RATE: 30,
+      TICK_INTERVAL_MS: period, dirty: false, landRouteRetentionTick: null,
+      recordTickDuration: (_, row) => { diagnostic = row; },
+      advanceTickDeadline: () => ({ skippedTickSlots: 0, nextDeadlineMs: 200 }),
+      simulationDeadlineMs: 100, scheduleSimulationTick() {},
+    });
+    vm.runInContext(`${tickBody}\nrunSimulationTick();`, context);
+    assert.equal(diagnostic.matchId, 'current-match'); assert.equal(diagnostic.mapId, 'crownroads');
+    assert.equal(diagnostic.tickNumber, 31); assert.equal(diagnostic.budgetMs, period);
+    assert.equal(diagnostic.durationMs, 33.333); assert.equal(diagnostic.overBudget, duration > period);
+  }
+});

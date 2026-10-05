@@ -12,6 +12,10 @@
 6. **Download JSON** for a portable copy; import and reopen it to check the round trip.
 
 Publishing resets the match. Use a disposable room when testing authoring.
+If the connection is offline or the client is waiting for current server state,
+Map Studio reports that the map was not published and keeps Save & Play enabled.
+Draft edits remain available; reconnect or wait for current state, then retry.
+Recovery does not automatically publish the draft.
 Imported files must be under the editor's 900 KB limit. Saved IDs cannot overwrite
 shipped maps; each room loads up to 16 custom maps. Remove a saved JSON and restart
 the room to remove it from that catalog.
@@ -184,6 +188,30 @@ cover reentrant capture/ordering and failures; actual template controls in the
 existing draft fixture cover region/event restoration, branching, local save,
 no running-match mutation and resets after recovery/import. Architecture/authoring
 retains rendered recovery acceptance at the existing cloud capability gap.
+
+### Portable-map validator boundary
+
+The source slice based on main `fec90d44` places the existing 298-line
+`validateImportedMap` body in
+[`authoring/map-import-validator.mjs`](../src/authoring/map-import-validator.mjs).
+Its sole named export is `createMapImportValidator`, taking eight existing scalar
+limits and the obstacle material list. The factory uses the same pure
+definitions/validators; it has no editor, DOM, storage, timer, renderer, server or
+live-match input. Main retains its thin named entry and existing import and
+collection/export/publish callers. File reading and its current errors remain
+unchanged; this candidate introduces no save version, schema migration or v1
+folder for unversioned policy coordination.
+
+The 16–256 gate, defaults, cloning, regions, wildlife/resources, elevation,
+triggers, scenario chains and rejection order retain their existing behavior.
+The actual draft and Stone/wildlife importer fixtures now consume canonical
+validation. The XL audit includes its source hash and host binding while keeping
+all dimension, file/parser/route limits and prior assertions. One exact browser
+module path is added; asset URLs, protocol/save formats and all eleven
+compatibility paths remain supported. Architecture/authoring retains local
+review, source/packed acceptance and the existing unverified browser import/export/
+publish observation at an identified release. Storage/recovery lifecycle and
+versioned draft organization remain separate boundaries.
 
 ## Coordinates and terrain
 

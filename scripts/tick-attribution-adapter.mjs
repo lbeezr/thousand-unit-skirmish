@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const sha = text => createHash('sha256').update(text).digest('hex');
-export function attributionSource(original) {
+export function attributionSource(original, { simulation = false, profiles = true } = {}) {
   const replace = (before, after) => {
     assert.equal(source.split(before).length - 1, 1, `Attribution seam changed: ${before}`);
     source = source.replace(before, after);
@@ -25,13 +25,15 @@ export function attributionSource(original) {
   if (url.pathname === '/health') {`);
   const observer = pathToFileURL(path.join(root, 'scripts/tick-attribution-observer.mjs')).href;
   const bindingNames = ['runSimulationTick','recordTickDuration','ensureVisionMasks','updateVisionMasks',
-    'markVisionFrom','roomPayload','prepareJsonFrame','captureMatchCheckpoint'];
+    'markVisionFrom','roomPayload','prepareJsonFrame','captureMatchCheckpoint',
+    ...(simulation ? ['simulateTick','rebuildSpatialBuckets','getMoveVector','spreadInteractingUnits'] : [])];
   replace('\nserver.listen(PORT, HOST, () => {', `
 if (HOST !== '127.0.0.1') throw new Error('Disposable attribution adapter requires loopback');
 const { createTickAttribution } = await import(${JSON.stringify(observer)});
 const attribution = createTickAttribution({
+  profiles: ${JSON.stringify(profiles)},
   functions: { ${bindingNames.join(',')}, deflateRawSync: attributionNativeDeflate, encodeWebSocketFrame: attributionNativeEncode },
-  context: () => ({ tickNumber, visionTick: visionMasksUpdatedTick,
+  context: () => ({ tickNumber, tickStartedMs: lastSimulationTickStartedAt, visionTick: visionMasksUpdatedTick,
     visionCoverage: visionMasksUpdatedCoverage, coverage: visionCoverageBySourceCell, cacheMetrics: visionCoverageBySourceCell.metrics() }),
   visionContext: () => ({ coverage: visionCoverageBySourceCell, processed: processedVisionSourcesByTeam,
     halfX: MAP_HALF_X, halfZ: MAP_HALF_Z, width: MAP_WIDTH, defaultSight: VISION_RADIUS_CELLS }),
@@ -43,10 +45,10 @@ JSON.stringify = attribution.wrapped.stringify;
 server.listen(PORT, HOST, () => {`);
   return source;
 }
-export async function createTickAttributionAdapter() {
+export async function createTickAttributionAdapter(options) {
   const directory = await mkdtemp(path.join(tmpdir(), 'rts-tick-attribution-'));
   try {
-    const original = await readFile(new URL('../server.mjs', import.meta.url), 'utf8'), source = attributionSource(original);
+    const original = await readFile(new URL('../server.mjs', import.meta.url), 'utf8'), source = attributionSource(original, options);
     const filename = path.join(directory, 'server-attribution.mjs'); await writeFile(filename, source);
     return { filename, originalSha256: sha(original), adapterSha256: sha(source),
       async dispose() { await rm(directory, { recursive: true, force: true }); } };

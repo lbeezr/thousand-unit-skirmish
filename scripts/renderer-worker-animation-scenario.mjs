@@ -79,7 +79,7 @@ export function observeRenderedUnits() {
         screen:{x:bounds.left+(foot.x+1)*bounds.width/2,y:bounds.top+(1-foot.y)*bounds.height/2},selected:selected.has(u.id)};
     });
     const snapshot={number:++probe.number,time:now,rendererFrame:renderer.info.render.frame,
-      team:localTeam,mapId:mapDefinition?.id,zoom,unitSpriteReady,units:observed,
+      team:localTeam,mapId:mapDefinition?.id,zoom,unitSpriteReady,unitLoad:unitSpriteRuntime.observeLoad(),units:observed,
       viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio},
       food:latestFood[localTeam],wood:latestWood[localTeam],population:latestPopulation[localTeam],
       buildings:latestBuildings.filter(b=>b.team===localTeam).map(b=>({id:b.id,type:b.type,x:b.x,z:b.z,
@@ -119,6 +119,23 @@ export function postRenderLine(source) {
   const next=lines.findIndex((line,index)=>index>matches[0]&&index<matches[0]+20&&line.trim()==='drawMinimap(now);');
   assert.ok(next>matches[0],'post-render observation site moved; owner must review it');
   return next;
+}
+
+function readUnitLoadDiagnostic(load) {
+  const stages=['manifest-request','manifest-decode','manifest-shape','texture-load','color-texture',
+    'mask-texture','pack-setup','batch-admission'];
+  const valid=load&&Object.keys(load).sort().join('|')==='cause|stage|state'
+    &&(load.state==='pending'&&load.stage==='loading'&&load.cause===null
+      ||load.state==='ready'&&load.stage==='complete'&&load.cause===null
+      ||load.state==='failed'&&stages.includes(load.stage)&&['http','rejected','invalid','exception'].includes(load.cause));
+  return valid?{state:load.state,stage:load.stage,cause:load.cause}:null;
+}
+
+export function assertUnitLoadReady(load) {
+  const value=readUnitLoadDiagnostic(load);
+  assert.ok(value,'bounded unit sprite load diagnostic is required');
+  assert.ok(value.state==='ready',`Unit sprite load ${value.state}: ${value.stage}/${value.cause??'none'}`);
+  return value;
 }
 
 function uvFor(frame,page) {
@@ -263,18 +280,19 @@ export async function loadUnitInputs(origin,{fetchImpl=fetch,read=readFile}={}) 
 // Only this adapter's normal input and observation contract. The shared owner
 // supplies qualified browser/pages, clean release identity, captures and cleanup.
 export async function run(context) {
-  const {page:host,openPage,origin,source,capture}=validateCaptureContext(context);
+  const {page:host,openPage,origin,source,capture,evidenceDirectory}=validateCaptureContext(context);
   const report={schemaVersion:1,adapterId:id,scope:'hosted-runner-local-packed-normal-game',
     status:'failed',sourceRevision:source.revision,releaseDigest:source.digest,mapId,
     normalEntry:'Create Room / ordinary Tiny Skirmish / two connected seats',
     testedCivilization:'human',testedTeam:0,peerCivilization:'boughward',
     defaultHumanRoles:{worker:'human/v3',spearman:'spearman/v1'},production:[],rows:[],captures:[],issues:[],
     expectedMissingWalkDirections:[],
-    captureAuthoredFrames:0,deployedRevision:null,stagingAcceptance:false};
+    captureAuthoredFrames:0,deployedRevision:null,stagingAcceptance:false,unitLoad:null};
   const checks=[],check=(id,passed)=>checks.push({id,passed:Boolean(passed)});
-  let evidenceDirectory,phase='ordinary-entry',peer;
+  let phase='ordinary-entry',peer;
   async function checkpoint(label,unitId,options={}) {
     const frame=await host.cdp.evaluate(`window.__rtsUnitAnimation.request(${JSON.stringify({...options,unitId})})`);
+    frame.unitLoad=assertUnitLoadReady(frame.unitLoad);
     assert.match(frame.version??'',/^WebGL 2\.0/);assert.equal(frame.contextLost,false);assert.equal(frame.glError,0);
     assert.equal(frame.pixels.length,192);assert.ok(new Set(frame.pixels).size>2,'actual game readback must not be blank');
     assert.ok(frame.units.some(u=>u.id===unitId&&u.actorDraw&&u.inView),'captured target must be in the actual visible draw');
@@ -283,7 +301,6 @@ export async function run(context) {
     // The canvas is from this exact post-render observation. The shared CDP
     // viewport capture happens afterward and is labelled separately, honestly.
     const retained=await capture({page:host,mapId,checkpoint:label});
-    evidenceDirectory=path.dirname(retained.directory);
     const entry={...frame,units:frame.units.filter(u=>u.id===unitId),
       canvas:`${label}/canvas.png`,canvasSha256:hash(canvas),
       viewport:`${label}/${retained.manifest.image.file}`,viewportSha256:retained.manifest.image.sha256,
@@ -314,8 +331,9 @@ export async function run(context) {
     await peer.cdp.evaluate("document.querySelector('#lobby-ready').click()");
     await host.wait("!document.querySelector('#lobby-launch').disabled",'both ready');
     await host.cdp.evaluate("document.querySelector('#lobby-launch').click()");
-    await host.wait("window.__rtsUnitAnimation.last?.unitSpriteReady&&window.__rtsUnitAnimation.last.units.some(u=>u.kind==='worker')&&window.__rtsEnvironmentCaptureCommand",'ordinary approved unit draws',30000);
-    const opening=await snapshot(host);assert.equal(opening.team,0);assert.equal(opening.mapId,mapId);
+    await host.wait("window.__rtsUnitAnimation.last?.unitLoad?.state==='failed'||(window.__rtsUnitAnimation.last?.unitSpriteReady&&window.__rtsUnitAnimation.last.units.some(u=>u.kind==='worker')&&window.__rtsEnvironmentCaptureCommand)",'ordinary approved unit draws or load failure',30000);
+    const opening=await snapshot(host);report.unitLoad=readUnitLoadDiagnostic(opening.unitLoad);assertUnitLoadReady(opening.unitLoad);
+    assert.equal(opening.team,0);assert.equal(opening.mapId,mapId);
     assert.equal(opening.food,150);assert.equal(opening.wood,250);
     await focus(host,opening.units.find(u=>u.kind==='worker').id);
     const beforeZoom=(await snapshot(host)).zoom;
@@ -399,11 +417,12 @@ export async function run(context) {
     assert.deepEqual(await host.cdp.evaluate('window.__rtsUnitAnimation.errors'),[]);
     report.status=report.issues.length?'failed':'blocked';
   } catch(error) {
+    report.unitLoad=readUnitLoadDiagnostic(await host.cdp.evaluate('window.__rtsUnitAnimation.last?.unitLoad??null').catch(()=>null));
     check(`${phase}-scenario`,false);report.issues.push({phase,
       message:error instanceof assert.AssertionError?error.message.split('\n')[0]:'bounded scenario step failed'});
   } finally {
     // Shared transport owns page cleanup and retains late browser/capture faults.
-    if(evidenceDirectory)await writeFile(path.join(evidenceDirectory,'unit-animation-acceptance.json'),JSON.stringify(report,null,2)+'\n');
+    await writeFile(path.join(evidenceDirectory,'unit-animation-acceptance.json'),JSON.stringify(report,null,2)+'\n');
   }
   return {status:report.status,checks};
 }

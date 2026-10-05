@@ -2,7 +2,9 @@
 // ordinary-game screenshots, hosted capture, staging or deployed evidence.
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { readFile } from 'node:fs/promises';
+import { readFile, mkdtemp, rm } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 import { createContext, runInContext } from 'node:vm';
 import * as THREE from 'three';
 import { spriteActionClip, spriteActionProvenance, createUnitSpriteRuntime } from '../src/unit-sprite-runtime.mjs';
@@ -10,7 +12,7 @@ import { unitArtDirections } from './unit-art-production-contract.mjs';
 import { validateCaptureAdapter } from './renderer-capture-context.mjs';
 import { id, contextVersion, run, mapId, directories, loadUnitInputs, identifyUnitFrame,
   validateHeadingSamples, validateStoppedSamples, postRenderLine, observeRenderedUnits,
-  installUnitProbe, missingWalkDirections, validateHeadingCoverage } from './renderer-worker-animation-scenario.mjs';
+  installUnitProbe, assertUnitLoadReady, missingWalkDirections, validateHeadingCoverage } from './renderer-worker-animation-scenario.mjs';
 
 const localFetch=async url=>{
   const bytes=await readFile(new URL(`..${new URL(url).pathname}`,import.meta.url));
@@ -148,7 +150,8 @@ test('post-render observer pins the actual render boundary and never pauses or m
   const before=JSON.stringify(game),probe={number:0,targets:[42],samples:[],pending:null,errors:[]};
   const context=createContext({...game,window:{__rtsUnitAnimation:probe},localTeam:0,now:1000,
     mapDefinition:{id:mapId},zoom:1.5,unitSpriteReady:true,latestPopulation:[{used:12,capacity:15}],latestWorkerProduction:[],
-    unitSpriteRuntime:{roleForUnit:()=> 'human',observeAction:()=>u.actionSelection},URL,location:{href:'http://127.0.0.1:1/?room=opaque'},camera:{},
+    unitSpriteRuntime:{roleForUnit:()=> 'human',observeAction:()=>u.actionSelection,
+      observeLoad:()=>({state:'ready',stage:'complete',cause:null})},URL,location:{href:'http://127.0.0.1:1/?room=opaque'},camera:{},
     innerWidth:1280,innerHeight:720,devicePixelRatio:1,
     groundHeight:()=>0,THREE:{Vector3:class {project(){this.x=0;this.y=0;this.z=0;return this;}}},
     renderer:{info:{render:{frame:10}},domElement:{getBoundingClientRect:()=>({left:0,top:0,width:1280,height:720})}}});
@@ -192,9 +195,10 @@ test('post-render hook consumes the real read-only runtime and bounds provenance
     runtime.update(unit,1000,1);
     const before=JSON.stringify(unit),buffers=scene.children.map(m=>Array.from(m.instanceMatrix.array));
     const probe={number:0,targets:[42],samples:[],pending:null,errors:[]};
-    let reads=0;
+    let reads=0,loadReads=0;
     const context=createContext({units:[Object.freeze(unit),{...unit,id:43,team:1},{...unit,id:44,visible:false}],
-      scene,unitSpriteRuntime:{roleForUnit:runtime.roleForUnit,observeAction(...args){reads++;return runtime.observeAction(...args);}},
+      scene,unitSpriteRuntime:{roleForUnit:runtime.roleForUnit,observeAction(...args){reads++;return runtime.observeAction(...args);},
+        observeLoad(){loadReads++;return runtime.observeLoad();}},
       window:{__rtsUnitAnimation:probe},localTeam:0,now:1200,selected:new Set(),latestBuildings:[],
       latestFood:[150,150],latestWood:[250,250],latestPopulation:[],latestWorkerProduction:[],
       mapDefinition:{id:mapId},zoom:1.5,unitSpriteReady:true,URL,location:{href:'http://127.0.0.1:1/'},camera:{},
@@ -202,17 +206,90 @@ test('post-render hook consumes the real read-only runtime and bounds provenance
       THREE:{Vector3:class {project(){this.x=0;this.y=0;this.z=0;return this;}}},
       renderer:{info:{render:{frame:10}},domElement:{getBoundingClientRect:()=>({left:0,top:0,width:1280,height:720})}}});
     const observe=()=>runInContext(`(${observeRenderedUnits.toString()})()`,context);
-    observe();assert.equal(probe.errors.length,0);assert.equal(reads,1);
+    observe();assert.equal(probe.errors.length,0);assert.equal(reads,1);assert.equal(loadReads,1);
+    assertUnitLoadReady(probe.last.unitLoad);assertUnitLoadReady(probe.samples[0].unitLoad);
     assert.equal(probe.last.units.length,1);assert.equal(probe.last.units[0].actionSelection.reason,'idle-placeholder');
     assert.equal(probe.samples[0].units[0].actionSelection.selectedDirection,'north');
     assert.equal(JSON.stringify(unit),before);assert.deepEqual(scene.children.map(m=>Array.from(m.instanceMatrix.array)),buffers);
     context.units=Array.from({length:40},(_,id)=>({...unit,id}));
-    probe.targets=[];reads=0;observe();assert.equal(reads,32);
+    probe.targets=[];reads=0;loadReads=0;observe();assert.equal(reads,32);assert.equal(loadReads,1);
     assert.equal(probe.last.units.filter(u=>u.actionSelection).length,32);
     probe.targets=[39];reads=0;observe();assert.equal(reads,1);
     assert.equal(probe.last.units.find(u=>u.id===39).actionSelection.reason,'idle-placeholder');
     probe.targets=Array.from({length:40},(_,id)=>id);reads=0;observe();assert.equal(reads,8);
     for(let i=0;i<190;i++)observe();assert.equal(probe.samples.length,180);
     assert.equal(probe.errors.length,0);
+  } finally {globalThis.fetch=originalFetch;}
+});
+
+test('load acceptance rejects pending, failed, missing and falsely completed diagnostic snapshots',()=>{
+  assertUnitLoadReady({state:'ready',stage:'complete',cause:null});
+  for(const [value,pattern] of [
+    [{state:'pending',stage:'loading',cause:null},/Unit sprite load pending: loading\/none/],
+    [{state:'failed',stage:'mask-texture',cause:'rejected'},/Unit sprite load failed: mask-texture\/rejected/],
+    [null,/bounded unit sprite load diagnostic/],
+    [{state:'ready',stage:'loading',cause:null},/bounded unit sprite load diagnostic/],
+    [{state:'ready',stage:'complete',cause:'http'},/bounded unit sprite load diagnostic/],
+    [{state:'ready',stage:'complete',cause:null,url:'private'},/bounded unit sprite load diagnostic/],
+    [{state:'failed',stage:'private-url',cause:'raw-secret'},/bounded unit sprite load diagnostic/],
+  ])assert.throws(()=>assertUnitLoadReady(value),pattern);
+});
+
+test('serialized post-render probe observes real pending and failed loaders without any unit census or payload',async()=>{
+  const originalFetch=globalThis.fetch,originalWarn=console.warn;
+  let release,reads=0;
+  globalThis.fetch=()=>new Promise(resolve=>{release=resolve;});console.warn=()=>{};
+  try {
+    const runtime=createUnitSpriteRuntime({THREE,scene:new THREE.Scene(),capacity:1,roles:['spearman'],
+      teamHex:[0x5aa7d7,0xe67a5e],cameraQuaternion:new THREE.Quaternion()});
+    const probe={number:0,targets:[],samples:[],pending:null,errors:[]};
+    const context=createContext({window:{__rtsUnitAnimation:probe},units:[],selected:new Set(),
+      unitSpriteRuntime:{observeLoad(){reads++;return runtime.observeLoad();}},localTeam:0,now:1000,
+      mapDefinition:{id:mapId},zoom:1.5,unitSpriteReady:false,latestBuildings:[],latestFood:[],latestWood:[],
+      latestPopulation:[],latestWorkerProduction:[],innerWidth:1280,innerHeight:720,devicePixelRatio:1,
+      renderer:{info:{render:{frame:10}}}});
+    const observe=()=>runInContext(`(${observeRenderedUnits.toString()})()`,context);
+    observe();assert.equal(reads,1);assert.equal(probe.last.unitLoad.state,'pending');
+    release({ok:false,status:404});assert.equal(await runtime.ready,false);
+    observe();assert.equal(reads,2);assert.equal(probe.errors.length,0);
+    const plain=JSON.parse(JSON.stringify(probe.last.unitLoad));
+    assert.deepEqual(plain,{state:'failed',stage:'manifest-request',cause:'http'});
+    assert.throws(()=>assertUnitLoadReady(plain),/Unit sprite load failed: manifest-request\/http/);
+    assert.equal(probe.last.units.length,0);
+  } finally {globalThis.fetch=originalFetch;console.warn=originalWarn;}
+});
+
+test('actual adapter retains truthful load failure or pending timeout evidence before any screenshot (CPU mock)',async()=>{
+  const originalFetch=globalThis.fetch;
+  globalThis.fetch=localFetch;
+  try {
+    for(const state of ['failed','pending','invalid']) {
+      const directory=await mkdtemp(path.join(os.tmpdir(),'rts-unit-load-consumer-'));
+      const unitLoad=state==='failed'?{state,stage:'manifest-request',cause:'http'}:state==='pending'
+        ?{state,stage:'loading',cause:null}:{state:'ready',stage:'complete',cause:null,url:'private-secret-do-not-retain'};
+      let captures=0,sawFailureBoundary=false;
+      const page={cdp:{call:async()=>{},evaluate:async expression=>{
+        if(expression==="document.querySelector('#lobby-map').value")return mapId;
+        if(expression==="document.querySelector('#lobby-match-mode').value")return 'skirmish@1';
+        if(expression==='location.href')return 'http://127.0.0.1:1/?room=fixture';
+        if(expression==='window.__rtsUnitAnimation.last')return {unitLoad};
+        if(expression==='window.__rtsUnitAnimation.last?.unitLoad??null')return unitLoad;
+        return null;
+      }},wait:async expression=>{
+        if(expression.includes("unitLoad?.state==='failed'")) {
+          sawFailureBoundary=true;if(state==='pending')throw new Error('mock timeout');
+        }
+      }};
+      try {
+        const result=await run({version:1,page,openPage:async()=>page,origin:'http://127.0.0.1:1',
+          evidenceDirectory:directory,source:Object.freeze({revision:'0'.repeat(40),digest:`sha256:${'0'.repeat(64)}`}),
+          capture:async()=>{captures++;throw Error('load failure cannot claim a screenshot');}});
+        assert.equal(result.status,'failed');assert.ok(sawFailureBoundary);assert.equal(captures,0);
+        const report=JSON.parse(await readFile(path.join(directory,'unit-animation-acceptance.json'),'utf8'));
+        assert.deepEqual(report.unitLoad,state==='invalid'?null:unitLoad);assert.deepEqual(report.captures,[]);
+        assert.equal(JSON.stringify(report).includes('private-secret'),false);
+        if(state==='failed')assert.equal(report.issues[0].message,'Unit sprite load failed: manifest-request/http');
+      } finally {await rm(directory,{recursive:true,force:true});}
+    }
   } finally {globalThis.fetch=originalFetch;}
 });

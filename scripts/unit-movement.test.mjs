@@ -643,3 +643,68 @@ for (const [label, kind, policy] of landExecutionPolicies) {
     }
   });
 }
+
+// Execute the actual serialized replay observer/wrapper over the existing real
+// getMoveVector fixture. These controls validate observation, never policy.
+const replaySource=readFileSync(new URL('./pathing-replay-fixture.mjs',import.meta.url),'utf8');
+function attachPauseObserver(f) {
+  Object.assign(f.context,{assert,replayMovementTeam:null,replayMovementActors:new Map(),
+    replayMovementDecisions:new Map(),workerPerformingAction:()=>null,replayTraceActorIds:new Set(),replayCrowdSteps:[]});
+  const recording=replaySource.slice(replaySource.indexOf('function observeReplayMovementDecision('),
+    replaySource.indexOf('function recordReplayRouteRejoin('));
+  const wrapper=replaySource.slice(replaySource.indexOf('function recordReplayCrowdStep('),
+    replaySource.indexOf('function recordReplayLandStep('))
+    .replace('${observeMovement}','true').replace('${Boolean(traceCrowdSteps || traceActorIds.length)}','false');
+  const methods=replaySource.slice(replaySource.indexOf('  observeMovement(team, ids) {'),
+    replaySource.indexOf('  attackApproach(')).replace('${observeMovement}','true');
+  vm.runInContext(recording+wrapper+'\nconst pauseObserver={'+methods+'};',f.context);
+  return {configure:(team,ids)=>vm.runInContext('pauseObserver.observeMovement(team,ids)',
+    Object.assign(f.context,{team,ids})),read:()=>JSON.parse(vm.runInContext('JSON.stringify(pauseObserver.movementObservations())',f.context)),
+    vector:()=>f.context.recordReplayCrowdStep(f.mover,.1,true)};
+}
+for(const team of [0,1])test(`seat ${team}: owned pause observation consumes a real wait once without rich trace or policy changes`,()=>{
+  const f=fixture({x:.05,z:.5,cliff:false,blocked:[35]});
+  for(const u of f.units)u.team=team;
+  Object.assign(f.mover,{generation:17,gatherNodeId:null,gatherPhase:'',path:[36],moveGoalCell:36});
+  f.mover.moveGoalPoint=createMoveGoalPoint(f.mover,.12,.5,36,width,width);
+  for(const u of f.units.slice(1))u.hp=0;
+  Object.assign(f.units[1],{hp:100,x:.5,z:.5});
+  const observer=attachPauseObserver(f);observer.configure(team,[f.mover.id]);
+  let calls=0,result;const original=f.context.getMoveVector;
+  f.context.getMoveVector=(...args)=>{calls++;return result=original(...args);};
+  const before=structuredClone(f.units),value=observer.vector();
+  assert.equal(calls,1);assert.equal(value,result);assert.equal(value.waitingForCrowd,true);
+  assert.deepEqual(observer.read(),[{id:0,holding:false,planningPending:false,performingAction:null,routeActive:true,decision:'vector-wait'}]);
+  assert.deepEqual(f.units,before);assert.equal(f.repairs.length,0);assert.deepEqual(f.context.replayCrowdSteps,[]);
+  assert.equal(f.context.replayMovementDecisions.size,1);
+  f.mover.holdingPosition=true;assert.equal(observer.read()[0].holding,true);
+  f.mover.movePlanningPending=true;assert.equal(observer.read()[0].holding,true,'Hold wins over pending');
+  f.mover.holdingPosition=false;assert.equal(observer.read()[0].planningPending,true);
+  f.mover.movePlanningPending=false;f.context.navigationRevision++;assert.equal(observer.read()[0].decision,'unobserved');
+  f.mover.orderRevision++;assert.equal(observer.read()[0].decision,'unobserved');
+  f.mover.path=[];assert.equal(observer.read()[0].routeActive,false,'Stop/idle/work is not a stall claim');
+  f.mover.path=[36];f.context.tickNumber++;assert.equal(observer.read()[0].decision,'unobserved');
+  f.mover.generation++;assert.deepEqual(observer.read(),[]);
+});
+
+test('pause observer rejects enemies before private reads, bounds requests and rejects replaced identities',()=>{
+  const f=fixture({cliff:false}),o=attachPauseObserver(f);
+  Object.assign(f.mover,{generation:1});const enemy=f.units[1];enemy.team=1;
+  for(const key of ['generation','path','pathIndex','movePlanningPending','holdingPosition','orderRevision'])
+    Object.defineProperty(enemy,key,{get(){throw Error('private enemy field');},configurable:true});
+  o.configure(0,[enemy.id,f.mover.id,9999]);assert.deepEqual(o.read(),[{id:0,holding:false,planningPending:false,performingAction:null,routeActive:true,decision:'unobserved'}]);
+  f.context.observeReplayMovementDecision(enemy,{get waitingForCrowd(){throw Error('private result');}});
+  for(const [team,ids] of [[null,[0]],[2,[0]],[0,[0,0]],[0,Array.from({length:9},(_,i)=>i)],[0,[-1]]])
+    assert.throws(()=>o.configure(team,ids),/at most eight/);
+  const read=o.read();read[0].decision='private';assert.equal(o.read()[0].decision,'unobserved');
+  f.units[0]={...f.mover};assert.deepEqual(o.read(),[]);
+});
+
+test('pause proposal classification returns original null/positive/rejected values and no admission claims',()=>{
+  const f=fixture({cliff:false}),o=attachPauseObserver(f);f.mover.generation=1;o.configure(0,[0]);
+  for(const [result,cause] of [[null,'no-vector-proposal'],[{x:1,z:0,stepDistance:.1},'vector-proposal'],
+    [{rejectedStaticProposal:true},'static-proposal-rejected']]) {
+    let calls=0;f.context.getMoveVector=()=>{calls++;return result;};
+    assert.equal(o.vector(),result);assert.equal(calls,1);assert.equal(o.read()[0].decision,cause);
+  }
+});

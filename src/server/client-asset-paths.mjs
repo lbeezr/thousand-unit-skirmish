@@ -27,6 +27,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
   'src/authoring/scenario-authoring.mjs', 'src/authoring/map-resize.mjs',
   'src/authoring/map-studio-form-state.mjs',
+  'src/authoring/map-import-validator.mjs',
   'src/authoring/map-studio-draft-store.mjs',
   'src/authoring/map-studio/draft/v1/contract.mjs',
   'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',

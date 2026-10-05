@@ -1,0 +1,5 @@
+{"armySize":24,"targetRegion":"north-pass","movedBySeat":[12,12],"tickP95Ms":3.909,"tickP99Ms":6.351,"overBudgetTickCount":0,"skippedSlotDelta":0}
+{"armySize":24,"targetRegion":"high-flank","movedBySeat":[12,12],"tickP95Ms":3.907,"tickP99Ms":7.401,"overBudgetTickCount":0,"skippedSlotDelta":0}
+{"armySize":24,"targetRegion":"causeway","movedBySeat":[12,12],"tickP95Ms":4.082,"tickP99Ms":5.647,"overBudgetTickCount":0,"skippedSlotDelta":0}
+{"armySize":24,"uniqueAttributedTicks":1084,"overBudgetTicks":0,"dominantPhaseCounts":{"simulationMs":0,"visionMs":0,"scenarioMs":0,"broadcastMs":0,"checkpointMs":0}}
+{"output":"/tmp/performance-inner-repeat-1","passed":true,"error":null}

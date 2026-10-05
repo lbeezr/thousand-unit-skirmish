@@ -95,12 +95,20 @@ does not identify deployed bytes.
 
 1. Consume this metric in the next already-owned complete-tick qualification,
    retaining every sampled window, raw unique tick boundaries and skipped slots.
+   The [bounded Crownroads consumer follow-up](qa-crownroads-tick-attribution-2026-10-05.md)
+   now retains identified unique rows and separates mean/tail outer phases; this
+   source observation does not close complete-match qualification.
    CPU/full-qualification owner `01a10378` retains expensive full matches; this
    lane does not launch duplicates or change that owner's scheduling interface.
-2. Qualify memory/resource validity for a representative ordinary256 workload
-   through existing resource observation and a bounded real consumer. Current
-   RSS samples do not provide allocation/GC, peak-between-samples or scoped
-   pressure attribution. Agree workload identity before any timing comparison.
+2. Measure remaining wrapper/memory/GC overhead with a bounded production-server
+   checkpoint control before interpreting inner simulation tails as optimization
+   targets. The [matched startup control](qa-crownroads-profiler-startup-2026-10-05.md)
+   now retains identical-input profile/observer/observer/profile forks,60 native
+   ticks and57 continuous clocks per fork. Startup37.149/38.123 ms occupies the
+   recorded next-tick gap; observer-only still has instrumentation overhead.
+   The previous36.237 ms lag failure and first cold-tick inner cause remain open.
+   Finer subcost experiments retain movement/crowd ownership and the rejected
+   zero-force arithmetic result. Scoped pressure/RSS peaks remain unmeasured.
 3. Establish ordinary256 rendered timing and device/viewport/backend identity
    through the existing cloud renderer owner. Retained hosted sandboxed SwiftShader
    Open Field frames prove selected pixels, not Crownroads GPU performance.

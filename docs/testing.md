@@ -179,7 +179,7 @@ Run from the repository root:
 | Formation destinations after paid obstruction | `node --test scripts/pathing-replay.test.mjs`; `node scripts/pathing-native-scenario.mjs dynamic-goal` (both-seat reservation, opponent goal independence, native arrival) |
 | Bounded choke baseline / deterministic replay | `PATHING_BASELINE_RECORD=/tmp/pathing.json node scripts/pathing-baseline.mjs all 2` (seven fixed-tick cases; [source evidence and limits](qa-pathing-goal-repair-2026-10-03.md)) |
 | Dynamic paid walls / queued formation legs | `node --test scripts/dynamic-wall-pathing.test.mjs`; `DYNAMIC_WALL_RECORD=/tmp/walls.json node scripts/dynamic-wall-pathing.mjs 2`; `node scripts/dynamic-wall-native-scenario.mjs` (both seats, 16/64 Infantry, route obstruction, future targets and removal; [evidence](qa-queued-wall-pathing-2026-10-03.md)) |
-| Manual gate closure over future formation targets | `QUEUED_GATE_RECORD=/tmp/gates.json node scripts/queued-gate-pathing.mjs`; add `--observe --park-builder` for the separate parked-Worker congestion probe |
+| Manual gate closure over future formation targets | `QUEUED_GATE_RECORD=/tmp/gates.json node scripts/queued-gate-pathing.mjs`; add `--observe --park-builder` for the separate parked-Worker congestion probe; `--observe-pauses` retains at most eight owned-actor finite pause observations without rich traces or changing arrival assertions |
 | Parked Worker route recovery / Stop and Hold | `node --test scripts/stationary-worker-pathing.test.mjs scripts/unit-movement.test.mjs`; `node scripts/queued-gate-pathing.mjs --park-builder --stop-builder` (or `--hold-builder`); `node scripts/stationary-worker-native-scenario.mjs`; [bounds and evidence](qa-stationary-worker-pathing-2026-10-03.md) |
 | Queued routes after finite cargo delivery | `node --test scripts/queued-cargo-return.test.mjs`; `QUEUED_CARGO_RECORD=/tmp/cargo.json node scripts/queued-cargo-return-case.mjs`; `QUEUED_CARGO_NATIVE_RECORD=/tmp/native-cargo.json node scripts/queued-cargo-return-native-scenario.mjs`; [failure, conservation and restart evidence](qa-queued-cargo-return-2026-10-03.md) |
 | Default map geometry | `node scripts/forked-vale-layout.mjs` |
@@ -359,6 +359,24 @@ tick period; do not sum overlapping windows or confuse a late zero count with
 no earlier spikes or skipped slots. The [bounded Crownroads record](qa-performance-window-overruns-2026-10-05.md)
 retains baseline/candidate source identities and a real preparation overrun.
 Existing p95/max diagnostic budgets remain unchanged.
+
+The [identified tick-attribution consumer](qa-crownroads-tick-attribution-2026-10-05.md)
+uses `map-capacity-scenario.mjs` and its existing report-check CLI. It retains raw
+rows once by worker/match/map/tick, reports observed phase means/tails, and keeps
+known map-probe interruptions separate from capture gaps. Exact per-row overrun
+flags survive display rounding; attribution is observational, not a causal claim.
+
+The opt-in [bounded inner observer](qa-crownroads-inner-attribution-2026-10-05.md)
+uses `--attribution on` only for Crownroads, 24 units and ten-second waves. Its
+existing report checker joins exact identities/phases, reports inclusive function
+timing and GC overlap, and keeps profile boundaries separate. Diagnostic startup
+overhead can fail the existing lag budget; retain that failure without a waiver.
+
+Use `--recovery-profile-control on` with that bounded inner mode for the
+[matched startup control](qa-crownroads-profiler-startup-2026-10-05.md). It restores
+one checkpoint in profile/observer/observer/profile order and retains fixed
+first60 tick windows with57 continuous post-startup clocks. Observer-only still
+contains wrapper/memory/GC overhead; retain earlier failures and exact identities.
 
 The [core tranche profile](core-playtest-tranche.md#scale-measurement-profile--proposed)
 documents the bounded hosted movement ladder and per-seat tagged-order intervals.
