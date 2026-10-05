@@ -1,0 +1,50 @@
+
+> thousand-unit-skirmish@0.95.0 architecture:check
+> node scripts/check-runtime-imports.mjs
+
+{
+  "modules": 215,
+  "localEdges": 393,
+  "browserModules": 133,
+  "serverModules": 91,
+  "sharedModules": [
+    "src/bannerfall-rules.mjs",
+    "src/building-orientation.mjs",
+    "src/dock-placement.mjs",
+    "src/economy-ledger.mjs",
+    "src/economy-profile.mjs",
+    "src/elevation.mjs",
+    "src/farm-harvest.mjs",
+    "src/gameplay-definitions.mjs",
+    "src/map-utils.mjs",
+    "src/match-modes.mjs",
+    "src/palisade-gate.mjs",
+    "src/palisade-profile.mjs",
+    "src/pve-match.mjs",
+    "src/regions.mjs",
+    "src/research-actions.mjs",
+    "src/rules/gameplay-action-rules.mjs",
+    "src/scenario-regions.mjs",
+    "src/shore-fishing-placement.mjs",
+    "src/shore-fishing.mjs",
+    "src/terrain-materials.mjs",
+    "src/town-center-spawn.mjs",
+    "src/unit-heading.mjs",
+    "src/wall-line-planner.mjs",
+    "src/water-contours.mjs",
+    "src/water-route-graph.mjs",
+    "src/wildlife-client-state.mjs",
+    "src/wildlife-heading.mjs",
+    "src/wildlife-herding.mjs",
+    "src/wildlife-motion.mjs",
+    "src/wildlife-state.mjs",
+    "src/worker-performing-action.mjs",
+    "src/world/map-audio-reference.mjs"
+  ],
+  "cycleEdges": []
+}
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

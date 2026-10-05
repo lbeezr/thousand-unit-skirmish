@@ -1,10 +1,58 @@
 # Ordinary crowd steering — 5 October 2026
 
 Owner `01a10933-c2b0-70f1-991d-761518eb5010` retains
-[draft PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400), its source
+[PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400), its source
 integration, packaging, deployment identity and ordinary rendered acceptance.
-This is an in-progress implementation record; it does not claim a merge or
-completed gameplay acceptance.
+Source qualification is complete at clean `1fa2c46d`. Normal merge, identified
+deployment and ordinary rendered acceptance remain separate milestones.
+
+## Qualified terrain-aware crowd detour
+
+The [exact checkpoint](qa-evidence/ordinary-crowd-steering-2026-10-05/controller-continuation/terrain-detour-checkpoint.json)
+and [independent qualification](qa-evidence/ordinary-crowd-steering-2026-10-05/controller-continuation/independent-terrain-detour-qualification.json)
+close the retained source liveness defect. Both unchanged 64-unit paid-gate
+returns complete: seat 0 at 1,141 ticks and seat 1 at 2,600, under the original
+2,700-tick deadline. All 141,567 selected substeps have zero static/body contacts
+at the existing 1e-9 tolerance. All 72 inactive actors per seat retain poses each
+tick and final command intent; no controller diagnostics are missing.
+
+Actor 113 reaches its first goal at tick 2,251 and its return at 2,555 with zero
+repair revisions and one legitimate queued handoff. The previous fourteen
+revision changes were accepted core repairs after physically legal crowd steps
+crossed a gate boundary and broke the next cell join. The
+[retained witness](qa-evidence/ordinary-crowd-steering-2026-10-05/controller-continuation/gate-repair-join-witness.json.gz)
+records every preceding step; it does not classify body separation as terrain clearance.
+
+The small fix rejects a parked-body detour point whose static-circle continuation
+to the adjacent, physically occupied raw waypoint crosses blocked terrain.
+Creation, retained point and alternative all revalidate; the preview does not
+claim body clearance through that occupied waypoint. Executed own steps retain
+full static/body admission and all three unchanged executor guards. Original
+immediate adjacent-corner repair and the 30-tick far-stall handoff remain.
+The broader corner-recovery variants are retired, including the 15/64 and 62/64
+seat-1 failures; no 120-tick repair allowance remains in source.
+
+The registered checks pass 152/152, Follow/queue/cold controls 63/63 and independent
+focused review 49/49. This includes both-seat retained forest/bridge/gate group
+journeys, mixed circles, opposing serial orders, Stop and occupied-endpoint
+resume. Observed added work is at most seven terrain detour probes and 38 parked
+waypoint observations, against fixed bounds of eight and 64; existing short
+proposal/query bounds remain 128/128 with 64 bodies. Maximum accepted static
+repairs excluding each single queue handoff are five and nine in the 64-unit
+runs. The 32-unit repair/fairness controls retain their original bounds.
+
+Fresh main `51c3085f` is integrated. Six incoming legacy parked-Worker journeys
+now expect ordinary military crowd steering to retain the selected route; their
+fractional arrival, parked body, queue and cold-recovery checks remain intact,
+and separate legacy splice/quota controls continue to pass. No core planner,
+publication budget or shared position-write policy changed in this slice.
+
+Clean `1fa2c46d` packs 1,386 files with digest
+`sha256:0a6e611395501188dcc4b593935c47f7bb914cfe565187e2d5cc26edb0d2e31f`;
+the local packed HTTP/WebSocket/startup/assets scenario passes. Source and clean
+packaging are qualified; deployed identity and rendered ordinary gameplay
+remain unverified. The recorded browser capability block stays in force.
+Historical checkpoints below preserve their original outcomes.
 
 ## Exact source checkpoint
 

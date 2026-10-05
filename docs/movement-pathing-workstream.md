@@ -843,38 +843,29 @@ Denied hosted dispatch and cancelled authentication remain paused.
 
 ### U5 crowd owner reservation — 4 October 2026
 
-5 October implementation checkpoint: [draft PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400)
-now consumes the [agreed hooks](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5985598359).
-The [crowd acceptance record](qa-ordinary-crowd-steering-2026-10-05.md) retains
-both the 32-unit zero-contact narrow-passage results and the wider 64-unit
-queue/counterflow failures under qualification. Clean source `eb43a976` retains
-32-unit arrivals in 417–438 ticks, at most eight repairs and zero contacts;
-the existing 64-unit seat-1 return case is 60/64 at 2,700 ticks, and the new
-perpendicular-goal module control remains red. Owner remains
-`01a10933-c2b0`; next step is resolve those liveness cases. A [concrete extension
-decision](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5986484334)
-was [approved by core owner `01a107ba`](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5986553571):
-one bounded transient actor controller may use the existing ordinary-Move
-vector/wait hooks, without a planner, tick hook or shared position writer.
-Crowd owns adjacent `crowd-wait-lease` and `crowd-parked-contour` modules and
-their controls. The retained checkpoint above remains historical; the approved
-continuation is under qualification against both unchanged 64-unit returns,
-the perpendicular follower and parked-body/Stop/recovery negative controls.
-The continuation's latest preserved-lane prototype is 64/64 at 1,141 ticks on
-seat 0 and 63/64 at 2,700 on seat 1, with actor 113 still on its first leg.
-The perpendicular clear-forward control is green; 47 focused controls pass.
-These runtime-hashed prototype records do not replace clean historical evidence
-or qualify the larger controller. No interface dependency remains. Fresh main `762c9b76` is integrated; clean
-`a4cef75f` passes 130 boundary and 63 Follow/cold checks, with zero contacts over
-141,861 full selected substeps but the same 63/64 deadline miss. Independent
-review identifies stale combat-peer grant consumption; clean `3c38364e` fixes
-it and passes 48 focused controls. Its clean 1,386-file pack and local served
-HTTP scenario pass; merged/deployed/rendered acceptance remains open. Next:
-trace actor113's fourteen repair revisions in the unchanged input and resolve
-the retained deadline, then retain fresh exact-head broad review,
-affected checks/clean pack and normal merge. Worker ordinary/economy movement stays with
-its existing source policy in this first military slice. No new position
-admission/planner edit or rendered-acceptance claim is included.
+5 October source qualification: [PR400](https://github.com/lbeezr/thousand-unit-skirmish/pull/400)
+consumes the [agreed hooks](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5986553571).
+Clean `1fa2c46d`, containing fresh main `51c3085f`, completes both unchanged
+64-unit paid-gate returns at 1,141/2,600 ticks with zero terrain/body contacts
+across 141,567 selected substeps. Actor113's fourteen accepted static repairs
+were traced to a local detour stranding its route at the closed gate corner.
+A bounded terrain-continuation preview fixes that selection: actor113 reaches
+its first goal at 2,251 and returns at 2,555 with zero repairs. It leaves the
+original static handoffs, shared admissions and accepted goals/queues intact.
+The [exact source checkpoint](qa-evidence/ordinary-crowd-steering-2026-10-05/controller-continuation/terrain-detour-checkpoint.json)
+and [QA record](qa-ordinary-crowd-steering-2026-10-05.md) retain the historical
+failures, retired recovery variants, full inputs/finals and independent review.
+All 152 registered movement/body/controller/journey checks, 63 Follow/cold/queue
+controls and 49 independent focused controls pass. The clean 1,386-file pack
+and local served HTTP scenario pass. Owner remains `01a10933-c2b0`; next action
+is normal author merge and existing deployment identity readback, then ordinary
+rendered verification through CI/capture owner `01a10378`. No open interface
+approval or parent merge gate remains. The recorded browser sandbox/storage
+failure produced zero frames and stays separate from source qualification.
+Worker/combat/naval/wildlife movement remains with its existing owners; this
+slice adopts ordinary military Move only. Added preview/query work stays
+bounded at eight detour probes and 64 parked-waypoint observations. It never
+claims physical clearance from cell joins, point insets or soft separation.
 
 Crowd owner `01a10933-c2b0-70f1-991d-761518eb5010` reserves
 `src/unit-crowd-steering.mjs` and its own focused module/ordinary-journey tests.
