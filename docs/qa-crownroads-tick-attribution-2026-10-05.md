@@ -97,7 +97,7 @@ Thirty-seven focused tests pass, covering rare spikes with passing p95/p99,
 deduplication, map/worker/match changes, known interruptions versus missing rows,
 phase corruption, contradictory flags and exact-before-rounding producer values.
 The new production identity test fails against unchanged baseline source while
-its four existing timing controls pass; [negative evidence](qa-evidence/crownroads-tick-attribution-2026-10-05/baseline-negative.log)
+its four existing timing controls pass; [negative evidence](qa-evidence/crownroads-tick-attribution-2026-10-05/baseline-negative.txt)
 is retained. Both native probes and the standalone report checker pass. The
 post-measurement refinement changes only derived coverage and a validation
 message; executed source/hash, original summaries and raw bytes remain separate.

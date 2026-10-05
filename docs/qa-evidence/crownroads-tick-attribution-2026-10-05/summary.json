@@ -380,5 +380,6 @@
     "Raw diagnostic capture adds polling/serialization overhead; no controlled or causal timing comparison.",
     "Only observed requested-map ticks have phase mean/quantiles; no all-match completeness, inner function, GC, allocation, target-cgroup pressure, renderer or2000-unit capacity inference.",
     "Source health build identity unknown; package,local served,deployment and rendered identities require separate checks."
-  ]
+  ],
+  "baselineNegativePath": "baseline-negative.txt"
 }
