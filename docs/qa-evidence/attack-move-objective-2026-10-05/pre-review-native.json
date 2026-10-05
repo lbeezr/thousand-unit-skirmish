@@ -1,0 +1,57 @@
+{
+  "sourceHead": "82a6676680c417d860a117d39511c1b118ddfec1",
+  "sourceDirty": true,
+  "observations": [
+    {
+      "team": 0,
+      "id": 4,
+      "notice": "ATTACK MOVE ORDER · 1 UNITS",
+      "start": {
+        "x": 0.75,
+        "z": 0.95
+      },
+      "goal": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "activePosition": {
+        "x": 2.585218492950651,
+        "z": 0.5
+      },
+      "recoveredBothSeats": true,
+      "completedPosition": {
+        "x": 6.5,
+        "z": 0.5
+      },
+      "hpUnchanged": true
+    },
+    {
+      "team": 1,
+      "id": 12,
+      "notice": "ATTACK MOVE ORDER · 1 UNITS",
+      "start": {
+        "x": 0.75,
+        "z": 0.95
+      },
+      "goal": {
+        "x": 8.5,
+        "z": 0.5
+      },
+      "activePosition": {
+        "x": 2.4985518262839843,
+        "z": 0.5
+      },
+      "recoveredBothSeats": true,
+      "completedPosition": {
+        "x": 8.5,
+        "z": 0.5
+      },
+      "hpUnchanged": true
+    }
+  ],
+  "limits": [
+    "Native authoritative process, two real WebSocket seats and real cold restart.",
+    "Physical body admission is established separately by the traced command regressions.",
+    "No rendered frames; served staging/production identity remains unverified."
+  ]
+}

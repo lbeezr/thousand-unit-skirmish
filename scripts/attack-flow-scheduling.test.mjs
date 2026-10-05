@@ -1,4 +1,5 @@
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import './attack-move-objective-journeys.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
