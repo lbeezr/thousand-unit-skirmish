@@ -39,3 +39,5 @@ for f in p['files']:f['dimensionsPx']={'width':2048,'height':4096};f['sha256']=h
 # Preserve full canvas pivots while removing atlas-only transparent margins.
 import subprocess,sys
 subprocess.run([sys.executable,str(root/'scripts/compact-human-atlas.py'),str(out)],check=True)
+if (source/'extracted/spearman/walk/north-east-local-v1/registration.json').exists():
+ subprocess.run([sys.executable,str(root/'scripts/append-spearman-ne-walk.py')],check=True)

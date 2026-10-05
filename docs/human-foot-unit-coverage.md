@@ -33,6 +33,28 @@ N/NE/E/S/SW/W/NW: **21 cells per role, 63 total**. Different-identity source key
 do not close that goal. All 63 original deployed/native cells remain unverified.
 Restoring the default is a source correction, not a live bug or appearance claim.
 
+## Spearman NE source slice — 5 October 2026
+
+The [NE walk slice](qa-spearman-ne-walk-2026-10-05.md) preserves the established
+public painted identity, all 32 prior registered poses and global body calibration,
+then adds four newly authored camera-frozen 2D leg poses, 200 ms each. A matching
+3D master was not located; the retained NE seed permits this free local test.
+Selected public-seed derivatives are registered in the existing default Spearman
+v1 pack 0.4.0. All process and rejected/corrected iterations remain private.
+
+Source coverage becomes two Spearman walk headings (SE/NE). Exact remaining
+Spearman cells: walk × N/E/S/SW/W/NW, attack × N/NE/E/S/SW/W/NW, defeat ×
+N/NE/E/S/SW/W/NW: **20**, with **62 Human military cells** remaining. Zero paid
+or provider-generated poses and no held v2 art are used. Independent source review
+corrected visible folds and a cloth slit; ordinary rendered gait/contact/speed,
+source/release delivery and identified deployed acceptance remain separate.
+
+The owning source/capture checks now derive actual missing walk headings from
+decoded registered pixels. Animation-state owner `01a103d4` retains clocks and
+selectors. Review actual NE playback at ordinary size while producing the six
+other walk directions from their own identity seeds; attack/defeat follow as
+separate slices. The historical sections below retain their dated counts.
+
 ## Historical Infantry source slice — 4 October 2026
 
 Source inspected at main `9351320d68b3b9c949166b7d5991973004b7553d`, including all three Infantry packs, both Archer packs and the only Spearman pack. The Meshy Infantry v2 bake has 264 real directional poses but lacks weapons/shield. The painted Infantry v1 retains readable equipment and distinct physical views; its old floor-grid registration is unusable because feet/weapons cross cell borders. The v3 SE keys work but cannot face the other seven headings.
@@ -81,6 +103,6 @@ A release/hash/CPU pass is a milestone. Review, deployed identity and actual in-
 
 The [bounded Worker/Spearman ordinary capture adapter](qa-worker-spearman-animation-capture-2026-10-04.md)
 owns the next rendered gait/work/Stop acceptance through CI's shared hosted transport.
-It changes0 art frames. Worker source gait is8/8; Spearman source gait is1/8 with
-N/NE/E/S/SW/W/NW explicitly incomplete. The63 military action-heading gaps and
-all identified-build ordinary/deployed acceptance remain open.
+It authors zero art frames. Worker source gait is8/8; this NE source slice makes
+Spearman gait2/8, with N/E/S/SW/W/NW explicitly incomplete. The62 military source
+action-heading gaps and all identified-build ordinary/deployed acceptance remain open.
