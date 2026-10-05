@@ -982,6 +982,20 @@ contracts and caller/core endpoint ownership. No full-suite retry until a
 substantive fix; source evidence remains separate from served/rendered proof.
 
 
+5 October executed peer-progress continuation: the
+[finite diagnostic and exact limitations](qa-native-wall-seat1-2026-10-05.md#executed-finite-retreat-diagnostic--current-main-continuation)
+retain actual own-call budgets, strict blockers and repeated48-tick causal
+comparisons from consistent retained serial poses. Owner110's finite retreat
+improves peer87, but disadvantages81; the131 and91 multi-body cases fail to
+qualify a remedy. Existing gate controls remain64/64, contact-free and preserve
+inactive actors. The disjoint test-only projection/probe is executable; it is
+not adopted by production. Crowd owns next bounded4-actor/2-maneuver frontier
+comparison and an independently reviewed deterministic fairness rule. Core's
+[own-call interface decision](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5990685776)
+is requested before shared executor edits. Endpoint occupancy stays caller/core
+owned. No full-suite retry or PR/main event until a substantive qualified fix;
+original native deadlines and gate/forest/bridge/Stop acceptance remain intact.
+
 ### U5 construction endpoint availability — agreed bounded interface
 
 The [core/caller agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/443#issuecomment-5989678024)

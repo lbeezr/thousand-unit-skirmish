@@ -400,3 +400,141 @@ Deterministic fairness and preservation of inactive/parked actors must be
 measured in the unchanged both-seat native and gate/forest/bridge/Stop controls
 before claiming a runtime correction. No full-suite retry, new PR/main push or
 served/rendered proof accompanies this source-only diagnosis continuation.
+
+## Executed finite-retreat diagnostic — current-main continuation
+
+The next executable slice incorporates main `80999c54`, including the separate
+core-owned endpoint query, without adopting or changing that endpoint consumer.
+[The narrow interface request](https://github.com/lbeezr/thousand-unit-skirmish/pull/400#issuecomment-5990685776)
+asks core to agree a pure own-call projection/admission seam before shared
+executor edits. No reply or production integration agreement is claimed here.
+
+The disjoint [projection helper](../scripts/crowd-executor-projection.mjs) is
+**test tooling**, not a production steering adapter. An own-call frame carries
+actual `remainingStep`, actor identity, generation, order revision, path reference
+and index, pose, tick, navigation revision and epoch. A stale guard refuses before
+reading the query. A future-turn bound is explicitly unspendable. Missing,
+incomplete or overflowing query metadata refuses a positive witness; host query
+completeness remains part of the interface contract. Strict short-segment static
+and body blockers remain separate from inherited-contact escape. A clear desired segment is physical evidence only: actual selector priority
+and parked-target waits can still refuse it. The helper never invokes the
+selector or publishes state.
+
+[The finite diagnostic](../scripts/crowd-finite-retreat-diagnostic.mjs) adapts
+copies of the existing fixed-tick fixture, server and crowd module. It observes
+the real own-call budget and runs the original selector, existing multi-peer
+lease guard, planner and pre-write branches. Its explicitly experimental
+intervention replaces only one active owner's chosen short heading with a
+strictly admitted self-retreat. It grants no peer priority, moves no peer,
+creates no lease/contour and refuses to interrupt an existing grant or parked-target wait. Every step
+rechecks route/pose/phase guards and full current static/body clearance. The
+maneuver ends at `.75` total retreat length, after at most12 ticks, on a changed
+guard, eligibility loss, query refusal, an unobserved own-turn gap or a new blocker.
+A canceled attempt cannot resume or restart when that condition clears. The normal controller resumes immediately; there is
+no hold, renewal, new order, changed goal or queue publication.
+
+### Retained input and repeatability
+
+For each owner91/110/131, the original tick3,120 samples reconstruct the
+consistent physical world at that owner's serial call: earlier actors use their
+post-move checkpoint poses, and later actors use their recorded pre-call poses.
+All63 selected actors' observed final proposals exactly predict their final
+checkpoint positions; identities, revisions, path lengths and raw headings
+match. Full paths, accepted goals/queues, health and parked actors come from the
+matching locally captured checkpoint. The resulting checkpoint passes the
+existing validator. No actor is invented, no parked unit is moved and no endpoint
+is shifted. Inputs and fresh diagnostic packets remain outside git; no private
+CPU archive is read or published.
+
+Cold replay deliberately rebuilds transient selector state and drains planning
+between ticks. It is a causal comparison from a retained physical call state,
+not an exact continuation of warm native scheduling/controller state. This
+matters: actor87 already makes progress in the cold baseline. Its improvement
+below therefore cannot claim that the original native knot is fixed.
+
+Each baseline and retreat runs48 ticks, twice from the same input. Each pair's
+full-unit trajectory hash matches exactly, without normalizing identities.
+Across all12 runs,24,754 selected substeps have zero static/body contacts.
+All72 inactive actors retain position, health and accepted movement/work intent;
+normal aggressive-stance scan clocks can change and are not falsely described
+as immutable full state. Own-call projections match the original projected
+target with zero mismatches.
+
+| Owner / observed peer | Finite maneuver | Peer fixed-waypoint progress at tick48: baseline → retreat | Limitation |
+| --- | --- | --- | --- |
+| 110 / 87 | Completes `.75` in9 ticks. | `1.626825 → 2.213696` | Peer87 advances another `1.670103` after the retreat completes. Peer81 instead loses `.101418` progress relative to baseline, so a chosen peer's gain is not fairness. |
+| 131 / 79, chain through101/108/109 | Completes `.75` in9 ticks. | `.094339 → .128139` | Peer79 remains below `.15` sustained progress; another completed self-retreat does not clear the chain. |
+| 91 / 119, also blocked by121 | Aborts at tick3 after2 steps / `.173333`, when a body closes the corridor. | `.588823 → .517808` | Fresh admission prevents contact, but peer119 loses `.071015` relative to baseline. |
+
+The primary peers keep their original revisions and path indices across these
+48-tick comparisons. Progress is measured toward the same retained raw waypoint;
+distance travelled or a repaired/new route does not substitute for it.
+
+The three immutable input hashes are respectively
+`cfd1082efd5e12d7d621195780a96fb44331e6d13dbb56a301a9510d24305333`,
+`aa16070737e1563c65bfb91d13a023c2fa3a338122648acf92e425031b00586b`, and
+`4305540bc7f64fef6a74cb17807458432697b6d2086466468ffd48ef62b5bec9`.
+They identify these locally retained source-derived inputs, not a public packet
+bundle or private archive entitlement.
+
+### Existing gate controls and bounded work
+
+The same own-call observer, with **no retreat intervention**, retains the
+existing paid-gate controls:64/64 at992/2,615 ticks,43,208/98,416 selected
+substeps, zero static/body contacts and72 unchanged inactive actors per seat.
+Across47,512/109,025 observed own calls, there are zero target mismatches.
+Observed maxima are63 query visits,48 direct body checks,16 short-segment
+static-cell observations,22 passage-point observations and828 passage body
+visits across native comparisons; gate maxima remain within these bounds.
+The contract refuses beyond128 query visits/64 retained bodies and caps short
+static-cell work at25. The finite probe considers at most4 explicitly named
+future peer bounds when it starts. Diagnostic overhead does not consume the
+production controller's proposal budget and is not a throughput/capacity claim.
+
+Focused regressions cover actual/future budgets, stale route/pose guards,
+incomplete/overflowing queries, all body blockers, strict inherited-contact
+classification, static contacts, Stop/pending/parked eligibility, nonmutation,
+finite displacement, expiration, changed orders, fresh-body aborts and permanent
+cancellation after eligibility/query/observation gaps. These
+checks and the original steering/lease regressions pass together (69 tests).
+The CI change only registers those focused tests; workflow triggers and access
+remain unchanged. A new PR/main push would still start the full suite, so this
+unqualified diagnostic remains on the diagnosis branch.
+
+Run the existing public-source gate controls with:
+
+```sh
+node scripts/crowd-finite-retreat-diagnostic.mjs --gate-controls=true
+```
+
+For an authorized locally retained input, the smallest actual-progress comparison
+is four48-tick runs (baseline/retreat, each repeated):
+
+```sh
+node scripts/crowd-finite-retreat-diagnostic.mjs --input=LOCAL_CHECKPOINT --owner=110 --peers=87,81 --angle=-90 --ticks=48
+```
+
+The tool reads the supplied checkpoint and performs no archive download. Do not
+publish its raw input/report packets to close a source-summary milestone.
+
+### Decision and smallest next experiment
+
+Executed local progress after a finite own retreat is now witnessed, together
+with repeatability and strict contact checks. A deterministic, fair ordinary-game
+recovery policy is **not** established: the successful pair already progresses
+in its cold baseline, another neighbor loses progress, and both multi-body cases
+fail to justify the single-owner remedy. No production correction, guard bypass,
+new lease, deadline relaxation, parked shove or endpoint patch ships.
+
+A justified next experiment should test a **bounded dependency frontier**, rather
+than repeat a single-peer lease exemption: at most4 active actors, at most2 finite
+owner maneuvers, one at a time, each independently admitted at its real own call.
+Measure whether clearing both current blockers enables sustained executed route
+progress for the shared peer, and retain effects on every frontier actor plus
+unchanged-dependency abort/retry suppression. The tradeoff is extra local query
+work and potential return-to-gap interference; neither permits a room promise,
+neighbor movement, hold or endpoint change. Deterministic selection and bounded
+loss/fairness need a separately reviewed rule before runtime adoption. Core's
+pure executor seam, unchanged native deadlines and both-seat gate/forest/bridge/
+Stop controls remain dependencies; source/pack/provider/served/render proofs stay
+separate. Art backing is N/A for this internal diagnostic slice.
