@@ -315,12 +315,24 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     parked: stationaryCrowdObstacle, yieldedTo, target, progressTarget, heading: { x: headingX, z: headingZ }, stepDistance,
     admit: clear, pointAllowed: pointClear, stats });
   if (contour) return { ...contour, noProgressTicks, crowdControl: stats };
+  // Retain an admitted oblique forward step only when every nearby body is
+  // following this segment from behind. A parked or opposing body keeps the
+  // existing stricter exemption and its own passage/contour arbitration.
+  const followingOnly = noProgressTicks >= 30 && best && best.x * routeX + best.z * routeZ > 0
+    && neighbors.every(other => {
+      stats.arbitrationVisits++;
+      const direction = directionOf(other);
+      return ordinaryCrowdBodyRadius(other) > 0
+        && (other.x - unit.x) * routeX + (other.z - unit.z) * routeZ <= 0
+        && finitePoint(direction) && direction.x * routeX + direction.z * routeZ
+          > .9 * Math.hypot(direction.x, direction.z);
+    });
   const yieldingToPeer = noProgressTicks >= 30 && neighbors.some(other => other.id < unit.id && finitePoint(targetOf(other))
     && (targetOf(other).x - other.x) * routeX + (targetOf(other).z - other.z) * routeZ < 0
     // A same-segment follower behind us cannot claim a clear forward step
     // merely because its distant final goal lies across the current segment.
     && !((other.x - unit.x) * routeX + (other.z - unit.z) * routeZ <= 0
-      && best && best.x * routeX + best.z * routeZ > .9
+      && best && (best.x * routeX + best.z * routeZ > .9 || followingOnly)
       && finitePoint(directionOf(other))
       && directionOf(other).x * routeX + directionOf(other).z * routeZ
         > .9 * Math.hypot(directionOf(other).x, directionOf(other).z))

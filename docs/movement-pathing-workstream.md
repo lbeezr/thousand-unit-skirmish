@@ -903,6 +903,28 @@ separate identified-release deployment/ordinary rendered proof;
 CI `01a10378` supplies its existing capture interface. No new benchmark,
 map-admission change, auth retry, denied dispatch or browser-security change.
 
+### U5 forward-yield continuation — 5 October 2026
+
+Crowd owner `01a10933-c2b0` retains the narrow ordinary-Move correction in
+[the forward-yield record](qa-crowd-forward-yield-2026-10-05.md). Its retained
+source witnesses prove an admitted safe oblique step was discarded by follower
+arbitration and the three original paid-house choke actors can leave that
+deadlock within the unchanged 1,000-tick deadline. The exemption requires every
+queried body to be an active same-segment follower behind the mover; physical
+admission, selected goals/queues and Stop priority stay intact. A broader
+variant regressed the 64-unit gate and was retired; the narrower candidate
+preserves both 2,700-tick gate controls. Exact-head independent review and checks
+belong to its delivery PR, separately from served/rendered proof.
+
+PR442's pending-aware loops are integrated without relaxing arrival assertions;
+the full paid-house batch still has runtime failures. The same record identifies
+the pending lifecycle and parked-builder endpoint contracts by source location.
+Core `01a107ba` and construction `01a10933-e913` retain access/repair coordination;
+crowd's next action is a retained remaining-final-approach witness and a bounded
+reviewed fix. No neighbor shove, endpoint overlap or silent goal replacement is
+an acceptable test fix. CI `01a10378` retains the next fresh full CPU attempt and
+supported served/rendered interface. No private archive access or publication.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
