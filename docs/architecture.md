@@ -332,6 +332,39 @@ future rendered acceptance uses its supported cloud capability path. Mac
 execution and canceled deployments stay stopped. Local packed checks do not
 restart either operation.
 
+### Versioned feature contracts
+
+The 5 October 2026 inventory at `b5b4dd49` finds **118 filenames containing v1**:
+41 assets, 70 documentation/art files, four schemas and three construction scripts;
+none are runtime source filenames. Across all numbered `v` filename tokens there
+are 239 matches, including 51 audio `v001` take names. These lexical counts are
+an inventory, not a mandate to rename content. Existing versioned asset directories,
+public URLs, manifest IDs/hashes, schema `$id`/`$ref` values, historical evidence and
+copied provenance are supported contracts with their own consumers.
+
+Use `feature/v1/` for an implementation or format contract actually pinned to that
+version. Keep stable feature entrypoints as explicit named adapters when required;
+do not add an unused v2 directory, a `latest` barrel or version every helper merely
+because its input contains a version field. Unversioned storage/transport/lifecycle
+coordination stays outside the pinned format implementation. Introduce another
+version only with its real reader/writer and explicit compatibility decision.
+
+| Feature / staged next action | Actual files and consumers | Boundary and evidence before migration |
+| --- | --- | --- |
+| Map Studio draft — current local candidate, architecture/authoring owner | Existing `src/authoring/map-studio-draft-store.mjs` pins draft format 1. Move only its version constant and recovery preflight to `src/authoring/map-studio/draft/v1/contract.mjs`; retain the store's two named exports and five-method API. Main, `scripts/fixtures/map-studio-draft-fixture.mjs`, registered brush controls and XL audits keep their existing entrypaths. | Pure format validation separates from deferred WebStorage access; byte-preserved body/error/16–256 limits, raw reads/key/save bytes and per-store methods. Existing host recovery/close/cancel/portable-map cases, canonical/old API controls, import-domain negatives, exact public paths and clean packed HTTP establish the source candidate. No host, asset, building, movement or renderer edits. |
+| Sprite-atlas format — proposal after renderer/asset owner agreement | `schemas/sprite-atlas-pack-v1.schema.json` and `schemas/sprite-atlas-capture-v1.schema.json`; `scripts/sprite-atlas-contract.mjs`, sprite capture/provenance and `docs/sprite-atlas-contract-v1.md` consumers. Proposed canonical grouping: `schemas/sprite-atlas/v1/pack.schema.json` and `capture.schema.json`. | Decide supported old filesystem and schema identities before moving the pair. The relative capture `$ref`, validator resolution, old command behavior and actual capture tests must remain valid. No JSON forwarding format or duplicated canonical schemas are introduced speculatively. Outside this lane's current write scope. |
+| Renderer asset-pack / painted-material format — proposal with owning validators | `schemas/renderer-asset-pack-v1.schema.json`, `schemas/painted-material-atlas-v1.schema.json`; `scripts/validate-visual-pack.mjs`, `scripts/visual-pack-path-safety-scenario.mjs`, `scripts/painted-material-atlas-contract.mjs` and linked guides. Proposed separate feature homes: `schemas/renderer-asset-pack/v1/` and `schemas/painted-material-atlas/v1/`. | Preserve schema IDs, contract bytes, isolated CLI/path-safety fixtures and supported commands. Separate schema organization from runtime texture/asset loading, pack IDs and art changes. Active renderer ownership is a dependency; no move here. |
+| Construction generators — deferred to building/asset owners | `scripts/build_archery_range_construction_v1.py`, `scripts/build_barracks_construction_v1.py`, `scripts/pack-archery-range-construction-v1.py`. The builders copy their own scripts into output `source/` and embed generator paths. | A future `scripts/buildings/<feature>/v1/` move needs an agreed root command and identical generated paths/provenance/output. It does not authorize changing existing asset-pack directories or active construction/renderer work. No generator or registry edits here. |
+| Historical content and audio take names — preserve current identities | The 41 asset and 70 documentation/art v1 filenames include published pack paths, snapshots, sources and contracts; `v001` audio names identify takes. | No automatic move. An actual feature owner first inventories runtime URLs, manifest/hash/provenance and historical links. Source organization can improve without rewriting those supported identities. |
+
+This candidate is based on main independently of the locally prepared import-error
+and portable-map-validator stack. Paused or canceled publication actions remain
+separate; a folder change is not a route to publish them. Testing-strategy, package,
+CI and workflow ownership stays with the existing command/testing lane. The next
+small authoring responsibility is the real portable-map validator, with its
+previously reviewed caller/body contract; delivery depends on clarified publication
+scope and fresh-main reconciliation, rather than merging unrelated work here.
+
 ### First eight migration PR candidates
 
 PR1 is the common prerequisite. PR2–PR7 have distinct canonical source scopes;

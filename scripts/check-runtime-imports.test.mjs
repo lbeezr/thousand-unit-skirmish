@@ -231,17 +231,22 @@ test('Map Studio form controller has no module dependencies and cannot enter aut
   assert.deepEqual(moduleImports(await readFile(new URL(`../${target}`, import.meta.url), 'utf8'), target), []);
 });
 
-test('local draft persistence stays authoring-only despite its dependency-free storage interface', async () => {
-  const target = 'src/authoring/map-studio-draft-store.mjs';
-  for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
-    'src/simulation/movement/formation-assignment.mjs', 'src/pve-regroup.mjs']) {
-    const relative = path.posix.relative(path.posix.dirname(root), target);
-    assert.throws(() => check({ [target]: '', [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
-      /(?:rules|world|simulation|ai) domain cannot reach authoring domain/);
+test('local draft persistence and its versioned contract stay authoring-only', async () => {
+  const store = 'src/authoring/map-studio-draft-store.mjs';
+  const contract = 'src/authoring/map-studio/draft/v1/contract.mjs';
+  for (const target of [store, contract]) {
+    for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+      'src/simulation/movement/formation-assignment.mjs', 'src/pve-regroup.mjs']) {
+      const relative = path.posix.relative(path.posix.dirname(root), target);
+      assert.throws(() => check({ [target]: '', [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
+        /(?:rules|world|simulation|ai) domain cannot reach authoring domain/);
+    }
+    assert.throws(() => check({ [target]: '', 'server.mjs': `import './${target}';` },
+      { serverEntrypoints: ['server.mjs'] }), /server host reaches authoring domain/);
   }
-  assert.throws(() => check({ [target]: '', 'server.mjs': `import './${target}';` },
-    { serverEntrypoints: ['server.mjs'] }), /server host reaches authoring domain/);
-  assert.deepEqual(moduleImports(await readFile(new URL(`../${target}`, import.meta.url), 'utf8'), target), []);
+  assert.deepEqual(moduleImports(await readFile(new URL(`../${store}`, import.meta.url), 'utf8'), store),
+    ['./map-studio/draft/v1/contract.mjs']);
+  assert.deepEqual(moduleImports(await readFile(new URL(`../${contract}`, import.meta.url), 'utf8'), contract), []);
 });
 
 test('domain membership rejects duplicate ownership and supports exact canonical migration paths', () => {
