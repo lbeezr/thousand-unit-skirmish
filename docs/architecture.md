@@ -319,13 +319,13 @@ The current runtime, mode, movement, Worker job/animation, HUD and art owners
 retain their files. In particular, [resource continuation PR283](https://github.com/lbeezr/thousand-unit-skirmish/pull/283)
 and the animation diagnostic [PR287](https://github.com/lbeezr/thousand-unit-skirmish/pull/287)
 (merged during this audit) make `server.mjs`, `main.js`, worker receipts and presentation fixtures active
-coordination surfaces. The testing-strategy owner `01a103db-7bbd` retains
+coordination surfaces. The testing-strategy owner retains
 `AGENTS.md`, testing-strategy docs, package and CI edits. This plan's write scope
-is `docs/architecture.md` and the inventory in `docs/README.md`; it reserves no
-runtime file. Future PRs need a named executing owner and parent-routed exact
-scope; the domain-owner labels below are assignments to confirm, not claims
-that those workers are currently executing a migration. The user's all-merges
-approval remains applicable; review/coordination does not grant independent
+was `docs/architecture.md` and the inventory in `docs/README.md`; that planning
+slice reserved no runtime file. Subsequent slices below name their executing
+role and exact scope. Follow the [continuing-work and integration rules](contributor-planning.md#continuing-workstream-bounded-pr)
+for author-owned normal merges under standing authorization; resolve concrete
+overlap with its owner. Review/coordination does not grant independent
 deployment, spend, security changes or release of an art-direction hold.
 The testing-strategy documentation merged as `70e7c813` during this audit;
 future rendered acceptance uses its supported cloud capability path. Mac
@@ -365,7 +365,7 @@ Candidate 3's atomic [PR314](https://github.com/lbeezr/thousand-unit-skirmish/pu
 retargets the existing action-rule coverage registration to
 `--test-coverage-include=src/rules/gameplay-action-rules.mjs` and the matching
 canonical-path expectation in `scripts/ci-lanes.test.mjs`. The parent assigned
-only those two shared CI hunks to the rules owner after CI owner `01a10378`'s
+only those two shared CI hunks to the rules owner after the CI owner's
 PR306 integrated. Every other registered check, the test command, all three
 100% line/branch/function floors and lane-partition assertions are preserved.
 Registered coverage must exercise the canonical implementation; coverage of a
@@ -386,7 +386,7 @@ Step 8's shared scope is recorded with the catalog owner in
 That catalog's published scope excludes `environment-art.mjs`; its presentation
 membership, manifest entries and CI job are distinct from PR327's leaf member,
 single module admission and one focused registration beside the existing oak
-contract. CI owner `01a10378`'s PR323 changes only renderer qualification files,
+contract. The CI owner's PR323 changes only renderer qualification files,
 which this slice preserves. Refresh both sets of entries at integration. The
 combined packed HEAD check asserts JSON MIME for the catalog's JSON admissions,
 retaining the existing JavaScript/CSS/HTML and private-file assertions.
@@ -468,7 +468,7 @@ has none. It remains supported: `gameplay-action-rules.test.mjs` deliberately
 checks its three value bindings, its two JSDoc type names and exact public HTTP
 entry remain, and supported external imports/identified-release reload safety
 have not been cleared for retirement. Production/research semantic wiring stays
-with building-functionality audit owner `01a107c9`; this boundary slice owns only
+with the building-functionality audit owner; this boundary slice owns only
 the two import literals, as recorded in the PR's exact-hunk coordination note.
 No shim, fixture, public entry or registration is removed. The PR records the
 same full native research scenario timeout on preceding main and the caller
@@ -476,9 +476,9 @@ head, before any research command at its initial Infantry Move; that unchanged
 check's research/recovery acceptance remains open with the building/movement
 owners. Native both-seat production/research cancellation and paid reservation
 lifecycle pass separately. The exact standalone command and both failing SHAs
-are routed to Universal movement `01a107ba` in
+are routed to the movement owner in
 [PR332](https://github.com/lbeezr/thousand-unit-skirmish/pull/332#issuecomment-5982378433)
-and Building/action `01a107c9-0032` in
+and the building/action owner in
 [PR339](https://github.com/lbeezr/thousand-unit-skirmish/pull/339#issuecomment-5982522735).
 Passing separate progression/cancellation checks do not close that failure.
 
@@ -754,16 +754,45 @@ The key/read/preflight bodies and JSON/storage operations preserve their old
 behavior; no new save version, migration or storage service appears. A dedicated
 test fixture owns actual draft/dialog and portable map paths without renaming
 tests or changing their registrations. Versioned storage is now an explicit
-contract; capture, debounce, history, recovery presentation and publishing remain
-host responsibilities, rather than hidden inside a catch-all editor context.
+contract. At this checkpoint, capture, debounce, history coordination, recovery
+presentation and publishing remained host responsibilities. PR412 merged as
+`8753c671`; its reviewed source, local served/packed identity and remaining
+rendered acceptance are recorded in that PR.
 
-| Next slice / exact candidate scope | Input and owning boundary | Semantic acceptance and retirement limit |
+[PR415](https://github.com/lbeezr/thousand-unit-skirmish/pull/415) selects the
+remaining scenario-history coordination from actual host coupling: one applying
+flag connected recording, Undo/Redo application and availability across the
+editor's region/event callers. The existing canonical scenario-authoring module
+now owns that coordination through `createScenarioEditCoordinator`; the host
+supplies history, liveness, snapshot, state application and availability callbacks.
+Its two existing implementation bodies and the legacy entry's two exports stay
+unchanged. No folder, module, import edge, shim or HTTP admission is added.
+On main `ca777a09`, including XL parser/file-budget PR407, the graph remains
+**210 modules, 385 edges, 132 browser / 87 server / 32 shared and zero cycles**.
+The client host grows by four physical lines to 11,024 because explicit callback
+wiring replaces the shared applying flag and coordination body; that wiring
+cost is intentional, rather than a line-count quality target. Current registered
+tests now consume the coordinator and actual template Undo/Redo handlers, while
+retaining prior cases and portable draft recovery/import/export checks.
+
+The next Map Studio evidence is the existing rendered draft scenario against an
+identified containing release, once normal-sandbox cloud browser capability is
+available. Recovery presentation/inertness and close/publish interaction changes
+would need that observation; the current JSDOM platform/rendering stubs do not
+establish it. Capture and debounce still share ordered subpanel/host callbacks.
+A further source slice needs a concrete responsibility with fewer shared state
+dependencies; a format-only helper or a broad editor parameter bag is not a next
+step. Keep the active server/movement/match-ending contracts separate and do not
+turn this local evidence dependency into a global hold.
+
+| Checkpoint / next scoped slice | Input and owning boundary | Semantic acceptance and retirement limit |
 | --- | --- | --- |
 | Server caller slice [PR404](https://github.com/lbeezr/thousand-unit-skirmish/pull/404): the three `server.mjs` lifecycle, map-audio validator and formation literals | Fresh-main integration after PR395; exact scope retains construction/crowd and XL checkpoint imports/bodies. Canonical entries are `src/rules/base-lifecycle.mjs`, `src/world/map-audio-reference.mjs` and `src/simulation/movement/formation-assignment.mjs`. | Four identical bindings and every other host byte; actual consumer/native, types/imports, clean pack and packed HTTP/private-path checks plus implemented-head independent review belong to PR404. Zero tracked-runtime compatibility callers; all eleven surfaces and every existing fixture/admission remain. |
-| Checkpoint validation seam in `server.mjs`; affected `economy-server-fixture.mjs` binding only if extraction replaces its existing slice | Server/simulation, building-action owner `01a107c9` and the map-size owner of [PR403](https://github.com/lbeezr/thousand-unit-skirmish/pull/403) agree `validateMatchCheckpoint`'s actual inputs, validation/error order, route-preflight hook and return contract before code moves. Preserve PR403's capture/validation consumers; validation, version migration and atomic storage remain separate responsibilities. | Existing `economy-checkpoint.test.mjs`, `fog-checkpoint-boundary.test.mjs`, `match-mode-checkpoint.test.mjs` and `checkpoint-storage-recovery-scenario.mjs`, preserving malformed-input rejection, resources, visibility, version handling and cold recovery. No host-state catch-all parameter or behavior rewrite. |
+| Checkpoint validation seam in `server.mjs`; affected `economy-server-fixture.mjs` binding only if extraction replaces its existing slice | Server/simulation, building/action and XL map owners agree `validateMatchCheckpoint`'s actual inputs, validation/error order, route-preflight hook and return contract before code moves. Preserve [PR403](https://github.com/lbeezr/thousand-unit-skirmish/pull/403)'s capture/validation consumers and [PR407](https://github.com/lbeezr/thousand-unit-skirmish/pull/407)'s bounded file/parser contracts; validation, version migration and atomic storage remain separate responsibilities. | Existing `economy-checkpoint.test.mjs`, `fog-checkpoint-boundary.test.mjs`, `match-mode-checkpoint.test.mjs` and `checkpoint-storage-recovery-scenario.mjs`, preserving malformed-input rejection, resources, visibility, version handling and cold recovery. This seam stays outside the authoring slice and active crowd/focused-Attack host hooks. No host-state catch-all parameter or behavior rewrite. |
 | Map Studio form snapshot controller [PR406](https://github.com/lbeezr/thousand-unit-skirmish/pull/406): `src/authoring/map-studio-form-state.mjs` with the two real draft callers in `src/main.js` | First small implementation of this row. Explicit `createMapStudioFormState({ root, document }) → { capture, restore }` owns only live dialog values; no host-state catch-all, storage, timer, rendering or simulation dependencies. The architecture/authoring owner retains the controller and source/browser acceptance. | Preserve old function bodies apart from closure identifiers/indentation, all draft JSON/version/storage/gesture/import/export/publish behavior and every prior brush case. Fixture uses production initialization; focused form/draft cases, import/privacy guard and exact served/packed bytes establish the source milestone. No new shim and all eleven existing surfaces retained. Normal-sandbox rendered draft acceptance remains incomplete. |
 | Versioned Map Studio draft storage/preflight [PR412](https://github.com/lbeezr/thousand-unit-skirmish/pull/412): `src/authoring/map-studio-draft-store.mjs` and real `main.js` callers | Explicit deferred storage getter, key identity inputs and cached recovery references. Preserve version 1 and old rejection/error ordering; no new file budget, migration, storage service or server checkpoint dependency. Architecture/authoring retains source and rendered recovery ownership. | Current registered brush/form cases plus malformed/old/foreign drafts, interruption/cancel/restore reread, storage failures, real portable import/export parity and native saved-map restart. Preserve every old host byte outside the bounded extraction/calls, all eleven compatibility surfaces and exact public/private packed HTTP policy. |
-| Remaining Map Studio capture/debounce/history/recovery presentation and publish seam in `src/main.js`; existing `map-studio-draft-scenario.mjs` consumer | Select a small actual lifecycle or publish contract using the form and draft-store APIs. Keep checkpoint parsing/XL file/route budgets with their owner and movement with its owners. Avoid passing unrelated editor state through a broad context. | Real draft edit/save/reopen/publish checks plus current authoring contracts. The storage/preflight module does not extract the modal lifecycle. Source/CPU results do not close the recorded normal-sandbox browser-startup gap; architecture/authoring retains rendered acceptance and the existing scenario when capability becomes available. |
+| Scenario history coordination [PR415](https://github.com/lbeezr/thousand-unit-skirmish/pull/415): existing `src/authoring/scenario-authoring.mjs` and actual record/Undo/Redo host callers | Architecture/authoring owns the applying flag and operation ordering in the canonical module. DOM/state assignments remain explicit host callbacks; the existing bounded history instance and all old resets/callers remain. The new export is canonical-only; the legacy namespace retains its two original bindings. | Preserve active-state gating, availability updates, reentrant suppression, redo branching, exhausted restoration, error propagation/suppression and draft-save order. Direct contracts and real template controls exercise selections, no match mutation and recovery/import resets; actual packed bytes cover both old/canonical paths. No new admission, alias retirement, source-policy/registry edits or unrelated host changes. |
+| Remaining Map Studio capture/debounce/recovery presentation and publish seam in `src/main.js`; existing `map-studio-draft-scenario.mjs` consumer | Architecture/authoring retains the concrete lifecycle/publish contract and rendered recovery evidence. Use current form, store and history APIs; preserve ordered subpanel callbacks. Keep checkpoint parsing/XL file/route budgets with their owner, crowd/focused Attack/selected-route movement with their owners and match-ending actions with theirs. Avoid a broad editor context or unused formatter extraction. | Next evidence: real draft edit/save/reopen/publish on an identified containing cloud release when normal-sandbox capability is available. Source/CPU results do not close that recorded startup gap. Further source work needs an independently useful responsibility and real caller contract; current modal behavior and product decisions are not silently changed to manufacture another slice. |
 | Root tool commands and test/fixture homes: current `package.json`, workflows and `docs/testing.md` consumers | Testing-strategy/command owners own registration migration, discovery and supported commands. Authoring/assets/scenario/performance owners first select an actual workload/API boundary from the purpose-based stage above. | Preserve every existing case, fixed input/seed, coverage floor, command and release consumer; root entries retire only after external/fixture/identified-release obligations clear. Those registries and broad tool/test moves are outside this lane's current write scope. |
 
 ### Coupling and size ratchets
