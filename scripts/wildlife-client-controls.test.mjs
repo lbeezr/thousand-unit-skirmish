@@ -158,7 +158,6 @@ for (const team of [0,1]) {
       ['malformed list',controlsState(f.map,{resourceNodes:{}})],
       ['opponent claim',rowState(f,{wildlifeTeam:1-team})],
       ['neutral claim',rowState(f,{wildlifeTeam:null})],
-      ['carcass',rowState(f,{wildlifeState:'carcass',wildlifeActivity:undefined,stock:99.75})],
       ['depleted',rowState(f,{wildlifeState:'depleted',wildlifeActivity:undefined,stock:0})],
       ['invalid heading',rowState(f,{wildlifeHeading:Infinity})],
       ['private route',rowState(f,{wildlifeHerd:{path:[4]}})],

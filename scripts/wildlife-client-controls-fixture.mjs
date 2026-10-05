@@ -17,6 +17,8 @@ import { formatResourceStock } from '../src/resource-format.mjs';
 import { readWorkerPerformingAction } from '../src/worker-work-presentation.mjs';
 import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
 import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
+import { clearOwnedBuildingFog } from '../src/building-fog-composition.mjs';
+import { selectionContext } from '../src/selection-context.mjs';
 import { fixedMatchArmySize } from '../src/match-mode-controls.mjs';
 import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 import { renderMatchRecap } from '../src/client/hud/match-recap.mjs';
@@ -104,6 +106,9 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
   }
   const query = selector => w.document.querySelector(selector);
   Object.assign(w, {...browserRecoveryBindings(),...selection,...economyProfile,...economyClient,...audioPolicy,...wildlifeClientBindings(),
+    clearOwnedBuildingFog,selectionContext,castPreview:false,updateBuildingLifecycleActions:noop,updateCombatStanceUI:noop,
+    updateSelectionPortrait:noop,updateProductionPortrait:noop,updateRosterProductionOptions:noop,
+    updateResearchOptions:noop,commandFocusTarget:()=>canvas,
     THREE,UNIT_DEFINITIONS,BUILDING_DEFINITIONS,TECHNOLOGY_DEFINITIONS,farmHarvestNode,isShoreFish,applyUnitStances,fixedMatchArmySize,
     rememberNotice,classifyOrderNotice,formatResourceStock,readWorkerPerformingAction,renderMatchRecap,matchDecisions:{update(){}},TextEncoder,WebSocket:WireSocket,
     mapDefinition:map,MAP_WIDTH:map.width,MAP_HEIGHT:map.height,MAP_HALF_X:map.width/2,MAP_HALF_Z:map.height/2,
@@ -170,7 +175,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     'pickBuildingAt','selectBuilding','pickFriendly','selectInRect','worldAt','mapCellToWorld','getBuildingQueueLength','buildingLabel',
     'buildingSupportsRally','buildingSupportsResearch','clearActiveControlGroup','revalidateControlGroups','clearControlGroups','controlGroupKeyLabel',
     'assignControlGroup','recallControlGroup','centerCameraOnControlGroup','syncSelectionMesh',
-    'updateStationaryOrderControls','updateSelectionUI','updateCommandUI','syncTargetOrderUI',
+    'updateStationaryOrderControls','updateContextualCommands','updateSelectionUI','updateCommandUI','syncTargetOrderUI',
     'issueStationaryOrder','issueReturnCargo','setPersistentTargetMode','setAttackMoveMode','setTapOrderArmed',
     'issueMove','issueBuildingRallyPoint','issueAttack','issueAttackBuilding','issueGather','issueForestGather','issueContextOrder',
     'minimapMapRect','worldFromMinimap','focusCameraFromMinimap','canIssueMinimapMove','finishMinimapPointer','finishPointer','captureBattlefieldPointer',
@@ -193,7 +198,8 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     return (target==='renderer.domElement.addEventListener' && ['contextmenu','pointerdown','pointermove','pointerup','pointercancel','lostpointercapture'].includes(event))
       || (target==='minimapCanvas.addEventListener' && ['contextmenu','pointerdown','pointermove','pointerup','pointercancel','lostpointercapture'].includes(event))
       || (target==='window.addEventListener' && event==='keydown' && text.includes('controlGroupIndexFromKey(event)'))
-      || (target==='ui.orderTargetToggle.addEventListener' && event==='click');
+      || (target==='ui.orderTargetToggle.addEventListener' && event==='click')
+      || (event==='click' && text.includes('[data-harvest-wildlife]'));
   });
   assert.ok(listeners.length>=10,'production battlefield, minimap, keyboard and button handlers');
   w.eval(listeners.map(node=>source.slice(node.start,node.end)).join('\n'));
