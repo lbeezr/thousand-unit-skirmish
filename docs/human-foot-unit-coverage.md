@@ -33,6 +33,17 @@ N/NE/E/S/SW/W/NW: **21 cells per role, 63 total**. Different-identity source key
 do not close that goal. All 63 original deployed/native cells remain unverified.
 Restoring the default is a source correction, not a live bug or appearance claim.
 
+## Actual default Infantry qualification — 5 October 2026
+
+The [default Infantry diagnosis and qualification](qa-default-infantry-walk-2026-10-05.md)
+adds Infantry v3 to CPU displacement/UV/time checks and a separate registered
+ordinary capture case. SE is the only genuine walk; N/NE/E/S/SW/W/NW retain idle.
+Approved sources lack matching directional walk keys or a layered exact-character
+rig. Seven walks and21 Infantry action cells remain missing; source previews,
+CPU checks and pack admission do not establish actual identified-build playback.
+Capture owner01a10378 retains that test; Spearman art/attack owner01a10469 is
+unchanged. No art/runtime changes or held assets are adopted.
+
 ## Spearman Northeast source attack — 5 October 2026
 
 The [Northeast attack increment](qa-spearman-ne-attack-2026-10-05.md) reuses its

@@ -10,7 +10,7 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 test('CPU temporal integration and fault controls require neither a browser nor Python', { timeout: 120000 }, async t => {
   const directory = mkdtempSync(path.join(os.tmpdir(), 'rts-temporal-ci-'));
   try {
-    for (const [name, failures] of [['positive', 0], ['frozen-clock', 64], ['wrong-heading', 56], ['duplicate-cells', 36]]) {
+    for (const [name, failures] of [['positive', 0], ['frozen-clock', 96], ['wrong-heading', 84], ['duplicate-cells', 68]]) {
       await t.test(name, () => {
         const output = path.join(directory, name);
         const run = spawnSync(process.execPath, ['scripts/unit-displacement-animation-scenario.mjs',
@@ -20,10 +20,12 @@ test('CPU temporal integration and fault controls require neither a browser nor 
         assert.equal(run.status, failures ? 1 : 0, run.stderr + run.stdout);
         const report = JSON.parse(readFileSync(path.join(output, 'checks.json')));
         assert.equal(report.rendered, false);
-        assert.equal(report.rows.length, 64);
+        assert.equal(report.rows.length, 96);
         assert.equal(report.failures.length, failures, 'fault detection cannot silently regress');
         if (!failures) {
-          assert.equal(report.missingArt.length, 7, 'Spearman missing gait remains explicitly incomplete');
+          assert.equal(report.missingArt.length, 7, 'actual default Infantry missing gait remains explicitly incomplete');
+          assert.deepEqual(report.authoredWalkHeadings,{human:8,infantry:1,spearman:8});
+          assert.deepEqual(report.missingArt.map(m=>[m.role,m.direction]),['north','north-east','east','south','south-west','west','north-west'].map(h=>['infantry',h]));
           assert.ok(report.rows.filter(r => r.role === 'human' || r.requestedHeading === 'south-east')
             .every(r => r.distinctFrameKeys === 8 && r.distinctVisibleCells === 8 && r.distinctSilhouettes === 8));
         } else {

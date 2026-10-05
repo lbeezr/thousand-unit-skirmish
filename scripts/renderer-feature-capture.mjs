@@ -8,6 +8,7 @@ import { CaptureCaseTimeoutError, qualifyPackedGame } from './renderer-qualifica
 import { CAPTURE_CONTEXT_VERSION, validateCaptureAdapter, validateCaptureContext } from './renderer-capture-context.mjs';
 
 export const CAPTURE_CASES = Object.freeze({
+  'infantry-animations': './renderer-infantry-animation-scenario.mjs',
   'worker-animations': './renderer-worker-animation-scenario.mjs',
   'novice-flow': './renderer-novice-flow-scenario.mjs',
   'worker-routes': './renderer-worker-route-scenario.mjs',
