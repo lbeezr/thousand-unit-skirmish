@@ -57,7 +57,10 @@ async function fixture({ original = false, mirror = false, terminal = false, tig
   const wallColumn = mirror ? 47 : 48, openingRow = mirror ? 31 : 32;
   const isWalkable = c => c >= 0 && c < width * height
     && (c % width !== wallColumn || Math.floor(c / width) === openingRow);
-  const context = vm.createContext({ ...movement, ...crowd, UNIT_DEFINITIONS, constructionMovementActive,
+  let selection;
+  const context = vm.createContext({ ...movement, ...crowd,
+    selectCrowdStep(input) { selection = input; return crowd.selectCrowdStep(input); },
+    UNIT_DEFINITIONS, constructionMovementActive,
     workerPatrolAcquiredMovementActive, units, STEP_SECONDS: 1 / 30,
     MAP_WIDTH: width, MAP_HEIGHT: height, MAP_HALF_X: width / 2, MAP_HALF_Z: height / 2,
     SPATIAL_BUCKET_SIZE: size, spatialBucketColumns: columns, spatialBucketRows: rows,
@@ -69,7 +72,9 @@ async function fixture({ original = false, mirror = false, terminal = false, tig
   assert.ok(start >= 0 && end > start, 'real host query/selection boundaries');
   vm.runInContext(server.slice(start, end), context);
   return { crowd, context, unit, peers, point, current, width, height, isWalkable,
-    select(tick) { context.tickNumber = tick; return context.getMoveVector(unit); } };
+    select(tick, overrides = null) { context.tickNumber = tick;
+      return overrides ? crowd.selectCrowdStep({ ...selection, ...overrides, tick }) : context.getMoveVector(unit); },
+    get selection() { return selection; } };
 }
 
 for (const mirror of [false, true]) test(`a bounded prefix of existing yielding recovery admits safe waypoint progress, mirror=${mirror}`, async () => {
@@ -100,6 +105,29 @@ for (const [label, options, tick] of [['before recovery age', {}, 0], ['terminal
     if (tick) { old.select(0); f.select(0); }
     assert.deepEqual(structuredClone(f.select(tick)), structuredClone(old.select(tick)));
   });
+
+test('an undisplaced passage target retains the original wait and proposal budget', async () => {
+  const old = await fixture({ original: true }), f = await fixture();
+  for (const control of [old, f]) {
+    control.select(0); control.select(0, { progressTarget: control.selection.target });
+  }
+  const refusal = old.select(40, { progressTarget: old.selection.target });
+  const result = f.select(40, { progressTarget: f.selection.target });
+  assert.ok(refusal.waitingForCrowd);
+  assert.deepEqual(structuredClone(result), structuredClone(refusal));
+});
+
+test('a physically admitted prefix cannot replace a wait without fixed-waypoint gain', async () => {
+  const old = await fixture({ original: true }), f = await fixture();
+  for (const control of [old, f]) {
+    control.select(0); control.select(0, { progressTarget: { x: control.unit.x, z: control.unit.z } });
+  }
+  const refusal = old.select(40, { progressTarget: { x: old.unit.x, z: old.unit.z } });
+  const result = f.select(40, { progressTarget: { x: f.unit.x, z: f.unit.z } });
+  assert.ok(refusal.waitingForCrowd && result.waitingForCrowd);
+  assert.equal(result.stepDistance, 0);
+  assert.ok(result.crowdControl.proposals <= f.crowd.CROWD_PROPOSAL_LIMIT);
+});
 
 test('every rejected short prefix remains physically rejected under tangency and overflow', async () => {
   const f = await fixture({ tight: true }); f.select(0); const result = f.select(40);

@@ -379,9 +379,12 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     if (best) best.yieldingForCrowd = true;
   }
   // Tight moving queues can reject every full/half recovery step while a
-  // shorter prefix of the same heading is clear. Preserve the existing
-  // recovery order and priority; debit every physical probe from the same cap.
-  if (!best && yieldingToPeer && ordinaryCrowdBodyRadius(unit)
+  // shorter prefix of the same heading is clear. Only displaced passage targets
+  // may use it, and the admitted step must improve the fixed waypoint distance.
+  // Preserve recovery order/priority and debit every probe from the same cap.
+  if (!best && yieldingToPeer && finitePoint(progressTarget)
+    && Math.hypot(target.x - progressTarget.x, target.z - progressTarget.z) > EPSILON
+    && ordinaryCrowdBodyRadius(unit)
     && unit.pathIndex < unit.path.length - 1 && !state.detour && !state.lease && !state.contour) {
     const probeStart = stats.proposals, smallest = Math.min(stepDistance, distance) / 64;
     for (const angle of [105, -105, 135, -135, 180]) {
@@ -398,7 +401,10 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
         if (clear(point(middle))) lower = middle;
         else upper = middle;
       }
-      if (stats.proposals - probeStart < 12) consider(point(lower), false);
+      const to = point(lower);
+      if (stats.proposals - probeStart < 12
+        && Math.hypot(progressTarget.x - to.x, progressTarget.z - to.z) < remaining - EPSILON)
+        consider(to, false);
       if (best) { best.yieldingForCrowd = true; break; }
     }
   }

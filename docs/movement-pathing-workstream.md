@@ -1314,20 +1314,37 @@ The same existing -105-degree recovery direction at a shorter admitted length
 makes fixed-waypoint progress. Core's allocated late fallback tries shorter
 prefixes only after an ordinary nonterminal actor still has no admitted recovery
 step under its existing opposing-peer yielding priority at 30 or more no-progress
-ticks, with no active detour, lease or contour.
+ticks, with no active detour, lease or contour. The final rejected refinement
+also requires a displaced passage target and a positive fixed-waypoint gain.
 It retains the existing recovery heading order and yielding flag, every physical
 oracle and the 128-proposal cap. At most twelve extra proposals are charged to
 that cap; five bounded bisections refine the first clear short prefix. No radius,
 query, route, queue, endpoint, checkpoint or controller state changes.
 
-[Six source controls](../scripts/crowd-short-recovery.test.mjs) bind the actual
+[Eight source controls](../scripts/crowd-short-recovery.test.mjs) bind the actual
 host query/helper/selector. Mirrored controls select a .0157845052-tile step with
 .0010470473 fixed-waypoint gain and preserved yielding priority; earlier recovery
 age, unclaimed waits and terminal selection remain identical, and tangency/overflow retain hard
-admission. The original wall/gate deadlines, paid productive construction,
-acquired Patrol body cases and ordinary passage controls qualify default adoption
-separately. The caller matrix and rendered acceptance remain open. Art backing
-is N/A.
+admission. Two additional controls preserve an undisplaced target's exact wait
+and refuse any new prefix without fixed-waypoint gain.
+
+**Default adoption failed; this fallback remains only in
+[draft PR #525](https://github.com/lbeezr/thousand-unit-skirmish/pull/525).**
+The first broader variant passes six of eight unchanged wall/gate cases but
+loses seat-1 closing-gate completion at 25/64. The existing-priority variant
+`fd44b1fa` passes 339 movement/body/source and 219 caller controls, independent
+exact-head review, types/imports/docs, clean packaging and packed HTTP, but
+only five of eight wall/gate cases: seat-1 queued-target 0/64, queued-removal
+4/64 and closing-gate 3/64. The final displaced-target/positive-gain refinement
+retains the complete public decision witness but fails the first seat-1 gate
+qualification at 6/64; further journey runs and default merge stop there.
+All deadlines and physical oracles stay unchanged. No failed historical report
+is regenerated and neither local legal-step evidence nor packaging qualifies
+journey liveness. Core retains the next evidence-backed correction; crowd owns
+independent qualification. That correction must preserve the original positive
+gate case and demonstrate sustained public-source journey progress before
+default adoption. The caller matrix and rendered acceptance remain open.
+Art backing is N/A.
 
 ### Forest cell-gap characterization — 4 October 2026
 
