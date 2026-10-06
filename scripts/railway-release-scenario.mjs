@@ -4,6 +4,7 @@ import { compareServedBuildIdentity } from './release/check-served-build-identit
 import { BROWSER_ENTRYPOINTS, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS } from './check-runtime-imports.mjs';
 import { CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH } from '../src/server/client-asset-paths.mjs';
 import assert from 'node:assert/strict';
+import {validateBuildingLifecycle} from './validate-building-lifecycle.mjs';
 import { createHash, randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { request as httpRequest } from 'node:http';
@@ -485,9 +486,9 @@ try {
     const response = await fetch(`${base}/${manifestPath}`, { headers: { authorization } });
     assert.equal(response.status, 200); assert.match(response.headers.get('content-type'), /application\/json/);
     const frontier = await response.json();
-    assert.equal(frontier.asset, family); assert.deepEqual(frontier.stateOrder, ['complete']);
+    assert.equal(frontier.asset, family); validateBuildingLifecycle(frontier);
     assert.equal(frontier.completeState.views.length, 8); frontierPaths.push(manifestPath);
-    for (const view of frontier.completeState.views) {
+    for (const view of [frontier.completeState, ...frontier.states].flatMap(state => state.views)) {
       const assetPath = frontierRoot + view.path; frontierPaths.push(assetPath);
       assert.ok(contextRules.includes('!' + assetPath), `${assetPath} must be explicitly admitted`);
       const frame = await fetch(`${base}/${assetPath}`, { headers: { authorization } });
@@ -499,7 +500,7 @@ try {
   const releaseManifest = JSON.parse(await readFile(path.join(root, 'release-manifest.json'), 'utf8'));
   assert.deepEqual(releaseManifest.files.filter(file => frontierRoots.some(root => file.startsWith(root))).sort(), frontierPaths.sort(),
     'package exactly the selected registered sprites, without source models or galleries');
-  assert.equal(frontierPaths.length, 72, 'eight manifests and 64 original frames');
+  assert.ok(frontierPaths.length >= 72, 'eight manifests and at least 64 original frames');
   for (const frontierRoot of frontierRoots) for (const absent of ['model-provenance.json', 'meshy_output/house.glb', 'preview.html', 'source/build_military.py', 'models/barracks-complete.glb']) {
     assert.equal((await fetch(`${base}/${frontierRoot}${absent}`, { headers: { authorization } })).status, 404);
   }

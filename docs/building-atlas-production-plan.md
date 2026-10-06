@@ -197,4 +197,29 @@ preserved concepts, original captures and their evolution.
 
 ## Reusable capture admission
 
+### Ranked existing-model continuation — 5 October 2026
+
+The [canonical owner/dependency record](asset-adoption-checklist.md#military-lifecycle-delivery-owner--5-october-2026)
+retains delivery responsibility through default use, package, deployment and
+ordinary-game acceptance. This list ranks the existing work; a waiting input is
+not completed production. No additional paid generation is authorized.
+
+| Rank | Small family slice | Existing input and precise dependency |
+| --- | --- | --- |
+| 0 | Deliver the reviewed Barracks + Range batch | On 6 October, actual surviving bytes were verified: 64 fresh recipe-derived state PNGs, two locally integrated manifests, both approved military GLBs and exact restored recipes. All sixteen Complete PNGs remain unchanged. The original historical PNG bytes were not recovered. Current focused checks and exact 82-file military HTTP/package admission pass; publication and identified ordinary-game acceptance remain pending with the same owner. |
+| 1 | Town Center matching Foundation/Frame/Damaged/Critical | Follow the existing roadmap priority. Eight approved Complete captures/provenance exist; the matching approved editable model is absent here. Older Town Center lifecycle art remains an explicit different-design fallback. Recover the existing model privately before art production. |
+| 2 | House matching lifecycle | Eight Complete captures and measured registration exist; original approved GLB is an ignored local input absent here. Recover it, preserve all Complete bytes, then derive one reviewed family. |
+| 3 | Stable matching lifecycle | Eight Complete captures/provenance exist; approved editable source absent. Retain 2.75-unit base/depth calibration and existing production exits. |
+| 4 | Workshop matching lifecycle | Eight Complete captures/provenance exist; approved editable source absent. Reuse its 2.8-unit registration and distinguish Frame from Complete production silhouette. |
+| 5 | Storehouse matching lifecycle | Eight Complete captures/provenance exist; approved editable source absent. Review the recorded low doorway/Worker-clearance issue in real game before claiming appearance acceptance. |
+| 6 | Watchtower matching lifecycle | Eight Complete captures/provenance exist; approved editable source absent. Preserve its 1.8-unit visible base and authoritative three-cell occupancy. |
+
+Mill/Farm/Dock already have their separately owned staged v1 lifecycle delivery;
+do not duplicate them. Palisade/Gate/Skiff remain separate Coastal outcomes and
+publication conditions, not substitutes for missing approved sources. After a
+small reviewed family, select the next rank with recovered inputs. When models
+are unavailable, advance disjoint registration/validation work: protect admitted
+lifecycle manifests, exact runtime transfer and state/picking/package contracts.
+Those technical increments do not count as more finished building art.
+
 `node scripts/build-frontier-complete-manifests.mjs` verifies each model family before producing renderer metadata: eight unique 45° directions, consistent orthographic camera/density/canvas, grounded pivots within numerical tolerance, measured uniform scale, shared grounding/lighting, explicit frame paths and actual pixel-file SHA-256. The renderer tests include deliberate camera, pivot, scale, light, direction and path drift. A new civilization should satisfy this same contract before game bindings are added; passing it does not certify role recognition, doorway scale or missing lifecycle/team art.
