@@ -3,7 +3,8 @@ import { readFile, readdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { generateFarMarches, XL_LAYOUT as layout } from './generate-far-marches.mjs';
-import { runXlBoundaryAudit, crossingTopology, assertCheckpointEnvelopeConsumer } from './xl-map-boundary-audit.mjs';
+import { runXlBoundaryAudit, crossingTopology, assertCheckpointEnvelopeConsumer,
+  assertAuthoritativeMapValidatorConsumer } from './xl-map-boundary-audit.mjs';
 import { buildElevationGrid, validateElevationPatches } from '../src/map-utils.mjs';
 import { planWallLine } from '../src/wall-line-planner.mjs';
 import { compressGroundLevels } from '../src/terrain-authoring.mjs';
@@ -102,6 +103,23 @@ test('all current dimension consumers agree on256 and reject both320 rectangular
   // silently increase the current wall command's256-waypoint allowance.
   assert.throws(() => planWallLine({ width: 256, height: 256,
     points: Array.from({ length: 257 }, () => ({ column: 0, row: 0 })) }), TypeError);
+});
+
+test('authority dimension evidence follows the actual module and unchanged host policy binding', async () => {
+  const expected = createHash('sha256').update(await readFile(new URL('../src/server/map-definition-validator.mjs', import.meta.url))).digest('hex');
+  assert.equal(report.sourceInputSha256['src/server/map-definition-validator.mjs'], expected);
+  assert.equal(report.gridCostProvenance.sourceInputSha256['src/server/map-definition-validator.mjs'], expected);
+  assert.doesNotThrow(() => assertAuthoritativeMapValidatorConsumer(authoritySource));
+  for (const [before, after] of [
+    ["from './src/server/map-definition-validator.mjs'", "from './src/authoring/map-import-validator.mjs'"],
+    ['maxUnits: MAX_UNITS, maxMapObstacles: MAX_MAP_OBSTACLES,', 'maxUnits: 4000, maxMapObstacles: MAX_MAP_OBSTACLES,'],
+    ['MIN_SCENARIO_EVENT_REPEAT_SECONDS, researchRulesFor,', 'MIN_SCENARIO_EVENT_REPEAT_SECONDS, researchRulesFor: researchRulesFor(),'],
+    ['return authoritativeMapValidator(definition, filename);', 'return definition;'],
+  ]) {
+    assert.ok(authoritySource.includes(before), before);
+    assert.throws(() => assertAuthoritativeMapValidatorConsumer(authoritySource.replace(before, after)),
+      /Authoritative map validator binding\/policy moved/);
+  }
 });
 
 test('draft restore dimension evidence follows the bound helper and actual recovery acceptance', () => {

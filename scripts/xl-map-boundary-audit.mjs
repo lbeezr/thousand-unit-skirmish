@@ -40,6 +40,24 @@ function accepts(call) {
   try { call(); return true; } catch { return false; }
 }
 
+export function assertAuthoritativeMapValidatorConsumer(source) {
+  const binding = `const authoritativeMapValidator = createMapDefinitionValidator({
+  maxUnits: MAX_UNITS, maxMapObstacles: MAX_MAP_OBSTACLES,
+  maxResourceNodes: MAX_RESOURCE_NODES, maxObjectiveFoodReward: MAX_OBJECTIVE_FOOD_REWARD,
+  maxMapScenarioEvents: MAX_MAP_SCENARIO_EVENTS, maxScenarioEventRepeats: MAX_SCENARIO_EVENT_REPEATS,
+  minScenarioEventRepeatSeconds: MIN_SCENARIO_EVENT_REPEAT_SECONDS, researchRulesFor,
+});`;
+  if (!source.includes("import { createMapDefinitionValidator } from './src/server/map-definition-validator.mjs';")
+    || !source.includes(binding)
+    || !source.includes(`function validateMapDefinition(definition, filename) {
+  return authoritativeMapValidator(definition, filename);
+}`)
+    || source.indexOf(binding) <= source.indexOf('const RESEARCH_RULES =')
+    || source.indexOf(binding) >= source.indexOf('const mapCatalog = new Map();')) {
+    throw new Error('Authoritative map validator binding/policy moved; update its evidence.');
+  }
+}
+
 export function assertCheckpointEnvelopeConsumer(source, envelopeSource) {
   const body = extractFunction(source, 'validateMatchCheckpoint');
   const call = body.indexOf('const { canonicalDefinition, effectiveDefinition: definition, state, savedMatchMode } = validateCheckpointEnvelope(snapshot, {');
@@ -180,6 +198,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     'src/wall-line-planner.mjs', 'src/water-route-graph.mjs', 'src/map-size-policy.mjs',
     'src/match-modes.mjs', 'src/server/vision-coverage-cache.mjs',
     'src/server/checkpoint-route-budget.mjs', 'src/server/checkpoint-envelope.mjs',
+    'src/server/map-definition-validator.mjs',
     'src/server/checkpoint-json-budget.mjs', 'src/server/checkpoint-json-scan.mjs', 'src/server/checkpoint-file-reader.mjs',
     'src/gameplay-definitions.mjs', 'src/elevation.mjs', 'src/map-utils.mjs',
     'src/world/scenario-event-chain.mjs',
@@ -192,6 +211,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
   const inputs = Object.fromEntries(await Promise.all(files.map(async file =>
     [file, await readFile(new URL(`../${file}`, import.meta.url), 'utf8')])));
   const source = inputs['server.mjs'], map = JSON.parse(inputs['scripts/fixtures/xl-far-marches.json']);
+  assertAuthoritativeMapValidatorConsumer(source);
   const identity = await performanceIdentity(ROOT, 'scripts/fixtures/xl-far-marches.json');
   const grid = await runGridCostAudit();
   const constants = {
@@ -251,7 +271,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     || !extractFunction(inputs['src/main.js'], 'validateImportedMap').includes('return mapImportValidator(value);'))
     throw new Error('Map Studio portable validation binding moved; update the audit.');
   const limits = {
-    server: sourceNumber(source, /definition\.width > (\d+) \|\| definition\.height >/),
+    server: sourceNumber(inputs['src/server/map-definition-validator.mjs'], /definition\.width > (\d+) \|\| definition\.height >/),
     studioRestore: sourceNumber(requireDraftRecovery.toString(), /definition\.width > (\d+)/),
     studioImport: sourceNumber(inputs['src/authoring/map-import-validator.mjs'], /definition\.width > (\d+)/),
     studioResize: sourceNumber(extractFunction(inputs['src/main.js'], 'resizeEditorMap'), /width > (\d+)/),

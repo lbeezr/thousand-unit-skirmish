@@ -852,6 +852,102 @@ and all unrelated host bytes; it does not incorporate an error-handling change.
 | Remaining Map Studio capture/debounce/recovery presentation and publish seam in `src/main.js`; existing `map-studio-draft-scenario.mjs` consumer | Architecture/authoring retains the lifecycle/publish contract and rendered recovery evidence. The terrain-cell packing slice below selects the existing capture/export/brush representation boundary with array inputs; ordered subpanel callbacks, form/store/history composition and modal behavior remain host-owned. Keep checkpoint/XL budgets, movement/Patrol and match-ending actions with their owners. | Preserve exact packed cells, rectangle order, defaults and elevation-limit/error ownership through actual draft/export/recovery consumers. Real draft edit/save/reopen/publish on an identified cloud release remains separate at the existing capability gap. Further source work needs a useful responsibility and real caller contract; avoid a broad editor context or unused formatter extraction. |
 | Root tool commands and test/fixture homes: current `package.json`, workflows and `docs/testing.md` consumers | Testing-strategy/command owners own registration migration, discovery and supported commands. Authoring/assets/scenario/performance owners first select an actual workload/API boundary from the purpose-based stage above. | Preserve every existing case, fixed input/seed, coverage floor, command and release consumer; root entries retire only after external/fixture/identified-release obligations clear. Those registries and broad tool/test moves are outside this lane's current write scope. |
 
+### Authoritative map validator contract preparation — 6 October 2026
+
+The next source responsibility after PR524 is the actual 313-line
+`validateMapDefinition(definition, filename)` at main `7628e8f8`. Architecture
+owns this extraction. The parent relayed PvE/replay agreement on its exact
+contract and allocated the narrow default host binding; movement selection,
+construction, Patrol, activation, catalog and restore functions remain outside
+the write scope. This continues the validation queue above, without another
+roadmap or a common authoring/authority validator.
+
+The private canonical [map definition validator](../src/server/map-definition-validator.mjs)
+exports only `createMapDefinitionValidator`. Its eight explicit inputs are the
+seven existing scalar host policies and the existing research lookup callback:
+
+```js
+import { createMapDefinitionValidator } from './src/server/map-definition-validator.mjs';
+
+const authoritativeMapValidator = createMapDefinitionValidator({
+  maxUnits: MAX_UNITS, maxMapObstacles: MAX_MAP_OBSTACLES,
+  maxResourceNodes: MAX_RESOURCE_NODES, maxObjectiveFoodReward: MAX_OBJECTIVE_FOOD_REWARD,
+  maxMapScenarioEvents: MAX_MAP_SCENARIO_EVENTS, maxScenarioEventRepeats: MAX_SCENARIO_EVENT_REPEATS,
+  minScenarioEventRepeatSeconds: MIN_SCENARIO_EVENT_REPEAT_SECONDS, researchRulesFor,
+});
+function validateMapDefinition(definition, filename) {
+  return authoritativeMapValidator(definition, filename);
+}
+```
+
+Construction follows existing scalar/`RESEARCH_RULES` initialization and precedes
+map catalog loading. Pass the actual hoisted `researchRulesFor` function, never
+call it or copy its registry at construction. Its sole validator call remains
+the same short-circuit `technologyReward` check. There is no new input guard,
+fallback policy, global host context, catalog, filesystem, mode, storage, timer,
+Node, renderer, or running match dependency in the canonical module.
+
+The 17 direct imported bindings come from these 11 existing leaves:
+
+| Existing leaf | Actual validator bindings |
+| --- | --- |
+| `economy-profile.mjs` | `resolveEconomyProfileId`, `economyResources` |
+| `world/map-audio-reference.mjs` | `validateMapAudioReference` |
+| `regions.mjs` | `validateMapRegion` |
+| `terrain-materials.mjs` | `TERRAIN_MATERIALS` |
+| `gameplay-definitions.mjs` | `UNIT_DEFINITIONS` |
+| `map-utils.mjs` | `buildElevationGrid`, `findUnreachableCaptureZone`, `findUnreachableResourceNode`, `validateElevationPatches` |
+| `world/capture-prerequisites.mjs` | `findInvalidCapturePrerequisite` |
+| `world/scenario-event-chain.mjs` | `findInvalidScenarioEventChain` |
+| `shore-fishing.mjs` | `findInvalidResourceVariant` |
+| `scenario-regions.mjs` | `validCompletionTrigger`, `validRegionEntryTrigger`, `validateScenarioRegions` |
+| `wildlife-state.mjs` | `validWildlifeNodeDefinition` |
+
+Preserve the entire ordered body, including unprefixed helper errors, filename
+diagnostics, unknown fields, and the two in-place defaults at their existing
+positions before some later rejections. Return a new shallow object, retaining
+nested identities; normalize `terrainSeed` only in the return; retain absent
+`regions` and the existing null/absent array defaults. The 16–256 bound, 2,000
+units, 4,096 obstacles/paint patches, 128 resources, 32 triggers/events, 20 repeats,
+five-second repeat minimum and 10,000 reward cap remain exact. Ordinary catalog
+eligibility and 320 admission stay separate and unchanged.
+
+The retained named host entry is consumed by shipped-map startup, saved-map
+startup, custom-map publication, and the checkpoint envelope (before mode and
+checksum). Both existing replay adapters copy the whole server, rewrite relative
+single-quoted imports to absolute file URLs, and call that same named entry for
+preparation/recovery. Their production bodies and adapter source remain intact;
+no replay or PvE injection is added. The XL boundary and grid-cost audits now
+read/hash the actual private validator for the dimension literal, while asserting
+its host binding and retaining the checkpoint/preflight assertions and all quotas.
+
+Before extraction, additive tests in the registered
+[checkpoint validator contract](../scripts/checkpoint-validator-contract.test.mjs)
+run the actual old function, actual imports, host scalar declarations and research
+registry. After extraction the same adapter evaluates the production wrapper,
+factory binding and actual canonical import. It supplies no substitute policy.
+Existing canonical/effective checkpoint, restore, first-error, live-state and XL
+controls remain unchanged. The private server-domain entry receives no public
+path; the packed-release domain loop checks its physical inclusion and GET/HEAD
+404. Source parity, focused/native consumers, import/type/docs checks, clean
+release identity, independent review and identified staging deployment are
+separate milestones. Ordinary rendered authoring/recovery acceptance remains
+owned at the existing cloud capability gap; the denied public route is unretried.
+
+At this containing base, extraction removes 303 net host lines and creates a
+335-line domain module rather than introducing a line-count quality threshold.
+The graph becomes 228 modules/446 local edges, 141 browser/98 server/34 shared
+modules with zero cycles; the 11 new leaf edges and one composition edge are
+explicit authority dependencies. All 11 compatibility surfaces remain. The
+1,428 existing CI plan entries are identical, with only two automatically
+discovered syntax entries added (private module and test fixture); no package,
+CI registration, testing-strategy, AGENTS, schema, art or static admission changes.
+Actual old/new body-byte parity and 1,805 input/output/error/identity/lookup
+observations pass, including all 32 shipped maps. Focused contract/domain checks,
+native custom-map restart, both strict type boundaries and packed private HTTP
+checks pass. These scoped checks do not claim a complete hosted suite or an
+identified served/rendered match.
+
 ### Checkpoint validator contract preparation — 5 October 2026
 
 Architecture owns this continuing boundary with server/simulation and XL as the
