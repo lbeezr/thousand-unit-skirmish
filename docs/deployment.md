@@ -4,7 +4,9 @@
 
 The supported hosted shape is one supervisor with isolated match workers and
 persistent storage. Shared HTTP Basic Auth protects an invite-only playtest.
-Accounts, public matchmaking, and multi-replica match routing are future work.
+An explicitly approved environment can set `RTS_PUBLIC_GAMEPLAY=1` for anonymous
+gameplay; the default remains protected. Accounts, public matchmaking, and
+multi-replica match routing are future work.
 
 ## Package a release
 
@@ -132,7 +134,20 @@ Identity comparison does not establish rendered gameplay or deployment byte atte
 
 The supervisor refuses Railway startup without its required volume, password,
 and public origin configuration. `/ready` exposes readiness; `/health`, room
-APIs, assets, and WebSockets require authentication. Never put service secrets in
+APIs, assets, and WebSockets require authentication by default. With
+`RTS_PUBLIC_GAMEPLAY=1`, only gameplay assets, room creation/status/invite lookup,
+session validation and `/ws` admit anonymous access. Health and review HTML
+pages retain authentication; private server/source files remain outside the static
+allowlist. Keep the existing password, origin policy, room/peer caps and volume
+settings. The mode does not authorize enabling production or opening other
+surfaces. Review the staging patch before committing only this setting, and
+verify anonymous HTTP, two-seat WebSockets and protected negative probes at
+the deployed source SHA before sharing the link.
+
+Anonymous visitors can exhaust room slots and create hosting load; the existing
+global `RTS_MAX_ROOMS` cap bounds invite workers and the idle deadline reclaims
+rooms. This is not per-person throttling, accounts or measured abuse capacity.
+Never put service secrets in
 a guide or run log. Review `railway.json`, the Dockerfile, and platform config
 compatibility when changing deployment tooling.
 
