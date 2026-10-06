@@ -49,7 +49,7 @@ async function clientGraph() {
   return new Set(checks.map(item => item.path.slice(1)));
 }
 
-export async function auditAssetAdoption({ registry, releaseFiles, main = null, environment = null, loadManifest = json }) {
+export async function auditAssetAdoption({ registry, releaseFiles, main = null, environment = null, groundSurfaces = null, loadManifest = json }) {
   assert.equal(registry.schemaVersion, 1);
   assert.ok(registry.scope?.trim() && registry.records?.length, 'state the bounded registry coverage');
   const graph = await clientGraph();
@@ -83,9 +83,15 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null, 
       dependencies.push(...descriptor.mipFiles);
       if (record.screeCliffFaces) {
         assert.ok(graph.has('src/terrain-cliff-faces.mjs'), 'normal scree cliff renderer must be reachable');
-        assert.match(environment, /const cliffFaces = createTerrainCliffFaces\(definition, \{ base,\s*texture: base === 'scree' \? groundTexture\('scree', definition\) : null/,
+        assert.ok(graph.has('src/presentation/rendering/ground-surfaces.mjs'), 'normal ground surface builder must be reachable');
+        assert.match(environment, /const buildGroundSurfaces = createGroundSurfaceBuilder\(\{ groundBaseMaterial, groundTexture \}\);/,
+          'normal ground surfaces must retain host base and shared texture policy');
+        assert.match(environment, /export function createGroundSurfaces\(definition\) \{\s*return buildGroundSurfaces\(definition\);/,
+          'normal ground surfaces must use the canonical builder');
+        groundSurfaces ??= (await read('src/presentation/rendering/ground-surfaces.mjs')).toString();
+        assert.match(groundSurfaces, /const cliffFaces = createTerrainCliffFaces\(definition, \{ base,\s*texture: base === 'scree' \? groundTexture\('scree', definition\) : null/,
           'approved scree cliff faces must consume the normal painted texture');
-        assert.match(environment, /if \(cliffFaces\) meshes\.push\(cliffFaces\)/,
+        assert.match(groundSurfaces, /if \(cliffFaces\) meshes\.push\(cliffFaces\)/,
           'normal ground surfaces must render the approved scree cliff faces');
       }
     } else if (record.probe === 'oak-depletion') {

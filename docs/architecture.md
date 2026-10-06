@@ -834,7 +834,7 @@ for an existing responsibility, not an already available framework/API.
 | R2 — agreed outbound transport source slice, architecture/transport owner | `server.mjs`: `canQueuePeerFrame`, `sendPreparedPeerFrame`, `recordPeerWrite` and the existing state/waypoint coalescing/drain branch in `createPeer` → `src/server/transport/peer-output.mjs`. Explicit peer/socket/frame, existing queue cap and two aggregate metric callbacks; no sessions, gameplay context or inbound command parser. Current `src/networking/websocket-frame.mjs` and deflate API stay stable. | The narrow factory/counter interface was reviewed before edits; no queue/access/negotiation policy changes. Run `scripts/websocket-frame.test.mjs`, `scripts/waypoint-backpressure.test.mjs`, `scripts/map-change-backpressure-scenario.mjs`, `scripts/server-hardening-scenario.mjs` and `scripts/resume-session-scenario.mjs`. Identical bytes, return values, counter increments, termination threshold, retained latest state and drain order. Private module never gets public HTTP admission. |
 | R3 — client welcome/session identity, client/network owner | Only the session token/server-instance/match-id storage and reset-vs-restore decision branches within `src/main.js::connectSocket` → `src/client/networking/welcome-session.mjs`. The independently reviewed factory takes a deferred storage getter and existing resolved room keys. Its separate resume-token read, instance/match identity and seat-token write operations retain their original positions around map rebuilding and return the existing identity flags. Keep map rebuilding, seat selection, lobby, audio, render state and WebSocket callbacks in the host. | Preserve the reviewed storage failure semantics, callback order and stale-connection guard described below. Run `scripts/browser-resume-client.test.mjs`, `scripts/renderer-browser-resume-scenario.test.mjs` and `scripts/resume-session-scenario.mjs`; rendered `scripts/renderer-browser-resume-scenario.mjs` on an identified cloud release remains separate. Same keys/tokens, fresh/reset/restored decisions and original storage catches; no new reconnect policy or protocol. Independent of R2's Node output implementation. |
 | R4 — draft timer/lifetime, authoring owner | `src/main.js`: `persistMapStudioDraft`, `scheduleMapStudioDraftSave` and their actual close/cancel calls → proposed `src/authoring/map-studio-draft-controller.mjs`, composing the existing store/form/history APIs. Keep ordered subpanel capture, import/publish mutation and canvas rendering in the host; own one dirty/timer/flush lifecycle rather than exporting setters for every editor global. | Dependent on the existing rendered draft/recovery observation and an agreed capture/status/clock/timer interface; not ready for an extraction through a broad editor bag. `scripts/resource-brush-controls.test.mjs`, `scripts/fixtures/map-studio-draft-fixture.mjs` and `scripts/map-studio-draft-scenario.mjs` retain real edit/save/close/reopen/import/export controls. Same 160 ms debounce, force-close flush, write order, failure text and v1 bytes; no publish rejection changes owned by the error lane. |
-| R5 — renderer ground resource lifetime, renderer/assets owner | `src/environment-art.mjs`: `groundBuffer`, `addGroundQuad`, `finishGroundGeometry`, `createGroundSurfaces` → proposed `src/presentation/rendering/ground-surfaces.mjs`. Keep definition/geometry projection distinct from material registry, water motion subscriptions and disposal ownership. Preserve `createGroundSurfaces` at the existing environment API while using the canonical implementation. | Agree the actual terrain-height/material/water resource interface and disposal ownership with the active renderer first. Run `scripts/terrain-blend-scenario.mjs`, `scripts/water-surface-scenario.mjs`, `scripts/water-surface-study.test.mjs` and `scripts/terrain-atmosphere-scenario.mjs`; ordinary ground/water appearance and disposal on an identified cloud build are separate acceptance. Same vertex/UV/index/order, bounds, texture URLs, material identity, motion subscription cleanup and fallback. If inputs require the whole renderer context, split a smaller geometry responsibility or defer; no art-path/default changes. |
+| R5 — renderer ground resource lifetime, renderer/assets owner | Parent-reconciled ownership and an independently reviewed two-callback factory establish `src/presentation/rendering/ground-surfaces.mjs` for `groundBuffer`, `addGroundQuad`, `finishGroundGeometry` and `createGroundSurfaces`. The environment host retains base selection, atlas/texture cache and URLs; its one-argument public API uses the canonical builder. Client map teardown retains geometry/material/owned-texture disposal. | The source boundary and acceptance contract are recorded below. Preserve vertex/UV/index order, material/shared-texture/clone identity, render/query/time order and water subscription cleanup. Run the existing terrain/water/atmosphere, cliff/shade and art-adoption checks plus parity, imports/types/admission/package. Identified cloud ground/water appearance and disposal remain separate acceptance; no art-path/default changes. |
 | R6 — room-index persistence, server/orchestration owner | The parent reconciled ownership; the independently reviewed factory in `src/server/persistence/room-index-store.mjs` owns the former `persistRoomIndex` body and index read/normalization portion of `loadRooms`. It receives the two host-resolved paths and a document-capture callback using the existing launch-option contract. Worker startup, expiry, routing, access/origin decisions and root path/environment resolution remain in `room-supervisor.mjs`. | The implementation and acceptance contract are recorded below. Serialize host/guard integration and preserve other owners' additive domain entries. Run the existing supervisor, expiry, PvE launch and pregame/recovery scenarios plus queue/error/path, import and packaged private HTTP checks. Same index format/order/defaults, temporary-file/rename behavior, failure recovery and room launch identity; no permission/access or storage-location changes. |
 
 A shared public positional-row codec is a later contract proposal, not a seventh
@@ -898,8 +898,8 @@ it. Source checks cover both-seat shape/privacy, malformed-mask/error order,
 immutable input, legacy identity, same-history decisions and native/replay
 consumers. Clean package/private GET/HEAD, exact-head independent review and
 identified delivery remain the implementation owner's checks; source counts do
-not establish rendered gameplay. Later R3/R6 agreements are recorded below;
-R4/R5 retain their named owner interfaces and acceptance dependencies.
+not establish rendered gameplay. Later R3/R5/R6 agreements are recorded below;
+R4 retains its named owner interface and rendered-observation dependency.
 No authoritative snapshot, movement, construction, policy, scheduling, art or
 security/access change is part of R1.
 
@@ -1038,8 +1038,68 @@ clean release digest, actual merged tree and provider deployment source are
 recorded separately in the implementation PR/evidence. They do not close the
 existing public-served/rendered cloud gap. Art backing is N/A.
 
+### R5 ground-surface construction and resource boundary
+
+Against clean main `a8dad6ed`, the parent reconciled no competing writer of the
+four ground functions. Independent source review approved
+`createGroundSurfaceBuilder({ groundBaseMaterial, groundTexture })` before edits.
+The [canonical presentation module](../src/presentation/rendering/ground-surfaces.mjs)
+captures those two existing host functions; construction performs no policy,
+query, preference or time reads and allocates no geometry/material/texture.
+Its returned one-argument operation contains the existing surface body and
+three private geometry helpers, with unchanged statement/expression order.
+
+The environment host keeps its `createGroundSurfaces(definition)` function
+declaration and every other public export. Its single builder receives the
+actual base selector and texture function. Painted-atlas readiness, selection,
+shared cache, sampling/fallback texture URLs and other resource families remain
+host-owned. No renderer context, alternate asset path or new resource policy is
+introduced. Base selection remains inside each operation before the existing
+query reads; texture lookups retain every original argument and call position.
+
+Blend clones and masks retain `ownedGroundTextures`. Water retains its initial
+reduced-motion read, same change callback, material-dispose listener removal and
+lazy performance time callback. The byte-unchanged client `clearMapObjects`
+traversal owns geometry/material and tagged-texture disposal; scene/fish,
+construction, settlement, vegetation and client lifecycle remain in their
+existing owners. Root texture/cache and art defaults are unchanged.
+
+Thirty actual old/new cases pass 337 controls across flat/raised, paint/forest,
+water/mist/cliff, atlas/fallback, reduced-motion and changing-query fixtures.
+Attribute/index bytes, bounds, material/shader/resource roles, query/texture/time
+traces and the actual unchanged client teardown match. Reconstruction preserves
+every environment-host byte outside the allocated imports/body/constant changes.
+
+The asset-adoption scree probe follows the actual canonical cliff body, verifies
+host composition and graph reachability, and retains both rejection controls;
+painted-atlas/default probes remain on the host. Existing paths, test names,
+assertions and CI registrations remain. Focused ground/water/cliff/shade,
+asset-adoption and import checks pass 77/77; 12 adjacent construction/settlement/
+sampling/atlas contracts pass. Current terrain blend, water geometry and
+atmosphere scenarios, both checked type boundaries and 58 negative type cases
+pass. The unchanged type configurations do not claim coverage of the new leaf
+or full environment host.
+
+The canonical file is 148 physical lines; the environment host is 1,113 (130
+fewer than 1,243). The graph is **235 modules / 465 local edges / 143 browser /
+103 server / 34 shared / zero cycles**. All 1,448 prior CI selections remain;
+only canonical module syntax is auto-discovered. These are dated responsibility
+ratchets rather than absolute file-size or quality thresholds. Exact public
+admission is added only for the canonical file; folder/unknown/suffix/double-slash
+denial, full browser closures/hashes and all server-private GET/HEAD 404 checks
+remain at both packed hosts. No compatibility shim is invented for formerly
+private helpers; the existing environment API remains supported.
+
+Independent exact-head review, clean reviewed and actual merged packing/digests,
+and automatic staging source are recorded separately in the implementation PR
+and evidence. Actual rendered ground/water appearance and disposal acceptance
+remain open with the existing cloud capture workstream. CPU geometry/material
+and teardown parity, source/asset/package checks or provider source SUCCESS do
+not establish those pixels. This internal no-change extraction introduces no
+new art treatment; preserve the existing approved ground/water defaults.
+
 R4 remains dependent on an identified rendered draft/recovery observation and
-the agreed authoring capture/status/clock/timer interface; R6 does not waive
+the agreed authoring capture/status/clock/timer interface; R5/R6 do not waive
 either dependency or allocate that host's draft lifecycle.
 
 ### Next responsibility checkpoints

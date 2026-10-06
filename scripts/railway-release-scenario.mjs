@@ -161,7 +161,8 @@ try {
     assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),
       createHash('sha256').update(await readFile(path.join(sourceRoot, filename))).digest('hex'), filename);
   }
-  for (const filename of ['src/environment-art.mjs', 'src/presentation/assets/interactive-runtime-image.mjs']) {
+  for (const filename of ['src/environment-art.mjs', 'src/presentation/assets/interactive-runtime-image.mjs',
+    'src/presentation/rendering/ground-surfaces.mjs']) {
     const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
     assert.equal(response.status, 200, filename);
     assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
@@ -172,7 +173,9 @@ try {
     assert.deepEqual(bytes, await readFile(path.join(sourceRoot, filename)), filename);
   }
   for (const filename of ['src/presentation/assets/', 'src/presentation/assets/unknown.mjs',
-    'src/presentation/assets/interactive-runtime-image.mjs/extra', 'src/presentation//assets/interactive-runtime-image.mjs']) {
+    'src/presentation/assets/interactive-runtime-image.mjs/extra', 'src/presentation//assets/interactive-runtime-image.mjs',
+    'src/presentation/rendering/', 'src/presentation/rendering/unknown.mjs',
+    'src/presentation/rendering/ground-surfaces.mjs/extra', 'src/presentation//rendering/ground-surfaces.mjs']) {
     for (const method of ['GET', 'HEAD']) {
       assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
         404, `image-loading admission remains exact (${method}): ${filename}`);

@@ -6,6 +6,7 @@ import { createWaterSurfaceStudy, waterSurfaceOptions } from '../src/water-surfa
 import { createWaterStudyFishBinding } from '../src/water-study-fish-binding.mjs';
 import { buildWaterSurfaceGeometry } from '../src/water-surface-geometry.mjs';
 import { findInvalidResourceVariant } from '../src/shore-fishing.mjs';
+import { createGroundSurfaceBuilder } from '../src/presentation/rendering/ground-surfaces.mjs';
 
 const fish = { id: 'bank-fish', type: 'food', resourceVariant: 'shore-fish', x: -1.5, z: -.5, stock: 22.5 };
 const map = () => ({ width: 8, height: 8, terrainSeed: 17, terrainBase: 'meadow',
@@ -16,6 +17,99 @@ function dispose(mesh) {
   mesh.traverse(o => { o.geometry?.dispose(); o.material?.dispose(); });
   for (const texture of mesh.userData.ownedGroundTextures || []) texture.dispose();
 }
+
+test('canonical ground builder defers host policy and query reads until surface creation', () => {
+  const original = globalThis.location, calls = [];
+  const texture = new THREE.Texture();
+  try {
+    globalThis.location = { get search() { calls.push('query'); return '?terrainTiling=mirror'; } };
+    const build = createGroundSurfaceBuilder({
+      groundBaseMaterial(definition) { calls.push(['base', definition]); return 'meadow'; },
+      groundTexture(material, definition, variant) { calls.push(['texture', material, definition, variant]); return texture; },
+    });
+    assert.deepEqual(calls, [], 'factory creation does not read queries or call texture/base policy');
+    assert.equal(build.name, 'createGroundSurfaces'); assert.equal(build.length, 1);
+    const definition = { width: 2, height: 2, obstacles: [] };
+    const surfaces = build(definition);
+    assert.deepEqual(calls[0], ['base', definition], 'base selection remains before query evaluation');
+    assert.equal(surfaces.length, 1);
+    assert.equal(surfaces[0].material.map, texture, 'shared host texture identity is retained');
+    assert.deepEqual(Array.from(surfaces[0].geometry.getAttribute('position').array),
+      Array.from(new Float32Array([-1, -.025, -1, 1, -.025, -1, -1, -.025, 1, 1, -.025, 1])));
+    assert.deepEqual(Array.from(surfaces[0].geometry.getAttribute('uv').array),
+      Array.from(new Float32Array([0, 0, 2 / 12, 0, 0, 2 / 12, 2 / 12, 2 / 12])));
+    assert.deepEqual(Array.from(surfaces[0].geometry.index.array), [0, 3, 1, 0, 2, 3]);
+    assert.equal(surfaces[0].userData.terrainSurface, true);
+    dispose(surfaces[0]);
+  } finally {
+    texture.dispose();
+    if (original === undefined) delete globalThis.location; else globalThis.location = original;
+  }
+});
+
+test('canonical ground builder keeps blend clones owned and cached source textures shared', () => {
+  const original = globalThis.location;
+  const shared = new Map();
+  let sharedDisposals = 0;
+  const surfaces = [];
+  try {
+    globalThis.location = { search: '?terrainTiling=mirror' };
+    const build = createGroundSurfaceBuilder({ groundBaseMaterial: () => 'meadow', groundTexture(material) {
+      if (!shared.has(material)) {
+        const texture = new THREE.Texture(); texture.addEventListener('dispose', () => sharedDisposals++);
+        shared.set(material, texture);
+      }
+      return shared.get(material);
+    } });
+    surfaces.push(...build({ width: 4, height: 4, terrainPatches: [
+      { column: 0, row: 0, width: 2, height: 4, material: 'sand' },
+    ], obstacles: [] }));
+    const blend = surfaces.find(surface => surface.userData.ownedGroundTextures);
+    assert.ok(blend);
+    const [clone, mask] = blend.userData.ownedGroundTextures;
+    assert.notEqual(clone, shared.get('sand')); assert.equal(blend.material.map, clone);
+    assert.equal(blend.material.alphaMap, mask);
+    assert.deepEqual([clone.repeat.x, clone.repeat.y], [4 / 12, 4 / 12]);
+    assert.equal(blend.renderOrder, -20); assert.equal(blend.material.depthWrite, false);
+    let ownedDisposals = 0;
+    for (const texture of [clone, mask]) texture.addEventListener('dispose', () => ownedDisposals++);
+    for (const surface of surfaces) dispose(surface);
+    assert.equal(ownedDisposals, 2); assert.equal(sharedDisposals, 0, 'map teardown does not own cached textures');
+  } finally {
+    for (const texture of shared.values()) texture.dispose();
+    if (original === undefined) delete globalThis.location; else globalThis.location = original;
+  }
+});
+
+test('canonical ground builder retains the water preference callback until material disposal', () => {
+  const original = { location: globalThis.location, matchMedia: globalThis.matchMedia };
+  const listeners = new Set();
+  let registered, removed;
+  const motion = { matches: false,
+    addEventListener(type, callback) { assert.equal(type, 'change'); registered = callback; listeners.add(callback); },
+    removeEventListener(type, callback) { assert.equal(type, 'change'); removed = callback; listeners.delete(callback); } };
+  const texture = new THREE.Texture();
+  const surfaces = [];
+  try {
+    globalThis.location = { search: '' }; globalThis.matchMedia = () => motion;
+    const build = createGroundSurfaceBuilder({ groundBaseMaterial: () => 'meadow', groundTexture: () => texture });
+    assert.equal(listeners.size, 0);
+    surfaces.push(...build(map()));
+    const water = surfaces.find(surface => surface.userData.waterStudy);
+    assert.equal(water.renderOrder, 5); assert.equal(listeners.size, 1);
+    registered({ matches: true }); water.userData.updateWaterStudy(19);
+    assert.equal(water.material.uniforms.time.value, 0);
+    registered({ matches: false }); water.userData.updateWaterStudy(19);
+    assert.equal(water.material.uniforms.time.value, 19);
+    water.material.dispose(); assert.equal(removed, registered); assert.equal(listeners.size, 0);
+  } finally {
+    for (const surface of surfaces) dispose(surface);
+    texture.dispose();
+    for (const key of ['location', 'matchMedia']) {
+      if (original[key] === undefined) delete globalThis[key]; else globalThis[key] = original[key];
+    }
+  }
+});
 
 test('cosmetic field grades real shore distance without mutating map or creating bathymetry', () => {
   const definition = { width: 12, height: 12, obstacles: [{ column: 1, row: 1, width: 10, height: 10, material: 'water' }] };
