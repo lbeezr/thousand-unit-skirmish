@@ -101,3 +101,148 @@ test('recovery guards preserve original getter faults and existing storage excep
   Object.defineProperty(draft, 'editor', { get() { throw failure; } });
   assert.throws(() => requireRecovery(draft, 'source'), error => error === failure);
 });
+
+
+const elevationPatch = (level = 2) => ({ column: 0, row: 0, width: 1, height: 1, level });
+const invalidElevations = [
+  ['shape', {}],
+  ['bounds', [{ ...elevationPatch(), column: 32 }]],
+  ['level', [elevationPatch(3)]],
+  ['overlap', [elevationPatch(), elevationPatch()]],
+  ['limit', Array.from({ length: 4097 }, () => elevationPatch())],
+];
+
+for (const [reason, patches] of invalidElevations) {
+  test(`actual Restore rejects elevation ${reason} before mutation and supports repair/retry`, t => {
+    const f = mapStudioDraftFixture(t);
+    const formState = createMapStudioFormState({ root: f.w.ui.mapStudio, document: f.d });
+    f.open();
+    f.edit('studio-name', 'Retained local edit');
+    f.flush();
+    const key = f.w.editorDraftStorageKey;
+    const validRaw = f.w.localStorage.getItem(key);
+    const damaged = JSON.parse(validRaw);
+    damaged.editor.definition.name = 'Private damaged draft';
+    damaged.editor.definition.elevationPatches = patches;
+    const damagedRaw = JSON.stringify(damaged);
+    f.w.localStorage.setItem(key, damagedRaw);
+    f.w.showMapStudioDraftRecovery(damaged);
+    const references = {
+      definition: f.w.editorDefinition, resources: f.w.editorResourceNodes,
+      triggers: f.w.editorTriggers, events: f.w.editorScenarioEvents,
+      ground: f.w.editorGroundMaterials, cells: f.w.editorCellMaterials,
+      levels: f.w.editorGroundLevels, elevations: f.w.editorCellElevations,
+    };
+    const before = {
+      form: formState.capture(), match: f.copy(f.w.mapDefinition),
+      definition: f.copy(f.w.editorDefinition),
+      grids: [f.w.editorGroundMaterials, f.w.editorCellMaterials, f.w.editorGroundLevels, f.w.editorCellElevations]
+        .map(grid => [...grid]),
+      selectedRegion: f.w.selectedEditorRegionId, tool: f.w.editorTool,
+      redraws: f.w.redraws, savedAt: f.w.lastDraftSavedAt(),
+      dirty: f.w.editorDraftDirty, status: f.w.ui.studioDraftStatus.textContent,
+      history: [...f.w.scenarioEditHistory.states], historyIndex: f.w.scenarioEditHistory.index,
+      timers: [...f.timers],
+    };
+    f.click('studio-draft-restore');
+    assert.equal(f.w.editorDefinition, references.definition);
+    assert.equal(f.w.editorResourceNodes, references.resources);
+    assert.equal(f.w.editorTriggers, references.triggers);
+    assert.equal(f.w.editorScenarioEvents, references.events);
+    assert.equal(f.w.editorGroundMaterials, references.ground);
+    assert.equal(f.w.editorCellMaterials, references.cells);
+    assert.equal(f.w.editorGroundLevels, references.levels);
+    assert.equal(f.w.editorCellElevations, references.elevations);
+    assert.deepEqual(f.copy(f.w.editorDefinition), before.definition);
+    assert.deepEqual([f.w.editorGroundMaterials, f.w.editorCellMaterials, f.w.editorGroundLevels, f.w.editorCellElevations]
+      .map(grid => [...grid]), before.grids);
+    assert.equal(f.w.selectedEditorRegionId, before.selectedRegion);
+    assert.equal(f.w.editorTool, before.tool);
+    assert.deepEqual(formState.capture(), before.form);
+    assert.deepEqual(f.copy(f.w.mapDefinition), before.match);
+    assert.equal(f.w.redraws, before.redraws);
+    assert.equal(f.w.lastDraftSavedAt(), before.savedAt);
+    assert.equal(f.w.editorDraftDirty, before.dirty);
+    assert.equal(f.w.ui.studioDraftStatus.textContent, before.status);
+    assert.deepEqual(f.w.scenarioEditHistory.states, before.history);
+    assert.equal(f.w.scenarioEditHistory.index, before.historyIndex);
+    assert.deepEqual([...f.timers], before.timers);
+    assert.equal(f.w.ui.studioDraftRecoveryMessage.textContent, `Invalid elevation patches: ${reason}.`);
+    assert.equal(f.w.ui.studioDraftRecovery.hidden, false);
+    assert.equal(f.w.ui.mapStudioLayout.inert, true);
+    assert.equal(f.w.localStorage.getItem(key), damagedRaw);
+    f.w.localStorage.setItem(key, validRaw);
+    f.click('studio-draft-restore');
+    assert.equal(f.w.ui.studioName.value, 'Retained local edit');
+    assert.equal(f.w.ui.studioDraftRecovery.hidden, true);
+    assert.equal(f.w.localStorage.getItem(key), validRaw);
+    f.flush();
+    assert.equal(JSON.parse(f.w.localStorage.getItem(key)).editor.definition.name, 'Retained local edit');
+  });
+}
+
+test('elevation preflight preserves valid recovery references and unfinished form values', () => {
+  for (const patches of [undefined, [], [elevationPatch(0)], [elevationPatch(2)]]) {
+    const draft = draftFor({ ...minimalDefinition(), elevationPatches: patches });
+    draft.editor.form = { name: '', width: 'unfinished' };
+    const before = structuredClone(draft);
+    const recovered = requireRecovery(draft, 'source');
+    assert.equal(recovered.state, draft.editor);
+    assert.equal(recovered.definition, draft.editor.definition);
+    assert.equal(recovered.definition.elevationPatches, patches);
+    assert.deepEqual(draft, before);
+  }
+  for (const patches of [null, false, 0, '']) {
+    assert.throws(() => requireRecovery(draftFor({ ...minimalDefinition(), elevationPatches: patches }), 'source'),
+      { message: 'Invalid elevation patches: shape.' });
+  }
+});
+
+for (const [name, patches, expectedLevel] of [
+  ['omitted', undefined, 0], ['empty', [], 0],
+  ['zero level', [elevationPatch(0)], 0], ['raised level', [elevationPatch(2)], 2],
+]) {
+  test(`actual Restore accepts ${name} elevations and retains saved form state`, t => {
+    const f = mapStudioDraftFixture(t);
+    f.open();
+    f.edit('studio-name', 'Saved valid recovery');
+    f.flush();
+    const key = f.w.editorDraftStorageKey;
+    const draft = JSON.parse(f.w.localStorage.getItem(key));
+    draft.editor.definition.elevationPatches = patches;
+    const raw = JSON.stringify(draft);
+    f.w.localStorage.setItem(key, raw);
+    f.w.showMapStudioDraftRecovery(draft);
+    f.click('studio-draft-restore');
+    assert.equal(f.w.ui.studioName.value, 'Saved valid recovery');
+    assert.equal(f.w.editorGroundLevels[0], expectedLevel);
+    assert.equal(f.w.editorGroundLevels[1], 0);
+    assert.equal(f.w.ui.studioDraftRecovery.hidden, true);
+    assert.equal(f.w.localStorage.getItem(key), raw);
+    f.flush();
+    assert.equal(JSON.parse(f.w.localStorage.getItem(key)).editor.definition.name, 'Saved valid recovery');
+  });
+}
+
+test('elevation preflight retains prior guard ordering and unexpected-error identity', () => {
+  const failure = new Error('Private unexpected elevation detail');
+  for (const makeDraft of [
+    () => ({ ...draftFor(minimalDefinition()), version: 2 }),
+    () => ({ ...draftFor(minimalDefinition()), sourceMapId: 'foreign' }),
+    () => draftFor({ ...minimalDefinition(), width: 15 }),
+    () => draftFor({ ...minimalDefinition(), resourceNodes: {} }),
+  ]) {
+    const draft = makeDraft();
+    let reads = 0;
+    Object.defineProperty(draft.editor.definition, 'elevationPatches', { get() { reads++; throw failure; } });
+    assert.throws(() => requireRecovery(draft, 'source'), { message: recoveryMessage });
+    assert.equal(reads, 0);
+  }
+  const draft = draftFor(minimalDefinition());
+  Object.defineProperty(draft.editor.definition, 'elevationPatches', { get() { throw failure; } });
+  assert.throws(() => requireRecovery(draft, 'source'), error => error === failure);
+  const patch = elevationPatch();
+  Object.defineProperty(patch, 'level', { get() { throw failure; } });
+  assert.throws(() => requireRecovery(draftFor({ ...minimalDefinition(), elevationPatches: [patch] }), 'source'),
+    error => error === failure);
+});
