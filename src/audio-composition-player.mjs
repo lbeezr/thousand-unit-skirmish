@@ -1,4 +1,4 @@
-import { compileComposition } from './audio-composition.mjs';
+import { compileComposition } from './presentation/audio/composition.mjs';
 
 // One Web Audio clock drives every clip. A generation token invalidates loads after stop/switch.
 export function createCompositionPlayer({ context, destination, resolveBuffer }) {

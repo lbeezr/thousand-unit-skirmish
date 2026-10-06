@@ -227,6 +227,28 @@ try {
         404, `audio admission remains exact (${method}): ${filename}`);
     }
   }
+  // Composition has one canonical implementation and a supported old API path.
+  for (const filename of ['src/audio-composition.mjs', 'src/presentation/audio/composition.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+      assert.equal(response.status, 200, `${method}: ${filename}`);
+      assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
+      assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+      assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+      if (method === 'GET') {
+        const bytes = Buffer.from(await response.arrayBuffer());
+        assert.deepEqual(bytes, await readFile(path.join(root, filename)), filename);
+        assert.deepEqual(bytes, await readFile(path.join(sourceRoot, filename)), filename);
+      }
+    }
+  }
+  for (const filename of ['src/presentation/audio/', 'src/presentation/audio/unknown.mjs',
+    'src/presentation/audio/composition.mjs/extra', 'src/presentation//audio/composition.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
+        404, `composition admission remains exact (${method}): ${filename}`);
+    }
+  }
   // Both old browser imports and canonical authoring paths must survive packing
   // with the source bytes and the same exact-path GET/HEAD policy.
   for (const filename of ['src/scenario-authoring.mjs', 'src/map-resize.mjs',

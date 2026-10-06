@@ -1,4 +1,4 @@
-import { validateComposition as validateSharedComposition } from './audio-composition.mjs';
+import { validateComposition as validateSharedComposition } from './presentation/audio/composition.mjs';
 
 // Portable metadata contract. Original recordings live beside this record as Blobs.
 export const AUDIO_PACK_SCHEMA_VERSION = 1;

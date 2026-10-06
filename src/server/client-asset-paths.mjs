@@ -50,6 +50,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/client/audio/audio-decoded-cache.mjs', 'src/client/audio/audio-shipped-response.mjs',
   'src/presentation/assets/interactive-runtime-image.mjs',
   'src/presentation/rendering/ground-surfaces.mjs',
+  'src/presentation/audio/composition.mjs',
   'src/audio-composition-player.mjs', 'src/audio-assets.mjs', 'src/audio-library-store.mjs',
   'src/audio-library-ui.mjs', 'src/audio-studio.mjs', 'src/audio-studio.css',
   'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
