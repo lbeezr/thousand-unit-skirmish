@@ -8069,8 +8069,9 @@ function workerPatrolApproachBody(unit, target) {
 // Local body adoption follows characterized live Worker intent. Callers extend
 // this single predicate seam; selection and actual write admission share it.
 function workerLocalBodyRadius(unit) {
-  return constructionMovementActive(unit) || workerPatrolAcquiredMovementActive(unit)
-    ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0;
+  return workerEconomyBodyRadius(unit)
+    || (constructionMovementActive(unit) || workerPatrolAcquiredMovementActive(unit)
+      ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0);
 }
 
 // Each activated Worker write uses a fresh bounded query of live body poses.
