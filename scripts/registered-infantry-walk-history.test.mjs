@@ -69,6 +69,15 @@ for(const receipt of history.filter(r=>r.gaitSpec))test(`actual own-${receipt.he
   for(const pose of poses)for(const [x0,y0,x1,y1] of receipt.frozenOpaqueSourceRegions??[])for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
     const k=(y*256+x)*4;if(seed[k+3]===255)assert.deepEqual(pose.pixels.subarray(k,k+4),seed.subarray(k,k+4),'actual opaque cuff/equipment samples stay frozen');
   }
+  for(const [x0,y0,x1,y1] of receipt.frozenRgbSourceRegions??[]){
+    let compared=0;
+    for(const pose of poses)for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
+      const k=(y*256+x)*4;if(seed[k+3]>0){
+        assert.deepEqual(pose.pixels.subarray(k,k+3),seed.subarray(k,k+3),'actual source cuff RGB stays frozen where a leg blends behind');compared++;
+      }
+    }
+    assert.ok(compared>0,'the explicit cuff RGB gate must compare actual source samples');
+  }
   const same=[0,1,0,1].map((n,i)=>{const p={...poses[n],pixels:Buffer.from(poses[n].pixels)};p.pixels[0]=i+1;return p;});
   assert.equal(new Set(same.map(p=>sha(p.pixels))).size,4);
   assert.throws(()=>inspectInfantrySourceFootfall(same,gaitSpec),/supporting foot|passing legs|forward reach/);
