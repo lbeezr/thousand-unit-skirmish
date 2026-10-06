@@ -1298,6 +1298,19 @@ still owns PR520 activation and the original kill/loss/native recovery deadline
 qualification; this input alone does not close that outcome. Construction
 liveness and rendered acceptance remain separate. Art backing is N/A.
 
+### Queued-wall temporal movement witness — 6 October 2026
+
+The subsequent [queued-wall temporal witness](qa-construction-temporal-witness-2026-10-06.md)
+retains the one authorized new current-source run after closed, unmerged
+[PR #525](https://github.com/lbeezr/thousand-unit-skirmish/pull/525). Actor75's
+558–678 progress-credit interval contains real movement; at594 far-goal priority
+discards a physically admitted .023663 fixed-waypoint gain even while the
+claimant's current waypoint direction has a positive route dot product.
+The complete public actor/query/controller receipt replays185actual calls without
+starting another match. Core proposes only current-route opposition semantics
+at that causal discard; crowd reviews the temporal case before any correction.
+Original completion, 150-tick fairness and physical limits remain unchanged.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
