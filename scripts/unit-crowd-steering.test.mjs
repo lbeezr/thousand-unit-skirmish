@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import './crowd-queue-geometry.test.mjs';
+import './crowd-entitlement-model.test.mjs';
 import { canTraverseCrowdBodySegment, ordinaryCrowdBodyRadius, selectCrowdStep,
   CROWD_NEIGHBOR_LIMIT, CROWD_PROPOSAL_LIMIT } from '../src/unit-crowd-steering.mjs';
 import { LAND_CLEARANCE_PROFILE, segmentRectangleDistanceSquared } from '../src/unit-movement.mjs';
