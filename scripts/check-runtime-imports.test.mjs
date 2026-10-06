@@ -90,12 +90,32 @@ test('canonical composer UI stays in client with its lazy caller and outside aut
   const canonical = 'src/client/audio/composer.mjs';
   assert.ok(RUNTIME_DOMAINS.client.includes(canonical));
   const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
-  assert.ok(moduleImports(sources.get('src/audio-library-ui.mjs'), 'src/audio-library-ui.mjs')
-    .includes('./client/audio/composer.mjs'));
+  assert.ok(moduleImports(sources.get('src/client/audio/library-ui.mjs'), 'src/client/audio/library-ui.mjs')
+    .includes('./composer.mjs'));
   assert.deepEqual(moduleImports(sources.get(canonical), canonical), [
     '../../presentation/audio/composition-player.mjs', '../../presentation/audio/composition-wav.mjs',
     '../../presentation/audio/composition.mjs',
   ]);
+  for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+    'src/formation-assignment.mjs', 'src/simulation/ai/opponent-observation.mjs']) {
+    const relative = path.posix.relative(path.posix.dirname(root), canonical);
+    assert.throws(() => check({ [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';`, [canonical]: '' }),
+      /(?:rules|world|simulation|ai) domain cannot reach client domain/, root);
+  }
+  for (const [host, domain] of Object.entries(RUNTIME_DOMAIN_HOSTS)) {
+    if (domain !== 'server') continue;
+    assert.throws(() => check({ [host]: `import './${canonical}';`, [canonical]: '' }, { serverEntrypoints: [host] }),
+      /server host reaches client domain/, host);
+  }
+});
+
+test('canonical audio library UI owns its DOM/composer consumers and stays outside authority hosts', async () => {
+  const canonical = 'src/client/audio/library-ui.mjs';
+  assert.ok(RUNTIME_DOMAINS.client.includes(canonical));
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  assert.deepEqual(moduleImports(sources.get(canonical), canonical), ['../../audio-assets.mjs', './composer.mjs']);
+  assert.deepEqual(moduleImports(sources.get('src/audio-library-ui.mjs'), 'src/audio-library-ui.mjs'), ['./client/audio/library-ui.mjs']);
+  assert.ok(moduleImports(sources.get('src/audio-studio.mjs'), 'src/audio-studio.mjs').includes('./client/audio/library-ui.mjs'));
   for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
     'src/formation-assignment.mjs', 'src/simulation/ai/opponent-observation.mjs']) {
     const relative = path.posix.relative(path.posix.dirname(root), canonical);
@@ -477,7 +497,26 @@ test('local draft persistence and its versioned contract stay authoring-only', a
   }
   assert.deepEqual(moduleImports(await readFile(new URL(`../${store}`, import.meta.url), 'utf8'), store),
     ['./map-studio/draft/v1/contract.mjs']);
-  assert.deepEqual(moduleImports(await readFile(new URL(`../${contract}`, import.meta.url), 'utf8'), contract), []);
+  assert.deepEqual(moduleImports(await readFile(new URL(`../${contract}`, import.meta.url), 'utf8'), contract),
+    ['../../../../map-utils.mjs']);
+  const graph = runtimeImportGraph(await readRuntimeSources(new URL('../', import.meta.url).pathname));
+  const dependencies = new Set();
+  const visit = filename => {
+    const node = graph.get(filename);
+    assert.ok(node, filename);
+    assert.deepEqual(node.external, [], filename);
+    for (const dependency of node.local) {
+      if (dependencies.has(dependency)) continue;
+      dependencies.add(dependency);
+      visit(dependency);
+    }
+  };
+  visit(contract);
+  assert.deepEqual([...dependencies].sort(), [
+    'src/elevation.mjs', 'src/map-utils.mjs',
+    'src/world/capture-prerequisites.mjs', 'src/world/scenario-event-chain.mjs',
+  ]);
+  for (const dependency of dependencies) assert.ok(RUNTIME_DOMAINS.world.includes(dependency), dependency);
 });
 
 test('domain membership rejects duplicate ownership and supports exact canonical migration paths', () => {
