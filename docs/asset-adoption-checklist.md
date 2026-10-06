@@ -77,6 +77,55 @@ Held/rejected [PR25](https://github.com/lbeezr/thousand-unit-skirmish/pull/25),
 This documentary reconciliation publishes no private source or new art and
 authorizes no Mac execution, provider spend, deployment or access change.
 
+The 6 October user approval below releases only the existing military runtime
+batch from the historical building-publication hold. Other private art/source
+boundaries and the other workstreams above retain their existing scope.
+
+### Military lifecycle delivery owner — 5 October 2026
+
+Owner: delegated building lifecycle lane `01a0f784-c5d7-72e0-82e8-1747b4c840c1`
+(`/root` implementation; `/root/barracks_independent_review` independent review).
+The [current reconciliation](qa-military-lifecycle-integration-2026-10-05.md)
+and [exact transfer list](qa-evidence/military-lifecycle-integration-2026-10-05/runtime-transfer-plan.json)
+supersede the military row's next-production action, without changing its
+public Complete-only delivery status.
+
+| Outcome | Evidence / dependency | Next action and acceptance |
+| --- | --- | --- |
+| Barracks + Range matching lifecycle | Prior private batch had 64 reviewed lifecycle PNGs and two manifests. Its source/package review is historical; this newly provisioned checkout at `518ba4af776b5aebefdb9dce50c3559d2ac9abb5` initially lacked those outputs. Exact recipes and the Barracks manifest are now restored from retained transcript text, and 64 fresh views recaptured privately without a design change or provider calls. All sixteen Complete PNGs match the prior source bytes. | Same owner validates and durably saves the fresh 66-file transfer, distinguishing its hashes from unrecovered historical PNG bytes. Integrate locally before identified gameplay verification. No model/recipe/gallery publication. |
+| Current-checkout integration preparation | Local code protects admitted lifecycle metadata and tests all declared states. The transfer tool validates hashes, alpha, registration and exact HTTP/Docker paths before writing a local overlay. | Same owner retains exact-head checks and independent review. The fresh exact transfer is now locally integrated; 59 focused checks and packed HTTP verify all 82 military paths. Preserve durable private inputs and complete identified ordinary-game verification. |
+| Release, publication and gameplay | On 6 October the user approved publication of only the 64 military state PNGs, two manifests and required integration/support code. The read-only `gh` GraphQL prerequisite returned `Forbidden`, with no write sent. The parent independently verified connected-app authorization; the existing configured Git route then fetched main `089b35a7` successfully. Historical cloud startup failed `sandbox-unavailable` / `storage-unavailable` before game frames. | Same owner retains current-main integration, draft PR, normal merge and identified release/game verification using those existing authorized routes. Sources, recipes, archives and review sheets remain private. Identify clean source, pack, deployment and real frames separately; no access expansion, denied dispatch, security bypass or Mac dependency. |
+
+Mill/Farm/Dock remain with economy owner `01a107a5-8aa1-7fd0-81b1-997b4d563e89`;
+their existing staged v1 evidence is preserved. Shadow-overlay layer code remains
+with owner `01a10c3c` and is outside this slice. No `.agents` claim files are
+available in this workspace; these documented owners and the active reviewer
+are the available ownership evidence. The ranked existing-model continuation
+stays in the [building production queue](building-atlas-production-plan.md#current-outcome-and-next-gaps).
+
+**Durability correction:** the prior turn saved only two review sheets, not the
+64-image runtime bundle. Supported Library inspection confirms those saves;
+Library byte materialization currently fails with a helper network error.
+Both approved Complete GLBs and comparison pixels now reproduce exactly from
+public sources; these recoverable inputs have a confirmed private Library
+checkpoint. Both complete lifecycle recipes and the Barracks historical manifest were
+restored from this task's retained transcript; the exact recipe bytes were saved
+before private state recapture. All 64 fresh views are locally integrated and
+verified against their current manifests; no original lifecycle PNG bytes were recovered. The
+[recovery record](qa-military-lifecycle-integration-2026-10-05.md#durability-correction-and-base-recovery)
+separates these recovery/recapture milestones from identified ordinary-game proof.
+
+**6 October surviving-byte check:** the cloud workspace retains the actual
+64 new lifecycle PNGs, two applied manifests, both approved military GLBs and
+both exact recipes. The private checkpoint's full inventory and all 66 applied
+runtime files match locally; all sixteen Complete images still match HEAD.
+Fifty-nine focused checks and packed HTTP/hash admission passed again, with
+the same dirty candidate digest recorded in the existing verification evidence.
+No Library retry, regeneration, upload or publication was performed. The next
+six approved source GLBs remain absent; all forty-eight Complete image hashes
+were verified. Town Center remains next, pending the original cloud-backup
+bytes and their recorded source hash, before any matching private prototype.
+
 ### Historical inspection — 3 October 2026
 
 Railway read-only `environment-status` + `list-deployments`, inspected about

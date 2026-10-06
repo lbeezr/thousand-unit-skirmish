@@ -41,7 +41,35 @@ test('a runtime capture missing its required digest cannot be called usable', as
   const manifest = JSON.parse(await readFile(path.join(root, record.manifest)));
   delete manifest.completeState.views[0].sha256;
   await assert.rejects(audit({ registry: { ...registry, records: [record] }, loadManifest: async () => manifest }),
-    /runtime dependency digest required/);
+    /runtime dependency digest required|Invalid frame reference/);
+});
+
+test('building adoption reports missing lifecycle separately from successful Complete binding', async () => {
+  // The bounded shipped audit registry contains the original eight buildings.
+  // Exercise economy compatibility explicitly, without changing that owner's registry.
+  const economy = ['mill', 'farm', 'dock'].filter(building => !registry.records.some(row => row.building === building))
+    .map(building => ({id: `frontier-${building}`, owner: 'Existing economy integration owner', probe: 'frontier-building', building,
+      manifest: `assets/buildings/frontier-economy-models-v1/${building}-complete-renderer.json`}));
+  const report = await audit({registry: {...registry, records: [...registry.records, ...economy]}});
+  for (const row of report.results.filter(row => row.id.startsWith('frontier-') && row.lifecycleCoverage)) {
+    assert.equal(row.lifecycleCoverage.viewsPerState, 8);
+    if (['frontier-mill', 'frontier-farm', 'frontier-dock'].includes(row.id)) assert.deepEqual(row.lifecycleCoverage.missingStates, []);
+    else {
+      const record = registry.records.find(record => record.id === row.id);
+      const manifest = JSON.parse(await readFile(path.join(root, record.manifest)));
+      assert.deepEqual(row.lifecycleCoverage.states, manifest.stateOrder);
+      assert.equal(row.lifecycleCoverage.missingStates.length + manifest.stateOrder.length, 5);
+    }
+    assert.equal(row.defaultBound, true);
+  }
+  assert.equal(report.results.filter(row => row.lifecycleCoverage).length, 11);
+});
+
+test('building adoption cannot report declared lifecycle states without corresponding entries', async () => {
+  const record = registry.records.find(row => row.id === 'frontier-barracks');
+  const manifest = JSON.parse(await readFile(path.join(root, record.manifest)));
+  manifest.stateOrder = ['complete', 'foundation']; manifest.states = [];
+  await assert.rejects(audit({registry: {...registry, records: [record]}, loadManifest: async () => manifest}), /Lifecycle entries differ/);
 });
 
 test('painted ground guard rejects a missing authored mip and a disconnected default binding', async () => {

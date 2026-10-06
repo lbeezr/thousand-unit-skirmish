@@ -9,6 +9,7 @@ import { frontierBuildingManifestUrl, frontierBuildingPreviewUrl } from '../src/
 import { WILDLIFE_RENDER_REGISTRY } from '../src/neutral-wildlife-renderer.mjs';
 import { activeState, civilizationSpriteRole, spriteActionClip, spriteDirectory } from '../src/unit-sprite-runtime.mjs';
 import { checkClientImports } from './check-client-imports.mjs';
+import { validateBuildingLifecycle } from './validate-building-lifecycle.mjs';
 import { groundTextureName, PAINTED_MATERIAL_ATLAS_MANIFEST, PAINTED_MATERIAL_NAMES,
   paintedMaterialAtlasDescriptor } from '../src/painted-material-atlas-runtime.mjs';
 import { OAK_DEPLETION_ATLAS_MANIFEST, oakDepletionAtlasDescriptor, oakDepletionStage } from '../src/oak-depletion-atlas-runtime.mjs';
@@ -68,7 +69,7 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null, 
     }
     const manifest = await loadManifest(record.manifest);
     const dependencies = [{ path: record.manifest, container: true }];
-    let defaultBound = false, module;
+    let defaultBound = false, module, lifecycleCoverage;
     if (record.probe === 'painted-ground') {
       module = 'src/painted-material-atlas-runtime.mjs';
       assert.equal(relativeUrl(PAINTED_MATERIAL_ATLAS_MANIFEST), record.manifest);
@@ -119,6 +120,9 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null, 
       assert.equal(relativeUrl(available), record.manifest, `${record.id}: selector/manifest disagreement`);
       defaultBound = Boolean(normal);
       assert.equal(manifest.asset, record.building);
+      const coverage = validateBuildingLifecycle(manifest);
+      lifecycleCoverage = { states: [...coverage.states], viewsPerState: coverage.viewsPerState,
+        missingStates: ['foundation', 'frame', 'complete', 'damaged', 'critical'].filter(state => !coverage.states.includes(state)) };
       assert.ok(manifest.completeState?.views?.length, `${record.id}: capture views required`);
       for (const state of [manifest.completeState, ...(manifest.states || [])]) {
         for (const view of state.views || []) {
@@ -183,6 +187,7 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null, 
     if (defaultBound) assert.deepEqual(missing, [], `${record.id}: default runtime dependency omitted from release`);
     results.push({ id: record.id, owner: record.owner, defaultBound, releaseIncluded: missing.length === 0,
       missing, status: defaultBound ? 'static-binding-and-package-checked' : 'incomplete-experiment',
+      ...(lifecycleCoverage ? { lifecycleCoverage } : {}),
       ...(defaultBound ? {} : { exception: record.exception }) });
   }
   return { scope: registry.scope, inGameVerification: 'not established by this static audit', results };

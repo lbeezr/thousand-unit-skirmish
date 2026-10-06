@@ -1,7 +1,7 @@
 {
   "schema": "thousand-unit-skirmish.building-lifecycle-reference.v1",
   "asset": "archery-range",
-  "status": "Complete-only renderer; native gameplay acceptance pending",
+  "status": "Local transcript-recaptured lifecycle; identified ordinary-game visual acceptance incomplete",
   "camera": {
     "projection": "orthographic",
     "framePixels": [
@@ -27,9 +27,258 @@
     "background": "transparent"
   },
   "stateOrder": [
-    "complete"
+    "foundation",
+    "frame",
+    "complete",
+    "damaged",
+    "critical"
   ],
-  "states": [],
+  "states": [
+    {
+      "state": "foundation",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/archery-range-foundation-view-00.png",
+          "sha256": "153f046f40c90e45cecb728ef2bce461c43e3851622d4d34d3f2021770b25f9c",
+          "bytes": 408004
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/archery-range-foundation-view-01.png",
+          "sha256": "6a25c777ff2fbdfb1dbfbdaf6260c0c7e78ff4ce8e7d29b28de823fc03cf677d",
+          "bytes": 430942
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/archery-range-foundation-view-02.png",
+          "sha256": "b5f8f89a745f44729fc5e58805cca1efce38324873e23e8d122574866797fc60",
+          "bytes": 413266
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/archery-range-foundation-view-03.png",
+          "sha256": "6f913a4cad431419bb8e3621b119b0f8778b74d6df7dcd31f392dd429f6299d6",
+          "bytes": 432296
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/archery-range-foundation-view-04.png",
+          "sha256": "4c513ebc400efd684809a5752c0e0014c11963a492099ff0575ac78e82aeb216",
+          "bytes": 407644
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/archery-range-foundation-view-05.png",
+          "sha256": "3a3330ad54819bdf4119afea9b121b98cdcb847e2b6d3e608a6588389eac1207",
+          "bytes": 431176
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/archery-range-foundation-view-06.png",
+          "sha256": "122f6bf369c3fecac5bdf4f2785929e8c97b25ea29bf907db0f54e51a06f937a",
+          "bytes": 413195
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/archery-range-foundation-view-07.png",
+          "sha256": "6c0fd26e856f5d1cf90a6fd9a1650e9cac701c625a1cec22fa77ba32cb4d880c",
+          "bytes": 427681
+        }
+      ]
+    },
+    {
+      "state": "frame",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/archery-range-frame-view-00.png",
+          "sha256": "8e4a3f03a101d2df6a3b0bd356e2b25b88fe43ddc714b32b7e61fa770ce6ec66",
+          "bytes": 490806
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/archery-range-frame-view-01.png",
+          "sha256": "1888177b170842f89217df78eddf937a9f99b9c8fcfffdcfc4a14278eed1252c",
+          "bytes": 558571
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/archery-range-frame-view-02.png",
+          "sha256": "693c17d1e773a25c5f2ca0ba63bebb640b1ecaa1b97177f7902ca33b81734906",
+          "bytes": 489066
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/archery-range-frame-view-03.png",
+          "sha256": "0b7ac79fd5e9bce1034c275697dae15f14f00f3f5a198f8be295475260ce15c2",
+          "bytes": 546932
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/archery-range-frame-view-04.png",
+          "sha256": "55d288ba1f746aa08068df5cb619beb230414ac5a1a9351a443c1f508632c129",
+          "bytes": 484462
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/archery-range-frame-view-05.png",
+          "sha256": "b566a341106f772a059ae476388611eaeac11348480235ccba0ac29605bc409f",
+          "bytes": 564921
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/archery-range-frame-view-06.png",
+          "sha256": "2c6e4a6d5577ad115c244f81141e12b1321215c4560e0e25b60064faa9dc4e16",
+          "bytes": 507135
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/archery-range-frame-view-07.png",
+          "sha256": "4e40b3ef5637119e5047f7e9f6822d86499f3cfadb6180302eed5a4900ca04cf",
+          "bytes": 559565
+        }
+      ]
+    },
+    {
+      "state": "damaged",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/archery-range-damaged-view-00.png",
+          "sha256": "44b04c240adf3ad0c97fba2462674f2160446e97b3dc6407a70940b9d8fb04fd",
+          "bytes": 546548
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/archery-range-damaged-view-01.png",
+          "sha256": "15ae157b1807e36800c37aa110172c03ed2ff8623ac43a17a150434e01018a07",
+          "bytes": 582703
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/archery-range-damaged-view-02.png",
+          "sha256": "1bbc6ee77c53265ea2c1618379a5bcb314f9d4fb26194cb2854071a1a79cc94b",
+          "bytes": 532489
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/archery-range-damaged-view-03.png",
+          "sha256": "816eff3d81999e274f52fe5fdbf9f31c4e87a862f8abf17b5197207a15119e35",
+          "bytes": 559974
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/archery-range-damaged-view-04.png",
+          "sha256": "a5d476ed1112fadc14fd229dc81fb1297fee4a7632532233aad22372dd7eefe5",
+          "bytes": 514876
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/archery-range-damaged-view-05.png",
+          "sha256": "8bf9598b733d59c1533b553ed43fc574d3772b518788e142b74c017b11d2e70f",
+          "bytes": 577436
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/archery-range-damaged-view-06.png",
+          "sha256": "4dc689ebfe269aae700d29825002ae8cac1bf82fd380b4c6a8b97e540f3ebd55",
+          "bytes": 565558
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/archery-range-damaged-view-07.png",
+          "sha256": "3e901cbb0ab662a1c28b3b2f0765e85794437b3b9301b9d848b6fd10ed91c5b7",
+          "bytes": 591268
+        }
+      ]
+    },
+    {
+      "state": "critical",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/archery-range-critical-view-00.png",
+          "sha256": "d51a2d38b98bc67cc1176ccf28892c5bc4f9c285a2b366ad6b6db0bb36d92b8f",
+          "bytes": 474264
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/archery-range-critical-view-01.png",
+          "sha256": "69d0cf7edddedb9f520dfaa8c2139a0af3fa2046dd057306f57c92c69c093831",
+          "bytes": 483379
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/archery-range-critical-view-02.png",
+          "sha256": "6aa6a442e147604ce30f530e0e0e901dccf7b0bb4ee0bf2c70b4964ecf45ee4f",
+          "bytes": 451806
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/archery-range-critical-view-03.png",
+          "sha256": "0a4b3632197799569a53b671e873bb428dc9d91132b6b202a64ff4790400f6b2",
+          "bytes": 471913
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/archery-range-critical-view-04.png",
+          "sha256": "60eeca27223becad43d12825f947e1527987c1209481ab9071b25d90f6530255",
+          "bytes": 465195
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/archery-range-critical-view-05.png",
+          "sha256": "f65e07f025f599b498bbe22eb36a8dbb7527582435441b0edc5eb071370bfb79",
+          "bytes": 492184
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/archery-range-critical-view-06.png",
+          "sha256": "4539d78d4cfc8477f8e537013e87f149b60066aafadffa745fee214c0ffef27d",
+          "bytes": 479891
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/archery-range-critical-view-07.png",
+          "sha256": "007ecf0c47864ca05165c1d45fcace36ad0355a45a57ce32d0ae7981144744f0",
+          "bytes": 491914
+        }
+      ]
+    }
+  ],
   "completeState": {
     "state": "complete",
     "views": [
@@ -96,5 +345,20 @@
     "No matched construction or damage views; retain older direct sprite fallback",
     "Barracks proportions differ from concept illustration; native doorway/Worker review open",
     "Procedural Blender bump nodes are not baked GLB normal maps"
-  ]
+  ],
+  "stateMapping": {
+    "construction": {
+      "foundationAtOrBelow": 0.275
+    },
+    "health": {
+      "damagedAtOrBelow": 0.6,
+      "criticalAtOrBelow": 0.3
+    }
+  },
+  "lifecycleProvenance": {
+    "captureRecipeSHA256": "bd749824b7931a774d7521e58c6c5b6237cfd3f02b0d92232080c00282d988a7",
+    "originalModelSHA256": "d4d1b3da7a7544351da191fdcc539b24a4bc2580df4d951848a24b0e21a85664",
+    "method": "Private recapture from restored exact transcript recipe and approved deterministic source",
+    "providerCalls": 0
+  }
 }

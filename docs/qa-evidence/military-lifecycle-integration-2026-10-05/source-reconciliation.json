@@ -1,0 +1,107 @@
+{
+  "sourceRevision": "518ba4af776b5aebefdb9dce50c3559d2ac9abb5",
+  "remoteMainFreshness": "Provisioned checkout only; no origin/main ref and no denied GitHub retry",
+  "previousBatchSourceRevision": "b5b4dd49139b86dbe6ad0d299469f6b193df81b1",
+  "completeImages": [
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/barracks-complete-view-00.png",
+      "sha256": "40f9e1cf8c516fbaa237dde66a6bb3b686a71c947a72acaab7661d8c78087439",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/barracks-complete-view-01.png",
+      "sha256": "c5c91aeb3e420218163bfe5f4793bb58dca31a0d95f26e4c20f6f7845886721d",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/barracks-complete-view-02.png",
+      "sha256": "dc91434fcdcf6eb12c21edb8d8e04fa178526a2bb064e18da954a0b6ddade734",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/barracks-complete-view-03.png",
+      "sha256": "76cb00ca490e25a651e5ea4d69c05c38654bb9a15d35efd198f8a16bf7cdb4b6",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/barracks-complete-view-04.png",
+      "sha256": "54958ea0f5d981dd1bde60bf7ba5399e56360662a929580c8f61724beeffb93f",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/barracks-complete-view-05.png",
+      "sha256": "43be32b02eddaae8028441b0197c5d0446042de361fd041919eba6650df2afb0",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/barracks-complete-view-06.png",
+      "sha256": "da4312833c2ac6b3744d5bd1c7f812ca69a1063e66c3ddb60c407e9f9c4aae1d",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/barracks-complete-view-07.png",
+      "sha256": "7366e033fe27265283b6933790c7fad99c985f0c4d7fd5ac63547b5524a80264",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/archery-range-complete-view-00.png",
+      "sha256": "f33193369ee91473728429dbb1d42646cc15064e1d9c290d06372e48a588a7a5",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/archery-range-complete-view-01.png",
+      "sha256": "a09351ec92be0fd340aad0fe680b02279964cc2ccc5ff5bd4028f08afa60bda4",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/archery-range-complete-view-02.png",
+      "sha256": "3a599a5bbd99a00023b5e8cddece4e10f52b19e82af53c4c9d705db8d45d41bd",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/archery-range-complete-view-03.png",
+      "sha256": "eeab6c21aa02dcdb372e490564033104d9957358a3cb7bb7f7e64049879bcda2",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/archery-range-complete-view-04.png",
+      "sha256": "ed909ca74e6c4843c2321a7bedb218f8e22ff5a668106aad19896172ce2ca30e",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/archery-range-complete-view-05.png",
+      "sha256": "08b08c74ff67bfad25b04ac5abc709eef14548c63ec79b47a92849741afdba25",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/archery-range-complete-view-06.png",
+      "sha256": "3f9676acef3987dfd7d561ab4406500e0954be063e9d42ddd87bd87edec56327",
+      "matchesPriorSourceBytes": true
+    },
+    {
+      "path": "assets/buildings/frontier-civilization-military-models-v1/captures/archery-range-complete-view-07.png",
+      "sha256": "6b0f2d544ce1455a123169ea3776476d0683b32e8b5de41a81348956c5a2460d",
+      "matchesPriorSourceBytes": true
+    }
+  ],
+  "priorCandidateDigest": "sha256:20ed24de5070a738240964cd2599a04d526ef79c3224a134c71600a284a3b3e5",
+  "priorCandidateEvidence": "Historical private batch, unavailable in this fresh workspace; not current release evidence",
+  "missingLifecyclePngCount": 64,
+  "currentMilitaryManifestStates": {
+    "barracks": [
+      "complete"
+    ],
+    "archery-range": [
+      "complete"
+    ]
+  },
+  "publicMilitaryAuthoringSources": [
+    "assets/buildings/frontier-civilization-military-models-v1/source/build_military.py",
+    "assets/buildings/frontier-civilization-military-models-v1/source/build_range.py",
+    "assets/buildings/frontier-civilization-military-models-v1/source/prepare_materials.py"
+  ],
+  "localApprovedEditableModelsForOtherSix": "Absent; public provenance and Complete captures only",
+  "gameFramesProduced": 0,
+  "deploymentChanged": false,
+  "paidGenerationCalls": 0
+}

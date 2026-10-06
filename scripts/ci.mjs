@@ -164,6 +164,8 @@ run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites')
 run(['--test', 'scripts/frontier-economy-art.test.mjs'], 'Frontier economy lifecycle and depletion capture integrity');
 run(['--test', 'scripts/captured-building-picking.test.mjs'], 'Visible building pixels and hidden fallback picking');
 run(['--test', 'scripts/frontier-building-default.test.mjs'], 'Normal finished Frontier building art, fallback and shared depth');
+run(['--test', 'scripts/military-lifecycle-integration.test.mjs'], 'Exact private military runtime transfer and lifecycle preservation');
+run(['--test', 'scripts/military-lifecycle-pixels.test.mjs'], 'Military lifecycle decoded art and zoom alpha picking');
 run(['scripts/frontier-building-acceptance-map-scenario.mjs'], 'Ordinary building acceptance map admission and legal pads');
 run(['--test', 'scripts/building-occlusion-fixture.test.mjs'], 'Building occlusion QA controls, HTTP assets and timing evidence');
 run(['--test', 'scripts/captured-building-state-race.test.mjs', 'scripts/captured-building-manifest-retry.test.mjs', 'scripts/frontier-building-renderer.test.mjs', 'scripts/frontier-building-preview.test.mjs', 'scripts/building-lifecycle-validation.test.mjs'], 'Captured building lifecycle and source contracts');

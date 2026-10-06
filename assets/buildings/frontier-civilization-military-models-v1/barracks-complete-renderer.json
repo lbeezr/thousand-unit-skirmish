@@ -1,7 +1,7 @@
 {
   "schema": "thousand-unit-skirmish.building-lifecycle-reference.v1",
   "asset": "barracks",
-  "status": "Complete-only renderer; native gameplay acceptance pending",
+  "status": "Local transcript-recaptured lifecycle; identified ordinary-game visual acceptance incomplete",
   "camera": {
     "projection": "orthographic",
     "framePixels": [
@@ -27,9 +27,258 @@
     "background": "transparent"
   },
   "stateOrder": [
-    "complete"
+    "foundation",
+    "frame",
+    "complete",
+    "damaged",
+    "critical"
   ],
-  "states": [],
+  "states": [
+    {
+      "state": "foundation",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/barracks-foundation-view-00.png",
+          "sha256": "6464f06e7b5f0e7927ca3066c8c742090329894d0efbe928cc41ae1e4f132979",
+          "bytes": 408108
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/barracks-foundation-view-01.png",
+          "sha256": "5501c263468a23f44861e5024ccd524062441f15657181b1aeeb6530c9398b96",
+          "bytes": 430416
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/barracks-foundation-view-02.png",
+          "sha256": "5e6707f7faf55f51f98804980fa1b2e8ae1ba3bd55153561e4d83ce249d66be8",
+          "bytes": 413424
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/barracks-foundation-view-03.png",
+          "sha256": "4cde7513fa724e622057b9abadeda9a5c5b658ba29812c6d3efd54d4f478c7c8",
+          "bytes": 432416
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/barracks-foundation-view-04.png",
+          "sha256": "e4e88b4cdbde27c19fb92f41ed0c1eae0c4790cb4d63477a41c0eae12e91d4cb",
+          "bytes": 408394
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/barracks-foundation-view-05.png",
+          "sha256": "c99b8663ae56b98faca93f76418b960a7862ad65245e0c9ca8450a239fadfae8",
+          "bytes": 431325
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/barracks-foundation-view-06.png",
+          "sha256": "eb7c54c7ff41cac9b1bf8f54aa0bb5f817990aef9c92363ce5df44abe2fc8d26",
+          "bytes": 413276
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/barracks-foundation-view-07.png",
+          "sha256": "b66f9f9e48b0bbfed5918571df7ed869b35a6e673b49bbd0bcabab9de97eba2b",
+          "bytes": 427347
+        }
+      ]
+    },
+    {
+      "state": "frame",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/barracks-frame-view-00.png",
+          "sha256": "c52cc227e97659bed0475021e6d7c26c0d83add90c9c31e82f68e8dbc669caba",
+          "bytes": 503786
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/barracks-frame-view-01.png",
+          "sha256": "46151d57b923868375c31a2920addd4d409210050fe8c24889616a88e86eaa9b",
+          "bytes": 544528
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/barracks-frame-view-02.png",
+          "sha256": "c327d5efb0841d51bb4a168c3552e0aa469d77532f7860eb5d09c35603282ea7",
+          "bytes": 489642
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/barracks-frame-view-03.png",
+          "sha256": "3c7470d16b87b6b9c252de930e8774eef28ff20d3b2966794070b478bb1dd56b",
+          "bytes": 546269
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/barracks-frame-view-04.png",
+          "sha256": "aa47434bbf91e326801065482f5d36e8dde47c923ccd114b7ccf1bc2497cec2a",
+          "bytes": 504568
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/barracks-frame-view-05.png",
+          "sha256": "287b3945c77936d7ccfd7fa918c3b2a9008f157d2c5cd4f12f792d911790bfe2",
+          "bytes": 547040
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/barracks-frame-view-06.png",
+          "sha256": "b6b751d2b4107b579e2335b54e54a5467f084c6840570221a92286dccfdd9ed2",
+          "bytes": 487621
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/barracks-frame-view-07.png",
+          "sha256": "bcb1047885ac79715874d31235e0ae5b225e831c977a236a5d572d3f01f4f618",
+          "bytes": 535629
+        }
+      ]
+    },
+    {
+      "state": "damaged",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/barracks-damaged-view-00.png",
+          "sha256": "265455ee0611cd92a950d7b6651de5a1650e8160d9ee8ddb0c4677514b38a8a3",
+          "bytes": 555265
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/barracks-damaged-view-01.png",
+          "sha256": "a7ef2190851577238ef347be6992235d36ec05e2b5d01837f49bdad0b5e8743e",
+          "bytes": 584527
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/barracks-damaged-view-02.png",
+          "sha256": "23b811024591903afd5e6059b725ad0738ca8e1d6dc187f6a6db976a04896c9e",
+          "bytes": 531791
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/barracks-damaged-view-03.png",
+          "sha256": "4595efb29ad7cecfbf25469c3d8aa5871a0b9c43cc254bfe77bd092a0db99e08",
+          "bytes": 555782
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/barracks-damaged-view-04.png",
+          "sha256": "dbda9c1fc26b70dd4a34d2982c6ec8c9bda2fd73aaa24f00baf9ecc32d433b22",
+          "bytes": 530231
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/barracks-damaged-view-05.png",
+          "sha256": "fb2810443b987b32b6ecff20c8bec81baf229c1a49a48203adcdd7c57484d107",
+          "bytes": 556365
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/barracks-damaged-view-06.png",
+          "sha256": "85011a3f6c2598ce8d7a8d8cbe39ecf5c006266eab0a97a74cf5bc2fc43c66e6",
+          "bytes": 516404
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/barracks-damaged-view-07.png",
+          "sha256": "b88aef1a909000eb5652d73188c1666d77369e5274988c9af020843ab8c2c9ad",
+          "bytes": 566479
+        }
+      ]
+    },
+    {
+      "state": "critical",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/barracks-critical-view-00.png",
+          "sha256": "a120451d252efb254a9217f50c900f03e53796b192c29a8afc8274755a50ccaa",
+          "bytes": 469066
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/barracks-critical-view-01.png",
+          "sha256": "206da0acd95e38a4dc2308eec54566d21a46fda7e985436b28c44053d77156ef",
+          "bytes": 485149
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/barracks-critical-view-02.png",
+          "sha256": "c85fe327bc08f844a48db7c62b8883d3e50744ce0574d58b071fe2945c66604a",
+          "bytes": 471396
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/barracks-critical-view-03.png",
+          "sha256": "40b66573861945f87b8bcd58a01cdc99c1163776faa86a9ca5d729b3480efa23",
+          "bytes": 470670
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/barracks-critical-view-04.png",
+          "sha256": "ee6bbe800d438f82d59638cbb005481e7dbeb6b297e86280018ab3adea6fc6b9",
+          "bytes": 458303
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/barracks-critical-view-05.png",
+          "sha256": "7456b118cd6de5c04341d7e44bfb79b7eb50beaa49c51bc127eda6fa0fdb015a",
+          "bytes": 474304
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/barracks-critical-view-06.png",
+          "sha256": "43ffde84c08683afc5f7e5f43c68ed3667572fd8f51371d77960adbe23a2f019",
+          "bytes": 464934
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/barracks-critical-view-07.png",
+          "sha256": "30049ee9420bc9ffb1aab8c9249e6112df68b0cc95d62b8140033f8d9b7e1893",
+          "bytes": 476625
+        }
+      ]
+    }
+  ],
   "completeState": {
     "state": "complete",
     "views": [
@@ -96,5 +345,20 @@
     "No matched construction or damage views; retain older direct sprite fallback",
     "Barracks proportions differ from concept illustration; native doorway/Worker review open",
     "Procedural Blender bump nodes are not baked GLB normal maps"
-  ]
+  ],
+  "stateMapping": {
+    "construction": {
+      "foundationAtOrBelow": 0.275
+    },
+    "health": {
+      "damagedAtOrBelow": 0.6,
+      "criticalAtOrBelow": 0.3
+    }
+  },
+  "lifecycleProvenance": {
+    "captureRecipeSHA256": "ff7e909826167c4961129b9e55bbd097da0a0bcf75f814f4e715be3c0ad8d404",
+    "originalModelSHA256": "2411cb41f61f326e90da7ee8c8d6d4a67eb9da274d6a228f6f347c8a03c90ab3",
+    "method": "Private recapture from restored exact transcript recipe and approved deterministic source",
+    "providerCalls": 0
+  }
 }

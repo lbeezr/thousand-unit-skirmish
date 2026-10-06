@@ -112,6 +112,8 @@ test('normal factories use all eleven authored families and truthful per-state f
       assert.ok(entry, 'actual normal factory attaches this family');
       await settle(() => entry.sprite.visible);
       const data = entry.sprite.userData.capturedBuildingArt, depth = data.bodyDepth;
+      const matchedLifecycle = ['foundation', 'frame', 'complete', 'damaged', 'critical']
+        .every(state => data.manifest.stateOrder.includes(state));
       assert.equal(data.manifest.asset, type); assert.equal(data.requestKey, 'complete:1:#' + TEAM_HEX[team].toString(16));
       assert.equal(entry.sprite.scale.x, 8); assert.equal(entry.sprite.scale.y, 8);
       assert.ok(Math.abs(entry.sprite.center.y - (1 - 647.1527325565025 / 1024)) < 1e-12);
@@ -163,7 +165,7 @@ test('normal factories use all eleven authored families and truthful per-state f
         entry.lifecycleInput = { ...building, ...state };
         update[type](visual, entry.lifecycleInput);
         step();
-        if (['mill', 'farm', 'dock'].includes(type)) {
+        if (matchedLifecycle) {
           await settle(() => entry.sprite.visible);
           const expected = state.complete === false ? state.progress <= .275 ? 'foundation' : 'frame' : state.hp <= 30 ? 'critical' : 'damaged';
           assert.ok(entry.sprite.userData.capturedBuildingArt.requestKey.startsWith(expected + ':'), 'authored lifecycle follows the live building');
@@ -189,7 +191,7 @@ test('normal factories use all eleven authored families and truthful per-state f
           assert.equal(visual.healthIndicator.group.visible, true);
           assert.equal(visual.healthIndicator.fill.scale.x, state.hp / building.maxHp);
         }
-        if (type === 'town-center') {
+        if (type === 'town-center' && !matchedLifecycle) {
           await settle(() => visual.captureEntry.sprite.visible);
           const expected = state.complete === false ? state.progress <= .275 ? 'foundation' : 'frame' : state.hp > 30 ? 'damaged' : 'critical';
           assert.ok(visual.captureEntry.sprite.userData.capturedBuildingArt.requestKey.startsWith(expected + ':'), 'older authored lifecycle fallback selects the real state');
@@ -210,7 +212,7 @@ test('normal factories use all eleven authored families and truthful per-state f
           assert.ok(entry.sprite.userData.capturedBuildingArt.requestKey.startsWith('complete:'), 'productive or unknown stock does not imply exhaustion');
         }
       }
-      if (['mill', 'farm', 'dock'].includes(type)) {
+      if (matchedLifecycle) {
         entry.lifecycleInput = building;
         for (let index = 0; index < 8; index++) {
           const az = index * Math.PI / 4;
