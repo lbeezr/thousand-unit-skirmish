@@ -6,7 +6,9 @@ export function requireRecovery(draft, sourceMapId) {
   if (draft?.version !== MAP_STUDIO_DRAFT_VERSION || draft.sourceMapId !== sourceMapId
     || !definition || !Number.isInteger(definition.width) || !Number.isInteger(definition.height)
     || definition.width < 16 || definition.width > 256 || definition.height < 16 || definition.height > 256
-    || !Array.isArray(definition.obstacles) || !Array.isArray(definition.spawnPoints)) {
+    || !Array.isArray(definition.obstacles) || !Array.isArray(definition.spawnPoints)
+    || !Array.isArray(definition.resourceNodes || []) || !Array.isArray(definition.triggers || [])
+    || !Array.isArray(definition.scenarioEvents || []) || !Array.isArray(definition.terrainPatches || [])) {
     throw new Error('The saved draft could not be read. Discard it to start a fresh map.');
   }
   return { state, definition };
