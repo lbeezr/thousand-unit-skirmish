@@ -1342,6 +1342,43 @@ owns the semantic refinement; crowd owns later unchanged journey/fairness
 qualification after an explicit supported-candidate handoff. No PR529 merge,
 fresh journey or inference about the later239-tick gap is included.
 
+Independent semantic review at `9f23c1a7` then rejected a concrete continuation
+proposal: allow an outside-lane inward step only when its resulting gap reserves
+the claimant's full next-tick travel budget, and terminate permission on lane
+entry. The reserve is derived from both body radii and authoritative speed ×
+fixed step, not a witness-specific distance. Forest142 fails it (.482295 gap
+versus .526667 required); wall594 passes with .030095 surplus. This proves only
+pair clearance for one fixed budget. Moving the entrant changes the peer's
+closest-eight tangent candidates even when all immediate headings remain clear.
+Wall594 enters the following lane after that half-step, where ordinary priority
+can stop the same tick's remaining execution. Extending permission to its raw
+waypoint is unsupported: that point intrudes .108256 into peer73's remaining
+waypoint corridor. No runtime candidate implements either proposal.
+
+Waiting can persist because the lower-ID far-goal claim discards the admitted
+best, all ten recovery proposals fail, and a crowd wait ends execution without
+body-only route repair. Neither admitted proposal beats historical
+`bestDistance - .02`; movement does not itself reset progress age. The existing
+forward-follower exception protects the actor ahead of compatible followers;
+the transverse-waypoint exception requires different geometry. Passage leases
+protect an isolated dependency beside parked bodies, excluding these 10/16
+moving-peer queries. A fresh peer progress timestamp measures historical
+distance at selector entry, not a promised next executed step.
+
+The **single missing architectural constraint is a bounded movement entitlement
+for the ahead claimant in moving-only crowds**: specify which route progress
+that peer retains, how ingress preserves it, and what consumes or releases the
+entitlement before another grant. Current identity, waypoint and progress
+records do not encode that promise. A next counterfactual peer73 decision could
+falsify this ingress, but would not define the general contract. Core owns that
+contract decision at the existing transient steering/arbitration boundary;
+prefer its bounded queries and lease/offer state after their semantics are
+specified. Crowd remains the sole original journey/fairness qualification owner
+after independent semantic review and explicit supported-candidate handoff.
+PR529 stays rejected; physical guards, progress credit, original deadlines and
+fairness are unchanged. No new helper, game, capture or qualification run is
+justified by this analysis.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
