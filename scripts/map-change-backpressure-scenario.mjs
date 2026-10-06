@@ -72,7 +72,9 @@ async function waitForBackpressure(client) {
       coalescedAtPressure = transport.coalescedStateSnapshots;
     }
     if (coalescedAtPressure !== null) {
-      if (coalescedAfterSetup === null && transport.pendingCommands === 0) {
+      if (transport.pendingCommands > 0) {
+        coalescedAfterSetup = null;
+      } else if (coalescedAfterSetup === null) {
         coalescedAfterSetup = transport.coalescedStateSnapshots;
       }
       if (coalescedAfterSetup !== null && transport.pendingCommands === 0
