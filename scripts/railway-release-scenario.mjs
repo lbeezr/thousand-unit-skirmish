@@ -238,7 +238,8 @@ try {
   for (const filename of ['src/audio-composition.mjs', 'src/presentation/audio/composition.mjs',
     'src/audio-composition-player.mjs', 'src/presentation/audio/composition-player.mjs',
     'src/audio-composer.mjs', 'src/presentation/audio/composition-wav.mjs',
-    'src/client/audio/composer.mjs']) {
+    'src/client/audio/composer.mjs', 'src/audio-library-store.mjs',
+    'src/client/audio/library-store.mjs']) {
     for (const method of ['GET', 'HEAD']) {
       const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
       assert.equal(response.status, 200, `${method}: ${filename}`);
@@ -257,7 +258,8 @@ try {
     'src/presentation/audio/composition-player.mjs/extra', 'src/presentation//audio/composition-player.mjs',
     'src/presentation/audio/composition-wav.mjs/extra', 'src/presentation//audio/composition-wav.mjs',
     'src/client/audio/', 'src/client/audio/unknown.mjs', 'src/client/audio/composer.mjs/extra',
-    'src/client//audio/composer.mjs']) {
+    'src/client//audio/composer.mjs', 'src/client/audio/library-store.mjs/extra',
+    'src/client//audio/library-store.mjs']) {
     for (const method of ['GET', 'HEAD']) {
       assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
         404, `composition admission remains exact (${method}): ${filename}`);

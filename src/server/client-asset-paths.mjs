@@ -49,6 +49,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/audio-shipped-loader.mjs', 'src/audio-shipped-response.mjs', 'src/audio-shipped-catalog.mjs', 'src/audio-decoded-cache.mjs',
   'src/client/audio/audio-decoded-cache.mjs', 'src/client/audio/audio-shipped-response.mjs',
   'src/client/audio/composer.mjs',
+  'src/client/audio/library-store.mjs',
   'src/presentation/assets/interactive-runtime-image.mjs',
   'src/presentation/assets/plant-packs/podvine-low-pack.mjs',
   'src/presentation/assets/plant-packs/veilcap-worked-pack.mjs',
