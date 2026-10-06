@@ -1,5 +1,5 @@
 // Synthetic semantic controls plus two prior PUBLIC rejection frames.
-// No qualifier-private bytes, exact tick809 replay, fixture, server or journey.
+// No qualifier-private bytes or decision replay, fixture, server or journey.
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
@@ -11,18 +11,18 @@ import { crowdPriorityClaims, canTraverseCrowdBodySegment } from '../src/unit-cr
 const actor = (id, x, z) => ({ id, x, z, team: 0, generation: 17, orderRevision: 8, kind: 'infantry', hp: 100,
   path: [7, 8, 9, 10], pathIndex: 0, moveGoalCell: 10, queuedWaypoints: [{ destination: 11 }] });
 function scene() {
-  const unit = actor(120, 0, 0), peer = actor(119, .42, .35);
+  const unit = actor(2, 0, 0), peer = actor(1, .42, .35);
   peer.pathIndex = 1; peer.target = { x: 0, z: -3 };
   const states = new Map([unit, peer].map(u => [u, { generation: u.generation, revision: u.orderRevision,
-    path: u.path, pathIndex: u.pathIndex, navigationRevision: 4, epoch: 2, lastTick: 809,
-    detour: null, lease: null, contour: null, lastProgressTick: 748 }]));
+    path: u.path, pathIndex: u.pathIndex, navigationRevision: 4, epoch: 2, lastTick: 40,
+    detour: null, lease: null, contour: null, lastProgressTick: 0 }]));
   const best = { x: Math.sin(.7), z: Math.cos(.7), stepDistance: 2.6 / 30 };
-  const args = { unit, neighbors: [peer], radius: .22, stepDistance: 2.6 / 30, noProgressTicks: 61,
+  const args = { unit, neighbors: [peer], radius: .22, stepDistance: 2.6 / 30, noProgressTicks: 40,
     best, detour: null, progressTarget: { x: 0, z: 3 }, travelDirection: { x: 0, z: 1 },
     targetOf: u => u.target, directionOf: u => ({ x: 3 - u.x, z: 3 - u.z }) };
   const to = { x: best.x * best.stepDistance, z: best.z * best.stepDistance };
   const original = crowdPriorityClaims(args).claims;
-  const policy = { ...args, to, claims: original, stateOf: u => states.get(u), tick: 809,
+  const policy = { ...args, to, claims: original, stateOf: u => states.get(u), tick: 40,
     navigationRevision: 4, epoch: 2, claimsComplete: true,
     physicalAdmitted: canTraverseCrowdBodySegment(unit, to, .22, [peer]) };
   return { unit, peer, states, args, policy, to };
@@ -58,7 +58,7 @@ for (let quarter = 0; quarter < 4; quarter++) for (const reflection of [-1, 1])
   });
 
 for (const reverse of [false, true]) test(`all original claimants are required, neighbor order reversed=${reverse}`, () => {
-  const s = scene(), other = actor(113, -.3, .4); other.target = { x: 0, z: -3 };
+  const s = scene(), other = actor(0, -.3, .4); other.target = { x: 0, z: -3 };
   const neighbors = reverse ? [other, s.peer] : [s.peer, other];
   s.policy.claims = crowdPriorityClaims({ ...s.args, neighbors }).claims;
   assert.equal(s.policy.claims.length, 2);
@@ -86,7 +86,7 @@ for (const [name, change] of [
   ['nonboolean claimant completeness', s => { s.policy.claimsComplete = 'false'; }],
   ['missing epoch', s => { s.policy.epoch = undefined; }],
   ['no original claimant', s => { s.policy.claims = []; }],
-  ['second original claimant', s => { s.policy.claims.push(actor(113, -.1, .4)); }],
+  ['second original claimant', s => { s.policy.claims.push(actor(0, -.1, .4)); }],
   ['terminal waypoint', s => { s.unit.path = [7]; }],
   ['unknown route axis', s => { s.policy.travelDirection = { x: 0, z: 0 }; }],
   ['backward route axis', s => { s.policy.travelDirection = { x: 0, z: -1 }; }],
@@ -119,10 +119,10 @@ for (const who of ['unit', 'peer']) for (const [name, change] of [
   ['fractional path index', (u, state) => { u.pathIndex = state.pathIndex = .25; }],
   ['navigation', (u, state) => { state.navigationRevision++; }],
   ['epoch', (u, state) => { state.epoch++; }],
-  ['stale observation', (u, state) => { state.lastTick = 807; }],
+  ['stale observation', (u, state) => { state.lastTick = 38; }],
   ['missing observation tick', (u, state) => { delete state.lastTick; }],
   ['nonfinite observation tick', (u, state) => { state.lastTick = NaN; }],
-  ['future observation', (u, state) => { state.lastTick = 810; }],
+  ['future observation', (u, state) => { state.lastTick = 41; }],
   ['detour', (u, state) => { state.detour = {}; }],
   ['lease', (u, state) => { state.lease = {}; }],
   ['contour', (u, state) => { state.contour = {}; }],

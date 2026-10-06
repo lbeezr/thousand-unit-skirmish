@@ -273,18 +273,12 @@ boundary; [the executable hypothesis](../scripts/crowd-following-continuation-co
 has no production importer. It does not alter the candidate or enable a runtime
 exception. Art, packaging, deployment and game pixels are N/A for this proposal.
 
-Two qualifier-reported diagnoses remain separate. A two-tick restoration of
-seat0 actor52 reproduces lateral raw-waypoint distance loss/gain while its
-projected passage target changes across a cell boundary; priority does not discard
-that proposal. Restoration lacks transient history and does not identify original
-onset. Seat1 actor120 actually completes ingress at784 and808; owner119 serves
-its reserved quantum at785 and809. Once service clears the reservation, original
-priority at809 discards actor120's physically admitted raw-gaining proposal and
-selects a retreat. No waypoint/queue advance or progress-history renewal follows.
-Private capture bytes remain qualifier-local; none are included here or replayed
-by these new controls.
+Projected-target ranking and following priority are separate contracts. This
+proposal addresses following priority only. Qualifier-local diagnostic records
+and their detailed findings stay outside this public proposal; the new controls
+use fabricated actors/geometry and the two previously public rejection frames.
 
-The smallest proposed correction concerns only that priority discard: a sole
+The smallest proposed priority correction is: a sole
 ahead claimant's distant final goal should not cancel already admitted forward
 queue-following progress when its current waypoint direction closely matches the
 actual selected step. Required conditions are all of:
@@ -322,20 +316,20 @@ Bounded controls use fabricated actors/geometry to exercise this proposed rule.
 The two prior public, hash-pinned rejection frames supply their **actual direction
 vectors only**: forest142 cosine`.5317950594532269` and wall594
 cosine`-.8253633325477777` both remain ineligible. Existing full frozen-frame
-controls still retain their original waits. This is not an exact raw replay of
-private tick809 and does not prove that the later rejected PR529 fairness/gate
+controls still retain their original waits. This is not a replay of a private
+diagnostic decision and does not prove that the later rejected PR529 fairness/gate
 regression cannot recur. Run only
 `node --test scripts/crowd-following-continuation-contract.test.mjs scripts/crowd-queue-geometry.test.mjs`
 for these semantic and preceding public-frame checks; no match or journey starts.
 
 Next dependency: qualifier `01a10933-c2b0` independently checks the proposed rule
-against its retained actual tick809 proposal/endpoint, peer waypoint cosine,
+against its retained actual proposal/endpoint, peer waypoint cosine,
 complete claimant set, current controller identities/maneuvers and all remaining
 admissions. The supplied diagnosis does not contain that cosine, so activation
 is unverified. Qualifier also retains original forest142/wall594 rejection and
 the mixed-claimant refusal boundary. Only a supported result justifies a separate
 runtime candidate and later unchanged qualification; no broader rerun or PR541
-merge is authorized by this proposal. Seat0 ranking/oscillation remains separate.
+merge is authorized by this proposal. Projected-target ranking remains separate.
 
 The newly reached CI move-planning-tick arrival failures (run37441169171,
 job112194995556, repeated in R6 run37442534373) are a separate core arrival item.
