@@ -88,6 +88,30 @@ Unselected gameplay/client files do not need a type cleanup to pass this check.
 Runtime validation of finite values, positive radius and unique cell IDs remains
 separate from static types; unchecked callers are outside this initial boundary.
 
+The existing `room-pregame.test.mjs` also checks the actual `RoomPregame.payload`
+method and `normalizeMatchMode` declarations in a separate strict browser program.
+It selects their actual JSDoc, checkpoint validator declarations/DTO, match-mode
+registry/map constant and the registry's `BANNERFALL_RULES` constant; no dependency
+body is replaced with a stub. The actual host `pregamePayload()` declaration is
+checked with named host binding slots, whose catalog/faction values remain unknown.
+All diagnostics are collected: positive programs require zero; fourteen negative
+consumer controls and four producer mutations require their exact diagnostics.
+Missing selected dependencies fail. Compiler-only envelopes do not change runtime
+module identity, imports, exports, wire fields or test discovery.
+
+The payload reuses phase/revision, fixes opponent mode to `pvp`, and produces
+Boolean launch/readiness values and a seat array. Map/army/match-mode and open
+seat metadata remain unknown; seat IDs, numeric teams, connection flags, metadata
+presence and seat count are not guaranteed by this type. The receiver's callback
+contracts apply to checked callers, not to a newly checked class implementation.
+`checkpoint()` inference and the single-read validated snapshot remain unchanged.
+The full class/dependency graph is not enrolled: at this source boundary 67 strict
+diagnostics remain (24 pregame, 20 match-mode and 23 Bannerfall); only the two
+normalizer property diagnostics are resolved. The raw saved-ending validator's
+nine diagnostics also remain deferred. Neither count implies a passing full-module
+gate or justifies a runtime compatibility change. Run the dedicated test alongside
+the existing lobby/mode tests and `room-pregame-scenario.mjs` for runtime coverage.
+
 #### Ranked type-safety backlog
 
 The incremental type-safety stream owns this list and takes one bounded,

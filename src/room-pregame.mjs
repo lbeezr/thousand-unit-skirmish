@@ -42,6 +42,28 @@ export function validatePregameCheckpoint(value) {
   return { phase, revision };
 }
 
+/**
+ * Projected metadata stays unknown: this class does not validate its kinds.
+ * Seat metadata is open; only the added readiness value is guaranteed.
+ * @typedef {PregameCheckpoint & {
+ * mapId: unknown, armySize: unknown, matchModeId: unknown, matchModeVersion: unknown,
+ * mode: 'pvp', canLaunch: boolean,
+ * seats: Array<Record<string, unknown> & {ready: boolean}>
+ * }} PregamePayload
+ */
+
+/**
+ * Dependencies required by a checked projection receiver. This does not enroll
+ * the constructor, mutators, checkpoint or launch implementation in checkJs.
+ * @typedef {{
+ * checkpoint: () => PregameCheckpoint,
+ * mapId: unknown, armySize: unknown,
+ * matchModeId?: unknown, matchModeVersion?: unknown,
+ * canLaunch: () => boolean,
+ * seats: ReadonlyArray<Readonly<Record<string, unknown>>>, readyIds: ReadonlySet<unknown>
+ * }} PregamePayloadSource
+ */
+
 /** Uses the worker's existing seat sessions; never allocates identities or seats. */
 export class RoomPregame {
   constructor(mapId, armySize, checkpoint = { phase: 'lobby', revision: 0 }, matchMode = {}) {
@@ -152,6 +174,7 @@ export class RoomPregame {
 
   checkpoint() { return { phase: this.phase, revision: this.revision }; }
 
+  /** @this {PregamePayloadSource} @returns {PregamePayload} */
   payload() {
     return {
       ...this.checkpoint(), mapId: this.mapId, armySize: this.armySize,
