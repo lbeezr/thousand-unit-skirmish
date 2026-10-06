@@ -1,4 +1,5 @@
 import test from 'node:test';
+import './registered-infantry-ne-walk.test.mjs';
 import './renderer-worker-animation-scenario.test.mjs';
 import './registered-spearman-ne-walk.test.mjs';
 import './registered-spearman-east-walk.test.mjs';
@@ -124,18 +125,18 @@ const establishedPage = establishedPack.pages[0];
 const establishedPixels = decodeRgba8(read('assets/units/infantry-sprite-v3/infantry-atlas-runtime.png'));
 const registered = decodeRegisteredUnitFrames(established, establishedPage, establishedPixels);
 
-test('established Infantry production: decoded fallbacks remain 21 missing cells, independent of descriptions', async () => {
+test('established Infantry production: decoded fallbacks retain20 missing cells after reviewed NE, independent of descriptions', async () => {
   const before = createHash('sha256').update(read('assets/units/infantry-sprite-v3/infantry-atlas-runtime.png')).digest('hex');
   const edited = structuredClone(production);
   edited.gameDescription = 'An edited gameplay description must not trigger regeneration.';
   const report = await validateUnitArtProduction({contract: edited});
   assert.deepEqual(report.errors, []);
-  assert.equal(report.requiredCells, 32); assert.equal(report.authoredCells, 11);
+  assert.equal(report.requiredCells, 32); assert.equal(report.authoredCells, 12);
   assert.deepEqual(report.missingCells, production.missingSourceCells);
   assert.equal(report.normalBinding, 'v3'); assert.equal(report.renderAcceptance, 'pending');
   assert.equal(createHash('sha256').update(read('assets/units/infantry-sprite-v3/infantry-atlas-runtime.png')).digest('hex'), before);
   const strict = await validateUnitArtProduction({requireComplete: true});
-  assert.match(strict.errors.join('\n'), /21 action\/heading cells missing/);
+  assert.match(strict.errors.join('\n'), /20 action\/heading cells missing/);
 });
 
 test('production failure controls: frozen actions and copy-labelled directions cannot close cells', () => {
@@ -164,6 +165,9 @@ test('production timing rejects 24 FPS samples played at 30 FPS and altered expl
   assert.match(result.join('\n'), /duration/);
   const keys = production.timing.walk;
   assert.deepEqual(checkUnitClipTiming(keys, established.clips.find(c => c.stateId === 'walk' && c.directionId === 'south-east').sequence), []);
+  const ne = established.clips.find(c => c.stateId === 'walk' && c.directionId === 'north-east').sequence;
+  assert.deepEqual(checkUnitClipTiming(production.timing.walk.directions['north-east'], ne), []);
+  assert.match(checkUnitClipTiming(keys, ne).join('\n'), /explicit source key durations changed/);
   assert.match(checkUnitClipTiming(keys, [{durationMs:800}]).join('\n'), /explicit source key durations changed/);
 });
 
