@@ -1,0 +1,266 @@
+{
+  "heightWorld": 1.6722564697265625,
+  "worldPerPixel": 0.0052421832906788795,
+  "baselineManifestSHA256": "8209a83f8becae64c07d5c1e4187a7ff3144223c628c741dcd07002671625109",
+  "baselineRuntimeSHA256": "46e917d1496ca7be1465c3912843888b8f0e4a5fb0ebd2481f13dc2bb2920e8f",
+  "baselineDecodedAtlasSHA256": "73eea8e161cf721999e6ab5f53d0eda18fe6c9e8e0b29c793f8c440066bda10e",
+  "baselineMaskSHA256": "789b54b2ae00b1711e49443032638c6f9a451deca5fdb97e0397f4b622d690e8",
+  "identitySource": {
+    "path": "docs/art-direction/human-roster-v1/extracted/spearman/idle/03.png",
+    "sha256": "8c1644b67eeca87c4dda337110e195cb7b4345f62c1bd85e17cd6b23244c4229",
+    "registeredFrameId": "idle-north-0",
+    "registeredSeedSHA256": "996f23a35b98a858e3210478a13570f455e9d8a4e3cc397e58fb6b53fbff6c68"
+  },
+  "baselineRegisteredPoseSHA256": "c8c8dfad243e2a8ebeb94d4932ca987ad69766b3ca4fa47c0fd7d47289a5a50e",
+  "baselineUnchangedClipsSHA256": "ba02c7c14c66209cb80a9a2a020f94a6871b091881503c980427f00ef9e72b20",
+  "baselineAssetMetadataSHA256": "856e6cf9c24e1a18b46d978a6e47e632f0f6bc5da586e547500c6d77698647d6",
+  "baselinePageMetadataSHA256": "d3c55136169185fdc2ac1cd176e64e41d6f65f63709d0b42dca7282454645ad8",
+  "canvasPx": {
+    "width": 416,
+    "height": 416
+  },
+  "groundPivotPx": {
+    "x": 208,
+    "y": 351
+  },
+  "atlasSlotsPx": [
+    [
+      2564,
+      1084
+    ],
+    [
+      2564,
+      1516
+    ]
+  ],
+  "baselineDimensionsPx": {
+    "width": 3072,
+    "height": 3968
+  },
+  "registeredDimensionsPx": {
+    "width": 3072,
+    "height": 3968
+  },
+  "registeredMaskSHA256": "789b54b2ae00b1711e49443032638c6f9a451deca5fdb97e0397f4b622d690e8",
+  "registeredPageMetadataSHA256": "d3c55136169185fdc2ac1cd176e64e41d6f65f63709d0b42dca7282454645ad8",
+  "sequence": [
+    {
+      "frameId": "idle-north-0",
+      "durationMs": 120
+    },
+    {
+      "frameId": "defeat-north-0",
+      "durationMs": 300
+    },
+    {
+      "frameId": "defeat-north-1",
+      "durationMs": 660
+    }
+  ],
+  "candidatePlacedBounds": {
+    "min": [
+      -1.3787337270092317,
+      0.0,
+      -1.4213949566697694
+    ],
+    "max": [
+      0.9201959478428509,
+      1.2355753536162926,
+      0.686602319825762
+    ]
+  },
+  "provenEmptyDisjointSlots": true,
+  "schemaVersion": 1,
+  "sourceRevision": "5b56f57ce22affa4853047b06798bef0ceff6268",
+  "sourceInspectionRevision": "d27728f84f947e7936fee44b8adbf63c4e518239",
+  "sourceFoundationRevision": "bbc8ac5418fa3de0a73e49c77ee0a6622b13a012",
+  "stateId": "defeat",
+  "directionId": "north",
+  "baselinePackVersion": "0.17.0",
+  "packVersion": "0.18.0",
+  "baselineBounds": {
+    "artBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.7722564697265626,
+        0.6828955364727002
+      ]
+    },
+    "cullingBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.8722564697265625,
+        0.6828955364727002
+      ]
+    }
+  },
+  "registeredBounds": {
+    "artBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.7722564697265626,
+        0.686602319825762
+      ]
+    },
+    "cullingBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.8722564697265625,
+        0.686602319825762
+      ]
+    }
+  },
+  "registeredAssetMetadataSHA256": "e02f9b7f60b15ce9ceff51f53285f5949af5c916a13aa56530d30dc3d24c69db",
+  "registeredDecodedAtlasSHA256": "d746499695855bd7cddcf87ecb3895899de8df7cd8951a723033ebd582f92386",
+  "poses": [
+    {
+      "file": "00-collapse.png",
+      "sha256": "ae0c1d8ce50a9d2ca0b5a2c0088d5c8191d647a17ecbc7b99aec7a54a6862211",
+      "pose": "collapse",
+      "durationMs": 300,
+      "rawSHA256": "d81154dcbda6a84f051ac8103e03534ca2e41397483fd698cc119254efd19a89",
+      "clearedAlphaZeroRGBSamples": 180,
+      "boundsAlpha8": [
+        39,
+        221,
+        405,
+        358
+      ],
+      "alphaHeight": 137,
+      "minimumCanvasClearance": 11,
+      "allAlphaAndPositiveRGBAExact": true
+    },
+    {
+      "file": "01-terminal.png",
+      "sha256": "e0e76caf37afaf7218b895f27c72ef028f810062cefba578025bd63af2fa0ffb",
+      "pose": "terminal",
+      "durationMs": 660,
+      "rawSHA256": "e511db3be646cddbe84ed78c2c01f7ee0da4c2ac16c95ca334c399942ff733df",
+      "clearedAlphaZeroRGBSamples": 190,
+      "boundsAlpha8": [
+        34,
+        247,
+        406,
+        359
+      ],
+      "alphaHeight": 112,
+      "minimumCanvasClearance": 10,
+      "allAlphaAndPositiveRGBAExact": true
+    }
+  ],
+  "reusedPriorRegisteredPoses": 81,
+  "reusedOpeningPoses": 1,
+  "newlyAuthoredPoses": 2,
+  "registeredTotalPoses": 83,
+  "loop": false,
+  "durationMs": 1080,
+  "existingClientScaleOutMs": 150,
+  "mirroredPoses": 0,
+  "borrowedDirectionPoses": 0,
+  "generationProviderCalls": 0,
+  "paidJobs": 0,
+  "sourceKind": "exact own public North source; reused six-part own-North foundation and explicit rigid body/pole/no-stretch arm targets; no borrowed facing",
+  "retainedFoundation": {
+    "sourceRevision": "bbc8ac5418fa3de0a73e49c77ee0a6622b13a012",
+    "publicActionRegistration": "docs/art-direction/human-roster-v1/extracted/spearman/attack/north-local-v1/registration.json",
+    "foundationMasks": [
+      {
+        "name": "restored-own-body",
+        "kind": "body",
+        "depth": 0,
+        "sha256": "b3831ab756593242aa0fd4d16e56ab80613d8654ce86a65f27a5992b0582456c",
+        "decodedRGBA_SHA256": "5c135822cdc3aee2083c1771448184912640d7653d76bd795893545d8631cec6"
+      },
+      {
+        "name": "rear-upper",
+        "kind": "upper-arm",
+        "depth": 0.01,
+        "sha256": "faf0b1d1a5430c55ae8deae8b4a89063d60dbd67ed24fde4bf8bdf0dc00079ab",
+        "decodedRGBA_SHA256": "596183703c4c749b06d81b06ab089cc1a4f47393d54c78b8f0a2bd60b0f41f4d"
+      },
+      {
+        "name": "rear-fore",
+        "kind": "forearm",
+        "depth": 0.02,
+        "sha256": "a68a01ed674c139fc1f0bba30eefddbf4539b0b15bb27b5000f9aa5191789fc8",
+        "decodedRGBA_SHA256": "b4d575291f50ddc1f7e1bbcfb3c4be1d0012f865ee70aa690897dd8dc521531f"
+      },
+      {
+        "name": "front-upper",
+        "kind": "upper-arm",
+        "depth": 0.025,
+        "sha256": "a0b27ee9d90a700bb5ed61b713912a7da05491ba1210e0263a8d30da2231c37a",
+        "decodedRGBA_SHA256": "056daf58f3067d708e738e10a8a0501e20cf2bc9d92f08635011ed198b6698db"
+      },
+      {
+        "name": "front-fore",
+        "kind": "forearm",
+        "depth": 0.03,
+        "sha256": "286a879583a14922df4f96c9295c5b4dd14dc78a7f2a63ad62d0245712da13dc",
+        "decodedRGBA_SHA256": "cc48c7778c551dcd8247279a94647d4f06fb12f414309f0e13e953713eeac199"
+      },
+      {
+        "name": "rigid-complete-spear-and-grips",
+        "kind": "weapon",
+        "depth": 0.04,
+        "sha256": "404602e2a5de4a6cee29ba7ff0cbd0b63b208e1c296bd48725b8d733e5fddfed",
+        "decodedRGBA_SHA256": "cfb4d63f780b81ae50836dff984b743fd3e27bb69a63ac018b65362e2260408f"
+      }
+    ],
+    "retainedBodyDonors": 1643,
+    "bodyMaterialCounts": {
+      "vest": 902,
+      "belt-pouch": 569,
+      "apron-cream": 23,
+      "source-left-trousers": 149
+    },
+    "retainedExplicitAuthoredNearSleeveUnderlapDonors": 211,
+    "totalRetainedDonors": 1854,
+    "originalJointOverlapSamples": 749,
+    "originalOwnershipTransfers": 13,
+    "originalMovingSamples": 7161,
+    "additionalDonors": 0,
+    "bootHandWoodReconstructionSamples": 0,
+    "anatomyClaim": "211 retained nominal near-sleeve underlap donors are authored clothing restoration, not recovered original hidden anatomy; both actual original grips stay on the complete original pole"
+  },
+  "additionalDonors": 0,
+  "processReceiptSHA256": {
+    "articulated-defeat-plan.json": "30e20e2c0bf49c862bd4fcd96503ab492ea525baca3de43ed2bffb0c7896f6ea",
+    "projected-positive-geometry.json": "007f5d670de378e2df7b7a9ca7f775ec305ea1d44cd9461bb9b9f6fbdf471cb6",
+    "independent-plan-receipt.json": "fea5230828b9cd93110947c7c2b677d33f06c95b79aeeedd92a06002eea43fe4",
+    "foundation-rig-input.json": "1f641cc167234cf06db5be4983bdd17690617319ed59336b9767dd1e54b01bac",
+    "ownership-map.json": "d103456f366d61a6c727a10f58f220d668617546727acd2458b929d4c1c82e04",
+    "donor-coordinate-map.json": "cc6eb1e6ebb17b9210963bc0827496802c62e9fc2f0fbed7a084c76970df5039",
+    "render_articulated_fall.py": "cd1904cd3fc27ac82a57036cb2712ce99f4e1aeafd61fabf5014500403e04e62",
+    "geometry-check.json": "f521986331bbf5a4f806bdc372ac19ae33c9717c50bd4326e56b539bdf6e45e9",
+    "camera-scale-check.json": "e760df47a2e46f88777b97a1f96d454ce3e4efcc07757f7e96d5600f353b8baa",
+    "normalization-receipt.json": "c811acd737e1f41d329bf32d5e63d8ddf16c8ad64fea09e790846a97cfbac049",
+    "normalize_selected.py": "aab3f43abeb555fc7df351f3674848fccd0e799838165264617e4d42ff316164"
+  },
+  "independentSourceReviewSHA256": "492d66fccb412be22c7b7cf6fe47404455a771716d69c4b1a54ff45c03034cbf",
+  "independentSourceReviewReceiptSHA256": "418f6302905f80a53a367414f5552272ea907c954735c226c85ac716f4316446",
+  "sourceReview": "independently-cleared-rough-source-minimum",
+  "ordinaryGameReview": "pending-identified-game-capture",
+  "packProvenanceNote": "North defeat reuses1 exact own idle opening and adds2 newly authored own-view collapse/terminal keys,1080ms one-shot then unchanged150ms clientfade. All81 prior full records/crops,31 otherclips, fullpage/mask/root/bodycalibration are exact. Conservative rooted bounds only grow maxZ0.6828955364727002\u21920.686602319825762; no perpose/source scale change. Six exact own-North source parts reuse1854 existing own-material donor samples(1643body/211 explicit nominal near-sleeve underlap),749 original overlaps/13 transfers,0 extra donors; no recovered hidden anatomy/borrowedSE/paid/provider/private inputs. First rigidfall and articulated trials/processes retained; native acceptance pending.",
+  "packReadme": "# Human Spearman preview\n\nDefault v1 pack0.18.0/83 frames preserves all81 preceding complete records/crops and31 other clips. North defeat reuses1 exact own idle opening and adds2 newly authored same-source collapse/terminal keys,120/300/660ms=1080ms nonloop; existing150ms client scaleout remains unchanged. Fixed416\u00b2 canvas/root208,351/sourceUVscale1; new alpha heights137/112 keep319px body calibration maximum.\n\nTwo proven empty cells2564/1084 and2564/1516 preserve3072\u00d73968 page, encoded mask/page metadata and every other RGBA byte. Old pivots/body calibration stay exact. Conservative rooted bounds grow only maxZ0.6828955364727002\u21920.686602319825762 to contain the fallen pole/body; standing/body scale is not changed. Retained own-North six-part foundation reuses1854 own-material donor samples(1643 body including149 trouser;211 explicitly authored nominal upper-sleeve underlap),749 original overlaps and13 original ownership transfers;0 additional donors, no boot/hand/wood reconstruction or recovered hidden anatomy. Both actual original grips stay on the complete straight pole. All first rigid/articulated source/render/recipe/.blend iterations preserved; no borrowedSE pixels, mirror, otherfacing, private input or paid/provider job.\n\nWalk/attack source8/8; defeatSE/N. Exact missing6:defeatNE/E/S/SW/W/NW; ordinary Infantry21+Archer21=48 military source cells, all63 original native/deployed cells unverified. Full builder replays all walks/attacks then own-North defeat. Repeat finalstage:python3 scripts/append-spearman-public-seed-defeat.py north. Ordinary-game support/contact/readability and identified containing delivery remain owned followup.\n"
+}
