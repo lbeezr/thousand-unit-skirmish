@@ -66,12 +66,32 @@ test('canonical composer UI stays in client with its lazy caller and outside aut
   const canonical = 'src/client/audio/composer.mjs';
   assert.ok(RUNTIME_DOMAINS.client.includes(canonical));
   const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
-  assert.ok(moduleImports(sources.get('src/audio-library-ui.mjs'), 'src/audio-library-ui.mjs')
-    .includes('./client/audio/composer.mjs'));
+  assert.ok(moduleImports(sources.get('src/client/audio/library-ui.mjs'), 'src/client/audio/library-ui.mjs')
+    .includes('./composer.mjs'));
   assert.deepEqual(moduleImports(sources.get(canonical), canonical), [
     '../../presentation/audio/composition-player.mjs', '../../presentation/audio/composition-wav.mjs',
     '../../presentation/audio/composition.mjs',
   ]);
+  for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+    'src/formation-assignment.mjs', 'src/simulation/ai/opponent-observation.mjs']) {
+    const relative = path.posix.relative(path.posix.dirname(root), canonical);
+    assert.throws(() => check({ [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';`, [canonical]: '' }),
+      /(?:rules|world|simulation|ai) domain cannot reach client domain/, root);
+  }
+  for (const [host, domain] of Object.entries(RUNTIME_DOMAIN_HOSTS)) {
+    if (domain !== 'server') continue;
+    assert.throws(() => check({ [host]: `import './${canonical}';`, [canonical]: '' }, { serverEntrypoints: [host] }),
+      /server host reaches client domain/, host);
+  }
+});
+
+test('canonical audio library UI owns its DOM/composer consumers and stays outside authority hosts', async () => {
+  const canonical = 'src/client/audio/library-ui.mjs';
+  assert.ok(RUNTIME_DOMAINS.client.includes(canonical));
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  assert.deepEqual(moduleImports(sources.get(canonical), canonical), ['../../audio-assets.mjs', './composer.mjs']);
+  assert.deepEqual(moduleImports(sources.get('src/audio-library-ui.mjs'), 'src/audio-library-ui.mjs'), ['./client/audio/library-ui.mjs']);
+  assert.ok(moduleImports(sources.get('src/audio-studio.mjs'), 'src/audio-studio.mjs').includes('./client/audio/library-ui.mjs'));
   for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
     'src/formation-assignment.mjs', 'src/simulation/ai/opponent-observation.mjs']) {
     const relative = path.posix.relative(path.posix.dirname(root), canonical);

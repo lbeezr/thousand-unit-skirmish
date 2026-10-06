@@ -108,6 +108,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'client/audio/audio-decoded-cache', 'client/audio/audio-shipped-response',
     'client/audio/composer',
     'client/audio/library-store',
+    'client/audio/library-ui',
     'audio', 'audio-assets', 'audio-composer', 'audio-composition',
     'audio-composition-player', 'audio-decoded-cache', 'audio-library-store',
     'audio-library-ui', 'audio-policy', 'audio-recognition-check',

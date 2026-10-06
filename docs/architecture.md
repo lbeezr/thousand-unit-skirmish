@@ -842,7 +842,7 @@ review and normal ready merge under standing authorization.
 
 | Lane / scope | Current implementation claim | Shared integration |
 | --- | --- | --- |
-| Module organization / this architecture-audio lane | Composition model/player/WAV/client UI slices are integrated. The next allocated scope is the whole audio library store/archive implementation and only its Studio/Zones import literals, preserving supported root bindings for main/browser tools. | Additive canonical entries in the import inventory and exact public admission, packed HTTP controls and this ownership record. No `main.js`, package/CI/type configuration, assets or deployment changes. |
+| Module organization / this architecture-audio lane | Composition model/player/WAV/composer UI and library store/archive slices are integrated. The next allocated scope is the existing whole library UI mount and Studio's one static import, with actual DOM consumer controls established before extraction and root binding compatibility retained. | Additive canonical entries in the import inventory and exact public admission, packed HTTP controls and this ownership record. Original library registration retained; no `main.js`, package/CI/type configuration, assets or deployment changes. |
 | Types/contracts lane | `room-launch-options`, `room-pregame`, `room-presence` boundaries. | Owned by that lane; audio does not edit those modules or approve its PRs. |
 | Error-handling lane | `main.js::importEditorMap`, its dedicated regression and additive CI registration; R4 draft lifecycle excluded. | Owned by that lane; audio does not edit that handler or its regression. |
 | DRY-formatting lane | Resource format, population readout and economy-client formatting. | Owned by that lane; audio does not edit those modules. |
@@ -1030,6 +1030,45 @@ prior CI entries/order remain plus canonical syntax. These are responsibility
 and compatibility ratchets. Root retirement requires migrating main and the
 tracked browser/tool/external consumers under the inventory/owner/identified-
 release criteria above; it is not part of this store-home slice.
+
+#### Audio library UI client organization
+
+Against containing source `02a2d9b5`, the existing 296-line
+`mountAudioLibrary` implementation lives in
+[client/audio/library-ui.mjs](../src/client/audio/library-ui.mjs). It owns pack
+selection/save/edit rollback, raw-source upload/search/preview, assignment and
+backup controls, and composer tab/resource disposal through the existing injected
+store and shared UI state. These closures remain together; no generic DOM helper,
+service or lifetime-controller interface is introduced. Only its schema and
+composer imports change relative paths. Studio changes one static import literal;
+the supported root entry forwards the same sole mount binding. The existing
+`audio-studio-browser.mjs` tool retains its root consumer and prior assertions.
+
+Before extraction, the real original mount passed ten DOM/store consumer cases
+through the existing JSDOM dependency and a bounded store/audio adapter. The same
+fixture in `scripts/fixtures/audio-library-ui-consumer.mjs` executes from the
+original registered `audio-library.test.mjs`, preserving all earlier store/archive
+assertions. It checks actual click/change listeners, selection and close/reopen,
+failed edit/source/backup feedback and retry, Blob identity, assignment controls,
+confirmation and store-call order, preview cleanup, the 30-second backup revoke,
+and composer lazy-tab guards/save/reopen/disposal. This is CPU consumer evidence;
+successful real-browser IndexedDB CRUD/listening/rendered acceptance remains open.
+
+The complete body retains its errors, callback order, state and existing async
+completion behavior. Document-relative CSS/links, preview URL cleanup, backup
+timing and composer stylesheet/context lifetime are unchanged; no lifecycle fix
+is mixed with the move. Root retirement follows tracked tool/external consumers
+and identified-release reload compatibility under the existing criteria.
+
+Client membership and exact root/canonical public GET/HEAD, suffix/doubleslash/map
+and server-private denial extend the existing guards. The dated graph is 244
+modules/476 edges/145 browser/103 server/34 shared/zero cycles. All 1,466 prior CI
+entries/order remain, plus canonical-module and DOM-fixture syntax; the original
+library execution registration stays unchanged. These are responsibility and
+compatibility ratchets. R4, main, assets, package/CI configuration and behavioral
+redesign are excluded; the root lane's non-audio audit integrates shared inventory
+and documentation deltas serially against fresh main. Internal organization has
+no presentation impact; art backing N/A.
 
 ### Remaining organization queue — 6 October 2026
 
