@@ -111,7 +111,7 @@ export function canTraverseCrowdBodySegment(from, to, radius, neighbors, { allow
 // order, navigation or waypoint changes and never enters durable unit state.
 // A crowd-only wait is not a static route failure and must not trigger repair.
 export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTraverse, cellCenter,
-  pointAllowed = canTraverse, progressTarget = target, targetOf = other => other.target,
+  pointAllowed = canTraverse, progressTarget = target, targetOf = other => other.target, approachBody = null,
   directionOf = other => { const goal = targetOf(other); return finitePoint(goal)
     ? { x: goal.x - other.x, z: goal.z - other.z } : null; },
   escapeAllowed = canTraverse, detourAllowed = () => true,
@@ -138,7 +138,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   const aim = (state.lease || state.contour) && Math.hypot(target.x - unit.x, target.z - unit.z) < EPSILON
     && remaining > EPSILON ? progressTarget : target;
   const dx = aim.x - unit.x, dz = aim.z - unit.z, distance = Math.hypot(dx, dz);
-  if (neighbors.some(other => { stats.bodyVisits++; return !ordinaryCrowdBodyRadius(other)
+  if (neighbors.some(other => { stats.bodyVisits++; return other !== approachBody && !ordinaryCrowdBodyRadius(other)
     && Math.hypot(target.x - other.x, target.z - other.z)
       < radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] - EPSILON; }))
     return { target, waitingForCrowd: true, stepDistance: 0, noProgressTicks, crowdControl: stats };
