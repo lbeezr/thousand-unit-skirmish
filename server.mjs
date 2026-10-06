@@ -8314,8 +8314,8 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   const point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
   let target = point && unit.pathIndex === unit.path.length - 1
     && unit.path[unit.pathIndex] === point.cell ? point : cellToWorld(unit.path[unit.pathIndex]);
-  const construction = constructionMovementActive(unit);
-  const crowdRadius = construction ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : ordinaryCrowdBodyRadius(unit);
+  const workerRadius = workerLocalBodyRadius(unit);
+  const crowdRadius = workerRadius || ordinaryCrowdBodyRadius(unit);
   if (crowdRadius) {
     const currentCell = worldToCell(unit.x, unit.z), targetCell = worldToCell(target.x, target.z);
     const adjacent = Math.abs(currentCell % MAP_WIDTH - targetCell % MAP_WIDTH) <= 1
@@ -8330,7 +8330,7 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
       || (coreRadius && !canTraverseStaticBodySegment(target, target, coreRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable)
         && !canTraverseStaticBodySegment(unit, target, coreRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true })))
       return { target, reachedWaypoint: true, stepDistance: 0, rejectedStaticProposal: true };
-    if (construction && !spatialBucketRosterCurrent) return { target, waitingForCrowd: true, stepDistance: 0 };
+    if (workerRadius && !spatialBucketRosterCurrent) return { target, waitingForCrowd: true, stepDistance: 0 };
     const query = crowdNeighborsNear(unit);
     const progressTarget = target;
     const diagnostics = { visits: query.visits, neighbors: query.neighbors.length, overflow: query.overflow };
@@ -8478,15 +8478,22 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   return { x: vx, z: vz, target, stepDistance: remainingStep };
 }
 
-// Each actual construction write uses a fresh bounded query of live body poses.
+// Local body adoption follows characterized live Worker intent. Callers extend
+// this single predicate seam; selection and actual write admission share it.
+function workerLocalBodyRadius(unit) {
+  return constructionMovementActive(unit) ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0;
+}
+
+// Each activated Worker write uses a fresh bounded query of live body poses.
 // A body-only refusal retains the existing route/work/queue, without static repair.
 // No neighbor displacement, endpoint reservation or saved activation state.
-function constructionBodyStepAllowed(unit, to) {
-  if (!constructionMovementActive(unit)) return true;
+function workerBodyStepAllowed(unit, to) {
+  const radius = workerLocalBodyRadius(unit);
+  if (!radius) return true;
   if (!spatialBucketRosterCurrent) return false;
   const query = crowdNeighborsNear(unit);
   return !query.overflow && canTraverseCrowdBodySegment(unit, to,
-    LAND_CLEARANCE_PROFILE.radiusByKind.worker, query.neighbors, { allowEscape: true });
+    radius, query.neighbors, { allowEscape: true });
 }
 
 function crowdNeighborsNear(unit) {
@@ -8645,7 +8652,7 @@ function spreadInteractingUnits() {
         MAP_WIDTH, elevationLevelByCell, isWalkable)
       || (clearanceRadius && !canTraverseStaticBodySegment(unit, { x, z },
         clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))
-      || !constructionBodyStepAllowed(unit, { x, z })) continue;
+      || !workerBodyStepAllowed(unit, { x, z })) continue;
     unit.x = x;
     unit.z = z;
     unit.lastMoveTick = tickNumber;
@@ -9152,7 +9159,7 @@ function simulateTick() {
         break;
       }
       if (move.reachedWaypoint) {
-        if (!constructionBodyStepAllowed(unit, move.target)) break;
+        if (!workerBodyStepAllowed(unit, move.target)) break;
         if (!automaticPositionAllowed(unit, move.target.x, move.target.z)) {
           if (unit.stanceReturning) abandonBlockedStanceReturn(unit);
           else { rejectAutomaticTarget(unit, units[unit.attackTargetId]); clearAttackTarget(unit); }
@@ -9168,7 +9175,7 @@ function simulateTick() {
 
       let nextX = unit.x + move.x * move.stepDistance;
       let nextZ = unit.z + move.z * move.stepDistance;
-      if (constructionMovementActive(unit)) {
+      if (workerLocalBodyRadius(unit)) {
         nextX = Math.max(-MAP_HALF_X + .5, Math.min(MAP_HALF_X - .5, nextX));
         nextZ = Math.max(-MAP_HALF_Z + .5, Math.min(MAP_HALF_Z - .5, nextZ));
       }
@@ -9182,7 +9189,7 @@ function simulateTick() {
       if (canTraverseUnitStep(currentCell, nextCell, MAP_WIDTH, elevationLevelByCell, isWalkable)
         && (!clearanceRadius || canTraverseStaticBodySegment(unit, { x: nextX, z: nextZ },
           clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {
-        if (!constructionBodyStepAllowed(unit, { x: nextX, z: nextZ })) break;
+        if (!workerBodyStepAllowed(unit, { x: nextX, z: nextZ })) break;
         unit.x = nextX;
         unit.z = nextZ;
       } else {
@@ -9191,7 +9198,7 @@ function simulateTick() {
         const length = Math.hypot(targetX, targetZ) || 1;
         let fallbackX = unit.x + (targetX / length) * move.stepDistance;
         let fallbackZ = unit.z + (targetZ / length) * move.stepDistance;
-        if (constructionMovementActive(unit)) {
+        if (workerLocalBodyRadius(unit)) {
           fallbackX = Math.max(-MAP_HALF_X + .5, Math.min(MAP_HALF_X - .5, fallbackX));
           fallbackZ = Math.max(-MAP_HALF_Z + .5, Math.min(MAP_HALF_Z - .5, fallbackZ));
         }
@@ -9199,7 +9206,7 @@ function simulateTick() {
           MAP_WIDTH, elevationLevelByCell, isWalkable) && automaticPositionAllowed(unit, fallbackX, fallbackZ)
           && (!clearanceRadius || canTraverseStaticBodySegment(unit, { x: fallbackX, z: fallbackZ },
             clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {
-          if (!constructionBodyStepAllowed(unit, { x: fallbackX, z: fallbackZ })) break;
+          if (!workerBodyStepAllowed(unit, { x: fallbackX, z: fallbackZ })) break;
           unit.x = fallbackX;
           unit.z = fallbackZ;
         } else {
