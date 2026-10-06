@@ -261,6 +261,18 @@ review, source/packed acceptance and the existing unverified browser import/expo
 publish observation at an identified release. Storage/recovery lifecycle and
 versioned draft organization remain separate boundaries.
 
+The next authoritative validator contract is prepared separately in the
+[architecture guide](architecture.md#authoritative-map-validator-contract-preparation--6-october-2026).
+The private `server/map-definition-validator.mjs` owns this validation body;
+`server.mjs` retains its existing `validateMapDefinition(definition, filename)`
+entry and every default consumer. It mutates `victoryMode`/`fogOfWar` defaults
+before some later errors and returns a shallow normalized map; the portable
+importer clones input and has different diagnostics and ordering. Preserve both
+contracts rather than sharing their implementations. The same contract tests
+execute the actual authoritative body/imports/limits before extraction and the
+default wrapper/canonical binding after extraction. Authoring validation, replay
+fixtures, map admission and live movement retain their existing contracts.
+
 ## Coordinates and terrain
 
 ### Organic landscape composition
