@@ -33,7 +33,7 @@
     "approvedRuntimeFiles": [
       {
         "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
-        "sha256": "56192faba2266acc8ef8925884c162adf0d0638a1b4e72b52da990c62b0a45c3"
+        "sha256": "62a67cf277ced75e8ed475b647d5fdfa00ad23be0ba7e21c528953516ee9c92d"
       },
       {
         "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
@@ -50,7 +50,7 @@
         "rgbaSha256": "9f2197fd73abf6f8fe53b86bafd5f2060e8e65eb1e2389de176e728cd69bef57"
       }
     ],
-    "registeredFramesSha256": "6025e8560bc8de23b18d6035e2aeccc38637f86dbddbe09cd7b49cf1166be645",
+    "registeredFramesSha256": "e4c95865b2b713f5a2ee8bc89d9178d0e905229f2aed12017bc2ca86714150d0",
     "revisions": [
       {
         "id": "reviewed-ne-public-seed-cutout-v1",
@@ -70,6 +70,25 @@
         "retainedFrames": 32,
         "newFrames": 4,
         "originalSourcePinsUnchanged": true
+      },
+      {
+        "id": "reviewed-east-public-seed-cutout-v1",
+        "sourceReview": "docs/qa-infantry-local-walk-continuation-2026-10-05.md",
+        "previousRuntimeFiles": [
+          {
+            "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+            "sha256": "56192faba2266acc8ef8925884c162adf0d0638a1b4e72b52da990c62b0a45c3"
+          },
+          {
+            "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+            "sha256": "6a7b444ba178b25223f4353af13cf58d8dda7c49ef800e19445c62f04eb6297b"
+          }
+        ],
+        "previousRegisteredFramesSha256": "6025e8560bc8de23b18d6035e2aeccc38637f86dbddbe09cd7b49cf1166be645",
+        "previousRegistrationSha256": "535b6d429327252184e83f1843bca0304be24d06935d49dd9465daacda62ee85",
+        "retainedFrames": 36,
+        "newFrames": 4,
+        "originalSourcePinsUnchanged": true
       }
     ]
   },
@@ -80,7 +99,7 @@
     "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; Pillow source-UV leg articulation from public NE seed",
     "providerVisibility": "historical-settings-not-recorded",
     "trainingPermission": "unknown",
-    "notes": "Existing repository source and manifests retained; provider privacy settings are not a no-training receipt. Explicit reviewed NE revision retains all32 established poses; private generator comparison remains rejected and unpublished."
+    "notes": "Existing repository source and manifests retained; provider privacy settings are not a no-training receipt. Explicit reviewed NE revision retains all32 established poses; private generator comparison remains rejected and unpublished. Explicit reviewed own-east local increment; no provider job or publication operation."
   },
   "publication": {
     "state": "existing-public-runtime-only",
@@ -106,7 +125,6 @@
   "sourceComplete": false,
   "missingSourceCells": [
     "walk|north",
-    "walk|east",
     "walk|south",
     "walk|south-west",
     "walk|west",
@@ -166,6 +184,19 @@
           "sourceFPS": null,
           "playbackFPS": null,
           "notes": "Four independently reviewed NE cutout keys; retained SE eight100ms cadence unchanged."
+        },
+        "east": {
+          "mode": "timed-keys",
+          "frameDurationsMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "durationMs": 800,
+          "sourceFPS": null,
+          "playbackFPS": null,
+          "notes": "Four independently reviewed own-east cutout keys; preceding source cadence unchanged."
         }
       }
     },
@@ -207,7 +238,7 @@
   "calibration": {
     "worldPerPixel": 0.005242183290678879,
     "bodyBaselineWorld": 1.2161865234375,
-    "registrationSha256": "535b6d429327252184e83f1843bca0304be24d06935d49dd9465daacda62ee85",
+    "registrationSha256": "568f2721e4f4b33babc8e767559a2f1f768802ba54efd2085c416e32a98dccf3",
     "pivotStatus": "unreviewed-estimate",
     "cameraStatus": "prompt-only",
     "cameraRecipe": null,

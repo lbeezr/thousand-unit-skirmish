@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "revisions": [
+    {
+      "heading": "north-east",
+      "registration": "docs/art-direction/human-roster-v1/infantry-ne-walk-registration.json"
+    },
+    {
+      "heading": "east",
+      "registration": "docs/art-direction/human-roster-v1/infantry-east-walk-registration.json"
+    }
+  ]
+}
