@@ -835,7 +835,7 @@ for an existing responsibility, not an already available framework/API.
 | R3 — client welcome/session identity, client/network owner | Only the session token/server-instance/match-id storage and reset-vs-restore decision branches within `src/main.js::connectSocket` → `src/client/networking/welcome-session.mjs`. The independently reviewed factory takes a deferred storage getter and existing resolved room keys. Its separate resume-token read, instance/match identity and seat-token write operations retain their original positions around map rebuilding and return the existing identity flags. Keep map rebuilding, seat selection, lobby, audio, render state and WebSocket callbacks in the host. | Preserve the reviewed storage failure semantics, callback order and stale-connection guard described below. Run `scripts/browser-resume-client.test.mjs`, `scripts/renderer-browser-resume-scenario.test.mjs` and `scripts/resume-session-scenario.mjs`; rendered `scripts/renderer-browser-resume-scenario.mjs` on an identified cloud release remains separate. Same keys/tokens, fresh/reset/restored decisions and original storage catches; no new reconnect policy or protocol. Independent of R2's Node output implementation. |
 | R4 — draft timer/lifetime, authoring owner | `src/main.js`: `persistMapStudioDraft`, `scheduleMapStudioDraftSave` and their actual close/cancel calls → proposed `src/authoring/map-studio-draft-controller.mjs`, composing the existing store/form/history APIs. Keep ordered subpanel capture, import/publish mutation and canvas rendering in the host; own one dirty/timer/flush lifecycle rather than exporting setters for every editor global. | Dependent on the existing rendered draft/recovery observation and an agreed capture/status/clock/timer interface; not ready for an extraction through a broad editor bag. `scripts/resource-brush-controls.test.mjs`, `scripts/fixtures/map-studio-draft-fixture.mjs` and `scripts/map-studio-draft-scenario.mjs` retain real edit/save/close/reopen/import/export controls. Same 160 ms debounce, force-close flush, write order, failure text and v1 bytes; no publish rejection changes owned by the error lane. |
 | R5 — renderer ground resource lifetime, renderer/assets owner | `src/environment-art.mjs`: `groundBuffer`, `addGroundQuad`, `finishGroundGeometry`, `createGroundSurfaces` → proposed `src/presentation/rendering/ground-surfaces.mjs`. Keep definition/geometry projection distinct from material registry, water motion subscriptions and disposal ownership. Preserve `createGroundSurfaces` at the existing environment API while using the canonical implementation. | Agree the actual terrain-height/material/water resource interface and disposal ownership with the active renderer first. Run `scripts/terrain-blend-scenario.mjs`, `scripts/water-surface-scenario.mjs`, `scripts/water-surface-study.test.mjs` and `scripts/terrain-atmosphere-scenario.mjs`; ordinary ground/water appearance and disposal on an identified cloud build are separate acceptance. Same vertex/UV/index/order, bounds, texture URLs, material identity, motion subscription cleanup and fallback. If inputs require the whole renderer context, split a smaller geometry responsibility or defer; no art-path/default changes. |
-| R6 — room-index persistence, server/orchestration owner | `room-supervisor.mjs`: `persistRoomIndex` and the index read/normalization portion of `loadRooms` → proposed `src/server/persistence/room-index-store.mjs`, using existing `roomIndexDocument`/launch-option contracts. Keep worker startup, expiry, routing, access/origin decisions and root path/environment resolution in the supervisor. | Agree exact root-resolved paths and queued write/failure semantics with orchestration first; independent of R1–R5 but serialize host integration. Run `scripts/room-supervisor-scenario.mjs`, `scripts/room-expiry-scenario.mjs`, `scripts/pve-room-launch-scenario.mjs` and relevant pregame/recovery checks. Same index format/order/defaults, temporary-file/rename behavior, failure recovery and room launch identity; no permission/access or storage-location changes. |
+| R6 — room-index persistence, server/orchestration owner | The parent reconciled ownership; the independently reviewed factory in `src/server/persistence/room-index-store.mjs` owns the former `persistRoomIndex` body and index read/normalization portion of `loadRooms`. It receives the two host-resolved paths and a document-capture callback using the existing launch-option contract. Worker startup, expiry, routing, access/origin decisions and root path/environment resolution remain in `room-supervisor.mjs`. | The implementation and acceptance contract are recorded below. Serialize host/guard integration and preserve other owners' additive domain entries. Run the existing supervisor, expiry, PvE launch and pregame/recovery scenarios plus queue/error/path, import and packaged private HTTP checks. Same index format/order/defaults, temporary-file/rename behavior, failure recovery and room launch identity; no permission/access or storage-location changes. |
 
 A shared public positional-row codec is a later contract proposal, not a seventh
 forced move. `server.mjs::snapshotUnits` (row slots 0–17), `src/main.js::applyState`,
@@ -898,7 +898,8 @@ it. Source checks cover both-seat shape/privacy, malformed-mask/error order,
 immutable input, legacy identity, same-history decisions and native/replay
 consumers. Clean package/private GET/HEAD, exact-head independent review and
 identified delivery remain the implementation owner's checks; source counts do
-not establish rendered gameplay. R3–R6 still need their named owner interfaces.
+not establish rendered gameplay. Later R3/R6 agreements are recorded below;
+R4/R5 retain their named owner interfaces and acceptance dependencies.
 No authoritative snapshot, movement, construction, policy, scheduling, art or
 security/access change is part of R1.
 
@@ -982,6 +983,61 @@ Native resume proves the existing server/protocol contract; adapter CPU tests
 and packed HTTP checks do not establish cloud rendered or public-served
 acceptance. The source owner retains R3 evidence and that separate cloud gap;
 public-served capture remains with its existing owner. Art backing is N/A.
+
+The wildlife owner subsequently corrected the two stale carcass fixtures in
+[PR543](https://github.com/lbeezr/thousand-unit-skirmish/pull/543). R6 starts from
+that merged source; it does not duplicate those fixture or gameplay edits.
+
+### R6 room-index persistence boundary
+
+Against clean main `d9e616af`, the parent reconciled the absence of a competing
+room-index/orchestration implementation. Independent source review approved
+`createRoomIndexStore({ dataDirectory, indexPath, captureDocument })` before
+edits. The [41-line private module](../src/server/persistence/room-index-store.mjs)
+does no construction-time I/O and interprets no environment or module-relative
+paths. The supervisor alone resolves both paths and captures
+`roomIndexDocument([...rooms.values()])` when the queued operation executes.
+
+`persist()` and the host delegate return the queued operation promise directly.
+Each write recovers a preceding rejection, captures the current document,
+creates the existing data directory, serializes compact JSON, writes the same
+`rooms.json.PID.tmp` with the existing `mode: 0o600`, and renames it. The current
+failure propagates unchanged; no failure cleanup, permission change, new retry,
+debounce or storage policy is introduced. `read()` preserves the original
+missing/invalid/valid result: ENOENT is missing; other read, parse or normalization
+failures are invalid; valid v1/v2/v3 data uses the existing normalized room array
+without sorting or waiting for the write queue.
+
+The host retains directory-recovery scans, `Date.now`, sorting, expiry/deletion,
+warnings, room capacity, worker lifecycle, HTTP/upgrade routing and access/origin
+decisions. Its private `persistRoomIndex` composition function remains at every
+existing call site. The root supervisor CLI remains the public process entry;
+no compatibility export is invented for a formerly inline private body.
+
+Source comparison restores every other supervisor byte exactly and passes 229
+old/new queue/error/path/read controls. Existing launch-option tests now exercise
+the real filesystem-backed factory; prior cases and registrations remain.
+The focused persistence/import tests pass 73/73, both checked type boundaries
+and 58 negative type cases pass, and native supervisor/recovery, expiry, PvE
+launch/rematch and 16 pregame controls pass. Neither the new private module nor
+the supervisor is claimed to enter the existing checked-JavaScript scope.
+
+The graph is **234 modules / 460 local edges / 142 browser / 103 server / 34
+shared / zero cycles**; the host is 753 physical lines (18 fewer). All 1,445
+prior CI selections remain; only canonical module syntax is auto-discovered.
+These dated counts are responsibility ratchets, not size or quality thresholds.
+The guard adds only the exact Node-only and server-domain memberships; it
+preserves other owners' additive classifications, including PR541's movement
+entry when integrated. Public admission remains unchanged. Clean packaging and
+both packed hosts must retain canonical bytes, browser import/manifest hashes
+and authenticated private GET/HEAD 404 before integration acceptance. Source,
+clean release digest, actual merged tree and provider deployment source are
+recorded separately in the implementation PR/evidence. They do not close the
+existing public-served/rendered cloud gap. Art backing is N/A.
+
+R4 remains dependent on an identified rendered draft/recovery observation and
+the agreed authoring capture/status/clock/timer interface; R6 does not waive
+either dependency or allocate that host's draft lifecycle.
 
 ### Next responsibility checkpoints
 

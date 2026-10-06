@@ -1,5 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { existsSync, readFileSync } from 'node:fs';
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { createRoomIndexStore } from '../src/server/persistence/room-index-store.mjs';
 import {
   buildRoomWorkerEnvironment,
   completeRoomLaunchOptions,
@@ -15,6 +20,120 @@ import { normalizeMatchMode } from '../src/match-modes.mjs';
 import { PVE_MAP_IDS, readPveLaunchOptions, selectPveMapId } from '../src/pve-match.mjs';
 
 const roomId = 'a'.repeat(32);
+
+async function roomIndexFixture(t) {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'room-index-store-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const dataDirectory = path.join(root, 'data');
+  const indexPath = path.join(dataDirectory, 'rooms.json');
+  return { root, dataDirectory, indexPath, temporaryPath: `${indexPath}.${process.pid}.tmp` };
+}
+
+test('room index store captures live state when each serialized write executes', async t => {
+  const fixture = await roomIndexFixture(t);
+  let timestamp = 1;
+  const priorDocuments = [];
+  const store = createRoomIndexStore({ ...fixture, captureDocument: () => {
+    priorDocuments.push(existsSync(fixture.indexPath) ? readFileSync(fixture.indexPath, 'utf8') : null);
+    return roomIndexDocument([{ id: roomId, createdAt: 0, lastActiveAt: timestamp++, launchOptions: { mode: 'pvp' } }]);
+  } });
+  assert.equal(existsSync(fixture.dataDirectory), false, 'construction performs no I/O');
+  const first = store.persist();
+  const second = store.persist();
+  timestamp = 10;
+  assert.equal(priorDocuments.length, 0, 'enqueueing does not capture the document');
+  await Promise.all([first, second]);
+  const bytes = await readFile(fixture.indexPath, 'utf8');
+  assert.equal(priorDocuments[0], null);
+  assert.equal(JSON.parse(priorDocuments[1]).rooms[0].lastActiveAt, 10, 'next capture follows the previous rename');
+  assert.equal(JSON.parse(bytes).rooms[0].lastActiveAt, 11);
+  assert.equal(bytes, JSON.stringify(JSON.parse(bytes)), 'the persisted document remains compact');
+  assert.equal((await stat(fixture.indexPath)).mode & 0o777, 0o600);
+  assert.equal(existsSync(fixture.temporaryPath), false, 'successful rename consumes the PID temporary file');
+});
+
+test('room index store propagates the current capture error and recovers the next queued write', async t => {
+  const fixture = await roomIndexFixture(t);
+  const failure = new Error('capture failed');
+  let captures = 0;
+  const store = createRoomIndexStore({ ...fixture, captureDocument: () => {
+    if (++captures === 1) throw failure;
+    return roomIndexDocument([]);
+  } });
+  const failed = store.persist();
+  const recovered = store.persist();
+  await assert.rejects(failed, error => error === failure);
+  await recovered;
+  assert.equal(captures, 2);
+  assert.deepEqual(JSON.parse(await readFile(fixture.indexPath, 'utf8')), roomIndexDocument([]));
+});
+
+test('room index serialization remains after directory creation and preserves its error', async t => {
+  const fixture = await roomIndexFixture(t);
+  const failure = new Error('serialization failed');
+  const store = createRoomIndexStore({ ...fixture, captureDocument: () => ({ toJSON() {
+    assert.equal(existsSync(fixture.dataDirectory), true);
+    throw failure;
+  } }) });
+  await assert.rejects(store.persist(), error => error === failure);
+  assert.equal(existsSync(fixture.temporaryPath), false);
+});
+
+test('room index store propagates mkdir, write and rename faults without adding cleanup', async t => {
+  for (const stage of ['mkdir', 'write', 'rename']) {
+    await t.test(stage, async t => {
+      const fixture = await roomIndexFixture(t);
+      if (stage === 'mkdir') await writeFile(fixture.dataDirectory, 'directory collision');
+      else await mkdir(fixture.dataDirectory);
+      if (stage === 'write') await mkdir(fixture.temporaryPath);
+      if (stage === 'rename') await mkdir(fixture.indexPath);
+      const store = createRoomIndexStore({ ...fixture, captureDocument: () => roomIndexDocument([]) });
+      await assert.rejects(store.persist(), error => ['EEXIST', 'EISDIR', 'ENOTDIR'].includes(error.code));
+      assert.equal(existsSync(fixture.temporaryPath), stage !== 'mkdir', stage);
+      if (stage === 'rename') {
+        assert.equal(await readFile(fixture.temporaryPath, 'utf8'), JSON.stringify(roomIndexDocument([])),
+          'rename failure leaves the existing temporary payload');
+      }
+      await rm(stage === 'mkdir' ? fixture.dataDirectory : stage === 'write' ? fixture.temporaryPath : fixture.indexPath,
+        { recursive: true });
+      await store.persist();
+      assert.deepEqual(JSON.parse(await readFile(fixture.indexPath, 'utf8')), roomIndexDocument([]));
+    });
+  }
+});
+
+test('room index read classifies missing and invalid data without creating or repairing files', async t => {
+  const fixture = await roomIndexFixture(t);
+  const store = createRoomIndexStore({ ...fixture, captureDocument: () => { throw new Error('read captured a write'); } });
+  assert.deepEqual(await store.read(), { savedRooms: [], validIndex: false, indexState: 'missing' });
+  assert.equal(existsSync(fixture.dataDirectory), false);
+  await mkdir(fixture.dataDirectory);
+  for (const bytes of ['{', JSON.stringify({ version: 99, rooms: [] }), JSON.stringify({ version: 1,
+    rooms: [{ id: roomId, createdAt: 1, lastActiveAt: 2 }, { id: roomId, createdAt: 1, lastActiveAt: 2 }] })]) {
+    await writeFile(fixture.indexPath, bytes);
+    assert.deepEqual(await store.read(), { savedRooms: [], validIndex: false, indexState: 'invalid' });
+    assert.equal(await readFile(fixture.indexPath, 'utf8'), bytes, 'invalid input is retained for host recovery policy');
+  }
+  await rm(fixture.indexPath);
+  await mkdir(fixture.indexPath);
+  assert.deepEqual(await store.read(), { savedRooms: [], validIndex: false, indexState: 'invalid' });
+});
+
+test('room index read preserves version migrations and document order', async t => {
+  const fixture = await roomIndexFixture(t);
+  await mkdir(fixture.dataDirectory);
+  const store = createRoomIndexStore({ ...fixture, captureDocument: () => roomIndexDocument([]) });
+  for (const version of [1, 2, 3]) {
+    const document = { version, rooms: [
+      { id: roomId, createdAt: 1, lastActiveAt: 2, ...(version === 1 ? {} : { launchOptions: { mode: 'pvp' } }) },
+      { id: 'b'.repeat(32), createdAt: 1, lastActiveAt: 9, ...(version === 1 ? {} : { launchOptions: { mode: 'pvp' } }) },
+    ] };
+    await writeFile(fixture.indexPath, JSON.stringify(document));
+    assert.deepEqual(await store.read(), {
+      savedRooms: normalizeRoomIndex(document).rooms, validIndex: true, indexState: 'valid',
+    });
+  }
+});
 
 test('room launch options default to PvP and validate PvE mode and uint32 seeds', () => {
   assert.deepEqual(normalizeRoomLaunchOptions(), { mode: 'pvp' });

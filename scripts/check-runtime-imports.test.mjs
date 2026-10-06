@@ -4,13 +4,31 @@ import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
-import { BROWSER_ENTRYPOINTS, BROWSER_PACKAGE_IMPORTS, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS, checkRuntimeImports, moduleImports, readRuntimeSources, runtimeImportGraph, cyclicEdges } from './check-runtime-imports.mjs';
+import { BROWSER_ENTRYPOINTS, BROWSER_PACKAGE_IMPORTS, NODE_ONLY_MODULES, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS, checkRuntimeImports, moduleImports, readRuntimeSources, runtimeImportGraph, cyclicEdges } from './check-runtime-imports.mjs';
 
 function check(files, options = {}) {
   return checkRuntimeImports(new Map(Object.entries(files)), {
     browserEntrypoints: [], serverEntrypoints: [], nodeOnlyModules: [], requireDomainCoverage: false, ...options,
   });
 }
+
+test('room index persistence is explicitly Node-only and excluded from every shipped browser entry', async () => {
+  const canonical = 'src/server/persistence/room-index-store.mjs';
+  assert.ok(NODE_ONLY_MODULES.includes(canonical));
+  assert.ok(RUNTIME_DOMAINS.server.includes(canonical));
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  for (const entry of BROWSER_ENTRYPOINTS) {
+    const changed = new Map(sources);
+    changed.set(entry, `${sources.get(entry)}\nimport './server/persistence/room-index-store.mjs';`);
+    assert.throws(() => checkRuntimeImports(changed), /browser reaches a Node-only adapter/, entry);
+  }
+  for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+    'src/formation-assignment.mjs', 'src/simulation/ai/opponent-observation.mjs']) {
+    const relative = path.posix.relative(path.posix.dirname(root), canonical);
+    assert.throws(() => check({ [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';`, [canonical]: '' }),
+      /(?:rules|world|simulation|ai) domain cannot reach server domain/, root);
+  }
+});
 
 test('welcome session is a browser-safe client leaf excluded from authoritative domains and server hosts', async () => {
   const canonical = 'src/client/networking/welcome-session.mjs';
