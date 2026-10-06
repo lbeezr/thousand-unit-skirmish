@@ -102,7 +102,8 @@ main and active PR scopes; record a concrete defect risk before expanding.
 | Rank / state | Boundary | Defect risk and required proof | Scope/dependency |
 | --- | --- | --- | --- |
 | 1 — reviewed source correction, [PR #563](https://github.com/lbeezr/thousand-unit-skirmish/pull/563) | Persisted room-ID string boundary | At main `dd759f62`, JSON array IDs pass `normalizeRoomIndex` for versions 1–3. The actual store labels the index valid; `loadRooms` then exits before listening with `ERR_INVALID_ARG_TYPE` at `path.join`. Separately parsed arrays containing the same ID also evade duplicate detection. Require a primitive string under the existing pattern and reuse that checked ID. | Only `src/room-launch-options.mjs`, its existing dedicated test and this plan. No index-store/supervisor/recovery-policy or compiler/discovery edits. Type-safety owner retains normal merge and applicable integration evidence in the delivery PR. |
-| 2 — reassess when evidence appears | Next stable pure-data boundary | Select a concrete unchecked shape/identity/ownership risk with a positive consumer, a failing negative case and exact runtime/serialization proof. No additional boundary is reserved. | Deflate-offer inputs intentionally remain `unknown` and its boolean contract already has strict-check/coverage evidence from its extraction; topology/cell helpers have active gameplay consumers and no new type defect reproduced in this audit. Revisit a documented defect or an agreed stable seam; avoid annotations solely to increase coverage. |
+| 2 — reviewed defensive hardening, [PR #565](https://github.com/lbeezr/thousand-unit-skirmish/pull/565) | Worker-ready port DTO | Injected IPC at main `fe3c2f03` admits ports 65536, 70000 and `Number.MAX_SAFE_INTEGER`; the actual health consumer then rejects with `ERR_SOCKET_BAD_PORT`. The current producer uses an OS-assigned port, so this is a defensive contract gap, not a demonstrated normal-match failure. Require an integer in 1–65535 and reuse the checked port. | Only the ready-message guard in `room-supervisor.mjs`, its regression in the existing room-launch-options test and this plan. Preserve malformed-message ignore behavior, later valid readiness, metadata, timeouts and child cleanup. No new abstraction, worker implementation or compiler/discovery change. |
+| 3 — reassess when evidence appears | Next stable pure-data boundary | Select a concrete unchecked shape/identity/ownership risk with a positive consumer, a failing negative case and exact runtime/serialization proof. No additional boundary is reserved. | Deflate-offer inputs intentionally remain `unknown` and its boolean contract already has strict-check/coverage evidence from its extraction; topology/cell helpers have active gameplay consumers and no new type defect reproduced in this audit. Revisit a documented defect or an agreed stable seam; avoid annotations solely to increase coverage. |
 
 Room-ID acceptance, 6 October 2026: the three added dedicated regressions cover
 valid string IDs/migration and duplicate controls, coercible non-string IDs across
@@ -120,6 +121,24 @@ a runtime shape-contract correction, not new whole-module compiler enrollment.
 [Delivery PR #563](https://github.com/lbeezr/thousand-unit-skirmish/pull/563)
 records exact-head review, clean package and provider status separately; scoped
 local checks do not claim a full CPU suite or deployed-byte/visual acceptance.
+
+Worker-ready acceptance, 6 October 2026: the dedicated test executes the actual
+startup/health declarations and startup-timeout constant, with synthetic child
+IPC and startup clock. It retains all existing assertions and covers ignored
+malformed ports, later valid readiness, ports 1/65535, unchanged metadata,
+timeout/error/early-exit and settled-startup cleanup. A real local HTTP server
+provides the positive control through the actual health consumer. The port is
+captured once, so the worker uses the value that passed the range check; IPC
+format, producer behavior, timeout values and recovery policy are unchanged.
+This is bounded runtime DTO hardening, not whole-host compiler enrollment.
+All 37 prior dedicated tests remain intact; 40 pass with zero skips, and the
+three new regressions fail against the original host while the original tests
+still pass. Independent review verifies all 65,535 valid ports and 19 malformed
+controls. Both type gates, 196 focused/tooling tests, architecture/import checks,
+native supervisor recovery/isolation, expiry, PvE and packaged serving pass.
+[Delivery PR #565](https://github.com/lbeezr/thousand-unit-skirmish/pull/565)
+retains exact review, source/package and provider evidence separately from
+full-suite and live rendered acceptance.
 
 Do not expand into audio reader/production/research extractions, gameplay roots
 or active render/entry hotspots to chase coverage. Coordinate concrete moves or
