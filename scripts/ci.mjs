@@ -80,6 +80,7 @@ run(['--test', 'scripts/stone-map-profile.test.mjs'], 'Typed Stone layout and ma
 run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush preview and editor transactions');
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
 run(['--test', 'scripts/map-studio-draft-recovery.test.mjs'], 'Map Studio draft recovery container preflight');
+run(['--test', 'scripts/map-studio-import-errors.test.mjs'], 'Map Studio import read and parse failure contracts');
 run(['--test', 'scripts/map-publish-feedback.test.mjs'], 'Map Studio rejected publish feedback and explicit retry');
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/public-gameplay.test.mjs'], 'Default-off anonymous gameplay and protected private routes');

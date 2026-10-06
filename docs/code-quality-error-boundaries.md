@@ -13,7 +13,30 @@ contents or secrets. No noisy logging, telemetry service or broad rewrite.
 Combat, lobby, animation, modes, Skiff and shared-hotspot refactors are outside
 the current write scope. The shipped-audio reader already has its own owner.
 
-## Ranked backlog
+## Current queue — 6 October 2026
+
+The quality swarm's error lane now owns bounded persistence/import diagnostics.
+The only allocated main-client change is `importEditorMap` read-versus-parse
+handling. R4 draft timers/save/close, publishing, other editor globals and the
+audio organization lane remain outside this slice.
+
+| Priority/outcome | Evidence and boundary | Next action/owner |
+| --- | --- | --- |
+| 1 — map import failure acceptance | [PR #561](https://github.com/lbeezr/thousand-unit-skirmish/pull/561) separates native file-read failures from JSON syntax failures, retains exact causes and unexpected-error identity, and preserves the existing input handler and draft-save scheduling. Unchanged main `c1a51059` fails 13 of the 16 new production-consumer controls; all 16 pass with the correction. | Error owner tracks exact review, normal source merge, clean package and automatic staging inclusion in the PR; native file-picker/status observation remains separate and open. |
+| 2 — draft recovery rendered acceptance | [PR #554](https://github.com/lbeezr/thousand-unit-skirmish/pull/554), merge `f657383c45c67479e791c9f18dd31efe6188c398`, rejects four malformed collection containers before editor mutation. Verified containing source `c1a51059eb500d3c52eb4561ddce24f6e8dd27e8` reached normal staging `SUCCESS` in deployment `1f3302c6-b93f-4e8a-8d6e-d3ee0f05a8d7` at 18:57:48 UTC on 6 October, with the recovery contract/tests unchanged and no manual rollout or config change. | Error owner retains Restore failure/repair/retry observation on an identified release. Provider-reported staging inclusion does not establish authenticated served identity, deployed-byte digest or rendered acceptance. |
+| Next source candidate — no reproduced issue reserved | Read-only audit of existing authoring persistence/import helpers; preserve incomplete local drafts, validation order, storage behavior and private diagnostics. | Choose another small correction only after reproduction and overlap checks; do not manufacture a refactor to fill the queue. |
+
+The dedicated import regression is registered additively in the normal CI suite;
+all existing registrations and assertions remain. Direct import failures preserve
+editor/form/history/raw storage/timers/redraw state. A bubbling file-input change
+retains the host's existing dirty flag, `SAVING DRAFT…` status and debounced write,
+even on failure; this is compatibility evidence, not a draft-lifecycle change.
+The import PR records focused checks and independent exact-head review separately
+from hosted full-suite failures/skips, clean packaging and runtime acceptance.
+Historical native acceptance still depends on the recorded browser capability;
+no unchanged blocked browser or denied metadata route is retried by this slice.
+
+## Historical queue — 5 October 2026
 
 | Rank/status | Reproduction and outcome | Write boundary | Next action/dependency | Acceptance owner |
 | --- | --- | --- | --- | --- |
@@ -212,8 +235,9 @@ remaining issue, and state the concrete condition. Never invent work or expand
 spending, access, publication rights or repository permissions to continue.
 
 Historical input/capture fixes and PRs #450/#455/#458 have source integration
-evidence; they do not remain in the ready source queue. Current source work is
-limited to the reproduced Publish rejection feedback above. Native/deployed
-acceptance remains blocked by the recorded browser failure and unidentified
-coordinated release. Resume acceptance when both dependencies are available;
+evidence; they do not remain in the ready source queue. The current bounded
+authoring scope and remaining acceptance are recorded in the 6 October queue
+above. Earlier Publish/audio observations retain their historical browser and
+release dependencies; they do not authorize edits to those lanes. Resume native
+acceptance when the required capability and identified release are available;
 select another source fix only after concrete reproduction and ownership checks.
