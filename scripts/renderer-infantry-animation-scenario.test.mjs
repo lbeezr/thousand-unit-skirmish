@@ -133,7 +133,7 @@ test('actual post-render observer includes the default Infantry and reads its re
     renderer:{info:{render:{frame:10}},domElement:{getBoundingClientRect:()=>({left:0,top:0,width:1280,height:720})}}});
   runInContext(`(${observeRenderedUnits.toString()})()`,context);
   assert.deepEqual(probe.errors,[]);assert.equal(probe.samples[0].units[0].kind,'infantry');
-  assert.equal(probe.samples[0].units[0].actionSelection.reason,'idle-placeholder');
+  assert.equal(probe.samples[0].units[0].actionSelection.reason,missing.includes('west')?'idle-placeholder':'exact');
   assert.deepEqual(Array.from(probe.samples[0].units[0].uv),Array.from(f.scene.children[0].geometry.attributes.instanceAtlasRect.array));
   assert.equal(JSON.stringify(unit),before);assert.deepEqual(f.scene.children.map(m=>Array.from(m.instanceMatrix.array)),buffers);
 });
