@@ -820,7 +820,7 @@ review and normal ready merge under standing authorization.
 
 | Lane / scope | Current implementation claim | Shared integration |
 | --- | --- | --- |
-| Module organization / this architecture-audio lane | Audio composition validation/compilation from `src/audio-composition.mjs` and its three audio callers; then the existing composition player and offline WAV rendering responsibilities, one reviewed slice at a time. | Additive canonical entries in the import inventory and exact public admission, packed HTTP controls and this ownership record. No `main.js`, package/CI/type configuration, assets or deployment changes. |
+| Module organization / this architecture-audio lane | Audio composition validation/compilation from `src/audio-composition.mjs` and its three audio callers; then the existing composition player, offline WAV rendering and remaining DOM composer implementation plus its one library caller, one reviewed slice at a time. | Additive canonical entries in the import inventory and exact public admission, packed HTTP controls and this ownership record. No `main.js`, package/CI/type configuration, assets or deployment changes. |
 | Types/contracts lane | `room-launch-options`, `room-pregame`, `room-presence` boundaries. | Owned by that lane; audio does not edit those modules or approve its PRs. |
 | Error-handling lane | Authoring storage/import helpers, excluding R4 draft lifecycle. | Owned by that lane; audio does not edit those helpers. |
 | DRY-formatting lane | Resource format, population readout and economy-client formatting. | Owned by that lane; audio does not edit those modules. |
@@ -871,9 +871,14 @@ The short audio queue is: (1) composition model and its three callers, integrate
 in [PR553](https://github.com/lbeezr/thousand-unit-skirmish/pull/553); (2) the
 existing `createCompositionPlayer` clock/generation/node-disposal implementation
 and three dynamic import literals in `audio.mjs`/composer, preserving its root
-named binding; (3) `renderCompositionWav` and private WAV encoding from composer
+named binding, integrated in
+[PR556](https://github.com/lbeezr/thousand-unit-skirmish/pull/556); (3)
+`renderCompositionWav` and private WAV encoding from composer
 UI into a dedicated audio rendering leaf, preserving its public export and exact
-decode/schedule/Blob/error behavior. Each is a separate ready PR with original
+decode/schedule/Blob/error behavior, integrated in
+[PR558](https://github.com/lbeezr/thousand-unit-skirmish/pull/558); (4) the
+remaining DOM composer and its one lazy library caller into `client/audio`,
+preserving the root two-name API. Each is a separate ready PR with original
 tests, exact-head review and package checks. Refresh ownership/main before the
 next item; no broad directory sweep or generic utilities move is allocated.
 
@@ -933,6 +938,38 @@ At this dated checkpoint composer shrinks from 263 to 190 lines and the audio
 rendering leaf is 76 lines. The graph is 238 modules/469 local edges with zero
 cycles; all 1,456 prior selections remain plus canonical WAV syntax. These are
 responsibility/compatibility measurements, not full-suite or listening results.
+
+#### Composer client UI organization
+
+Against containing merge `3cd321e5`, the remaining DOM implementation lives in
+[client/audio/composer.mjs](../src/client/audio/composer.mjs), whose only named
+export is `mountAudioComposer`. All UI/helper bodies are unchanged; only the
+three relative model/WAV/lazy-player imports adjust to the new home. The root
+`audio-composer.mjs` explicitly forwards its existing two bindings from the
+client UI and presentation WAV leaves. This preserves supported API identity
+without making either canonical responsibility an API barrel.
+
+The one dynamic import in `audio-library-ui.mjs` loads the canonical UI at its
+same asynchronous position. Library stale-tab/connection checks, persistence,
+the `./src/audio-composer.css` URL, preview generations, save callbacks, export
+requests, download/revocation and DOM/player/context disposal retain their bytes.
+Original preview/export/WAV contracts exercise the canonical mount and check
+its sole export plus both legacy binding identities. The browser fixture and
+composer scenario retain the supported root API. No test is renamed.
+
+Import inventory and exact public GET/HEAD admission include the client UI;
+authority/server negatives and packed invalid/private paths retain the existing
+boundary policy. The dated checkpoint is a 189-line client implementation and
+three-line compatibility entry, 239 runtime modules/471 edges/zero cycles, with
+all 1,459 prior selections retained plus canonical syntax. These measurements
+track responsibilities and compatibility, not an absolute root-file limit.
+Retirement follows the inventory/owner/identified-release criteria above.
+
+This completes the bounded composition queue. A future library storage/import
+slice first needs a concrete ownership decision against the error-handling
+lane's authoring storage/import claim; no persistence edit is allocated here.
+Game audio host/cache disposal and audio asset metadata remain separate active
+responsibilities. Listening/rendered acceptance remains separately owned.
 
 ### Remaining organization queue — 6 October 2026
 
