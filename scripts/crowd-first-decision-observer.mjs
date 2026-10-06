@@ -23,11 +23,12 @@ export function observedCrowdSource(source, actorId = [4,5,6,7,8,9,10,11,12,13,1
     return allowed;
   };`);
   source = replace(source,
-    '    stats.proposals++; return canTraverse(to) && sweep(unit, to, neighbors);',
-    `    stats.proposals++;
+    '    const physical = () => canTraverse(to) && sweep(unit, to, neighbors);',
+    `    const physical = () => {
     const terrain = canTraverse(to), allowed = terrain && sweep(unit, to, neighbors);
     replayNote('proposal', { to, terrain, allowed, number: stats.proposals });
-    return allowed;`);
+    return allowed;
+    };`);
   source = replace(source,
     '    stats.pointProposals++; return pointAllowed(to) && sweep(to, to, neighbors);',
     `    stats.pointProposals++;
@@ -35,9 +36,9 @@ export function observedCrowdSource(source, actorId = [4,5,6,7,8,9,10,11,12,13,1
     replayNote('point-proposal', { to, terrain, allowed, number: stats.pointProposals });
     return allowed;`);
   for (const [before, phase] of [
-    ['  if (!state.lease && !state.contour && distance <= stepDistance', 'terminal'],
+    ['  if (!passageLease(state) && !state.contour && distance <= stepDistance', 'terminal'],
     ['  if (blocking.length && !state.detour)', 'detour'],
-    ['  if (!state.lease && !state.contour && (!opposed', 'direct'],
+    ['  if (!passageLease(state) && !state.contour && (!opposed', 'direct'],
     ['  if (finitePoint(cellCenter)) for', 'inset'],
     ['  for (const scale of [1, .5]) {', 'ordinary-headings'],
     ['  const closest = neighbors.toSorted', 'tangents'],
@@ -200,20 +201,10 @@ export { instrumentHost };
 }
 
 function observePriorityClaimants(source) {
-  const first = '  const yieldingToPeer = noProgressTicks >= 30 && neighbors.some(other => ';
-  const end = "\n  replayPhase = 'recovery';";
-  const start = source.indexOf(first), finish = source.indexOf(end, start);
-  if (start < 0 || finish < 0) throw Error('claimant observation boundary changed');
-  const original = source.slice(start, finish);
-  if (!original.endsWith(');')) throw Error('claimant expression boundary changed');
-  const expression = original.slice(first.length, -2);
-  let replacement = first.slice(0,-'other => '.length) + 'other => { const claims = ' + expression
-    + "; replayNote('claimant', { id: other.id, claims }); return claims; });";
-  if (replacement.includes('!parallelWaypointStep(other)')) replacement = replacement.replace('!parallelWaypointStep(other)',
-    "!replayClaimPredicate('parallel-waypoint', other, parallelWaypointStep(other))");
-  if (replacement.includes('!directedJoinStep(other)')) replacement = replacement.replace('!directedJoinStep(other)',
-    "!replayClaimPredicate('directed-join', other, directedJoinStep(other))");
-  source = source.slice(0,start) + replacement + source.slice(finish);
+  source=replace(source,'    if (claimed) { claims.push(other);',
+    "    replayNote('claimant', {id:other.id,claims:claimed});\n    if (claimed) { claims.push(other);");
+  source=replace(source,'    && !parallelWaypointStep(other)',
+    "    && !replayClaimPredicate('parallel-waypoint',other,parallelWaypointStep(other))");
   return source + `\nfunction replayClaimPredicate(predicate, other, result) {
     replayNote('claim-predicate', { predicate, id: other.id, result }); return result;
   }\n`;

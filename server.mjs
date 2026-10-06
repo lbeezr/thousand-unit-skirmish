@@ -90,7 +90,9 @@ import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoin
   unitRouteResultIsCurrent, rejoinSelectedUnitRoute, unitRouteRejoinDecision, createUnitRoutePublicationLedger } from './src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
-import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, canTraverseCrowdBodySegment } from './src/unit-crowd-steering.mjs';
+import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, canTraverseCrowdBodySegment,
+  crowdMovingEntitlement, crowdSteeringRecord, crowdExecutionState, crowdPriorityClaims } from './src/unit-crowd-steering.mjs';
+import { crowdMovementStart, finalizedCrowdProgress } from './src/crowd-moving-entitlement.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
 import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, stanceAcquiredMovementActive, patrolAcquiredMovementActive, workerPatrolAcquiredMovementActive, followTravelMovementActive, workerFollowTravelMovementActive } from './src/combat-movement.mjs';
 
@@ -7894,6 +7896,7 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   const workerRadius = workerLocalBodyRadius(unit);
   const crowdRadius = workerRadius || ordinaryCrowdBodyRadius(unit);
   if (crowdRadius) {
+    crowdExecutionState(unit, tickNumber);
     const currentCell = worldToCell(unit.x, unit.z), targetCell = worldToCell(target.x, target.z);
     const adjacent = Math.abs(currentCell % MAP_WIDTH - targetCell % MAP_WIDTH) <= 1
       && Math.abs(Math.floor(currentCell / MAP_WIDTH) - Math.floor(targetCell / MAP_WIDTH)) <= 1;
@@ -7937,6 +7940,7 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
         inset => canTraverseStaticBodySegment(inset, inset, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable), controlDiagnostics, crowdRadius);
     }
     const crowdMove = selectCrowdStep({ unit, target, stepDistance: Math.min(remainingStep, .25),
+      entitlementContext: crowdEntitlementContext(unit, query),
       travelDirection, progressTarget, approachBody: workerPatrolApproachBody(unit, target), diagnostics: controlDiagnostics,
       tick: tickNumber, navigationRevision, epoch: movePlanningEpoch,
       neighbors: query.neighbors, cellCenter: cellToWorld(currentCell), radius: crowdRadius,
@@ -8108,6 +8112,152 @@ function crowdNeighborsNear(unit) {
   return { neighbors, visits, overflow: false };
 }
 
+// Entitlements use the same fixed waypoint and accepted route edge as steering.
+function crowdRawPoint(unit) {
+  const point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
+  return point && unit.pathIndex === unit.path.length - 1 && unit.path[unit.pathIndex] === point.cell
+    ? point : cellToWorld(unit.path[unit.pathIndex]);
+}
+function crowdRouteDirection(unit) {
+  const target = crowdRawPoint(unit);
+  if (unit.pathIndex >= unit.path.length - 1) return {x:target.x-unit.x,z:target.z-unit.z};
+  const previous = unit.pathIndex ? cellToWorld(unit.path[unit.pathIndex-1]) : cellToWorld(worldToCell(unit.x,unit.z));
+  let x=target.x-previous.x,z=target.z-previous.z;
+  if (!x && !z) { const following=cellToWorld(unit.path[unit.pathIndex+1]);x=following.x-target.x;z=following.z-target.z; }
+  return {x,z};
+}
+function crowdNextBudget(unit) { return UNIT_DEFINITIONS[unit.kind].combat.moveSpeed * STEP_SECONDS; }
+function crowdRemainingBudget(unit) {
+  const execution=crowdSteeringRecord(unit)?.execution;
+  return Math.max(0,crowdNextBudget(unit)-(execution?.tick===tickNumber?execution.spent:0));
+}
+function crowdPromiseControllerAllowed(unit, bodies, work, nextTick = false) {
+  work.controllerActors=(work.controllerActors??0)+1;
+  if (!ordinaryCrowdBodyRadius(unit) || unit.pathIndex>=unit.path.length-1) return false;
+  const state=crowdSteeringRecord(unit);
+  if (state?.detour || state?.contour || (state?.lease && state.lease.kind!=='ingress-obligation')) return false;
+  const raw=crowdRawPoint(unit), radius=ordinaryCrowdBodyRadius(unit);
+  const current=worldToCell(unit.x,unit.z), targetCell=worldToCell(raw.x,raw.z);
+  const adjacent=Math.abs(current%MAP_WIDTH-targetCell%MAP_WIDTH)<=1
+    && Math.abs(Math.floor(current/MAP_WIDTH)-Math.floor(targetCell/MAP_WIDTH))<=1;
+  if (!isWalkable(targetCell)
+    || (adjacent && !canTraverseUnitStep(current,targetCell,MAP_WIDTH,elevationLevelByCell,isWalkable))
+    || (!canTraverseStaticBodySegment(raw,raw,radius,MAP_WIDTH,MAP_HEIGHT,isWalkable)
+      && !canTraverseStaticBodySegment(unit,raw,radius,MAP_WIDTH,MAP_HEIGHT,isWalkable,{allowEscape:true}))) return false;
+  const remaining=Math.hypot(raw.x-unit.x,raw.z-unit.z);
+  const age=state && remaining>=state.bestDistance-.02 ? tickNumber+Number(nextTick)-state.lastProgressTick : 0;
+  if (age>=30 && !canTraverseUnitStep(current,targetCell,MAP_WIDTH,elevationLevelByCell,isWalkable)
+    && !canTraverseStaticBodySegment(unit,raw,radius,MAP_WIDTH,MAP_HEIGHT,isWalkable)) return false;
+  const target=crowdPassagePoint(raw,crowdRouteDirection(unit),unit,bodies,
+    to=>canTraverseStaticBodySegment(to,to,radius,MAP_WIDTH,MAP_HEIGHT,isWalkable),{
+      get passageProposals(){return work.controllerPoints??0;},set passageProposals(v){work.controllerPoints=v;},
+      get passageBodyVisits(){return work.controllerBodyVisits??0;},set passageBodyVisits(v){work.controllerBodyVisits=v;}
+    },radius);
+  if (bodies.some(body=>{
+    work.controllerBodyVisits=(work.controllerBodyVisits??0)+1;
+    return !ordinaryCrowdBodyRadius(body)
+      && Math.hypot(target.x-body.x,target.z-body.z)<radius+LAND_CLEARANCE_PROFILE.radiusByKind[body.kind]-1e-9;
+  })) return false;
+  const length=Math.hypot(target.x-unit.x,target.z-unit.z);
+  if (length<=1e-9) return false;
+  const directLength=Math.min(crowdNextBudget(unit),length);
+  const direct={x:unit.x+(target.x-unit.x)/length*directLength,z:unit.z+(target.z-unit.z)/length*directLength};
+  if (bodies.some(body=>{
+    work.controllerBodyVisits=(work.controllerBodyVisits??0)+1;
+    return !ordinaryCrowdBodyRadius(body)
+      && (body.x-unit.x)*(target.x-unit.x)+(body.z-unit.z)*(target.z-unit.z)>0
+      && !canTraverseCrowdBodySegment(unit,direct,radius,[body],{allowEscape:true,
+        onVisit:()=>work.controllerBodyVisits=(work.controllerBodyVisits??0)+1});
+  })) return false;
+  // An ordinary admitted arrival consumes the waypoint; a promise only owns
+  // steering, never that arrival or the existing repair/endpoint-wait policy.
+  return !(length<=crowdNextBudget(unit)
+    && canTraverseUnitStep(current,worldToCell(target.x,target.z),MAP_WIDTH,elevationLevelByCell,isWalkable)
+    && canTraverseStaticBodySegment(unit,target,radius,MAP_WIDTH,MAP_HEIGHT,isWalkable,{allowEscape:true})
+    && canTraverseCrowdBodySegment(unit,target,radius,bodies,{allowEscape:true,
+      onVisit:()=>work.controllerBodyVisits=(work.controllerBodyVisits??0)+1}));
+}
+function crowdEntitlementContext(unit, query = crowdNeighborsNear(unit)) {
+  const work=crowdSteeringRecord(unit)?.execution?.work ?? {};
+  const controllers=new Map(); // One fresh context per actor per adapter call, at most65.
+  const bodiesOf=other=>other===unit?query.neighbors:[...query.neighbors.filter(body=>body!==other),unit];
+  return {tick:tickNumber,nav:navigationRevision,epoch:movePlanningEpoch,
+    neighbors:query.neighbors,overflow:query.overflow || !spatialBucketRosterCurrent,
+    pointOf:crowdRawPoint,nextBudgetOf:crowdNextBudget,remainingBudgetOf:crowdRemainingBudget,
+    maneuver:(other,nextTick=false) => {
+      const key=other.id*2+Number(nextTick);
+      if (!controllers.has(key)) controllers.set(key,crowdPromiseControllerAllowed(other,bodiesOf(other),work,nextTick));
+      return !controllers.get(key);
+    },
+    claims:(other,to,nextTick=false) => {
+      if (!ordinaryCrowdBodyRadius(other)) return [];
+      const state=crowdSteeringRecord(other), raw=crowdRawPoint(other);
+      const length=Math.hypot(to.x-other.x,to.z-other.z);
+      const remaining=Math.hypot(raw.x-other.x,raw.z-other.z);
+      // Preview the next selector's original progress observation, without
+      // mutating a neighbor's history or freshness during this serial turn.
+      const age=state && remaining>=state.bestDistance-.02 ? tickNumber+Number(nextTick)-state.lastProgressTick : 0;
+      work.priorityCalls=(work.priorityCalls??0)+1;
+      work.priorityVisits=(work.priorityVisits??0)+bodiesOf(other).length;
+      return crowdPriorityClaims({unit:other,neighbors:bodiesOf(other),
+        radius:ordinaryCrowdBodyRadius(other),stepDistance:Math.min(.25,nextTick?crowdNextBudget(other):crowdRemainingBudget(other)),
+        onVisit:()=>work.priorityVisits=(work.priorityVisits??0)+1,
+        noProgressTicks:age,best:length>0?{x:(to.x-other.x)/length,z:(to.z-other.z)/length,stepDistance:length}:null,
+        detour:state?.detour,progressTarget:raw,travelDirection:crowdRouteDirection(other),
+        targetOf:body=>ordinaryCrowdBodyRadius(body)?activeMoveGoalPoint(body)??cellToWorld(body.moveGoalCell):null,
+        directionOf:body=>{if(!ordinaryCrowdBodyRadius(body))return null;
+          const point=cellToWorld(body.path[body.pathIndex]);return {x:point.x-body.x,z:point.z-body.z};}}).claims;
+    },
+    admit:(other,from,to) => {
+      const radius=ordinaryCrowdBodyRadius(other);
+      return radius>0 && to.x>=-MAP_HALF_X+.5 && to.x<=MAP_HALF_X-.5 && to.z>=-MAP_HALF_Z+.5 && to.z<=MAP_HALF_Z-.5
+        && automaticPositionAllowed(other,to.x,to.z)
+        && canTraverseUnitStep(worldToCell(from.x,from.z),worldToCell(to.x,to.z),MAP_WIDTH,elevationLevelByCell,isWalkable)
+        && canTraverseStaticBodySegment(from,to,radius,MAP_WIDTH,MAP_HEIGHT,isWalkable,{allowEscape:true})
+        && canTraverseCrowdBodySegment(from,to,radius,bodiesOf(other),{allowEscape:true});
+    }};
+}
+
+// Supplemental to each caller's original physical admission. Account the raw
+// write and its existing final clamp together before either position is changed.
+function admitCrowdLandWrite(unit, to, clampAfter = false) {
+  const clamped = clampAfter ? {x:Math.max(-MAP_HALF_X+.5,Math.min(MAP_HALF_X-.5,to.x)),
+    z:Math.max(-MAP_HALF_Z+.5,Math.min(MAP_HALF_Z-.5,to.z))} : to;
+  const length=Math.hypot(to.x-unit.x,to.z-unit.z)+Math.hypot(clamped.x-to.x,clamped.z-to.z);
+  if (!Number.isFinite(length)) return false;
+  if (length<=1e-9) return true; // A reached zero-position waypoint still consumes its route entry.
+  const execution=crowdExecutionState(unit,tickNumber);
+  const stamp={tick:tickNumber,nav:navigationRevision,epoch:movePlanningEpoch};
+  const protectedTick=crowdMovingEntitlement.hasReservations(stamp)
+    || crowdMovingEntitlement.obligation(unit,{...stamp,pointOf:crowdRawPoint});
+  if (ordinaryCrowdBodyRadius(unit) && length>crowdRemainingBudget(unit)+1e-9) return false;
+  if (protectedTick || ordinaryCrowdBodyRadius(unit)) {
+    if (protectedTick && length>.25+1e-9) return false;
+    const c=crowdEntitlementContext(unit);
+    if (!crowdMovingEntitlement.protectWrite(unit,unit,to,c,execution.work)
+      || !crowdMovingEntitlement.protectWrite(unit,to,clamped,c,execution.work)) return false;
+  }
+  execution.spent+=length;
+  return true;
+}
+
+function finalizeCrowdMovement(unit, start, repairPending) {
+  const state=crowdSteeringRecord(unit);
+  if (!ordinaryCrowdBodyRadius(unit) && !state?.lease?.pending && !crowdMovingEntitlement.reservation(unit)?.attempted) return;
+  const execution=crowdExecutionState(unit,tickNumber), c=crowdEntitlementContext(unit);
+  const receipt=finalizedCrowdProgress(unit,start,c);
+  const attempted=crowdMovingEntitlement.reservation(unit)?.attempted;
+  crowdMovingEntitlement.finishIngress(unit,receipt,c);
+  if (attempted) { crowdMovingEntitlement.finish(unit,receipt,c); return; }
+  if (repairPending || !ordinaryCrowdBodyRadius(unit) || unit.pathIndex>=unit.path.length-1) return;
+  // Continue the actual finalized heading once; never invent a tangent as a
+  // promise. Raw-waypoint gain and all original priority/physical checks apply.
+  if (!c.neighbors.some(other=>{const q=crowdSteeringRecord(other)?.offer?.moving?.request;
+    return q?.tick===tickNumber-1 && q.peer===unit;})) return;
+  const to={x:unit.x+(unit.x-start.from.x),z:unit.z+(unit.z-start.from.z)};
+  crowdMovingEntitlement.publish(unit,to,receipt,c,execution.work);
+}
+
 function stationaryWorkerCellsNear(unit, blockerCell) {
   const occupied = new Set([blockerCell]);
   const center = cellToWorld(blockerCell);
@@ -8241,7 +8391,7 @@ function spreadInteractingUnits() {
         MAP_WIDTH, elevationLevelByCell, isWalkable)
       || (clearanceRadius && !canTraverseStaticBodySegment(unit, { x, z },
         clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))
-      || !workerBodyStepAllowed(unit, { x, z })) continue;
+      || !workerBodyStepAllowed(unit, { x, z }) || !admitCrowdLandWrite(unit, { x, z })) continue;
     unit.x = x;
     unit.z = z;
     unit.lastMoveTick = tickNumber;
@@ -8677,7 +8827,8 @@ function simulateTick() {
           const step = Math.min(UNIT_DEFINITIONS[unit.kind].combat.moveSpeed * STEP_SECONDS, distance - range + 0.02);
           const x = unit.x + dx / distance * step;
           const z = unit.z + dz / distance * step;
-          if (isWalkable(worldToCell(x, z)) && automaticPositionAllowed(unit, x, z)) {
+          if (isWalkable(worldToCell(x, z)) && automaticPositionAllowed(unit, x, z)
+            && admitCrowdLandWrite(unit, { x, z })) {
             unit.x = x;
             unit.z = z;
             unit.lastMoveTick = tickNumber;
@@ -8687,7 +8838,8 @@ function simulateTick() {
       }
     }
     if (unit.holdingPosition || unit.pathIndex >= unit.path.length) continue;
-    let remainingStep = UNIT_DEFINITIONS[unit.kind].combat.moveSpeed * STEP_SECONDS;
+    const movementStart = crowdMovementStart(unit, {tick:tickNumber,nav:navigationRevision,epoch:movePlanningEpoch,pointOf:crowdRawPoint});
+    let remainingStep = crowdRemainingBudget(unit);
     const clearanceRadius = activeLandMovementBodyRadius(unit);
     let allowLocalDetour = true;
     while (remainingStep > 0 && unit.pathIndex < unit.path.length) {
@@ -8754,6 +8906,7 @@ function simulateTick() {
           else { rejectAutomaticTarget(unit, units[unit.attackTargetId]); clearAttackTarget(unit); }
           break;
         }
+        if (!admitCrowdLandWrite(unit, move.target)) break;
         unit.x = move.target.x;
         unit.z = move.target.z;
         unit.pathIndex++;
@@ -8778,7 +8931,8 @@ function simulateTick() {
       if (canTraverseUnitStep(currentCell, nextCell, MAP_WIDTH, elevationLevelByCell, isWalkable)
         && (!clearanceRadius || canTraverseStaticBodySegment(unit, { x: nextX, z: nextZ },
           clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {
-        if (!workerBodyStepAllowed(unit, { x: nextX, z: nextZ })) break;
+        if (!workerBodyStepAllowed(unit, { x: nextX, z: nextZ })
+          || !admitCrowdLandWrite(unit, { x: nextX, z: nextZ }, true)) break;
         unit.x = nextX;
         unit.z = nextZ;
       } else {
@@ -8795,7 +8949,8 @@ function simulateTick() {
           MAP_WIDTH, elevationLevelByCell, isWalkable) && automaticPositionAllowed(unit, fallbackX, fallbackZ)
           && (!clearanceRadius || canTraverseStaticBodySegment(unit, { x: fallbackX, z: fallbackZ },
             clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {
-          if (!workerBodyStepAllowed(unit, { x: fallbackX, z: fallbackZ })) break;
+          if (!workerBodyStepAllowed(unit, { x: fallbackX, z: fallbackZ })
+            || !admitCrowdLandWrite(unit, { x: fallbackX, z: fallbackZ }, true)) break;
           unit.x = fallbackX;
           unit.z = fallbackZ;
         } else {
@@ -8820,6 +8975,7 @@ function simulateTick() {
       dirty = true;
       break;
     }
+    finalizeCrowdMovement(unit, movementStart, blockedRouteRepairs.at(-1)?.unit===unit);
   }
   enqueueRouteRepairs(blockedRouteRepairs);
   spreadInteractingUnits();

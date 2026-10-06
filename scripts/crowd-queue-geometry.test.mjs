@@ -84,7 +84,9 @@ for (const c of cases) test(`${c.name}: classified geometry preserves the full c
     observer.observed.replayHostEnd(unit,result);
     const [replayed] = observer.observed.drainReplayFrames();
     assert.deepEqual(structuredClone(result),decode(c.frame.result));
-    assert.deepEqual(unit,actorBefore); assert.deepEqual(replayed.afterState,c.frame.afterState);
+    assert.deepEqual(unit,actorBefore); const {execution,...historical}=replayed.afterState;
+    if(historical.offer?.moving)historical.offer=historical.offer.passage;
+    assert.deepEqual(historical,c.frame.afterState);
     const omit = e => !['host-entry','host-oracle'].includes(e.type)
       && (c.name==='forest142' || !['claim-predicate','claimant'].includes(e.type));
     assert.deepEqual(replayed.events.filter(omit),c.frame.events.filter(omit));

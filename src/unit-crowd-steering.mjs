@@ -1,6 +1,7 @@
 import { LAND_CLEARANCE_PROFILE, pointSegmentDistanceSquared } from './unit-movement.mjs';
 import { crowdWaitLease } from './crowd-wait-lease.mjs';
 import { crowdParkedContour } from './crowd-parked-contour.mjs';
+import { MovingCrowdEntitlement, crowdEntitlementBudget, classifyQueueGeometry } from './crowd-moving-entitlement.mjs';
 
 // The host supplies current serial-executor neighbours and its terrain/static
 // admission predicate. An explicit radius admits another host-owned movement
@@ -17,19 +18,49 @@ const DIRECTIONS = ANGLES.map(angle => {
 });
 const finitePoint = p => p && Number.isFinite(p.x) && Number.isFinite(p.z);
 const steeringStates = new WeakMap();
+const safetyLease = state => state?.lease?.kind === 'ingress-obligation' ? state.lease : null;
+const passageLease = state => state.lease && !safetyLease(state);
+export const crowdSteeringRecord = unit => steeringStates.get(unit);
+export const crowdMovingEntitlement = new MovingCrowdEntitlement({ stateOf: crowdSteeringRecord,
+  active: ordinaryCrowdBodyRadius });
+
+// Only the executing actor initializes this record. Queries remain passive.
+export function crowdExecutionState(unit, tick) {
+  let state = steeringStates.get(unit);
+  if (!state || state.generation !== unit.generation) {
+    state = { generation: unit.generation, offer: null, lease: null };
+    steeringStates.set(unit, state);
+  }
+  if (state.execution?.tick !== tick) state.execution = { tick, spent: 0, work: crowdEntitlementBudget() };
+  return state.execution;
+}
 
 function steeringState(unit, tick, navigationRevision, epoch) {
   let state = steeringStates.get(unit);
   if (!state || state.generation !== unit.generation || state.revision !== unit.orderRevision
     || state.navigationRevision !== navigationRevision || state.epoch !== epoch || tick < state.lastTick
     || state.path !== unit.path || state.pathIndex !== unit.pathIndex) {
+    const sameBirth = state?.generation === unit.generation;
+    const lease = sameBirth ? safetyLease(state) : null;
+    const lastGrantTick = lease ? state.lastGrantTick : -Infinity;
+    const execution = sameBirth ? state.execution : undefined;
+    const issuedTick = sameBirth ? state.offer?.moving?.issuedTick : undefined;
     state = { generation: unit.generation, revision: unit.orderRevision, navigationRevision, epoch,
       path: unit.path, pathIndex: unit.pathIndex, detour: null, lastProgressTick: tick, bestDistance: Infinity,
-      lease: null, leaseCooldown: -Infinity, lastGrantTick: -Infinity, offer: null, offerTick: -Infinity };
+      lease, leaseCooldown: -Infinity, lastGrantTick, offer: null, offerTick: -Infinity };
+    if (execution) state.execution = execution;
+    if (issuedTick !== undefined) state.offer = { passage: null,
+      moving: { request: null, reservation: null, cursor: -1, issuedTick } };
     steeringStates.set(unit, state);
   }
-  if (tick > state.lastTick + 1) { state.lease = null; state.contour = null; state.offer = null; }
+  if (tick > state.lastTick + 1) {
+    if (!safetyLease(state)) state.lease = null;
+    state.contour = null;
+    if (state.offer?.moving) { state.offer.moving.request = null; state.offer.moving.reservation = null; }
+    else state.offer = null;
+  }
   state.lastTick = tick;
+
   return state;
 }
 
@@ -103,6 +134,63 @@ export function canTraverseCrowdBodySegment(from, to, radius, neighbors, { allow
   return !escaping || improved;
 }
 
+// One original priority predicate for selection, publication and next-tick service.
+export function crowdPriorityClaims({unit, neighbors, radius, stepDistance, noProgressTicks,
+  best, detour, progressTarget, travelDirection, fallbackDirection = null, targetOf, directionOf, onVisit = null, limit = Infinity}) {
+  const directionLength = finitePoint(travelDirection) && Math.hypot(travelDirection.x, travelDirection.z);
+  const heading = fallbackDirection ?? best ?? {x: progressTarget.x-unit.x, z: progressTarget.z-unit.z};
+  const headingLength = Math.hypot(heading.x, heading.z) || 1;
+  const routeX = directionLength ? travelDirection.x/directionLength : heading.x/headingLength;
+  const routeZ = directionLength ? travelDirection.z/directionLength : heading.z/headingLength;
+  const remaining = Math.hypot(progressTarget.x-unit.x, progressTarget.z-unit.z);
+  const state = {detour};
+  // Retain an admitted oblique forward step only when every nearby body is
+  // following this segment from behind. A parked or opposing body keeps the
+  // existing stricter exemption and its own passage/contour arbitration.
+  const followingOnly = noProgressTicks >= 30 && best && best.x * routeX + best.z * routeZ > 0
+    && neighbors.every(other => {
+      onVisit?.();
+      const direction = directionOf(other);
+      return ordinaryCrowdBodyRadius(other) > 0
+        && (other.x - unit.x) * routeX + (other.z - unit.z) * routeZ <= 0
+        && finitePoint(direction) && direction.x * routeX + direction.z * routeZ
+          > .9 * Math.hypot(direction.x, direction.z);
+    });
+  // Crowd deflection can leave the actor beside the accepted segment. A peer's
+  // far goal may then look opposed to that segment while both current waypoints
+  // lead the same way. Keep already admitted progress in that shared direction;
+  // a different opposing claimant still retains its ordinary priority.
+  const advancingWaypoint = !state.detour && best && directionLength
+    && unit.pathIndex < unit.path.length - 1 && finitePoint(progressTarget)
+    && (progressTarget.x - unit.x) * routeX + (progressTarget.z - unit.z) * routeZ < -EPSILON
+    && Math.abs(best.x * routeX + best.z * routeZ) < .1
+    && Math.hypot(progressTarget.x - unit.x - best.x * best.stepDistance,
+      progressTarget.z - unit.z - best.z * best.stepDistance) < remaining - EPSILON;
+  const parallelWaypointStep = other => {
+    if (!advancingWaypoint || !ordinaryCrowdBodyRadius(other)) return false;
+    const direction = directionOf(other);
+    return finitePoint(direction) && direction.x * best.x + direction.z * best.z
+      > .9 * Math.hypot(direction.x, direction.z);
+  };
+  const claims = [];
+  if (noProgressTicks >= 30) for (const other of neighbors) {
+    const claimed = other.id < unit.id && finitePoint(targetOf(other))
+    && (targetOf(other).x - other.x) * routeX + (targetOf(other).z - other.z) * routeZ < 0
+    && !parallelWaypointStep(other)
+    // A same-segment follower behind us cannot claim a clear forward step
+    // merely because its distant final goal lies across the current segment.
+    && !((other.x - unit.x) * routeX + (other.z - unit.z) * routeZ <= 0
+      && best && (best.x * routeX + best.z * routeZ > .9 || followingOnly)
+      && finitePoint(directionOf(other))
+      && directionOf(other).x * routeX + directionOf(other).z * routeZ
+        > .9 * Math.hypot(directionOf(other).x, directionOf(other).z))
+    && Math.hypot(other.x - unit.x, other.z - unit.z)
+      < radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] + stepDistance + .1;
+    if (claimed) { claims.push(other); if (claims.length >= limit) break; }
+  }
+  return {claims, followingOnly, advancingWaypoint};
+}
+
 // At most 128 admitted short proposals, including lease/contour proposals:
 // 26 headings, four lane-boundary proposals, 32 tangents around eight closest
 // bodies, ten recovery headings, fourteen lease offers and local contour exits. Each
@@ -116,14 +204,21 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     ? { x: goal.x - other.x, z: goal.z - other.z } : null; },
   escapeAllowed = canTraverse, detourAllowed = () => true,
   travelDirection = null, tick = 0, navigationRevision = 0, epoch = 0, overflow = false, diagnostics = null,
-  radius = ordinaryCrowdBodyRadius(unit) }) {
+  radius = ordinaryCrowdBodyRadius(unit), entitlementContext = null }) {
   if (!(radius > 0 && radius <= .5) || !finitePoint(target) || !(stepDistance > 0 && stepDistance <= .25)) {
-    steeringStates.delete(unit); return null;
+    const prior = steeringStates.get(unit);
+    if (!safetyLease(prior) && !prior?.offer?.moving) steeringStates.delete(unit);
+    return null;
   }
   const state = steeringState(unit, tick, navigationRevision, epoch);
+  const work = entitlementContext ? crowdExecutionState(unit, tick).work : null;
+  if (safetyLease(state) && entitlementContext && !crowdMovingEntitlement.obligation(unit, entitlementContext)) state.lease = null;
   const stats = { proposals: 0, pointProposals: 0, escapeProposals: 0, bodyVisits: 0, arbitrationVisits: 0, leaseAge: 0, contourAge: 0, waitAge: 0, detourTerrainProbes: 0, ...diagnostics };
   if (overflow || neighbors.length > CROWD_NEIGHBOR_LIMIT) {
-    state.lease = null; state.contour = null; state.offer = null;
+    if (!safetyLease(state)) state.lease = null;
+    state.contour = null;
+    if (state.offer?.moving) { state.offer.moving.request = null; state.offer.moving.reservation = null; }
+    else state.offer = null;
     return { target, waitingForCrowd: true, stepDistance: 0, crowdControl: stats };
   }
   const sweep = (from, to, bodies) => canTraverseCrowdBodySegment(from, to, radius, bodies,
@@ -135,24 +230,41 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   stats.waitAge = noProgressTicks;
   // A contour or retreat can enter the projected waypoint's cell before it
   // finishes its own manoeuvre. That pose does not consume the waypoint.
-  const aim = (state.lease || state.contour) && Math.hypot(target.x - unit.x, target.z - unit.z) < EPSILON
+  const aim = (passageLease(state) || state.contour) && Math.hypot(target.x - unit.x, target.z - unit.z) < EPSILON
     && remaining > EPSILON ? progressTarget : target;
   const dx = aim.x - unit.x, dz = aim.z - unit.z, distance = Math.hypot(dx, dz);
   if (neighbors.some(other => { stats.bodyVisits++; return other !== approachBody && !ordinaryCrowdBodyRadius(other)
     && Math.hypot(target.x - other.x, target.z - other.z)
       < radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] - EPSILON; }))
     return { target, waitingForCrowd: true, stepDistance: 0, noProgressTicks, crowdControl: stats };
-  if (!distance) { state.lease = null; state.contour = null; return { target, reachedWaypoint: true, stepDistance: 0, noProgressTicks, crowdControl: stats }; }
+  if (!distance) { if (!safetyLease(state)) state.lease = null; state.contour = null; return { target, reachedWaypoint: true, stepDistance: 0, noProgressTicks, crowdControl: stats }; }
   const clear = to => {
-    if (stats.proposals >= CROWD_PROPOSAL_LIMIT) return false;
-    stats.proposals++; return canTraverse(to) && sweep(unit, to, neighbors);
+    // Keep three admissions for request, actual write and publication. All
+    // selector/offer/write work shares this actor's fixed-tick 128 limit.
+    if (stats.proposals >= CROWD_PROPOSAL_LIMIT || (work && work.proposals >= CROWD_PROPOSAL_LIMIT - 3)) return false;
+    stats.proposals++;
+    const physical = () => canTraverse(to) && sweep(unit, to, neighbors);
+    return work ? crowdMovingEntitlement.admit(unit, unit, to,
+      { ...entitlementContext, admit: physical }, work) : physical();
   };
   const pointClear = to => {
     if (stats.pointProposals >= CROWD_POINT_PROPOSAL_LIMIT) return false;
     stats.pointProposals++; return pointAllowed(to) && sweep(to, to, neighbors);
   };
   const detourClear = to => { stats.detourTerrainProbes++; return detourAllowed(to); };
-  if (!state.lease && !state.contour && distance <= stepDistance && clear(target)) return { target, reachedWaypoint: true, stepDistance: distance, noProgressTicks, crowdControl: stats };
+  if (!passageLease(state) && !state.contour && distance <= stepDistance && clear(target)) return { target, reachedWaypoint: true, stepDistance: distance, noProgressTicks, crowdControl: stats };
+  if (entitlementContext && ordinaryCrowdBodyRadius(unit)) {
+    let to = crowdMovingEntitlement.take(unit, entitlementContext, work);
+    if (!to) {
+      const peer = state.offer?.moving?.request?.peer;
+      if (peer) to = crowdMovingEntitlement.prepareIngress(unit, peer, entitlementContext, work);
+    }
+    if (to) {
+      const length = Math.hypot(to.x-unit.x,to.z-unit.z);
+      return {x:(to.x-unit.x)/length,z:(to.z-unit.z)/length,target,stepDistance:length,
+        noProgressTicks,crowdControl:stats};
+    }
+  }
   const headingX = dx / distance, headingZ = dz / distance;
   const directionLength = finitePoint(travelDirection) && Math.hypot(travelDirection.x, travelDirection.z);
   const routeX = directionLength ? travelDirection.x / directionLength : headingX;
@@ -223,14 +335,14 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
       preferredZ = (state.detour.z - unit.z) / length;
     }
   }
-  if (!state.lease && !state.contour && (!opposed || lane === null) && Math.hypot(separationX, separationZ) < EPSILON && clear(direct))
+  if (!passageLease(state) && !state.contour && (!opposed || lane === null) && Math.hypot(separationX, separationZ) < EPSILON && clear(direct))
     return { x: headingX, z: headingZ, target, stepDistance: directLength, noProgressTicks, crowdControl: stats };
   let best = null, bestScore = -Infinity;
   const consider = (to, ordinaryProposal = true) => {
     const length = Math.hypot(to.x - unit.x, to.z - unit.z);
     if (length <= EPSILON || length > stepDistance + EPSILON || !clear(to)) return;
     const progress = distance - Math.hypot(target.x - to.x, target.z - to.z);
-    const rankRawRoute = ordinaryProposal && projectedRouteFeedback && !state.detour && !state.lease && !state.contour;
+    const rankRawRoute = ordinaryProposal && projectedRouteFeedback && !state.detour && !passageLease(state) && !state.contour;
     const rankingProgress = rankRawRoute
       ? remaining - Math.hypot(progressTarget.x - to.x, progressTarget.z - to.z) : progress;
     const cross = headingX * (to.z - unit.z) - headingZ * (to.x - unit.x);
@@ -296,8 +408,8 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   const activePeers = neighbors.reduce((count, other) => {
     stats.arbitrationVisits++; return count + Number(ordinaryCrowdBodyRadius(other) > 0);
   }, 0);
-  if (activePeers > 1) state.lease = null;
-  const lease = activePeers <= 1 && !state.contour ? crowdWaitLease({ unit, state, tick, neighbors, radius, radiusOf: ordinaryCrowdBodyRadius,
+  if (activePeers > 1 && !safetyLease(state)) state.lease = null;
+  const lease = activePeers <= 1 && !safetyLease(state) && !state.contour ? crowdWaitLease({ unit, state, tick, neighbors, radius, radiusOf: ordinaryCrowdBodyRadius,
     parked: stationaryCrowdObstacle, readState,
     blockedBy: other => !sweep(unit, direct, [other]),
     blockedByFrom: (from, direction, other) => !sweep(from,
@@ -329,46 +441,16 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     parked: stationaryCrowdObstacle, yieldedTo, target, progressTarget, heading: { x: headingX, z: headingZ }, stepDistance,
     admit: clear, pointAllowed: pointClear, stats });
   if (contour) return { ...contour, noProgressTicks, crowdControl: stats };
-  // Retain an admitted oblique forward step only when every nearby body is
-  // following this segment from behind. A parked or opposing body keeps the
-  // existing stricter exemption and its own passage/contour arbitration.
-  const followingOnly = noProgressTicks >= 30 && best && best.x * routeX + best.z * routeZ > 0
-    && neighbors.every(other => {
-      stats.arbitrationVisits++;
-      const direction = directionOf(other);
-      return ordinaryCrowdBodyRadius(other) > 0
-        && (other.x - unit.x) * routeX + (other.z - unit.z) * routeZ <= 0
-        && finitePoint(direction) && direction.x * routeX + direction.z * routeZ
-          > .9 * Math.hypot(direction.x, direction.z);
-    });
-  // Crowd deflection can leave the actor beside the accepted segment. A peer's
-  // far goal may then look opposed to that segment while both current waypoints
-  // lead the same way. Keep already admitted progress in that shared direction;
-  // a different opposing claimant still retains its ordinary priority.
-  const advancingWaypoint = !state.detour && best && directionLength
-    && unit.pathIndex < unit.path.length - 1 && finitePoint(progressTarget)
-    && (progressTarget.x - unit.x) * routeX + (progressTarget.z - unit.z) * routeZ < -EPSILON
-    && Math.abs(best.x * routeX + best.z * routeZ) < .1
-    && Math.hypot(progressTarget.x - unit.x - best.x * best.stepDistance,
-      progressTarget.z - unit.z - best.z * best.stepDistance) < remaining - EPSILON;
-  const parallelWaypointStep = other => {
-    if (!advancingWaypoint || !ordinaryCrowdBodyRadius(other)) return false;
-    const direction = directionOf(other);
-    return finitePoint(direction) && direction.x * best.x + direction.z * best.z
-      > .9 * Math.hypot(direction.x, direction.z);
-  };
-  const yieldingToPeer = noProgressTicks >= 30 && neighbors.some(other => other.id < unit.id && finitePoint(targetOf(other))
-    && (targetOf(other).x - other.x) * routeX + (targetOf(other).z - other.z) * routeZ < 0
-    && !parallelWaypointStep(other)
-    // A same-segment follower behind us cannot claim a clear forward step
-    // merely because its distant final goal lies across the current segment.
-    && !((other.x - unit.x) * routeX + (other.z - unit.z) * routeZ <= 0
-      && best && (best.x * routeX + best.z * routeZ > .9 || followingOnly)
-      && finitePoint(directionOf(other))
-      && directionOf(other).x * routeX + directionOf(other).z * routeZ
-        > .9 * Math.hypot(directionOf(other).x, directionOf(other).z))
-    && Math.hypot(other.x - unit.x, other.z - unit.z)
-      < radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] + stepDistance + .1);
+  const { claims, followingOnly, advancingWaypoint } = crowdPriorityClaims({unit, neighbors, radius, stepDistance,
+    noProgressTicks, best, detour: state.detour, progressTarget, travelDirection, fallbackDirection: {x:headingX,z:headingZ},
+    targetOf, directionOf, onVisit: () => stats.arbitrationVisits++, limit: 1});
+  const yieldingToPeer = claims.length > 0;
+  if (yieldingToPeer && best && entitlementContext && ordinaryCrowdBodyRadius(unit)) {
+    const to = {x:unit.x+best.x*best.stepDistance,z:unit.z+best.z*best.stepDistance};
+    if (classifyQueueGeometry({from:unit,to,peer:claims[0],routeDirection:{x:routeX,z:routeZ},
+      progressTarget,radius,peerRadius:ordinaryCrowdBodyRadius(claims[0])})==='lateral-rejoin')
+      crowdMovingEntitlement.request(unit, claims[0], to, {x:routeX,z:routeZ}, entitlementContext, work);
+  }
   if (!best || yieldingToPeer || (state.detour && noProgressTicks >= 30)) {
     if (yieldingToPeer) { best = null; bestScore = -Infinity; }
     for (const scale of [1, .5]) for (const angle of [105, -105, 135, -135, 180]) {
