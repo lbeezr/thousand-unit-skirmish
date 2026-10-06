@@ -54,7 +54,7 @@
     "revisions": [
       {
         "id": "reviewed-ne-public-seed-cutout-v1",
-        "sourceReview": "docs/qa-infantry-ne-cutout-walk-2026-10-05.md",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-ne-walk-registration.json",
         "previousRuntimeFiles": [
           {
             "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
@@ -73,7 +73,7 @@
       },
       {
         "id": "reviewed-east-public-seed-cutout-v1",
-        "sourceReview": "docs/qa-infantry-local-walk-continuation-2026-10-05.md",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-east-walk-registration.json",
         "previousRuntimeFiles": [
           {
             "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
@@ -92,7 +92,7 @@
       },
       {
         "id": "reviewed-north-public-seed-cutout-v1",
-        "sourceReview": "docs/qa-infantry-local-walk-continuation-2026-10-05.md",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-north-walk-registration.json",
         "previousRuntimeFiles": [
           {
             "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
@@ -111,7 +111,7 @@
       },
       {
         "id": "reviewed-south-public-seed-cutout-v1",
-        "sourceReview": "docs/qa-infantry-local-walk-continuation-2026-10-05.md",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-south-walk-registration.json",
         "previousRuntimeFiles": [
           {
             "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
@@ -130,7 +130,7 @@
       },
       {
         "id": "reviewed-west-public-seed-cutout-v1",
-        "sourceReview": "docs/qa-infantry-local-walk-continuation-2026-10-05.md",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-west-walk-registration.json",
         "previousRuntimeFiles": [
           {
             "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
@@ -149,7 +149,7 @@
       },
       {
         "id": "reviewed-north-west-public-seed-cutout-v1",
-        "sourceReview": "docs/qa-infantry-local-walk-continuation-2026-10-05.md",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-north-west-walk-registration.json",
         "previousRuntimeFiles": [
           {
             "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
@@ -168,7 +168,7 @@
       },
       {
         "id": "reviewed-south-west-public-seed-cutout-v1",
-        "sourceReview": "docs/qa-infantry-local-walk-continuation-2026-10-05.md",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-south-west-walk-registration.json",
         "previousRuntimeFiles": [
           {
             "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
