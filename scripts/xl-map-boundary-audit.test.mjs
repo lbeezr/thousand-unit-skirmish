@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { generateFarMarches, XL_LAYOUT as layout } from './generate-far-marches.mjs';
 import { runXlBoundaryAudit, crossingTopology, assertCheckpointEnvelopeConsumer,
-  assertAuthoritativeMapValidatorConsumer } from './xl-map-boundary-audit.mjs';
+  assertAuthoritativeMapValidatorConsumer, assertCheckpointScenarioStateConsumer } from './xl-map-boundary-audit.mjs';
 import { buildElevationGrid, validateElevationPatches } from '../src/map-utils.mjs';
 import { planWallLine } from '../src/wall-line-planner.mjs';
 import { compressGroundLevels } from '../src/terrain-authoring.mjs';
@@ -149,6 +149,22 @@ test('checkpoint audit follows the actual private envelope binding, limits and p
     [authoritySource.replace('function validateMatchCheckpoint(snapshot) {', 'function validateMatchCheckpoint(snapshot) {\n  const savedPregame = validatePregameCheckpoint(state.pregame);'), envelopeSource],
     [authoritySource, envelopeSource.replace(route + state, state + route)],
   ]) assert.throws(() => assertCheckpointEnvelopeConsumer(source, envelope), /XL checkpoint preflight consumer\/ordering changed/);
+});
+
+test('scenario-state audit retains the effective map, actual unit cap and surrounding rejection order', async () => {
+  const source = await readFile(new URL('../src/server/checkpoint-scenario-state.mjs', import.meta.url), 'utf8');
+  assert.equal(report.sourceInputSha256['src/server/checkpoint-scenario-state.mjs'], createHash('sha256').update(source).digest('hex'));
+  assert.doesNotThrow(() => assertCheckpointScenarioStateConsumer(authoritySource));
+  const call = '  validateCheckpointScenarioState(definition, state, { maxUnits: MAX_UNITS });\n';
+  assert.ok(authoritySource.includes(call));
+  for (const changed of [
+    authoritySource.replace("from './src/server/checkpoint-scenario-state.mjs'", "from './src/server/checkpoint-envelope.mjs'"),
+    authoritySource.replace(call, call.replace('(definition,', '(canonicalDefinition,')),
+    authoritySource.replace(call, call.replace('MAX_UNITS', '4000')),
+    authoritySource.replace(call, ''),
+    authoritySource.replace(call, '').replace('function validateMatchCheckpoint(snapshot) {', `function validateMatchCheckpoint(snapshot) {\n${call}`),
+    authoritySource.replace(call, '').replace('  return { definition: canonicalDefinition, state, explored, savedMatchMode };', `${call}  return { definition: canonicalDefinition, state, explored, savedMatchMode };`),
+  ]) assert.throws(() => assertCheckpointScenarioStateConsumer(changed), /Checkpoint scenario-state consumer\/ordering changed/);
 });
 
 test('both XL audit input hashes include the bound checkpoint envelope bytes', () => {
