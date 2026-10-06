@@ -1,0 +1,253 @@
+{
+  "heightWorld": 1.6722564697265625,
+  "worldPerPixel": 0.0052421832906788795,
+  "baselineManifestSHA256": "475e4a68c4bfbed7461b7d1064096b310a54951fb324c2e624d5378440cfcb26",
+  "baselineRuntimeSHA256": "2fb362f11c4406508c7ff5cbb6597628a46083a47644b8deab96373ee653aa9d",
+  "baselineDecodedAtlasSHA256": "d746499695855bd7cddcf87ecb3895899de8df7cd8951a723033ebd582f92386",
+  "baselineMaskSHA256": "789b54b2ae00b1711e49443032638c6f9a451deca5fdb97e0397f4b622d690e8",
+  "identitySource": {
+    "path": "docs/art-direction/human-roster-v1/extracted/spearman/idle/02.png",
+    "sha256": "a1ec9294586ed22bfad9e27d1fa1fd5432bd2d4723d5532e7d0a9b188eae010e",
+    "registeredFrameId": "idle-north-east-0",
+    "registeredSeedSHA256": "0f049b4ed4ceb11132fa45211c995bbfd529e25de0e9ac8bb3b6e53a9bf70a21"
+  },
+  "baselineRegisteredPoseSHA256": "1675f20d47e7174bf2bf4a72e0976f6baa5f80ea631be4e0ef4cfe556396d216",
+  "baselineUnchangedClipsSHA256": "484d49acf2d7851b912d025c73c49dbc72e5cd37850c89185f9dfde1cfcfea36",
+  "baselineAssetMetadataSHA256": "e02f9b7f60b15ce9ceff51f53285f5949af5c916a13aa56530d30dc3d24c69db",
+  "baselinePageMetadataSHA256": "d3c55136169185fdc2ac1cd176e64e41d6f65f63709d0b42dca7282454645ad8",
+  "canvasPx": {
+    "width": 416,
+    "height": 416
+  },
+  "groundPivotPx": {
+    "x": 208,
+    "y": 353
+  },
+  "atlasSlotsPx": [
+    [
+      2564,
+      1948
+    ],
+    [
+      2564,
+      2380
+    ]
+  ],
+  "baselineDimensionsPx": {
+    "width": 3072,
+    "height": 3968
+  },
+  "registeredDimensionsPx": {
+    "width": 3072,
+    "height": 3968
+  },
+  "registeredMaskSHA256": "789b54b2ae00b1711e49443032638c6f9a451deca5fdb97e0397f4b622d690e8",
+  "registeredPageMetadataSHA256": "d3c55136169185fdc2ac1cd176e64e41d6f65f63709d0b42dca7282454645ad8",
+  "sequence": [
+    {
+      "frameId": "idle-north-east-0",
+      "durationMs": 120
+    },
+    {
+      "frameId": "defeat-north-east-0",
+      "durationMs": 300
+    },
+    {
+      "frameId": "defeat-north-east-1",
+      "durationMs": 660
+    }
+  ],
+  "provenEmptyDisjointSlots": true,
+  "schemaVersion": 1,
+  "sourceRevision": "8175cbcbd641babce7d3d915cb24e669ec0798d9",
+  "sourceInspectionRevision": "ae0bf2023727766617ca93c6d2fbf5219a757a45",
+  "sourceFoundationRevision": "ae0bf2023727766617ca93c6d2fbf5219a757a45",
+  "stateId": "defeat",
+  "directionId": "north-east",
+  "baselinePackVersion": "0.18.0",
+  "packVersion": "0.19.0",
+  "baselineBounds": {
+    "artBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.7722564697265626,
+        0.686602319825762
+      ]
+    },
+    "cullingBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.8722564697265625,
+        0.686602319825762
+      ]
+    }
+  },
+  "registeredBounds": {
+    "artBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.7722564697265626,
+        0.686602319825762
+      ]
+    },
+    "cullingBoundsWorld": {
+      "min": [
+        -1.3787337270092317,
+        0,
+        -1.4213949566697694
+      ],
+      "max": [
+        0.9201959478428509,
+        1.8722564697265625,
+        0.686602319825762
+      ]
+    }
+  },
+  "registeredAssetMetadataSHA256": "e02f9b7f60b15ce9ceff51f53285f5949af5c916a13aa56530d30dc3d24c69db",
+  "registeredDecodedAtlasSHA256": "3c0bb5fc537e3c0b33c965f78b6b046dc8226685df1b15ba714a81f45614de77",
+  "poses": [
+    {
+      "file": "00-collapse.png",
+      "sha256": "dff9de582a3d166d952fa51394331f77d6b23a9a5fbbaa549d096056dd8dfccf",
+      "pose": "collapse",
+      "durationMs": 300,
+      "rawSHA256": "34bd7970b98eab87e9ad47ff3af7f9c37730767ee4c202dd3832e5709a708d85",
+      "clearedAlphaZeroRGBSamples": 173,
+      "boundsAlpha8": [
+        55,
+        205,
+        406,
+        359
+      ],
+      "alphaHeight": 154,
+      "minimumCanvasClearance": 10,
+      "allAlphaAndPositiveRGBAExact": true
+    },
+    {
+      "file": "01-terminal.png",
+      "sha256": "3a7ff65b250c3bb343de0fa5a4586b000e793454df0acdc60c544e4743e60462",
+      "pose": "terminal",
+      "durationMs": 660,
+      "rawSHA256": "925d65bf3f57bf817f57073fac15a9c1a788b2dfebb01e885a594aef7d1c7ab2",
+      "clearedAlphaZeroRGBSamples": 162,
+      "boundsAlpha8": [
+        36,
+        238,
+        408,
+        359
+      ],
+      "alphaHeight": 121,
+      "minimumCanvasClearance": 8,
+      "allAlphaAndPositiveRGBAExact": true
+    }
+  ],
+  "reusedPriorRegisteredPoses": 83,
+  "reusedOpeningPoses": 1,
+  "newlyAuthoredPoses": 2,
+  "registeredTotalPoses": 85,
+  "loop": false,
+  "durationMs": 1080,
+  "existingClientScaleOutMs": 150,
+  "mirroredPoses": 0,
+  "borrowedDirectionPoses": 0,
+  "generationProviderCalls": 0,
+  "paidJobs": 0,
+  "sourceKind": "exact own public Northeast source; reused six-part own-Northeast foundation and explicit rigid body/pole/no-stretch arm targets; no borrowed facing",
+  "retainedFoundation": {
+    "sourceRevision": "ae0bf2023727766617ca93c6d2fbf5219a757a45",
+    "publicActionRegistration": "docs/art-direction/human-roster-v1/extracted/spearman/attack/north-east-local-v1/registration.json",
+    "foundationMasks": [
+      {
+        "name": "restored-own-body",
+        "kind": "body",
+        "depth": 0,
+        "sha256": "7f05d680783d8b84d36cdf9c08aa6d5f7b6eae8004fe3fefd428c153f12f7c4c",
+        "decodedRGBA_SHA256": "cc23a10008f2f119d5700349d849dfda16d86f51cd8695d06f0a02e38a790d3b"
+      },
+      {
+        "name": "rear-upper",
+        "kind": "upper-arm",
+        "depth": 0.01,
+        "sha256": "3e569e333c8e7eaa3e587a9dafff45732d94d374f076d3e86b0abb67410a99ae",
+        "decodedRGBA_SHA256": "357057098ae947022ea239e0f4e077575824a104778fdf85cfff4968c2614e4b"
+      },
+      {
+        "name": "rear-fore",
+        "kind": "forearm",
+        "depth": 0.02,
+        "sha256": "02ee50da2c5b23e747ad1f0001c8e828c8e2367312a5f259855f38b970fedf38",
+        "decodedRGBA_SHA256": "7a3331f08cb55637bcd13c49ce540abba340721adf9002e01ce7bc65585b14bd"
+      },
+      {
+        "name": "front-upper",
+        "kind": "upper-arm",
+        "depth": 0.025,
+        "sha256": "dc6469fe8b5234aeab376d13a3307a84794519f4b7c88ab05a0075e929933ae8",
+        "decodedRGBA_SHA256": "fdf7dd45ee71663abc32aca576712207fbd1357d369a54b4fe14369c079da76c"
+      },
+      {
+        "name": "front-fore",
+        "kind": "forearm",
+        "depth": 0.03,
+        "sha256": "e4e45340a3eefe8da96463a72c1dc984cf5a5eefa88f5159a299d5cda348f209",
+        "decodedRGBA_SHA256": "57afc205af9883e58ddb480454b1603e524f8da466c613684417b7b80c6edf0b"
+      },
+      {
+        "name": "rigid-complete-spear-and-grips",
+        "kind": "weapon",
+        "depth": 0.04,
+        "sha256": "acc956274312c5946196aa74df7ece0f3f9639145a82de37c026baefa2fdf117",
+        "decodedRGBA_SHA256": "3026c974ddae286067330c41330594c7fd0f5af9d4b3600a9fc770ff1d6ad2f7"
+      }
+    ],
+    "retainedBodyDonors": 1985,
+    "bodyMaterialCounts": {
+      "own leather trim": 447,
+      "own vest": 127,
+      "own belt/pouch": 613,
+      "own olive trousers": 798
+    },
+    "retainedExplicitAuthoredFarSleeveUnderlapDonors": 337,
+    "totalRetainedDonors": 2322,
+    "nearElbowExactOriginalOverlapSamples": 375,
+    "farPartAlphaPositiveIntersectionSamples": 95,
+    "farPartIntersectionExactlyOriginalSourceSamples": 38,
+    "originalMovingSamples": 7266,
+    "additionalDonors": 0,
+    "anatomyClaim": "337 retained far-sleeve underlap samples are authored clothing restoration, not recovered original hidden anatomy; both original visible partial grip silhouettes stay with the complete original pole"
+  },
+  "additionalDonors": 0,
+  "processReceiptSHA256": {
+    "articulated-defeat-plan.json": "901fc0843f4f2d2a4a5d210080606368cd00a91fd681eca1f66ef8198726f1df",
+    "projected-positive-geometry.json": "c3e18486ae6cf99d16b2f4f052a7f3cbee860daad222c688b24b8ef3704f1d34",
+    "independent-plan-receipt.json": "68171695b9bdebcf438bf5054174c00e9052c315ac1293cff8ec826557f7034f",
+    "foundation-rig-input.json": "5dbe4b6ad6b979c11c8fa29a9cde11fde4d3232064abde05810a79b7fb16f04b",
+    "donor-coordinate-map.json": "98c1d042c47a288b80fbbaac658175d6cee6a1ccff896f7e125dcca22dd91c4c",
+    "render_articulated_fall.py": "cacdb190a57f869fa8ca6709514c8ffa6b99c6b8e6697a7242348809b207105e",
+    "geometry-check.json": "9909c7dedfb70472ea780e6dbf99fd3c7bcee99c774decd016e63c6cac985ac8",
+    "camera-scale-check.json": "31d557837bf0d0e81c2290972af3d5a37cc65639b05b5d6e4498776f1a22bb84",
+    "normalization-receipt.json": "5d0dde6d8ba093f289cc780d6c0285ba2d0a9bcea8ef3cdf4d1ebe2914973294",
+    "normalize_selected.py": "34a84688a84b2989727fd63d48a81317f3685207a969204b8ee72a0ed917f757"
+  },
+  "independentSourceReviewSHA256": "87ad987594d489df39834ef3b21348e97eff7a08120b9b5754ce293d390a6d32",
+  "independentSourceReviewReceiptSHA256": "e2128430549e510ae29f8fb18a5ddb91c8df76474d5c3c83c57c53a111e58220",
+  "sourceReview": "independently-cleared-rough-source-minimum",
+  "ordinaryGameReview": "pending-identified-game-capture",
+  "packProvenanceNote": "Northeast defeat reuses1 exact own idle opening and adds2 newly authored own-view collapse/terminal keys,1080ms nonloop then unchanged150ms clientfade. All83 prior full records/crops,31 otherclips, fullpage/mask/root/bodycalibration are exact. Six own-NE source parts reuse2322 existing own-material donor samples(1985body/337 explicit far-sleeve underlap),375 near original joint overlaps and95 far intersections of which38 are exact original samples,0 extra donors; no recovered hidden anatomy/borrowedSE/North/paid/provider/private inputs. All actual inspection/plan/scene/render/export/review iterations retained; native acceptance pending.",
+  "packReadme": "# Human Spearman preview\n\nDefault v1 pack0.19.0/85 frames preserves all83 preceding complete records/crops and31 otherclips. Northeast defeat reuses1 exact own idle opening and adds2 newly authored matching-source collapse/terminal keys,120/300/660=1080ms nonloop; existing150ms client scaleout stays exact. Fixed416square/root208,353/sourceUVscale1 and source heights154/121 preserve319px body calibration maximum.\n\nTwo proven empty cells2564/1948 and2564/2380 preserve3072x3968 page/encoded mask/page metadata/every other RGBA byte. Existing pivots/body calibration remain; conservative rooted bounds are pinned in registration.json without per-pose scale fitting. Six actual own-NE matching foundation parts reuse2322 own-material donor samples(1985body/337 explicitly authored far-sleeve underlap),375 original near-joint overlaps and95 far intersections including38 exact original samples;7266 original moving samples reconstruct before donors. Zero additional donors or recovered hidden anatomy; both actual original partial grips stay on the full straight spear. All source/render/recipe/.blend/review iterations are retained. No borrowedSE/North pixels, mirrors, private input, generation provider call or paidjob. Thin retained cuff-edge fringes and coarse clothes are accepted rough source limits.\n\nWalk/attack source8/8; defeatSE/N/NE. Exact missing5:defeatE/S/SW/W/NW; Infantry21+Archer21=47 military source cells, all63 original native/deployed cells unverified. Full builder replays all walks/attacks then North and Northeast defeat. Repeat finalstage:python3 scripts/append-spearman-public-seed-defeat.py north-east. Ordinary-game support/contact/readability and identified delivery remain owned followup.\n"
+}

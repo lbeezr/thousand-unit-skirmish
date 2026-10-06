@@ -83,3 +83,6 @@ if (source/'extracted/spearman/attack/north-west-local-v1/registration.json').ex
 
 if (source/'extracted/spearman/defeat/north-local-v1/registration.json').exists():
  subprocess.run([sys.executable,str(root/'scripts/append-spearman-public-seed-defeat.py'),'north'],check=True)
+
+if (source/'extracted/spearman/defeat/north-east-local-v1/registration.json').exists():
+ subprocess.run([sys.executable,str(root/'scripts/append-spearman-public-seed-defeat.py'),'north-east'],check=True)

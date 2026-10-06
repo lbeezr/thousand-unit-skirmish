@@ -19,12 +19,12 @@ const cells=decodeRegisteredUnitFrames(asset,page,pixels);
 
 test('Historical Spearman North preserves all 40 prior registered poses, clips and body calibration',()=>{
   const laterIds=new Set(["walk-north-0","walk-north-1","walk-north-2","walk-north-3","walk-south-0","walk-south-1","walk-south-2","walk-south-3","walk-south-west-0","walk-south-west-1","walk-south-west-2","walk-south-west-3","walk-west-0","walk-west-1","walk-west-2","walk-west-3","walk-north-west-0","walk-north-west-1","walk-north-west-2","walk-north-west-3"]);
-  const legacy=asset.frames.filter(f=>!laterIds.has(f.id)&&!/^attack-(?:north-east|east|north|south|south-west|west|north-west)-\d+$/.test(f.id)&&!/^defeat-north-\d+$/.test(f.id));
-  assert.equal(legacy.length,40);assert.equal(asset.frames.length,83);
+  const legacy=asset.frames.filter(f=>!laterIds.has(f.id)&&!/^attack-(?:north-east|east|north|south|south-west|west|north-west)-\d+$/.test(f.id)&&!/^defeat-north-\d+$/.test(f.id)&&!/^defeat-north-east-\d+$/.test(f.id));
+  assert.equal(legacy.length,40);assert.equal(asset.frames.length,85);
   assert.equal(sha(JSON.stringify(legacy.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
   // Pin actual retained clips; later own-view replacements are separately checked.
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='defeat'&&c.directionId==='north')&&!(c.stateId==='attack'&&['north-east','east','north','south','south-west','west','north-west'].includes(c.directionId))&&!(c.stateId==='walk'&&["north","south","south-west","west","north-west"].includes(c.directionId)));
-  assert.equal(asset.clips.length,32);assert.equal(unchanged.length,19);assert.equal(sha(JSON.stringify(unchanged)),'59a15aebba9f03fe842bce810b9e34e628ec3ce58bb29656efe4724bea60f688');
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='defeat'&&c.directionId==='north-east')&&!(c.stateId==='defeat'&&c.directionId==='north')&&!(c.stateId==='attack'&&['north-east','east','north','south','south-west','west','north-west'].includes(c.directionId))&&!(c.stateId==='walk'&&["north","south","south-west","west","north-west"].includes(c.directionId)));
+  assert.equal(asset.clips.length,32);assert.equal(unchanged.length,18);assert.equal(sha(JSON.stringify(unchanged)),'42dfec3f742aaa0a6639a5a4968ff23e8a78ca3fa3e6d839c368f1e36a096105');
   assert.equal(asset.heightWorld/Math.max(...asset.frames.map(f=>f.alphaBoundsPx.height)),receipt.worldPerPixel);
   assert.equal(asset.heightWorld,receipt.heightWorld);
   assert.equal(sha(read(receipt.identitySource.path)),receipt.identitySource.sha256);
@@ -32,7 +32,7 @@ test('Historical Spearman North preserves all 40 prior registered poses, clips a
   for(const key of ['mirroredPoses','borrowedDirectionPoses','generationProviderCalls','paidJobs'])assert.equal(receipt[key],0);
 });
 
-test('Spearman North contains four exact source poses and leaves the other 6 cells incomplete',()=>{
+test('Spearman North contains four exact source poses and leaves the other 5 cells incomplete',()=>{
   const clip=asset.clips.find(c=>c.stateId==='walk'&&c.directionId==='north');
   assert.equal(clip.loop,true);assert.equal(clip.sequence.reduce((n,k)=>n+k.durationMs,0),800);
   for(let index=0;index<4;index++){
@@ -47,7 +47,7 @@ test('Spearman North contains four exact source poses and leaves the other 6 cel
     for(let y=0;y<352;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+320)*4),original.pixels.subarray(y*320*4,(y+1)*320*4));
   }
   const report=analyzeUnitArtCoverage(asset,cells);
-  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,6);
+  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,5);
   const ne=report.rows.find(r=>r.key==='walk|north');assert.equal(ne.status,'authored');assert.equal(ne.distinctFrames,4);assert.equal(ne.distinctSilhouettes,4);
   assert.deepEqual(missingWalkDirections({pack,cells}),[]);
   assert.equal(report.rows.find(r=>r.key==='attack|north').status,'authored');assert.equal(report.rows.find(r=>r.key==='defeat|north').status,'authored');
