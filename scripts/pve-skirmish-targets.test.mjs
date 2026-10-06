@@ -5,6 +5,7 @@ import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opp
 import { replayRememberedSearch } from './pve-remembered-search-case.mjs';
 import { replayProgressSearch } from './pve-progress-search-case.mjs';
 import { createContactMemoryCase, replayContactMemory } from './pve-contact-memory-case.mjs';
+import { createBuildingInspectionCase, replayBuildingInspection } from './pve-building-inspection-case.mjs';
 import { assertTinySearchCompletion, encodeTinyFailureEvidence, decodeTinyFailureEvidence,
   TINY_FAILURE_PREFIX } from './pve-tiny-failure-evidence.mjs';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
@@ -441,6 +442,146 @@ test('Tiny contact history remains invariant under hidden enemy movement, genera
   assert.deepEqual(b.next(second,second.units.friendly),a.next(first,first.units.friendly));
  }
 });
+
+function buildingContact(team, side = 160) {
+  const o = state(team, side);
+  o.units.visibleEnemies = [];
+  o.buildings.visibleEnemies = [building(1 - team, 700, { type: 'town-center', x: 10, z: 0 })];
+  return o;
+}
+const hideBuilding = o => { o.buildings.visibleEnemies = []; o.tick = 30; };
+for (const team of [0, 1]) {
+  for (const seed of [0, 20260925, 0xffffffff]) {
+    test(`Tiny building seat ${team}, seed ${seed}: inspect the disclosed point without extending its deadline`, () => {
+      const o = buildingContact(team), policy = createSkirmishTargetPolicy(seed);
+      assert.equal(policy.next(o, o.units.friendly)[0].buildingId, 700);
+      hideBuilding(o);
+      const inspection = policy.next(o, o.units.friendly)[0];
+      assert.equal(inspection.type, 'attackMove');
+      assert.deepEqual(point(inspection), [10, 0]);
+      assert(!Object.hasOwn(inspection, 'buildingId'));
+      assert(!Object.hasOwn(inspection, 'targetId'));
+      assert.deepEqual(policy.next(o, o.units.friendly), [], 'duplicate views do not repeat the inspection');
+      o.tick = limits.contactMemoryTicks - 1;
+      o.units.friendly[0].x++;
+      o.units.friendly.push(actor(team, 44, { x: 10, z: 0 }));
+      assert.deepEqual(policy.next(o, o.units.friendly)[0].ids, [44]);
+      o.tick = limits.contactMemoryTicks;
+      assert.notDeepEqual(point(policy.next(o, o.units.friendly)[0]), [10, 0], 'motion/joining cannot renew disclosure');
+    });
+  }
+  test(`Tiny building seat ${team}: original arrival/loss/reuse and policy context clear inspection`, () => {
+    for (const cause of ['arrival', 'loss', 'reuse', 'empty', 'rewind', 'map', 'seat', 'fresh']) {
+      const o = buildingContact(team); let policy = createSkirmishTargetPolicy(0);
+      policy.next(o, o.units.friendly); hideBuilding(o); policy.next(o, o.units.friendly); o.tick++;
+      if (cause === 'arrival') o.units.friendly[0].x = 11.9;
+      if (cause === 'loss') o.units.friendly = o.units.friendly.map(unit => ({ ...unit, hp: 0 })).concat(actor(team, 44));
+      if (cause === 'reuse') o.units.friendly.forEach(unit => unit.generation++);
+      if (cause === 'empty') { assert.deepEqual(policy.next(o, []), []); o.tick++; }
+      if (cause === 'rewind') o.tick = 0;
+      if (cause === 'map') o.map.id = 'another-map';
+      if (cause === 'seat') { o.team = 1 - team; o.units.friendly.forEach(unit => unit.team = o.team); }
+      if (cause === 'fresh') policy = createSkirmishTargetPolicy(0);
+      assert.notDeepEqual(point(policy.next(o, o.units.friendly)[0]), [10, 0], cause);
+    }
+  });
+  test(`Tiny building seat ${team}: visible targets and combat protection retain priority`, () => {
+    const o = buildingContact(team), policy = createSkirmishTargetPolicy(0);
+    policy.next(o, o.units.friendly); hideBuilding(o);
+    o.units.friendly[0].focusedCount = 1; o.units.friendly[1].lastAttack = { tick: o.tick };
+    assert.deepEqual(policy.next(o, o.units.friendly), [], 'current fighters keep their orders');
+    o.tick = 150; o.units.friendly[0].focusedCount = 0;
+    assert.deepEqual(point(policy.next(o, o.units.friendly)[0]), [10, 0]);
+    o.units.visibleEnemies = [actor(1 - team, 90, { x: -20, z: 0 })]; o.tick++;
+    assert.equal(policy.next(o, o.units.friendly)[0].targetId, 90, 'visible military threat outranks old building point');
+    o.units.visibleEnemies[0].x = 25; o.tick++; policy.next(o, o.units.friendly);
+    o.units.visibleEnemies = []; o.tick++;
+    assert.deepEqual(point(policy.next(o, o.units.friendly)[0]), [25, 0], 'existing unit memory still uses its own disclosure');
+    o.buildings.visibleEnemies = [building(1 - team, 701, { type: 'town-center', x: 30, z: 10 })]; o.tick++;
+    assert.equal(policy.next(o, o.units.friendly)[0].buildingId, 701);
+    o.buildings.visibleEnemies = []; o.tick++;
+    assert.deepEqual(point(policy.next(o, o.units.friendly)[0]), [30, 10], 'only new current sight updates the point');
+  });
+  test(`Tiny building seat ${team}: hidden HP/position/banks cannot establish survival or relocation`, () => {
+    const map = { id: 'building-contact', width: 160, height: 160, resourceNodes: [], triggers: [] };
+    const raw = { type: 'state', mapId: map.id, tick: 0, fogOfWar: true,
+      visibility: { columns: 160, rows: 160, data: Buffer.alloc(6400, 0xaa).toString('base64') },
+      food: [150, 150], wood: [250, 250], units: [[0, team, -20, 0, 100, 'infantry', 0, '', 1]],
+      buildings: [building(1 - team, 700, { type: 'town-center', x: 10 })], objectives: [] };
+    const first = createSkirmishTargetPolicy(0), second = createSkirmishTargetPolicy(0);
+    const initial = toOpponentObservation(raw, team, map);
+    first.next(initial, initial.units.friendly); second.next(initial, initial.units.friendly);
+    for (const tick of [30, 60, 299, 300, 600]) {
+      raw.tick = tick; raw.visibility.data = Buffer.alloc(6400, 0x55).toString('base64');
+      const changed = structuredClone(raw);
+      changed.buildings[0].hp = tick === 30 ? 0 : 10;
+      changed.buildings[0].x = 50; changed.buildings[0].z = -30;
+      changed.food[1 - team] = 99999; changed.wood[1 - team] = 0;
+      const a = toOpponentObservation(raw, team, map), b = toOpponentObservation(changed, team, map);
+      assert.deepEqual(b, a);
+      const orders = first.next(a, a.units.friendly);
+      assert.deepEqual(second.next(b, b.units.friendly), orders);
+      assert(orders.every(command => command.type === 'attackMove'), 'unseen buildings never receive entity commands');
+    }
+    const visibleDead = buildingContact(team), deadPolicy = createSkirmishTargetPolicy(0);
+    deadPolicy.next(visibleDead, visibleDead.units.friendly);
+    visibleDead.tick = 30; visibleDead.buildings.visibleEnemies[0].hp = 0;
+    assert.equal(deadPolicy.next(visibleDead, visibleDead.units.friendly)[0].type, 'attackMove', 'a dead disclosed building is no attack target');
+    visibleDead.units.friendly[0].x = 10; visibleDead.tick++;
+    assert.notDeepEqual(point(deadPolicy.next(visibleDead, visibleDead.units.friendly)[0]), [10, 0], 'inspection releases on actual original-cohort arrival');
+  });
+  test(`Tiny building seat ${team}: no disclosure and other map tiers keep global search`, () => {
+    const o = buildingContact(team), policy = createSkirmishTargetPolicy(0);
+    hideBuilding(o);
+    assert.notDeepEqual(point(policy.next(o, o.units.friendly)[0]), [10, 0]);
+    for (const side of [80, 192, 224, 256]) {
+      const other = buildingContact(team, side), unchanged = createSkirmishTargetPolicy(0);
+      unchanged.next(other, other.units.friendly); hideBuilding(other);
+      assert.notDeepEqual(point(unchanged.next(other, other.units.friendly)[0]), [10, 0]);
+    }
+  });
+}
+
+const buildingCases = new Map();
+function buildingCase(team) {
+  if (!buildingCases.has(team)) buildingCases.set(team, createBuildingInspectionCase(team));
+  return buildingCases.get(team);
+}
+for (const team of [0, 1]) {
+  test(`Tiny building native seat ${team}: inspection rediscloses the Town Center and resumes real damage`, async () => {
+    const data = await buildingCase(team), result = await replayBuildingInspection(data);
+    const control = await replayBuildingInspection(data, { forgetOnLoss: true });
+    assert.deepEqual(await replayBuildingInspection(data), result, 'full orders, notices and final authority repeat exactly');
+    assert.deepEqual(await replayBuildingInspection(data, { forgetOnLoss: true }), control, 'no-history control repeats exactly');
+    const hidden = result.trace.find(row => !row.visible);
+    assert.deepEqual(point(hidden.command), [data.target.x, data.target.z]);
+    assert.equal(hidden.command.type, 'attackMove');
+    assert(result.stages.authorityCleared > result.stages.lost);
+    assert(result.stages.authorityCleared < hidden.tick, 'native fog termination happens before the coordinate replacement');
+    assert(result.stages.redisclosed < data.priming.tick + limits.contactMemoryTicks);
+    assert(result.stages.damage > result.stages.redisclosed, 'damage follows actual redisclosure');
+    assert(result.final.state.homeTownCenters[data.enemy].hp < control.final.state.homeTownCenters[data.enemy].hp);
+    if (control.stages.damage !== undefined) assert(result.stages.damage < control.stages.damage);
+    else assert.equal(control.final.state.homeTownCenters[data.enemy].hp, data.target.hp);
+    assert.equal(result.final.state.matchWinner, -1, 'bounded damage proof is not completion');
+    assert.deepEqual(result.final.state.teamFood, data.checkpoint.state.teamFood);
+    assert.deepEqual(result.final.state.teamWood, data.checkpoint.state.teamWood);
+    assert.equal(result.final.state.units.filter(unit => unit.hp > 0).length, 24);
+    console.log(JSON.stringify({ team, stages: result.stages, hp: result.final.state.homeTownCenters[data.enemy].hp,
+      controlStages: control.stages, controlHp: control.final.state.homeTownCenters[data.enemy].hp }));
+  });
+  test(`Tiny building native seat ${team}: fresh hidden recovery forgets history; sighted recovery reacquires damage`, async () => {
+    const data = await buildingCase(team);
+    const hidden = await replayBuildingInspection(data, { coldAt: 'loss' });
+    const sighted = await replayBuildingInspection(data, { coldAt: 'redisclosure' });
+    for (const result of [hidden, sighted]) assert.deepEqual(await replayBuildingInspection(data, { coldAt: result.coldAt }), result);
+    assert.equal(hidden.stages.restart, hidden.stages.lost);
+    assert.notDeepEqual(point(hidden.trace.find(row => !row.visible).command), [data.target.x, data.target.z], 'no contact is serialized into a fresh policy');
+    assert.equal(sighted.stages.restart, sighted.stages.redisclosed);
+    assert(sighted.stages.damage > sighted.stages.restart);
+    assert(sighted.trace.some(row => row.tick >= sighted.stages.restart && row.visible && row.command.type === 'attackBuilding'));
+  });
+}
 
 test('current native Tiny contact inspection is useful, bounded and forgotten by cold recovery',async()=>{
  const data=await createContactMemoryCase(),baseline=await replayContactMemory(data,{disclosed:false});
