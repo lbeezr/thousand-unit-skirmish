@@ -80,6 +80,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'presentation/rendering/ground-surfaces',
     'presentation/audio/composition',
     'presentation/audio/composition-player',
+    'presentation/audio/composition-wav',
     'building-production-cue', 'building-sprites', 'building-visual-state', 'building-fog-composition',
     'camera-controls', 'captured-building-art', 'environment-art', 'asset-readability', 'catalog-barracks-observation',
     'environment-instance-picking',
