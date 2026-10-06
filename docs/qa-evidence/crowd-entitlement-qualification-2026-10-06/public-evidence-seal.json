@@ -1,0 +1,19 @@
+{
+  "baseline-fairness.json.gz": "763c68a524944d9b3a684421d320f174d9c99fe5994528d78a647bcd211e4193",
+  "baseline-fixed-observer.mjs.gz": "543ec1772c015aae3059c4a9b8cc57c974cd1d4ac95224a9bb83562bd4a8aca0",
+  "baseline-journeys.tap.gz": "c8b13973cb05e9316b61a881463c020b45ad1a68cd18babe51c869afa182f1fc",
+  "candidate-fairness.json.gz": "c8a5f0a4ba9fd5ffd7692fee3028b51a243b63651ea792b2dfb1b52dc542886c",
+  "candidate-fixed-observer.mjs.gz": "0f729514c422cc1978d73e4cb7ff7c7619d4b37dc8c96331f8fc9051f11fcb17",
+  "candidate-gate-compatible-adapter.mjs.gz": "74beb080550d4838acd7143bdc1633c05e854ee188b28c80e1176ce7f19d8744",
+  "candidate-gate-fixed-observer.mjs.gz": "fe46d59d7494f23314f53fdbacc6bce607bd687bd7540976762b396711cceaef",
+  "candidate-gate-observer-incompatibility.json.gz": "70fe12aede26dfda2e468ca946a02e4c768c69dde3c63c322c516311cfd39e71",
+  "candidate-gate-only-run.mjs.gz": "0f41424a944cc3b99ba16b54c4d7505b542c1f04bae4e9cb559ec25cde5890ef",
+  "candidate-journeys.tap.gz": "5818f52597556a72083897372542b29629b2e5e4785e5063cad212d926bfb746",
+  "entitlement-observer.mjs.gz": "fe6f3a308847c682b98a3ed8037960a8b6e05180ebc93748005476661a1bcf9b",
+  "fairness.mjs.gz": "3d8da5f866615b58fe96f0cf680429a6f62920de7124cad6a85dd6d178dda657",
+  "gate-observer-compatibility.json.gz": "bfc25c3a614a9e8a1e4e53cf4cd486d3553f47486e3271921786c98413161b5d",
+  "harness-provenance.json.gz": "94551a59692bd65576e0d18f8d49c76ce8c76d421e3c75017ca907a50228c622",
+  "prepare-fairness.py.gz": "96a91283fd8c2d202c95c48e37f9e0d4d858f13ba40c53d65a70a258fa72b724",
+  "receipt.json.gz": "4506b47008bd62b697f5fec4cb73f23a2b92f93f9a7d54f738052398330f921d",
+  "report.mjs.gz": "29eb5340938db21caea22d78795b3cae536bd1d07f73883ba842092b53221835"
+}
