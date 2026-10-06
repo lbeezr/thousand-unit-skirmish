@@ -6429,11 +6429,20 @@ function validateImportedMap(value) {
 
 async function importEditorMap(file) {
   if (file.size > 900_000) throw new Error('Map JSON must be smaller than 900 KB so it can be sent safely.');
+  let text;
+  try {
+    text = await file.text();
+  } catch (error) {
+    if (!(error instanceof DOMException)
+      || !['NotFoundError', 'NotReadableError', 'SecurityError'].includes(error.name)) throw error;
+    throw new Error('Map file could not be read. Choose the file again and retry.', { cause: error });
+  }
   let parsed;
   try {
-    parsed = JSON.parse(await file.text());
-  } catch {
-    throw new Error('That file is not valid JSON.');
+    parsed = JSON.parse(text);
+  } catch (error) {
+    if (!(error instanceof SyntaxError)) throw error;
+    throw new Error('That file is not valid JSON.', { cause: error });
   }
   const definition = validateImportedMap(parsed);
   populateMapEditor(definition,
