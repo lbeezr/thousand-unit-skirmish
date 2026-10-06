@@ -381,7 +381,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   // Tight moving queues can reject every full/half recovery step while a
   // shorter prefix of the same heading is clear. Preserve the existing
   // recovery order and priority; debit every physical probe from the same cap.
-  if (!best && noProgressTicks >= 30 && ordinaryCrowdBodyRadius(unit)
+  if (!best && yieldingToPeer && ordinaryCrowdBodyRadius(unit)
     && unit.pathIndex < unit.path.length - 1 && !state.detour && !state.lease && !state.contour) {
     const probeStart = stats.proposals, smallest = Math.min(stepDistance, distance) / 64;
     for (const angle of [105, -105, 135, -135, 180]) {

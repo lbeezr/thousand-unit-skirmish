@@ -1313,16 +1313,17 @@ report is not regenerated; its lost query/proposal fields remain unavailable.
 The same existing -105-degree recovery direction at a shorter admitted length
 makes fixed-waypoint progress. Core's allocated late fallback tries shorter
 prefixes only after an ordinary nonterminal actor still has no admitted recovery
-step at 30 or more no-progress ticks, with no active detour, lease or contour.
+step under its existing opposing-peer yielding priority at 30 or more no-progress
+ticks, with no active detour, lease or contour.
 It retains the existing recovery heading order and yielding flag, every physical
 oracle and the 128-proposal cap. At most twelve extra proposals are charged to
 that cap; five bounded bisections refine the first clear short prefix. No radius,
 query, route, queue, endpoint, checkpoint or controller state changes.
 
-[Five source controls](../scripts/crowd-short-recovery.test.mjs) bind the actual
+[Six source controls](../scripts/crowd-short-recovery.test.mjs) bind the actual
 host query/helper/selector. Mirrored controls select a .0157845052-tile step with
-.0010313538 fixed-waypoint gain and preserved yielding priority; earlier recovery
-age and terminal selection remain identical, and tangency/overflow retain hard
+.0010470473 fixed-waypoint gain and preserved yielding priority; earlier recovery
+age, unclaimed waits and terminal selection remain identical, and tangency/overflow retain hard
 admission. The original wall/gate deadlines, paid productive construction,
 acquired Patrol body cases and ordinary passage controls qualify default adoption
 separately. The caller matrix and rendered acceptance remain open. Art backing

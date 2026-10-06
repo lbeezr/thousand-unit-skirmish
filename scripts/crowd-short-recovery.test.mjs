@@ -25,7 +25,7 @@ async function selectorModule({ original = false } = {}) {
 // Complete four-actor public-source input; no checkpoint, private route payload
 // or omitted query body. Poses are a small retained-geometry reduction. Frozen
 // calls at 0/40 test the decision, not original live onset or persistent identity.
-async function fixture({ original = false, mirror = false, terminal = false, tight = false } = {}) {
+async function fixture({ original = false, mirror = false, terminal = false, tight = false, unclaimed = false } = {}) {
   const crowd = await selectorModule({ original });
   const width = 96, height = 64, sign = mirror ? -1 : 1, size = 1.2;
   const columns = Math.ceil(width / size), rows = Math.ceil(height / size);
@@ -44,6 +44,10 @@ async function fixture({ original = false, mirror = false, terminal = false, tig
     actor(95, 1.22, tight ? unit.z - .44 : -.7423664598313029, -6.5, -3.5),
     actor(110, 1.1972125275761414, .14556298048009927, -7.5, .5,
       [next, cell(sign * -.5, sign * .5), cell(sign * -7.5, sign * .5)])];
+  if (unclaimed) for (const peer of peers) {
+    const goal = point(peer.moveGoalCell); peer.moveGoalCell = cell(goal.x, sign * .5);
+    peer.path[peer.path.length - 1] = peer.moveGoalCell;
+  }
   if (terminal) unit.path = [current];
   const units = [], heads = new Int32Array(columns * rows).fill(-1), links = new Int32Array(111).fill(-1);
   const column = x => Math.max(0, Math.min(columns - 1, Math.floor((x + width / 2) / size)));
@@ -89,7 +93,8 @@ for (const mirror of [false, true]) test(`a bounded prefix of existing yielding 
   assert.deepEqual([f.unit, ...f.peers], before, 'no pose, path, goal, queue or neighbor write during selection');
 });
 
-for (const [label, options, tick] of [['before recovery age', {}, 0], ['terminal route', { terminal: true }, 40]])
+for (const [label, options, tick] of [['before recovery age', {}, 0], ['terminal route', { terminal: true }, 40],
+  ['no opposing priority claimant', { unclaimed: true }, 40]])
   test(`${label} retains the original selection exactly`, async () => {
     const old = await fixture({ ...options, original: true }), f = await fixture(options);
     if (tick) { old.select(0); f.select(0); }
