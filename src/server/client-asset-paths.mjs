@@ -9,6 +9,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/client/hud/resource-format.mjs', 'src/client/hud/population-readout.mjs',
   'src/client/hud/objective-summary.mjs',
   'src/client/hud/match-recap.mjs', 'src/client/hud/match-decisions.mjs',
+  'src/client/networking/welcome-session.mjs',
   'src/frontier-building-preview.mjs',
   'src/building-fog-composition.mjs',
   'src/building-orientation.mjs', 'src/building-placement-preview.mjs', 'src/building-rotation-controls.mjs',

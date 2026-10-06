@@ -832,7 +832,7 @@ for an existing responsibility, not an already available framework/API.
 | --- | --- | --- |
 | R1 — agreed AI observation source slice, architecture with PvE owner | `src/pve-opponent.mjs`: `toOpponentObservation`, `decodeVisibility`, normalization and visible resource/forest/objective helpers → `src/simulation/ai/opponent-observation.mjs`. Retain the existing observation/schema exports as named forwarding bindings; both actual policy/socket callers use the canonical projection. Leave seeded decisions, tactical retry state and `attachDeterministicOpponent` in their current owner. | First agree the exact export/helper set and preserve the browser `atob`/existing Node fallback behavior. Run `scripts/pve-opponent-scenario.mjs`, `scripts/pve-wildlife-disclosure.test.mjs` and the affected recorded PvE fixture consumers. Same team-visible DTO keys, sorting, own/enemy exceptions, errors and same-input policy traces; no hidden state, socket, timer or new observation version. Independent of R2–R6 after owner agreement. |
 | R2 — agreed outbound transport source slice, architecture/transport owner | `server.mjs`: `canQueuePeerFrame`, `sendPreparedPeerFrame`, `recordPeerWrite` and the existing state/waypoint coalescing/drain branch in `createPeer` → `src/server/transport/peer-output.mjs`. Explicit peer/socket/frame, existing queue cap and two aggregate metric callbacks; no sessions, gameplay context or inbound command parser. Current `src/networking/websocket-frame.mjs` and deflate API stay stable. | The narrow factory/counter interface was reviewed before edits; no queue/access/negotiation policy changes. Run `scripts/websocket-frame.test.mjs`, `scripts/waypoint-backpressure.test.mjs`, `scripts/map-change-backpressure-scenario.mjs`, `scripts/server-hardening-scenario.mjs` and `scripts/resume-session-scenario.mjs`. Identical bytes, return values, counter increments, termination threshold, retained latest state and drain order. Private module never gets public HTTP admission. |
-| R3 — client welcome/session identity, client/network owner | Only the session token/server-instance/match-id storage and reset-vs-restore decision branches within `src/main.js::connectSocket` → proposed `src/client/networking/welcome-session.mjs`. Deferred session storage plus existing room keys and welcome fields; separate resume-token read, instance/match identity and seat-token write calls retain their original positions around map rebuilding. Return the existing identity flags. Keep map rebuilding, seat selection, lobby, audio, render state and WebSocket callbacks in the host. | Agree current storage failure semantics and callback order before moving this body; preserve the stale-connection guard. Run `scripts/browser-resume-client.test.mjs`, `scripts/renderer-browser-resume-scenario.test.mjs` and `scripts/resume-session-scenario.mjs`; rendered `scripts/renderer-browser-resume-scenario.mjs` on an identified cloud release remains separate. Same keys/tokens, fresh/reset/restored decisions and original storage catches; no new reconnect policy or protocol. Independent of R2's Node output implementation. |
+| R3 — client welcome/session identity, client/network owner | Only the session token/server-instance/match-id storage and reset-vs-restore decision branches within `src/main.js::connectSocket` → `src/client/networking/welcome-session.mjs`. The independently reviewed factory takes a deferred storage getter and existing resolved room keys. Its separate resume-token read, instance/match identity and seat-token write operations retain their original positions around map rebuilding and return the existing identity flags. Keep map rebuilding, seat selection, lobby, audio, render state and WebSocket callbacks in the host. | Preserve the reviewed storage failure semantics, callback order and stale-connection guard described below. Run `scripts/browser-resume-client.test.mjs`, `scripts/renderer-browser-resume-scenario.test.mjs` and `scripts/resume-session-scenario.mjs`; rendered `scripts/renderer-browser-resume-scenario.mjs` on an identified cloud release remains separate. Same keys/tokens, fresh/reset/restored decisions and original storage catches; no new reconnect policy or protocol. Independent of R2's Node output implementation. |
 | R4 — draft timer/lifetime, authoring owner | `src/main.js`: `persistMapStudioDraft`, `scheduleMapStudioDraftSave` and their actual close/cancel calls → proposed `src/authoring/map-studio-draft-controller.mjs`, composing the existing store/form/history APIs. Keep ordered subpanel capture, import/publish mutation and canvas rendering in the host; own one dirty/timer/flush lifecycle rather than exporting setters for every editor global. | Dependent on the existing rendered draft/recovery observation and an agreed capture/status/clock/timer interface; not ready for an extraction through a broad editor bag. `scripts/resource-brush-controls.test.mjs`, `scripts/fixtures/map-studio-draft-fixture.mjs` and `scripts/map-studio-draft-scenario.mjs` retain real edit/save/close/reopen/import/export controls. Same 160 ms debounce, force-close flush, write order, failure text and v1 bytes; no publish rejection changes owned by the error lane. |
 | R5 — renderer ground resource lifetime, renderer/assets owner | `src/environment-art.mjs`: `groundBuffer`, `addGroundQuad`, `finishGroundGeometry`, `createGroundSurfaces` → proposed `src/presentation/rendering/ground-surfaces.mjs`. Keep definition/geometry projection distinct from material registry, water motion subscriptions and disposal ownership. Preserve `createGroundSurfaces` at the existing environment API while using the canonical implementation. | Agree the actual terrain-height/material/water resource interface and disposal ownership with the active renderer first. Run `scripts/terrain-blend-scenario.mjs`, `scripts/water-surface-scenario.mjs`, `scripts/water-surface-study.test.mjs` and `scripts/terrain-atmosphere-scenario.mjs`; ordinary ground/water appearance and disposal on an identified cloud build are separate acceptance. Same vertex/UV/index/order, bounds, texture URLs, material identity, motion subscription cleanup and fallback. If inputs require the whole renderer context, split a smaller geometry responsibility or defer; no art-path/default changes. |
 | R6 — room-index persistence, server/orchestration owner | `room-supervisor.mjs`: `persistRoomIndex` and the index read/normalization portion of `loadRooms` → proposed `src/server/persistence/room-index-store.mjs`, using existing `roomIndexDocument`/launch-option contracts. Keep worker startup, expiry, routing, access/origin decisions and root path/environment resolution in the supervisor. | Agree exact root-resolved paths and queued write/failure semantics with orchestration first; independent of R1–R5 but serialize host integration. Run `scripts/room-supervisor-scenario.mjs`, `scripts/room-expiry-scenario.mjs`, `scripts/pve-room-launch-scenario.mjs` and relevant pregame/recovery checks. Same index format/order/defaults, temporary-file/rename behavior, failure recovery and room launch identity; no permission/access or storage-location changes. |
@@ -937,6 +937,51 @@ client admission manifest is unchanged. Original native backpressure, hardening
 and session-resume scenarios remain the delivery checks; this source split does
 not restart the archived client-resume task or claim rendered acceptance. Art
 backing is N/A for this behavior-preserving internal boundary.
+
+The parent allocated **R3** against main `a71fcb46` after confirming no active
+client-session implementation overlap. Independent source review approved
+`createWelcomeSession({ getStorage, sessionKey, instanceKey, matchKey })` before
+implementation. It has three operations: `readResumeToken`,
+`recordWelcomeIdentity` and `recordWelcomeSeat`. Import and construction never
+read browser storage; each original storage expression separately evaluates the
+getter. Instance and match operations keep separate catches. A write failure
+retains a change flag already computed from a successful read. Token and last-room
+writes share one catch, so the first failure skips the second and a last-room
+failure retains the preceding token write. Empty string IDs, token truthiness,
+pending-seat retention/deletion, the fixed last-room key and truthy versus strict
+checkpoint recovery decisions remain unchanged.
+
+The host reads the resume token before socket construction, records identity
+before audio/map rebuilding, then records the seat token after rebuilding.
+Synchronous audio/map exceptions therefore keep the identity writes and skip
+seat writes and later callbacks. Stale message/close guards, map validation,
+seat/camera, confirmation, lobby, audio/render/recovery and reconnect callbacks
+remain in `main.js`; the separate HTTP preflight in `connect()` is byte-identical.
+The four extracted-socket fixture consumers bind the real canonical factory.
+The rematch fixture also binds its already-required `clearOwnedBuildingFog`
+production helper; every prior test body and assertion is retained. That binding
+exposes two pre-existing harvested-carcass selection assertion failures, identical
+on the base with the same binding. They remain unresolved wildlife contract
+work, outside the session migration; no assertion is weakened or removed.
+
+Against this base, 1,767 actual old/new socket controls match storage/callback
+traces, getter counts, partial failures, room/protocol values, recovery decisions
+and stale-message behavior. The canonical leaf is 44 physical lines; the host
+is 10,694 (18 fewer than 10,712). The graph is **233 modules / 458 local edges /
+142 browser / 102 server / 34 shared / zero cycles**. All 1,444 prior CI entries
+remain; the only new selection is auto-discovered module syntax. These are
+responsibility/dependency ratchets, not absolute quality or size thresholds.
+
+Only the exact canonical browser file gains public admission. Packed checks
+require canonical bytes, every browser entry's full import/hash closure, public
+GET/HEAD and folder/unknown/suffix/double-slash denial at both hosts; every
+server-private canonical and compatibility path retains authenticated GET/HEAD
+404. No forwarding entry is invented for a formerly inline body: `main.js`
+remains the composition entry and all eleven existing compatibility APIs remain.
+Native resume proves the existing server/protocol contract; adapter CPU tests
+and packed HTTP checks do not establish cloud rendered or public-served
+acceptance. The source owner retains R3 evidence and that separate cloud gap;
+public-served capture remains with its existing owner. Art backing is N/A.
 
 ### Next responsibility checkpoints
 

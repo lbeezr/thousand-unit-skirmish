@@ -12,6 +12,23 @@ function check(files, options = {}) {
   });
 }
 
+test('welcome session is a browser-safe client leaf excluded from authoritative domains and server hosts', async () => {
+  const canonical = 'src/client/networking/welcome-session.mjs';
+  assert.ok(RUNTIME_DOMAINS.client.includes(canonical));
+  assert.deepEqual(moduleImports(await readFile(new URL(`../${canonical}`, import.meta.url), 'utf8'), canonical), []);
+  for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+    'src/formation-assignment.mjs', 'src/simulation/ai/opponent-observation.mjs']) {
+    const relative = path.posix.relative(path.posix.dirname(root), canonical);
+    assert.throws(() => check({ [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';`, [canonical]: '' }),
+      /(?:rules|world|simulation|ai) domain cannot reach client domain/, root);
+  }
+  for (const [host, domain] of Object.entries(RUNTIME_DOMAIN_HOSTS)) {
+    if (domain !== 'server') continue;
+    assert.throws(() => check({ [host]: `import './${canonical}';`, [canonical]: '' }, { serverEntrypoints: [host] }),
+      /server host reaches client domain/, host);
+  }
+});
+
 test('scenario-event contract remains a dependency-free world leaf', async () => {
   const canonical = 'src/world/scenario-event-chain.mjs';
   assert.ok(RUNTIME_DOMAINS.world.includes(canonical));
