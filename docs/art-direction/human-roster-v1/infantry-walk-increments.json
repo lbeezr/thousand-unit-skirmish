@@ -8,6 +8,10 @@
     {
       "heading": "east",
       "registration": "docs/art-direction/human-roster-v1/infantry-east-walk-registration.json"
+    },
+    {
+      "heading": "north",
+      "registration": "docs/art-direction/human-roster-v1/infantry-north-walk-registration.json"
     }
   ]
 }

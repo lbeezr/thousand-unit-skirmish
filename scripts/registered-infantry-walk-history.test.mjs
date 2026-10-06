@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {decodeRgba8} from './sprite-pixel-bounds.mjs';
 import {inspectInfantryEastFootfall} from './infantry-east-gait.mjs';
+import {inspectInfantrySourceFootfall} from './infantry-source-footfall.mjs';
 const read=p=>readFileSync(new URL(`../${p}`,import.meta.url));
 const sha=p=>createHash('sha256').update(p).digest('hex');
 const history=JSON.parse(read('docs/art-direction/human-roster-v1/infantry-walk-increments.json')).revisions.map(r=>JSON.parse(read(r.registration)));
@@ -50,4 +51,19 @@ test('East rejects four unique same-leading-leg keys, wrong passing order and re
   assert.throws(()=>inspectInfantryEastFootfall(same),/supporting foot|passing legs|forward reach/);
   assert.throws(()=>inspectInfantryEastFootfall([east[0],east[3],east[2],east[1]]),/supporting foot|passing legs/);
   assert.throws(()=>inspectInfantryEastFootfall([east[0],east[0],east[2],east[2]]),/passing legs/);
+});
+for(const receipt of history.filter(r=>r.gaitSpec))test(`actual own-${receipt.heading} footfall and frozen joins qualify ordered opposite-leg motion`,()=>{
+  const poses=Array.from({length:4},(_,i)=>crop(asset.frames.find(f=>f.id===`walk-${receipt.heading}-${i}`).frameRectsPx[0].rectPx));
+  assert.equal(inspectInfantrySourceFootfall(poses,receipt.gaitSpec).renderedFootPlanting,false);
+  const idle=asset.frames.find(f=>f.id===receipt.sourceFrameId),small=crop(idle.frameRectsPx[0].rectPx),seed=Buffer.alloc(256*256*4);
+  const ox=128-idle.groundPivotPx.x,oy=246-idle.groundPivotPx.y;
+  for(let y=0;y<small.height;y++)seed.set(small.pixels.subarray(y*small.width*4,(y+1)*small.width*4),((y+oy)*256+ox)*4);
+  for(const pose of poses)for(const [x0,y0,x1,y1] of receipt.frozenSourceRegions)for(let y=y0;y<y1;y++){
+    assert.deepEqual(pose.pixels.subarray((y*256+x0)*4,(y*256+x1)*4),seed.subarray((y*256+x0)*4,(y*256+x1)*4));
+  }
+  const same=[0,1,0,1].map((n,i)=>{const p={...poses[n],pixels:Buffer.from(poses[n].pixels)};p.pixels[0]=i+1;return p;});
+  assert.equal(new Set(same.map(p=>sha(p.pixels))).size,4);
+  assert.throws(()=>inspectInfantrySourceFootfall(same,receipt.gaitSpec),/supporting foot|passing legs|forward reach/);
+  assert.throws(()=>inspectInfantrySourceFootfall([poses[0],poses[3],poses[2],poses[1]],receipt.gaitSpec),/supporting foot|passing legs/);
+  assert.throws(()=>inspectInfantrySourceFootfall([poses[0],poses[0],poses[2],poses[2]],receipt.gaitSpec),/passing legs/);
 });

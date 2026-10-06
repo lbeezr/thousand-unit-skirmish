@@ -33,11 +33,11 @@
     "approvedRuntimeFiles": [
       {
         "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
-        "sha256": "62a67cf277ced75e8ed475b647d5fdfa00ad23be0ba7e21c528953516ee9c92d"
+        "sha256": "882c1bddce16ead1ec76f039dec8205b0f345009a4a25b42ecc382a6dc1909e9"
       },
       {
         "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
-        "sha256": "6a7b444ba178b25223f4353af13cf58d8dda7c49ef800e19445c62f04eb6297b"
+        "sha256": "38be0ef9fa157be7144711e28ae797935e3f13305c1dd0c900c8051d15779827"
       }
     ],
     "anchors": [
@@ -50,7 +50,7 @@
         "rgbaSha256": "9f2197fd73abf6f8fe53b86bafd5f2060e8e65eb1e2389de176e728cd69bef57"
       }
     ],
-    "registeredFramesSha256": "e4c95865b2b713f5a2ee8bc89d9178d0e905229f2aed12017bc2ca86714150d0",
+    "registeredFramesSha256": "1adda9a5daf0c7b6a8a9f6d20f5fb291358cf02ab96f62f3ed0708e2476850f0",
     "revisions": [
       {
         "id": "reviewed-ne-public-seed-cutout-v1",
@@ -89,6 +89,25 @@
         "retainedFrames": 36,
         "newFrames": 4,
         "originalSourcePinsUnchanged": true
+      },
+      {
+        "id": "reviewed-north-public-seed-cutout-v1",
+        "sourceReview": "docs/qa-infantry-local-walk-continuation-2026-10-05.md",
+        "previousRuntimeFiles": [
+          {
+            "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+            "sha256": "62a67cf277ced75e8ed475b647d5fdfa00ad23be0ba7e21c528953516ee9c92d"
+          },
+          {
+            "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+            "sha256": "6a7b444ba178b25223f4353af13cf58d8dda7c49ef800e19445c62f04eb6297b"
+          }
+        ],
+        "previousRegisteredFramesSha256": "e4c95865b2b713f5a2ee8bc89d9178d0e905229f2aed12017bc2ca86714150d0",
+        "previousRegistrationSha256": "568f2721e4f4b33babc8e767559a2f1f768802ba54efd2085c416e32a98dccf3",
+        "retainedFrames": 40,
+        "newFrames": 4,
+        "originalSourcePinsUnchanged": true
       }
     ]
   },
@@ -99,7 +118,7 @@
     "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; Pillow source-UV leg articulation from public NE seed",
     "providerVisibility": "historical-settings-not-recorded",
     "trainingPermission": "unknown",
-    "notes": "Existing repository source and manifests retained; provider privacy settings are not a no-training receipt. Explicit reviewed NE revision retains all32 established poses; private generator comparison remains rejected and unpublished. Explicit reviewed own-east local increment; no provider job or publication operation."
+    "notes": "Existing repository source and manifests retained; provider privacy settings are not a no-training receipt. Explicit reviewed NE revision retains all32 established poses; private generator comparison remains rejected and unpublished. Explicit reviewed own-east local increment; no provider job or publication operation. Explicit reviewed own-north local increment; no provider job or publication operation."
   },
   "publication": {
     "state": "existing-public-runtime-only",
@@ -124,7 +143,6 @@
   ],
   "sourceComplete": false,
   "missingSourceCells": [
-    "walk|north",
     "walk|south",
     "walk|south-west",
     "walk|west",
@@ -197,6 +215,19 @@
           "sourceFPS": null,
           "playbackFPS": null,
           "notes": "Four independently reviewed own-east cutout keys; preceding source cadence unchanged."
+        },
+        "north": {
+          "mode": "timed-keys",
+          "frameDurationsMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "durationMs": 800,
+          "sourceFPS": null,
+          "playbackFPS": null,
+          "notes": "Four independently reviewed own-north cutout keys; preceding source cadence unchanged."
         }
       }
     },
@@ -238,7 +269,7 @@
   "calibration": {
     "worldPerPixel": 0.005242183290678879,
     "bodyBaselineWorld": 1.2161865234375,
-    "registrationSha256": "568f2721e4f4b33babc8e767559a2f1f768802ba54efd2085c416e32a98dccf3",
+    "registrationSha256": "21165e864269d75ba3f702afe35096b38d277baba512514b874e419ff07845f3",
     "pivotStatus": "unreviewed-estimate",
     "cameraStatus": "prompt-only",
     "cameraRecipe": null,
