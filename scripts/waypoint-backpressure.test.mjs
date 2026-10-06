@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import { websocketFrameBytes } from '../src/networking/websocket-frame.mjs';
+import { createPeerOutput } from '../src/server/transport/peer-output.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 function between(start, end) {
@@ -16,7 +17,7 @@ function transport() {
   const frames = [];
   let rows = [[7, 1]];
   const context = vm.createContext({
-    Buffer, websocketFrameBytes, MAX_PEER_QUEUED_BYTES: 1024, outboundQueueLimitDisconnects: 0,
+    Buffer, websocketFrameBytes, createPeerOutput, MAX_PEER_QUEUED_BYTES: 1024, outboundQueueLimitDisconnects: 0,
     peakOutboundQueuedBytes: 0, lastWaypointQueueCountsByTeam: [[], []],
     snapshotQueuedWaypointCounts: (team) => team === 0 ? rows : [],
     prepareJsonFrame: (message) => Buffer.from(JSON.stringify(message)),
@@ -26,7 +27,7 @@ function transport() {
   });
   vm.runInContext([
     between('function sendRoomMetadata()', 'function returnToPregame()'),
-    between('function canQueuePeerFrame(', 'function sendPeerControlFrame('),
+    between('const {\n  canQueuePeerFrame,', '\nlet inboundControlFramesReceived'),
     between('function broadcastWaypointQueueCounts()', 'function clientOrderToken('),
     `globalThis.peer = {
       team: 0, closed: false, backpressured: true, pendingState: null, pendingWaypointCounts: null,
@@ -132,4 +133,87 @@ test('same queue signature on a new map is delivered again', () => {
   assert.deepEqual(wire.frames.map((frame) => frame.type),
     ['mapChange', 'state', 'waypointQueueCounts']);
   assert.deepEqual(wire.frames.at(-1).rows, [[7, 1]]);
+});
+
+function accountedPeer(write, queued = 0) {
+  return {
+    closed: false, backpressured: false, pendingState: null, pendingWaypointCounts: null,
+    coalescedStateSnapshots: 0, peakQueuedBytes: 0,
+    outboundJsonFrames: 0, outboundJsonWireBytes: 0, outboundJsonPayloadBytes: 0,
+    outboundJsonUncompressedWireBytes: 0, outboundCompressedFrames: 0,
+    outboundCompressedWireBytes: 0, outboundCompressedPayloadBytes: 0,
+    socket: { writableLength: queued, write },
+    terminate() { this.closed = true; },
+  };
+}
+
+test('exact queue cap accepts a frame and accounts bytes before its unchanged write', () => {
+  const events = [];
+  let queued = 7;
+  const frame = Buffer.from([0xc1, 1, 0x41]);
+  frame.rtsPayloadBytes = 100;
+  frame.rtsCompressed = true;
+  const peer = accountedPeer(bytes => {
+    assert.equal(bytes, frame, 'the original prepared buffer reaches the socket');
+    assert.deepEqual([peer.outboundJsonFrames, peer.outboundJsonWireBytes,
+      peer.outboundJsonPayloadBytes, peer.outboundJsonUncompressedWireBytes,
+      peer.outboundCompressedFrames, peer.outboundCompressedWireBytes,
+      peer.outboundCompressedPayloadBytes], [1, 3, 100, 102, 1, 3, 100]);
+    events.push('write'); queued = 10; return false;
+  });
+  Object.defineProperty(peer.socket, 'writableLength', {
+    get() { events.push(`read:${queued}`); return queued; },
+  });
+  const output = createPeerOutput(10, () => assert.fail('exact cap must not terminate'), bytes => {
+    assert.equal(peer.peakQueuedBytes, 10); events.push(`peak:${bytes}`);
+  });
+  assert.deepEqual(events, [], 'factory construction performs no callbacks or queue reads');
+  assert.equal(output.sendPreparedPeerFrame(peer, frame), false);
+  assert.equal(peer.backpressured, true);
+  assert.equal(peer.closed, false);
+  assert.deepEqual(events, ['read:7', 'write', 'read:10', 'read:10', 'peak:10', 'read:10']);
+});
+
+test('pre-write queue rejection increments the aggregate before termination without accounting', () => {
+  const events = [];
+  const peer = accountedPeer(() => assert.fail('rejected frame must not be written'), 8);
+  peer.terminate = () => { events.push('terminate'); peer.closed = true; };
+  const output = createPeerOutput(10, () => events.push('limit'), () => assert.fail('no write peak'));
+  assert.equal(output.sendPreparedPeerFrame(peer, Buffer.alloc(3)), false);
+  assert.equal(peer.outboundJsonFrames, 0);
+  assert.deepEqual(events, ['limit', 'terminate']);
+});
+
+test('post-write overflow records the peak and disconnect before returning without backpressure mutation', () => {
+  const events = [];
+  const peer = accountedPeer(() => { peer.socket.writableLength = 11; return false; }, 7);
+  peer.terminate = () => { events.push('terminate'); peer.closed = true; };
+  const output = createPeerOutput(10, () => events.push('limit'), bytes => events.push(`peak:${bytes}`));
+  assert.equal(output.sendPreparedPeerFrame(peer, Buffer.alloc(3)), false);
+  assert.equal(peer.peakQueuedBytes, 11);
+  assert.equal(peer.outboundJsonFrames, 1);
+  assert.equal(peer.backpressured, false);
+  assert.deepEqual(events, ['peak:11', 'limit', 'terminate']);
+});
+
+test('socket write errors keep prior accounting and propagate before post-write callbacks', () => {
+  const error = new Error('write fixture failure');
+  const peer = accountedPeer(() => { throw error; });
+  const output = createPeerOutput(10, () => assert.fail('no disconnect'), () => assert.fail('no post-write peak'));
+  assert.throws(() => output.sendPreparedPeerFrame(peer, Buffer.alloc(3)), actual => actual === error);
+  assert.equal(peer.outboundJsonFrames, 1);
+  assert.equal(peer.outboundJsonWireBytes, 3);
+  assert.equal(peer.peakQueuedBytes, 0);
+  assert.equal(peer.backpressured, false);
+});
+
+test('a closed peer retains its pending buffers when drain does no work', () => {
+  const peer = accountedPeer(() => assert.fail('closed peer must not write'));
+  const state = Buffer.from('state'), counts = Buffer.from('counts');
+  Object.assign(peer, { closed: true, backpressured: true, pendingState: state, pendingWaypointCounts: counts });
+  const output = createPeerOutput(10, () => assert.fail('no disconnect'), () => assert.fail('no peak'));
+  assert.equal(output.drainPeerOutput(peer), undefined);
+  assert.equal(peer.pendingState, state);
+  assert.equal(peer.pendingWaypointCounts, counts);
+  assert.equal(peer.backpressured, true);
 });

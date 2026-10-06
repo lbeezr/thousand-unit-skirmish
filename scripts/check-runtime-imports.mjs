@@ -30,6 +30,7 @@ export const NODE_ONLY_MODULES = [
   'src/pve-model-proposal.mjs', // Compatibility entry for the offline Node adapter.
   'src/server/pve-model-proposal.mjs', // Offline Node model-request implementation.
   'src/networking/websocket-frame.mjs', // Server-only Node Buffer wire encoding.
+  'src/server/transport/peer-output.mjs', // Private Node socket output and queue accounting.
 ];
 
 // Responsibilities of existing modules, independent of their current flat paths.
@@ -130,6 +131,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'server/map-definition-validator', // Authoritative map policy; no browser/public admission.
     'server/checkpoint-scenario-state', // Ordered saved scenario-state checks; no live simulation mutation.
     'server/checkpoint-roster', // Saved living/queued population and mode roster/result invariants.
+    'server/transport/peer-output', // Explicit peer output; host retains queue policy and aggregate metrics.
     'server/checkpoint-json-budget', 'server/checkpoint-json-scan', 'server/checkpoint-file-reader',
   ],
   // Legacy map-validation entry also exports playback policy. Preserve existing

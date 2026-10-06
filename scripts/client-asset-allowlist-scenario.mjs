@@ -17,6 +17,7 @@ assert.ok(Object.isFrozen(CLIENT_ASSET_PATHS), 'client admission paths must rema
 const allowed = new Set(CLIENT_ASSET_PATHS);
 for (const privateModule of ['src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs',
     'src/pve-opponent.mjs', 'src/simulation/ai/opponent-observation.mjs',
+    'src/server/transport/peer-output.mjs',
   'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs',
   'src/forest-fringe.mjs', 'src/server/vision-coverage-cache.mjs']) {
   assert.ok(!allowed.has(privateModule), `server-consumed helper must remain HTTP-private: ${privateModule}`);
