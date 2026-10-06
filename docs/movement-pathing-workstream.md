@@ -1322,6 +1322,16 @@ qualification evidence, coordinated through the parent with the existing crowd
 owner; no new runtime condition or repeated broad journey batch is justified
 from aggregate counts. Safety, deadline and fairness contracts remain unchanged.
 
+The independently reviewed [bounded paired forest capture](qa-crowd-first-decision-2026-10-06.md)
+now identifies the first changed decision at journey142, actor28 on seat1:
+PR529 exempts claimant24 through its directed join, keeps the same admitted
+northward best and commits a .0433333 step where baseline waits. The paired
+inputs and4,906 preceding calls match; both captured calls replay offline
+without a new match. This locates the first branch/write difference, not the
+complete mechanism of the later fairness failure. Core retains the next
+refinement-or-retirement decision; crowd retains sealed diagnostic/replay
+qualification. No fix, changed contract or broader rerun is included.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
