@@ -135,6 +135,7 @@ run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach
 run(['--test', 'scripts/unit-movement.test.mjs', 'scripts/land-body-clearance.test.mjs', 'scripts/unit-crowd-steering.test.mjs', 'scripts/crowd-projected-route-ranking.test.mjs', 'scripts/crowd-parallel-route-yield.test.mjs', 'scripts/crowd-wait-lease.test.mjs', 'scripts/crowd-body-journeys.test.mjs'], 'Unit separation terrain boundaries');
 run(['--test', 'scripts/crowd-forward-progress.test.mjs'], 'Parked crowd route progress and preserved idle actors');
 run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals and team reservation');
+run(['--test', 'scripts/pathing-replay-observer.test.mjs'], 'Replay observation preserves land admissions');
 run(['--test', 'scripts/unit-path-line.test.mjs', 'scripts/open-ground-move.test.mjs', 'scripts/worker-flat-flow-routes.test.mjs', 'scripts/fractional-move-endpoints.test.mjs'], 'Direct open-ground trajectories and safe long waypoint repair');
 run(['--test', 'scripts/move-planning-slices.test.mjs'], 'Clock-independent route planning, stale results and fair queue turns');
 run(['--test', 'scripts/move-planning-tick.test.mjs', 'scripts/move-planning-tick-error.test.mjs', 'scripts/pathing-arrival.test.mjs'], 'Opt-in planning tick budgets, order invalidation, topology and recovery');
