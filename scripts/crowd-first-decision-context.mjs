@@ -35,9 +35,6 @@ export function frameContext(frame, record, observed, dependencies, host) {
     assert.equal(new Set(ids).size,ids.length,'actual bucket chain has no duplicate actor');
     heads[bucket]=ids[0]; for(let i=0;i<ids.length;i++)links[ids[i]]=ids[i+1]??-1;
   }
-  const blocked=new Set();
-  for(const obstacle of record.map.obstacles)for(let z=obstacle.row;z<obstacle.row+obstacle.height;z++)
-    for(let x=obstacle.column;x<obstacle.column+obstacle.width;x++)blocked.add(z*width+x);
   const cell=(x,z)=>Math.floor(z+height/2)*width+Math.floor(x+width/2);
   const point=c=>({x:c%width-width/2+.5,z:Math.floor(c/width)-height/2+.5});
   const context=vm.createContext({...movement,...observed,UNIT_DEFINITIONS,constructionMovementActive,
@@ -46,8 +43,8 @@ export function frameContext(frame, record, observed, dependencies, host) {
     spatialBucketColumns:columns,spatialBucketRows:rows,spatialBucketHeads:heads,spatialBucketNext:links,
     spatialBucketColumn:x=>Math.max(0,Math.min(columns-1,Math.floor((x+width/2)/size))),
     spatialBucketRow:z=>Math.max(0,Math.min(rows-1,Math.floor((z+height/2)/size))),
-    spatialBucketRosterCurrent:true,elevationLevelByCell:new Uint8Array(width*height),
-    cellToWorld:point,worldToCell:cell,isWalkable:c=>c>=0&&c<width*height&&!blocked.has(c),
+    spatialBucketRosterCurrent:true,elevationLevelByCell:Uint8Array.from(record.elevationLevels),
+    cellToWorld:point,worldToCell:cell,isWalkable:c=>c>=0&&c<width*height&&record.navigationMask[c],
     SEPARATION_DIAGNOSTICS_ENABLED:false,tickNumber:frame.tick,
     navigationRevision:frame.navigationRevision,movePlanningEpoch:frame.epoch});
   vm.runInContext(host,context);
