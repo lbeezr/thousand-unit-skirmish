@@ -842,7 +842,7 @@ review and normal ready merge under standing authorization.
 
 | Lane / scope | Current implementation claim | Shared integration |
 | --- | --- | --- |
-| Module organization / this architecture-audio lane | Composition model/player/WAV/composer UI and library store/archive slices are integrated. The next allocated scope is the existing whole library UI mount and Studio's one static import, with actual DOM consumer controls established before extraction and root binding compatibility retained. | Additive canonical entries in the import inventory and exact public admission, packed HTTP controls and this ownership record. Original library registration retained; no `main.js`, package/CI/type configuration, assets or deployment changes. |
+| Module organization / this architecture-audio lane | All six allocated audio source slices are integrated: composition model/player/WAV, composer UI, library store/archive and the complete library UI mount. This source batch is closed; no further audio extraction is allocated. Served, browser, listening and R4 acceptance remain distinct below. | Additive canonical entries in the import inventory and exact public admission, packed HTTP controls and this ownership record. Original library registration retained; no `main.js`, package/CI/type configuration, assets or deployment changes. |
 | Types/contracts lane | `room-launch-options`, `room-pregame`, `room-presence` boundaries. | Owned by that lane; audio does not edit those modules or approve its PRs. |
 | Error-handling lane | `main.js::importEditorMap`, its dedicated regression and additive CI registration; R4 draft lifecycle excluded. | Owned by that lane; audio does not edit that handler or its regression. |
 | DRY-formatting lane | Resource format, population readout and economy-client formatting. | Owned by that lane; audio does not edit those modules. |
@@ -889,7 +889,7 @@ API documentation is reconciled. No removal follows merely from zero production
 callers. No barrel, duplicate implementation, resource URL or object-lifetime
 change is introduced.
 
-The short audio queue is: (1) composition model and its three callers, integrated
+The allocated audio source queue is complete: (1) composition model and its three callers, integrated
 in [PR553](https://github.com/lbeezr/thousand-unit-skirmish/pull/553); (2) the
 existing `createCompositionPlayer` clock/generation/node-disposal implementation
 and three dynamic import literals in `audio.mjs`/composer, preserving its root
@@ -900,9 +900,14 @@ UI into a dedicated audio rendering leaf, preserving its public export and exact
 decode/schedule/Blob/error behavior, integrated in
 [PR558](https://github.com/lbeezr/thousand-unit-skirmish/pull/558); (4) the
 remaining DOM composer and its one lazy library caller into `client/audio`,
-preserving the root two-name API. Each is a separate ready PR with original
-tests, exact-head review and package checks. Refresh ownership/main before the
-next item; no broad directory sweep or generic utilities move is allocated.
+preserving the root two-name API, integrated in
+[PR560](https://github.com/lbeezr/thousand-unit-skirmish/pull/560); (5) the complete
+library store/archive and Studio/Zones callers, integrated in
+[PR564](https://github.com/lbeezr/thousand-unit-skirmish/pull/564); (6) the complete
+library UI mount and Studio's one static import, integrated in
+[PR567](https://github.com/lbeezr/thousand-unit-skirmish/pull/567). Each retained
+its original registration, supported root bindings and independent source review.
+No additional audio directory sweep or utility extraction is allocated.
 
 #### Composition player organization
 
@@ -1069,6 +1074,41 @@ compatibility ratchets. R4, main, assets, package/CI configuration and behaviora
 redesign are excluded; the root lane's non-audio audit integrates shared inventory
 and documentation deltas serially against fresh main. Internal organization has
 no presentation impact; art backing N/A.
+
+#### Allocated audio source batch closure
+
+The six source slices above are integrated and this allocation is closed. Their
+dated source measurements remain historical checkpoints; compatibility entries
+remain subject to the existing consumer/owner/identified-release retirement
+criteria. Source completion does not claim a green full CPU suite: exact public
+CI failures and the cancelled main run are recorded on
+[PR567](https://github.com/lbeezr/thousand-unit-skirmish/pull/567).
+
+The bounded read-only assessment of the remaining audio roots found seven
+compatibility entries and nine implementations, including the two shipped page
+entrypoints. The 734-line `audio.mjs` owns one Web Audio context, bus/node state,
+pack/music/work generations and their common disposal. Its runtime consumers
+remain `game-entry.mjs`, `main.js` and `audio-zones.mjs`. `audio-assets.mjs` is a
+coherent pack/provenance/reference validator consumed by the shipped loader,
+canonical library store and canonical library UI; its local validation helpers
+retain first-error/normalization order. The 48-line shipped loader already
+composes the world reference validator, pack validator and bounded client reader,
+and owns its verified Blob/LRU cache. Remaining cue policy, event-profile policy,
+recognition protocol, shipped catalog and page entrypoints have existing explicit
+consumers and responsibilities. No additional organization-only extraction is
+justified by this assessment; future audio work needs a concrete runtime outcome
+or lifetime contract, rather than a flat-path or line-count target.
+
+The following acceptance gaps remain separately open:
+
+- Authenticated provider-served revision/digest and reload identity; automatic
+  source inclusion and local packed HTTP checks do not establish that observation.
+- Successful real-browser IndexedDB save/reopen/edit/backup/import/quota behavior;
+  the DOM fixture's store/audio adapters establish CPU consumer contracts only.
+- Creative listening, cue recognition and audible playback acceptance.
+- Rendered Audio Studio/game observations on an identified cloud release.
+- R4's separately owned rendered/interface prerequisites; this audio batch does
+  not change or close that excluded lifecycle.
 
 #### Production and research availability rule homes
 
