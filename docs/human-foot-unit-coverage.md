@@ -44,18 +44,20 @@ CPU checks and pack admission do not establish actual identified-build playback.
 Capture owner01a10378 retains that test; Spearman art/attack owner01a10469 is
 unchanged. No art/runtime changes or held assets are adopted.
 
-## Active Spearman continuation — 5 October 2026
+## Active Spearman continuation — 6 October 2026
 
-The foot-art owner continues after each admitted slice. South PR505 merged at
-`1cad8b8b93be3c2a9671f6da11b806fd5b7b7f9f`; Southwest PR509 merged at
-`f33c3a1a64a86597c7724204061dd19a691200a0`. Exact containing clean packages,
-HTTP admission and merged CPU checks pass; identified-game evidence stays open.
-[West source](qa-spearman-west-attack-2026-10-05.md) independently clears the rough
-minimum and registers default pack0.16.0:3 new poses,1 exact reused own idle,
-all75 preceding frames/31 clips preserved. Spearman gaps8:attackNW and7 defeats;
-Infantry21+Archer21=50 source cells. All63 native/deployed cells remain unverified.
-Next is genuine own-Northwest attack(public idle04), then7 matching terminal
-falls, then Archer. No combat/state/stance edits or held identity adoption.
+South PR505, Southwest PR509 and [West PR511](https://github.com/lbeezr/thousand-unit-skirmish/pull/511)
+are merged with exact containing clean packages, HTTP admission and merged CPU
+checks. West actual merge is `d106ceb0cda33467598d8bc0a9246fc8ce957a33`;
+its clean1395-file release digest is
+`sha256:c3b5260308750a46a58d3a91d2a564f8ae39fc40ca869cd4d47222c47385e279`.
+Identified-game acceptance stays open. The [Northwest attack increment](qa-spearman-north-west-attack-2026-10-06.md)
+registers default0.17.0/81:3 new own-view poses,1 exact reused own idle,
+all78 preceding frames/31 clips preserved. Source walks8/8 and attacks8/8.
+Spearman gaps7:only defeatN/NE/E/S/SW/W/NW; Infantry21+Archer21=49 source cells.
+All63 native/deployed cells remain unverified. Continue seven matching terminal
+falls starting with actual own-North, then Archer. No combat/state/stance edits
+or rejected identity adoption. Every first/corrected source trial is retained.
 
 ## Spearman Southwest source attack — 5 October 2026
 
