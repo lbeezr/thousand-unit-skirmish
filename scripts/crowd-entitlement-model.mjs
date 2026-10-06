@@ -111,7 +111,8 @@ export class MovingEntitlementModel {
   finishIngress(u,receipt,c) {
     const s=this.state(u),l=s.lease; if(!l?.pending) return false;
     l.pending=false; s.offer.request=null;
-    const committed=receipt?.finalized && receipt.tick===c.tick && matches(l.reservation.request.stamp,u,c)
+    const committed=receipt?.finalized && c.tick===l.reservation.tick && receipt.tick===c.tick
+      && matches(l.reservation.request.stamp,u,c)
       && matches(receipt.beforeStamp,u,c) && matches(receipt.stamp,u,c)
       && this.live(l.reservation,c) && same(receipt.from,l.from)
       && same(receipt.to,l.to) && same(u,l.to);
@@ -122,6 +123,7 @@ export class MovingEntitlementModel {
   }
   take(u,c,b) {
     const s=this.state(u),r=s.offer.reservation;
+    if(r?.attempted && (!this.live(r,c) || c.tick!==r.tick+1)) { s.offer.reservation=null; return null; }
     if(r?.attempted) throw Error('finish the reserved admission before another selection');
     const ack=r && this.obligation(r.winner,c);
     if(!this.live(r,c) || c.tick!==r.tick+1 || ack?.reservation!==r || ack.pending || c.maneuver(u)
@@ -130,7 +132,7 @@ export class MovingEntitlementModel {
   }
   finish(u,receipt,c) {
     const s=this.state(u),r=s.offer.reservation;
-    const committed=r?.attempted && receipt?.finalized && receipt.tick===c.tick
+    const committed=r?.attempted && c.tick===r.tick+1 && receipt?.finalized && receipt.tick===c.tick
       && matches(r.stamp,u,c) && matches(receipt.beforeStamp,u,c) && matches(receipt.stamp,u,c)
       && same(receipt.from,r.from) && same(receipt.to,r.to) && same(u,r.to);
     s.offer.reservation=null; return Boolean(committed); // One attempt, including failure.

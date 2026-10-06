@@ -143,6 +143,36 @@ test('same-pose new promise cannot inherit the exact-object acknowledgement of a
   assert.equal(s.model.take(s.peer,s.c,entitlementBudget()),null);
 });
 
+test('finalized ingress and service receipts cannot delay permission across its fixed-tick boundary',()=>{
+  const s=scene(),u=s.units[1];s.request(u);s.publish();
+  const ingress=s.model.prepareIngress(u,s.peer,s.c,entitlementBudget());assert.ok(ingress);
+  s.c.tick=2;const start=movementStart(u,s.c);move(u,ingress);
+  assert.equal(s.model.finishIngress(u,finalizedProgress(u,start,s.c),s.c),false,
+    'a later-tick actual write earns no same-tick ingress authority or credit');
+  assert.equal(s.model.state(u).lastGrantTick,-Infinity);
+  const a=scene();a.request(a.units[1]);const promised=a.publish();a.ingress(a.units[1]);
+  a.c.tick=2;assert.deepEqual(a.model.take(a.peer,a.c,entitlementBudget()),promised.to);
+  a.c.tick=3;const delayed=movementStart(a.peer,a.c);move(a.peer,promised.to);
+  assert.equal(a.model.finish(a.peer,finalizedProgress(a.peer,delayed,a.c),a.c),false,
+    'take admission cannot carry claimed service past expiry');
+  assert.equal(a.model.state(a.peer).offer.reservation,null);
+  assert.equal(a.model.obligation(a.units[1],a.c),null);
+});
+
+test('a missing service finalizer rejects duplicate selection but expires or invalidates without perpetual throws',()=>{
+  for(const change of ['expiry','route','epoch']) {
+    const s=scene();s.request(s.units[1]);s.publish();s.ingress(s.units[1]);s.c.tick=2;
+    assert.ok(s.model.take(s.peer,s.c,entitlementBudget()));
+    assert.throws(()=>s.model.take(s.peer,s.c,entitlementBudget()),/finish the reserved admission/);
+    if(change==='expiry')s.c.tick=3;
+    if(change==='route')s.peer.path=[...s.peer.path];
+    if(change==='epoch')s.c.epoch++;
+    assert.equal(s.model.take(s.peer,s.c,entitlementBudget()),null,change);
+    assert.equal(s.model.state(s.peer).offer.reservation,null);
+    assert.equal(s.model.take(s.peer,s.c,entitlementBudget()),null);
+  }
+});
+
 test('bounded queries fail closed and all physical admissions share the remaining 128 proposals',()=>{
   const s=scene(),u=s.units[1];s.request(u);s.c.tick=1;
   const start=movementStart(s.peer,s.c);move(s.peer,{x:.45,z:.2});

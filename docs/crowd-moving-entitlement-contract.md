@@ -76,7 +76,10 @@ atomically; backward-clock contexts cannot take old grants. No saved-state addit
    admit the **exact named step** before tangent reranking. Finish after authoritative
    execution and clear the promise even on failure. Missing acknowledgement or any
    invalidation clears it and permits ordinary selection/recovery immediately.
-   A skipped next tick expires it. A new tick or unchanged pose is no progress receipt.
+   A skipped next tick expires it. Ingress must finalize on its issue tick and service
+   on its next tick; delayed receipts receive no grant/service success credit.
+   A missing service finalizer cannot keep throwing after promise expiry/invalidation.
+   A new tick or unchanged pose is no progress receipt.
 
 ## Guarantees and work bounds
 
@@ -89,8 +92,9 @@ This does **not** establish route completion, deadlock freedom, the original 150
 fairness deadline or productive construction. Cancellation may return to an already
 stalled ordinary controller; no success is inferred from that fallback.
 
-For a stable visible set of K eligible requesters and positive residual work/service
-opportunities, cyclic probing visits each within K allocation probes. This is a bound
+For a stable owner identity/cursor lifetime, a stable visible set of K eligible
+requesters and positive residual work/service opportunities, cyclic probing visits
+each within K allocation probes. This is a bound
 on **probe opportunities**, not successful grants, ticks or arrival time. Churning
 eligibility, query truncation and budget starvation defeat any stronger guarantee.
 Unit IDs are existing deterministic identities; no randomness, clock or global queue.
