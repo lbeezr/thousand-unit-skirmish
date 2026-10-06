@@ -439,6 +439,7 @@ try {
   // HTTP admission denies both methods, including pure negotiation and shims.
   const privateModules = [...RUNTIME_DOMAINS.server,
     'src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs',
+    'src/pve-opponent.mjs', 'src/simulation/ai/opponent-observation.mjs',
     'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs', 'src/forest-fringe.mjs',
     ...Object.entries(RUNTIME_DOMAIN_HOSTS).filter(([, domain]) => domain === 'server').map(([filename]) => filename)];
   for (const filename of privateModules) {

@@ -830,7 +830,7 @@ for an existing responsibility, not an already available framework/API.
 
 | Next scoped PR / owner | Exact candidate files and responsibility | Dependency, focused checks and semantic no-change criterion |
 | --- | --- | --- |
-| R1 — AI observation, architecture with PvE owner | `src/pve-opponent.mjs`: `toOpponentObservation`, `decodeVisibility`, normalization and visible resource/forest/objective helpers → proposed `src/simulation/ai/opponent-observation.mjs`. Retain the existing observation/schema exports as named forwarding bindings; both actual policy/socket callers use the canonical projection. Leave seeded decisions, tactical retry state and `attachDeterministicOpponent` in their current owner. | First agree the exact export/helper set and preserve the browser `atob`/existing Node fallback behavior. Run `scripts/pve-opponent-scenario.mjs`, `scripts/pve-wildlife-disclosure.test.mjs` and the affected recorded PvE fixture consumers. Same team-visible DTO keys, sorting, own/enemy exceptions, errors and same-input policy traces; no hidden state, socket, timer or new observation version. Independent of R2–R6 after owner agreement. |
+| R1 — agreed AI observation source slice, architecture with PvE owner | `src/pve-opponent.mjs`: `toOpponentObservation`, `decodeVisibility`, normalization and visible resource/forest/objective helpers → `src/simulation/ai/opponent-observation.mjs`. Retain the existing observation/schema exports as named forwarding bindings; both actual policy/socket callers use the canonical projection. Leave seeded decisions, tactical retry state and `attachDeterministicOpponent` in their current owner. | First agree the exact export/helper set and preserve the browser `atob`/existing Node fallback behavior. Run `scripts/pve-opponent-scenario.mjs`, `scripts/pve-wildlife-disclosure.test.mjs` and the affected recorded PvE fixture consumers. Same team-visible DTO keys, sorting, own/enemy exceptions, errors and same-input policy traces; no hidden state, socket, timer or new observation version. Independent of R2–R6 after owner agreement. |
 | R2 — outbound transport queue, transport owner | `server.mjs`: `canQueuePeerFrame`, `sendPreparedPeerFrame`, `recordPeerWrite` and the existing state/waypoint coalescing/drain branch in `createPeer` → proposed `src/server/transport/peer-output.mjs`. Explicit socket/frame, existing queue cap and counter/termination callbacks; no sessions, gameplay context or inbound command parser. Current `src/networking/websocket-frame.mjs` and deflate API stay stable. | Agree only the narrow host adapter/counter interface first; no queue/access/negotiation policy changes. Run `scripts/websocket-frame.test.mjs`, `scripts/waypoint-backpressure.test.mjs`, `scripts/map-change-backpressure-scenario.mjs`, `scripts/server-hardening-scenario.mjs` and `scripts/resume-session-scenario.mjs`. Identical bytes, return values, counter increments, termination threshold, retained latest state and drain order. Private module never gets public HTTP admission. |
 | R3 — client welcome/session identity, client/network owner | Only the session token/server-instance/match-id storage and reset-vs-restore decision branches within `src/main.js::connectSocket` → proposed `src/client/networking/welcome-session.mjs`. Deferred session storage plus existing room keys and welcome fields; separate resume-token read, instance/match identity and seat-token write calls retain their original positions around map rebuilding. Return the existing identity flags. Keep map rebuilding, seat selection, lobby, audio, render state and WebSocket callbacks in the host. | Agree current storage failure semantics and callback order before moving this body; preserve the stale-connection guard. Run `scripts/browser-resume-client.test.mjs`, `scripts/renderer-browser-resume-scenario.test.mjs` and `scripts/resume-session-scenario.mjs`; rendered `scripts/renderer-browser-resume-scenario.mjs` on an identified cloud release remains separate. Same keys/tokens, fresh/reset/restored decisions and original storage catches; no new reconnect policy or protocol. Independent of R2's Node output implementation. |
 | R4 — draft timer/lifetime, authoring owner | `src/main.js`: `persistMapStudioDraft`, `scheduleMapStudioDraftSave` and their actual close/cancel calls → proposed `src/authoring/map-studio-draft-controller.mjs`, composing the existing store/form/history APIs. Keep ordered subpanel capture, import/publish mutation and canvas rendering in the host; own one dirty/timer/flush lifecycle rather than exporting setters for every editor global. | Dependent on the existing rendered draft/recovery observation and an agreed capture/status/clock/timer interface; not ready for an extraction through a broad editor bag. `scripts/resource-brush-controls.test.mjs`, `scripts/fixtures/map-studio-draft-fixture.mjs` and `scripts/map-studio-draft-scenario.mjs` retain real edit/save/close/reopen/import/export controls. Same 160 ms debounce, force-close flush, write order, failure text and v1 bytes; no publish rejection changes owned by the error lane. |
@@ -881,12 +881,26 @@ asset families follow one real tool interface at a time. Every compatibility
 entry keeps its existing named API until [retirement conditions](#stages-ownership-and-stable-entrypoints)
 are met; zero tracked runtime imports alone is insufficient.
 
-The **next concrete action** is a contract/ownership decision on R1's existing
-observation API, using current PvE fixture traces; it has a real exported
-consumer and avoids the active main/server movement, construction and art bodies.
-If that owner has an overlapping change, choose an independent agreed row or
-report that exact dependency. This plan allocates no runtime move in advance of
-review and coordination, and does not manufacture extraction work to fill a PR count.
+The parent relayed PvE agreement for **R1** against main `5d304723`, including
+no competing projector edit. The canonical module contains the exact 14 projection
+functions, schema v1 constant and three existing portable dependencies. The two
+legacy named bindings resolve to that implementation; the nine remaining policy/
+socket helper bodies and both actual internal projection calls stay unchanged.
+The shared two-line team predicate intentionally remains private in each module,
+as agreed; no general helper export or all-domain utility is introduced.
+
+At this source checkpoint, the canonical module is 345 physical lines and
+`pve-opponent.mjs` is 633 (335 fewer); graph **231 modules / 455 edges / 141
+browser / 101 server / 34 shared / zero cycles**. The new module and old policy
+entry remain HTTP-private under the unchanged exact static allowlist. Its
+portable atob/Node fallback is preserved, while no shipped browser entry acquires
+it. Source checks cover both-seat shape/privacy, malformed-mask/error order,
+immutable input, legacy identity, same-history decisions and native/replay
+consumers. Clean package/private GET/HEAD, exact-head independent review and
+identified delivery remain the implementation owner's checks; source counts do
+not establish rendered gameplay. R2–R6 still need their named owner interfaces.
+No authoritative snapshot, movement, construction, policy, scheduling, art or
+security/access change is part of R1.
 
 ### Next responsibility checkpoints
 

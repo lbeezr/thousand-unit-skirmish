@@ -12,6 +12,8 @@ import {
   OPPONENT_OBSERVATION_SCHEMA_VERSION,
   toOpponentObservation,
 } from '../src/pve-opponent.mjs';
+import { OPPONENT_OBSERVATION_SCHEMA_VERSION as canonicalObservationVersion,
+  toOpponentObservation as canonicalObservation } from '../src/simulation/ai/opponent-observation.mjs';
 import {
   PVE_MAP_IDS, parseUint32Seed, readPveLaunchOptions, selectPveMapId,
 } from '../src/pve-match.mjs';
@@ -86,7 +88,69 @@ function setVisibility(cells, columns, rows) {
   return { columns, rows, data: packed.toString('base64') };
 }
 
+function verifyObservationBoundary() {
+  assert.equal(toOpponentObservation, canonicalObservation, 'legacy projection retains the canonical function binding');
+  assert.equal(OPPONENT_OBSERVATION_SCHEMA_VERSION, canonicalObservationVersion);
+  const map = { id: 'observation-boundary', width: 16, height: 16, resourceNodes: [], triggers: [] };
+  const base = { type: 'state', fogOfWar: true, tick: 30, food: [120, 220], wood: [80, 180],
+    visibility: { columns: 16, rows: 16, data: Buffer.alloc(64).toString('base64') },
+    units: [[0, 0, -3, -3, 100, 'worker', 0, '', 1, 'idle'], [1, 1, 3, 3, 100, 'worker', 0, '', 1, 'idle']],
+    buildings: [0, 1].map(team => ({ id: 10 + team, team, type: 'barracks', x: team ? 3 : -3, z: 0,
+      complete: true, hp: 100, researchOptions: [{ upgrade: 'infantry-attack', available: true }],
+      productionOptions: [{ kind: 'infantry', available: true }] })),
+    teamResearch: [{ infantryAttack: true }, { archerAttack: true }], resourceNodes: [], objectives: [],
+    sessionToken: 'private-token', scenarioEvents: [{ id: 'private-event' }], winner: 1 };
+  const freeze = value => {
+    if (value && typeof value === 'object') { Object.values(value).forEach(freeze); Object.freeze(value); }
+    return value;
+  };
+  for (const team of [0, 1]) {
+    const input = freeze(structuredClone(base)), frozenMap = freeze(structuredClone(map));
+    const view = canonicalObservation(input, team, frozenMap);
+    assert.deepEqual(Object.keys(view), ['schemaVersion', 'team', 'tick', 'map', 'fogOfWar', 'visibility',
+      'resources', 'population', 'units', 'buildings', 'workerProduction', 'research', 'resourceNodes', 'forestCells', 'objectives']);
+    assert.deepEqual(Object.keys(view.map), ['id', 'width', 'height']);
+    assert.deepEqual(view.resources, { food: base.food[team], wood: base.wood[team] });
+    assert.deepEqual(view.units.friendly.map(unit => unit.id), [team]);
+    assert.deepEqual(view.units.visibleEnemies, []);
+    assert.deepEqual(view.buildings.friendly.map(building => building.id), [10 + team]);
+    assert.deepEqual(view.buildings.visibleEnemies, []);
+    assert.equal(view.buildings.friendly[0].researchOptions.length, 1);
+    const changed = structuredClone(base);
+    changed.food[1 - team] = 1e9; changed.wood[1 - team] = 1e9;
+    changed.teamResearch[1 - team] = { infantryAttack: true, archerAttack: true };
+    changed.buildings[1 - team].productionOptions.push({ kind: 'private-kind', available: true });
+    changed.sessionToken = 'changed-private-token'; changed.winner = team;
+    assert.deepEqual(canonicalObservation(changed, team, map), view, 'hidden data cannot change either seat projection');
+    assert.deepEqual(input, base, 'projection does not mutate its frozen state');
+    assert.deepEqual(frozenMap, map, 'projection does not mutate its frozen map');
+  }
+  const rejectionCases = [
+    [null, -1, 'Opponent seat must be assigned team 0 or 1.'],
+    [null, 0, 'Opponent adapter requires a peer-scoped state snapshot.'],
+    [{ type: 'state' }, 0, 'Opponent state must declare its fog-of-war mode.'],
+    [{ ...base, visibility: null }, 0, 'Fogged opponent state requires a matching team visibility mask.'],
+    [{ ...base, visibility: { ...base.visibility, columns: 15 } }, 0, 'Fogged opponent state requires a matching team visibility mask.'],
+    [{ ...base, visibility: { ...base.visibility, data: '' } }, 0, 'Opponent visibility mask is truncated.'],
+    [{ ...base, food: [NaN, 0] }, 0, 'Opponent state is missing the assigned team resource balances.'],
+  ];
+  const originalAtob = globalThis.atob;
+  try {
+    for (const fallback of [false, true]) {
+      globalThis.atob = fallback ? undefined : originalAtob;
+      for (const [state, team, message] of rejectionCases) {
+        assert.throws(() => canonicalObservation(state, team, map), { name: 'TypeError', message });
+      }
+      const malformed = { ...base, visibility: { ...base.visibility, data: '***' } };
+      assert.throws(() => canonicalObservation(malformed, 0, map), { name: 'TypeError', message: fallback
+        ? 'Opponent visibility mask is truncated.' : 'Opponent visibility mask is not valid base64.' });
+      assert.deepEqual(canonicalObservation(base, 0, map), toOpponentObservation(base, 0, map));
+    }
+  } finally { globalThis.atob = originalAtob; }
+}
+
 function verifyPureContract() {
+  verifyObservationBoundary();
   const map = {
     id: 'contract-smoke', width: 16, height: 16,
     spawnPoints: [{ team: 0, x: -6.5, z: -6.5 }, { team: 1, x: 6.5, z: 6.5 }],

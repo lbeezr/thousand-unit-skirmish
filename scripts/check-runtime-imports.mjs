@@ -66,6 +66,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'wildlife-state', 'work-intent', 'worker-performing-action',
   ],
   ai: [
+    'simulation/ai/opponent-observation',
     'pve-home-defense', 'pve-objective-rotation', 'pve-opponent', 'pve-production',
     'pve-reconnaissance', 'pve-regroup', 'pve-skirmish-targets',
   ],
