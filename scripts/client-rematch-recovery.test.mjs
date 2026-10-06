@@ -290,8 +290,8 @@ for (const team of [0, 1]) {
   });
 
   const carcassLosses = [
-    ['zero-Food carcass', f => ({ resourceNodes: [{ ...f.disclosed, stock: 0, wildlifeState: 'carcass' }] })],
-    ['depleted food', f => ({ resourceNodes: [{ ...f.disclosed, stock: 0, wildlifeState: 'depleted' }] })],
+    ['zero-Food carcass', f => ({ resourceNodes: [{ ...f.disclosed, stock: 0, wildlifeState: 'carcass', wildlifeActivity: undefined }] })],
+    ['depleted food', f => ({ resourceNodes: [{ ...f.disclosed, stock: 0, wildlifeState: 'depleted', wildlifeActivity: undefined }] })],
     ['unseen current cell', f => ({ visibility: f.visibility(0) })],
     ['explored current cell', f => ({ visibility: f.visibility(1) })],
     ['resource epoch transition', () => ({ forestEpoch: 8 })],
@@ -306,6 +306,14 @@ for (const team of [0, 1]) {
     const patch = change(f);
     connection.message(f.packet({ resourceNodes: [carcass], ...patch }));
     assertWildlifeCleared(f);
+    if (reason === 'depleted food') {
+      const depleted = f.context.latestWildlifeView.rows.get(f.node.id);
+      assert.equal(depleted.wildlifeState, 'depleted', 'valid depletion stays disclosed');
+      assert.equal(depleted.stock, 0);
+    } else if (reason === 'zero-Food carcass') {
+      assert.equal(f.context.latestWildlifeView.rows.has(f.node.id), false,
+        'zero Food cannot retain the positive-Food carcass lifecycle');
+    }
     connection.message(f.packet({ resourceNodes: [carcass], forestEpoch: patch.forestEpoch ?? 7 }));
     assert.equal(f.context.latestWildlifeView.rows.has(f.node.id), true,
       'later disclosure restores inspection eligibility, not selection');
