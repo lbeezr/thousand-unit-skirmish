@@ -1231,6 +1231,25 @@ against the fixed 2,700-tick requirement. CPU elapsed time is not simulation
 liveness; native full arrival, served identity and ordinary rendered acceptance
 remain open. No software-render result establishes consumer-GPU capacity.
 
+### Construction separation static-profile correction — 6 October 2026
+
+Original fixed qualification after PR513 regressed from seven to five passing
+cases; it is not universal movement improvement. A separate crowd phase witness
+at `d27728f8` identifies Worker 68 on tick 347 of seat-1 queued-wall construction:
+active unfinished site 1, progress `.32`, revision 1 and exhausted route `[3230]`.
+Interaction separation used static radius zero while construction's body radius
+was `.18`. Its body guard passed; the `.18` static sweep entered site 2's
+footprint with margin `+.0077793237` to `-.0092269066`. The economy-only static
+selector predates PR513, so this observation does not isolate the full liveness
+regression or explain all aggregate Worker contacts.
+
+Core extends only that separation radius to active construction, preserving the
+existing economy predicate, terrain/cell guard, short static escape, body guard,
+intent and query budgets. Mirrored source controls fail before the correction;
+inherited static escape/deeper controls retain legal own movement. The separate
+matched first-divergence investigation and original 2,700-tick qualification
+remain open; this source slice closes only the witnessed static admission gap.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5

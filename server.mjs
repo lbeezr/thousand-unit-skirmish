@@ -8636,7 +8636,8 @@ function spreadInteractingUnits() {
     } else if (distanceToBuildingEdge({ x, z }, building) > range - 0.02) {
       continue;
     }
-    const clearanceRadius = workerEconomyBodyRadius(unit);
+    const clearanceRadius = workerEconomyBodyRadius(unit)
+      || (constructionMovementActive(unit) ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0);
     if (x <= -MAP_HALF_X + 0.5 || x >= MAP_HALF_X - 0.5
       || z <= -MAP_HALF_Z + 0.5 || z >= MAP_HALF_Z - 0.5
       || !automaticPositionAllowed(unit, x, z)
