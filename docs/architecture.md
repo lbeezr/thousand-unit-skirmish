@@ -30,6 +30,54 @@ or reveal hidden state.
 
 ## Module dependencies and gradual organization
 
+### Current organization snapshot — 6 October 2026
+
+Organization continued beyond `networking/` and `server/`. At main
+`3da33c3125dbcb2ec6cd6d543f8811cb9ded27e5`, the source tree has **225 JavaScript
+modules: 185 flat and 40 nested** (230 source files including five CSS files).
+The existing Acorn audit reports **230 runtime modules including five root
+hosts/adapters, 453 distinct local edges, 141 browser-reachable, 100
+server-reachable, 34 shared and zero cyclic edges**. These counts include literal
+lazy imports and re-exports, but exclude tests/tools, asset URLs and injected
+callbacks. Reproduce with `node scripts/check-runtime-imports.mjs` at that source.
+
+The [first eight migration slices](#first-eight-migration-pr-candidates) all have
+integrated source implementations: domain guard PR294, map-audio reference
+PR298, rules PR314, formation PR301, HUD PR299, audio PR322, authoring PR300 and
+verified image loading PR327. Their source milestone does not close every
+rendered/native outcome. Later caller migrations through PR404 leave zero
+tracked runtime consumers of the eleven retained compatibility surfaces; tests,
+tools and supported old APIs still require them. Release pack/verification/served
+import tools have canonical `scripts/release/` homes through PR373/378/382.
+
+Subsequent real host extractions include Map Studio form/storage/history,
+portable import validation and terrain packing (PR406/412/415/463/524), world
+queries and their actual callers (PR510/512/514), and private authoritative
+map/checkpoint validation (PR507/526/528/530). The latter three are integrated,
+not a fresh pending extraction queue. Their exact package/provider receipts live
+in their PRs; served identity and ordinary rendered recovery remain separately
+owned. The detailed dated checkpoints below are retained as evidence.
+
+| Current hotspot | Physical lines | Local fan-out / fan-in | Remaining responsibility boundary |
+| --- | ---: | ---: | --- |
+| `src/main.js` | 10,712 | 79 / 1 | Map/visual construction (`buildMap`, 356 lines), socket/session handling (`connectSocket`, 262), HUD projection (`updateEconomyUI`, 229), state application (`applyState`, 220), animation and editor lifecycle. Extract one lifetime or projection with its real caller; retain the browser composition entry. |
+| `server.mjs` | 9,586 | 79 / 0 | Authoritative tick (`simulateTick`, 424), scenario execution (`evaluateScenarioTriggers`, 367), remaining checkpoint validation (367), peer creation (236), migration (203), command/movement/construction and visibility projection. Map/envelope/scenario/roster validators already have private homes. Live execution is a different contract from saved-state validation. |
+| `src/environment-art.mjs` | 1,243 | 28 / 1 | Ground/water creation, material/texture registries, resource readiness/fallback and obstacle batches (`addObstacleEnvironmentSprites`, 437). Verified image loading is already separate; resource disposal/lifetime is the next question, not another loader copy. |
+| `src/pve-opponent.mjs` | 968 | 10 / 2 | Filtered observation, seeded policy and socket adapter. `toOpponentObservation` and its visibility/normalization helpers are a concrete portable seam independent of policy scheduling. |
+| `room-supervisor.mjs` | 771 | 7 / 0 | Persistent room index, worker lifetime and HTTP/upgrade routing. Preserve process launch and resolved storage paths. |
+| `src/audio.mjs` | 734 | 4 / 3 | Synthesized/sampled playback, buses, interruption and disposal. Cache/response helpers are already separate; further changes need a playback lifetime contract. |
+| `src/gameplay-definitions.mjs` | 242 | 2 / 31 | Highest fan-in is the intentionally shared validated registry. Keep IDs, object identity and revision hashes cohesive; do not split it to reduce a coupling number. |
+
+Size and coupling are **review ratchets**, not universal limits: compare an
+owned slice against its pinned base and explain added responsibilities, changed
+edges and host-state reads/writes. A composition host may gain an import while
+losing state ownership. A cohesive registry or validator may remain hundreds of
+lines. Reject a new lower-domain dependency on a host/client/Three/Node adapter,
+a new cycle, duplicated state or an all-host context bag. Do not impose an
+arbitrary maximum file length or reset the empty cycle ledger to make a move pass.
+The next proposals are in [the remaining queue](#remaining-organization-queue--6-october-2026);
+the domain destinations below remain the governing dependency contract.
+
 `npm run architecture:check` parses imports, re-exports and literal lazy imports
 with Acorn; it does not execute game modules. At source revision `32f11d5`
 (3 October 2026), the graph contains 141 `src` modules plus five root JavaScript
@@ -232,7 +280,7 @@ not a second competing extraction/testing roadmap. The
 [planning inventory](README.md#planning-inventory--4-october-2026) identifies
 the other canonical queues and their evidence gaps.
 
-### Current coupling and mixed responsibilities
+### Historical coupling and mixed responsibilities — 4 October 2026
 
 Counts below use physical lines (including comments/blank lines) and distinct
 direct local runtime imports/importers, from the existing Acorn graph. They
@@ -367,7 +415,9 @@ scenario-event dependency contract from map topology without moving its callers.
 
 ### First eight migration PR candidates
 
-PR1 is the common prerequisite. PR2–PR7 have distinct canonical source scopes;
+This is the original eight-slice sequence, now integrated in source; do not
+reopen it as eight new folder moves. PR1 is the common prerequisite. PR2–PR7
+have distinct canonical source scopes;
 their existing-module imports can stay behind explicit shims so `main.js` and
 `server.mjs` need no path-only churn. The manifest, guard membership and any
 type/coverage/CI registries are shared integration files: apply those deltas
@@ -377,13 +427,13 @@ PR8 waits for the asset/renderer owner's agreed lifetime interface.
 | PR / owner and dependency | Exact candidate source scope and resulting boundary | Focused acceptance beyond the common checks below |
 | --- | --- | --- |
 | 1 — architecture/import owner; plan reviewed in PR291 | [PR294](https://github.com/lbeezr/thousand-unit-skirmish/pull/294): `scripts/check-runtime-imports.mjs`, `scripts/check-runtime-imports.test.mjs` and the existing `scripts/railway-release-scenario.mjs` private-path assertions; `scripts/fixtures/runtime-import-baseline.json` stays unchanged and empty. Explicit current responsibility memberships reject backwards edges before files move. The PR records exact-head review, checks and integration. | Import/served regressions: 41/41 pass; actual source allowlist: 118 modules; unchanged 175-module/319-edge/zero-cycle graph. Negative simulation→client/editor/presentation, rules/world direction, transitive host-package and browser→private-module cases pass. Pure disclosed helpers used by AI/server remain intentionally shared; new files need a classification. Clean pack and actual packed HTTP private GET/HEAD denial pass. No new package/CI pipeline, wildcard exception or cycle-baseline reset. |
-| 2 — world/metadata owner after PR1 and audio-owner agreement | Extract only `validateMapAudioReference` from `src/audio-event-profile.mjs` into proposed `src/world/map-audio-reference.mjs`; retain its named re-export at the old path. Leave random binding choice/cooldown behavior in the audio module. Its shared reference validation can no longer acquire Web Audio/storage dependencies. | Existing audio runtime/map-persistence/shipped-serving scenarios and new exact old/new validator parity for accepted/rejected references, optional version/hash pair, returned keys and error text. Existing host imports can stay stable. No source audio bytes, map reference or playback change. |
-| 3 — shared-rule/extraction owner after PR1 | `src/gameplay-action-rules.mjs` and `src/base-lifecycle.mjs` → proposed `src/rules/` counterparts; explicit named compatibility entries retain the old API. Update only relative dependencies of the canonical copies. The cohesive action/refund calculations remain portable and independent of UI/hosts. | `scripts/gameplay-action-rules.test.mjs`, `scripts/base-lifecycle.test.mjs`, production/research action tests and `scripts/base-lifecycle-scenario.mjs`. Preserve rejection reason order, epsilon, refund/repair rounding, immutable inputs, payment and cold recovery; preserve existing comparison evidence. |
-| 4 — movement owner after PR1 and current path work | `src/formation-assignment.mjs` → proposed `src/simulation/movement/formation-assignment.mjs`, named old-path forwarding entry. No changes to `unit-path-line`, planner budgets, force combination, command queues or server host imports. Establish the authoritative formation-helper home without moving active path/order implementations. | `scripts/formation-assignment-scenario.mjs`, pathing replay and fortified-site-clearance tests; compare ordered IDs/slot pairing/ties for the same inputs and retain no input mutation. Existing real terrain/paid-construction controls remain meaningful. |
-| 5 — HUD owner after PR1 and selection-fix coordination | `src/resource-format.mjs`, `src/population-readout.mjs`, `src/objective-summary.mjs` → proposed `src/client/hud/` counterparts with named forwarding entries. Keep state projection/text separate from DOM layout, authoritative accounting and rendering. `hud-layout`, `main.js`, selection/stance hooks and HTML stay outside this slice. | Their three matching tests, `scripts/selection-context.test.mjs` and relevant contextual HUD regressions. Preserve all labels/formatting, unknown/hidden/enemy values, population totals, notice retention/order and disclosed objective state. Existing `selection-portrait`/`wall-placement` imports may use the shims until their own migration. |
-| 6 — audio/extraction owner after PR1; coverage registration through testing owner | `src/audio-decoded-cache.mjs`, `src/audio-shipped-response.mjs` → proposed `src/client/audio/` counterparts with named forwarding entries. Preserve cache and bounded-response interfaces; `audio.mjs`, loader/profile behavior and all recordings stay stable. | `scripts/audio-decoded-cache.test.mjs`, `scripts/audio-shared-decode.test.mjs`, `scripts/audio-shipped-response.test.mjs`, shipped-loader/lifecycle tests and serving scenario. Exact reader limits/errors/cancellation, shared object identity, LRU accounting/retry and independent bus interruption. Keep the existing 100% reader coverage pointed at the canonical implementation, not the shim; no test renaming. |
+| 2 — world/metadata; integrated [PR298](https://github.com/lbeezr/thousand-unit-skirmish/pull/298), after PR1/audio agreement | Extract only `validateMapAudioReference` from `src/audio-event-profile.mjs` into proposed `src/world/map-audio-reference.mjs`; retain its named re-export at the old path. Leave random binding choice/cooldown behavior in the audio module. Its shared reference validation can no longer acquire Web Audio/storage dependencies. | Existing audio runtime/map-persistence/shipped-serving scenarios and new exact old/new validator parity for accepted/rejected references, optional version/hash pair, returned keys and error text. Existing host imports can stay stable. No source audio bytes, map reference or playback change. |
+| 3 — shared rules; integrated [PR314](https://github.com/lbeezr/thousand-unit-skirmish/pull/314), after PR1 | `src/gameplay-action-rules.mjs` and `src/base-lifecycle.mjs` → proposed `src/rules/` counterparts; explicit named compatibility entries retain the old API. Update only relative dependencies of the canonical copies. The cohesive action/refund calculations remain portable and independent of UI/hosts. | `scripts/gameplay-action-rules.test.mjs`, `scripts/base-lifecycle.test.mjs`, production/research action tests and `scripts/base-lifecycle-scenario.mjs`. Preserve rejection reason order, epsilon, refund/repair rounding, immutable inputs, payment and cold recovery; preserve existing comparison evidence. |
+| 4 — movement; integrated [PR301](https://github.com/lbeezr/thousand-unit-skirmish/pull/301), after PR1/path coordination | `src/formation-assignment.mjs` → proposed `src/simulation/movement/formation-assignment.mjs`, named old-path forwarding entry. No changes to `unit-path-line`, planner budgets, force combination, command queues or server host imports. Establish the authoritative formation-helper home without moving active path/order implementations. | `scripts/formation-assignment-scenario.mjs`, pathing replay and fortified-site-clearance tests; compare ordered IDs/slot pairing/ties for the same inputs and retain no input mutation. Existing real terrain/paid-construction controls remain meaningful. |
+| 5 — HUD; integrated [PR299](https://github.com/lbeezr/thousand-unit-skirmish/pull/299), after PR1/selection coordination | `src/resource-format.mjs`, `src/population-readout.mjs`, `src/objective-summary.mjs` → proposed `src/client/hud/` counterparts with named forwarding entries. Keep state projection/text separate from DOM layout, authoritative accounting and rendering. `hud-layout`, `main.js`, selection/stance hooks and HTML stay outside this slice. | Their three matching tests, `scripts/selection-context.test.mjs` and relevant contextual HUD regressions. Preserve all labels/formatting, unknown/hidden/enemy values, population totals, notice retention/order and disclosed objective state. Existing `selection-portrait`/`wall-placement` imports may use the shims until their own migration. |
+| 6 — audio; integrated [PR322](https://github.com/lbeezr/thousand-unit-skirmish/pull/322), after PR1; coverage through testing owner | `src/audio-decoded-cache.mjs`, `src/audio-shipped-response.mjs` → proposed `src/client/audio/` counterparts with named forwarding entries. Preserve cache and bounded-response interfaces; `audio.mjs`, loader/profile behavior and all recordings stay stable. | `scripts/audio-decoded-cache.test.mjs`, `scripts/audio-shared-decode.test.mjs`, `scripts/audio-shipped-response.test.mjs`, shipped-loader/lifecycle tests and serving scenario. Exact reader limits/errors/cancellation, shared object identity, LRU accounting/retry and independent bus interruption. Keep the existing 100% reader coverage pointed at the canonical implementation, not the shim; no test renaming. |
 | 7 — map-authoring owner; [PR300](https://github.com/lbeezr/thousand-unit-skirmish/pull/300) | `src/scenario-authoring.mjs`, `src/map-resize.mjs` → canonical `src/authoring/` counterparts with explicit named forwarding entries. Both implementations remain byte-identical to `a93c8175`; normal `main.js` imports stay stable. [Known consumers and retirement conditions](map-authoring.md#authoring-module-paths). No validators, map/default/size changes or editor-loop rewrite. `map-studio-viewport` remains a later slice without a direct viewport contract. | Existing scenario-authoring tests plus exact named-export/binding identity, canonical marker resize/publish/save/reopen, game-menu/served imports, domain negatives and packed HTTP hashes/privacy pass. The normal-sandbox cloud browser cannot start; rendered `map-studio-draft-scenario.mjs` acceptance remains incomplete with the authoring owner. Source/release/review evidence and this capability limitation are recorded in PR300. |
-| 8 — environment/asset-loading owner after PR1–2 and renderer agreement | Extract only `fetchVerifiedRuntimeImage` from `src/environment-art.mjs` into proposed `src/presentation/assets/interactive-runtime-image.mjs`. Pass the existing root/loader dependencies explicitly; keep manifest selection, material registries, resource-state status, `resourceStateAssetsReady`, oak fallback and batch mutation in the old module. | Focused hash/dimension/failure/disposal contract using the actual exported helper; existing resource visual, oak depletion, environment asset and packed release scenarios. Same request paths/cache options, SHA acceptance, texture filters/dimensions/error text and exactly-once failed-texture disposal. No new source assets, default art, quality decision or capture claim. |
+| 8 — assets; integrated [PR327](https://github.com/lbeezr/thousand-unit-skirmish/pull/327), after PR1–2/renderer agreement | Extract only `fetchVerifiedRuntimeImage` from `src/environment-art.mjs` into proposed `src/presentation/assets/interactive-runtime-image.mjs`. Pass the existing root/loader dependencies explicitly; keep manifest selection, material registries, resource-state status, `resourceStateAssetsReady`, oak fallback and batch mutation in the old module. | Focused hash/dimension/failure/disposal contract using the actual exported helper; existing resource visual, oak depletion, environment asset and packed release scenarios. Same request paths/cache options, SHA acceptance, texture filters/dimensions/error text and exactly-once failed-texture disposal. No new source assets, default art, quality decision or capture claim. |
 
 ### Migration checkpoints and retained compatibility
 
@@ -750,6 +800,84 @@ checks pass without the root entry, and current command/API documentation is
 reconciled. Test names, workloads, CI registration policy, parser grammar,
 HTTP access and runtime paths do not change. This tool move does not establish
 rendered-game acceptance or a remote deployment.
+
+
+### Remaining organization queue — 6 October 2026
+
+These are scoped proposals for the remaining stages, **not runtime edit
+allocations**. Architecture owns this plan; the parent coordinates the exact
+host/owner overlap before an implementation starts. Testing strategy retains
+`AGENTS.md`, testing-strategy documents, package/CI/workflow/discovery changes.
+Movement/Patrol, construction, Worker action/animation, match ending, HUD and
+active asset binding remain with their current owners. PR529 is a rejected
+movement candidate, not an organization dependency or code to incorporate.
+No runtime path or behavior changes are part of this documentation refresh.
+
+The original eight PRs above supplied the first safe boundaries. The next small
+PRs should be selected from this ordered queue when their named input is ready.
+Each row owns a distinct implementation body; shared manifest/guard and host
+call-site deltas integrate serially. A proposed path is explicitly a destination
+for an existing responsibility, not an already available framework/API.
+
+| Next scoped PR / owner | Exact candidate files and responsibility | Dependency, focused checks and semantic no-change criterion |
+| --- | --- | --- |
+| R1 — AI observation, architecture with PvE owner | `src/pve-opponent.mjs`: `toOpponentObservation`, `decodeVisibility`, normalization and visible resource/forest/objective helpers → proposed `src/simulation/ai/opponent-observation.mjs`. Retain the existing observation/schema exports as named forwarding bindings; both actual policy/socket callers use the canonical projection. Leave seeded decisions, tactical retry state and `attachDeterministicOpponent` in their current owner. | First agree the exact export/helper set and preserve the browser `atob`/existing Node fallback behavior. Run `scripts/pve-opponent-scenario.mjs`, `scripts/pve-wildlife-disclosure.test.mjs` and the affected recorded PvE fixture consumers. Same team-visible DTO keys, sorting, own/enemy exceptions, errors and same-input policy traces; no hidden state, socket, timer or new observation version. Independent of R2–R6 after owner agreement. |
+| R2 — outbound transport queue, transport owner | `server.mjs`: `canQueuePeerFrame`, `sendPreparedPeerFrame`, `recordPeerWrite` and the existing state/waypoint coalescing/drain branch in `createPeer` → proposed `src/server/transport/peer-output.mjs`. Explicit socket/frame, existing queue cap and counter/termination callbacks; no sessions, gameplay context or inbound command parser. Current `src/networking/websocket-frame.mjs` and deflate API stay stable. | Agree only the narrow host adapter/counter interface first; no queue/access/negotiation policy changes. Run `scripts/websocket-frame.test.mjs`, `scripts/waypoint-backpressure.test.mjs`, `scripts/map-change-backpressure-scenario.mjs`, `scripts/server-hardening-scenario.mjs` and `scripts/resume-session-scenario.mjs`. Identical bytes, return values, counter increments, termination threshold, retained latest state and drain order. Private module never gets public HTTP admission. |
+| R3 — client welcome/session identity, client/network owner | Only the session token/server-instance/match-id storage and reset-vs-restore decision branches within `src/main.js::connectSocket` → proposed `src/client/networking/welcome-session.mjs`. Deferred session storage plus existing room keys and welcome fields; separate resume-token read, instance/match identity and seat-token write calls retain their original positions around map rebuilding. Return the existing identity flags. Keep map rebuilding, seat selection, lobby, audio, render state and WebSocket callbacks in the host. | Agree current storage failure semantics and callback order before moving this body; preserve the stale-connection guard. Run `scripts/browser-resume-client.test.mjs`, `scripts/renderer-browser-resume-scenario.test.mjs` and `scripts/resume-session-scenario.mjs`; rendered `scripts/renderer-browser-resume-scenario.mjs` on an identified cloud release remains separate. Same keys/tokens, fresh/reset/restored decisions and original storage catches; no new reconnect policy or protocol. Independent of R2's Node output implementation. |
+| R4 — draft timer/lifetime, authoring owner | `src/main.js`: `persistMapStudioDraft`, `scheduleMapStudioDraftSave` and their actual close/cancel calls → proposed `src/authoring/map-studio-draft-controller.mjs`, composing the existing store/form/history APIs. Keep ordered subpanel capture, import/publish mutation and canvas rendering in the host; own one dirty/timer/flush lifecycle rather than exporting setters for every editor global. | Dependent on the existing rendered draft/recovery observation and an agreed capture/status/clock/timer interface; not ready for an extraction through a broad editor bag. `scripts/resource-brush-controls.test.mjs`, `scripts/fixtures/map-studio-draft-fixture.mjs` and `scripts/map-studio-draft-scenario.mjs` retain real edit/save/close/reopen/import/export controls. Same 160 ms debounce, force-close flush, write order, failure text and v1 bytes; no publish rejection changes owned by the error lane. |
+| R5 — renderer ground resource lifetime, renderer/assets owner | `src/environment-art.mjs`: `groundBuffer`, `addGroundQuad`, `finishGroundGeometry`, `createGroundSurfaces` → proposed `src/presentation/rendering/ground-surfaces.mjs`. Keep definition/geometry projection distinct from material registry, water motion subscriptions and disposal ownership. Preserve `createGroundSurfaces` at the existing environment API while using the canonical implementation. | Agree the actual terrain-height/material/water resource interface and disposal ownership with the active renderer first. Run existing terrain/ground/water geometry contracts and `scripts/terrain-atmosphere-scenario.mjs`; ordinary ground/water appearance and disposal on an identified cloud build are separate acceptance. Same vertex/UV/index/order, bounds, texture URLs, material identity, motion subscription cleanup and fallback. If inputs require the whole renderer context, split a smaller geometry responsibility or defer; no art-path/default changes. |
+| R6 — room-index persistence, server/orchestration owner | `room-supervisor.mjs`: `persistRoomIndex` and the index read/normalization portion of `loadRooms` → proposed `src/server/persistence/room-index-store.mjs`, using existing `roomIndexDocument`/launch-option contracts. Keep worker startup, expiry, routing, access/origin decisions and root path/environment resolution in the supervisor. | Agree exact root-resolved paths and queued write/failure semantics with orchestration first; independent of R1–R5 but serialize host integration. Run `scripts/room-supervisor-scenario.mjs`, `scripts/room-expiry-scenario.mjs`, `scripts/pve-room-launch-scenario.mjs` and relevant pregame/recovery checks. Same index format/order/defaults, temporary-file/rename behavior, failure recovery and room launch identity; no permission/access or storage-location changes. |
+
+A shared public positional-row codec is a later contract proposal, not a seventh
+forced move. `server.mjs::snapshotUnits` (row slots 0–17), `src/main.js::applyState`,
+`src/pve-opponent.mjs::normalizeUnit`, `src/wildlife-client-state.mjs` and Worker
+receipts have different authority/disclosure responsibilities. Agree an actual
+common serializer/reader consumer first; keep fog filtering, current tick checks,
+transient work grants and visual interpolation outside `src/networking/protocol/`.
+Preserve sparse optional slots, generations, rounding and reason ordering with
+`scripts/snapshot-row-allocation.test.mjs`, its preserved oracle fixture, network
+snapshot and Worker contracts. Do not move transient authoritative journals into
+protocol because they are browser-reachable. Live simulation/domain moves remain
+later owner-run vertical slices; the active movement/construction investigations
+are not path-reorganization opportunities.
+
+For **every runtime row**, retain all prior assertions/registrations and migrate
+only its affected source-slice fixture to the actual canonical export. Inspect
+`node scripts/ci.mjs --list`, run the existing domain checks plus import/type
+checks, and require `scripts/client-asset-allowlist-scenario.mjs` for all five
+shipped browser entries. Update exact public module entries in
+`src/server/client-asset-paths.mjs` only where needed. The existing
+`scripts/railway-release-scenario.mjs` must prove canonical bytes/manifest hashes,
+public GET/HEAD behavior and authenticated private GET/HEAD **404** at both Node
+hosts and compatibility paths. A source file being packaged does not authorize
+serving it. Preserve root entrypoints, static admission and current access policy.
+Review the exact integrated head, package from clean source, and record source
+SHA, release digest, provider source and served identity separately. Blocked cloud
+browser/public access remains a named acceptance gap; no Mac, proxy bypass,
+security changes or paid services are part of this plan.
+
+Tool/test organization continues under the [existing purpose-based stage](#tests-fixtures-scenarios-and-performance-tools),
+not a duplicate testing roadmap. At the current pin, `scripts/` has 909 tracked
+files (875 flat), 332 `*.test.mjs` files and 238 filenames containing `scenario`;
+these are file counts, not CI selection counts. Literal references to `src/main.js`
+and `server.mjs` occur in 97 and 203 JS/MJS script files, including launches as
+well as source-slice fixtures. Keep actual assertions/fixed seeds in domain
+fixtures (`scripts/fixtures/map-studio-draft-fixture.mjs`, preserved snapshot/PvE
+fixtures); telemetry belongs to evidence. First prospective tooling scope is
+`scripts/checkpoint-performance-scenario.mjs` → `scripts/performance/` with its
+current CLI retained, only after the workload/command owner agrees root resolution
+and discovery. Do not relabel correctness scenarios or rename the 332 tests as a
+folder metric. Release tools already moved; broader scenario/browser/authoring/
+asset families follow one real tool interface at a time. Every compatibility
+entry keeps its existing named API until [retirement conditions](#stages-ownership-and-stable-entrypoints)
+are met; zero tracked runtime imports alone is insufficient.
+
+The **next concrete action** is a contract/ownership decision on R1's existing
+observation API, using current PvE fixture traces; it has a real exported
+consumer and avoids the active main/server movement, construction and art bodies.
+If that owner has an overlapping change, choose an independent agreed row or
+report that exact dependency. This plan allocates no runtime move in advance of
+review and coordination, and does not manufacture extraction work to fill a PR count.
 
 ### Next responsibility checkpoints
 
