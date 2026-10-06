@@ -1023,8 +1023,11 @@ launch/rematch and 16 pregame controls pass. Neither the new private module nor
 the supervisor is claimed to enter the existing checked-JavaScript scope.
 
 The graph is **234 modules / 460 local edges / 142 browser / 103 server / 34
-shared / zero cycles**; the host is 753 physical lines (18 fewer). All 1,445
-prior CI selections remain; only canonical module syntax is auto-discovered.
+shared / zero cycles**; the host is 753 physical lines (18 fewer). At the initial
+`d9e616af` checkpoint, all 1,445 prior CI selections remain (1,446 with this
+module). After integrating PR544's independent observer correction onto
+`8d5afd07`, all 1,447 base selections remain (1,448 with this module). Only
+canonical module syntax is added by R6; PR544's registrations are preserved.
 These dated counts are responsibility ratchets, not size or quality thresholds.
 The guard adds only the exact Node-only and server-domain memberships; it
 preserves other owners' additive classifications, including PR541's movement
