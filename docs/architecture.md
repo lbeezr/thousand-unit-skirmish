@@ -831,7 +831,7 @@ for an existing responsibility, not an already available framework/API.
 | Next scoped PR / owner | Exact candidate files and responsibility | Dependency, focused checks and semantic no-change criterion |
 | --- | --- | --- |
 | R1 — agreed AI observation source slice, architecture with PvE owner | `src/pve-opponent.mjs`: `toOpponentObservation`, `decodeVisibility`, normalization and visible resource/forest/objective helpers → `src/simulation/ai/opponent-observation.mjs`. Retain the existing observation/schema exports as named forwarding bindings; both actual policy/socket callers use the canonical projection. Leave seeded decisions, tactical retry state and `attachDeterministicOpponent` in their current owner. | First agree the exact export/helper set and preserve the browser `atob`/existing Node fallback behavior. Run `scripts/pve-opponent-scenario.mjs`, `scripts/pve-wildlife-disclosure.test.mjs` and the affected recorded PvE fixture consumers. Same team-visible DTO keys, sorting, own/enemy exceptions, errors and same-input policy traces; no hidden state, socket, timer or new observation version. Independent of R2–R6 after owner agreement. |
-| R2 — outbound transport queue, transport owner | `server.mjs`: `canQueuePeerFrame`, `sendPreparedPeerFrame`, `recordPeerWrite` and the existing state/waypoint coalescing/drain branch in `createPeer` → proposed `src/server/transport/peer-output.mjs`. Explicit socket/frame, existing queue cap and counter/termination callbacks; no sessions, gameplay context or inbound command parser. Current `src/networking/websocket-frame.mjs` and deflate API stay stable. | Agree only the narrow host adapter/counter interface first; no queue/access/negotiation policy changes. Run `scripts/websocket-frame.test.mjs`, `scripts/waypoint-backpressure.test.mjs`, `scripts/map-change-backpressure-scenario.mjs`, `scripts/server-hardening-scenario.mjs` and `scripts/resume-session-scenario.mjs`. Identical bytes, return values, counter increments, termination threshold, retained latest state and drain order. Private module never gets public HTTP admission. |
+| R2 — agreed outbound transport source slice, architecture/transport owner | `server.mjs`: `canQueuePeerFrame`, `sendPreparedPeerFrame`, `recordPeerWrite` and the existing state/waypoint coalescing/drain branch in `createPeer` → `src/server/transport/peer-output.mjs`. Explicit peer/socket/frame, existing queue cap and two aggregate metric callbacks; no sessions, gameplay context or inbound command parser. Current `src/networking/websocket-frame.mjs` and deflate API stay stable. | The narrow factory/counter interface was reviewed before edits; no queue/access/negotiation policy changes. Run `scripts/websocket-frame.test.mjs`, `scripts/waypoint-backpressure.test.mjs`, `scripts/map-change-backpressure-scenario.mjs`, `scripts/server-hardening-scenario.mjs` and `scripts/resume-session-scenario.mjs`. Identical bytes, return values, counter increments, termination threshold, retained latest state and drain order. Private module never gets public HTTP admission. |
 | R3 — client welcome/session identity, client/network owner | Only the session token/server-instance/match-id storage and reset-vs-restore decision branches within `src/main.js::connectSocket` → proposed `src/client/networking/welcome-session.mjs`. Deferred session storage plus existing room keys and welcome fields; separate resume-token read, instance/match identity and seat-token write calls retain their original positions around map rebuilding. Return the existing identity flags. Keep map rebuilding, seat selection, lobby, audio, render state and WebSocket callbacks in the host. | Agree current storage failure semantics and callback order before moving this body; preserve the stale-connection guard. Run `scripts/browser-resume-client.test.mjs`, `scripts/renderer-browser-resume-scenario.test.mjs` and `scripts/resume-session-scenario.mjs`; rendered `scripts/renderer-browser-resume-scenario.mjs` on an identified cloud release remains separate. Same keys/tokens, fresh/reset/restored decisions and original storage catches; no new reconnect policy or protocol. Independent of R2's Node output implementation. |
 | R4 — draft timer/lifetime, authoring owner | `src/main.js`: `persistMapStudioDraft`, `scheduleMapStudioDraftSave` and their actual close/cancel calls → proposed `src/authoring/map-studio-draft-controller.mjs`, composing the existing store/form/history APIs. Keep ordered subpanel capture, import/publish mutation and canvas rendering in the host; own one dirty/timer/flush lifecycle rather than exporting setters for every editor global. | Dependent on the existing rendered draft/recovery observation and an agreed capture/status/clock/timer interface; not ready for an extraction through a broad editor bag. `scripts/resource-brush-controls.test.mjs`, `scripts/fixtures/map-studio-draft-fixture.mjs` and `scripts/map-studio-draft-scenario.mjs` retain real edit/save/close/reopen/import/export controls. Same 160 ms debounce, force-close flush, write order, failure text and v1 bytes; no publish rejection changes owned by the error lane. |
 | R5 — renderer ground resource lifetime, renderer/assets owner | `src/environment-art.mjs`: `groundBuffer`, `addGroundQuad`, `finishGroundGeometry`, `createGroundSurfaces` → proposed `src/presentation/rendering/ground-surfaces.mjs`. Keep definition/geometry projection distinct from material registry, water motion subscriptions and disposal ownership. Preserve `createGroundSurfaces` at the existing environment API while using the canonical implementation. | Agree the actual terrain-height/material/water resource interface and disposal ownership with the active renderer first. Run `scripts/terrain-blend-scenario.mjs`, `scripts/water-surface-scenario.mjs`, `scripts/water-surface-study.test.mjs` and `scripts/terrain-atmosphere-scenario.mjs`; ordinary ground/water appearance and disposal on an identified cloud build are separate acceptance. Same vertex/UV/index/order, bounds, texture URLs, material identity, motion subscription cleanup and fallback. If inputs require the whole renderer context, split a smaller geometry responsibility or defer; no art-path/default changes. |
@@ -898,9 +898,45 @@ it. Source checks cover both-seat shape/privacy, malformed-mask/error order,
 immutable input, legacy identity, same-history decisions and native/replay
 consumers. Clean package/private GET/HEAD, exact-head independent review and
 identified delivery remain the implementation owner's checks; source counts do
-not establish rendered gameplay. R2–R6 still need their named owner interfaces.
+not establish rendered gameplay. R3–R6 still need their named owner interfaces.
 No authoritative snapshot, movement, construction, policy, scheduling, art or
 security/access change is part of R1.
+
+The parent reconciled **R2** ownership to the existing source/transport workstream;
+there is no competing output-queue worker. Its reviewed interface is
+`createPeerOutput(maxQueuedBytes, onQueueLimitDisconnect, onQueuedBytes)` in the
+[private peer-output module](../src/server/transport/peer-output.mjs). The factory
+captures only the unchanged host cap and two aggregate metric callbacks. Each
+operation receives its peer/frame explicitly; factory creation performs no queue
+reads, writes or callbacks. The host retains both aggregate counters, peer/session
+creation, control framing, JSON/compression preparation, map/reset clearing,
+inbound parsing, and release/access policy. No broad host context or new protocol
+entrypoint is introduced.
+
+The disconnect callback runs at both original limit sites before `peer.terminate()`.
+The peak callback occupies the second original post-write `writableLength` read,
+after the per-peer peak update; the third read still checks the unchanged strict
+overflow threshold. Prepared bytes, pre-write accounting and exception/return
+order remain unchanged. Drain clears both saved buffers, dispatches the latest
+state through the peer's existing method, then writes the latest waypoint counts
+even if the state re-enters backpressure. The old seven waypoint/map-change
+contracts exercise the real factory and actual host adapter; additional boundary
+cases cover exact-cap admission, metric/read order, overflow, write exceptions
+and closed-peer drain. No test rename or CI/type configuration change is needed.
+
+At this R2 checkpoint against `1509805c`, the host is 9,535 physical lines
+(51 fewer than 9,586); the queue module is 78. The runtime graph is **232
+modules / 457 local edges / 141 browser / 102 server / 34 shared / zero cycles**.
+All 1,441 prior CI selections are retained; the only added entry is the
+automatically discovered canonical syntax check. These counts describe the
+transferred responsibility and dependency ratchet, not absolute size targets.
+
+The new module is a Node-only server responsibility. Existing domain-driven packed
+checks require its presence and private authenticated GET/HEAD denial, while the
+client admission manifest is unchanged. Original native backpressure, hardening
+and session-resume scenarios remain the delivery checks; this source split does
+not restart the archived client-resume task or claim rendered acceptance. Art
+backing is N/A for this behavior-preserving internal boundary.
 
 ### Next responsibility checkpoints
 

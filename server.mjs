@@ -1,4 +1,5 @@
 import { freshVoluntaryEndings, voluntaryCapability, decideVoluntaryEnding, cancelVoluntaryOffer, savedVoluntaryEndings, validSavedVoluntaryEndings, migrateVoluntaryEndingCheckpoint, VOLUNTARY_REASONS } from './src/server/voluntary-endings.mjs';
+import { createPeerOutput } from './src/server/transport/peer-output.mjs';
 import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } from './src/shore-fishing.mjs';
 import { farmHarvestNode, farmHarvestNodeId, farmBuildingId, validFarmStock, eligibleFarmReplantWorker } from './src/farm-harvest.mjs';
 import { createDockPlacementContext, dockBerthOrientation, validDockFacingState } from './src/dock-placement.mjs';
@@ -699,6 +700,12 @@ unitGenerationCounters.fill(randomBytes(4).readUInt32LE(0));
 const peers = new Set();
 let outboundQueueLimitDisconnects = 0;
 let peakOutboundQueuedBytes = 0;
+const {
+  canQueuePeerFrame, sendPreparedPeerFrame, recordPeerWrite,
+  sendPreparedState, sendPreparedWaypointCounts, drainPeerOutput,
+} = createPeerOutput(MAX_PEER_QUEUED_BYTES,
+  () => { outboundQueueLimitDisconnects++; },
+  queuedBytes => { peakOutboundQueuedBytes = Math.max(peakOutboundQueuedBytes, queuedBytes); });
 let inboundControlFramesReceived = 0;
 let inboundControlPingsReceived = 0;
 let inboundControlPongsReceived = 0;
@@ -8850,43 +8857,6 @@ function prepareJsonFrame(message, allowCompression = false) {
   return frame;
 }
 
-function canQueuePeerFrame(peer, frameBytes) {
-  if (peer.closed) return false;
-  const queuedBytes = peer.socket.writableLength;
-  if (frameBytes > MAX_PEER_QUEUED_BYTES || queuedBytes + frameBytes > MAX_PEER_QUEUED_BYTES) {
-    outboundQueueLimitDisconnects++;
-    peer.terminate();
-    return false;
-  }
-  return true;
-}
-
-function sendPreparedPeerFrame(peer, frame) {
-  if (!canQueuePeerFrame(peer, frame.length)) return false;
-  peer.outboundJsonFrames++;
-  peer.outboundJsonWireBytes += frame.length;
-  peer.outboundJsonPayloadBytes += frame.rtsPayloadBytes ?? frame.length;
-  peer.outboundJsonUncompressedWireBytes += websocketFrameBytes(frame.rtsPayloadBytes ?? frame.length);
-  if (frame.rtsCompressed) {
-    peer.outboundCompressedFrames++;
-    peer.outboundCompressedWireBytes += frame.length;
-    peer.outboundCompressedPayloadBytes += frame.rtsPayloadBytes;
-  }
-  return recordPeerWrite(peer, peer.socket.write(frame));
-}
-
-function recordPeerWrite(peer, writable) {
-  peer.peakQueuedBytes = Math.max(peer.peakQueuedBytes, peer.socket.writableLength);
-  peakOutboundQueuedBytes = Math.max(peakOutboundQueuedBytes, peer.socket.writableLength);
-  if (peer.socket.writableLength > MAX_PEER_QUEUED_BYTES) {
-    outboundQueueLimitDisconnects++;
-    peer.terminate();
-    return false;
-  }
-  if (!writable) peer.backpressured = true;
-  return writable;
-}
-
 function sendPeerControlFrame(peer, opcode, payload) {
   const frameBytes = websocketFrameBytes(payload.length);
   if (!canQueuePeerFrame(peer, frameBytes)) return false;
@@ -9038,21 +9008,10 @@ function createPeer(socket, resumeToken, compressionEnabled = false, now = Date.
       return sendPreparedPeerFrame(peer, frame);
     },
     sendPreparedState(frame) {
-      if (peer.closed) return false;
-      if (peer.backpressured) {
-        if (peer.pendingState) peer.coalescedStateSnapshots++;
-        peer.pendingState = frame;
-        return false;
-      }
-      return sendPreparedPeerFrame(peer, frame);
+      return sendPreparedState(peer, frame);
     },
     sendPreparedWaypointCounts(frame) {
-      if (peer.closed) return false;
-      if (peer.backpressured) {
-        peer.pendingWaypointCounts = frame;
-        return false;
-      }
-      return sendPreparedPeerFrame(peer, frame);
+      return sendPreparedWaypointCounts(peer, frame);
     },
     close() { releasePeer(peer, true); },
     terminate() { releasePeer(peer, false); },
@@ -9175,17 +9134,7 @@ function createPeer(socket, resumeToken, compressionEnabled = false, now = Date.
   };
 
   socket.on('drain', () => {
-    if (peer.closed) return;
-    peer.backpressured = false;
-    const latestState = peer.pendingState;
-    const latestWaypointCounts = peer.pendingWaypointCounts;
-    peer.pendingState = null;
-    peer.pendingWaypointCounts = null;
-    if (latestState) peer.sendPreparedState(latestState);
-    // The state may reset the client's roster. Its owner counts must follow it,
-    // even if writing that state re-enters backpressure. The byte limit still
-    // applies to this single metadata frame.
-    if (latestWaypointCounts) sendPreparedPeerFrame(peer, latestWaypointCounts);
+    drainPeerOutput(peer);
   });
 
   let session = resumable && !resumable.peer && resumable.expiresAt > now ? resumable : null;
