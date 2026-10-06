@@ -18,8 +18,8 @@ selected unit coordinate. A selected building instead cleared that history;
 after sight loss the next target decision immediately chose global search.
 
 Native authority cancels a building attack after losing sight. The first hidden
-publication can still contain the previous attack target; the following native
-tick clears it before the next policy decision. The peer observation has no
+publication can still contain the previous attack target; a later sampled
+publication shows it cleared before the next policy decision. The peer observation has no
 durable military order-result field. Absence therefore establishes neither a
 live target nor completed travel. This extension inspects a disclosed point;
 it does not retain an entity order or infer hidden survival/HP.
@@ -59,15 +59,17 @@ reconstruct an unrelated private policy cursor.
 
 Both seats repeat complete command/notices/final-authority results exactly.
 Each controlled comparison runs 450 ticks (15 seconds), with the distant enemy
-army held after setup. All listed times are native ticks, not decision guesses.
+army held after setup. Checkpoints are sampled every 3 native ticks. The stage
+times below are first observed publication boundaries, not exact mutation ticks;
+order times are their actual submission ticks.
 
-| Seat | Initial entity order | Sight lost | Authority cleared | Point order | Redisclosed | First damage | Final TC HP | No-history control |
+| Seat | Initial entity order | Sight lost | Authority cleared | Point order | Redisclosed | First observed damage | Final TC HP | No-history control |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
 | 0 | 555 | 558 | 561 | 585 | 651 | 729 | 2383.5 | No redisclosure/damage; 2400 HP |
 | 1 | 537 | 540 | 543 | 567 | 600 | 690 | 2382 | Redisclosed 639; damage 759; 2386.5 HP |
 
-Seat 0 deals 16.5 damage where its control deals none. Seat 1 starts damage
-69 ticks (2.3 seconds) earlier and deals 18 rather than 13.5 damage. All orders
+Seat 0 deals 16.5 damage where its control deals none. Seat 1's first observed
+damage is 69 ticks (2.3 seconds) earlier and it deals 18 rather than 13.5 damage. All orders
 are accepted, banks remain unchanged, all 24 units survive and matches remain
 ongoing. Fresh hidden restores forget the point; fresh restores at actual
 redisclosure reacquire a legal building attack and resume damage. Both recovery

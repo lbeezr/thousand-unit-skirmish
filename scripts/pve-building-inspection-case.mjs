@@ -115,6 +115,8 @@ export async function replayBuildingInspection(data, { forgetOnLoss = false, col
     await issue(view());
     assert.equal(trace[0].command.type, 'attackBuilding');
     assert.equal(trace[0].command.buildingId, data.target.id);
+    for (const id of ids) assert.equal(r.checkpoint().state.units.find(unit => unit.id === id).attackBuildingTargetId,
+      data.target.id, 'initial sighted order actually assigns the native building target');
     for (let step = 1; step <= seconds * 30; step++) {
       r.step();
       if (step % 3) continue;
