@@ -87,6 +87,22 @@ its anchor/generation/target membership atomically. Legacy jobs retain radius8.
 source/native proof from containing-build rendered acceptance. Terrain presentation
 owns tree registration; resource movement owns flat-flow route construction.
 
+Farm and land drop-off route selection consume the transient
+[`economy-perimeter-access`](../src/economy-perimeter-access.mjs) helper. One
+synchronous operation lazily indexes at most 2,000 live unit slots, using every
+registered land body's actual radius on both teams. It prefers body-clear
+unclaimed endpoints; prospective Return Cargo clones register preferences before
+subsequent selection and rebind them on live acceptance. Claims grant no motion
+authority and never enter checkpoints. Per scope: at most 256 perimeter checks,
+32 cells per candidate and 64 combined body/claim visits per check. Incomplete
+or exhausted queries defer the preference and preserve existing static admission;
+all physical guards remain authoritative. The existing fixed Farm/drop-off flow
+key is invalidated when its exact goal membership changes; the eight-field cache
+cap remains unchanged. Arrival, harvest/deposit rates, typed cargo and source or
+recipient ownership still use the existing actual-position checks. An endpoint
+occupied after selection retains the strict crowd wait: persistent-wait recovery
+is the separate next economy slice, rather than a saved flag in this contract.
+
 Construction remembers only explicitly assigned paid owned site IDs, in priority
 order. Area is the initial sites' footprint bounding rectangle plus two world
 units, clipped to map bounds, and remains fixed. An explicitly assigned adjoining

@@ -1,4 +1,4 @@
-import { economyServerBindings, economyServerFunctions, workerFlowRouteBindings } from './economy-server-fixture.mjs';
+import { economyServerBindings, economyServerFunctions, workerFlowRouteBindings, workerPerimeterServerFunctions } from './economy-server-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -19,7 +19,7 @@ for (const team of [0, 1]) test(`drop-off choice measures reachable routes and p
     pathFromAttackFlow: (_, field) => Array(field.goal === 1 ? 20 : field.goal === 2 ? 10 : 4).fill(field.goal),
   });
   context.allMatchBuildings = () => context.buildings;
-  vm.runInContext(economyServerFunctions + functions, context);
+  vm.runInContext(economyServerFunctions + workerPerimeterServerFunctions + functions, context);
   const route = context.routeWorkerToDropoff(unit);
   assert.equal(unit.dropoffBuildingId, 3, 'a shorter reachable route wins over a closer building across a long detour');
   assert.equal(unit.path.length, 1, 'only the chosen route is reduced after comparing original lengths'); assert.equal(unit.cargo, 10);

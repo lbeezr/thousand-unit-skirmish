@@ -13,6 +13,7 @@ import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { creditResourceBalance } from '../src/economy-ledger.mjs';
 import { preflightXlCheckpointRoutes, XL_CHECKPOINT_ROUTE_MAX_ENTRIES as QUOTA } from '../src/server/checkpoint-route-budget.mjs';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
+import { workerPerimeterServerFunctions, workerPerimeterRouteBindings } from './economy-server-fixture.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const SPATIAL_BUCKET_SIZE = Number(source.match(/^const SPATIAL_BUCKET_SIZE = ([\d.]+);$/m)[1]);
@@ -74,7 +75,7 @@ function fixture({ width = 320, height = 320, total = 0, count = 1, team = 0,
   const spatialBucketColumns = Math.floor((width - .5) / SPATIAL_BUCKET_SIZE) + 1;
   const spatialBucketRows = Math.floor((height - .5) / SPATIAL_BUCKET_SIZE) + 1;
   const bucketCount = spatialBucketColumns * spatialBucketRows;
-  const context = vm.createContext({ ...movement, shortcutFlatUnitPath, canTraverseFlatUnitSegment,
+  const context = vm.createContext({ ...movement, ...workerPerimeterRouteBindings(), shortcutFlatUnitPath, canTraverseFlatUnitSegment,
     constructionMovementActive, workerPatrolAcquiredMovementActive, canTraverseCrowdBodySegment, spatialBucketRosterCurrent: false,
     SPATIAL_BUCKET_SIZE, CROWD_NEIGHBOR_LIMIT, spatialBucketColumns, spatialBucketRows,
     spatialBucketHeads: new Int32Array(bucketCount), spatialBucketNext: new Int32Array(2000),
@@ -124,7 +125,7 @@ function fixture({ width = 320, height = 320, total = 0, count = 1, team = 0,
   });
   // Preserve physical admission using the tick's real fresh bucket roster;
   // straight-route proposals remain controlled, but bodies are never mocked out.
-  vm.runInContext(names.map(body).join('\n') + `\nfunction physicalPhase(){rebuildSpatialBuckets();${physicalPhase}}\nfunction recoverPendingTail(){${recoveryTail}}`, context);
+  vm.runInContext(workerPerimeterServerFunctions + names.map(body).join('\n') + `\nfunction physicalPhase(){rebuildSpatialBuckets();${physicalPhase}}\nfunction recoverPendingTail(){${recoveryTail}}`, context);
   const apply = context.applyWorkerFlowRoute;
   context.applyWorkerFlowRoute = (...args) => {
     const result = apply(...args);
