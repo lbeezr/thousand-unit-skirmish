@@ -377,3 +377,155 @@ test('null-entry preflight retains envelope, collection, elevation, terrain and 
   assert.throws(() => requireRecovery(draftFor({ ...definition, obstacles }), 'source'),
     { message: terrainMessage });
 });
+
+const selectorEntryCases = [
+  ['triggers', 'selectedTriggerId', {
+    id: 'capture-zone-1', type: 'capture-zone', name: 'Capture point',
+    zone: { column: 2, row: 2, width: 2, height: 2 }, requiredUnits: 8,
+    captureSeconds: 3.5, foodReward: 0, victory: false,
+  }, 'Map contains an invalid capture-zone trigger.'],
+  ['scenarioEvents', 'selectedScenarioEventId', {
+    id: 'supply-1', type: 'timed-supply', name: 'Supply', afterSeconds: 30,
+    team: 'both', foodReward: 100,
+  }, 'Map contains an invalid timed supply event.'],
+  ['resourceNodes', 'selectedResourceId', {
+    id: 'food', type: 'food', x: 0.5, z: 0.5, stock: 300,
+  }, 'Map has an invalid, duplicate, out-of-bounds or unsupported resource node.'],
+];
+
+function selectorRecoverySnapshot(f, formState) {
+  const names = ['editorDefinition', 'editorResourceNodes', 'editorTriggers', 'editorScenarioEvents',
+    'editorGroundMaterials', 'editorCellMaterials', 'editorGroundLevels', 'editorCellElevations'];
+  return {
+    references: Object.fromEntries(names.map(name => [name, f.w[name]])),
+    values: {
+      definition: f.copy(f.w.editorDefinition), resources: f.copy(f.w.editorResourceNodes),
+      triggers: f.copy(f.w.editorTriggers), events: f.copy(f.w.editorScenarioEvents),
+      grids: names.slice(4).map(name => [...f.w[name]]),
+      form: formState.capture(), match: f.copy(f.w.mapDefinition),
+      selectedIds: [f.w.selectedEditorTriggerId, f.w.selectedEditorScenarioEventId,
+        f.w.selectedEditorResourceId, f.w.selectedEditorRegionId],
+      tool: f.w.editorTool, history: [...f.w.scenarioEditHistory.states],
+      historyIndex: f.w.scenarioEditHistory.index,
+      canUndo: f.w.scenarioEditHistory.canUndo, canRedo: f.w.scenarioEditHistory.canRedo,
+      redraws: f.w.redraws, savedAt: f.w.lastDraftSavedAt(),
+      dirty: f.w.editorDraftDirty, status: f.w.ui.studioDraftStatus.textContent,
+      timers: [...f.timers], stored: f.saved(),
+    },
+  };
+}
+
+function assertSelectorRecoveryUnchanged(f, formState, before) {
+  for (const [name, reference] of Object.entries(before.references)) assert.equal(f.w[name], reference, name);
+  assert.deepEqual(selectorRecoverySnapshot(f, formState).values, before.values);
+}
+
+for (const [field, selectedKey, record, message] of selectorEntryCases) {
+  for (const [name, records] of [
+    ['single null', [null]], ['null before selected record', [null, record]],
+    ['null after selected record', [record, null]],
+  ]) {
+    test(`actual Restore rejects ${field} ${name} without losing undo/redo and supports repair/retry`, t => {
+      const f = mapStudioDraftFixture(t);
+      const formState = createMapStudioFormState({ root: f.w.ui.mapStudio, document: f.d });
+      f.open(); f.edit('studio-name', 'Retained local edit'); f.flush();
+      const key = f.w.editorDraftStorageKey, validRaw = f.w.localStorage.getItem(key);
+      const damaged = JSON.parse(validRaw);
+      damaged.editor.definition.name = 'Private damaged draft';
+      damaged.editor.definition[field] = records;
+      damaged.editor[selectedKey] = record.id;
+      const damagedRaw = JSON.stringify(damaged);
+      f.w.localStorage.setItem(key, damagedRaw); f.w.showMapStudioDraftRecovery(damaged);
+      const history = f.w.scenarioEditHistory;
+      history.record({ ...f.w.scenarioEditorState(), regionId: 'retained-first' });
+      history.record({ ...f.w.scenarioEditorState(), regionId: 'retained-second' });
+      history.undo();
+      assert.equal(history.canUndo, true); assert.equal(history.canRedo, true);
+      const before = selectorRecoverySnapshot(f, formState);
+      f.click('studio-draft-restore');
+      assertSelectorRecoveryUnchanged(f, formState, before);
+      assert.equal(f.w.ui.studioDraftRecoveryMessage.textContent, message);
+      assert.equal(f.w.ui.studioDraftRecovery.hidden, false);
+      assert.equal(f.w.ui.mapStudioLayout.inert, true);
+      assert.equal(f.w.localStorage.getItem(key), damagedRaw);
+      const repaired = JSON.parse(validRaw);
+      repaired.editor.definition[field] = [record, { ...record, id: `${record.id}-second` }];
+      repaired.editor[selectedKey] = record.id;
+      const repairedRaw = JSON.stringify(repaired);
+      f.w.localStorage.setItem(key, repairedRaw); f.click('studio-draft-restore');
+      assert.equal(f.w.ui.studioName.value, 'Retained local edit');
+      assert.equal(f.w.ui.studioDraftRecovery.hidden, true);
+      assert.equal(f.w.ui.mapStudioLayout.inert, false);
+      assert.equal(f.w.localStorage.getItem(key), repairedRaw);
+      assert.deepEqual(f.copy(f.w.editorDefinition[field]), repaired.editor.definition[field]);
+      assert.deepEqual(f.copy(f.w[`editor${field === 'triggers' ? 'Triggers'
+        : field === 'scenarioEvents' ? 'ScenarioEvents' : 'ResourceNodes'}`]), repaired.editor.definition[field]);
+      f.flush();
+      const saved = JSON.parse(f.w.localStorage.getItem(key));
+      assert.equal(saved.editor.definition.name, 'Retained local edit');
+      assert.deepEqual(saved.editor.definition[field], repaired.editor.definition[field]);
+    });
+  }
+
+  test(`selector-entry preflight preserves unfinished ${field} and rejects persisted nulls/holes`, () => {
+    for (const records of [undefined, null, false, 0, '', [], [record], [{}], [{ id: 'unfinished' }],
+      [false, 0, '', 'unfinished']]) {
+      const draft = draftFor({ ...minimalDefinition(), [field]: records });
+      const before = structuredClone(draft);
+      const recovered = requireRecovery(draft, 'source');
+      assert.equal(recovered.state, draft.editor); assert.equal(recovered.definition, draft.editor.definition);
+      assert.equal(recovered.definition[field], records); assert.deepEqual(draft, before);
+    }
+    for (const records of [[null], [null, record], [record, null], [undefined], new Array(1)]) {
+      const draft = JSON.parse(JSON.stringify(draftFor({ ...minimalDefinition(), [field]: records })));
+      const before = structuredClone(draft);
+      assert.throws(() => requireRecovery(draft, 'source'), { name: 'Error', message });
+      assert.deepEqual(draft, before);
+    }
+  });
+
+  test(`selector-entry preflight retains unexpected ${field} element getter identity`, () => {
+    const failure = new Error('Private unexpected element detail'), records = [];
+    Object.defineProperty(records, 0, { get() { throw failure; } });
+    assert.throws(() => requireRecovery(draftFor({ ...minimalDefinition(), [field]: records }), 'source'),
+      error => error === failure);
+  });
+
+  test(`actual import rejects null ${field} with the existing diagnostic before mutation`, async t => {
+    const f = mapStudioDraftFixture(t);
+    const formState = createMapStudioFormState({ root: f.w.ui.mapStudio, document: f.d });
+    f.open(); f.edit('studio-name', 'Retained local edit'); f.flush();
+    const input = f.copy(f.w.collectEditorMap()); input[field] = [null];
+    const before = selectorRecoverySnapshot(f, formState);
+    await assert.rejects(f.w.importEditorMap({ size: 10, text: async () => JSON.stringify(input) }),
+      { name: 'Error', message });
+    assertSelectorRecoveryUnchanged(f, formState, before);
+    assert.equal(f.w.ui.studioDraftRecovery.hidden, true);
+  });
+}
+
+test('selector-entry preflight retains earlier checks and trigger/event/resource diagnostic priority', () => {
+  const definition = { ...minimalDefinition(), triggers: [null], scenarioEvents: [null], resourceNodes: [null] };
+  for (const invalid of [
+    { ...draftFor(definition), version: 2 }, draftFor({ ...definition, width: 15 }),
+    draftFor({ ...definition, terrainPatches: {} }),
+  ]) assert.throws(() => requireRecovery(invalid, 'source'), { message: recoveryMessage });
+  for (const [overrides, message] of [
+    [{ elevationPatches: {} }, 'Invalid elevation patches: shape.'],
+    [{ terrainPatches: [null] }, nullEntryCases[0][2]],
+    [{ obstacles: [null] }, nullEntryCases[1][2]],
+    [{}, selectorEntryCases[0][3]],
+    [{ triggers: [] }, selectorEntryCases[1][3]],
+    [{ triggers: [], scenarioEvents: [] }, selectorEntryCases[2][3]],
+  ]) assert.throws(() => requireRecovery(draftFor({ ...definition, ...overrides }), 'source'), { message });
+  const failure = new Error('Private later collection detail');
+  for (const [first, later, message] of [
+    ['triggers', 'scenarioEvents', selectorEntryCases[0][3]],
+    ['triggers', 'resourceNodes', selectorEntryCases[0][3]],
+    ['scenarioEvents', 'resourceNodes', selectorEntryCases[1][3]],
+  ]) {
+    const records = []; Object.defineProperty(records, 0, { get() { throw failure; } });
+    assert.throws(() => requireRecovery(draftFor({ ...minimalDefinition(), [first]: [null], [later]: records }),
+      'source'), { message });
+  }
+});
