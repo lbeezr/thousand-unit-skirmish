@@ -105,7 +105,7 @@ main and active PR scopes; record a concrete defect risk before expanding.
 | 2 — reviewed defensive hardening, [PR #565](https://github.com/lbeezr/thousand-unit-skirmish/pull/565) | Worker-ready port DTO | Injected IPC at main `fe3c2f03` admits ports 65536, 70000 and `Number.MAX_SAFE_INTEGER`; the actual health consumer then rejects with `ERR_SOCKET_BAD_PORT`. The current producer uses an OS-assigned port, so this is a defensive contract gap, not a demonstrated normal-match failure. Require an integer in 1–65535 and reuse the checked port. | Only the ready-message guard in `room-supervisor.mjs`, its regression in the existing room-launch-options test and this plan. Preserve malformed-message ignore behavior, later valid readiness, metadata, timeouts and child cleanup. No new abstraction, worker implementation or compiler/discovery change. |
 | 3 — reviewed defensive hardening, [PR #568](https://github.com/lbeezr/thousand-unit-skirmish/pull/568) | Worker-health boolean result | At main `04efee2b`, synthetic worker HTTP bodies with `ok` equal to `"false"`, `1`, `[]` or `{}` pass `readWorkerHealth`; the actual `/ready` handler reports HTTP 200 and `{ok:true}`. The producer emits literal `true`, so no ordinary-match failure is demonstrated. Require that boolean and retain all other response fields. | Only the health-result guard in `room-supervisor.mjs`, regression coverage in the existing room-launch-options test and this plan. Preserve malformed responses, request timeout/error settlement, room-status aggregation and private/public HTTP boundaries; no worker, protocol, compiler or discovery changes. |
 | 4 — scoped strict enrollment | Private peer-output contract | At main `c76ca030`, `createPeerOutput` and its six operations have 14 implicit-any parameters; text queue caps and string metric callbacks are not rejected at their call sites. Compressed traffic accounting assumes numeric payload metadata supplied by the real producer. Enroll only this stable private leaf with positive production adapters and compile-only consumer, negative shape/result controls and unchanged runtime evidence. No ordinary-match defect is claimed. | Only JSDoc in `src/server/transport/peer-output.mjs`, two appended files entries in `tsconfig.check-node.json`, `scripts/type-contracts/peer-output-valid.mjs`, additive `scripts/check-node-types.test.mjs` controls and this plan. No host, compiler-option, ambient-type, discovery, HTTP admission or runtime changes. |
-| 5 — reassess when evidence appears | Next stable pure-data boundary | Select a concrete unchecked shape/identity/ownership risk with a positive consumer, a failing negative case and exact runtime/serialization proof. No additional boundary is reserved. | Deflate-offer inputs intentionally remain `unknown` and its boolean contract already has strict-check/coverage evidence from its extraction; topology/cell helpers have active gameplay consumers and no new type defect reproduced in this audit. Revisit a documented defect or an agreed stable seam; avoid annotations solely to increase coverage. |
+| 5 — scoped core contract | Voluntary-ending decision/result | `decideVoluntaryEnding` previously inferred `accepted:boolean`; guarded consumers could not discriminate its result, while text revisions/seat flags passed unchecked call sites. Give accepted/rejected results explicit branches, retain nullable spectators/actor metadata and unknown command fields, and prove existing transition/evaluation behavior. | Only `src/server/voluntary-endings.mjs`, additive `scripts/voluntary-endings.test.mjs` controls and this guide. Five actual core functions are checked with existing strict Node options; no whole-module/host enrollment, compiler/discovery changes or module extraction. |
 
 Peer-output enrollment checks raw Buffer/offset Uint8Array frames, numeric queue
 metrics, compressed payload metadata and minimal control-frame peer state.
@@ -119,6 +119,27 @@ result is a preservation control. Browser Node-global exclusion and every prior
 negative assertion remain. Strict enrollment changes no queue threshold,
 coalescing/drain order, metrics, bytes or module identity. Private transport stays
 outside browser reachability and public HTTP admission.
+
+The voluntary-ending core check compiles the actual `freshVoluntaryEndings`,
+`voluntaryCapability`, `decideVoluntaryEnding`, `cancelVoluntaryOffer` and
+`savedVoluntaryEndings` declarations, plus the real host context/stale-feedback
+and accepted/result read fragments. Fixture-only host bindings and feedback types
+make that partial scope explicit. Eight negative caller/result cases and two
+initializer-drift controls must fail; nullable spectators and unknown command
+field values remain accepted by the type contract. The dispatch carrier assumes
+an object, preserving existing malformed-carrier runtime behavior.
+
+This is a behavior-preserving source expression change, not comment-only:
+two native comparison lists retain their evaluation/read positions and checked
+exact initializers; resignation states the existing null-to-zero subtraction.
+The independent pre-contract core reference retains 11,669 malformed-input/DTO
+comparisons and 56 changing-getter cases, alongside all 15 original assertions.
+Accepted result identity, key order and rejection shape are unchanged.
+`SavedEndingState` is a structural projection, not validated checkpoint proof.
+The nine raw-property diagnostics in `validSavedVoluntaryEndings` and six in
+`migrateVoluntaryEndingCheckpoint` remain separate, unallocated narrowing work;
+both functions retain their executable code and stay outside this strict check.
+No session/access, gameplay, wire format or public/private admission changes.
 
 At the enrollment checkpoint against `c76ca030`, both strict compiler gates
 pass and focused Node-type/framing/backpressure tests pass 52/52 with zero skips,
