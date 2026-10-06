@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
-import { mountAudioComposer } from '../src/audio-composer.mjs';
+import { mountAudioComposer } from '../src/client/audio/composer.mjs';
 
 const deferred = () => {
   let resolve, reject;

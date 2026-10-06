@@ -19,7 +19,7 @@ test('canonical audio composition stays in presentation with browser-safe caller
   assert.deepEqual(moduleImports(sources.get(canonical), canonical), []);
   for (const [caller, specifier] of [
     ['src/audio-assets.mjs', './presentation/audio/composition.mjs'],
-    ['src/audio-composer.mjs', './presentation/audio/composition.mjs'],
+    ['src/client/audio/composer.mjs', '../../presentation/audio/composition.mjs'],
     ['src/presentation/audio/composition-player.mjs', './composition.mjs'],
     ['src/presentation/audio/composition-wav.mjs', './composition.mjs'],
   ]) {
@@ -35,6 +35,29 @@ test('canonical audio composition stays in presentation with browser-safe caller
     if (domain !== 'server') continue;
     assert.throws(() => check({ [host]: `import './${canonical}';`, [canonical]: '' }, { serverEntrypoints: [host] }),
       /server host reaches presentation domain/, host);
+  }
+});
+
+test('canonical composer UI stays in client with its lazy caller and outside authoritative hosts', async () => {
+  const canonical = 'src/client/audio/composer.mjs';
+  assert.ok(RUNTIME_DOMAINS.client.includes(canonical));
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  assert.ok(moduleImports(sources.get('src/audio-library-ui.mjs'), 'src/audio-library-ui.mjs')
+    .includes('./client/audio/composer.mjs'));
+  assert.deepEqual(moduleImports(sources.get(canonical), canonical), [
+    '../../presentation/audio/composition-player.mjs', '../../presentation/audio/composition-wav.mjs',
+    '../../presentation/audio/composition.mjs',
+  ]);
+  for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+    'src/formation-assignment.mjs', 'src/simulation/ai/opponent-observation.mjs']) {
+    const relative = path.posix.relative(path.posix.dirname(root), canonical);
+    assert.throws(() => check({ [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';`, [canonical]: '' }),
+      /(?:rules|world|simulation|ai) domain cannot reach client domain/, root);
+  }
+  for (const [host, domain] of Object.entries(RUNTIME_DOMAIN_HOSTS)) {
+    if (domain !== 'server') continue;
+    assert.throws(() => check({ [host]: `import './${canonical}';`, [canonical]: '' }, { serverEntrypoints: [host] }),
+      /server host reaches client domain/, host);
   }
 });
 

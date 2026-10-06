@@ -222,7 +222,7 @@ export function mountAudioLibrary(container, { store }) {
 
   async function mountComposer(host) {
     try {
-      const { mountAudioComposer } = await import('./audio-composer.mjs');
+      const { mountAudioComposer } = await import('./client/audio/composer.mjs');
       if (disposed || tab !== 'composer' || !host.isConnected) return;
       if (!composerStyle) {
         composerStyle = element('link', { rel: 'stylesheet', href: './src/audio-composer.css' });
