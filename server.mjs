@@ -7938,6 +7938,7 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
     }
     const crowdMove = selectCrowdStep({ unit, target, stepDistance: Math.min(remainingStep, .25),
       travelDirection, progressTarget, approachBody: workerPatrolApproachBody(unit, target), diagnostics: controlDiagnostics,
+      passageProjection: unit.pathIndex < unit.path.length - 1 && ordinaryCrowdBodyRadius(unit) > 0,
       tick: tickNumber, navigationRevision, epoch: movePlanningEpoch,
       neighbors: query.neighbors, cellCenter: cellToWorld(currentCell), radius: crowdRadius,
       pointAllowed: to => to.x >= -MAP_HALF_X + .5 && to.x <= MAP_HALF_X - .5

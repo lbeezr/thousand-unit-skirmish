@@ -23,6 +23,21 @@ Naval and wildlife retain their route/execution adapters. Combat acquisition,
 range/damage and match-ending work retain their active owners. This reconciliation
 changes no runtime, caller hook, checkpoint policy or dimension admission.
 
+## Cardinal passage projection ranking
+
+A closest intermediate passage target follows the actor along a cardinal route
+until that coordinate clamps at the raw waypoint tile edge. Ordinary opposing-lane
+proposal ranking retains fixed-waypoint progress across that clamp when the host
+identifies its passage projection and the exact clamp geometry agrees. The earlier
+perpendicular projection case remains supported. Arbitrary or terminal targets,
+owned detours, leases and contours keep their existing ranking and arbitration;
+physical admissions and proposal bounds are unchanged.
+
+Public synthetic corridor checks cover both seats, cardinal rotations and the
+inside/outside boundary with preserved goals and queues. These checks establish
+this scoring discontinuity only; retained crowd qualification and ordinary arrival
+remain separate acceptance evidence. No SOURCE task-recovery changes are included.
+
 ## Universal movement contract and rollout
 
 The 4 October user delegation extends this lane to the shared movement architecture.

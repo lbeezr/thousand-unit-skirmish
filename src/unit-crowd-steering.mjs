@@ -115,7 +115,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   directionOf = other => { const goal = targetOf(other); return finitePoint(goal)
     ? { x: goal.x - other.x, z: goal.z - other.z } : null; },
   escapeAllowed = canTraverse, detourAllowed = () => true,
-  travelDirection = null, tick = 0, navigationRevision = 0, epoch = 0, overflow = false, diagnostics = null,
+  travelDirection = null, passageProjection = false, tick = 0, navigationRevision = 0, epoch = 0, overflow = false, diagnostics = null,
   radius = ordinaryCrowdBodyRadius(unit) }) {
   if (!(radius > 0 && radius <= .5) || !finitePoint(target) || !(stepDistance > 0 && stepDistance <= .25)) {
     steeringStates.delete(unit); return null;
@@ -169,11 +169,23 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   // A closest intermediate point can follow the actor along the route axis.
   // Then projected-distance progress loses all credit for advancing that axis,
   // while the opposing lane can cancel lateral ingress. Rank ordinary proposals
-  // against the fixed waypoint only in this perpendicular projection context.
+  // against the fixed waypoint in this perpendicular projection context. The
+  // host's cardinal closest-point projection keeps that context when its route
+  // coordinate clamps at the raw tile edge, rather than following the actor.
+  const routeAxis = Math.abs(routeX) < EPSILON ? 'z' : Math.abs(routeZ) < EPSILON ? 'x' : null;
+  const projectedAlong = dx * routeX + dz * routeZ;
+  const rawAlong = finitePoint(progressTarget)
+    ? (progressTarget.x - unit.x) * routeX + (progressTarget.z - unit.z) * routeZ : 0;
+  const closestClamp = passageProjection === true && routeAxis !== null && finitePoint(progressTarget)
+    && Math.abs(target[routeAxis] - Math.max(progressTarget[routeAxis] - .499,
+      Math.min(progressTarget[routeAxis] + .499, unit[routeAxis]))) < EPSILON
+    && Math.abs(target.x - progressTarget.x) <= .499 + EPSILON
+    && Math.abs(target.z - progressTarget.z) <= .499 + EPSILON
+    && projectedAlong >= 0 && projectedAlong < rawAlong - EPSILON;
   const projectedRouteFeedback = opposed && lane !== null && directionLength
     && unit.pathIndex < unit.path.length - 1 && finitePoint(progressTarget)
-    && Math.abs(dx * routeX + dz * routeZ) < EPSILON
-    && (progressTarget.x - unit.x) * routeX + (progressTarget.z - unit.z) * routeZ > EPSILON;
+    && (Math.abs(projectedAlong) < EPSILON || closestClamp)
+    && rawAlong > EPSILON;
   let separationX = 0, separationZ = 0;
   for (const other of neighbors) {
     stats.bodyVisits++;

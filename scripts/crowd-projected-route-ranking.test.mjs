@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {selectCrowdStep, canTraverseCrowdBodySegment, CROWD_PROPOSAL_LIMIT} from '../src/unit-crowd-steering.mjs';
+import {selectCrowdStep, crowdPassagePoint, canTraverseCrowdBodySegment, CROWD_PROPOSAL_LIMIT} from '../src/unit-crowd-steering.mjs';
+import {canTraverseStaticBodySegment, canTraverseUnitStep} from '../src/unit-movement.mjs';
 
 const actor = extra => ({id:1, generation:1, orderRevision:1, kind:'infantry', hp:100,
   x:0, z:0, path:[1,2], pathIndex:0, moveGoalCell:2, queuedWaypoints:[], ...extra});
@@ -68,4 +69,132 @@ test('blocked admission waits and Hold/planning ownership remain intact',()=>{
     const cfg=setup(); cfg.unit[flag]=true;
     assert.equal(selectCrowdStep(cfg),null);
   }
+});
+
+// New public synthetic geometry, not the unavailable retained actor52 scene.
+// Both circles fit a cardinal corridor; the accepted raw waypoint stays fixed
+// while its closest passage projection clamps at the longitudinal tile edge.
+function clampSetup({quarter=0,inside=false,team=0}={}) {
+  const turn=p=>{let {x,z}=p;for(let n=0;n<quarter;n++)[x,z]=[-z,x];return{x,z};};
+  const unturn=p=>{let {x,z}=p;for(let n=0;n<quarter;n++)[x,z]=[z,-x];return{x,z};};
+  const width=64,cell=p=>Math.floor(p.z+32)*width+Math.floor(p.x+32);
+  const center=c=>({x:c%width-32+.5,z:Math.floor(c/width)-32+.5});
+  const walk=c=>c>=0&&c<width*width&&unturn(center(c)).x===-.5;
+  const levels=new Uint8Array(width*width);
+  const path=Array.from({length:15},(_,i)=>cell(turn({x:-.5,z:11.5-i})));
+  const unit=actor({id:52,team,...turn({x:-.77,z:inside?.985:1.015}),
+    path,pathIndex:11,moveGoalCell:path.at(-1),queuedWaypoints:[{destination:cell(turn({x:-.5,z:-3.5})),attackMove:false}]});
+  const peerPath=Array.from({length:15},(_,i)=>cell(turn({x:-.5,z:-9.5+i})));
+  const peer=actor({id:51,team,...turn({x:-.3,z:.85}),path:peerPath,pathIndex:11,
+    moveGoalCell:peerPath.at(-1),target:turn({x:-.5,z:4.5})});
+  const raw=turn({x:-.5,z:.5}),direction=turn({x:0,z:-1});
+  const pointAllowed=p=>canTraverseStaticBodySegment(p,p,.22,width,width,walk);
+  const canTraverse=p=>canTraverseUnitStep(cell(unit),cell(p),width,levels,walk)
+    &&canTraverseStaticBodySegment(unit,p,.22,width,width,walk,{allowEscape:true});
+  assert.ok(pointAllowed(unit)&&pointAllowed(peer));
+  return {unit,neighbors:[peer],progressTarget:raw,travelDirection:direction,
+    target:crowdPassagePoint(raw,direction,unit,[peer],pointAllowed),
+    passageProjection:true,stepDistance:2.6/30,cellCenter:center(cell(unit)),
+    pointAllowed,canTraverse,directionOf:()=>turn({x:0,z:1})};
+}
+
+for(const team of [0,1])for(let quarter=0;quarter<4;quarter++)for(const inside of [false,true])
+  test(`seat${team}, rotation${quarter}, ${inside?'inside':'outside'} tile: cardinal clamp retains route scoring`,()=>{
+    const cfg=clampSetup({team,quarter,inside}),before=structuredClone([cfg.unit,...cfg.neighbors]);
+    const result=selectCrowdStep(cfg),to=endpoint(cfg.unit,result),raw=cfg.progressTarget;
+    assert.ok(!result.waitingForCrowd&&!result.yieldingForCrowd&&!result.reachedWaypoint);
+    assert.ok(Math.hypot(raw.x-to.x,raw.z-to.z)<Math.hypot(raw.x-cfg.unit.x,raw.z-cfg.unit.z)-.04);
+    assert.ok(cfg.canTraverse(to)&&canTraverseCrowdBodySegment(cfg.unit,to,.22,cfg.neighbors));
+    assert.ok(result.crowdControl.proposals<=CROWD_PROPOSAL_LIMIT);
+    assert.deepEqual(result.target,cfg.target,'the executor keeps its exact passage target');
+    assert.deepEqual([cfg.unit,...cfg.neighbors],before,'no movement, intent or waypoint consumption in selection');
+  });
+
+test('the same outside-clamp geometry requires host passage provenance',()=>{
+  const cfg=clampSetup();cfg.passageProjection=false;
+  const move=selectCrowdStep(cfg),to=endpoint(cfg.unit,move),raw=cfg.progressTarget;
+  assert.ok(Math.hypot(raw.x-to.x,raw.z-to.z)>Math.hypot(raw.x-cfg.unit.x,raw.z-cfg.unit.z));
+});
+
+for(const [name,change]of[
+  ['unrelated target inside raw tile',c=>{c.target={x:-.22,z:.8};}],
+  ['target outside raw tile',c=>{c.target={x:-.22,z:-.01};}],
+  ['preferred target instead of closest clamp',c=>{c.target={x:-.22,z:.5};}],
+  ['terminal waypoint',c=>{c.unit.path=[c.unit.path.at(-1)];c.unit.pathIndex=0;}],
+  ['raw waypoint behind',c=>{c.progressTarget={x:-.5,z:2.5};}],
+  ['missing direction',c=>{c.travelDirection=null;}],
+  ['diagonal direction',c=>{c.travelDirection={x:1,z:-1};}],
+  ['no opposing claimant',c=>{c.neighbors[0].target={x:-.5,z:-4.5};}],
+  ['query overflow',c=>{c.overflow=true;}],
+])test(`${name} preserves selection outside the new clamp arm`,()=>{
+  const flagged=clampSetup(),original=clampSetup();change(flagged);change(original);original.passageProjection=false;
+  assert.deepEqual(selectCrowdStep(flagged),selectCrowdStep(original));
+});
+
+test('a physically admitted backward retreat remains selectable at a verified clamp',()=>{
+  const cfg=clampSetup();cfg.canTraverse=p=>p.z>cfg.unit.z+.001;
+  const move=selectCrowdStep(cfg),to=endpoint(cfg.unit,move);
+  assert.ok(!move.waitingForCrowd&&to.z>cfg.unit.z);
+  assert.ok(canTraverseCrowdBodySegment(cfg.unit,to,.22,cfg.neighbors));
+});
+
+test('an active parked-body detour excludes clamp ranking',()=>{
+  const flagged=clampSetup(),original=clampSetup();
+  for(const cfg of [flagged,original])cfg.neighbors.push(actor({id:53,kind:'worker',x:-.67,z:1.410,path:[],pathIndex:0}));
+  original.passageProjection=false;
+  const a=selectCrowdStep(flagged),b=selectCrowdStep(original);
+  assert.ok(a.crowdControl.pointProposals>0&&a.crowdControl.detourTerrainProbes>0,'actual selection constructs a detour');
+  assert.deepEqual(a,b);
+});
+
+for(const team of [0,1])for(const relabel of [false,true])
+  test(`seat${team}, relabel=${relabel}: an opposing claimant retains its original priority`,()=>{
+    const cfg=clampSetup({team});if(relabel){cfg.unit.id=152;cfg.neighbors[0].id=151;}
+    const before=structuredClone([cfg.unit,...cfg.neighbors]);
+    selectCrowdStep({...cfg,tick:0});
+    const move=selectCrowdStep({...cfg,tick:40});
+    assert.ok(move.waitingForCrowd||move.yieldingForCrowd,'no new exemption from the lower-ID opposing claim');
+    if(!move.waitingForCrowd){const to=endpoint(cfg.unit,move);
+      assert.ok(cfg.canTraverse(to)&&canTraverseCrowdBodySegment(cfg.unit,to,.22,cfg.neighbors));}
+    assert.deepEqual([cfg.unit,...cfg.neighbors],before);
+  });
+
+test('the actual host executes fixed-route progress across a cardinal passage clamp',async()=>{
+  const {createPathingReplayFixture}=await import('./pathing-replay-fixture.mjs');
+  const {pathingBaselineMap}=await import('./pathing-baseline-cases.mjs');
+  const map={...pathingBaselineMap({group:2}),width:64,height:64,
+    spawnPoints:[{team:0,x:-20,z:-20},{team:1,x:20,z:20}],obstacles:[
+      {id:'left-bank',column:0,row:25,width:31,height:15,material:'stone'},
+      {id:'right-bank',column:32,row:25,width:32,height:15,material:'stone'},
+    ]};
+  const f=await createPathingReplayFixture(map,{traceLandSteps:true,traceCrowdSteps:true}),r=f.replay;
+  try{
+    const [unit,peer]=r.units.filter(u=>u.team===0&&u.kind==='infantry');
+    for(const other of r.units)if(other!==unit&&other!==peer)other.hp=0;
+    for(const [body,z,goal]of[[unit,1.015,-2.5],[peer,.85,4.5]]){
+      Object.assign(body,{x:body===unit?-.77:-.3,z});
+      r.order(0,{type:'setStance',ids:[body.id],stance:'noAttack'});
+      r.order(0,{type:'move',ids:[body.id],x:-.5,z:goal});r.drain();
+    }
+    r.order(0,{type:'move',queue:true,ids:[unit.id],x:-.5,z:-3.5});r.drain();
+    // A public controlled accepted-route input, independent of private actor52.
+    unit.path=Array.from({length:15},(_,i)=>r.cell(-.5,11.5-i));unit.pathIndex=11;
+    peer.path=Array.from({length:15},(_,i)=>r.cell(-.5,-9.5+i));peer.pathIndex=11;
+    const intent={revision:unit.orderRevision,goal:unit.moveGoalCell,path:unit.path,
+      index:unit.pathIndex,queue:structuredClone(unit.queuedWaypoints)};
+    const from={x:unit.x,z:unit.z},raw=r.point(unit.path[unit.pathIndex]);
+    r.step();
+    const writes=r.landSteps.filter(s=>s.id===unit.id);
+    assert.equal(writes.length,1);assert.equal(writes[0].reason,'steering');
+    assert.ok(Math.hypot(raw.x-unit.x,raw.z-unit.z)<Math.hypot(raw.x-from.x,raw.z-from.z)-.04);
+    const walk=c=>r.isWalkable(c);
+    assert.ok(canTraverseStaticBodySegment(from,unit,.22,64,64,walk));
+    assert.ok(canTraverseCrowdBodySegment(from,unit,.22,writes[0].neighbours));
+    assert.equal(unit.path,intent.path);assert.equal(unit.pathIndex,intent.index);
+    assert.equal(unit.orderRevision,intent.revision);assert.equal(unit.moveGoalCell,intent.goal);
+    assert.deepEqual(unit.queuedWaypoints,intent.queue);
+    const control=r.crowdSteps.find(s=>s.id===unit.id);
+    assert.ok(control.complete&&control.proposals<=CROWD_PROPOSAL_LIMIT);
+    assert.equal(control.leaseAge,0);assert.equal(control.contourAge,0);
+  }finally{await f.dispose();}
 });
