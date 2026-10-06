@@ -226,7 +226,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   }
   if (!state.lease && !state.contour && (!opposed || lane === null) && Math.hypot(separationX, separationZ) < EPSILON && clear(direct))
     return { x: headingX, z: headingZ, target, stepDistance: directLength, noProgressTicks, crowdControl: stats };
-  let best = null, bestScore = -Infinity;
+  let best = null, bestScore = -Infinity, admittedForward = null, admittedForwardScore = -Infinity;
   const consider = (to, ordinaryProposal = true) => {
     const length = Math.hypot(to.x - unit.x, to.z - unit.z);
     if (length <= EPSILON || length > stepDistance + EPSILON || !clear(to)) return;
@@ -239,6 +239,15 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
       ? Math.abs(unit[laneAxis] - lane) - Math.abs(to[laneAxis] - lane) : 0;
     const directed = (to.x - unit.x) * preferredX + (to.z - unit.z) * preferredZ;
     const score = state.detour ? .1 * progress + .9 * directed : rankingProgress + laneProgress + (cross > 0 ? 1e-7 : 0);
+    // Retain a proposal already admitted by this same bounded consider/clear
+    // stream. The ordinary consumer may need it after local recovery expires;
+    // selection/ranking remains unchanged, and arbitration can still revoke it.
+    if (unit.ordinaryMoveRecovery && ordinaryProposal && score > admittedForwardScore
+      && remaining - Math.hypot(progressTarget.x - to.x, progressTarget.z - to.z) > EPSILON) {
+      admittedForwardScore = score;
+      admittedForward = { x: (to.x - unit.x) / length, z: (to.z - unit.z) / length,
+        target, stepDistance: length };
+    }
     if (score > bestScore) {
       bestScore = score;
       best = { x: (to.x - unit.x) / length, z: (to.z - unit.z) / length, target, stepDistance: length };
@@ -371,7 +380,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     && Math.hypot(other.x - unit.x, other.z - unit.z)
       < radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] + stepDistance + .1);
   if (!best || yieldingToPeer || (state.detour && noProgressTicks >= 30)) {
-    if (yieldingToPeer) { best = null; bestScore = -Infinity; }
+    if (yieldingToPeer) { best = null; bestScore = -Infinity; admittedForward = null; }
     for (const scale of [1, .5]) for (const angle of [105, -105, 135, -135, 180]) {
       const radians = angle * Math.PI / 180, length = stepDistance * scale;
       consider({ x: unit.x + (headingX * Math.cos(radians) - headingZ * Math.sin(radians)) * length,
@@ -380,6 +389,6 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     if (best) { best.yieldingForCrowd = true; Object.assign(best, recoveryPhase('retreat')); }
   }
   if (best && state.detour) Object.assign(best, recoveryPhase('detour'));
-  return best ? { ...best, noProgressTicks, crowdControl: stats }
+  return best ? { ...best, ...(admittedForward ? { admittedForward } : {}), noProgressTicks, crowdControl: stats }
     : { target, waitingForCrowd: true, stepDistance: 0, ...recoveryPhase('wait'), noProgressTicks, crowdControl: stats };
 }

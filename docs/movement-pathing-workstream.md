@@ -990,9 +990,10 @@ Shared movement owns the bounded current-main candidate based on `089b35a7`:
 `src/ordinary-move-recovery.mjs`, ordinary Move acceptance/queued handoff,
 `getMoveVector` proposal consumption, post-admission progress, its optional
 checkpoint subsection and owner-only `blockedMoves` diagnostic rows, including
-their existing no-fog broadcast private-view filter. Crowd's
-selector adds phase labels only; its arbitration, bounds and physical guards
-remain authoritative. Independent review is in progress; the candidate remains
+their existing no-fog broadcast private-view filter. Crowd's selector adds phase
+labels and retains an ephemeral ordinary raw-forward proposal from its existing
+admitted/scored stream; its preferred ranking, arbitration, bounds and physical
+guards remain authoritative. Independent review is in progress; the candidate remains
 draft/unmerged pending qualification. It has no dependency on held PR541/546/548
 or their synthetic recovery producer. Worker, combat, Patrol/Follow and naval
 execution remain separately owned adopters; this does not complete U5 or U7.
@@ -1039,12 +1040,37 @@ this internal diagnostic/authority contract is N/A.
 
 Merge qualification retains the original 64-actor queued-wall removal,
 closing-gate and one-turn queued-planning service controls. Independent review
-found introduced service failures in the predecessor candidate; the draft does
-not qualify these as baseline failures. Shared movement retains the next bounded
-correction: expose an already budgeted, physically admitted raw-forward
-alternative when the preferred non-forward recovery is exhausted. Preserve
-priority, proposal bounds, physical guards and the original service deadlines;
-do not expand portal credit or refresh the task budget to conceal starvation.
+found introduced service failures at `0ebec3b`; the draft does not qualify these
+as baseline failures. A local causal preflight recorded surviving admitted
+ordinary raw-forward proposals in all three failing controls, distinct from
+proposals revoked by priority, superseded by lease/contour policy or unavailable
+within the existing budget. Guarded writes did not establish a missed fixed
+portal crossing, so portal credit and recovery thresholds remain unchanged.
+
+The bounded correction retains the highest existing score with original strict
+tie order, revokes it on yielding and exposes none from exclusive lease/contour
+or early returns. The exhausted ordinary consumer may use this candidate without
+renewing task/episode clocks, dependency or exhausted-scene history; its unchanged
+host still guards the actual write. Newly authored selector/consumer controls
+cover retained admission, priority revocation and exclusive contour precedence.
+Preseal checks restore the original queued-removal seat-0 and one-turn planning
+controls and pass all 18 recovery/privacy tests, including the fourteen-cycle
+bound. The original closing-gate seat-1 control still fails at 0/64 arrivals under
+its original 2,700-tick deadline. Its remaining observed decisions include
+exclusive contour precedence and zero admitted forward proposals; broad
+qualification and planned320 expansion remain deferred. Shared movement owns
+the next bounded gate-service diagnosis with crowd's policy contract, preserving
+priority, physical guards and history rather than relaxing the deadline.
+
+Test groups remain distinct: the earlier 13/13
+`scripts/crowd-body-journeys.test.mjs` covers retained forests, mirrored open
+16-per-team bridge/gate journeys, two-actor interrupted/restored gate and occupied
+queued endpoints. Its paid-obstruction assertion admits three tails, not all 64.
+It does not cover the eight 64-actor wall/closing-gate controls in
+`scripts/dynamic-wall-pathing.test.mjs` or the original one-turn queued-planning
+deadline. The correction's focused preseal results do not supersede the earlier
+full qualification or claim all baseline-passing journeys restored. Exact-head
+independent review and aggregate draft results retain this distinction.
 
 ### U5 native wall seat-1 diagnosis — 5 October 2026
 

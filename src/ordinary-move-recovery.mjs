@@ -56,6 +56,8 @@ export function ordinaryMoveRecoveryDecision(unit, move, { tick, navigationRevis
   point, radius, direction, portalInvalid = false, neighbors = [], bodyById = () => null, queryOverflow = false }) {
   const state = unit.ordinaryMoveRecovery;
   if (!state || state.generation !== unit.generation || !move) return { move, changed: false };
+  const { admittedForward, ...preferred } = move;
+  move = preferred;
   let changed = false;
   if (!state.portal || (portalInvalid && state.portal.navigationRevision !== navigationRevision)) {
     setPortal(state, unit, point, navigationRevision, direction);
@@ -84,6 +86,18 @@ export function ordinaryMoveRecoveryDecision(unit, move, { tick, navigationRevis
       state.episodeTick = tick; state.episodes++; state.dependency = current;
       state.blockedTick = null; changed = true;
     } else if (gain <= EPSILON && rawGain <= EPSILON) {
+      // This alternative survived selector arbitration and was already checked
+      // in its existing proposal budget. It grants no new recovery episode or
+      // task credit; the unchanged host still guards its actual position write.
+      if (admittedForward && Number.isFinite(admittedForward.x) && Number.isFinite(admittedForward.z)
+        && admittedForward.stepDistance > 0 && admittedForward.stepDistance <= .25
+        && Math.abs(Math.hypot(admittedForward.x, admittedForward.z) - 1) < EPSILON
+        && distance(unit, point) - distance({ x: unit.x + admittedForward.x * admittedForward.stepDistance,
+          z: unit.z + admittedForward.z * admittedForward.stepDistance }, point) > EPSILON) {
+        if (phase) state.recoverySteps++;
+        return { changed, move: { ...admittedForward, noProgressTicks: move.noProgressTicks,
+          crowdControl: move.crowdControl, ordinaryRawWaypoint: point, ordinaryMoveOutcome: 'forward-resumption' } };
+      }
       if (state.blockedTick === null) { state.blockedTick = tick; changed = true; }
       return { changed, move: { ...move, reachedWaypoint: false, waitingForCrowd: true,
         stepDistance: 0, ordinaryMoveOutcome: 'recovery-unresolved' } };

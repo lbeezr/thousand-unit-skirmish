@@ -7,6 +7,7 @@ import { runCrowdPassageJourney } from './crowd-body-journeys.mjs';
 import { canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
 import { sweptBodyPairMargin } from './land-body-clearance.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { selectCrowdStep, CROWD_PROPOSAL_LIMIT } from '../src/unit-crowd-steering.mjs';
 import { beginOrdinaryMoveRecovery, ordinaryMoveRecoveryDecision,
   finalizeOrdinaryMoveProgress } from '../src/ordinary-move-recovery.mjs';
 
@@ -274,6 +275,71 @@ test('a crossed raw portal still budgets recovery at the retained waypoint witho
   const result = decide(182, -1, 'retreat');
   assert.equal(result.move.ordinaryMoveOutcome, 'recovery-unresolved');
   assert.equal(unit.ordinaryMoveRecovery.episodeTick, 2, 'completed coordinate cannot disable the recovery consumer');
+});
+
+test('exhausted recovery uses only an already admitted surviving forward proposal without renewing history', () => {
+  const actor = extra => ({ id: 20, generation: 1, orderRevision: 1, kind: 'infantry', hp: 100,
+    x: 0, z: 0, path: [1, 2], pathIndex: 0, moveGoalCell: 2, buildingTargetId: null, ...extra });
+  const unit = actor(), peer = actor({ id: 21, x: .5, z: .5 });
+  const point = { x: 0, z: 3 }, checked = [];
+  beginOrdinaryMoveRecovery(unit, 0);
+  const options = { tick: 0, navigationRevision: 0, point, radius: .22, direction: { x: 0, z: 1 }, neighbors: [peer] };
+  ordinaryMoveRecoveryDecision(unit, { waitingForCrowd: true, stepDistance: 0, recoveryPhase: 'wait' }, options);
+  const preferred = selectCrowdStep({ unit, target: { x: 1, z: 0 }, progressTarget: point,
+    stepDistance: .08, neighbors: [peer], tick: 180,
+    canTraverse: to => { checked.push({ ...to }); return true; } });
+  const to = move => ({ x: unit.x + move.x * move.stepDistance, z: unit.z + move.z * move.stepDistance });
+  assert.ok(Math.hypot(to(preferred).x, to(preferred).z - 3) > 3,
+    'unchanged target scoring can prefer a safe proposal away from the raw route');
+  assert.ok(preferred.admittedForward);
+  assert.ok(preferred.crowdControl.proposals <= CROWD_PROPOSAL_LIMIT);
+  const calls = checked.length, before = structuredClone(unit.ordinaryMoveRecovery);
+  const result = ordinaryMoveRecoveryDecision(unit, preferred, { ...options, tick: 180 });
+  assert.equal(result.move.ordinaryMoveOutcome, 'forward-resumption');
+  assert.ok(Math.hypot(to(result.move).x, to(result.move).z - 3) < 3);
+  assert.ok(checked.some(p => Math.hypot(p.x - to(result.move).x, p.z - to(result.move).z) < 1e-9),
+    'the alternative came from the same executed proposal stream');
+  assert.equal(checked.length, calls, 'consumption does not run another admission predicate');
+  assert.equal(unit.ordinaryMoveRecovery.progressTick, before.progressTick);
+  assert.equal(unit.ordinaryMoveRecovery.episodeTick, before.episodeTick);
+  assert.equal(unit.ordinaryMoveRecovery.episodes, before.episodes);
+  assert.deepEqual(unit.ordinaryMoveRecovery.dependency, before.dependency);
+  assert.deepEqual(unit.ordinaryMoveRecovery.failedScenes, ['[]']);
+  assert.equal(result.move.admittedForward, undefined, 'the execution proposal consumes the optional alternative');
+});
+
+test('a priority-revoked forward proposal is unavailable to the exhausted consumer', () => {
+  const actor = extra => ({ id: 20, generation: 1, orderRevision: 1, kind: 'infantry', hp: 100,
+    x: 0, z: 0, path: [1, 2], pathIndex: 0, moveGoalCell: 2, buildingTargetId: null, ...extra });
+  const unit = actor(), peer = actor({ id: 19, x: .5, z: .15, target: { x: -3, z: .15 } });
+  const point = { x: 1, z: 0 }, config = { unit, target: point, progressTarget: point,
+    travelDirection: { x: 1, z: 0 }, stepDistance: .08, neighbors: [peer], canTraverse: () => true };
+  beginOrdinaryMoveRecovery(unit, 0);
+  const options = { tick: 0, navigationRevision: 0, point, radius: .22, direction: { x: 1, z: 0 }, neighbors: [peer] };
+  ordinaryMoveRecoveryDecision(unit, { waitingForCrowd: true, stepDistance: 0, recoveryPhase: 'wait' }, options);
+  selectCrowdStep({ ...config, tick: 0 });
+  const move = selectCrowdStep({ ...config, tick: 180 });
+  assert.ok(move.waitingForCrowd || move.yieldingForCrowd, 'lower-ID opposing claimant retains existing priority');
+  assert.equal(move.admittedForward, undefined);
+  const result = ordinaryMoveRecoveryDecision(unit, move, { ...options, tick: 180 });
+  assert.equal(result.move.ordinaryMoveOutcome, 'recovery-unresolved');
+  assert.equal(unit.ordinaryMoveRecovery.progressTick, 0);
+  assert.equal(unit.ordinaryMoveRecovery.episodes, 1);
+});
+
+test('an exclusive parked contour exposes no alternative despite admitted ordinary forward options', () => {
+  const unit = { id: 20, generation: 1, orderRevision: 1, kind: 'infantry', hp: 100,
+    x: 0, z: 0, path: [1, 2], pathIndex: 0, moveGoalCell: 2, buildingTargetId: null };
+  const parked = { id: 21, generation: 1, orderRevision: 0, kind: 'worker', hp: 100,
+    x: .41, z: 0, path: [], pathIndex: 0, moveGoalCell: -1 };
+  beginOrdinaryMoveRecovery(unit, 0);
+  const options = { unit, target: { x: 3, z: 0 }, progressTarget: { x: 3, z: 0 },
+    stepDistance: .08, neighbors: [parked], canTraverse: () => true };
+  selectCrowdStep({ ...options, tick: 0 });
+  const move = selectCrowdStep({ ...options, tick: 100 });
+  assert.equal(move.recoveryPhase, 'contour');
+  assert.equal(move.admittedForward, undefined, 'the contour retains its exclusive policy result');
+  assert.ok(move.crowdControl.proposals <= CROWD_PROPOSAL_LIMIT);
 });
 
 test('matching guarded projected-waypoint arrival is physical progress; publication and a zero write are not', () => {
