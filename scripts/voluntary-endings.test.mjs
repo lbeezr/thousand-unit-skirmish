@@ -579,3 +579,235 @@ test('context faults precede falsy-input rejection; header faults precede termin
   const saved = new Proxy({ ...savedHeader(), revision: 1 }, { ownKeys() { throw keysError; } });
   assert.throws(() => validSavedVoluntaryEndings(saved, { ...resignationContext, started: false }), caught => caught === keysError);
 });
+
+// Migration at main 2ca0d5ae, before the intentional primitive-carrier refusal.
+const migrationReferenceReasons = currentCore.VOLUNTARY_REASONS;
+function legacyEndingMigration(snapshot) {
+  if (snapshot?.schemaVersion !== 29 || !snapshot.state || Object.hasOwn(snapshot.state, 'voluntaryEndings')
+    || migrationReferenceReasons.includes(snapshot.state.matchWinnerReason)) return false;
+  snapshot.state.voluntaryEndings = savedVoluntaryEndings(freshVoluntaryEndings(0));
+  snapshot.schemaVersion = 30;
+  return true;
+}
+function migrationOutcome(migrate, snapshot) {
+  try { return { returned: migrate(snapshot) }; }
+  catch (error) { return { name: error.name, message: error.message }; }
+}
+
+for (const [state, type] of [[true, 'boolean'], [1, 'number'], ['state', 'string']]) {
+  test(`parsed legacy ${type} state intentionally refuses migration without writes`, () => {
+    const serialized = JSON.stringify({ schemaVersion: 29, state });
+    const previous = JSON.parse(serialized), current = JSON.parse(serialized);
+    assert.throws(() => legacyEndingMigration(previous), { name: 'TypeError',
+      message: `Cannot create property 'voluntaryEndings' on ${type} '${state}'` });
+    assert.equal(migrateVoluntaryEndingCheckpoint(current), false);
+    assert.equal(JSON.stringify(previous), serialized);
+    assert.equal(JSON.stringify(current), serialized);
+  });
+}
+
+test('migration retains other serialized legacy cases and exact changed-input scope', () => {
+  const cases = [null, false, true, 0, 1, 'checkpoint', [], {}, { schemaVersion: 29 }];
+  for (const schemaVersion of [28, 30, '29', null]) cases.push({ schemaVersion, state: {} });
+  for (const state of [null, false, 0, '', [], [1], {}]) cases.push({ schemaVersion: 29, state });
+  for (const matchWinnerReason of [undefined, null, false, 0, '', 'timed-control', 'trigger', 'resignation', 'agreed-draw', [], {}]) {
+    for (const own of [false, true]) cases.push({ schemaVersion: 29,
+      state: { matchWinnerReason, matchWinner: 1, matchElapsedSeconds: 900, ...(own ? { voluntaryEndings: null } : {}) },
+      retained: { extra: 'metadata' } });
+  }
+  assert.equal(cases.length, 42);
+  for (const value of cases) {
+    const bytes = JSON.stringify(value), previous = JSON.parse(bytes), current = JSON.parse(bytes);
+    assert.deepEqual(migrationOutcome(migrateVoluntaryEndingCheckpoint, current), migrationOutcome(legacyEndingMigration, previous));
+    assert.deepEqual(current, previous);
+  }
+});
+
+test('migration retains object/function/array carriers, inherited metadata and null prototypes', () => {
+  const make = () => [
+    { schemaVersion: 29, state: {} }, Object.assign(function () {}, { schemaVersion: 29, state: {} }),
+    { schemaVersion: 29, state: function () {} }, Object.assign([], { schemaVersion: 29, state: {} }),
+    { schemaVersion: 29, state: [] }, Object.create({ schemaVersion: 29, state: Object.create({ voluntaryEndings: { old: true } }) }),
+    Object.assign(Object.create(null), { schemaVersion: 29, state: Object.create(null) }),
+  ];
+  const previous = make(), current = make();
+  for (let index = 0; index < current.length; index++) {
+    const state = current[index].state;
+    assert.equal(migrateVoluntaryEndingCheckpoint(current[index]), legacyEndingMigration(previous[index]));
+    assert.equal(current[index].schemaVersion, 30);
+    assert.equal(current[index].state, state);
+    assert.deepEqual(Object.getOwnPropertyDescriptors(current[index].state), Object.getOwnPropertyDescriptors(previous[index].state));
+  }
+});
+
+test('migration preserves supported proxy reads and ending-before-schema writes without has traps', () => {
+  const run = migrate => {
+    const trace = [], targetState = { matchWinnerReason: null }, target = { schemaVersion: 29 };
+    const observe = (target, prefix) => new Proxy(target, {
+      has() { throw new Error('no existence query'); },
+      get(target, key, receiver) { trace.push(`${prefix}.get.${String(key)}`); return Reflect.get(target, key, receiver); },
+      getOwnPropertyDescriptor(target, key) { trace.push(`${prefix}.descriptor.${String(key)}`); return Reflect.getOwnPropertyDescriptor(target, key); },
+      set(target, key, value, receiver) { trace.push(`${prefix}.set.${String(key)}`); return Reflect.set(target, key, value, receiver); },
+    });
+    target.state = observe(targetState, 'state');
+    assert.equal(migrate(observe(target, 'root')), true);
+    return { trace, state: targetState, schema: target.schemaVersion };
+  };
+  const previous = run(legacyEndingMigration), current = run(migrateVoluntaryEndingCheckpoint);
+  assert.deepEqual(current, previous);
+  assert.equal(current.trace.filter(value => value === 'root.get.state').length, 4);
+  assert.ok(current.trace.indexOf('state.set.voluntaryEndings') < current.trace.indexOf('root.set.schemaVersion'));
+});
+
+test('migration keeps short circuits and exposes getter, setter and read-only write errors', () => {
+  for (const migrate of [legacyEndingMigration, migrateVoluntaryEndingCheckpoint]) {
+    assert.equal(migrate({ schemaVersion: 30, get state() { throw new Error('unread state'); } }), false);
+    assert.equal(migrate({ schemaVersion: 29, state: { voluntaryEndings: null,
+      get matchWinnerReason() { throw new Error('unread reason'); } } }), false);
+    const error = new Error('migration state getter');
+    assert.throws(() => migrate({ schemaVersion: 29, get state() { throw error; } }), caught => caught === error);
+    const setterError = new Error('migration ending setter'), state = Object.create({ set voluntaryEndings(value) { throw setterError; } });
+    const snapshot = { schemaVersion: 29, state };
+    assert.throws(() => migrate(snapshot), caught => caught === setterError);
+    assert.equal(snapshot.schemaVersion, 29);
+    const readOnlySchema = Object.defineProperty({ state: {} }, 'schemaVersion', { value: 29, writable: false });
+    assert.throws(() => migrate(readOnlySchema), TypeError);
+    assert.deepEqual(readOnlySchema.state.voluntaryEndings, { version: 0, generation: 1, revision: 0, result: null });
+  }
+});
+
+test('migration retains assignment rereads but intentionally refuses a primitive first state read', () => {
+  const run = (migrate, first, last) => {
+    const state = {}, trace = []; let reads = 0;
+    const snapshot = { schemaVersion: 29, get state() { trace.push(reads); return reads++ === 0 ? first : reads === 4 ? last : state; } };
+    return { outcome: migrationOutcome(migrate, snapshot), schema: snapshot.schemaVersion, trace, state };
+  };
+  assert.deepEqual(run(migrateVoluntaryEndingCheckpoint, {}, true), run(legacyEndingMigration, {}, true));
+  const previous = run(legacyEndingMigration, true, {}), current = run(migrateVoluntaryEndingCheckpoint, true, {});
+  assert.deepEqual(previous.outcome, { returned: true });
+  assert.deepEqual(current, { outcome: { returned: false }, schema: 29, trace: [0], state: {} });
+});
+
+function migrationContractDiagnostics(caller, previous = false) {
+  const root = new URL('../', import.meta.url), modulePath = fileURLToPath(new URL('src/server/voluntary-endings.mjs', root));
+  const parsed = ts.parseJsonConfigFileContent(ts.readConfigFile(fileURLToPath(new URL('tsconfig.check-node.json', root)), ts.sys.readFile).config, ts.sys, fileURLToPath(root));
+  assert.deepEqual(parsed.errors, []);
+  const module = ts.createSourceFile(modulePath, readFileSync(modulePath, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const names = ['freshVoluntaryEndings', 'savedVoluntaryEndings', 'isMigrationObject', 'migrateVoluntaryEndingCheckpoint'];
+  const selected = module.statements.filter(statement => ts.isVariableStatement(statement)
+    || ts.isFunctionDeclaration(statement) && names.includes(statement.name?.text));
+  assert.deepEqual(selected.filter(ts.isFunctionDeclaration).map(statement => statement.name.text), names);
+  let boundary = selected.map(statement => statement.getFullText(module)).join('\n');
+  if (previous) {
+    const declaration = selected.find(statement => ts.isFunctionDeclaration(statement) && statement.name.text === 'migrateVoluntaryEndingCheckpoint');
+    const reference = legacyEndingMigration.toString().replace('function legacyEndingMigration', 'export function migrateVoluntaryEndingCheckpoint')
+      .replace('migrationReferenceReasons', 'VOLUNTARY_REASONS');
+    boundary = boundary.replace(declaration.getFullText(module), `\n/** @param {unknown} snapshot @returns {boolean} */\n${reference}`);
+  }
+  const fixturePath = fileURLToPath(new URL('scripts/type-contracts/migration-consumer.mjs', root)), host = ts.createCompilerHost(parsed.options), getSourceFile = host.getSourceFile.bind(host);
+  host.getSourceFile = (fileName, languageVersion, ...args) => fileName === modulePath || fileName === fixturePath
+    ? ts.createSourceFile(fileName, fileName === modulePath ? boundary : caller, languageVersion, true, ts.ScriptKind.JS)
+    : getSourceFile(fileName, languageVersion, ...args);
+  return ts.getPreEmitDiagnostics(ts.createProgram([fixturePath], parsed.options, host));
+}
+test('migration checks unknown JSON at the actual initializer call without promising a stable DTO', () => {
+  const source = ts.createSourceFile('server.mjs', readFileSync(new URL('../server.mjs', import.meta.url), 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const initialize = source.statements.find(statement => ts.isFunctionDeclaration(statement) && statement.name?.text === 'initializeMatchFromCheckpoint');
+  const body = initialize.body.statements.find(ts.isTryStatement).tryBlock.statements;
+  const parse = body.find(statement => ts.isVariableStatement(statement) && statement.declarationList.declarations[0].name.getText(source) === 'parsed');
+  const calls = body.filter(statement => ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression)
+    && statement.expression.expression.getText(source) === 'migrateVoluntaryEndingCheckpoint');
+  assert.ok(parse); assert.equal(calls.length, 1);
+  // Actual parser/call texts, with unknown fixture bindings; earlier migrations
+  // and the whole host are outside this separate compile-only program.
+  const caller = `import {migrateVoluntaryEndingCheckpoint} from '../../src/server/voluntary-endings.mjs';
+const serialized='{"schemaVersion":29,"state":{}}';
+/** @type {unknown} */ ${parse.getText(source)}
+/** @type {unknown} */ const snapshot=parsed;
+${calls[0].getText(source)}
+const changed=migrateVoluntaryEndingCheckpoint(snapshot);`;
+  assert.deepEqual(migrationContractDiagnostics(caller), []);
+  const baseline = migrationContractDiagnostics(caller, true);
+  assert.equal(baseline.length, 6); assert.ok(baseline.every(diagnostic => diagnostic.code === 2339));
+  assert.ok(migrationContractDiagnostics(caller + '\nif(changed) snapshot.state;').some(diagnostic => diagnostic.code === 18046));
+  assert.ok(migrationContractDiagnostics(caller + '\n/** @type {string} */ const incorrect=changed;').some(diagnostic => diagnostic.code === 2322));
+});
+
+test('actual initializer keeps recovery/rejection and file bytes with the intentional primitive diagnostic', async () => {
+  const { mkdtemp, readFile, writeFile, rm } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { pathToFileURL } = await import('node:url');
+  const { join } = await import('node:path');
+  const { createPveHeadlessFixture } = await import('./pve-headless-fixture.mjs');
+  const root = fileURLToPath(new URL('../', import.meta.url)), moduleUrl = new URL('../src/server/voluntary-endings.mjs', import.meta.url).href;
+  const directory = await mkdtemp(join(tmpdir(), 'rts-ending-migration-'));
+  const originalPath = process.env.RTS_MATCH_STATE_PATH;
+  delete process.env.RTS_MATCH_STATE_PATH;
+  let seedFixture;
+  try {
+    const map = JSON.parse(await readFile(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url), 'utf8'));
+    seedFixture = await createPveHeadlessFixture(map, { matchModeId: 'skirmish', matchModeVersion: 1 });
+    const seed = seedFixture.replay.checkpoint();
+    await seedFixture.dispose(); seedFixture = null;
+    seed.schemaVersion = 29; delete seed.state.voluntaryEndings;
+    const referenceUrl = pathToFileURL(join(directory, 'previous-ending.mjs')).href;
+    await writeFile(new URL(referenceUrl), `export * from ${JSON.stringify(moduleUrl)};
+import {freshVoluntaryEndings,savedVoluntaryEndings,VOLUNTARY_REASONS as migrationReferenceReasons} from ${JSON.stringify(moduleUrl)};
+${legacyEndingMigration.toString().replace('function legacyEndingMigration', 'export function migrateVoluntaryEndingCheckpoint')}`);
+    const template = await readFile(new URL('./pve-headless-fixture.mjs', import.meta.url), 'utf8');
+    const replace = (source, before, after) => { assert.equal(source.split(before).length - 1, 1, before); return source.replace(before, after); };
+    const cases = [['valid legacy', seed], ...[true, 1, 'state', []].map(state => ['malformed state', { ...seed, state }])];
+    for (const [index, [name, snapshot]] of cases.entries()) {
+      const bytes = JSON.stringify(snapshot), outcomes = [];
+      for (const [kind, calleeUrl] of [['previous', referenceUrl], ['current', moduleUrl]]) {
+        // Derive only the existing fixture's I/O adapter; the complete actual
+        // initializer, JSON.parse, preceding migrations and restore stay intact.
+        let adapter = replace(template, "const root = fileURLToPath(new URL('..', import.meta.url));", `const root=${JSON.stringify(root)};`);
+        for (const relative of ['../server.mjs', '../src/server/checkpoint-envelope.mjs']) adapter = replace(adapter,
+          `new URL('${relative}', import.meta.url)`, `new URL(${JSON.stringify(new URL(relative, import.meta.url).href)})`);
+        adapter = replace(adapter, '    source = `import { validateCheckpointEnvelope',
+          `    source = replaceExactly(source, ${JSON.stringify("from '" + moduleUrl + "'")}, ${JSON.stringify("from '" + calleeUrl + "'")});\n    source = \`import { validateCheckpointEnvelope`);
+        adapter = replace(adapter, '    replay.prepare(map, identity);', '    const initialCheckpoint = replay.checkpoint();\n    replay.prepare(map, identity);');
+        adapter = replace(adapter, '    return { replay, async dispose()', '    return { replay, initialCheckpoint, async dispose()');
+        const filename = join(directory, `${kind}-${index}.json`), adapterPath = join(directory, `${kind}-${index}.mjs`);
+        await writeFile(filename, bytes); await writeFile(adapterPath, adapter);
+        process.env.RTS_MATCH_STATE_PATH = filename;
+        const { createPveHeadlessFixture: recover } = await import(pathToFileURL(adapterPath).href);
+        const logs = [], log = console.log, warn = console.warn; let fixture;
+        try {
+          console.log = console.warn = (...args) => logs.push(args.join(' '));
+          fixture = await recover(map, { matchModeId: 'skirmish', matchModeVersion: 1 });
+        } finally { console.log = log; console.warn = warn; }
+        try {
+          const rejected = logs.find(line => line.startsWith('Preserved rejected checkpoint at '));
+          if (rejected) assert.equal(await readFile(rejected.slice('Preserved rejected checkpoint at '.length, -1), 'utf8'), bytes);
+          else assert.equal(await readFile(filename, 'utf8'), bytes);
+          outcomes.push({ restored: logs.some(line => line.startsWith('Restored match ')),
+            rejection: logs.find(line => line.startsWith('Match checkpoint was rejected;')) ?? null,
+            preserved: !!rejected, checkpoint: fixture.initialCheckpoint });
+        } finally { await fixture.dispose(); }
+      }
+      const [previous, current] = outcomes;
+      if (name === 'valid legacy') {
+        assert.equal(previous.restored, true); assert.equal(current.restored, true);
+        assert.deepEqual(current.checkpoint.state, previous.checkpoint.state);
+        assert.equal(current.checkpoint.matchId, previous.checkpoint.matchId);
+        assert.deepEqual(current.checkpoint.state.voluntaryEndings, { version: 0, generation: 1, revision: 0, result: null });
+      } else {
+        assert.equal(previous.restored, false); assert.equal(current.restored, false);
+        assert.equal(previous.preserved, true); assert.equal(current.preserved, true);
+        if (Array.isArray(snapshot.state)) assert.equal(current.rejection, previous.rejection);
+        else {
+          assert.match(previous.rejection, /Cannot create property 'voluntaryEndings'/);
+          assert.equal(current.rejection, 'Match checkpoint was rejected; starting a fresh match: Invalid match checkpoint: unsupported schema version');
+          assert.equal(current.checkpoint.state.voluntaryEndings.version, 1, 'rejection starts a clean match');
+        }
+      }
+    }
+  } finally {
+    await seedFixture?.dispose();
+    if (originalPath === undefined) delete process.env.RTS_MATCH_STATE_PATH;
+    else process.env.RTS_MATCH_STATE_PATH = originalPath;
+    await rm(directory, { recursive: true, force: true });
+  }
+});

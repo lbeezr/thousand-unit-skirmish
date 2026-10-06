@@ -113,9 +113,18 @@ export function validSavedVoluntaryEndings(saved, { winner, reason, triggerId, s
       && Object.keys(result).length === 3
     : winner === 2 && JSON.stringify(result.agreedTeams) === '[0,1]' && Object.keys(result).length === 3;
 }
+/** @param {unknown} value @returns {value is Record<string, unknown>} */
+function isMigrationObject(value) {
+  return value !== null && (typeof value === 'object' || typeof value === 'function');
+}
+// Primitive carriers intentionally refuse migration instead of native boxing or
+// assignment errors. A true return does not validate a stable checkpoint shape.
+/** @param {unknown} snapshot @returns {boolean} */
 export function migrateVoluntaryEndingCheckpoint(snapshot) {
-  if (snapshot?.schemaVersion !== 29 || !snapshot.state || Object.hasOwn(snapshot.state, 'voluntaryEndings')
-    || VOLUNTARY_REASONS.includes(snapshot.state.matchWinnerReason)) return false;
+  /** @type {readonly unknown[]} */ const migrationReasons = VOLUNTARY_REASONS;
+  if (!isMigrationObject(snapshot) || snapshot.schemaVersion !== 29 || !isMigrationObject(snapshot.state)
+    || Object.hasOwn(snapshot.state, 'voluntaryEndings')
+    || migrationReasons.includes(snapshot.state.matchWinnerReason)) return false;
   snapshot.state.voluntaryEndings = savedVoluntaryEndings(freshVoluntaryEndings(0));
   snapshot.schemaVersion = 30;
   return true;

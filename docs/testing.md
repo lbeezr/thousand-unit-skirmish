@@ -106,6 +106,7 @@ main and active PR scopes; record a concrete defect risk before expanding.
 | 3 — reviewed defensive hardening, [PR #568](https://github.com/lbeezr/thousand-unit-skirmish/pull/568) | Worker-health boolean result | At main `04efee2b`, synthetic worker HTTP bodies with `ok` equal to `"false"`, `1`, `[]` or `{}` pass `readWorkerHealth`; the actual `/ready` handler reports HTTP 200 and `{ok:true}`. The producer emits literal `true`, so no ordinary-match failure is demonstrated. Require that boolean and retain all other response fields. | Only the health-result guard in `room-supervisor.mjs`, regression coverage in the existing room-launch-options test and this plan. Preserve malformed responses, request timeout/error settlement, room-status aggregation and private/public HTTP boundaries; no worker, protocol, compiler or discovery changes. |
 | 4 — scoped strict enrollment | Private peer-output contract | At main `c76ca030`, `createPeerOutput` and its six operations have 14 implicit-any parameters; text queue caps and string metric callbacks are not rejected at their call sites. Compressed traffic accounting assumes numeric payload metadata supplied by the real producer. Enroll only this stable private leaf with positive production adapters and compile-only consumer, negative shape/result controls and unchanged runtime evidence. No ordinary-match defect is claimed. | Only JSDoc in `src/server/transport/peer-output.mjs`, two appended files entries in `tsconfig.check-node.json`, `scripts/type-contracts/peer-output-valid.mjs`, additive `scripts/check-node-types.test.mjs` controls and this plan. No host, compiler-option, ambient-type, discovery, HTTP admission or runtime changes. |
 | 5 — scoped core contract | Voluntary-ending decision/result | `decideVoluntaryEnding` previously inferred `accepted:boolean`; guarded consumers could not discriminate its result, while text revisions/seat flags passed unchecked call sites. Give accepted/rejected results explicit branches, retain nullable spectators/actor metadata and unknown command fields, and prove existing transition/evaluation behavior. | Only `src/server/voluntary-endings.mjs`, additive `scripts/voluntary-endings.test.mjs` controls and this guide. Five actual core functions are checked with existing strict Node options; no whole-module/host enrollment, compiler/discovery changes or module extraction. |
+| 6 — scoped migration boundary | Legacy voluntary-ending checkpoint | Truthy primitive states in parsed schema-29 saves reach a native assignment error. Refuse primitive carriers with `false`, retain object/function/array carriers and existing supported-input reads/writes, and check the actual initializer's rejection and preserved bytes. This intentionally changes malformed-input behavior and diagnostics; no ordinary-match defect or universal equivalence is claimed. | Only `src/server/voluntary-endings.mjs`, additive controls in its existing dedicated test and this guide. A separate migration-only strict program uses existing Node options; no host, compiler/discovery, wire, gameplay or HTTP admission changes. |
 
 Peer-output enrollment checks raw Buffer/offset Uint8Array frames, numeric queue
 metrics, compressed payload metadata and minimal control-frame peer state.
@@ -136,9 +137,9 @@ The independent pre-contract core reference retains 11,669 malformed-input/DTO
 comparisons and 56 changing-getter cases, alongside all 15 original assertions.
 Accepted result identity, key order and rejection shape are unchanged.
 `SavedEndingState` is a structural projection, not validated checkpoint proof.
-The nine raw-property diagnostics in `validSavedVoluntaryEndings` and six in
-`migrateVoluntaryEndingCheckpoint` remain separate, unallocated narrowing work;
-both functions retain their executable code and stay outside this strict check.
+At that core enrollment checkpoint, the nine raw-property diagnostics in
+`validSavedVoluntaryEndings` and six in `migrateVoluntaryEndingCheckpoint` were
+separate, unallocated narrowing work outside the five-function strict check.
 No session/access, gameplay, wire format or public/private admission changes.
 
 The dedicated voluntary-ending tests also characterize the raw saved validator
@@ -149,9 +150,24 @@ context/header/result error order, `JSON.stringify`/`toJSON` and input mutation.
 Prototype fixtures restore their exact descriptors in `finally`. These cases
 cover the twelve demonstrated guard/cache incompatibilities with distinct
 controls rather than a combinatorial sweep. They add no runtime guard, serializer
-change or strict enrollment: the validator's nine diagnostics remain open, and
-migration's six remain separate. A boolean validation result does not establish
+change or strict enrollment: the validator's nine diagnostics remain open.
+A boolean validation result does not establish
 a stable `SavedEndingState` for later getter reads.
+
+The migration now accepts unknown input and returns a boolean. Its separate
+strict check covers the actual migration, private object/function predicate and
+two core dependencies; it resolves the six migration diagnostics without
+enrolling the raw validator or changing either compiler configuration.
+Truthy primitive states (`true`, `1`, `"state"`) intentionally return `false`
+before writes rather than throwing. The unchanged initializer then rejects the
+unmigrated schema 29 as unsupported, preserves the original file bytes and starts
+clean. That diagnostic describes the schema gate, not the primitive-state cause;
+the malformed-input cause and diagnostic change are explicit in these controls.
+Arrays/functions and repeated getters retain their existing reads and writes;
+this does not promise every accidental malformed carrier permanent support.
+Primitive prototype carriers and getters first yielding primitives also refuse;
+no universal runtime equivalence or stable migrated DTO is claimed. Native getter,
+setter and read-only assignment exceptions are still exposed rather than caught.
 
 At the enrollment checkpoint against `c76ca030`, both strict compiler gates
 pass and focused Node-type/framing/backpressure tests pass 52/52 with zero skips,
