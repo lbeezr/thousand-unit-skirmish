@@ -15,6 +15,7 @@ Production movement/crowd and UI/renderer remain separate lanes. The existing
 | [PR433](https://github.com/lbeezr/thousand-unit-skirmish/pull/433) | Extracted queued Palisade assignment lacked `followTravelMovementActive` after a merge-ref integration. | Real predicate and missing-binding controls; original intent/revision/queue assertions. |
 | [PR449](https://github.com/lbeezr/thousand-unit-skirmish/pull/449) | Main `c8aa92c8` receipt VM missed `constructionEndpointSnapshotGetter`; 14/18 passed. | Real endpoint/access helpers; all 18 original bodies and four occupied-endpoint controls. |
 | [PR503](https://github.com/lbeezr/thousand-unit-skirmish/pull/503) | Main `a2bdd041` receipt VM missed `finishFarmReplantHarvest`; 28/29 passed locally, matching [shard3 public failure](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37381496303/job/112004637661). | Real server helper body and existing real `activeWorkIntent` binding; all 29 original tests and expectations remain unchanged. |
+| Parked crowd shared dependencies | Core513 main `d27728f8` and current `06a3ca83` both fail all 18 `crowd-forward-progress` scenarios on missing `constructionMovementActive`, matching [public shard2 failure](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37391641406/job/112038057661). | Reuse `constructionServerBindings()` and its real AST-discovered imports; original test callbacks, vectors, route completion and parked-actor expectations remain unchanged. |
 
 These are fixture dependency failures, not evidence that the underlying
 production policy should change. Historical passes and failures retain their
@@ -141,6 +142,45 @@ carcass authority, presentation, art, CI registration or deadline change is need
 This fixture qualification and clean pack do not claim a full-suite pass,
 identified deployment or ordinary rendered acceptance of Sheep interaction.
 
+## Construction movement/body consumer checks
+
+Core513 added a construction predicate to the actual `getMoveVector` body.
+The parked Infantry fixture extracted that body without its imported predicate;
+the established construction harness already resolves the real dependency.
+Its adopter now spreads those bindings before its existing fixture state. No
+false predicate, movement policy, loader/framework rewrite or assertion change
+is needed. [Specific core dependency coordination](https://github.com/lbeezr/thousand-unit-skirmish/pull/513#issuecomment-6006368753)
+retains core body-guard/selector ownership and caller Patrol/access ownership.
+
+The existing impacted consumers below form a focused dependency check set for
+future construction movement/body-helper changes. Run it on the proposed head
+before merge; it is not full native movement or full-suite qualification.
+
+| Production-derived consumer | Dependency boundary / retained check |
+| --- | --- |
+| `crowd-forward-progress.test.mjs` | Actual `getMoveVector`; real shared construction imports; both seats/eight headings, forward completion, unchanged parked actors and exact legacy soft-separation vector. |
+| `unit-movement.test.mjs` | Actual `getMoveVector`, body guard, land executor and interaction separation; real construction predicate/body segment imports and bounded query/admission controls. |
+| `construction-work-intent.test.mjs` | Production construction/parking slice with real predicate, static body and endpoint policy; retained paid-job/access/retry contracts. |
+| `worker-performing-action.test.mjs`, `economy-server.test.mjs`, `wall-construction-draft.test.mjs`, `palisade-gate.test.mjs` | Existing shared AST construction import adopters; retain activity, economy, wall and Gate assertions. The loader's existing inserted-helper/import/setup/isolation controls remain in Worker receipt tests. |
+| `worker-economy-route-admission-journeys.mjs` | Extracted land executor and real construction body guard; economy-only actors must retain their separate publication/quota/recovery path. |
+| `construction-next-leg-journeys.test.mjs` | Full production replay import graph and next-head parking/repair consumers; retained both-seat warm/cold completion. |
+| `worker-patrol-acquired-clearance.test.mjs` | Existing shared selected-route clearance consumer from PR508; acquired Worker travel remains a separate caller policy. |
+
+```sh
+node --test scripts/crowd-forward-progress.test.mjs scripts/unit-movement.test.mjs \
+  scripts/construction-work-intent.test.mjs scripts/worker-performing-action.test.mjs \
+  scripts/economy-server.test.mjs scripts/wall-construction-draft.test.mjs \
+  scripts/palisade-gate.test.mjs scripts/worker-economy-route-admission-journeys.mjs \
+  scripts/construction-next-leg-journeys.test.mjs scripts/worker-patrol-acquired-clearance.test.mjs
+```
+
+The full-server replay adapters keep actual imports when copying the host, so
+their existing controlled trajectories above cover that binding mechanism.
+Broad `pathing-replay`, Worker Patrol 64-actor and queued-first-wall journeys
+remain their runtime owners' acceptance. Known formation/arrival failures are
+not missing globals; this fixture slice does not alter their expectations,
+deadlines, CI labels or inputs. Passing consumers need no migration.
+
 ## Coordination and ongoing queue
 
 The default-delivery audit at main `6ee1cce4` reproduces four false-green controls:
@@ -200,6 +240,7 @@ preserves the descriptor, art, pine activation and served/rendered ownership.
 | Continuing delivery-quality audit / `01a1085f` | After Bellweather integration inspect the existing generic pine eight-full-view release boundary; select only a demonstrated disjoint consumer gap. | Flora501's bounded missing-lifecycle specification stays separate; its 24 absent cells and prepared-unbound selector are not tests to turn green. Worker normal v3, Infantry485, oak depletion and flora490/494 already have guards. Use existing approved full-view source/pack evidence and preserve source/render incompleteness. |
 | Next reliability audit / `01a1085f` | Check new reported extraction failures against exact containing source before selecting another bounded migration. | Passing fixtures need no rewrite. Core/modularization owners retain runtime roots; crowd owner retains formation/native-wall liveness; CPU owner retains the known-red full suite. No further production write reserved. |
 | Worker Farm completion fixture / `01a1085f` | Completed in [PR503](https://github.com/lbeezr/thousand-unit-skirmish/pull/503); retain real completion-helper extraction during future Farm changes. | Public main `a2bdd041` fails at the original line160 completion assertion; scoped fixture repair only. [Specific Farm coordination](https://github.com/lbeezr/thousand-unit-skirmish/pull/491#issuecomment-6004406428); Farm owner `01a10e0d-d8e7-70fa-ae57-6c301bd2c023` retains renewal policy and ordinary acceptance. Worker receipts and existing real Farm renewal/checkpoint tests retain their contracts; CPU owner retains full-suite qualification. |
+| Parked crowd shared dependency adopter / `01a1085f` | Qualify the recorded ten-file consumer set, independently review and normally integrate the real shared binding repair. | Exact public/local `d27728f8` and current `06a3ca83` missing-predicate failures; all 18 original crowd expectations preserved. Core513 owns body admission, separate movement/crowd owners retain their known native formation/arrival regressions, and CPU owner retains full-suite qualification. After integration, inspect a containing current-head CI result; select only a genuinely new fixture dependency error. |
 | Production modularization owner | Preserve or explicitly replace these construction roots when extracting them into an exported runtime module; then replace only the affected fixture slice. | No production host/module/path changes in this slice. Architecture owner retains import/domain guards. |
 | Checked-type owner | Retain strict project membership, negative contracts and ambient isolation; assess the fixture interface in the dedicated type lane. | No tsconfig, runtime type-contract or coverage-floor edits here. Existing type gates remain required. |
 | CPU qualification owner `01a10378` | Qualify containing source through the existing full-suite workflow. | The existing receipt registration runs the new loader controls; labels, deadlines, shard selection and CI registry are unchanged. Focused checks are not a full-suite receipt. |
