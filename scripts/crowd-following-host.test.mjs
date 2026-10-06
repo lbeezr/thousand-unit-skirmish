@@ -8,6 +8,7 @@ import * as movement from '../src/unit-movement.mjs';
 import * as crowd from '../src/unit-crowd-steering.mjs';
 import * as protocol from '../src/crowd-moving-entitlement.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { instrumentReplayMovementAdmissions } from './pathing-replay-fixture.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const helpers = source.slice(source.indexOf('function getMoveVector('), source.indexOf('function stationaryWorkerCellsNear('));
@@ -15,6 +16,9 @@ const comment = source.indexOf('    // A target can move within its current cell
 const start = source.lastIndexOf('  for (const unit of units) {', comment);
 const executor = source.slice(start, source.indexOf('  enqueueRouteRepairs(blockedRouteRepairs);', start));
 assert.ok(start >= 0 && executor.includes('crowdFollowingStepAllowed') && executor.includes('finalizeCrowdMovement'));
+const adapter = readFileSync(new URL('./pathing-replay-fixture.mjs', import.meta.url), 'utf8');
+const observerFunctions = adapter.slice(adapter.indexOf('function observeReplayMovementDecision('), adapter.indexOf('function recordReplayRouteRejoin('));
+const observerMethods = adapter.slice(adapter.indexOf('  observeMovement(team, ids) {'), adapter.indexOf('  buildingDistance(')).replaceAll('${observeMovement}', 'true');
 const actor = (id, x, z, index = 0) => ({ id, x, z, team: 0, generation: 17 + id, orderRevision: 8,
   kind: 'infantry', hp: 100, path: [60, 63, 55, 7], pathIndex: index, moveGoalCell: 7,
   attackTargetId: -1, attackBuildingTargetId: -1, gatherNodeId: null, gatherForestCell: -1,
@@ -177,4 +181,78 @@ test('actual write retains a non-round-tripping following endpoint after its own
       x: (to.x - h.unit.x) / length, z: (to.z - h.unit.z) / length, stepDistance: length });
   };
   h.c.run(); assert.deepEqual({ x: h.unit.x, z: h.unit.z }, to);
+});
+
+for (const first of [false, true]) test(`real selector retains the mixed-claimant veto, second claimant first=${first}`, () => {
+  const h = host(), other = actor(0, .2, .9), before = structuredClone(h.unit);
+  if (first) h.units.unshift(other); else h.units.push(other);
+  const move = h.select(h.unit);
+  assert.equal(move.crowdFollowingPoint, undefined);
+  assert.deepEqual(h.unit, before);
+});
+
+function observedWrite(on, outcome) {
+  const h = host(), calls = [], c = h.c;
+  for (const name of ['crowdFollowingStepAllowed', 'automaticPositionAllowed', 'canTraverseUnitStep',
+    'canTraverseStaticBodySegment', 'workerBodyStepAllowed', 'admitCrowdLandWrite', 'finalizeCrowdMovement']) {
+    const fn = c[name]; c[name] = (...args) => { calls.push(name); return fn(...args); };
+  }
+  h.beforeWrite = () => {
+    if (outcome === 'fresh-refuse') crowd.crowdExecutionState(h.unit, c.tickNumber).spent = c.crowdNextBudget(h.unit);
+    if (outcome === 'late-cell' || outcome === 'late-static') {
+      const admit = c.crowdFollowingStepAllowed;
+      c.crowdFollowingStepAllowed = (...args) => {
+        assert.equal(admit(...args), true);
+        const name = outcome === 'late-cell' ? 'canTraverseUnitStep' : 'canTraverseStaticBodySegment';
+        c[name] = () => { calls.push(name); return false; }; return true;
+      };
+    }
+  };
+  Object.assign(c, { assert, replayMovementTeam: null,
+    replayMovementActors: new Map(), replayMovementDecisions: new Map() });
+  vm.runInContext(observerFunctions + '\nconst observation={' + observerMethods + '};', c);
+  // Bind with production ID lookup; execute only this actor's bounded turn.
+  const lookup = []; for (const u of h.units) lookup[u.id] = u;
+  c.units = lookup;
+  if (on) vm.runInContext('observation.observeMovement(0,[2]);', c);
+  c.units = [h.unit];
+  const get = c.getMoveVector;
+  c.getMoveVector = (...args) => { const move = get(...args);
+    if (on) c.observeReplayMovementDecision(h.unit, move); return move; };
+  let body = executor;
+  if (on) {
+    const instrumented = instrumentReplayMovementAdmissions(source);
+    const position = instrumented.indexOf('    // A target can move within its current cell after the flow path ends.');
+    const first = instrumented.lastIndexOf('  for (const unit of units) {', position);
+    body = instrumented.slice(first, instrumented.indexOf('  enqueueRouteRepairs(blockedRouteRepairs);', first));
+  }
+  vm.runInContext(body, c); c.units = lookup;
+  return { state: structuredClone(h.units), controllers: structuredClone(h.units.map(crowd.crowdSteeringRecord)),
+    repairs: structuredClone(c.blockedRouteRepairs), calls,
+    rows: JSON.parse(vm.runInContext('JSON.stringify(observation.movementObservations())', c)) };
+}
+for (const outcome of ['admit', 'fresh-refuse', 'late-cell', 'late-static'])
+  test(`actual following observer ${outcome} preserves calls/state and labels the executed branch`, () => {
+    const off = observedWrite(false, outcome), on = observedWrite(true, outcome);
+    assert.deepEqual(on.state, off.state); assert.deepEqual(on.controllers, off.controllers);
+    assert.deepEqual(on.repairs, off.repairs); assert.deepEqual(on.calls, off.calls); assert.deepEqual(off.rows, []);
+    assert.equal(on.rows.length, 1);
+    assert.equal(on.rows[0].admission, outcome === 'admit' ? 'steering-admitted'
+      : outcome === 'fresh-refuse' ? 'following-rejected' : 'following-static-rejected');
+    assert.equal(on.rows[0].positionChanged, outcome === 'admit');
+  });
+
+for (const guard of [
+  'if (move.crowdFollowingPoint && !crowdFollowingStepAllowed(unit, { x: nextX, z: nextZ })) break;',
+  'if (move.crowdFollowingPoint) break;',
+]) for (const fault of ['missing', 'duplicate']) test(`following observation refuses ${fault} guard: ${guard}`, () => {
+  assert.throws(() => instrumentReplayMovementAdmissions(source.replace(guard,
+    fault === 'missing' ? 'break;' : guard + '\n' + guard)), /server entrypoint changed/);
+});
+
+test('following observation accepts the prior entrypoint without either new following guard', () => {
+  let prior = source.replaceAll('move.crowdFollowingPoint?.x ?? ', '').replaceAll('move.crowdFollowingPoint?.z ?? ', '');
+  prior = prior.replace('      if (move.crowdFollowingPoint && !crowdFollowingStepAllowed(unit, { x: nextX, z: nextZ })) break;\n', '');
+  prior = prior.replace('        if (move.crowdFollowingPoint) break;\n', '');
+  assert.doesNotThrow(() => instrumentReplayMovementAdmissions(prior));
 });

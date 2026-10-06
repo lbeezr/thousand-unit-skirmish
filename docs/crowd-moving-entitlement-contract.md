@@ -368,6 +368,11 @@ Worker guard and supplemental land-write/capsule accounting still execute.
 A later cell/static rejection ends this attempt: its waiver cannot be reused on
 another fallback endpoint. The 64-neighbor and shared 128-proposal limits do not
 increase; exhausted work refuses, including exhaustion after the fresh admission.
+The replay observer labels fresh continuation refusal `following-rejected` and
+the later cell/static refusal `following-static-rejected`. Both branches retain
+identical calls, actor/controller state and repairs with observation on or off;
+missing/duplicate guard shapes refuse instrumentation. Prior entrypoints without
+either following guard remain supported. No new diagnostic records are published.
 No route/index/queue rewrite, new registry, checkpoint field, grant, offer,
 obligation, historical progress renewal or deadline/fairness relaxation is added.
 

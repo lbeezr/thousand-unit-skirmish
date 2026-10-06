@@ -52,6 +52,15 @@ export function instrumentReplayMovementAdmissions(source) {
     movement = replaceExactly(movement, guard,
       guard.slice(0, -' break;'.length) + ` { observeReplayMovementAdmission(unit, '${label}'); break; }`);
   }
+  // Older entrypoints have neither following guard. A candidate with an exact
+  // following point must expose both known branches once; refuse partial shapes.
+  const following = [
+    ['if (move.crowdFollowingPoint && !crowdFollowingStepAllowed(unit, { x: nextX, z: nextZ })) break;', 'following-rejected'],
+    ['if (move.crowdFollowingPoint) break;', 'following-static-rejected'],
+  ];
+  if (movement.includes('move.crowdFollowingPoint')) for (const [guard, label] of following)
+    movement = replaceExactly(movement, guard,
+      guard.slice(0, -' break;'.length) + ` { observeReplayMovementAdmission(unit, '${label}'); break; }`);
   return source.slice(0, start) + movement + source.slice(end);
 }
 export async function createPathingReplayFixture(map, { traceLandSteps = false, traceRouteRejoins = false,
