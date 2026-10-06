@@ -5,7 +5,7 @@ import { Buffer } from 'node:buffer';
 import { createHash } from 'node:crypto';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 import { createAuthoritativeMapValidatorFixture } from './fixtures/authoritative-map-validator-fixture.mjs';
-import { TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { TECHNOLOGY_DEFINITIONS, UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 // The same authority adapter used by existing checkpoint/fog/native consumers.
 // No validator copy or replacement policy is evaluated by this contract.
@@ -175,6 +175,159 @@ const checkpointScenarioMap = {
   ],
 };
 const checkpointEvent = (snapshot, id) => snapshot.state.scenarioEventStates.find(event => event.id === id);
+
+test('roster checkpoint: living plus queued population retains its boundary, first error and input identity', async () => {
+  const fixture = await createPveHeadlessFixture({ ...bareMap(64), startingArmySize: 2000 });
+  try {
+    const r = fixture.replay, world = r.checkpoint();
+    const queueWorker = (snapshot, team) => Object.assign(snapshot.state.workerProduction[team],
+      { queue: 1, trainingRemaining: 1 });
+    const accepted = [
+      ['full living roster', () => {}],
+      ...[0, 1].map(team => [`dead slot admits one queued Worker for team ${team}`, s => {
+        s.state.units.find(unit => unit.team === team).hp = 0;
+        queueWorker(s, team);
+      }]),
+    ];
+    for (const [label, change] of accepted) {
+      const snapshot = structuredClone(world); change(snapshot);
+      const bytes = JSON.stringify(snapshot);
+      assert.equal(r.validateCheckpoint(snapshot).state, snapshot.state, label);
+      assert.equal(JSON.stringify(snapshot), bytes, label);
+      assert.deepEqual(r.checkpoint(), world, label);
+    }
+    for (const [label, change, message] of [
+      ...[0, 1].map(team => [`living plus queued overflow for team ${team}`, s => queueWorker(s, team),
+        'team population exceeds its living-unit and queued-production cap']),
+      ['population precedes unexpected mode state', s => { queueWorker(s, 0); s.state.bannerfall = null; },
+        'team population exceeds its living-unit and queued-production cap'],
+      ['earlier route error precedes population', s => { queueWorker(s, 0); s.state.units[0].path = null; },
+        'invalid unit route 0'],
+    ]) {
+      const snapshot = structuredClone(world); change(snapshot);
+      const bytes = JSON.stringify(snapshot);
+      for (const consume of [s => r.validateCheckpoint(s), s => r.restore(s)]) {
+        assert.throws(() => consume(snapshot), { name: 'Error', message: `Invalid match checkpoint: ${message}` }, label);
+        assert.equal(JSON.stringify(snapshot), bytes, label);
+        assert.deepEqual(r.checkpoint(), world, label);
+      }
+    }
+  } finally { await fixture.dispose(); }
+});
+
+test('non-Bannerfall checkpoints retain explicit mode admission and late rejection order', async () => {
+  const fixture = await createPveHeadlessFixture({ ...bareMap(), startingArmySize: 24 });
+  try {
+    const r = fixture.replay, world = r.checkpoint();
+    for (const [label, change, message] of [
+      ['present null mode state', s => { s.state.bannerfall = null; }, 'Bannerfall state requires its explicit mode identity'],
+      ['present undefined mode state', s => { s.state.bannerfall = undefined; }, 'Bannerfall state requires its explicit mode identity'],
+      ['mode-specific winner reason', s => { s.state.matchWinnerReason = 'stronghold-destruction'; }, 'Bannerfall state requires its explicit mode identity'],
+      ['earlier exploration error', s => { s.state.bannerfall = null; s.state.explored[0] = ''; }, 'invalid exploration grid'],
+      ['earlier target error', s => { s.state.bannerfall = null; s.state.units[0].attackTargetId = 24; }, 'invalid unit combat state 0'],
+    ]) {
+      const snapshot = structuredClone(world); change(snapshot);
+      const bytes = JSON.stringify(snapshot);
+      for (const consume of [s => r.validateCheckpoint(s), s => r.restore(s)]) {
+        assert.throws(() => consume(snapshot), { name: 'Error', message: `Invalid match checkpoint: ${message}` }, label);
+        assert.equal(JSON.stringify(snapshot), bytes, label);
+        assert.deepEqual(r.checkpoint(), world, label);
+      }
+    }
+  } finally { await fixture.dispose(); }
+});
+
+const bannerfallCheckpointMap = JSON.parse(await readFile(new URL('../maps/bannerfall-arena.json', import.meta.url), 'utf8'));
+const startBannerfallCheckpoint = snapshot => { snapshot.state.scenarioClockStarted = true; };
+const checkpointRider = (snapshot, unit) => {
+  unit.kind = 'rider'; unit.hp = UNIT_DEFINITIONS.rider.combat.maxHp;
+  snapshot.state.bannerfall.kills[unit.team] = 6;
+};
+const checkpointVoluntaryResult = (snapshot, resignedTeam = null) => {
+  startBannerfallCheckpoint(snapshot);
+  const reason = resignedTeam === null ? 'agreed-draw' : 'resignation';
+  const winner = resignedTeam === null ? 2 : 1 - resignedTeam;
+  Object.assign(snapshot.state, { matchWinner: winner, matchWinnerReason: reason,
+    voluntaryEndings: { ...snapshot.state.voluntaryEndings, revision: 1,
+      result: resignedTeam === null ? { reason, winner, agreedTeams: [0, 1] } : { reason, winner, resignedTeam } } });
+};
+
+test('Bannerfall checkpoint: waiting, evolved and stronghold saves preserve validated state and restore', async () => {
+  const fixture = await createPveHeadlessFixture(bannerfallCheckpointMap, { matchModeId: 'bannerfall', matchModeVersion: 1 });
+  try {
+    const r = fixture.replay, world = r.checkpoint();
+    for (const [label, change] of [
+      ['waiting opening', () => {}],
+      ['started opening', startBannerfallCheckpoint],
+      ['evolved Rider', s => { startBannerfallCheckpoint(s); checkpointRider(s, s.state.units[0]); }],
+      ['expired due waves', s => { startBannerfallCheckpoint(s); s.state.matchElapsedSeconds = 30; }],
+      ['agreed draw with live strongholds', s => checkpointVoluntaryResult(s)],
+      ...[0, 1].map(team => [`resignation by team ${team}`, s => checkpointVoluntaryResult(s, team)]),
+      ...[0, 1].map(team => [`destroyed stronghold ${team}`, s => {
+        startBannerfallCheckpoint(s); s.state.homeTownCenters[team].hp = 0;
+        s.state.matchWinner = 1 - team; s.state.matchWinnerReason = 'stronghold-destruction';
+      }]),
+      ['both strongholds destroyed', s => {
+        startBannerfallCheckpoint(s); s.state.homeTownCenters.forEach(home => { home.hp = 0; });
+        s.state.matchWinner = 2; s.state.matchWinnerReason = 'stronghold-destruction';
+      }],
+      ['unknown outer state field', s => { s.state.retainedContractField = { untouched: true }; }],
+    ]) {
+      const snapshot = structuredClone(world); change(snapshot);
+      const bytes = JSON.stringify(snapshot), before = r.checkpoint();
+      const result = r.validateCheckpoint(snapshot);
+      assert.equal(result.state, snapshot.state, label);
+      assert.equal(result.state.bannerfall, snapshot.state.bannerfall, 'the rule validator clone does not replace saved state');
+      assert.equal(JSON.stringify(snapshot), bytes, label);
+      assert.deepEqual(r.checkpoint(), before, label);
+      r.restore(snapshot);
+      const restored = r.checkpoint();
+      for (const key of ['units', 'bannerfall', 'workerProduction', 'homeTownCenters', 'matchWinner',
+        'matchWinnerReason', 'matchWinnerTriggerId', 'scenarioClockStarted', 'matchElapsedSeconds']) {
+        assert.deepEqual(restored.state[key], snapshot.state[key], `${label}: ${key}`);
+      }
+      assert.equal(JSON.stringify(snapshot), bytes, label);
+    }
+  } finally { await fixture.dispose(); }
+});
+
+test('Bannerfall checkpoint: exact delegated, roster, result and waiting errors preserve first-error order', async () => {
+  const fixture = await createPveHeadlessFixture(bannerfallCheckpointMap, { matchModeId: 'bannerfall', matchModeVersion: 1 });
+  try {
+    const r = fixture.replay, world = r.checkpoint();
+    const cases = [
+      ['rule version before roster', s => { s.state.bannerfall.version = 2; s.state.currentArmySize = 18; }, 'Invalid Bannerfall state: unsupported version'],
+      ['rule fields before result', s => { s.state.bannerfall.extra = true; s.state.matchWinnerTriggerId = 'unknown'; }, 'Invalid Bannerfall state: expected exact state fields'],
+      ['rule kill counters', s => { s.state.bannerfall.kills[0] = 7; }, 'Invalid Bannerfall state: invalid kill counters'],
+      ['opening army size', s => { s.state.currentArmySize = 18; }, 'invalid Bannerfall roster or economy'],
+      ['foreign unit kind', s => { s.state.units[0].kind = 'scout'; s.state.units[0].hp = UNIT_DEFINITIONS.scout.combat.maxHp; }, 'invalid Bannerfall roster or economy'],
+      ['Rider before evolution', s => { s.state.units[0].kind = 'rider'; s.state.units[0].hp = UNIT_DEFINITIONS.rider.combat.maxHp; }, 'invalid Bannerfall roster or economy'],
+      ['weighted live population', s => { startBannerfallCheckpoint(s); s.state.units.filter(u => u.team === 0).forEach(u => checkpointRider(s, u)); }, 'invalid Bannerfall roster or economy'],
+      ['friendly attack target', s => { s.state.units[0].attackTargetId = s.state.units.find(u => u.team === s.state.units[0].team && u.id !== 0).id; }, 'invalid Bannerfall roster or economy'],
+      ['economy before result', s => { s.state.teamFood[0] = 1; s.state.matchWinnerTriggerId = 'unknown'; }, 'invalid Bannerfall roster or economy'],
+      ['queued production', s => { Object.assign(s.state.workerProduction[0], { queue: 1, trainingRemaining: 1 }); }, 'invalid Bannerfall roster or economy'],
+      ['stronghold winner', s => { startBannerfallCheckpoint(s); s.state.homeTownCenters[0].hp = 0; }, 'invalid Bannerfall stronghold result'],
+      ['stronghold reason', s => { s.state.matchWinnerReason = 'elimination'; }, 'invalid Bannerfall stronghold result'],
+      ['voluntary result after destroyed stronghold', s => { checkpointVoluntaryResult(s, 0); s.state.homeTownCenters[0].hp = 0; }, 'invalid Bannerfall stronghold result'],
+      ['result before waiting', s => { s.state.matchWinnerTriggerId = 'unknown'; s.state.units[0].hp = 1; }, 'invalid Bannerfall stronghold result'],
+      ['waiting clock', s => { s.state.matchElapsedSeconds = 1; }, 'waiting Bannerfall cannot contain completed gameplay'],
+      ['waiting kills', s => { s.state.bannerfall.kills[0] = 1; }, 'waiting Bannerfall cannot contain completed gameplay'],
+      ['waiting damaged unit', s => { s.state.units[0].hp = 1; }, 'waiting Bannerfall cannot contain completed gameplay'],
+      ['waiting dead unit', s => { s.state.units[0].hp = 0; }, 'waiting Bannerfall cannot contain completed gameplay'],
+      ['waiting damaged stronghold', s => { s.state.homeTownCenters[0].hp = 1; }, 'waiting Bannerfall cannot contain completed gameplay'],
+    ];
+    for (const [label, change, reason] of cases) {
+      const snapshot = structuredClone(world); change(snapshot);
+      const bytes = JSON.stringify(snapshot);
+      const message = reason.startsWith('Invalid Bannerfall state:') ? reason : `Invalid match checkpoint: ${reason}`;
+      for (const consume of [s => r.validateCheckpoint(s), s => r.restore(s)]) {
+        assert.throws(() => consume(snapshot), { name: 'Error', message }, label);
+        assert.equal(JSON.stringify(snapshot), bytes, label);
+        assert.deepEqual(r.checkpoint(), world, label);
+      }
+    }
+  } finally { await fixture.dispose(); }
+});
 
 for (const mode of ['authored', 'objective-control']) test(`${mode}: scenario checkpoint validation and restore retain state and bytes`, async () => {
   const fixture = await createPveHeadlessFixture(checkpointScenarioMap, { matchModeId: mode, matchModeVersion: 1 });
