@@ -33,7 +33,7 @@
     "approvedRuntimeFiles": [
       {
         "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
-        "sha256": "deac58771b2e4bd9217c4411142db268845202c0bfe1f3bb23644f241862d517"
+        "sha256": "995b20d643ab05c804e97a163b505a5895743518cd033d4f06259151ad44cc46"
       },
       {
         "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
@@ -50,7 +50,7 @@
         "rgbaSha256": "9f2197fd73abf6f8fe53b86bafd5f2060e8e65eb1e2389de176e728cd69bef57"
       }
     ],
-    "registeredFramesSha256": "c581fb9a0b6a9ce08f55a949d8de3073a70b2a43a33c6caf7c3f0c81ad9d8097",
+    "registeredFramesSha256": "aa35f707cbb809013407cce303496eada41f9b399353b8f282e7b7bb82398eb2",
     "revisions": [
       {
         "id": "reviewed-ne-public-seed-cutout-v1",
@@ -146,6 +146,25 @@
         "retainedFrames": 48,
         "newFrames": 4,
         "originalSourcePinsUnchanged": true
+      },
+      {
+        "id": "reviewed-north-west-public-seed-cutout-v1",
+        "sourceReview": "docs/qa-infantry-local-walk-continuation-2026-10-05.md",
+        "previousRuntimeFiles": [
+          {
+            "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+            "sha256": "deac58771b2e4bd9217c4411142db268845202c0bfe1f3bb23644f241862d517"
+          },
+          {
+            "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+            "sha256": "973f091729859e19f83f4065211297afd68ef9fe533008b282b0261907e040aa"
+          }
+        ],
+        "previousRegisteredFramesSha256": "c581fb9a0b6a9ce08f55a949d8de3073a70b2a43a33c6caf7c3f0c81ad9d8097",
+        "previousRegistrationSha256": "a391050719ab6066b682e232af40990feccf3f7a83c733dbd4d3ef875dd20555",
+        "retainedFrames": 52,
+        "newFrames": 4,
+        "originalSourcePinsUnchanged": true
       }
     ]
   },
@@ -156,7 +175,7 @@
     "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; Pillow source-UV leg articulation from public NE seed",
     "providerVisibility": "historical-settings-not-recorded",
     "trainingPermission": "unknown",
-    "notes": "Existing repository source and manifests retained; provider privacy settings are not a no-training receipt. Explicit reviewed NE revision retains all32 established poses; private generator comparison remains rejected and unpublished. Explicit reviewed own-east local increment; no provider job or publication operation. Explicit reviewed own-north local increment; no provider job or publication operation. Explicit reviewed own-south local increment; no provider job or publication operation. Explicit reviewed own-west local increment; no provider job or publication operation."
+    "notes": "Existing repository source and manifests retained; provider privacy settings are not a no-training receipt. Explicit reviewed NE revision retains all32 established poses; private generator comparison remains rejected and unpublished. Explicit reviewed own-east local increment; no provider job or publication operation. Explicit reviewed own-north local increment; no provider job or publication operation. Explicit reviewed own-south local increment; no provider job or publication operation. Explicit reviewed own-west local increment; no provider job or publication operation. Explicit reviewed own-north-west local increment; no provider job or publication operation."
   },
   "publication": {
     "state": "existing-public-runtime-only",
@@ -182,7 +201,6 @@
   "sourceComplete": false,
   "missingSourceCells": [
     "walk|south-west",
-    "walk|north-west",
     "attack|north",
     "attack|north-east",
     "attack|east",
@@ -290,6 +308,19 @@
           "sourceFPS": null,
           "playbackFPS": null,
           "notes": "Four independently reviewed own-west cutout keys; preceding source cadence unchanged."
+        },
+        "north-west": {
+          "mode": "timed-keys",
+          "frameDurationsMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "durationMs": 800,
+          "sourceFPS": null,
+          "playbackFPS": null,
+          "notes": "Four independently reviewed own-north-west cutout keys; preceding source cadence unchanged."
         }
       }
     },
@@ -331,7 +362,7 @@
   "calibration": {
     "worldPerPixel": 0.005242183290678879,
     "bodyBaselineWorld": 1.2161865234375,
-    "registrationSha256": "a391050719ab6066b682e232af40990feccf3f7a83c733dbd4d3ef875dd20555",
+    "registrationSha256": "d8ad3ca24715f904d287aad91a708c06fe990d8b03353f516b298c74795b61e6",
     "pivotStatus": "unreviewed-estimate",
     "cameraStatus": "prompt-only",
     "cameraRecipe": null,
