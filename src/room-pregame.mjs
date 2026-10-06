@@ -2,15 +2,44 @@ import { normalizeMatchMode, assertMatchModeCompatibility, matchModeDefinition }
 
 export const LOBBY_ARMY_SIZES = Object.freeze([250, 500, 1000, 2000]);
 
+/**
+ * @typedef {object} PregameCheckpoint
+ * @property {'lobby' | 'running'} phase
+ * @property {number} revision Nonnegative safe integer, checked at the boundary.
+ */
+
+/** @param {unknown} value @returns {value is Record<string, unknown>} */
+function isPregameCheckpointRecord(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+/** @param {unknown} value @returns {value is PregameCheckpoint['phase']} */
+function isPregameCheckpointPhase(value) {
+  return value === 'lobby' || value === 'running';
+}
+
+/** @param {unknown} value @returns {value is number} */
+function isPregameCheckpointRevision(value) {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+}
+
+/**
+ * Return only the field values that passed validation. Capturing each once
+ * prevents changing accessors from substituting unchecked values in the result.
+ * @param {unknown} value
+ * @returns {PregameCheckpoint | null}
+ */
 export function validatePregameCheckpoint(value) {
   if (value === null) return null;
-  if (!value || typeof value !== 'object' || Array.isArray(value)
-    || Object.keys(value).some(key => !['phase', 'revision'].includes(key))
-    || !['lobby', 'running'].includes(value.phase)
-    || !Number.isSafeInteger(value.revision) || value.revision < 0) {
+  if (!isPregameCheckpointRecord(value)
+    || Object.keys(value).some(key => !['phase', 'revision'].includes(key))) {
     throw new TypeError('Invalid pregame checkpoint.');
   }
-  return { phase: value.phase, revision: value.revision };
+  const phase = value.phase;
+  if (!isPregameCheckpointPhase(phase)) throw new TypeError('Invalid pregame checkpoint.');
+  const revision = value.revision;
+  if (!isPregameCheckpointRevision(revision)) throw new TypeError('Invalid pregame checkpoint.');
+  return { phase, revision };
 }
 
 /** Uses the worker's existing seat sessions; never allocates identities or seats. */
