@@ -515,7 +515,7 @@ export function createGameAudio({
     profileMusicLoading = true;
     try {
       if (!compositionPlayer) {
-        const { createCompositionPlayer } = await import('./audio-composition-player.mjs');
+        const { createCompositionPlayer } = await import('./presentation/audio/composition-player.mjs');
         if (ticket !== packGeneration || generation !== musicGeneration || !canPlayProfileMusic()) return;
         compositionPlayer = createCompositionPlayer({ context, destination: music, resolveBuffer: decodeSource });
       }
@@ -542,7 +542,7 @@ export function createGameAudio({
     const ticket = packGeneration, generation = ++ambienceGeneration;
     const composition = activePack.compositions.find(item=>item.id===activeProfile.ambience.defaultCompositionId);
     try {
-      const { createCompositionPlayer } = await import('./audio-composition-player.mjs');
+      const { createCompositionPlayer } = await import('./presentation/audio/composition-player.mjs');
       if (ticket !== packGeneration || generation !== ambienceGeneration) return;
       ambiencePlayer ||= createCompositionPlayer({context,destination:atmosphere,resolveBuffer:decodeSource});
       if (await ambiencePlayer.play(composition,{loop:true}) && ticket===packGeneration && generation===ambienceGeneration) {

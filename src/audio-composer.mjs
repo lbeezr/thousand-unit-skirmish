@@ -147,7 +147,7 @@ export function mountAudioComposer(container, {pack, sourceBlobs = {}, onChange}
     stop();
     const token = previewToken;
     validateComposition(draft);
-    const {createCompositionPlayer} = await import('./audio-composition-player.mjs');
+    const {createCompositionPlayer} = await import('./presentation/audio/composition-player.mjs');
     if (disposed || token !== previewToken) return;
     context ||= new AudioContext();
     player ||= createCompositionPlayer({context,destination:context.destination,resolveBuffer: async sourceId => {

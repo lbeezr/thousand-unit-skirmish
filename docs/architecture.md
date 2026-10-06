@@ -867,7 +867,8 @@ API documentation is reconciled. No removal follows merely from zero production
 callers. No barrel, duplicate implementation, resource URL or object-lifetime
 change is introduced.
 
-The short audio queue is: (1) composition model and its three callers; (2) the
+The short audio queue is: (1) composition model and its three callers, integrated
+in [PR553](https://github.com/lbeezr/thousand-unit-skirmish/pull/553); (2) the
 existing `createCompositionPlayer` clock/generation/node-disposal implementation
 and three dynamic import literals in `audio.mjs`/composer, preserving its root
 named binding; (3) `renderCompositionWav` and private WAV encoding from composer
@@ -875,6 +876,31 @@ UI into a dedicated audio rendering leaf, preserving its public export and exact
 decode/schedule/Blob/error behavior. Each is a separate ready PR with original
 tests, exact-head review and package checks. Refresh ownership/main before the
 next item; no broad directory sweep or generic utilities move is allocated.
+
+#### Composition player organization
+
+Against containing merge `10d615de`, the existing `createCompositionPlayer` body
+lives in [presentation/audio/composition-player.mjs](../src/presentation/audio/composition-player.mjs).
+Only its relative composition-model import changes. Its root module forwards
+the sole named factory value; both dynamic imports in `audio.mjs` and the one in
+composer now load that canonical value at their unchanged asynchronous positions.
+No cache, URL, context/destination, storage or UI policy moves into the player.
+
+Generation checks, stop/dispose and pending-load cancellation, the 24 MiB bound,
+atomic offset validation, clock/fade/pan scheduling, node callback/disconnection
+and loop timer order retain their exact bodies. The original registered player
+scenario uses the canonical factory and checks the root namespace/binding while
+retaining every timing/cancellation assertion. Original preview/music/cue/decode/
+synthesis/lifecycle checks protect the actual callers. Import inventory/public
+admission and the existing packed GET/HEAD/negative-path checks integrate only
+the exact new module; all previous registrations, private paths and closures stay.
+The previous model guard follows the actual canonical player dependency. Root
+player retirement follows the inventory/consumer/identified-release criteria
+above, independently from retiring the model API.
+At this dated checkpoint the 87-line player moves behind a three-line entry;
+the graph is 237 modules/467 local edges with zero cycles. All 1,455 previous
+selections remain plus canonical player syntax. These are source ratchets,
+not a numerical file-size or whole-suite acceptance claim.
 
 ### Remaining organization queue — 6 October 2026
 

@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
-import { createCompositionPlayer } from '../src/audio-composition-player.mjs';
+import { createCompositionPlayer } from '../src/presentation/audio/composition-player.mjs';
+import * as compatibility from '../src/audio-composition-player.mjs';
+assert.deepEqual(Object.keys(compatibility), ['createCompositionPlayer']);
+assert.equal(compatibility.createCompositionPlayer, createCompositionPlayer);
 
 const starts = [];
 const stops = [];
