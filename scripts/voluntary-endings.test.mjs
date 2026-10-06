@@ -369,3 +369,213 @@ test('accepted result keeps state identity and wire key order; rejection has no 
   assert.deepEqual(Object.keys(accepted),['accepted','message','result']);
   assert.deepEqual(Object.keys(decideVoluntaryEnding(freshVoluntaryEndings(),{},{...context(0),team:null})),['accepted','message']);
 });
+
+// Characterization of the raw checkpoint validator, not additional type enrollment.
+// These cases preserve today's boundary for a later deliberate contract decision.
+const savedContext = { winner: -1, reason: null, triggerId: null, started: true };
+const resignationContext = { ...savedContext, winner: 1, reason: 'resignation' };
+const drawContext = { ...savedContext, winner: 2, reason: 'agreed-draw' };
+const savedHeader = () => ({ version: 1, generation: 1, revision: 0, result: null });
+
+test('actual checkpoint assertion consumes unknown JSON values without modifying them', () => {
+  const source = ts.createSourceFile('server.mjs', readFileSync(new URL('../server.mjs', import.meta.url), 'utf8'),
+    ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const find = name => source.statements.find(statement => ts.isFunctionDeclaration(statement) && statement.name?.text === name);
+  const assertion = find('assertSnapshot'), checkpoint = find('validateMatchCheckpoint');
+  assert.ok(assertion && checkpoint);
+  const calls = checkpoint.body.statements.filter(statement => ts.isExpressionStatement(statement)
+    && ts.isCallExpression(statement.expression) && statement.expression.expression.getText(source) === 'assertSnapshot'
+    && statement.expression.arguments[0]?.getText(source).startsWith('validSavedVoluntaryEndings('));
+  assert.equal(calls.length, 1);
+  // Evaluate the actual assertion and call unchanged, with fixture-owned state
+  // and launch bindings. This does not claim whole-checkpoint/host validation.
+  const consume = new Function('validSavedVoluntaryEndings', `${assertion.getText(source)}
+    return (state, soloPractice = false, pveLaunchOptions = null) => { ${calls[0].getText(source)} };`)(validSavedVoluntaryEndings);
+  const cases = [
+    [savedHeader(), savedContext, true], [{ ...savedHeader(), version: 0 }, savedContext, true],
+    [{ ...savedHeader(), revision: 1, result: { winner: 1, reason: 'resignation', resignedTeam: 0 } }, resignationContext, true],
+    [{ ...savedHeader(), revision: 1, result: { winner: 2, reason: 'agreed-draw', agreedTeams: [0, 1] } }, drawContext, true],
+    [null, savedContext, false], [false, savedContext, false], [0, savedContext, false], ['saved', savedContext, false],
+    [[], savedContext, false], [{ ...savedHeader(), revision: '0' }, savedContext, false],
+    [{ ...savedHeader(), generation: 0 }, savedContext, false], [{ ...savedHeader(), extra: true }, savedContext, false],
+    [{ ...savedHeader(), result: {} }, savedContext, false],
+  ];
+  for (const [value, context, accepted] of cases) {
+    /** @type {unknown} */ const input = JSON.parse(JSON.stringify(value));
+    const before = structuredClone(input);
+    const state = { voluntaryEndings: input, matchWinner: context.winner, matchWinnerReason: context.reason,
+      matchWinnerTriggerId: context.triggerId, scenarioClockStarted: context.started };
+    assert.equal(validSavedVoluntaryEndings(input, context), accepted);
+    if (accepted) assert.doesNotThrow(() => consume(state));
+    else assert.throws(() => consume(state), { name: 'Error', message: 'Invalid match checkpoint: invalid voluntary match ending' });
+    assert.deepEqual(input, before);
+  }
+});
+
+function withSavedPrototypeFields(prototype, run) {
+  const fields = savedHeader();
+  const before = Object.fromEntries(Object.keys(fields).map(key => [key, Object.getOwnPropertyDescriptor(prototype, key)]));
+  try {
+    for (const [key, value] of Object.entries(fields)) Object.defineProperty(prototype, key, { value, writable: true, configurable: true });
+    const installed = Object.fromEntries(Object.keys(fields).map(key => [key, Object.getOwnPropertyDescriptor(prototype, key)]));
+    run();
+    for (const [key, descriptor] of Object.entries(installed)) assert.deepEqual(Object.getOwnPropertyDescriptor(prototype, key), descriptor);
+  } finally {
+    for (const [key, descriptor] of Object.entries(before)) {
+      if (descriptor) Object.defineProperty(prototype, key, descriptor);
+      else delete prototype[key];
+    }
+    for (const [key, descriptor] of Object.entries(before)) assert.deepEqual(Object.getOwnPropertyDescriptor(prototype, key), descriptor);
+  }
+}
+for (const [name, prototype, value] of [['number', Number.prototype, 1], ['boolean', Boolean.prototype, true],
+  ['BigInt', BigInt.prototype, 1n], ['Symbol', Symbol.prototype, Symbol('saved')]]) {
+  test(`raw saved ${name} retains native inherited-property lookup`, () => {
+    withSavedPrototypeFields(prototype, () => assert.equal(validSavedVoluntaryEndings(value, savedContext), true));
+  });
+}
+test('primitive saved version getter exceptions propagate unchanged', () => {
+  const before = Object.getOwnPropertyDescriptor(String.prototype, 'version');
+  const error = new Error('primitive version getter');
+  try {
+    Object.defineProperty(String.prototype, 'version', { get() { throw error; }, configurable: true });
+    assert.throws(() => validSavedVoluntaryEndings('saved', savedContext), caught => caught === error);
+  } finally {
+    if (before) Object.defineProperty(String.prototype, 'version', before);
+    else delete String.prototype.version;
+    assert.deepEqual(Object.getOwnPropertyDescriptor(String.prototype, 'version'), before);
+  }
+});
+
+for (const [name, second, accepted] of [['negative', -1, false], ['text', '1', true], ['undefined', undefined, true],
+  ['BigInt', 0n, true], ['Symbol', Symbol('revision'), null]]) {
+  test(`saved revision reread preserves ${name} comparison behavior`, () => {
+    const trace = []; let reads = 0;
+    const saved = { ...savedHeader(), get revision() { trace.push(`revision:${reads}`); return reads++ === 0 ? 1 : second; } };
+    const before = Object.getOwnPropertyDescriptors(saved);
+    if (accepted === null) assert.throws(() => validSavedVoluntaryEndings(saved, savedContext),
+      { name: 'TypeError', message: 'Cannot convert a Symbol value to a number' });
+    else assert.equal(validSavedVoluntaryEndings(saved, savedContext), accepted);
+    assert.deepEqual(trace, ['revision:0', 'revision:1']);
+    assert.deepEqual(Object.getOwnPropertyDescriptors(saved), before);
+  });
+}
+test('saved generation also compares its second getter value', () => {
+  let reads = 0;
+  const saved = { ...savedHeader(), get generation() { return reads++ === 0 ? 1 : 0; } };
+  assert.equal(validSavedVoluntaryEndings(saved, savedContext), false);
+  assert.equal(reads, 2);
+});
+
+test('native integer method lookup precedes each saved getter argument', () => {
+  const before = Object.getOwnPropertyDescriptor(Number, 'isSafeInteger'), trace = [];
+  let revisionReads = 0, generationReads = 0, accepted;
+  const saved = { ...savedHeader(), get revision() { trace.push(`revision:${revisionReads++}`); return 1; },
+    get generation() { trace.push(`generation:${generationReads++}`); return 1; } };
+  try {
+    Object.defineProperty(Number, 'isSafeInteger', { configurable: true, get() {
+      trace.push('integer:lookup');
+      return value => { trace.push(`integer:call:${value}`); return before.value(value); };
+    } });
+    accepted = validSavedVoluntaryEndings(saved, savedContext);
+  } finally {
+    Object.defineProperty(Number, 'isSafeInteger', before);
+  }
+  assert.equal(accepted, true);
+  assert.deepEqual(trace, ['integer:lookup', 'revision:0', 'integer:call:1', 'revision:1',
+    'integer:lookup', 'generation:0', 'integer:call:1', 'generation:1']);
+  assert.deepEqual(Object.getOwnPropertyDescriptor(Number, 'isSafeInteger'), before);
+});
+
+test('saved validation reads native proxy properties without a has trap or input writes', () => {
+  const trace = [], target = savedHeader(), before = structuredClone(target);
+  const saved = new Proxy(target, {
+    has() { throw new Error('no existence query'); },
+    get(target, key, receiver) { trace.push(`get:${String(key)}`); return Reflect.get(target, key, receiver); },
+    ownKeys(target) { trace.push('ownKeys'); return Reflect.ownKeys(target); },
+    getOwnPropertyDescriptor(target, key) { trace.push(`descriptor:${String(key)}`); return Reflect.getOwnPropertyDescriptor(target, key); },
+  });
+  assert.equal(validSavedVoluntaryEndings(saved, savedContext), true);
+  assert.deepEqual(trace, ['get:version', 'get:revision', 'get:revision', 'get:generation', 'get:generation', 'ownKeys',
+    'descriptor:version', 'descriptor:generation', 'descriptor:revision', 'descriptor:result', 'get:result']);
+  assert.deepEqual(target, before);
+});
+
+test('function, decorated array, inherited and null-prototype saved carriers remain accepted', () => {
+  for (const saved of [Object.assign(function () {}, savedHeader()), Object.assign([], savedHeader()),
+    Object.create(savedHeader()), Object.assign(Object.create(null), savedHeader())]) {
+    const before = Object.getOwnPropertyDescriptors(saved), prototype = Object.getPrototypeOf(saved);
+    assert.equal(validSavedVoluntaryEndings(saved, savedContext), true);
+    assert.deepEqual(Object.getOwnPropertyDescriptors(saved), before);
+    assert.equal(Object.getPrototypeOf(saved), prototype);
+  }
+});
+
+test('terminal validator preserves all context, header and result read positions', () => {
+  const trace = [], result = { winner: 1, reason: 'resignation', resignedTeam: 0 };
+  const observe = (target, prefix) => new Proxy(target, {
+    get(target, key, receiver) { trace.push(`${prefix}.${String(key)}`); return Reflect.get(target, key, receiver); },
+    ownKeys(target) { trace.push(`${prefix}.keys`); return Reflect.ownKeys(target); },
+    getOwnPropertyDescriptor(target, key) { trace.push(`${prefix}.descriptor.${String(key)}`); return Reflect.getOwnPropertyDescriptor(target, key); },
+  });
+  const target = { ...savedHeader(), revision: 1, result: observe(result, 'result') };
+  const before = Object.getOwnPropertyDescriptors(target), resultBefore = Object.getOwnPropertyDescriptors(result),
+    contextBefore = Object.getOwnPropertyDescriptors(resignationContext);
+  assert.equal(validSavedVoluntaryEndings(observe(target, 'saved'), observe(resignationContext, 'context')), true);
+  assert.deepEqual(trace, ['context.winner', 'context.reason', 'context.triggerId', 'context.started', 'context.practice', 'context.pve',
+    'saved.version', 'saved.revision', 'saved.revision', 'saved.generation', 'saved.generation', 'saved.keys',
+    'saved.descriptor.version', 'saved.descriptor.generation', 'saved.descriptor.revision', 'saved.descriptor.result',
+    'saved.version', 'saved.revision', 'saved.result', 'result.reason', 'result.winner', 'result.resignedTeam', 'result.resignedTeam',
+    'result.keys', 'result.descriptor.winner', 'result.descriptor.reason', 'result.descriptor.resignedTeam']);
+  assert.deepEqual(Object.getOwnPropertyDescriptors(target), before);
+  assert.deepEqual(Object.getOwnPropertyDescriptors(result), resultBefore);
+  assert.deepEqual(Object.getOwnPropertyDescriptors(resignationContext), contextBefore);
+});
+
+test('terminal version rejection precedes result getter access', () => {
+  let reads = 0;
+  const saved = { ...savedHeader(), revision: 1, get version() { return reads++ === 0 ? 1 : 0; },
+    get result() { throw new Error('result must remain unread'); } };
+  assert.equal(validSavedVoluntaryEndings(saved, resignationContext), false);
+  assert.equal(reads, 2);
+});
+for (const [name, second, accepted] of [['text', '0', true], ['BigInt', 0n, false]]) {
+  test(`resignation actor reread retains native ${name} subtraction`, () => {
+    let reads = 0;
+    const result = { winner: 1, reason: 'resignation', get resignedTeam() { return reads++ === 0 ? 0 : second; } };
+    const before = Object.getOwnPropertyDescriptors(result), saved = { ...savedHeader(), revision: 1, result };
+    if (accepted) assert.equal(validSavedVoluntaryEndings(saved, resignationContext), true);
+    else assert.throws(() => validSavedVoluntaryEndings(saved, resignationContext),
+      { name: 'TypeError', message: 'Cannot mix BigInt and other types, use explicit conversions' });
+    assert.equal(reads, 2);
+    assert.deepEqual(Object.getOwnPropertyDescriptors(result), before);
+  });
+}
+
+test('draw proof preserves toJSON invocation, native serialization errors and input descriptors', () => {
+  const trace = [], teams = { get toJSON() { trace.push('get:toJSON'); return function (key) {
+    assert.equal(this, teams); trace.push(`call:toJSON:${key}`); return [0, 1];
+  }; } };
+  const before = Object.getOwnPropertyDescriptors(teams);
+  const saved = { ...savedHeader(), revision: 1, result: { winner: 2, reason: 'agreed-draw', agreedTeams: teams } };
+  const savedBefore = Object.getOwnPropertyDescriptors(saved), resultBefore = Object.getOwnPropertyDescriptors(saved.result);
+  assert.equal(validSavedVoluntaryEndings(saved, drawContext), true);
+  assert.deepEqual(trace, ['get:toJSON', 'call:toJSON:']);
+  assert.deepEqual(Object.getOwnPropertyDescriptors(teams), before);
+  assert.deepEqual(Object.getOwnPropertyDescriptors(saved), savedBefore);
+  assert.deepEqual(Object.getOwnPropertyDescriptors(saved.result), resultBefore);
+  saved.result.agreedTeams = 1n;
+  assert.throws(() => validSavedVoluntaryEndings(saved, drawContext), { name: 'TypeError', message: 'Do not know how to serialize a BigInt' });
+  const error = new Error('draw serialization getter');
+  saved.result.agreedTeams = { get toJSON() { throw error; } };
+  assert.throws(() => validSavedVoluntaryEndings(saved, drawContext), caught => caught === error);
+});
+
+test('context faults precede falsy-input rejection; header faults precede terminal policy checks', () => {
+  const contextError = new Error('context first');
+  assert.throws(() => validSavedVoluntaryEndings(null, { get winner() { throw contextError; } }), caught => caught === contextError);
+  assert.equal(validSavedVoluntaryEndings({ version: 2, get revision() { throw new Error('revision must remain unread'); } }, savedContext), false);
+  const keysError = new Error('saved own keys');
+  const saved = new Proxy({ ...savedHeader(), revision: 1 }, { ownKeys() { throw keysError; } });
+  assert.throws(() => validSavedVoluntaryEndings(saved, { ...resignationContext, started: false }), caught => caught === keysError);
+});
