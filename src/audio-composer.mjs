@@ -1,4 +1,4 @@
-import {compileComposition, validateComposition} from './audio-composition.mjs';
+import {compileComposition, validateComposition} from './presentation/audio/composition.mjs';
 
 const id = prefix => `${prefix}-${globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)}`;
 const clone = value => JSON.parse(JSON.stringify(value));
