@@ -811,6 +811,71 @@ HTTP access and runtime paths do not change. This tool move does not establish
 rendered-game acceptance or a remote deployment.
 
 
+### Code-quality swarm ownership — 6 October 2026
+
+This is the bounded ownership record for the user's organization/DRY/contract
+request. It extends the existing migration plan; it is not a common PR approval
+queue. Each lane owns its conflicts, proportionate checks, independent exact-head
+review and normal ready merge under standing authorization.
+
+| Lane / task | Current implementation claim | Shared integration |
+| --- | --- | --- |
+| Module organization / this architecture-audio lane | Audio composition validation/compilation from `src/audio-composition.mjs` and its three audio callers; then the existing composition player and offline WAV rendering responsibilities, one reviewed slice at a time. | Additive canonical entries in the import inventory and exact public admission, packed HTTP controls and this ownership record. No `main.js`, package/CI/type configuration, assets or deployment changes. |
+| Types/contracts / `01a11265-7c21-71a4-8345-611bf0318011` | `room-launch-options`, `room-pregame`, `room-presence` boundaries. | Owned by that lane; audio does not edit those modules or approve its PRs. |
+| Error handling / `01a11265-a1f2-7006-b235-ab410e87703f` | Authoring storage/import helpers, excluding R4 draft lifecycle. | Owned by that lane; audio does not edit those helpers. |
+| DRY formatting / `01a11265-cc42-74fa-a49c-be8bcb87f01d` | Resource format, population readout and economy-client formatting. | Owned by that lane; audio does not edit those modules. |
+
+Import-inventory/public-admission deltas integrate additively against fresh main;
+preserve each other lane's exact memberships. A concrete overlap requires only
+the affected file/interface decision. R4 remains blocked and excluded; movement,
+asset binding, security/credentials and deployments are outside these audio
+source changes.
+
+### Audio composition organization
+
+At clean base `98fad32d`, `src/audio-composition.mjs` is a dependency-free musical
+arrangement validator and playback-timeline compiler. Its canonical implementation
+is [presentation/audio/composition.mjs](../src/presentation/audio/composition.mjs),
+copied byte-for-byte. The supported root entry explicitly forwards the same
+`validateComposition` and `compileComposition` function values. `audio-assets`
+retains its `validateSharedComposition` alias; it, `audio-composer` and
+`audio-composition-player` consume the canonical implementation directly.
+
+Schema version/limits, normalized object shape, first-error text/order, clip
+sorting, mute/solo selection and timing/gain/fade calculations are unchanged.
+Both entries are exact public modules. The canonical model is presentation:
+rules/world/simulation/AI and server hosts cannot reach it. It is not a shared
+world/gameplay contract or a utility container. The existing map-audio-reference
+world validator and client decode/response leaves stay in their canonical homes.
+
+The registered composer scenario now exercises the canonical model and verifies
+both old-path binding identities; original assertions/names/registrations remain.
+At this dated source checkpoint, the graph grows from 235 modules/465 local
+edges to 236/466 with zero cycles; the canonical file is 108 lines and the old
+entry is three. All 1,454 prior check selections remain, plus canonical syntax.
+These track responsibility/compatibility rather than an absolute size target.
+Composer/player/library, preview/export/cancellation contracts, import-domain
+negatives, unchanged type scopes, allowlist and both packed hosts establish their
+named source contracts. Packed GET/HEAD checks retain exact canonical/root bytes,
+browser import/hash closures and server-private denial. Record clean source/pack
+identity in each PR; a source move does not establish listening/rendered acceptance.
+
+The root entry remains supported until tracked runtime/tool/fixture/documentation
+and external consumers are inventoried, their owners agree migration, canonical
+contracts plus identified packed/served reload checks pass without it, and current
+API documentation is reconciled. No removal follows merely from zero production
+callers. No barrel, duplicate implementation, resource URL or object-lifetime
+change is introduced.
+
+The short audio queue is: (1) composition model and its three callers; (2) the
+existing `createCompositionPlayer` clock/generation/node-disposal implementation
+and three dynamic import literals in `audio.mjs`/composer, preserving its root
+named binding; (3) `renderCompositionWav` and private WAV encoding from composer
+UI into a dedicated audio rendering leaf, preserving its public export and exact
+decode/schedule/Blob/error behavior. Each is a separate ready PR with original
+tests, exact-head review and package checks. Refresh ownership/main before the
+next item; no broad directory sweep or generic utilities move is allocated.
+
 ### Remaining organization queue — 6 October 2026
 
 These are scoped proposals for the remaining stages, **not runtime edit
