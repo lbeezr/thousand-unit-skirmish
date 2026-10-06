@@ -818,12 +818,12 @@ request. It extends the existing migration plan; it is not a common PR approval
 queue. Each lane owns its conflicts, proportionate checks, independent exact-head
 review and normal ready merge under standing authorization.
 
-| Lane / task | Current implementation claim | Shared integration |
+| Lane / scope | Current implementation claim | Shared integration |
 | --- | --- | --- |
 | Module organization / this architecture-audio lane | Audio composition validation/compilation from `src/audio-composition.mjs` and its three audio callers; then the existing composition player and offline WAV rendering responsibilities, one reviewed slice at a time. | Additive canonical entries in the import inventory and exact public admission, packed HTTP controls and this ownership record. No `main.js`, package/CI/type configuration, assets or deployment changes. |
-| Types/contracts / `01a11265-7c21-71a4-8345-611bf0318011` | `room-launch-options`, `room-pregame`, `room-presence` boundaries. | Owned by that lane; audio does not edit those modules or approve its PRs. |
-| Error handling / `01a11265-a1f2-7006-b235-ab410e87703f` | Authoring storage/import helpers, excluding R4 draft lifecycle. | Owned by that lane; audio does not edit those helpers. |
-| DRY formatting / `01a11265-cc42-74fa-a49c-be8bcb87f01d` | Resource format, population readout and economy-client formatting. | Owned by that lane; audio does not edit those modules. |
+| Types/contracts lane | `room-launch-options`, `room-pregame`, `room-presence` boundaries. | Owned by that lane; audio does not edit those modules or approve its PRs. |
+| Error-handling lane | Authoring storage/import helpers, excluding R4 draft lifecycle. | Owned by that lane; audio does not edit those helpers. |
+| DRY-formatting lane | Resource format, population readout and economy-client formatting. | Owned by that lane; audio does not edit those modules. |
 
 Import-inventory/public-admission deltas integrate additively against fresh main;
 preserve each other lane's exact memberships. A concrete overlap requires only
