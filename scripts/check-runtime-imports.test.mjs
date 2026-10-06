@@ -45,8 +45,8 @@ test('canonical composer UI stays in client with its lazy caller and outside aut
   assert.ok(moduleImports(sources.get('src/audio-library-ui.mjs'), 'src/audio-library-ui.mjs')
     .includes('./client/audio/composer.mjs'));
   assert.deepEqual(moduleImports(sources.get(canonical), canonical), [
-    '../../presentation/audio/composition.mjs', '../../presentation/audio/composition-wav.mjs',
-    '../../presentation/audio/composition-player.mjs',
+    '../../presentation/audio/composition-player.mjs', '../../presentation/audio/composition-wav.mjs',
+    '../../presentation/audio/composition.mjs',
   ]);
   for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
     'src/formation-assignment.mjs', 'src/simulation/ai/opponent-observation.mjs']) {
