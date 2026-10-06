@@ -9,12 +9,13 @@ import { shortcutFlatUnitPath, canTraverseFlatUnitSegment } from '../src/unit-pa
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { constructionMovementActive } from '../src/construction-work-intent.mjs';
 import { workerPatrolAcquiredMovementActive } from '../src/combat-movement.mjs';
-import { canTraverseCrowdBodySegment } from '../src/unit-crowd-steering.mjs';
+import { canTraverseCrowdBodySegment, CROWD_NEIGHBOR_LIMIT } from '../src/unit-crowd-steering.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { creditResourceBalance } from '../src/economy-ledger.mjs';
 import { preflightXlCheckpointRoutes, XL_CHECKPOINT_ROUTE_MAX_ENTRIES as QUOTA } from '../src/server/checkpoint-route-budget.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+const SPATIAL_BUCKET_SIZE = Number(source.match(/^const SPATIAL_BUCKET_SIZE = ([\d.]+);$/m)[1]);
 function body(name) {
   const start = source.indexOf(`function ${name}(`), end = source.indexOf('\nfunction ', start + 1);
   assert.ok(start > 0 && end > start, name); return source.slice(start, end);
@@ -27,7 +28,8 @@ const names = ['workerFlowPath', 'applyWorkerFlowRoute', 'publishWorkerEconomyRo
   'ensureGatherWorkIntent', 'depositWorkerCargo', 'stopGathering', 'cancelGatherOrder',
   'clearAttackMoveOrder', 'assignStationaryOrder', 'pendingMoveAssignmentsByUnit', 'enqueueRouteRepairs',
   'applyPlannedMoveAssignment', 'completeMovePlanningJob', 'processMovePlanningSlice',
-  'scheduleNextMovePlanning', 'serviceMovePlanningForTick', 'workerLocalBodyRadius', 'workerBodyStepAllowed'];
+  'scheduleNextMovePlanning', 'serviceMovePlanningForTick', 'workerLocalBodyRadius', 'workerBodyStepAllowed',
+  'spatialBucketColumn', 'spatialBucketRow', 'rebuildSpatialBuckets', 'crowdNeighborsNear'];
 const record = path => ({ hp: 0, kind: 'infantry', path, pathIndex: path.length, attackMoveResumePath: null });
 const entries = f => f.units.reduce((n, u) => n + u.path.length + (u.attackMoveResumePath?.length ?? 0), 0);
 const phaseStart = source.indexOf('  const blockedRouteRepairs = [];');
@@ -66,9 +68,17 @@ function fixture({ width = 320, height = 320, total = 0, weighted = false, count
   const candidates = [{ id: 10, goals: [...fields[0].goals] }, { id: 11, goals: [...fields[1].goals] }];
   const callbacks = [], censuses = [], selections = [], notices = [], searches = [], samples = [];
   const forestCellMask = new Uint8Array(levels.length), forestWoodRemaining = new Float64Array(levels.length);
+  const spatialBucketColumns = Math.floor((width - .5) / SPATIAL_BUCKET_SIZE) + 1;
+  const spatialBucketRows = Math.floor((height - .5) / SPATIAL_BUCKET_SIZE) + 1;
+  const bucketCount = spatialBucketColumns * spatialBucketRows;
   const context = vm.createContext({ ...movement, ...workIntent, shortcutFlatUnitPath, canTraverseFlatUnitSegment,
     constructionMovementActive, workerPatrolAcquiredMovementActive, canTraverseCrowdBodySegment, spatialBucketRosterCurrent:false,
-    crowdNeighborsNear(){throw Error('economy-only fixture cannot enter construction body admission');},
+    SPATIAL_BUCKET_SIZE, CROWD_NEIGHBOR_LIMIT, spatialBucketColumns, spatialBucketRows,
+    spatialBucketHeads: new Int32Array(bucketCount), spatialBucketNext: new Int32Array(2000),
+    spatialBucketTeamHeads: [new Int32Array(bucketCount), new Int32Array(bucketCount)],
+    spatialBucketTeamTails: [new Int32Array(bucketCount), new Int32Array(bucketCount)],
+    spatialBucketTeamCounts: [new Uint16Array(bucketCount), new Uint16Array(bucketCount)],
+    spatialBucketOfUnit: new Int32Array(2000), spatialBucketTeamNext: [new Int32Array(2000), new Int32Array(2000)],
     activeWallBuildOrder, UNIT_DEFINITIONS, creditResourceBalance, visibleForestCandidates,
     MAP_WIDTH: width, MAP_HEIGHT: height, MAP_HALF_X: width / 2, MAP_HALF_Z: height / 2, CELL_COUNT: levels.length,
     MAX_UNITS: 2000, MAX_RESOURCE_NODES: 128, XL_CHECKPOINT_ROUTE_MAX_ENTRIES: QUOTA,
@@ -115,7 +125,9 @@ function fixture({ width = 320, height = 320, total = 0, weighted = false, count
   context.createUnitRoutePublicationLedger = (...args) => {
     const ledger = movement.createUnitRoutePublicationLedger(...args); censuses.push(ledger); return ledger;
   };
-  vm.runInContext(names.map(body).join('\n') + `\nfunction physicalPhase(){${physicalPhase}}\nfunction recoverPendingTail(){${recoveryTail}}`, context);
+  // The full tick builds a fresh roster before movement. Keep its real bucket
+  // rebuild/query and hard admission; controlled flow/A* do not waive bodies.
+  vm.runInContext(names.map(body).join('\n') + `\nfunction physicalPhase(){rebuildSpatialBuckets();${physicalPhase}}\nfunction recoverPendingTail(){${recoveryTail}}`, context);
   const apply = context.applyWorkerFlowRoute;
   context.applyWorkerFlowRoute = (...args) => {
     const result = apply(...args);
