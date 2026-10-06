@@ -15,5 +15,11 @@ export function requireRecovery(draft, sourceMapId) {
   }
   const invalid = validateElevationPatches(definition.width, definition.height, definition.elevationPatches);
   if (invalid) throw new Error(`Invalid elevation patches: ${invalid.reason}.`);
+  if ((definition.terrainPatches || []).some(patch => patch === null)) {
+    throw new Error('Map has a ground paint patch outside its grid or with an invalid material.');
+  }
+  if (definition.obstacles.some(obstacle => obstacle === null)) {
+    throw new Error('Map has a terrain block outside its grid or with invalid dimensions.');
+  }
   return { state, definition };
 }
