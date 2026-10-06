@@ -112,6 +112,29 @@ nine diagnostics also remain deferred. Neither count implies a passing full-modu
 gate or justifies a runtime compatibility change. Run the dedicated test alongside
 the existing lobby/mode tests and `room-pregame-scenario.mjs` for runtime coverage.
 
+The next bounded seat contract checks only the actual `RoomPregame.syncSeats`
+declaration and its named receiver dependencies with those same strict browser
+options. Trusted checked callers supply string IDs, teams 0/1 and Boolean
+connection flags; readonly inputs may carry extra unknown or nullable metadata.
+The actual host `syncPregameSeats` declaration is checked and executed, including
+its null guard, active/reserved/expired-session filtering, Boolean peer projection
+and change-driven dirty flag. Host binding slots describe dependencies; session
+creation and checkpoint restore retain their existing identity/admission ownership.
+The receiver's stored seat/phase/invalidation contract applies only to checked
+callers, not a newly checked constructor or invalidation implementation.
+
+Eight negative consumer controls, three method mutations and three host-producer
+mutations require exact diagnostics; every diagnostic is collected. Runtime
+controls retain getter/evaluation order, copied projection keys, frozen-input
+acceptance, no-op comparison, assignment before invalidation failure and running
+phase behavior. No runtime validator is added: unselected callers retain existing
+nonstandard-field acceptance, and the generic payload's open metadata stays
+unknown. Runtime module identity, bodies and all prior assertions are unchanged.
+At this seat boundary, six method diagnostics are resolved and **61 full-graph
+diagnostics remain** (18 pregame, 20 match-mode, 23 Bannerfall), alongside the
+separate nine saved-ending validator diagnostics. No full-class/module enrollment,
+catalog/gameplay change or compiler/discovery change is implied by this result.
+
 #### Ranked type-safety backlog
 
 The incremental type-safety stream owns this list and takes one bounded,

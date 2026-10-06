@@ -555,3 +555,212 @@ return {mode, canLaunch, ready, catalog};
 `);
   assert.deepEqual(diagnostics.map(diagnostic => ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')), []);
 });
+
+function seatSyncDiagnostics(source, mutation) {
+  const root = new URL('../', import.meta.url);
+  const path = relative => fileURLToPath(new URL(relative, root));
+  const config = ts.readConfigFile(path('tsconfig.check-js.json'), ts.sys.readFile);
+  assert.equal(config.error, undefined);
+  const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, fileURLToPath(root));
+  assert.deepEqual(parsed.errors, []);
+  const modulePath = path('src/room-pregame.mjs');
+  const room = ts.createSourceFile(modulePath, readFileSync(modulePath, 'utf8'),
+    ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const names = ['isPregameCheckpointRecord', 'isPregameCheckpointPhase',
+    'isPregameCheckpointRevision', 'validatePregameCheckpoint'];
+  const declarations = room.statements.filter(statement => ts.isFunctionDeclaration(statement)
+    && names.includes(statement.name?.text));
+  assert.deepEqual(declarations.map(statement => statement.name.text), names);
+  const classes = room.statements.filter(statement => ts.isClassDeclaration(statement)
+    && statement.name?.text === 'RoomPregame');
+  assert.equal(classes.length, 1);
+  const methods = classes[0].members.filter(member => ts.isMethodDeclaration(member)
+    && member.name.getText(room) === 'syncSeats');
+  assert.equal(methods.length, 1);
+  let method = methods[0].getFullText(room);
+  if (mutation) {
+    assert.equal(method.split(mutation.before).length, 2);
+    method = method.replace(mutation.before, mutation.after);
+  }
+  // Select actual JSDoc/declarations. The receiver callback remains explicitly
+  // caller-owned; this does not enroll the constructor or other class methods.
+  const moduleSource = declarations.map(statement => statement.getFullText(room)).join('\n')
+    + room.text.slice(classes[0].getFullStart(), classes[0].getStart())
+    + `\nexport class RoomPregame {${method}\n}\n`;
+  const fixturePath = path('scripts/type-contracts/pregame-seat-sync-consumer.mjs');
+  const host = ts.createCompilerHost(parsed.options);
+  const getSourceFile = host.getSourceFile.bind(host);
+  host.getSourceFile = (fileName, version, ...args) => {
+    const text = fileName === modulePath ? moduleSource : fileName === fixturePath ? source : null;
+    return text === null ? getSourceFile(fileName, version, ...args)
+      : ts.createSourceFile(fileName, text, version, true, ts.ScriptKind.JS);
+  };
+  const program = ts.createProgram([fixturePath], parsed.options, host);
+  assert.deepEqual(program.getSourceFiles().filter(file => file.fileName.startsWith(path('src/')))
+    .map(file => file.fileName), [modulePath]);
+  return { fixturePath, modulePath, diagnostics: ts.getPreEmitDiagnostics(program) };
+}
+
+const seatSyncPrefix = `import { RoomPregame } from '../../src/room-pregame.mjs';
+/** @param {import('../../src/room-pregame.mjs').PregameSeatSyncSource & RoomPregame} room */
+function consume(room) {
+`;
+
+test('trusted seat projection accepts readonly caller data and unknown or nullable extra metadata', () => {
+  const { diagnostics } = seatSyncDiagnostics(`${seatSyncPrefix}
+/** @type {unknown} */ const metadata = null;
+/** @type {0} */ const hostTeam = 0;
+/** @type {1} */ const guestTeam = 1;
+const seats = Object.freeze([Object.freeze({id: 'player-1', team: hostTeam,
+  connected: true, metadata}), Object.freeze({id: 'player-2', team: guestTeam,
+  connected: false, extra: undefined})]);
+/** @type {boolean} */ const changed = room.syncSeats(seats);
+room.syncSeats([]);
+/** @type {string} */ const id = room.seats[0].id;
+/** @type {0 | 1} */ const team = room.seats[0].team;
+/** @type {boolean} */ const connected = room.seats[0].connected;
+return {changed, id, team, connected};
+}
+`);
+  assert.deepEqual(diagnostics.map(d => ts.flattenDiagnosticMessageText(d.messageText, '\n')), []);
+});
+
+test('trusted seat projection rejects incorrect kinds, incomplete seats and result misuse', () => {
+  const cases = [
+    { source: "room.syncSeats([{id: 1, team: 0, connected: true}]);", code: 2322 },
+    { source: "room.syncSeats([{id: 'p', team: '0', connected: true}]);", code: 2322 },
+    { source: "room.syncSeats([{id: 'p', team: null, connected: true}]);", code: 2322 },
+    { source: "room.syncSeats([{id: 'p', team: 2, connected: true}]);", code: 2322 },
+    { source: "room.syncSeats([{id: 'p', team: 0, connected: 'true'}]);", code: 2322 },
+    { source: "room.syncSeats([{id: 'p', team: 0}]);", code: 2322 },
+    { source: 'room.syncSeats([]).toFixed(0);', code: 2339 },
+    { source: "RoomPregame.prototype.syncSeats.call({seats: [], phase: 'lobby'}, []);", code: 2345 },
+  ];
+  const { fixturePath, diagnostics } = seatSyncDiagnostics(seatSyncPrefix
+    + cases.map(item => item.source).join('\n') + '\n}');
+  assert.equal(diagnostics.length, cases.length);
+  assert.ok(diagnostics.every(d => d.file?.fileName === fixturePath));
+  for (const [index, item] of cases.entries()) {
+    assert.deepEqual(diagnostics.filter(d => d.file.getLineAndCharacterOfPosition(d.start).line === index + 3)
+      .map(d => d.code), [item.code], item.source);
+  }
+});
+
+test('seat projection checks its actual stored fields, sort callback and Boolean result', () => {
+  for (const mutation of [
+    { before: '({ id, team, connected }))', after: "({ id, team, connected: 'true' }))", code: 2322 },
+    { before: 'a.team - b.team', after: 'a.team.toUpperCase() - b.team', code: 2339 },
+    { before: 'return false;', after: "return 'unchanged';", code: 2322 },
+  ]) {
+    const { modulePath, diagnostics } = seatSyncDiagnostics(seatSyncPrefix + 'return room.syncSeats([]);\n}', mutation);
+    assert.equal(diagnostics.length, 1);
+    assert.equal(diagnostics[0].file?.fileName, modulePath);
+    assert.equal(diagnostics[0].code, mutation.code);
+  }
+});
+
+const seatHostSource = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+const seatHostAst = ts.createSourceFile('server.mjs', seatHostSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+const seatHostDeclarations = seatHostAst.statements.filter(statement => ts.isFunctionDeclaration(statement)
+  && statement.name?.text === 'syncPregameSeats');
+assert.equal(seatHostDeclarations.length, 1);
+const seatHostDeclaration = seatHostDeclarations[0].getFullText(seatHostAst);
+const seatHostPrefix = `import { RoomPregame } from '../../src/room-pregame.mjs';
+/** @param {{
+ * pregame: (import('../../src/room-pregame.mjs').PregameSeatSyncSource & RoomPregame) | null,
+ * sessions: ReadonlyMap<string, Readonly<{id: string, team: 0 | 1,
+ * peer: Readonly<{closed: unknown}> | null, expiresAt: number, metadata?: unknown}>>,
+ * dirty: boolean
+ * }} bindings */
+function project(bindings) {
+let {pregame, sessions, dirty} = bindings;
+`;
+
+test('actual host session projection supplies checked seats and Booleanizes nullable peer state', () => {
+  const { diagnostics } = seatSyncDiagnostics(seatHostPrefix + seatHostDeclaration
+    + '\nsyncPregameSeats(); return dirty;\n}');
+  assert.deepEqual(diagnostics.map(d => ts.flattenDiagnosticMessageText(d.messageText, '\n')), []);
+  for (const [before, after] of [
+    ['id: session.id', 'id: 42'], ['team: session.team', 'team: null'],
+    ['Boolean(session.peer && !session.peer.closed)', 'session.peer && !session.peer.closed'],
+  ]) {
+    assert.equal(seatHostDeclaration.split(before).length, 2);
+    const { fixturePath, diagnostics: negative } = seatSyncDiagnostics(seatHostPrefix
+      + seatHostDeclaration.replace(before, after) + '\nsyncPregameSeats(); return dirty;\n}');
+    assert.equal(negative.length, 1);
+    assert.equal(negative[0].file?.fileName, fixturePath);
+    assert.equal(negative[0].code, 2345);
+  }
+});
+
+test('actual host seat sync retains active and reserved sessions, drops expired sessions and marks changes', () => {
+  const project = new Function('bindings', `let {pregame, sessions, dirty} = bindings;
+    ${seatHostDeclaration}
+    syncPregameSeats(); return dirty;`);
+  assert.equal(project({pregame: null, sessions: null, dirty: false}), false);
+  const room = new RoomPregame('a', 8);
+  const active = {id: 'host', team: 0, peer: {closed: null}, expiresAt: 0, metadata: null};
+  const reserved = {id: 'guest', team: 1, peer: null, expiresAt: Date.now() + 60_000};
+  const sessions = new Map([['guest', reserved], ['expired', {
+    id: 'expired', team: 1, peer: null, expiresAt: 0,
+  }], ['host', active]]);
+  assert.equal(project({pregame: room, sessions, dirty: false}), true);
+  assert.deepEqual(room.seats, [{id: 'host', team: 0, connected: true}, {id: 'guest', team: 1, connected: false}]);
+  assert.equal(project({pregame: room, sessions, dirty: false}), false);
+  assert.equal(project({pregame: room, sessions, dirty: true}), true);
+  active.peer.closed = 'closed';
+  assert.equal(project({pregame: room, sessions, dirty: false}), true);
+  assert.equal(room.seats[0].connected, false);
+  assert.equal(active.metadata, null);
+});
+
+test('seat sync preserves getter order, copies without input mutation and ignores extra metadata', () => {
+  const calls = [];
+  const seat = (id, team, connected) => Object.freeze({
+    get id() { calls.push(`${id}:id`); return id; },
+    get team() { calls.push(`${id}:team`); return team; },
+    get connected() { calls.push(`${id}:connected`); return connected; },
+    get metadata() { throw new Error('extra metadata is not projected'); },
+  });
+  const input = Object.freeze([seat('guest', 1, false), seat('host', 0, true)]);
+  const room = lobby();
+  assert.equal(room.syncSeats(input), true);
+  assert.deepEqual(calls, ['guest:id', 'guest:team', 'guest:connected', 'host:id', 'host:team', 'host:connected']);
+  assert.deepEqual(room.seats, [{id: 'host', team: 0, connected: true}, {id: 'guest', team: 1, connected: false}]);
+  assert.notEqual(room.seats[0], input[1]);
+  const mutable = [{id: 'host', team: 0, connected: true}];
+  room.syncSeats(mutable);
+  mutable[0].connected = false;
+  assert.equal(room.seats[0].connected, true);
+  // Unselected runtime callers retain existing acceptance; no admission guard
+  // or metadata-kind guarantee is added to the class/payload by this annotation.
+  assert.equal(room.syncSeats([{id: null, team: '1', connected: 'truthy', extra: null}]), true);
+  assert.deepEqual(room.seats, [{id: null, team: '1', connected: 'truthy'}]);
+});
+
+test('seat sync preserves comparison, assignment and invalidation ordering on no-op and failure', () => {
+  const calls = [];
+  let stored = [];
+  let phase = 'lobby';
+  const failure = new Error('invalidate');
+  const receiver = {
+    get seats() { calls.push('read seats'); return stored; },
+    set seats(value) { calls.push('write seats'); stored = value; },
+    get phase() { calls.push('phase'); return phase; },
+    get invalidate() { calls.push('invalidate'); return () => { calls.push('call'); throw failure; }; },
+  };
+  const sync = seats => RoomPregame.prototype.syncSeats.call(receiver, seats);
+  assert.equal(sync([]), false);
+  assert.deepEqual(calls, ['read seats']);
+  calls.length = 0;
+  assert.throws(() => sync([{id: 'p', team: 0, connected: true}]), error => error === failure);
+  assert.deepEqual(calls, ['read seats', 'write seats', 'phase', 'invalidate', 'call']);
+  assert.deepEqual(stored, [{id: 'p', team: 0, connected: true}], 'assignment precedes callback failure');
+  calls.length = 0;
+  const readFailure = new Error('id');
+  assert.throws(() => sync([{get id() { throw readFailure; }}]), error => error === readFailure);
+  assert.deepEqual(calls, []);
+  phase = 'running';
+  assert.equal(sync([]), true);
+  assert.deepEqual(calls, ['read seats', 'write seats', 'phase']);
+});
