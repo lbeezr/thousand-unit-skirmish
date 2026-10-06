@@ -10,6 +10,7 @@ import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from '../src/auth
 import { mapStudioDraftFixture } from './fixtures/map-studio-draft-fixture.mjs';
 import * as draftV1 from '../src/authoring/map-studio/draft/v1/contract.mjs';
 import { createMapImportValidator } from '../src/authoring/map-import-validator.mjs';
+import * as terrainPacking from '../src/authoring/map-studio-terrain-packing.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
@@ -24,7 +25,7 @@ function terrainPackingFixture({ width = 4, height = 3, ground = [], levels = []
     editorGroundLevels: Uint8Array.from(levels), editorCellMaterials: Int8Array.from(materials),
     editorCellElevations: Float64Array.from(elevations), MAX_ELEVATION_PATCHES: limit,
     TERRAIN_MATERIALS: ['dirt', 'gravel', 'sand'], EDITOR_MATERIALS: ['stone', 'forest', 'water'] };
-  const context = vm.createContext(state);
+  const context = vm.createContext({ ...state, ...terrainPacking });
   vm.runInContext(between('function compressEditorGround(', 'function collectEditorMap('), context);
   return context;
 }

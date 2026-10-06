@@ -29,6 +29,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/world/capture-prerequisites.mjs',
   'src/authoring/scenario-authoring.mjs', 'src/authoring/map-resize.mjs',
   'src/authoring/map-studio-form-state.mjs',
+  'src/authoring/map-studio-terrain-packing.mjs',
   'src/authoring/map-import-validator.mjs',
   'src/authoring/map-studio-draft-store.mjs',
   'src/authoring/map-studio/draft/v1/contract.mjs',
