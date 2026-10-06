@@ -438,7 +438,8 @@ PR8 used the asset/renderer owner's agreed lifetime interface in PR327.
 
 ### Migration checkpoints and retained compatibility
 
-Plant descriptor organization owner (6 October 2026): the organization lane owns
+Plant descriptor organization owner ([PR562](https://github.com/lbeezr/thousand-unit-skirmish/pull/562),
+6 October 2026): the organization lane owns
 the three active descriptors in `src/presentation/assets/plant-packs/`:
 `podvine-low-pack.mjs`, `veilcap-worked-pack.mjs` and `sunbloom-low-pack.mjs`.
 The old paths forward their sole named bindings; `qa-vegetation-browser.mjs`
@@ -450,9 +451,12 @@ utility is added. Parent coordination authorizes only three renderer import
 substitutions and additive domain/HTTP/package checks; audio remains separately
 owned. Evidence: generator verification without `--write`, existing regional
 plant scenario extended with actual renderer lifecycle/legacy/identity controls,
-import-boundary negatives and packed GET/HEAD checks. Next: exact-head independent
-review, focused checks, normal merge and containing release/deployment receipts in
-the owned PR. This source organization does not establish rendered appearance or
+import-boundary negatives and packed GET/HEAD checks. All three generator checks,
+the real plant scenario, 49 forest/import tests, types/docs, source admission and
+packed HTTP pass; 18 selected asset files and three descriptor bodies retain their
+exact bytes. Next: independent exact-head review, terminal CI reconciliation,
+normal merge and containing release/deployment receipts in PR562. This source
+organization does not establish rendered appearance or
 close the vegetation owner's remaining art acceptance. Retire forwarders only
 after their supported callers and served reload compatibility are reconciled.
 
