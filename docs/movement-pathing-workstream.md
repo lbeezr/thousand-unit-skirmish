@@ -61,7 +61,7 @@ actual journey coverage and rendered acceptance are separate.
 
 ### Remaining caller steps after PR432
 
-The [acquired Worker Patrol shared-body candidate](qa-worker-patrol-shared-body-admission-2026-10-06.md) consumes core PR519 through its single radius seam. Executed body safety improves, but the original kill bounds fail; this remains a draft dependency decision, not completed caller acceptance. Core retains shared selection and construction liveness.
+The [acquired Worker Patrol shared-body adoption](qa-worker-patrol-shared-body-admission-2026-10-06.md) consumes core PR519 through its single radius seam and PR522's live-target approach input. The unchanged eight cases now pass productive and body-safety bounds; exact-head review/native/package evidence remains on PR520. Core retains shared selection and construction liveness; same-cell and rendered acceptance remain separate.
 
 The [Patrol-only acquired Worker adoption](qa-worker-patrol-acquired-clearance-2026-10-05.md) observes actual pre-write acquired substeps, consumes the existing selected-route rejoin and preserves original policy/recovery controls. It is based on PR513's construction body-admission merge without changing its guards; crowd retains original qualification. The canceled acquired-AttackMove handoff remains separate. Direct Worker combat, rally and interaction writers require their own measured contracts before further adoption.
 
@@ -1272,6 +1272,31 @@ coverage before a caller claims all its writes; three routed guards alone do
 not establish that. Construction separation's static radius remains its own
 policy. Core owns shared admission/fixtures; caller owns acquisition policy;
 crowd retains original fixed-deadline wall qualification. Art backing is N/A.
+
+### Acquired Worker Patrol combat approach input — 6 October 2026
+
+The [caller witness](https://github.com/lbeezr/thousand-unit-skirmish/pull/513#issuecomment-6007111690)
+at PR520 head `aa1afcb7` has a safe but stationary Worker at
+`(4.001, .9536390483)`, outside its existing weapon range from target Worker 8
+at `(5.5, .5)`. A terminal accepted waypoint occupies that target's cell. The
+shared selector's endpoint refusal reports zero proposals; all four kill cases
+miss their original deadline while four loss cases retain safe continuation.
+
+Core owns the [allocated input](https://github.com/lbeezr/thousand-unit-skirmish/pull/520#issuecomment-6007215081):
+optional `approachBody` in `selectCrowdStep` excludes only that live object's
+identity from the early occupied-endpoint refusal. It remains in every physical
+point/sweep oracle, separation, detour, lease and contour query. Server-local
+`workerPatrolApproachBody` supplies it only for existing acquired Worker Patrol,
+a nonpending terminal waypoint in the live enemy land target's cell, with valid
+slot identity and positive HP. Unrelated occupied endpoints keep their wait.
+No route, goal, range, queue, body radius or query/proposal limit changes.
+
+Fifteen source controls reproduce the original zero-proposal wait, enter the
+existing weapon range through clear steps, and retain hard body/terrain refusal,
+other occupied endpoints, replacement and identity/domain exclusions. The caller
+still owns PR520 activation and the original kill/loss/native recovery deadline
+qualification; this input alone does not close that outcome. Construction
+liveness and rendered acceptance remain separate. Art backing is N/A.
 
 ### Forest cell-gap characterization — 4 October 2026
 

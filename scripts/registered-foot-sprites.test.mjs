@@ -248,3 +248,5 @@ import './registered-spearman-south-west-attack.test.mjs';
 import './registered-spearman-west-attack.test.mjs';
 
 import './registered-spearman-north-west-attack.test.mjs';
+
+import './registered-spearman-north-defeat.test.mjs';

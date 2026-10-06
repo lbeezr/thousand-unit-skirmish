@@ -3,7 +3,30 @@
 Owner: caller adoption `01a10933-e913`. Shared helper/selector implementation
 and construction liveness remain core-owned. Art backing: N/A.
 
-## Scope and current result
+## Refreshed adoption after PR522
+
+Core PR522 merge `8175cbcbd641babce7d3d915cb24e669ec0798d9` resolves the
+recorded dependency with a live-object `approachBody` input. Only the actual
+acquired enemy land target can bypass early occupied-endpoint refusal, under
+core's matching identity, positive HP, terminal accepted-waypoint and nonpending
+conditions. That body stays in all physical point/sweep/detour/separation/lease/
+contour checks. Other occupied endpoints still wait. Caller still adds only the
+existing predicate at the radius seam; no range/radius/route/goal/queue/budget
+change, canceled AttackMove adoption or same-cell combat edit.
+
+The unchanged eight real-command cases now pass all original kill/loss and
+continuation/recovery bounds, with zero rejected executed body sweeps, zero new
+contacts and zero strict static failures. Each kill retains25 original legal
+range/damage hits. No acquired wait or same-cell-combat write occurs in this
+workload. The original failed receipts below remain historical evidence.
+
+Refreshed candidate runtime SHA256: `4117aa43ef1d900a5993f12250e008d8439d2d4e1a53ee7b68aceba9918526f7`.
+Exact published-head review, native recovery, required checks and merge evidence
+remain recorded on PR520. The source QA scope does not close the separately
+unobserved same-cell writer, core construction liveness or ordinary rendered
+acceptance. The original wall suite is not rerun.
+
+## Historical PR519-only draft at `aa1afcb7`
 
 The candidate is based on PR519 merge
 `7c031a05b2fadd1c20af93e64a00980f886d8d3b`, after PR517's static correction.
@@ -54,7 +77,7 @@ The original construction/crowd wall suite is not duplicated.
 
 ## Validation and remaining acceptance
 
-Author candidate adjacent movement/body/forward/Return checks: 295/295 pass.
+Historical author candidate adjacent movement/body/forward/Return checks: 295/295 pass.
 Exact-head independent integration review, eight-case evidence, bounded native
 both-seat recovery and required types/imports/docs/pack results are recorded on
 the owning PR. Keep native authority/recovery separate from the failed productive
