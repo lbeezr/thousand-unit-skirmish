@@ -1069,9 +1069,11 @@ compatibility ratchets. R4, main, assets, package/CI configuration and behaviora
 redesign are excluded; the root lane's non-audio audit integrates shared inventory
 and documentation deltas serially against fresh main. Internal organization has
 no presentation impact; art backing N/A.
+
 #### Production and research availability rule homes
 
-In [PR569](https://github.com/lbeezr/thousand-unit-skirmish/pull/569), the quality rules owner places the existing `productionAction` implementation in
+In [PR569](https://github.com/lbeezr/thousand-unit-skirmish/pull/569), the quality
+rules owner places the existing `productionAction` implementation in
 `src/rules/production-actions.mjs` and the three existing research functions in
 `src/rules/research-actions.mjs`, beside their shared action-rule dependency.
 Only their two relative dependency specifiers change; function bodies, default
