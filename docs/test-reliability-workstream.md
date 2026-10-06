@@ -8,6 +8,31 @@ Production movement/crowd and UI/renderer remain separate lanes. The existing
 
 ## Concrete failure history
 
+### Stone checkpoint selection
+
+Owner: fixture workstream `01a1085f`. The already-public
+[sole native capture](https://github.com/lbeezr/thousand-unit-skirmish/pull/520#issuecomment-6010691160)
+reports that the post-restart wait selected shutdown's newer checkpoint sequence
+without a newer simulation tick. This passing trace establishes a selection gap;
+it does not establish the cause of earlier timer assertion failures. The separate
+construction completion timeout remains with its runtime owner.
+
+The Stone fixture now reads the actual checkpoint after Stop and requires both
+sequence and tick advancement beyond that record before its post-restart checks.
+Focused controls reject shutdown itself and either counter advancing alone, and
+accept a newer record from resumed simulation. All original conservation,
+structure and finite/range timer assertions and the 90-second waits remain.
+Production is unchanged. No held timer records are published here.
+
+Next step: qualify the exact fixture head with the focused selection controls and
+the single original filtered Stone journey, then independently review and merge.
+The dependency is the existing native fixture/runtime, so any construction wait
+failure is retained separately rather than weakening its predicate or deadline.
+Run `node --test --test-name-pattern='checkpoint selection' scripts/stone-map-profile.test.mjs`
+for selection controls and the original `internal Practice selects shipped Stone`
+name filter for the native journey. Source/tests, clean packaging, hosted CI,
+deployment and playable evidence remain separate claims.
+
 | Integrated correction | Observed extraction failure | Retained contract |
 | --- | --- | --- |
 | [PR365](https://github.com/lbeezr/thousand-unit-skirmish/pull/365) | Extracted client `sendCommand` lacked `browserStateRecovery`. | Real recovery binding, both-seat fractional cargo and conservation controls. |
