@@ -317,6 +317,21 @@ test('construction loader rejects referenced host imports and conservatively rej
   });
 });
 
+test('construction loader resolves completion imports and the actual queue limit without widening its body slice', async () => {
+  await constructionFixtureSource(async ({ directory, sourceURL, source }) => {
+    await writeFile(join(directory, 'completion.mjs'), 'export const policy = limit => limit;');
+    const text = source("import { policy as completionPolicy } from './completion.mjs';")
+      + '\nconst MAX_QUEUED_WAYPOINTS = 7;\nfunction updateBuildingAndProduction() { return completionPolicy(MAX_QUEUED_WAYPOINTS); }\n';
+    await writeFile(sourceURL, text);
+    const loaded = await loadConstructionServerFixture(sourceURL);
+    assert.equal(loaded.bindings.MAX_QUEUED_WAYPOINTS, 7, 'read the production declaration, never a fixture default');
+    assert.equal(loaded.bindings.completionPolicy(loaded.bindings.MAX_QUEUED_WAYPOINTS), 7);
+    assert.ok(!loaded.functions.includes('updateBuildingAndProduction'), 'completion state/body stays with its caller');
+    await writeFile(sourceURL, text.replace('const MAX_QUEUED_WAYPOINTS = 7;', 'const MAX_QUEUED_WAYPOINTS = missing;'));
+    await assert.rejects(loadConstructionServerFixture(sourceURL), /Missing production construction queue limit/);
+  });
+});
+
 test('shared construction fixtures retain separate retry state with identical production policies', () => {
   const first = constructionServerBindings(), second = constructionServerBindings();
   const unit = { generation: 1, orderRevision: 2 }, building = { id: 3 };
