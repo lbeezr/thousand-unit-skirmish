@@ -61,6 +61,8 @@ actual journey coverage and rendered acceptance are separate.
 
 ### Remaining caller steps after PR432
 
+The [acquired Worker Patrol shared-body adoption](qa-worker-patrol-shared-body-admission-2026-10-06.md) consumes core PR519 through its single radius seam and PR522's live-target approach input. The unchanged eight cases now pass productive and body-safety bounds; exact-head review/native/package evidence remains on PR520. Core retains shared selection and construction liveness; same-cell and rendered acceptance remain separate.
+
 The [Patrol-only acquired Worker adoption](qa-worker-patrol-acquired-clearance-2026-10-05.md) observes actual pre-write acquired substeps, consumes the existing selected-route rejoin and preserves original policy/recovery controls. It is based on PR513's construction body-admission merge without changing its guards; crowd retains original qualification. The canceled acquired-AttackMove handoff remains separate. Direct Worker combat, rally and interaction writers require their own measured contracts before further adoption.
 
 Construction travel/approach and the scoped military Move-objective, explicit
@@ -1230,6 +1232,71 @@ original native assertion: its 60-second run covered only 1,770 journey ticks
 against the fixed 2,700-tick requirement. CPU elapsed time is not simulation
 liveness; native full arrival, served identity and ordinary rendered acceptance
 remain open. No software-render result establishes consumer-GPU capacity.
+
+### Construction separation static-profile correction — 6 October 2026
+
+Original fixed qualification after PR513 regressed from seven to five passing
+cases; it is not universal movement improvement. A separate crowd phase witness
+at `d27728f8` identifies Worker 68 on tick 347 of seat-1 queued-wall construction:
+active unfinished site 1, progress `.32`, revision 1 and exhausted route `[3230]`.
+Interaction separation used static radius zero while construction's body radius
+was `.18`. Its body guard passed; the `.18` static sweep entered site 2's
+footprint with margin `+.0077793237` to `-.0092269066`. The economy-only static
+selector predates PR513, so this observation does not isolate the full liveness
+regression or explain all aggregate Worker contacts.
+
+Core extends only that separation radius to active construction, preserving the
+existing economy predicate, terrain/cell guard, short static escape, body guard,
+intent and query budgets. Mirrored source controls fail before the correction;
+inherited static escape/deeper controls retain legal own movement. The separate
+matched first-divergence investigation and original 2,700-tick qualification
+remain open; this source slice closes only the witnessed static admission gap.
+
+### Shared Worker body-admission seam — 6 October 2026
+
+Core supplies the [agreed acquired-Patrol hook](https://github.com/lbeezr/thousand-unit-skirmish/pull/513#issuecomment-6006751152):
+server-local `workerLocalBodyRadius(unit)` derives local body adoption from
+existing intent, and `workerBodyStepAllowed(unit, proposedPosition)` consumes
+that radius with a fresh bounded live query. The same radius selects local
+steering, stale-roster wait and actual steering/fallback coordinate normalization.
+The four existing construction guards consume the shared helper; its default
+activation remains exactly construction. This extraction changes no route,
+target, work, checkpoint state, queue, query/proposal budget or movement policy.
+
+Caller owns only the additive `workerPatrolAcquiredMovementActive` term in that
+radius seam, its original eight physical cases and productive two-seat/native
+recovery. Selection and write admission must stay coupled. Original rejoin,
+range/leash/return policy and excluded Worker modes remain caller-owned. The
+same-cell combat writer and other direct interaction phases require explicit
+coverage before a caller claims all its writes; three routed guards alone do
+not establish that. Construction separation's static radius remains its own
+policy. Core owns shared admission/fixtures; caller owns acquisition policy;
+crowd retains original fixed-deadline wall qualification. Art backing is N/A.
+
+### Acquired Worker Patrol combat approach input — 6 October 2026
+
+The [caller witness](https://github.com/lbeezr/thousand-unit-skirmish/pull/513#issuecomment-6007111690)
+at PR520 head `aa1afcb7` has a safe but stationary Worker at
+`(4.001, .9536390483)`, outside its existing weapon range from target Worker 8
+at `(5.5, .5)`. A terminal accepted waypoint occupies that target's cell. The
+shared selector's endpoint refusal reports zero proposals; all four kill cases
+miss their original deadline while four loss cases retain safe continuation.
+
+Core owns the [allocated input](https://github.com/lbeezr/thousand-unit-skirmish/pull/520#issuecomment-6007215081):
+optional `approachBody` in `selectCrowdStep` excludes only that live object's
+identity from the early occupied-endpoint refusal. It remains in every physical
+point/sweep oracle, separation, detour, lease and contour query. Server-local
+`workerPatrolApproachBody` supplies it only for existing acquired Worker Patrol,
+a nonpending terminal waypoint in the live enemy land target's cell, with valid
+slot identity and positive HP. Unrelated occupied endpoints keep their wait.
+No route, goal, range, queue, body radius or query/proposal limit changes.
+
+Fifteen source controls reproduce the original zero-proposal wait, enter the
+existing weapon range through clear steps, and retain hard body/terrain refusal,
+other occupied endpoints, replacement and identity/domain exclusions. The caller
+still owns PR520 activation and the original kill/loss/native recovery deadline
+qualification; this input alone does not close that outcome. Construction
+liveness and rendered acceptance remain separate. Art backing is N/A.
 
 ### Forest cell-gap characterization — 4 October 2026
 

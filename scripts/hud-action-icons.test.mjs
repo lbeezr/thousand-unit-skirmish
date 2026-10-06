@@ -16,7 +16,7 @@ test('default action set supplements every existing labelled control with a deco
     ['patrol', 'follow', 'stop', 'holdPosition', 'returnCargo', 'formation']);
   assert.deepEqual(manifest.actions.find(action => action.id === 'formation').selectionContexts,
     ['workers', 'military', 'mixed', 'boats'], 'Formation does not replace building rally/upgrade meaning');
-  const server = readFileSync(new URL('server.mjs', root), 'utf8');
+  const server = readFileSync(new URL('src/server/client-static-assets.mjs', root), 'utf8');
   const allowlist = server.match(/const publicUiAsset = \[([\s\S]*?)\]\.includes\(relative\);/)[1];
   for (const action of manifest.actions) {
     assert.match(action.source, /^assets\/ui\/icons\/actions\/[a-z-]+\.svg$/);

@@ -8,6 +8,7 @@ import { forestGatherGroups, visibleForestCandidates } from '../src/forest-gathe
 import { shortcutFlatUnitPath, canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { constructionMovementActive } from '../src/construction-work-intent.mjs';
+import { workerPatrolAcquiredMovementActive } from '../src/combat-movement.mjs';
 import { canTraverseCrowdBodySegment } from '../src/unit-crowd-steering.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { creditResourceBalance } from '../src/economy-ledger.mjs';
@@ -26,7 +27,7 @@ const names = ['workerFlowPath', 'applyWorkerFlowRoute', 'publishWorkerEconomyRo
   'ensureGatherWorkIntent', 'depositWorkerCargo', 'stopGathering', 'cancelGatherOrder',
   'clearAttackMoveOrder', 'assignStationaryOrder', 'pendingMoveAssignmentsByUnit', 'enqueueRouteRepairs',
   'applyPlannedMoveAssignment', 'completeMovePlanningJob', 'processMovePlanningSlice',
-  'scheduleNextMovePlanning', 'serviceMovePlanningForTick', 'constructionBodyStepAllowed'];
+  'scheduleNextMovePlanning', 'serviceMovePlanningForTick', 'workerLocalBodyRadius', 'workerBodyStepAllowed'];
 const record = path => ({ hp: 0, kind: 'infantry', path, pathIndex: path.length, attackMoveResumePath: null });
 const entries = f => f.units.reduce((n, u) => n + u.path.length + (u.attackMoveResumePath?.length ?? 0), 0);
 const phaseStart = source.indexOf('  const blockedRouteRepairs = [];');
@@ -66,7 +67,7 @@ function fixture({ width = 320, height = 320, total = 0, weighted = false, count
   const callbacks = [], censuses = [], selections = [], notices = [], searches = [], samples = [];
   const forestCellMask = new Uint8Array(levels.length), forestWoodRemaining = new Float64Array(levels.length);
   const context = vm.createContext({ ...movement, ...workIntent, shortcutFlatUnitPath, canTraverseFlatUnitSegment,
-    constructionMovementActive, canTraverseCrowdBodySegment, spatialBucketRosterCurrent:false,
+    constructionMovementActive, workerPatrolAcquiredMovementActive, canTraverseCrowdBodySegment, spatialBucketRosterCurrent:false,
     crowdNeighborsNear(){throw Error('economy-only fixture cannot enter construction body admission');},
     activeWallBuildOrder, UNIT_DEFINITIONS, creditResourceBalance, visibleForestCandidates,
     MAP_WIDTH: width, MAP_HEIGHT: height, MAP_HALF_X: width / 2, MAP_HALF_Z: height / 2, CELL_COUNT: levels.length,

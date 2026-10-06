@@ -6,6 +6,7 @@ import './follow-travel-journeys.mjs';
 import './worker-follow-journeys.mjs';
 import './worker-patrol-journeys.mjs';
 import './worker-patrol-acquired-clearance.test.mjs';
+import './worker-patrol-acquired-body-pairs.test.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';

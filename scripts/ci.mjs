@@ -81,6 +81,7 @@ run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush pre
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
 run(['--test', 'scripts/map-publish-feedback.test.mjs'], 'Map Studio rejected publish feedback and explicit retry');
 run(['scripts/check-docs.mjs'], 'Documentation links');
+run(['--test', 'scripts/public-gameplay.test.mjs'], 'Default-off anonymous gameplay and protected private routes');
 run(['--test', 'scripts/tiny-match-pacing.test.mjs'], 'Paid Tiny pacing measurement and non-completion labels');
 run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default bindings and release dependencies');
 run(['--test', 'scripts/asset-readability.test.mjs'], 'Read-only asset catalog consuming the existing production sidecar');

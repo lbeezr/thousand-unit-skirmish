@@ -6,6 +6,9 @@ import * as movement from '../src/unit-movement.mjs';
 import { shortcutFlatUnitPath, canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
 import { clearWorkIntent, clearGatherWorkIntent } from '../src/work-intent.mjs';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
+import { constructionMovementActive } from '../src/construction-work-intent.mjs';
+import { workerPatrolAcquiredMovementActive } from '../src/combat-movement.mjs';
+import { canTraverseCrowdBodySegment } from '../src/unit-crowd-steering.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { creditResourceBalance } from '../src/economy-ledger.mjs';
 import { preflightXlCheckpointRoutes, XL_CHECKPOINT_ROUTE_MAX_ENTRIES as QUOTA } from '../src/server/checkpoint-route-budget.mjs';
@@ -21,7 +24,8 @@ const names = ['workerFlowPath', 'applyWorkerFlowRoute', 'routeWorkerToDropoff',
   'clearAttackMoveOrder', 'cancelGatherOrder', 'assignStationaryOrder', 'pendingMoveAssignmentsByUnit',
   'enqueueRouteRepairs', 'applyPlannedMoveAssignment', 'completeMovePlanningJob', 'processMovePlanningSlice',
   'scheduleNextMovePlanning', 'serviceMovePlanningForTick', 'workerAtDropoff', 'ensureGatherWorkIntent',
-  'depositWorkerCargo', 'stopGathering', 'updateWorkerEconomy', 'advanceQueuedWaypoints'];
+  'depositWorkerCargo', 'stopGathering', 'updateWorkerEconomy', 'advanceQueuedWaypoints',
+  'workerLocalBodyRadius', 'workerBodyStepAllowed'];
 const phaseStart = source.indexOf('  const blockedRouteRepairs = [];');
 const phaseEnd = source.indexOf('  advanceQueuedWaypoints();', phaseStart);
 assert.ok(phaseStart > 0 && phaseEnd > phaseStart);
@@ -66,6 +70,8 @@ function fixture({ width = 320, height = 320, total = 0, count = 1, team = 0,
   const candidates = [{ id: 10, goals: [...fields[0].goals] }, { id: 11, goals: [...fields[1].goals] }];
   const notices = [], selections = [], callbacks = [], samples = [], searches = [];
   const context = vm.createContext({ ...movement, shortcutFlatUnitPath, canTraverseFlatUnitSegment,
+    constructionMovementActive, workerPatrolAcquiredMovementActive, canTraverseCrowdBodySegment, spatialBucketRosterCurrent: false,
+    crowdNeighborsNear() { throw Error('Return-only fixture cannot enter local Worker body admission'); },
     clearWorkIntent, clearGatherWorkIntent, activeWallBuildOrder, UNIT_DEFINITIONS, creditResourceBalance,
     MAP_WIDTH: width, MAP_HEIGHT: height, MAP_HALF_X: width / 2, MAP_HALF_Z: height / 2, CELL_COUNT: levels.length,
     MAX_UNITS: 2000, MAX_RESOURCE_NODES: 128, XL_CHECKPOINT_ROUTE_MAX_ENTRIES: QUOTA,

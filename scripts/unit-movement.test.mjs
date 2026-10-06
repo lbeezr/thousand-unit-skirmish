@@ -7,10 +7,12 @@ import './military-endpoint-availability-journeys.mjs';
 import './military-next-leg-claims-journeys.mjs';
 import './worker-gather-route-admission-journeys.mjs';
 import './construction-body-admission-journeys.mjs';
+import './crowd-combat-approach-input-journeys.mjs';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { constructionMovementActive } from '../src/construction-work-intent.mjs';
+import { workerPatrolAcquiredMovementActive } from '../src/combat-movement.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent,
   activeLandMovementBodyRadius, workerEconomyBodyRadius, LAND_CLEARANCE_PROFILE,
   canTraverseStaticBodySegment, createClearanceMoveGoalPoint, activeMoveGoalPoint, createMoveGoalPoint,
@@ -298,7 +300,7 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     spatialBucketRow:z=>Math.max(0,Math.min(bucketColumns-1,Math.floor((z+half)/bucketSize))),
     elevationLevelByCell:levels,canTraverseUnitStep,activeLandMovementBodyRadius,workerEconomyBodyRadius,LAND_CLEARANCE_PROFILE,canTraverseStaticBodySegment,createClearanceMoveGoalPoint,activeMoveGoalPoint,rejoinSelectedUnitRoute,
     ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT,
-    constructionMovementActive, canTraverseCrowdBodySegment, navigationRevision: 0, movePlanningEpoch: 0,
+    constructionMovementActive, workerPatrolAcquiredMovementActive, canTraverseCrowdBodySegment, navigationRevision: 0, movePlanningEpoch: 0,
     spatialBucketRosterCurrent:true,
     canTraverseFlatUnitSegment,findStationaryWorkerDetour,SEPARATION_DIAGNOSTICS_ENABLED:false,
     createUnitRoutePublicationLedger, MAX_UNITS:2000, MAX_RESOURCE_NODES:128, XL_CHECKPOINT_ROUTE_MAX_ENTRIES,
@@ -405,14 +407,14 @@ test('construction body-only wait resumes on physical release without navigation
 test('construction body query reads live serial positions, includes stationary combat and defers overflow',()=>{
   const f=constructionBodyFixture(),to={x:.15654,z:-.33671};
   Object.assign(f.units[1],{x:2,attackTargetId:0});
-  assert.equal(f.context.constructionBodyStepAllowed(f.mover,to),true);
-  f.units[1].x=.5;assert.equal(f.context.constructionBodyStepAllowed(f.mover,to),false);
+  assert.equal(f.context.workerBodyStepAllowed(f.mover,to),true);
+  f.units[1].x=.5;assert.equal(f.context.workerBodyStepAllowed(f.mover,to),false);
   const before=structuredClone(f.mover);let queries=0;
   f.context.crowdNeighborsNear=()=>{queries++;return {neighbors:[],visits:128,overflow:true};};
   f.move();assert.equal(queries,1);assert.deepEqual(f.mover,before);assert.equal(f.repairs.length,0);
   for(const count of [64,65]) {
     f.context.crowdNeighborsNear=()=>({neighbors:Array.from({length:count},()=>({kind:'infantry',x:2,z:2})),visits:128,overflow:false});
-    assert.equal(f.context.constructionBodyStepAllowed(f.mover,to),count===64);
+    assert.equal(f.context.workerBodyStepAllowed(f.mover,to),count===64);
   }
 });
 
@@ -439,7 +441,7 @@ for(const reuse of [false,true]) test(`construction waits for a current producti
   f.context.spatialBucketTeamNext=[new Int32Array(2000).fill(-1),new Int32Array(2000).fill(-1)];
   f.move();assert.deepEqual(f.mover,before);assert.equal(f.repairs.length,0);
   rebuildBodyFixtureBuckets(f);assert.equal(f.context.spatialBucketRosterCurrent,true);
-  assert.equal(f.context.constructionBodyStepAllowed(f.mover,{x:.15654,z:-.33671}),false);
+  assert.equal(f.context.workerBodyStepAllowed(f.mover,{x:.15654,z:-.33671}),false);
   assert.ok(f.context.crowdNeighborsNear(f.mover).neighbors.includes(spawned));
 });
 
@@ -456,13 +458,45 @@ for(const enemy of [false,true]) test(`construction interaction separation check
   assert.deepEqual(f.mover.queuedWaypoints,before.queuedWaypoints);
 });
 
+for(const side of [-1,1]) test(`active construction separation checks its static body before entering an unfinished footprint, side=${side}`,()=>{
+  const f=constructionBodyFixture({x:side*.1877793237,z:-.5});f.mover.path=[];
+  f.blockedCells.add(side<0?28:27);
+  Object.assign(f.units[1],{x:side*.6287357116,z:-.5});
+  f.context.buildingsById.set(7,{id:7,hp:100,complete:false,progress:.32});f.context.distanceToBuildingEdge=()=>.5;
+  rebuildBodyFixtureBuckets(f);
+  const before=structuredClone(f.mover),others=structuredClone(f.units.slice(1));
+  const proposed={x:before.x-side*.0170062303,z:before.z};
+  assert.ok(canTraverseUnitStep(cell(before.x,before.z),cell(proposed.x,proposed.z),width,f.levels,f.walkable));
+  assert.equal(f.context.workerBodyStepAllowed(f.mover,proposed),true,'this is a static-profile gap, not a body refusal');
+  assert.ok(canTraverseStaticBodySegment(before,before,.18,width,width,f.walkable));
+  assert.equal(canTraverseStaticBodySegment(before,proposed,.18,width,width,f.walkable,{allowEscape:true}),false);
+  f.spread();assert.deepEqual(f.mover,before);assert.deepEqual(f.units.slice(1),others);assert.equal(f.repairs.length,0);
+});
+
+for(const escape of [false,true]) test(`construction separation preserves short inherited static escape, escape=${escape}`,()=>{
+  const f=constructionBodyFixture({x:-.17,z:-.5});f.mover.path=[];f.blockedCells.add(28);
+  Object.assign(f.units[1],{x:escape ? .27 : -.61,z:-.5});
+  f.context.buildingsById.set(7,{id:7,hp:100,complete:false,progress:.32});f.context.distanceToBuildingEdge=()=>.5;
+  rebuildBodyFixtureBuckets(f);
+  const before=structuredClone(f.mover),others=structuredClone(f.units.slice(1));
+  assert.equal(canTraverseStaticBodySegment(before,before,.18,width,width,f.walkable),false);
+  f.spread();
+  if(escape) {
+    assert.ok(f.mover.x<before.x);
+    assert.ok(canTraverseStaticBodySegment(before,f.mover,.18,width,width,f.walkable,{allowEscape:true}));
+    assert.ok(canTraverseCrowdBodySegment(before,f.mover,.18,[others[0]],{allowEscape:true}));
+  } else assert.deepEqual(f.mover,before);
+  assert.deepEqual(f.units.slice(1),others);assert.equal(f.repairs.length,0);
+  assert.deepEqual(f.mover.workIntent,before.workIntent);assert.deepEqual(f.mover.queuedWaypoints,before.queuedWaypoints);
+});
+
 test('construction guard excludes other domains without querying or granting displacement',()=>{
   const f=constructionBodyFixture(),before=structuredClone(f.mover);
   f.context.crowdNeighborsNear=()=>{throw Error('excluded body query');};
   for(const change of [{buildingTargetId:null},{holdingPosition:true},{hp:0},{kind:'infantry'},
     {movementDomain:'water'},{persistentOrder:{type:'patrol'}},{persistentOrder:{type:'follow'}},
     {attackTargetId:1},{attackMove:true},{gatherPhase:'gathering'}]) {
-    assert.equal(f.context.constructionBodyStepAllowed({...f.mover,...change},{x:.15654,z:-.33671}),true);
+    assert.equal(f.context.workerBodyStepAllowed({...f.mover,...change},{x:.15654,z:-.33671}),true);
   }
   assert.deepEqual(f.mover,before);
 });

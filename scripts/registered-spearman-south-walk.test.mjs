@@ -21,14 +21,14 @@ const historicalPixels=Buffer.alloc(2048*pixels.height*4);
 for(let row=0;row<pixels.height;row++)historicalPixels.set(pixels.pixels.subarray(row*pixels.width*4,(row*pixels.width+2048)*4),row*2048*4);
 for(const [x,y] of [[1316,2772],[1316,3204],[1316,3588]])for(let row=y;row<y+352;row++)historicalPixels.fill(0,(row*2048+x)*4,(row*2048+x+416)*4);
 
-test('Spearman South preserves all 44 prior registered poses, clips and body calibration',()=>{
+test('Historical Spearman South preserves all 44 prior registered poses, clips and body calibration',()=>{
   const laterIds=new Set(["walk-south-0","walk-south-1","walk-south-2","walk-south-3","walk-south-west-0","walk-south-west-1","walk-south-west-2","walk-south-west-3","walk-west-0","walk-west-1","walk-west-2","walk-west-3","walk-north-west-0","walk-north-west-1","walk-north-west-2","walk-north-west-3"]);
-  const legacy=asset.frames.filter(f=>!laterIds.has(f.id)&&!/^attack-(?:north-east|east|north|south|south-west|west|north-west)-\d+$/.test(f.id));
-  assert.equal(legacy.length,44);assert.equal(asset.frames.length,81);
+  const legacy=asset.frames.filter(f=>!laterIds.has(f.id)&&!/^attack-(?:north-east|east|north|south|south-west|west|north-west)-\d+$/.test(f.id)&&!/^defeat-north-\d+$/.test(f.id)&&!/^defeat-north-east-\d+$/.test(f.id));
+  assert.equal(legacy.length,44);assert.equal(asset.frames.length,85);
   assert.equal(sha(JSON.stringify(legacy.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
   // Pin actual retained clips; later own-view replacements are separately checked.
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['north-east','east','north','south','south-west','west','north-west'].includes(c.directionId))&&!(c.stateId==='walk'&&["south","south-west","west","north-west"].includes(c.directionId)));
-  assert.equal(asset.clips.length,32);assert.equal(unchanged.length,21);assert.equal(sha(JSON.stringify(unchanged)),'00517e19dad8ffcecd63c69fbc93324a6b95f1f7ec6afcb711a5eeaa13485f37');
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='defeat'&&c.directionId==='north-east')&&!(c.stateId==='defeat'&&c.directionId==='north')&&!(c.stateId==='attack'&&['north-east','east','north','south','south-west','west','north-west'].includes(c.directionId))&&!(c.stateId==='walk'&&["south","south-west","west","north-west"].includes(c.directionId)));
+  assert.equal(asset.clips.length,32);assert.equal(unchanged.length,19);assert.equal(sha(JSON.stringify(unchanged)),'5295fa89f17b0f0e794fda5f872e0c2ec55fb5da102e864fa002defaee7955c8');
   assert.equal(asset.heightWorld/Math.max(...asset.frames.map(f=>f.alphaBoundsPx.height)),receipt.worldPerPixel);
   assert.equal(asset.heightWorld,receipt.heightWorld);
   assert.equal(sha(read(receipt.identitySource.path)),receipt.identitySource.sha256);
@@ -36,7 +36,7 @@ test('Spearman South preserves all 44 prior registered poses, clips and body cal
   for(const key of ['mirroredPoses','borrowedDirectionPoses','generationProviderCalls','paidJobs'])assert.equal(receipt[key],0);
 });
 
-test('Spearman South contains four exact source poses and leaves the other 7 cells incomplete',()=>{
+test('Spearman South contains four exact source poses and leaves the other 5 cells incomplete',()=>{
   const clip=asset.clips.find(c=>c.stateId==='walk'&&c.directionId==='south');
   assert.equal(clip.loop,true);assert.equal(clip.sequence.reduce((n,k)=>n+k.durationMs,0),800);
   for(let index=0;index<4;index++){
@@ -51,7 +51,7 @@ test('Spearman South contains four exact source poses and leaves the other 7 cel
     for(let y=0;y<352;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+320)*4),original.pixels.subarray(y*320*4,(y+1)*320*4));
   }
   const report=analyzeUnitArtCoverage(asset,cells);
-  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,7);
+  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,5);
   const ne=report.rows.find(r=>r.key==='walk|south');assert.equal(ne.status,'authored');assert.equal(ne.distinctFrames,4);assert.equal(ne.distinctSilhouettes,4);
   assert.deepEqual(missingWalkDirections({pack,cells}),[]);
   assert.equal(report.rows.find(r=>r.key==='attack|south').status,'authored');assert.ok(report.missingCells.includes('defeat|south'));

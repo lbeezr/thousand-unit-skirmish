@@ -17,14 +17,14 @@ const pixels=decodeRgba8(read(`${dir}/spearman-atlas-runtime.png`));
 const cells=decodeRegisteredUnitFrames(asset,page,pixels);
 const ownIds=new Set(['attack-north-west-0','attack-north-west-1','attack-north-west-2']);
 
-test('Northwest attack preserves all 78 prior complete frame records, pixels, 31 other clips and calibration',()=>{
-  const prior=asset.frames.filter(f=>!ownIds.has(f.id));
-  assert.equal(prior.length,78);assert.equal(asset.frames.length,81);
+test('Historical Northwest attack preserves all 78 prior complete frame records, pixels, 31 other clips and calibration',()=>{
+  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^defeat-north-\d+$/.test(f.id)&&!/^defeat-north-east-\d+$/.test(f.id));
+  assert.equal(prior.length,78);assert.equal(asset.frames.length,85);
   assert.equal(sha(JSON.stringify(prior.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&c.directionId==='north-west'));
-  assert.equal(unchanged.length,31);assert.equal(sha(JSON.stringify(unchanged)),receipt.baselineUnchangedClipsSHA256);
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='defeat'&&c.directionId==='north-east')&&!(c.stateId==='defeat'&&c.directionId==='north')&&!(c.stateId==='attack'&&c.directionId==='north-west'));
+  assert.equal(unchanged.length,29);assert.equal(sha(JSON.stringify(unchanged)),'f1a505eba03bc7842b8b8b249eb0ed51674de969563acf5c50c6e3aea2c279b2');
   const {frames,clips,...metadata}=asset;
-  assert.equal(sha(JSON.stringify(metadata)),receipt.registeredAssetMetadataSHA256);
+  assert.equal(sha(JSON.stringify({...metadata,...receipt.registeredBounds})),receipt.registeredAssetMetadataSHA256);
   const baseline={...metadata,artBoundsWorld:receipt.baselineBounds.artBoundsWorld,cullingBoundsWorld:receipt.baselineBounds.cullingBoundsWorld};
   assert.equal(sha(JSON.stringify(baseline)),receipt.baselineAssetMetadataSHA256);
   assert.equal(asset.heightWorld/Math.max(...frames.map(f=>f.alphaBoundsPx.height)),receipt.worldPerPixel);
@@ -47,7 +47,7 @@ test('Northwest attack reuses its exact idle key then plays three own-view keys 
     for(let y=0;y<352;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+416)*4),original.pixels.subarray(y*416*4,(y+1)*416*4));
   }
   const report=analyzeUnitArtCoverage(asset,cells),row=report.rows.find(r=>r.key==='attack|north-west');
-  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,7);
+  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,5);
   assert.equal(row.status,'authored');assert.equal(row.distinctFrames,4);assert.equal(row.distinctSilhouettes,4);
   assert.ok(!report.missingCells.some(c=>c.startsWith('walk|')));assert.ok(report.missingCells.includes('defeat|north-west'));
   const frozen=structuredClone(asset);frozen.clips.find(c=>c.stateId==='attack'&&c.directionId==='north-west').sequence.forEach(k=>{k.frameId='idle-north-west-0';});
@@ -68,6 +68,8 @@ test('Northwest attack preserves the whole old RGBA page and zero mask while ext
   }
   assert.equal(sha(prefix),receipt.baselineDecodedAtlasSHA256,'every old page byte including unused space remains exact');
   for(const [x,y] of receipt.atlasSlotsPx)for(let row=y;row<y+352;row++)extension.fill(0,(row*512+x-2560)*4,(row*512+x-2560+416)*4);
+  // Remove only the later own-North defeat's separately pinned former empty cells.
+  for(const [x,y] of [[2564,1084],[2564,1516],[2564,1948],[2564,2380]])for(let row=y;row<y+416;row++)extension.fill(0,(row*512+x-2560)*4,(row*512+x-2560+416)*4);
   assert.equal(sha(extension),sha(Buffer.alloc(512*3968*4)),'every other new-column RGBA byte is zero');
   const mask=read(`${dir}/team-accent-mask.png`);
   assert.equal(mask.readUInt32BE(16),3072);assert.equal(mask.readUInt32BE(20),3968);assert.equal(mask[25],0);
