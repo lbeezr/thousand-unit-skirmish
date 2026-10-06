@@ -21,9 +21,26 @@ test('canonical audio composition stays in presentation with browser-safe caller
     ['src/audio-assets.mjs', './presentation/audio/composition.mjs'],
     ['src/audio-composer.mjs', './presentation/audio/composition.mjs'],
     ['src/presentation/audio/composition-player.mjs', './composition.mjs'],
+    ['src/presentation/audio/composition-wav.mjs', './composition.mjs'],
   ]) {
     assert.ok(moduleImports(sources.get(caller), caller).includes(specifier), caller);
   }
+  for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+    'src/formation-assignment.mjs', 'src/simulation/ai/opponent-observation.mjs']) {
+    const relative = path.posix.relative(path.posix.dirname(root), canonical);
+    assert.throws(() => check({ [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';`, [canonical]: '' }),
+      /(?:rules|world|simulation|ai) domain cannot reach presentation domain/, root);
+  }
+  for (const [host, domain] of Object.entries(RUNTIME_DOMAIN_HOSTS)) {
+    if (domain !== 'server') continue;
+    assert.throws(() => check({ [host]: `import './${canonical}';`, [canonical]: '' }, { serverEntrypoints: [host] }),
+      /server host reaches presentation domain/, host);
+  }
+});
+
+test('canonical WAV rendering stays browser-safe in presentation outside authoritative hosts', () => {
+  const canonical = 'src/presentation/audio/composition-wav.mjs';
+  assert.ok(RUNTIME_DOMAINS.presentation.includes(canonical));
   for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
     'src/formation-assignment.mjs', 'src/simulation/ai/opponent-observation.mjs']) {
     const relative = path.posix.relative(path.posix.dirname(root), canonical);

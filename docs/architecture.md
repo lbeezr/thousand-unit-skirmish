@@ -902,6 +902,38 @@ the graph is 237 modules/467 local edges with zero cycles. All 1,455 previous
 selections remain plus canonical player syntax. These are source ratchets,
 not a numerical file-size or whole-suite acceptance claim.
 
+#### Offline composition WAV rendering
+
+After [PR556](https://github.com/lbeezr/thousand-unit-skirmish/pull/556), the
+contiguous private WAV encoder and `renderCompositionWav` bodies move unchanged
+from composer into [presentation/audio/composition-wav.mjs](../src/presentation/audio/composition-wav.mjs).
+That renderer imports only the canonical composition compiler. Composer retains
+the validator, imports the renderer and forwards its same function binding;
+its complete `mountAudioComposer`/DOM/export-request/download/object-URL lifetime
+and other UI helper bodies remain byte-unchanged.
+
+Offline-context/default sample-rate reads remain call-time operations. Blob
+read/decode ordering and per-source cache, known DOMException messages/causes,
+unexpected error identity, five-minute bound, source/gain/pan/loop/fade schedule,
+PCM channel clipping/rounding/RIFF bytes and returned Blob type retain their
+existing implementation. No loader, recording URL, cache or UI cancellation
+policy is added to the leaf. The registered WAV tests consume it and preserve
+the root composer's two-name namespace plus renderer identity; every prior test
+name/assertion remains. The original composer scenario still exercises the
+supported renderer API through the real UI host.
+
+Exact canonical admission, authority/server negatives and packed root/canonical
+GET/HEAD/invalid-path checks extend the existing guards. Pure musical definitions,
+clock scheduling and offline output now have distinct audio responsibilities,
+without a generic utilities module or another barrel. The composer API remains
+supported under the consumer/inventory/identified-release retirement criteria
+above; only its renderer implementation moved. Listening/rendered acceptance
+is separate from the source/CPU/package milestone.
+At this dated checkpoint composer shrinks from 263 to 190 lines and the audio
+rendering leaf is 76 lines. The graph is 238 modules/469 local edges with zero
+cycles; all 1,456 prior selections remain plus canonical WAV syntax. These are
+responsibility/compatibility measurements, not full-suite or listening results.
+
 ### Remaining organization queue — 6 October 2026
 
 These are scoped proposals for the remaining stages, **not runtime edit
