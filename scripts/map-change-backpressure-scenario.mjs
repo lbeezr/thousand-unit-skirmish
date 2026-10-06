@@ -49,16 +49,49 @@ async function readHealth() {
   return response.json();
 }
 
-async function waitForBackpressure() {
+async function waitForBackpressure(client) {
   const deadline = Date.now() + timeoutMs;
+  const maxRefreshRequests = 200;
+  let refreshRequests = 0;
+  let coalescedAtPressure = null;
+  let coalescedAfterSetup = null;
   let health;
   do {
     health = await readHealth();
-    if (health.transport?.backpressuredPeers > 0
-      && health.transport.coalescedStateSnapshots > 0) return health;
+    const transport = health.transport;
+    assert.ok(transport, 'health should report native transport state');
+    assert.equal(client.socket.destroyed, false, 'the paused peer must remain connected');
+    assert.equal(transport.activePeers, 2, 'both scenario peers must remain connected');
+    assert.equal(transport.outboundQueueLimitDisconnects, 0, 'setup must stay below the real output queue cap');
+    assert.equal(transport.commandQueueLimitRejections, 0, 'setup commands must not be rejected');
+    if (Date.now() >= deadline) break;
+
+    if (coalescedAtPressure === null && transport.backpressuredPeers > 0) {
+      // stateRefresh clears pending replaceable snapshots. Permanently stop
+      // requesting it before testing fresh ordinary-state coalescing.
+      coalescedAtPressure = transport.coalescedStateSnapshots;
+    }
+    if (coalescedAtPressure !== null) {
+      if (transport.pendingCommands > 0) {
+        coalescedAfterSetup = null;
+      } else if (coalescedAfterSetup === null) {
+        coalescedAfterSetup = transport.coalescedStateSnapshots;
+      }
+      if (coalescedAfterSetup !== null && transport.pendingCommands === 0
+        && transport.backpressuredPeers > 0
+        && transport.coalescedStateSnapshots > coalescedAfterSetup) {
+        return { health, refreshRequests, coalescedAtPressure, coalescedAfterSetup };
+      }
+    } else if (health.armySize === 2000 && refreshRequests < maxRefreshRequests) {
+      // One valid full snapshot per poll creates real socket pressure without
+      // resetting simulation or exceeding the production inbound limits.
+      client.send({ type: 'stateRefresh', stateRefreshId: ++refreshRequests });
+    }
     await new Promise((resolve) => setTimeout(resolve, 50));
   } while (Date.now() < deadline);
-  throw new Error(`Large army did not create a coalesced backpressured state: ${JSON.stringify(health?.transport)}`);
+  throw new Error(`Large army did not create a fresh coalesced backpressured state: ${JSON.stringify({
+    refreshRequests, coalescedAtPressure, coalescedAfterSetup, transport: health?.transport,
+  })}`);
 }
 
 async function openPausedPlayer() {
@@ -176,7 +209,8 @@ try {
   pausedClient.send({
     type: 'move', ids: Array.from({ length: 1000 }, (_, index) => index), x: -10, z: 0, formation: 'box',
   });
-  const stalledHealth = await waitForBackpressure();
+  const pressure = await waitForBackpressure(pausedClient);
+  const stalledHealth = pressure.health;
   assert.equal(stalledHealth.armySize, 2000, 'the backpressured peer should receive the full army workload');
   const oldMapId = opened.welcome.map.id;
   const nextMap = opened.welcome.maps.find((map) => map.id === 'dense-clash' && map.id !== oldMapId)
@@ -208,6 +242,9 @@ try {
     scenario: 'coalesced state is discarded across map changes for a backpressured peer',
     oldMapId,
     newMapId: nextMap.id,
+    refreshRequests: pressure.refreshRequests,
+    coalescedAtPressure: pressure.coalescedAtPressure,
+    coalescedAfterSetup: pressure.coalescedAfterSetup,
     backpressuredPeers: stalledHealth.transport.backpressuredPeers,
     coalescedStateSnapshots: stalledHealth.transport.coalescedStateSnapshots,
     statesAfterMapChange: statesAfterMapChange.map((state) => state.mapId),
