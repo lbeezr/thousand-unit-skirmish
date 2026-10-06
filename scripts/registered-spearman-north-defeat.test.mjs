@@ -11,10 +11,10 @@ const source='docs/art-direction/human-roster-v1/extracted/spearman/defeat/north
 const dir='assets/units/spearman-sprite-v1',pack=JSON.parse(read(`${dir}/sprite-atlas-pack-v1.json`)),asset=pack.assets[0],page=pack.pages[0];
 const pixels=decodeRgba8(read(`${dir}/spearman-atlas-runtime.png`)),cells=decodeRegisteredUnitFrames(asset,page,pixels),ownIds=new Set(['defeat-north-0','defeat-north-1']);
 
-test('North defeat preserves all81 prior complete records/crops and31 other clips with unchanged body calibration',()=>{
-  const prior=asset.frames.filter(f=>!ownIds.has(f.id));assert.equal(prior.length,81);assert.equal(asset.frames.length,83);
+test('Historical North defeat preserves all81 prior complete records/crops and30 unaffected prior clips with unchanged body calibration',()=>{
+  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^defeat-north-east-\d+$/.test(f.id));assert.equal(prior.length,81);assert.equal(asset.frames.length,85);
   assert.equal(sha(JSON.stringify(prior.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
-  const clips=asset.clips.filter(c=>!(c.stateId==='defeat'&&c.directionId==='north'));assert.equal(clips.length,31);assert.equal(sha(JSON.stringify(clips)),receipt.baselineUnchangedClipsSHA256);
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='defeat'&&['north','north-east'].includes(c.directionId)));assert.equal(unchanged.length,30);assert.equal(sha(JSON.stringify(unchanged)),'893796afd12ae695ac1cbc8d202705bc1f5a720dd69d70087f701b8364802221');
   const {frames,clips:ignored,...metadata}=asset;assert.equal(sha(JSON.stringify(metadata)),receipt.registeredAssetMetadataSHA256);
   assert.equal(sha(JSON.stringify({...metadata,...receipt.baselineBounds})),receipt.baselineAssetMetadataSHA256);
   assert.equal(asset.heightWorld/Math.max(...frames.map(f=>f.alphaBoundsPx.height)),receipt.worldPerPixel);
@@ -36,7 +36,7 @@ test('North defeat reuses its exact idle then plays2 complete same-view source k
     const original=decodeRgba8(read(`${source}/${input.file}`)),r=f.frameRectsPx[0].rectPx;
     for(let y=0;y<416;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+416)*4),original.pixels.subarray(y*416*4,(y+1)*416*4));
   }
-  const report=analyzeUnitArtCoverage(asset,cells),row=report.rows.find(r=>r.key==='defeat|north');assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,6);assert.equal(row.status,'authored');assert.equal(row.distinctFrames,3);assert.equal(row.distinctSilhouettes,3);assert.ok(report.missingCells.every(c=>c.startsWith('defeat|')));
+  const report=analyzeUnitArtCoverage(asset,cells),row=report.rows.find(r=>r.key==='defeat|north');assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,5);assert.equal(row.status,'authored');assert.equal(row.distinctFrames,3);assert.equal(row.distinctSilhouettes,3);assert.ok(report.missingCells.every(c=>c.startsWith('defeat|')));
   const frozen=structuredClone(asset);frozen.clips.find(c=>c.stateId==='defeat'&&c.directionId==='north').sequence.forEach(k=>{k.frameId='idle-north-0';});assert.equal(analyzeUnitArtCoverage(frozen,cells).rows.find(r=>r.key==='defeat|north').status,'idle-fallback');
   const selected=spriteActionProvenance(new Map(asset.clips.map(c=>[`${c.stateId}|${c.directionId}`,c])),'defeat','north',null,'spearman',true);assert.equal(selected.reason,'exact');assert.equal(selected.selectedDirection,'north');
 });
@@ -44,6 +44,7 @@ test('North defeat reuses its exact idle then plays2 complete same-view source k
 test('North defeat changes only2 reviewed empty cells and preserves the whole3072page and encoded mask',()=>{
   assert.deepEqual(page.dimensionsPx,{width:3072,height:3968});assert.deepEqual(receipt.atlasSlotsPx,[[2564,1084],[2564,1516]]);assert.deepEqual(receipt.baselineDimensionsPx,page.dimensionsPx);assert.deepEqual(receipt.registeredDimensionsPx,page.dimensionsPx);
   const restored=Buffer.from(pixels.pixels);for(const [x,y] of receipt.atlasSlotsPx)for(let row=y;row<y+416;row++)restored.fill(0,(row*pixels.width+x)*4,(row*pixels.width+x+416)*4);
+  for(const [x,y] of [[2564,1948],[2564,2380]])for(let row=y;row<y+416;row++)restored.fill(0,(row*pixels.width+x)*4,(row*pixels.width+x+416)*4);
   assert.equal(sha(restored),receipt.baselineDecodedAtlasSHA256,'every prior page byte outside2 empty cells is exact');assert.equal(sha(read(`${dir}/team-accent-mask.png`)),receipt.baselineMaskSHA256);assert.equal(receipt.registeredMaskSHA256,receipt.baselineMaskSHA256);assert.equal(sha(JSON.stringify(page)),receipt.baselinePageMetadataSHA256);assert.equal(sha(read(`${dir}/spearman-atlas-source.png`)),sha(read(`${dir}/spearman-atlas-runtime.png`)));
 });
 

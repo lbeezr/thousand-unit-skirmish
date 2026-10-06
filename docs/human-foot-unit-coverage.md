@@ -46,20 +46,23 @@ unchanged. No art/runtime changes or held assets are adopted.
 
 ## Active Spearman continuation — 6 October 2026
 
-SouthPR505, SouthwestPR509, WestPR511 and [NorthwestPR515](https://github.com/lbeezr/thousand-unit-skirmish/pull/515)
-are merged with containing clean packages, HTTP admission and merged CPU checks.
-Northwest actual mergeae0bf2023727766617ca93c6d2fbf5219a757a45 has a clean1395-file
-release,digestsha256:6a1ea57caaaa5abefe4ec4027c96e02c9b57c52b41cd81c8dd40e42c9f1d7883.
+SouthPR505, SouthwestPR509, WestPR511, NorthwestPR515 and
+[North defeatPR521](https://github.com/lbeezr/thousand-unit-skirmish/pull/521) are
+merged with clean containing packages, HTTP admission and actual-merged CPU checks.
+North actual merge8ba4a51b884aae3338bfb07cec5c322a8bfe42e0 has1397 runtimefiles,
+sourceDirtyfalse,digestsha256:42ce02ab04ed1418a9ef105714a3268775ec512dd0d0c38a3f25fa4d38ba6b0c.
 Source walks8/8 and attacks8/8; identified-game acceptance stays open.
-[Own-North defeat](qa-spearman-north-defeat-2026-10-06.md) independently clears
-its corrected source and registers2 new collapse/terminal keys after1 exact
-reused idle opening in1080ms nonloop, through the unchanged150ms client fade.
-Default0.18.0/83 preserves81 full prior frames/31 clips/fullpage/mask/body scale;
-rooted bounds grow only the declared3.71mm maxZ. Spearman gaps6:defeatNE/E/S/SW/W/NW;
-Infantry21+Archer21=48 military source cells, all63 original native/deployed
-cells unverified. Continue own-NE defeat, remaining five defeats, then Archer.
-Every original/failed/corrected source trial is retained. No combat/state/stance
-edits, new paid jobs, private input or rejected identity adoption.
+[Own-Northeast defeat](qa-spearman-ne-defeat-2026-10-06.md) independently clears
+actual source and registers2 new collapse/terminal keys after1 exact reused idle,
+1080ms nonloop through the unchanged150ms fade. Default0.19.0/85 preserves83 full
+prior frames/31 clips/fullpage/mask/root/bodycalibration and all current bounds.
+Spearman gaps5:defeatE/S/SW/W/NW; Infantry21+Archer21=47 military source cells,
+all63 original native/deployed cells unverified. Continue own-East defeat, then
+S/SW/W/NW and Archer own matching views. Actual legacy/current Archer80 frames
+are inspected; legacy hood/blue-cloth identity differs and several crops contain
+stray boot fragments, so those are movement references, not admitted current cells.
+All original/failed/corrected source trials remain. No combat/state/stance edits,
+new paid jobs/private input/rejected identity adoption.
 
 ## Spearman Southwest source attack — 5 October 2026
 

@@ -5,8 +5,8 @@ from PIL import Image
 import copy, hashlib, io, json, subprocess, sys
 from foot_sprite_world_bounds import placed_sprite_bounds
 
-if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in ['north']):
-    raise ValueError('Expected a reviewed north defeat stage')
+if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] not in ['north', 'north-east']):
+    raise ValueError('Expected a reviewed north or north-east defeat stage')
 direction = sys.argv[1] if len(sys.argv) == 2 else 'north'
 root = Path(__file__).resolve().parents[1]
 source = root / f'docs/art-direction/human-roster-v1/extracted/spearman/defeat/{direction}-local-v1'
@@ -27,7 +27,7 @@ if (width, height) != (416, 416) or receipt['stateId'] != 'defeat' or receipt['s
     raise ValueError('Reviewed defeat canvas or one-shot cadence changed')
 if receipt['groundPivotPx'] != {'x': 208, 'y': idle['groundPivotPx']['y'] + 80}:
     raise ValueError('Reviewed defeat root changed')
-slots = {'north': [[2564, 1084], [2564, 1516]]}
+slots = {'north': [[2564, 1084], [2564, 1516]], 'north-east': [[2564, 1948], [2564, 2380]]}
 if receipt['atlasSlotsPx'] != slots[direction]:
     raise ValueError('Reviewed disjoint action slots changed')
 already = [f for f in asset['frames'] if f['id'] in own_ids]
