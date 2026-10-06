@@ -1072,6 +1072,16 @@ deadline. The correction's focused preseal results do not supersede the earlier
 full qualification or claim all baseline-passing journeys restored. Exact-head
 independent review and aggregate draft results retain this distinction.
 
+The next bounded consumer correction acknowledges an ordinary recovery veto by
+releasing that transient contour, retaining its original cooldown and this
+tick's wait. It adds no proposal, physical exception, route closure or task
+credit. A public actual-host regression checks subsequent guarded resumption,
+the unchanged goal/queue and recovery history across the original cooldown.
+Independent review supports this execution-feedback correction only: the
+original wall-removal and one-turn controls pass, while the closing-gate control
+still finishes 0/64. PR549 remains draft/unmerged; restoring that journey still
+precedes broader crowd qualification by the existing crowd owner.
+
 ### U5 native wall seat-1 diagnosis — 5 October 2026
 
 Crowd owner `01a10933-c2b0` retains the separate

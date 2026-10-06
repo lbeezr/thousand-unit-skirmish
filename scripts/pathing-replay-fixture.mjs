@@ -184,6 +184,7 @@ function recordReplayActorTrace(unit, type, extra = {}) {
     rawWaypoint: unit.pathIndex < unit.path.length ? cellToWorld(unit.path[unit.pathIndex]) : null,
     goal: unit.moveGoalCell, point: structuredClone(unit.moveGoalPoint),
     queue: structuredClone(unit.queuedWaypoints), pending: unit.movePlanningPending,
+    ordinaryRecovery: structuredClone(unit.ordinaryMoveRecovery),
     neighbours: units.filter(o => o !== unit && o.hp > 0 && Math.hypot(o.x - unit.x, o.z - unit.z) <= 2.1)
       .map(o => ({ id: o.id, kind: o.kind, x: o.x, z: o.z, pathIndex: o.pathIndex, pathLength: o.path.length })),
     ...extra });

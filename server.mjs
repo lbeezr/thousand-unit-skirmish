@@ -93,7 +93,7 @@ import { beginOrdinaryMoveRecovery, ordinaryMoveRecoveryDecision,
   cloneOrdinaryMoveRecovery } from './src/ordinary-move-recovery.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
-import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, canTraverseCrowdBodySegment } from './src/unit-crowd-steering.mjs';
+import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, canTraverseCrowdBodySegment, rejectCrowdContourProposal } from './src/unit-crowd-steering.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
 import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, stanceAcquiredMovementActive, patrolAcquiredMovementActive, workerPatrolAcquiredMovementActive, followTravelMovementActive, workerFollowTravelMovementActive } from './src/combat-movement.mjs';
 
@@ -7939,6 +7939,8 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
           || !canTraverseStaticBodySegment({ x: portal.fromX, z: portal.fromZ }, portal,
             crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable)) });
       if (decision.changed) dirty = true;
+      if (decision.move.ordinaryMoveOutcome === 'recovery-unresolved')
+        rejectCrowdContourProposal(unit, move, { tick: tickNumber, navigationRevision, epoch: movePlanningEpoch });
       return decision.move;
     };
     const diagnostics = { visits: query.visits, neighbors: query.neighbors.length, overflow: query.overflow };

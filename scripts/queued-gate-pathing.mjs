@@ -13,7 +13,9 @@ process.env.RTS_MAP='maps/open-field.json';process.env.RTS_GAME_MODE='pvp';proce
 delete process.env.RTS_MATCH_STATE_PATH;
 export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true,parkOrder=null,
   tracePhysical=false,captureInput,captureFinal,traceActorIds=[],captureActorTrace,
-  observePauses=false,pauseActorIds=null}={}) {
+  observePauses=false,pauseActorIds=null,maxTicks=2700}={}) {
+  assert.ok(Number.isInteger(maxTicks)&&maxTicks>0&&maxTicks<=2700);
+  assert.ok(observe||maxTicks===2700,'a shorter diagnostic window cannot qualify the journey');
   const map=pathingBaselineMap({group:64}),fixture=await createPathingReplayFixture(map,
     {traceLandSteps:tracePhysical,traceCrowdSteps:tracePhysical,traceActorIds,observeMovement:observePauses}),r=fixture.replay;
   try {
@@ -89,7 +91,7 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
     const progress=new Map(army.map(u=>[u.id,{goal:u.moveGoalCell,remaining:Infinity,tick:r.tick,max:0}]));
     const done=u=>!u.queuedWaypoints.length&&!u.movePlanningPending&&u.pathIndex===u.path.length
       &&Math.hypot(u.x-r.point(u.moveGoalCell).x,u.z-r.point(u.moveGoalCell).z)<.02;
-    while(r.tick-startTick<2700&&!army.every(done)) {
+    while(r.tick-startTick<maxTicks&&!army.every(done)) {
       const previous=army.map(u=>r.cell(u.x,u.z)),queued=army.map(u=>u.queuedWaypoints.length);r.step();
       if(traceActorIds.length)actorTrace.push(...r.actorTrace);
       if(tracePhysical) {

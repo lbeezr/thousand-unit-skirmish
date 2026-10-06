@@ -18,6 +18,19 @@ const DIRECTIONS = ANGLES.map(angle => {
 const finitePoint = p => p && Number.isFinite(p.x) && Number.isFinite(p.z);
 const steeringStates = new WeakMap();
 
+// Admission proves a proposal can move, not that its consumer will execute it.
+// Release a contour vetoed by ordinary task recovery without granting another
+// proposal in this tick or shortening its original arbitration cooldown.
+export function rejectCrowdContourProposal(unit, move, { tick, navigationRevision, epoch }) {
+  const state = steeringStates.get(unit);
+  if (!state?.contour || move?.recoveryPhase !== 'contour' || move.waitingForCrowd
+    || !(move.stepDistance > 0) || state.lastTick !== tick
+    || state.generation !== unit.generation || state.revision !== unit.orderRevision
+    || state.navigationRevision !== navigationRevision || state.epoch !== epoch
+    || state.path !== unit.path || state.pathIndex !== unit.pathIndex) return;
+  state.contour = null;
+}
+
 function steeringState(unit, tick, navigationRevision, epoch) {
   let state = steeringStates.get(unit);
   if (!state || state.generation !== unit.generation || state.revision !== unit.orderRevision

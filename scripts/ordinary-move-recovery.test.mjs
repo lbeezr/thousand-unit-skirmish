@@ -4,10 +4,11 @@ import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 import { configureLandBodyReplay } from './land-body-clearance-fixture.mjs';
 import { forestGapMap } from './forest-gap-fixture.mjs';
 import { runCrowdPassageJourney } from './crowd-body-journeys.mjs';
+import { runQueuedGateCase } from './queued-gate-pathing.mjs';
 import { canTraverseStaticBodySegment, LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
 import { sweptBodyPairMargin } from './land-body-clearance.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
-import { selectCrowdStep, CROWD_PROPOSAL_LIMIT } from '../src/unit-crowd-steering.mjs';
+import { selectCrowdStep, rejectCrowdContourProposal, CROWD_PROPOSAL_LIMIT } from '../src/unit-crowd-steering.mjs';
 import { beginOrdinaryMoveRecovery, ordinaryMoveRecoveryDecision,
   finalizeOrdinaryMoveProgress } from '../src/ordinary-move-recovery.mjs';
 
@@ -340,6 +341,69 @@ test('an exclusive parked contour exposes no alternative despite admitted ordina
   assert.equal(move.recoveryPhase, 'contour');
   assert.equal(move.admittedForward, undefined, 'the contour retains its exclusive policy result');
   assert.ok(move.crowdControl.proposals <= CROWD_PROPOSAL_LIMIT);
+});
+
+test('consumer refusal closes only the current contour and retains its original cooldown and task', () => {
+  const unit = { id: 20, generation: 1, orderRevision: 1, kind: 'infantry', hp: 100,
+    x: 0, z: 0, path: [1, 2], pathIndex: 0, moveGoalCell: 2, buildingTargetId: null,
+    queuedWaypoints: [{ destination: 4 }] };
+  const parked = { id: 21, generation: 1, orderRevision: 0, kind: 'worker', hp: 100,
+    x: .41, z: 0, path: [], pathIndex: 0, moveGoalCell: -1 };
+  beginOrdinaryMoveRecovery(unit, 0);
+  const options = { unit, target: { x: 3, z: 0 }, stepDistance: .08,
+    neighbors: [parked], canTraverse: () => true, navigationRevision: 2, epoch: 3 };
+  selectCrowdStep({ ...options, tick: 0 });
+  const move = selectCrowdStep({ ...options, tick: 100 });
+  assert.equal(move.recoveryPhase, 'contour');
+  const before = structuredClone([unit, parked]);
+  const acknowledge = (proposal, tick = 100, navigationRevision = 2, epoch = 3) =>
+    rejectCrowdContourProposal(unit, proposal, { tick, navigationRevision, epoch });
+  acknowledge(move, 99); acknowledge(move, 100, 1); acknowledge(move, 100, 2, 2);
+  acknowledge({ ...move, waitingForCrowd: true });
+  acknowledge({ ...move, recoveryPhase: 'detour' });
+  assert.equal(selectCrowdStep({ ...options, tick: 100 }).recoveryPhase, 'contour',
+    'stale acknowledgments and non-executable proposals cannot close current ownership');
+  acknowledge(move);
+  for (let tick = 101; tick < 220; tick++) {
+    const selected = selectCrowdStep({ ...options, tick });
+    assert.notEqual(selected.recoveryPhase, 'contour', 'the original 120-tick cooldown stays in force');
+    assert.ok(selected.crowdControl.proposals <= CROWD_PROPOSAL_LIMIT);
+  }
+  assert.equal(selectCrowdStep({ ...options, tick: 220 }).recoveryPhase, 'contour',
+    'closure does not extend the original reacquisition deadline');
+  assert.deepEqual([unit, parked], before, 'feedback changes no saved state, pose, intent, history or peer');
+});
+
+test('actual closing-gate host releases a vetoed contour before ordinary guarded resumption', async () => {
+  let trace;
+  const result = await runQueuedGateCase({ team: 1, observe: true, maxTicks: 400, tracePhysical: true,
+    traceActorIds: [133], captureActorTrace: rows => { trace = rows; } });
+  assert.equal(result.ticks, 400, 'this is a bounded consumer regression, not all-64 qualification');
+  assert.equal(result.physical.staticContactSteps, 0); assert.equal(result.physical.pairContactSteps, 0);
+  const vectors = trace.filter(row => row.type === 'vector');
+  const first = vectors.find(row => row.result?.recoveryPhase === 'contour'
+    && row.result.ordinaryMoveOutcome === 'recovery-unresolved');
+  assert.ok(first, 'the natural paid-gate control reaches an actual host contour veto');
+  const next = vectors.find(row => row.tick === first.tick + 1);
+  assert.ok(next && next.result.recoveryPhase !== 'contour');
+  assert.equal(next.x, first.x); assert.equal(next.z, first.z, 'the veto itself writes no position');
+  assert.equal(next.result.ordinaryMoveOutcome, 'forward-resumption');
+  const afterWrite = vectors.find(row => row.tick === first.tick + 2);
+  assert.ok(afterWrite.x !== next.x || afterWrite.z !== next.z,
+    'the ordinary host executes the subsequent proposal through its existing guards');
+  const window = vectors.filter(row => row.tick >= first.tick && row.tick <= first.tick + 120);
+  assert.ok(window.some(row => row.tick === first.tick + 120));
+  for (const row of window) {
+    if (row.tick > first.tick && row.tick < first.tick + 120)
+      assert.notEqual(row.result.recoveryPhase, 'contour', 'the original contour cooldown persists');
+    assert.equal(row.goal, first.goal); assert.deepEqual(row.queue, first.queue);
+    assert.equal(row.ordinaryRecovery.progressTick, first.ordinaryRecovery.progressTick);
+    assert.equal(row.ordinaryRecovery.portals, first.ordinaryRecovery.portals);
+    assert.equal(row.ordinaryRecovery.episodeTick, first.ordinaryRecovery.episodeTick);
+    assert.equal(row.ordinaryRecovery.episodes, first.ordinaryRecovery.episodes);
+    assert.deepEqual(row.ordinaryRecovery.failedScenes, first.ordinaryRecovery.failedScenes);
+    assert.deepEqual(row.ordinaryRecovery.dependency, first.ordinaryRecovery.dependency);
+  }
 });
 
 test('matching guarded projected-waypoint arrival is physical progress; publication and a zero write are not', () => {
