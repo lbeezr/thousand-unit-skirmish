@@ -103,7 +103,8 @@ main and active PR scopes; record a concrete defect risk before expanding.
 | --- | --- | --- | --- |
 | 1 — reviewed source correction, [PR #563](https://github.com/lbeezr/thousand-unit-skirmish/pull/563) | Persisted room-ID string boundary | At main `dd759f62`, JSON array IDs pass `normalizeRoomIndex` for versions 1–3. The actual store labels the index valid; `loadRooms` then exits before listening with `ERR_INVALID_ARG_TYPE` at `path.join`. Separately parsed arrays containing the same ID also evade duplicate detection. Require a primitive string under the existing pattern and reuse that checked ID. | Only `src/room-launch-options.mjs`, its existing dedicated test and this plan. No index-store/supervisor/recovery-policy or compiler/discovery edits. Type-safety owner retains normal merge and applicable integration evidence in the delivery PR. |
 | 2 — reviewed defensive hardening, [PR #565](https://github.com/lbeezr/thousand-unit-skirmish/pull/565) | Worker-ready port DTO | Injected IPC at main `fe3c2f03` admits ports 65536, 70000 and `Number.MAX_SAFE_INTEGER`; the actual health consumer then rejects with `ERR_SOCKET_BAD_PORT`. The current producer uses an OS-assigned port, so this is a defensive contract gap, not a demonstrated normal-match failure. Require an integer in 1–65535 and reuse the checked port. | Only the ready-message guard in `room-supervisor.mjs`, its regression in the existing room-launch-options test and this plan. Preserve malformed-message ignore behavior, later valid readiness, metadata, timeouts and child cleanup. No new abstraction, worker implementation or compiler/discovery change. |
-| 3 — reassess when evidence appears | Next stable pure-data boundary | Select a concrete unchecked shape/identity/ownership risk with a positive consumer, a failing negative case and exact runtime/serialization proof. No additional boundary is reserved. | Deflate-offer inputs intentionally remain `unknown` and its boolean contract already has strict-check/coverage evidence from its extraction; topology/cell helpers have active gameplay consumers and no new type defect reproduced in this audit. Revisit a documented defect or an agreed stable seam; avoid annotations solely to increase coverage. |
+| 3 — reviewed defensive hardening, [PR #568](https://github.com/lbeezr/thousand-unit-skirmish/pull/568) | Worker-health boolean result | At main `04efee2b`, synthetic worker HTTP bodies with `ok` equal to `"false"`, `1`, `[]` or `{}` pass `readWorkerHealth`; the actual `/ready` handler reports HTTP 200 and `{ok:true}`. The producer emits literal `true`, so no ordinary-match failure is demonstrated. Require that boolean and retain all other response fields. | Only the health-result guard in `room-supervisor.mjs`, regression coverage in the existing room-launch-options test and this plan. Preserve malformed responses, request timeout/error settlement, room-status aggregation and private/public HTTP boundaries; no worker, protocol, compiler or discovery changes. |
+| 4 — reassess when evidence appears | Next stable pure-data boundary | Select a concrete unchecked shape/identity/ownership risk with a positive consumer, a failing negative case and exact runtime/serialization proof. No additional boundary is reserved. | Deflate-offer inputs intentionally remain `unknown` and its boolean contract already has strict-check/coverage evidence from its extraction; topology/cell helpers have active gameplay consumers and no new type defect reproduced in this audit. Revisit a documented defect or an agreed stable seam; avoid annotations solely to increase coverage. |
 
 Room-ID acceptance, 6 October 2026: the three added dedicated regressions cover
 valid string IDs/migration and duplicate controls, coercible non-string IDs across
@@ -139,6 +140,25 @@ native supervisor recovery/isolation, expiry, PvE and packaged serving pass.
 [Delivery PR #565](https://github.com/lbeezr/thousand-unit-skirmish/pull/565)
 retains exact review, source/package and provider evidence separately from
 full-suite and live rendered acceptance.
+
+Worker-health acceptance, 6 October 2026: the regression executes the actual
+health consumer, request handler and JSON response writer. Real local HTTP
+supplies the four malformed bodies and existing rejection controls. A native
+`server.mjs` child supplies the valid producer response; actual `/ready` and
+private-health aggregation preserve its metadata and existing room counters.
+Private aggregation is exercised after a granted access gate; packaged serving
+retains separate access-boundary coverage. A synthetic request error/clock
+control verifies the existing 1500 ms timeout, destruction and single-settlement
+behavior. All 40 prior dedicated tests/assertions remain intact; 43 pass with
+zero skips. The original host passes 42 and fails the new negative readiness
+regression; both new compatibility controls pass there. Independent review
+verifies 84 real-HTTP comparisons. Both type gates, 185 focused/tooling tests,
+architecture/import checks, native supervisor recovery and packaged serving
+pass at the implementation head. This is defensive runtime DTO hardening, not
+new host compiler enrollment or a demonstrated ordinary-match failure.
+[Delivery PR #568](https://github.com/lbeezr/thousand-unit-skirmish/pull/568)
+owns exact review, final-head integration checks, clean packaging and automatic
+provider evidence separately from full-suite and rendered acceptance.
 
 Do not expand into audio reader/production/research extractions, gameplay roots
 or active render/entry hotspots to chase coverage. Coordinate concrete moves or

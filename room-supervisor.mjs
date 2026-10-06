@@ -455,7 +455,7 @@ function readWorkerHealth(worker) {
       response.on('end', () => {
         try {
           const health = JSON.parse(body);
-          finish(response.statusCode === 200 && health?.ok ? health : null);
+          finish(response.statusCode === 200 && health?.ok === true ? health : null);
         } catch { finish(null); }
       });
     });

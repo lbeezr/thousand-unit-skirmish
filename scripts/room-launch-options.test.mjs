@@ -144,6 +144,150 @@ test('later valid worker readiness reaches the actual health consumer successful
   assert.equal(fixture.workerProcesses.size, 0);
 });
 
+function workerHealthConsumerFixture(worker, request = httpRequest) {
+  const source = readFileSync(new URL('../room-supervisor.mjs', import.meta.url), 'utf8');
+  const parsed = ts.createSourceFile('room-supervisor.mjs', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const names = ['sendJson', 'readWorkerHealth', 'handleRequest'];
+  const functions = parsed.statements.filter(statement =>
+    ts.isFunctionDeclaration(statement) && names.includes(statement.name?.text));
+  assert.deepEqual(functions.map(statement => statement.name.text), names);
+  const buildIdentity = { sourceRevision: 'health-contract' };
+  const context = vm.createContext({ httpRequest: request, Buffer, URL,
+    stopping: false, HOST: '127.0.0.1', PORT: 1, BUILD_IDENTITY: buildIdentity, MAX_ROOMS: 8,
+    rooms: new Map([['invite', { worker, activeConnections: 2 }], ['idle', { worker: null, activeConnections: 0 }]]),
+    ensureDefaultWorker: async () => worker,
+    // Private-health aggregation runs after the existing access gate grants access.
+    hasAccess: () => true,
+  });
+  vm.runInContext(functions.map(statement => statement.getFullText(parsed)).join('\n'), context);
+  return {
+    readHealth: context.readWorkerHealth,
+    buildIdentity,
+    status: async (pathname = '/ready', method = 'GET') => {
+      const result = {};
+      const response = {
+        writeHead(status, headers) { Object.assign(result, { status, headers }); },
+        end(body) { result.body = JSON.parse(body.toString()); },
+      };
+      await context.handleRequest({ url: pathname, method, headers: { host: '127.0.0.1' } }, response);
+      return result;
+    },
+  };
+}
+
+test('actual readiness rejects non-boolean worker ok and retains malformed-response handling', async t => {
+  let body = '', status = 200;
+  const server = createServer((request, response) => {
+    assert.equal(request.url, '/health');
+    response.writeHead(status);
+    response.end(body);
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const worker = { port: server.address().port, child: { exitCode: null } };
+  const fixture = workerHealthConsumerFixture(worker);
+  for (const invalid of ['false', 1, [], {}]) {
+    body = JSON.stringify({ ok: invalid });
+    const result = await fixture.status();
+    assert.equal(result.status, 503, JSON.stringify(invalid));
+    assert.deepEqual(result.body, { ok: false });
+    assert.equal(await fixture.readHealth(worker), null);
+  }
+  for (const invalid of [{ ok: false }, { ok: null }, { ok: 0 }, { ok: '' }, {}, null, [], true, 'healthy']) {
+    body = JSON.stringify(invalid);
+    const result = await fixture.status();
+    assert.equal(result.status, 503);
+    assert.deepEqual(result.body, { ok: false });
+  }
+  body = '{';
+  assert.equal((await fixture.status()).status, 503, 'malformed JSON remains unavailable');
+  body = JSON.stringify({ ok: true, connected: 1 });
+  for (const code of [201, 503]) {
+    status = code;
+    assert.equal((await fixture.status()).status, 503, 'only HTTP 200 is healthy');
+  }
+  status = 200;
+  assert.deepEqual((await fixture.status('/ready', 'HEAD')).body, { ok: true });
+  assert.equal((await fixture.status('/ready', 'POST')).status, 405);
+  worker.child.exitCode = 0;
+  assert.equal(await fixture.readHealth(worker), null);
+  assert.equal((await fixture.status()).status, 503, 'exited worker remains unavailable');
+  assert.equal(await fixture.readHealth(null), null);
+});
+
+test('worker health timeout and request error retain one settlement and unchanged cleanup', async () => {
+  for (const stage of ['timeout', 'error']) {
+    const upstream = new EventEmitter();
+    let onTimeout, timeoutMs, ended = 0, destroyed = 0;
+    upstream.setTimeout = (milliseconds, callback) => { timeoutMs = milliseconds; onTimeout = callback; };
+    upstream.end = () => {
+      ended++;
+      queueMicrotask(() => stage === 'timeout' ? onTimeout() : upstream.emit('error', new Error('request failed')));
+    };
+    upstream.destroy = () => { destroyed++; upstream.emit('error', new Error('request closed')); };
+    const fixture = workerHealthConsumerFixture({ port: 4173, child: { exitCode: null } }, () => upstream);
+    const result = await fixture.status();
+    assert.equal(timeoutMs, 1500);
+    assert.equal(ended, 1);
+    assert.equal(result.status, 503);
+    assert.deepEqual(result.body, { ok: false });
+    assert.equal(destroyed, stage === 'timeout' ? 1 : 0);
+    upstream.emit('error', new Error('late request error'));
+    assert.deepEqual(result.body, { ok: false });
+  }
+});
+
+test('actual readiness and health aggregation accept a real worker producer response', { timeout: 20_000 }, async t => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'worker-health-producer-'));
+  const child = spawn(process.execPath, [fileURLToPath(new URL('../server.mjs', import.meta.url))], {
+    cwd: fileURLToPath(new URL('../', import.meta.url)),
+    env: { PATH: process.env.PATH, PORT: '0', RTS_HOST: '127.0.0.1', RTS_MANAGED_WORKER: '1',
+      RTS_CUSTOM_MAP_DIRECTORY: path.join(root, 'custom-maps') },
+    stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
+  });
+  const exited = once(child, 'exit');
+  let output = '';
+  child.stdout.on('data', chunk => { output += chunk; });
+  child.stderr.on('data', chunk => { output += chunk; });
+  t.after(async () => {
+    if (child.exitCode === null && child.signalCode === null) {
+      child.kill('SIGINT');
+      await Promise.race([exited, delay(8000, null, { ref: false })]);
+      if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
+    }
+    await exited;
+    await rm(root, { recursive: true, force: true });
+  });
+  const ready = await Promise.race([
+    once(child, 'message'),
+    exited.then(() => assert.fail(`Worker exited before readiness: ${output}`)),
+    delay(10_000, null, { ref: false }).then(() => assert.fail(`Worker readiness timed out: ${output}`)),
+  ]);
+  assert.equal(ready[0].type, 'ready');
+  const worker = { port: ready[0].port, child };
+  const producerResponse = await fetch(`http://127.0.0.1:${worker.port}/health`);
+  assert.equal(producerResponse.status, 200);
+  const producer = await producerResponse.json();
+  assert.equal(producer.ok, true);
+  const fixture = workerHealthConsumerFixture(worker);
+  const accepted = await fixture.readHealth(worker);
+  for (const key of ['ok', 'map', 'matchId', 'matchModeId', 'matchModeVersion', 'connected']) {
+    assert.deepEqual(accepted[key], producer[key], key);
+  }
+  const readyStatus = await fixture.status();
+  assert.equal(readyStatus.status, 200);
+  assert.deepEqual(readyStatus.body, { ok: true });
+  const health = await fixture.status('/health');
+  assert.equal(health.status, 200);
+  assert.equal(health.body.map, producer.map);
+  assert.equal(health.body.matchId, producer.matchId);
+  assert.deepEqual(health.body.buildIdentity, fixture.buildIdentity);
+  assert.equal(health.body.roomCount, 2);
+  assert.equal(health.body.roomLimit, 8);
+  assert.equal(health.body.liveRoomProcesses, 1);
+  assert.equal(health.body.connectedInvitePeers, 2);
+});
+
 async function roomIndexFixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'room-index-store-'));
   t.after(() => rm(root, { recursive: true, force: true }));
