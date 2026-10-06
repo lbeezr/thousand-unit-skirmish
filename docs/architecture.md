@@ -842,9 +842,9 @@ review and normal ready merge under standing authorization.
 
 | Lane / scope | Current implementation claim | Shared integration |
 | --- | --- | --- |
-| Module organization / this architecture-audio lane | Audio composition validation/compilation from `src/audio-composition.mjs` and its three audio callers; then the existing composition player, offline WAV rendering and remaining DOM composer implementation plus its one library caller, one reviewed slice at a time. | Additive canonical entries in the import inventory and exact public admission, packed HTTP controls and this ownership record. No `main.js`, package/CI/type configuration, assets or deployment changes. |
+| Module organization / this architecture-audio lane | Composition model/player/WAV/client UI slices are integrated. The next allocated scope is the whole audio library store/archive implementation and only its Studio/Zones import literals, preserving supported root bindings for main/browser tools. | Additive canonical entries in the import inventory and exact public admission, packed HTTP controls and this ownership record. No `main.js`, package/CI/type configuration, assets or deployment changes. |
 | Types/contracts lane | `room-launch-options`, `room-pregame`, `room-presence` boundaries. | Owned by that lane; audio does not edit those modules or approve its PRs. |
-| Error-handling lane | Authoring storage/import helpers, excluding R4 draft lifecycle. | Owned by that lane; audio does not edit those helpers. |
+| Error-handling lane | `main.js::importEditorMap`, its dedicated regression and additive CI registration; R4 draft lifecycle excluded. | Owned by that lane; audio does not edit that handler or its regression. |
 | DRY-formatting lane | Resource format, population readout and economy-client formatting. | Owned by that lane; audio does not edit those modules. |
 
 Import-inventory/public-admission deltas integrate additively against fresh main;
@@ -987,11 +987,49 @@ all 1,459 prior selections retained plus canonical syntax. These measurements
 track responsibilities and compatibility, not an absolute root-file limit.
 Retirement follows the inventory/owner/identified-release criteria above.
 
-This completes the bounded composition queue. A future library storage/import
-slice first needs a concrete ownership decision against the error-handling
-lane's authoring storage/import claim; no persistence edit is allocated here.
+This completes the bounded composition queue. The next whole-library store/home
+slice below is separately allocated; the error lane's map-import handler is
+outside its scope. The main audio lazy caller stays on its supported root API.
 Game audio host/cache disposal and audio asset metadata remain separate active
 responsibilities. Listening/rendered acceptance remains separately owned.
+
+#### Audio library store client organization
+
+Against containing merge `dd759f62`, the complete 223-line library implementation
+lives in [client/audio/library-store.mjs](../src/client/audio/library-store.mjs).
+Only its schema-validator import changes to `../../audio-assets.mjs`. The root
+entry explicitly forwards the same `createAudioLibraryStore`, `exportAudioPack`
+and `parseAudioPackArchive` function bindings. Store import/export directly reuse
+the archive functions and `savePack` also uses the Blob validator; keeping these
+bodies together preserves the existing responsibility without another validation
+interface or duplicate helper. Pack/composition validators retain their homes.
+
+Studio and Zones change only their static store import literals. Main's
+`getAudioLibraryStore` keeps its lazy root import, cached promise and map-audio
+generation/fallback behavior. The Studio, shipped-audio and Fortified browser
+tools retain their supported root imports. No `main.js` handler is edited.
+
+Database name/version, key paths/indexes, six store methods, atomic writes,
+existing Blob reuse, metadata/provenance and deletion selection retain their
+exact bodies. Archive format/iteration/bytes/MIME/limits, first-error order/text,
+error identity/cause, quota mapping, shared-open retry and late abandoned
+connection closure are unchanged. IndexedDB/IDBKeyRange defaults still resolve
+when the factory is called. No catch, persistence policy or codec change is added.
+
+The original registered library script consumes canonical functions and checks
+both three-name namespaces and all legacy binding identities; its prior
+assertions/name remain. Its empty-read/open-lifetime mock does not establish full
+successful CRUD. Keep the real Studio browser save/reload/edit/backup/import/quota
+acceptance distinct from CPU/package proof. The original zone provenance contract
+protects metadata; assets, catalog/defaults and URLs are unchanged.
+
+Client membership, exact canonical/root public GET/HEAD and invalid/private-path
+controls extend existing guards additively. At this dated checkpoint, the graph
+is 240 modules/472 edges/145 browser/103 server/34 shared/zero cycles; all 1,460
+prior CI entries/order remain plus canonical syntax. These are responsibility
+and compatibility ratchets. Root retirement requires migrating main and the
+tracked browser/tool/external consumers under the inventory/owner/identified-
+release criteria above; it is not part of this store-home slice.
 
 ### Remaining organization queue — 6 October 2026
 

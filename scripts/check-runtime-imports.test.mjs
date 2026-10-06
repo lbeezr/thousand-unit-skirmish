@@ -85,6 +85,31 @@ test('canonical composer UI stays in client with its lazy caller and outside aut
   }
 });
 
+test('canonical audio library stays client-only with supported lazy compatibility and page callers', async () => {
+  const canonical = 'src/client/audio/library-store.mjs';
+  assert.ok(RUNTIME_DOMAINS.client.includes(canonical));
+  assert.ok(RUNTIME_DOMAINS.client.includes('src/audio-library-store.mjs'));
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  assert.deepEqual(moduleImports(sources.get(canonical), canonical), ['../../audio-assets.mjs']);
+  assert.deepEqual(moduleImports(sources.get('src/audio-library-store.mjs'), 'src/audio-library-store.mjs'),
+    ['./client/audio/library-store.mjs']);
+  for (const caller of ['src/audio-studio.mjs', 'src/audio-zones.mjs']) {
+    assert.ok(moduleImports(sources.get(caller), caller).includes('./client/audio/library-store.mjs'), caller);
+  }
+  assert.ok(moduleImports(sources.get('src/main.js'), 'src/main.js').includes('./audio-library-store.mjs'));
+  for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+    'src/formation-assignment.mjs', 'src/simulation/ai/opponent-observation.mjs']) {
+    const relative = path.posix.relative(path.posix.dirname(root), canonical);
+    assert.throws(() => check({ [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';`, [canonical]: '' }),
+      /(?:rules|world|simulation|ai) domain cannot reach client domain/, root);
+  }
+  for (const [host, domain] of Object.entries(RUNTIME_DOMAIN_HOSTS)) {
+    if (domain !== 'server') continue;
+    assert.throws(() => check({ [host]: `import './${canonical}';`, [canonical]: '' }, { serverEntrypoints: [host] }),
+      /server host reaches client domain/, host);
+  }
+});
+
 test('canonical WAV rendering stays browser-safe in presentation outside authoritative hosts', () => {
   const canonical = 'src/presentation/audio/composition-wav.mjs';
   assert.ok(RUNTIME_DOMAINS.presentation.includes(canonical));

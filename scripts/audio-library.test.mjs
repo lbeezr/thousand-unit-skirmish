@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict';
 import { validateAudioPack } from '../src/audio-assets.mjs';
-import { createAudioLibraryStore, exportAudioPack, parseAudioPackArchive } from '../src/audio-library-store.mjs';
+import { createAudioLibraryStore, exportAudioPack, parseAudioPackArchive } from '../src/client/audio/library-store.mjs';
+import * as libraryApi from '../src/audio-library-store.mjs';
+import * as canonicalLibraryApi from '../src/client/audio/library-store.mjs';
+
+assert.deepEqual(Object.keys(libraryApi), ['createAudioLibraryStore', 'exportAudioPack', 'parseAudioPackArchive']);
+assert.deepEqual(Object.keys(canonicalLibraryApi), Object.keys(libraryApi));
+assert.equal(libraryApi.createAudioLibraryStore, createAudioLibraryStore);
+assert.equal(libraryApi.exportAudioPack, exportAudioPack);
+assert.equal(libraryApi.parseAudioPackArchive, parseAudioPackArchive);
 
 const pack = {
   schemaVersion: 1, id: 'pack-test', name: 'Fixture',
