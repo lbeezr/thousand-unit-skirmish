@@ -101,7 +101,20 @@ main and active PR scopes; record a concrete defect risk before expanding.
 
 | Rank / state | Boundary | Defect risk and required proof | Scope/dependency |
 | --- | --- | --- | --- |
-| 1 — reassess when evidence appears | Next stable pure-data boundary | Select a concrete unchecked shape/identity/ownership risk with a positive consumer, a failing negative case and exact runtime/serialization proof. The current ready queue is exhausted. | No additional source writes reserved. Deflate-offer inputs intentionally remain `unknown` and its boolean contract already has strict-check/coverage evidence from its extraction; topology/cell helpers have active gameplay consumers and no new type defect reproduced in this audit. Revisit a documented defect or an agreed stable seam; avoid annotations solely to increase coverage. |
+| 1 — reproduced, source fix under review | Persisted room-ID string boundary | At main `dd759f62`, JSON array IDs pass `normalizeRoomIndex` for versions 1–3. The actual store labels the index valid; `loadRooms` then exits before listening with `ERR_INVALID_ARG_TYPE` at `path.join`. Separately parsed arrays containing the same ID also evade duplicate detection. Require a primitive string under the existing pattern and reuse that checked ID. | Only `src/room-launch-options.mjs`, its existing dedicated test and this plan. No index-store/supervisor/recovery-policy or compiler/discovery edits. Type-safety owner retains review, merge and applicable integration evidence. |
+| 2 — reassess when evidence appears | Next stable pure-data boundary | Select a concrete unchecked shape/identity/ownership risk with a positive consumer, a failing negative case and exact runtime/serialization proof. No additional boundary is reserved. | Deflate-offer inputs intentionally remain `unknown` and its boolean contract already has strict-check/coverage evidence from its extraction; topology/cell helpers have active gameplay consumers and no new type defect reproduced in this audit. Revisit a documented defect or an agreed stable seam; avoid annotations solely to increase coverage. |
+
+Room-ID acceptance, 6 October 2026: the three added dedicated regressions cover
+valid string IDs/migration and duplicate controls, coercible non-string IDs across
+versions 1–3, and the real index store classifying malformed JSON as invalid
+without rewriting it. The actual supervisor recovers the existing room directory,
+preserves its data, rebuilds the index under its existing policy, and serves HTTP.
+All 34 prior dedicated tests remain intact; 37 tests pass with zero skips at the
+candidate. The ID is captured once so the returned value is the primitive string
+that passed validation, including for a changing programmatic accessor. This is
+a runtime shape-contract correction, not new whole-module compiler enrollment.
+Exact-head review, clean package and provider identities remain separately owned
+until their evidence is recorded in the delivery PR.
 
 Do not expand into audio reader/production/research extractions, gameplay roots
 or active render/entry hotspots to chase coverage. Coordinate concrete moves or
