@@ -849,7 +849,7 @@ and all unrelated host bytes; it does not incorporate an error-handling change.
 | Map Studio form snapshot controller [PR406](https://github.com/lbeezr/thousand-unit-skirmish/pull/406): `src/authoring/map-studio-form-state.mjs` with the two real draft callers in `src/main.js` | First small implementation of this row. Explicit `createMapStudioFormState({ root, document }) → { capture, restore }` owns only live dialog values; no host-state catch-all, storage, timer, rendering or simulation dependencies. The architecture/authoring owner retains the controller and source/browser acceptance. | Preserve old function bodies apart from closure identifiers/indentation, all draft JSON/version/storage/gesture/import/export/publish behavior and every prior brush case. Fixture uses production initialization; focused form/draft cases, import/privacy guard and exact served/packed bytes establish the source milestone. No new shim and all eleven existing surfaces retained. Normal-sandbox rendered draft acceptance remains incomplete. |
 | Versioned Map Studio draft storage/preflight [PR412](https://github.com/lbeezr/thousand-unit-skirmish/pull/412): `src/authoring/map-studio-draft-store.mjs` and real `main.js` callers | Explicit deferred storage getter, key identity inputs and cached recovery references. Preserve version 1 and old rejection/error ordering; no new file budget, migration, storage service or server checkpoint dependency. Architecture/authoring retains source and rendered recovery ownership. | Current registered brush/form cases plus malformed/old/foreign drafts, interruption/cancel/restore reread, storage failures, real portable import/export parity and native saved-map restart. Preserve every old host byte outside the bounded extraction/calls, all eleven compatibility surfaces and exact public/private packed HTTP policy. |
 | Scenario history coordination [PR415](https://github.com/lbeezr/thousand-unit-skirmish/pull/415), then the editable event-graph queries below: existing `src/authoring/scenario-authoring.mjs` with real main callers | Architecture/authoring owns the applying flag/order and the draft's capture-root/cycle questions. DOM/state assignments remain host callbacks; history, mutation, storage/debounce and publication stay outside the pure queries. New exports are canonical-only; the legacy namespace retains its two original bindings. | Preserve history gating/ordering and query roots, caller cache/visiting identity, partial/cyclic drafts, source eligibility and capturing-team reconciliation. Actual-host contract cases pass before extraction; real template controls and source/packed checks follow. No admission, alias retirement, registry or movement/Patrol body changes. |
-| Remaining Map Studio capture/debounce/recovery presentation and publish seam in `src/main.js`; existing `map-studio-draft-scenario.mjs` consumer | Architecture/authoring retains the concrete lifecycle/publish contract and rendered recovery evidence. Use current form, store and history APIs; preserve ordered subpanel callbacks. Keep checkpoint parsing/XL file/route budgets with their owner, crowd/focused Attack/selected-route movement with their owners and match-ending actions with theirs. Avoid a broad editor context or unused formatter extraction. | Next evidence: real draft edit/save/reopen/publish on an identified containing cloud release when normal-sandbox capability is available. Source/CPU results do not close that recorded startup gap. Further source work needs an independently useful responsibility and real caller contract; current modal behavior and product decisions are not silently changed to manufacture another slice. |
+| Remaining Map Studio capture/debounce/recovery presentation and publish seam in `src/main.js`; existing `map-studio-draft-scenario.mjs` consumer | Architecture/authoring retains the lifecycle/publish contract and rendered recovery evidence. The terrain-cell packing slice below selects the existing capture/export/brush representation boundary with array inputs; ordered subpanel callbacks, form/store/history composition and modal behavior remain host-owned. Keep checkpoint/XL budgets, movement/Patrol and match-ending actions with their owners. | Preserve exact packed cells, rectangle order, defaults and elevation-limit/error ownership through actual draft/export/recovery consumers. Real draft edit/save/reopen/publish on an identified cloud release remains separate at the existing capability gap. Further source work needs a useful responsibility and real caller contract; avoid a broad editor context or unused formatter extraction. |
 | Root tool commands and test/fixture homes: current `package.json`, workflows and `docs/testing.md` consumers | Testing-strategy/command owners own registration migration, discovery and supported commands. Authoring/assets/scenario/performance owners first select an actual workload/API boundary from the purpose-based stage above. | Preserve every existing case, fixed input/seed, coverage floor, command and release consumer; root entries retire only after external/fixture/identified-release obligations clear. Those registries and broad tool/test moves are outside this lane's current write scope. |
 
 ### Checkpoint validator contract preparation — 5 October 2026
@@ -1164,6 +1164,51 @@ path: one authoring→world edge yields 224 modules/429 local edges, unchanged
 140 browser/95 server/34 shared and zero cycles. The helpers have real editing
 consumers; source/pack/deployment proof and ordinary rendered draft acceptance
 remain separate. Do not retire any compatibility surface from these migrations.
+
+#### Terrain-cell packing within the capture/export seam — 6 October 2026
+
+The next responsibility after PR514 is the three actual host algorithms
+`compressEditorGround`, `compressEditorElevation` and `compressEditorObstacles`.
+They convert editable cell arrays into portable rectangular patches, consumed
+by draft capture, `collectEditorMap` and the live resource-brush map read.
+This is part of the existing authoring capture/export queue: it owns the painted
+cell representation, not UI wording or an unused convenience helper. Rectangle
+partition and order affect patch admission and exported map bytes. Ground,
+elevation and obstacles deliberately keep separate algorithms because their
+omission, equality and limit rules differ.
+
+At current main `8dd6ae26`, including Patrol PR520/522 and art PR523, these
+functions need only width/height, their typed cell arrays, material-name arrays
+and the existing elevation-patch limit. The dependency-free canonical
+`authoring/map-studio-terrain-packing.mjs` exposes three named packers; the same
+named host wrappers read current dimensions/arrays for every call. No editor
+context, lifecycle callback, DOM, storage, timer, rendering or simulation input
+is needed. `withCurrentEditorElevation` retains its mutation and exact error;
+collection retains ground/obstacle admission and authority validation.
+
+Contract preparation runs the actual old functions before extraction: ordered
+rectangles across holes, zero/default omission, strict elevation equality,
+live array replacement, input immutability and the first over-limit result.
+The actual draft fixture also saves, downloads and restores the same packed
+ground/elevation/obstacle bytes without changing the running map. After the
+bounded body move it supplies production exports and executes the thin wrappers;
+all previous assertions and CI registrations remain. Preserve algorithm bodies
+apart from names, explicit inputs and identifier forwarding; every other host
+byte and import stays unchanged.
+
+Architecture/authoring owns the module, callers and source/rendered acceptance.
+Core `01a107ba` and caller/construction `01a10933-e913` retain movement/Patrol
+functions; there is no server or movement body edit. The one new pure authoring
+path receives exact client admission and authoring-domain membership, with
+packed bytes and unknown/extra/private GET/HEAD checks. No folder wildcard,
+private-source admission, new entrypoint, compatibility retirement, save/protocol
+version, quota policy, asset, package/CI/AGENTS or testing-strategy change.
+The existing eleven compatibility surfaces stay supported. At this source
+checkpoint the graph grows from 226 modules/433 edges to 227/434, with browser
+140→141, server 97/shared 34 unchanged and zero cycles. This records a new
+responsibility and composition edge rather than a size/performance claim.
+Source/package/provider identity and ordinary rendered draft acceptance remain
+separate; retain the documented cloud capability/public-route limitation.
 
 ### Coupling and size ratchets
 

@@ -211,6 +211,32 @@ Storage, debounce, publication, DOM synchronization, live match state, save/prot
 formats and all compatibility paths remain outside this extraction. Source/packed
 checks do not close the existing rendered draft/publish acceptance gap.
 
+### Terrain-cell packing
+
+`authoring/map-studio-terrain-packing.mjs` owns the three existing grid-to-patch
+algorithms used by draft capture, validated export and resource-brush reads:
+`packGroundPaint(width, height, groundMaterials, terrainMaterials)`,
+`packGroundElevation(width, height, groundLevels, maxElevationPatches)` and
+`packTerrainObstacles(width, height, cellMaterials, cellElevations, obstacleMaterials)`.
+Inputs are current dimensions and typed cell/material-name arrays. Outputs are
+new, ordered rectangle lists; no input or running match is mutated. Host wrappers
+retain the old private names and read the live arrays on every call.
+
+Row-first, maximal-width packing, negative ground/obstacle omission, zero elevation
+omission, strict material/elevation equality and exactly the default obstacle
+height's omission are preserved. Elevation packing returns after the first
+over-limit patch; `withCurrentEditorElevation` keeps the existing error and
+definition mutation. Ground/obstacle count admission and authority validation
+remain in their existing collection callers. This introduces no schema, cap,
+default terrain, brush behavior or map-size policy change.
+
+Actual-host golden cases pass before extraction. The production draft fixture
+then receives the canonical packers and covers identical saved/downloaded/recovered
+patch bytes with every prior case retained. The new browser-safe path is admitted
+exactly; all compatibility paths and server-private denials remain. Architecture/
+authoring retains source and identified-release rendered acceptance at the existing
+cloud capability gap; a pure/packed check does not establish ordinary-game use.
+
 ### Portable-map validator boundary
 
 The source slice based on main `fec90d44` places the existing 298-line

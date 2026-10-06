@@ -8,6 +8,7 @@ import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { mountResourceBrushControls } from './resource-brush-controls.mjs';
 import { createMapStudioFormState } from './authoring/map-studio-form-state.mjs';
 import { createMapImportValidator } from './authoring/map-import-validator.mjs';
+import { packGroundPaint, packGroundElevation, packTerrainObstacles } from './authoring/map-studio-terrain-packing.mjs';
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from './authoring/map-studio-draft-store.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS } from './regions.mjs';
@@ -6877,71 +6878,11 @@ function drawEditorGrid() {
 }
 
 function compressEditorGround() {
-  const width = editorDefinition.width;
-  const height = editorDefinition.height;
-  const visited = new Uint8Array(width * height);
-  const patches = [];
-  for (let row = 0; row < height; row++) {
-    for (let column = 0; column < width; column++) {
-      const index = row * width + column;
-      const material = editorGroundMaterials[index];
-      if (material < 0 || visited[index]) continue;
-      let rectangleWidth = 1;
-      while (column + rectangleWidth < width
-        && editorGroundMaterials[row * width + column + rectangleWidth] === material
-        && !visited[row * width + column + rectangleWidth]) rectangleWidth++;
-      let rectangleHeight = 1;
-      while (row + rectangleHeight < height) {
-        let same = true;
-        for (let dx = 0; dx < rectangleWidth; dx++) {
-          const next = (row + rectangleHeight) * width + column + dx;
-          if (editorGroundMaterials[next] !== material || visited[next]) { same = false; break; }
-        }
-        if (!same) break;
-        rectangleHeight++;
-      }
-      for (let dy = 0; dy < rectangleHeight; dy++) {
-        for (let dx = 0; dx < rectangleWidth; dx++) visited[(row + dy) * width + column + dx] = 1;
-      }
-      patches.push({ column, row, width: rectangleWidth, height: rectangleHeight,
-        material: TERRAIN_MATERIALS[material] });
-    }
-  }
-  return patches;
+  return packGroundPaint(editorDefinition.width, editorDefinition.height, editorGroundMaterials, TERRAIN_MATERIALS);
 }
 
 function compressEditorElevation() {
-  const width = editorDefinition.width;
-  const height = editorDefinition.height;
-  const visited = new Uint8Array(width * height);
-  const patches = [];
-  for (let row = 0; row < height; row++) {
-    for (let column = 0; column < width; column++) {
-      const index = row * width + column;
-      const level = editorGroundLevels[index];
-      if (level === 0 || visited[index]) continue;
-      let rectangleWidth = 1;
-      while (column + rectangleWidth < width
-        && editorGroundLevels[row * width + column + rectangleWidth] === level
-        && !visited[row * width + column + rectangleWidth]) rectangleWidth++;
-      let rectangleHeight = 1;
-      while (row + rectangleHeight < height) {
-        let same = true;
-        for (let dx = 0; dx < rectangleWidth; dx++) {
-          const next = (row + rectangleHeight) * width + column + dx;
-          if (editorGroundLevels[next] !== level || visited[next]) { same = false; break; }
-        }
-        if (!same) break;
-        rectangleHeight++;
-      }
-      for (let dy = 0; dy < rectangleHeight; dy++) {
-        for (let dx = 0; dx < rectangleWidth; dx++) visited[(row + dy) * width + column + dx] = 1;
-      }
-      patches.push({ column, row, width: rectangleWidth, height: rectangleHeight, level });
-      if (patches.length > MAX_ELEVATION_PATCHES) return patches;
-    }
-  }
-  return patches;
+  return packGroundElevation(editorDefinition.width, editorDefinition.height, editorGroundLevels, MAX_ELEVATION_PATCHES);
 }
 
 function withCurrentEditorElevation(definition) {
@@ -6955,47 +6896,8 @@ function withCurrentEditorElevation(definition) {
 }
 
 function compressEditorObstacles() {
-  const width = editorDefinition.width;
-  const height = editorDefinition.height;
-  const visited = new Uint8Array(width * height);
-  const obstacles = [];
-  for (let row = 0; row < height; row++) {
-    for (let column = 0; column < width; column++) {
-      const index = row * width + column;
-      const material = editorCellMaterials[index];
-      if (material < 0 || visited[index]) continue;
-      const elevation = editorCellElevations[index];
-      let rectangleWidth = 1;
-      while (column + rectangleWidth < width) {
-        const next = row * width + column + rectangleWidth;
-        if (editorCellMaterials[next] !== material || editorCellElevations[next] !== elevation || visited[next]) break;
-        rectangleWidth++;
-      }
-      let rectangleHeight = 1;
-      while (row + rectangleHeight < height) {
-        let sameMaterial = true;
-        for (let dx = 0; dx < rectangleWidth; dx++) {
-          const next = (row + rectangleHeight) * width + column + dx;
-          if (editorCellMaterials[next] !== material || editorCellElevations[next] !== elevation || visited[next]) {
-            sameMaterial = false;
-            break;
-          }
-        }
-        if (!sameMaterial) break;
-        rectangleHeight++;
-      }
-      for (let dy = 0; dy < rectangleHeight; dy++) {
-        for (let dx = 0; dx < rectangleWidth; dx++) visited[(row + dy) * width + column + dx] = 1;
-      }
-      const obstacle = {
-        column, row, width: rectangleWidth, height: rectangleHeight,
-        material: EDITOR_MATERIALS[material],
-      };
-      if (elevation !== 1.12) obstacle.elevation = elevation;
-      obstacles.push(obstacle);
-    }
-  }
-  return obstacles;
+  return packTerrainObstacles(editorDefinition.width, editorDefinition.height,
+    editorCellMaterials, editorCellElevations, EDITOR_MATERIALS);
 }
 
 function collectEditorMap() {
