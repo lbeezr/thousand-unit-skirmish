@@ -1141,6 +1141,94 @@ cold recovery and blocked/released escape controls. Those native, served and
 normal rendered outcomes remain with the construction owner; these primitive
 checks establish neither admitted320 play nor consumer-GPU capacity.
 
+### U5 active construction body-write admission — 5 October 2026
+
+Crowd supplied an independently reviewed reproduction at `50055ab0`: Worker 0
+steering on tick 954 moves `(14.07827,-.29949)` to
+`(14.15654,-.33671)` beside stationary actor 34 at `(14.5,-.5)`.
+The `.18/.22` body margin changes from `+.06697` to `-.01970`; terrain/static
+admission passes but the analytic body sweep rejects. Original native samples
+only bracket ticks 930–960; the first writer is established in the reproduced
+observer (`vector-proposal` / `steering-admitted`), not the original live run.
+Later terminal and interaction-separation writes are separate observations.
+
+Core reproduced the same steering displacement in both seats through the real
+executor source at `34e9beab`, translating x by -14 in its bounded fixture. Both
+new safety assertions fail before the fix. This is an injected executor control,
+not a private checkpoint transfer or native reconstruction. Core owns the
+server-local `constructionBodyStepAllowed`, its four consumed pre-write guards,
+the production/bucket freshness bit, explicit-radius local-selection integration,
+source fixture bindings and the private `body-wait` admission observation.
+Caller `01a10933-e913` retains active Patrol
+predicates, construction access/parking and work/escape policy; no caller-owned
+route hook, ordinary crowd predicate or endpoint-claim domain changes. Crowd
+`01a10933-c2b0` retains the original qualification after integration.
+
+```js
+// Called only after the existing terrain/static admission, before each write.
+if (!constructionBodyStepAllowed(unit, proposedPosition)) break;
+```
+
+The helper returns true immediately outside `constructionMovementActive`.
+For active builders/repairers and retained completed-site egress it uses the
+original `crowdNeighborsNear` query of current live poses and the existing
+`canTraverseCrowdBodySegment` with Worker radius `.18` and `allowEscape:true`.
+Each query retains the original 128 candidate/64 neighbor limits; overflow
+refuses the write. There is no saved activation state, body displacement, route
+reservation or geometry rewrite. A short inherited overlap may escape only
+without worsening that contact or entering another body, with actual improvement.
+Stationary combat, idle and Hold bodies remain physical obstacles.
+
+Independent review rejected the first guard-only candidate `161360a`: the
+original executor clamps steering/fallback after admission, allowing a raw
+boundary proposal to pass while the actual write creates contact. Construction
+now normalizes the proposed coordinates before terrain/body admission and any
+write; mirrored boundary controls retain the rejected raw/actual witness. The
+same review found a productive regression against unchanged `f33c3a1a`: an
+ordinary build order stalls at its parked starting army and cannot complete its
+first House within 1,000 ticks. Construction now supplies radius `.18` to the
+existing bounded `selectCrowdStep` and intermediate `crowdPassagePoint`. Both
+keep their ordinary military defaults; `ordinaryCrowdBodyRadius` and endpoint
+domains are unchanged. The final exact target remains exact, and an occupied
+terminal target waits. Selection cannot move another actor or grant a write;
+the fresh pre-write guard still owns admission. Existing proposal/query limits
+and transient identity/order/navigation/waypoint resets remain in force.
+
+The land terminal, steering and static-fallback branches break on a body refusal
+before position, route cursor, movement timestamp or intent mutation. A legal
+terrain fallback blocked only by a body remains a wait, not a static repair.
+The interaction-separation branch skips its own write through the same guard.
+Other productive work/rates/payment and remembered sites remain unchanged;
+physical release resumes the retained route without order/navigation revision
+changes. Own-step avoidance retains construction progress around parked bodies;
+there is no unconditional finite-progress guarantee through a sealed crowd or
+an occupied exact terminal target. Construction currently treats other active
+construction movers as hard bodies rather than bilateral yielding peers; shared
+productive-crowd arbitration remains separate work.
+
+Buckets are built before production. A successful appended or reused production
+slot marks the transient roster bit stale, so construction refuses movement for
+the remainder of that tick without trusting missing/old bucket links. The next
+normal rebuild makes the roster current. This bit is not checkpoint data; reset
+and cold restore already use the normal rebuild. Re-query before each actual
+construction write rather than retain neighbor snapshots across phases.
+
+Registered controls cover the reproduced step, terminal/fallback,
+interaction separation, inherited escape/deeper/new contact, release, live
+stationary combat positions, overflow, append/reuse freshness, excluded domains
+and truthful private `body-wait` diagnostics. Mirrored clamp and safe own-step
+controls accompany four normal-command paid-build journeys (both seats, warm
+and cold); every builder substep is swept against unchanged parked actors.
+The explicit-radius contract retains default Worker exclusion and rejects
+invalid radii. Focused movement/body and construction/Patrol checks retain
+productive completion, paid sites, original queues/endpoints, Stop/Hold and
+separate cold continuation. Independent exact-head review, clean packaging
+and normal merge are part of this bounded core slice. Crowd retains the unchanged
+original native assertion: its 60-second run covered only 1,770 journey ticks
+against the fixed 2,700-tick requirement. CPU elapsed time is not simulation
+liveness; native full arrival, served identity and ordinary rendered acceptance
+remain open. No software-render result establishes consumer-GPU capacity.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5

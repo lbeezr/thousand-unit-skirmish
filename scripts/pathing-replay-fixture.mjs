@@ -23,6 +23,10 @@ export function instrumentReplayMovementAdmissions(source) {
   for (const [before, after, count = 1] of [
     ['if (!move) break;', "if (!move) { observeReplayMovementAdmission(unit, 'no-proposal'); break; }"],
     ['if (move.waitingForCrowd) break;', "if (move.waitingForCrowd) { observeReplayMovementAdmission(unit, 'crowd-wait'); break; }"],
+    ...['move.target', '{ x: nextX, z: nextZ }', '{ x: fallbackX, z: fallbackZ }'].map(point => [
+      `if (!constructionBodyStepAllowed(unit, ${point})) break;`,
+      `if (!constructionBodyStepAllowed(unit, ${point})) { observeReplayMovementAdmission(unit, 'body-wait'); break; }`
+    ]),
     ['break; // Keep this route/pose/intent;', "observeReplayMovementAdmission(unit, 'detour-deferred');\n          break; // Keep this route/pose/intent;"],
     ['        || (move.reachedWaypoint && clearanceRadius && !canTraverseStaticBodySegment(unit, move.target,\n          clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {',
       "        || (move.reachedWaypoint && clearanceRadius && !canTraverseStaticBodySegment(unit, move.target,\n          clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {\n        observeReplayMovementAdmission(unit, 'static-rejected');"],
