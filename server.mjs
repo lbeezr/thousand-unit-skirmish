@@ -47,10 +47,11 @@ import { deflateRawSync, inflateRawSync, constants as zlibConstants } from 'node
 import { encodeWebSocketFrame, websocketFrameBytes } from './src/networking/websocket-frame.mjs';
 import { hasCompatiblePerMessageDeflateOffer } from './src/networking/websocket-deflate-offer.mjs';
 import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
+import { capturePrerequisiteIds, findInvalidCapturePrerequisite } from './src/world/capture-prerequisites.mjs';
+import { findInvalidScenarioEventChain, scenarioEventSourceIds } from './src/world/scenario-event-chain.mjs';
 import {
-  buildElevationGrid, capturePrerequisiteIds, findInvalidCapturePrerequisite,
-  findInvalidScenarioEventChain, findUnreachableCaptureZone, findUnreachableResourceNode,
-  scenarioEventSourceIds, validateElevationPatches,
+  buildElevationGrid, findUnreachableCaptureZone, findUnreachableResourceNode,
+  validateElevationPatches,
 } from './src/map-utils.mjs';
 import {
   BASE_ELEVATION_PATH_COST, canTraverseElevation, elevationPathCost, hasElevation,
@@ -85,9 +86,9 @@ import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoin
   unitRouteResultIsCurrent, rejoinSelectedUnitRoute, unitRouteRejoinDecision, createUnitRoutePublicationLedger } from './src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
-import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT } from './src/unit-crowd-steering.mjs';
+import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, canTraverseCrowdBodySegment } from './src/unit-crowd-steering.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
-import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, stanceAcquiredMovementActive, patrolAcquiredMovementActive, followTravelMovementActive, workerFollowTravelMovementActive } from './src/combat-movement.mjs';
+import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, stanceAcquiredMovementActive, patrolAcquiredMovementActive, workerPatrolAcquiredMovementActive, followTravelMovementActive, workerFollowTravelMovementActive } from './src/combat-movement.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const BUILD_IDENTITY = await loadBuildIdentity(ROOT);
@@ -763,6 +764,9 @@ let spatialBucketTeamTails = [new Int32Array(0), new Int32Array(0)];
 let spatialBucketTeamCounts = [new Uint16Array(0), new Uint16Array(0)];
 let spatialBucketTeamCursors = [new Int32Array(0), new Int32Array(0)];
 const spatialBucketOfUnit = new Int32Array(MAX_UNITS);
+// Production may append/reuse a slot after the tick's bucket census.
+// Construction body admission waits until the next normal rebuild in that case.
+let spatialBucketRosterCurrent = false;
 const spatialBucketTeamNext = [new Int32Array(MAX_UNITS), new Int32Array(MAX_UNITS)];
 const attackMoveCandidateBuckets = new Int32Array(targetBucketCapacity);
 const attackMoveCandidateRemaining = new Uint16Array(targetBucketCapacity);
@@ -1798,6 +1802,7 @@ function spawnProducedUnit(team, kind, x, z) {
   if (id < 0) return false;
 
   const unit = makeUnit(id, team, x, z, kind, teamSlots);
+  spatialBucketRosterCurrent = false;
   if (id === units.length) units.push(unit);
   else {
     for (const other of units) {
@@ -8132,6 +8137,7 @@ function rebuildSpatialBuckets() {
     }
     teamCount[bucket]++;
   }
+  spatialBucketRosterCurrent = true;
 }
 
 function findAttackMoveTarget(unit, acquireRadius = ATTACK_MOVE_ACQUIRE_RADIUS, offsets = attackMoveBucketOffsets) {
@@ -8308,7 +8314,8 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   const point = unit.moveGoalPoint && activeMoveGoalPoint(unit);
   let target = point && unit.pathIndex === unit.path.length - 1
     && unit.path[unit.pathIndex] === point.cell ? point : cellToWorld(unit.path[unit.pathIndex]);
-  const crowdRadius = ordinaryCrowdBodyRadius(unit);
+  const construction = constructionMovementActive(unit);
+  const crowdRadius = construction ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : ordinaryCrowdBodyRadius(unit);
   if (crowdRadius) {
     const currentCell = worldToCell(unit.x, unit.z), targetCell = worldToCell(target.x, target.z);
     const adjacent = Math.abs(currentCell % MAP_WIDTH - targetCell % MAP_WIDTH) <= 1
@@ -8323,6 +8330,7 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
       || (coreRadius && !canTraverseStaticBodySegment(target, target, coreRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable)
         && !canTraverseStaticBodySegment(unit, target, coreRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true })))
       return { target, reachedWaypoint: true, stepDistance: 0, rejectedStaticProposal: true };
+    if (construction && !spatialBucketRosterCurrent) return { target, waitingForCrowd: true, stepDistance: 0 };
     const query = crowdNeighborsNear(unit);
     const progressTarget = target;
     const diagnostics = { visits: query.visits, neighbors: query.neighbors.length, overflow: query.overflow };
@@ -8339,7 +8347,7 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
     diagnostics.parkedWaypointProbes = parkedWaypointProbes;
     if (query.overflow) return { ...selectCrowdStep({ unit, target,
       stepDistance: Math.min(remainingStep, .25), neighbors: query.neighbors,
-      tick: tickNumber, navigationRevision, epoch: movePlanningEpoch, overflow: true }), crowd: diagnostics };
+      tick: tickNumber, navigationRevision, epoch: movePlanningEpoch, overflow: true, radius: crowdRadius }), crowd: diagnostics };
     const controlDiagnostics = { passageProposals: 0, passageBodyVisits: 0 };
     let travelDirection = { x: target.x - unit.x, z: target.z - unit.z };
     if (unit.pathIndex < unit.path.length - 1) {
@@ -8349,12 +8357,12 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
       if (!dx && !dz) { dx = following.x - target.x; dz = following.z - target.z; }
       travelDirection = { x: dx, z: dz };
       target = crowdPassagePoint(target, { x: dx, z: dz }, unit, query.neighbors,
-        inset => canTraverseStaticBodySegment(inset, inset, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable), controlDiagnostics);
+        inset => canTraverseStaticBodySegment(inset, inset, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable), controlDiagnostics, crowdRadius);
     }
     const crowdMove = selectCrowdStep({ unit, target, stepDistance: Math.min(remainingStep, .25),
       travelDirection, progressTarget, diagnostics: controlDiagnostics,
       tick: tickNumber, navigationRevision, epoch: movePlanningEpoch,
-      neighbors: query.neighbors, cellCenter: cellToWorld(currentCell),
+      neighbors: query.neighbors, cellCenter: cellToWorld(currentCell), radius: crowdRadius,
       pointAllowed: to => to.x >= -MAP_HALF_X + .5 && to.x <= MAP_HALF_X - .5
         && to.z >= -MAP_HALF_Z + .5 && to.z <= MAP_HALF_Z - .5
         && canTraverseStaticBodySegment(to, to, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable),
@@ -8468,6 +8476,17 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   vx /= length;
   vz /= length;
   return { x: vx, z: vz, target, stepDistance: remainingStep };
+}
+
+// Each actual construction write uses a fresh bounded query of live body poses.
+// A body-only refusal retains the existing route/work/queue, without static repair.
+// No neighbor displacement, endpoint reservation or saved activation state.
+function constructionBodyStepAllowed(unit, to) {
+  if (!constructionMovementActive(unit)) return true;
+  if (!spatialBucketRosterCurrent) return false;
+  const query = crowdNeighborsNear(unit);
+  return !query.overflow && canTraverseCrowdBodySegment(unit, to,
+    LAND_CLEARANCE_PROFILE.radiusByKind.worker, query.neighbors, { allowEscape: true });
 }
 
 function crowdNeighborsNear(unit) {
@@ -8624,7 +8643,8 @@ function spreadInteractingUnits() {
       || !canTraverseUnitStep(worldToCell(unit.x, unit.z), worldToCell(x, z),
         MAP_WIDTH, elevationLevelByCell, isWalkable)
       || (clearanceRadius && !canTraverseStaticBodySegment(unit, { x, z },
-        clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) continue;
+        clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))
+      || !constructionBodyStepAllowed(unit, { x, z })) continue;
     unit.x = x;
     unit.z = z;
     unit.lastMoveTick = tickNumber;
@@ -8874,7 +8894,7 @@ function simulateTick() {
             continue;
           }
           let rejoinRejected = false;
-          if (focusedUnitAttackMovementActive(unit) || attackMoveAcquiredMovementActive(unit) || stanceAcquiredMovementActive(unit) || patrolAcquiredMovementActive(unit)) {
+          if (focusedUnitAttackMovementActive(unit) || attackMoveAcquiredMovementActive(unit) || stanceAcquiredMovementActive(unit) || patrolAcquiredMovementActive(unit) || workerPatrolAcquiredMovementActive(unit)) {
             const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
             const rejoined = rejoinSelectedUnitRoute(approach, {
               position: unit, startCell, firstPoint: cellToWorld(approach.path[0] ?? startCell), radius,
@@ -8975,7 +8995,7 @@ function simulateTick() {
           unit.attackTargetId = target.id;
           unit.repathTimer = 0.6;
           unit.lastAttackCell = movePath.targetCell;
-          if (attackMoveAcquiredMovementActive(unit) || stanceAcquiredMovementActive(unit) || patrolAcquiredMovementActive(unit)) {
+          if (attackMoveAcquiredMovementActive(unit) || stanceAcquiredMovementActive(unit) || patrolAcquiredMovementActive(unit) || workerPatrolAcquiredMovementActive(unit)) {
             const startCell = worldToCell(unit.x, unit.z), radius = activeLandMovementBodyRadius(unit);
             const rejoined = rejoinSelectedUnitRoute(movePath, {
               position: unit, startCell, firstPoint: cellToWorld(movePath.path[0] ?? startCell), radius,
@@ -9131,6 +9151,7 @@ function simulateTick() {
         break;
       }
       if (move.reachedWaypoint) {
+        if (!constructionBodyStepAllowed(unit, move.target)) break;
         if (!automaticPositionAllowed(unit, move.target.x, move.target.z)) {
           if (unit.stanceReturning) abandonBlockedStanceReturn(unit);
           else { rejectAutomaticTarget(unit, units[unit.attackTargetId]); clearAttackTarget(unit); }
@@ -9144,8 +9165,12 @@ function simulateTick() {
         continue;
       }
 
-      const nextX = unit.x + move.x * move.stepDistance;
-      const nextZ = unit.z + move.z * move.stepDistance;
+      let nextX = unit.x + move.x * move.stepDistance;
+      let nextZ = unit.z + move.z * move.stepDistance;
+      if (constructionMovementActive(unit)) {
+        nextX = Math.max(-MAP_HALF_X + .5, Math.min(MAP_HALF_X - .5, nextX));
+        nextZ = Math.max(-MAP_HALF_Z + .5, Math.min(MAP_HALF_Z - .5, nextZ));
+      }
       const nextCell = worldToCell(nextX, nextZ);
       const currentCell = worldToCell(unit.x, unit.z);
       if (!automaticPositionAllowed(unit, nextX, nextZ)) {
@@ -9156,18 +9181,24 @@ function simulateTick() {
       if (canTraverseUnitStep(currentCell, nextCell, MAP_WIDTH, elevationLevelByCell, isWalkable)
         && (!clearanceRadius || canTraverseStaticBodySegment(unit, { x: nextX, z: nextZ },
           clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {
+        if (!constructionBodyStepAllowed(unit, { x: nextX, z: nextZ })) break;
         unit.x = nextX;
         unit.z = nextZ;
       } else {
         const targetX = move.target.x - unit.x;
         const targetZ = move.target.z - unit.z;
         const length = Math.hypot(targetX, targetZ) || 1;
-        const fallbackX = unit.x + (targetX / length) * move.stepDistance;
-        const fallbackZ = unit.z + (targetZ / length) * move.stepDistance;
+        let fallbackX = unit.x + (targetX / length) * move.stepDistance;
+        let fallbackZ = unit.z + (targetZ / length) * move.stepDistance;
+        if (constructionMovementActive(unit)) {
+          fallbackX = Math.max(-MAP_HALF_X + .5, Math.min(MAP_HALF_X - .5, fallbackX));
+          fallbackZ = Math.max(-MAP_HALF_Z + .5, Math.min(MAP_HALF_Z - .5, fallbackZ));
+        }
         if (canTraverseUnitStep(currentCell, worldToCell(fallbackX, fallbackZ),
           MAP_WIDTH, elevationLevelByCell, isWalkable) && automaticPositionAllowed(unit, fallbackX, fallbackZ)
           && (!clearanceRadius || canTraverseStaticBodySegment(unit, { x: fallbackX, z: fallbackZ },
             clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {
+          if (!constructionBodyStepAllowed(unit, { x: fallbackX, z: fallbackZ })) break;
           unit.x = fallbackX;
           unit.z = fallbackZ;
         } else {

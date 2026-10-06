@@ -6,7 +6,9 @@ import { TERRAIN_MATERIALS } from '../terrain-materials.mjs';
 import { validWildlifeNodeDefinition } from '../wildlife-state.mjs';
 import { findInvalidResourceVariant } from '../shore-fishing.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, validCompletionTrigger } from '../scenario-regions.mjs';
-import { buildElevationGrid, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
+import { findInvalidCapturePrerequisite } from '../world/capture-prerequisites.mjs';
+import { findInvalidScenarioEventChain } from '../world/scenario-event-chain.mjs';
+import { buildElevationGrid,
   findUnreachableCaptureZone, findUnreachableResourceNode, validateElevationPatches } from '../map-utils.mjs';
 
 // Portable-map validation only. The host supplies its existing authoring policy;

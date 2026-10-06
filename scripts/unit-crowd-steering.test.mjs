@@ -7,6 +7,16 @@ import { LAND_CLEARANCE_PROFILE, segmentRectangleDistanceSquared } from '../src/
 const actor = (extra = {}) => ({ id: 1, generation: 17, orderRevision: 8, kind: 'infantry',
   x: 0, z: .5, hp: 100, path: [1], pathIndex: 0, moveGoalCell: 1, ...extra });
 
+test('explicit construction radius reuses bounded selection without ordinary Worker activation', () => {
+  const unit=actor({kind:'worker',buildingTargetId:7}),before=structuredClone(unit);
+  const options={unit,target:{x:2,z:.5},stepDistance:2.6/30,neighbors:[],canTraverse:()=>true};
+  assert.equal(ordinaryCrowdBodyRadius(unit),0);assert.equal(selectCrowdStep(options),null);
+  const move=selectCrowdStep({...options,radius:.18});
+  assert.ok(move.x>0&&!move.waitingForCrowd);assert.ok(move.crowdControl.proposals<=CROWD_PROPOSAL_LIMIT);
+  assert.deepEqual(unit,before);assert.equal(ordinaryCrowdBodyRadius(unit),0);
+  for(const radius of [0,.51,NaN,Infinity]) assert.equal(selectCrowdStep({...options,radius}),null);
+});
+
 test('a distant perpendicular final goal does not force a same-route front actor to retreat into its follower', () => {
   const front = actor({ id: 66, x: -.22, z: 3.057, target: { x: 18.5, z: 3.5 } });
   const rear = actor({ id: 64, x: -.22, z: 3.498, target: { x: 16.5, z: 3.5 } });

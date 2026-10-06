@@ -10,9 +10,10 @@ import { combatDamage } from '../src/combat-rules.mjs';
 
 // Characterization, not a safety pass. Observe the actual pre-write acquired
 // state; no positions/HP/routes/targets/checkpoint fields are injected.
-export async function observeWorkerPatrolAcquired({ team, ending, nearStone, cold }) {
+export async function observeWorkerPatrolAcquired({ team, ending, nearStone, cold, planningTurns = 1 }) {
+  assert.ok([0, 1].includes(planningTurns));
   process.env.RTS_MAP = 'maps/open-field.json'; process.env.RTS_GAME_MODE = 'pvp';
-  process.env.RTS_PREGAME = '0'; process.env.RTS_MOVE_PLANNING_TURNS_PER_TICK = '1';
+  process.env.RTS_PREGAME = '0'; process.env.RTS_MOVE_PLANNING_TURNS_PER_TICK = String(planningTurns);
   delete process.env.RTS_MATCH_STATE_PATH;
   const map = { id: 'worker-patrol-acquired-clearance', name: 'Worker Patrol acquired clearance',
     width: 64, height: 48, terrainSeed: 881, fogOfWar: false, startingArmySize: 16,
@@ -20,12 +21,12 @@ export async function observeWorkerPatrolAcquired({ team, ending, nearStone, col
     spawnPoints: [{ team: 0, x: -20, z: -16 }, { team: 1, x: 20, z: 16 }],
     resourceNodes: [], triggers: [], scenarioEvents: [],
     obstacles: [{ column: 33, row: 25, width: 1, height: 1, material: 'stone' }] };
-  let f = await createPathingReplayFixture(map, { traceLandSteps: true, tracePatrolAcquiredSteps: true }), r = f.replay;
+  let f = await createPathingReplayFixture(map, { traceLandSteps: true, traceRouteRejoins: true, tracePatrolAcquiredSteps: true }), r = f.replay;
   const id = r.units.find(u => u.team === team && u.kind === 'worker').id;
   const targetId = r.units.find(u => u.team !== team && u.kind === 'worker').id;
   const actor = () => r.units[id], target = () => r.units[targetId];
-  const orders = [], samples = [], trace = createHash('sha256');
-  let acquiredSteps = 0, unsafeSteps = 0, admissionRejectedSteps = 0, newContacts = 0, hits = 0, restored = false;
+  const orders = [], samples = [], trace = createHash('sha256'), acquiredBodyRadii = new Set();
+  let acquiredSteps = 0, acquiredRejoins = 0, unsafeSteps = 0, admissionRejectedSteps = 0, newContacts = 0, hits = 0, restored = false;
   const clear = (from, to) => canTraverseStaticBodySegment(from, to, .18, map.width, map.height, r.isWalkable);
   const command = (actorId, type, fields = {}) => {
     const seat = r.units[actorId].team;
@@ -37,8 +38,15 @@ export async function observeWorkerPatrolAcquired({ team, ending, nearStone, col
   const step = () => {
     const hp = target().hp, distance = Math.hypot(actor().x - target().x, actor().z - target().z);
     r.step();
+    for (const join of r.routeRejoins.filter(j => j.id === id && j.patrolAcquired)) {
+      acquiredRejoins++;
+      assert.equal(join.radius, .18);
+      const prefix = join.path.length - join.selected.length;
+      assert.ok(prefix === 0 || prefix === 1);
+      assert.deepEqual(join.path.slice(prefix), join.selected, 'consumer retains the entire selected route tail');
+    }
     for (const s of r.landSteps.filter(s => s.id === id && s.patrolAcquired)) {
-      assert.equal(s.attackTargetId, targetId); acquiredSteps++;
+      assert.equal(s.attackTargetId, targetId); acquiredSteps++; acquiredBodyRadii.add(s.bodyRadius);
       const unsafe = !clear(s.from, s.to), contact = clear(s.from, s.from) && !clear(s.to, s.to);
       // Strict clearance excludes inherited overlap escape; the production
       // executor separately permits its existing monotone escape rule.
@@ -68,12 +76,13 @@ export async function observeWorkerPatrolAcquired({ team, ending, nearStone, col
       generation: actor().generation, revision: actor().orderRevision, queue: structuredClone(actor().queuedWaypoints),
       cargo: actor().cargo, work: structuredClone(actor().workIntent), stance: actor().combatStance };
     const saved = r.checkpoint(); assert.ok(r.validate(structuredClone(saved)));
-    await f.dispose(); f = await createPathingReplayFixture(map, { traceLandSteps: true, tracePatrolAcquiredSteps: true }); r = f.replay;
+    await f.dispose(); f = await createPathingReplayFixture(map, { traceLandSteps: true, traceRouteRejoins: true, tracePatrolAcquiredSteps: true }); r = f.replay;
     assert.ok(r.validate(structuredClone(saved))); r.restore(structuredClone(saved));
     assert.deepEqual({ goal: actor().moveGoalCell, order: actor().persistentOrder, target: actor().attackTargetId,
       anchor: [actor().attackMoveAnchorX, actor().attackMoveAnchorZ], resume: actor().attackMoveResumePath,
       resumeIndex: actor().attackMoveResumePathIndex, generation: actor().generation, revision: actor().orderRevision,
-      queue: actor().queuedWaypoints, cargo: actor().cargo, work: actor().workIntent, stance: actor().combatStance }, before);
+      queue: actor().queuedWaypoints, cargo: actor().cargo, work: actor().workIntent, stance: actor().combatStance },
+      { ...before, revision: before.revision + Number(saved.state.units[id].movePlanningPending) });
     restored = true;
   };
   try {
@@ -94,7 +103,38 @@ export async function observeWorkerPatrolAcquired({ team, ending, nearStone, col
     assert.equal(actor().combatStance, null); assert.equal(actor().attackMove, true);
     const anchor = [actor().attackMoveAnchorX, actor().attackMoveAnchorZ], goal = actor().moveGoalCell;
     if (cold) await restore();
-    if (ending === 'loss') {
+    const replacement = ['stop', 'holdPosition', 'move', 'queuedMove'].includes(ending);
+    if (replacement) {
+      const hp = target().hp, revision = actor().orderRevision, path = actor().path, index = actor().pathIndex;
+      const resume = actor().attackMoveResumePath, resumeIndex = actor().attackMoveResumePathIndex;
+      command(id, ending === 'queuedMove' ? 'move' : ending,
+        ['move', 'queuedMove'].includes(ending) ? { x: -3.5, z: -3.5, ...(ending === 'queuedMove' ? { queue: true } : {}) } : {});
+      assert.equal(actor().persistentOrder, null);
+      if (ending === 'queuedMove') {
+        assert.equal(actor().orderRevision, revision); assert.equal(actor().path, path); assert.equal(actor().pathIndex, index);
+        assert.equal(actor().attackMoveResumePath, resume); assert.equal(actor().attackMoveResumePathIndex, resumeIndex);
+        assert.equal(actor().attackTargetId, targetId); assert.equal(actor().queuedWaypoints.length, 1);
+        assert.equal(activeLandMovementBodyRadius(actor()), 0, 'cancelled Patrol keeps the separate acquired AttackMove contract');
+        await restore(); command(targetId, 'move', { x: 24.5, z: 16.5 });
+        until(() => actor().attackTargetId < 0, 1200);
+        until(() => actor().queuedWaypoints.length === 0, 1800);
+        until(() => !actor().movePlanningPending && actor().pathIndex >= actor().path.length, 1000);
+        assert.deepEqual([actor().x, actor().z], [-3.5, -3.5]);
+      } else {
+        assert.equal(actor().attackTargetId, -1); assert.equal(actor().attackMoveResumePath, null);
+        assert.equal(actor().attackMove, false); assert.equal(actor().queuedWaypoints.length, 0);
+        await restore();
+        if (ending === 'move') {
+          until(() => !actor().movePlanningPending && actor().pathIndex >= actor().path.length);
+          assert.deepEqual([actor().x, actor().z], [-3.5, -3.5]);
+        } else {
+          const pose = [actor().x, actor().z]; for (let i = 0; i < 80; i++) step();
+          assert.deepEqual([actor().x, actor().z], pose);
+        }
+        assert.equal(target().hp, hp, 'replacement does not invent residual damage');
+      }
+      assert.equal(actor().persistentOrder, null); assert.equal(actor().attackMove, false);
+    } else if (ending === 'loss') {
       command(targetId, 'move', { x: 24.5, z: 16.5 });
       until(() => actor().attackTargetId < 0, 1200);
       assert.ok(target().hp > 0); assert.equal(actor().moveGoalCell, goal);
@@ -107,11 +147,14 @@ export async function observeWorkerPatrolAcquired({ team, ending, nearStone, col
       let switches = 0, leg = actor().persistentOrder.leg;
       until(() => { const next = actor().persistentOrder.leg; if (next !== leg) { switches++; leg = next; } return switches >= 2; }, 1800);
     }
-    assert.deepEqual([actor().persistentOrder.start,actor().persistentOrder.end], [patrol.start,patrol.end]);
-    assert.equal(activeLandMovementBodyRadius(actor()), .18); assert.equal(actor().hp, 100);
+    if (!replacement) {
+      assert.deepEqual([actor().persistentOrder.start,actor().persistentOrder.end], [patrol.start,patrol.end]);
+      assert.equal(activeLandMovementBodyRadius(actor()), .18);
+    }
+    assert.equal(actor().hp, 100);
     assert.deepEqual(r.units.filter(u => ![id,targetId].includes(u.id)).map(u => [u.id,u.orderRevision,u.hp,u.cargo,u.x,u.z]), untouched);
     assert.ok(acquiredSteps > 0, 'observe actual acquired substeps, not only target-free travel');
-    return { team, ending, nearStone, cold, orders, acquiredSteps, unsafeSteps, admissionRejectedSteps, newContacts, hits,
+    return { team, ending, nearStone, cold, planningTurns, orders, acquiredSteps, acquiredRejoins, acquiredBodyRadii: [...acquiredBodyRadii], unsafeSteps, admissionRejectedSteps, newContacts, hits,
       restored, patrolCells: [patrol.start,patrol.end], samples, traceSha256: trace.digest('hex'),
       outcome: 'original policy/retention conditions met; clearance measured separately' };
   } finally { await f.dispose(); }

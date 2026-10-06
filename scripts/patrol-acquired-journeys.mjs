@@ -12,7 +12,7 @@ test('acquired Patrol selects the shared military body while excluding automatic
     attackBuildingTargetId: -1, buildingTargetId: null, combatStance: 'aggressive',
     gatherNodeId: null, gatherForestCell: -1, path: [], persistentOrder: { type: 'patrol' } };
   for (const [kind, radius] of Object.entries(LAND_CLEARANCE_PROFILE.radiusByKind)) {
-    assert.equal(activeLandMovementBodyRadius({ ...unit, kind }), kind === 'worker' ? 0 : radius);
+    assert.equal(activeLandMovementBodyRadius({ ...unit, kind }), radius);
   }
   assert.equal(patrolAcquiredMovementActive(unit), true);
   for (const override of [{ kind: 'worker' }, { kind: 'skiff' }, { kind: 'sheep' }, { kind: 'unknown' },
