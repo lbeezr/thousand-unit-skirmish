@@ -65,15 +65,14 @@ test('actual acquired Worker Patrol target permits safe approach into existing w
 test('unrelated occupied endpoint still waits while the actual target remains collidable', () => {
   const f = fixture({ otherOccupied: true }); const result = f.select();
   assert.ok(result.waitingForCrowd); assert.equal(result.crowdControl.proposals, 0);
-  assert.equal(crowd.canTraverseCrowdBodySegment(f.unit, f.target, .18, f.neighbors), false);
+  assert.equal(crowd.canTraverseCrowdBodySegment({ x: 5.12, z: .5 }, { x: 5.2, z: .5 }, .18, f.neighbors), false);
 });
 
 test('an approach body cannot bypass the terrain sweep or physical target contact', () => {
   const f = fixture({ denied: true }); const result = f.select();
   assert.ok(result.waitingForCrowd); assert.equal(result.stepDistance, 0);
   assert.ok(result.crowdControl.proposals > 0, 'approach enters the original physical oracle');
-  const to = { x: 5.4, z: .5 };
-  assert.equal(crowd.canTraverseCrowdBodySegment(f.unit, to, .18, f.neighbors), false);
+  assert.equal(crowd.canTraverseCrowdBodySegment({ x: 5.12, z: .5 }, { x: 5.2, z: .5 }, .18, f.neighbors), false);
 });
 
 for (const [label, change] of [
@@ -99,4 +98,19 @@ test('default and a same-ID clone retain the original occupied target refusal', 
       radius: .18, stepDistance: .08, neighbors: f.neighbors, canTraverse: () => true });
     assert.ok(result.waitingForCrowd); assert.equal(result.crowdControl.proposals, 0);
   }
+});
+
+
+test('a short target-contact proposal still waits when the permitted forward corridor has no clear step', () => {
+  const f = fixture(); Object.assign(f.unit, { x: 5.12, z: .5 });
+  const before = structuredClone([f.unit, ...f.neighbors]);
+  const to = { x: 5.2, z: .5 };
+  assert.ok(Math.hypot(to.x - f.unit.x, to.z - f.unit.z) < .25, 'within the bounded physical sweep limit');
+  assert.equal(crowd.canTraverseCrowdBodySegment(f.unit, to, .18, f.neighbors), false);
+  const result = crowd.selectCrowdStep({ unit: f.unit, target: f.target, approachBody: f.target,
+    radius: .18, stepDistance: .08, neighbors: f.neighbors,
+    canTraverse: p => p.x >= f.unit.x && Math.abs(p.z - f.unit.z) < 1e-12 });
+  assert.ok(result.waitingForCrowd); assert.equal(result.stepDistance, 0);
+  assert.ok(result.crowdControl.proposals > 0);
+  assert.deepEqual([f.unit, ...f.neighbors], before);
 });

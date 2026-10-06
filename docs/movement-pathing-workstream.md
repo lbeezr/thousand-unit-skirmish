@@ -1289,7 +1289,7 @@ a nonpending terminal waypoint in the live enemy land target's cell, with valid
 slot identity and positive HP. Unrelated occupied endpoints keep their wait.
 No route, goal, range, queue, body radius or query/proposal limit changes.
 
-Fourteen source controls reproduce the original zero-proposal wait, enter the
+Fifteen source controls reproduce the original zero-proposal wait, enter the
 existing weapon range through clear steps, and retain hard body/terrain refusal,
 other occupied endpoints, replacement and identity/domain exclusions. The caller
 still owns PR520 activation and the original kill/loss/native recovery deadline
