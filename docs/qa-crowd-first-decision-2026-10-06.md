@@ -7,7 +7,7 @@
 
 The first differing decision occurs at **journey142 / production143**, serial
 call21 (zero based), actor28 on seat1. Before this call, 4,906 compared calls and
-141 complete tick-state comparisons match. The immediately preceding call is
+141 whole-roster pose/route comparisons match. The immediately preceding call is
 actor27 at the same tick/call20. This is earlier than the retained actor5 crossing
 event at185 versus196; that downstream timestamp did not identify the cause.
 
