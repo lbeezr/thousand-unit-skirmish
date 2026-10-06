@@ -30,7 +30,16 @@ export function requireRecovery(draft, sourceMapId) {
   if ((definition.resourceNodes || []).some(node => node === null)) {
     throw new Error('Map has an invalid, duplicate, out-of-bounds or unsupported resource node.');
   }
-  if (state.formValues === null) {
+  const formValues = state.formValues;
+  if (formValues === null) {
+    throw new Error('The saved draft could not be read. Discard it to start a fresh map.');
+  }
+  // Capture omits file inputs; inspect stored data without invoking field getters.
+  const fileEntry = formValues == null ? undefined
+    : Object.getOwnPropertyDescriptor(formValues, 'studio-import-file');
+  const fileValue = fileEntry?.enumerable && fileEntry.value != null
+    ? Object.getOwnPropertyDescriptor(fileEntry.value, 'value')?.value : undefined;
+  if (typeof fileValue === 'string' && fileValue !== '') {
     throw new Error('The saved draft could not be read. Discard it to start a fresh map.');
   }
   return { state, definition };

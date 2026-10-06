@@ -651,3 +651,164 @@ test('null formValues preflight preserves explicit undefined and earlier diagnos
   const opaque = draftFor(minimalDefinition()); opaque.editor.formValues = entries;
   assert.equal(requireRecovery(opaque, 'source').state.formValues, entries);
 });
+
+for (const [name, value, repair] of [
+  ['filename', 'forged.json', { value: '' }],
+  ['fakepath', 'C:\\fakepath\\forged.json', undefined],
+  ['whitespace', ' ', { value: null }],
+]) {
+  test(`actual Restore rejects corrupted ${name} file value before mutation and supports explicit repair/retry`, t => {
+    const f = mapStudioDraftFixture(t);
+    const formState = createMapStudioFormState({ root: f.w.ui.mapStudio, document: f.d });
+    f.open(); f.edit('studio-name', 'Retained local edit'); f.flush();
+    const key = f.w.editorDraftStorageKey, damaged = JSON.parse(f.w.localStorage.getItem(key));
+    assert.equal(Object.hasOwn(damaged.editor.formValues, 'studio-import-file'), false);
+    damaged.editor.definition.name = 'Private corrupted draft';
+    damaged.editor.formValues = {
+      'studio-name': { value: 'Recovered name' },
+      'studio-objective-name': { value: 'Unfinished pending objective' },
+      'studio-required-units': { value: '' }, 'studio-regions': { value: '[unfinished' },
+      'studio-import-file': { value },
+    };
+    const raw = JSON.stringify(damaged);
+    f.w.localStorage.setItem(key, raw); f.w.showMapStudioDraftRecovery(damaged);
+    const history = f.w.scenarioEditHistory;
+    history.record({ ...f.w.scenarioEditorState(), regionId: 'retained-first' });
+    history.record({ ...f.w.scenarioEditorState(), regionId: 'retained-second' }); history.undo();
+    assert.equal(history.canUndo, true); assert.equal(history.canRedo, true);
+    const before = selectorRecoverySnapshot(f, formState);
+    f.click('studio-draft-restore');
+    assertSelectorRecoveryUnchanged(f, formState, before);
+    assert.equal(f.w.ui.studioDraftRecoveryMessage.textContent, recoveryMessage);
+    assert.equal(f.w.ui.studioDraftRecovery.hidden, false);
+    assert.equal(f.w.ui.mapStudioLayout.inert, true);
+    assert.equal(f.w.localStorage.getItem(key), raw);
+    if (name !== 'whitespace') assert.equal(f.w.ui.studioDraftRecoveryMessage.textContent.includes(value), false);
+    const repaired = JSON.parse(raw);
+    if (repair === undefined) delete repaired.editor.formValues['studio-import-file'];
+    else repaired.editor.formValues['studio-import-file'] = repair;
+    const repairedRaw = JSON.stringify(repaired);
+    f.w.localStorage.setItem(key, repairedRaw); f.click('studio-draft-restore');
+    assert.equal(f.w.ui.studioDraftRecovery.hidden, true);
+    assert.equal(f.w.ui.mapStudioLayout.inert, false);
+    assert.equal(f.w.ui.studioName.value, 'Recovered name');
+    assert.equal(f.w.ui.studioObjectiveName.value, 'Unfinished pending objective');
+    assert.equal(f.w.ui.studioRequiredUnits.value, '');
+    assert.equal(f.w.ui.studioRegions.value, '[unfinished');
+    assert.equal(f.w.localStorage.getItem(key), repairedRaw);
+    f.flush();
+    const saved = JSON.parse(f.w.localStorage.getItem(key));
+    assert.equal(Object.hasOwn(saved.editor.formValues, 'studio-import-file'), false);
+    assert.equal(saved.editor.formValues['studio-objective-name'].value, 'Unfinished pending objective');
+    assert.equal(saved.editor.formValues['studio-required-units'].value, '');
+    assert.equal(saved.editor.formValues['studio-regions'].value, '[unfinished');
+  });
+}
+
+for (const [name, entry] of [
+  ['absent', undefined], ['empty string', { value: '' }], ['missing value', {}],
+  ['null entry', null], ['false entry', false], ['null value', { value: null }],
+  ['number', { value: 7 }], ['boolean', { value: true }],
+  ['array', { value: ['forged.json'] }], ['object', { value: {} }],
+]) {
+  test(`actual Restore retains successful incomplete ${name} file entry and normal capture/save`, t => {
+    const f = mapStudioDraftFixture(t);
+    f.open(); f.edit('studio-name', 'Saved definition name'); f.flush();
+    const key = f.w.editorDraftStorageKey, draft = JSON.parse(f.w.localStorage.getItem(key));
+    draft.editor.formValues = {
+      'studio-objective-name': { value: 'Pending objective' },
+      'studio-required-units': { value: '' }, 'studio-regions': { value: '[unfinished' },
+      'studio-unknown-field': { value: 'Ignored unknown field' },
+    };
+    if (entry !== undefined) draft.editor.formValues['studio-import-file'] = entry;
+    const before = structuredClone(draft), raw = JSON.stringify(draft);
+    const recovered = requireRecovery(draft, 'draft-source');
+    assert.equal(recovered.state, draft.editor); assert.equal(recovered.definition, draft.editor.definition);
+    assert.equal(recovered.state.formValues, draft.editor.formValues); assert.deepEqual(draft, before);
+    f.w.localStorage.setItem(key, raw); f.w.showMapStudioDraftRecovery(draft);
+    f.click('studio-draft-restore');
+    assert.equal(f.w.ui.studioDraftRecovery.hidden, true);
+    assert.equal(f.w.ui.studioName.value, 'Saved definition name');
+    assert.equal(f.w.ui.studioObjectiveName.value, 'Pending objective');
+    assert.equal(f.w.ui.studioRequiredUnits.value, '');
+    assert.equal(f.w.ui.studioRegions.value, '[unfinished');
+    assert.equal(f.w.localStorage.getItem(key), raw);
+    f.flush();
+    const saved = JSON.parse(f.w.localStorage.getItem(key));
+    assert.equal(Object.hasOwn(saved.editor.formValues, 'studio-import-file'), false);
+    assert.equal(saved.editor.formValues['studio-regions'].value, '[unfinished');
+  });
+}
+
+test('file-value preflight rejects only enumerable stored strings without mutating input or tightening other entries', () => {
+  for (const value of ['forged.json', 'C:\\fakepath\\forged.json', ' ']) {
+    const draft = draftFor(minimalDefinition());
+    draft.editor.formValues = { 'studio-import-file': { value } };
+    const before = structuredClone(draft);
+    assert.throws(() => requireRecovery(draft, 'source'), { name: 'Error', message: recoveryMessage });
+    assert.deepEqual(draft, before);
+  }
+  for (const entries of [
+    Object.create({ 'studio-import-file': { value: 'Inherited ignored entry' } }),
+    Object.defineProperty({}, 'studio-import-file', { value: { value: 'Nonenumerable ignored entry' } }),
+    { 'studio-unknown-file': { value: 'Ignored unknown field' } },
+    { 'studio-import-file': Object.create({ value: 'Inherited deferred value' }) },
+  ]) {
+    const draft = draftFor(minimalDefinition()); draft.editor.formValues = entries;
+    assert.equal(requireRecovery(draft, 'source').state.formValues, entries);
+  }
+});
+
+test('file-value preflight preserves accessor timing, error identity and direct-controller setter failures', t => {
+  const f = mapStudioDraftFixture(t);
+  const controller = createMapStudioFormState({ root: f.w.ui.mapStudio, document: f.d });
+  const failure = new Error('Private unexpected getter detail');
+  for (const entries of [
+    Object.defineProperty({}, 'studio-import-file', { enumerable: true, get() { throw failure; } }),
+    { 'studio-import-file': Object.defineProperty({}, 'value', { get() { throw failure; } }) },
+    Object.defineProperty({}, 'studio-name', { enumerable: true, get() { throw failure; } }),
+  ]) {
+    const draft = draftFor(minimalDefinition()); draft.editor.formValues = entries;
+    assert.equal(requireRecovery(draft, 'source').state.formValues, entries);
+    assert.throws(() => controller.restore(entries), error => error === failure);
+  }
+  let reads = 0;
+  const draft = draftFor(minimalDefinition()), entries = { 'studio-import-file': { value: '' } };
+  Object.defineProperty(draft.editor, 'formValues', { get() { reads++; return entries; } });
+  assert.equal(requireRecovery(draft, 'source').state, draft.editor); assert.equal(reads, 1);
+  const untouched = Object.defineProperty({}, 'studio-import-file', { enumerable: true,
+    get() { reads++; return { value: '' }; } });
+  const untouchedDraft = draftFor(minimalDefinition()); untouchedDraft.editor.formValues = untouched;
+  assert.equal(requireRecovery(untouchedDraft, 'source').state.formValues, untouched); assert.equal(reads, 1);
+  controller.restore(untouched); assert.equal(reads, 2);
+  for (const values of [
+    { 'studio-import-file': { value: 'forged.json' } },
+    { 'studio-import-file': Object.create({ value: 'Inherited deferred value' }) },
+  ]) assert.throws(() => controller.restore(values), { name: 'InvalidStateError' });
+  assert.throws(() => controller.restore(null), TypeError);
+  for (const values of [
+    Object.create({ 'studio-import-file': { value: 'Inherited ignored entry' } }),
+    Object.defineProperty({}, 'studio-import-file', { value: { value: 'Nonenumerable ignored entry' } }),
+  ]) assert.doesNotThrow(() => controller.restore(values));
+});
+
+test('file-value preflight leaves every earlier recovery diagnostic ahead of corrupted file entries', () => {
+  const failure = new Error('Private later file descriptor fault');
+  for (const [definition, message] of [
+    [{ ...minimalDefinition(), width: 15 }, recoveryMessage],
+    [{ ...minimalDefinition(), resourceNodes: {} }, recoveryMessage],
+    [{ ...minimalDefinition(), elevationPatches: {} }, 'Invalid elevation patches: shape.'],
+    [{ ...minimalDefinition(), terrainPatches: [null] }, nullEntryCases[0][2]],
+    [{ ...minimalDefinition(), obstacles: [null] }, nullEntryCases[1][2]],
+    ...selectorEntryCases.map(([field, , , message]) => [{ ...minimalDefinition(), [field]: [null] }, message]),
+  ]) {
+    const draft = draftFor(definition); let inspected = 0;
+    draft.editor.formValues = new Proxy({ 'studio-import-file': { value: 'forged.json' } }, {
+      getOwnPropertyDescriptor() { inspected++; throw failure; },
+    });
+    assert.throws(() => requireRecovery(draft, 'source'), { message }); assert.equal(inspected, 0);
+  }
+  const draft = draftFor(minimalDefinition());
+  draft.editor.formValues = new Proxy({}, { getOwnPropertyDescriptor() { throw failure; } });
+  assert.throws(() => requireRecovery(draft, 'source'), error => error === failure);
+});

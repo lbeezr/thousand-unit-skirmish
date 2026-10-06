@@ -166,8 +166,14 @@ After all those checks, recovery rejects an explicit null `formValues` envelope
 with the existing generic saved-draft diagnostic before population mutates state.
 Omitted/undefined, successful primitive/array empty-snapshot behavior and
 incomplete object snapshots remain supported. The form controller's direct
-`restore(null)` TypeError and native setter errors remain unchanged; this adds
-no field-entry validation or strict object-only requirement.
+`restore(null)` TypeError and native setter errors remain unchanged.
+Normal capture omits file inputs. For corrupted stored drafts, preflight also
+rejects only an own enumerable `studio-import-file` entry whose own data `value`
+is a nonempty string, using the same generic diagnostic before mutation.
+Empty/non-string/incomplete entries remain supported. Descriptor inspection
+does not invoke field getters; accessor snapshots retain their deferred behavior
+and original error identity. No file access, strict object-only requirement or
+broader field-entry schema is added.
 Raw saved bytes remain
 available for explicit repair/retry. The dependency closure is unchanged.
 
