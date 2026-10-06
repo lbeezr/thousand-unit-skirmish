@@ -1,6 +1,6 @@
 import { economyClientBindings } from './economy-client-fixture.mjs';
 import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
-import { economyServerBindings, economyServerFunctions, workerFlowRouteBindings } from './economy-server-fixture.mjs';
+import { economyServerBindings, economyServerFunctions, workerFlowRouteBindings, workerPerimeterServerFunctions } from './economy-server-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -62,7 +62,7 @@ for (const team of [0, 1]) test(`Mill routing filters resource, completion, owne
     pathFromAttackFlow: (_, field) => Array(field.goal === 1 ? 20 : field.goal === 2 ? 2 : 8).fill(field.goal),
     distanceToBuildingEdge: () => 0,
   });
-  vm.runInContext(economyServerFunctions + routing, context);
+  vm.runInContext(economyServerFunctions + workerPerimeterServerFunctions + routing, context);
   const unit = { team, x: 0, z: 0, cargo: 10, cargoType: 'food', orderRevision: 0 };
   context.routeWorkerToDropoff(unit);
   assert.equal(unit.dropoffBuildingId, 2, 'the nearest reachable completed friendly Mill accepts food');
@@ -96,7 +96,7 @@ for (const team of [0, 1]) test(`Return cargo uses Mill for food and rejects woo
     teamFood: [0, 0], teamWood: [0, 0], resourceNodeStates: new Map(),
     creditResourceBalance, flushPendingForestClears() {},
   });
-  vm.runInContext(economyServerFunctions + ['commandUnitAt', 'commandUnits', 'clearAttackMoveOrder',
+  vm.runInContext(economyServerFunctions + workerPerimeterServerFunctions + ['commandUnitAt', 'commandUnits', 'clearAttackMoveOrder',
     'workerDropoffCandidates', 'workerFlowPath', 'applyWorkerFlowRoute', 'routeWorkerToDropoff', 'workerAtDropoff', 'assignReturnCargo',
     'stopGathering', 'ensureGatherWorkIntent', 'updateWorkerEconomy'].map(serverFunction).join('\n'), context);
   const order = () => context.assignReturnCargo({ team }, { type: 'returnCargo', ids: [0], unitGenerations: [3] });

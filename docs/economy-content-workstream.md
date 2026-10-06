@@ -86,6 +86,21 @@ uses their current interfaces without changing their implementation.
 
 ## Delivery ledger
 
+- Economy perimeter selection (6 October 2026) addresses the reproduced paid
+  Farm/Storehouse reciprocal-goal cycle under strict source580 body admission.
+  The domain-local helper and scoped Farm/drop-off/Return selection preserve
+  registered radii, accounting, existing route publication and the eight-field
+  flow cache. [Canonical checks](../scripts/worker-economy-perimeter-access.test.mjs)
+  cover both seats, batch previews, cold recovery, actual deposits/Farm grants,
+  every serial Worker write and explicit query bounds. Raw captures stay private.
+  Initial selection is the first slice; the same fixture's late-occupation case
+  retains its valid recipient/cargo and waits until normal blocker removal.
+  Next economy slice: transient 30-tick detection and fair eight-retry service,
+  after this slice's independent review and integration. Movement owner retains
+  cooperative selector/receipts; testing owner retains held PR583 and unchanged
+  Tiny qualification. Source/CPU evidence does not establish deployment or the
+  separate qualified rendered acceptance.
+
 - The reported Worker work-loop right-angle travel is corrected in bounded
   [PR #330](https://github.com/lbeezr/thousand-unit-skirmish/pull/330), merged at
   `6183693c`, with
