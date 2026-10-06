@@ -22,12 +22,12 @@ for(const [x,y] of [[1316,2772],[1316,3204],[1316,3588]])for(let row=y;row<y+352
 const ownIds=new Set(['attack-north-east-0','attack-north-east-1','attack-north-east-2']);
 
 test('Historical NE attack preserves all 60 prior complete frame records, pixels, 28 unaffected clips and calibration',()=>{
-  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^attack-(?:east|north|south|south-west|west|north-west)-\d+$/.test(f.id)&&!/^defeat-north-\d+$/.test(f.id)&&!/^defeat-north-east-\d+$/.test(f.id));
-  assert.equal(prior.length,60);assert.equal(asset.frames.length,85);
+  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^attack-(?:east|north|south|south-west|west|north-west)-\d+$/.test(f.id)&&!/^defeat-north-\d+$/.test(f.id)&&!/^defeat-north-east-\d+$/.test(f.id)&&!/^defeat-east-\d+$/.test(f.id));
+  assert.equal(prior.length,60);assert.equal(asset.frames.length,87);
   assert.equal(sha(JSON.stringify(prior.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
   // Later East/North attacks are independently verified; pin all remaining clips.
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='defeat'&&c.directionId==='north-east')&&!(c.stateId==='defeat'&&c.directionId==='north')&&!(c.stateId==='attack'&&['north-east','east','north','south','south-west','west','north-west'].includes(c.directionId)));
-  assert.equal(unchanged.length,23);assert.equal(sha(JSON.stringify(unchanged)),'9d1adabd823d5e69248a1fd37edd2bd1496c5bba1c4b1e405dbeffabe1d6283c');
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='defeat'&&c.directionId==='east')&&!(c.stateId==='defeat'&&c.directionId==='north-east')&&!(c.stateId==='defeat'&&c.directionId==='north')&&!(c.stateId==='attack'&&['north-east','east','north','south','south-west','west','north-west'].includes(c.directionId)));
+  assert.equal(unchanged.length,22);assert.equal(sha(JSON.stringify(unchanged)),'2ab71253167869ab97063f76ce1994bf86eaae5d45e0dd60a51e84c6f63b4213');
   const {frames,clips,...metadata}=asset;
   assert.equal(sha(JSON.stringify({...metadata,...receipt.registeredBounds})),receipt.registeredAssetMetadataSHA256);
   for(const key of ['artBoundsWorld','cullingBoundsWorld'])for(let axis=0;axis<3;axis++){
@@ -56,7 +56,7 @@ test('NE attack reuses its exact idle key then plays three own-view keys with an
     for(let y=0;y<352;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+416)*4),original.pixels.subarray(y*416*4,(y+1)*416*4));
   }
   const report=analyzeUnitArtCoverage(asset,cells),row=report.rows.find(r=>r.key==='attack|north-east');
-  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,5);
+  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,4);
   assert.equal(row.status,'authored');assert.equal(row.distinctFrames,4);assert.equal(row.distinctSilhouettes,4);
   assert.ok(!report.missingCells.some(c=>c.startsWith('walk|')));assert.equal(report.missingCells.includes('defeat|north-east'),false);
   const frozen=structuredClone(asset);frozen.clips.find(c=>c.stateId==='attack'&&c.directionId==='north-east').sequence.forEach(k=>{k.frameId='idle-north-east-0';});
