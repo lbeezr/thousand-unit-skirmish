@@ -405,14 +405,14 @@ test('construction body-only wait resumes on physical release without navigation
 test('construction body query reads live serial positions, includes stationary combat and defers overflow',()=>{
   const f=constructionBodyFixture(),to={x:.15654,z:-.33671};
   Object.assign(f.units[1],{x:2,attackTargetId:0});
-  assert.equal(f.context.constructionBodyStepAllowed(f.mover,to),true);
-  f.units[1].x=.5;assert.equal(f.context.constructionBodyStepAllowed(f.mover,to),false);
+  assert.equal(f.context.workerBodyStepAllowed(f.mover,to),true);
+  f.units[1].x=.5;assert.equal(f.context.workerBodyStepAllowed(f.mover,to),false);
   const before=structuredClone(f.mover);let queries=0;
   f.context.crowdNeighborsNear=()=>{queries++;return {neighbors:[],visits:128,overflow:true};};
   f.move();assert.equal(queries,1);assert.deepEqual(f.mover,before);assert.equal(f.repairs.length,0);
   for(const count of [64,65]) {
     f.context.crowdNeighborsNear=()=>({neighbors:Array.from({length:count},()=>({kind:'infantry',x:2,z:2})),visits:128,overflow:false});
-    assert.equal(f.context.constructionBodyStepAllowed(f.mover,to),count===64);
+    assert.equal(f.context.workerBodyStepAllowed(f.mover,to),count===64);
   }
 });
 
@@ -439,7 +439,7 @@ for(const reuse of [false,true]) test(`construction waits for a current producti
   f.context.spatialBucketTeamNext=[new Int32Array(2000).fill(-1),new Int32Array(2000).fill(-1)];
   f.move();assert.deepEqual(f.mover,before);assert.equal(f.repairs.length,0);
   rebuildBodyFixtureBuckets(f);assert.equal(f.context.spatialBucketRosterCurrent,true);
-  assert.equal(f.context.constructionBodyStepAllowed(f.mover,{x:.15654,z:-.33671}),false);
+  assert.equal(f.context.workerBodyStepAllowed(f.mover,{x:.15654,z:-.33671}),false);
   assert.ok(f.context.crowdNeighborsNear(f.mover).neighbors.includes(spawned));
 });
 
@@ -465,7 +465,7 @@ for(const side of [-1,1]) test(`active construction separation checks its static
   const before=structuredClone(f.mover),others=structuredClone(f.units.slice(1));
   const proposed={x:before.x-side*.0170062303,z:before.z};
   assert.ok(canTraverseUnitStep(cell(before.x,before.z),cell(proposed.x,proposed.z),width,f.levels,f.walkable));
-  assert.equal(f.context.constructionBodyStepAllowed(f.mover,proposed),true,'this is a static-profile gap, not a body refusal');
+  assert.equal(f.context.workerBodyStepAllowed(f.mover,proposed),true,'this is a static-profile gap, not a body refusal');
   assert.ok(canTraverseStaticBodySegment(before,before,.18,width,width,f.walkable));
   assert.equal(canTraverseStaticBodySegment(before,proposed,.18,width,width,f.walkable,{allowEscape:true}),false);
   f.spread();assert.deepEqual(f.mover,before);assert.deepEqual(f.units.slice(1),others);assert.equal(f.repairs.length,0);
@@ -494,7 +494,7 @@ test('construction guard excludes other domains without querying or granting dis
   for(const change of [{buildingTargetId:null},{holdingPosition:true},{hp:0},{kind:'infantry'},
     {movementDomain:'water'},{persistentOrder:{type:'patrol'}},{persistentOrder:{type:'follow'}},
     {attackTargetId:1},{attackMove:true},{gatherPhase:'gathering'}]) {
-    assert.equal(f.context.constructionBodyStepAllowed({...f.mover,...change},{x:.15654,z:-.33671}),true);
+    assert.equal(f.context.workerBodyStepAllowed({...f.mover,...change},{x:.15654,z:-.33671}),true);
   }
   assert.deepEqual(f.mover,before);
 });

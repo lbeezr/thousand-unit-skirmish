@@ -1250,6 +1250,27 @@ inherited static escape/deeper controls retain legal own movement. The separate
 matched first-divergence investigation and original 2,700-tick qualification
 remain open; this source slice closes only the witnessed static admission gap.
 
+### Shared Worker body-admission seam — 6 October 2026
+
+Core supplies the [agreed acquired-Patrol hook](https://github.com/lbeezr/thousand-unit-skirmish/pull/513#issuecomment-6006751152):
+server-local `workerLocalBodyRadius(unit)` derives local body adoption from
+existing intent, and `workerBodyStepAllowed(unit, proposedPosition)` consumes
+that radius with a fresh bounded live query. The same radius selects local
+steering, stale-roster wait and actual steering/fallback coordinate normalization.
+The four existing construction guards consume the shared helper; its default
+activation remains exactly construction. This extraction changes no route,
+target, work, checkpoint state, queue, query/proposal budget or movement policy.
+
+Caller owns only the additive `workerPatrolAcquiredMovementActive` term in that
+radius seam, its original eight physical cases and productive two-seat/native
+recovery. Selection and write admission must stay coupled. Original rejoin,
+range/leash/return policy and excluded Worker modes remain caller-owned. The
+same-cell combat writer and other direct interaction phases require explicit
+coverage before a caller claims all its writes; three routed guards alone do
+not establish that. Construction separation's static radius remains its own
+policy. Core owns shared admission/fixtures; caller owns acquisition policy;
+crowd retains original fixed-deadline wall qualification. Art backing is N/A.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5

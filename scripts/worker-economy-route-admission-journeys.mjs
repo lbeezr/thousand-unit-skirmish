@@ -26,7 +26,7 @@ const names = ['workerFlowPath', 'applyWorkerFlowRoute', 'publishWorkerEconomyRo
   'ensureGatherWorkIntent', 'depositWorkerCargo', 'stopGathering', 'cancelGatherOrder',
   'clearAttackMoveOrder', 'assignStationaryOrder', 'pendingMoveAssignmentsByUnit', 'enqueueRouteRepairs',
   'applyPlannedMoveAssignment', 'completeMovePlanningJob', 'processMovePlanningSlice',
-  'scheduleNextMovePlanning', 'serviceMovePlanningForTick', 'constructionBodyStepAllowed'];
+  'scheduleNextMovePlanning', 'serviceMovePlanningForTick', 'workerLocalBodyRadius', 'workerBodyStepAllowed'];
 const record = path => ({ hp: 0, kind: 'infantry', path, pathIndex: path.length, attackMoveResumePath: null });
 const entries = f => f.units.reduce((n, u) => n + u.path.length + (u.attackMoveResumePath?.length ?? 0), 0);
 const phaseStart = source.indexOf('  const blockedRouteRepairs = [];');
