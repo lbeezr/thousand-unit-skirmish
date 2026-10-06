@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
-import { researchAction, researchOptions, emptyTechnologyCompletions } from '../src/research-actions.mjs';
+import { researchAction, researchOptions, emptyTechnologyCompletions } from '../src/rules/research-actions.mjs';
 import { GAMEPLAY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { cueForNotice } from '../src/audio-policy.mjs';
 

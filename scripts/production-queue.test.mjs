@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
-import { productionAction } from '../src/production-actions.mjs';
+import { productionAction } from '../src/rules/production-actions.mjs';
 import { UNIT_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const start = source.indexOf('function enqueueBuildingUnit(');

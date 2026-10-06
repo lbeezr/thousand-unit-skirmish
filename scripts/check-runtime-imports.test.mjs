@@ -12,6 +12,30 @@ function check(files, options = {}) {
   });
 }
 
+test('production and research use pure canonical rules with explicit legacy edges', async () => {
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  for (const name of ['production-actions', 'research-actions']) {
+    const canonical = `src/rules/${name}.mjs`;
+    const legacy = `src/${name}.mjs`;
+    assert.ok(RUNTIME_DOMAINS.rules.includes(canonical));
+    assert.ok(RUNTIME_DOMAINS.rules.includes(legacy));
+    assert.deepEqual(moduleImports(sources.get(canonical), canonical),
+      ['../gameplay-definitions.mjs', './gameplay-action-rules.mjs']);
+    assert.deepEqual(moduleImports(sources.get(legacy), legacy), [`./rules/${name}.mjs`]);
+    assert.ok(moduleImports(sources.get('server.mjs'), 'server.mjs').includes(`./${canonical}`));
+    for (const [target, domain] of [['src/client/hud/resource-format.mjs', 'client'],
+      ['src/presentation/audio/composition.mjs', 'presentation'], ['src/unit-movement.mjs', 'simulation']]) {
+      const relative = path.posix.relative(path.posix.dirname(canonical), target);
+      assert.throws(() => check({ [canonical]: `import '${relative}';`, [target]: '' }),
+        new RegExp(`rules domain cannot reach ${domain} domain`), canonical);
+    }
+    assert.throws(() => check({ [canonical]: "import 'node:fs';" }), /Node builtin/, canonical);
+  }
+  assert.ok(moduleImports(sources.get('src/main.js'), 'src/main.js').includes('./rules/research-actions.mjs'));
+  assert.ok(moduleImports(sources.get('src/server/worker-food-tools.mjs'), 'src/server/worker-food-tools.mjs')
+    .includes('../research-actions.mjs'), 'existing Worker compatibility consumer stays unchanged');
+});
+
 test('canonical plant descriptors stay in presentation with real renderer callers and no authority imports', async () => {
   const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
   for (const name of ['podvine-low-pack', 'veilcap-worked-pack', 'sunbloom-low-pack']) {

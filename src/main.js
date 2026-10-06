@@ -16,7 +16,7 @@ import { regionGestureZone, ScenarioEditHistory, createScenarioEditCoordinator,
   scenarioEventCaptureRootId, scenarioEventSourceWouldCycle } from './authoring/scenario-authoring.mjs';
 import { validateScenarioRegions, validCompletionTrigger } from './scenario-regions.mjs';
 import { regionalGroundColor } from './regional-ground-kits.mjs';
-import { researchOptions, researchAction } from './research-actions.mjs';
+import { researchOptions, researchAction } from './rules/research-actions.mjs';
 import { unitPresentation, buildingPresentation } from './gameplay-presentation.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './gameplay-definitions.mjs';
 import { createDockPlacementContext } from './dock-placement.mjs';
