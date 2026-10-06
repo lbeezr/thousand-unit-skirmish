@@ -263,3 +263,78 @@ matches, packaging or deployment. Next: independent exact-head review and bounde
 checks, then the crowd owner's original eight journey cases without altered gates
 or deadlines. Release/deployed identity and normal-game screenshots/replays remain
 separate downstream evidence; universal movement liveness remains open.
+
+## Following continuation proposal — 6 October 2026
+
+PR541 failed unchanged arrival qualification. Its exact head `30a2d709` remains
+draft/unmerged. The separately merged PR544 repairs observation compatibility,
+not arrival behavior. Core owns this **source-only** refinement at the priority
+boundary; [the executable hypothesis](../scripts/crowd-following-continuation-contract.mjs)
+has no production importer. It does not alter the candidate or enable a runtime
+exception. Art, packaging, deployment and game pixels are N/A for this proposal.
+
+Projected-target ranking and following priority are separate contracts. This
+proposal addresses following priority only. Qualifier-local diagnostic records
+and their detailed findings stay outside this public proposal; the new controls
+use fabricated actors/geometry and the two previously public rejection frames.
+
+The smallest proposed priority correction is: a sole
+ahead claimant's distant final goal should not cancel already admitted forward
+queue-following progress when its current waypoint direction closely matches the
+actual selected step. Required conditions are all of:
+
+- Complete original claimant enumeration returns exactly one claimant. A
+  first-claimant-only selector result is insufficient; query overflow refuses.
+  Admission/completeness assertions must be Boolean`true`, not truthy placeholders.
+- Both actors have current ordinary eligibility and fresh generation, command,
+  path identity/index, navigation, epoch and observation state, with no detour,
+  passage/contour maneuver or live safety obligation.
+- The current directed three-distinct-cell continuation matches at the peer's
+  current index or one preceding index, as in existing entitlement eligibility.
+- The exact already admitted step remains within body-width queue-following
+  geometry, has positive accepted-axis and fixed raw-waypoint gain, and its unit
+  direction has cosine strictly greater than the existing `.9` threshold with
+  the claimant's actual current raw-waypoint direction.
+- All existing bounds/cell/static/body, work/travel-budget and reservation
+  admissions still succeed. This predicate supplies no admission or grant itself.
+
+The contract neither renews `lastProgressTick` from a selection nor changes route,
+waypoint, queue, offer or lease state. A successful selected step still needs the
+existing authoritative write and normal historical net-progress observation.
+It does not extend ingress permission, issue another named entitlement or infer
+peer execution from its desired waypoint vector. A future peer tangent, wait or
+downstream obstruction remains a fairness/liveness counterexample to qualify.
+For any later runtime adoption, reuse existing directed-continuation semantics,
+enumerate all claimants within the existing bound, and remove this separate
+source-only predicate once its qualified rule lives at the shared priority seam.
+The predicate receives the exact admitted endpoint directly; normalization is
+used only for the direction comparison and never reconstructs that endpoint.
+Unknown/noninteger actor identities, births, commands, observation ticks or route
+indexes refuse permission.
+
+Bounded controls use fabricated actors/geometry to exercise this proposed rule.
+The two prior public, hash-pinned rejection frames supply their **actual direction
+vectors only**: forest142 cosine`.5317950594532269` and wall594
+cosine`-.8253633325477777` both remain ineligible. Existing full frozen-frame
+controls still retain their original waits. This is not a replay of a private
+diagnostic decision and does not prove that the later rejected PR529 fairness/gate
+regression cannot recur. Run only
+`node --test scripts/crowd-following-continuation-contract.test.mjs scripts/crowd-queue-geometry.test.mjs`
+for these semantic and preceding public-frame checks; no match or journey starts.
+
+Next dependency: qualifier `01a10933-c2b0` independently checks the proposed rule
+against its retained actual proposal/endpoint, peer waypoint cosine,
+complete claimant set, current controller identities/maneuvers and all remaining
+admissions. The supplied diagnosis does not contain that cosine, so activation
+is unverified. Qualifier also retains original forest142/wall594 rejection and
+the mixed-claimant refusal boundary. Only a supported result justifies a separate
+runtime candidate and later unchanged qualification; no broader rerun or PR541
+merge is authorized by this proposal. Projected-target ranking remains separate.
+
+The newly reached CI move-planning-tick arrival failures (run37441169171,
+job112194995556, repeated in R6 run37442534373) are a separate core arrival item.
+Four footprint/queue controls fail their existing1000/1800-tick completion
+assertions after reaching planning idle and repaired goals. Registry reshuffling
+made them newly reached; production/tests/maps and their used observer-off adapter
+are unchanged. Their introduction date and mechanism are unproven. No extra run
+or expansion of this continuation contract follows from that CI evidence.
