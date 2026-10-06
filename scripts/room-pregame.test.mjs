@@ -2,6 +2,160 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { RoomPregame, validatePregameCheckpoint } from '../src/room-pregame.mjs';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
+
+function checkpointDiagnostics(source) {
+  const root = new URL('../', import.meta.url);
+  const configPath = fileURLToPath(new URL('tsconfig.check-js.json', root));
+  const config = ts.readConfigFile(configPath, ts.sys.readFile);
+  assert.equal(config.error, undefined);
+  const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, fileURLToPath(root));
+  assert.deepEqual(parsed.errors, []);
+  const modulePath = fileURLToPath(new URL('src/room-pregame.mjs', root));
+  const moduleSource = ts.createSourceFile(modulePath, readFileSync(modulePath, 'utf8'),
+    ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const names = ['isPregameCheckpointRecord', 'isPregameCheckpointPhase',
+    'isPregameCheckpointRevision', 'validatePregameCheckpoint'];
+  const declarations = moduleSource.statements.filter(statement =>
+    ts.isFunctionDeclaration(statement) && names.includes(statement.name?.text));
+  assert.deepEqual(declarations.map(statement => statement.name.text), names);
+  // Compile the actual boundary declarations (including their JSDoc), without
+  // enrolling the unrelated RoomPregame class and match-mode dependency graph.
+  // A new boundary dependency must be included here or fails as an unknown name.
+  const boundarySource = declarations.map(statement => statement.getFullText(moduleSource)).join('\n');
+  const fixturePath = fileURLToPath(new URL('scripts/type-contracts/pregame-checkpoint-consumer.mjs', root));
+  const host = ts.createCompilerHost(parsed.options);
+  const getSourceFile = host.getSourceFile.bind(host);
+  host.getSourceFile = (fileName, languageVersion, ...args) => {
+    const contents = fileName === modulePath ? boundarySource : fileName === fixturePath ? source : null;
+    return contents === null ? getSourceFile(fileName, languageVersion, ...args)
+      : ts.createSourceFile(fileName, contents, languageVersion, true, ts.ScriptKind.JS);
+  };
+  const program = ts.createProgram([fixturePath], parsed.options, host);
+  return { fixturePath, diagnostics: ts.getPreEmitDiagnostics(program) };
+}
+
+test('checkpoint boundary declarations and checked restore consumer compile with existing strict options', () => {
+  const { diagnostics } = checkpointDiagnostics(`
+import { validatePregameCheckpoint } from '../../src/room-pregame.mjs';
+/** @param {unknown} input */
+function restore(input) {
+  const saved = validatePregameCheckpoint(input);
+  if (!saved) throw new TypeError('Pregame phase is required.');
+  /** @type {'lobby' | 'running'} */ const phase = saved.phase;
+  /** @type {number} */ const revision = saved.revision;
+  return { phase, revision: Number(revision.toFixed(0)) };
+}
+/** @type {import('../../src/room-pregame.mjs').PregameCheckpoint} */
+const checkpoint = { phase: 'running', revision: 1 };
+restore(checkpoint);
+restore({ phase: 'invalid', revision: 'unchecked boundary input' });
+`);
+  assert.deepEqual(diagnostics.map(diagnostic => ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')), []);
+});
+
+test('checked checkpoint consumers reject nullable and incorrectly typed results', () => {
+  const cases = [
+    { source: 'validatePregameCheckpoint(null).phase;', code: 2531 },
+    { source: "const a = validatePregameCheckpoint({}); if (a) a.phase.toFixed(0);", code: 2551 },
+    { source: 'const b = validatePregameCheckpoint({}); if (b) b.revision.toUpperCase();', code: 2339 },
+    { source: "/** @type {import('../../src/room-pregame.mjs').PregameCheckpoint} */ const c = { phase: 'launching', revision: 0 };", code: 2322 },
+    { source: "/** @type {import('../../src/room-pregame.mjs').PregameCheckpoint} */ const d = { phase: 'lobby', revision: '0' };", code: 2322 },
+    { source: 'const e = validatePregameCheckpoint({}); if (e) e.ready;', code: 2339 },
+  ];
+  const { fixturePath, diagnostics } = checkpointDiagnostics([
+    "import { validatePregameCheckpoint } from '../../src/room-pregame.mjs';",
+    ...cases.map(item => item.source),
+  ].join('\n'));
+  assert.equal(diagnostics.length, cases.length);
+  assert.ok(diagnostics.every(diagnostic => diagnostic.file?.fileName === fixturePath));
+  for (const [index, item] of cases.entries()) {
+    const onLine = diagnostics.filter(diagnostic =>
+      diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start).line === index + 1);
+    assert.deepEqual(onLine.map(diagnostic => diagnostic.code), [item.code], item.source);
+  }
+});
+
+test('checkpoint validation preserves stable object and JSON acceptance and rejection', () => {
+  assert.equal(validatePregameCheckpoint(null), null);
+  for (const phase of ['lobby', 'running']) for (const revision of [0, -0, 1, Number.MAX_SAFE_INTEGER]) {
+    const input = { phase, revision };
+    const result = validatePregameCheckpoint(input);
+    assert.deepEqual(result, input);
+    assert.notEqual(result, input);
+    assert.deepEqual(Object.keys(result), ['phase', 'revision']);
+    const json = JSON.parse(JSON.stringify(input));
+    assert.deepEqual(validatePregameCheckpoint(json), json);
+    assert.deepEqual(new RoomPregame('a', 8, json).checkpoint(), json);
+  }
+  const inherited = Object.create({ phase: 'running', revision: 4 });
+  Object.defineProperty(inherited, 'ignored', { value: true });
+  inherited[Symbol('ignored')] = true;
+  assert.deepEqual(validatePregameCheckpoint(inherited), { phase: 'running', revision: 4 });
+  for (const input of [undefined, false, 0, 'lobby', Symbol('checkpoint'), 0n, [], {},
+    { phase: 'launching', revision: 0 }, { revision: 0 }, { phase: 'lobby' },
+    { phase: 'running', revision: 0, ready: true },
+    ...[-1, 0.5, Infinity, -Infinity, NaN, Number.MAX_SAFE_INTEGER + 1, '0', null, {}, 0n]
+      .map(revision => ({ phase: 'lobby', revision }))]) {
+    assert.throws(() => validatePregameCheckpoint(input), {
+      name: 'TypeError', message: 'Invalid pregame checkpoint.',
+    });
+  }
+  assert.throws(() => new RoomPregame('a', 8, null), {
+    name: 'TypeError', message: 'Pregame phase is required.',
+  });
+});
+
+test('changing checkpoint getters cannot replace validated fields during constructor restore', () => {
+  for (const restore of [validatePregameCheckpoint, checkpoint => new RoomPregame('a', 8, checkpoint).checkpoint()]) {
+    let phases = 0;
+    let revisions = 0;
+    const input = {
+      get phase() { return ++phases === 1 ? 'lobby' : 'launching'; },
+      get revision() { return ++revisions <= 2 ? 0 : 'invalid'; },
+    };
+    assert.deepEqual(restore(input), { phase: 'lobby', revision: 0 });
+    assert.deepEqual({ phases, revisions }, { phases: 1, revisions: 1 });
+  }
+  let phaseReads = 0;
+  let revisionReads = 0;
+  assert.throws(() => validatePregameCheckpoint({
+    get phase() { return ++phaseReads === 1 ? 'launching' : 'running'; },
+    get revision() { revisionReads++; return 0; },
+  }), { name: 'TypeError', message: 'Invalid pregame checkpoint.' });
+  assert.deepEqual({ phaseReads, revisionReads }, { phaseReads: 1, revisionReads: 0 });
+  assert.throws(() => validatePregameCheckpoint({
+    phase: 'running', get revision() { return ++revisionReads === 1 ? 'invalid' : 0; },
+  }), { name: 'TypeError', message: 'Invalid pregame checkpoint.' });
+  assert.equal(revisionReads, 1);
+});
+
+test('checkpoint validation keeps key, phase and revision rejection order and propagates accessor errors', () => {
+  const calls = [];
+  const phaseFailure = new Error('phase getter');
+  const revisionFailure = new Error('revision getter');
+  const input = {
+    get phase() { calls.push('phase'); throw phaseFailure; },
+    get revision() { calls.push('revision'); throw revisionFailure; },
+  };
+  const extraKey = Object.create(null, Object.getOwnPropertyDescriptors(input));
+  extraKey.extra = true;
+  assert.throws(() => validatePregameCheckpoint(extraKey),
+    { name: 'TypeError', message: 'Invalid pregame checkpoint.' });
+  assert.deepEqual(calls, []);
+  assert.throws(() => validatePregameCheckpoint(input), error => error === phaseFailure);
+  assert.deepEqual(calls, ['phase']);
+  calls.length = 0;
+  assert.throws(() => validatePregameCheckpoint({ phase: 'launching', get revision() { calls.push('revision'); throw revisionFailure; } }),
+    { name: 'TypeError', message: 'Invalid pregame checkpoint.' });
+  assert.deepEqual(calls, []);
+  assert.throws(() => validatePregameCheckpoint({ phase: 'running', get revision() { throw revisionFailure; } }),
+    error => error === revisionFailure);
+  const keysFailure = new Error('own keys');
+  assert.throws(() => validatePregameCheckpoint(new Proxy(input, { ownKeys() { throw keysFailure; } })),
+    error => error === keysFailure);
+});
 
 const host = { id: 'player-1', team: 0 };
 const guest = { id: 'player-2', team: 1 };
