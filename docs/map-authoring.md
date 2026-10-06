@@ -157,10 +157,11 @@ authority/server rejection assertions remain. This adds no elevation rule,
 migration, storage or capture behavior.
 
 After the elevation check, recovery rejects literal null entries in ground paint
-patches and then obstacles, using the portable import validator's existing
+patches, obstacles, triggers, scenario events and resource nodes, in that order,
+using the portable import validator's existing
 field-specific diagnostics before population can clear history or replace grids.
-It retains unfinished non-null entries and the existing ground-paint falsy
-container fallback; it does not filter entries or introduce deep map validation.
+It retains unfinished non-null entries and the existing optional-collection falsy
+container fallbacks; it does not filter entries or introduce deep map validation.
 Raw saved bytes remain
 available for explicit repair/retry. The dependency closure is unchanged.
 

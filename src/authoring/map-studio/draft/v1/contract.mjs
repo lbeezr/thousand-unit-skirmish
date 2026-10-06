@@ -21,5 +21,14 @@ export function requireRecovery(draft, sourceMapId) {
   if (definition.obstacles.some(obstacle => obstacle === null)) {
     throw new Error('Map has a terrain block outside its grid or with invalid dimensions.');
   }
+  if ((definition.triggers || []).some(trigger => trigger === null)) {
+    throw new Error('Map contains an invalid capture-zone trigger.');
+  }
+  if ((definition.scenarioEvents || []).some(event => event === null)) {
+    throw new Error('Map contains an invalid timed supply event.');
+  }
+  if ((definition.resourceNodes || []).some(node => node === null)) {
+    throw new Error('Map has an invalid, duplicate, out-of-bounds or unsupported resource node.');
+  }
   return { state, definition };
 }
