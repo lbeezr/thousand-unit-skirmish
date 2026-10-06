@@ -453,7 +453,26 @@ test('local draft persistence and its versioned contract stay authoring-only', a
   }
   assert.deepEqual(moduleImports(await readFile(new URL(`../${store}`, import.meta.url), 'utf8'), store),
     ['./map-studio/draft/v1/contract.mjs']);
-  assert.deepEqual(moduleImports(await readFile(new URL(`../${contract}`, import.meta.url), 'utf8'), contract), []);
+  assert.deepEqual(moduleImports(await readFile(new URL(`../${contract}`, import.meta.url), 'utf8'), contract),
+    ['../../../../map-utils.mjs']);
+  const graph = runtimeImportGraph(await readRuntimeSources(new URL('../', import.meta.url).pathname));
+  const dependencies = new Set();
+  const visit = filename => {
+    const node = graph.get(filename);
+    assert.ok(node, filename);
+    assert.deepEqual(node.external, [], filename);
+    for (const dependency of node.local) {
+      if (dependencies.has(dependency)) continue;
+      dependencies.add(dependency);
+      visit(dependency);
+    }
+  };
+  visit(contract);
+  assert.deepEqual([...dependencies].sort(), [
+    'src/elevation.mjs', 'src/map-utils.mjs',
+    'src/world/capture-prerequisites.mjs', 'src/world/scenario-event-chain.mjs',
+  ]);
+  for (const dependency of dependencies) assert.ok(RUNTIME_DOMAINS.world.includes(dependency), dependency);
 });
 
 test('domain membership rejects duplicate ownership and supports exact canonical migration paths', () => {

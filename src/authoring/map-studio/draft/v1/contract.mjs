@@ -1,3 +1,5 @@
+import { validateElevationPatches } from '../../../../map-utils.mjs';
+
 export const MAP_STUDIO_DRAFT_VERSION = 1;
 
 export function requireRecovery(draft, sourceMapId) {
@@ -11,5 +13,7 @@ export function requireRecovery(draft, sourceMapId) {
     || !Array.isArray(definition.scenarioEvents || []) || !Array.isArray(definition.terrainPatches || [])) {
     throw new Error('The saved draft could not be read. Discard it to start a fresh map.');
   }
+  const invalid = validateElevationPatches(definition.width, definition.height, definition.elevationPatches);
+  if (invalid) throw new Error(`Invalid elevation patches: ${invalid.reason}.`);
   return { state, definition };
 }

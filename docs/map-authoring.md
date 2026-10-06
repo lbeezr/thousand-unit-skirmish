@@ -144,10 +144,17 @@ service belongs to this extraction.
 recovery-envelope validator in
 [`map-studio/draft/v1/contract.mjs`](../src/authoring/map-studio/draft/v1/contract.mjs).
 The version is the saved draft format, rather than the whole editor or storage
-implementation. The dependency-free contract has two named exports:
+implementation. The contract has two named exports:
 `MAP_STUDIO_DRAFT_VERSION` and `requireRecovery(draft, sourceMapId)`.
-The validator body, error, 16–256 ceiling and returned references are preserved.
-It does not add migration, deep map validation, storage or capture behavior.
+The existing envelope/collection guards, 16–256 ceiling and returned references
+are preserved. After those guards, recovery calls the existing
+`validateElevationPatches` through `../../../../map-utils.mjs` before editor
+population can mutate history, forms or grids. Malformed shape, bounds, level,
+overlap and limit retain the population helper's exact diagnostics. The import
+test pins this pure world dependency closure to map-utils, elevation,
+capture-prerequisites and scenario-event-chain, with no external imports; all
+authority/server rejection assertions remain. This adds no elevation rule,
+migration, storage or capture behavior.
 
 The existing `map-studio-draft-store.mjs` remains the public host API. It re-exports
 the same constant and delegates recovery through the same per-store two-argument
