@@ -1,10 +1,25 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { GAMEPLAY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
-import { productionAction } from '../src/production-actions.mjs';
-import { researchAction } from '../src/research-actions.mjs';
+import { productionAction } from '../src/rules/production-actions.mjs';
+import { researchAction } from '../src/rules/research-actions.mjs';
 import * as actionRules from '../src/rules/gameplay-action-rules.mjs';
 import * as legacyActionRules from '../src/gameplay-action-rules.mjs';
+import * as productionActions from '../src/rules/production-actions.mjs';
+import * as legacyProductionActions from '../src/production-actions.mjs';
+import * as researchActions from '../src/rules/research-actions.mjs';
+import * as legacyResearchActions from '../src/research-actions.mjs';
+
+test('canonical production and research retain exactly the legacy named bindings', () => {
+  for (const [canonical, legacy, names] of [
+    [productionActions, legacyProductionActions, ['productionAction']],
+    [researchActions, legacyResearchActions, ['emptyTechnologyCompletions', 'researchAction', 'researchOptions']],
+  ]) {
+    assert.deepEqual(Object.keys(canonical), names);
+    assert.deepEqual(Object.keys(legacy), names);
+    for (const name of names) assert.equal(canonical[name], legacy[name], name);
+  }
+});
 
 test('canonical action rules retain exactly the three legacy export bindings', () => {
   const names = ['foodWoodShortfallReason', 'missingTechnologyPrerequisites', 'technologyRequirementReason'];

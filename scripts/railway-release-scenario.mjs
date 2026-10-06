@@ -153,7 +153,9 @@ try {
     assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
       `exact client admission must deny: ${filename}`);
   }
-  for (const filename of ['src/gameplay-action-rules.mjs', 'src/rules/gameplay-action-rules.mjs']) {
+  for (const filename of ['src/gameplay-action-rules.mjs', 'src/rules/gameplay-action-rules.mjs',
+    'src/production-actions.mjs', 'src/rules/production-actions.mjs',
+    'src/research-actions.mjs', 'src/rules/research-actions.mjs']) {
     const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
     assert.equal(response.status, 200, filename);
     assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
@@ -161,6 +163,14 @@ try {
     assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
     assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),
       createHash('sha256').update(await readFile(path.join(sourceRoot, filename))).digest('hex'), filename);
+  }
+  for (const filename of ['src/rules/', 'src/rules/unknown.mjs',
+    'src/rules/production-actions.mjs/extra', 'src/rules/research-actions.mjs.map',
+    'src/rules//production-actions.mjs', 'SRC/rules/research-actions.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
+        404, `action-rule admission remains exact (${method}): ${filename}`);
+    }
   }
   for (const filename of ['src/environment-art.mjs', 'src/presentation/assets/interactive-runtime-image.mjs',
     'src/presentation/assets/plant-packs/podvine-low-pack.mjs', 'src/podvine-low-pack.mjs',

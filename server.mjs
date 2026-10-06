@@ -28,14 +28,14 @@ import { validateCheckpointScenarioState } from './src/server/checkpoint-scenari
 import { validateCheckpointRoster } from './src/server/checkpoint-roster.mjs';
 import { createMapDefinitionValidator } from './src/server/map-definition-validator.mjs';
 import { readMatchCheckpointFile } from './src/server/checkpoint-file-reader.mjs';
-import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
+import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/rules/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
 import { creditResourceBalance } from './src/economy-ledger.mjs';
 import { STONE_ECONOMY_PROFILE_ID, resolveEconomyProfileId, economyResources, economyRulesetRevision, constructionCostForProfile, acceptsProfileDropoff, debitEconomyCost, proportionalEconomyRefund, creditEconomyRefund } from './src/economy-profile.mjs';
 import { migrateEconomyCheckpoint } from './src/economy-checkpoint.mjs';
 import { workerFoodGatherMultiplier, migrateFoodToolsCheckpoint } from './src/server/worker-food-tools.mjs';
 import { unfinishedRefund, buildingRepairStep } from './src/rules/base-lifecycle.mjs';
-import { productionAction } from './src/production-actions.mjs';
+import { productionAction } from './src/rules/production-actions.mjs';
 import { teamPopulation } from './src/population.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION, DEFAULT_FACTION_ID, UNIT_WIRE_IDS, missingGameplayPrerequisites } from './src/gameplay-definitions.mjs';
 import { validBuildingOrientation, orderedBuildingExitCells, legalBuildingExitCells, nearbyBuildingExitCell } from './src/building-orientation.mjs';

@@ -1031,6 +1031,35 @@ and compatibility ratchets. Root retirement requires migrating main and the
 tracked browser/tool/external consumers under the inventory/owner/identified-
 release criteria above; it is not part of this store-home slice.
 
+#### Production and research availability rule homes
+
+The quality rules owner places the existing `productionAction` implementation in
+`src/rules/production-actions.mjs` and the three existing research functions in
+`src/rules/research-actions.mjs`, beside their shared action-rule dependency.
+Only their two relative dependency specifiers change; function bodies, default
+definitions, DTO keys, declaration order and gameplay policy remain identical.
+No extra helper, registry split or combined action framework is introduced.
+
+The server imports both canonical leaves for disclosed choices, accepted
+training/research and upgrade initialization/recovery. Main changes only its
+research import literal for the existing controls and command validation.
+Both root entries explicitly forward the same four bindings. Worker Food Tools
+and other supported runtime/tool/test imports retain those compatibility paths.
+Canonical action contracts exercise the production bodies; legacy namespace
+identity, both-seat affordability/reason order, immutable inputs and existing
+production/research/HUD controls remain acceptance evidence.
+
+Exact public canonical paths join the two already public root paths; rules
+membership and backward-dependency negatives extend existing import guards.
+Private lifecycle/transport admission stays denied. Clean packed byte/hash,
+GET/HEAD and malformed-path checks, independent exact-head review and an
+identified containing automatic staging deployment remain owner-run delivery
+checks. These checks do not establish rendered gameplay. Visual backing: N/A,
+source organization with unchanged controls and policy. Next: inventory retained
+root consumers through their owners before any separate retirement proposal;
+zero tracked imports alone does not retire supported paths. Preserve the
+existing identified-release and compatibility retirement conditions above.
+
 ### Remaining organization queue — 6 October 2026
 
 These are scoped proposals for the remaining stages, **not runtime edit
