@@ -456,6 +456,38 @@ for(const enemy of [false,true]) test(`construction interaction separation check
   assert.deepEqual(f.mover.queuedWaypoints,before.queuedWaypoints);
 });
 
+for(const side of [-1,1]) test(`active construction separation checks its static body before entering an unfinished footprint, side=${side}`,()=>{
+  const f=constructionBodyFixture({x:side*.1877793237,z:-.5});f.mover.path=[];
+  f.blockedCells.add(side<0?28:27);
+  Object.assign(f.units[1],{x:side*.6287357116,z:-.5});
+  f.context.buildingsById.set(7,{id:7,hp:100,complete:false,progress:.32});f.context.distanceToBuildingEdge=()=>.5;
+  rebuildBodyFixtureBuckets(f);
+  const before=structuredClone(f.mover),others=structuredClone(f.units.slice(1));
+  const proposed={x:before.x-side*.0170062303,z:before.z};
+  assert.ok(canTraverseUnitStep(cell(before.x,before.z),cell(proposed.x,proposed.z),width,f.levels,f.walkable));
+  assert.equal(f.context.constructionBodyStepAllowed(f.mover,proposed),true,'this is a static-profile gap, not a body refusal');
+  assert.ok(canTraverseStaticBodySegment(before,before,.18,width,width,f.walkable));
+  assert.equal(canTraverseStaticBodySegment(before,proposed,.18,width,width,f.walkable,{allowEscape:true}),false);
+  f.spread();assert.deepEqual(f.mover,before);assert.deepEqual(f.units.slice(1),others);assert.equal(f.repairs.length,0);
+});
+
+for(const escape of [false,true]) test(`construction separation preserves short inherited static escape, escape=${escape}`,()=>{
+  const f=constructionBodyFixture({x:-.17,z:-.5});f.mover.path=[];f.blockedCells.add(28);
+  Object.assign(f.units[1],{x:escape ? .27 : -.61,z:-.5});
+  f.context.buildingsById.set(7,{id:7,hp:100,complete:false,progress:.32});f.context.distanceToBuildingEdge=()=>.5;
+  rebuildBodyFixtureBuckets(f);
+  const before=structuredClone(f.mover),others=structuredClone(f.units.slice(1));
+  assert.equal(canTraverseStaticBodySegment(before,before,.18,width,width,f.walkable),false);
+  f.spread();
+  if(escape) {
+    assert.ok(f.mover.x<before.x);
+    assert.ok(canTraverseStaticBodySegment(before,f.mover,.18,width,width,f.walkable,{allowEscape:true}));
+    assert.ok(canTraverseCrowdBodySegment(before,f.mover,.18,[others[0]],{allowEscape:true}));
+  } else assert.deepEqual(f.mover,before);
+  assert.deepEqual(f.units.slice(1),others);assert.equal(f.repairs.length,0);
+  assert.deepEqual(f.mover.workIntent,before.workIntent);assert.deepEqual(f.mover.queuedWaypoints,before.queuedWaypoints);
+});
+
 test('construction guard excludes other domains without querying or granting displacement',()=>{
   const f=constructionBodyFixture(),before=structuredClone(f.mover);
   f.context.crowdNeighborsNear=()=>{throw Error('excluded body query');};
