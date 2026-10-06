@@ -342,4 +342,3 @@ export function toOpponentObservation(state, team, map = null) {
     objectives: projectObjectives(state, map, visibility, units),
   };
 }
-

@@ -889,7 +889,7 @@ socket helper bodies and both actual internal projection calls stay unchanged.
 The shared two-line team predicate intentionally remains private in each module,
 as agreed; no general helper export or all-domain utility is introduced.
 
-At this source checkpoint, the canonical module is 345 physical lines and
+At this source checkpoint, the canonical module is 344 physical lines and
 `pve-opponent.mjs` is 633 (335 fewer); graph **231 modules / 455 edges / 141
 browser / 101 server / 34 shared / zero cycles**. The new module and old policy
 entry remain HTTP-private under the unchanged exact static allowlist. Its
