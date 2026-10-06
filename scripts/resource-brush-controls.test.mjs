@@ -365,6 +365,29 @@ test('actual draft capture uses the form controller after committing selected ed
   assert.equal(draft.editor.definition.resourceNodes[0].stock, 13.5);
 });
 
+test('actual draft graph wrappers preserve source eligibility, recipient reconciliation and autosaved event bytes', t => {
+  const f = mapStudioDraftFixture(t), match = f.copy(f.w.mapDefinition);
+  f.open();
+  f.w.editorScenarioEvents = [
+    { id: 'root', team: 'capturing', trigger: { type: 'capture', objectiveId: 'zone' } },
+    { id: 'child', team: 'capturing', trigger: { type: 'event', eventId: 'root' } },
+    { id: 'downstream', team: 'capturing', trigger: { type: 'event', eventId: 'child' } },
+    { id: 'incomplete', team: 'capturing', trigger: { type: 'event', eventId: 'missing' } },
+  ];
+  const cache = new f.w.Map(), visiting = new f.w.Set();
+  assert.equal(f.w.editorScenarioEventCaptureRootId('downstream', cache, visiting), 'root');
+  assert.deepEqual(f.copy([...cache]), [['root', 'root'], ['child', 'root'], ['downstream', 'root']]);
+  assert.equal(visiting.size, 0);
+  assert.deepEqual(f.w.eligibleEditorScenarioEventSources({ id: 'child' }).map(event => event.id), ['root', 'incomplete']);
+  assert.equal(f.w.reconcileEditorScenarioEventCapturingTeams(), 1);
+  assert.equal(f.w.editorScenarioEvents[1].team, 'capturing');
+  assert.equal(f.w.editorScenarioEvents[3].team, 'both');
+  f.edit('studio-name', 'EVENT GRAPH DRAFT'); f.flush();
+  const raw = Object.values(f.saved())[0], saved = JSON.parse(raw);
+  assert.deepEqual(saved.editor.definition.scenarioEvents, f.copy(f.w.editorScenarioEvents));
+  assert.deepEqual(f.copy(f.w.mapDefinition), match);
+});
+
 test('draft store preserves version-1 keys and raw reads; recovery rejects old/corrupt shapes without migrating', () => {
   const storage = new Map();
   const store = createMapStudioDraftStore({ getStorage: () => ({

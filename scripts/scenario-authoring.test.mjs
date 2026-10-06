@@ -1,17 +1,89 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
 import {ScenarioEditHistory,regionGestureZone,createScenarioEditCoordinator} from '../src/authoring/scenario-authoring.mjs';
 import * as scenarioAuthoring from '../src/authoring/scenario-authoring.mjs';
 import * as legacyScenarioAuthoring from '../src/scenario-authoring.mjs';
 import * as mapResize from '../src/authoring/map-resize.mjs';
 import * as legacyMapResize from '../src/map-resize.mjs';
 import {validCompletionTrigger,completionTeam} from '../src/scenario-regions.mjs';
+import {scenarioEventSourceIds} from '../src/world/scenario-event-chain.mjs';
+
+const mainSource=readFileSync(new URL('../src/main.js',import.meta.url),'utf8');
+function draftEventGraph(events){
+ const context=vm.createContext({...scenarioAuthoring,scenarioEventSourceIds,editorScenarioEvents:events});
+ const a=mainSource.indexOf('function editorScenarioEventCaptureRootId(');
+ const b=mainSource.indexOf('\nfunction reconcileEditorScenarioEventTriggers(',a);
+ assert.ok(a>=0&&b>a,'actual Map Studio graph consumer');
+ vm.runInContext(mainSource.slice(a,b),context);
+ return context;
+}
+const captureEvent=id=>({id,team:'both',trigger:{type:'capture',objectiveId:'zone'}});
+const dependentEvent=(id,...eventIds)=>({id,team:'capturing',trigger:eventIds.length===1
+ ?{type:'event',eventId:eventIds[0]}:{type:'event',eventIds}});
+
+test('actual draft graph queries keep roots, convergent all-of chains and missing or mixed roots',()=>{
+ const events=[captureEvent('a'),captureEvent('b'),dependentEvent('one','a'),dependentEvent('two','one'),
+  dependentEvent('same','one','two'),dependentEvent('mixed','a','b'),dependentEvent('missing','absent'),
+  {id:'clock'}, {id:'region',trigger:{type:'region-entry',regionId:'region'}},dependentEvent('empty')];
+ const bytes=JSON.stringify(events),f=draftEventGraph(events);
+ for(const [id,root] of [['a','a'],['b','b'],['one','a'],['two','a'],['same','a'],['mixed',null],
+  ['missing',null],['absent',null],['clock',null],['region',null],['empty',null]]){
+  assert.equal(f.editorScenarioEventCaptureRootId(id),root,id);
+  assert.equal(f.editorScenarioEventHasCaptureRoot(id),root!==null,id);
+ }
+ assert.equal(JSON.stringify(events),bytes);
+});
+
+test('actual draft graph roots retain caller cache identity, visiting guards and deterministic traversal',()=>{
+ const events=[captureEvent('a'),dependentEvent('one','a'),dependentEvent('child','one','a')];
+ const f=draftEventGraph(events),cache=new Map([['unrelated','keep']]),visiting=new Set(['retained']);
+ assert.equal(f.editorScenarioEventCaptureRootId('child',cache,visiting),'a');
+ assert.deepEqual([...cache],[['unrelated','keep'],['a','a'],['one','a'],['child','a']]);
+ assert.deepEqual([...visiting],['retained']);
+ const sentinel={legacy:'cache value'};cache.set('child',sentinel);visiting.add('child');
+ assert.equal(f.editorScenarioEventCaptureRootId('child',cache,visiting),sentinel,'cache precedes visiting guard');
+ assert.ok(visiting.has('child'));
+ assert.equal(f.editorScenarioEventCaptureRootId('one',new Map(),new Set(['one'])),null);
+});
+
+test('actual draft graph cycle refusal handles self, downstream, malformed draft cycles and replaced arrays',()=>{
+ const events=[captureEvent('a'),dependentEvent('one','a'),dependentEvent('two','one'),
+  dependentEvent('cycle-a','cycle-b'),dependentEvent('cycle-b','cycle-a')];
+ const bytes=JSON.stringify(events),f=draftEventGraph(events);
+ assert.equal(f.editorScenarioEventSourceWouldCycle('missing','missing'),true);
+ assert.equal(f.editorScenarioEventSourceWouldCycle('two','a'),true);
+ assert.equal(f.editorScenarioEventSourceWouldCycle('a','two'),false);
+ assert.equal(f.editorScenarioEventSourceWouldCycle('cycle-a','unrelated'),false);
+ assert.deepEqual(f.eligibleEditorScenarioEventSources({id:'one'}).map(e=>e.id),
+  ['a','cycle-a','cycle-b'],'actual source picker excludes self and downstream cycle candidates');
+ const cache=new Map(),visiting=new Set();
+ assert.equal(f.editorScenarioEventCaptureRootId('cycle-a',cache,visiting),null);
+ assert.deepEqual([...cache],[['cycle-b',null],['cycle-a',null]]);assert.equal(visiting.size,0);
+ assert.equal(JSON.stringify(events),bytes);
+ f.editorScenarioEvents=[dependentEvent('two','missing')];
+ assert.equal(f.editorScenarioEventCaptureRootId('two'),null,'query reads the replaced draft');
+ assert.equal(f.editorScenarioEventSourceWouldCycle('two','a'),false);
+});
+
+test('actual draft graph capturing-team reconciliation changes only unrooted recipients',()=>{
+ const events=[captureEvent('a'),dependentEvent('rooted','a'),dependentEvent('unrooted','missing'),
+  {id:'clock',team:'capturing'}, {id:'ordinary',team:'0'},dependentEvent('mixed','a','ordinary')];
+ const f=draftEventGraph(events),before=JSON.stringify(events);
+ assert.equal(f.reconcileEditorScenarioEventCapturingTeams(),3);
+ assert.equal(events[1].team,'capturing');
+ for(const index of [2,3,5])assert.equal(events[index].team,'both');
+ assert.equal(events[4].team,'0');assert.equal(f.reconcileEditorScenarioEventCapturingTeams(),0);
+ assert.deepEqual(events.map(e=>({...e,team:JSON.parse(before).find(old=>old.id===e.id).team})),JSON.parse(before));
+});
 test('compatibility paths preserve exactly the existing named export bindings',()=>{
  for (const [canonical,legacy,keys] of [
   [scenarioAuthoring,legacyScenarioAuthoring,['ScenarioEditHistory','regionGestureZone']],
   [mapResize,legacyMapResize,['resizeWorldMarkers']],
  ]) {
-  assert.deepEqual(Object.keys(canonical).sort(),[...keys,...(canonical===scenarioAuthoring?['createScenarioEditCoordinator']:[])].sort());
+  assert.deepEqual(Object.keys(canonical).sort(),[...keys,...(canonical===scenarioAuthoring?
+   ['createScenarioEditCoordinator','scenarioEventCaptureRootId','scenarioEventSourceWouldCycle']:[])].sort());
   assert.deepEqual(Object.keys(legacy).sort(),keys.sort());
   for (const key of keys) assert.equal(legacy[key],canonical[key],key);
  }

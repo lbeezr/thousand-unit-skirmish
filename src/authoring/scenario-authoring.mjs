@@ -1,3 +1,5 @@
+import { scenarioEventSourceIds } from '../world/scenario-event-chain.mjs';
+
 // Scenario-only snapshots are bounded independently of terrain and gameplay state.
 export class ScenarioEditHistory {
   constructor(limit = 64) { this.limit = limit; this.clear(); }
@@ -48,4 +50,34 @@ export function createScenarioEditCoordinator({ history, canRecord, capture, app
     return true;
   }
   return { record, restore };
+}
+
+// Queries over an editable draft, including incomplete references and cycles.
+// Authority validation remains in the world validator.
+export function scenarioEventCaptureRootId(events, eventId, cache = new Map(), visiting = new Set()) {
+  if (cache.has(eventId)) return cache.get(eventId);
+  if (visiting.has(eventId)) return null;
+  visiting.add(eventId);
+  const event = events.find((item) => item.id === eventId);
+  let rootId = event?.trigger?.type === 'capture' ? event.id : null;
+  const sourceIds = scenarioEventSourceIds(event?.trigger);
+  if (sourceIds.length > 0) {
+    const roots = sourceIds.map((sourceId) => scenarioEventCaptureRootId(events, sourceId, cache, visiting));
+    if (roots[0] && roots.every((candidate) => candidate === roots[0])) rootId = roots[0];
+  }
+  visiting.delete(eventId);
+  cache.set(eventId, rootId);
+  return rootId;
+}
+
+export function scenarioEventSourceWouldCycle(events, sourceId, childId) {
+  const visited = new Set();
+  const reachesChild = (eventId) => {
+    if (eventId === childId) return true;
+    if (visited.has(eventId)) return false;
+    visited.add(eventId);
+    const event = events.find((item) => item.id === eventId);
+    return scenarioEventSourceIds(event?.trigger).some(reachesChild);
+  };
+  return reachesChild(sourceId);
 }
