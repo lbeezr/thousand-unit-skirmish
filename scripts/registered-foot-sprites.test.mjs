@@ -126,18 +126,18 @@ const establishedPage = establishedPack.pages[0];
 const establishedPixels = decodeRgba8(read('assets/units/infantry-sprite-v3/infantry-atlas-runtime.png'));
 const registered = decodeRegisteredUnitFrames(established, establishedPage, establishedPixels);
 
-test('established Infantry production: decoded fallbacks retain17 missing cells after reviewed local walks, independent of descriptions', async () => {
+test('established Infantry production: decoded fallbacks retain16 missing cells after reviewed local walks, independent of descriptions', async () => {
   const before = createHash('sha256').update(read('assets/units/infantry-sprite-v3/infantry-atlas-runtime.png')).digest('hex');
   const edited = structuredClone(production);
   edited.gameDescription = 'An edited gameplay description must not trigger regeneration.';
   const report = await validateUnitArtProduction({contract: edited});
   assert.deepEqual(report.errors, []);
-  assert.equal(report.requiredCells, 32); assert.equal(report.authoredCells, 15);
+  assert.equal(report.requiredCells, 32); assert.equal(report.authoredCells, 16);
   assert.deepEqual(report.missingCells, production.missingSourceCells);
   assert.equal(report.normalBinding, 'v3'); assert.equal(report.renderAcceptance, 'pending');
   assert.equal(createHash('sha256').update(read('assets/units/infantry-sprite-v3/infantry-atlas-runtime.png')).digest('hex'), before);
   const strict = await validateUnitArtProduction({requireComplete: true});
-  assert.match(strict.errors.join('\n'), /17 action\/heading cells missing/);
+  assert.match(strict.errors.join('\n'), /16 action\/heading cells missing/);
 });
 
 test('production failure controls: frozen actions and copy-labelled directions cannot close cells', () => {

@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "packId": "infantry-sprite",
-  "packVersion": "0.9.0",
+  "packVersion": "0.10.0",
   "maturity": "runtime-candidate",
   "provenance": {
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
     "source": "Vaelora Human roster role and action sheets",
     "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; reviewed CPU public-seed NE cutout articulation",
-    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four reviewed NE contact/passing keys reuse the exact public Infantry NE identity. All32 original poses and31 other clips remain. SE timing/poses unchanged; six walk headings remain idle. Source review does not establish rendered gait/planting or deployed acceptance. Four reviewed own-east source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified. Four reviewed own-north source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified. Current local pack0.8.0 has four source walks (SE/NE/E/N); four walk holds and14 non-SE attack/defeat gaps remain. Historical earlier counts describe their dated increments. Four reviewed own-south source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified."
+    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four reviewed NE contact/passing keys reuse the exact public Infantry NE identity. All32 original poses and31 other clips remain. SE timing/poses unchanged; six walk headings remain idle. Source review does not establish rendered gait/planting or deployed acceptance. Four reviewed own-east source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified. Four reviewed own-north source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified. Current local pack0.8.0 has four source walks (SE/NE/E/N); four walk holds and14 non-SE attack/defeat gaps remain. Historical earlier counts describe their dated increments. Four reviewed own-south source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified. Four reviewed own-west source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified."
   },
   "files": [
     {
@@ -17,9 +17,9 @@
       "format": "png",
       "dimensionsPx": {
         "width": 2048,
-        "height": 1536
+        "height": 1792
       },
-      "sha256": "ddc48f0f835e35bb2318503cdcd6a4fd23f7d7738a1262d1b8d9ba5045586de2"
+      "sha256": "deac58771b2e4bd9217c4411142db268845202c0bfe1f3bb23644f241862d517"
     },
     {
       "id": "infantry-atlas-runtime",
@@ -28,9 +28,9 @@
       "format": "png",
       "dimensionsPx": {
         "width": 2048,
-        "height": 1536
+        "height": 1792
       },
-      "sha256": "ddc48f0f835e35bb2318503cdcd6a4fd23f7d7738a1262d1b8d9ba5045586de2"
+      "sha256": "deac58771b2e4bd9217c4411142db268845202c0bfe1f3bb23644f241862d517"
     },
     {
       "id": "infantry-team-mask",
@@ -39,9 +39,9 @@
       "format": "png",
       "dimensionsPx": {
         "width": 2048,
-        "height": 1536
+        "height": 1792
       },
-      "sha256": "38be0ef9fa157be7144711e28ae797935e3f13305c1dd0c900c8051d15779827"
+      "sha256": "973f091729859e19f83f4065211297afd68ef9fe533008b282b0261907e040aa"
     }
   ],
   "pages": [
@@ -52,7 +52,7 @@
       "maskFileId": "infantry-team-mask",
       "dimensionsPx": {
         "width": 2048,
-        "height": 1536
+        "height": 1792
       },
       "colorSpace": "srgb",
       "pixelFormat": "rgba8",
@@ -2187,6 +2187,178 @@
             }
           ],
           "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-west-0",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 41,
+            "y": 14,
+            "width": 140,
+            "height": 231
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 0,
+              "y": 1536,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 0,
+                "y": 1536,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-west-1",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 41,
+            "y": 14,
+            "width": 140,
+            "height": 225
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 256,
+              "y": 1536,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 256,
+                "y": 1536,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-west-2",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 41,
+            "y": 14,
+            "width": 140,
+            "height": 231
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 512,
+              "y": 1536,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 512,
+                "y": 1536,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-west-3",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 41,
+            "y": 14,
+            "width": 140,
+            "height": 231
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 768,
+              "y": 1536,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 768,
+                "y": 1536,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
         }
       ],
       "clips": [
@@ -2403,8 +2575,20 @@
           "loop": true,
           "sequence": [
             {
-              "frameId": "idle-west-0",
-              "durationMs": 1000
+              "frameId": "walk-west-0",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-west-1",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-west-2",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-west-3",
+              "durationMs": 200
             }
           ]
         },

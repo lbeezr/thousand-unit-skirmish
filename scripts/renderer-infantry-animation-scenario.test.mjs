@@ -21,7 +21,7 @@ const localFetch=async url=>{
 };
 const {inputs,assets}=await loadUnitInputs('http://127.0.0.1:4321',{fetchImpl:localFetch,roles:['human','infantry']});
 const roster=normalRoster(await readFile(new URL('../src/main.js',import.meta.url),'utf8'));
-const missing=['south-west','west','north-west'];
+const missing=['south-west','north-west'];
 
 async function runtimeSamples(heading,{kind='infantry',team=0}={}) {
   const saved=globalThis.fetch;
@@ -64,17 +64,17 @@ async function runtimeSamples(heading,{kind='infantry',team=0}={}) {
 test('registered ordinary Infantry case pins actual restored no-option v3 and 3 decoded art gaps',async()=>{
   assert.equal(id,'infantry-animations');assert.equal(contextVersion,1);
   const loaded=await loadCaptureCases(id);assert.deepEqual(loaded.issues,[]);assert.equal(loaded.adapters[0].id,id);
-  assert.equal(roster.unitSpritePreviewVersions.infantry,'v3');assert.equal(inputs.infantry.pack.packVersion,'0.9.0');
+  assert.equal(roster.unitSpritePreviewVersions.infantry,'v3');assert.equal(inputs.infantry.pack.packVersion,'0.10.0');
   assert.equal(assets.length,6);assert.deepEqual(missingWalkDirections(inputs.infantry),missing);
 });
 
 test('real Infantry UV/time/matrix playback, Stop and resume keep 3 static holds out of animated coverage',async()=>{
   for(const team of [0,1])for(const heading of unitArtDirections) {
     const f=await runtimeSamples(heading,{team}),result=validateHeadingSamples(f.samples,f.options);
-    assert.equal(result.status,['south-east','north-east','east','north','south'].includes(heading)?'animated':'incomplete-art-correct-facing');
-    assert.equal(result.distinctCells,['south-east','north-east','east','north','south'].includes(heading)?3:1);
+    assert.equal(result.status,['south-east','north-east','east','north','south','west'].includes(heading)?'animated':'incomplete-art-correct-facing');
+    assert.equal(result.distinctCells,['south-east','north-east','east','north','south','west'].includes(heading)?3:1);
     assert.ok(result.samples.every(s=>s.clipDirection===heading&&s.drawnRoot.visibleScale===1
-      &&s.kind==='infantry'&&s.role==='infantry'&&s.assetId==='infantry'&&s.packVersion==='0.9.0'));
+      &&s.kind==='infantry'&&s.role==='infantry'&&s.assetId==='infantry'&&s.packVersion==='0.10.0'));
     validateStoppedSamples(f.stopped,{...f.options,stopTime:1999});
     const resume=validateHeadingSamples(f.resumed,f.options);
     assert.equal(resume.samples[0].elapsedMs,0);assert.equal(f.resumed[0].units[0].clockStartedAt,2400);
@@ -87,7 +87,7 @@ test('coverage requires every real Infantry heading once, and false idle complet
     const f=await runtimeSamples(heading,{kind});rows.push(validateHeadingSamples(f.samples,f.options));
   }
   const report={rows,militaryKind:'infantry',expectedMissingWalkDirections:missing};
-  validateHeadingCoverage(report);assert.equal(rows.filter(r=>r.status==='animated').length,13);
+  validateHeadingCoverage(report);assert.equal(rows.filter(r=>r.status==='animated').length,14);
   const falseWalk=structuredClone(rows),faultHeading=missing[0]??'west';
   falseWalk.find(r=>r.kind==='infantry'&&r.heading===faultHeading).status=missing.length?'animated':'incomplete-art-correct-facing';
   assert.throws(()=>validateHeadingCoverage({...report,rows:falseWalk}),/idle placeholders/);

@@ -16,6 +16,10 @@
     {
       "heading": "south",
       "registration": "docs/art-direction/human-roster-v1/infantry-south-walk-registration.json"
+    },
+    {
+      "heading": "west",
+      "registration": "docs/art-direction/human-roster-v1/infantry-west-walk-registration.json"
     }
   ]
 }
