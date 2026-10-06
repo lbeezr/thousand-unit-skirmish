@@ -8481,7 +8481,8 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
 // Local body adoption follows characterized live Worker intent. Callers extend
 // this single predicate seam; selection and actual write admission share it.
 function workerLocalBodyRadius(unit) {
-  return constructionMovementActive(unit) ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0;
+  return constructionMovementActive(unit) || workerPatrolAcquiredMovementActive(unit)
+    ? LAND_CLEARANCE_PROFILE.radiusByKind.worker : 0;
 }
 
 // Each activated Worker write uses a fresh bounded query of live body poses.

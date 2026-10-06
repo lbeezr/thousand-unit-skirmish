@@ -7,6 +7,7 @@ import { shortcutFlatUnitPath, canTraverseFlatUnitSegment } from '../src/unit-pa
 import { clearWorkIntent, clearGatherWorkIntent } from '../src/work-intent.mjs';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { constructionMovementActive } from '../src/construction-work-intent.mjs';
+import { workerPatrolAcquiredMovementActive } from '../src/combat-movement.mjs';
 import { canTraverseCrowdBodySegment } from '../src/unit-crowd-steering.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { creditResourceBalance } from '../src/economy-ledger.mjs';
@@ -69,7 +70,7 @@ function fixture({ width = 320, height = 320, total = 0, count = 1, team = 0,
   const candidates = [{ id: 10, goals: [...fields[0].goals] }, { id: 11, goals: [...fields[1].goals] }];
   const notices = [], selections = [], callbacks = [], samples = [], searches = [];
   const context = vm.createContext({ ...movement, shortcutFlatUnitPath, canTraverseFlatUnitSegment,
-    constructionMovementActive, canTraverseCrowdBodySegment, spatialBucketRosterCurrent: false,
+    constructionMovementActive, workerPatrolAcquiredMovementActive, canTraverseCrowdBodySegment, spatialBucketRosterCurrent: false,
     crowdNeighborsNear() { throw Error('Return-only fixture cannot enter local Worker body admission'); },
     clearWorkIntent, clearGatherWorkIntent, activeWallBuildOrder, UNIT_DEFINITIONS, creditResourceBalance,
     MAP_WIDTH: width, MAP_HEIGHT: height, MAP_HALF_X: width / 2, MAP_HALF_Z: height / 2, CELL_COUNT: levels.length,

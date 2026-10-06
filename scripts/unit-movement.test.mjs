@@ -11,6 +11,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { constructionMovementActive } from '../src/construction-work-intent.mjs';
+import { workerPatrolAcquiredMovementActive } from '../src/combat-movement.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, unitRoutePathCost, unitRouteResultIsCurrent,
   activeLandMovementBodyRadius, workerEconomyBodyRadius, LAND_CLEARANCE_PROFILE,
   canTraverseStaticBodySegment, createClearanceMoveGoalPoint, activeMoveGoalPoint, createMoveGoalPoint,
@@ -298,7 +299,7 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     spatialBucketRow:z=>Math.max(0,Math.min(bucketColumns-1,Math.floor((z+half)/bucketSize))),
     elevationLevelByCell:levels,canTraverseUnitStep,activeLandMovementBodyRadius,workerEconomyBodyRadius,LAND_CLEARANCE_PROFILE,canTraverseStaticBodySegment,createClearanceMoveGoalPoint,activeMoveGoalPoint,rejoinSelectedUnitRoute,
     ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT,
-    constructionMovementActive, canTraverseCrowdBodySegment, navigationRevision: 0, movePlanningEpoch: 0,
+    constructionMovementActive, workerPatrolAcquiredMovementActive, canTraverseCrowdBodySegment, navigationRevision: 0, movePlanningEpoch: 0,
     spatialBucketRosterCurrent:true,
     canTraverseFlatUnitSegment,findStationaryWorkerDetour,SEPARATION_DIAGNOSTICS_ENABLED:false,
     createUnitRoutePublicationLedger, MAX_UNITS:2000, MAX_RESOURCE_NODES:128, XL_CHECKPOINT_ROUTE_MAX_ENTRIES,
