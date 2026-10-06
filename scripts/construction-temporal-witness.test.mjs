@@ -16,7 +16,12 @@ const record = JSON.parse(gunzipSync(packed));
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const start = server.indexOf('function getMoveVector('), end = server.indexOf('function stationaryWorkerCellsNear(', start);
 assert.ok(start >= 0 && end > start);
-const host = server.slice(start, end);
+// Frozen receipts retain the projection contract of their recorded source.
+// Current-host clamp behavior is covered in crowd-projected-route-ranking.test.mjs.
+const passageArgument = '      passageProjection: unit.pathIndex < unit.path.length - 1 && ordinaryCrowdBodyRadius(unit) > 0,\n';
+const currentHost = server.slice(start, end);
+assert.equal(currentHost.split(passageArgument).length, 2, 'exactly one current-host passage argument');
+const host = currentHost.replace(passageArgument, '');
 const distance = (a,b) => Math.hypot(a.x-b.x,a.z-b.z);
 
 function frameContext(frame, row, observed) {
@@ -89,7 +94,7 @@ test('the one fresh run is source-identified and retains only bounded public act
   assert.ok(!/(?:seatSessions|tokenHash|matchId|recoveryToken|checkpointSequence)/.test(JSON.stringify(record)));
 });
 
-test('all retained temporal decisions replay through real host queries and production oracles without another match',async()=>{
+test('all retained temporal decisions replay through the recorded pre-clamp host contract without another match',async()=>{
   const f=await createTemporalObserver(null,{prepareOnly:true});let calls=0,previousState,continuous=0;
   try {
     for(const row of record.history)for(const frame of row.frames) {

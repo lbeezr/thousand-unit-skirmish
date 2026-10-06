@@ -71,8 +71,8 @@ test('blocked admission waits and Hold/planning ownership remain intact',()=>{
   }
 });
 
-// New public synthetic geometry, not the unavailable retained actor52 scene.
-// Both circles fit a cardinal corridor; the accepted raw waypoint stays fixed
+// Public synthetic geometry: both circles fit a cardinal corridor while the
+// accepted raw waypoint stays fixed
 // while its closest passage projection clamps at the longitudinal tile edge.
 function clampSetup({quarter=0,inside=false,team=0}={}) {
   const turn=p=>{let {x,z}=p;for(let n=0;n<quarter;n++)[x,z]=[-z,x];return{x,z};};
@@ -177,7 +177,7 @@ test('the actual host executes fixed-route progress across a cardinal passage cl
       r.order(0,{type:'move',ids:[body.id],x:-.5,z:goal});r.drain();
     }
     r.order(0,{type:'move',queue:true,ids:[unit.id],x:-.5,z:-3.5});r.drain();
-    // A public controlled accepted-route input, independent of private actor52.
+    // A controlled accepted-route input with real Move and queued Move intent.
     unit.path=Array.from({length:15},(_,i)=>r.cell(-.5,11.5-i));unit.pathIndex=11;
     peer.path=Array.from({length:15},(_,i)=>r.cell(-.5,-9.5+i));peer.pathIndex=11;
     const intent={revision:unit.orderRevision,goal:unit.moveGoalCell,path:unit.path,
@@ -197,4 +197,44 @@ test('the actual host executes fixed-route progress across a cardinal passage cl
     assert.ok(control.complete&&control.proposals<=CROWD_PROPOSAL_LIMIT);
     assert.equal(control.leaseAge,0);assert.equal(control.contourAge,0);
   }finally{await f.dispose();}
+});
+
+test('a live finite passage lease retains its retreat under clamp provenance',()=>{
+  const run=flag=>{
+    const unit=actor({x:0,z:.5,path:[1,2,3]}),peer=actor({id:2,x:.44,z:.5,path:[1,2,3]});
+    const worker=actor({id:3,kind:'worker',x:0,z:1.5,path:[],pathIndex:0});
+    const before=structuredClone([unit,peer,worker]);
+    const move=(body,tick,extra={})=>selectCrowdStep({unit:body,tick,
+      target:{x:body===unit?2:-2,z:.5},neighbors:[body===unit?peer:unit,worker],
+      stepDistance:.09,canTraverse:()=>true,...extra});
+    for(let tick=0;tick<120;tick++){move(peer,tick);move(unit,tick);}
+    assert.ok(move(unit,120).yieldingForCrowd);move(peer,120);
+    const target=crowdPassagePoint({x:2,z:.5},{x:1,z:0},unit,[peer,worker],()=>true);
+    const result=move(unit,121,{target,progressTarget:{x:2,z:.5},travelDirection:{x:1,z:0},
+      cellCenter:{x:0,z:.5},passageProjection:flag,
+      targetOf:other=>other===peer?{x:-2,z:.5}:null});
+    assert.equal(result.crowdControl.leaseAge,1);assert.ok(result.yieldingForCrowd&&result.x<0);
+    assert.ok(canTraverseCrowdBodySegment(unit,endpoint(unit,result),.22,[peer,worker]));
+    assert.ok(result.crowdControl.proposals<=CROWD_PROPOSAL_LIMIT);
+    assert.deepEqual([unit,peer,worker],before);return result;
+  };
+  assert.deepEqual(run(true),run(false));
+});
+
+test('a live parked contour keeps its admitted step under clamp provenance',()=>{
+  const run=flag=>{
+    const unit=actor({x:0,z:.5,path:[1,2,3]});
+    const neighbors=[actor({id:3,kind:'worker',x:.5,z:.5,path:[],pathIndex:0}),
+      actor({id:4,x:-.8,z:.5,target:{x:-2,z:.5}}),actor({id:5,x:-.8,z:1.2,target:{x:-2,z:1.2}})];
+    const before=structuredClone([unit,...neighbors]);
+    const cfg={unit,neighbors,target:{x:1.501,z:.5},progressTarget:{x:2,z:.5},
+      travelDirection:{x:1,z:0},cellCenter:{x:0,z:.5},stepDistance:.09,canTraverse:()=>true};
+    for(let tick=0;tick<=90;tick++)selectCrowdStep({...cfg,tick});
+    const result=selectCrowdStep({...cfg,tick:91,passageProjection:flag});
+    assert.equal(result.crowdControl.contourAge,1);assert.ok(!result.waitingForCrowd);
+    assert.ok(canTraverseCrowdBodySegment(unit,endpoint(unit,result),.22,neighbors));
+    assert.ok(result.crowdControl.proposals<=CROWD_PROPOSAL_LIMIT);
+    assert.deepEqual([unit,...neighbors],before);return result;
+  };
+  assert.deepEqual(run(true),run(false));
 });

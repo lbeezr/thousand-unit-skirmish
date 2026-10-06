@@ -28,6 +28,12 @@ const wallMap = { map: wall.map, navigationMask: Array.from({length: wall.map.wi
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const start = server.indexOf('function getMoveVector('), end = server.indexOf('function stationaryWorkerCellsNear(', start);
 assert.ok(start >= 0 && end > start);
+// Preserve exact historical receipts under their recorded projection contract;
+// current-host clamp execution has its own regression and admission checks.
+const passageArgument = '      passageProjection: unit.pathIndex < unit.path.length - 1 && ordinaryCrowdBodyRadius(unit) > 0,\n';
+const currentHost = server.slice(start, end);
+assert.equal(currentHost.split(passageArgument).length, 2, 'exactly one current-host passage argument');
+const recordedHost = currentHost.replace(passageArgument, '');
 const dependencies = { movement, UNIT_DEFINITIONS, constructionMovementActive, workerPatrolAcquiredMovementActive };
 const distance = (a,b) => Math.hypot(a.x-b.x, a.z-b.z);
 const cases = [
@@ -43,10 +49,10 @@ function geometry(frame, peer) {
     radius: frame.input.radius, peerRadius: movement.LAND_CLEARANCE_PROFILE.radiusByKind[peer.kind] };
 }
 
-for (const c of cases) test(`${c.name}: classified geometry preserves the full captured production wait and controller`, async () => {
+for (const c of cases) test(`${c.name}: recorded pre-clamp geometry preserves the full captured wait and controller`, async () => {
   const observer = await createTemporalObserver(null, { prepareOnly: true, actorId: [28,75] });
   try {
-    const {context, unit, decode} = frameContext(c.frame, c.record, observer.observed, dependencies, server.slice(start,end));
+    const {context, unit, decode} = frameContext(c.frame, c.record, observer.observed, dependencies, recordedHost);
     const query = context.crowdNeighborsNear(unit), peerBody = c.frame.bodies.find(b => b.actor.id === c.peerId);
     assert.deepEqual(Array.from(query.neighbors, u => u.id), c.frame.query.ids);
     assert.equal(query.visits, c.frame.query.visits); assert.equal(query.overflow, false);
