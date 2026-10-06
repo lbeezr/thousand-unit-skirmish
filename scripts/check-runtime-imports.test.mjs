@@ -12,6 +12,22 @@ function check(files, options = {}) {
   });
 }
 
+test('canonical ground surfaces retain the presentation boundary and stay outside authoritative hosts', () => {
+  const canonical = 'src/presentation/rendering/ground-surfaces.mjs';
+  assert.ok(RUNTIME_DOMAINS.presentation.includes(canonical));
+  for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+    'src/formation-assignment.mjs', 'src/simulation/ai/opponent-observation.mjs']) {
+    const relative = path.posix.relative(path.posix.dirname(root), canonical);
+    assert.throws(() => check({ [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';`, [canonical]: '' }),
+      /(?:rules|world|simulation|ai) domain cannot reach presentation domain/, root);
+  }
+  for (const [host, domain] of Object.entries(RUNTIME_DOMAIN_HOSTS)) {
+    if (domain !== 'server') continue;
+    assert.throws(() => check({ [host]: `import './${canonical}';`, [canonical]: '' }, { serverEntrypoints: [host] }),
+      /server host reaches presentation domain/, host);
+  }
+});
+
 test('room index persistence is explicitly Node-only and excluded from every shipped browser entry', async () => {
   const canonical = 'src/server/persistence/room-index-store.mjs';
   assert.ok(NODE_ONLY_MODULES.includes(canonical));

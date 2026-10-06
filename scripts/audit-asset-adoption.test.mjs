@@ -61,10 +61,10 @@ test('oak depletion guard rejects lost default sampling and a missing authored m
 });
 
 test('painted scree guard rejects a disconnected terrace-face consumer', async () => {
-  const source = await readFile(path.join(root, 'src/environment-art.mjs'), 'utf8');
+  const source = await readFile(path.join(root, 'src/presentation/rendering/ground-surfaces.mjs'), 'utf8');
   for (const [from, to] of [["texture: base === 'scree' ? groundTexture('scree', definition) : null", 'texture: null'],
     ['if (cliffFaces) meshes.push(cliffFaces)', 'if (false) meshes.push(cliffFaces)']]) {
-    await assert.rejects(audit({ environment: source.replace(from, to) }), /scree cliff faces/);
+    await assert.rejects(audit({ groundSurfaces: source.replace(from, to) }), /scree cliff faces/);
   }
 });
 
