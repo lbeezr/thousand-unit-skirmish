@@ -291,6 +291,7 @@ actual selected step. Required conditions are all of:
 
 - Complete original claimant enumeration returns exactly one claimant. A
   first-claimant-only selector result is insufficient; query overflow refuses.
+  Admission/completeness assertions must be Boolean`true`, not truthy placeholders.
 - Both actors have current ordinary eligibility and fresh generation, command,
   path identity/index, navigation, epoch and observation state, with no detour,
   passage/contour maneuver or live safety obligation.
@@ -312,6 +313,10 @@ downstream obstruction remains a fairness/liveness counterexample to qualify.
 For any later runtime adoption, reuse existing directed-continuation semantics,
 enumerate all claimants within the existing bound, and remove this separate
 source-only predicate once its qualified rule lives at the shared priority seam.
+The predicate receives the exact admitted endpoint directly; normalization is
+used only for the direction comparison and never reconstructs that endpoint.
+Unknown/noninteger actor identities, births, commands, observation ticks or route
+indexes refuse permission.
 
 Bounded controls use fabricated actors/geometry to exercise this proposed rule.
 The two prior public, hash-pinned rejection frames supply their **actual direction

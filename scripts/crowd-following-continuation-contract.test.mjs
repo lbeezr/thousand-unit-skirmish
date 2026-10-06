@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { soleFollowingContinuation } from './crowd-following-continuation-contract.mjs';
-import { crowdPriorityClaims, canTraverseCrowdBodySegment, ordinaryCrowdBodyRadius } from '../src/unit-crowd-steering.mjs';
+import { crowdPriorityClaims, canTraverseCrowdBodySegment } from '../src/unit-crowd-steering.mjs';
 
 const actor = (id, x, z) => ({ id, x, z, team: 0, generation: 17, orderRevision: 8, kind: 'infantry', hp: 100,
   path: [7, 8, 9, 10], pathIndex: 0, moveGoalCell: 10, queuedWaypoints: [{ destination: 11 }] });
@@ -22,7 +22,7 @@ function scene() {
     targetOf: u => u.target, directionOf: u => ({ x: 3 - u.x, z: 3 - u.z }) };
   const to = { x: best.x * best.stepDistance, z: best.z * best.stepDistance };
   const original = crowdPriorityClaims(args).claims;
-  const policy = { ...args, claims: original, stateOf: u => states.get(u), tick: 809,
+  const policy = { ...args, to, claims: original, stateOf: u => states.get(u), tick: 809,
     navigationRevision: 4, epoch: 2, claimsComplete: true,
     physicalAdmitted: canTraverseCrowdBodySegment(unit, to, .22, [peer]) };
   return { unit, peer, states, args, policy, to };
@@ -52,6 +52,7 @@ for (let quarter = 0; quarter < 4; quarter++) for (const reflection of [-1, 1])
     s.policy.claims = crowdPriorityClaims({ ...s.args, ...s.policy }).claims;
     const to = { x: s.unit.x + s.policy.best.x * s.policy.best.stepDistance,
       z: s.unit.z + s.policy.best.z * s.policy.best.stepDistance };
+    s.policy.to = to;
     s.policy.physicalAdmitted = canTraverseCrowdBodySegment(s.unit, to, .22, [s.peer]);
     assert.deepEqual(s.policy.claims, [s.peer]); assert.equal(soleFollowingContinuation(s.policy), true);
   });
@@ -65,7 +66,7 @@ for (const reverse of [false, true]) test(`all original claimants are required, 
 });
 
 for (const cosine of [.899999, .9, .900001]) test(`strict selected-step alignment threshold ${cosine}`, () => {
-  const s = scene(); s.policy.best = { x: 0, z: 1, stepDistance: .08 };
+  const s = scene(); s.policy.to = { x: 0, z: .08 };
   s.policy.directionOf = () => ({ x: Math.sqrt(1 - cosine ** 2), z: cosine });
   assert.equal(soleFollowingContinuation(s.policy), cosine > .9);
 });
@@ -79,8 +80,10 @@ for (const cells of [[7, 8], [7, 7, 9], [9, 8, 7], [7, 8, -1]])
 
 for (const [name, change] of [
   ['not physically admitted', s => { s.policy.physicalAdmitted = false; }],
+  ['nonboolean admission assertion', s => { s.policy.physicalAdmitted = 'false'; }],
   ['query overflow', s => { s.policy.overflow = true; }],
   ['first-claimant-only input', s => { s.policy.claimsComplete = false; }],
+  ['nonboolean claimant completeness', s => { s.policy.claimsComplete = 'false'; }],
   ['missing epoch', s => { s.policy.epoch = undefined; }],
   ['no original claimant', s => { s.policy.claims = []; }],
   ['second original claimant', s => { s.policy.claims.push(actor(113, -.1, .4)); }],
@@ -97,20 +100,28 @@ for (const [name, change] of [
   ['missing peer direction', s => { s.policy.directionOf = () => null; }],
   ['zero peer direction', s => { s.policy.directionOf = () => ({ x: 0, z: 0 }); }],
   ['only route-axis alignment', s => { s.policy.directionOf = () => ({ x: 0, z: 1 }); }],
-  ['nonunit proposal direction', s => { s.policy.best = { x: 0, z: 2, stepDistance: .04 }; }],
-  ['overlong proposal', s => { s.policy.best = { ...s.policy.best, stepDistance: .251 }; }],
+  ['unknown endpoint', s => { s.policy.to = { x: NaN, z: .04 }; }],
+  ['zero displacement', s => { s.policy.to = { x: 0, z: 0 }; }],
+  ['overlong proposal', s => { s.policy.to = { x: 0, z: .251 }; }],
 ]) test(`${name} preserves the original veto`, () => {
   const s = scene(); change(s); assert.equal(soleFollowingContinuation(s.policy), false);
 });
 
 for (const who of ['unit', 'peer']) for (const [name, change] of [
+  ['unknown actor identity', (u, state) => { u.id = undefined; }],
+  ['negative actor identity', (u, state) => { u.id = -1; }],
   ['generation', (u, state) => { u.generation++; }],
+  ['unknown birth', (u, state) => { u.generation = state.generation = undefined; }],
   ['command', (u, state) => { u.orderRevision++; }],
+  ['unknown command', (u, state) => { u.orderRevision = state.revision = undefined; }],
   ['path identity', (u, state) => { u.path = [...u.path]; }],
   ['path index', (u, state) => { u.pathIndex++; }],
+  ['fractional path index', (u, state) => { u.pathIndex = state.pathIndex = .25; }],
   ['navigation', (u, state) => { state.navigationRevision++; }],
   ['epoch', (u, state) => { state.epoch++; }],
   ['stale observation', (u, state) => { state.lastTick = 807; }],
+  ['missing observation tick', (u, state) => { delete state.lastTick; }],
+  ['nonfinite observation tick', (u, state) => { state.lastTick = NaN; }],
   ['future observation', (u, state) => { state.lastTick = 810; }],
   ['detour', (u, state) => { state.detour = {}; }],
   ['lease', (u, state) => { state.lease = {}; }],
@@ -136,6 +147,17 @@ for (const [name, frame, peerId, expected] of [
   const direction = frame.bodies.find(body => body.actor.id === peerId).direction;
   const cosine = (best.x * direction.x + best.z * direction.z) / Math.hypot(direction.x, direction.z);
   assert.ok(Math.abs(cosine - expected) < 1e-12); assert.ok(cosine < .9);
-  const s = scene(); s.policy.best = best; s.policy.directionOf = () => direction;
+  const s = scene(); s.policy.to = { x: best.x * best.stepDistance, z: best.z * best.stepDistance };
+  s.policy.directionOf = () => direction;
   assert.equal(soleFollowingContinuation(s.policy), false);
+});
+
+test('the exact admitted endpoint supplies the step; normalized metadata is not reconstructed', () => {
+  const s = scene(); s.policy.to = { x: .01, z: .03 };
+  const length = Math.hypot(s.policy.to.x, s.policy.to.z);
+  assert.notEqual(s.policy.to.z / length * length, s.policy.to.z);
+  s.policy.best = { x: NaN, z: NaN, stepDistance: NaN };
+  s.policy.directionOf = () => ({ x: .01, z: .03 });
+  assert.equal(soleFollowingContinuation(s.policy), true);
+  assert.deepEqual(s.policy.to, { x: .01, z: .03 });
 });
