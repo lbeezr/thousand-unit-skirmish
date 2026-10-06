@@ -154,6 +154,114 @@ test('map validator: every shipped map retains normalized bytes and shallow refe
   }
 });
 
+const checkpointScenarioMap = {
+  ...bareMap(), startingArmySize: 24, terrainSeed: 71, terrainBase: 'meadow',
+  victoryMode: 'all', victoryHoldSeconds: 12,
+  triggers: [0, 1].map(i => ({ id: `capture-${i}`, name: `Capture ${i}`, type: 'capture-zone',
+    zone: { column: 14, row: 6 + i * 18, width: 2, height: 2 },
+    requiredUnits: 1, captureSeconds: 2, victory: true })),
+  regions: [{ id: 'arrival', name: 'Arrival', zone: { column: 28, row: 28, width: 2, height: 2 } }],
+  scenarioEvents: [
+    timedEvent({ id: 'plain' }),
+    timedEvent({ id: 'repeat-time', repeatCount: 2, repeatEverySeconds: 5 }),
+    timedEvent({ id: 'captured', team: 'capturing', trigger: { type: 'capture', objectiveId: 'capture-0' } }),
+    timedEvent({ id: 'repeat-capture', team: 'capturing', repeatCount: 2, repeatEverySeconds: 5,
+      trigger: { type: 'capture', objectiveId: 'capture-0' } }),
+    timedEvent({ id: 'region', trigger: { type: 'region-entry', regionId: 'arrival', team: '0' } }),
+    timedEvent({ id: 'construction', trigger: { type: 'construction-complete', buildingType: 'barracks', team: '0' } }),
+    timedEvent({ id: 'research', trigger: { type: 'research-complete', technologyId: 'food-tools', team: '0' } }),
+    timedEvent({ id: 'chain', team: 'capturing', trigger: { type: 'event', eventId: 'captured' } }),
+    timedEvent({ id: 'join', trigger: { type: 'event', eventIds: ['captured', 'plain'] } }),
+  ],
+};
+const checkpointEvent = (snapshot, id) => snapshot.state.scenarioEventStates.find(event => event.id === id);
+
+for (const mode of ['authored', 'objective-control']) test(`${mode}: scenario checkpoint validation and restore retain state and bytes`, async () => {
+  const fixture = await createPveHeadlessFixture(checkpointScenarioMap, { matchModeId: mode, matchModeVersion: 1 });
+  try {
+    const r = fixture.replay, snapshot = r.checkpoint(), world = structuredClone(snapshot), bytes = JSON.stringify(snapshot);
+    const result = r.validateCheckpoint(snapshot);
+    assert.equal(result.state, snapshot.state);
+    assert.deepEqual(result.definition.scenarioEvents, checkpointScenarioMap.scenarioEvents);
+    assert.equal(result.definition.victoryHoldSeconds, 12, 'the return remains canonical in both modes');
+    assert.equal(JSON.stringify(snapshot), bytes);
+    assert.deepEqual(r.checkpoint(), world);
+    r.restore(snapshot);
+    assert.deepEqual(r.checkpoint(), world, 'the existing restore consumer retains all scenario state');
+  } finally { await fixture.dispose(); }
+});
+
+test('scenario checkpoint: exact first errors retain caller ordering and live-state/input parity', async () => {
+  const fixture = await createPveHeadlessFixture(checkpointScenarioMap, { matchModeId: 'authored', matchModeVersion: 1 });
+  try {
+    const r = fixture.replay, world = r.checkpoint();
+    const activate = (s, id, team = 0) => Object.assign(checkpointEvent(s, id), { activatedAtSeconds: 0, triggeredByTeam: team, fired: true });
+    const cases = [
+      ['earlier building ID', s => { s.state.nextBuildingId = 0; s.state.triggerStates = null; }, 'invalid next building ID'],
+      ['trigger table before event/clock', s => { s.state.triggerStates = null; s.state.scenarioEventStates = null; s.state.matchElapsedSeconds = -1; }, 'invalid trigger states'],
+      ['trigger duplicate', s => { s.state.triggerStates[1] = structuredClone(s.state.triggerStates[0]); }, 'invalid trigger state'],
+      ['trigger owner', s => { s.state.triggerStates[0].owner = 2; }, 'invalid trigger state'],
+      ['trigger progress', s => { s.state.triggerStates[0].progress = 2.01; }, 'invalid trigger state'],
+      ['trigger count cap', s => { s.state.triggerStates[0].unitCounts[0] = 2001; }, 'invalid trigger state'],
+      ['event table before hold', s => { s.state.scenarioEventStates = null; delete s.state.victoryHoldState; }, 'invalid scenario event states'],
+      ['event duplicate', s => { s.state.scenarioEventStates[1] = structuredClone(s.state.scenarioEventStates[0]); }, 'invalid scenario event state'],
+      ['event fired type', s => { checkpointEvent(s, 'plain').fired = 1; }, 'invalid scenario event state'],
+      ['repeat count', s => { checkpointEvent(s, 'repeat-time').fireCount = -1; }, 'invalid repeating scenario event state'],
+      ['repeat upper count', s => { checkpointEvent(s, 'repeat-time').fireCount = 4; }, 'invalid repeating scenario event state'],
+      ['repeat fired schedule', s => { checkpointEvent(s, 'repeat-time').fired = true; }, 'invalid repeating scenario event state'],
+      ['plain unexpected repeat fields', s => { checkpointEvent(s, 'plain').fireCount = 0; }, 'unexpected repeating scenario event state'],
+      ['capture awaiting team', s => { checkpointEvent(s, 'captured').triggeredByTeam = 0; }, 'invalid triggered scenario event state'],
+      ['capture activation beyond clock', s => { Object.assign(checkpointEvent(s, 'captured'), { activatedAtSeconds: 1, triggeredByTeam: 0 }); }, 'invalid triggered scenario event state'],
+      ['region entering team', s => { activate(s, 'region', 1); }, 'invalid region event entering team'],
+      ['construction completion team', s => { activate(s, 'construction', 1); }, 'invalid region event entering team'],
+      ['research completion team', s => { activate(s, 'research', 1); }, 'invalid region event entering team'],
+      ['chain before source', s => { activate(s, 'chain'); }, 'invalid chained scenario event state'],
+      ['join before sources', s => { activate(s, 'join'); }, 'invalid chained scenario event state'],
+      ['awaiting repeat-capture count', s => { checkpointEvent(s, 'repeat-capture').fireCount = 1; }, 'invalid repeating triggered scenario event schedule'],
+      ['missing hold before clock', s => { delete s.state.victoryHoldState; s.state.matchElapsedSeconds = -1; }, 'missing victory hold state'],
+      ['inactive hold progress', s => { s.state.victoryHoldState.progressSeconds[0] = 1; }, 'invalid victory hold state'],
+      ['hold duration', s => { s.state.victoryHoldState.activeTeams[0] = true; s.state.victoryHoldState.progressSeconds[0] = 12.01; }, 'invalid victory hold state'],
+      ['hold trigger', s => { s.state.victoryHoldState.triggerIds = ['unknown', null]; }, 'invalid victory hold state'],
+      ['later clock', s => { s.state.matchElapsedSeconds = -1; }, 'invalid match result or clock'],
+    ];
+    for (const [label, change, detail] of cases) {
+      const candidate = structuredClone(world); change(candidate); const bytes = JSON.stringify(candidate);
+      for (const method of ['validateCheckpoint', 'restore']) {
+        assert.throws(() => r[method](candidate), { name: 'Error', message: `Invalid match checkpoint: ${detail}` }, `${label}: ${method}`);
+        assert.equal(JSON.stringify(candidate), bytes, `${label}: input bytes`);
+        assert.deepEqual(r.checkpoint(), world, `${label}: live authority`);
+      }
+    }
+  } finally { await fixture.dispose(); }
+});
+
+test('scenario checkpoint: accepted legacy/default and event-chain boundaries retain state identity', async () => {
+  const fixture = await createPveHeadlessFixture(checkpointScenarioMap, { matchModeId: 'authored', matchModeVersion: 1 });
+  try {
+    const r = fixture.replay, world = r.checkpoint();
+    const cases = [
+      ['trigger count cap', s => { s.state.triggerStates[0].unitCounts = [2000, 2000]; }],
+      ['null victory-hold default', s => { s.state.victoryHoldState = null; }],
+      ['hold duration cap', s => { s.state.victoryHoldState.activeTeams[0] = true; s.state.victoryHoldState.progressSeconds[0] = 12; s.state.victoryHoldState.triggerIds = ['capture-0', null]; }],
+      ['completed timed repeat', s => { Object.assign(checkpointEvent(s, 'repeat-time'), { fireCount: 3, fired: true, nextFireAtSeconds: null }); }],
+      ['mixed joined-source team', s => {
+        Object.assign(checkpointEvent(s, 'captured'), { fired: true, activatedAtSeconds: 0, triggeredByTeam: 0 });
+        Object.assign(checkpointEvent(s, 'chain'), { fired: true, activatedAtSeconds: 0, triggeredByTeam: 0 });
+        checkpointEvent(s, 'plain').fired = true;
+        Object.assign(checkpointEvent(s, 'join'), { fired: true, activatedAtSeconds: 0, triggeredByTeam: -1 });
+      }],
+      ['unknown scenario fields', s => { s.state.triggerStates[0].extra = { retained: true }; checkpointEvent(s, 'plain').extra = 7; }],
+    ];
+    for (const [label, change] of cases) {
+      const candidate = structuredClone(world); change(candidate); const bytes = JSON.stringify(candidate);
+      const result = r.validateCheckpoint(candidate);
+      assert.equal(result.state, candidate.state, label);
+      assert.equal(JSON.stringify(candidate), bytes, `${label}: input bytes`);
+      assert.deepEqual(r.checkpoint(), world, `${label}: live authority`);
+    }
+  } finally { await fixture.dispose(); }
+});
+
 for (const mode of ['authored', 'skirmish']) test(`${mode}: validation retains canonical map/state and restore parity`, async () => {
   const fixture = await createPveHeadlessFixture(map, { matchModeId: mode, matchModeVersion: 1 });
   const replay = fixture.replay;

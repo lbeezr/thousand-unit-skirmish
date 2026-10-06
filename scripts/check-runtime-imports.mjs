@@ -127,6 +127,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'server/vision-coverage-cache', 'server/checkpoint-route-budget',
     'server/checkpoint-envelope', // Ordered private validation handoff; domain state remains caller-owned.
     'server/map-definition-validator', // Authoritative map policy; no browser/public admission.
+    'server/checkpoint-scenario-state', // Ordered saved scenario-state checks; no live simulation mutation.
     'server/checkpoint-json-budget', 'server/checkpoint-json-scan', 'server/checkpoint-file-reader',
   ],
   // Legacy map-validation entry also exports playback policy. Preserve existing
