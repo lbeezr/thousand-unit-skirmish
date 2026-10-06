@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
+import { spawn } from 'node:child_process';
+import { once } from 'node:events';
 import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { setTimeout as delay } from 'node:timers/promises';
 import { createRoomIndexStore } from '../src/server/persistence/room-index-store.mjs';
 import {
   buildRoomWorkerEnvironment,
@@ -133,6 +137,98 @@ test('room index read preserves version migrations and document order', async t 
       savedRooms: normalizeRoomIndex(document).rooms, validIndex: true, indexState: 'valid',
     });
   }
+});
+
+test('room index IDs require primitive strings without coercion across supported versions', () => {
+  for (const version of [1, 2, 3]) {
+    const entry = id => ({ id, createdAt: 1, lastActiveAt: 2,
+      ...(version === 1 ? {} : { launchOptions: { mode: 'pvp' } }) });
+    for (const id of [roomId, 'A9_-'.repeat(8), '_'.repeat(32), '-'.repeat(32)]) {
+      const document = JSON.parse(JSON.stringify({ version, rooms: [entry(id)] }));
+      assert.deepEqual(normalizeRoomIndex(document), {
+        version: 3, rooms: [{ ...entry(id), launchOptions: { mode: 'pvp' } }],
+      });
+      assert.deepEqual(document.rooms[0], entry(id), 'normalization does not mutate the caller');
+      assert.equal(normalizeRoomIndex({ version, rooms: [entry(id), entry(id)] }), null,
+        'duplicate valid string IDs reject the entire document');
+    }
+    for (const id of [[roomId], [[roomId]], [], {}, null, undefined, 0, true,
+      new String(roomId), { toString() { return roomId; } },
+      { toString() { throw new Error('must not coerce an ID'); } },
+      Symbol('room'), 1n, '', 'a'.repeat(31), 'a'.repeat(33), 'a'.repeat(31) + '/']) {
+      assert.equal(normalizeRoomIndex({ version, rooms: [entry(id)] }), null);
+    }
+    const duplicateArrays = JSON.parse(JSON.stringify({ version, rooms: [entry([roomId]), entry([roomId])] }));
+    assert.equal(normalizeRoomIndex(duplicateArrays), null, 'coercible arrays cannot bypass string duplicate checks');
+    let reads = 0;
+    const changing = { ...entry(roomId), get id() { return ++reads === 1 ? roomId : [roomId]; } };
+    assert.equal(normalizeRoomIndex({ version, rooms: [changing] }).rooms[0].id, roomId,
+      'the returned ID is the primitive string that passed validation');
+    assert.equal(reads, 1);
+  }
+});
+
+test('room index store classifies coercible JSON IDs as invalid without rewriting', async t => {
+  const fixture = await roomIndexFixture(t);
+  await mkdir(fixture.dataDirectory);
+  const store = createRoomIndexStore({ ...fixture, captureDocument: () => { throw new Error('read captured a write'); } });
+  for (const version of [1, 2, 3]) for (const id of [[roomId], [[roomId]], [], {}, null, true, 0]) {
+    const bytes = JSON.stringify({ version, rooms: [{ id, createdAt: 1, lastActiveAt: 2,
+      ...(version === 1 ? {} : { launchOptions: { mode: 'pvp' } }) }] });
+    await writeFile(fixture.indexPath, bytes);
+    assert.deepEqual(await store.read(), { savedRooms: [], validIndex: false, indexState: 'invalid' });
+    assert.equal(await readFile(fixture.indexPath, 'utf8'), bytes);
+    assert.equal(existsSync(fixture.temporaryPath), false);
+  }
+});
+
+test('actual supervisor recovers room directories after an index contains an array ID', { timeout: 20_000 }, async t => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'room-index-id-recovery-'));
+  const dataDirectory = path.join(root, 'room-data');
+  const directory = path.join(dataDirectory, 'rooms', roomId);
+  await mkdir(directory, { recursive: true });
+  const retainedPath = path.join(directory, 'retained-data.txt');
+  await writeFile(retainedPath, 'existing room data');
+  const now = Date.now();
+  await writeFile(path.join(dataDirectory, 'rooms.json'), JSON.stringify({ version: 3,
+    rooms: [{ id: [roomId], createdAt: now, lastActiveAt: now, launchOptions: { mode: 'pvp' } }] }));
+  const child = spawn(process.execPath, [fileURLToPath(new URL('../room-supervisor.mjs', import.meta.url))], {
+    cwd: fileURLToPath(new URL('../', import.meta.url)),
+    env: { PATH: process.env.PATH, PORT: '0', RTS_HOST: '127.0.0.1',
+      RTS_ROOM_DATA_DIRECTORY: dataDirectory, RTS_CUSTOM_MAP_DIRECTORY: path.join(root, 'custom-maps') },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  const exited = once(child, 'exit');
+  let output = '';
+  child.stdout.on('data', chunk => { output += chunk; });
+  child.stderr.on('data', chunk => { output += chunk; });
+  t.after(async () => {
+    if (child.exitCode === null && child.signalCode === null) {
+      child.kill('SIGINT');
+      await Promise.race([exited, delay(8000, null, { ref: false })]);
+      if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
+    }
+    await exited;
+    await rm(root, { recursive: true, force: true });
+  });
+  const deadline = Date.now() + 10_000;
+  let address;
+  while (Date.now() < deadline) {
+    assert.equal(child.exitCode, null, output);
+    address = output.match(/RTS room supervisor listening at (http:\/\/127\.0\.0\.1:\d+) · 1 invite rooms/)?.[1];
+    if (address && output.includes('[default room] RTS prototype server listening')) break;
+    await delay(20);
+  }
+  assert.ok(address && output.includes('[default room] RTS prototype server listening'), output);
+  assert.equal((await fetch(address)).status, 200);
+  assert.match(output, /Room index is malformed or unsupported; preserving room directories and rebuilding the index/);
+  assert.match(output, /Recovered 1 room directory missing from the index/);
+  assert.equal(await readFile(retainedPath, 'utf8'), 'existing room data');
+  const rebuilt = JSON.parse(await readFile(path.join(dataDirectory, 'rooms.json'), 'utf8'));
+  assert.equal(rebuilt.version, 3);
+  assert.deepEqual(rebuilt.rooms.map(entry => entry.id), [roomId]);
+  assert.deepEqual(rebuilt.rooms[0].launchOptions, { mode: 'pvp' });
+  assert.deepEqual(normalizeRoomIndex(rebuilt), rebuilt);
 });
 
 test('room launch options default to PvP and validate PvE mode and uint32 seeds', () => {
