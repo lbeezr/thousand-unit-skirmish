@@ -1223,6 +1223,81 @@ dependencies become 78 and server's 76; all existing imported names remain.
 Further host extraction still needs a useful interface and concrete write scope;
 this allocation does not authorize construction/Patrol or a broad host refactor.
 
+#### Saved scenario-state checkpoint validation — 6 October 2026
+
+After PR526, the next documented validation responsibility is the 91-line
+ordered block in `validateMatchCheckpoint` from the capture-state table through
+victory-hold state. At containing main `55b83219`, including the disjoint PR527
+construction witness, it needs only the existing effective map, saved state and
+`MAX_UNITS`. Architecture owns this narrow checkpoint hunk. Live capture/event
+evaluation, match result/clock validation, unit/route/forest/building checks,
+movement selection, construction and Patrol functions remain in their hosts
+with their current owners.
+
+The private [scenario-state validator](../src/server/checkpoint-scenario-state.mjs)
+exports `validateCheckpointScenarioState(definition, state, { maxUnits })`.
+Its real default consumer is the retained `validateMatchCheckpoint` entry:
+
+```js
+import { validateCheckpointScenarioState } from './src/server/checkpoint-scenario-state.mjs';
+
+// After nextBuildingId checks, before result/clock and exploration checks:
+validateCheckpointScenarioState(definition, state, { maxUnits: MAX_UNITS });
+```
+
+`definition` remains the effective map returned by the checkpoint envelope;
+passing the canonical map would change Skirmish hold/zone validation. This is
+one existing scalar policy (2,000), not a host-context object or a new limit.
+The only direct imports are `validCompletionTrigger` from `scenario-regions.mjs`
+and `scenarioEventSourceIds` from `world/scenario-event-chain.mjs`. The module
+keeps the exact assertion helper and numeric predicates locally; their existing
+host definitions and other domain consumers remain intact. It creates the same
+temporary ID sets, returns `undefined`, and neither clones nor writes the map,
+saved state or live match. No callback, mode registry, catalog, activation,
+filesystem, Buffer decoding, timer or running simulation dependency is added.
+
+Preserve statement, property and short-circuit order across capture progress,
+repeat counters/schedules, the five activation trigger types, completion team,
+single/joined source inheritance and victory hold. In particular, elapsed time
+is read here before its later host clock validation; do not add an early clock
+guard. Preserve legacy null hold defaulting, unknown saved fields, joined mixed
+teams inheriting `-1`, and the existing `invalid region event entering team`
+diagnostic for region/construction/research team failures. Save shape/version,
+map-size/capacity policy and all other rejection positions remain unchanged.
+
+Four additive cases in the registered checkpoint validator contract first run
+the actual old host: authored/Objective Control restore parity; 26 malformed or
+two-fault cases through validation and restore; and six accepted legacy/boundary
+variants retaining input bytes and state identity. Existing authored/Skirmish,
+canonical/effective, map/default/checksum, live-state and XL controls are retained.
+After extraction the same whole-server fixture resolves the ordinary relative
+private import and executes the actual default caller; neither replay adapter
+is changed or given replacement policy. The XL audit records the canonical
+module hash and asserts the call's effective-map input, original unit cap and
+position between building-ID and result checks, with negative controls.
+
+Server-domain membership creates no public path. The existing packed-release
+loop checks physical inclusion and GET/HEAD 404; all eleven compatibility
+surfaces remain. Source parity, relevant native event/hold recovery, existing
+CI entries, types/imports/docs, clean packaging and independent review precede
+the author-owned merge. Source, provider and served/rendered identities remain
+separate; ordinary rendered acceptance stays open at the existing cloud gap.
+This does not extract the remaining checkpoint domains behind a parameter bag
+or allocate any active movement/Patrol write.
+
+At this containing base, the 91 ordered body lines and every other host byte
+are preserved; the default import/call removes 89 net host lines and creates a
+104-line private domain module. The graph is 229 modules/449 local edges,
+141 browser/99 server/34 shared modules with zero cycles. These are dated
+boundary measurements, not a universal size score. All 1,433 containing-base
+CI entries remain identical, with one automatically discovered syntax entry;
+no package/CI/AGENTS/testing-strategy registration changes occur. The actual
+old/new whole-server validation and restore consumers match in 1,156 observations,
+including accepted/rejected input bytes, errors, state identity and live state.
+The 136 focused checks, both-seat native hold/repeat recovery, native completion
+conditions/recovery, types and documentation checks pass. Hosted full-suite,
+package/deployment and served/rendered observations retain their own evidence.
+
 #### Editable scenario-event graph responsibility — 6 October 2026
 
 After the PR512 caller migration, the next existing authoring responsibility is

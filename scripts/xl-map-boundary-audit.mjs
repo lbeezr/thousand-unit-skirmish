@@ -84,6 +84,17 @@ export function assertCheckpointEnvelopeConsumer(source, envelopeSource) {
     throw new Error('XL checkpoint preflight consumer/ordering changed; update its evidence.');
 }
 
+export function assertCheckpointScenarioStateConsumer(source) {
+  const body = extractFunction(source, 'validateMatchCheckpoint');
+  const call = body.indexOf('validateCheckpointScenarioState(definition, state, { maxUnits: MAX_UNITS });');
+  const building = body.indexOf("'invalid next building ID');");
+  const result = body.indexOf('assertSnapshot(finite(state.matchElapsedSeconds)');
+  if (!source.includes("import { validateCheckpointScenarioState } from './src/server/checkpoint-scenario-state.mjs';")
+    || building < 0 || call <= building || result <= call) {
+    throw new Error('Checkpoint scenario-state consumer/ordering changed; update its evidence.');
+  }
+}
+
 // Bounded payload/operation witness, not a match or comparable performance run.
 // The real authority remains gated at256; do not widen it for this probe.
 export function xlCheckpointRouteProbe({ width, height }, { maxUnits, maxResourceNodes }) {
@@ -199,6 +210,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     'src/match-modes.mjs', 'src/server/vision-coverage-cache.mjs',
     'src/server/checkpoint-route-budget.mjs', 'src/server/checkpoint-envelope.mjs',
     'src/server/map-definition-validator.mjs',
+    'src/server/checkpoint-scenario-state.mjs',
     'src/server/checkpoint-json-budget.mjs', 'src/server/checkpoint-json-scan.mjs', 'src/server/checkpoint-file-reader.mjs',
     'src/gameplay-definitions.mjs', 'src/elevation.mjs', 'src/map-utils.mjs',
     'src/world/scenario-event-chain.mjs',
@@ -245,6 +257,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     || !captureBody.includes('{ maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES }'))
     throw new Error('XL checkpoint preflight consumer/ordering changed; update its evidence.');
   assertCheckpointEnvelopeConsumer(source, inputs['src/server/checkpoint-envelope.mjs']);
+  assertCheckpointScenarioStateConsumer(source);
   const xlRoutePreflight = xlCheckpointRouteProbe(map, { maxUnits, maxResourceNodes });
   const xlJsonEnvelope = await runCheckpointJsonBudgetAudit({ native });
   // The literal may use separators; parse separately without evaluating code.
