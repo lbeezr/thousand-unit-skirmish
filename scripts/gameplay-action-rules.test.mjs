@@ -113,6 +113,21 @@ for (const team of [0, 1]) for (const actionType of ['production', 'research']) 
 }
 
 for (const team of [0, 1]) {
+  test(`production, seat ${team}: completed enemy producer is rejected without other blockers`, () => {
+    const f = fixture(team, 'production');
+    const friendlyBefore = structuredClone({ definitions: f.definitions, building: f.building, state: f.state });
+    const friendly = f.action();
+    assert.equal(friendly.available, true);
+    assert.equal(friendly.reason, '');
+    assert.deepEqual({ definitions: f.definitions, building: f.building, state: f.state }, friendlyBefore);
+    f.building.team = 1 - team;
+    const enemyBefore = structuredClone({ definitions: f.definitions, building: f.building, state: f.state });
+    const enemy = f.action();
+    assert.equal(enemy.available, false);
+    assert.equal(enemy.reason, 'SELECT A COMPLETED BUILDING THAT PRODUCES THIS UNIT');
+    assert.deepEqual({ definitions: f.definitions, building: f.building, state: f.state }, enemyBefore);
+  });
+
   test(`production, seat ${team}: queue, reservations, prerequisites, population and spawn keep their reason precedence`, () => {
     const f = fixture(team, 'production');
     f.entry.requires = ['archer-attack'];
