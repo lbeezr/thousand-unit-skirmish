@@ -1348,7 +1348,7 @@ the claimant's full next-tick travel budget, and terminate permission on lane
 entry. The reserve is derived from both body radii and authoritative speed ×
 fixed step, not a witness-specific distance. Forest142 fails it (.482295 gap
 versus .526667 required); wall594 passes with .030095 surplus. This proves only
-pair clearance for one fixed budget. Moving the entrant changes the peer's
+pair clearance for one fixed budget. Moving the entrant can change the peer's
 closest-eight tangent candidates even when all immediate headings remain clear.
 Wall594 enters the following lane after that half-step, where ordinary priority
 can stop the same tick's remaining execution. Extending permission to its raw
