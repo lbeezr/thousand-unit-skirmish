@@ -47,8 +47,9 @@ PR298, rules PR314, formation PR301, HUD PR299, audio PR322, authoring PR300 and
 verified image loading PR327. Their source milestone does not close every
 rendered/native outcome. Later caller migrations through PR404 leave zero
 tracked runtime consumers of the eleven retained compatibility surfaces; tests,
-tools and supported old APIs still require them. Release pack/verification/served
-import tools have canonical `scripts/release/` homes through PR373/378/382.
+tools and supported old APIs still require them. Release pack/verification
+tools have canonical `scripts/release/` homes through PR373/378; PR382 places
+the served-import auditor in `scripts/browser/`.
 
 Subsequent real host extractions include Map Studio form/storage/history,
 portable import validation and terrain packing (PR406/412/415/463/524), world
@@ -422,7 +423,7 @@ their existing-module imports can stay behind explicit shims so `main.js` and
 `server.mjs` need no path-only churn. The manifest, guard membership and any
 type/coverage/CI registries are shared integration files: apply those deltas
 serially through their owners, not concurrent edits disguised as disjoint work.
-PR8 waits for the asset/renderer owner's agreed lifetime interface.
+PR8 used the asset/renderer owner's agreed lifetime interface in PR327.
 
 | PR / owner and dependency | Exact candidate source scope and resulting boundary | Focused acceptance beyond the common checks below |
 | --- | --- | --- |
@@ -437,7 +438,13 @@ PR8 waits for the asset/renderer owner's agreed lifetime interface.
 
 ### Migration checkpoints and retained compatibility
 
-| Slice | Canonical boundary / current consumers | Retirement owner and criteria |
+Consumer descriptions here record their stated extraction/caller checkpoints.
+Current tracked-runtime status after PR404 is zero consumers through the eleven
+retained compatibility surfaces; tool/test/external retirement remains open.
+Use the caller-migration history below and the current snapshot above rather
+than treating an extraction-time server/HUD import as pending runtime work.
+
+| Slice | Canonical boundary / consumers at recorded checkpoint | Retirement owner and criteria |
 | --- | --- | --- |
 | Capture-prerequisite contract, extracted from `53951d6b` | `src/world/capture-prerequisites.mjs` preserves the exact existing `capturePrerequisiteIds` and `findInvalidCapturePrerequisite` statements (48 lines including a separator) with no imports. Map-utils retains its full ten-name API and forwards the same two bindings; main, server and the authoring validator keep their existing imports and use the canonical implementation by default. Legacy `requires`, ordered `requiresAll`, shape/duplicate/self/missing/cycle rejection and first-error order stay unchanged. The event validator remains separate. At this 2026-10-05 checkpoint, map-utils goes from 197 to 150 lines; graph 221 modules / 412 edges becomes 222 / 413, zero cycles. These values measure the responsibility split, not an absolute quality target. | Architecture/world boundary owner retains the named exports. Migrate capture-only consumers only after caller-owner agreement and an inventory of tracked/runtime/tool/test/docs and supported external uses. Remove those exports only after canonical contract coverage, source/served/packed checks and an identified containing release succeed without them; the topology/elevation module remains. Both paths are exact public modules; private host/transport GET/HEAD denial is retained. No export retirement, map/save/protocol change, crowd replay edit or host rewrite occurs here. |
 | Scenario-event dependency contract, extracted from `c3725def` | `src/world/scenario-event-chain.mjs` contains the exact two adjacent functions (71 lines) formerly in `src/map-utils.mjs`: `scenarioEventSourceIds` and `findInvalidScenarioEventChain`. It has no imports and is an unversioned world responsibility. Map-utils retains all ten named exports and forwards the same two bindings. Existing main, server, authoring validator and fortified-crossing imports remain stable; the map-utils scenario exercises the canonical API and old-path identity. Topology, elevation and capture-prerequisite bodies remain in map-utils. At the 2026-10-05 extraction checkpoint against `c3725def`, map-utils goes from 267 to 197 lines; the runtime graph goes from 219 modules / 407 local edges to 220 / 408 with zero cycles. Existing hosts and validator source bytes stay unchanged. These counts track this boundary, not an absolute quality score; no generalized graph framework, map schema or save/protocol change is introduced. | World/scenario boundary owner retains the two public exports in map-utils. Event-only caller migration first inventories tracked runtime/tools/tests/docs and supported external consumers with their owners. Remove these exports only after those callers use the canonical module, canonical contract checks pass, and source plus an identified served/packed release work without them. Map-utils remains a real topology/elevation/capture module. No retirement is scheduled here. Exact canonical and old module paths remain public; private host/transport paths retain GET/HEAD denial. |
@@ -506,10 +513,11 @@ the testing owner's current strategy; this plan does not change that registry.
 The reviewed plan is integrated, with PR1's guard/check milestone recorded in
 PR294; PR298 records the first canonical metadata boundary with stable host
 imports. Candidate 3 establishes the canonical pure-rule boundary and its
-implementation coverage in PR314. Formation and authoring moves remain with their existing
-owners, and caller migration stays a coordinated follow-up.
+implementation coverage in PR314. Formation and authoring source moves are
+integrated through PR301/300; their owners retain acceptance and retirement.
+The caller-migration checkpoints below record the subsequent default bindings.
 
-Step 5's HUD owner moves the three pure text/projection implementations
+At the PR299 HUD checkpoint, Step 5's owner moved the three pure text/projection implementations
 byte-for-byte to `src/client/hud/`, retaining explicit named old-path exports.
 The source guard classifies both paths as client responsibilities; negative
 fixtures reject rules/world/simulation/server consumers and keep the canonical
@@ -518,9 +526,10 @@ admit only the exact six paths. Existing helper tests exercise canonical exports
 and verify compatibility binding identity; contextual consumers still use shims.
 No layout, selection, accounting, labels or authored objective behavior changes.
 
-The HUD integration owner retains shim retirement. Remaining runtime consumers
-are `main.js` (all three), `selection-portrait.mjs` and `wall-placement.mjs`
-(resource format), and `match-mode-controls.mjs` (objective summary). Tool/test
+The HUD integration owner retains shim retirement. At PR299, runtime consumers
+were `main.js` (all three), `selection-portrait.mjs` and `wall-placement.mjs`
+(resource format), and `match-mode-controls.mjs` (objective summary). Those
+runtime callers migrated in PR349/370; no current runtime HUD-shim caller remains. Tool/test
 consumers include contextual HUD, construction/wildlife fixtures, roster and
 shore-fishing checks, Practice/Bannerfall entry checks and the population browser
 runner. Convert these with their owners in later bounded changes. Remove each
