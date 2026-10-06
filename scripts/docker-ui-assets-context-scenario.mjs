@@ -10,7 +10,9 @@ const dockerignore = readFileSync(path.join(root, '.dockerignore'), 'utf8')
   .filter((line) => line && !line.startsWith('#'));
 const dockerfile = readFileSync(path.join(root, 'Dockerfile'), 'utf8');
 const server = readFileSync(path.join(root, 'server.mjs'), 'utf8');
-const uiAllowlist = server.match(/const publicUiAsset = \[([\s\S]*?)\]\.includes\(relative\);/);
+const staticAssets = readFileSync(path.join(root, 'src/server/client-static-assets.mjs'), 'utf8');
+assert.match(server, /isClientStaticAsset\(relative\)/, 'worker must enforce the shared static allowlist');
+const uiAllowlist = staticAssets.match(/const publicUiAsset = \[([\s\S]*?)\]\.includes\(relative\);/);
 assert.ok(uiAllowlist, 'server should declare a UI asset allowlist');
 const assets = [...uiAllowlist[1].matchAll(/'([^']+)'/g)].map((match) => match[1]);
 assert.ok(assets.length > 0, 'server UI asset allowlist should not be empty');

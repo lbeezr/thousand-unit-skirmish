@@ -20,7 +20,9 @@ for (const privateModule of ['src/formation-assignment.mjs', 'src/simulation/mov
   'src/forest-fringe.mjs', 'src/server/vision-coverage-cache.mjs']) {
   assert.ok(!allowed.has(privateModule), `server-consumed helper must remain HTTP-private: ${privateModule}`);
 }
-const uiAllowlist = server.match(/const publicUiAsset = \[([\s\S]*?)\]\.includes\(relative\);/);
+const staticAssets = readFileSync(path.join(root, 'src/server/client-static-assets.mjs'), 'utf8');
+assert.match(server, /isClientStaticAsset\(relative\)/, 'worker must enforce the shared static allowlist');
+const uiAllowlist = staticAssets.match(/const publicUiAsset = \[([\s\S]*?)\]\.includes\(relative\);/);
 assert.ok(uiAllowlist, 'server UI asset allowlist should be declared');
 const allowedUi = new Set([...CLIENT_ASSET_PATHS.filter(name => name.startsWith('assets/ui/')),
   ...[...uiAllowlist[1].matchAll(/'([^']+)'/g)].map((match) => match[1])]);
@@ -28,7 +30,7 @@ const environmentModule = ENVIRONMENT_MODULE_PATH;
 assert.ok(allowed.has('src/water-surface-geometry.mjs'), 'water geometry module should be statically served');
 const spriteNames = environmentArt.match(/const spriteNames = \[([\s\S]*?)\];/);
 assert.ok(spriteNames, 'environment renderer should declare its environment sprite families');
-const servedEnvironmentAssets = server.match(/const publicEnvironmentAsset = ([\s\S]*?);\n  const publicInteractiveEnvironmentAsset/);
+const servedEnvironmentAssets = staticAssets.match(/const publicEnvironmentAsset = ([\s\S]*?);\n  const publicInteractiveEnvironmentAsset/);
 assert.ok(servedEnvironmentAssets, 'server should explicitly allow environment sprites');
 const allowedEnvironmentNames = new Set([...servedEnvironmentAssets[1].matchAll(/'([^']+)'/g)]
   .map((match) => match[1]));

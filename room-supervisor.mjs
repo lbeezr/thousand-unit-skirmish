@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
 import { practiceEntryCatalog } from './src/practice-entry-catalog.mjs';
 import { NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from './src/match-modes.mjs';
+import { isAnonymousGameplayRequest } from './src/server/public-gameplay.mjs';
 import { loadBuildIdentity } from './src/server/build-identity.mjs';
 import { ORDINARY_MAP_MIN_SIDE, MAP_SIZE_TIERS } from './src/map-size-policy.mjs';
 import {
@@ -32,6 +33,7 @@ const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
 const RAILWAY_DEPLOYMENT = Boolean(process.env.RAILWAY_PROJECT_ID || process.env.RAILWAY_ENVIRONMENT);
 const PUBLIC_ORIGINS = configuredPublicOrigins();
 const VOLUME_MOUNT_PATH = process.env.RAILWAY_VOLUME_MOUNT_PATH || null;
+const PUBLIC_GAMEPLAY = process.env.RTS_PUBLIC_GAMEPLAY === '1';
 const ACCESS_USER = process.env.RTS_ACCESS_USER || 'players';
 const ACCESS_PASSWORD = process.env.RTS_ACCESS_PASSWORD || null;
 const ACCESS_HASH = ACCESS_PASSWORD
@@ -67,7 +69,7 @@ if (RAILWAY_DEPLOYMENT && !VOLUME_MOUNT_PATH) {
 if (VOLUME_MOUNT_PATH && !path.isAbsolute(VOLUME_MOUNT_PATH)) {
   throw new Error('RAILWAY_VOLUME_MOUNT_PATH must be an absolute path.');
 }
-if (RAILWAY_DEPLOYMENT && (!ACCESS_PASSWORD || ACCESS_PASSWORD.length < 16)) {
+if ((RAILWAY_DEPLOYMENT || PUBLIC_GAMEPLAY) && (!ACCESS_PASSWORD || ACCESS_PASSWORD.length < 16)) {
   throw new Error('Set RTS_ACCESS_PASSWORD to at least 16 characters before exposing the Railway service.');
 }
 if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
@@ -572,7 +574,9 @@ async function handleRequest(request, response) {
     return;
   }
 
-  if (!hasAccess(request)) { requireAccess(response); return; }
+  if (!hasAccess(request) && !(PUBLIC_GAMEPLAY && isAnonymousGameplayRequest(request.method, url))) {
+    requireAccess(response); return;
+  }
 
   if (url.pathname === '/api/rooms/status' && request.method === 'GET') {
     sendJson(response, 200, { enabled: true, roomCount: rooms.size, roomLimit: MAX_ROOMS, practiceSetup: await practiceSetup,
@@ -636,10 +640,14 @@ async function handleRequest(request, response) {
 
 async function handleUpgrade(request, socket, head) {
   if (stopping) { rejectUpgrade(socket, 503, 'Service Unavailable'); return; }
-  if (!hasAccess(request)) { rejectUpgrade(socket, 401, 'Unauthorized'); return; }
+  const authenticated = hasAccess(request);
+  if (!authenticated && !PUBLIC_GAMEPLAY) { rejectUpgrade(socket, 401, 'Unauthorized'); return; }
   let url;
   try { url = new URL(request.url || '/', `http://${request.headers.host || `${HOST}:${PORT}`}`); }
   catch { rejectUpgrade(socket, 400, 'Bad Request'); return; }
+  if (!authenticated && !(request.method === 'GET' && url.pathname === '/ws')) {
+    rejectUpgrade(socket, 401, 'Unauthorized'); return;
+  }
   if (url.pathname !== '/ws') { rejectUpgrade(socket, 404, 'Not Found'); return; }
   if (!sameOrigin(request)) { rejectUpgrade(socket, 403, 'Forbidden'); return; }
 

@@ -28,6 +28,7 @@ and `src/pve-match.mjs` are authoritative.
 
 | Variable | Purpose |
 | --- | --- |
+| `RTS_PUBLIC_GAMEPLAY` | Default off. Only the exact value `1` admits anonymous gameplay assets, room entry/session APIs and WebSockets. Health, review pages and all other routes retain Basic Auth; a password of at least 16 characters is still required. Enable only in an explicitly approved environment. |
 | `RTS_ACCESS_USER` | Shared Basic Auth username; defaults to `players`. |
 | `RTS_ACCESS_PASSWORD` | Shared password; Railway startup requires at least 16 characters. Store it in service variables. |
 | `RAILWAY_VOLUME_MOUNT_PATH` | Persistent storage root supplied by Railway; configure the volume at `/app/data`. |
