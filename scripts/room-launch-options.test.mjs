@@ -2,12 +2,15 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { spawn } from 'node:child_process';
-import { once } from 'node:events';
+import { EventEmitter, once } from 'node:events';
+import { createServer, request as httpRequest } from 'node:http';
 import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as delay } from 'node:timers/promises';
+import vm from 'node:vm';
+import ts from 'typescript';
 import { createRoomIndexStore } from '../src/server/persistence/room-index-store.mjs';
 import {
   buildRoomWorkerEnvironment,
@@ -24,6 +27,122 @@ import { normalizeMatchMode } from '../src/match-modes.mjs';
 import { PVE_MAP_IDS, readPveLaunchOptions, selectPveMapId } from '../src/pve-match.mjs';
 
 const roomId = 'a'.repeat(32);
+
+function workerReadyFixture() {
+  const source = readFileSync(new URL('../room-supervisor.mjs', import.meta.url), 'utf8');
+  const parsed = ts.createSourceFile('room-supervisor.mjs', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const names = ['startWorker', 'readWorkerHealth'];
+  const functions = parsed.statements.filter(statement =>
+    ts.isFunctionDeclaration(statement) && names.includes(statement.name?.text));
+  assert.deepEqual(functions.map(statement => statement.name.text), names);
+  const timeoutDeclaration = parsed.statements.find(statement => ts.isVariableStatement(statement)
+    && statement.declarationList.declarations.some(declaration => declaration.name.getText(parsed) === 'WORKER_START_TIMEOUT_MS'));
+  assert.ok(timeoutDeclaration);
+  const child = new EventEmitter();
+  child.exitCode = null;
+  child.pid = 1;
+  const kills = [], timers = [], cleared = [], updates = [];
+  child.kill = signal => { kills.push(signal); return true; };
+  const workerProcesses = new Set();
+  // Execute the actual startup/health functions and timeout constant. Only the
+  // child IPC transport and startup clock are synthetic; health uses Node HTTP.
+  const context = vm.createContext({ buildRoomWorkerEnvironment, normalizeRoomMetadata,
+    NORMAL_HUMAN_MATCH_MODE: { matchModeId: 'skirmish', matchModeVersion: 1 },
+    process: { env: {}, execPath: process.execPath }, ROOT: fileURLToPath(new URL('../', import.meta.url)),
+    WORKER_PATH: 'server.mjs', workerProcesses, spawn: () => child,
+    logWorkerOutput: () => {}, console: { log: () => {} }, httpRequest,
+    setTimeout: (callback, milliseconds) => {
+      const timer = { callback, milliseconds }; timers.push(timer); return timer;
+    },
+    clearTimeout: timer => { cleared.push(timer); },
+  });
+  vm.runInContext([timeoutDeclaration, ...functions].map(statement => statement.getFullText(parsed)).join('\n'), context);
+  const pending = context.startWorker('/tmp/ready-contract-maps', '/tmp/ready-contract-match', 'contract',
+    { mode: 'pvp' }, (metadata, worker) => updates.push({ metadata, worker }));
+  assert.equal(timers.length, 1);
+  assert.equal(timers[0].milliseconds, 15_000);
+  return { child, pending, kills, timers, cleared, updates, workerProcesses, readHealth: context.readWorkerHealth };
+}
+
+test('worker ready ignores malformed ports and accepts later valid readiness with unchanged metadata', async () => {
+  for (const port of [undefined, null, '4173', false, -1, 0, .5, NaN, Infinity, 65536, 70000, Number.MAX_SAFE_INTEGER]) {
+    const fixture = workerReadyFixture();
+    const initial = { mapId: 'underbough-rootways', matchModeId: 'skirmish', matchModeVersion: 1 };
+    fixture.child.emit('message', { type: 'ready', port, roomMetadata: initial });
+    await Promise.resolve();
+    assert.equal(fixture.cleared.length, 0, 'malformed readiness leaves the startup timeout active');
+    assert.deepEqual(fixture.kills, []);
+    assert.deepEqual(fixture.updates, []);
+    fixture.child.emit('message', { type: 'ready', port: 4173, roomMetadata: initial });
+    const worker = await fixture.pending;
+    assert.equal(worker.port, 4173);
+    assert.equal(worker.child, fixture.child);
+    assert.equal(JSON.stringify(worker.roomMetadata), JSON.stringify(initial));
+    assert.deepEqual(fixture.cleared, [fixture.timers[0]]);
+    fixture.child.emit('message', { type: 'ready', port: 65535 });
+    assert.equal(worker.port, 4173, 'duplicate readiness cannot replace the worker');
+    const updated = { mapId: 'veyrholds-terraced-vale', matchModeId: 'authored', matchModeVersion: 1 };
+    fixture.child.emit('message', { type: 'roomMetadata', roomMetadata: updated });
+    assert.equal(fixture.updates.length, 1);
+    assert.equal(fixture.updates[0].worker, worker);
+    assert.equal(JSON.stringify(worker.roomMetadata), JSON.stringify(updated));
+    fixture.child.emit('message', { type: 'roomMetadata', roomMetadata: { mapId: '../invalid' } });
+    assert.equal(fixture.updates.length, 1);
+    fixture.child.emit('error', new Error('late child error'));
+    fixture.timers[0].callback();
+    assert.deepEqual(fixture.cleared, [fixture.timers[0]], 'settled startup retains its original cleanup');
+    fixture.child.emit('exit', 0, null);
+    assert.equal(fixture.workerProcesses.size, 0);
+    assert.deepEqual(fixture.kills, []);
+  }
+});
+
+test('worker ready retains port endpoints and existing timeout, error and early-exit cleanup', async () => {
+  for (const port of [1, 65535]) {
+    const fixture = workerReadyFixture();
+    fixture.child.emit('message', { type: 'ready', port });
+    assert.equal((await fixture.pending).port, port);
+    fixture.child.emit('exit', 0, null);
+    assert.equal(fixture.workerProcesses.size, 0);
+  }
+  for (const stage of ['timeout', 'error', 'exit']) {
+    const fixture = workerReadyFixture();
+    fixture.child.emit('message', { type: 'ready', port: 65536 });
+    const failure = new Error('child startup error');
+    const rejected = assert.rejects(fixture.pending, error => stage === 'error'
+      ? error === failure : error.message === (stage === 'timeout'
+        ? 'contract did not become ready in time.' : 'contract exited before startup (code 1, signal none).'));
+    if (stage === 'timeout') fixture.timers[0].callback();
+    else if (stage === 'error') fixture.child.emit('error', failure);
+    else fixture.child.emit('exit', 1, null);
+    await rejected;
+    assert.deepEqual(fixture.kills, ['SIGTERM']);
+    assert.deepEqual(fixture.cleared, [fixture.timers[0]]);
+    if (stage !== 'exit') fixture.child.emit('exit', 1, null);
+    assert.equal(fixture.workerProcesses.size, 0);
+  }
+});
+
+test('later valid worker readiness reaches the actual health consumer successfully', async t => {
+  const server = createServer((request, response) => {
+    assert.equal(request.url, '/health');
+    response.end(JSON.stringify({ ok: true }));
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const fixture = workerReadyFixture();
+  fixture.child.emit('message', { type: 'ready', port: 70000 });
+  let reads = 0;
+  fixture.child.emit('message', { type: 'ready', get port() { return ++reads === 1 ? server.address().port : 70000; } });
+  const worker = await fixture.pending;
+  assert.equal(worker.port, server.address().port);
+  assert.equal(reads, 1, 'worker keeps the port that passed validation');
+  assert.equal((await fixture.readHealth(worker)).ok, true);
+  fixture.child.exitCode = 0;
+  fixture.child.emit('exit', 0, null);
+  assert.equal(await fixture.readHealth(worker), null);
+  assert.equal(fixture.workerProcesses.size, 0);
+});
 
 async function roomIndexFixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'room-index-store-'));
