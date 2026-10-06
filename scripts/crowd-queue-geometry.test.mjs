@@ -94,7 +94,7 @@ for (const c of cases) test(`${c.name}: classified geometry preserves the full c
       canTraverse:()=>{throw Error('overflow must perform no physical proposals');}});
     assert.ok(overflow.waitingForCrowd); assert.equal(overflow.stepDistance,0);
     assert.equal(overflow.crowdControl.proposals,0); assert.deepEqual(unit,actorBefore);
-    // Positive one-step gain is below the unchanged .02 progress-credit bound.
+    // Resulting distance does not beat the historical bestDistance minus .02.
     assert.ok(distance(args.to,args.progressTarget) >= decode(c.frame.bodies[0].state).bestDistance - .02);
     assert.equal(replayed.afterState.lastProgressTick,c.frame.bodies[0].state.lastProgressTick);
     if (c.name==='wall594') {

@@ -47,8 +47,8 @@ controller transitions. They establish both actors' ordinary eligibility,
 fresh generation/order/navigation/epoch/path-object/index/tick identities,
 inactive maneuvers, shared future triples and strict physical admission of the
 discarded proposals. Classification leaves all actors, selected routes, target
-intent and queues unchanged. Both proposals remain above the unchanged .02
-progress-credit bound; no progress timestamp is reset. Terrain/body denials and
+intent and queues unchanged. Neither resulting distance beats the historical
+bestDistance minus .02; no progress timestamp is reset. Terrain/body denials and
 query overflow stay independent of geometry. Boundary/radius, oblique following,
 backward/outward/overshoot/stationary, invalid-input, rotation, reflection,
 translation and axis-scaling controls exercise the distinguishing predicate.
