@@ -8,6 +8,7 @@ import { forestGatherGroups, visibleForestCandidates } from '../src/forest-gathe
 import { shortcutFlatUnitPath, canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { constructionMovementActive } from '../src/construction-work-intent.mjs';
+import { workerPatrolAcquiredMovementActive } from '../src/combat-movement.mjs';
 import { canTraverseCrowdBodySegment } from '../src/unit-crowd-steering.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { creditResourceBalance } from '../src/economy-ledger.mjs';
@@ -66,7 +67,7 @@ function fixture({ width = 320, height = 320, total = 0, weighted = false, count
   const callbacks = [], censuses = [], selections = [], notices = [], searches = [], samples = [];
   const forestCellMask = new Uint8Array(levels.length), forestWoodRemaining = new Float64Array(levels.length);
   const context = vm.createContext({ ...movement, ...workIntent, shortcutFlatUnitPath, canTraverseFlatUnitSegment,
-    constructionMovementActive, canTraverseCrowdBodySegment, spatialBucketRosterCurrent:false,
+    constructionMovementActive, workerPatrolAcquiredMovementActive, canTraverseCrowdBodySegment, spatialBucketRosterCurrent:false,
     crowdNeighborsNear(){throw Error('economy-only fixture cannot enter construction body admission');},
     activeWallBuildOrder, UNIT_DEFINITIONS, creditResourceBalance, visibleForestCandidates,
     MAP_WIDTH: width, MAP_HEIGHT: height, MAP_HALF_X: width / 2, MAP_HALF_Z: height / 2, CELL_COUNT: levels.length,
