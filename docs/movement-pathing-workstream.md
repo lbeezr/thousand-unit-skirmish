@@ -1332,6 +1332,16 @@ complete mechanism of the later fairness failure. Core retains the next
 refinement-or-retirement decision; crowd retains sealed diagnostic/replay
 qualification. No fix, changed contract or broader rerun is included.
 
+The next [source-only queue geometry contract](qa-crowd-queue-geometry-2026-10-06.md)
+replays forest142 and wall594 while retaining both production waits. A claimant
+ahead inside the combined body-width lane keeps ordinary following priority;
+outside-lane inward waypoint progress is only lateral-rejoin geometry, not a
+waiver. The wall proposal itself enters the following lane, so this distinction
+does not yet justify a runtime exception or establish continued progress. Core
+owns the semantic refinement; crowd owns later unchanged journey/fairness
+qualification after an explicit supported-candidate handoff. No PR529 merge,
+fresh journey or inference about the later239-tick gap is included.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
