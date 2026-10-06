@@ -52,7 +52,9 @@ atomically; backward-clock contexts cannot take old grants. No saved-state addit
 2. The claimant first makes ordinary progress. Only the host's receipt **after all
    fixed-tick writes and budget finalization**, with unchanged pre/post route stamp
    and positive gain on the same fixed raw waypoint, can publish a next-tick step.
-   That step must itself make positive raw-waypoint gain, remain nonterminal, pass
+   Preview that future step against `nextBudgetOf(owner)`, even when the finalized
+   current tick has no remaining travel. That step must itself make positive
+   raw-waypoint gain, remain nonterminal, pass
    all original physical guards and have **zero remaining original priority vetoes**.
    Active legacy maneuvers, overflow and exhausted shared work refuse publication.
 3. Probe eligible previous-tick requests in ascending ID order cyclically after the
@@ -61,7 +63,9 @@ atomically; backward-clock contexts cannot take old grants. No saved-state addit
    late requests cannot seize a publication. Failed allocations still rotate.
 4. The selected recipient rechecks identity, geometry, original physical guards,
    other priority vetoes and all live reservations. Capture the safety obligation
-   **before** writing. Waive only this exact claimant's one veto for this exact
+   **before** writing. Current request/ingress/fallback/service admissions use fresh
+   `remainingBudgetOf(actor)` after every authoritative displacement; a future full
+   allowance never pays another current write. Waive only this exact claimant's one veto for this exact
    requested proposal. Actual finalized ingress consumes permission and updates
    `lastGrantTick`; selection or failed execution does not earn progress/grant credit.
    A guarded partial/fallback write retains safety without claiming ingress success.
@@ -113,8 +117,9 @@ candidate eligibility can scan up to 64 requests and perform up to 64 priority s
 Sorting at most 64 IDs and one bounded probe loop suffice. Overflow fails closed.
 These are source work bounds, not wall-time or consumer-GPU capacity claims.
 
-The host supplies actual fixed raw waypoints, full authoritative next-tick movement
-budgets, current legacy-maneuver status, **remaining step-specific existing priority
+The host supplies actual fixed raw waypoints, authoritative **current remaining**
+travel budgets separately from full next-tick offer-preview budgets, current
+legacy-maneuver status, **remaining step-specific existing priority
 vetoes**, and real bounds/cell/static/body admissions. The reference model never writes
 actors, routes, queues, jobs, targets or historical progress clocks. Its progress
 receipt is a host-owned assertion after execution; it is not inferred from a selector
@@ -128,7 +133,9 @@ service and a legal three-actor chain; capsule crossing despite clear endpoints;
 inherited obligations outside the current neighbor query; reciprocal claims;
 other/new priority vetoes; failed commits/fallbacks; recipient route/index/Hold
 changes, death/replacement; peer route/index/generation/origin/nav/epoch/controller
-changes; missing/expired acknowledgements; same-pose different promise identity;
+changes; missing/expired acknowledgements; current travel exhaustion versus future
+preview, including actual displacement accounting in the three-actor chain;
+same-pose different promise identity;
 unchanged-pose renewal refusal; partial host receipts; failed-winner rotation and
 the shared-budget/overflow limits. Controlled chain/identity cases isolate those
 oracles; they do not represent captured production paths or a game qualification.

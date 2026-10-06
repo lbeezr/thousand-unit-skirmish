@@ -10,21 +10,24 @@ import { canTraverseStaticBodySegment, canTraverseUnitStep, LAND_CLEARANCE_PROFI
 const actor = (id,x,z,index=0) => ({id,x,z,generation:17,orderRevision:1,kind:'infantry',hp:100,
   path:[7,8,9,10],pathIndex:index,moveGoalCell:10,attackTargetId:-1,attackBuildingTargetId:-1});
 const p = u => ({x:u.x,z:u.z});
-const move = (u,to) => Object.assign(u,to);
+const move = (u,to,c) => { c.consumeBudget(u,Math.hypot(to.x-u.x,to.z-u.z));return Object.assign(u,to); };
 function scene(count=1) {
   const model=new MovingEntitlementModel(),peer=actor(1,.51,.18,1),units=[peer,actor(2,0,-.6)];
   if(count===2) units.push(actor(3,-.55,-.5));
-  const goals=new Map([[7,{x:.5,z:.5}],[8,{x:-.5,z:.5}],[9,{x:-1.5,z:.5}],[10,{x:-2.5,z:.5}]]);
+  const goals=new Map([[7,{x:.5,z:.5}],[8,{x:-.5,z:.5}],[9,{x:-1.5,z:.5}],[10,{x:-2.5,z:.5}]]),spent=new WeakMap();
   const c={tick:0,nav:0,epoch:1,neighbors:units,overflow:false,pointOf:u=>goals.get(u.path[u.pathIndex]),
-    budgetOf:()=>2.6/30,maneuver:()=>false,claims:u=>u===peer?[]:[peer],
+    nextBudgetOf:()=>2.6/30,remainingBudgetOf:u=>c.nextBudgetOf(u)-(spent.get(u)?.tick===c.tick?spent.get(u).distance:0),
+    consumeBudget:(u,length)=>{assert.ok(length<=c.remainingBudgetOf(u)+1e-9,'host write stays within current fixed-tick budget');
+      spent.set(u,{tick:c.tick,distance:(spent.get(u)?.tick===c.tick?spent.get(u).distance:0)+length});},
+    maneuver:()=>false,claims:u=>u===peer?[]:[peer],
     admit:(u,from,to)=>canTraverseStaticBodySegment(from,to,LAND_CLEARANCE_PROFILE.radiusByKind[u.kind],8,8,()=>true)
       && canTraverseCrowdBodySegment(from,to,LAND_CLEARANCE_PROFILE.radiusByKind[u.kind],units.filter(o=>o!==u))};
   const request=u=>model.request(u,peer,{x:u.x+.04,z:u.z+.05},{x:0,z:1},c,entitlementBudget());
   const publish=(tick=c.tick+1)=>{c.tick=tick;const start=movementStart(peer,c),budget=entitlementBudget();
-    const to={x:peer.x-.06,z:peer.z+.02};assert.ok(model.admit(peer,peer,to,c,budget));move(peer,to);
+    const to={x:peer.x-.06,z:peer.z+.02};assert.ok(model.admit(peer,peer,to,c,budget));move(peer,to,c);
     return model.publish(peer,{x:peer.x-.06,z:peer.z+.02},finalizedProgress(peer,start,c),c,budget);};
   const ingress=u=>{const budget=entitlementBudget(),to=model.prepareIngress(u,peer,c,budget);assert.ok(to);
-    const start=movementStart(u,c);assert.ok(model.admit(u,u,to,c,budget));move(u,to);
+    const start=movementStart(u,c);assert.ok(model.admit(u,u,to,c,budget));move(u,to,c);
     assert.ok(model.finishIngress(u,finalizedProgress(u,start,c),c));};
   return {model,peer,units,c,request,publish,ingress};
 }
@@ -38,7 +41,7 @@ test('one ingress consumes one named peer quantum; real progress clocks, routes 
   assert.equal(s.model.state(u).bestDistance,.54);assert.deepEqual(u.queuedWaypoints,[{destination:11}]);
   assert.equal(s.request(u),false,'lane entry restores queue-following priority');
   s.c.tick=2;const to=s.model.take(s.peer,s.c,entitlementBudget());assert.deepEqual(to,offer.to);
-  const start=movementStart(s.peer,s.c);move(s.peer,to);assert.ok(s.model.finish(s.peer,finalizedProgress(s.peer,start,s.c),s.c));
+  const start=movementStart(s.peer,s.c);move(s.peer,to,s.c);assert.ok(s.model.finish(s.peer,finalizedProgress(s.peer,start,s.c),s.c));
   assert.equal(s.model.obligation(u,s.c),null);assert.equal(s.model.take(s.peer,s.c,entitlementBudget()),null);
 });
 
@@ -65,10 +68,10 @@ test('publication and consumption respect an actor serving both roles in a reser
   // Give the recipient another requester and a later ordinary progress receipt.
   // Controlled physical admission isolates the reservation oracle in this chain test.
   const follower=actor(3,-.55,-.9);s.units.push(follower);s.c.admit=()=>true;
-  s.c.claims=a=>a===follower?[u]:[];s.c.budgetOf=()=>.25;
+  s.c.claims=a=>a===follower?[u]:[];s.c.nextBudgetOf=()=>.5; // Controlled oracle with enough current budget for both probes.
   s.c.tick=1;assert.ok(s.model.request(follower,u,{x:-.50,z:-.85},{x:0,z:1},s.c,entitlementBudget()));
   s.c.tick=2;
-  const start=movementStart(u,s.c);move(u,{x:.12,z:-.38});
+  const start=movementStart(u,s.c);move(u,{x:.12,z:-.38},s.c);
   const to={x:.29,z:-.20},budget=entitlementBudget();
   s.c.neighbors=[u,follower]; // The captured obligation also guards outside the current query.
   assert.ok(Math.hypot(to.x-u.x,to.z-u.z)<=.25);
@@ -91,26 +94,26 @@ test('a legal three-actor chain services both named steps without a circular wai
   assert.ok(s.request(u));
   assert.ok(s.model.request(follower,u,{x:-.50,z:-.85},{x:0,z:1},s.c,entitlementBudget()));
   const first=s.publish();s.ingress(u);
-  const start=movementStart(u,s.c);move(u,{x:.06,z:-.53});
+  const start=movementStart(u,s.c);move(u,{x:.05,z:-.54},s.c);
   const second=s.model.publish(u,{x:.10,z:-.48},finalizedProgress(u,start,s.c),s.c,entitlementBudget());
   assert.equal(second.winner,follower);
   const to=s.model.prepareIngress(follower,u,s.c,entitlementBudget());assert.ok(to);
-  const followerStart=movementStart(follower,s.c);move(follower,to);
+  const followerStart=movementStart(follower,s.c);move(follower,to,s.c);
   assert.ok(s.model.finishIngress(follower,finalizedProgress(follower,followerStart,s.c),s.c));
   s.c.tick=2;
   const budget=entitlementBudget(),middleTo=s.model.take(u,s.c,budget);assert.deepEqual(middleTo,second.to);
   assert.ok(budget.reservationVisits>0,'middle actor preserves its older obligation while serving its follower');
-  const middleStart=movementStart(u,s.c);move(u,middleTo);
+  const middleStart=movementStart(u,s.c);move(u,middleTo,s.c);
   assert.ok(s.model.finish(u,finalizedProgress(u,middleStart,s.c),s.c));
   const aheadTo=s.model.take(s.peer,s.c,entitlementBudget());assert.deepEqual(aheadTo,first.to);
-  const aheadStart=movementStart(s.peer,s.c);move(s.peer,aheadTo);
+  const aheadStart=movementStart(s.peer,s.c);move(s.peer,aheadTo,s.c);
   assert.ok(s.model.finish(s.peer,finalizedProgress(s.peer,aheadStart,s.c),s.c));
 });
 
 test('publication needs unchanged pre/post waypoint identity and no current peer priority veto',()=>{
   for(const change of ['route','index','priority','maneuver']) {
     const s=scene();s.request(s.units[1]);s.c.tick=1;
-    const start=movementStart(s.peer,s.c);move(s.peer,{x:.45,z:.2});
+    const start=movementStart(s.peer,s.c);move(s.peer,{x:.45,z:.2},s.c);
     if(change==='route')s.peer.path=[...s.peer.path];
     if(change==='index')s.peer.pathIndex=2;
     if(change==='priority')s.c.claims=a=>a===s.peer?[actor(0,2,2)]:[s.peer];
@@ -124,7 +127,7 @@ test('failed recipient fallback keeps safety but earns no grant credit; birth/de
     const s=scene(),u=s.units[1];s.request(u);s.publish();
     assert.ok(s.model.prepareIngress(u,s.peer,s.c,entitlementBudget()));
     const from=p(u),to={x:u.x+.01,z:u.z+.01};
-    assert.ok(s.model.admit(u,from,to,s.c,entitlementBudget()));move(u,to);
+    assert.ok(s.model.admit(u,from,to,s.c,entitlementBudget()));move(u,to,s.c);
     assert.equal(s.model.finishIngress(u,null,s.c),false);
     assert.equal(s.model.state(u).lastGrantTick,-Infinity);
     if(change==='generation')u.generation++;
@@ -147,13 +150,13 @@ test('same-pose new promise cannot inherit the exact-object acknowledgement of a
 test('finalized ingress and service receipts cannot delay permission across its fixed-tick boundary',()=>{
   const s=scene(),u=s.units[1];s.request(u);s.publish();
   const ingress=s.model.prepareIngress(u,s.peer,s.c,entitlementBudget());assert.ok(ingress);
-  s.c.tick=2;const start=movementStart(u,s.c);move(u,ingress);
+  s.c.tick=2;const start=movementStart(u,s.c);move(u,ingress,s.c);
   assert.equal(s.model.finishIngress(u,finalizedProgress(u,start,s.c),s.c),false,
     'a later-tick actual write earns no same-tick ingress authority or credit');
   assert.equal(s.model.state(u).lastGrantTick,-Infinity);
   const a=scene();a.request(a.units[1]);const promised=a.publish();a.ingress(a.units[1]);
   a.c.tick=2;assert.deepEqual(a.model.take(a.peer,a.c,entitlementBudget()),promised.to);
-  a.c.tick=3;const delayed=movementStart(a.peer,a.c);move(a.peer,promised.to);
+  a.c.tick=3;const delayed=movementStart(a.peer,a.c);move(a.peer,promised.to,a.c);
   assert.equal(a.model.finish(a.peer,finalizedProgress(a.peer,delayed,a.c),a.c),false,
     'take admission cannot carry claimed service past expiry');
   assert.equal(a.model.state(a.peer).offer.reservation,null);
@@ -176,7 +179,7 @@ test('a missing service finalizer rejects duplicate selection but expires or inv
 
 test('bounded queries fail closed and all physical admissions share the remaining 128 proposals',()=>{
   const s=scene(),u=s.units[1];s.request(u);s.c.tick=1;
-  const start=movementStart(s.peer,s.c);move(s.peer,{x:.45,z:.2});
+  const start=movementStart(s.peer,s.c);move(s.peer,{x:.45,z:.2},s.c);
   const budget=entitlementBudget(127);
   assert.equal(s.model.publish(s.peer,{x:.39,z:.22},finalizedProgress(s.peer,start,s.c),s.c,budget),null);
   assert.equal(budget.proposals,128,'no requester gets a fresh budget after the peer proposal');
@@ -192,7 +195,7 @@ test('bounded queries fail closed and all physical admissions share the remainin
 
 test('malformed authoritative movement and shared work budgets fail closed before physical admission',()=>{
   for(const movement of [NaN,Infinity,-.1,0]) {
-    const s=scene();s.c.budgetOf=()=>movement;
+    const s=scene();s.c.nextBudgetOf=()=>movement;
     s.c.admit=()=>assert.fail('invalid movement budget reached physical admission');
     assert.equal(s.request(s.units[1]),false);
   }
@@ -201,10 +204,28 @@ test('malformed authoritative movement and shared work budgets fail closed befor
     assert.equal(s.model.admit(s.peer,s.peer,{x:.45,z:.2},s.c,entitlementBudget(counter)),false);
   }
   const s=scene(2);s.request(s.units[1]);s.request(s.units[2]);
-  s.c.tick=1;const start=movementStart(s.peer,s.c);move(s.peer,{x:.45,z:.2});
+  s.c.tick=1;const start=movementStart(s.peer,s.c);move(s.peer,{x:.45,z:.2},s.c);
   const b=entitlementBudget();assert.ok(s.model.publish(s.peer,{x:.39,z:.22},finalizedProgress(s.peer,start,s.c),s.c,b));
   assert.equal(b.pairingVisits,1,'new-capsule pairing has its own explicit work receipt');
   assert.ok(b.reservationVisits<=b.proposals*65);assert.ok(b.pairingVisits<=64);
+});
+
+test('finalized publication previews the next tick while every current write checks actual remaining travel',()=>{
+  const s=scene(),u=s.units[1];s.request(u);s.c.tick=1;
+  const delta={x:-.06,z:.02};
+  const start=movementStart(s.peer,s.c),to={x:s.peer.x+delta.x,z:s.peer.z+delta.z},budget=entitlementBudget();
+  assert.ok(s.model.admit(s.peer,s.peer,to,s.c,budget));move(s.peer,to,s.c);
+  const rest={x:s.peer.x,z:s.peer.z+s.c.remainingBudgetOf(s.peer)};
+  assert.ok(s.model.admit(s.peer,s.peer,rest,s.c,budget));move(s.peer,rest,s.c);
+  assert.ok(Math.abs(s.c.remainingBudgetOf(s.peer))<1e-9);
+  const future={x:s.peer.x+delta.x,z:s.peer.z+delta.z};
+  assert.equal(s.model.admit(s.peer,s.peer,future,s.c,budget),false,'full next allowance cannot pay a current write');
+  const offer=s.model.publish(s.peer,future,finalizedProgress(s.peer,start,s.c),s.c,budget);assert.ok(offer);
+  s.ingress(u);const remainder=s.c.remainingBudgetOf(u);assert.ok(remainder>0&&remainder<.023);
+  assert.equal(s.model.admit(u,u,{x:u.x+.03,z:u.z},s.c,entitlementBudget()),false,'remaining current budget prevents a second overspend');
+  s.c.tick=2;assert.deepEqual(s.model.take(s.peer,s.c,entitlementBudget()),offer.to);
+  const nextStart=movementStart(s.peer,s.c);move(s.peer,offer.to,s.c);
+  assert.ok(s.model.finish(s.peer,finalizedProgress(s.peer,nextStart,s.c),s.c));
 });
 
 for(const change of ['new-priority','route','generation','footprint','pose','navigation','epoch','stationary','overflow','budget'])
@@ -256,10 +277,10 @@ test('offers cannot renew at an unchanged pose or attach stale acknowledgements 
 test('expired promises, partial receipts and exhausted shared planning budgets issue no authority',()=>{
   const s=scene(),u=s.units[1];s.request(u);const r=s.publish();s.ingress(u);s.c.tick=3;
   assert.equal(s.model.obligation(u,s.c),null);assert.equal(s.model.take(s.peer,s.c,entitlementBudget()),null);
-  const a=scene();a.request(a.units[1]);a.c.tick=1;const start=movementStart(a.peer,a.c);move(a.peer,{x:.45,z:.2});
+  const a=scene();a.request(a.units[1]);a.c.tick=1;const start=movementStart(a.peer,a.c);move(a.peer,{x:.45,z:.2},a.c);
   const receipt=finalizedProgress(a.peer,start,a.c),budget=entitlementBudget(128);
   assert.equal(a.model.publish(a.peer,{x:.39,z:.22},receipt,a.c,budget),null);assert.equal(budget.proposals,128);
-  const b=scene();b.request(b.units[1]);b.c.tick=1;const before=movementStart(b.peer,b.c);move(b.peer,{x:.45,z:.2});
+  const b=scene();b.request(b.units[1]);b.c.tick=1;const before=movementStart(b.peer,b.c);move(b.peer,{x:.45,z:.2},b.c);
   assert.equal(b.model.publish(b.peer,{x:.39,z:.22},{...finalizedProgress(b.peer,before,b.c),finalized:false},b.c,entitlementBudget()),null);
 });
 
@@ -286,7 +307,7 @@ for(const name of ['forest142','wall594']) test(`${name}: retained production in
   const walkable=cell=>cell>=0&&cell<width*height&&(forest?data.navigationMask[cell]:!blocked.has(cell));
   const pointOf=a=>({x:a.path[a.pathIndex]%width-width/2+.5,z:Math.floor(a.path[a.pathIndex]/width)-height/2+.5});
   const cell=p=>Math.floor(p.z+height/2)*width+Math.floor(p.x+width/2),elevation=new Uint8Array(width*height);
-  const c={tick:f.tick,nav:f.navigationRevision,epoch:f.epoch,neighbors:units,overflow:false,pointOf,budgetOf:()=>2.6/30,
+  const c={tick:f.tick,nav:f.navigationRevision,epoch:f.epoch,neighbors:units,overflow:false,pointOf,remainingBudgetOf:()=>2.6/30,nextBudgetOf:()=>2.6/30,
     maneuver:()=>false,claims:a=>a===u?[peer]:[],admit:(a,from,to)=>canTraverseUnitStep(cell(from),cell(to),width,elevation,walkable)
       &&canTraverseStaticBodySegment(from,to,.22,width,height,walkable)
       &&canTraverseCrowdBodySegment(from,to,.22,units.filter(b=>b!==a))};

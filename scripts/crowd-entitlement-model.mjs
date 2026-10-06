@@ -54,8 +54,7 @@ export class MovingEntitlementModel {
     }
     return true;
   }
-  admit(u,from,to,c,b) {
-    const movementBudget=c.budgetOf(u);
+  #admit(u,from,to,c,b,movementBudget) {
     if(!finite(from) || !finite(to) || c.overflow || c.neighbors.length>LIMIT
       || !Number.isFinite(movementBudget) || movementBudget<=0
       || !Number.isInteger(b.proposals) || b.proposals<0 || b.proposals>=PROPOSALS
@@ -63,6 +62,7 @@ export class MovingEntitlementModel {
     b.proposals++;
     return c.admit(u,from,to) && this.#guard(u,from,to,c,b);
   }
+  admit(u,from,to,c,b) { return this.#admit(u,from,to,c,b,c.remainingBudgetOf(u)); }
   eligible(q,peer,c) {
     if (!(q && q.tick===c.tick-1 && q.peer===peer && peer.id<q.unit.id
       && directedJoin(q.unit,peer)
@@ -90,7 +90,7 @@ export class MovingEntitlementModel {
       || !matches(receipt.beforeStamp,u,c) || !matches(receipt.stamp,u,c) || !ordinaryCrowdBodyRadius(u) || c.maneuver(u)
       || c.claims(u,to).length || distance(receipt.from,c.pointOf(u))<=distance(u,c.pointOf(u))+EPS
       || distance(u,c.pointOf(u))<=distance(to,c.pointOf(u))+EPS || distance(to,c.pointOf(u))<=EPS
-      || !this.admit(u,u,to,c,b)) return null;
+      || !this.#admit(u,u,to,c,b,c.nextBudgetOf(u))) return null;
     const contenders=c.neighbors.map(other=>this.state(other).offer.request).filter(q=>this.eligible(q,u,c))
       .sort((a,b)=>a.unit.id-b.unit.id);
     const ordered=[...contenders.filter(q=>q.unit.id>slot.cursor),...contenders.filter(q=>q.unit.id<=slot.cursor)];
