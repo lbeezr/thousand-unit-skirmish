@@ -152,6 +152,18 @@ false predicate, movement policy, loader/framework rewrite or assertion change
 is needed. [Specific core dependency coordination](https://github.com/lbeezr/thousand-unit-skirmish/pull/513#issuecomment-6006368753)
 retains core body-guard/selector ownership and caller Patrol/access ownership.
 
+The expanded set initially passes 498/500 and exposes two more real wall-fixture
+dependencies: the completion phase's `createNextQueuedMilitaryEndpointClaims`
+and checkpoint validation's `validDockFacingState`. Resolving the first also
+exposes its actual `MAX_QUEUED_WAYPOINTS` input. The existing construction loader
+now visits the completion declaration for imported names, reads the queue limit
+from its literal production declaration, and retains the original returned
+body range and caller-owned state. Existing economy bindings expose the real
+Dock validator beside their orientation validator. No original wall or Worker
+test callback/expected value changes. One new loader control checks completion
+imports, a non-default production queue value, unchanged body boundaries and a
+missing queue declaration rejected at setup. Passing consumers stay unchanged.
+
 The existing impacted consumers below form a focused dependency check set for
 future construction movement/body-helper changes. Run it on the proposed head
 before merge; it is not full native movement or full-suite qualification.

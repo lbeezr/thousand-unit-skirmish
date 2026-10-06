@@ -32,8 +32,18 @@ export async function loadConstructionServerFixture(sourceURL = serverURL) {
       else if (child?.type) visit(child, node, childKey);
     }
   }
-  helpers.forEach(node => visit(node));
+  // Consumers also extract the actual completion phase. Resolve its imported
+  // dependencies with the same loader while keeping each caller's phase/state.
+  const completion = declaration('updateBuildingAndProduction');
+  [...helpers, ...(completion ? [completion] : [])].forEach(node => visit(node));
   const bindings = {};
+  if (completion) {
+    const queueLimit = ast.body.filter(node => node.type === 'VariableDeclaration')
+      .flatMap(node => node.declarations).find(node => node.id?.name === 'MAX_QUEUED_WAYPOINTS');
+    assert.ok(queueLimit?.init?.type === 'Literal' && Number.isSafeInteger(queueLimit.init.value)
+      && queueLimit.init.value > 0, 'Missing production construction queue limit');
+    bindings.MAX_QUEUED_WAYPOINTS = queueLimit.init.value;
+  }
   for (const node of ast.body.filter(node => node.type === 'ImportDeclaration')) {
     const required = node.specifiers.filter(specifier => names.has(specifier.local.name));
     if (!required.length) continue;

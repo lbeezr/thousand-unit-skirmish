@@ -3,6 +3,7 @@ import * as economyProfile from '../src/economy-profile.mjs';
 import { creditResourceBalance } from '../src/economy-ledger.mjs';
 import * as workIntent from '../src/work-intent.mjs';
 import { validBuildingOrientation } from '../src/building-orientation.mjs';
+import { validDockFacingState } from '../src/dock-placement.mjs';
 import { shortcutFlatUnitPath, canTraverseFlatUnitSegment } from '../src/unit-path-line.mjs';
 import * as unitMovement from '../src/unit-movement.mjs';
 import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
@@ -11,7 +12,7 @@ const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 export const economyServerFunctions = source.slice(source.indexOf('function matchEconomyProfileId('),
   source.indexOf('function resetScenarioEventClock('));
 export function economyServerBindings(profileId = economyProfile.DEFAULT_ECONOMY_PROFILE_ID) {
-  return { ...economyProfile, ...workIntent, validBuildingOrientation, creditResourceBalance, teamStone: [0, 0], automaticTargetRejections: new WeakMap(),
+  return { ...economyProfile, ...workIntent, validBuildingOrientation, validDockFacingState, creditResourceBalance, teamStone: [0, 0], automaticTargetRejections: new WeakMap(),
     mapDefinition: { economyProfileId: profileId } };
 }
 
