@@ -281,9 +281,20 @@ export const replay = {
     if (${observeMovement}) sampleReplayMovementWindows();
   },
   get units() { return units; }, get buildings() { return buildings; },
+  repairRoutes(ids) {
+    enqueueRouteRepairs(ids.map(id => units[id]).filter(unit => unit && unit.hp > 0)
+      .map(unit => ({ unit, destination: unit.moveGoalCell })));
+  },
   get wood() { return teamWood; },
   get food() { return teamFood; }, get resources() { return resourceNodeStates; },
   snapshot(team) { return roomPayload(team); },
+  broadcastFrames() {
+    if (peers.size) throw new Error('Replay broadcast requires an isolated peer roster');
+    const frames = new Map();
+    for (const team of [0, 1, null]) peers.add({ team, socket: { destroyed: false }, compressionEnabled: false,
+      sendPreparedState(frame) { frames.set(team, frame); }, sendPreparedWaypointCounts() {}, sendJson() {} });
+    try { broadcastState(); return frames; } finally { peers.clear(); }
+  },
   observeMovement(team, ids) {
     if (!${observeMovement}) throw new Error('movement observation must be explicitly enabled');
     if (!([0, 1].includes(team) && Array.isArray(ids) && ids.length <= 8

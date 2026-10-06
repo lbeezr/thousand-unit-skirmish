@@ -88,6 +88,9 @@ import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoint, activeMoveGoalPoint, validMoveGoalPoint, unitRoutePathCost,
   activeLandMovementBodyRadius, workerEconomyBodyRadius, LAND_CLEARANCE_PROFILE, canTraverseStaticBodySegment,
   unitRouteResultIsCurrent, rejoinSelectedUnitRoute, unitRouteRejoinDecision, createUnitRoutePublicationLedger } from './src/unit-movement.mjs';
+import { beginOrdinaryMoveRecovery, clearOrdinaryMoveRecovery, ordinaryMoveRecoveryDecision,
+  finalizeOrdinaryMoveProgress, ordinaryMoveBlockedStatus, validOrdinaryMoveRecovery,
+  cloneOrdinaryMoveRecovery } from './src/ordinary-move-recovery.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, canTraverseCrowdBodySegment } from './src/unit-crowd-steering.mjs';
@@ -2438,6 +2441,8 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     fogOfWar: mapDefinition.fogOfWar,
     visibility: fogView ? snapshotVisibility(viewTeam) : null,
     persistentOrders: snapshotPersistentOrders(viewTeam),
+    blockedMoves: units.filter(unit => viewTeam === null || unit.team === viewTeam)
+      .map(ordinaryMoveBlockedStatus).filter(Boolean),
     unitStances: units.filter(unit => unit.hp > 0 && militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind])
       && (viewTeam === null || unit.team === viewTeam)).map(unit => [unit.id, unit.generation, unit.combatStance]),
     units: snapshotUnits(fogView ? viewTeam : null), objectives: snapshotObjectives(fogView ? viewTeam : null),
@@ -2561,6 +2566,7 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
       pregame: pregame?.checkpoint() ?? null,
     units: units.map((unit) => ({
       ...unit,
+      ...(unit.ordinaryMoveRecovery ? { ordinaryMoveRecovery: cloneOrdinaryMoveRecovery(unit.ordinaryMoveRecovery) } : {}),
       moveGoalPoint: unit.moveGoalPoint && activeMoveGoalPoint(unit) ? { ...unit.moveGoalPoint } : null,
       wallBuildOrder: activeWallBuildOrder(unit) ? { ...unit.wallBuildOrder, ids: [...unit.wallBuildOrder.ids] } : null,
       persistentOrder: unit.persistentOrder ? { ...unit.persistentOrder } : null,
@@ -2745,6 +2751,8 @@ function validateMatchCheckpoint(snapshot) {
     if (unit.lastMoveTick !== undefined) {
       assertSnapshot(integerIn(unit.lastMoveTick, 0, state.tickNumber), `invalid movement tick ${index}`);
     }
+    assertSnapshot(validOrdinaryMoveRecovery(unit, state.tickNumber, definition.width, definition.height),
+      `invalid ordinary movement recovery ${index}`);
   }
   assertSnapshot(Array.isArray(state.teamFood) && state.teamFood.length === 2
     && state.teamFood.every((value) => finite(value) && value >= 0)
@@ -3044,6 +3052,7 @@ function restoreMatchCheckpoint(snapshot) {
   for (const record of state.units) {
     units.push({
       ...record,
+      ...(record.ordinaryMoveRecovery ? { ordinaryMoveRecovery: cloneOrdinaryMoveRecovery(record.ordinaryMoveRecovery) } : {}),
       moveGoalPoint: record.moveGoalPoint ? { ...record.moveGoalPoint } : null,
       wallBuildOrder: record.wallBuildOrder ? { ...record.wallBuildOrder, ids: [...record.wallBuildOrder.ids] } : null,
       holdingPosition: record.holdingPosition ?? false,
@@ -3055,6 +3064,11 @@ function restoreMatchCheckpoint(snapshot) {
       queuedWaypoints: record.queuedWaypoints.map((waypoint) => ({ ...waypoint,
         ...(waypoint.point ? { point: { ...waypoint.point } } : {}) })),
     });
+    const unit = units.at(-1);
+    if (record.ordinaryMoveRecovery === undefined && unit.hp > 0 && !unit.holdingPosition
+      && unit.attackTargetId < 0 && unit.attackBuildingTargetId < 0 && unit.moveGoalCell >= 0
+      && (unit.movePlanningPending || unit.pathIndex < unit.path.length))
+      beginOrdinaryMoveRecovery(unit, tickNumber);
   }
   unitGenerationCounters.set(state.unitGenerationCounters);
   teamFood = [...state.teamFood];
@@ -3899,6 +3913,7 @@ function completeMovePlanningJob(job) {
 }
 
 function clearAttackMoveOrder(unit) {
+  clearOrdinaryMoveRecovery(unit);
   unit.moveGoalPoint = null;
   automaticTargetRejections.delete(unit);
   unit.stanceCombat = false;
@@ -6794,6 +6809,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
         unit.moveGoalPoint = createClearanceMoveGoalPoint(unit, point.x, point.z,
           unit.moveGoalCell, MAP_WIDTH, MAP_HEIGHT, isWalkable);
       }
+      if (retainFollowCatchUp) beginOrdinaryMoveRecovery(unit, tickNumber);
       unit.queuedWaypoints.push({ destination, attackMove,
         ...(precisePoint ? { point: createClearanceMoveGoalPoint(unit, centerX, centerZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable) } : {}) });
       queuedCount++;
@@ -6824,6 +6840,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     unit.attackMoveScanTick = tickNumber + (unit.id % ATTACK_MOVE_SCAN_INTERVAL_TICKS);
     unit.orderRevision++;
     unit.moveGoalPoint = precisePoint ? createClearanceMoveGoalPoint(unit, centerX, centerZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable) : null;
+    beginOrdinaryMoveRecovery(unit, tickNumber);
     unit.path = [];
     unit.pathIndex = 0;
     if (destination < 0) {
@@ -7362,6 +7379,7 @@ function advanceQueuedWaypoints() {
     unit.moveGoalCell = destination;
     unit.moveGoalPoint = waypoint.point
       ? createClearanceMoveGoalPoint(unit, waypoint.point.requestedX, waypoint.point.requestedZ, destination, MAP_WIDTH, MAP_HEIGHT, isWalkable) : null;
+    beginOrdinaryMoveRecovery(unit, tickNumber);
     const assignment = { unit, destination, revision: unit.orderRevision, path: [] };
     assignments.push(assignment);
     const startCell = nearestOpenCell(worldToCell(unit.x, unit.z));
@@ -7936,7 +7954,7 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
       target = crowdPassagePoint(target, { x: dx, z: dz }, unit, query.neighbors,
         inset => canTraverseStaticBodySegment(inset, inset, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable), controlDiagnostics, crowdRadius);
     }
-    const crowdMove = selectCrowdStep({ unit, target, stepDistance: Math.min(remainingStep, .25),
+    let crowdMove = selectCrowdStep({ unit, target, stepDistance: Math.min(remainingStep, .25),
       travelDirection, progressTarget, approachBody: workerPatrolApproachBody(unit, target), diagnostics: controlDiagnostics,
       tick: tickNumber, navigationRevision, epoch: movePlanningEpoch,
       neighbors: query.neighbors, cellCenter: cellToWorld(currentCell), radius: crowdRadius,
@@ -7969,6 +7987,18 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
       // body alone never triggers this handoff or loses its queued intent.
       return { target: progressTarget, reachedWaypoint: true, stepDistance: 0,
         rejectedStaticProposal: true, crowd: diagnostics, crowdControl: crowdMove.crowdControl };
+    }
+    if (crowdMove && ordinaryCrowdBodyRadius(unit)) {
+      const portal = unit.ordinaryMoveRecovery?.portal;
+      const decision = ordinaryMoveRecoveryDecision(unit, crowdMove, { tick: tickNumber,
+        navigationRevision, point: progressTarget, radius: crowdRadius, direction: travelDirection,
+        neighbors: query.neighbors, bodyById: id => units[id],
+        portalInvalid: portal && portal.navigationRevision !== navigationRevision
+          && (!isWalkable(worldToCell(portal.x, portal.z))
+          || !canTraverseStaticBodySegment({ x: portal.fromX, z: portal.fromZ }, portal,
+            crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable)) });
+      crowdMove = decision.move;
+      if (decision.changed) dirty = true;
     }
     if (crowdMove) return { ...crowdMove, crowd: { ...diagnostics,
       waiting: Boolean(crowdMove.waitingForCrowd), yielding: Boolean(crowdMove.yieldingForCrowd),
@@ -8691,6 +8721,7 @@ function simulateTick() {
     const clearanceRadius = activeLandMovementBodyRadius(unit);
     let allowLocalDetour = true;
     while (remainingStep > 0 && unit.pathIndex < unit.path.length) {
+      const ordinaryFrom = unit.ordinaryMoveRecovery ? { x: unit.x, z: unit.z } : null;
       const move = getMoveVector(unit, remainingStep, allowLocalDetour);
       if (!move) break;
       if (move.waitingForCrowd) break;
@@ -8756,6 +8787,8 @@ function simulateTick() {
         }
         unit.x = move.target.x;
         unit.z = move.target.z;
+        if (ordinaryFrom) finalizeOrdinaryMoveProgress(unit, ordinaryFrom, tickNumber,
+          unit.pathIndex === unit.path.length - 1, move.ordinaryRawWaypoint);
         unit.pathIndex++;
         remainingStep -= move.stepDistance;
         dirty = true;
@@ -8816,6 +8849,7 @@ function simulateTick() {
       }
       unit.x = Math.max(-MAP_HALF_X + 0.5, Math.min(MAP_HALF_X - 0.5, unit.x));
       unit.z = Math.max(-MAP_HALF_Z + 0.5, Math.min(MAP_HALF_Z - 0.5, unit.z));
+      if (ordinaryFrom) finalizeOrdinaryMoveProgress(unit, ordinaryFrom, tickNumber);
       unit.lastMoveTick = tickNumber;
       dirty = true;
       break;

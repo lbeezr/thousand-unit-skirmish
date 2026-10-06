@@ -18,3 +18,11 @@ for (const team of [0, 1]) test(`no-fog broadcast withholds enemy queue contents
   assert.equal(payload.buildings[1 - team].productionQueue.length, 2, 'masking one view cannot mutate another');
   assert.equal(privateProductionView(payload, null), payload, 'spectator retains the full view');
 });
+for (const team of [0, 1]) test(`blocked movement metadata stays owner-only in the no-fog view for seat ${team}`, () => {
+  const payload = { units: [[0, 0], [1, 1]], buildings: [],
+    blockedMoves: [[0, 1, 'temporarily-blocked', 'recovery-unresolved', 200],
+      [1, 1, 'temporarily-blocked', 'recovery-unresolved', 250]] };
+  const view = privateProductionView(payload, team);
+  assert.deepEqual(view.blockedMoves, [payload.blockedMoves[team]]);
+  assert.equal(view.units, payload.units); assert.equal(payload.blockedMoves.length, 2);
+});

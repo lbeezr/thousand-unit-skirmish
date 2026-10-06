@@ -984,6 +984,56 @@ reviewed fix. No neighbor shove, endpoint overlap or silent goal replacement is
 an acceptable test fix. CI `01a10378` retains the next fresh full CPU attempt and
 supported served/rendered interface. No private archive access or publication.
 
+### U5 ordinary Move productive recovery candidate — 6 October 2026
+
+Shared movement owns the bounded current-main candidate based on `089b35a7`:
+`src/ordinary-move-recovery.mjs`, ordinary Move acceptance/queued handoff,
+`getMoveVector` proposal consumption, post-admission progress, its optional
+checkpoint subsection and owner-only `blockedMoves` diagnostic rows, including
+their existing no-fog broadcast private-view filter. Crowd's
+selector adds phase labels only; its arbitration, bounds and physical guards
+remain authoritative. Independent review is in progress; the candidate remains
+draft/unmerged pending qualification. It has no dependency on held PR541/546/548
+or their synthetic recovery producer. Worker, combat, Patrol/Follow and naval
+execution remain separately owned adopters; this does not complete U5 or U7.
+
+An accepted ordinary leg saves generation, accepted-intent revision and goal,
+separately from repair revisions, route references and waypoint indices. A fixed
+raw-route portal uses the accepted segment's direction. Only a guarded physical
+directed entry from outside its fixed tile, crossing in its tile aperture,
+matching guarded projected-waypoint arrival from outside that tile or
+actual final arrival credits task progress;
+small best-distance gains measure maneuver progress. Publication, an unrelated
+navigation edit and an invalidated approach's replacement portal cannot renew
+that task clock. Duplicate passage at a retained raw waypoint cannot grant
+another budget. Ordinary forward travel on a valid replacement route remains
+admissible, including travel away from an obsolete portal.
+An actual guarded waypoint closure on that replacement route may retire a
+missed old aperture as a phase change, retaining its clock and exhausted budget.
+Already occupied start/rejoin prefixes similarly retire as phase closure.
+
+Local wait/yield/retreat/contour/detour or the selector's 30-tick net stall starts
+a 180-tick recovery episode (three existing 60-tick lease windows). At most three episodes are available between real
+portal crossings, with bounded witnesses for four original blocking bodies and
+three exhausted scene signatures. A new phase requires an original blocking
+body to clear its fixed approach capsule and a previously unexhausted scene; unrelated peer,
+order or navigation churn cannot refresh it. After exhaustion, the host consumes
+`recovery-unresolved` before writing a non-forward recovery proposal. It retains
+the active destination and queue and exposes `temporarily-blocked`; it does not
+declare arrival or unreachable. An admitted write is observable resumption and
+does not reset the task clock. This bounds local recovery, not total order age.
+
+The optional versioned scalar state is bounded-validated and copied on capture
+and restore. Existing saves reconstruct missing metadata once from active saved
+ordinary intent at restore, without claiming earlier progress. Source controls
+use fourteen real 60-tick windows in a newly authored closed corridor, preserved
+queue/goal, internal repair, Stop/reissue, legacy/cold restore, paid obstacle
+changes and peer-command resumption. Existing forest/bridge/gate deadlines,
+fairness and swept-body checks stay unchanged. Qualification must retain any
+introduced or baseline failures. Clean packaging, served identity, normal-game
+pixels/replays and capacity remain separate open evidence; visual backing for
+this internal diagnostic/authority contract is N/A.
+
 ### U5 native wall seat-1 diagnosis — 5 October 2026
 
 Crowd owner `01a10933-c2b0` retains the separate
