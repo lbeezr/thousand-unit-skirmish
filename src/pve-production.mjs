@@ -64,11 +64,19 @@ export function createProductionPolicy(seed) {
   let nextAttemptTick = 0;
   let retryTicks = limits.retryTicks;
   let siteAttempt = 0;
+  let firstBarracksBuilder = null;
+  let observedBarracks = false;
+  const ownedDropoff = (observation, worker) => observation.buildings.friendly.some(building =>
+    building.team === observation.team && building.hp > 0 && building.complete
+      && BUILDING_DEFINITIONS[building.type]?.dropoff?.includes(worker.cargoType));
   const postpone = (tick) => {
     nextAttemptTick = tick + retryTicks;
     retryTicks = Math.min(retryTicks * 2, limits.maxRetryTicks);
   };
   return {
+    reservedBuilder() {
+      return firstBarracksBuilder && { id: firstBarracksBuilder.id, generation: firstBarracksBuilder.generation };
+    },
     next(observation) {
       firstTick ??= observation.tick;
       // Partial synthetic observations and maps without an economy cannot spend.
@@ -81,6 +89,13 @@ export function createProductionPolicy(seed) {
       const barracks = observation.buildings.friendly
         .filter((building) => building.type === 'barracks' && building.hp > 0)
         .sort((a, b) => a.id - b.id)[0];
+      observedBarracks ||= Boolean(barracks);
+      const prepared = firstBarracksBuilder && workers.find(worker => worker.id === firstBarracksBuilder.id
+        && worker.generation === firstBarracksBuilder.generation);
+      if (firstBarracksBuilder && (barracks || !prepared
+        || !['idle', 'gathering', 'returning'].includes(prepared.task)
+        || observation.resources.wood < limits.barracksWoodCost + limits.woodReserve
+        || prepared.cargo > 0 && !ownedDropoff(observation, prepared))) firstBarracksBuilder = null;
       if (observation.tick - firstTick < limits.openingDelayTicks) return [];
       if (barracks?.queue > 0 || workers.some((worker) => ['building', 'repairing'].includes(worker.task))) {
         retryTicks = limits.retryTicks;
@@ -179,10 +194,27 @@ export function createProductionPolicy(seed) {
         // Reserves and backoff still bound spending while gathering pauses.
         if (!home || workers.length === 0
           || observation.resources.wood < limits.barracksWoodCost + limits.woodReserve) return [];
-        const builder = workers.find((worker) => ['idle', 'gathering'].includes(worker.task) && worker.cargo === 0);
-        if (!builder) return [];
+        const reserved = firstBarracksBuilder && workers.find(worker => worker.id === firstBarracksBuilder.id
+          && worker.generation === firstBarracksBuilder.generation);
+        const builder = reserved
+          ? ['idle', 'gathering'].includes(reserved.task) && reserved.cargo === 0 ? reserved : null
+          : workers.find((worker) => ['idle', 'gathering'].includes(worker.task) && worker.cargo === 0);
+        const carrier = !builder && (reserved || (!observedBarracks && workers.find(worker => worker.cargo > 0
+          && ['gathering', 'returning'].includes(worker.task) && ownedDropoff(observation, worker))));
+        if (!builder && (!carrier || reserved?.task === 'returning')) return [];
         const sites = candidateSites(observation, home, seed);
         if (!sites.length) { postpone(observation.tick); return []; }
+        if (!builder) {
+          // A live Gather job can deposit and resume before the next AI turn.
+          // Prepare one generation-bound actor with the conserving normal
+          // Return command; other Workers retain their jobs and cargo.
+          firstBarracksBuilder ??= { id: carrier.id, generation: carrier.generation,
+            nextReturnTick: observation.tick, retryTicks: limits.retryTicks };
+          if (observation.tick < firstBarracksBuilder.nextReturnTick) return [];
+          firstBarracksBuilder.nextReturnTick = observation.tick + firstBarracksBuilder.retryTicks;
+          firstBarracksBuilder.retryTicks = Math.min(firstBarracksBuilder.retryTicks * 2, limits.maxRetryTicks);
+          return [{ type: 'returnCargo', ids: [carrier.id], unitGenerations: [carrier.generation] }];
+        }
         const point = sites[siteAttempt++ % sites.length];
         postpone(observation.tick);
         return [{ type: 'build', ids: [builder.id], unitGenerations: [builder.generation], buildingType: 'barracks', ...point }];
