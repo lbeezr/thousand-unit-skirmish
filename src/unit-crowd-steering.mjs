@@ -378,6 +378,30 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     }
     if (best) best.yieldingForCrowd = true;
   }
+  // Tight moving queues can reject every full/half recovery step while a
+  // shorter prefix of the same heading is clear. Preserve the existing
+  // recovery order and priority; debit every physical probe from the same cap.
+  if (!best && noProgressTicks >= 30 && ordinaryCrowdBodyRadius(unit)
+    && unit.pathIndex < unit.path.length - 1 && !state.detour && !state.lease && !state.contour) {
+    const probeStart = stats.proposals, smallest = Math.min(stepDistance, distance) / 64;
+    for (const angle of [105, -105, 135, -135, 180]) {
+      if (smallest <= EPSILON || stats.proposals - probeStart >= 12 || stats.proposals >= CROWD_PROPOSAL_LIMIT) break;
+      const radians = angle * Math.PI / 180;
+      const x = headingX * Math.cos(radians) - headingZ * Math.sin(radians);
+      const z = headingZ * Math.cos(radians) + headingX * Math.sin(radians);
+      const point = length => ({ x: unit.x + x * length, z: unit.z + z * length });
+      if (!clear(point(smallest))) continue;
+      let lower = smallest, upper = Math.min(stepDistance * .5, distance);
+      for (let probe = 0; probe < 5 && stats.proposals - probeStart < 11
+        && stats.proposals < CROWD_PROPOSAL_LIMIT - 1; probe++) {
+        const middle = (lower + upper) / 2;
+        if (clear(point(middle))) lower = middle;
+        else upper = middle;
+      }
+      if (stats.proposals - probeStart < 12) consider(point(lower), false);
+      if (best) { best.yieldingForCrowd = true; break; }
+    }
+  }
   return best ? { ...best, noProgressTicks, crowdControl: stats }
     : { target, waitingForCrowd: true, stepDistance: 0, noProgressTicks, crowdControl: stats };
 }

@@ -8,6 +8,7 @@ import './military-next-leg-claims-journeys.mjs';
 import './worker-gather-route-admission-journeys.mjs';
 import './construction-body-admission-journeys.mjs';
 import './crowd-combat-approach-input-journeys.mjs';
+import './crowd-short-recovery.test.mjs';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';

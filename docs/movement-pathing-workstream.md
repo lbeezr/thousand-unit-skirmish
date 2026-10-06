@@ -1298,6 +1298,36 @@ still owns PR520 activation and the original kill/loss/native recovery deadline
 qualification; this input alone does not close that outcome. Construction
 liveness and rendered acceptance remain separate. Art backing is N/A.
 
+### Bounded short recovery after rejected full/half steps — 6 October 2026
+
+The [complete public-source input](https://github.com/lbeezr/thousand-unit-skirmish/pull/513#issuecomment-6009375798)
+reduces retained passage geometry to four ordinary Infantry. The real host query
+visits all four actors and returns the other three live objects without overflow.
+Frozen cold-selector calls at 0/40 reproduce a wait after 49 rejected proposals:
+22 fail static clearance, 13 hit bodies 73/110, six hit 73, five hit 95 and three
+hit 73/95. The controller has no best step before applying its existing yielding
+priority. This is a deterministic decision control, not the original live
+558–678 trace or proof of persistent blocker identity. The failed full-history
+report is not regenerated; its lost query/proposal fields remain unavailable.
+
+The same existing -105-degree recovery direction at a shorter admitted length
+makes fixed-waypoint progress. Core's allocated late fallback tries shorter
+prefixes only after an ordinary nonterminal actor still has no admitted recovery
+step at 30 or more no-progress ticks, with no active detour, lease or contour.
+It retains the existing recovery heading order and yielding flag, every physical
+oracle and the 128-proposal cap. At most twelve extra proposals are charged to
+that cap; five bounded bisections refine the first clear short prefix. No radius,
+query, route, queue, endpoint, checkpoint or controller state changes.
+
+[Five source controls](../scripts/crowd-short-recovery.test.mjs) bind the actual
+host query/helper/selector. Mirrored controls select a .0157845052-tile step with
+.0010313538 fixed-waypoint gain and preserved yielding priority; earlier recovery
+age and terminal selection remain identical, and tangency/overflow retain hard
+admission. The original wall/gate deadlines, paid productive construction,
+acquired Patrol body cases and ordinary passage controls qualify default adoption
+separately. The caller matrix and rendered acceptance remain open. Art backing
+is N/A.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
