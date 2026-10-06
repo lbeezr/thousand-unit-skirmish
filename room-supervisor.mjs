@@ -332,11 +332,13 @@ function startWorker(customMapDirectory, matchStatePath, label, launchOptions = 
         }
         return;
       }
-      if (settled || message?.type !== 'ready' || !Number.isInteger(message.port) || message.port < 1) return;
+      if (settled || message?.type !== 'ready') return;
+      const port = message.port;
+      if (!Number.isInteger(port) || port < 1 || port > 65535) return;
       settled = true;
       clearTimeout(timeout);
       const roomMetadata = normalizeRoomMetadata(message.roomMetadata);
-      worker = { child, port: message.port, ...(roomMetadata ? { roomMetadata } : {}) };
+      worker = { child, port, ...(roomMetadata ? { roomMetadata } : {}) };
       resolve(worker);
     });
     child.once('error', fail);
