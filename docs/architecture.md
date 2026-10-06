@@ -1298,6 +1298,66 @@ The 136 focused checks, both-seat native hold/repeat recovery, native completion
 conditions/recovery, types and documentation checks pass. Hosted full-suite,
 package/deployment and served/rendered observations retain their own evidence.
 
+#### Saved roster and mode-state checkpoint validation — 6 October 2026
+
+The next ready checkpoint responsibility after PR528 is the terminal 40-line
+block that counts living units and queued production, then checks Bannerfall's
+saved roster, zero economy, stronghold result and untouched waiting opening.
+At base `31af0275`, no open source PR overlaps that block. Architecture owns
+this validation call; active movement, construction, Infantry publication and
+Spearman art retain their existing scopes. Their record validation, live
+simulation, death credit, waves and production paths are unchanged.
+
+The private [roster validator](../src/server/checkpoint-roster.mjs) is consumed
+directly by the retained production `validateMatchCheckpoint`:
+
+```js
+import { validateCheckpointRoster } from './src/server/checkpoint-roster.mjs';
+
+// After individual records, references and duplicate footprint checks:
+validateCheckpointRoster(state, savedMatchMode, {
+  maxUnits: MAX_UNITS, maxTeamRoster: MAX_TEAM_ROSTER,
+});
+```
+
+The two policies remain the actual host limits, 2000 and 1000. `savedMatchMode`
+is the already-validated envelope identity. The module directly imports the
+existing unit/building definitions, Bannerfall rules/validator/winner and
+private voluntary-ending reasons; it introduces no rule copy or default policy.
+It returns undefined and changes no saved or live state. Its population counts
+are local, including the separate Town Center and building queues. Bannerfall's
+rule-validator clone remains discarded, preserving the original saved identity.
+
+The 40 ordered body lines are byte-identical. Population checks still precede
+mode rules, which precede roster/economy, stronghold and waiting-state checks.
+Unprefixed delegated Bannerfall errors and the existing checkpoint prefix remain
+distinct. All other host bytes and existing imports remain unchanged; the call
+stays immediately before the original canonical definition/state/explored/mode
+return. No validation tightening, save migration, transport, schema, map limit,
+asset or accepted-tick change belongs to this boundary.
+
+Four additive cases in the already-registered checkpoint contract pass through
+the real host before and after extraction. They cover both teams' living/queued
+caps and dead slots, earlier-error ordering, explicit mode identity, waiting and
+evolved saves, delayed waves, both stronghold outcomes and voluntary endings.
+Malformed saves retain exact validate/restore errors, input bytes and live state;
+accepted saves retain state identity and real restore observations. The XL audit
+hashes the canonical module and checks saved-mode input, both policies and caller
+position with seven negative controls. The private server-domain membership adds
+no public admission; existing packed checks prove physical inclusion and GET/HEAD
+404. All eleven compatibility surfaces and both replay adapters remain intact.
+
+At this source checkpoint, the module has 54 lines and the host loses 38 net
+lines. The graph has 230 modules/453 local edges, 141 browser/100 server/34 shared
+modules and zero cycles. These are responsibility measurements, not size targets.
+All 1,434 existing CI entries are identical, with one automatic syntax check
+added. The actual old/new whole-server consumers agree in 726 observations;
+137 focused checks, native Bannerfall and voluntary-ending recovery, both type
+boundaries and packed HTTP checks pass. Independent review, clean committed
+package, actual merge and staging observations belong in the owned PR. Served
+identity and ordinary rendered recovery remain open at the existing cloud gap;
+the proxy-denied route is unretried and no production promotion is implied.
+
 #### Editable scenario-event graph responsibility — 6 October 2026
 
 After the PR512 caller migration, the next existing authoring responsibility is

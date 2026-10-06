@@ -4,7 +4,8 @@ import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { generateFarMarches, XL_LAYOUT as layout } from './generate-far-marches.mjs';
 import { runXlBoundaryAudit, crossingTopology, assertCheckpointEnvelopeConsumer,
-  assertAuthoritativeMapValidatorConsumer, assertCheckpointScenarioStateConsumer } from './xl-map-boundary-audit.mjs';
+  assertAuthoritativeMapValidatorConsumer, assertCheckpointScenarioStateConsumer,
+  assertCheckpointRosterConsumer } from './xl-map-boundary-audit.mjs';
 import { buildElevationGrid, validateElevationPatches } from '../src/map-utils.mjs';
 import { planWallLine } from '../src/wall-line-planner.mjs';
 import { compressGroundLevels } from '../src/terrain-authoring.mjs';
@@ -171,6 +172,23 @@ test('both XL audit input hashes include the bound checkpoint envelope bytes', (
   const expected = createHash('sha256').update(envelopeSource).digest('hex');
   assert.equal(report.sourceInputSha256['src/server/checkpoint-envelope.mjs'], expected);
   assert.equal(report.checkpoint.xlJsonEnvelope.sourceInputSha256['src/server/checkpoint-envelope.mjs'], expected);
+});
+
+test('roster audit retains saved mode, actual population caps and terminal rejection order', async () => {
+  const source = await readFile(new URL('../src/server/checkpoint-roster.mjs', import.meta.url), 'utf8');
+  assert.equal(report.sourceInputSha256['src/server/checkpoint-roster.mjs'], createHash('sha256').update(source).digest('hex'));
+  assert.doesNotThrow(() => assertCheckpointRosterConsumer(authoritySource));
+  const call = '  validateCheckpointRoster(state, savedMatchMode, { maxUnits: MAX_UNITS, maxTeamRoster: MAX_TEAM_ROSTER });\n';
+  assert.ok(authoritySource.includes(call));
+  for (const changed of [
+    authoritySource.replace("from './src/server/checkpoint-roster.mjs'", "from './src/server/checkpoint-envelope.mjs'"),
+    authoritySource.replace(call, call.replace('savedMatchMode,', 'matchMode,')),
+    authoritySource.replace(call, call.replace('MAX_UNITS', '4000')),
+    authoritySource.replace(call, call.replace('MAX_TEAM_ROSTER', '2000')),
+    authoritySource.replace(call, ''),
+    authoritySource.replace(call, '').replace('function validateMatchCheckpoint(snapshot) {', `function validateMatchCheckpoint(snapshot) {\n${call}`),
+    authoritySource.replace(call, '').replace('  return { definition: canonicalDefinition, state, explored, savedMatchMode };', `  return { definition: canonicalDefinition, state, explored, savedMatchMode };\n${call}`),
+  ]) assert.throws(() => assertCheckpointRosterConsumer(changed), /Checkpoint roster consumer\/ordering changed/);
 });
 
 test('source-bound route/save/wire envelope distinguishes finite validation from observed cost', () => {
