@@ -77,6 +77,9 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   disclosed: ['wildlife-client-state', 'worker-fishing-presentation', 'worker-work-presentation'],
   presentation: [
     'presentation/assets/interactive-runtime-image',
+    'presentation/assets/plant-packs/podvine-low-pack',
+    'presentation/assets/plant-packs/veilcap-worked-pack',
+    'presentation/assets/plant-packs/sunbloom-low-pack',
     'presentation/rendering/ground-surfaces',
     'presentation/audio/composition',
     'presentation/audio/composition-player',

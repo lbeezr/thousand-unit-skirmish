@@ -63,7 +63,7 @@ def main():
             'contactMethod':'silhouette center/lower bound; provisional',
             'fullWorkedSources':'../vesperra-podvine-worked-v1/review-manifest.json'}
         (PACK/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
-        (ROOT/'src/podvine-low-pack.mjs').write_text(config_text)
+        (ROOT/'src/presentation/assets/plant-packs/podvine-low-pack.mjs').write_text(config_text)
     manifest = json.loads((PACK/'manifest.json').read_text())
     assert manifest['sourceSha256'] == sha(PACK/'source.png')
     assert manifest['referenceSha256'] == sha(PACK/registration['reference'])
@@ -72,7 +72,7 @@ def main():
     assert manifest['atlasFile'] == 'lifecycle-atlas.webp' and manifest['frameSizePx'] == [512,259]
     assert manifest['gutterPx'] == 64 and manifest['sourceCanvasPerFramePx'] == [884,448]
     assert manifest['pivot'] == [.5,1] and manifest['perViewScale'] is False
-    assert (ROOT/'src/podvine-low-pack.mjs').read_text() == config_text
+    assert (ROOT/'src/presentation/assets/plant-packs/podvine-low-pack.mjs').read_text() == config_text
     atlas = Image.open(PACK/'lifecycle-atlas.webp').convert('RGBA')
     assert list(atlas.size) == manifest['atlasSizePx'] == [2560,1161]
     for frame,row in generated:

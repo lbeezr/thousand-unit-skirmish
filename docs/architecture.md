@@ -438,6 +438,24 @@ PR8 used the asset/renderer owner's agreed lifetime interface in PR327.
 
 ### Migration checkpoints and retained compatibility
 
+Plant descriptor organization owner (6 October 2026): the organization lane owns
+the three active descriptors in `src/presentation/assets/plant-packs/`:
+`podvine-low-pack.mjs`, `veilcap-worked-pack.mjs` and `sunbloom-low-pack.mjs`.
+The old paths forward their sole named bindings; `qa-vegetation-browser.mjs`
+continues to consume them. The renderer imports the canonical leaves, and the
+three existing generators write/check those leaves without changing generated
+descriptor text, images or manifests. Earlier plant exports remain untouched.
+`PLANT_ASSETS` remains the scale/pivot registration contract; no registry or
+utility is added. Parent coordination authorizes only three renderer import
+substitutions and additive domain/HTTP/package checks; audio remains separately
+owned. Evidence: generator verification without `--write`, existing regional
+plant scenario extended with actual renderer lifecycle/legacy/identity controls,
+import-boundary negatives and packed GET/HEAD checks. Next: exact-head independent
+review, focused checks, normal merge and containing release/deployment receipts in
+the owned PR. This source organization does not establish rendered appearance or
+close the vegetation owner's remaining art acceptance. Retire forwarders only
+after their supported callers and served reload compatibility are reconciled.
+
 Consumer descriptions here record their stated extraction/caller checkpoints.
 Current tracked-runtime status after PR404 is zero consumers through the eleven
 retained compatibility surfaces; tool/test/external retirement remains open.

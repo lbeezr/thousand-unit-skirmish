@@ -20,9 +20,9 @@ import { shorePlantPositions } from './shore-vegetation.mjs';
 import { meadowPlantGroups, drylandPlantGroups, snowPlantGroups, ridgePlantGroups, lunarPlantGroups, marshPlantGroups, junglePlantGroups } from './meadow-vegetation.mjs';
 import { gardenPlantGroups } from './garden-vegetation.mjs';
 import { assertPlantDimensions, PLANT_ASSETS } from './environment-plant-assets.mjs';
-import { PODVINE_LOW_PACK as PODVINE_VIEW_PACK } from './podvine-low-pack.mjs';
-import { VEILCAP_WORKED_PACK as VEILCAP_VIEW_PACK } from './veilcap-worked-pack.mjs';
-import { SUNBLOOM_LOW_PACK as SUNBLOOM_VIEW_PACK } from './sunbloom-low-pack.mjs';
+import { PODVINE_LOW_PACK as PODVINE_VIEW_PACK } from './presentation/assets/plant-packs/podvine-low-pack.mjs';
+import { VEILCAP_WORKED_PACK as VEILCAP_VIEW_PACK } from './presentation/assets/plant-packs/veilcap-worked-pack.mjs';
+import { SUNBLOOM_LOW_PACK as SUNBLOOM_VIEW_PACK } from './presentation/assets/plant-packs/sunbloom-low-pack.mjs';
 
 const meshyResourcesEnabled = new URLSearchParams(globalThis.location?.search ?? '').get('meshyResources') !== '0';
 

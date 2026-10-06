@@ -68,14 +68,14 @@ def main():
             'gutterPx':64,'worldSize':[.61614,.65],'pivot':[.5,1],'frames':rows,'perViewScale':False,
             'anatomicalRootAlignmentCertified':False,'runtimeIntegrated':True}
         (PACK/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
-        (ROOT/'src/veilcap-worked-pack.mjs').write_text(config_text)
+        (ROOT/'src/presentation/assets/plant-packs/veilcap-worked-pack.mjs').write_text(config_text)
     manifest = json.loads((PACK/'manifest.json').read_text())
     assert manifest['sourceSha256'] == sha(PACK/'source.png') and manifest['referenceSha256'] == sha(reference)
     assert manifest['atlasSha256'] == sha(PACK/'veilcap-worked-atlas.webp') and manifest['frames'] == rows
     assert manifest['worldSize'] == config['worldSize'] and manifest['pivot'] == [.5,1]
     assert manifest['perViewScale'] is False and manifest['gutterPx'] == 64
     assert manifest['frameSizePx'] == [512,537] and manifest['sourceCanvasPerFramePx'] == [564,591]
-    assert (ROOT/'src/veilcap-worked-pack.mjs').read_text() == config_text
+    assert (ROOT/'src/presentation/assets/plant-packs/veilcap-worked-pack.mjs').read_text() == config_text
     atlas = Image.open(PACK/'veilcap-worked-atlas.webp').convert('RGBA')
     assert list(atlas.size) == manifest['atlasSizePx'] == [2560,1330]
     for frame,row in generated:

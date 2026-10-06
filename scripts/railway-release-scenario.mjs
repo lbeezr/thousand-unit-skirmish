@@ -163,6 +163,9 @@ try {
       createHash('sha256').update(await readFile(path.join(sourceRoot, filename))).digest('hex'), filename);
   }
   for (const filename of ['src/environment-art.mjs', 'src/presentation/assets/interactive-runtime-image.mjs',
+    'src/presentation/assets/plant-packs/podvine-low-pack.mjs', 'src/podvine-low-pack.mjs',
+    'src/presentation/assets/plant-packs/veilcap-worked-pack.mjs', 'src/veilcap-worked-pack.mjs',
+    'src/presentation/assets/plant-packs/sunbloom-low-pack.mjs', 'src/sunbloom-low-pack.mjs',
     'src/presentation/rendering/ground-surfaces.mjs']) {
     const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
     assert.equal(response.status, 200, filename);
@@ -174,6 +177,10 @@ try {
     assert.deepEqual(bytes, await readFile(path.join(sourceRoot, filename)), filename);
   }
   for (const filename of ['src/presentation/assets/', 'src/presentation/assets/unknown.mjs',
+    'src/presentation/assets/plant-packs/', 'src/presentation/assets/plant-packs/unknown.mjs',
+    'src/presentation/assets/plant-packs/podvine-low-pack.mjs/extra',
+    'src/presentation/assets/plant-packs/../plant-packs/podvine-low-pack.mjs.map',
+    'src/presentation/assets/plant-packs//sunbloom-low-pack.mjs',
     'src/presentation/assets/interactive-runtime-image.mjs/extra', 'src/presentation//assets/interactive-runtime-image.mjs',
     'src/presentation/rendering/', 'src/presentation/rendering/unknown.mjs',
     'src/presentation/rendering/ground-surfaces.mjs/extra', 'src/presentation//rendering/ground-surfaces.mjs']) {
