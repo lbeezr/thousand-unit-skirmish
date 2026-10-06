@@ -7,6 +7,7 @@ import { constructionClientFixture } from './construction-client-fixture.mjs';
 import { BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { DEFAULT_ECONOMY_PROFILE_ID as BASE, STONE_ECONOMY_PROFILE_ID as STONE, economyRulesetRevision } from '../src/economy-profile.mjs';
 import { matchesEconomySnapshot, profileDropoffResources, sumTypedCargo } from '../src/economy-client.mjs';
+import { selectionContext } from '../src/selection-context.mjs';
 import { unitCargoVisualState } from '../src/unit-visual-state.mjs';
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 function fn(name) {
@@ -39,6 +40,35 @@ test('Stone cargo remains distinct from food, wood and unknown cargo without gra
   for (const type of ['town-center', 'storehouse']) {
     assert.deepEqual(profileDropoffResources(type, STONE), ['food', 'wood', 'stone']);
     assert.deepEqual(profileDropoffResources(type, BASE), ['food', 'wood']);
+  }
+});
+
+for (const profile of [BASE, STONE]) test(`${profile}: cargo totals reject invalid amounts and unknown types without coercion`, () => {
+  const units = [
+    { cargoType: 'food', cargo: 0.625 }, { cargoType: 'food', cargo: 0.625 },
+    { cargoType: 'wood', cargo: 7.25 }, { cargoType: 'stone', cargo: 3.125 },
+    ...['food', 'wood', 'stone'].flatMap(cargoType =>
+      [0, -0, -1, NaN, Infinity, -Infinity, undefined, null, '100', new Number(100)]
+        .map(cargo => ({ cargoType, cargo }))),
+    ...['gold', '__proto__', 'constructor', 'toString', '', null, undefined]
+      .map(cargoType => ({ cargoType, cargo: 100 })),
+  ].map(unit => Object.freeze(unit));
+  const before = structuredClone(units);
+  const expected = profile === STONE ? { food: 1.25, wood: 7.25, stone: 3.125 } : { food: 1.25, wood: 7.25 };
+  assert.deepEqual(sumTypedCargo(Object.freeze(units), profile), expected);
+  assert.deepEqual(units, before, 'aggregation does not normalize or mutate source cargo');
+  assert.deepEqual(sumTypedCargo([], profile), Object.fromEntries(Object.keys(expected).map(resource => [resource, 0])));
+
+  for (const team of [0, 1]) {
+    const selected = units.map(unit => Object.freeze({ team, kind: 'worker', hp: 35, ...unit }));
+    selected.push(
+      { team: 1 - team, kind: 'worker', hp: 35, cargoType: 'food', cargo: 999 },
+      { team, kind: 'worker', hp: 0, cargoType: 'food', cargo: 999 },
+      { team, kind: 'infantry', hp: 100, cargoType: 'food', cargo: 999 },
+    );
+    const selection = Object.freeze(selected);
+    const model = selectionContext(selection, [...selection.keys(), selection.length + 1], team, null, profile);
+    assert.deepEqual(model.cargo, expected, `seat ${team}: only living friendly gatherers contribute`);
   }
 });
 
