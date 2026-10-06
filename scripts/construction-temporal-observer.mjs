@@ -104,6 +104,9 @@ export function drainReplayFrames() { const frames = replayFrames; replayFrames 
 export function seedReplayStates(rows) { for (const [unit, state] of rows) {
   if (state) steeringStates.set(unit, state); else steeringStates.delete(unit);
 } }
+export function seedReplayPaths(rows) { for (const [id, value] of rows) {
+  replayPathIds.set(value, id); replayNextPathId = Math.max(replayNextPathId, id + 1);
+} }
 export function selectCrowdStep(args) {
   const own = replayActive && args.unit.id === ${actorId};
   if (own) {

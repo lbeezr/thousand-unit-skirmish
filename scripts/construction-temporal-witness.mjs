@@ -44,6 +44,8 @@ export async function captureConstructionTemporalWitness(output) {
   let fixture;
   try {
     fixture = await createTemporalObserver(map, { actorId: policy.actorId });
+    report.requestedMapSha256 = report.mapSha256;
+    report.mapSha256 = hash(map); // Validation adds the explicit victoryMode.
     const r = fixture.replay, observer = fixture.observed;
     const unit = r.units[policy.actorId];
     assert.equal(unit.team, policy.team); assert.equal(unit.kind, 'infantry');

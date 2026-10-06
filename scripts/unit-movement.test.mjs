@@ -1066,3 +1066,4 @@ test('fixed own motion window caps every binding and invalidates discontinuous o
   f.units[1]={...f.units[1]};f.context.sampleReplayMovementWindows();assert.equal(f.context.replayMovementActors.get(1).window,null);
   o.configure(0,[2]);assert.equal(o.read()[0].motionWindow,null,'subscription replacement starts fresh');
 });
+import './construction-temporal-witness.test.mjs';
