@@ -17,7 +17,6 @@ export function beginOrdinaryMoveRecovery(unit, tick) {
     progressTick: tick, portals: 0, portal: null, completedPortal: null, episodeTick: null,
     recoverySteps: 0, blockedTick: null, episodes: 0, dependency: null, failedScenes: [] };
 }
-export function clearOrdinaryMoveRecovery(unit) { delete unit.ordinaryMoveRecovery; }
 function setPortal(state, unit, point, navigationRevision, direction) {
   const length = distance(unit, point), axis = direction ?? { x: point.x - unit.x, z: point.z - unit.z };
   const axisLength = Math.hypot(axis.x, axis.z);
@@ -26,20 +25,22 @@ function setPortal(state, unit, point, navigationRevision, direction) {
     dz: axisLength ? axis.z / axisLength : 0,
     best: length, navigationRevision, fromX: unit.x, fromZ: unit.z };
 }
-const scene = bodies => JSON.stringify(bodies.map(b => [b.id, b.generation,
+const scene = bodies => bodies === null ? 'query-overflow' : JSON.stringify(bodies.map(b => [b.id, b.generation,
   Math.round(b.x * 10), Math.round(b.z * 10)]));
-function dependency(unit, point, neighbors, radius) {
+function dependency(unit, point, neighbors, radius, queryOverflow) {
   const length = distance(unit, point) || 1, step = Math.min(length, .75);
   const from = { x: unit.x, z: unit.z }, to = {
     x: unit.x + (point.x - unit.x) / length * step,
     z: unit.z + (point.z - unit.z) / length * step };
-  const bodies = neighbors.filter(b => pointSegmentDistanceSquared(b, from, to)
+  const bodies = queryOverflow ? null : neighbors.filter(b => pointSegmentDistanceSquared(b, from, to)
     < (radius + LAND_CLEARANCE_PROFILE.radiusByKind[b.kind]) ** 2)
     .slice(0, 4).map(b => ({ id: b.id, generation: b.generation, x: b.x, z: b.z, kind: b.kind }));
   return { from, to, bodies };
 }
-function dependencyChanged(state, bodyById, radius) {
+function dependencyChanged(state, bodyById, radius, queryOverflow) {
   const d = state.dependency;
+  if (d?.bodies === null) return !queryOverflow;
+  if (queryOverflow) return false;
   if (!d?.bodies.length) return false;
   return d.bodies.some(w => {
     const body = bodyById(w.id);
@@ -52,7 +53,7 @@ function dependencyChanged(state, bodyById, radius) {
 // guarded position write. A new portal caused by static invalidation is a phase
 // change and preserves both the task clock and an exhausted episode.
 export function ordinaryMoveRecoveryDecision(unit, move, { tick, navigationRevision,
-  point, radius, direction, portalInvalid = false, neighbors = [], bodyById = () => null }) {
+  point, radius, direction, portalInvalid = false, neighbors = [], bodyById = () => null, queryOverflow = false }) {
   const state = unit.ordinaryMoveRecovery;
   if (!state || state.generation !== unit.generation || !move) return { move, changed: false };
   let changed = false;
@@ -71,14 +72,14 @@ export function ordinaryMoveRecoveryDecision(unit, move, { tick, navigationRevis
   const phase = Boolean(move.recoveryPhase || move.yieldingForCrowd || move.noProgressTicks >= 30);
   if (phase && state.episodeTick === null) {
     state.episodeTick = tick; state.episodes++;
-    state.dependency = dependency(unit, point, neighbors, radius); changed = true;
+    state.dependency = dependency(unit, point, neighbors, radius, queryOverflow); changed = true;
   }
   if (state.episodeTick !== null && tick - state.episodeTick >= ORDINARY_RECOVERY_EPISODE_TICKS
     && !move.rejectedStaticProposal) {
-    const exhausted = scene(state.dependency?.bodies ?? []);
+    const exhausted = scene(state.dependency.bodies);
     if (!state.failedScenes.includes(exhausted)) state.failedScenes.push(exhausted);
-    const current = dependency(unit, point, neighbors, radius);
-    if (state.episodes < ORDINARY_RECOVERY_MAX_EPISODES && dependencyChanged(state, bodyById, radius)
+    const current = dependency(unit, point, neighbors, radius, queryOverflow);
+    if (state.episodes < ORDINARY_RECOVERY_MAX_EPISODES && dependencyChanged(state, bodyById, radius, queryOverflow)
       && !state.failedScenes.includes(scene(current.bodies))) {
       state.episodeTick = tick; state.episodes++; state.dependency = current;
       state.blockedTick = null; changed = true;
@@ -178,12 +179,12 @@ export function validOrdinaryMoveRecovery(unit, tick, width, height) {
     && Math.abs(p.x) <= width / 2 && Math.abs(p.z) <= height / 2;
   if (d !== null && (!d || typeof d !== 'object' || Array.isArray(d) || Object.keys(d).length !== 3
     || !['from', 'to', 'bodies'].every(k => Object.hasOwn(d, k)) || !boundedPoint(d.from) || !boundedPoint(d.to)
-    || !Array.isArray(d.bodies) || d.bodies.length > 4 || !d.bodies.every(b => b && typeof b === 'object'
+    || (d.bodies !== null && (!Array.isArray(d.bodies) || d.bodies.length > 4 || !d.bodies.every(b => b && typeof b === 'object'
       && !Array.isArray(b) && Object.keys(b).length === 5 && ['id', 'generation', 'x', 'z', 'kind'].every(k => Object.hasOwn(b, k))
       && integer(b.id, Number.MAX_SAFE_INTEGER) && integer(b.generation, Number.MAX_SAFE_INTEGER)
       && Number.isFinite(b.x) && Number.isFinite(b.z) && Math.abs(b.x) <= width / 2 && Math.abs(b.z) <= height / 2
       && LAND_CLEARANCE_PROFILE.radiusByKind[b.kind] > 0)
-    || new Set(d.bodies.map(b => b.id)).size !== d.bodies.length)) return false;
+    || new Set(d.bodies.map(b => b.id)).size !== d.bodies.length)))) return false;
   const p = state.portal;
   return p === null || (typeof p === 'object' && !Array.isArray(p)
     && Object.keys(p).length === 8 && ['x', 'z', 'dx', 'dz', 'best', 'navigationRevision', 'fromX', 'fromZ'].every(k => Object.hasOwn(p, k))
@@ -198,5 +199,5 @@ export function cloneOrdinaryMoveRecovery(state) {
     completedPortal: state.completedPortal && { ...state.completedPortal },
     failedScenes: [...state.failedScenes], dependency: state.dependency && {
       from: { ...state.dependency.from }, to: { ...state.dependency.to },
-      bodies: state.dependency.bodies.map(b => ({ ...b })) } };
+      bodies: state.dependency.bodies?.map(b => ({ ...b })) ?? null } };
 }

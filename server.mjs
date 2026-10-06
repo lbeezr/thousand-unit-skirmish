@@ -88,7 +88,7 @@ import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoint, activeMoveGoalPoint, validMoveGoalPoint, unitRoutePathCost,
   activeLandMovementBodyRadius, workerEconomyBodyRadius, LAND_CLEARANCE_PROFILE, canTraverseStaticBodySegment,
   unitRouteResultIsCurrent, rejoinSelectedUnitRoute, unitRouteRejoinDecision, createUnitRoutePublicationLedger } from './src/unit-movement.mjs';
-import { beginOrdinaryMoveRecovery, clearOrdinaryMoveRecovery, ordinaryMoveRecoveryDecision,
+import { beginOrdinaryMoveRecovery, ordinaryMoveRecoveryDecision,
   finalizeOrdinaryMoveProgress, ordinaryMoveBlockedStatus, validOrdinaryMoveRecovery,
   cloneOrdinaryMoveRecovery } from './src/ordinary-move-recovery.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
@@ -3913,7 +3913,7 @@ function completeMovePlanningJob(job) {
 }
 
 function clearAttackMoveOrder(unit) {
-  clearOrdinaryMoveRecovery(unit);
+  delete unit.ordinaryMoveRecovery;
   unit.moveGoalPoint = null;
   automaticTargetRejections.delete(unit);
   unit.stanceCombat = false;
@@ -7928,6 +7928,19 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
     if (workerRadius && !spatialBucketRosterCurrent) return { target, waitingForCrowd: true, stepDistance: 0 };
     const query = crowdNeighborsNear(unit);
     const progressTarget = target;
+    const consumeOrdinaryProposal = (move, direction = null, queryOverflow = false) => {
+      if (!move || !unit.ordinaryMoveRecovery || !ordinaryCrowdBodyRadius(unit)) return move;
+      const portal = unit.ordinaryMoveRecovery.portal;
+      const decision = ordinaryMoveRecoveryDecision(unit, move, { tick: tickNumber,
+        navigationRevision, point: progressTarget, radius: crowdRadius, direction, queryOverflow,
+        neighbors: queryOverflow ? [] : query.neighbors, bodyById: id => units[id],
+        portalInvalid: portal && portal.navigationRevision !== navigationRevision
+          && (!isWalkable(worldToCell(portal.x, portal.z))
+          || !canTraverseStaticBodySegment({ x: portal.fromX, z: portal.fromZ }, portal,
+            crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable)) });
+      if (decision.changed) dirty = true;
+      return decision.move;
+    };
     const diagnostics = { visits: query.visits, neighbors: query.neighbors.length, overflow: query.overflow };
     let parkedWaypointProbes = 0;
     // A parked body at the raw waypoint can make a local tangent attractive
@@ -7940,9 +7953,10 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
         && Math.hypot(other.x - progressTarget.x, other.z - progressTarget.z) < crowdRadius + radius;
     });
     diagnostics.parkedWaypointProbes = parkedWaypointProbes;
-    if (query.overflow) return { ...selectCrowdStep({ unit, target,
+    if (query.overflow) return { ...consumeOrdinaryProposal({ ...selectCrowdStep({ unit, target,
       stepDistance: Math.min(remainingStep, .25), neighbors: query.neighbors,
-      tick: tickNumber, navigationRevision, epoch: movePlanningEpoch, overflow: true, radius: crowdRadius }), crowd: diagnostics };
+      tick: tickNumber, navigationRevision, epoch: movePlanningEpoch, overflow: true, radius: crowdRadius }),
+      recoveryPhase: 'query-wait' }, null, true), crowd: diagnostics };
     const controlDiagnostics = { passageProposals: 0, passageBodyVisits: 0 };
     let travelDirection = { x: target.x - unit.x, z: target.z - unit.z };
     if (unit.pathIndex < unit.path.length - 1) {
@@ -7988,18 +8002,7 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
       return { target: progressTarget, reachedWaypoint: true, stepDistance: 0,
         rejectedStaticProposal: true, crowd: diagnostics, crowdControl: crowdMove.crowdControl };
     }
-    if (crowdMove && ordinaryCrowdBodyRadius(unit)) {
-      const portal = unit.ordinaryMoveRecovery?.portal;
-      const decision = ordinaryMoveRecoveryDecision(unit, crowdMove, { tick: tickNumber,
-        navigationRevision, point: progressTarget, radius: crowdRadius, direction: travelDirection,
-        neighbors: query.neighbors, bodyById: id => units[id],
-        portalInvalid: portal && portal.navigationRevision !== navigationRevision
-          && (!isWalkable(worldToCell(portal.x, portal.z))
-          || !canTraverseStaticBodySegment({ x: portal.fromX, z: portal.fromZ }, portal,
-            crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable)) });
-      crowdMove = decision.move;
-      if (decision.changed) dirty = true;
-    }
+    crowdMove = consumeOrdinaryProposal(crowdMove, travelDirection);
     if (crowdMove) return { ...crowdMove, crowd: { ...diagnostics,
       waiting: Boolean(crowdMove.waitingForCrowd), yielding: Boolean(crowdMove.yieldingForCrowd),
       noProgressTicks: crowdMove.noProgressTicks ?? 0 } };

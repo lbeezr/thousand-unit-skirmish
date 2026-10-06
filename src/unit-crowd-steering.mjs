@@ -121,6 +121,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     steeringStates.delete(unit); return null;
   }
   const state = steeringState(unit, tick, navigationRevision, epoch);
+  const recoveryPhase = phase => unit.ordinaryMoveRecovery ? { recoveryPhase: phase } : {};
   const stats = { proposals: 0, pointProposals: 0, escapeProposals: 0, bodyVisits: 0, arbitrationVisits: 0, leaseAge: 0, contourAge: 0, waitAge: 0, detourTerrainProbes: 0, ...diagnostics };
   if (overflow || neighbors.length > CROWD_NEIGHBOR_LIMIT) {
     state.lease = null; state.contour = null; state.offer = null;
@@ -141,7 +142,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   if (neighbors.some(other => { stats.bodyVisits++; return other !== approachBody && !ordinaryCrowdBodyRadius(other)
     && Math.hypot(target.x - other.x, target.z - other.z)
       < radius + LAND_CLEARANCE_PROFILE.radiusByKind[other.kind] - EPSILON; }))
-    return { target, waitingForCrowd: true, stepDistance: 0, recoveryPhase: 'wait', noProgressTicks, crowdControl: stats };
+    return { target, waitingForCrowd: true, stepDistance: 0, ...recoveryPhase('wait'), noProgressTicks, crowdControl: stats };
   if (!distance) { state.lease = null; state.contour = null; return { target, reachedWaypoint: true, stepDistance: 0, noProgressTicks, crowdControl: stats }; }
   const clear = to => {
     if (stats.proposals >= CROWD_PROPOSAL_LIMIT) return false;
@@ -321,14 +322,14 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
       });
     },
     admit: clear, heading: { x: headingX, z: headingZ }, stepDistance, target, stats }) : null;
-  if (lease) return { ...lease, recoveryPhase: 'lease', noProgressTicks, crowdControl: stats };
+  if (lease) return { ...lease, ...recoveryPhase('lease'), noProgressTicks, crowdControl: stats };
   const yieldedTo = neighbors.some(other => { stats.arbitrationVisits++;
     const observed = readState(other);
     return observed?.lease?.peer === unit && tick < observed.lease.until; });
   const contour = crowdParkedContour({ unit, state, tick, neighbors, radius, radiusOf: ordinaryCrowdBodyRadius,
     parked: stationaryCrowdObstacle, yieldedTo, target, progressTarget, heading: { x: headingX, z: headingZ }, stepDistance,
     admit: clear, pointAllowed: pointClear, stats });
-  if (contour) return { ...contour, recoveryPhase: 'contour', noProgressTicks, crowdControl: stats };
+  if (contour) return { ...contour, ...recoveryPhase('contour'), noProgressTicks, crowdControl: stats };
   // Retain an admitted oblique forward step only when every nearby body is
   // following this segment from behind. A parked or opposing body keeps the
   // existing stricter exemption and its own passage/contour arbitration.
@@ -376,9 +377,9 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
       consider({ x: unit.x + (headingX * Math.cos(radians) - headingZ * Math.sin(radians)) * length,
         z: unit.z + (headingZ * Math.cos(radians) + headingX * Math.sin(radians)) * length }, false);
     }
-    if (best) { best.yieldingForCrowd = true; best.recoveryPhase = 'retreat'; }
+    if (best) { best.yieldingForCrowd = true; Object.assign(best, recoveryPhase('retreat')); }
   }
-  if (best && state.detour) best.recoveryPhase = 'detour';
+  if (best && state.detour) Object.assign(best, recoveryPhase('detour'));
   return best ? { ...best, noProgressTicks, crowdControl: stats }
-    : { target, waitingForCrowd: true, stepDistance: 0, recoveryPhase: 'wait', noProgressTicks, crowdControl: stats };
+    : { target, waitingForCrowd: true, stepDistance: 0, ...recoveryPhase('wait'), noProgressTicks, crowdControl: stats };
 }

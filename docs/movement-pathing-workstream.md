@@ -1015,7 +1015,10 @@ Already occupied start/rejoin prefixes similarly retire as phase closure.
 Local wait/yield/retreat/contour/detour or the selector's 30-tick net stall starts
 a 180-tick recovery episode (three existing 60-tick lease windows). At most three episodes are available between real
 portal crossings, with bounded witnesses for four original blocking bodies and
-three exhausted scene signatures. A new phase requires an original blocking
+three exhausted scene signatures. An incomplete capped query remains a safe
+wait and saves a null body witness, never a truncated roster. Completion of that
+query is a legitimate new scene; repair, navigation churn and cold restore retain
+the original incomplete observation and its exhausted budget. A new phase otherwise requires an original blocking
 body to clear its fixed approach capsule and a previously unexhausted scene; unrelated peer,
 order or navigation churn cannot refresh it. After exhaustion, the host consumes
 `recovery-unresolved` before writing a non-forward recovery proposal. It retains
@@ -1033,6 +1036,15 @@ fairness and swept-body checks stay unchanged. Qualification must retain any
 introduced or baseline failures. Clean packaging, served identity, normal-game
 pixels/replays and capacity remain separate open evidence; visual backing for
 this internal diagnostic/authority contract is N/A.
+
+Merge qualification retains the original 64-actor queued-wall removal,
+closing-gate and one-turn queued-planning service controls. Independent review
+found introduced service failures in the predecessor candidate; the draft does
+not qualify these as baseline failures. Shared movement retains the next bounded
+correction: expose an already budgeted, physically admitted raw-forward
+alternative when the preferred non-forward recovery is exhausted. Preserve
+priority, proposal bounds, physical guards and the original service deadlines;
+do not expand portal credit or refresh the task budget to conceal starvation.
 
 ### U5 native wall seat-1 diagnosis — 5 October 2026
 

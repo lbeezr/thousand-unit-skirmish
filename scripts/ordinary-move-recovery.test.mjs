@@ -133,6 +133,84 @@ test('internal route repair/publication cannot renew task progress or hide unres
   } finally { await c.fixture.dispose(); }
 });
 
+test('incomplete crowd query becomes explicit unresolved and resumes observation only on query completion', async () => {
+  configureLandBodyReplay();
+  const map = { id: 'ordinary-recovery-dense-query', name: 'ORDINARY RECOVERY DENSE QUERY',
+    width: 64, height: 48, terrainSeed: 881, fogOfWar: false, startingArmySize: 136,
+    spawnPoints: [{ team: 0, x: -26, z: -12 }, { team: 1, x: 26, z: 12 }],
+    startingResources: { food: 500, wood: 500 }, resourceNodes: [], triggers: [],
+    scenarioEvents: [], obstacles: [] };
+  const fixture = await createPathingReplayFixture(map, { traceLandSteps: true }), r = fixture.replay;
+  try {
+    for (const team of [0, 1]) {
+      const ids = r.units.filter(u => u.team === team).map(u => u.id);
+      r.order(team, { type: 'stop', ids }); r.order(team, { type: 'setStance', ids, stance: 'noAttack' });
+    }
+    // New authored non-overlapping placement, validated before accepting intent.
+    const infantry = r.units.filter(u => u.kind === 'infantry'), sites = [];
+    for (let row = -4; row <= 4; row++) for (let col = -4; col <= 4; col++)
+      if ((col * .45) ** 2 + (row * .45) ** 2 <= 2.1 ** 2) sites.push({ x: .5 + col * .45, z: .5 + row * .45 });
+    const center = sites.findIndex(p => p.x === .5 && p.z === .5);
+    [sites[0], sites[center]] = [sites[center], sites[0]];
+    assert.equal(sites.length, 69);
+    for (let i = 0; i < sites.length; i++) {
+      Object.assign(infantry[i], sites[i]);
+      for (let j = i + 1; j < sites.length; j++) assert.ok(Math.hypot(sites[i].x - sites[j].x, sites[i].z - sites[j].z) >= .44 - 1e-9);
+    }
+    const placed = r.checkpoint(); assert.ok(r.validate(placed)); r.restore(placed);
+    const actorId = infantry[0].id, actor = () => r.units[actorId], u = actor();
+    r.order(u.team, { type: 'move', ids: [u.id], unitGenerations: [u.generation], x: 12.5, z: .5 }); r.drain();
+    r.order(u.team, { type: 'move', ids: [u.id], unitGenerations: [u.generation], x: 14.5, z: .5, queue: true }); r.drain();
+    const goalPoint = () => { const { revision, ...point } = actor().moveGoalPoint; return point; };
+    const intent = { goal: u.moveGoalCell, point: goalPoint(),
+      revision: u.ordinaryMoveRecovery.intentRevision, queue: structuredClone(u.queuedWaypoints) };
+    r.step();
+    assert.equal(u.ordinaryMoveRecovery.dependency.bodies, null, 'incomplete query never becomes a truncated blocker witness');
+    const episodeTick = u.ordinaryMoveRecovery.episodeTick;
+    const worker = r.units.find(v => v.kind === 'worker' && v.team === 0), nav = r.navigationRevision;
+    const notices = r.order(0, { type: 'buildWall', ids: [worker.id],
+      points: [{ column: 10, row: 10 }, { column: 11, row: 10 }] }); r.drain();
+    assert.ok(notices.some(n => n.message.startsWith('PALISADE LINE PLACED'))); assert.ok(r.navigationRevision > nav);
+    for (let cycle = 0; cycle < 14; cycle++) {
+      for (let tick = 0; tick < 60; tick++) r.step();
+      r.repairRoutes([u.id]); r.drain();
+      assert.equal(u.ordinaryMoveRecovery.progressTick, 0); assert.equal(u.ordinaryMoveRecovery.episodeTick, episodeTick);
+      assert.equal(u.ordinaryMoveRecovery.dependency.bodies, null);
+      assert.deepEqual({ x: u.x, z: u.z }, { x: .5, z: .5 }, 'safe overflow wait does not admit an unverified body step');
+    }
+    assert.deepEqual({ goal: u.moveGoalCell, point: goalPoint(),
+      revision: u.ordinaryMoveRecovery.intentRevision, queue: u.queuedWaypoints }, intent);
+    assert.deepEqual(r.snapshot(u.team).blockedMoves,
+      [[u.id, u.generation, 'temporarily-blocked', 'recovery-unresolved', u.ordinaryMoveRecovery.blockedTick]]);
+    assert.equal(u.ordinaryMoveRecovery.episodes, 1);
+    const saved = r.checkpoint(), bytes = JSON.stringify(saved); assert.ok(r.validate(saved));
+    r.step(); assert.equal(JSON.stringify(saved), bytes); r.restore(saved); r.drain(); r.step();
+    assert.equal(JSON.stringify(saved), bytes); assert.equal(actor().ordinaryMoveRecovery.episodeTick, episodeTick);
+    assert.equal(actor().ordinaryMoveRecovery.dependency.bodies, null);
+    // Own real commands move the outer bodies clear of the capped query. No
+    // checkpoint edit, teleport, route publication or nav edit reopens it.
+    for (const id of infantry.slice(1, sites.length).map(v => v.id)) {
+      const peer = r.units[id], dx = peer.x - .5, dz = peer.z - .5, length = Math.hypot(dx, dz);
+      r.order(peer.team, { type: 'move', ids: [id], unitGenerations: [peer.generation],
+        x: .5 + dx / length * 12, z: .5 + dz / length * 12 });
+    }
+    r.drain(); let completedQuery = false;
+    for (let tick = 0; tick < 180 && !completedQuery; tick++) {
+      r.step();
+      for (const s of r.landSteps.filter(s => s.id === actorId)) {
+        assert.ok(canTraverseStaticBodySegment(s.from, s.to, .22, map.width, map.height, r.isWalkable));
+        for (const other of s.neighbours) assert.ok(sweptBodyPairMargin(s, .22, other,
+          LAND_CLEARANCE_PROFILE.radiusByKind[other.kind]) >= -1e-9);
+      }
+      completedQuery = Array.isArray(actor().ordinaryMoveRecovery.dependency?.bodies);
+    }
+    assert.ok(completedQuery, 'real peer departure restores completeness and a fresh bounded observation');
+    assert.equal(actor().ordinaryMoveRecovery.episodes, 2);
+    assert.ok(actor().ordinaryMoveRecovery.episodeTick > episodeTick);
+    assert.equal(actor().ordinaryMoveRecovery.progressTick, 0, 'query completion is phase resumption, not task progress');
+  } finally { await fixture.dispose(); }
+});
+
 test('Stop/reissue supersedes saved recovery; cold metadata is bounded and optional', async () => {
   const c = await corridor(), { r, selected, send, step } = c;
   try {
