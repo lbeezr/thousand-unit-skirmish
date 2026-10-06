@@ -77,6 +77,14 @@ step. This directly proves that particular far-goal priority discards legal
 current-waypoint progress; it does not prove that removing it completes the
 journey or preserves fairness elsewhere.
 
+Temporal-review clarification: that step would leave distance .8219333, above the
+existing credit threshold .5204107; it does not reset progress credit. Peer73's
+accepted route segment is westward, perpendicular to actor75's northward accepted
+segment, while its actual current-waypoint direction has positive alignment.
+The stronger shared-route evidence is the directed join `3121→3120→3119`. The
+[subsequent candidate](qa-crowd-directed-join-2026-10-06.md) requires that join
+per claimant, rather than inferring compatibility from alignment alone.
+
 At 600,73 itself has revision3 and route start3121→3120→3119, the same first
 segment sequence as75. All69 proposals for75 fail:32 static failures,30first body
 refusals at73 and seven at95. At 660 priority selects a half-step southward
@@ -106,7 +114,8 @@ query bounds and simulation writes. Production imports and modules remain
 unchanged. The ordinary test reconstructs the actual stale bucket chains and
 live poses from the public observations, seeds only observed transient steering
 state, then calls real host functions, shared selector and physical oracles.
-All185 calls reproduce the complete original result, proposal/score/priority
+Using the hash-verified public archived selector from the captured source,
+all185 calls reproduce the complete original result, proposal/score/priority
 sequence and controller transition.182 consecutive controller inputs match the
 previous observed output, including the repair/route handoff. This replay does
 not create another match or regenerate the authorized production reproduction.

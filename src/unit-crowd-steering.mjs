@@ -133,6 +133,8 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   if (remaining < state.bestDistance - .02) { state.bestDistance = remaining; state.lastProgressTick = tick; }
   const noProgressTicks = tick - state.lastProgressTick;
   stats.waitAge = noProgressTicks;
+  const ordinaryJoinMovement = ordinaryCrowdBodyRadius(unit) === radius
+    && !state.detour && !state.lease && !state.contour;
   // A contour or retreat can enter the projected waypoint's cell before it
   // finishes its own manoeuvre. That pose does not consume the waypoint.
   const aim = (state.lease || state.contour) && Math.hypot(target.x - unit.x, target.z - unit.z) < EPSILON
@@ -357,9 +359,31 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     return finitePoint(direction) && direction.x * best.x + direction.z * best.z
       > .9 * Math.hypot(direction.x, direction.z);
   };
+  // A peer one waypoint ahead can turn across this segment while both routes
+  // share the same directed join. Its far goal must not cancel an already
+  // admitted forward improvement; unrelated/opposing claimants still arbitrate.
+  const forwardJoinStep = ordinaryJoinMovement && best && directionLength && lane !== null
+    && !state.detour && !state.lease && !state.contour
+    && best.x * routeX + best.z * routeZ > EPSILON
+    && Math.hypot(progressTarget.x - unit.x - best.x * best.stepDistance,
+      progressTarget.z - unit.z - best.z * best.stepDistance) < remaining - EPSILON;
+  const directedJoinStep = other => {
+    if (!forwardJoinStep || !ordinaryCrowdBodyRadius(other)) return false;
+    const peer = readState(other), direction = directionOf(other);
+    if (!peer || peer.detour || peer.lease || peer.contour || !finitePoint(direction)
+      || direction.x * routeX + direction.z * routeZ <= EPSILON) return false;
+    const i = unit.pathIndex, j = other.pathIndex;
+    if (!Number.isInteger(i) || !Number.isInteger(j) || i < 0 || j < 0) return false;
+    const from = unit.path[i], join = unit.path[i + 1], next = unit.path[i + 2];
+    if (![from, join, next].every(cell => Number.isInteger(cell) && cell >= 0)
+      || from === join || from === next || join === next) return false;
+    return (other.path[j] === from && other.path[j + 1] === join && other.path[j + 2] === next)
+      || (j > 0 && other.path[j - 1] === from && other.path[j] === join && other.path[j + 1] === next);
+  };
   const yieldingToPeer = noProgressTicks >= 30 && neighbors.some(other => other.id < unit.id && finitePoint(targetOf(other))
     && (targetOf(other).x - other.x) * routeX + (targetOf(other).z - other.z) * routeZ < 0
     && !parallelWaypointStep(other)
+    && !directedJoinStep(other)
     // A same-segment follower behind us cannot claim a clear forward step
     // merely because its distant final goal lies across the current segment.
     && !((other.x - unit.x) * routeX + (other.z - unit.z) * routeZ <= 0

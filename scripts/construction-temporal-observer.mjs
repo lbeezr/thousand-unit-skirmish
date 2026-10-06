@@ -125,10 +125,11 @@ export function selectCrowdStep(args) {
 `;
 }
 
-export async function createTemporalObserver(map, { actorId = 75, prepareOnly = false } = {}) {
+export async function createTemporalObserver(map, { actorId = 75, prepareOnly = false, crowdSource = null } = {}) {
+  if (crowdSource !== null && !prepareOnly) throw Error('archived selector is replay-only; capture uses production source');
   const directory = await mkdtemp(path.join(tmpdir(), 'rts-temporal-observer-'));
   try {
-    const crowd = await readFile(path.join(root, 'src/unit-crowd-steering.mjs'), 'utf8');
+    const crowd = crowdSource ?? await readFile(path.join(root, 'src/unit-crowd-steering.mjs'), 'utf8');
     const modulePath = path.join(directory, 'observed-crowd.mjs');
     const absolutize = s => s.replace(/from '(\.\/?[^']+)'/g,
       (_, name) => `from '${pathToFileURL(path.resolve(root, 'src', name)).href}'`);

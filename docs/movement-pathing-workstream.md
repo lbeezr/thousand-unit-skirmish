@@ -1311,6 +1311,18 @@ starting another match. Core proposes only current-route opposition semantics
 at that causal discard; crowd reviews the temporal case before any correction.
 Original completion, 150-tick fairness and physical limits remain unchanged.
 
+The accepted temporal review now scopes the
+[directed-join arbitration candidate](qa-crowd-directed-join-2026-10-06.md):
+keep an already admitted forward waypoint improvement only for an individual
+fresh ordinary claimant with positive current-waypoint alignment and the same
+directed three-cell join. Peer73's accepted segment is perpendicular, not
+parallel, and the tick 594 improvement does not itself earn progress credit. Core owns
+the 24-line selector candidate and exact source controls; crowd retains original
+seed/deadline/fairness qualification before merge. The capture remains unchanged;
+historical replay is hash-bound to its archived selector and current-candidate
+decision controls are separate. Journey, release, deployed and rendered acceptance
+remain open.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
