@@ -36,7 +36,7 @@ async function journey(team, turns, action, { food = false, combat = false } = {
     spawnPoints: [{ team: 0, x: -20, z: -16 }, { team: 1, x: 20, z: 16 }],
     resourceNodes: food ? [{ id: 'food', type: 'food', x: -1.5, z: .5, stock: 24 }] : [],
     triggers: [], scenarioEvents: [], obstacles: [{ column: 33, row: 25, width: 1, height: 1, material: 'stone' }] };
-  const original = await createPathingReplayFixture(map, { traceLandSteps: true, traceRouteRejoins: true });
+  const original = await createPathingReplayFixture(map, { traceLandSteps: true, traceRouteRejoins: true, tracePatrolAcquiredSteps: combat });
   let r = original.replay, cold;
   try {
     for (const seat of [0, 1]) r.order(seat, { type: 'stop', ids: r.units.filter(u => u.team === seat).map(u => u.id) });
@@ -53,8 +53,11 @@ async function journey(team, turns, action, { food = false, combat = false } = {
     const step = options => {
       r.step(options);
       for (const s of r.landSteps.filter(s => s.id === id)) {
-        if (combat && actor().attackTargetId >= 0) {
-          assert.equal(activeLandMovementBodyRadius(actor()), 0, 'acquired Worker pursuit stays outside this profile');
+        if (combat && s.patrolAcquired) {
+          assert.equal(s.bodyRadius, .18);
+          assert.ok(clear(s.from, s.to), 'actual acquired Worker Patrol step uses the shared static body');
+        } else if (combat && actor().attackTargetId >= 0 && actor().persistentOrder?.type !== 'patrol') {
+          assert.equal(activeLandMovementBodyRadius(actor()), 0, 'direct acquired Worker AttackMove retains its separate profile');
         } else assert.ok(clear(s.from, s.to), `unsafe Worker Patrol/objective/queued step ${JSON.stringify(s)}`);
         steps++;
       }
@@ -65,7 +68,7 @@ async function journey(team, turns, action, { food = false, combat = false } = {
     };
     const recover = async () => {
       const saved = JSON.parse(JSON.stringify(r.checkpoint())); assert.ok(r.validate(structuredClone(saved)));
-      await cold?.dispose(); cold = await createPathingReplayFixture(map, { traceLandSteps: true, traceRouteRejoins: true });
+      await cold?.dispose(); cold = await createPathingReplayFixture(map, { traceLandSteps: true, traceRouteRejoins: true, tracePatrolAcquiredSteps: combat });
       r = cold.replay; r.restore(saved);
       const before = saved.state.units[id];
       assert.equal(actor().moveGoalCell, before.moveGoalCell); assert.deepEqual(actor().persistentOrder, before.persistentOrder);
@@ -114,7 +117,7 @@ for (const team of [0, 1]) for (const type of ['patrol', 'attackMove']) for (con
       command('stop', {}, targetId);
       command(type, { x: 6.5, z: .5 });
       until(() => actor().attackTargetId === targetId);
-      assert.equal(activeLandMovementBodyRadius(actor()), 0);
+      assert.equal(activeLandMovementBodyRadius(actor()), type === 'patrol' ? .18 : 0);
       assert.equal(predicates.workerPatrolObjectiveMovementActive(actor()), false);
       const goal = actor().moveGoalCell, anchor = [actor().attackMoveAnchorX, actor().attackMoveAnchorZ];
       const order = structuredClone(actor().persistentOrder), resume = [...actor().attackMoveResumePath];

@@ -118,3 +118,15 @@ export function patrolAcquiredMovementActive(unit) {
     && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0) && !unit.gatherPhase
     && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
 }
+
+// Acquired Worker Patrol is separate from direct/acquired AttackMove and
+// automatic stance. Original target/range/leash/order policy stays authoritative.
+export function workerPatrolAcquiredMovementActive(unit) {
+  return unit.kind === 'worker' && unit.hp > 0 && unit.attackMove === true
+    && unit.persistentOrder?.type === 'patrol' && unit.movementDomain !== 'water'
+    && !unit.holdingPosition && !unit.stanceCombat && !unit.stanceReturning
+    && Number.isSafeInteger(unit.attackTargetId) && unit.attackTargetId >= 0
+    && !(unit.attackBuildingTargetId >= 0) && unit.gatherNodeId == null
+    && !(unit.gatherForestCell >= 0) && !unit.gatherPhase
+    && (unit.buildingTargetId == null || unit.buildingTargetId < 0);
+}
