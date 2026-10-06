@@ -136,6 +136,7 @@ run(['--test', 'scripts/unit-movement.test.mjs', 'scripts/land-body-clearance.te
 run(['--test', 'scripts/crowd-forward-progress.test.mjs'], 'Parked crowd route progress and preserved idle actors');
 run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals and team reservation');
 run(['--test', 'scripts/crowd-following-continuation-contract.test.mjs'], 'Source-only following continuation hypothesis');
+run(['--test', 'scripts/pathing-replay-observer.test.mjs'], 'Replay observation preserves land admissions');
 run(['--test', 'scripts/unit-path-line.test.mjs', 'scripts/open-ground-move.test.mjs', 'scripts/worker-flat-flow-routes.test.mjs', 'scripts/fractional-move-endpoints.test.mjs'], 'Direct open-ground trajectories and safe long waypoint repair');
 run(['--test', 'scripts/move-planning-slices.test.mjs'], 'Clock-independent route planning, stale results and fair queue turns');
 run(['--test', 'scripts/move-planning-tick.test.mjs', 'scripts/move-planning-tick-error.test.mjs', 'scripts/pathing-arrival.test.mjs'], 'Opt-in planning tick budgets, order invalidation, topology and recovery');
