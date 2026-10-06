@@ -162,6 +162,12 @@ using the portable import validator's existing
 field-specific diagnostics before population can clear history or replace grids.
 It retains unfinished non-null entries and the existing optional-collection falsy
 container fallbacks; it does not filter entries or introduce deep map validation.
+After all those checks, recovery rejects an explicit null `formValues` envelope
+with the existing generic saved-draft diagnostic before population mutates state.
+Omitted/undefined, successful primitive/array empty-snapshot behavior and
+incomplete object snapshots remain supported. The form controller's direct
+`restore(null)` TypeError and native setter errors remain unchanged; this adds
+no field-entry validation or strict object-only requirement.
 Raw saved bytes remain
 available for explicit repair/retry. The dependency closure is unchanged.
 

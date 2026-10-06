@@ -529,3 +529,125 @@ test('selector-entry preflight retains earlier checks and trigger/event/resource
       'source'), { message });
   }
 });
+
+test('actual Restore rejects null formValues before mutation and supports incomplete-form repair/retry', t => {
+  const f = mapStudioDraftFixture(t);
+  const formState = createMapStudioFormState({ root: f.w.ui.mapStudio, document: f.d });
+  f.open(); f.edit('studio-name', 'Retained local edit');
+  f.edit('studio-objective-name', 'Retained pending objective'); f.flush();
+  const key = f.w.editorDraftStorageKey, validRaw = f.w.localStorage.getItem(key);
+  const damaged = JSON.parse(validRaw);
+  damaged.editor.definition.name = 'Private damaged draft';
+  damaged.editor.formValues = null;
+  const damagedRaw = JSON.stringify(damaged);
+  f.w.localStorage.setItem(key, damagedRaw); f.w.showMapStudioDraftRecovery(damaged);
+  const history = f.w.scenarioEditHistory;
+  history.record({ ...f.w.scenarioEditorState(), regionId: 'retained-first' });
+  history.record({ ...f.w.scenarioEditorState(), regionId: 'retained-second' }); history.undo();
+  assert.equal(history.canUndo, true); assert.equal(history.canRedo, true);
+  const before = selectorRecoverySnapshot(f, formState);
+  f.click('studio-draft-restore');
+  assertSelectorRecoveryUnchanged(f, formState, before);
+  assert.equal(f.w.ui.studioDraftRecoveryMessage.textContent, recoveryMessage);
+  assert.equal(f.w.ui.studioDraftRecovery.hidden, false);
+  assert.equal(f.w.ui.mapStudioLayout.inert, true);
+  assert.equal(f.w.localStorage.getItem(key), damagedRaw);
+  const repaired = JSON.parse(validRaw);
+  repaired.editor.formValues = {
+    'studio-name': { value: 'Retained local edit' },
+    'studio-objective-name': { value: 'Unfinished pending objective' },
+    'studio-required-units': { value: '' }, 'studio-regions': { value: '[unfinished' },
+  };
+  const repairedRaw = JSON.stringify(repaired);
+  f.w.localStorage.setItem(key, repairedRaw); f.click('studio-draft-restore');
+  assert.equal(f.w.ui.studioDraftRecovery.hidden, true);
+  assert.equal(f.w.ui.mapStudioLayout.inert, false);
+  assert.equal(f.w.ui.studioName.value, 'Retained local edit');
+  assert.equal(f.w.ui.studioObjectiveName.value, 'Unfinished pending objective');
+  assert.equal(f.w.ui.studioRequiredUnits.value, '');
+  assert.equal(f.w.ui.studioRegions.value, '[unfinished');
+  assert.equal(f.w.localStorage.getItem(key), repairedRaw);
+  f.flush();
+  const saved = JSON.parse(f.w.localStorage.getItem(key));
+  assert.equal(saved.editor.formValues['studio-objective-name'].value, 'Unfinished pending objective');
+  assert.equal(saved.editor.formValues['studio-required-units'].value, '');
+  assert.equal(saved.editor.formValues['studio-regions'].value, '[unfinished');
+});
+
+const successfulFormContainers = [
+  ['absent', undefined], ['false', false], ['true', true], ['zero', 0], ['number', 3],
+  ['empty string', ''], ['string', 'Existing empty-snapshot behavior'],
+  ['empty array', []], ['null array', [null]],
+  ['field-object array', [{ value: 'Ignored numeric key' }]],
+  ['key/value-pair array', [['studio-name', { value: 'Ignored numeric key' }]]],
+  ['empty object', {}],
+  ['partial object', { 'studio-name': { value: 'Recovered partial form' } }],
+  ['unfinished object', { 'studio-name': { value: '' }, 'studio-regions': { value: '[unfinished' } }],
+  ['incomplete field entries', { 'studio-name': null, 'studio-summary': { value: 3 },
+    'studio-required-units': [], 'studio-fog-of-war': { checked: 'true' },
+    'studio-missing-control': { value: 'Ignored unknown key' } }],
+];
+
+for (const [name, formValues] of successfulFormContainers) {
+  test(`actual Restore retains successful ${name} formValues recovery and capture/save behavior`, t => {
+    const f = mapStudioDraftFixture(t);
+    f.open(); f.edit('studio-name', 'Saved definition name'); f.flush();
+    const key = f.w.editorDraftStorageKey, draft = JSON.parse(f.w.localStorage.getItem(key));
+    if (formValues === undefined) delete draft.editor.formValues; else draft.editor.formValues = formValues;
+    const raw = JSON.stringify(draft), persisted = JSON.parse(raw);
+    const recovered = requireRecovery(persisted, 'draft-source');
+    assert.equal(recovered.state, persisted.editor); assert.equal(recovered.definition, persisted.editor.definition);
+    assert.equal(recovered.state.formValues, persisted.editor.formValues);
+    const before = structuredClone(persisted);
+    f.w.localStorage.setItem(key, raw); f.w.showMapStudioDraftRecovery(persisted);
+    f.click('studio-draft-restore');
+    assert.equal(f.w.ui.studioDraftRecovery.hidden, true);
+    assert.equal(f.w.ui.mapStudioLayout.inert, false);
+    assert.equal(f.w.ui.studioName.value, name === 'partial object' ? 'Recovered partial form'
+      : name === 'unfinished object' ? '' : 'Saved definition name');
+    if (name === 'unfinished object') assert.equal(f.w.ui.studioRegions.value, '[unfinished');
+    assert.deepEqual(persisted, before);
+    assert.equal(f.w.localStorage.getItem(key), raw);
+    assert.equal(f.w.editorDraftDirty, true);
+    assert.ok([...f.timers.values()].some(timer => timer.delay === 160));
+    f.flush();
+    const saved = JSON.parse(f.w.localStorage.getItem(key));
+    assert.equal(Array.isArray(saved.editor.formValues), false);
+    assert.equal(typeof saved.editor.formValues, 'object');
+    assert.notEqual(saved.editor.formValues, null);
+    assert.equal(saved.editor.formValues['studio-name'].value, f.w.ui.studioName.value);
+    if (name === 'unfinished object') assert.equal(saved.editor.formValues['studio-regions'].value, '[unfinished');
+  });
+}
+
+test('null formValues preflight preserves explicit undefined and earlier diagnostics/getter identity', () => {
+  const draft = draftFor(minimalDefinition()); draft.editor.formValues = undefined;
+  const recovered = requireRecovery(draft, 'source');
+  assert.equal(recovered.state, draft.editor); assert.equal(Object.hasOwn(recovered.state, 'formValues'), true);
+  assert.equal(recovered.state.formValues, undefined);
+  const invalid = draftFor(minimalDefinition()); invalid.editor.formValues = null;
+  const before = structuredClone(invalid);
+  assert.throws(() => requireRecovery(invalid, 'source'), { name: 'Error', message: recoveryMessage });
+  assert.deepEqual(invalid, before);
+  const failure = new Error('Private unexpected form envelope detail');
+  for (const [definition, message] of [
+    [{ ...minimalDefinition(), width: 15 }, recoveryMessage],
+    [{ ...minimalDefinition(), resourceNodes: {} }, recoveryMessage],
+    [{ ...minimalDefinition(), elevationPatches: {} }, 'Invalid elevation patches: shape.'],
+    [{ ...minimalDefinition(), terrainPatches: [null] }, nullEntryCases[0][2]],
+    [{ ...minimalDefinition(), obstacles: [null] }, nullEntryCases[1][2]],
+    ...selectorEntryCases.map(([field, , , message]) => [{ ...minimalDefinition(), [field]: [null] }, message]),
+  ]) {
+    const earlier = draftFor(definition); let reads = 0;
+    Object.defineProperty(earlier.editor, 'formValues', { get() { reads++; throw failure; } });
+    assert.throws(() => requireRecovery(earlier, 'source'), { message });
+    assert.equal(reads, 0);
+  }
+  const unexpected = draftFor(minimalDefinition());
+  Object.defineProperty(unexpected.editor, 'formValues', { get() { throw failure; } });
+  assert.throws(() => requireRecovery(unexpected, 'source'), error => error === failure);
+  const entries = {};
+  Object.defineProperty(entries, 'studio-name', { enumerable: true, get() { throw failure; } });
+  const opaque = draftFor(minimalDefinition()); opaque.editor.formValues = entries;
+  assert.equal(requireRecovery(opaque, 'source').state.formValues, entries);
+});

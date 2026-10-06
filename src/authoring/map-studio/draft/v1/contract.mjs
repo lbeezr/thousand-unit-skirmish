@@ -30,5 +30,8 @@ export function requireRecovery(draft, sourceMapId) {
   if ((definition.resourceNodes || []).some(node => node === null)) {
     throw new Error('Map has an invalid, duplicate, out-of-bounds or unsupported resource node.');
   }
+  if (state.formValues === null) {
+    throw new Error('The saved draft could not be read. Discard it to start a fresh map.');
+  }
   return { state, definition };
 }
