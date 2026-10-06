@@ -1379,6 +1379,25 @@ PR529 stays rejected; physical guards, progress credit, original deadlines and
 fairness are unchanged. No new helper, game, capture or qualification run is
 justified by this analysis.
 
+The subsequent design task now supplies a concrete
+[moving-crowd entitlement contract](crowd-moving-entitlement-contract.md) and an
+executable model at the existing offer/lease boundary. It reserves one named,
+freshly admitted positive next-tick peer step, preserves its swept capsule across
+recipient route/profile changes, and consumes or cancels on the first next-tick
+attempt without waiting for acknowledgement. Rotating failed allocation probes,
+exact-object acknowledgement, shared proposal limits and real finalized progress
+receipts define the bounded policy. This is usable engineering design, not runtime
+adoption or a deadlock/fairness/completion guarantee. Forest142 stays following;
+wall594 remains request-only without a retained legal peer step.
+
+Core owns the reference model and the later host-finalization/pre-write adapter;
+crowd `01a10933-c2b0` owns ordinary steering adoption and unchanged qualification
+after a supported-candidate handoff. All relevant land writes and safety-only
+state across route resets must be bound before any runtime permission is enabled.
+The model tests use the two pinned receipts plus bounded adversarial sequences;
+no game rerun, production integration or source/package/render acceptance is
+claimed by this design milestone. PR529 stays rejected.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
