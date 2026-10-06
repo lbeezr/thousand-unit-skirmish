@@ -141,6 +141,18 @@ The nine raw-property diagnostics in `validSavedVoluntaryEndings` and six in
 both functions retain their executable code and stay outside this strict check.
 No session/access, gameplay, wire format or public/private admission changes.
 
+The dedicated voluntary-ending tests also characterize the raw saved validator
+before a later deliberate contract decision. They use the actual host assertion
+and call with JSON/unknown inputs, and protect inherited/primitive/function/array
+carriers, changing field reads, proxy traps, coercion, native exceptions,
+context/header/result error order, `JSON.stringify`/`toJSON` and input mutation.
+Prototype fixtures restore their exact descriptors in `finally`. These cases
+cover the twelve demonstrated guard/cache incompatibilities with distinct
+controls rather than a combinatorial sweep. They add no runtime guard, serializer
+change or strict enrollment: the validator's nine diagnostics remain open, and
+migration's six remain separate. A boolean validation result does not establish
+a stable `SavedEndingState` for later getter reads.
+
 At the enrollment checkpoint against `c76ca030`, both strict compiler gates
 pass and focused Node-type/framing/backpressure tests pass 52/52 with zero skips,
 including the original 25 transport tests. Comment-erased ES2022 module output
