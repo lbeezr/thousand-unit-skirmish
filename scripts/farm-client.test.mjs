@@ -188,23 +188,39 @@ for (const team of [0, 1]) test(`seat ${team} explicitly selected Workers surviv
     { id: 1, team, kind: 'infantry', hp: 100, generation: 8 },
     { id: 2, team: 1-team, kind: 'worker', hp: 100, generation: 9 }];
   const f = constructionTargetingFixture({ team, units, selection: [0, 1, 2], buildings: [farm] });
+  const statuses = [], submitted = [];
   const container = {dataset:{},children:[],replaceChildren(){this.children=[];},append(button){this.children.push(button);}};
   Object.assign(f.context, {ui:{buildingLifecycleActions:container},latestTeamResearch:[{},{}],
     getBuildingQueueLength:()=>0, document:{createElement:()=>({dataset:{},addEventListener(type,fn){this.click=fn;}})},
     teamUnits:[[],[]],clearWildlifeSelection(){},clearActiveControlGroup(){},syncSelectionMesh(){},
-    updateSelectionUI(){},updateBuildingSelectionVisual(){},window:{matchMedia:()=>({matches:false})}});
-  vm.runInContext([fn('selectBuilding'),fn('updateBuildingLifecycleActions')].join('\n'),f.context);
+    updateSelectionUI(){},updateBuildingSelectionVisual(){},window:{matchMedia:()=>({matches:false})},
+    currentOrderToken:700,beginOrderStatus:(...args)=>{submitted.push(args);return 700;},
+    finishOrderStatus:(...args)=>statuses.push(args)});
+  vm.runInContext([fn('selectBuilding'),fn('updateBuildingLifecycleActions'),fn('applyOrderNotice')].join('\n'),f.context);
   f.context.selectBuilding(farm);
   assert.deepEqual([...f.selected],[0],'exhausted owned plot retains only explicitly selected living friendly Workers');
   f.context.updateBuildingLifecycleActions();
+  assert.equal(container.children[0].textContent,'Replant · 60 wood');
+  assert.equal(container.children[1].textContent,'Clear exhausted Farm · no refund');
   container.children[0].click();
+  assert.deepEqual(submitted,[['REPLANT · 60 WOOD',1,'WORKERS']]);
   assert.equal(f.payloads[0].type,'replantFarm');
   assert.equal(f.payloads[0].buildingId,10);
   assert.deepEqual(f.payloads[0].ids,[0]);
   assert.deepEqual(f.payloads[0].unitGenerations,[7]);
+  assert.equal(f.context.applyOrderNotice(699,'REPLANT REJECTED · NEED 60 WOOD'),false,'stale affordability feedback cannot finish the current order');
+  assert.deepEqual(statuses,[]);
+  assert.equal(f.context.applyOrderNotice(700,'REPLANT REJECTED · NEED 60 WOOD'),true);
+  assert.deepEqual(statuses,[[700,'REPLANT REJECTED · NEED 60 WOOD','failed']]);
+  assert.equal(farm.harvestStock,0,'rejection leaves the selected plot exhausted');
+  assert.deepEqual([...f.selected],[0],'rejection preserves the explicitly selected Worker');
+  assert.equal(f.context.applyOrderNotice(700,'FARM REPLANTED · 60 WOOD · 1 WORKERS · HARVEST AFTER CONSTRUCTION'),true);
+  assert.deepEqual(statuses.at(-1),[700,'FARM REPLANTED · 60 WOOD · 1 WORKERS · HARVEST AFTER CONSTRUCTION','applied']);
   f.selected.clear(); container.children[0].click();
   assert.equal(f.payloads.length,1,'no selected Worker sends no order');
   assert.match(f.toasts.at(-1),/SELECT IDLE WORKERS.*60 WOOD/);
+  assert.equal(f.toasts.at(-1),'SELECT IDLE WORKERS, THEN SELECT THIS EXHAUSTED PLOT · REPLANT COSTS 60 WOOD');
+  assert.equal(submitted.length,1,'no selected Worker starts no tracked order');
   farm.harvestStock=1; f.selected.add(0); f.context.selectBuilding(farm);
   assert.equal(f.selected.size,0,'productive plot retains ordinary exclusive building selection');
 });

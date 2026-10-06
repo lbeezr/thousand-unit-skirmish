@@ -19,6 +19,7 @@ import { objectiveSummary } from '../src/client/hud/objective-summary.mjs';
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+const exhaustedFarmInstruction = 'Select idle Workers, then select this plot and choose Replant · 60 wood. Workers harvest after construction. Clear exhausted Farm remains available with no refund. No regrowth.';
 const minimapProof = readFileSync(new URL('./minimap-orders-browser.mjs', import.meta.url), 'utf8');
 const between = (start, end) => {
   const a = source.indexOf(start), b = source.indexOf(end, a + start.length);
@@ -150,7 +151,7 @@ for (const team of [0, 1]) test(`seat ${team}: utility selection describes its a
   const farm = { id: 50, team, type: 'farm', complete: true, progress: 1, hp: 600, maxHp: 600, harvestStock: 0 };
   f.select([], farm); f.w.updateCommandUI();
   assert.match(f.w.ui.selectedBuildingProduction.textContent, /0 \/ 200 food remaining.*Exhausted/);
-  assert.match(f.w.ui.commandHint.textContent, /Clear exhausted Farm.*build a new Farm/);
+  assert.equal(f.w.ui.commandHint.textContent, exhaustedFarmInstruction);
   const gate = { id: 50, team, type: 'palisade-gate', complete: true, progress: 1, hp: 300, maxHp: 300, gateOpen: true };
   f.select([], gate); assert.match(f.w.ui.selectedBuildingProduction.textContent, /Gate open.*both teams/);
   f.dom.window.close();
@@ -1020,7 +1021,7 @@ for (const team of [0, 1]) test(`seat ${team}: Farm identity opens accurate comp
   assert.equal(art.querySelector('img'), artImage, 'state changes keep the existing image and link nodes');
   assert.match(art.textContent, /Farm illustration.*Exhausted food plot/);
   assert.match(f.w.ui.selectedBuildingProduction.textContent, /0 \/ 200.*Exhausted/);
-  assert.match(f.d.querySelector('[data-building-instruction]').textContent, /Clear exhausted Farm.*new Farm.*No regrowth/);
+  assert.equal(f.d.querySelector('[data-building-instruction]').textContent, exhaustedFarmInstruction);
   farm.complete = false; farm.progress = .4; f.select([], farm);
   assert.equal(f.w.ui.selectedBuildingState.textContent, 'BUILDING · 40%');
   assert.equal(artImage.getAttribute('src'), FARM_PORTRAITS.frame.asset);
