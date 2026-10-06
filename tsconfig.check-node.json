@@ -7,6 +7,8 @@
     "src/networking/websocket-frame.mjs",
     "scripts/type-contracts/websocket-frame-valid.mjs",
     "scripts/renderer-capture-context.mjs",
-    "scripts/type-contracts/renderer-capture-context-valid.mjs"
+    "scripts/type-contracts/renderer-capture-context-valid.mjs",
+    "src/server/transport/peer-output.mjs",
+    "scripts/type-contracts/peer-output-valid.mjs"
   ]
 }

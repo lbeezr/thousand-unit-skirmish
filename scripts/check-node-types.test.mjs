@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -80,4 +81,102 @@ test('installed Node ambient types stay outside the browser boundary', () => {
   assert.equal(diagnostics.length, 2, describe(diagnostics).join('\n'));
   assert.ok(diagnostics.every(diagnostic => diagnostic.file?.fileName === fixturePath));
   assert.deepEqual(diagnostics.map(diagnostic => diagnostic.code), [2591, 2591]);
+});
+
+const peerFixturePath = path.join(root, 'scripts/type-contracts/peer-output-invalid.mjs');
+const peerFixtureImports = [
+  "import { Buffer } from 'node:buffer';",
+  "import { createPeerOutput } from '../../src/server/transport/peer-output.mjs';",
+  "import '../../scripts/type-contracts/peer-output-valid.mjs';",
+  'const output = createPeerOutput(1024, () => {}, queuedBytes => Math.max(0, queuedBytes));',
+  "/** @type {import('../../src/server/transport/peer-output.mjs').DrainPeer} */",
+  'const peer = { closed: false, socket: { writableLength: 0, write: frame => true }, terminate() {},',
+  'peakQueuedBytes: 0, backpressured: false, outboundJsonFrames: 0, outboundJsonWireBytes: 0,',
+  'outboundJsonPayloadBytes: 0, outboundJsonUncompressedWireBytes: 0, outboundCompressedFrames: 0,',
+  'outboundCompressedWireBytes: 0, outboundCompressedPayloadBytes: 0, pendingState: null,',
+  'coalescedStateSnapshots: 0, pendingWaypointCounts: null,',
+  'sendPreparedState(frame) { return output.sendPreparedState(peer, frame); } };',
+];
+const peerCases = [
+  { name: 'text queue limit', code: 2345, source: "createPeerOutput('1024', () => {}, queuedBytes => {});" },
+  { name: 'text queue metric callback', code: 2345,
+    source: 'createPeerOutput(1024, () => {}, /** @param {string} queuedBytes */ queuedBytes => {});' },
+  { name: 'text frame byte count', code: 2345, source: "output.canQueuePeerFrame(peer, '3');" },
+  { name: 'text prepared frame', code: 2345, source: "output.sendPreparedPeerFrame(peer, 'frame');" },
+  { name: 'floating-point prepared frame', code: 2345,
+    source: 'output.sendPreparedPeerFrame(peer, new Float32Array(3));' },
+  { name: 'compressed frame without payload metadata', code: 2345,
+    source: 'output.sendPreparedPeerFrame(peer, Object.assign(Buffer.alloc(1), { rtsCompressed: true }));' },
+  { name: 'text payload metadata', code: 2345,
+    source: "output.sendPreparedPeerFrame(peer, Object.assign(Buffer.alloc(1), { rtsPayloadBytes: '3' }));" },
+  { name: 'text socket write result', code: 2345, source: "output.recordPeerWrite(peer, 'false');" },
+  { name: 'text socket queued-byte state', code: 2322,
+    source: "/** @type {import('../../src/server/transport/peer-output.mjs').QueuePeer} */ const badQueue = { closed: false, socket: { writableLength: '3' }, terminate() {} };" },
+  { name: 'text peak queue counter', code: 2322,
+    source: "/** @type {import('../../src/server/transport/peer-output.mjs').WritePeer} */ const badCounter = { closed: false, socket: { writableLength: 0 }, terminate() {}, peakQueuedBytes: '0', backpressured: false };" },
+  { name: 'write result mistaken for text', code: 2339,
+    source: 'output.sendPreparedPeerFrame(peer, Buffer.alloc(1)).toUpperCase();' },
+  // Drain already inferred void before enrollment; retain that result contract.
+  { name: 'drain result mistaken for number', code: 2339, source: 'output.drainPeerOutput(peer).toFixed(0);' },
+];
+const peerDiagnostics = fixtureDiagnostics(parsed, peerFixturePath,
+  [...peerFixtureImports, ...peerCases.map(item => item.source)].join('\n'));
+
+test('peer-output negative fixtures produce only the expected contract failures', () => {
+  assert.equal(peerDiagnostics.length, peerCases.length, describe(peerDiagnostics).join('\n'));
+  assert.ok(peerDiagnostics.every(diagnostic => diagnostic.file?.fileName === peerFixturePath));
+});
+for (const [index, item] of peerCases.entries()) {
+  test(`the checker rejects ${item.name}`, () => {
+    const onLine = peerDiagnostics.filter(diagnostic => diagnostic.file?.fileName === peerFixturePath
+      && diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start).line === index + peerFixtureImports.length);
+    assert.deepEqual(onLine.map(diagnostic => diagnostic.code), [item.code], describe(onLine).join('\n'));
+  });
+}
+
+test('the actual production peer-output factory, peer adapters and drain callback compile', () => {
+  const source = readFileSync(path.join(root, 'server.mjs'), 'utf8');
+  const tree = ts.createSourceFile('server.mjs', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const nodes = [];
+  function visit(node) { nodes.push(node); ts.forEachChild(node, visit); }
+  visit(tree);
+  const factoryBindings = nodes.filter(node => ts.isVariableDeclaration(node)
+    && node.initializer && ts.isCallExpression(node.initializer)
+    && node.initializer.expression.getText(tree) === 'createPeerOutput');
+  assert.equal(factoryBindings.length, 1);
+  const createPeer = tree.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'createPeer');
+  assert.ok(createPeer);
+  const peerObjects = nodes.filter(node => ts.isVariableDeclaration(node) && node.name.getText(tree) === 'peer'
+    && node.initializer && ts.isObjectLiteralExpression(node.initializer)
+    && node.pos >= createPeer.pos && node.end <= createPeer.end);
+  assert.equal(peerObjects.length, 1);
+  const fields = new Set(['socket', 'closed', 'backpressured', 'pendingState', 'pendingWaypointCounts',
+    'coalescedStateSnapshots', 'peakQueuedBytes', 'outboundJsonFrames', 'outboundJsonWireBytes',
+    'outboundJsonPayloadBytes', 'outboundJsonUncompressedWireBytes', 'outboundCompressedFrames',
+    'outboundCompressedWireBytes', 'outboundCompressedPayloadBytes',
+    'sendPreparedState', 'sendPreparedWaypointCounts', 'terminate']);
+  const properties = peerObjects[0].initializer.properties.filter(node => fields.has(node.name?.getText(tree)));
+  assert.equal(properties.length, fields.size);
+  const drainCalls = nodes.filter(node => ts.isExpressionStatement(node) && ts.isCallExpression(node.expression)
+    && node.expression.expression.getText(tree) === 'socket.on'
+    && node.expression.arguments[0]?.getText(tree) === "'drain'"
+    && node.pos >= createPeer.pos && node.end <= createPeer.end);
+  assert.equal(drainCalls.length, 1);
+
+  // Compile the real adapters with Node's Socket and typed host release/constants.
+  // prepareJsonFrame remains host-owned and covered by the runtime transport tests.
+  const fixturePath = path.join(root, 'scripts/type-contracts/peer-output-production.mjs');
+  const fixture = [
+    "import { Socket } from 'node:net';",
+    "import { createPeerOutput } from '../../src/server/transport/peer-output.mjs';",
+    'const MAX_PEER_QUEUED_BYTES = 1024; let outboundQueueLimitDisconnects = 0, peakOutboundQueuedBytes = 0;',
+    `const ${factoryBindings[0].getText(tree)};`,
+    'const socket = new Socket();',
+    "/** @param {import('../../src/server/transport/peer-output.mjs').DrainPeer} peer @param {boolean} graceful */",
+    'function releasePeer(peer, graceful) {}',
+    "/** @type {import('../../src/server/transport/peer-output.mjs').DrainPeer & {sendPreparedWaypointCounts: (frame: import('../../src/server/transport/peer-output.mjs').PreparedPeerFrame) => boolean}} */",
+    `const peer = { ${properties.map(node => node.getText(tree)).join(',\n')} };`,
+    drainCalls[0].getText(tree),
+  ].join('\n');
+  assert.deepEqual(describe(fixtureDiagnostics(parsed, fixturePath, fixture)), []);
 });
