@@ -11,7 +11,8 @@ import { createMapImportValidator } from './authoring/map-import-validator.mjs';
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from './authoring/map-studio-draft-store.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS } from './regions.mjs';
-import { regionGestureZone, ScenarioEditHistory, createScenarioEditCoordinator } from './authoring/scenario-authoring.mjs';
+import { regionGestureZone, ScenarioEditHistory, createScenarioEditCoordinator,
+  scenarioEventCaptureRootId, scenarioEventSourceWouldCycle } from './authoring/scenario-authoring.mjs';
 import { validateScenarioRegions, validCompletionTrigger } from './scenario-regions.mjs';
 import { regionalGroundColor } from './regional-ground-kits.mjs';
 import { researchOptions, researchAction } from './research-actions.mjs';
@@ -5983,19 +5984,7 @@ function eligibleEditorCaptureTriggers() {
 }
 
 function editorScenarioEventCaptureRootId(eventId, cache = new Map(), visiting = new Set()) {
-  if (cache.has(eventId)) return cache.get(eventId);
-  if (visiting.has(eventId)) return null;
-  visiting.add(eventId);
-  const event = editorScenarioEvents.find((item) => item.id === eventId);
-  let rootId = event?.trigger?.type === 'capture' ? event.id : null;
-  const sourceIds = scenarioEventSourceIds(event?.trigger);
-  if (sourceIds.length > 0) {
-    const roots = sourceIds.map((sourceId) => editorScenarioEventCaptureRootId(sourceId, cache, visiting));
-    if (roots[0] && roots.every((candidate) => candidate === roots[0])) rootId = roots[0];
-  }
-  visiting.delete(eventId);
-  cache.set(eventId, rootId);
-  return rootId;
+  return scenarioEventCaptureRootId(editorScenarioEvents, eventId, cache, visiting);
 }
 
 function editorScenarioEventHasCaptureRoot(eventId) {
@@ -6013,15 +6002,7 @@ function reconcileEditorScenarioEventCapturingTeams() {
 }
 
 function editorScenarioEventSourceWouldCycle(sourceId, childId) {
-  const visited = new Set();
-  const reachesChild = (eventId) => {
-    if (eventId === childId) return true;
-    if (visited.has(eventId)) return false;
-    visited.add(eventId);
-    const event = editorScenarioEvents.find((item) => item.id === eventId);
-    return scenarioEventSourceIds(event?.trigger).some(reachesChild);
-  };
-  return reachesChild(sourceId);
+  return scenarioEventSourceWouldCycle(editorScenarioEvents, sourceId, childId);
 }
 
 function eligibleEditorScenarioEventSources(event) {

@@ -82,7 +82,8 @@ test('compatibility paths preserve exactly the existing named export bindings',(
   [scenarioAuthoring,legacyScenarioAuthoring,['ScenarioEditHistory','regionGestureZone']],
   [mapResize,legacyMapResize,['resizeWorldMarkers']],
  ]) {
-  assert.deepEqual(Object.keys(canonical).sort(),[...keys,...(canonical===scenarioAuthoring?['createScenarioEditCoordinator']:[])].sort());
+  assert.deepEqual(Object.keys(canonical).sort(),[...keys,...(canonical===scenarioAuthoring?
+   ['createScenarioEditCoordinator','scenarioEventCaptureRootId','scenarioEventSourceWouldCycle']:[])].sort());
   assert.deepEqual(Object.keys(legacy).sort(),keys.sort());
   for (const key of keys) assert.equal(legacy[key],canonical[key],key);
  }

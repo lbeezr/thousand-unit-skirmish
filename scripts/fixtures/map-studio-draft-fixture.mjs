@@ -4,7 +4,8 @@ import { JSDOM } from 'jsdom';
 import { createMapImportValidator } from '../../src/authoring/map-import-validator.mjs';
 import { createMapStudioFormState } from '../../src/authoring/map-studio-form-state.mjs';
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from '../../src/authoring/map-studio-draft-store.mjs';
-import { ScenarioEditHistory, createScenarioEditCoordinator } from '../../src/authoring/scenario-authoring.mjs';
+import { ScenarioEditHistory, createScenarioEditCoordinator,
+  scenarioEventCaptureRootId, scenarioEventSourceWouldCycle } from '../../src/authoring/scenario-authoring.mjs';
 import * as mapUtils from '../../src/map-utils.mjs';
 import * as scenarioRegions from '../../src/scenario-regions.mjs';
 import * as definitions from '../../src/gameplay-definitions.mjs';
@@ -49,6 +50,7 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {} } = {}) {
     editorDraftSourceMapId: null, editorDraftStorageKey: null, editorDraftDirty: false, editorDraftWriteTimer: 0,
     editorDefinition: null, editorTool: 'stone', editorDrag: null, editorPanDrag: null,
     scenarioEditHistory: new ScenarioEditHistory(64), createScenarioEditCoordinator,
+    scenarioEventCaptureRootId, scenarioEventSourceWouldCycle,
     selectedEditorRegionId: null, resourceBrushControls: null, redraws: 0,
     groundBaseMaterial: () => { throw new Error('Fixture maps must specify terrainBase'); },
     selectedStudioAudio: () => w.editorDefinition?.audio,
@@ -79,6 +81,7 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {} } = {}) {
     between('function selectedEditorPrerequisiteIds(', 'function setEditorTriggerPrerequisites('),
     between('function scenarioEditorState(', 'let editorDraftSourceMapId'),
     between('function readEditorRegions(', 'function getSelectedEditorScenarioEvent('),
+    between('function editorScenarioEventCaptureRootId(', 'function reconcileEditorScenarioEventTriggers('),
     between('function saveEditorStartingResourcesFields(', 'function syncEditorTriggerControls('),
     between('function populateMapEditor(', 'function isGroundEditorTool('),
     between('function compressEditorGround(', 'function showToast('),

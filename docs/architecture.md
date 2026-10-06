@@ -848,7 +848,7 @@ and all unrelated host bytes; it does not incorporate an error-handling change.
 | Checkpoint envelope [PR507](https://github.com/lbeezr/thousand-unit-skirmish/pull/507), integrated after contract preparation in PR495 and module preparation in PR502 | Architecture owns the default private envelope binding after the parent allocated the core PR504 handoff and XL audit writes. The nine inputs, domain-state return and existing capture/restore/file contracts are preserved; PR506 parking/movement bytes remain unchanged. | Actual merge `6c5dde0f` has the reviewed tree: 91 checkpoint/XL cases, 90 old/new authority/restore observations, native economy/storage and 11 native XL dimension rows pass. Clean package and private HTTP checks pass. Railway staging SUCCESS `422033b4` contains that source; the direct public read is proxy-blocked, so served identity and ordinary-game recovery remain open with architecture/public staging. Hosted CI retains formation/native-wall failures, separately from the passing scoped contracts. Next: the disjoint world-helper caller migration below; do not move the remaining domain-state validator behind a broad host parameter bag. |
 | Map Studio form snapshot controller [PR406](https://github.com/lbeezr/thousand-unit-skirmish/pull/406): `src/authoring/map-studio-form-state.mjs` with the two real draft callers in `src/main.js` | First small implementation of this row. Explicit `createMapStudioFormState({ root, document }) → { capture, restore }` owns only live dialog values; no host-state catch-all, storage, timer, rendering or simulation dependencies. The architecture/authoring owner retains the controller and source/browser acceptance. | Preserve old function bodies apart from closure identifiers/indentation, all draft JSON/version/storage/gesture/import/export/publish behavior and every prior brush case. Fixture uses production initialization; focused form/draft cases, import/privacy guard and exact served/packed bytes establish the source milestone. No new shim and all eleven existing surfaces retained. Normal-sandbox rendered draft acceptance remains incomplete. |
 | Versioned Map Studio draft storage/preflight [PR412](https://github.com/lbeezr/thousand-unit-skirmish/pull/412): `src/authoring/map-studio-draft-store.mjs` and real `main.js` callers | Explicit deferred storage getter, key identity inputs and cached recovery references. Preserve version 1 and old rejection/error ordering; no new file budget, migration, storage service or server checkpoint dependency. Architecture/authoring retains source and rendered recovery ownership. | Current registered brush/form cases plus malformed/old/foreign drafts, interruption/cancel/restore reread, storage failures, real portable import/export parity and native saved-map restart. Preserve every old host byte outside the bounded extraction/calls, all eleven compatibility surfaces and exact public/private packed HTTP policy. |
-| Scenario history coordination [PR415](https://github.com/lbeezr/thousand-unit-skirmish/pull/415): existing `src/authoring/scenario-authoring.mjs` and actual record/Undo/Redo host callers | Architecture/authoring owns the applying flag and operation ordering in the canonical module. DOM/state assignments remain explicit host callbacks; the existing bounded history instance and all old resets/callers remain. The new export is canonical-only; the legacy namespace retains its two original bindings. | Preserve active-state gating, availability updates, reentrant suppression, redo branching, exhausted restoration, error propagation/suppression and draft-save order. Direct contracts and real template controls exercise selections, no match mutation and recovery/import resets; actual packed bytes cover both old/canonical paths. No new admission, alias retirement, source-policy/registry edits or unrelated host changes. |
+| Scenario history coordination [PR415](https://github.com/lbeezr/thousand-unit-skirmish/pull/415), then the editable event-graph queries below: existing `src/authoring/scenario-authoring.mjs` with real main callers | Architecture/authoring owns the applying flag/order and the draft's capture-root/cycle questions. DOM/state assignments remain host callbacks; history, mutation, storage/debounce and publication stay outside the pure queries. New exports are canonical-only; the legacy namespace retains its two original bindings. | Preserve history gating/ordering and query roots, caller cache/visiting identity, partial/cyclic drafts, source eligibility and capturing-team reconciliation. Actual-host contract cases pass before extraction; real template controls and source/packed checks follow. No admission, alias retirement, registry or movement/Patrol body changes. |
 | Remaining Map Studio capture/debounce/recovery presentation and publish seam in `src/main.js`; existing `map-studio-draft-scenario.mjs` consumer | Architecture/authoring retains the concrete lifecycle/publish contract and rendered recovery evidence. Use current form, store and history APIs; preserve ordered subpanel callbacks. Keep checkpoint parsing/XL file/route budgets with their owner, crowd/focused Attack/selected-route movement with their owners and match-ending actions with theirs. Avoid a broad editor context or unused formatter extraction. | Next evidence: real draft edit/save/reopen/publish on an identified containing cloud release when normal-sandbox capability is available. Source/CPU results do not close that recorded startup gap. Further source work needs an independently useful responsibility and real caller contract; current modal behavior and product decisions are not silently changed to manufacture another slice. |
 | Root tool commands and test/fixture homes: current `package.json`, workflows and `docs/testing.md` consumers | Testing-strategy/command owners own registration migration, discovery and supported commands. Authoring/assets/scenario/performance owners first select an actual workload/API boundary from the purpose-based stage above. | Preserve every existing case, fixed input/seed, coverage floor, command and release consumer; root entries retire only after external/fixture/identified-release obligations clear. Those registries and broad tool/test moves are outside this lane's current write scope. |
 
@@ -1126,6 +1126,44 @@ This header-only slice adds four composition edges: 224 modules/428 local edges,
 dependencies become 78 and server's 76; all existing imported names remain.
 Further host extraction still needs a useful interface and concrete write scope;
 this allocation does not authorize construction/Patrol or a broad host refactor.
+
+#### Editable scenario-event graph responsibility — 6 October 2026
+
+After the PR512 caller migration, the next existing authoring responsibility is
+the two Map Studio graph queries still in `main.js`, used by capturing-team
+reconciliation and source eligibility. The input is the current draft event array
+with explicit IDs; capture-root lookup also accepts the caller's cache and visiting
+set. Outputs are the same root ID/`null` and cycle boolean. They need no DOM,
+storage, timer, renderer, running match or host context. Incomplete/cyclic drafts
+make these authoring queries distinct from authoritative map validation; use the
+existing canonical authoring module and its world source-ID reader rather than
+moving UI policy into the authority validator.
+
+Contract preparation at `d106ceb0` runs through the actual old host functions:
+single/all-of/mixed/missing roots, cache precedence and traversal/identity, cycles,
+replaced arrays, actual eligible sources and exactly the same team reconciliation.
+Extraction preserves those function bodies apart from names, explicit array input
+and recursive forwarding. The two named host wrappers remain default-wired, and
+every other host byte/import remains unchanged. Existing history/gesture/coordinator
+bodies, the legacy two-export namespace and every canonical/legacy public path
+stay supported. The actual draft fixture receives production exports, preserving
+all old controls rather than copying query implementations or renaming tests.
+
+The containing refresh to `d27728f8` includes core PR513's construction body
+admission unchanged, with no overlapping file or hunk in this extraction. The
+template draft consumer also executes the production wrappers using browser-realm
+cache/visiting objects, reconciles the same recipients and autosaves the exact
+event bytes without mutating the running map.
+
+Movement core `01a107ba` retains shared admission/planning; caller/construction
+`01a10933-e913` retains Patrol and construction functions. Open PR508's replay
+fixture work is separate. No server/executor/movement/caller function, art,
+save/protocol/rules version, quota, admission, package/CI/AGENTS/testing discovery,
+manifest or source-domain registration changes. This creates no module or public
+path: one authoring→world edge yields 224 modules/429 local edges, unchanged
+140 browser/95 server/34 shared and zero cycles. The helpers have real editing
+consumers; source/pack/deployment proof and ordinary rendered draft acceptance
+remain separate. Do not retire any compatibility surface from these migrations.
 
 ### Coupling and size ratchets
 

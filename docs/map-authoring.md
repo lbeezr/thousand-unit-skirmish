@@ -189,6 +189,28 @@ existing draft fixture cover region/event restoration, branching, local save,
 no running-match mutation and resets after recovery/import. Architecture/authoring
 retains rendered recovery acceptance at the existing cloud capability gap.
 
+### Editable scenario-event graph queries
+
+The canonical `authoring/scenario-authoring.mjs` also owns
+`scenarioEventCaptureRootId(events, eventId, cache?, visiting?)` and
+`scenarioEventSourceWouldCycle(events, sourceId, childId)`. These are queries over
+the current editable array, including incomplete references and draft cycles.
+Main retains its two named wrappers, passing the live array and the same caller
+cache/visiting objects. Capture-root results drive capturing-team reconciliation;
+cycle results exclude self/downstream candidates from the real source picker.
+Root traversal order, cache precedence, `null` results and unrelated draft-cycle
+handling stay unchanged; the helpers do not mutate events or validate a saved map.
+
+Authority validation remains in `world/scenario-event-chain.mjs`, whose source and
+error ordering are untouched. Existing history/gesture/coordinator bodies remain
+identical, and the legacy `scenario-authoring.mjs` path retains only its two
+original exports; new queries are canonical-only. Actual-host cases first pass
+before extraction, then exercise the default wrappers and canonical functions.
+The draft fixture supplies the production query exports for its template controls.
+Storage, debounce, publication, DOM synchronization, live match state, save/protocol
+formats and all compatibility paths remain outside this extraction. Source/packed
+checks do not close the existing rendered draft/publish acceptance gap.
+
 ### Portable-map validator boundary
 
 The source slice based on main `fec90d44` places the existing 298-line
