@@ -23,7 +23,13 @@ const definitions = Object.freeze([
 const skirmishMapIds = new Set(['bellweather-millrace', 'underbough-rootways', NORMAL_MATCH_MAP_ID,
   'veyrholds-threefold-basin', 'veyrholds-riven-escarpment', 'veyrholds-crownroads']);
 
-/** Missing fields preserve legacy authored rules; explicit invalid fields reject. */
+/**
+ * Missing fields preserve legacy authored rules; explicit invalid fields reject.
+ * Checked callers supply an object; unselected runtime callers retain the
+ * existing malformed-carrier rejection. Identity metadata stays unknown here.
+ * @param {object & {matchModeId?: unknown, matchModeVersion?: unknown}} [value]
+ * @returns {{matchModeId: unknown, matchModeVersion: unknown}}
+ */
 export function normalizeMatchMode(value = {}) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new Error('Match mode settings must be an object.');

@@ -351,3 +351,207 @@ test('recovery preserves phase and clears readiness; reset requires a new launch
     { phase: 'lobby', revision: -1 }, { phase: 'lobby', revision: 1.5 },
     { phase: 'running', revision: 1, ready: true }]) assert.throws(() => validatePregameCheckpoint(invalid));
 });
+
+function payloadDiagnostics(source, { mutation, omitNormalizer = false } = {}) {
+  const root = new URL('../', import.meta.url);
+  const path = relative => fileURLToPath(new URL(relative, root));
+  const config = ts.readConfigFile(path('tsconfig.check-js.json'), ts.sys.readFile);
+  assert.equal(config.error, undefined);
+  const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, fileURLToPath(root));
+  assert.deepEqual(parsed.errors, []);
+  const readAst = relative => ts.createSourceFile(path(relative), readFileSync(path(relative), 'utf8'),
+    ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const functions = (ast, names) => {
+    const selected = ast.statements.filter(statement =>
+      ts.isFunctionDeclaration(statement) && names.includes(statement.name?.text));
+    assert.deepEqual(selected.map(statement => statement.name.text), names);
+    return selected.map(statement => statement.getFullText(ast)).join('\n');
+  };
+  const variables = (ast, names) => {
+    const declaredNames = statement => ts.isVariableStatement(statement)
+      ? statement.declarationList.declarations.map(declaration => declaration.name.getText(ast)) : [];
+    const selected = ast.statements.filter(statement => declaredNames(statement).some(name => names.includes(name)));
+    assert.deepEqual(selected.flatMap(declaredNames), names);
+    return selected.map(statement => statement.getFullText(ast)).join('\n');
+  };
+  const requiredImport = (ast, name, specifier) => {
+    const selected = ast.statements.filter(statement => ts.isImportDeclaration(statement)
+      && statement.moduleSpecifier.text === specifier
+      && statement.importClause?.namedBindings && ts.isNamedImports(statement.importClause.namedBindings)
+      && statement.importClause.namedBindings.elements.some(element => element.name.text === name));
+    assert.equal(selected.length, 1, `${name} production import`);
+    return `import { ${name} } from '${specifier}';\n`;
+  };
+  const room = readAst('src/room-pregame.mjs');
+  const classes = room.statements.filter(statement => ts.isClassDeclaration(statement)
+    && statement.name?.text === 'RoomPregame');
+  assert.equal(classes.length, 1);
+  const declaration = classes[0];
+  const methods = declaration.members.filter(member => ts.isMethodDeclaration(member)
+    && member.name.getText(room) === 'payload');
+  assert.equal(methods.length, 1);
+  let method = methods[0].getFullText(room);
+  if (mutation) {
+    assert.equal(method.split(mutation.before).length, 2, 'mutate exactly one producer expression');
+    method = method.replace(mutation.before, mutation.after);
+  }
+  const modes = readAst('src/match-modes.mjs');
+  const banner = readAst('src/bannerfall-rules.mjs');
+  // Keep actual declarations and their JSDoc. Only envelopes/imports are generated;
+  // no producer, normalizer, registry or constant is replaced with a test stub.
+  const roomSource = requiredImport(room, 'normalizeMatchMode', './match-modes.mjs')
+    + functions(room, ['isPregameCheckpointRecord', 'isPregameCheckpointPhase',
+      'isPregameCheckpointRevision', 'validatePregameCheckpoint'])
+    + room.text.slice(declaration.getFullStart(), declaration.getStart())
+    + `\nexport class RoomPregame {${method}\n}\n`;
+  const normalizer = functions(modes, ['normalizeMatchMode']);
+  const modeSource = requiredImport(modes, 'BANNERFALL_RULES', './bannerfall-rules.mjs')
+    + variables(modes, ['NORMAL_MATCH_MAP_ID', 'definitions']) + (omitNormalizer ? '' : normalizer);
+  const sources = new Map([
+    [path('src/room-pregame.mjs'), roomSource],
+    [path('src/match-modes.mjs'), modeSource],
+    [path('src/bannerfall-rules.mjs'), variables(banner, ['BANNERFALL_RULES'])],
+  ]);
+  const fixturePath = path('scripts/type-contracts/pregame-payload-consumer.mjs');
+  sources.set(fixturePath, source);
+  const host = ts.createCompilerHost(parsed.options);
+  const getSourceFile = host.getSourceFile.bind(host);
+  host.getSourceFile = (fileName, version, ...args) => sources.has(fileName)
+    ? ts.createSourceFile(fileName, sources.get(fileName), version, true, ts.ScriptKind.JS)
+    : getSourceFile(fileName, version, ...args);
+  const program = ts.createProgram([fixturePath], parsed.options, host);
+  const selectedFiles = program.getSourceFiles().filter(file => file.fileName.startsWith(path('src/')));
+  assert.deepEqual(selectedFiles.map(file => file.fileName).sort(), [...sources.keys()]
+    .filter(file => file.startsWith(path('src/'))).sort());
+  // Every diagnostic is returned. A positive program must be entirely clean;
+  // controls assert exact diagnostics rather than filtering unselected errors.
+  return { fixturePath, modulePath: path('src/room-pregame.mjs'),
+    modePath: path('src/match-modes.mjs'), diagnostics: ts.getPreEmitDiagnostics(program) };
+}
+
+const payloadConsumerPrefix = `import { RoomPregame } from '../../src/room-pregame.mjs';
+/** @param {import('../../src/room-pregame.mjs').PregamePayloadSource & RoomPregame} room */
+function consume(room) {
+const checkpoint = room.checkpoint();
+const payload = room.payload();
+const seat = payload.seats[0];
+`;
+const payloadPositiveControls = [
+  '/** @type {"lobby" | "running"} */ const checkpointPhase = checkpoint.phase;',
+  '/** @type {number} */ const checkpointRevision = checkpoint.revision;',
+  '/** @type {"lobby" | "running"} */ const payloadPhase = payload.phase;',
+  '/** @type {number} */ const payloadRevision = payload.revision;',
+  '/** @type {boolean} */ const launch = payload.canLaunch;',
+  '/** @type {boolean} */ const ready = seat.ready;',
+  '/** @type {"pvp"} */ const mode = payload.mode;',
+];
+const payloadConsumer = controls => `${payloadConsumerPrefix}${controls.join('\n')}\n}\n`;
+
+test('actual payload/normalizer declarations compile with seven checked result controls', () => {
+  const { diagnostics } = payloadDiagnostics(payloadConsumer(payloadPositiveControls));
+  assert.deepEqual(diagnostics.map(diagnostic => ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')), []);
+});
+
+test('payload result controls reject fourteen unchecked kinds without inventing metadata guarantees', () => {
+  const cases = [
+    { source: 'checkpoint.phase = "launching";', code: 2322 },
+    { source: 'checkpoint.revision = "0";', code: 2322 },
+    { source: 'checkpoint.ready;', code: 2339 },
+    { source: 'payload.phase = "launching";', code: 2322 },
+    { source: 'payload.revision = "0";', code: 2322 },
+    { source: 'payload.canLaunch = "yes";', code: 2322 },
+    { source: 'seat.ready = "yes";', code: 2322 },
+    { source: '/** @type {number} */ const map = payload.mapId;', code: 2322 },
+    { source: '/** @type {string} */ const army = payload.armySize;', code: 2322 },
+    { source: '/** @type {number} */ const id = seat.id;', code: 2322 },
+    { source: '/** @type {string} */ const team = seat.team;', code: 2322 },
+    { source: '/** @type {string} */ const connected = seat.connected;', code: 2322 },
+    { source: '/** @type {number} */ const identity = payload.matchModeId;', code: 2322 },
+    { source: '/** @type {string} */ const version = payload.matchModeVersion;', code: 2322 },
+  ];
+  const { fixturePath, diagnostics } = payloadDiagnostics(payloadConsumer(cases.map(item => item.source)));
+  assert.equal(diagnostics.length, cases.length);
+  assert.ok(diagnostics.every(diagnostic => diagnostic.file?.fileName === fixturePath));
+  for (const [index, item] of cases.entries()) {
+    const onLine = diagnostics.filter(diagnostic => diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start).line
+      === payloadConsumerPrefix.split('\n').length - 1 + index);
+    assert.deepEqual(onLine.map(diagnostic => diagnostic.code), [item.code], item.source);
+  }
+});
+
+test('partial payload DTO admits open/missing/nonstandard metadata and preserves runtime passthrough', () => {
+  const { diagnostics } = payloadDiagnostics(`
+/** @type {import('../../src/room-pregame.mjs').PregamePayload} */
+const metadata = { phase: 'lobby', revision: 0, mapId: 42, armySize: 'eight',
+  matchModeId: null, matchModeVersion: false, mode: 'pvp', canLaunch: false,
+  seats: [{ ready: false }, { id: 7, team: '0', connected: 'yes', extra: true, ready: true }] };
+`);
+  assert.deepEqual(diagnostics.map(diagnostic => ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')), []);
+  const value = new RoomPregame(42, 'eight');
+  value.syncSeats([{ id: 7, team: '0', connected: 'yes' }]);
+  assert.deepEqual(value.payload(), { phase: 'lobby', revision: 1, mapId: 42, armySize: 'eight',
+    matchModeId: 'authored', matchModeVersion: 1, mode: 'pvp', canLaunch: false,
+    seats: [{ id: 7, team: '0', connected: 'yes', ready: false }] });
+  value.seats = [{ extra: 'open metadata' }];
+  assert.deepEqual(value.payload().seats, [{ extra: 'open metadata', ready: false }]);
+});
+
+test('checked actual payload body rejects four producer result regressions', () => {
+  const mutations = [
+    { before: "      mode: 'pvp', canLaunch:", after: "      mode: 'pve', canLaunch:", code: 2322 },
+    { before: 'canLaunch: this.canLaunch(),', after: "canLaunch: 'yes',", code: 2322 },
+    { before: 'ready: this.readyIds.has(seat.id)', after: "ready: 'yes'", code: 2322 },
+    { before: 'seats: this.seats.map(seat => ({ ...seat, ready: this.readyIds.has(seat.id) })),',
+      after: 'seats: { ready: true },', code: 2353 },
+  ];
+  for (const mutation of mutations) {
+    const { modulePath, diagnostics } = payloadDiagnostics(payloadConsumer(payloadPositiveControls), { mutation });
+    assert.equal(diagnostics.length, 1, mutation.before);
+    assert.equal(diagnostics[0].file?.fileName, modulePath);
+    assert.equal(diagnostics[0].code, mutation.code);
+    const line = diagnostics[0].file.getLineAndCharacterOfPosition(diagnostics[0].start).line;
+    assert.ok(diagnostics[0].file.text.split('\n')[line].includes(mutation.after.trim()), mutation.after);
+  }
+});
+
+test('selected payload program fails when its actual normalizer dependency is missing', () => {
+  const { modulePath, diagnostics } = payloadDiagnostics(payloadConsumer(payloadPositiveControls), { omitNormalizer: true });
+  assert.equal(diagnostics.length, 1);
+  assert.equal(diagnostics[0].file?.fileName, modulePath);
+  assert.equal(diagnostics[0].code, 2305);
+  assert.match(ts.flattenDiagnosticMessageText(diagnostics[0].messageText, '\n'), /normalizeMatchMode/);
+});
+
+test('actual host pregamePayload consumer preserves checked projection results with unknown host metadata', () => {
+  const root = new URL('../', import.meta.url);
+  const serverPath = fileURLToPath(new URL('server.mjs', root));
+  const server = ts.createSourceFile(serverPath, readFileSync(serverPath, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const declarations = server.statements.filter(statement => ts.isFunctionDeclaration(statement)
+    && statement.name?.text === 'pregamePayload');
+  assert.equal(declarations.length, 1);
+  // Host binding slots describe dependencies, not stand-in implementations.
+  // The actual host declaration retains its null guard, sync call and full spread.
+  const { diagnostics } = payloadDiagnostics(`
+import { RoomPregame } from '../../src/room-pregame.mjs';
+/** @param {{
+ * pregame: (import('../../src/room-pregame.mjs').PregamePayloadSource & RoomPregame) | null,
+ * syncPregameSeats: () => void,
+ * DEFAULT_FACTION_ID: unknown, mapCatalogPayload: () => unknown,
+ * matchModeCatalog: (input: unknown) => unknown, matchModeDefinition: (input: unknown) => unknown,
+ * authoredMapDefinition: unknown, matchMode: unknown
+ * }} bindings */
+function hostProjection(bindings) {
+const {pregame, syncPregameSeats, DEFAULT_FACTION_ID, mapCatalogPayload,
+matchModeCatalog, matchModeDefinition, authoredMapDefinition, matchMode} = bindings;
+${declarations[0].getFullText(server)}
+const payload = pregamePayload();
+if (payload === null) return null;
+/** @type {'pvp'} */ const mode = payload.mode;
+/** @type {boolean} */ const canLaunch = payload.canLaunch;
+/** @type {boolean} */ const ready = payload.seats[0].ready;
+/** @type {unknown} */ const catalog = payload.maps;
+return {mode, canLaunch, ready, catalog};
+}
+`);
+  assert.deepEqual(diagnostics.map(diagnostic => ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')), []);
+});
