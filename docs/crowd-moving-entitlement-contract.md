@@ -101,9 +101,13 @@ Unit IDs are existing deterministic identities; no randomness, clock or global q
 
 Keep the existing 64-neighbor limit and **share the remaining 128 proposals** across
 ordinary selection, request checks, publication, ingress and service; no offer hook
-gets a fresh budget. Every physical admission consumes one proposal. At most 64
-queried reservations plus one captured obligation are checked per admission, so at
-most `128 × 65` reservation-capsule comparisons per shared selection budget. Physical
+gets a fresh budget. Every modeled authoritative write uses the public budgeted
+`admit` entrypoint; the capsule oracle is private. Reject nonfinite/nonpositive
+movement budgets and work counters outside integer `[0,128]`. Every physical
+admission consumes one proposal. At most 64 queried reservations plus one captured
+obligation are checked per admission, so at most `128 × 65` existing-reservation
+comparisons plus at most 64 explicit request/new-capsule pairing comparisons per
+publication (`pairingVisits`). Physical
 body admission and each original priority scan remain bounded by the same 64 bodies;
 candidate eligibility can scan up to 64 requests and perform up to 64 priority scans.
 Sorting at most 64 IDs and one bounded probe loop suffice. Overflow fails closed.

@@ -20,10 +20,11 @@ function scene(count=1) {
     admit:(u,from,to)=>canTraverseStaticBodySegment(from,to,LAND_CLEARANCE_PROFILE.radiusByKind[u.kind],8,8,()=>true)
       && canTraverseCrowdBodySegment(from,to,LAND_CLEARANCE_PROFILE.radiusByKind[u.kind],units.filter(o=>o!==u))};
   const request=u=>model.request(u,peer,{x:u.x+.04,z:u.z+.05},{x:0,z:1},c,entitlementBudget());
-  const publish=(tick=c.tick+1)=>{c.tick=tick;const start=movementStart(peer,c);move(peer,{x:peer.x-.06,z:peer.z+.02});
-    return model.publish(peer,{x:peer.x-.06,z:peer.z+.02},finalizedProgress(peer,start,c),c,entitlementBudget());};
-  const ingress=u=>{const to=model.prepareIngress(u,peer,c,entitlementBudget());assert.ok(to);
-    const start=movementStart(u,c);assert.ok(model.guard(u,u,to,c,entitlementBudget()));move(u,to);
+  const publish=(tick=c.tick+1)=>{c.tick=tick;const start=movementStart(peer,c),budget=entitlementBudget();
+    const to={x:peer.x-.06,z:peer.z+.02};assert.ok(model.admit(peer,peer,to,c,budget));move(peer,to);
+    return model.publish(peer,{x:peer.x-.06,z:peer.z+.02},finalizedProgress(peer,start,c),c,budget);};
+  const ingress=u=>{const budget=entitlementBudget(),to=model.prepareIngress(u,peer,c,budget);assert.ok(to);
+    const start=movementStart(u,c);assert.ok(model.admit(u,u,to,c,budget));move(u,to);
     assert.ok(model.finishIngress(u,finalizedProgress(u,start,c),c));};
   return {model,peer,units,c,request,publish,ingress};
 }
@@ -55,7 +56,7 @@ test('a short crossing can have clear endpoints/current-body clearance but viola
   const u=actor(4,r.to.x-.439,r.to.z-.04),to={x:u.x,z:u.z+.08};s.units.push(u);
   for(const v of [u,to]) assert.ok(Math.sqrt(pointSegmentDistanceSquared(v,r.from,r.to))>.44);
   assert.ok(s.c.admit(u,u,to),'actual peer body is clear');
-  assert.equal(s.model.guard(u,u,to,s.c,entitlementBudget()),false);
+  assert.equal(s.model.admit(u,u,to,s.c,entitlementBudget()),false);
 });
 
 test('publication and consumption respect an actor serving both roles in a reservation chain',()=>{
@@ -123,7 +124,7 @@ test('failed recipient fallback keeps safety but earns no grant credit; birth/de
     const s=scene(),u=s.units[1];s.request(u);s.publish();
     assert.ok(s.model.prepareIngress(u,s.peer,s.c,entitlementBudget()));
     const from=p(u),to={x:u.x+.01,z:u.z+.01};
-    assert.ok(s.model.guard(u,from,to,s.c,entitlementBudget()));move(u,to);
+    assert.ok(s.model.admit(u,from,to,s.c,entitlementBudget()));move(u,to);
     assert.equal(s.model.finishIngress(u,null,s.c),false);
     assert.equal(s.model.state(u).lastGrantTick,-Infinity);
     if(change==='generation')u.generation++;
@@ -187,6 +188,23 @@ test('bounded queries fail closed and all physical admissions share the remainin
   assert.equal(b.model.obligation(b.units[1],b.c),null);
   for(let i=0;i<actors.length;i++)assert.deepEqual(b.units[i].path,actors[i].path);
   assert.ok(r);
+});
+
+test('malformed authoritative movement and shared work budgets fail closed before physical admission',()=>{
+  for(const movement of [NaN,Infinity,-.1,0]) {
+    const s=scene();s.c.budgetOf=()=>movement;
+    s.c.admit=()=>assert.fail('invalid movement budget reached physical admission');
+    assert.equal(s.request(s.units[1]),false);
+  }
+  for(const counter of [NaN,Infinity,-1,.5,129]) {
+    const s=scene();s.c.admit=()=>assert.fail('invalid work counter reached physical admission');
+    assert.equal(s.model.admit(s.peer,s.peer,{x:.45,z:.2},s.c,entitlementBudget(counter)),false);
+  }
+  const s=scene(2);s.request(s.units[1]);s.request(s.units[2]);
+  s.c.tick=1;const start=movementStart(s.peer,s.c);move(s.peer,{x:.45,z:.2});
+  const b=entitlementBudget();assert.ok(s.model.publish(s.peer,{x:.39,z:.22},finalizedProgress(s.peer,start,s.c),s.c,b));
+  assert.equal(b.pairingVisits,1,'new-capsule pairing has its own explicit work receipt');
+  assert.ok(b.reservationVisits<=b.proposals*65);assert.ok(b.pairingVisits<=64);
 });
 
 for(const change of ['new-priority','route','generation','footprint','pose','navigation','epoch','stationary','overflow','budget'])

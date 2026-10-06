@@ -44,7 +44,7 @@ export class MovingEntitlementModel {
     && matches(r.stamp,r.owner,c) && same(r.from,r.owner); }
   obligation(u,c) { const l=this.state(u).lease;
     return l && u.hp>0 && l.generation===u.generation && this.live(l.reservation,c) ? l : null; }
-  guard(u,from,to,c,b) {
+  #guard(u,from,to,c,b) {
     if (c.overflow || c.neighbors.length>LIMIT) return false;
     // At most64 queried reservations plus the actor's own captured obligation.
     const reservations=new Set(c.neighbors.map(other=>this.state(other).offer.reservation));
@@ -55,10 +55,13 @@ export class MovingEntitlementModel {
     return true;
   }
   admit(u,from,to,c,b) {
-    if(!finite(from) || !finite(to) || c.overflow || c.neighbors.length>LIMIT || b.proposals>=PROPOSALS
-      || distance(from,to)<=EPS || distance(from,to)>Math.min(.25,c.budgetOf(u))+EPS) return false;
+    const movementBudget=c.budgetOf(u);
+    if(!finite(from) || !finite(to) || c.overflow || c.neighbors.length>LIMIT
+      || !Number.isFinite(movementBudget) || movementBudget<=0
+      || !Number.isInteger(b.proposals) || b.proposals<0 || b.proposals>=PROPOSALS
+      || distance(from,to)<=EPS || distance(from,to)>Math.min(.25,movementBudget)+EPS) return false;
     b.proposals++;
-    return c.admit(u,from,to) && this.guard(u,from,to,c,b);
+    return c.admit(u,from,to) && this.#guard(u,from,to,c,b);
   }
   eligible(q,peer,c) {
     if (!(q && q.tick===c.tick-1 && q.peer===peer && peer.id<q.unit.id
@@ -96,7 +99,9 @@ export class MovingEntitlementModel {
     for(const q of ordered) {
       if(b.proposals>=PROPOSALS) break;
       slot.cursor=q.unit.id; // Attempts rotate even if admission/acknowledgement later fails.
-      if(!this.admit(q.unit,q.from,q.to,c,b) || !separated(q.from,q.to,r,q.unit)) continue;
+      if(!this.admit(q.unit,q.from,q.to,c,b)) continue;
+      b.pairingVisits++;
+      if(!separated(q.from,q.to,r,q.unit)) continue;
       r.winner=q.unit; r.request=q; slot.reservation=r; return r;
     }
     return null;
@@ -139,7 +144,7 @@ export class MovingEntitlementModel {
   }
 }
 
-export const entitlementBudget = (proposals=0) => ({proposals,reservationVisits:0});
+export const entitlementBudget = (proposals=0) => ({proposals,reservationVisits:0,pairingVisits:0});
 export const movementStart = (u,c) => ({from:point(u),stamp:stamp(u,c),tick:c.tick});
 // The host alone asserts finalized after all authoritative writes/budget accounting.
 export const finalizedProgress = (u,start,c) => ({from:start.from,to:point(u),beforeStamp:start.stamp,
