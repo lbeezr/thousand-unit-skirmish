@@ -185,7 +185,7 @@ test('actual capture consumer retains fallback provenance and rejects false comp
   }
 });
 
-test('post-render hook retains real Northwest attack fallback and bounds read-only provenance to visible targets',async()=>{
+test('post-render hook retains real Northwest authored attack and bounds read-only provenance to visible targets',async()=>{
   const originalFetch=globalThis.fetch;
   globalThis.fetch=async url=>({ok:true,json:async()=>JSON.parse(await readFile(new URL(`..${url}`,import.meta.url)))});
   class TextureLoader { load(url,done) {
@@ -198,7 +198,7 @@ test('post-render hook retains real Northwest attack fallback and bounds read-on
     runtime.setCount(0,1);runtime.setVisible(true);assert.equal(await runtime.ready,true);
     const unit={id:42,generation:3,team:0,slot:0,kind:'spearman',hp:35,angle:7*Math.PI/4,walking:false,
       renderX:0,renderZ:0,scale:1,visible:true,attackStartedAt:1000,defeatStartedAt:0};
-    runtime.update(unit,1000,1);
+    runtime.update(unit,1200,1);
     const before=JSON.stringify(unit),buffers=scene.children.map(m=>Array.from(m.instanceMatrix.array));
     const probe={number:0,targets:[42],samples:[],pending:null,errors:[]};
     let reads=0,loadReads=0;
@@ -214,14 +214,14 @@ test('post-render hook retains real Northwest attack fallback and bounds read-on
     const observe=()=>runInContext(`(${observeRenderedUnits.toString()})()`,context);
     observe();assert.equal(probe.errors.length,0);assert.equal(reads,1);assert.equal(loadReads,1);
     assertUnitLoadReady(probe.last.unitLoad);assertUnitLoadReady(probe.samples[0].unitLoad);
-    assert.equal(probe.last.units.length,1);assert.equal(probe.last.units[0].actionSelection.reason,'idle-placeholder');
+    assert.equal(probe.last.units.length,1);assert.equal(probe.last.units[0].actionSelection.reason,'exact');
     assert.equal(probe.samples[0].units[0].actionSelection.selectedDirection,'north-west');
     assert.equal(JSON.stringify(unit),before);assert.deepEqual(scene.children.map(m=>Array.from(m.instanceMatrix.array)),buffers);
     context.units=Array.from({length:40},(_,id)=>({...unit,id}));
     probe.targets=[];reads=0;loadReads=0;observe();assert.equal(reads,32);assert.equal(loadReads,1);
     assert.equal(probe.last.units.filter(u=>u.actionSelection).length,32);
     probe.targets=[39];reads=0;observe();assert.equal(reads,1);
-    assert.equal(probe.last.units.find(u=>u.id===39).actionSelection.reason,'idle-placeholder');
+    assert.equal(probe.last.units.find(u=>u.id===39).actionSelection.reason,'exact');
     probe.targets=Array.from({length:40},(_,id)=>id);reads=0;observe();assert.equal(reads,8);
     for(let i=0;i<190;i++)observe();assert.equal(probe.samples.length,180);
     assert.equal(probe.errors.length,0);

@@ -18,11 +18,11 @@ const cells=decodeRegisteredUnitFrames(asset,page,pixels);
 const ownIds=new Set(['attack-south-0','attack-south-1','attack-south-2']);
 
 test('South attack preserves all 69 prior complete frame records, pixels, 31 other clips and calibration',()=>{
-  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^attack-(?:south-west|west)-\d+$/.test(f.id));
-  assert.equal(prior.length,69);assert.equal(asset.frames.length,78);
+  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^attack-(?:south-west|west|north-west)-\d+$/.test(f.id));
+  assert.equal(prior.length,69);assert.equal(asset.frames.length,81);
   assert.equal(sha(JSON.stringify(prior.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['south','south-west','west'].includes(c.directionId)));
-  assert.equal(unchanged.length,29);assert.equal(sha(JSON.stringify(unchanged)),'a0584a1b74d29493462c6a2d9123e173928f520c0f864e3109412a089fea6113');
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['south','south-west','west','north-west'].includes(c.directionId)));
+  assert.equal(unchanged.length,28);assert.equal(sha(JSON.stringify(unchanged)),'742f9f9cdce899be78a3058afe397001b70b4fe258cc6b219a57a91e5dfdfff9');
   const {frames,clips,...metadata}=asset;
   assert.equal(sha(JSON.stringify(metadata)),receipt.registeredAssetMetadataSHA256);
   const baseline={...metadata,artBoundsWorld:receipt.baselineBounds.artBoundsWorld,cullingBoundsWorld:receipt.baselineBounds.cullingBoundsWorld};
@@ -47,7 +47,7 @@ test('South attack reuses its exact idle key then plays three own-view keys with
     for(let y=0;y<352;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+416)*4),original.pixels.subarray(y*416*4,(y+1)*416*4));
   }
   const report=analyzeUnitArtCoverage(asset,cells),row=report.rows.find(r=>r.key==='attack|south');
-  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,8);
+  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,7);
   assert.equal(row.status,'authored');assert.equal(row.distinctFrames,4);assert.equal(row.distinctSilhouettes,4);
   assert.ok(!report.missingCells.some(c=>c.startsWith('walk|')));assert.ok(report.missingCells.includes('defeat|south'));
   const frozen=structuredClone(asset);frozen.clips.find(c=>c.stateId==='attack'&&c.directionId==='south').sequence.forEach(k=>{k.frameId='idle-south-0';});
@@ -57,23 +57,23 @@ test('South attack reuses its exact idle key then plays three own-view keys with
 });
 
 test('South attack preserves the complete old page and extends only reviewed right-column cells',()=>{
-  assert.deepEqual(page.dimensionsPx,{width:2560,height:3968});
+  assert.deepEqual(page.dimensionsPx,{width:3072,height:3968});
   assert.deepEqual(receipt.atlasSlotsPx,[[2052,4],[2052,364],[2052,724]]);
   assert.deepEqual(receipt.baselineDimensionsPx,{width:2048,height:3968});
-  assert.deepEqual(receipt.registeredDimensionsPx,page.dimensionsPx);
+  assert.deepEqual(receipt.registeredDimensionsPx,{width:2560,height:3968});
   const prefix=Buffer.alloc(2048*3968*4),extension=Buffer.alloc(512*3968*4);
   for(let row=0;row<3968;row++){
-    prefix.set(pixels.pixels.subarray(row*2560*4,(row*2560+2048)*4),row*2048*4);
-    extension.set(pixels.pixels.subarray((row*2560+2048)*4,(row+1)*2560*4),row*512*4);
+    prefix.set(pixels.pixels.subarray(row*pixels.width*4,(row*pixels.width+2048)*4),row*2048*4);
+    extension.set(pixels.pixels.subarray((row*pixels.width+2048)*4,(row*pixels.width+2560)*4),row*512*4);
   }
   assert.equal(sha(prefix),receipt.baselineDecodedAtlasSHA256,'every old page byte, including unused space, stays exact');
   for(const [x,y] of receipt.atlasSlotsPx)for(let row=y;row<y+352;row++)extension.fill(0,(row*512+x-2048)*4,(row*512+x-2048+416)*4);
   for(const [x,y] of [[2052,1084],[2052,1516],[2052,1948]])for(let row=y;row<y+416;row++)extension.fill(0,(row*512+x-2048)*4,(row*512+x-2048+416)*4);
   for(const [x,y] of [[2052,2388],[2052,2748],[2052,3108]])for(let row=y;row<y+352;row++)extension.fill(0,(row*512+x-2048)*4,(row*512+x-2048+416)*4);
   assert.equal(sha(extension),sha(Buffer.alloc(512*3968*4)),'all other new-column pixels are zero');
-  assert.equal(sha(read(`${dir}/team-accent-mask.png`)),receipt.registeredMaskSHA256);
+  assert.equal(sha(read(`${dir}/team-accent-mask.png`)),'789b54b2ae00b1711e49443032638c6f9a451deca5fdb97e0397f4b622d690e8');
   assert.notEqual(receipt.registeredMaskSHA256,receipt.baselineMaskSHA256);
-  assert.equal(sha(JSON.stringify(page)),receipt.registeredPageMetadataSHA256);
+  assert.equal(sha(JSON.stringify({...page,dimensionsPx:receipt.registeredDimensionsPx})),receipt.registeredPageMetadataSHA256);
   assert.equal(sha(read(`${dir}/spearman-atlas-source.png`)),sha(read(`${dir}/spearman-atlas-runtime.png`)));
 });
 

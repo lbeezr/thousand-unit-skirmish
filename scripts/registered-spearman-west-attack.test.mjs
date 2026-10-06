@@ -18,11 +18,11 @@ const cells=decodeRegisteredUnitFrames(asset,page,pixels);
 const ownIds=new Set(['attack-west-0','attack-west-1','attack-west-2']);
 
 test('West attack preserves all 75 prior complete frame records, pixels, 31 other clips and calibration',()=>{
-  const prior=asset.frames.filter(f=>!ownIds.has(f.id));
-  assert.equal(prior.length,75);assert.equal(asset.frames.length,78);
+  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^attack-north-west-\d+$/.test(f.id));
+  assert.equal(prior.length,75);assert.equal(asset.frames.length,81);
   assert.equal(sha(JSON.stringify(prior.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&c.directionId==='west'));
-  assert.equal(unchanged.length,31);assert.equal(sha(JSON.stringify(unchanged)),receipt.baselineUnchangedClipsSHA256);
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['west','north-west'].includes(c.directionId)));
+  assert.equal(unchanged.length,30);assert.equal(sha(JSON.stringify(unchanged)),'ba6adbbbe7fa61807cc7f55a7980b9a6034c1240d13840164d15d814cad4ad5c');
   const {frames,clips,...metadata}=asset;
   assert.equal(sha(JSON.stringify(metadata)),receipt.registeredAssetMetadataSHA256);
   const baseline={...metadata,artBoundsWorld:receipt.baselineBounds.artBoundsWorld,cullingBoundsWorld:receipt.baselineBounds.cullingBoundsWorld};
@@ -47,7 +47,7 @@ test('West attack reuses its exact idle key then plays three own-view keys with 
     for(let y=0;y<352;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+416)*4),original.pixels.subarray(y*416*4,(y+1)*416*4));
   }
   const report=analyzeUnitArtCoverage(asset,cells),row=report.rows.find(r=>r.key==='attack|west');
-  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,8);
+  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,7);
   assert.equal(row.status,'authored');assert.equal(row.distinctFrames,4);assert.equal(row.distinctSilhouettes,4);
   assert.ok(!report.missingCells.some(c=>c.startsWith('walk|')));assert.ok(report.missingCells.includes('defeat|west'));
   const frozen=structuredClone(asset);frozen.clips.find(c=>c.stateId==='attack'&&c.directionId==='west').sequence.forEach(k=>{k.frameId='idle-west-0';});
@@ -57,16 +57,17 @@ test('West attack reuses its exact idle key then plays three own-view keys with 
 });
 
 test('West attack changes only its reviewed empty cells and preserves the full prior page/mask',()=>{
-  assert.deepEqual(page.dimensionsPx,{width:2560,height:3968});
+  assert.deepEqual(page.dimensionsPx,{width:3072,height:3968});
   assert.deepEqual(receipt.atlasSlotsPx,[[2052,2388],[2052,2748],[2052,3108]]);
-  assert.deepEqual(receipt.baselineDimensionsPx,page.dimensionsPx);
-  assert.deepEqual(receipt.registeredDimensionsPx,page.dimensionsPx);
-  const restored=Buffer.from(pixels.pixels);
+  assert.deepEqual(receipt.baselineDimensionsPx,{width:2560,height:3968});
+  assert.deepEqual(receipt.registeredDimensionsPx,{width:2560,height:3968});
+  const restored=Buffer.alloc(2560*3968*4);
+  for(let row=0;row<3968;row++)restored.set(pixels.pixels.subarray(row*pixels.width*4,(row*pixels.width+2560)*4),row*2560*4);
   for(const [x,y] of receipt.atlasSlotsPx)for(let row=y;row<y+352;row++)restored.fill(0,(row*2560+x)*4,(row*2560+x+416)*4);
   assert.equal(sha(restored),receipt.baselineDecodedAtlasSHA256,'every earlier page byte outside3 empty slots stays exact');
-  assert.equal(sha(read(`${dir}/team-accent-mask.png`)),receipt.baselineMaskSHA256);
+  assert.equal(sha(read(`${dir}/team-accent-mask.png`)),'789b54b2ae00b1711e49443032638c6f9a451deca5fdb97e0397f4b622d690e8');
   assert.equal(receipt.registeredMaskSHA256,receipt.baselineMaskSHA256);
-  assert.equal(sha(JSON.stringify(page)),receipt.baselinePageMetadataSHA256);
+  assert.equal(sha(JSON.stringify({...page,dimensionsPx:receipt.registeredDimensionsPx})),receipt.baselinePageMetadataSHA256);
   assert.equal(sha(read(`${dir}/spearman-atlas-source.png`)),sha(read(`${dir}/spearman-atlas-runtime.png`)));
 });
 

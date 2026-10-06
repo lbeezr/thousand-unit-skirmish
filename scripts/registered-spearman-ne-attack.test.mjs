@@ -22,12 +22,12 @@ for(const [x,y] of [[1316,2772],[1316,3204],[1316,3588]])for(let row=y;row<y+352
 const ownIds=new Set(['attack-north-east-0','attack-north-east-1','attack-north-east-2']);
 
 test('NE attack preserves all 60 prior complete frame records, pixels, 28 unaffected clips and calibration',()=>{
-  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^attack-(?:east|north|south|south-west|west)-\d+$/.test(f.id));
-  assert.equal(prior.length,60);assert.equal(asset.frames.length,78);
+  const prior=asset.frames.filter(f=>!ownIds.has(f.id)&&!/^attack-(?:east|north|south|south-west|west|north-west)-\d+$/.test(f.id));
+  assert.equal(prior.length,60);assert.equal(asset.frames.length,81);
   assert.equal(sha(JSON.stringify(prior.map(f=>({frame:f,rgba:cells[f.id].rgba,alpha:cells[f.id].alpha})))),receipt.baselineRegisteredPoseSHA256);
   // Later East/North attacks are independently verified; pin all remaining clips.
-  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['north-east','east','north','south','south-west','west'].includes(c.directionId)));
-  assert.equal(unchanged.length,26);assert.equal(sha(JSON.stringify(unchanged)),'a32e7359cd3bd122fed2504c6c54a0bc6f24d0912c839f6a49f19640648e474d');
+  const unchanged=asset.clips.filter(c=>!(c.stateId==='attack'&&['north-east','east','north','south','south-west','west','north-west'].includes(c.directionId)));
+  assert.equal(unchanged.length,25);assert.equal(sha(JSON.stringify(unchanged)),'bba13259e9f73f74fd9e84a39df1e2d020412da78c5342866276d40f48e9585e');
   const {frames,clips,...metadata}=asset;
   assert.equal(sha(JSON.stringify({...metadata,...receipt.registeredBounds})),receipt.registeredAssetMetadataSHA256);
   for(const key of ['artBoundsWorld','cullingBoundsWorld'])for(let axis=0;axis<3;axis++){
@@ -56,7 +56,7 @@ test('NE attack reuses its exact idle key then plays three own-view keys with an
     for(let y=0;y<352;y++)assert.deepEqual(pixels.pixels.subarray(((r.y+y)*pixels.width+r.x)*4,((r.y+y)*pixels.width+r.x+416)*4),original.pixels.subarray(y*416*4,(y+1)*416*4));
   }
   const report=analyzeUnitArtCoverage(asset,cells),row=report.rows.find(r=>r.key==='attack|north-east');
-  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,8);
+  assert.deepEqual(report.errors,[]);assert.equal(report.missingCells.length,7);
   assert.equal(row.status,'authored');assert.equal(row.distinctFrames,4);assert.equal(row.distinctSilhouettes,4);
   assert.ok(!report.missingCells.some(c=>c.startsWith('walk|')));assert.ok(report.missingCells.includes('defeat|north-east'));
   const frozen=structuredClone(asset);frozen.clips.find(c=>c.stateId==='attack'&&c.directionId==='north-east').sequence.forEach(k=>{k.frameId='idle-north-east-0';});
@@ -66,13 +66,13 @@ test('NE attack reuses its exact idle key then plays three own-view keys with an
 });
 
 test('NE attack keeps the complete previous page prefix and appends only the reviewed three slots',()=>{
-  assert.deepEqual(page.dimensionsPx,{width:2560,height:3968});
+  assert.deepEqual(page.dimensionsPx,{width:3072,height:3968});
   assert.equal(sha(historicalPixels.subarray(0,2048*3200*4)),receipt.baselineDecodedAtlasSHA256);
   assert.equal(sha(historicalPixels.subarray(0,2048*3584*4)),receipt.registeredDecodedAtlasSHA256);
   const appended=Buffer.from(historicalPixels.subarray(2048*3200*4,2048*3584*4));
   for(const [x,y] of receipt.atlasSlotsPx)for(let row=y;row<y+352;row++)appended.fill(0,((row-3200)*2048+x)*4,((row-3200)*2048+x+416)*4);
   assert.equal(sha(appended),sha(Buffer.alloc(2048*384*4)));
-  assert.equal(sha(read(`${dir}/team-accent-mask.png`)),'45d8a78af8c0d9ad3bda7626a7e6dc76a83ff9c87b5499f96efb915b6540c001');
+  assert.equal(sha(read(`${dir}/team-accent-mask.png`)),'789b54b2ae00b1711e49443032638c6f9a451deca5fdb97e0397f4b622d690e8');
   assert.equal(sha(read(`${dir}/spearman-atlas-source.png`)),sha(read(`${dir}/spearman-atlas-runtime.png`)));
 });
 
