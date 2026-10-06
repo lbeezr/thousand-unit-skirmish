@@ -31,6 +31,7 @@ export const NODE_ONLY_MODULES = [
   'src/server/pve-model-proposal.mjs', // Offline Node model-request implementation.
   'src/networking/websocket-frame.mjs', // Server-only Node Buffer wire encoding.
   'src/server/transport/peer-output.mjs', // Private Node socket output and queue accounting.
+  'src/server/persistence/room-index-store.mjs', // Private Node room-index persistence; host resolves paths.
 ];
 
 // Responsibilities of existing modules, independent of their current flat paths.
@@ -133,6 +134,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'server/checkpoint-scenario-state', // Ordered saved scenario-state checks; no live simulation mutation.
     'server/checkpoint-roster', // Saved living/queued population and mode roster/result invariants.
     'server/transport/peer-output', // Explicit peer output; host retains queue policy and aggregate metrics.
+    'server/persistence/room-index-store', // Serialized private index I/O; supervisor retains room lifecycle.
     'server/checkpoint-json-budget', 'server/checkpoint-json-scan', 'server/checkpoint-file-reader',
   ],
   // Legacy map-validation entry also exports playback policy. Preserve existing

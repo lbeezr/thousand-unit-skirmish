@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { createServer, request as httpRequest } from 'node:http';
 import { connect as connectTcp } from 'node:net';
-import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
@@ -11,11 +11,11 @@ import { practiceEntryCatalog } from './src/practice-entry-catalog.mjs';
 import { NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from './src/match-modes.mjs';
 import { isAnonymousGameplayRequest } from './src/server/public-gameplay.mjs';
 import { loadBuildIdentity } from './src/server/build-identity.mjs';
+import { createRoomIndexStore } from './src/server/persistence/room-index-store.mjs';
 import { ORDINARY_MAP_MIN_SIDE, MAP_SIZE_TIERS } from './src/map-size-policy.mjs';
 import {
   buildRoomWorkerEnvironment,
   completeRoomLaunchOptions,
-  normalizeRoomIndex,
   normalizeRoomMetadata,
   roomIndexDocument,
   roomResponseMetadata,
@@ -96,7 +96,11 @@ const proxySockets = new Set();
 let stopping = false;
 let defaultWorker = null;
 let defaultWorkerStarting = null;
-let indexSaveQueue = Promise.resolve();
+const roomIndexStore = createRoomIndexStore({
+  dataDirectory: ROOM_DATA_DIRECTORY,
+  indexPath: ROOM_INDEX_PATH,
+  captureDocument: () => roomIndexDocument([...rooms.values()]),
+});
 
 function makeRoom(id, values = {}) {
   const directory = path.join(ROOM_DIRECTORY, id);
@@ -122,34 +126,12 @@ function makeRoom(id, values = {}) {
 }
 
 function persistRoomIndex() {
-  const operation = indexSaveQueue.catch(() => {}).then(async () => {
-    const payload = roomIndexDocument([...rooms.values()]);
-    await mkdir(ROOM_DATA_DIRECTORY, { recursive: true });
-    const temporaryPath = `${ROOM_INDEX_PATH}.${process.pid}.tmp`;
-    await writeFile(temporaryPath, JSON.stringify(payload), { mode: 0o600 });
-    await rename(temporaryPath, ROOM_INDEX_PATH);
-  });
-  indexSaveQueue = operation;
-  return operation;
+  return roomIndexStore.persist();
 }
 
 async function loadRooms() {
   await mkdir(ROOM_DIRECTORY, { recursive: true });
-  let savedRooms = [];
-  let validIndex = false;
-  let indexState = 'missing';
-  try {
-    const index = JSON.parse(await readFile(ROOM_INDEX_PATH, 'utf8'));
-    indexState = 'invalid';
-    const normalized = normalizeRoomIndex(index);
-    if (normalized) {
-      validIndex = true;
-      savedRooms = normalized.rooms;
-      indexState = 'valid';
-    }
-  } catch (error) {
-    if (error.code !== 'ENOENT') indexState = 'invalid';
-  }
+  const { savedRooms, validIndex, indexState } = await roomIndexStore.read();
   const now = Date.now();
   const retained = new Set();
   if (validIndex) {
