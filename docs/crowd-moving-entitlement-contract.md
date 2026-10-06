@@ -210,6 +210,10 @@ heading once and requires positive fixed raw-waypoint gain. The next projected
 controller must remain nonzero ordinary steering: arrival, static repair,
 parked-endpoint wait, a new parked-body detour, and active detour/contour/passage
 lease all retain their original gates. Service bypasses only tangent ranking.
+Its admitted endpoint is carried explicitly through `getMoveVector` to the actual
+write; normalization is only steering metadata and never reconstructs that point.
+A due promise also retires after a first executor call preempted by arrival,
+repair or parked-endpoint wait, even when no named admission was attempted.
 
 A single fixed-tick work record shares 128 segment admissions across selection,
 request, publication, ingress/service and actual writes. Selection leaves three

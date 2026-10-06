@@ -262,7 +262,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     if (to) {
       const length = Math.hypot(to.x-unit.x,to.z-unit.z);
       return {x:(to.x-unit.x)/length,z:(to.z-unit.z)/length,target,stepDistance:length,
-        noProgressTicks,crowdControl:stats};
+        crowdEntitlementPoint:to,noProgressTicks,crowdControl:stats};
     }
   }
   const headingX = dx / distance, headingZ = dz / distance;

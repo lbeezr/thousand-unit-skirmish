@@ -8246,9 +8246,13 @@ function finalizeCrowdMovement(unit, start, repairPending) {
   if (!ordinaryCrowdBodyRadius(unit) && !state?.lease?.pending && !crowdMovingEntitlement.reservation(unit)?.attempted) return;
   const execution=crowdExecutionState(unit,tickNumber), c=crowdEntitlementContext(unit);
   const receipt=finalizedCrowdProgress(unit,start,c);
-  const attempted=crowdMovingEntitlement.reservation(unit)?.attempted;
+  const reservation=crowdMovingEntitlement.reservation(unit);
   crowdMovingEntitlement.finishIngress(unit,receipt,c);
-  if (attempted) { crowdMovingEntitlement.finish(unit,receipt,c); return; }
+  // Arrival/repair/parked wait can preempt selection. The first due executor
+  // call still retires this promise, including an unattempted failed service.
+  if (reservation && (reservation.attempted || tickNumber>=reservation.tick+1)) {
+    crowdMovingEntitlement.finish(unit,receipt,c); return;
+  }
   if (repairPending || !ordinaryCrowdBodyRadius(unit) || unit.pathIndex>=unit.path.length-1) return;
   // Continue the actual finalized heading once; never invent a tangent as a
   // promise. Raw-waypoint gain and all original priority/physical checks apply.
@@ -8915,8 +8919,9 @@ function simulateTick() {
         continue;
       }
 
-      let nextX = unit.x + move.x * move.stepDistance;
-      let nextZ = unit.z + move.z * move.stepDistance;
+      // A named admission retains its exact endpoint across normalization.
+      let nextX = move.crowdEntitlementPoint?.x ?? unit.x + move.x * move.stepDistance;
+      let nextZ = move.crowdEntitlementPoint?.z ?? unit.z + move.z * move.stepDistance;
       if (workerLocalBodyRadius(unit)) {
         nextX = Math.max(-MAP_HALF_X + .5, Math.min(MAP_HALF_X - .5, nextX));
         nextZ = Math.max(-MAP_HALF_Z + .5, Math.min(MAP_HALF_Z - .5, nextZ));

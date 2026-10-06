@@ -141,3 +141,38 @@ test('nonordinary writes keep their caller travel policy while each short write 
   assert.ok(crowd.crowdSteeringRecord(combat).execution.spent>h.c.crowdNextBudget(combat));
   assert.equal(h.c.admitCrowdLandWrite(combat,{x:2.5,z:3}),false,'long unqueried travel fails closed during a protected tick');
 });
+
+test('a non-round-tripping named endpoint is written and finalized exactly by the actual executor',()=>{
+  const h=host();h.peer.x=0;h.peer.z=0;h.peer.path=[44,43,42,34];h.peer.moveGoalCell=34;
+  h.unit.x=2;h.unit.z=0;h.unit.holdingPosition=true;
+  h.c.getMoveVector(h.peer); // Prime this actor's own route record.
+  h.c.tickNumber++;
+  const c=h.c.crowdEntitlementContext(h.peer),to={x:.01,z:.03},length=Math.hypot(to.x,to.z);
+  assert.notEqual(to.z/length*length,to.z,'this vector exposes the old normalization/reconstruction defect');
+  // Isolate consumption of an already admitted, acknowledged named promise.
+  // Publication is exercised independently above using real host progress.
+  const r={owner:h.peer,from:{x:0,z:0},to,radius:.22,stamp:protocol.crowdMovementStart(h.peer,c).stamp,
+    tick:h.c.tickNumber-1,winner:h.unit,request:null,attempted:false};
+  crowd.crowdMovingEntitlement.slot(h.peer).reservation=r;
+  crowd.crowdSteeringRecord(h.unit).lease={kind:'ingress-obligation',generation:h.unit.generation,reservation:r,pending:false};
+  h.c.units=[h.peer];h.c.run();
+  assert.deepEqual({x:h.peer.x,z:h.peer.z},to);
+  assert.equal(crowd.crowdMovingEntitlement.reservation(h.peer),null);
+});
+
+test('the first actual due call cancels a promise preempted by parked endpoint wait or static repair',()=>{
+  for(const reason of ['parked','repair']) {
+    const h=issue();h.c.tickNumber++;h.c.units=[h.peer];
+    if(reason==='repair') {const raw=h.peer.path[h.peer.pathIndex];h.c.isWalkable=cell=>cell>=0&&cell<64&&cell!==raw;}
+    else {
+      const raw=h.c.crowdRawPoint(h.peer);let id=10;
+      for(const x of [-.4,0,.4])for(const z of [-.4,0,.4]) {
+        const body=actor(id++,raw.x+x,raw.z+z);body.path=[];body.pathIndex=0;body.moveGoalCell=-1;h.units.push(body);
+      }
+      assert.ok(h.c.getMoveVector(h.peer).waitingForCrowd,'the unchanged parked endpoint gate preempts take');
+    }
+    h.c.run();
+    assert.equal(crowd.crowdMovingEntitlement.reservation(h.peer),null,reason);
+    assert.equal(crowd.crowdMovingEntitlement.obligation(h.unit,h.c.crowdEntitlementContext(h.unit)),null,reason);
+  }
+});
