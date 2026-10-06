@@ -74,4 +74,3 @@ export async function renderCompositionWav(composition, sourceBlobs, {OfflineCon
   }
   return wavBlob(await context.startRendering());
 }
-

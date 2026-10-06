@@ -930,7 +930,7 @@ supported under the consumer/inventory/identified-release retirement criteria
 above; only its renderer implementation moved. Listening/rendered acceptance
 is separate from the source/CPU/package milestone.
 At this dated checkpoint composer shrinks from 263 to 190 lines and the audio
-rendering leaf is 77 lines. The graph is 238 modules/469 local edges with zero
+rendering leaf is 76 lines. The graph is 238 modules/469 local edges with zero
 cycles; all 1,456 prior selections remain plus canonical WAV syntax. These are
 responsibility/compatibility measurements, not full-suite or listening results.
 
