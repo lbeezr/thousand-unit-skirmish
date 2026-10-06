@@ -8360,7 +8360,7 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
         inset => canTraverseStaticBodySegment(inset, inset, crowdRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable), controlDiagnostics, crowdRadius);
     }
     const crowdMove = selectCrowdStep({ unit, target, stepDistance: Math.min(remainingStep, .25),
-      travelDirection, progressTarget, diagnostics: controlDiagnostics,
+      travelDirection, progressTarget, approachBody: workerPatrolApproachBody(unit, target), diagnostics: controlDiagnostics,
       tick: tickNumber, navigationRevision, epoch: movePlanningEpoch,
       neighbors: query.neighbors, cellCenter: cellToWorld(currentCell), radius: crowdRadius,
       pointAllowed: to => to.x >= -MAP_HALF_X + .5 && to.x <= MAP_HALF_X - .5
@@ -8476,6 +8476,17 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   vx /= length;
   vz /= length;
   return { x: vx, z: vz, target, stepDistance: remainingStep };
+}
+
+// An acquired combat target is an approach objective, while every body remains
+// in the selector's physical oracles. Unrelated occupied endpoints still wait.
+function workerPatrolApproachBody(unit, target) {
+  if (unit.kind !== 'worker' || !(unit.attackTargetId >= 0) || unit.movePlanningPending
+    || unit.pathIndex !== unit.path.length - 1 || !workerPatrolAcquiredMovementActive(unit)) return null;
+  const other = units[unit.attackTargetId];
+  return other?.id === unit.attackTargetId && other.hp > 0 && other.team !== unit.team
+    && (other.movementDomain || 'land') === (unit.movementDomain || 'land')
+    && worldToCell(other.x, other.z) === worldToCell(target.x, target.z) ? other : null;
 }
 
 // Local body adoption follows characterized live Worker intent. Callers extend
