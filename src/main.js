@@ -38,6 +38,7 @@ import { createRoomLobby } from './room-lobby-ui.mjs';
 import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel, fixedMatchArmySize } from './match-mode-controls.mjs';
 import { roomPresence } from './room-presence.mjs';
 import { BrowserStateRecovery } from './browser-state-recovery.mjs';
+import { createWelcomeSession } from './client/networking/welcome-session.mjs';
 import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
 import { renderMatchRecap } from './client/hud/match-recap.mjs';
@@ -750,6 +751,12 @@ const SESSION_STORAGE_KEY = 'thousand-unit-skirmish-session';
 const ROOM_SESSION_STORAGE_KEY = `${SESSION_STORAGE_KEY}:${ROOM_ID || 'default'}`;
 const ROOM_INSTANCE_STORAGE_KEY = `${SESSION_STORAGE_KEY}:instance:${location.host}:${ROOM_ID || 'default'}`;
 const ROOM_MATCH_STORAGE_KEY = `${SESSION_STORAGE_KEY}:match:${location.host}:${ROOM_ID || 'default'}`;
+const welcomeSession = createWelcomeSession({
+  getStorage: () => sessionStorage,
+  sessionKey: ROOM_SESSION_STORAGE_KEY,
+  instanceKey: ROOM_INSTANCE_STORAGE_KEY,
+  matchKey: ROOM_MATCH_STORAGE_KEY,
+});
 
 function setCamera() {
   const clipPlanes = cameraDepthSafePlanes({
@@ -10154,8 +10161,7 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
   const url = new URL(`${protocol}//${location.host}/ws`);
   if (HAS_ROOM_PARAMETER) url.searchParams.set('room', ROOM_ID);
   if (resumeOnly) url.searchParams.set('resumeOnly', '1');
-  let savedToken = null;
-  try { savedToken = sessionStorage.getItem(ROOM_SESSION_STORAGE_KEY); } catch {}
+  const savedToken = welcomeSession.readResumeToken();
   const websocketProtocols = ['rts-v1'];
   if (savedToken) websocketProtocols.push(`rts-resume.${savedToken}`);
   const connection = new WebSocket(url, websocketProtocols);
@@ -10179,38 +10185,14 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
       const joinedSeat = hasPlayerSeat && message.player.team !== cameraSeatTeam;
       if (hasPlayerSeat) cameraSeatTeam = message.player.team;
       else if (message.player.resumePending !== true) cameraSeatTeam = null;
-      let matchInstanceChanged = false;
-      let matchIdentityChanged = false;
-      if (typeof message.serverInstanceId === 'string') {
-        try {
-          const previousInstanceId = sessionStorage.getItem(ROOM_INSTANCE_STORAGE_KEY);
-          matchInstanceChanged = Boolean(previousInstanceId && previousInstanceId !== message.serverInstanceId);
-          sessionStorage.setItem(ROOM_INSTANCE_STORAGE_KEY, message.serverInstanceId);
-        } catch {}
-      }
-      if (typeof message.matchId === 'string') {
-        try {
-          const previousMatchId = sessionStorage.getItem(ROOM_MATCH_STORAGE_KEY);
-          matchIdentityChanged = Boolean(previousMatchId && previousMatchId !== message.matchId);
-          sessionStorage.setItem(ROOM_MATCH_STORAGE_KEY, message.matchId);
-        } catch {}
-      }
-      const matchWasReset = !message.recoveredFromCheckpoint && (matchIdentityChanged || matchInstanceChanged);
-      const matchWasRestored = message.recoveredFromCheckpoint === true && matchInstanceChanged
-        && !matchIdentityChanged;
+      const { matchWasReset, matchWasRestored } = welcomeSession.recordWelcomeIdentity(message);
       void loadMapAudio(message.map.audio);
       if (mapChanged) {
         mapDefinition = message.map;
         buildMap(mapDefinition);
       }
       waitingForResume = message.player.resumePending === true;
-      try {
-        if (message.player.sessionToken) {
-          sessionStorage.setItem(ROOM_SESSION_STORAGE_KEY, message.player.sessionToken);
-          sessionStorage.setItem('thousand-unit-skirmish-last-room', HAS_ROOM_PARAMETER ? ROOM_ID : 'default');
-        }
-        else if (!waitingForResume) sessionStorage.removeItem(ROOM_SESSION_STORAGE_KEY);
-      } catch {}
+      welcomeSession.recordWelcomeSeat(message.player, waitingForResume, HAS_ROOM_PARAMETER ? ROOM_ID : 'default');
       setPlayer(message.player);
       if (hasPlayerSeat) onSessionConfirmed();
       applyLobby(message.state.lobby);

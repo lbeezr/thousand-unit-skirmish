@@ -6,6 +6,8 @@ import test from 'node:test';
 import { BrowserStateRecovery } from '../src/browser-state-recovery.mjs';
 import { createUnitPresentationClientFixture, workerSnapshotRow } from './unit-presentation-client-fixture.mjs';
 import { classifyOrderNotice } from '../src/order-feedback.mjs';
+import { createWelcomeSession } from '../src/client/networking/welcome-session.mjs';
+import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 function section(start, end) {
@@ -128,4 +130,140 @@ test('actual full refresh handler clears queued replaceable state/metadata befor
   const queued = peer.pendingState = { tick: 10 };
   await context.handleCommand(peer, { type: 'stateRefresh', stateRefreshId: 0 });
   assert.equal(peer.pendingState, queued); assert.equal(sent.length, 1);
+});
+
+// Actual socket body and production key/factory initialization; controlled
+// callbacks prove storage ordering without claiming rendered browser acceptance.
+function welcomeFixture({ room = 'room-a', hasRoom = true, previous = {}, failAt, throwAt } = {}) {
+  const trace = [], connections = [], values = new Map(Object.entries(previous));
+  let accesses = 0;
+  const prefix = 'thousand-unit-skirmish-session';
+  const keys = { token: `${prefix}:${room || 'default'}`,
+    instance: `${prefix}:instance:localhost:${room || 'default'}`,
+    match: `${prefix}:match:localhost:${room || 'default'}`, lastRoom: 'thousand-unit-skirmish-last-room' };
+  function record(label, value) {
+    trace.push(value === undefined ? [label] : [label, value]);
+    if (failAt === label || throwAt === label) throw new Error(label);
+  }
+  const storage = {
+    getItem(key) { record(`get:${key}`); return values.get(key) ?? null; },
+    setItem(key, value) { record(`set:${key}`, value); values.set(key, value); },
+    removeItem(key) { record(`remove:${key}`); values.delete(key); },
+  };
+  class WebSocket {
+    constructor(url, protocols) { this.url = url; this.protocols = protocols; this.events = new Map(); connections.push(this); }
+    addEventListener(type, callback) { this.events.set(type, callback); }
+    message(value) { this.events.get('message')({ data: JSON.stringify(value) }); }
+  }
+  const context = vm.createContext({ ...browserRecoveryBindings(), createWelcomeSession, WebSocket, URL,
+    location: { protocol: 'http:', host: 'localhost' }, ROOM_ID: room, HAS_ROOM_PARAMETER: hasRoom,
+    pageLeaving: false, localTeam: 0, cameraSeatTeam: 0, socket: null, waitingForResume: false,
+    mapDefinition: null, currentArmySize: 24, document: { visibilityState: 'visible' },
+    window: { reportPrototypeError: value => record('invalid-map', value) },
+    ui: { orderStatus: { textContent: '' }, mapStudio: { open: false } }, TEAM_NAMES: ['Azure', 'Ember'],
+    setConnection() {}, loadMapAudio: value => record('audio', value), buildMap: () => record('map'),
+    setPlayer(player) { record('player'); context.localTeam = player.team; },
+    applyLobby: () => record('lobby'), roomLobby: { updateChat: () => record('chat') },
+    setMapCatalog: () => record('catalog'), setArmySize: () => record('army'),
+    applyState: () => record('state'), updateRoomUI: () => record('room'),
+    showToast: (value, duration) => record('toast', [value, duration]), reconnectDelayMs: 500,
+  });
+  Object.defineProperty(context, 'sessionStorage', { get() {
+    accesses++; if (failAt === `access:${accesses}`) throw new Error('storage getter'); return storage;
+  } });
+  vm.runInContext(section('const SESSION_STORAGE_KEY', '\nconst welcomeSession')
+    + section('const welcomeSession', '\n});') + '\n});', context);
+  assert.equal(accesses, 0, 'construction must defer browser storage access');
+  vm.runInContext(section('function connectSocket(', "\nwindow.addEventListener('beforeunload'"), context);
+  const connect = () => { context.connectSocket({ onSessionConfirmed: () => record('confirmed') }); return connections.at(-1); };
+  const welcome = (changes = {}) => ({ type: 'welcome', serverInstanceId: 'instance-b', matchId: 'match-b',
+    map: { id: 'welcome-map', obstacles: [], triggers: [], scenarioEvents: [], audio: 'map-audio' }, maps: [],
+    state: { armySize: 24, connected: 2, serverInstanceId: 'instance-b', matchId: 'match-b', tick: 1 },
+    player: { team: 0, sessionToken: 'new-token' }, ...changes });
+  return { context, keys, values, trace, connect, welcome, accesses: () => accesses };
+}
+
+test('actual welcome stores identity before audio/map and seat token before confirmation and state', () => {
+  const f = welcomeFixture({ room: '' });
+  f.values.set(f.keys.token, 'old-token'); f.values.set(f.keys.instance, 'instance-a'); f.values.set(f.keys.match, 'match-a');
+  const connection = f.connect();
+  assert.deepEqual([...connection.protocols], ['rts-v1', 'rts-resume.old-token']);
+  assert.equal(connection.url.searchParams.get('room'), '');
+  connection.message(f.welcome());
+  assert.deepEqual(f.trace.slice(0, 9), [
+    [`get:${f.keys.token}`], [`get:${f.keys.instance}`], [`set:${f.keys.instance}`, 'instance-b'],
+    [`get:${f.keys.match}`], [`set:${f.keys.match}`, 'match-b'], ['audio', 'map-audio'], ['map'],
+    [`set:${f.keys.token}`, 'new-token'], [`set:${f.keys.lastRoom}`, ''],
+  ]);
+  assert.deepEqual(f.trace.slice(9, -1).map(entry => entry[0]), ['player', 'confirmed', 'lobby', 'chat', 'catalog', 'army', 'state', 'room']);
+  assert.deepEqual(f.trace.at(-1), ['toast', ['MATCH SERVER RESTARTED · THE MATCH RESET', 3600]]);
+  assert.equal(f.accesses(), 7, 'each original storage expression evaluates the getter');
+});
+
+test('identity reads and writes fail independently; a failed write retains the computed reset flag', () => {
+  for (const [fault, reset] of [['get:instance', false], ['set:instance', true], ['access:2', false], ['access:3', true]]) {
+    const f = welcomeFixture(); f.values.set(f.keys.instance, 'instance-a'); f.values.set(f.keys.match, 'match-b');
+    const failure = fault.replace(':instance', `:${f.keys.instance}`);
+    const failed = welcomeFixture({ previous: Object.fromEntries(f.values), failAt: failure });
+    failed.connect().message(failed.welcome());
+    assert.equal(failed.values.get(failed.keys.match), 'match-b', failure);
+    assert.equal(failed.values.get(failed.keys.token), 'new-token', failure);
+    assert.equal(failed.trace.at(-1)[1][0].includes('MATCH RESET'), reset, failure);
+    assert.ok(failed.trace.some(([label]) => label === `set:${failed.keys.match}`), failure);
+  }
+});
+
+test('seat and last-room storage retain their shared catch and resume-pending deletion behavior', () => {
+  for (const fault of ['token', 'lastRoom']) {
+    const key = welcomeFixture().keys[fault];
+    const f = welcomeFixture({ failAt: `set:${key}` }); f.values.set(f.keys.token, 'old-token');
+    f.connect().message(f.welcome());
+    assert.equal(f.values.get(f.keys.token), fault === 'token' ? 'old-token' : 'new-token');
+    assert.equal(f.values.has(f.keys.lastRoom), false);
+    assert.equal(f.trace.some(([label]) => label === `set:${f.keys.lastRoom}`), fault === 'lastRoom');
+    assert.ok(f.trace.some(([label]) => label === 'state'));
+  }
+  for (const pending of [true, false]) {
+    const f = welcomeFixture({ hasRoom: false }); f.values.set(f.keys.token, 'old-token');
+    f.connect().message(f.welcome({ player: { team: null, resumePending: pending } }));
+    assert.equal(f.values.has(f.keys.token), pending);
+  }
+  const f = welcomeFixture({ hasRoom: false }); f.connect().message(f.welcome());
+  assert.equal(f.values.get(f.keys.lastRoom), 'default');
+});
+
+test('synchronous audio/map failures leave identity stored and skip seat writes and subsequent callbacks', () => {
+  for (const callback of ['audio', 'map']) {
+    const f = welcomeFixture({ throwAt: callback }); const connection = f.connect();
+    assert.throws(() => connection.message(f.welcome()), new RegExp(callback));
+    assert.equal(f.values.get(f.keys.instance), 'instance-b'); assert.equal(f.values.get(f.keys.match), 'match-b');
+    assert.equal(f.values.has(f.keys.token), false); assert.equal(f.trace.at(-1)[0], callback);
+    assert.equal(f.context.waitingForResume, false);
+  }
+});
+
+test('stale welcome messages cannot access storage or invoke welcome callbacks', () => {
+  const f = welcomeFixture(); const stale = f.connect(), current = f.connect();
+  const before = structuredClone(f.trace), accesses = f.accesses();
+  stale.message(f.welcome()); assert.deepEqual(f.trace, before); assert.equal(f.accesses(), accesses);
+  current.message(f.welcome()); assert.equal(f.values.get(f.keys.token), 'new-token');
+});
+
+test('welcome identity preserves empty IDs and truthy versus strict checkpoint recovery decisions', () => {
+  for (const recovery of [undefined, false, true, 'true']) {
+    const values = new Map([['instance', 'old'], ['match', 'same']]);
+    const session = createWelcomeSession({ getStorage: () => ({ getItem: key => values.get(key),
+      setItem: (key, value) => values.set(key, value) }), instanceKey: 'instance', matchKey: 'match' });
+    const flags = session.recordWelcomeIdentity({ serverInstanceId: '', matchId: 'same', recoveredFromCheckpoint: recovery });
+    assert.deepEqual(flags, { matchInstanceChanged: true, matchIdentityChanged: false,
+      matchWasReset: !recovery, matchWasRestored: recovery === true });
+    assert.equal(values.get('instance'), '');
+  }
+  let accesses = 0;
+  const session = createWelcomeSession({ getStorage: () => { accesses++; throw new Error('unavailable'); } });
+  assert.equal(accesses, 0); assert.equal(session.readResumeToken(), null);
+  assert.deepEqual(session.recordWelcomeIdentity({ serverInstanceId: null, matchId: 2 }), {
+    matchInstanceChanged: false, matchIdentityChanged: false, matchWasReset: false, matchWasRestored: false,
+  });
+  assert.equal(accesses, 1, 'non-string IDs do not access storage');
 });

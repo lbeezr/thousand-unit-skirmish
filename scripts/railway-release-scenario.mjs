@@ -251,6 +251,17 @@ try {
         404, `form controller admission remains exact (${method}): ${filename}`);
     }
   }
+  const welcomeSessionPath = 'src/client/networking/welcome-session.mjs';
+  const welcomeSession = await fetch(`${base}/${welcomeSessionPath}`, { headers: { authorization } });
+  assert.equal(welcomeSession.status, 200);
+  assert.deepEqual(Buffer.from(await welcomeSession.arrayBuffer()), await readFile(path.join(root, welcomeSessionPath)));
+  for (const filename of ['src/client/networking/', 'src/client/networking/unknown.mjs',
+    `${welcomeSessionPath}/extra`, 'src/client//networking/welcome-session.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
+        404, `welcome session admission remains exact (${method}): ${filename}`);
+    }
+  }
   // Both compatibility and canonical HUD entries must retain exact packed bytes.
   for (const helper of ['resource-format', 'population-readout', 'objective-summary']) {
     for (const filename of [`src/${helper}.mjs`, `src/client/hud/${helper}.mjs`]) {

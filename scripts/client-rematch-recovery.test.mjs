@@ -16,6 +16,8 @@ import { fixedMatchArmySize } from '../src/match-mode-controls.mjs';
 import { matchRecap, renderMatchRecap } from '../src/client/hud/match-recap.mjs';
 import { JSDOM } from 'jsdom';
 import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
+import { createWelcomeSession } from '../src/client/networking/welcome-session.mjs';
+import { clearOwnedBuildingFog } from '../src/building-fog-composition.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const declaration = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`\nfunction ${next}(`));
@@ -65,7 +67,7 @@ function fixture(team) {
     close() {}
   }
   const noop = () => {};
-  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS, fixedMatchArmySize, renderMatchRecap, matchDecisions: { update() {}, disconnect() {}, feedback() {}, close() {} },
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), clearOwnedBuildingFog, readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS, fixedMatchArmySize, renderMatchRecap, matchDecisions: { update() {}, disconnect() {}, feedback() {}, close() {} },
     applyLobby() {}, applyWaypointQueueCounts() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
@@ -99,6 +101,8 @@ function fixture(team) {
     setConnection:noop,setMapCatalog:noop,loadMapAudio:noop,updateRoomUI:noop,showToast:noop,scheduleReconnect:noop,
     zoom:1.7,defaultCameraZoom:0.91,cameraMinZoom:0.1,mapFitActive:false,resize:noop,centerCameraOnHomeBase:noop,
   });
+  context.welcomeSession = createWelcomeSession({ getStorage: () => context.sessionStorage,
+    sessionKey: context.ROOM_SESSION_STORAGE_KEY, instanceKey: 'fixture-instance', matchKey: 'fixture-match' });
   vm.runInContext([
     declaration('updateMatchArmySizeControls','applyLobby'),
     wildlifeClientFunctionSource(source), declaration('clearActiveControlGroup','assignControlGroup'),

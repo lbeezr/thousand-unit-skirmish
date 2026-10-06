@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
+import { createWelcomeSession } from '../src/client/networking/welcome-session.mjs';
 import { WallPlacementGesture } from '../src/wall-placement.mjs';
 import { classifyOrderNotice } from '../src/order-feedback.mjs';
 
@@ -56,6 +57,8 @@ function fixture({ pending = true, state = 'pending' } = {}) {
     scheduleReconnect() { reconnects++; },
   });
   context.wallPlacementGesture.begin(3, { column: 1, row: 1 });
+  context.welcomeSession = createWelcomeSession({ getStorage: () => context.sessionStorage,
+    sessionKey: context.ROOM_SESSION_STORAGE_KEY, instanceKey: 'fixture-instance', matchKey: 'fixture-match' });
   vm.runInContext(`${declaration('resetWallPlacement', 'updateBuildPlacementGhost')}\n${declaration('cancelBuildPlacement', 'beginBuildPlacement')}\n${socketSource}\nconnectSocket();`, context);
   return { context, connections, toasts, economyUpdates: () => economyUpdates, reconnects: () => reconnects, workStops: () => workStops, orderResets: () => orderResets, fishClears: () => fishClears };
 }
