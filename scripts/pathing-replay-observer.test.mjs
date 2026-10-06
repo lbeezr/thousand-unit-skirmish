@@ -27,7 +27,7 @@ function actor(team,id=0) {
 function run(kind,team,branch,outcome,on) {
   const unit=actor(team),enemy={...actor(1-team,1),holdingPosition:true};
   const calls=[],repairs=[],context=vm.createContext({unit,units:[unit,enemy],calls,repairs,assert,
-    tickNumber:40,navigationRevision:9,dirty:false,STEP_SECONDS:.1,
+    tickNumber:40,navigationRevision:9,movePlanningEpoch:1,dirty:false,STEP_SECONDS:.1,
     UNIT_DEFINITIONS:{worker:{combat:{moveSpeed:1,range:0}}},MAP_HALF_X:4,MAP_HALF_Z:4,MAP_WIDTH:8,
     elevationLevelByCell:new Uint8Array(64),worldToCell:(x,z)=>x>0?1:z>0?2:0,isWalkable:()=>true,
     activeLandMovementBodyRadius:()=>0,workerLocalBodyRadius:()=>0,
@@ -37,6 +37,10 @@ function run(kind,team,branch,outcome,on) {
     workerBodyStepAllowed:(u,to)=>{assert.equal(u,unit);calls.push(['worker',{...to}]);return outcome!=='worker-reject';},
     admitCrowdLandWrite:(u,to,clamp)=>{assert.equal(u,unit);calls.push(['capsule',{...to},clamp]);return outcome!=='capsule-reject';},
     enqueueRouteRepairs:r=>repairs.push(...r),workerPerformingAction:()=>null,
+    // This bounded observer host has no moving entitlement. Preserve identical
+    // start/budget/finalizer calls on both sides of the observation comparison.
+    crowdMovementStart:()=>null,crowdRemainingBudget:()=>.1,crowdRawPoint:()=>null,
+    finalizeCrowdMovement:u=>{assert.equal(u,unit);calls.push(['finalize']);},
     replayMovementTeam:null,replayMovementActors:new Map(),replayMovementDecisions:new Map()});
   const proposal=branch==='terminal'?{target:{x:.1,z:0},reachedWaypoint:true,stepDistance:.1}
     :{x:1,z:0,target:{x:0,z:1},stepDistance:.1};

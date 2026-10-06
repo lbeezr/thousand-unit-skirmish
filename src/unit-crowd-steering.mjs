@@ -1,7 +1,7 @@
 import { LAND_CLEARANCE_PROFILE, pointSegmentDistanceSquared } from './unit-movement.mjs';
 import { crowdWaitLease } from './crowd-wait-lease.mjs';
 import { crowdParkedContour } from './crowd-parked-contour.mjs';
-import { MovingCrowdEntitlement, crowdEntitlementBudget, classifyQueueGeometry } from './crowd-moving-entitlement.mjs';
+import { MovingCrowdEntitlement, crowdEntitlementBudget, classifyQueueGeometry, crowdDirectedContinuation } from './crowd-moving-entitlement.mjs';
 
 // The host supplies current serial-executor neighbours and its terrain/static
 // admission predicate. An explicit radius admits another host-owned movement
@@ -80,6 +80,43 @@ export function stationaryCrowdObstacle(unit) {
     && !(unit.attackTargetId >= 0) && !(unit.attackBuildingTargetId >= 0)
     && unit.gatherNodeId == null && !(unit.gatherForestCell >= 0)
     && !unit.gatherPhase && unit.buildingTargetId == null;
+}
+
+// Retain only the exact admitted ordinary proposal after complete original
+// claimant enumeration. Desired peer alignment never promises its executed step.
+export function soleFollowingContinuation({ unit, claims, to, progressTarget, travelDirection,
+  directionOf, stateOf, tick, navigationRevision, epoch, physicalAdmitted, claimsComplete, overflow = false }) {
+  if (physicalAdmitted !== true || claimsComplete !== true || overflow || !Array.isArray(claims) || claims.length !== 1
+    || ![tick, navigationRevision, epoch].every(value => Number.isInteger(value) && value >= 0)
+    || ![unit, to, progressTarget, travelDirection].every(finitePoint)) return false;
+  const peer = claims[0]; if (!finitePoint(peer)) return false;
+  const dx = to.x - unit.x, dz = to.z - unit.z, length = Math.hypot(dx, dz);
+  if (!(length > EPSILON && length <= .25 + EPSILON)) return false;
+  const headingX = dx / length, headingZ = dz / length;
+  for (const actor of [unit, peer]) if (!Array.isArray(actor.path)
+    || !Number.isInteger(actor.pathIndex) || actor.pathIndex < 0 || actor.pathIndex >= actor.path.length
+    || !Number.isInteger(actor.id) || actor.id < 0
+    || !Number.isInteger(actor.generation) || actor.generation <= 0
+    || !Number.isInteger(actor.orderRevision) || actor.orderRevision < 0) return false;
+  const radius = ordinaryCrowdBodyRadius(unit), peerRadius = ordinaryCrowdBodyRadius(peer);
+  if (!radius || !peerRadius || peer.id >= unit.id || unit.pathIndex >= unit.path.length - 1) return false;
+  for (const actor of [unit, peer]) {
+    const state = stateOf(actor);
+    if (!state || state.generation !== actor.generation || state.revision !== actor.orderRevision
+      || state.path !== actor.path || state.pathIndex !== actor.pathIndex
+      || state.navigationRevision !== navigationRevision || state.epoch !== epoch
+      || !Number.isInteger(state.lastTick) || state.lastTick < 0 || state.lastTick < tick - 1 || state.lastTick > tick
+      || state.detour || state.lease || state.contour) return false;
+  }
+  if (!crowdDirectedContinuation(unit, peer)) return false;
+  if (classifyQueueGeometry({ from: unit, to, peer, routeDirection: travelDirection,
+    progressTarget, radius, peerRadius }) !== 'queue-following'
+    || dx * travelDirection.x + dz * travelDirection.z <= EPSILON
+    || Math.hypot(progressTarget.x - to.x, progressTarget.z - to.z)
+      >= Math.hypot(progressTarget.x - unit.x, progressTarget.z - unit.z) - EPSILON) return false;
+  const direction = directionOf(peer);
+  return Boolean(finitePoint(direction) && direction.x * headingX + direction.z * headingZ
+    > .9 * Math.hypot(direction.x, direction.z));
 }
 
 export function crowdPassagePoint(center, direction, unit, neighbors, pointAllowed, diagnostics = null,
@@ -337,7 +374,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   }
   if (!passageLease(state) && !state.contour && (!opposed || lane === null) && Math.hypot(separationX, separationZ) < EPSILON && clear(direct))
     return { x: headingX, z: headingZ, target, stepDistance: directLength, noProgressTicks, crowdControl: stats };
-  let best = null, bestScore = -Infinity;
+  let best = null, bestPoint = null, bestScore = -Infinity;
   const consider = (to, ordinaryProposal = true) => {
     const length = Math.hypot(to.x - unit.x, to.z - unit.z);
     if (length <= EPSILON || length > stepDistance + EPSILON || !clear(to)) return;
@@ -352,6 +389,7 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     const score = state.detour ? .1 * progress + .9 * directed : rankingProgress + laneProgress + (cross > 0 ? 1e-7 : 0);
     if (score > bestScore) {
       bestScore = score;
+      bestPoint = to;
       best = { x: (to.x - unit.x) / length, z: (to.z - unit.z) / length, target, stepDistance: length };
     }
   };
@@ -444,7 +482,21 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
   const { claims, followingOnly, advancingWaypoint } = crowdPriorityClaims({unit, neighbors, radius, stepDistance,
     noProgressTicks, best, detour: state.detour, progressTarget, travelDirection, fallbackDirection: {x:headingX,z:headingZ},
     targetOf, directionOf, onVisit: () => stats.arbitrationVisits++, limit: 1});
-  const yieldingToPeer = claims.length > 0;
+  let followingContinuation = false;
+  const peerDirection = best && claims.length === 1 ? directionOf(claims[0]) : null;
+  // A first claimant is sufficient to refuse. Only a directionally eligible
+  // exception pays for complete enumeration; a second claimant ends that proof.
+  const stepX = bestPoint ? bestPoint.x - unit.x : 0, stepZ = bestPoint ? bestPoint.z - unit.z : 0;
+  if (finitePoint(peerDirection) && peerDirection.x * stepX + peerDirection.z * stepZ
+    > .9 * Math.hypot(peerDirection.x, peerDirection.z) * Math.hypot(stepX, stepZ)) {
+    const complete = crowdPriorityClaims({unit, neighbors, radius, stepDistance, noProgressTicks,
+      best, detour: state.detour, progressTarget, travelDirection, fallbackDirection: {x:headingX,z:headingZ},
+      targetOf, directionOf, onVisit: () => stats.arbitrationVisits++, limit: 2}).claims;
+    followingContinuation = soleFollowingContinuation({ unit, claims: complete, to: bestPoint,
+      progressTarget, travelDirection, directionOf, stateOf: readState, tick, navigationRevision, epoch,
+      physicalAdmitted: true, claimsComplete: complete.length < 2, overflow });
+  }
+  const yieldingToPeer = claims.length > 0 && !followingContinuation;
   if (yieldingToPeer && best && entitlementContext && ordinaryCrowdBodyRadius(unit)) {
     const to = {x:unit.x+best.x*best.stepDistance,z:unit.z+best.z*best.stepDistance};
     if (classifyQueueGeometry({from:unit,to,peer:claims[0],routeDirection:{x:routeX,z:routeZ},
@@ -460,6 +512,6 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     }
     if (best) best.yieldingForCrowd = true;
   }
-  return best ? { ...best, noProgressTicks, crowdControl: stats }
+  return best ? { ...best, ...(followingContinuation ? { crowdFollowingPoint: bestPoint } : {}), noProgressTicks, crowdControl: stats }
     : { target, waitingForCrowd: true, stepDistance: 0, noProgressTicks, crowdControl: stats };
 }
