@@ -6,7 +6,7 @@ const same = (a,b) => a && b && a.x === b.x && a.z === b.z;
 const distance = (a,b) => Math.hypot(a.x-b.x,a.z-b.z);
 const radius = u => LAND_CLEARANCE_PROFILE.radiusByKind[u.kind];
 const finite = p => p && Number.isFinite(p.x) && Number.isFinite(p.z);
-function directedJoin(u,p) {
+export function crowdDirectedContinuation(u,p) {
   const own=u.path.slice(u.pathIndex,u.pathIndex+3);
   return own.length===3 && new Set(own).size===3 && own.every(Number.isInteger) && own.every(cell=>cell>=0)
     && [p.pathIndex,p.pathIndex-1].some(i=>i>=0 && own.every((cell,k)=>p.path[i+k]===cell));
@@ -74,7 +74,7 @@ export class MovingCrowdEntitlement {
   }
   eligible(q,peer,c) {
     if (!(q && q.tick===c.tick-1 && q.peer===peer && peer.id<q.unit.id
-      && directedJoin(q.unit,peer)
+      && crowdDirectedContinuation(q.unit,peer)
       && this.matches(q.stamp,q.unit,c) && this.matches(q.peerStamp,peer,c) && same(q.from,q.unit)
       && !c.maneuver(q.unit) && !this.obligation(q.unit,c)
       && classifyQueueGeometry({...q,peer,radius:radius(q.unit),peerRadius:radius(peer),
@@ -84,7 +84,7 @@ export class MovingCrowdEntitlement {
   request(u,peer,to,routeDirection,c,b) {
     const slot=this.slot(u),claims=c.claims(u,to);
     if(!slot) return false;
-    if(!this.active(u) || !this.active(peer) || peer.id>=u.id || !directedJoin(u,peer)
+    if(!this.active(u) || !this.active(peer) || peer.id>=u.id || !crowdDirectedContinuation(u,peer)
       || c.maneuver(u) || this.obligation(u,c) || claims.length!==1 || claims[0]!==peer
       || classifyQueueGeometry({from:u,to,peer,routeDirection,progressTarget:c.pointOf(u),
         radius:radius(u),peerRadius:radius(peer)})!=='lateral-rejoin' || distance(to,c.pointOf(u))<=EPS

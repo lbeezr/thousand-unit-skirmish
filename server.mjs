@@ -91,7 +91,7 @@ import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoin
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { ordinaryCrowdBodyRadius, stationaryCrowdObstacle, selectCrowdStep, crowdPassagePoint, CROWD_NEIGHBOR_LIMIT, canTraverseCrowdBodySegment,
-  crowdMovingEntitlement, crowdSteeringRecord, crowdExecutionState, crowdPriorityClaims } from './src/unit-crowd-steering.mjs';
+  crowdMovingEntitlement, crowdSteeringRecord, crowdExecutionState, crowdPriorityClaims, soleFollowingContinuation } from './src/unit-crowd-steering.mjs';
 import { crowdMovementStart, finalizedCrowdProgress } from './src/crowd-moving-entitlement.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
 import { focusedUnitAttackMovementActive, focusedBuildingAttackMovementActive, attackMoveAcquiredMovementActive, stanceAcquiredMovementActive, patrolAcquiredMovementActive, workerPatrolAcquiredMovementActive, followTravelMovementActive, workerFollowTravelMovementActive } from './src/combat-movement.mjs';
@@ -8218,6 +8218,18 @@ function crowdEntitlementContext(unit, query = crowdNeighborsNear(unit)) {
     }};
 }
 
+// The selector's following exception owns one exact ordinary endpoint. Repeat
+// physical admission and complete original claims from fresh serial-turn poses.
+function crowdFollowingStepAllowed(unit, to) {
+  const execution = crowdExecutionState(unit, tickNumber), c = crowdEntitlementContext(unit);
+  if (!crowdMovingEntitlement.admit(unit, unit, to, c, execution.work)) return false;
+  return soleFollowingContinuation({ unit, claims: c.claims(unit, to), to,
+    progressTarget: crowdRawPoint(unit), travelDirection: crowdRouteDirection(unit),
+    directionOf: other => { const point = crowdRawPoint(other); return { x: point.x - other.x, z: point.z - other.z }; },
+    stateOf: crowdSteeringRecord, tick: tickNumber, navigationRevision, epoch: movePlanningEpoch,
+    physicalAdmitted: true, claimsComplete: true, overflow: c.overflow });
+}
+
 // Supplemental to each caller's original physical admission. Account the raw
 // write and its existing final clamp together before either position is changed.
 function admitCrowdLandWrite(unit, to, clampAfter = false) {
@@ -8920,14 +8932,15 @@ function simulateTick() {
       }
 
       // A named admission retains its exact endpoint across normalization.
-      let nextX = move.crowdEntitlementPoint?.x ?? unit.x + move.x * move.stepDistance;
-      let nextZ = move.crowdEntitlementPoint?.z ?? unit.z + move.z * move.stepDistance;
+      let nextX = move.crowdEntitlementPoint?.x ?? move.crowdFollowingPoint?.x ?? unit.x + move.x * move.stepDistance;
+      let nextZ = move.crowdEntitlementPoint?.z ?? move.crowdFollowingPoint?.z ?? unit.z + move.z * move.stepDistance;
       if (workerLocalBodyRadius(unit)) {
         nextX = Math.max(-MAP_HALF_X + .5, Math.min(MAP_HALF_X - .5, nextX));
         nextZ = Math.max(-MAP_HALF_Z + .5, Math.min(MAP_HALF_Z - .5, nextZ));
       }
       const nextCell = worldToCell(nextX, nextZ);
       const currentCell = worldToCell(unit.x, unit.z);
+      if (move.crowdFollowingPoint && !crowdFollowingStepAllowed(unit, { x: nextX, z: nextZ })) break;
       if (!automaticPositionAllowed(unit, nextX, nextZ)) {
         if (unit.stanceReturning) abandonBlockedStanceReturn(unit);
         else { rejectAutomaticTarget(unit, units[unit.attackTargetId]); clearAttackTarget(unit); }
@@ -8941,6 +8954,7 @@ function simulateTick() {
         unit.x = nextX;
         unit.z = nextZ;
       } else {
+        if (move.crowdFollowingPoint) break;
         const targetX = move.target.x - unit.x;
         const targetZ = move.target.z - unit.z;
         const length = Math.hypot(targetX, targetZ) || 1;

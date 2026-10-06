@@ -338,3 +338,56 @@ assertions after reaching planning idle and repaired goals. Registry reshuffling
 made them newly reached; production/tests/maps and their used observer-off adapter
 are unchanged. Their introduction date and mechanism are unproven. No extra run
 or expansion of this continuation contract follows from that CI evidence.
+
+## Following continuation runtime candidate — 6 October 2026
+
+This separate, unmerged child of frozen PR546 adopts its exact-endpoint predicate
+in [ordinary steering](../src/unit-crowd-steering.mjs). The previous script is now
+a re-export, so its unchanged semantic controls exercise the production function.
+The directed three-cell test shares the existing entitlement implementation.
+PR541 and PR546 remain frozen and unmerged; this candidate inherits their source
+without authorizing either merge. The already merged PR544 observer repair is
+adopted explicitly, with its isolated VM host adapted to the entitlement executor
+start/budget/finalizer hooks. Art production backing is N/A for this simulation
+policy slice; normal-game movement acceptance remains open.
+
+The original priority predicate is unchanged for selection, publication and
+next-tick entitlement service. A first claimant still suffices to refuse an
+ordinary proposal. Only an exact step aligned with that claimant's raw-waypoint
+direction pays for another bounded enumeration: a second claimant rejects;
+zero/one implies the complete neighbor set was examined. Only the complete
+result reaches `soleFollowingContinuation`. Existing rejection witnesses retain
+their full selector result, controller and observed decision events.
+
+The accepted ordinary proposal carries its original `crowdFollowingPoint` through
+[the serial land executor](../server.mjs). Immediately before writing, a fresh
+bounded context repeats bounds, automatic policy, cell/elevation, static sweep,
+current body sweep, live reservations and remaining travel/work admission, then
+complete original claims and current eligibility/controller stamps. The original
+Worker guard and supplemental land-write/capsule accounting still execute.
+A later cell/static rejection ends this attempt: its waiver cannot be reused on
+another fallback endpoint. The 64-neighbor and shared 128-proposal limits do not
+increase; exhausted work refuses, including exhaustion after the fresh admission.
+The replay observer labels fresh continuation refusal `following-rejected` and
+the later cell/static refusal `following-static-rejected`. Both branches retain
+identical calls, actor/controller state and repairs with observation on or off;
+missing/duplicate guard shapes refuse instrumentation. Prior entrypoints without
+either following guard remain supported. No new diagnostic records are published.
+No route/index/queue rewrite, new registry, checkpoint field, grant, offer,
+obligation, historical progress renewal or deadline/fairness relaxation is added.
+
+[Bounded host controls](../scripts/crowd-following-host.test.mjs) exercise the real
+selector and actual executor on a fabricated open 8×8 map, successful exact
+consumption, stale own/peer stamps and maneuvers, changed policy/terrain/body,
+multiple original claims, reservations and both budget exhaustion points. A
+separate isolated-consumption control admits a synthetic endpoint whose normalized
+vector cannot reconstruct it exactly; it does not claim that the selector chose
+that point. These controls establish local contract behavior only. They neither
+run retained private decisions nor qualify arrivals, fairness, large maps,
+rendering, release packaging or deployed identity.
+
+Next dependency remains the qualifier's unchanged crowd acceptance at this
+candidate's exact reviewed head, preserving frozen baseline/PR541 evidence and
+original case gates. The shared movement owner retains conflicts and integration
+after that result. Projected-target oscillation is a separate slice. No merge of
+the held stack or broader rerun is implied by bounded source/host checks.

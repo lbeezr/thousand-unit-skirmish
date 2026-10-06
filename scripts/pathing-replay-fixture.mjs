@@ -23,10 +23,8 @@ export function instrumentReplayMovementAdmissions(source) {
   for (const [before, after, count = 1] of [
     ['if (!move) break;', "if (!move) { observeReplayMovementAdmission(unit, 'no-proposal'); break; }"],
     ['if (move.waitingForCrowd) break;', "if (move.waitingForCrowd) { observeReplayMovementAdmission(unit, 'crowd-wait'); break; }"],
-    ...['move.target', '{ x: nextX, z: nextZ }', '{ x: fallbackX, z: fallbackZ }'].map(point => [
-      `if (!workerBodyStepAllowed(unit, ${point})) break;`,
-      `if (!workerBodyStepAllowed(unit, ${point})) { observeReplayMovementAdmission(unit, 'body-wait'); break; }`
-    ]),
+    ['if (!workerBodyStepAllowed(unit, move.target)) break;',
+      "if (!workerBodyStepAllowed(unit, move.target)) { observeReplayMovementAdmission(unit, 'body-wait'); break; }"],
     ['break; // Keep this route/pose/intent;', "observeReplayMovementAdmission(unit, 'detour-deferred');\n          break; // Keep this route/pose/intent;"],
     ['        || (move.reachedWaypoint && clearanceRadius && !canTraverseStaticBodySegment(unit, move.target,\n          clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {',
       "        || (move.reachedWaypoint && clearanceRadius && !canTraverseStaticBodySegment(unit, move.target,\n          clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) {\n        observeReplayMovementAdmission(unit, 'static-rejected');"],
@@ -42,6 +40,27 @@ export function instrumentReplayMovementAdmissions(source) {
     ['      unit.z = Math.max(-MAP_HALF_Z + 0.5, Math.min(MAP_HALF_Z - 0.5, unit.z));',
       '      unit.z = Math.max(-MAP_HALF_Z + 0.5, Math.min(MAP_HALF_Z - 0.5, unit.z));\n      observeReplayMovementAdmission(unit);'],
   ]) movement = replaceExactly(movement, before, after, count);
+  for (const [point, indent] of [['{ x: nextX, z: nextZ }', '          '],
+    ['{ x: fallbackX, z: fallbackZ }', '            ']]) {
+    const standalone = `if (!workerBodyStepAllowed(unit, ${point})) break;`;
+    const combined = `if (!workerBodyStepAllowed(unit, ${point})\n${indent}|| !admitCrowdLandWrite(unit, ${point}, true)) break;`;
+    const shapes = [[standalone, 'body-wait'], [combined, 'body-or-capsule-wait']];
+    const counts = shapes.map(([guard]) => movement.split(guard).length - 1);
+    assert.equal(counts.reduce((sum, count) => sum + count, 0), 1,
+      `land guard observation requires exactly one known shape: ${point}`);
+    const [guard, label] = shapes[counts.findIndex(count => count === 1)];
+    movement = replaceExactly(movement, guard,
+      guard.slice(0, -' break;'.length) + ` { observeReplayMovementAdmission(unit, '${label}'); break; }`);
+  }
+  // Older entrypoints have neither following guard. A candidate with an exact
+  // following point must expose both known branches once; refuse partial shapes.
+  const following = [
+    ['if (move.crowdFollowingPoint && !crowdFollowingStepAllowed(unit, { x: nextX, z: nextZ })) break;', 'following-rejected'],
+    ['if (move.crowdFollowingPoint) break;', 'following-static-rejected'],
+  ];
+  if (movement.includes('move.crowdFollowingPoint')) for (const [guard, label] of following)
+    movement = replaceExactly(movement, guard,
+      guard.slice(0, -' break;'.length) + ` { observeReplayMovementAdmission(unit, '${label}'); break; }`);
   return source.slice(0, start) + movement + source.slice(end);
 }
 export async function createPathingReplayFixture(map, { traceLandSteps = false, traceRouteRejoins = false,
