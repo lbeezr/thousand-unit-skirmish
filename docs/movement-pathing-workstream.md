@@ -1311,6 +1311,17 @@ starting another match. Core proposes only current-route opposition semantics
 at that causal discard; crowd reviews the temporal case before any correction.
 Original completion, 150-tick fairness and physical limits remain unchanged.
 
+Independent qualification subsequently
+[rejected the directed-join exception in PR529](qa-crowd-directed-join-rejection-2026-10-06.md),
+exact preserved head `2882498c`. Both baseline and candidate pass 5/8 original
+journeys, but formerly passing seat 1 gate arrival regresses 64→1 at 2700 and the
+reported fairness gap 35→239 exceeds 150 despite zero contacts. The seat 0 queued
+wall improvement is not an overall success. PR529 remains draft/unmerged;
+PR525 remains retired. Core owns the first-divergence diagnosis from retained
+qualification evidence, coordinated through the parent with the existing crowd
+owner; no new runtime condition or repeated broad journey batch is justified
+from aggregate counts. Safety, deadline and fairness contracts remain unchanged.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5
