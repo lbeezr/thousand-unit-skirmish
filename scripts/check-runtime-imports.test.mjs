@@ -503,6 +503,23 @@ test('canonical authoring leaves retain the editor boundary through compatibilit
   }
 });
 
+test('building selection synthesis remains a dependency-free client leaf outside authority and server hosts', async () => {
+  const target = 'src/client/audio/building-selection.mjs';
+  for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+    'src/simulation/movement/formation-assignment.mjs', 'src/pve-regroup.mjs']) {
+    const relative = path.posix.relative(path.posix.dirname(root), target);
+    assert.throws(() => check({ [target]: '', [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
+      /(?:rules|world|simulation|ai) domain cannot reach client domain/);
+  }
+  for (const host of ['server.mjs', 'room-supervisor.mjs']) {
+    assert.throws(() => check({ [target]: '', [host]: `import './${target}';` },
+      { serverEntrypoints: [host] }), /server host reaches client domain/);
+  }
+  assert.deepEqual(moduleImports(await readFile(new URL(`../${target}`, import.meta.url), 'utf8'), target), []);
+  assert.ok(moduleImports(await readFile(new URL('../src/audio.mjs', import.meta.url), 'utf8'), 'src/audio.mjs')
+    .includes('./client/audio/building-selection.mjs'));
+});
+
 test('Map Studio form controller has no module dependencies and cannot enter authority or server closures', async () => {
   const target = 'src/authoring/map-studio-form-state.mjs';
   for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
