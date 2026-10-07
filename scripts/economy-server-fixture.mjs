@@ -8,6 +8,7 @@ import { shortcutFlatUnitPath, canTraverseFlatUnitSegment } from '../src/unit-pa
 import * as unitMovement from '../src/unit-movement.mjs';
 import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
 import { createWorkerPerimeterAccess } from '../src/economy-perimeter-access.mjs';
+import { createWorkerPerimeterRecovery } from '../src/economy-perimeter-recovery.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 export const economyServerFunctions = source.slice(source.indexOf('function matchEconomyProfileId('),
@@ -15,7 +16,8 @@ export const economyServerFunctions = source.slice(source.indexOf('function matc
 export const workerPerimeterServerFunctions = source.slice(source.indexOf('function withWorkerPerimeterAccess('),
   source.indexOf('function workerDropoffCandidates('));
 export function workerPerimeterRouteBindings() {
-  return { createWorkerPerimeterAccess, workerPerimeterAccessScope: null, attackFlowFields: new Map(),
+  return { createWorkerPerimeterAccess, workerPerimeterAccessScope: null, createWorkerPerimeterRecovery,
+    workerPerimeterRecovery: createWorkerPerimeterRecovery(), tickNumber: 0, attackFlowFields: new Map(),
     units: [], MAX_UNITS: 2000 };
 }
 export function economyServerBindings(profileId = economyProfile.DEFAULT_ECONOMY_PROFILE_ID) {
