@@ -309,6 +309,7 @@ run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservatio
 run(['--test', 'scripts/return-cargo.test.mjs'], 'Explicit cargo return authority and controls');
 run(['--test', 'scripts/worker-economy-body-handoff.test.mjs'], 'Worker economy body clearance and construction handoff');
 run(['--test', 'scripts/worker-economy-perimeter-access.test.mjs'], 'Bounded Worker perimeter selection and conserving paid Farm delivery');
+run(['--test', 'scripts/worker-economy-perimeter-recovery.test.mjs'], 'Bounded late-occupied Worker perimeter recovery and fair transient retries');
 run(['--test', 'scripts/queued-cargo-return.test.mjs'], 'Delivery completion, queued routes and preserved cargo');
 run(['scripts/queued-cargo-return-native-scenario.mjs'], 'Native both-seat queued cargo delivery and restart');
 run(['scripts/interrupted-cargo-return-scenario.mjs'], 'Interrupted final sheep-food delivery and restart');

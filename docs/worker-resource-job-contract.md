@@ -99,9 +99,20 @@ or exhausted queries defer the preference and preserve existing static admission
 all physical guards remain authoritative. The existing fixed Farm/drop-off flow
 key is invalidated when its exact goal membership changes; the eight-field cache
 cap remains unchanged. Arrival, harvest/deposit rates, typed cargo and source or
-recipient ownership still use the existing actual-position checks. An endpoint
-occupied after selection retains the strict crowd wait: persistent-wait recovery
-is the separate next economy slice, rather than a saved flag in this contract.
+recipient ownership still use the existing actual-position checks.
+
+[`economy-perimeter-recovery`](../src/economy-perimeter-recovery.mjs) observes
+only live final Farm/drop-off routes outside interaction range. Thirty
+consecutive stalled ticks (accumulated displacement below 0.02 world units)
+make an actor eligible for a fresh bounded physical occupation check. Claims or
+waiting alone never trigger repair. At most eight round-robin attempts run per
+tick, with a 30-tick actor cooldown, sharing the existing scope's 256 checks,
+64 visits and 32 candidate-cell bounds. A successful alternative replaces only
+the route/goal, retaining revision, recipient, source, phase and typed cargo.
+No alternative, stale/incomplete query or route-capacity refusal retains the
+original route and job. Meaningful movement restarts the stalled window; changed
+work/identity/navigation and cold recovery retire old observations. Observations
+and fairness state are private transient service state, never checkpoint fields.
 
 Construction remembers only explicitly assigned paid owned site IDs, in priority
 order. Area is the initial sites' footprint bounding rectangle plus two world

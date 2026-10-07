@@ -186,21 +186,48 @@ async function paidJourney(team, mode) {
     }
     move(ids[2], { x: x + 2, z: 4.5 });
     if (mode === 'late') move(ids[2], { x: x + 2, z: 5.5 });
+    if (mode === 'late-farm') {
+      move(ids[0], { x: x + 3, z: 2.5 });
+      move(ids[2], { x: x + 2, z: 5.5 });
+    }
     const before = conserved(); assert.equal(before.teamWood[team], 240);
     const crop = before.buildings.find(b => b.id === farmId).harvestStock;
+    if (mode === 'late-farm') {
+      order('gather', [ids[2]], { nodeId: `farm:${farmId}` }, /GATHER ORDER/);
+      const retainedGoal = r.units[ids[2]].moveGoalCell;
+      move(ids[0], r.point(retainedGoal));
+      const blockerPose = [r.units[ids[0]].x, r.units[ids[0]].z];
+      const ticks = until(() => r.units[ids[2]].cargo > 0, 'late-occupied Farm resumes actual harvesting');
+      assert.equal(r.units[ids[2]].gatherNodeId, `farm:${farmId}`);
+      assert.deepEqual([r.units[ids[0]].x, r.units[ids[0]].z], blockerPose, 'blocker stays parked');
+      assert.equal(r.units[ids[0]].cargo, 10);
+      console.log(JSON.stringify({ team, mode, sourceSha256: f.sourceSha256, ticks, writes,
+        positiveFarmGrant: true, contactViolations: 0 })); return;
+    }
     order('returnCargo', carriers, {}, /RETURN CARGO ORDER/);
     assert.ok(carriers.every(id => r.units[id].dropoffBuildingId === depotId));
     if (mode === 'late') {
       const retainedGoal = r.units[ids[0]].moveGoalCell;
       move(ids[2], r.point(retainedGoal));
-      const cargo = r.units[ids[0]].cargo, bank = r.food[team], pose = [r.units[ids[0]].x, r.units[ids[0]].z];
-      for (let n = 0; n < 300; n++) step();
-      assert.equal(cargo, 10); assert.equal(r.units[ids[0]].cargo, cargo); assert.equal(r.food[team], bank);
-      assert.equal(r.units[ids[0]].moveGoalCell, retainedGoal);
-      assert.deepEqual([r.units[ids[0]].x, r.units[ids[0]].z], pose, 'late occupation remains the separately allocated retry case');
-      order('move', [ids[2]], { x: x + 8, z: 15.5 }, /PLANNING MOVE|MOVE ORDER/);
-      until(() => r.units[ids[0]].cargo === 0, 'normal blocker removal releases late occupied goal');
-      assert.equal(r.food[team], 10); return;
+      const cargo = r.units[ids[0]].cargo, bank = r.food[team], revision = r.units[ids[0]].orderRevision;
+      const blockerPose = [r.units[ids[2]].x, r.units[ids[2]].z];
+      for (let n = 0; n < 20; n++) step();
+      assert.equal(r.units[ids[0]].moveGoalCell, retainedGoal, 'mere waiting cannot repair or churn revision');
+      assert.equal(r.units[ids[0]].orderRevision, revision);
+      const cp = r.checkpoint(); r.restore(structuredClone(cp));
+      assert.deepEqual(conserved().units, cp.state.units, 'cold restore retains all durable route/job bytes');
+      for (let n = 0; n < 29; n++) step();
+      assert.equal(r.units[ids[0]].moveGoalCell, retainedGoal, 'cold observations start a new full stalled window');
+      const ticks = until(() => r.units[ids[0]].moveGoalCell !== retainedGoal, 'bounded alternative goal selected');
+      assert.equal(r.units[ids[0]].cargo, cargo); assert.equal(r.food[team], bank);
+      assert.equal(r.units[ids[0]].dropoffBuildingId, depotId);
+      assert.equal(r.units[ids[0]].gatherPhase, 'to-base');
+      assert.equal(r.units[ids[0]].orderRevision, revision, 'accepted repair retains job revision');
+      until(() => r.units[ids[0]].cargo === 0, 'late occupied goal delivers with blocker still parked');
+      assert.deepEqual([r.units[ids[2]].x, r.units[ids[2]].z], blockerPose);
+      assert.equal(r.food[team], 10);
+      console.log(JSON.stringify({ team, mode, sourceSha256: f.sourceSha256, repairTicksAfterColdWindow: ticks,
+        writes, delivered: r.food[team], contactViolations: 0 })); return;
     }
     if (mode === 'batch') assert.equal(new Set(carriers.map(id => r.units[id].moveGoalCell)).size, carriers.length,
       'prospective clones choose distinct available endpoints before live acceptance');
@@ -219,5 +246,5 @@ async function paidJourney(team, mode) {
       delivered: r.food[team], positiveFarmGrant: true, contactViolations: 0 }));
   } finally { await f.dispose(); }
 }
-for (const team of [0, 1]) for (const mode of ['initial', 'batch', 'late'])
+for (const team of [0, 1]) for (const mode of ['initial', 'batch', 'late', 'late-farm'])
   test(`seat ${team}: paid ${mode} perimeter selection, strict contacts and conservation`, () => paidJourney(team, mode));
