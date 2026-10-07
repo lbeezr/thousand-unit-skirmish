@@ -89,6 +89,7 @@ function journeyStep(r,u,peers) {
 function trackLeg(r,u,finish,{straight=true,bodies=false,clear=false,step=()=>r.step()}={}) {
   const start={x:u.x,z:u.z},goal=r.point(u.path.at(-1)); let samples=0;
   const accepted=legIdentity(r,u);
+  assert.equal(accepted.goal,accepted.tail,'accepted selected goal matches the route tail');
   if(clear)checkClearCorridor(r,u,goal);
   for(let tick=0;tick<5000&&!finish();tick++) {
     const before={x:u.x,z:u.z,cell:r.cell(u.x,u.z)};step();checkWorkerSteps(r,u.id,bodies);samples++;
@@ -115,8 +116,9 @@ for(const clear of [false,true])for(const team of [0,1])test(`seat ${team}: ${cl
       const peers=r.units.filter(v=>v!==u);
       const identity=()=>r.units.map(v=>({id:v.id,generation:v.generation,team:v.team,kind:v.kind,hp:v.hp,cargo:v.cargo,cargoType:v.cargoType}));
       const original=identity(),food=[...r.food],wood=[...r.wood],stock=r.resources.get('food').stock;
-      for(const peer of peers)command(r,peer,{type:'move',x:-60+peer.id*3,z:55});
-      until(r,()=>peers.every(v=>!v.movePlanningPending&&v.pathIndex===v.path.length),'clear-control peers reach their parking orders');
+      for(const peer of peers)command(r,peer,{type:'move',x:-60.5+peer.id*3,z:55.5});
+      until(r,()=>peers.every(v=>!v.movePlanningPending&&v.pathIndex===v.path.length
+        &&v.x===-60.5+v.id*3&&v.z===55.5),'clear-control peers reach their exact parking targets');
       for(const peer of peers)command(r,peer,{type:'stop'});
       assert.deepEqual({x:u.x,z:u.z},{x:-8.27,z:-9.19},'parking peers leaves the original fractional start unchanged');
       assert.deepEqual(identity(),original,'parking preserves roster identity, HP and cargo');
@@ -188,6 +190,7 @@ test('journey guards reject corrupt observations and a stalled deposit without r
     await t.test('lost or substituted goal fails accepted-leg identity',()=>{
       checkAcceptedLeg(r,u,accepted);
       for(const goal of [-1,u.moveGoalCell+1])assert.throws(()=>checkAcceptedLeg(r,{...u,moveGoalCell:goal},accepted),/selected goal remain unchanged/);
+      assert.throws(()=>trackLeg(r,{...u,path:[u.moveGoalCell+1]},()=>false),/selected goal matches the route tail/);
     });
     trackLeg(r,u,()=>u.gatherPhase==='gathering');
     until(r,()=>u.cargo===10&&u.gatherPhase==='to-base','negative-control real full cargo');
