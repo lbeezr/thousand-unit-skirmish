@@ -6,6 +6,20 @@ Map Studio lists installed packs and their profiles. Publishing, saving, downloa
 
 Bindings resolve from a role, action, and resource (for example `unit.worker.gather.wood`) to a role and action, then `cue.<name>`, then synthesis. Building selection first checks its exact building type. One selected group or issued order makes one decision, regardless of unit count. A profile can assign multiple variants; the resolver avoids an immediate repeat. Its voice cooldown is separate from synthesis, and urgent alerts can take priority. Captions use the binding's caption when present and the existing cue caption rules for fallback.
 
+The [canonical event and asset matrix](audio-event-asset-matrix.md) records every
+registered unit/building, contextual order and warning, current versus missing
+sources, civilization overrides, fallback, priority, cooldown and disclosure rules.
+Profiles may add sparse `civilizationBindings` maps using the same validated
+binding format. The audio instance defaults to the current `frontier` civilization;
+an event may provide `civilizationId` explicitly. That civilization's exact/role/cue
+chain is tried first, then the unchanged common chain, then synthesis. Unknown or
+absent overrides use common bindings; a matching generic recorded choice remains
+an explicit pack choice. No current manifest gains an override or new recording.
+Building selection synthesis now retains the supplied type for all 13 registered
+buildings, including after decode failure. Unknown building types and unit
+selection keep the original generic gesture. Existing cooldowns, mix, interruption
+and disposal apply. Checks: `node --test scripts/audio-building-selection.test.mjs`.
+
 The match decodes local Blobs on demand, limiting each composition to 24 MiB of decoded PCM, keeping a 24 MiB decoded-source cache, and allowing at most eight simultaneous sampled cues. A source over 16 MiB, unsupported codec, invalid trim, or decode failure is reported in the sound panel and falls back to synthesis. Music compositions use the shared Web Audio timeline player; map switches stop prior playback. The master, effects, voice, music, and ambience controls are saved under `tus-audio-v1`. Existing settings migrate with voice at 100% and music from the previous ambience level, with a previously disabled ambience setting keeping music muted.
 
 Profile music waits for a running audio context. Hiding the page, muting music or

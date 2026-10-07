@@ -1,6 +1,7 @@
 import { loadShippedAudio } from './audio-shipped-loader.mjs';
 import { createProfileDecisionGate, resolveEventBinding } from './audio-event-profile.mjs';
 import { createDecodedAudioCache } from './client/audio/audio-decoded-cache.mjs';
+import { buildingSelectionTone } from './client/audio/building-selection.mjs';
 // Web Audio synthesis remains the fallback when an authored local pack is unavailable.
 const STORAGE_KEY = 'tus-audio-v1';
 const DEFAULT_SETTINGS = Object.freeze({
@@ -51,6 +52,7 @@ export function readAudioSettings(storage = browserStorage()) {
 }
 
 export function createGameAudio({
+  civilizationId = 'frontier',
   storage = browserStorage(), doc = globalThis.document, onStatusChange, onCue, onCueDecision, onProfileCaption, onPackStatus, workNow = () => performance.now(),
 } = {}) {
   let settings = readAudioSettings(storage);
@@ -393,7 +395,7 @@ export function createGameAudio({
     duckTimer = globalThis.setTimeout(() => { duckTimer = null; applyLevels(); }, 2450);
   }
 
-  function play(cue, { preview = false, suppressDecision = false } = {}) {
+  function play(cue, { preview = false, suppressDecision = false, buildingType } = {}) {
     if (disposed) return false;
     if (!(cue in COOLDOWN_MS)) { record({ cue }, 'unsupported cue'); return false; }
     if (!suppressDecision && !doc?.hidden && (!preview || settings.captions)) {
@@ -408,7 +410,11 @@ export function createGameAudio({
     voiceLimit = cue.includes('alert') || ['base-lost', 'objective', 'objective-lost', 'victory', 'defeat', 'draw'].includes(cue)
       ? 20 : 12;
     switch (cue) {
-      case 'select': tone(620, at, 0.055, { endFrequency: 780, gain: 0.13 }); break;
+      case 'select': {
+        const { frequency, endFrequency } = buildingSelectionTone(buildingType);
+        tone(frequency, at, 0.055, { endFrequency, gain: 0.13 });
+        break;
+      }
       case 'move': tone(310, at, 0.09, { wave: 'triangle', endFrequency: 390, gain: 0.19 }); break;
       case 'attack':
         noiseBurst(at, 0.028, { centerFrequency: 420, gain: 0.025 });
@@ -588,9 +594,10 @@ export function createGameAudio({
 
   function playEvent(event) {
     if (disposed) return false;
+    event = { ...event, civilizationId: event?.civilizationId ?? civilizationId };
     const cue = event?.cue;
     if (!(cue in COOLDOWN_MS)) { record(event, 'unsupported cue'); return false; }
-    if (!resolveEventBinding(activeProfile, event)) { record(event, 'synthesized fallback'); return play(cue); }
+    if (!resolveEventBinding(activeProfile, event)) { record(event, 'synthesized fallback'); return play(cue, { buildingType: event.buildingType }); }
     const choice = profileGate.choose(activeProfile, event);
     if (!choice) { record(event, profileGate.getReason()); return false; }
     record(event, 'resolved', choice.key);
@@ -647,7 +654,7 @@ export function createGameAudio({
       if (variant.caption) { try { onProfileCaption?.(variant.caption); } catch {} }
       if (isUrgentCue(cue)) duckForAlert();
       try { onCue?.(cue); } catch {}
-    }).catch((error) => { if (isCurrent()) { record(event, `decode failed: ${error.message}`, choice.key); setPackStatus(`Cue ${variant.sourceId} could not decode: ${error.message}. Synthesized feedback remains available.`); play(cue, { suppressDecision: true }); } else record(event, 'sample cancelled', choice.key); });
+    }).catch((error) => { if (isCurrent()) { record(event, `decode failed: ${error.message}`, choice.key); setPackStatus(`Cue ${variant.sourceId} could not decode: ${error.message}. Synthesized feedback remains available.`); play(cue, { suppressDecision: true, buildingType: event.buildingType }); } else record(event, 'sample cancelled', choice.key); });
     return true;
   }
 
