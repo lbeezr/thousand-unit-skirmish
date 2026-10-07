@@ -40,7 +40,7 @@ The absence of wood disclosure is not permission to inspect hidden deposits.
 
 ## Small bounded correction
 
-[Reconnaissance](../src/pve-reconnaissance.mjs) retains its existing local
+[Reconnaissance](../src/simulation/ai/policies/reconnaissance.mjs) retains its existing local
 selection. Only if that selection finds no point, on public Small-or-larger
 dimensions, it scans at most 64 coarse fog cells. A deterministic coprime cursor
 eventually covers the coarse grid; the nearest eligible unknown point in that

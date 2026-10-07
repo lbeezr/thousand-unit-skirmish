@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { gunzipSync } from 'node:zlib';
-import { createSkirmishTargetPolicy } from '../src/pve-skirmish-targets.mjs';
+import { createSkirmishTargetPolicy } from '../src/simulation/ai/policies/skirmish-targets.mjs';
 import { toOpponentObservation } from '../src/pve-opponent.mjs';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 import { economyRulesetRevision } from '../src/economy-profile.mjs';

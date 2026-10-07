@@ -1,5 +1,5 @@
-import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS } from './gameplay-definitions.mjs';
-import { mapSizeIdentity } from './map-size-policy.mjs';
+import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS } from '../../../gameplay-definitions.mjs';
+import { mapSizeIdentity } from '../../../map-size-policy.mjs';
 
 export const PVE_SKIRMISH_LIMITS = Object.freeze({ retryTicks: 300, maxRetryTicks: 1800,
   searchTicks: 1800, maxSearchTicks: 5400, searchCandidates: 64, recentCombatTicks: 120,

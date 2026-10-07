@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
-import { createReconnaissancePolicy } from '../src/pve-reconnaissance.mjs';
+import { createReconnaissancePolicy } from '../src/simulation/ai/policies/reconnaissance.mjs';
 import { toOpponentObservation } from '../src/pve-opponent.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';

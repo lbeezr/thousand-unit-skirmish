@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
-import { createSkirmishTargetPolicy } from '../src/pve-skirmish-targets.mjs';
+import { createSkirmishTargetPolicy } from '../src/simulation/ai/policies/skirmish-targets.mjs';
 import { toOpponentObservation } from '../src/pve-opponent.mjs';
 
 // Trusted lab geometry retains authored native identity; the tested targeting

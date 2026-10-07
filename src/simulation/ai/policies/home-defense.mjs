@@ -1,4 +1,4 @@
-import { UNIT_DEFINITIONS } from './gameplay-definitions.mjs';
+import { UNIT_DEFINITIONS } from '../../../gameplay-definitions.mjs';
 
 export const PVE_HOME_DEFENSE_LIMITS = Object.freeze({ radius: 12, units: 4, retryTicks: 300, maxRetryTicks: 1800, recentCombatTicks: 120 });
 const key = unit => `${unit.id}:${unit.generation}`;

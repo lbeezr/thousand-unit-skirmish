@@ -21,6 +21,12 @@ export const BROWSER_PACKAGE_IMPORTS = {
   'src/water-study-preview.mjs': ['three'],
 };
 export const SERVER_ENTRYPOINTS = ['room-supervisor.mjs', 'server.mjs'];
+// Private policies moved with all consumers; these paths have no supported
+// external API. Reject root copies/stubs so new callers use the subsystem home.
+export const RETIRED_RUNTIME_PATHS = Object.freeze([
+  'src/pve-home-defense.mjs', 'src/pve-objective-rotation.mjs',
+  'src/pve-reconnaissance.mjs', 'src/pve-regroup.mjs', 'src/pve-skirmish-targets.mjs',
+]);
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
 export const NODE_ONLY_MODULES = [
   'src/server/client-static-assets.mjs', // Shared exact static admission uses Node path semantics.
@@ -71,8 +77,9 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   ],
   ai: [
     'simulation/ai/opponent-observation',
-    'pve-home-defense', 'pve-objective-rotation', 'pve-opponent', 'pve-production',
-    'pve-reconnaissance', 'pve-regroup', 'pve-skirmish-targets',
+    'simulation/ai/policies/home-defense', 'simulation/ai/policies/objective-rotation',
+    'simulation/ai/policies/reconnaissance', 'simulation/ai/policies/regroup',
+    'simulation/ai/policies/skirmish-targets', 'pve-opponent', 'pve-production',
   ],
   // Portable disclosed-row/action projections, despite misleading file names.
   // The authoritative Worker receipt journal itself belongs to simulation.
@@ -278,6 +285,9 @@ export function checkRuntimeImports(sources, {
   const domains = runtimeDomainMembership(runtimeDomains, runtimeDomainHosts);
   const errors = [];
   for (const [filename, { external }] of graph) {
+    if (RETIRED_RUNTIME_PATHS.includes(filename)) {
+      errors.push(`${filename}: retired private implementation path; use src/simulation/ai/policies/`);
+    }
     if (requireDomainCoverage && !domains.has(filename)) {
       errors.push(`${filename}: unclassified runtime module; declare its reviewed responsibility`);
     }

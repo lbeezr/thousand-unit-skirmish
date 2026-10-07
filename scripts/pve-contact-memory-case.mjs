@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createPveHeadlessFixture,assertRecoveredWorkerObservation} from './pve-headless-fixture.mjs';
-import {createSkirmishTargetPolicy} from '../src/pve-skirmish-targets.mjs';
+import {createSkirmishTargetPolicy} from '../src/simulation/ai/policies/skirmish-targets.mjs';
 import {toOpponentObservation} from '../src/pve-opponent.mjs';
 
 const identity={matchModeId:'skirmish',matchModeVersion:1};

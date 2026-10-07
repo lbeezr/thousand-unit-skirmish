@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { createObjectiveRotationPolicy, PVE_OBJECTIVE_ROTATION_LIMITS as limits } from '../src/pve-objective-rotation.mjs';
+import { createObjectiveRotationPolicy, PVE_OBJECTIVE_ROTATION_LIMITS as limits } from '../src/simulation/ai/policies/objective-rotation.mjs';
 import { replayPaidObstruction } from './pve-objective-rotation-case.mjs';
 
 function fixture(team) {

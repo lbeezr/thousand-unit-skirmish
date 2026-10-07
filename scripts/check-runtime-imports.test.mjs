@@ -4,7 +4,42 @@ import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
-import { BROWSER_ENTRYPOINTS, BROWSER_PACKAGE_IMPORTS, NODE_ONLY_MODULES, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS, checkRuntimeImports, moduleImports, readRuntimeSources, runtimeImportGraph, cyclicEdges } from './check-runtime-imports.mjs';
+import { BROWSER_ENTRYPOINTS, BROWSER_PACKAGE_IMPORTS, NODE_ONLY_MODULES, RETIRED_RUNTIME_PATHS, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS, checkRuntimeImports, moduleImports, readRuntimeSources, runtimeImportGraph, cyclicEdges } from './check-runtime-imports.mjs';
+
+const AI_POLICIES = ['home-defense', 'objective-rotation', 'reconnaissance', 'regroup', 'skirmish-targets'];
+
+test('private AI policies use canonical consumers with no root copies or forwarding entries', async () => {
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  const hostImports = moduleImports(sources.get('src/pve-opponent.mjs'), 'src/pve-opponent.mjs');
+  for (const name of AI_POLICIES) {
+    const canonical = `src/simulation/ai/policies/${name}.mjs`;
+    const retired = `src/pve-${name}.mjs`;
+    assert.ok(sources.has(canonical), canonical);
+    assert.equal(sources.has(retired), false, retired);
+    assert.ok(RUNTIME_DOMAINS.ai.includes(canonical));
+    assert.equal(RUNTIME_DOMAINS.ai.includes(retired), false);
+    assert.ok(RETIRED_RUNTIME_PATHS.includes(retired));
+    assert.ok(hostImports.includes(`./simulation/ai/policies/${name}.mjs`), name);
+    for (const source of ['', `export * from './simulation/ai/policies/${name}.mjs';`]) {
+      const changed = new Map(sources).set(retired, source);
+      assert.throws(() => checkRuntimeImports(changed), /retired private implementation path/, retired);
+    }
+  }
+});
+
+test('every canonical AI policy rejects static, lazy and re-export dependencies on UI, editors, rendering and transport', () => {
+  for (const name of AI_POLICIES) {
+    const canonical = `src/simulation/ai/policies/${name}.mjs`;
+    for (const target of ['resource-format', 'scenario-authoring', 'terrain-height', 'networking/websocket-deflate-offer']) {
+      const destination = `src/${target}.mjs`;
+      const relative = path.posix.relative(path.posix.dirname(canonical), destination);
+      for (const source of [`import '${relative}';`, `export * from '${relative}';`, `const later = () => import('${relative}');`]) {
+        assert.throws(() => check({ [canonical]: source, [destination]: '' }),
+          /ai domain cannot reach (?:client|authoring|presentation|server) domain/, `${canonical} -> ${destination}`);
+      }
+    }
+  }
+});
 
 function check(files, options = {}) {
   return checkRuntimeImports(new Map(Object.entries(files)), {
@@ -299,9 +334,10 @@ test('every shipped browser entry rejects private manifest and transport paths, 
 });
 
 test('unreferenced simulation and AI modules reject client, authoring, presentation and transport imports', () => {
-  for (const root of ['formation-assignment', 'pve-regroup']) {
+  for (const root of ['formation-assignment', 'simulation/ai/policies/regroup']) {
     for (const target of ['resource-format', 'scenario-authoring', 'terrain-height', 'networking/websocket-deflate-offer']) {
-      const files = { [`src/${root}.mjs`]: `import './${target}.mjs';`, [`src/${target}.mjs`]: '' };
+      const relative = path.posix.relative(path.posix.dirname(`src/${root}.mjs`), `src/${target}.mjs`);
+      const files = { [`src/${root}.mjs`]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';`, [`src/${target}.mjs`]: '' };
       assert.throws(() => check(files), /(?:simulation|ai) domain cannot reach (?:client|authoring|presentation|server) domain/,
         `${root} -> ${target}`);
     }
@@ -362,7 +398,7 @@ test('canonical audio leaves and compatibility paths stay outside authority and 
       [legacy]: `export { ${binding} } from './client/audio/${helper}.mjs';`,
     };
     for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/rules/base-lifecycle.mjs',
-      'src/map-utils.mjs', 'src/simulation/movement/formation-assignment.mjs', 'src/pve-regroup.mjs']) {
+      'src/map-utils.mjs', 'src/simulation/movement/formation-assignment.mjs', 'src/simulation/ai/policies/regroup.mjs']) {
       for (const target of [canonical, legacy]) {
         const relative = path.posix.relative(path.posix.dirname(root), target);
         assert.throws(() => check({ ...helpers, [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
@@ -391,7 +427,7 @@ test('canonical audio implementations remain dependency-free behind explicit leg
 test('the image-loading leaf stays outside authority and server hosts with no module dependencies', async () => {
   const target = 'src/presentation/assets/interactive-runtime-image.mjs';
   for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/rules/base-lifecycle.mjs',
-    'src/map-utils.mjs', 'src/simulation/movement/formation-assignment.mjs', 'src/pve-regroup.mjs']) {
+    'src/map-utils.mjs', 'src/simulation/movement/formation-assignment.mjs', 'src/simulation/ai/policies/regroup.mjs']) {
     const relative = path.posix.relative(path.posix.dirname(root), target);
     assert.throws(() => check({ [target]: '',
       [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
@@ -413,7 +449,7 @@ test('rules and world cannot reach higher policy domains, including through unkn
     'src/map-utils.mjs': "import './formation-assignment.mjs';", 'src/formation-assignment.mjs': '',
   }), /world domain cannot reach simulation domain/);
   assert.throws(() => check({
-    'src/formation-assignment.mjs': "import './pve-regroup.mjs';", 'src/pve-regroup.mjs': '',
+    'src/formation-assignment.mjs': "import './simulation/ai/policies/regroup.mjs';", 'src/simulation/ai/policies/regroup.mjs': '',
   }), /simulation domain cannot reach ai domain/);
 });
 
@@ -470,7 +506,7 @@ test('canonical authoring leaves retain the editor boundary through compatibilit
 test('building selection synthesis remains a dependency-free client leaf outside authority and server hosts', async () => {
   const target = 'src/client/audio/building-selection.mjs';
   for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
-    'src/simulation/movement/formation-assignment.mjs', 'src/pve-regroup.mjs']) {
+    'src/simulation/movement/formation-assignment.mjs', 'src/simulation/ai/policies/regroup.mjs']) {
     const relative = path.posix.relative(path.posix.dirname(root), target);
     assert.throws(() => check({ [target]: '', [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
       /(?:rules|world|simulation|ai) domain cannot reach client domain/);
@@ -487,7 +523,7 @@ test('building selection synthesis remains a dependency-free client leaf outside
 test('Map Studio form controller has no module dependencies and cannot enter authority or server closures', async () => {
   const target = 'src/authoring/map-studio-form-state.mjs';
   for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
-    'src/simulation/movement/formation-assignment.mjs', 'src/pve-regroup.mjs']) {
+    'src/simulation/movement/formation-assignment.mjs', 'src/simulation/ai/policies/regroup.mjs']) {
     const relative = path.posix.relative(path.posix.dirname(root), target);
     assert.throws(() => check({ [target]: '', [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
       /(?:rules|world|simulation|ai) domain cannot reach authoring domain/);
@@ -504,7 +540,7 @@ test('local draft persistence and its versioned contract stay authoring-only', a
   const contract = 'src/authoring/map-studio/draft/v1/contract.mjs';
   for (const target of [store, contract]) {
     for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
-      'src/simulation/movement/formation-assignment.mjs', 'src/pve-regroup.mjs']) {
+      'src/simulation/movement/formation-assignment.mjs', 'src/simulation/ai/policies/regroup.mjs']) {
       const relative = path.posix.relative(path.posix.dirname(root), target);
       assert.throws(() => check({ [target]: '', [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
         /(?:rules|world|simulation|ai) domain cannot reach authoring domain/);
