@@ -150,6 +150,20 @@ finite Farms, rebuilds producers, scouts, recruits counters, directs Siege at
 visible defenses, answers observed home raids and regroups after a wipeout.
 It uses owned and disclosed state, stable identities and bounded retries.
 
+Discretionary Town Center expansion prefers an idle empty owned Worker. Its
+fallback is an empty gatherer whose delivery completion was observed during the
+current gathering/returning episode. History contains only living observed owned
+Worker identities and generations, is pruned on disappearance or interruption,
+and clears on observation rewind. Repeated ticks cannot establish completion;
+a cold policy begins without prior delivery evidence. The public DTO cannot
+distinguish seamless Gather source changes, so this is an observed episode rule,
+not authoritative job tracking. With no eligible Worker, expansion is deferred
+while other production continues; eventual expansion is not guaranteed. Paid
+foundations use the same selector for resumption. Urgent recovery priorities
+remain unchanged. Source controls and native paid expansion/replay are in
+[the focused test](../scripts/pve-expansion-builder-priority.test.mjs); served
+and ordinary rendered acceptance remain separate.
+
 The [Tiny building inspection receipt](qa-pve-building-inspection-2026-10-06.md)
 extends existing point inspection to the last selected disclosed building.
 After native sight termination, coordinate AttackMove regains real Town Center
