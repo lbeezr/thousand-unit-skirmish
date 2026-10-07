@@ -1,4 +1,4 @@
-import { shoreFishSitePositions } from './shore-fishing-placement.mjs';
+import { shoreFishSitePositions } from '../../../shore-fishing-placement.mjs';
 
 const EMPTY = Object.freeze({ resourceNodes: [], visibleResourceIds: [], visibleWaterCells: [] });
 

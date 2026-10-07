@@ -1,6 +1,6 @@
 import { shoreFishSitePositions } from './shore-fishing-placement.mjs';
 import { headingToTarget } from './unit-heading.mjs';
-import { WATER_LEVEL } from './water-surface-geometry.mjs';
+import { WATER_LEVEL } from './presentation/rendering/water/geometry.mjs';
 import { workerWorkAction } from './worker-work-presentation.mjs';
 
 const sitesByMap = new WeakMap();

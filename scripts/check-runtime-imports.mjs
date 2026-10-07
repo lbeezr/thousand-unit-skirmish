@@ -21,11 +21,13 @@ export const BROWSER_PACKAGE_IMPORTS = {
   'src/water-study-preview.mjs': ['three'],
 };
 export const SERVER_ENTRYPOINTS = ['room-supervisor.mjs', 'server.mjs'];
-// Private policies moved with all consumers; these paths have no supported
-// external API. Reject root copies/stubs so new callers use the subsystem home.
+// Reviewed migrations update every tracked consumer. Reject returning copies
+// or stubs at retired roots; supported compatibility entries remain separate.
 export const RETIRED_RUNTIME_PATHS = Object.freeze([
   'src/pve-home-defense.mjs', 'src/pve-objective-rotation.mjs',
   'src/pve-reconnaissance.mjs', 'src/pve-regroup.mjs', 'src/pve-skirmish-targets.mjs',
+  'src/water-surface-study.mjs', 'src/water-study-state.mjs',
+  'src/water-study-fish-binding.mjs', 'src/water-surface-geometry.mjs',
 ]);
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
 export const NODE_ONLY_MODULES = [
@@ -106,8 +108,9 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'sunbloom-crown-pack', 'sunbloom-low-pack', 'sunbloom-view-pack', 'sunbloom-worked-pack',
     'settlement-wear', 'terrain-atmosphere', 'terrain-blend', 'terrain-cliff-faces', 'terrain-height', 'terrain-texture-sampling',
     'unit-lod-state', 'unit-sprite-runtime', 'unit-visual-state', 'veilcap-view-pack',
-    'veilcap-worked-pack', 'wall-placement-ghost', 'water-study-fish-binding',
-    'water-study-state', 'water-surface-geometry', 'water-surface-study',
+    'veilcap-worked-pack', 'wall-placement-ghost',
+    'presentation/rendering/water/fish-binding', 'presentation/rendering/water/state',
+    'presentation/rendering/water/geometry', 'presentation/rendering/water/surface',
     'worker-fishing-contact',
   ],
   client: [
@@ -286,7 +289,7 @@ export function checkRuntimeImports(sources, {
   const errors = [];
   for (const [filename, { external }] of graph) {
     if (RETIRED_RUNTIME_PATHS.includes(filename)) {
-      errors.push(`${filename}: retired private implementation path; use src/simulation/ai/policies/`);
+      errors.push(`${filename}: retired implementation path; use the canonical subsystem module`);
     }
     if (requireDomainCoverage && !domains.has(filename)) {
       errors.push(`${filename}: unclassified runtime module; declare its reviewed responsibility`);

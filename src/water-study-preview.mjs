@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { buildWaterSurfaceGeometry } from './water-surface-geometry.mjs';
-import { createWaterSurfaceStudy } from './water-surface-study.mjs';
+import { buildWaterSurfaceGeometry } from './presentation/rendering/water/geometry.mjs';
+import { createWaterSurfaceStudy } from './presentation/rendering/water/surface.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
 import { waterRaster } from './water-contours.mjs';
 

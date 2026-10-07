@@ -5,8 +5,8 @@ import { createGroundMistStudy, groundMistEnabled } from '../../terrain-atmosphe
 import { applyTerrainTextureSampling } from '../../terrain-texture-sampling.mjs';
 import { createTerrainCliffFaces } from '../../terrain-cliff-faces.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from '../../terrain-blend.mjs';
-import { buildWaterSurfaceGeometry } from '../../water-surface-geometry.mjs';
-import { createWaterSurfaceStudy, waterSurfaceOptions } from '../../water-surface-study.mjs';
+import { buildWaterSurfaceGeometry } from './water/geometry.mjs';
+import { createWaterSurfaceStudy, waterSurfaceOptions } from './water/surface.mjs';
 import { createShoreBankShade } from '../../shore-bank-shade.mjs';
 
 const GROUND_RENDER_ORDER = -20;

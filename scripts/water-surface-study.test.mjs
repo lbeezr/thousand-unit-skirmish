@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { buildWaterStudyField, selectWaterStudyFish, waterStudyTime, WATER_STUDY_FISH_LIMIT } from '../src/water-study-state.mjs';
-import { createWaterSurfaceStudy, waterSurfaceOptions } from '../src/water-surface-study.mjs';
-import { createWaterStudyFishBinding } from '../src/water-study-fish-binding.mjs';
-import { buildWaterSurfaceGeometry } from '../src/water-surface-geometry.mjs';
+import { buildWaterStudyField, selectWaterStudyFish, waterStudyTime, WATER_STUDY_FISH_LIMIT } from '../src/presentation/rendering/water/state.mjs';
+import { createWaterSurfaceStudy, waterSurfaceOptions } from '../src/presentation/rendering/water/surface.mjs';
+import { createWaterStudyFishBinding } from '../src/presentation/rendering/water/fish-binding.mjs';
+import { buildWaterSurfaceGeometry } from '../src/presentation/rendering/water/geometry.mjs';
 import { findInvalidResourceVariant } from '../src/shore-fishing.mjs';
 import { createGroundSurfaceBuilder } from '../src/presentation/rendering/ground-surfaces.mjs';
 

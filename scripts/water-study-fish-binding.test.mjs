@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createWaterStudyFishBinding } from '../src/water-study-fish-binding.mjs';
-import { createWaterSurfaceStudy } from '../src/water-surface-study.mjs';
-import { selectWaterStudyFish } from '../src/water-study-state.mjs';
+import { createWaterStudyFishBinding } from '../src/presentation/rendering/water/fish-binding.mjs';
+import { createWaterSurfaceStudy } from '../src/presentation/rendering/water/surface.mjs';
+import { selectWaterStudyFish } from '../src/presentation/rendering/water/state.mjs';
 import { shoreFishSitePositions } from '../src/shore-fishing-placement.mjs';
 
 const node = { id: 'bank-fish', type: 'food', resourceVariant: 'shore-fish', x: -1.5, z: -.5, stock: 60 };

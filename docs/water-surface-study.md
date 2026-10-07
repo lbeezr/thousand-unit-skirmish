@@ -122,6 +122,29 @@ lane; this cloud adapter work does not establish pixel readability. No palette,
 contrast, amplitude or shader appearance was redesigned for default integration.
 Fish silhouettes and boats remain art work.
 
+## Production source homes — 7 October 2026
+
+The default match renderer lives in `src/presentation/rendering/water/`:
+
+| Implementation | Canonical module |
+| --- | --- |
+| Surface materials, field texture and fish ripples | [surface.mjs](../src/presentation/rendering/water/surface.mjs) |
+| Cosmetic shore field, disclosed fish selection and time policy | [state.mjs](../src/presentation/rendering/water/state.mjs) |
+| Accepted live snapshot and fog binding | [fish-binding.mjs](../src/presentation/rendering/water/fish-binding.mjs) |
+| Shared contour buffers and water level | [geometry.mjs](../src/presentation/rendering/water/geometry.mjs) |
+
+Ground surfaces, Main, environment construction and fishing-contact presentation
+consume these canonical modules. The separate `/water-study.html` comparison
+still uses `src/water-study-preview.mjs`; only its shared production dependencies
+move. Existing exported bindings, `waterStudy` object fields and quality/time
+query compatibility are retained. All tracked module/URL consumers move together;
+the four former root implementation paths retire without forwarding stubs.
+
+Shader, material, geometry, disclosure and disposal bodies are preserved except
+for import paths. Source equality, packed HTTP admission, deployed identity and
+actual rendered output remain separate evidence; this migration does not claim
+new appearance acceptance.
+
 ## Verification and limits
 
 `node --test scripts/water-surface-study.test.mjs` checks field/geometry integrity,
