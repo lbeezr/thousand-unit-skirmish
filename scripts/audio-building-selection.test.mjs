@@ -85,7 +85,7 @@ test('sparse civilization overrides use the common exact/role/cue chain for miss
   assert.equal(resolveEventBinding(profile, { cue: 'gather', kind: 'worker', resource: 'wood' }), null);
 });
 
-test('civilization selection retains shared cooldown, variant rotation and urgent speech priority', () => {
+test('civilization selection retains shared cooldown, random nonrepeat and urgent speech priority', () => {
   let now = 1000;
   const gate = createProfileDecisionGate({ now: () => now });
   const profile = { bindings: { 'cue.base-alert': binding('horn-note', 'voice') }, civilizationBindings: {
@@ -123,12 +123,12 @@ test('actual building selection uses distinct default synthesis and the existing
       async resume() { this.state = 'running'; }
       async close() { this.state = 'closed'; }
     };
-    const listeners = new Map(), cues = [], captions = [];
+    const listeners = new Map(), cues = [], decisionCallbacks = [];
     const doc = { hidden: false, addEventListener: (event, fn) => listeners.set(event, fn),
       removeEventListener: event => listeners.delete(event) };
-    const audio = createGameAudio({ storage: null, doc, civilizationId, onCue: cue => cues.push(cue), onCueDecision: cue => captions.push(cue) });
+    const audio = createGameAudio({ storage: null, doc, civilizationId, onCue: cue => cues.push(cue), onCueDecision: cue => decisionCallbacks.push(cue) });
     audio.setSettings({ ambience: false, musicLevel: 0 }); audio.unlock();
-    return { audio, sources, cues, captions, doc, select: actualSelectionConsumer(audio), context: () => context,
+    return { audio, sources, cues, decisionCallbacks, doc, select: actualSelectionConsumer(audio), context: () => context,
       finish() { for (const source of sources) source.finish(); },
       hide() { doc.hidden = true; listeners.get('visibilitychange')?.(); },
       async show() { doc.hidden = false; listeners.get('visibilitychange')?.(); await settle(); } };
@@ -225,7 +225,7 @@ test('actual building selection uses distinct default synthesis and the existing
         assert.equal(tones.length, 1); assert.equal(tones[0].frequency.values[0], 880);
       } finally { f.audio.dispose(); }
     });
-    await t.test('existing attack aggregation and urgent captions remain available for multiple units and muted output', () => {
+    await t.test('existing attack aggregation and muted warning decision callbacks remain available for multiple units', () => {
       const f = fixture(); const gate = new CombatAudioGate();
       try { clock += 1000; const cue = gate.observe({ friendlyDamage: 1000 }, clock); assert.equal(cue, 'battle-alert');
         assert.equal(f.audio.playEvent({ cue }), true);
@@ -234,7 +234,8 @@ test('actual building selection uses distinct default synthesis and the existing
         assert.equal(gate.observe({ friendlyDamage: 2, selectedDamage: 2, buildingDamage: 3 }, clock + 1), 'base-alert');
         f.audio.setSettings({ enabled: false }); const before = f.sources.length;
         assert.equal(f.audio.playEvent({ cue: 'selected-alert' }), false);
-        assert.equal(f.sources.length, before); assert.ok(f.captions.includes('selected-alert'));
+        assert.equal(f.sources.length, before);
+        assert.ok(f.decisionCallbacks.includes('selected-alert'), 'decision callback observed; no caption UI is instantiated');
       } finally { f.audio.dispose(); }
     });
   } finally {

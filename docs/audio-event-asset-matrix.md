@@ -70,7 +70,8 @@ are not new assets or a delivered assignment. Resolution is:
    failure, use existing synthesis. A configured generic recording intentionally
    wins before synthesis; the technical profile therefore retains its shared tick.
 
-Variants rotate without an immediate same-source repeat. Cooldowns and voice
+Existing `Math.random` choice avoids an immediate same-source repeat when
+alternatives exist; it does not promise deterministic rotation. Cooldowns and voice
 priority remain shared within the active profile; changing civilization does not
 create a per-unit sound loop or bypass the same-key cooldown. The current default
 is Frontier and current source packs have no override layer. The API supports a
@@ -183,7 +184,9 @@ urgent synthesis uses the existing 20-note budget versus 12 routine notes and
 ducks the background. Effects/master mute, overall zero, hidden pages, stale
 pack/decode generations and disposal remain in force. Return never replays stale
 selection/order samples; a fresh eligible event can schedule. Critical warning
-decisions retain captions while muted/locked and never display hidden-page backlog.
+decisions still invoke the decision callback while muted/locked. Visible warning
+captions require captions enabled; Main's `showAudioCaption` otherwise returns
+immediately. Hidden pages do not queue warning callbacks for replay.
 
 This source slice owns default building-selection delivery and sparse override
 validation/resolution. Its backing is the existing short selection gesture and
@@ -192,7 +195,9 @@ published or rebound. The selection HUD owns panel presentation; Main and its
 selection/event hooks remain unchanged. Focused tests execute the committed
 selection consumer with injected presentation boundaries, all thirteen defaults,
 sample precedence/decode failure, unknown fallback, shared cooldown, mute/focus
-return and existing warning aggregation. Those are CPU scheduling contracts.
+return and existing warning aggregation. The muted-warning assertion observes
+`onCueDecision`, not caption UI. These CPU scheduling/callback checks do not
+establish UI rendering, audible playback or recognition.
 
 Next justified source task: coordinate worker acknowledgement context for dynamic
 Farm/sheep/fish before editing `sendTrackedOrder`; use existing applied-token
