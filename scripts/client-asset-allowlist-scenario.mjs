@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SCOUT_PORTRAITS, RIDER_PORTRAITS, SIEGE_ENGINE_PORTRAITS, SPEARMAN_PORTRAITS, BARRACKS_PORTRAIT, FARM_PORTRAIT, FARM_PORTRAITS, farmSelectionPortrait } from '../src/selection-portrait.mjs';
+import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SCOUT_PORTRAITS, RIDER_PORTRAITS, SIEGE_ENGINE_PORTRAITS, SPEARMAN_PORTRAITS, BARRACKS_PORTRAIT, BARRACKS_PORTRAITS, FARM_PORTRAIT, FARM_PORTRAITS, farmSelectionPortrait } from '../src/selection-portrait.mjs';
 import { buildingSpriteUrl } from '../src/building-sprites.mjs';
 import { moduleImports } from './module-imports.mjs';
 import { BROWSER_ENTRYPOINTS } from './check-runtime-imports.mjs';
@@ -150,7 +150,7 @@ const barracksHashes = new Map([...barracksProvenance.matchAll(/`runtime\/([^`]+
   .map(([, name, hash]) => [name, hash]));
 assert.equal(barracksHashes.size, 10, 'both teams retain all five existing Barracks frames');
 const barracksGrid = JSON.parse(readFileSync(path.join(root, barracksRoot, 'sprite-grid.json'), 'utf8'));
-assert.equal(BARRACKS_PORTRAIT.sourceWidth, barracksGrid.spriteFrame.pixels[0]);
+assert.deepEqual(barracksGrid.spriteFrame.pixels, [640, 640], 'legacy battlefield/menu source keeps its independent contract');
 for (const team of [0, 1]) for (const state of [
   { complete: false, progress: 0 }, { complete: false, progress: 0.5 },
   { complete: true, hp: 1800 }, { complete: true, hp: 900 }, { complete: true, hp: 300 },
@@ -158,7 +158,22 @@ for (const team of [0, 1]) for (const state of [
   const resource = buildingSpriteUrl({ type: 'barracks', team, maxHp: 1800, ...state }).slice(2);
   const bytes = readFileSync(path.join(root, resource));
   assert.equal(createHash('sha256').update(bytes).digest('hex'), barracksHashes.get(path.basename(resource)),
-    'Barracks thumbnail uses the retained shipped source');
+    'legacy Barracks fallback/menu uses the retained shipped source');
+}
+const barracksPortraitRoot = 'assets/buildings/frontier-civilization-military-models-v1';
+const barracksManifest = JSON.parse(readFileSync(path.join(root, barracksPortraitRoot, 'barracks-complete-renderer.json'), 'utf8'));
+assert.deepEqual(Object.keys(BARRACKS_PORTRAITS), barracksManifest.stateOrder, 'HUD uses only registered Barracks states');
+assert.deepEqual(barracksManifest.camera.framePixels, [BARRACKS_PORTRAIT.sourceWidth, BARRACKS_PORTRAIT.sourceWidth]);
+for (const state of [barracksManifest.completeState, ...barracksManifest.states]) {
+  const portrait = BARRACKS_PORTRAITS[state.state], source = state.views.find(view => view.index === 1);
+  assert.equal(portrait.asset, `/${barracksPortraitRoot}/${source.path}`, 'fixed illustration reuses admitted default Barracks');
+  const bytes = readFileSync(path.join(root, barracksPortraitRoot, source.path));
+  assert.equal(createHash('sha256').update(bytes).digest('hex'), source.sha256);
+  assert.equal(bytes.length, source.bytes);
+  assert.deepEqual([bytes.readUInt32BE(16), bytes.readUInt32BE(20)], barracksManifest.camera.framePixels);
+  assert.ok(portrait.cropX >= 0 && portrait.cropY >= 0 && portrait.cropSize > 0);
+  assert.ok(portrait.cropX + portrait.cropSize <= portrait.sourceWidth);
+  assert.ok(portrait.cropY + portrait.cropSize <= portrait.sourceWidth);
 }
 const menuStyle = readFileSync(path.join(root, 'src/game-menu.css'), 'utf8');
 assert.ok(allowed.has('src/game-menu.css'), 'entry menu stylesheet must be served');
