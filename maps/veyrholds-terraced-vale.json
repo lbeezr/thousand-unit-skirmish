@@ -7907,29 +7907,29 @@
     {
       "id": "s0-home-wood-1",
       "type": "wood",
-      "x": -50.5,
-      "z": -8.5,
+      "x": -51.5,
+      "z": -7.5,
       "stock": 325
     },
     {
       "id": "s0-home-wood-2",
       "type": "wood",
       "x": -49.5,
-      "z": -3.5,
+      "z": -5.5,
       "stock": 325
     },
     {
       "id": "s1-home-wood-1",
       "type": "wood",
-      "x": 50.5,
-      "z": -8.5,
+      "x": 51.5,
+      "z": -7.5,
       "stock": 325
     },
     {
       "id": "s1-home-wood-2",
       "type": "wood",
       "x": 49.5,
-      "z": -3.5,
+      "z": -5.5,
       "stock": 325
     }
   ],

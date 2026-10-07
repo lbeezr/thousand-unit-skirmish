@@ -105,7 +105,7 @@ test('opening groves retain anchors/budgets and provide two reachable registered
     assert.equal(anchor.stock + candidates.reduce((sum, node) => sum + node.stock, 0), 975);
     for (const node of candidates) {
       assert.equal(node.stock, 325);
-      assert.ok(Math.hypot(node.x - anchor.x, node.z - anchor.z) <= 4);
+      assert.ok(Math.hypot(node.x - anchor.x, node.z - anchor.z) <= 2);
       assert.equal(blocked[cell(node)], 0); assert.equal(levels[cell(node)], levels[cell(anchor)]);
       assert.ok(map.spawnPoints.every(spawn => Math.max(Math.abs(node.x - spawn.x), Math.abs(node.z - spawn.z)) > 6));
       for (const team of [0, 1]) assert.ok(searchGrid(160, 160, blocked, levels, cell(map.spawnPoints[team]), false).distance[cell(node)] >= 0);

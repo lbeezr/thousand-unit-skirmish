@@ -18,7 +18,7 @@ export function priorTerracedValeGroves(shipped) {
     || shipped.resourceNodes.length !== 16) return null;
   const prior = structuredClone(shipped), satellites = new Set();
   for (const team of [0, 1]) for (const [suffix, x, z] of [
-    ['', 51.5, -5.5], ['-1', 50.5, -8.5], ['-2', 49.5, -3.5],
+    ['', 51.5, -5.5], ['-1', 51.5, -7.5], ['-2', 49.5, -5.5],
   ]) {
     const id = `s${team}-home-wood${suffix}`;
     const matches = prior.resourceNodes.filter(node => node?.id === id), node = matches[0];

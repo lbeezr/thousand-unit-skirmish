@@ -25,9 +25,13 @@ Fresh Tiny changes only the two home Wood patches to three 325-stock nodes each:
 12 → 16 total ordinary nodes and 6 → 10 Wood nodes. All 7,950 ordinary Wood,
 6,100 Food, 3,162 forest cells, anchor IDs/positions, expansion pockets, starting banks,
 terrain, objectives and map identity remain unchanged. Each home anchor gains two
-registered replacements in radius four, using terrain seed 93025 and the existing
+registered replacements in radius two, using terrain seed 93025 and the existing
 seeded mirrored placement helper. Other tiers and expansion singleton patches remain
 unchanged. This is deliberately an opening slice, not a general density/balance retune.
+Local node load changes AI worker allocation even at equal stock. Compact placement
+is qualified against both seed orders and both existing authored/Skirmish identities
+through the default Tiny paid fogged match, checkpoint recovery and exact replay
+contract. Simulation elimination times are observations, not a timing/parity promise.
 
 Existing [regional environment and lifecycle art](environment-pack-v1.md)
 and [fixed-camera construction](art-direction/environment-camera-v1/README.md)
@@ -65,7 +69,9 @@ Fixed ticks are a source-copy simulation adapter, not native real-time full depl
 
 Run `node --test scripts/terraced-vale.test.mjs scripts/terraced-vale-sheep.test.mjs scripts/terraced-vale-sheep-entry.test.mjs`,
 `node scripts/terraced-vale-groves-scenario.mjs` and the existing
-`node scripts/terraced-vale-sheep-scenario.mjs`; the grove scenario is registered through
+`node scripts/terraced-vale-sheep-scenario.mjs`, plus
+`node --test scripts/pve-tiny-search.test.mjs` for complete seeded AI matches;
+the grove scenario is registered through
 the Tiny test file, without editing the shared CI registry. Required repository checks,
 independent review, clean release identity and final head evidence accompany the PR.
 Baseline CI exceptions for PRs 602–604 do not extend to this slice.

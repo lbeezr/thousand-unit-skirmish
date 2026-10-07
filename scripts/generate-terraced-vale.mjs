@@ -82,7 +82,7 @@ export async function generateTerracedVale() {
   // A small registered grove lets the existing Wood job continue locally.
   // Redistribute the opening budget; retain original anchors and expansion intent.
   const groves = seededMirroredResourceClusters(map, {
-    seed: map.terrainSeed, nodesPerPatch: 3, radius: 4, spawnClearance: 6,
+    seed: map.terrainSeed, nodesPerPatch: 3, radius: 2, spawnClearance: 6,
     patches: [{ type: 'wood', x: -51.5, z: -5.5, stock: 975 }],
   }).map(node => ({ ...node, id: node.id.replace(/-0(?=-|$)/, '-home-wood') }));
   const anchors = new Map(groves.map(node => [node.id, node]));
