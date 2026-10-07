@@ -145,8 +145,8 @@ export function createSkirmishTargetPolicy(seed = 0) {
         && mapSizeIdentity(observation.map).sizeTierId === 'tiny';
       if (visible) {
         search = null;
-        // Remember one public point, never a hidden enemy identity or movement.
-        contact = tiny && visible.type === 'attack' ? { x: visible.x, z: visible.z,
+        // Inspect one last disclosed unit/building point, never a hidden target.
+        contact = tiny && (visible.type === 'attack' || visible.type === 'attackBuilding') ? { x: visible.x, z: visible.z,
           tick: observation.tick, cohort: new Set(soldiers.map(identity)) } : null;
       }
       const original = contact ? soldiers.filter(unit => contact.cohort.has(identity(unit))) : [];

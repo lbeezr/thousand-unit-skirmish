@@ -2,6 +2,8 @@ import { freshVoluntaryEndings, voluntaryCapability, decideVoluntaryEnding, canc
 import { createPeerOutput } from './src/server/transport/peer-output.mjs';
 import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } from './src/shore-fishing.mjs';
 import { farmHarvestNode, farmHarvestNodeId, farmBuildingId, validFarmStock, eligibleFarmReplantWorker } from './src/farm-harvest.mjs';
+import { createWorkerPerimeterAccess } from './src/economy-perimeter-access.mjs';
+import { createWorkerPerimeterRecovery } from './src/economy-perimeter-recovery.mjs';
 import { createDockPlacementContext, dockBerthOrientation, validDockFacingState } from './src/dock-placement.mjs';
 import { createWaterUnitRuntime, waterUnitOccupiedCells } from './src/water-unit-runtime.mjs';
 import { createSkiffFishingContext } from './src/skiff-fishing.mjs';
@@ -786,6 +788,8 @@ let separationTickMoveVectorCalls = 0;
 let separationTickMaxCandidatesPerCall = 0;
 let landRouteRetentionTick = null;
 let workerEconomyRouteScope = null;
+let workerPerimeterAccessScope = null;
+const workerPerimeterRecovery = createWorkerPerimeterRecovery();
 let lastSimulationTickStartedAt = null;
 const movePlanningSamples = [];
 const movePlanningQueue = [];
@@ -4185,6 +4189,81 @@ function cancelGatherOrder(unit) {
   if (changed) dirty = true;
 }
 
+function withWorkerPerimeterAccess(operation) {
+  if (workerPerimeterAccessScope) return operation();
+  const scope = createWorkerPerimeterAccess({ units, width: MAP_WIDTH, height: MAP_HEIGHT,
+    maxUnits: MAX_UNITS, epoch: movePlanningEpoch, navigationRevision,
+    current: () => ({ epoch: movePlanningEpoch, navigationRevision }) });
+  workerPerimeterAccessScope = scope;
+  try { return operation(); }
+  finally { workerPerimeterAccessScope = null; scope.close(); }
+}
+
+function workerBuildingPerimeterGoals(unit, goals) {
+  const selected = workerPerimeterAccessScope.select(unit, goals);
+  // Temporary crowd/budget refusal keeps the existing static admission. This
+  // fallback grants no body availability: every physical write stays guarded.
+  return selected.status === 'ready' ? selected.goals : goals;
+}
+
+function workerPerimeterFlowField(goals, key) {
+  const normalized = [...new Set(goals.filter(isWalkable))];
+  const cached = attackFlowFields.get(key);
+  if (cached && (!cached.goals || cached.goals.size !== normalized.length
+    || normalized.some(cell => !cached.goals.has(cell)))) attackFlowFields.delete(key);
+  return getAttackFlowFieldForGoals(normalized, key);
+}
+
+function workerPerimeterRecoveryTarget(unit) {
+  let building;
+  if (unit.gatherPhase === 'to-base' && unit.cargo > 0 && unit.dropoffNavigationRevision === navigationRevision) {
+    building = buildingsById.get(unit.dropoffBuildingId);
+    if (!building || !acceptsProfileDropoff(building.type, unit.cargoType || 'food', matchEconomyProfileId())) return null;
+  } else if (unit.gatherPhase === 'to-node' && unit.gatherForestCell < 0) {
+    const node = harvestNodeById(unit.gatherNodeId);
+    if (!node || node.sourceBuildingId === undefined || node.stock <= 0) return null;
+    building = buildingsById.get(node.sourceBuildingId);
+  } else return null;
+  if (!building?.complete || building.team !== unit.team || building.hp <= 0
+    || distanceToBuildingEdge(unit, building) <= WORKER_INTERACTION_RANGE) return null;
+  return { building };
+}
+
+function reselectWorkerPerimeter(unit, target) {
+  if (workerPerimeterRecoveryTarget(unit)?.building !== target.building) return { status: 'deferred' };
+  const oldGoal = unit.moveGoalCell;
+  // Claims alone cannot trigger recovery. Only a fresh physical obstruction
+  // of the retained final waypoint qualifies; incomplete queries defer.
+  if (workerPerimeterAccessScope.select(unit, [oldGoal]).status !== 'blocked') return { status: 'deferred' };
+  const start = nearestOpenCell(worldToCell(unit.x, unit.z)), component = walkableComponents[start];
+  const selected = workerPerimeterAccessScope.select(unit, buildingAccessCells(target.building.footprint)
+    .filter(cell => cell !== oldGoal && walkableComponents[cell] === component));
+  if (selected.status !== 'ready' || !selected.goals.length) return { status: 'deferred' };
+  const key = unit.gatherPhase === 'to-base'
+    ? `dropoff:${unit.team}:${target.building.id}:${component}` : `farm:${target.building.id}:${component}`;
+  const field = workerPerimeterFlowField(selected.goals, key);
+  const path = field ? pathFromAttackFlow(start, field) : [];
+  if (!field || (!path.length && !field.goals.has(start))) return { status: 'deferred' };
+  const preview = { ...unit };
+  const route = applyWorkerFlowRoute(preview, start, field, path, false);
+  if (route.status === 'deferred' || route.selectedGoalCell < 0 || route.selectedGoalCell === oldGoal
+    || !route.path.length) return { status: 'deferred' };
+  // Capacity refusal leaves the existing route/job untouched. Check before
+  // invoking the existing publisher, whose ordinary refusal releases payloads.
+  if (MAP_WIDTH > 256 || MAP_HEIGHT > 256) {
+    const scope = workerEconomyRouteScope;
+    scope.ledger ??= createUnitRoutePublicationLedger(MAP_WIDTH, MAP_HEIGHT, units, resourceNodeStates,
+      { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES, maxEntries: XL_CHECKPOINT_ROUTE_MAX_ENTRIES });
+    if (!scope.ledger || scope.ledger.check(unit, route.path.length).status !== 'ready') return { status: 'deferred' };
+    if (publishWorkerEconomyRoute(unit, route.path, route.selectedGoalCell).status !== 'ready') return { status: 'deferred' };
+  } else {
+    unit.moveGoalCell = route.selectedGoalCell; unit.path = route.path; unit.pathIndex = 0;
+  }
+  workerPerimeterAccessScope.commit(unit);
+  dirty = true;
+  return { status: 'ready' };
+}
+
 function workerDropoffCandidates(unit) {
   return allMatchBuildings().filter((building) => building.team === unit.team && building.complete
       && acceptsProfileDropoff(building.type, unit.cargoType || 'food', matchEconomyProfileId()))
@@ -4284,29 +4363,37 @@ function withWorkerRouteAdmission(operation, mode) {
 }
 
 function updateWorkerEconomyWithRouteAdmission() {
-  return withWorkerRouteAdmission(updateWorkerEconomy, 'worker-economy-capacity');
+  return withWorkerRouteAdmission(() => withWorkerPerimeterAccess(() => {
+    updateWorkerEconomy();
+    workerPerimeterRecovery.run({ units, tick: tickNumber, movePlanningEpoch, navigationRevision,
+      targetFor: workerPerimeterRecoveryTarget, attempt: reselectWorkerPerimeter });
+  }), 'worker-economy-capacity');
 }
 
 function assignGatherWithRouteAdmission(player, command) {
-  return withWorkerRouteAdmission(() => assignGather(player, command), 'worker-gather-command-capacity');
+  return withWorkerRouteAdmission(() => withWorkerPerimeterAccess(() => assignGather(player, command)), 'worker-gather-command-capacity');
 }
 
 function routeWorkerToDropoff(unit) {
+  if (!workerPerimeterAccessScope) return withWorkerPerimeterAccess(() => routeWorkerToDropoff(unit));
   const start = nearestOpenCell(worldToCell(unit.x, unit.z));
   const component = walkableComponents[start];
   let best = null;
   for (const candidate of workerDropoffCandidates(unit)) {
-    const goals = candidate.goals.filter((cell) => walkableComponents[cell] === component);
+    const goals = workerBuildingPerimeterGoals(unit,
+      candidate.goals.filter((cell) => walkableComponents[cell] === component));
     if (!goals.length) continue;
-    const field = getAttackFlowFieldForGoals(goals, `dropoff:${unit.team}:${candidate.id ?? 'home'}:${component}`);
+    const field = workerPerimeterFlowField(goals, `dropoff:${unit.team}:${candidate.id ?? 'home'}:${component}`);
     const path = field ? pathFromAttackFlow(start, field) : [];
     if (!field || (!path.length && !field.goals.has(start))) continue;
     if (!best || path.length < best.path.length) best = { candidate, field, path };
   }
   unit.dropoffBuildingId = best?.candidate.id ?? null;
   unit.dropoffNavigationRevision = navigationRevision;
-  return applyWorkerFlowRoute(unit, start, best?.field, best?.path ?? [],
+  const result = applyWorkerFlowRoute(unit, start, best?.field, best?.path ?? [],
     Boolean(best && distanceToBuildingEdge(unit, best.candidate) <= WORKER_INTERACTION_RANGE));
+  if (units[unit.id] === unit) workerPerimeterAccessScope.commit(unit);
+  return result;
 }
 
 function workerAtDropoff(unit) {
@@ -4330,6 +4417,8 @@ function harvestNodeById(id) {
 }
 
 function routeWorker(unit, phase, node) {
+  if (phase !== 'to-base' && node.sourceBuildingId !== undefined && !workerPerimeterAccessScope)
+    return withWorkerPerimeterAccess(() => routeWorker(unit, phase, node));
   unit.orderRevision++;
   unit.movePlanningPending = false;
   unit.gatherPhase = phase;
@@ -4338,10 +4427,13 @@ function routeWorker(unit, phase, node) {
     const start = nearestOpenCell(worldToCell(unit.x, unit.z));
     const component = walkableComponents[start];
     const building = buildingsById.get(node.sourceBuildingId);
-    const goals = buildingAccessCells(building.footprint).filter(cell => walkableComponents[cell] === component);
-    const field = goals.length ? getAttackFlowFieldForGoals(goals, `farm:${building.id}:${component}`) : null;
-    return applyWorkerFlowRoute(unit, start, field, field ? pathFromAttackFlow(start, field) : [],
+    const goals = workerBuildingPerimeterGoals(unit,
+      buildingAccessCells(building.footprint).filter(cell => walkableComponents[cell] === component));
+    const field = goals.length ? workerPerimeterFlowField(goals, `farm:${building.id}:${component}`) : null;
+    const result = applyWorkerFlowRoute(unit, start, field, field ? pathFromAttackFlow(start, field) : [],
       distanceToBuildingEdge(unit, building) <= WORKER_INTERACTION_RANGE);
+    workerPerimeterAccessScope.commit(unit);
+    return result;
   }
   const target = node;
   const field = getAttackFlowField(worldToCell(target.x, target.z));
@@ -4455,6 +4547,7 @@ function assignReturnCargo(player, command) {
     for (const { unit, route, nodeId, phase } of plan.assignments) skiffFishingContext.start(unit, nodeId, phase, route);
     dirty = true; sendOrderNotice(player, command, `RETURN CARGO ORDER · ${plan.assignments.length} SKIFFS TO OWNED DOCK`); return;
   }
+  if (!workerPerimeterAccessScope) return withWorkerPerimeterAccess(() => assignReturnCargo(player, command));
   const publicationLedger = MAP_WIDTH > 256 || MAP_HEIGHT > 256
     ? createUnitRoutePublicationLedger(MAP_WIDTH, MAP_HEIGHT, units, resourceNodeStates,
       { maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES, maxEntries: XL_CHECKPOINT_ROUTE_MAX_ENTRIES }) : null;
@@ -4490,6 +4583,7 @@ function assignReturnCargo(player, command) {
     if (deferred) {
       pendingReturns.push({ unit, destination: unit.moveGoalCell });
     }
+    workerPerimeterAccessScope.commit(unit);
     accepted++;
   };
   const deliveries = [];
@@ -4501,6 +4595,7 @@ function assignReturnCargo(player, command) {
     const route = { ...unit };
     routeWorkerToDropoff(route);
     if (route.moveGoalCell < 0) continue;
+    workerPerimeterAccessScope.preview(unit, route.moveGoalCell);
     if (publicationLedger) acceptReturn(unit, route);
     else deliveries.push({ unit, route });
   }

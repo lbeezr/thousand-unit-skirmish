@@ -150,6 +150,14 @@ finite Farms, rebuilds producers, scouts, recruits counters, directs Siege at
 visible defenses, answers observed home raids and regroups after a wipeout.
 It uses owned and disclosed state, stable identities and bounded retries.
 
+The [Tiny building inspection receipt](qa-pve-building-inspection-2026-10-06.md)
+extends existing point inspection to the last selected disclosed building.
+After native sight termination, coordinate AttackMove regains real Town Center
+sight and damage in both controlled seats. The 300-tick bound, original-cohort
+clearing, visible priority, hidden-input equivalence and fresh-policy forgetting
+remain. This source-only proof does not close full Tiny completion, rendered
+acceptance, or held PR583's separate production/movement diagnosis.
+
 The identity/checkpoint bridge and explicit Skirmish target branch are merged in
 [PR195](https://github.com/lbeezr/thousand-unit-skirmish/pull/195) and
 [PR212](https://github.com/lbeezr/thousand-unit-skirmish/pull/212), with runtime

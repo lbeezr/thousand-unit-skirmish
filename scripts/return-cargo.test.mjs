@@ -1,4 +1,4 @@
-import { economyServerBindings, economyServerFunctions, workerFlowRouteBindings } from './economy-server-fixture.mjs';
+import { economyServerBindings, economyServerFunctions, workerFlowRouteBindings, workerPerimeterServerFunctions } from './economy-server-fixture.mjs';
 import './land-return-admission-journeys.mjs';
 import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 import assert from 'node:assert/strict';
@@ -84,7 +84,7 @@ function authority(team, overrides = {}) {
   const names = ['commandUnitAt', 'commandUnits', 'clearAttackMoveOrder',
     'workerDropoffCandidates', 'workerFlowPath', 'applyWorkerFlowRoute', 'routeWorkerToDropoff', 'workerAtDropoff',
     'assignReturnCargo', 'stopGathering', 'ensureGatherWorkIntent', 'updateWorkerEconomy', 'workerTaskStatus'];
-  vm.runInContext(economyServerFunctions + names.map(name => fn(server, name)).join('\n'), context);
+  vm.runInContext(economyServerFunctions + workerPerimeterServerFunctions + names.map(name => fn(server, name)).join('\n'), context);
   const order = extra => context.assignReturnCargo({ team }, {
     type: 'returnCargo', ids: [0], unitGenerations: [unit.generation], clientOrderToken: 100, ...extra,
   });

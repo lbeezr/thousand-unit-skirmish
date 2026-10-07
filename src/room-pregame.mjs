@@ -42,6 +42,42 @@ export function validatePregameCheckpoint(value) {
   return { phase, revision };
 }
 
+/**
+ * Projected metadata stays unknown: this class does not validate its kinds.
+ * Seat metadata is open; only the added readiness value is guaranteed.
+ * @typedef {PregameCheckpoint & {
+ * mapId: unknown, armySize: unknown, matchModeId: unknown, matchModeVersion: unknown,
+ * mode: 'pvp', canLaunch: boolean,
+ * seats: Array<Record<string, unknown> & {ready: boolean}>
+ * }} PregamePayload
+ */
+
+/**
+ * Dependencies required by a checked projection receiver. This does not enroll
+ * the constructor, mutators, checkpoint or launch implementation in checkJs.
+ * @typedef {{
+ * checkpoint: () => PregameCheckpoint,
+ * mapId: unknown, armySize: unknown,
+ * matchModeId?: unknown, matchModeVersion?: unknown,
+ * canLaunch: () => boolean,
+ * seats: ReadonlyArray<Readonly<Record<string, unknown>>>, readyIds: ReadonlySet<unknown>
+ * }} PregamePayloadSource
+ */
+
+/**
+ * Trusted host sessions supply these fields; this is not runtime admission.
+ * @typedef {{id: string, team: 0 | 1, connected: boolean}} PregameSeat
+ */
+
+/**
+ * Receiver dependencies for the checked seat projection only. Other class
+ * implementations and the payload's open metadata remain outside this contract.
+ * @typedef {{
+ * seats: ReadonlyArray<Readonly<PregameSeat>>,
+ * phase: PregameCheckpoint['phase'], invalidate: () => void
+ * }} PregameSeatSyncSource
+ */
+
 /** Uses the worker's existing seat sessions; never allocates identities or seats. */
 export class RoomPregame {
   constructor(mapId, armySize, checkpoint = { phase: 'lobby', revision: 0 }, matchMode = {}) {
@@ -61,6 +97,12 @@ export class RoomPregame {
     this.readyIds.clear();
   }
 
+  /**
+   * Extra input metadata may be unknown or null; only the three seat fields project.
+   * @this {PregameSeatSyncSource}
+   * @param {ReadonlyArray<Readonly<PregameSeat> & Readonly<Record<string, unknown>>>} seats
+   * @returns {boolean}
+   */
   syncSeats(seats) {
     const next = seats.map(({ id, team, connected }) => ({ id, team, connected }))
       .sort((a, b) => a.team - b.team);
@@ -152,6 +194,7 @@ export class RoomPregame {
 
   checkpoint() { return { phase: this.phase, revision: this.revision }; }
 
+  /** @this {PregamePayloadSource} @returns {PregamePayload} */
   payload() {
     return {
       ...this.checkpoint(), mapId: this.mapId, armySize: this.armySize,

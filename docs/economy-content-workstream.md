@@ -86,6 +86,28 @@ uses their current interfaces without changing their implementation.
 
 ## Delivery ledger
 
+- Economy perimeter selection (6 October 2026) addresses the reproduced paid
+  Farm/Storehouse reciprocal-goal cycle under strict source580 body admission.
+  The domain-local helper and scoped Farm/drop-off/Return selection preserve
+  registered radii, accounting, existing route publication and the eight-field
+  flow cache. [Canonical checks](../scripts/worker-economy-perimeter-access.test.mjs)
+  cover both seats, batch previews, cold recovery, actual deposits/Farm grants,
+  every serial Worker write and explicit query bounds. Raw captures stay private.
+  Initial selection merged in [PR #589](https://github.com/lbeezr/thousand-unit-skirmish/pull/589).
+  The next bounded slice observes 30 stalled ticks and fairly services at most
+  eight attempts per tick with a 30-tick actor cooldown. The same canonical
+  normal-command fixture now proves late-occupied Farm harvest and drop-off
+  credit with the blocker still parked, plus a fresh cold-recovery observation
+  window. [Lifecycle and refusal checks](../scripts/worker-economy-perimeter-recovery.test.mjs)
+  cover no alternatives, claims-only waits, query overflow, route capacity,
+  cancellation/death/changed identity/navigation and fair deferred service.
+  Recipient/source/phase/cargo/revision and strict admission remain unchanged.
+  Economy retains exact-head review/default integration for this slice.
+  Movement owner retains
+  cooperative selector/receipts; testing owner retains held PR583 and unchanged
+  Tiny qualification. Source/CPU evidence does not establish deployment or the
+  separate qualified rendered acceptance.
+
 - The reported Worker work-loop right-angle travel is corrected in bounded
   [PR #330](https://github.com/lbeezr/thousand-unit-skirmish/pull/330), merged at
   `6183693c`, with
