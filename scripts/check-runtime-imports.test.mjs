@@ -506,7 +506,7 @@ test('canonical authoring leaves retain the editor boundary through compatibilit
 test('building selection synthesis remains a dependency-free client leaf outside authority and server hosts', async () => {
   const target = 'src/client/audio/building-selection.mjs';
   for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
-    'src/simulation/movement/formation-assignment.mjs', 'src/pve-regroup.mjs']) {
+    'src/simulation/movement/formation-assignment.mjs', 'src/simulation/ai/policies/regroup.mjs']) {
     const relative = path.posix.relative(path.posix.dirname(root), target);
     assert.throws(() => check({ [target]: '', [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
       /(?:rules|world|simulation|ai) domain cannot reach client domain/);
