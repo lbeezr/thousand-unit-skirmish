@@ -88,3 +88,17 @@ current pixels. Infantry01a10d9c remains separate; clock/state01a103d4 unchanged
 Parent/capture01a10378 retains containing delivery/contact/reach/readability.
 Recorded graphics/dispatch block remains once; no bypass, denied dispatch retry
 or stoppedMac dependency. Held rejected-identity PR230/241 remain held.
+
+## Main reconciliation — 7 October 2026
+
+The exact original0cc25bda source/integration review and1397-file clean release
+remain retained. Fresh main7df6b20404b3e480c6b1a4a82f8adfcac5c1f02c has245
+upstream changes; the only owned overlap is the shared adoption checklist. Its
+other owners' entries are preserved. All approved Spearman source/pack/pipeline
+and animation-control files at main remain byte-exact to the measured85-frame
+baseline8dd6ae26; registration keeps that historical art baseline explicit.
+The refreshed containing commit receives its own independent review, exact-head
+default/registration tests and clean package/HTTP identities before publication.
+Only existing approved sprite outputs, manifests and their integration/tests/QA
+are in this slice; private Blender/models/rig textures/process files are excluded.
+South's separately reviewed two fall keys remain the next distinct increment.
