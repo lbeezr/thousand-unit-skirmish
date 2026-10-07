@@ -4,6 +4,7 @@ import { economyServerBindings, economyServerFunctions, workerFlowRouteBindings,
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
+import { JSDOM } from 'jsdom';
 import { readFileSync } from 'node:fs';
 import { BUILDING_DEFINITIONS, FACTION_DEFINITIONS, UNIT_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION } from '../src/gameplay-definitions.mjs';
 import { hasGameplayCapability } from '../src/combat-rules.mjs';
@@ -120,7 +121,7 @@ for (const team of [0, 1]) test(`selected depot hints describe registered resour
   const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), ...economyServerBindings(), BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, localTeam: team, selectedBuildingId: 7,
     latestBuildings: [], ui: { commandHint: {}, commandTitle: {} }, persistentTargetMode: null,
     tapOrderArmed: false, attackMoveMode: false, window: { matchMedia: () => ({ matches: false }) },
-    document: { querySelectorAll: () => [] }, buildingLabel: type => BUILDING_DEFINITIONS[type].label,
+    document: new JSDOM().window.document, buildingLabel: type => BUILDING_DEFINITIONS[type].label,
     updateStationaryOrderControls() {}, updateBuildingResearchControls() {}, syncTargetOrderUI() {},
     syncBattlefieldCursor() {}, updateContextualCommands() {},
   });

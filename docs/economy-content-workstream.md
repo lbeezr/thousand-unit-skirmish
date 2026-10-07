@@ -94,7 +94,9 @@ uses their current interfaces without changing their implementation.
   cover both seats, batch previews, cold recovery, actual deposits/Farm grants,
   every serial Worker write and explicit query bounds. Raw captures stay private.
   Initial selection merged in [PR #589](https://github.com/lbeezr/thousand-unit-skirmish/pull/589).
-  The next bounded slice observes 30 stalled ticks and fairly services at most
+  Late-occupation recovery merged in [PR #590](https://github.com/lbeezr/thousand-unit-skirmish/pull/590)
+  at `3e5d581b658c888c48e4fea2f124d09587f17735`. It observes 30 stalled ticks
+  and fairly services at most
   eight attempts per tick with a 30-tick actor cooldown. The same canonical
   normal-command fixture now proves late-occupied Farm harvest and drop-off
   credit with the blocker still parked, plus a fresh cold-recovery observation
@@ -102,11 +104,30 @@ uses their current interfaces without changing their implementation.
   cover no alternatives, claims-only waits, query overflow, route capacity,
   cancellation/death/changed identity/navigation and fair deferred service.
   Recipient/source/phase/cargo/revision and strict admission remain unchanged.
-  Economy retains exact-head review/default integration for this slice.
-  Movement owner retains
-  cooperative selector/receipts; testing owner retains held PR583 and unchanged
-  Tiny qualification. Source/CPU evidence does not establish deployment or the
-  separate qualified rendered acceptance.
+  Independent review approved exact head `2925054c`; merged-source checks pass
+  54/54 and the twelve unchanged credit cases pass at their original limits.
+  Native paid Farm renewal/restart also passes both seats. Clean merged release
+  digest is `sha256:7b91493c94f88f6cb10e24fa343e7d5ece8f2b6a06f45ca4e490f8aad90f3cb7`.
+  [PR CI](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37549712923)
+  and [exact merge CI](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37549957330)
+  are terminal failures: Tiny durable attack evidence, the older seat-0 direct
+  trajectory assertion, and four planning topology/queued-arrival assertions.
+  All six failing assertions reproduce on untouched base `632903b6`; no new
+  failing assertion was observed. These halted shards do not prove a full CPU
+  pass. Existing movement/testing owners retain those failures without relaxed
+  deadlines or altered fixtures.
+  Movement retains cooperative selector/receipts. Testing owner `01a1085f`
+  retains [held PR #583](https://github.com/lbeezr/thousand-unit-skirmish/pull/583)
+  qualification on compatible main containing #586/#587/#589/#590, preserving
+  existing Tiny limits. The separate qualified via323 rendered workflow remains
+  open. Railway confirms automatic staging deployment
+  `550997de-7e0e-42da-a3fd-709e87802557` at that exact merge source succeeded
+  at 00:10:17 UTC on 7 October 2026. This is provider identity evidence;
+  direct staging `/ready` and `/health` requests failed from the economy
+  environment, so authenticated served identity remains unverified. Existing
+  configuration/access boundaries are unchanged. Economy retains
+  [terminal CI/provider reconciliation on PR #590](https://github.com/lbeezr/thousand-unit-skirmish/pull/590),
+  separately from testing's Tiny and qualified rendered acceptance.
 
 - The reported Worker work-loop right-angle travel is corrected in bounded
   [PR #330](https://github.com/lbeezr/thousand-unit-skirmish/pull/330), merged at
