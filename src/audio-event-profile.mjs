@@ -2,16 +2,20 @@
 const ROLE_BY_KIND = Object.freeze({ worker: 'worker', infantry: 'infantry', archer: 'archer' });
 const BUILDING_BY_TYPE = Object.freeze({ townCenter: 'town-center', 'town-center': 'town-center', barracks: 'barracks', archeryRange: 'archery-range', 'archery-range': 'archery-range' });
 const URGENT_CUES = new Set(['battle-alert', 'selected-alert', 'base-alert', 'base-lost', 'objective', 'objective-lost', 'victory', 'defeat', 'draw']);
+const WORKER_FOOD_JOBS = new Set(['farm', 'fish', 'sheep-carcass']);
 
 // Compatibility entry; map validation stays independent of playback policy.
 export { validateMapAudioReference } from './world/map-audio-reference.mjs';
 
-export function bindingKeysForEvent({ cue, kind, buildingType, resource } = {}) {
+export function bindingKeysForEvent({ cue, kind, buildingType, resource, gatherJob } = {}) {
   const keys = [];
   const building = BUILDING_BY_TYPE[buildingType] || (typeof buildingType === 'string' ? buildingType : null);
   const role = ROLE_BY_KIND[kind] || (typeof kind === 'string' ? kind : null);
   if (building && cue === 'select') keys.push(`building.${building}.select`);
   if (role && cue) {
+    if (role === 'worker' && cue === 'gather' && resource === 'food' && WORKER_FOOD_JOBS.has(gatherJob)) {
+      keys.push(`unit.worker.gather.${gatherJob}`);
+    }
     if (resource && ['gather', 'work'].includes(cue)) keys.push(`unit.${role}.${cue}.${resource}`);
     keys.push(`unit.${role}.${cue}`);
   }

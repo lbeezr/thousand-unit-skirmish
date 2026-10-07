@@ -91,6 +91,29 @@ Supported lifecycle keys are `unit.<kind>.ready`, `unit.<kind>.death` and
 All roster kinds use the same routing. Wood and food orders retain distinct
 `unit.worker.gather.wood` and `unit.worker.gather.food` bindings.
 
+Worker food acknowledgements can also carry optional
+`gatherJob: 'farm' | 'fish' | 'sheep-carcass'`, preserving `resource: 'food'`.
+An owned complete living Farm with remaining stock uses the existing generated
+harvest-node adapter; shore fish requires a currently visible authored fish node;
+sheep harvest requires a currently disclosed visible stocked carcass row at its
+actual pose. The representative actor must be a living owned Worker. IDs, last
+known wildlife positions, live sheep and generic food do not imply a job.
+Only a matching authoritative applied Gather notice releases this metadata;
+planning/queued intent, rejection and duplicates do not acknowledge success.
+Nothing is added to the server command or snapshot protocol.
+
+Within each civilization/common layer, these events try
+`unit.worker.gather.farm`, `.fish` or `.sheep-carcass`, then the existing
+`unit.worker.gather.food`, `unit.worker.gather`, `cue.gather` chain and synthesis.
+Missing or unknown `gatherJob` uses the old chain; other roles, cues and resources
+are unchanged. Current manifests still assign no job-specific recording.
+The existing technical food sample remains generic food; it is not a farm, fish
+or sheep voice. Work-loop row 14 remains coarse food. Skiff's server
+`FISHING ORDER` notice is still outside the audio gate's applied-notice list;
+this Worker context slice does not close that separate acknowledgement gap.
+Check: `node --test scripts/audio-execution.test.mjs` (actual committed producer,
+disclosure/token adapters, fallback and scheduling decisions; no hearing claim).
+
 Ready comes from a newly alive local unit generation; death requires an explicit
 alive-to-dead local row. Missing enemy rows never mean death. Initial/reconnect,
 map/reset and rematch baselines are silent; repeated or older ticks are ignored.
