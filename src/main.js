@@ -5004,10 +5004,12 @@ function updateBuildingLifecycleActions() {
   if (!container) return;
   const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
   const active = building && latestTeamResearch[localTeam]?.active?.buildingId === building.id;
+  const replantCost = building?.type === 'farm'
+    ? constructionCostForProfile('farm', mapDefinition?.economyProfileId).wood : 0;
   const choices = !building ? [] : [
     ...(!building.complete ? [{ type: 'cancelConstruction', label: 'Cancel construction · refund unfinished work' }] : []),
     ...(building.type === 'farm' && building.complete && building.harvestStock === 0
-      ? [{ type: 'replantFarm', label: 'Replant · 60 wood' }, { type: 'cancelConstruction', label: 'Clear exhausted Farm · no refund' }] : []),
+      ? [{ type: 'replantFarm', label: `Replant · ${replantCost} wood` }, { type: 'cancelConstruction', label: 'Clear exhausted Farm · no refund' }] : []),
     ...(building.complete && getBuildingQueueLength(building) > 0 ? [{ type: 'cancelTraining', label: 'Cancel last queued unit' }] : []),
     ...(building.complete && building.type === 'palisade-gate' ? [{ type: 'setGateOpen', label: building.gateOpen ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass' }] : []),
     ...(active ? [{ type: 'cancelResearch', label: 'Cancel research · refund unfinished work' }] : []),
@@ -5030,9 +5032,14 @@ function updateBuildingLifecycleActions() {
           command.open = !current.gateOpen;
         }
         if (choice.type === 'replantFarm') {
+          const current = latestBuildings.find(row => row.id === building.id && row.team === localTeam);
+          if (selectedBuildingId !== building.id || !current || current.type !== 'farm'
+            || !current.complete || current.hp <= 0 || current.harvestStock !== 0) return;
+          updateBuildingLifecycleActions();
+          const action = [...container.children].find(child => child.dataset.action === 'replantFarm');
+          if (!action || isHudActionUnavailable(action)) return;
           const ids = selectedWorkerIds();
-          if (!ids.length) { showToast('SELECT IDLE WORKERS, THEN SELECT THIS EXHAUSTED PLOT · REPLANT COSTS 60 WOOD'); return; }
-          sendTrackedOrder({ ...command, ids }, 'REPLANT · 60 WOOD', ids.length, 'WORKERS'); return;
+          sendTrackedOrder({ ...command, ids }, `REPLANT · ${replantCost} WOOD`, ids.length, 'WORKERS'); return;
         }
         if (choice.type === 'repairBuilding') {
           command.ids = teamUnits[localTeam].filter((unit) => unit.hp > 0 && unit.kind === 'worker').map((unit) => unit.id);
@@ -5044,6 +5051,15 @@ function updateBuildingLifecycleActions() {
     }
   }
   for (const button of container.children) {
+    if (button.dataset.action === 'replantFarm') {
+      const reason = matchWinner >= 0 ? 'Match finished' : building.hp <= 0 ? 'Farm destroyed'
+        : !selectedWorkerIds().length ? 'Select living Workers, then select this exhausted plot'
+        : latestWood[localTeam] < replantCost ? `Need ${formatResourceRequirement(replantCost - latestWood[localTeam])} wood` : '';
+      setHudActionAvailability(button, Boolean(reason), true);
+      button.textContent = `Replant · ${replantCost} wood${reason ? ` · ${reason}` : ''}`;
+      button.title = button.textContent;
+      continue;
+    }
     button.disabled = matchWinner >= 0
       || (button.dataset.action === 'repairBuilding' && !teamUnits[localTeam].some(unit => unit.hp > 0 && unit.kind === 'worker'));
     if (button.dataset.action === 'setGateOpen') button.textContent = building.gateOpen
