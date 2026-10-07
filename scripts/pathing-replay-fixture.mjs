@@ -317,6 +317,10 @@ export const replay = {
     return rows;
   },
   buildingDistance(position, buildingId) { return distanceToBuildingEdge(position, buildingsById.get(buildingId)); },
+  dropoffBuilding(buildingId) {
+    const building = buildingsById.get(buildingId);
+    return building && { id: building.id, type: building.type, team: building.team, complete: building.complete };
+  },
   attackApproach(id, targetId, continueWaypoint = false) {
     const approach = getUnitAttackPath(units[id], units[targetId], null, continueWaypoint);
     return approach && { ...approach, path: [...approach.path] };
