@@ -158,3 +158,8 @@ test('ordinary default both-seat wood jobs naturally exhaust the whole grove and
   const { runTerracedValeGroveScenario } = await import('./terraced-vale-groves-scenario.mjs');
   await runTerracedValeGroveScenario();
 });
+
+test('native historical Tiny lobby retains its layout until explicit host reset', { timeout: 90_000 }, async () => {
+  const { runTerracedValeGroveRecoveryScenario } = await import('./terraced-vale-groves-scenario.mjs');
+  await runTerracedValeGroveRecoveryScenario();
+});

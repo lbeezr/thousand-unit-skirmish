@@ -29,7 +29,7 @@ registered replacements in radius four, using terrain seed 93025 and the existin
 seeded mirrored placement helper. Other tiers and expansion singleton patches remain
 unchanged. This is deliberately an opening slice, not a general density/balance retune.
 
-Existing [regional environment and lifecycle art](environment-pack-v1.md#veyrholds-highpine-lifecycle--30-september-2026)
+Existing [regional environment and lifecycle art](environment-pack-v1.md)
 and [fixed-camera construction](art-direction/environment-camera-v1/README.md)
 back the retained regional assets and small grove composition. No artwork, private
 source, tree renderer, HUD, audio, movement or collision behavior changes. The bounded
@@ -45,7 +45,8 @@ orders, cargo, banks, buildings and moved/herded Sheep. Fresh games and explicit
 adopt the grove. Pre-Sheep checkpoints migrate only their four food identities to the
 exact historical Sheep layout, then use the same historical admission. Pinned old-map
 hashes and exact reconstruction reject unrelated/modified definitions. The server change
-is limited to that compatibility import and guard, disjoint from held movement PR hunks.
+is limited to that compatibility import, restore/reset guards and same-map lobby
+retention, disjoint from held movement PR hunks.
 
 ## Acceptance and delivery boundaries
 
@@ -57,6 +58,9 @@ and recovers the exact old checkpoint, including its resource geometry and paid 
 The registered both-seat grove scenario admits normal HTTP/WS Gather commands, then
 uses unchanged production fixed ticks to deplete all three full-stock nodes without
 another order. It verifies partial/depleted recovery and stock+bank+cargo conservation.
+A native two-seat lobby regression restores a validated historical waiting checkpoint,
+changes the same-map army size while retaining 12 nodes, launches through Ready/Launch,
+and verifies that the explicit host Reset alone adopts the current 16-node grove.
 Fixed ticks are a source-copy simulation adapter, not native real-time full depletion.
 
 Run `node --test scripts/terraced-vale.test.mjs scripts/terraced-vale-sheep.test.mjs scripts/terraced-vale-sheep-entry.test.mjs`,

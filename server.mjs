@@ -1644,7 +1644,8 @@ function resetArmy(count = currentArmySize) {
 // changes and ongoing same-ID selection must not adopt new canonical positions.
 function resetExplicitMatchWorld() {
   const shipped = mapCatalog.get(authoredMapDefinition.id);
-  const mapChanged = isHistoricalConfluenceDefinition(authoredMapDefinition, shipped, matchMapHash);
+  const mapChanged = isHistoricalConfluenceDefinition(authoredMapDefinition, shipped, matchMapHash)
+    || isHistoricalTerracedValeDefinition(authoredMapDefinition, shipped, matchMapHash);
   if (mapChanged) activateMap(shipped);
   resetArmy(currentArmySize);
   return mapChanged;
@@ -7633,7 +7634,8 @@ async function handleCommand(player, command) {
             : mapCatalog;
           if (pregame.configure(player, command, choices)) {
             const catalogDefinition = mapCatalog.get(pregame.mapId);
-            const retainedDefinition = isHistoricalConfluenceDefinition(authoredMapDefinition, catalogDefinition, matchMapHash)
+            const retainedDefinition = (isHistoricalConfluenceDefinition(authoredMapDefinition, catalogDefinition, matchMapHash)
+              || isHistoricalTerracedValeDefinition(authoredMapDefinition, catalogDefinition, matchMapHash))
               ? authoredMapDefinition : catalogDefinition;
             matchMode = normalizeMatchMode(pregame);
             activateMap(retainedDefinition);
