@@ -7,10 +7,12 @@ choice, accent feature, phrase, duration and language-development direction belo
 is a proposal. This guide adopts no new canon, approves no recording and assigns
 no runtime asset. No voices or new assets were produced for it.
 
-Source review uses main `7df6b204`. The separate
+The original source review used main `7df6b204`. The pinned
 [PR598 event/asset matrix at `d19df5c3`](https://github.com/lbeezr/thousand-unit-skirmish/blob/d19df5c3d2c2ab8c013d847c64ebdc5b3994334f/docs/audio-event-asset-matrix.md)
-is **draft branch evidence**, not a file present on main or a merged runtime
-contract. It records caller coverage, missing context and proposed asset slots;
+was draft branch evidence at that review. PR598 is now merged; use the
+[current event/asset matrix](audio-event-asset-matrix.md) and runtime contract,
+updated for Worker context against main `86d66396`. They record caller coverage,
+remaining context gaps and proposed asset slots;
 this guide supplies proposed spoken treatment. The owning lore entries retain
 their selected, working, belief and open status.
 
