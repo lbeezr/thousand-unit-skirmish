@@ -21,9 +21,18 @@ export function bindingKeysForEvent({ cue, kind, buildingType, resource } = {}) 
 }
 
 export function resolveEventBinding(profile, event) {
-  for (const key of bindingKeysForEvent(event)) {
-    const binding = profile?.bindings?.[key];
-    if (binding?.variants?.length) return { key, binding };
+  const civilizationId = event?.civilizationId ?? 'frontier';
+  const overrides = profile?.civilizationBindings;
+  // Sparse overrides never replace the common layer. Missing/unknown identities
+  // and events retain the existing exact building / role-resource / role / cue order.
+  const layers = overrides && Object.hasOwn(overrides, civilizationId)
+    ? [overrides[civilizationId], profile?.bindings] : [profile?.bindings];
+  const keys = bindingKeysForEvent(event);
+  for (const bindings of layers) {
+    for (const key of keys) {
+      const binding = bindings?.[key];
+      if (binding?.variants?.length) return { key, binding };
+    }
   }
   return null;
 }
