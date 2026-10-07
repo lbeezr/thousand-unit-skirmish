@@ -184,7 +184,7 @@ try {
    const THREE=await import('/vendor/three.module.js');
    const {addObstacleEnvironmentSprites,createGroundSurfaces,setForestSpriteStock}=await import('/src/environment-art.mjs');
    const {setActiveTerrain}=await import('/src/terrain-height.mjs');
-   const {WATER_LEVEL}=await import('/src/water-surface-geometry.mjs');
+   const {WATER_LEVEL}=await import('/src/presentation/rendering/water/geometry.mjs');
    const {CAMERA_VIEW_DIRECTION}=await import('/src/camera-controls.mjs');
    const map=${JSON.stringify(shipped)},original=JSON.stringify(map);setActiveTerrain(map);
    const objects=[],slots=addObstacleEnvironmentSprites(map,map.width/2,map.height/2,o=>objects.push(o));

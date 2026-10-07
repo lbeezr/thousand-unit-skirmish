@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { createShoreBankShade, SHORE_BANK_WIDTH, SHORE_BANK_OPACITY, SHORE_BANK_QUAD_LIMIT } from '../src/shore-bank-shade.mjs';
-import { buildWaterSurfaceGeometry } from '../src/water-surface-geometry.mjs';
+import { buildWaterSurfaceGeometry } from '../src/presentation/rendering/water/geometry.mjs';
 
 const pond = () => ({ width: 12, height: 12, terrainBase: 'meadow', terrainSeed: 7,
   obstacles: [{ column: 4, row: 4, width: 4, height: 4, material: 'water' }],

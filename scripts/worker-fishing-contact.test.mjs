@@ -7,7 +7,7 @@ import { fishingVisualSites, fishingWaterContact, createWorkerFishingContactRunt
   FISHING_REACH_CONTACT_PX } from '../src/worker-fishing-contact.mjs';
 import { createUnitSpriteRuntime } from '../src/unit-sprite-runtime.mjs';
 import { isShoreFish } from '../src/shore-fishing.mjs';
-import { WATER_LEVEL } from '../src/water-surface-geometry.mjs';
+import { WATER_LEVEL } from '../src/presentation/rendering/water/geometry.mjs';
 import { decodeRgba8 } from './sprite-pixel-bounds.mjs';
 import { resourcePickingBindings, resourcePickingFunctionSource } from './resource-picking-fixture-bindings.mjs';
 

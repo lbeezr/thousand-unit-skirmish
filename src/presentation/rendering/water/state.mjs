@@ -1,6 +1,6 @@
-import { waterRaster } from './water-contours.mjs';
-import { isShoreFish } from './shore-fishing.mjs';
-import { shoreFishSitePositions } from './shore-fishing-placement.mjs';
+import { waterRaster } from '../../../water-contours.mjs';
+import { isShoreFish } from '../../../shore-fishing.mjs';
+import { shoreFishSitePositions } from '../../../shore-fishing-placement.mjs';
 
 export const WATER_STUDY_FISH_LIMIT = 32;
 const FORWARD = [[-1, 0, 1], [-1, -1, Math.SQRT2], [0, -1, 1], [1, -1, Math.SQRT2]];

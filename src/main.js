@@ -3,7 +3,7 @@ import { createGateTimbers, updateGateTimbers } from './palisade-gate-visual.mjs
 import { isShoreFish } from './shore-fishing.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
 import { fishingVisualSites, createWorkerFishingContactRuntime } from './worker-fishing-contact.mjs';
-import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
+import { createWaterStudyFishBinding } from './presentation/rendering/water/fish-binding.mjs';
 import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { mountResourceBrushControls } from './resource-brush-controls.mjs';
 import { createMapStudioFormState } from './authoring/map-studio-form-state.mjs';

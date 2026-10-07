@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { buildWaterSurfaceGeometry } from '../src/water-surface-geometry.mjs';
+import { buildWaterSurfaceGeometry } from '../src/presentation/rendering/water/geometry.mjs';
 
 const map = {
   width: 4,

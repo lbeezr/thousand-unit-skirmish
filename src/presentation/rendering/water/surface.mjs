@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
-import { buildWaterStudyField, createWaterStudyFishSelector, waterStudyTime, WATER_STUDY_FISH_LIMIT } from './water-study-state.mjs';
+import { buildWaterSurfaceGeometry, WATER_LEVEL } from './geometry.mjs';
+import { buildWaterStudyField, createWaterStudyFishSelector, waterStudyTime, WATER_STUDY_FISH_LIMIT } from './state.mjs';
 
 export function waterSurfaceOptions(search = '', reducedMotion = false) {
   const params = new URLSearchParams(search);
