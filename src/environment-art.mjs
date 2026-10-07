@@ -12,7 +12,7 @@ import { createSettlementWearMesh } from './settlement-wear.mjs';
 import { createPalisadeConstructionGroundMesh } from './palisade-construction-ground.mjs';
 import { groundTextureName, loadPaintedMaterialAtlas } from './painted-material-atlas-runtime.mjs';
 import { loadOakDepletionAtlas, oakDepletionStage, applyOakDepletionSampling } from './oak-depletion-atlas-runtime.mjs';
-import { WATER_LEVEL } from './water-surface-geometry.mjs';
+import { WATER_LEVEL } from './presentation/rendering/water/geometry.mjs';
 import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from './forest-habitat.mjs';
 import { forestAgeFactors } from './forest-age-composition.mjs';
 import { underboughForestSpecies } from './forest-composition.mjs';

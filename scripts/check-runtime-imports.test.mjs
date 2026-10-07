@@ -22,7 +22,7 @@ test('private AI policies use canonical consumers with no root copies or forward
     assert.ok(hostImports.includes(`./simulation/ai/policies/${name}.mjs`), name);
     for (const source of ['', `export * from './simulation/ai/policies/${name}.mjs';`]) {
       const changed = new Map(sources).set(retired, source);
-      assert.throws(() => checkRuntimeImports(changed), /retired private implementation path/, retired);
+      assert.throws(() => checkRuntimeImports(changed), /retired implementation path/, retired);
     }
   }
 });
@@ -36,6 +36,57 @@ test('every canonical AI policy rejects static, lazy and re-export dependencies 
       for (const source of [`import '${relative}';`, `export * from '${relative}';`, `const later = () => import('${relative}');`]) {
         assert.throws(() => check({ [canonical]: source, [destination]: '' }),
           /ai domain cannot reach (?:client|authoring|presentation|server) domain/, `${canonical} -> ${destination}`);
+      }
+    }
+  }
+});
+
+const WATER_RENDER_MODULES = {
+  'src/water-surface-study.mjs': 'src/presentation/rendering/water/surface.mjs',
+  'src/water-study-state.mjs': 'src/presentation/rendering/water/state.mjs',
+  'src/water-study-fish-binding.mjs': 'src/presentation/rendering/water/fish-binding.mjs',
+  'src/water-surface-geometry.mjs': 'src/presentation/rendering/water/geometry.mjs',
+};
+
+test('default water renderer has canonical production consumers and no retired root copies', async () => {
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  for (const [retired, canonical] of Object.entries(WATER_RENDER_MODULES)) {
+    assert.ok(sources.has(canonical), canonical);
+    assert.equal(sources.has(retired), false, retired);
+    assert.ok(RUNTIME_DOMAINS.presentation.includes(canonical), canonical);
+    assert.ok(RETIRED_RUNTIME_PATHS.includes(retired), retired);
+    for (const source of ['', `export * from './${canonical.slice(4)}';`]) {
+      assert.throws(() => check({ [retired]: source, [canonical]: '' }), /retired implementation path/, retired);
+    }
+  }
+  for (const [consumer, names] of [
+    ['src/main.js', ['fish-binding']], ['src/environment-art.mjs', ['geometry']],
+    ['src/worker-fishing-contact.mjs', ['geometry']],
+    ['src/presentation/rendering/ground-surfaces.mjs', ['geometry', 'surface']],
+    ['src/water-study-preview.mjs', ['geometry', 'surface']],
+  ]) {
+    const imports = moduleImports(sources.get(consumer), consumer);
+    for (const name of names) {
+      const relative = path.posix.relative(path.posix.dirname(consumer), `src/presentation/rendering/water/${name}.mjs`);
+      assert.ok(imports.includes(relative.startsWith('.') ? relative : `./${relative}`), `${consumer}: ${name}`);
+    }
+  }
+  assert.ok(BROWSER_ENTRYPOINTS.includes('src/water-study-preview.mjs'), 'standalone study keeps its entrypoint');
+  assert.ok(RUNTIME_DOMAINS.client.includes('src/water-study-preview.mjs'));
+});
+
+test('water rendering stays outside authoritative domains and server hosts through every import form', () => {
+  for (const target of Object.values(WATER_RENDER_MODULES)) {
+    for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+      'src/simulation/movement/formation-assignment.mjs', 'src/simulation/ai/policies/regroup.mjs',
+      'server.mjs', 'room-supervisor.mjs']) {
+      const relative = path.posix.relative(path.posix.dirname(root), target);
+      const specifier = relative.startsWith('.') ? relative : `./${relative}`;
+      for (const source of [`import '${specifier}';`, `export * from '${specifier}';`, `const later = () => import('${specifier}');`]) {
+        assert.throws(() => check({ [root]: source, [target]: '' },
+          { serverEntrypoints: root.endsWith('server.mjs') || root === 'room-supervisor.mjs' ? [root] : [] }),
+        /(?:rules|world|simulation|ai) domain cannot reach presentation domain|server host reaches presentation domain/,
+        `${root} -> ${target}`);
       }
     }
   }

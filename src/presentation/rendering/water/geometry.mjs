@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {waterRaster,waterContains,waterContours,roundedWaterContour,contourArea,contourContains} from './water-contours.mjs';
+import {waterRaster,waterContains,waterContours,roundedWaterContour,contourArea,contourContains} from '../../../water-contours.mjs';
 
 export const WATER_LEVEL = 0.032;
 const SHORE_LIFT = 0.004;

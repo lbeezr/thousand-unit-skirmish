@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {buildWaterSurfaceGeometry,WATER_LEVEL} from '../src/water-surface-geometry.mjs';
+import {buildWaterSurfaceGeometry,WATER_LEVEL} from '../src/presentation/rendering/water/geometry.mjs';
 import {waterRaster,waterContains} from '../src/water-contours.mjs';
 const triangleContains=(a,b,c,x,z)=>{
   const cross=(p,q)=>(q[0]-p[0])*(z-p[1])-(q[1]-p[1])*(x-p[0]);

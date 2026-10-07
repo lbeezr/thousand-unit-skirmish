@@ -8,7 +8,7 @@ import { seedShoreFishSites, shoreFishSitePositions, SHORE_FISHING_PILOT_SETTING
 import { findInvalidResourceVariant } from '../src/shore-fishing.mjs';
 import { buildElevationGrid, findUnreachableResourceNode } from '../src/map-utils.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
-import { selectWaterStudyFish } from '../src/water-study-state.mjs';
+import { selectWaterStudyFish } from '../src/presentation/rendering/water/state.mjs';
 
 const source = JSON.parse(await readFile(new URL('./fixtures/shore-fishing-authoring-source.json', import.meta.url)));
 const pilot = JSON.parse(await readFile(new URL('../maps/shore-fishing.json', import.meta.url)));

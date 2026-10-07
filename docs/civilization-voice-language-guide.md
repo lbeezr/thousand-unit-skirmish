@@ -7,10 +7,12 @@ choice, accent feature, phrase, duration and language-development direction belo
 is a proposal. This guide adopts no new canon, approves no recording and assigns
 no runtime asset. No voices or new assets were produced for it.
 
-Source review uses main `7df6b204`. The separate
+The original source review used main `7df6b204`. The pinned
 [PR598 event/asset matrix at `d19df5c3`](https://github.com/lbeezr/thousand-unit-skirmish/blob/d19df5c3d2c2ab8c013d847c64ebdc5b3994334f/docs/audio-event-asset-matrix.md)
-is **draft branch evidence**, not a file present on main or a merged runtime
-contract. It records caller coverage, missing context and proposed asset slots;
+was draft branch evidence at that review. PR598 is now merged; use the
+[current event/asset matrix](audio-event-asset-matrix.md) and runtime contract,
+updated for Worker context against main `86d66396`. They record caller coverage,
+remaining context gaps and proposed asset slots;
 this guide supplies proposed spoken treatment. The owning lore entries retain
 their selected, working, belief and open status.
 
@@ -98,13 +100,17 @@ rapid orders and music. The targets are not measured recordings or new cooldowns
   Preserve common/synthesis fallback, shared cooldowns, urgent priority and
   interruption/mute/focus limits. A longer proposed phrase does not authorize
   changing these policies or adding a queue of stale acknowledgements.
-- Farm, sheep and fish-specific lines remain **UNBOUND** until callers supply real,
-  already disclosed context. Generic food does not imply farming, fishing or
-  hunting. The current sheep route does not establish a supported hunting action.
-  Skiff has no attack capability; do not add an attack line for it.
+- Worker Farm, shore-fish and sheep-carcass Gather now supply real, already
+  disclosed context to `unit.worker.gather.farm`, `.fish` and `.sheep-carcass`,
+  retaining generic food fallback. Their proposed voices remain **UNPRODUCED /
+  UNASSIGNED**; no recording is bound by the context change. Missing/unknown or
+  undisclosed context stays generic food. Hunting remains **UNBOUND**: the current
+  sheep route does not establish a supported hunting action. Skiff's applied
+  fishing acknowledgement still has a separate gate gap; it has no attack
+  capability, so do not add an attack line for it.
 - Exact `building.<type>.select` keys already exist. Typed building completion is
   a caller/schema gap: the completion caller omits type and building keys support
-  selection only. PR598's distinct synthesized building defaults are draft work;
+  selection only. PR598's distinct synthesized building defaults are merged source;
   no exact-building voice is delivered by this guide.
 - Damage warnings describe observed losses to owned units or buildings. They
   supply no attacker, animal cause, count, direction, location or proximity. The
@@ -167,7 +173,7 @@ The existing [pack validator](../src/audio-assets.mjs) has a voice bus and one
 plain `caption` string per variant. Language, caption locale, explicit actor
 identity and these editorial fields are **future** bounded validation and
 save/import/export design; adding them to prose or arbitrary JSON implements
-none of them. The draft PR598 civilization layers do not implement locale
+none of them. The merged PR598 civilization layers do not implement locale
 selection or produce a voice family.
 
 Both Main caption renderers require captions enabled. Sampled profile text follows

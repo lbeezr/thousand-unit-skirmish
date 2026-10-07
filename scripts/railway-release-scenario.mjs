@@ -518,7 +518,10 @@ try {
     }
   }
   await checkClientImports(base, { authorization, entrypoints: BROWSER_ENTRYPOINTS.map(filename => `/${filename}`) });
-  for (const file of ['water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs', 'src/water-study-fish-binding.mjs', 'src/shore-bank-shade.mjs']) {
+  for (const file of ['water-study.html', 'src/water-study-preview.mjs',
+    'src/presentation/rendering/water/surface.mjs', 'src/presentation/rendering/water/state.mjs',
+    'src/presentation/rendering/water/fish-binding.mjs', 'src/presentation/rendering/water/geometry.mjs',
+    'src/shore-bank-shade.mjs']) {
     assert.ok(packedManifest.files.includes(file), `water study release must contain ${file}`);
     const response = await fetch(`${base}/${file}`, { headers: { authorization } });
     assert.equal(response.status, 200, `packed water study must serve ${file}`);
@@ -527,6 +530,15 @@ try {
     assert.equal(createHash('sha256').update(bytes).digest('hex'),
       createHash('sha256').update(await readFile(path.join(sourceRoot, file))).digest('hex'),
       `packed water study bytes must match ${file}`);
+  }
+  for (const filename of ['src/water-surface-study.mjs', 'src/water-study-state.mjs',
+    'src/water-study-fish-binding.mjs', 'src/water-surface-geometry.mjs']) {
+    assert.equal(packedManifest.files.includes(filename), false, `retired water implementation must not be packed: ${filename}`);
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+      assert.equal(response.status, 404, `retired water implementation must not be served (${method}): ${filename}`);
+      if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
+    }
   }
   // Default finished families retain exact source PNGs; no GLB/gallery/source upload.
   const frontierRoots = ['frontier-civilization-scale-pilot-v1', 'frontier-civilization-models-v1', 'frontier-civilization-military-models-v1']

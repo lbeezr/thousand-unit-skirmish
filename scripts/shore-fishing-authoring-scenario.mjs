@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { shoreFishSitePositions } from '../src/shore-fishing-placement.mjs';
-import { createWaterStudyFishBinding } from '../src/water-study-fish-binding.mjs';
-import { selectWaterStudyFish } from '../src/water-study-state.mjs';
+import { createWaterStudyFishBinding } from '../src/presentation/rendering/water/fish-binding.mjs';
+import { selectWaterStudyFish } from '../src/presentation/rendering/water/state.mjs';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 
 const map = JSON.parse(await readFile(new URL('../maps/shore-fishing.json', import.meta.url)));

@@ -18,8 +18,8 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/asset-readability.mjs', 'src/catalog-barracks-observation.mjs', 'docs/art-direction/human-roster-v1/infantry-production-contract.json', 'assets/ui/icons/actions/manifest.json',
   'src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/wildlife-motion.mjs', 'src/wildlife-heading.mjs', 'src/wildlife-herding.mjs', 'src/wildlife-client-state.mjs', 'src/sheep-static-preview.mjs',
   'environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs',
-  'water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs',
-  'src/water-study-fish-binding.mjs',
+  'water-study.html', 'src/water-study-preview.mjs', 'src/presentation/rendering/water/surface.mjs', 'src/presentation/rendering/water/state.mjs',
+  'src/presentation/rendering/water/fish-binding.mjs',
   'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
   'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
   'src/room-lobby-ui.mjs', 'src/room-lobby-chat-ui.mjs', 'src/room-lobby.css',
@@ -67,7 +67,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'audio-studio.html', 'audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
   'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/match-modes.mjs', 'src/bannerfall-rules.mjs', 'src/hud-layout.mjs', 'src/combat-stance-ui.mjs',
   'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/economy-profile.mjs', 'src/economy-ledger.mjs', 'src/economy-client.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
-  'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/podvine-worked-pack.mjs', 'src/podvine-low-pack.mjs', 'src/veilcap-view-pack.mjs', 'src/veilcap-worked-pack.mjs', 'src/sunbloom-view-pack.mjs', 'src/sunbloom-crown-pack.mjs', 'src/sunbloom-worked-pack.mjs', 'src/sunbloom-low-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
+  'src/captured-building-art.mjs', 'src/presentation/rendering/water/geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/podvine-worked-pack.mjs', 'src/podvine-low-pack.mjs', 'src/veilcap-view-pack.mjs', 'src/veilcap-worked-pack.mjs', 'src/sunbloom-view-pack.mjs', 'src/sunbloom-crown-pack.mjs', 'src/sunbloom-worked-pack.mjs', 'src/sunbloom-low-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
   'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/painted-material-atlas-runtime.mjs', 'src/oak-depletion-atlas-runtime.mjs', 'src/water-contours.mjs', 'src/shore-bank-shade.mjs',
 ]);
 
