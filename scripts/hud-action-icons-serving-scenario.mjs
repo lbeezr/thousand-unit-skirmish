@@ -105,6 +105,21 @@ try {
   for (const file of ['source/capture_economy.py', 'runtime/farm-complete-view-08.png', 'runtime/farm-winter-view-01.png']) {
     for (const method of ['GET', 'HEAD']) assert.equal((await fetch(`${base}/${farmRoot}/${file}`, { method })).status, 404);
   }
+  const barracksRoot = 'assets/buildings/frontier-civilization-military-models-v1';
+  const barracks = JSON.parse(await readFile(path.join(root, barracksRoot, 'barracks-complete-renderer.json'), 'utf8'));
+  for (const state of [barracks.completeState, ...barracks.states]) {
+    const view = state.views.find(entry => entry.index === 1);
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/${barracksRoot}/${view.path}`, { method });
+      assert.equal(response.status, 200); assert.match(response.headers.get('content-type'), /^image\/png/);
+      const bytes = Buffer.from(await response.arrayBuffer());
+      if (method === 'GET') { assert.equal(hash(bytes), view.sha256); assert.equal(bytes.length, view.bytes); }
+      else assert.equal(bytes.length, 0);
+    }
+  }
+  for (const file of ['source/build_military.py', 'model-provenance.json', 'runtime/barracks-frame-view-08.png']) {
+    for (const method of ['GET', 'HEAD']) assert.equal((await fetch(`${base}/${barracksRoot}/${file}`, { method })).status, 404);
+  }
   console.log('Six default HUD action glyphs: labelled HTML, GET/HEAD MIME/hash checks; source-only/unapproved paths stay closed.');
 } finally {
   child.kill('SIGINT');

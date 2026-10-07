@@ -6,7 +6,7 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { selectionContext } from '../src/selection-context.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from '../src/combat-stance-ui.mjs';
-import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, farmSelectionPortrait, FARM_PORTRAITS, workerRoleFacts, WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SCOUT_PORTRAITS, RIDER_PORTRAITS, SIEGE_ENGINE_PORTRAITS, SPEARMAN_PORTRAITS } from '../src/selection-portrait.mjs';
+import { updateSelectionPortrait, updateProductionPortrait, barracksSelectionPortrait, BARRACKS_PORTRAITS, farmSelectionFacts, farmSelectionPortrait, FARM_PORTRAITS, workerRoleFacts, WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SCOUT_PORTRAITS, RIDER_PORTRAITS, SIEGE_ENGINE_PORTRAITS, SPEARMAN_PORTRAITS } from '../src/selection-portrait.mjs';
 import { civilizationSpriteRole } from '../src/unit-sprite-runtime.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
@@ -1094,24 +1094,45 @@ for (const team of [0, 1]) test(`seat ${team}: failed Farm art retains Food symb
   assert.equal(button.hidden, true); assert.equal(art.hidden, true);
 });
 
-for (const team of [0, 1]) test(`seat ${team}: Barracks portrait matches lifecycle/team art and opens existing structure details`, t => {
+test('Barracks HUD lifecycle boundaries and source paths match the admitted renderer manifest', () => {
+  const root = new URL('../assets/buildings/frontier-civilization-military-models-v1/', import.meta.url);
+  const manifest = JSON.parse(readFileSync(new URL('barracks-complete-renderer.json', root), 'utf8'));
+  const building = { type: 'barracks', complete: true, progress: 1, hp: 1800, maxHp: 1800 };
+  for (const entry of [manifest.completeState, ...manifest.states]) {
+    const portrait = BARRACKS_PORTRAITS[entry.state];
+    assert.equal(portrait.asset, `/assets/buildings/frontier-civilization-military-models-v1/${entry.views[1].path}`);
+  }
+  for (const [limit, state] of [
+    [manifest.stateMapping.health.damagedAtOrBelow, 'damaged'],
+    [manifest.stateMapping.health.criticalAtOrBelow, 'critical'],
+  ]) assert.equal(barracksSelectionPortrait({ ...building, hp: building.maxHp * limit }).state, state);
+  const boundary = manifest.stateMapping.construction.foundationAtOrBelow;
+  assert.equal(barracksSelectionPortrait({ ...building, complete: false, progress: boundary }).state, 'foundation');
+  assert.equal(barracksSelectionPortrait({ ...building, complete: false, progress: boundary + .0001 }).state, 'frame');
+  for (const patch of [
+    { type: 'mill' }, { complete: false, progress: undefined }, { complete: false, progress: NaN },
+    { hp: NaN }, { hp: 0 }, { maxHp: 0 }, { maxHp: Infinity },
+  ]) assert.equal(barracksSelectionPortrait({ ...building, ...patch }), null);
+  assert.equal(barracksSelectionPortrait({ ...building, maxHp: undefined }).state, 'complete', 'missing maxHp uses the registered definition');
+});
+
+for (const team of [0, 1]) test(`seat ${team}: rotated Barracks portrait follows current lifecycle art and opens existing structure details`, t => {
   const f = fixture(team); t.after(() => f.dom.window.close());
   const button = f.bar.querySelector('[data-selection-portrait]'), image = button.querySelector('img');
-  const building = { id: 8, team, type: 'barracks', complete: false, hp: 1800, maxHp: 1800, progress: 0, productionQueue: [] };
-  const family = team === 0 ? 'azure' : 'ember';
+  const building = { id: 8, team, type: 'barracks', orientation: 1, complete: false, hp: 1800, maxHp: 1800, progress: 0, productionQueue: [] };
   for (const [changes, state] of [
-    [{ progress: 0.1999, complete: false }, 'foundation'],
-    [{ progress: 0.2 }, 'frame'],
-    [{ progress: 0.8999 }, 'frame'],
-    [{ progress: 0.9 }, 'complete'],
-    [{ complete: true, hp: 1188 }, 'complete'],
-    [{ hp: 1187 }, 'damaged'],
-    [{ hp: 594 }, 'damaged'],
-    [{ hp: 593 }, 'critical'],
+    [{ progress: 0.275, complete: false }, 'foundation'],
+    [{ progress: 0.2751 }, 'frame'],
+    [{ progress: 0.9 }, 'frame'],
+    [{ progress: 1 }, 'frame'],
+    [{ complete: true, hp: 1081 }, 'complete'],
+    [{ hp: 1080 }, 'damaged'],
+    [{ hp: 541 }, 'damaged'],
+    [{ hp: 540 }, 'critical'],
   ]) {
     Object.assign(building, changes); f.select([], building);
     assert.equal(button.hidden, false);
-    assert.equal(image.getAttribute('src'), `/assets/buildings/barracks-sprite-test-v1/runtime/barracks-${state}-${family}.webp`);
+    assert.equal(image.getAttribute('src'), `/assets/buildings/frontier-civilization-military-models-v1/${state === 'complete' ? 'captures' : 'runtime'}/barracks-${state}-view-01.png`);
     assert.equal(button.querySelector('img'), image);
     assert.equal(button.getAttribute('aria-label'), 'Barracks — open structure details');
     assert.equal(button.dataset.codexEntry, 'building.barracks');
@@ -1121,10 +1142,23 @@ for (const team of [0, 1]) test(`seat ${team}: Barracks portrait matches lifecyc
   f.click(button);
   assert.equal(f.w.commandDock.dataset.activePanel, 'selection');
   assert.equal(f.d.querySelector('#building-selection-card').hidden, false);
-  assert.match(f.d.querySelector('#selected-building-health').textContent, /593 \/ 1,800 HP/);
+  assert.match(f.d.querySelector('#selected-building-health').textContent, /540 \/ 1,800 HP/);
   f.escape(); assert.equal(f.d.activeElement, button); assert.equal(f.w.selectedBuildingId, building.id);
   building.hp = 1000; f.select([], building);
   assert.equal(f.d.activeElement, button); assert.match(image.src, /damaged/);
+  for (const orientation of [0, 1, 2, 3]) {
+    building.orientation = orientation; f.select([], building);
+    assert.equal(f.d.activeElement, button);
+    assert.match(image.src, /barracks-damaged-view-01\.png$/, 'fixed illustration does not infer yaw or team');
+  }
+  image.dispatchEvent(new f.w.Event('error')); f.select([], building);
+  assert.equal(button.hidden, false, 'art failure retains the labelled details action');
+  assert.equal(button.querySelector('.selection-portrait-art').hidden, true);
+  assert.equal(f.d.activeElement, button);
+  f.click(button); assert.equal(f.w.commandDock.dataset.activePanel, 'selection');
+  f.escape(); assert.equal(f.d.activeElement, button);
+  building.hp = 1800; f.select([], building);
+  assert.equal(button.querySelector('.selection-portrait-art').hidden, false, 'new state can load different art');
   building.hp = 0; f.select([], building); assert.equal(button.hidden, true);
   assert.equal(f.d.activeElement.closest('[hidden]'), null);
 });

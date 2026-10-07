@@ -19,6 +19,38 @@ vest and yellow bedroll. The Boughward view preserves the olive face, burgundy
 clothes and woven pack. Static source pixels were inspected; in-game pixels and
 native accessibility remain on the [capture checklist](../../../docs/contextual-hud-validation.md#cumulative-mac-qa-checklist).
 
+## Barracks runtime reuse — 7 October 2026
+
+The existing [default Frontier military family](../../buildings/frontier-civilization-military-models-v1/README.md)
+supplies the selected Barracks portrait directly, replacing its legacy single-view
+thumbnail. The [admitted renderer manifest](../../buildings/frontier-civilization-military-models-v1/barracks-complete-renderer.json)
+pins these original 1024 × 1024 PNGs. No image is copied, edited, generated or
+newly admitted; private models and capture sources remain outside browser output.
+
+| State | Existing view-01 path within the military pack | SHA-256 |
+| --- | --- | --- |
+| Foundation | `runtime/barracks-foundation-view-01.png` | `5501c263468a23f44861e5024ccd524062441f15657181b1aeeb6530c9398b96` |
+| Frame | `runtime/barracks-frame-view-01.png` | `46151d57b923868375c31a2920addd4d409210050fe8c24889616a88e86eaa9b` |
+| Complete | `captures/barracks-complete-view-01.png` | `c5c91aeb3e420218163bfe5f4793bb58dca31a0d95f26e4c20f6f7845886721d` |
+| Damaged | `runtime/barracks-damaged-view-01.png` | `a7ef2190851577238ef347be6992235d36ec05e2b5d01837f49bdad0b5e8743e` |
+| Critical | `runtime/barracks-critical-view-01.png` | `206da0acd95e38a4dc2308eec54566d21a46fda7e985436b28c44053d77156ef` |
+
+The fixed 45° illustration uses CSS viewport x212/y246/600px in the existing
+52px slot. The source alpha union x257..766/y262..829 fits with margins on
+every side, retaining roof, scaffold and stone base across all states. This is
+source-pixel framing evidence, not a rendered HUD pass. The written name,
+health, construction/production state and Details action remain authoritative;
+camera yaw and owner standards remain battlefield cues. Manifest construction
+and health thresholds drive the portrait, while completion requires its explicit
+snapshot flag. An image error hides only the decorative frame and leaves the
+labelled Details action usable. No paid services or rejected PR25/230/241 art
+are used.
+
+Cloud capability at baseline `7df6b204` failed with `sandbox-unavailable` and
+`storage-unavailable`; no game frames or screenshots were produced. Compact
+framing/keyboard acceptance in an actual rendered game and identified hosted
+delivery remain open under the selection HUD owner.
+
 ## Infantry reuse — 4 October 2026
 
 Two additional delivery files copy existing public illustrations byte for byte.
