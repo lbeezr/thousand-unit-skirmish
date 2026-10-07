@@ -8,13 +8,15 @@ import { clearWorkIntent, clearGatherWorkIntent } from '../src/work-intent.mjs';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { constructionMovementActive } from '../src/construction-work-intent.mjs';
 import { workerPatrolAcquiredMovementActive } from '../src/combat-movement.mjs';
-import { canTraverseCrowdBodySegment } from '../src/unit-crowd-steering.mjs';
+import { canTraverseCrowdBodySegment, CROWD_NEIGHBOR_LIMIT } from '../src/unit-crowd-steering.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { creditResourceBalance } from '../src/economy-ledger.mjs';
 import { preflightXlCheckpointRoutes, XL_CHECKPOINT_ROUTE_MAX_ENTRIES as QUOTA } from '../src/server/checkpoint-route-budget.mjs';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
+import { workerPerimeterServerFunctions, workerPerimeterRouteBindings } from './economy-server-fixture.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+const SPATIAL_BUCKET_SIZE = Number(source.match(/^const SPATIAL_BUCKET_SIZE = ([\d.]+);$/m)[1]);
 function body(name) {
   const start = source.indexOf(`function ${name}(`), end = source.indexOf('\nfunction ', start + 1);
   assert.ok(start > 0 && end > start, name);
@@ -25,7 +27,8 @@ const names = ['workerFlowPath', 'applyWorkerFlowRoute', 'routeWorkerToDropoff',
   'enqueueRouteRepairs', 'applyPlannedMoveAssignment', 'completeMovePlanningJob', 'processMovePlanningSlice',
   'scheduleNextMovePlanning', 'serviceMovePlanningForTick', 'workerAtDropoff', 'ensureGatherWorkIntent',
   'depositWorkerCargo', 'stopGathering', 'updateWorkerEconomy', 'advanceQueuedWaypoints',
-  'workerLocalBodyRadius', 'workerBodyStepAllowed'];
+  'workerLocalBodyRadius', 'workerBodyStepAllowed',
+  'spatialBucketColumn', 'spatialBucketRow', 'rebuildSpatialBuckets', 'crowdNeighborsNear'];
 const phaseStart = source.indexOf('  const blockedRouteRepairs = [];');
 const phaseEnd = source.indexOf('  advanceQueuedWaypoints();', phaseStart);
 assert.ok(phaseStart > 0 && phaseEnd > phaseStart);
@@ -69,9 +72,17 @@ function fixture({ width = 320, height = 320, total = 0, count = 1, team = 0,
   ];
   const candidates = [{ id: 10, goals: [...fields[0].goals] }, { id: 11, goals: [...fields[1].goals] }];
   const notices = [], selections = [], callbacks = [], samples = [], searches = [];
-  const context = vm.createContext({ ...movement, shortcutFlatUnitPath, canTraverseFlatUnitSegment,
+  const spatialBucketColumns = Math.floor((width - .5) / SPATIAL_BUCKET_SIZE) + 1;
+  const spatialBucketRows = Math.floor((height - .5) / SPATIAL_BUCKET_SIZE) + 1;
+  const bucketCount = spatialBucketColumns * spatialBucketRows;
+  const context = vm.createContext({ ...movement, ...workerPerimeterRouteBindings(), shortcutFlatUnitPath, canTraverseFlatUnitSegment,
     constructionMovementActive, workerPatrolAcquiredMovementActive, canTraverseCrowdBodySegment, spatialBucketRosterCurrent: false,
-    crowdNeighborsNear() { throw Error('Return-only fixture cannot enter local Worker body admission'); },
+    SPATIAL_BUCKET_SIZE, CROWD_NEIGHBOR_LIMIT, spatialBucketColumns, spatialBucketRows,
+    spatialBucketHeads: new Int32Array(bucketCount), spatialBucketNext: new Int32Array(2000),
+    spatialBucketTeamHeads: [new Int32Array(bucketCount), new Int32Array(bucketCount)],
+    spatialBucketTeamTails: [new Int32Array(bucketCount), new Int32Array(bucketCount)],
+    spatialBucketTeamCounts: [new Uint16Array(bucketCount), new Uint16Array(bucketCount)],
+    spatialBucketOfUnit: new Int32Array(2000), spatialBucketTeamNext: [new Int32Array(2000), new Int32Array(2000)],
     clearWorkIntent, clearGatherWorkIntent, activeWallBuildOrder, UNIT_DEFINITIONS, creditResourceBalance,
     MAP_WIDTH: width, MAP_HEIGHT: height, MAP_HALF_X: width / 2, MAP_HALF_Z: height / 2, CELL_COUNT: levels.length,
     MAX_UNITS: 2000, MAX_RESOURCE_NODES: 128, XL_CHECKPOINT_ROUTE_MAX_ENTRIES: QUOTA,
@@ -112,7 +123,9 @@ function fixture({ width = 320, height = 320, total = 0, count = 1, team = 0,
       return { target, x: dx / length, z: dz / length, stepDistance: Math.min(distance, length), reachedWaypoint: length <= distance };
     },
   });
-  vm.runInContext(names.map(body).join('\n') + `\nfunction physicalPhase(){${physicalPhase}}\nfunction recoverPendingTail(){${recoveryTail}}`, context);
+  // Preserve physical admission using the tick's real fresh bucket roster;
+  // straight-route proposals remain controlled, but bodies are never mocked out.
+  vm.runInContext(workerPerimeterServerFunctions + names.map(body).join('\n') + `\nfunction physicalPhase(){rebuildSpatialBuckets();${physicalPhase}}\nfunction recoverPendingTail(){${recoveryTail}}`, context);
   const apply = context.applyWorkerFlowRoute;
   context.applyWorkerFlowRoute = (...args) => {
     const result = apply(...args);

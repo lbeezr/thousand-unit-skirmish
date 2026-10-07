@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
-import { mountAudioComposer, renderCompositionWav } from '../src/audio-composer.mjs';
+import { mountAudioComposer } from '../src/client/audio/composer.mjs';
+import * as composerUi from '../src/client/audio/composer.mjs';
+import { renderCompositionWav } from '../src/presentation/audio/composition-wav.mjs';
+import * as composerApi from '../src/audio-composer.mjs';
+assert.deepEqual(Object.keys(composerApi), ['mountAudioComposer', 'renderCompositionWav']);
+assert.deepEqual(Object.keys(composerUi), ['mountAudioComposer']);
+assert.equal(composerApi.mountAudioComposer, mountAudioComposer);
+assert.equal(composerApi.renderCompositionWav, renderCompositionWav);
 
 const composition = { schemaVersion: 1, id: 'c', name: 'Export', bpm: 120, beatsPerBar: 4, lengthBars: 1,
   tracks: [{ id: 't', name: 'Track', gain: 1, pan: 0, mute: false, solo: false,

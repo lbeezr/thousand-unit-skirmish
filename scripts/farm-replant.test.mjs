@@ -96,6 +96,8 @@ for (const team of [0, 1]) test(`seat ${team} refuses invalid plots, funds, stal
       const before = state(r);
       const result=await order(r, team, 'replantFarm', workers, { buildingId: plot.id, ...overrides });
       assert.ok(result.some(n=>/REPLANT REJECTED/.test(n.message)), label+JSON.stringify(result));
+      if (label === 'insufficient') assert.equal(result.find(n=>/REPLANT REJECTED/.test(n.message)).message,
+        'REPLANT REJECTED · NEED 60 WOOD', 'affordability feedback names the existing paid renewal cost');
       assert.deepEqual(state(r), before, `${label}: failed admission changes no authority`);
     }
   } finally { await f.dispose(); }

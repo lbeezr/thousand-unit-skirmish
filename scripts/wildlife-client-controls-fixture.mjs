@@ -22,6 +22,7 @@ import { selectionContext } from '../src/selection-context.mjs';
 import { fixedMatchArmySize } from '../src/match-mode-controls.mjs';
 import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 import { renderMatchRecap } from '../src/client/hud/match-recap.mjs';
+import { createWelcomeSession } from '../src/client/networking/welcome-session.mjs';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 export const controlsMap = {
@@ -163,6 +164,8 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     cancelBuildPlacement() {w.buildPlacementActive=w.buildPlacementPending=false;},
     setArmySize() {throw new Error('This input fixture does not simulate army replacement; use the recovery fixture.');},
   });
+  w.welcomeSession = createWelcomeSession({ getStorage: () => w.sessionStorage,
+    sessionKey: w.ROOM_SESSION_STORAGE_KEY, instanceKey: w.ROOM_INSTANCE_STORAGE_KEY, matchKey: w.ROOM_MATCH_STORAGE_KEY });
   w.matchMedia=()=>({matches:false});
   Object.defineProperty(w.document,'visibilityState',{value:'visible',configurable:true});
   w.matchMenu.hidden=w.helpPanel.hidden=w.scenarioBriefPanel.hidden=true;

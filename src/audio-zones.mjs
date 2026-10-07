@@ -1,5 +1,5 @@
 import { createGameAudio } from './audio.mjs';
-import { createAudioLibraryStore } from './audio-library-store.mjs';
+import { createAudioLibraryStore } from './client/audio/library-store.mjs';
 const ROOT = './assets/audio/vaelora-zones-v1/';
 const $ = (id) => document.getElementById(id);
 const catalog = await fetch(`${ROOT}catalog.json`).then((r) => { if (!r.ok) throw new Error('Zone catalog unavailable'); return r.json(); }).catch((error) => { $('coverage').textContent = error.message; throw error; });

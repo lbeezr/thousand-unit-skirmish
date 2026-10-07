@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 import { createMapImportValidator } from '../../src/authoring/map-import-validator.mjs';
 import { createMapStudioFormState } from '../../src/authoring/map-studio-form-state.mjs';
+import * as terrainPacking from '../../src/authoring/map-studio-terrain-packing.mjs';
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from '../../src/authoring/map-studio-draft-store.mjs';
 import { ScenarioEditHistory, createScenarioEditCoordinator,
   scenarioEventCaptureRootId, scenarioEventSourceWouldCycle } from '../../src/authoring/scenario-authoring.mjs';
@@ -38,7 +39,7 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {} } = {}) {
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) {
     (w.ui ??= {})[name] = d.querySelector(selector);
   }
-  Object.assign(w, mapUtils, scenarioRegions, definitions, {
+  Object.assign(w, mapUtils, scenarioRegions, definitions, terrainPacking, {
     createMapImportValidator, createMapStudioFormState, MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore,
     economyResources, validateMapAudioReference, validateMapRegion, validWildlifeNodeDefinition,
     findInvalidResourceVariant, TERRAIN_MATERIALS, ROOM_ID: roomId,

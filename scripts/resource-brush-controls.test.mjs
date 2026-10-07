@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import vm from 'node:vm';
 import { JSDOM } from 'jsdom';
 import { mountResourceBrushControls } from '../src/resource-brush-controls.mjs';
 import { previewResourceBrush } from '../src/resource-brush-authoring.mjs';
@@ -9,6 +10,7 @@ import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from '../src/auth
 import { mapStudioDraftFixture } from './fixtures/map-studio-draft-fixture.mjs';
 import * as draftV1 from '../src/authoring/map-studio/draft/v1/contract.mjs';
 import { createMapImportValidator } from '../src/authoring/map-import-validator.mjs';
+import * as terrainPacking from '../src/authoring/map-studio-terrain-packing.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
@@ -17,6 +19,83 @@ function between(start, end) {
   const a = source.indexOf(start), b = source.indexOf(end, a + start.length);
   assert.ok(a >= 0 && b > a, `Production hook: ${start}`); return source.slice(a, b);
 }
+
+function terrainPackingFixture({ width = 4, height = 3, ground = [], levels = [], materials = [], elevations = [], limit = 4096 } = {}) {
+  const state = { editorDefinition: { width, height }, editorGroundMaterials: Int8Array.from(ground),
+    editorGroundLevels: Uint8Array.from(levels), editorCellMaterials: Int8Array.from(materials),
+    editorCellElevations: Float64Array.from(elevations), MAX_ELEVATION_PATCHES: limit,
+    TERRAIN_MATERIALS: ['dirt', 'gravel', 'sand'], EDITOR_MATERIALS: ['stone', 'forest', 'water'] };
+  const context = vm.createContext({ ...state, ...terrainPacking });
+  vm.runInContext(between('function compressEditorGround(', 'function collectEditorMap('), context);
+  return context;
+}
+
+test('actual terrain packing keeps row-first maximal-width rectangles and omitted ground cells', () => {
+  const ground = [0, 0, 1, -1, 0, 0, 1, 1, 0, 2, 2, 1], f = terrainPackingFixture({ ground });
+  const before = [...f.editorGroundMaterials];
+  assert.deepEqual(copy(f.compressEditorGround()), [
+    { column: 0, row: 0, width: 2, height: 2, material: 'dirt' },
+    { column: 2, row: 0, width: 1, height: 2, material: 'gravel' },
+    { column: 3, row: 1, width: 1, height: 2, material: 'gravel' },
+    { column: 0, row: 2, width: 1, height: 1, material: 'dirt' },
+    { column: 1, row: 2, width: 2, height: 1, material: 'sand' },
+  ]);
+  assert.deepEqual([...f.editorGroundMaterials], before);
+});
+
+test('actual elevation packing retains zero omission, first-over-limit return and host error ownership', () => {
+  const f = terrainPackingFixture({ levels: [1, 1, 2, 0, 1, 1, 2, 2, 1, 0, 0, 2], limit: 2 });
+  const before = [...f.editorGroundLevels], expected = [
+    { column: 0, row: 0, width: 2, height: 2, level: 1 },
+    { column: 2, row: 0, width: 1, height: 2, level: 2 },
+    { column: 3, row: 1, width: 1, height: 2, level: 2 },
+  ];
+  assert.deepEqual(copy(f.compressEditorElevation()), expected);
+  const definition = { elevationPatches: ['retained until success'] };
+  assert.throws(() => f.withCurrentEditorElevation(definition), /This map has more than 2 separate elevation patches\./);
+  assert.deepEqual(definition.elevationPatches, ['retained until success']);
+  f.MAX_ELEVATION_PATCHES = 4096;
+  assert.deepEqual(copy(f.compressEditorElevation()), [...expected, { column: 0, row: 2, width: 1, height: 1, level: 1 }]);
+  assert.equal(f.withCurrentEditorElevation(definition), definition);
+  assert.deepEqual([...f.editorGroundLevels], before);
+  f.editorGroundLevels.fill(0);
+  assert.equal(f.withCurrentEditorElevation(definition), definition);
+  assert.equal(Object.hasOwn(definition, 'elevationPatches'), false);
+});
+
+test('actual obstacle packing merges only equal material and elevation, omitting exactly the default height', () => {
+  const f = terrainPackingFixture({ materials: [0, 0, 0, -1, 0, 0, 0, 1, 2, 2, 0, 1],
+    elevations: [1.12, 1.12, 2, 1.12, 1.12, 1.12, 2, 3, 1.12, 1.1200000000000003, 2, 3] });
+  const materials = [...f.editorCellMaterials], elevations = [...f.editorCellElevations];
+  assert.deepEqual(copy(f.compressEditorObstacles()), [
+    { column: 0, row: 0, width: 2, height: 2, material: 'stone' },
+    { column: 2, row: 0, width: 1, height: 3, material: 'stone', elevation: 2 },
+    { column: 3, row: 1, width: 1, height: 2, material: 'forest', elevation: 3 },
+    { column: 0, row: 2, width: 1, height: 1, material: 'water' },
+    { column: 1, row: 2, width: 1, height: 1, material: 'water', elevation: 1.1200000000000003 },
+  ]);
+  assert.deepEqual([...f.editorCellMaterials], materials); assert.deepEqual([...f.editorCellElevations], elevations);
+});
+
+test('actual packers reread replaced editor dimensions and arrays without retaining cell state', () => {
+  const f = terrainPackingFixture({ width: 1, height: 1, ground: [0], levels: [1], materials: [0], elevations: [1.12] });
+  const first = f.compressEditorGround(); first[0].material = 'caller mutation';
+  assert.equal(f.compressEditorGround()[0].material, 'dirt');
+  f.editorDefinition = { width: 2, height: 1 }; f.editorGroundMaterials = Int8Array.from([-1, 2]);
+  f.editorGroundLevels = Uint8Array.from([0, 2]); f.editorCellMaterials = Int8Array.from([-1, 1]);
+  f.editorCellElevations = Float64Array.from([1.12, 4]);
+  assert.deepEqual(copy(f.compressEditorGround()), [{ column: 1, row: 0, width: 1, height: 1, material: 'sand' }]);
+  assert.deepEqual(copy(f.compressEditorElevation()), [{ column: 1, row: 0, width: 1, height: 1, level: 2 }]);
+  assert.deepEqual(copy(f.compressEditorObstacles()), [{ column: 1, row: 0, width: 1, height: 1, material: 'forest', elevation: 4 }]);
+});
+
+test('actual elevation packing alone stops after the 4097th patch while ground and obstacles retain their complete lists', () => {
+  const width = 65, height = 65, cells = Array.from({ length: width * height }, (_, i) => (i % width + Math.floor(i / width)) % 2);
+  const f = terrainPackingFixture({ width, height, ground: cells, levels: cells.map(i => i + 1),
+    materials: cells, elevations: cells.map(() => 1.12) });
+  assert.equal(f.compressEditorElevation().length, 4097);
+  assert.equal(f.compressEditorGround().length, cells.length); assert.equal(f.compressEditorObstacles().length, cells.length);
+});
 function fixture(t) {
   const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost/' });
   t.after(() => dom.window.close());
@@ -557,6 +636,33 @@ test('actual scenario history resets on draft recovery and portable import', asy
   assert.deepEqual(f.copy(f.w.readEditorRegions()), [region]);
   assert.equal(f.w.scenarioEditHistory.canUndo, false); assert.equal(f.w.scenarioEditHistory.canRedo, false);
   assert.equal(f.d.getElementById('studio-scenario-redo').disabled, true);
+});
+
+test('actual draft autosave, export and recovery retain packed terrain, elevation and obstacle bytes', async t => {
+  const f = mapStudioDraftFixture(t); f.open(); const match = f.copy(f.w.mapDefinition);
+  const width = f.w.editorDefinition.width;
+  f.w.editorGroundMaterials.fill(-1); f.w.editorGroundLevels.fill(0);
+  f.w.editorCellMaterials.fill(-1); f.w.editorCellElevations.fill(1.12);
+  for (const row of [2, 3]) for (const column of [3, 4]) {
+    f.w.editorGroundMaterials[row * width + column] = f.w.TERRAIN_MATERIALS.indexOf('dirt');
+    f.w.editorGroundLevels[row * width + column] = 1;
+  }
+  for (const row of [8, 9]) f.w.editorCellMaterials[row * width + 3] = 0;
+  const terrainPatches = [{ column: 3, row: 2, width: 2, height: 2, material: 'dirt' }];
+  const elevationPatches = [{ column: 3, row: 2, width: 2, height: 2, level: 1 }];
+  const obstacles = [{ column: 3, row: 8, width: 1, height: 2, material: 'stone' }];
+  f.edit('studio-name', 'Packed terrain'); f.flush();
+  const draft = JSON.parse(f.w.localStorage.getItem(f.w.editorDraftStorageKey));
+  for (const [key, expected] of Object.entries({ terrainPatches, elevationPatches, obstacles })) {
+    assert.deepEqual(draft.editor.definition[key], expected, `actual autosave ${key}`);
+  }
+  f.w.downloadEditorMap(); const exported = JSON.parse(await f.downloads.at(-1).blob.text());
+  for (const key of ['terrainPatches', 'elevationPatches', 'obstacles']) {
+    assert.equal(JSON.stringify(exported[key]), JSON.stringify(draft.editor.definition[key]), `actual export bytes ${key}`);
+  }
+  f.click('map-studio-close'); f.open(); f.click('studio-draft-restore');
+  assert.deepEqual(f.copy(f.w.collectEditorMap()), exported);
+  assert.deepEqual(f.copy(f.w.mapDefinition), match, 'packing changes only the editable map');
 });
 
 test('canonical portable validator retains normalization, 256 dimensions, error order and input ownership', t => {

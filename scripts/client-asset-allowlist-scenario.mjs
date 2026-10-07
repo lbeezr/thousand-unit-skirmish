@@ -15,7 +15,17 @@ const server = readFileSync(path.join(root, 'server.mjs'), 'utf8');
 const environmentArt = readFileSync(path.join(root, 'src/environment-art.mjs'), 'utf8');
 assert.ok(Object.isFrozen(CLIENT_ASSET_PATHS), 'client admission paths must remain immutable');
 const allowed = new Set(CLIENT_ASSET_PATHS);
+for (const name of ['production-actions', 'research-actions']) {
+  assert.ok(allowed.has(`src/${name}.mjs`), `legacy action module stays public: ${name}`);
+  assert.ok(allowed.has(`src/rules/${name}.mjs`), `canonical action module is public: ${name}`);
+  for (const invalid of [`src/rules/${name}.mjs/extra`, `src/rules/${name}.mjs.map`,
+    `src/rules//${name}.mjs`, `SRC/rules/${name}.mjs`]) {
+    assert.ok(!allowed.has(invalid), `action module admission stays exact: ${invalid}`);
+  }
+}
 for (const privateModule of ['src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs',
+    'src/pve-opponent.mjs', 'src/simulation/ai/opponent-observation.mjs',
+    'src/server/transport/peer-output.mjs',
   'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs',
   'src/forest-fringe.mjs', 'src/server/vision-coverage-cache.mjs']) {
   assert.ok(!allowed.has(privateModule), `server-consumed helper must remain HTTP-private: ${privateModule}`);

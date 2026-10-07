@@ -88,6 +88,53 @@ Unselected gameplay/client files do not need a type cleanup to pass this check.
 Runtime validation of finite values, positive radius and unique cell IDs remains
 separate from static types; unchecked callers are outside this initial boundary.
 
+The existing `room-pregame.test.mjs` also checks the actual `RoomPregame.payload`
+method and `normalizeMatchMode` declarations in a separate strict browser program.
+It selects their actual JSDoc, checkpoint validator declarations/DTO, match-mode
+registry/map constant and the registry's `BANNERFALL_RULES` constant; no dependency
+body is replaced with a stub. The actual host `pregamePayload()` declaration is
+checked with named host binding slots, whose catalog/faction values remain unknown.
+All diagnostics are collected: positive programs require zero; fourteen negative
+consumer controls and four producer mutations require their exact diagnostics.
+Missing selected dependencies fail. Compiler-only envelopes do not change runtime
+module identity, imports, exports, wire fields or test discovery.
+
+The payload reuses phase/revision, fixes opponent mode to `pvp`, and produces
+Boolean launch/readiness values and a seat array. Map/army/match-mode and open
+seat metadata remain unknown; seat IDs, numeric teams, connection flags, metadata
+presence and seat count are not guaranteed by this type. The receiver's callback
+contracts apply to checked callers, not to a newly checked class implementation.
+`checkpoint()` inference and the single-read validated snapshot remain unchanged.
+The full class/dependency graph is not enrolled: at this source boundary 67 strict
+diagnostics remain (24 pregame, 20 match-mode and 23 Bannerfall); only the two
+normalizer property diagnostics are resolved. The raw saved-ending validator's
+nine diagnostics also remain deferred. Neither count implies a passing full-module
+gate or justifies a runtime compatibility change. Run the dedicated test alongside
+the existing lobby/mode tests and `room-pregame-scenario.mjs` for runtime coverage.
+
+The next bounded seat contract checks only the actual `RoomPregame.syncSeats`
+declaration and its named receiver dependencies with those same strict browser
+options. Trusted checked callers supply string IDs, teams 0/1 and Boolean
+connection flags; readonly inputs may carry extra unknown or nullable metadata.
+The actual host `syncPregameSeats` declaration is checked and executed, including
+its null guard, active/reserved/expired-session filtering, Boolean peer projection
+and change-driven dirty flag. Host binding slots describe dependencies; session
+creation and checkpoint restore retain their existing identity/admission ownership.
+The receiver's stored seat/phase/invalidation contract applies only to checked
+callers, not a newly checked constructor or invalidation implementation.
+
+Eight negative consumer controls, three method mutations and three host-producer
+mutations require exact diagnostics; every diagnostic is collected. Runtime
+controls retain getter/evaluation order, copied projection keys, frozen-input
+acceptance, no-op comparison, assignment before invalidation failure and running
+phase behavior. No runtime validator is added: unselected callers retain existing
+nonstandard-field acceptance, and the generic payload's open metadata stays
+unknown. Runtime module identity, bodies and all prior assertions are unchanged.
+At this seat boundary, six method diagnostics are resolved and **61 full-graph
+diagnostics remain** (18 pregame, 20 match-mode, 23 Bannerfall), alongside the
+separate nine saved-ending validator diagnostics. No full-class/module enrollment,
+catalog/gameplay change or compiler/discovery change is implied by this result.
+
 #### Ranked type-safety backlog
 
 The incremental type-safety stream owns this list and takes one bounded,
@@ -101,7 +148,133 @@ main and active PR scopes; record a concrete defect risk before expanding.
 
 | Rank / state | Boundary | Defect risk and required proof | Scope/dependency |
 | --- | --- | --- | --- |
-| 1 — reassess when evidence appears | Next stable pure-data boundary | Select a concrete unchecked shape/identity/ownership risk with a positive consumer, a failing negative case and exact runtime/serialization proof. The current ready queue is exhausted. | No additional source writes reserved. Deflate-offer inputs intentionally remain `unknown` and its boolean contract already has strict-check/coverage evidence from its extraction; topology/cell helpers have active gameplay consumers and no new type defect reproduced in this audit. Revisit a documented defect or an agreed stable seam; avoid annotations solely to increase coverage. |
+| 1 — reviewed source correction, [PR #563](https://github.com/lbeezr/thousand-unit-skirmish/pull/563) | Persisted room-ID string boundary | At main `dd759f62`, JSON array IDs pass `normalizeRoomIndex` for versions 1–3. The actual store labels the index valid; `loadRooms` then exits before listening with `ERR_INVALID_ARG_TYPE` at `path.join`. Separately parsed arrays containing the same ID also evade duplicate detection. Require a primitive string under the existing pattern and reuse that checked ID. | Only `src/room-launch-options.mjs`, its existing dedicated test and this plan. No index-store/supervisor/recovery-policy or compiler/discovery edits. Type-safety owner retains normal merge and applicable integration evidence in the delivery PR. |
+| 2 — reviewed defensive hardening, [PR #565](https://github.com/lbeezr/thousand-unit-skirmish/pull/565) | Worker-ready port DTO | Injected IPC at main `fe3c2f03` admits ports 65536, 70000 and `Number.MAX_SAFE_INTEGER`; the actual health consumer then rejects with `ERR_SOCKET_BAD_PORT`. The current producer uses an OS-assigned port, so this is a defensive contract gap, not a demonstrated normal-match failure. Require an integer in 1–65535 and reuse the checked port. | Only the ready-message guard in `room-supervisor.mjs`, its regression in the existing room-launch-options test and this plan. Preserve malformed-message ignore behavior, later valid readiness, metadata, timeouts and child cleanup. No new abstraction, worker implementation or compiler/discovery change. |
+| 3 — reviewed defensive hardening, [PR #568](https://github.com/lbeezr/thousand-unit-skirmish/pull/568) | Worker-health boolean result | At main `04efee2b`, synthetic worker HTTP bodies with `ok` equal to `"false"`, `1`, `[]` or `{}` pass `readWorkerHealth`; the actual `/ready` handler reports HTTP 200 and `{ok:true}`. The producer emits literal `true`, so no ordinary-match failure is demonstrated. Require that boolean and retain all other response fields. | Only the health-result guard in `room-supervisor.mjs`, regression coverage in the existing room-launch-options test and this plan. Preserve malformed responses, request timeout/error settlement, room-status aggregation and private/public HTTP boundaries; no worker, protocol, compiler or discovery changes. |
+| 4 — scoped strict enrollment | Private peer-output contract | At main `c76ca030`, `createPeerOutput` and its six operations have 14 implicit-any parameters; text queue caps and string metric callbacks are not rejected at their call sites. Compressed traffic accounting assumes numeric payload metadata supplied by the real producer. Enroll only this stable private leaf with positive production adapters and compile-only consumer, negative shape/result controls and unchanged runtime evidence. No ordinary-match defect is claimed. | Only JSDoc in `src/server/transport/peer-output.mjs`, two appended files entries in `tsconfig.check-node.json`, `scripts/type-contracts/peer-output-valid.mjs`, additive `scripts/check-node-types.test.mjs` controls and this plan. No host, compiler-option, ambient-type, discovery, HTTP admission or runtime changes. |
+| 5 — scoped core contract | Voluntary-ending decision/result | `decideVoluntaryEnding` previously inferred `accepted:boolean`; guarded consumers could not discriminate its result, while text revisions/seat flags passed unchecked call sites. Give accepted/rejected results explicit branches, retain nullable spectators/actor metadata and unknown command fields, and prove existing transition/evaluation behavior. | Only `src/server/voluntary-endings.mjs`, additive `scripts/voluntary-endings.test.mjs` controls and this guide. Five actual core functions are checked with existing strict Node options; no whole-module/host enrollment, compiler/discovery changes or module extraction. |
+| 6 — scoped migration boundary | Legacy voluntary-ending checkpoint | Truthy primitive states in parsed schema-29 saves reach a native assignment error. Refuse primitive carriers with `false`, retain object/function/array carriers and existing supported-input reads/writes, and check the actual initializer's rejection and preserved bytes. This intentionally changes malformed-input behavior and diagnostics; no ordinary-match defect or universal equivalence is claimed. | Only `src/server/voluntary-endings.mjs`, additive controls in its existing dedicated test and this guide. A separate migration-only strict program uses existing Node options; no host, compiler/discovery, wire, gameplay or HTTP admission changes. |
+
+Peer-output enrollment checks raw Buffer/offset Uint8Array frames, numeric queue
+metrics, compressed payload metadata and minimal control-frame peer state.
+The existing Node type test compiles the actual host factory binding, transport
+fields, state/waypoint adapters and drain callback against Node's actual Socket
+type and a typed host release binding. The whole `prepareJsonFrame` implementation stays host-owned and
+unchecked; existing framing/backpressure runtime tests cover its integration.
+Twelve in-memory negative controls reject incorrect scalar/callback/byte/metadata
+and peer-counter shapes plus result misuse; the drain's already-inferred void
+result is a preservation control. Browser Node-global exclusion and every prior
+negative assertion remain. Strict enrollment changes no queue threshold,
+coalescing/drain order, metrics, bytes or module identity. Private transport stays
+outside browser reachability and public HTTP admission.
+
+The voluntary-ending core check compiles the actual `freshVoluntaryEndings`,
+`voluntaryCapability`, `decideVoluntaryEnding`, `cancelVoluntaryOffer` and
+`savedVoluntaryEndings` declarations, plus the real host context/stale-feedback
+and accepted/result read fragments. Fixture-only host bindings and feedback types
+make that partial scope explicit. Eight negative caller/result cases and two
+initializer-drift controls must fail; nullable spectators and unknown command
+field values remain accepted by the type contract. The dispatch carrier assumes
+an object, preserving existing malformed-carrier runtime behavior.
+
+This is a behavior-preserving source expression change, not comment-only:
+two native comparison lists retain their evaluation/read positions and checked
+exact initializers; resignation states the existing null-to-zero subtraction.
+The independent pre-contract core reference retains 11,669 malformed-input/DTO
+comparisons and 56 changing-getter cases, alongside all 15 original assertions.
+Accepted result identity, key order and rejection shape are unchanged.
+`SavedEndingState` is a structural projection, not validated checkpoint proof.
+At that core enrollment checkpoint, the nine raw-property diagnostics in
+`validSavedVoluntaryEndings` and six in `migrateVoluntaryEndingCheckpoint` were
+separate, unallocated narrowing work outside the five-function strict check.
+No session/access, gameplay, wire format or public/private admission changes.
+
+The dedicated voluntary-ending tests also characterize the raw saved validator
+before a later deliberate contract decision. They use the actual host assertion
+and call with JSON/unknown inputs, and protect inherited/primitive/function/array
+carriers, changing field reads, proxy traps, coercion, native exceptions,
+context/header/result error order, `JSON.stringify`/`toJSON` and input mutation.
+Prototype fixtures restore their exact descriptors in `finally`. These cases
+cover the twelve demonstrated guard/cache incompatibilities with distinct
+controls rather than a combinatorial sweep. They add no runtime guard, serializer
+change or strict enrollment: the validator's nine diagnostics remain open.
+A boolean validation result does not establish
+a stable `SavedEndingState` for later getter reads.
+
+The migration now accepts unknown input and returns a boolean. Its separate
+strict check covers the actual migration, private object/function predicate and
+two core dependencies; it resolves the six migration diagnostics without
+enrolling the raw validator or changing either compiler configuration.
+Truthy primitive states (`true`, `1`, `"state"`) intentionally return `false`
+before writes rather than throwing. The unchanged initializer then rejects the
+unmigrated schema 29 as unsupported, preserves the original file bytes and starts
+clean. That diagnostic describes the schema gate, not the primitive-state cause;
+the malformed-input cause and diagnostic change are explicit in these controls.
+Arrays/functions and repeated getters retain their existing reads and writes;
+this does not promise every accidental malformed carrier permanent support.
+Primitive prototype carriers and getters first yielding primitives also refuse;
+no universal runtime equivalence or stable migrated DTO is claimed. Native getter,
+setter and read-only assignment exceptions are still exposed rather than caught.
+
+At the enrollment checkpoint against `c76ca030`, both strict compiler gates
+pass and focused Node-type/framing/backpressure tests pass 52/52 with zero skips,
+including the original 25 transport tests. Comment-erased ES2022 module output
+is identical to the baseline; existing Node negative assertions and browser
+ambient exclusion remain byte-identical after the additive filesystem import.
+
+Room-ID acceptance, 6 October 2026: the three added dedicated regressions cover
+valid string IDs/migration and duplicate controls, coercible non-string IDs across
+versions 1–3, and the real index store classifying malformed JSON as invalid
+without rewriting it. The actual supervisor recovers the existing room directory,
+preserves its data, rebuilds the index under its existing policy, and serves HTTP.
+All 34 prior dedicated tests remain intact; 37 tests pass with zero skips at the
+candidate, and all three new regressions fail against the original source while
+the original 34 still pass. The broader native supervisor scenario, packaged
+serving, both type gates and 191 focused/tooling tests pass. Independent review
+also verifies 46,080 stable-string differential cases and original assertion
+preservation. The ID is captured once so the returned value is the primitive string
+that passed validation, including for a changing programmatic accessor. This is
+a runtime shape-contract correction, not new whole-module compiler enrollment.
+[Delivery PR #563](https://github.com/lbeezr/thousand-unit-skirmish/pull/563)
+records exact-head review, clean package and provider status separately; scoped
+local checks do not claim a full CPU suite or deployed-byte/visual acceptance.
+
+Worker-ready acceptance, 6 October 2026: the dedicated test executes the actual
+startup/health declarations and startup-timeout constant, with synthetic child
+IPC and startup clock. It retains all existing assertions and covers ignored
+malformed ports, later valid readiness, ports 1/65535, unchanged metadata,
+timeout/error/early-exit and settled-startup cleanup. A real local HTTP server
+provides the positive control through the actual health consumer. The port is
+captured once, so the worker uses the value that passed the range check; IPC
+format, producer behavior, timeout values and recovery policy are unchanged.
+This is bounded runtime DTO hardening, not whole-host compiler enrollment.
+All 37 prior dedicated tests remain intact; 40 pass with zero skips, and the
+three new regressions fail against the original host while the original tests
+still pass. Independent review verifies all 65,535 valid ports and 19 malformed
+controls. Both type gates, 196 focused/tooling tests, architecture/import checks,
+native supervisor recovery/isolation, expiry, PvE and packaged serving pass.
+[Delivery PR #565](https://github.com/lbeezr/thousand-unit-skirmish/pull/565)
+retains exact review, source/package and provider evidence separately from
+full-suite and live rendered acceptance.
+
+Worker-health acceptance, 6 October 2026: the regression executes the actual
+health consumer, request handler and JSON response writer. Real local HTTP
+supplies the four malformed bodies and existing rejection controls. A native
+`server.mjs` child supplies the valid producer response; actual `/ready` and
+private-health aggregation preserve its metadata and existing room counters.
+Private aggregation is exercised after a granted access gate; packaged serving
+retains separate access-boundary coverage. A synthetic request error/clock
+control verifies the existing 1500 ms timeout, destruction and single-settlement
+behavior. All 40 prior dedicated tests/assertions remain intact; 43 pass with
+zero skips. The original host passes 42 and fails the new negative readiness
+regression; both new compatibility controls pass there. Independent review
+verifies 84 real-HTTP comparisons. Both type gates, 185 focused/tooling tests,
+architecture/import checks, native supervisor recovery and packaged serving
+pass at the implementation head. This is defensive runtime DTO hardening, not
+new host compiler enrollment or a demonstrated ordinary-match failure.
+[Delivery PR #568](https://github.com/lbeezr/thousand-unit-skirmish/pull/568)
+owns exact review, final-head integration checks, clean packaging and automatic
+provider evidence separately from full-suite and rendered acceptance.
 
 Do not expand into audio reader/production/research extractions, gameplay roots
 or active render/entry hotspots to chase coverage. Coordinate concrete moves or

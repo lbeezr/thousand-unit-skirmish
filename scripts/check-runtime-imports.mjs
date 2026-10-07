@@ -30,6 +30,8 @@ export const NODE_ONLY_MODULES = [
   'src/pve-model-proposal.mjs', // Compatibility entry for the offline Node adapter.
   'src/server/pve-model-proposal.mjs', // Offline Node model-request implementation.
   'src/networking/websocket-frame.mjs', // Server-only Node Buffer wire encoding.
+  'src/server/transport/peer-output.mjs', // Private Node socket output and queue accounting.
+  'src/server/persistence/room-index-store.mjs', // Private Node room-index persistence; host resolves paths.
 ];
 
 // Responsibilities of existing modules, independent of their current flat paths.
@@ -39,6 +41,7 @@ export const NODE_ONLY_MODULES = [
 export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   rules: [
     'rules/base-lifecycle', 'rules/gameplay-action-rules',
+    'rules/production-actions', 'rules/research-actions',
     'bannerfall-rules', 'base-lifecycle', 'combat-rules', 'economy-ledger',
     'economy-profile', 'farm-harvest', 'gameplay-action-rules', 'gameplay-definitions',
     'match-modes', 'palisade-gate', 'palisade-profile', 'population',
@@ -52,6 +55,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   ],
   simulation: [
     'combat-movement', 'combat-stance', 'confluence-opening-compat', 'construction-work-intent', 'economy-checkpoint',
+    'economy-perimeter-access', 'economy-perimeter-recovery',
     'forest-fringe', 'forest-gather-group', 'formation-assignment', 'gather-work-area', 'match-mode-checkpoint',
     'simulation/movement/formation-assignment',
     'simulation/movement/military-endpoint-availability',
@@ -66,6 +70,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'wildlife-state', 'work-intent', 'worker-performing-action',
   ],
   ai: [
+    'simulation/ai/opponent-observation',
     'pve-home-defense', 'pve-objective-rotation', 'pve-opponent', 'pve-production',
     'pve-reconnaissance', 'pve-regroup', 'pve-skirmish-targets',
   ],
@@ -74,6 +79,13 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   disclosed: ['wildlife-client-state', 'worker-fishing-presentation', 'worker-work-presentation'],
   presentation: [
     'presentation/assets/interactive-runtime-image',
+    'presentation/assets/plant-packs/podvine-low-pack',
+    'presentation/assets/plant-packs/veilcap-worked-pack',
+    'presentation/assets/plant-packs/sunbloom-low-pack',
+    'presentation/rendering/ground-surfaces',
+    'presentation/audio/composition',
+    'presentation/audio/composition-player',
+    'presentation/audio/composition-wav',
     'building-production-cue', 'building-sprites', 'building-visual-state', 'building-fog-composition',
     'camera-controls', 'captured-building-art', 'environment-art', 'asset-readability', 'catalog-barracks-observation',
     'environment-instance-picking',
@@ -92,9 +104,13 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'worker-fishing-contact',
   ],
   client: [
+    'client/networking/welcome-session',
     'client/hud/match-recap', 'client/hud/match-decisions',
     'client/hud/resource-format', 'client/hud/population-readout', 'client/hud/objective-summary',
     'client/audio/audio-decoded-cache', 'client/audio/audio-shipped-response',
+    'client/audio/composer',
+    'client/audio/library-store',
+    'client/audio/library-ui',
     'audio', 'audio-assets', 'audio-composer', 'audio-composition',
     'audio-composition-player', 'audio-decoded-cache', 'audio-library-store',
     'audio-library-ui', 'audio-policy', 'audio-recognition-check',
@@ -111,6 +127,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   authoring: [
     'authoring/scenario-authoring', 'authoring/map-resize',
     'authoring/map-studio-form-state',
+    'authoring/map-studio-terrain-packing',
     'authoring/map-import-validator',
     'authoring/map-studio-draft-store',
     'authoring/map-studio/draft/v1/contract',
@@ -125,6 +142,11 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'server/client-static-assets', 'server/public-gameplay',
     'server/vision-coverage-cache', 'server/checkpoint-route-budget',
     'server/checkpoint-envelope', // Ordered private validation handoff; domain state remains caller-owned.
+    'server/map-definition-validator', // Authoritative map policy; no browser/public admission.
+    'server/checkpoint-scenario-state', // Ordered saved scenario-state checks; no live simulation mutation.
+    'server/checkpoint-roster', // Saved living/queued population and mode roster/result invariants.
+    'server/transport/peer-output', // Explicit peer output; host retains queue policy and aggregate metrics.
+    'server/persistence/room-index-store', // Serialized private index I/O; supervisor retains room lifecycle.
     'server/checkpoint-json-budget', 'server/checkpoint-json-scan', 'server/checkpoint-file-reader',
   ],
   // Legacy map-validation entry also exports playback policy. Preserve existing

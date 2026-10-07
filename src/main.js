@@ -8,6 +8,7 @@ import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { mountResourceBrushControls } from './resource-brush-controls.mjs';
 import { createMapStudioFormState } from './authoring/map-studio-form-state.mjs';
 import { createMapImportValidator } from './authoring/map-import-validator.mjs';
+import { packGroundPaint, packGroundElevation, packTerrainObstacles } from './authoring/map-studio-terrain-packing.mjs';
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from './authoring/map-studio-draft-store.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS } from './regions.mjs';
@@ -15,7 +16,7 @@ import { regionGestureZone, ScenarioEditHistory, createScenarioEditCoordinator,
   scenarioEventCaptureRootId, scenarioEventSourceWouldCycle } from './authoring/scenario-authoring.mjs';
 import { validateScenarioRegions, validCompletionTrigger } from './scenario-regions.mjs';
 import { regionalGroundColor } from './regional-ground-kits.mjs';
-import { researchOptions, researchAction } from './research-actions.mjs';
+import { researchOptions, researchAction } from './rules/research-actions.mjs';
 import { unitPresentation, buildingPresentation } from './gameplay-presentation.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './gameplay-definitions.mjs';
 import { createDockPlacementContext } from './dock-placement.mjs';
@@ -37,6 +38,7 @@ import { createRoomLobby } from './room-lobby-ui.mjs';
 import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel, fixedMatchArmySize } from './match-mode-controls.mjs';
 import { roomPresence } from './room-presence.mjs';
 import { BrowserStateRecovery } from './browser-state-recovery.mjs';
+import { createWelcomeSession } from './client/networking/welcome-session.mjs';
 import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
 import { renderMatchRecap } from './client/hud/match-recap.mjs';
@@ -749,6 +751,12 @@ const SESSION_STORAGE_KEY = 'thousand-unit-skirmish-session';
 const ROOM_SESSION_STORAGE_KEY = `${SESSION_STORAGE_KEY}:${ROOM_ID || 'default'}`;
 const ROOM_INSTANCE_STORAGE_KEY = `${SESSION_STORAGE_KEY}:instance:${location.host}:${ROOM_ID || 'default'}`;
 const ROOM_MATCH_STORAGE_KEY = `${SESSION_STORAGE_KEY}:match:${location.host}:${ROOM_ID || 'default'}`;
+const welcomeSession = createWelcomeSession({
+  getStorage: () => sessionStorage,
+  sessionKey: ROOM_SESSION_STORAGE_KEY,
+  instanceKey: ROOM_INSTANCE_STORAGE_KEY,
+  matchKey: ROOM_MATCH_STORAGE_KEY,
+});
 
 function setCamera() {
   const clipPlanes = cameraDepthSafePlanes({
@@ -6421,11 +6429,20 @@ function validateImportedMap(value) {
 
 async function importEditorMap(file) {
   if (file.size > 900_000) throw new Error('Map JSON must be smaller than 900 KB so it can be sent safely.');
+  let text;
+  try {
+    text = await file.text();
+  } catch (error) {
+    if (!(error instanceof DOMException)
+      || !['NotFoundError', 'NotReadableError', 'SecurityError'].includes(error.name)) throw error;
+    throw new Error('Map file could not be read. Choose the file again and retry.', { cause: error });
+  }
   let parsed;
   try {
-    parsed = JSON.parse(await file.text());
-  } catch {
-    throw new Error('That file is not valid JSON.');
+    parsed = JSON.parse(text);
+  } catch (error) {
+    if (!(error instanceof SyntaxError)) throw error;
+    throw new Error('That file is not valid JSON.', { cause: error });
   }
   const definition = validateImportedMap(parsed);
   populateMapEditor(definition,
@@ -6877,71 +6894,11 @@ function drawEditorGrid() {
 }
 
 function compressEditorGround() {
-  const width = editorDefinition.width;
-  const height = editorDefinition.height;
-  const visited = new Uint8Array(width * height);
-  const patches = [];
-  for (let row = 0; row < height; row++) {
-    for (let column = 0; column < width; column++) {
-      const index = row * width + column;
-      const material = editorGroundMaterials[index];
-      if (material < 0 || visited[index]) continue;
-      let rectangleWidth = 1;
-      while (column + rectangleWidth < width
-        && editorGroundMaterials[row * width + column + rectangleWidth] === material
-        && !visited[row * width + column + rectangleWidth]) rectangleWidth++;
-      let rectangleHeight = 1;
-      while (row + rectangleHeight < height) {
-        let same = true;
-        for (let dx = 0; dx < rectangleWidth; dx++) {
-          const next = (row + rectangleHeight) * width + column + dx;
-          if (editorGroundMaterials[next] !== material || visited[next]) { same = false; break; }
-        }
-        if (!same) break;
-        rectangleHeight++;
-      }
-      for (let dy = 0; dy < rectangleHeight; dy++) {
-        for (let dx = 0; dx < rectangleWidth; dx++) visited[(row + dy) * width + column + dx] = 1;
-      }
-      patches.push({ column, row, width: rectangleWidth, height: rectangleHeight,
-        material: TERRAIN_MATERIALS[material] });
-    }
-  }
-  return patches;
+  return packGroundPaint(editorDefinition.width, editorDefinition.height, editorGroundMaterials, TERRAIN_MATERIALS);
 }
 
 function compressEditorElevation() {
-  const width = editorDefinition.width;
-  const height = editorDefinition.height;
-  const visited = new Uint8Array(width * height);
-  const patches = [];
-  for (let row = 0; row < height; row++) {
-    for (let column = 0; column < width; column++) {
-      const index = row * width + column;
-      const level = editorGroundLevels[index];
-      if (level === 0 || visited[index]) continue;
-      let rectangleWidth = 1;
-      while (column + rectangleWidth < width
-        && editorGroundLevels[row * width + column + rectangleWidth] === level
-        && !visited[row * width + column + rectangleWidth]) rectangleWidth++;
-      let rectangleHeight = 1;
-      while (row + rectangleHeight < height) {
-        let same = true;
-        for (let dx = 0; dx < rectangleWidth; dx++) {
-          const next = (row + rectangleHeight) * width + column + dx;
-          if (editorGroundLevels[next] !== level || visited[next]) { same = false; break; }
-        }
-        if (!same) break;
-        rectangleHeight++;
-      }
-      for (let dy = 0; dy < rectangleHeight; dy++) {
-        for (let dx = 0; dx < rectangleWidth; dx++) visited[(row + dy) * width + column + dx] = 1;
-      }
-      patches.push({ column, row, width: rectangleWidth, height: rectangleHeight, level });
-      if (patches.length > MAX_ELEVATION_PATCHES) return patches;
-    }
-  }
-  return patches;
+  return packGroundElevation(editorDefinition.width, editorDefinition.height, editorGroundLevels, MAX_ELEVATION_PATCHES);
 }
 
 function withCurrentEditorElevation(definition) {
@@ -6955,47 +6912,8 @@ function withCurrentEditorElevation(definition) {
 }
 
 function compressEditorObstacles() {
-  const width = editorDefinition.width;
-  const height = editorDefinition.height;
-  const visited = new Uint8Array(width * height);
-  const obstacles = [];
-  for (let row = 0; row < height; row++) {
-    for (let column = 0; column < width; column++) {
-      const index = row * width + column;
-      const material = editorCellMaterials[index];
-      if (material < 0 || visited[index]) continue;
-      const elevation = editorCellElevations[index];
-      let rectangleWidth = 1;
-      while (column + rectangleWidth < width) {
-        const next = row * width + column + rectangleWidth;
-        if (editorCellMaterials[next] !== material || editorCellElevations[next] !== elevation || visited[next]) break;
-        rectangleWidth++;
-      }
-      let rectangleHeight = 1;
-      while (row + rectangleHeight < height) {
-        let sameMaterial = true;
-        for (let dx = 0; dx < rectangleWidth; dx++) {
-          const next = (row + rectangleHeight) * width + column + dx;
-          if (editorCellMaterials[next] !== material || editorCellElevations[next] !== elevation || visited[next]) {
-            sameMaterial = false;
-            break;
-          }
-        }
-        if (!sameMaterial) break;
-        rectangleHeight++;
-      }
-      for (let dy = 0; dy < rectangleHeight; dy++) {
-        for (let dx = 0; dx < rectangleWidth; dx++) visited[(row + dy) * width + column + dx] = 1;
-      }
-      const obstacle = {
-        column, row, width: rectangleWidth, height: rectangleHeight,
-        material: EDITOR_MATERIALS[material],
-      };
-      if (elevation !== 1.12) obstacle.elevation = elevation;
-      obstacles.push(obstacle);
-    }
-  }
-  return obstacles;
+  return packTerrainObstacles(editorDefinition.width, editorDefinition.height,
+    editorCellMaterials, editorCellElevations, EDITOR_MATERIALS);
 }
 
 function collectEditorMap() {
@@ -10252,8 +10170,7 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
   const url = new URL(`${protocol}//${location.host}/ws`);
   if (HAS_ROOM_PARAMETER) url.searchParams.set('room', ROOM_ID);
   if (resumeOnly) url.searchParams.set('resumeOnly', '1');
-  let savedToken = null;
-  try { savedToken = sessionStorage.getItem(ROOM_SESSION_STORAGE_KEY); } catch {}
+  const savedToken = welcomeSession.readResumeToken();
   const websocketProtocols = ['rts-v1'];
   if (savedToken) websocketProtocols.push(`rts-resume.${savedToken}`);
   const connection = new WebSocket(url, websocketProtocols);
@@ -10277,38 +10194,14 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
       const joinedSeat = hasPlayerSeat && message.player.team !== cameraSeatTeam;
       if (hasPlayerSeat) cameraSeatTeam = message.player.team;
       else if (message.player.resumePending !== true) cameraSeatTeam = null;
-      let matchInstanceChanged = false;
-      let matchIdentityChanged = false;
-      if (typeof message.serverInstanceId === 'string') {
-        try {
-          const previousInstanceId = sessionStorage.getItem(ROOM_INSTANCE_STORAGE_KEY);
-          matchInstanceChanged = Boolean(previousInstanceId && previousInstanceId !== message.serverInstanceId);
-          sessionStorage.setItem(ROOM_INSTANCE_STORAGE_KEY, message.serverInstanceId);
-        } catch {}
-      }
-      if (typeof message.matchId === 'string') {
-        try {
-          const previousMatchId = sessionStorage.getItem(ROOM_MATCH_STORAGE_KEY);
-          matchIdentityChanged = Boolean(previousMatchId && previousMatchId !== message.matchId);
-          sessionStorage.setItem(ROOM_MATCH_STORAGE_KEY, message.matchId);
-        } catch {}
-      }
-      const matchWasReset = !message.recoveredFromCheckpoint && (matchIdentityChanged || matchInstanceChanged);
-      const matchWasRestored = message.recoveredFromCheckpoint === true && matchInstanceChanged
-        && !matchIdentityChanged;
+      const { matchWasReset, matchWasRestored } = welcomeSession.recordWelcomeIdentity(message);
       void loadMapAudio(message.map.audio);
       if (mapChanged) {
         mapDefinition = message.map;
         buildMap(mapDefinition);
       }
       waitingForResume = message.player.resumePending === true;
-      try {
-        if (message.player.sessionToken) {
-          sessionStorage.setItem(ROOM_SESSION_STORAGE_KEY, message.player.sessionToken);
-          sessionStorage.setItem('thousand-unit-skirmish-last-room', HAS_ROOM_PARAMETER ? ROOM_ID : 'default');
-        }
-        else if (!waitingForResume) sessionStorage.removeItem(ROOM_SESSION_STORAGE_KEY);
-      } catch {}
+      welcomeSession.recordWelcomeSeat(message.player, waitingForResume, HAS_ROOM_PARAMETER ? ROOM_ID : 'default');
       setPlayer(message.player);
       if (hasPlayerSeat) onSessionConfirmed();
       applyLobby(message.state.lobby);

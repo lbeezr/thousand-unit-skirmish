@@ -73,7 +73,7 @@ def main():
             'gutterPx':64,'worldSize':[.88654,.85],'pivot':[.5,1],'frames':rows,'perViewScale':False,
             'anatomicalRootAlignmentCertified':False,'runtimeIntegrated':True}
         (PACK/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
-        (ROOT/'src/sunbloom-low-pack.mjs').write_text(config_text)
+        (ROOT/'src/presentation/assets/plant-packs/sunbloom-low-pack.mjs').write_text(config_text)
     manifest = json.loads((PACK/'manifest.json').read_text())
     assert manifest['sourceSha256'] == sha(PACK/'source.png') and manifest['referenceSha256'] == sha(reference)
     assert manifest['workedReferenceSha256'] == sha(worked_reference)
@@ -81,7 +81,7 @@ def main():
     assert manifest['worldSize'] == config['worldSize'] and manifest['pivot'] == [.5,1]
     assert manifest['perViewScale'] is False and manifest['gutterPx'] == 64
     assert manifest['frameSizePx'] == [512,491] and manifest['sourceCanvasPerFramePx'] == [700,671]
-    assert (ROOT/'src/sunbloom-low-pack.mjs').read_text() == config_text
+    assert (ROOT/'src/presentation/assets/plant-packs/sunbloom-low-pack.mjs').read_text() == config_text
     atlas = Image.open(PACK/'sunbloom-low-atlas.webp').convert('RGBA')
     assert list(atlas.size) == manifest['atlasSizePx'] == [2560,1857]
     for frame,row in generated:

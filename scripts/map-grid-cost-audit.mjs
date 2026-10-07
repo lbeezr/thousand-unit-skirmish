@@ -52,9 +52,14 @@ export async function runGridCostAudit() {
   const files = ['server.mjs', 'src/main.js', 'src/wall-line-planner.mjs', 'src/water-route-graph.mjs',
     'src/environment-art.mjs', 'src/terrain-height.mjs', 'src/terrain-blend.mjs', 'src/gameplay-definitions.mjs',
     'src/elevation.mjs', 'src/map-size-policy.mjs', 'src/forest-fringe.mjs',
-    'src/server/vision-coverage-cache.mjs', 'src/forest-gather-group.mjs', 'scripts/map-grid-cost-audit.mjs', 'index.html'];
+    'src/server/vision-coverage-cache.mjs', 'src/server/map-definition-validator.mjs',
+    'src/forest-gather-group.mjs', 'scripts/map-grid-cost-audit.mjs', 'index.html'];
   const inputs = Object.fromEntries(await Promise.all(files.map(async name => [name, await readFile(new URL(`../${name}`, import.meta.url), 'utf8')])));
   const server = inputs['server.mjs'];
+  const validator = inputs['src/server/map-definition-validator.mjs'];
+  if (!server.includes("import { createMapDefinitionValidator } from './src/server/map-definition-validator.mjs';")
+    || !server.includes('return authoritativeMapValidator(definition, filename);'))
+    throw new Error('Authoritative map validator binding moved; update the source-bound cost audit.');
   const start = server.indexOf('\nfunction activateMap(definition) {');
   const end = server.indexOf('\nfunction ', start + 1);
   if (start < 0 || end < 0) throw new Error('Map activation moved; update the source-bound cost audit.');
@@ -84,7 +89,11 @@ export async function runGridCostAudit() {
     attackFlowLimit: number(/const MAX_ATTACK_FLOW_FIELDS = (\d+);/), visionIndexBits,
     visionCache: { maxBytes: probe.metrics().maxBytes, maxEntries: probe.metrics().maxEntries,
       coverageArrays: ['visible', 'fringe'], scope: 'live exact owned typed payload; excludes temporary/GC buffers and JS overhead' },
-    validatorMaxSide: number(/definition\.width > (\d+) \|\| definition\.height >/),
+    validatorMaxSide: (() => {
+      const match = validator.match(/definition\.width > (\d+) \|\| definition\.height >/);
+      if (!match) throw new Error('Authoritative map dimension gate moved; update the source-bound cost audit.');
+      return Number(match[1]);
+    })(),
     highGroundBonus: number(/const HIGH_GROUND_VISION_BONUS_CELLS = (\d+);/),
     snapshotHz: number(/const TICK_RATE = (\d+);/) / number(/const STATE_EVERY_TICKS = (\d+);/),
     sights: [...new Set([8, ...Object.values(UNIT_DEFINITIONS).map(v => v.sight || 8),
@@ -95,7 +104,7 @@ export async function runGridCostAudit() {
     sourceDirty: Boolean(execFileSync('git', ['status', '--porcelain'], { cwd: ROOT, encoding: 'utf8' }).trim()),
     sourceInputSha256: Object.fromEntries(files.map(name => [name, createHash('sha256').update(inputs[name]).digest('hex')])),
     model, grids: [160, 192, 224, 256, 320].map(side => gridCosts(side, model)),
-    hardLimitSites: ['server.mjs:validateMapDefinition', 'src/main.js:editor validation', 'index.html:studio width/height',
+    hardLimitSites: ['src/server/map-definition-validator.mjs:validateMapDefinition', 'src/main.js:editor validation', 'index.html:studio width/height',
       'src/wall-line-planner.mjs:wall geometry', 'src/water-route-graph.mjs:water geometry', 'src/map-size-policy.mjs:ordinary eligibility'],
     xlAdmitted: false, limitsChanged: false };
 }

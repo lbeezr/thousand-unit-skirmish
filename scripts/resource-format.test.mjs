@@ -62,6 +62,46 @@ test('whole resource display preserves conservative stock and requirement bounda
   assert.equal(formatResourceRequirement(0), '0');
 });
 
+test('resource text retains legacy zero, coercion and nonfinite display contracts', () => {
+  const cases = [
+    [0, '0', '0'], [-0, '0', '0'], [-0.001, '0', '0'], [-1000, '0', '0'],
+    [Number.MIN_VALUE, '0', '1'], [1.0001, '1', '2'],
+    [1234.99, (1234).toLocaleString(), (1235).toLocaleString()],
+    [null, '0', '0'], ['', '0', '0'], ['1.25', '1', '2'],
+    [undefined, NaN.toLocaleString(), NaN.toLocaleString()],
+    [NaN, NaN.toLocaleString(), NaN.toLocaleString()],
+    [Infinity, Infinity.toLocaleString(), Infinity.toLocaleString()],
+    [-Infinity, '0', '0'],
+  ];
+  for (const [value, stock, requirement] of cases) {
+    assert.equal(formatResourceStock(value), stock, `stock: ${String(value)}`);
+    assert.equal(formatResourceRequirement(value), requirement, `requirement: ${String(value)}`);
+  }
+  for (const format of [formatResourceStock, formatResourceRequirement]) {
+    for (const value of [1n, Symbol('resource')]) assert.throws(() => format(value), TypeError);
+    const fault = new Error('numeric conversion failed');
+    assert.throws(() => format({ valueOf() { throw fault; } }), error => error === fault);
+  }
+});
+
+for (const team of [0, 1]) test(`seat ${team}: economy HUD excludes invalid cargo and preserves fractional typed totals`, () => {
+  const { context, ui } = fixture(team);
+  context.mapDefinition.economyProfileId = 'stone-defense-v1';
+  const owned = [
+    { cargoType: 'food', cargo: 0.625 }, { cargoType: 'food', cargo: 0.625 },
+    { cargoType: 'wood', cargo: 1234.75 }, { cargoType: 'stone', cargo: 2.125 },
+    ...[0, -1, NaN, Infinity, -Infinity, undefined, null, '100'].map(cargo => ({ cargoType: 'food', cargo })),
+    { cargoType: 'gold', cargo: 100 }, { cargoType: '__proto__', cargo: 100 },
+  ].map(cargo => Object.freeze({ hp: 35, team, kind: 'worker', ...cargo }));
+  context.teamUnits[team] = Object.freeze(owned);
+  context.teamUnits[1 - team] = [{ hp: 35, team: 1 - team, kind: 'worker', cargoType: 'food', cargo: 999 }];
+  context.updateEconomyUI();
+  assert.equal(ui.workerLoad.textContent, `WORKER CARGO · 1 FOOD · ${(1234).toLocaleString()} WOOD · 2 STONE`);
+  assert.equal(context.teamUnits[team][0].cargo, 0.625, 'display leaves fractional cargo intact');
+  assert.equal(context.latestFood[team], 0, 'cargo does not become a bank credit');
+  assert.equal(context.latestStone[team], 0);
+});
+
 for (const team of [0, 1]) test(`seat ${team}: House, Barracks and Range require selected eligible workers`, () => {
   const f = fixture(team);
   f.context.units.push({ id: 1, team, hp: 100, kind: 'infantry' },

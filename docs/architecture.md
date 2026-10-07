@@ -30,6 +30,55 @@ or reveal hidden state.
 
 ## Module dependencies and gradual organization
 
+### Current organization snapshot — 6 October 2026
+
+Organization continued beyond `networking/` and `server/`. At main
+`3da33c3125dbcb2ec6cd6d543f8811cb9ded27e5`, the source tree has **225 JavaScript
+modules: 185 flat and 40 nested** (230 source files including five CSS files).
+The existing Acorn audit reports **230 runtime modules including five root
+hosts/adapters, 453 distinct local edges, 141 browser-reachable, 100
+server-reachable, 34 shared and zero cyclic edges**. These counts include literal
+lazy imports and re-exports, but exclude tests/tools, asset URLs and injected
+callbacks. Reproduce with `node scripts/check-runtime-imports.mjs` at that source.
+
+The [first eight migration slices](#first-eight-migration-pr-candidates) all have
+integrated source implementations: domain guard PR294, map-audio reference
+PR298, rules PR314, formation PR301, HUD PR299, audio PR322, authoring PR300 and
+verified image loading PR327. Their source milestone does not close every
+rendered/native outcome. Later caller migrations through PR404 leave zero
+tracked runtime consumers of the eleven retained compatibility surfaces; tests,
+tools and supported old APIs still require them. Release pack/verification
+tools have canonical `scripts/release/` homes through PR373/378; PR382 places
+the served-import auditor in `scripts/browser/`.
+
+Subsequent real host extractions include Map Studio form/storage/history,
+portable import validation and terrain packing (PR406/412/415/463/524), world
+queries and their actual callers (PR510/512/514), and private authoritative
+map/checkpoint validation (PR507/526/528/530). The latter three are integrated,
+not a fresh pending extraction queue. Their exact package/provider receipts live
+in their PRs; served identity and ordinary rendered recovery remain separately
+owned. The detailed dated checkpoints below are retained as evidence.
+
+| Current hotspot | Physical lines | Local fan-out / fan-in | Remaining responsibility boundary |
+| --- | ---: | ---: | --- |
+| `src/main.js` | 10,712 | 79 / 1 | Map/visual construction (`buildMap`, 356 lines), socket/session handling (`connectSocket`, 262), HUD projection (`updateEconomyUI`, 229), state application (`applyState`, 220), animation and editor lifecycle. Extract one lifetime or projection with its real caller; retain the browser composition entry. |
+| `server.mjs` | 9,586 | 79 / 0 | Authoritative tick (`simulateTick`, 424), scenario execution (`evaluateScenarioTriggers`, 367), remaining checkpoint validation (367), peer creation (236), migration (203), command/movement/construction and visibility projection. Map/envelope/scenario/roster validators already have private homes. Live execution is a different contract from saved-state validation. |
+| `src/environment-art.mjs` | 1,243 | 28 / 1 | Ground/water creation, material/texture registries, resource readiness/fallback and obstacle batches (`addObstacleEnvironmentSprites`, 437). Verified image loading is already separate; resource disposal/lifetime is the next question, not another loader copy. |
+| `src/pve-opponent.mjs` | 968 | 10 / 2 | Filtered observation, seeded policy and socket adapter. `toOpponentObservation` and its visibility/normalization helpers are a concrete portable seam independent of policy scheduling. |
+| `room-supervisor.mjs` | 771 | 7 / 0 | Persistent room index, worker lifetime and HTTP/upgrade routing. Preserve process launch and resolved storage paths. |
+| `src/audio.mjs` | 734 | 4 / 3 | Synthesized/sampled playback, buses, interruption and disposal. Cache/response helpers are already separate; further changes need a playback lifetime contract. |
+| `src/gameplay-definitions.mjs` | 242 | 2 / 31 | Highest fan-in is the intentionally shared validated registry. Keep IDs, object identity and revision hashes cohesive; do not split it to reduce a coupling number. |
+
+Size and coupling are **review ratchets**, not universal limits: compare an
+owned slice against its pinned base and explain added responsibilities, changed
+edges and host-state reads/writes. A composition host may gain an import while
+losing state ownership. A cohesive registry or validator may remain hundreds of
+lines. Reject a new lower-domain dependency on a host/client/Three/Node adapter,
+a new cycle, duplicated state or an all-host context bag. Do not impose an
+arbitrary maximum file length or reset the empty cycle ledger to make a move pass.
+The next proposals are in [the remaining queue](#remaining-organization-queue--6-october-2026);
+the domain destinations below remain the governing dependency contract.
+
 `npm run architecture:check` parses imports, re-exports and literal lazy imports
 with Acorn; it does not execute game modules. At source revision `32f11d5`
 (3 October 2026), the graph contains 141 `src` modules plus five root JavaScript
@@ -232,7 +281,7 @@ not a second competing extraction/testing roadmap. The
 [planning inventory](README.md#planning-inventory--4-october-2026) identifies
 the other canonical queues and their evidence gaps.
 
-### Current coupling and mixed responsibilities
+### Historical coupling and mixed responsibilities — 4 October 2026
 
 Counts below use physical lines (including comments/blank lines) and distinct
 direct local runtime imports/importers, from the existing Acorn graph. They
@@ -367,27 +416,57 @@ scenario-event dependency contract from map topology without moving its callers.
 
 ### First eight migration PR candidates
 
-PR1 is the common prerequisite. PR2–PR7 have distinct canonical source scopes;
+This is the original eight-slice sequence, now integrated in source; do not
+reopen it as eight new folder moves. PR1 is the common prerequisite. PR2–PR7
+have distinct canonical source scopes;
 their existing-module imports can stay behind explicit shims so `main.js` and
 `server.mjs` need no path-only churn. The manifest, guard membership and any
 type/coverage/CI registries are shared integration files: apply those deltas
 serially through their owners, not concurrent edits disguised as disjoint work.
-PR8 waits for the asset/renderer owner's agreed lifetime interface.
+PR8 used the asset/renderer owner's agreed lifetime interface in PR327.
 
 | PR / owner and dependency | Exact candidate source scope and resulting boundary | Focused acceptance beyond the common checks below |
 | --- | --- | --- |
 | 1 — architecture/import owner; plan reviewed in PR291 | [PR294](https://github.com/lbeezr/thousand-unit-skirmish/pull/294): `scripts/check-runtime-imports.mjs`, `scripts/check-runtime-imports.test.mjs` and the existing `scripts/railway-release-scenario.mjs` private-path assertions; `scripts/fixtures/runtime-import-baseline.json` stays unchanged and empty. Explicit current responsibility memberships reject backwards edges before files move. The PR records exact-head review, checks and integration. | Import/served regressions: 41/41 pass; actual source allowlist: 118 modules; unchanged 175-module/319-edge/zero-cycle graph. Negative simulation→client/editor/presentation, rules/world direction, transitive host-package and browser→private-module cases pass. Pure disclosed helpers used by AI/server remain intentionally shared; new files need a classification. Clean pack and actual packed HTTP private GET/HEAD denial pass. No new package/CI pipeline, wildcard exception or cycle-baseline reset. |
-| 2 — world/metadata owner after PR1 and audio-owner agreement | Extract only `validateMapAudioReference` from `src/audio-event-profile.mjs` into proposed `src/world/map-audio-reference.mjs`; retain its named re-export at the old path. Leave random binding choice/cooldown behavior in the audio module. Its shared reference validation can no longer acquire Web Audio/storage dependencies. | Existing audio runtime/map-persistence/shipped-serving scenarios and new exact old/new validator parity for accepted/rejected references, optional version/hash pair, returned keys and error text. Existing host imports can stay stable. No source audio bytes, map reference or playback change. |
-| 3 — shared-rule/extraction owner after PR1 | `src/gameplay-action-rules.mjs` and `src/base-lifecycle.mjs` → proposed `src/rules/` counterparts; explicit named compatibility entries retain the old API. Update only relative dependencies of the canonical copies. The cohesive action/refund calculations remain portable and independent of UI/hosts. | `scripts/gameplay-action-rules.test.mjs`, `scripts/base-lifecycle.test.mjs`, production/research action tests and `scripts/base-lifecycle-scenario.mjs`. Preserve rejection reason order, epsilon, refund/repair rounding, immutable inputs, payment and cold recovery; preserve existing comparison evidence. |
-| 4 — movement owner after PR1 and current path work | `src/formation-assignment.mjs` → proposed `src/simulation/movement/formation-assignment.mjs`, named old-path forwarding entry. No changes to `unit-path-line`, planner budgets, force combination, command queues or server host imports. Establish the authoritative formation-helper home without moving active path/order implementations. | `scripts/formation-assignment-scenario.mjs`, pathing replay and fortified-site-clearance tests; compare ordered IDs/slot pairing/ties for the same inputs and retain no input mutation. Existing real terrain/paid-construction controls remain meaningful. |
-| 5 — HUD owner after PR1 and selection-fix coordination | `src/resource-format.mjs`, `src/population-readout.mjs`, `src/objective-summary.mjs` → proposed `src/client/hud/` counterparts with named forwarding entries. Keep state projection/text separate from DOM layout, authoritative accounting and rendering. `hud-layout`, `main.js`, selection/stance hooks and HTML stay outside this slice. | Their three matching tests, `scripts/selection-context.test.mjs` and relevant contextual HUD regressions. Preserve all labels/formatting, unknown/hidden/enemy values, population totals, notice retention/order and disclosed objective state. Existing `selection-portrait`/`wall-placement` imports may use the shims until their own migration. |
-| 6 — audio/extraction owner after PR1; coverage registration through testing owner | `src/audio-decoded-cache.mjs`, `src/audio-shipped-response.mjs` → proposed `src/client/audio/` counterparts with named forwarding entries. Preserve cache and bounded-response interfaces; `audio.mjs`, loader/profile behavior and all recordings stay stable. | `scripts/audio-decoded-cache.test.mjs`, `scripts/audio-shared-decode.test.mjs`, `scripts/audio-shipped-response.test.mjs`, shipped-loader/lifecycle tests and serving scenario. Exact reader limits/errors/cancellation, shared object identity, LRU accounting/retry and independent bus interruption. Keep the existing 100% reader coverage pointed at the canonical implementation, not the shim; no test renaming. |
+| 2 — world/metadata; integrated [PR298](https://github.com/lbeezr/thousand-unit-skirmish/pull/298), after PR1/audio agreement | Extract only `validateMapAudioReference` from `src/audio-event-profile.mjs` into proposed `src/world/map-audio-reference.mjs`; retain its named re-export at the old path. Leave random binding choice/cooldown behavior in the audio module. Its shared reference validation can no longer acquire Web Audio/storage dependencies. | Existing audio runtime/map-persistence/shipped-serving scenarios and new exact old/new validator parity for accepted/rejected references, optional version/hash pair, returned keys and error text. Existing host imports can stay stable. No source audio bytes, map reference or playback change. |
+| 3 — shared rules; integrated [PR314](https://github.com/lbeezr/thousand-unit-skirmish/pull/314), after PR1 | `src/gameplay-action-rules.mjs` and `src/base-lifecycle.mjs` → proposed `src/rules/` counterparts; explicit named compatibility entries retain the old API. Update only relative dependencies of the canonical copies. The cohesive action/refund calculations remain portable and independent of UI/hosts. | `scripts/gameplay-action-rules.test.mjs`, `scripts/base-lifecycle.test.mjs`, production/research action tests and `scripts/base-lifecycle-scenario.mjs`. Preserve rejection reason order, epsilon, refund/repair rounding, immutable inputs, payment and cold recovery; preserve existing comparison evidence. |
+| 4 — movement; integrated [PR301](https://github.com/lbeezr/thousand-unit-skirmish/pull/301), after PR1/path coordination | `src/formation-assignment.mjs` → proposed `src/simulation/movement/formation-assignment.mjs`, named old-path forwarding entry. No changes to `unit-path-line`, planner budgets, force combination, command queues or server host imports. Establish the authoritative formation-helper home without moving active path/order implementations. | `scripts/formation-assignment-scenario.mjs`, pathing replay and fortified-site-clearance tests; compare ordered IDs/slot pairing/ties for the same inputs and retain no input mutation. Existing real terrain/paid-construction controls remain meaningful. |
+| 5 — HUD; integrated [PR299](https://github.com/lbeezr/thousand-unit-skirmish/pull/299), after PR1/selection coordination | `src/resource-format.mjs`, `src/population-readout.mjs`, `src/objective-summary.mjs` → proposed `src/client/hud/` counterparts with named forwarding entries. Keep state projection/text separate from DOM layout, authoritative accounting and rendering. `hud-layout`, `main.js`, selection/stance hooks and HTML stay outside this slice. | Their three matching tests, `scripts/selection-context.test.mjs` and relevant contextual HUD regressions. Preserve all labels/formatting, unknown/hidden/enemy values, population totals, notice retention/order and disclosed objective state. Existing `selection-portrait`/`wall-placement` imports may use the shims until their own migration. |
+| 6 — audio; integrated [PR322](https://github.com/lbeezr/thousand-unit-skirmish/pull/322), after PR1; coverage through testing owner | `src/audio-decoded-cache.mjs`, `src/audio-shipped-response.mjs` → proposed `src/client/audio/` counterparts with named forwarding entries. Preserve cache and bounded-response interfaces; `audio.mjs`, loader/profile behavior and all recordings stay stable. | `scripts/audio-decoded-cache.test.mjs`, `scripts/audio-shared-decode.test.mjs`, `scripts/audio-shipped-response.test.mjs`, shipped-loader/lifecycle tests and serving scenario. Exact reader limits/errors/cancellation, shared object identity, LRU accounting/retry and independent bus interruption. Keep the existing 100% reader coverage pointed at the canonical implementation, not the shim; no test renaming. |
 | 7 — map-authoring owner; [PR300](https://github.com/lbeezr/thousand-unit-skirmish/pull/300) | `src/scenario-authoring.mjs`, `src/map-resize.mjs` → canonical `src/authoring/` counterparts with explicit named forwarding entries. Both implementations remain byte-identical to `a93c8175`; normal `main.js` imports stay stable. [Known consumers and retirement conditions](map-authoring.md#authoring-module-paths). No validators, map/default/size changes or editor-loop rewrite. `map-studio-viewport` remains a later slice without a direct viewport contract. | Existing scenario-authoring tests plus exact named-export/binding identity, canonical marker resize/publish/save/reopen, game-menu/served imports, domain negatives and packed HTTP hashes/privacy pass. The normal-sandbox cloud browser cannot start; rendered `map-studio-draft-scenario.mjs` acceptance remains incomplete with the authoring owner. Source/release/review evidence and this capability limitation are recorded in PR300. |
-| 8 — environment/asset-loading owner after PR1–2 and renderer agreement | Extract only `fetchVerifiedRuntimeImage` from `src/environment-art.mjs` into proposed `src/presentation/assets/interactive-runtime-image.mjs`. Pass the existing root/loader dependencies explicitly; keep manifest selection, material registries, resource-state status, `resourceStateAssetsReady`, oak fallback and batch mutation in the old module. | Focused hash/dimension/failure/disposal contract using the actual exported helper; existing resource visual, oak depletion, environment asset and packed release scenarios. Same request paths/cache options, SHA acceptance, texture filters/dimensions/error text and exactly-once failed-texture disposal. No new source assets, default art, quality decision or capture claim. |
+| 8 — assets; integrated [PR327](https://github.com/lbeezr/thousand-unit-skirmish/pull/327), after PR1–2/renderer agreement | Extract only `fetchVerifiedRuntimeImage` from `src/environment-art.mjs` into proposed `src/presentation/assets/interactive-runtime-image.mjs`. Pass the existing root/loader dependencies explicitly; keep manifest selection, material registries, resource-state status, `resourceStateAssetsReady`, oak fallback and batch mutation in the old module. | Focused hash/dimension/failure/disposal contract using the actual exported helper; existing resource visual, oak depletion, environment asset and packed release scenarios. Same request paths/cache options, SHA acceptance, texture filters/dimensions/error text and exactly-once failed-texture disposal. No new source assets, default art, quality decision or capture claim. |
 
 ### Migration checkpoints and retained compatibility
 
-| Slice | Canonical boundary / current consumers | Retirement owner and criteria |
+Plant descriptor organization owner ([PR562](https://github.com/lbeezr/thousand-unit-skirmish/pull/562),
+6 October 2026): the organization lane owns
+the three active descriptors in `src/presentation/assets/plant-packs/`:
+`podvine-low-pack.mjs`, `veilcap-worked-pack.mjs` and `sunbloom-low-pack.mjs`.
+The old paths forward their sole named bindings; `qa-vegetation-browser.mjs`
+continues to consume them. The renderer imports the canonical leaves, and the
+three existing generators write/check those leaves without changing generated
+descriptor text, images or manifests. Earlier plant exports remain untouched.
+`PLANT_ASSETS` remains the scale/pivot registration contract; no registry or
+utility is added. Parent coordination authorizes only three renderer import
+substitutions and additive domain/HTTP/package checks; audio remains separately
+owned. Evidence: generator verification without `--write`, existing regional
+plant scenario extended with actual renderer lifecycle/legacy/identity controls,
+import-boundary negatives and packed GET/HEAD checks. All three generator checks,
+the real plant scenario, 49 forest/import tests, types/docs, source admission and
+packed HTTP pass; 18 selected asset files and three descriptor bodies retain their
+exact bytes. Next: independent exact-head review, terminal CI reconciliation,
+normal merge and containing release/deployment receipts in PR562. This source
+organization does not establish rendered appearance or
+close the vegetation owner's remaining art acceptance. Retire forwarders only
+after their supported callers and served reload compatibility are reconciled.
+
+Consumer descriptions here record their stated extraction/caller checkpoints.
+Current tracked-runtime status after PR404 is zero consumers through the eleven
+retained compatibility surfaces; tool/test/external retirement remains open.
+Use the caller-migration history below and the current snapshot above rather
+than treating an extraction-time server/HUD import as pending runtime work.
+
+| Slice | Canonical boundary / consumers at recorded checkpoint | Retirement owner and criteria |
 | --- | --- | --- |
 | Capture-prerequisite contract, extracted from `53951d6b` | `src/world/capture-prerequisites.mjs` preserves the exact existing `capturePrerequisiteIds` and `findInvalidCapturePrerequisite` statements (48 lines including a separator) with no imports. Map-utils retains its full ten-name API and forwards the same two bindings; main, server and the authoring validator keep their existing imports and use the canonical implementation by default. Legacy `requires`, ordered `requiresAll`, shape/duplicate/self/missing/cycle rejection and first-error order stay unchanged. The event validator remains separate. At this 2026-10-05 checkpoint, map-utils goes from 197 to 150 lines; graph 221 modules / 412 edges becomes 222 / 413, zero cycles. These values measure the responsibility split, not an absolute quality target. | Architecture/world boundary owner retains the named exports. Migrate capture-only consumers only after caller-owner agreement and an inventory of tracked/runtime/tool/test/docs and supported external uses. Remove those exports only after canonical contract coverage, source/served/packed checks and an identified containing release succeed without them; the topology/elevation module remains. Both paths are exact public modules; private host/transport GET/HEAD denial is retained. No export retirement, map/save/protocol change, crowd replay edit or host rewrite occurs here. |
 | Scenario-event dependency contract, extracted from `c3725def` | `src/world/scenario-event-chain.mjs` contains the exact two adjacent functions (71 lines) formerly in `src/map-utils.mjs`: `scenarioEventSourceIds` and `findInvalidScenarioEventChain`. It has no imports and is an unversioned world responsibility. Map-utils retains all ten named exports and forwards the same two bindings. Existing main, server, authoring validator and fortified-crossing imports remain stable; the map-utils scenario exercises the canonical API and old-path identity. Topology, elevation and capture-prerequisite bodies remain in map-utils. At the 2026-10-05 extraction checkpoint against `c3725def`, map-utils goes from 267 to 197 lines; the runtime graph goes from 219 modules / 407 local edges to 220 / 408 with zero cycles. Existing hosts and validator source bytes stay unchanged. These counts track this boundary, not an absolute quality score; no generalized graph framework, map schema or save/protocol change is introduced. | World/scenario boundary owner retains the two public exports in map-utils. Event-only caller migration first inventories tracked runtime/tools/tests/docs and supported external consumers with their owners. Remove these exports only after those callers use the canonical module, canonical contract checks pass, and source plus an identified served/packed release work without them. Map-utils remains a real topology/elevation/capture module. No retirement is scheduled here. Exact canonical and old module paths remain public; private host/transport paths retain GET/HEAD denial. |
@@ -456,10 +535,11 @@ the testing owner's current strategy; this plan does not change that registry.
 The reviewed plan is integrated, with PR1's guard/check milestone recorded in
 PR294; PR298 records the first canonical metadata boundary with stable host
 imports. Candidate 3 establishes the canonical pure-rule boundary and its
-implementation coverage in PR314. Formation and authoring moves remain with their existing
-owners, and caller migration stays a coordinated follow-up.
+implementation coverage in PR314. Formation and authoring source moves are
+integrated through PR301/300; their owners retain acceptance and retirement.
+The caller-migration checkpoints below record the subsequent default bindings.
 
-Step 5's HUD owner moves the three pure text/projection implementations
+At the PR299 HUD checkpoint, Step 5's owner moved the three pure text/projection implementations
 byte-for-byte to `src/client/hud/`, retaining explicit named old-path exports.
 The source guard classifies both paths as client responsibilities; negative
 fixtures reject rules/world/simulation/server consumers and keep the canonical
@@ -468,9 +548,10 @@ admit only the exact six paths. Existing helper tests exercise canonical exports
 and verify compatibility binding identity; contextual consumers still use shims.
 No layout, selection, accounting, labels or authored objective behavior changes.
 
-The HUD integration owner retains shim retirement. Remaining runtime consumers
-are `main.js` (all three), `selection-portrait.mjs` and `wall-placement.mjs`
-(resource format), and `match-mode-controls.mjs` (objective summary). Tool/test
+The HUD integration owner retains shim retirement. At PR299, runtime consumers
+were `main.js` (all three), `selection-portrait.mjs` and `wall-placement.mjs`
+(resource format), and `match-mode-controls.mjs` (objective summary). Those
+runtime callers migrated in PR349/370; no current runtime HUD-shim caller remains. Tool/test
 consumers include contextual HUD, construction/wildlife fixtures, roster and
 shore-fishing checks, Practice/Bannerfall entry checks and the population browser
 runner. Convert these with their owners in later bounded changes. Remove each
@@ -751,6 +832,605 @@ reconciled. Test names, workloads, CI registration policy, parser grammar,
 HTTP access and runtime paths do not change. This tool move does not establish
 rendered-game acceptance or a remote deployment.
 
+
+### Code-quality swarm ownership — 6 October 2026
+
+This is the bounded ownership record for the user's organization/DRY/contract
+request. It extends the existing migration plan; it is not a common PR approval
+queue. Each lane owns its conflicts, proportionate checks, independent exact-head
+review and normal ready merge under standing authorization.
+
+| Lane / scope | Current implementation claim | Shared integration |
+| --- | --- | --- |
+| Module organization / this architecture-audio lane | All six allocated audio source slices are integrated: composition model/player/WAV, composer UI, library store/archive and the complete library UI mount. This source batch is closed; no further audio extraction is allocated. Served, browser, listening and R4 acceptance remain distinct below. | Additive canonical entries in the import inventory and exact public admission, packed HTTP controls and this ownership record. Original library registration retained; no `main.js`, package/CI/type configuration, assets or deployment changes. |
+| Types/contracts lane | `room-launch-options`, `room-pregame`, `room-presence` boundaries. | Owned by that lane; audio does not edit those modules or approve its PRs. |
+| Error-handling lane | `main.js::importEditorMap`, its dedicated regression and additive CI registration; R4 draft lifecycle excluded. | Owned by that lane; audio does not edit that handler or its regression. |
+| DRY-formatting lane | Resource format, population readout and economy-client formatting. | Owned by that lane; audio does not edit those modules. |
+
+Import-inventory/public-admission deltas integrate additively against fresh main;
+preserve each other lane's exact memberships. A concrete overlap requires only
+the affected file/interface decision. R4 remains blocked and excluded; movement,
+asset binding, security/credentials and deployments are outside these audio
+source changes.
+
+### Audio composition organization
+
+At clean base `98fad32d`, `src/audio-composition.mjs` is a dependency-free musical
+arrangement validator and playback-timeline compiler. Its canonical implementation
+is [presentation/audio/composition.mjs](../src/presentation/audio/composition.mjs),
+copied byte-for-byte. The supported root entry explicitly forwards the same
+`validateComposition` and `compileComposition` function values. `audio-assets`
+retains its `validateSharedComposition` alias; it, `audio-composer` and
+`audio-composition-player` consume the canonical implementation directly.
+
+Schema version/limits, normalized object shape, first-error text/order, clip
+sorting, mute/solo selection and timing/gain/fade calculations are unchanged.
+Both entries are exact public modules. The canonical model is presentation:
+rules/world/simulation/AI and server hosts cannot reach it. It is not a shared
+world/gameplay contract or a utility container. The existing map-audio-reference
+world validator and client decode/response leaves stay in their canonical homes.
+
+The registered composer scenario now exercises the canonical model and verifies
+both old-path binding identities; original assertions/names/registrations remain.
+At this dated source checkpoint, the graph grows from 235 modules/465 local
+edges to 236/466 with zero cycles; the canonical file is 108 lines and the old
+entry is three. All 1,454 prior check selections remain, plus canonical syntax.
+These track responsibility/compatibility rather than an absolute size target.
+Composer/player/library, preview/export/cancellation contracts, import-domain
+negatives, unchanged type scopes, allowlist and both packed hosts establish their
+named source contracts. Packed GET/HEAD checks retain exact canonical/root bytes,
+browser import/hash closures and server-private denial. Record clean source/pack
+identity in each PR; a source move does not establish listening/rendered acceptance.
+
+The root entry remains supported until tracked runtime/tool/fixture/documentation
+and external consumers are inventoried, their owners agree migration, canonical
+contracts plus identified packed/served reload checks pass without it, and current
+API documentation is reconciled. No removal follows merely from zero production
+callers. No barrel, duplicate implementation, resource URL or object-lifetime
+change is introduced.
+
+The allocated audio source queue is complete: (1) composition model and its three callers, integrated
+in [PR553](https://github.com/lbeezr/thousand-unit-skirmish/pull/553); (2) the
+existing `createCompositionPlayer` clock/generation/node-disposal implementation
+and three dynamic import literals in `audio.mjs`/composer, preserving its root
+named binding, integrated in
+[PR556](https://github.com/lbeezr/thousand-unit-skirmish/pull/556); (3)
+`renderCompositionWav` and private WAV encoding from composer
+UI into a dedicated audio rendering leaf, preserving its public export and exact
+decode/schedule/Blob/error behavior, integrated in
+[PR558](https://github.com/lbeezr/thousand-unit-skirmish/pull/558); (4) the
+remaining DOM composer and its one lazy library caller into `client/audio`,
+preserving the root two-name API, integrated in
+[PR560](https://github.com/lbeezr/thousand-unit-skirmish/pull/560); (5) the complete
+library store/archive and Studio/Zones callers, integrated in
+[PR564](https://github.com/lbeezr/thousand-unit-skirmish/pull/564); (6) the complete
+library UI mount and Studio's one static import, integrated in
+[PR567](https://github.com/lbeezr/thousand-unit-skirmish/pull/567). Each retained
+its original registration, supported root bindings and independent source review.
+No additional audio directory sweep or utility extraction is allocated.
+
+#### Composition player organization
+
+Against containing merge `10d615de`, the existing `createCompositionPlayer` body
+lives in [presentation/audio/composition-player.mjs](../src/presentation/audio/composition-player.mjs).
+Only its relative composition-model import changes. Its root module forwards
+the sole named factory value; both dynamic imports in `audio.mjs` and the one in
+composer now load that canonical value at their unchanged asynchronous positions.
+No cache, URL, context/destination, storage or UI policy moves into the player.
+
+Generation checks, stop/dispose and pending-load cancellation, the 24 MiB bound,
+atomic offset validation, clock/fade/pan scheduling, node callback/disconnection
+and loop timer order retain their exact bodies. The original registered player
+scenario uses the canonical factory and checks the root namespace/binding while
+retaining every timing/cancellation assertion. Original preview/music/cue/decode/
+synthesis/lifecycle checks protect the actual callers. Import inventory/public
+admission and the existing packed GET/HEAD/negative-path checks integrate only
+the exact new module; all previous registrations, private paths and closures stay.
+The previous model guard follows the actual canonical player dependency. Root
+player retirement follows the inventory/consumer/identified-release criteria
+above, independently from retiring the model API.
+At this dated checkpoint the 87-line player moves behind a three-line entry;
+the graph is 237 modules/467 local edges with zero cycles. All 1,455 previous
+selections remain plus canonical player syntax. These are source ratchets,
+not a numerical file-size or whole-suite acceptance claim.
+
+#### Offline composition WAV rendering
+
+After [PR556](https://github.com/lbeezr/thousand-unit-skirmish/pull/556), the
+contiguous private WAV encoder and `renderCompositionWav` bodies move unchanged
+from composer into [presentation/audio/composition-wav.mjs](../src/presentation/audio/composition-wav.mjs).
+That renderer imports only the canonical composition compiler. Composer retains
+the validator, imports the renderer and forwards its same function binding;
+its complete `mountAudioComposer`/DOM/export-request/download/object-URL lifetime
+and other UI helper bodies remain byte-unchanged.
+
+Offline-context/default sample-rate reads remain call-time operations. Blob
+read/decode ordering and per-source cache, known DOMException messages/causes,
+unexpected error identity, five-minute bound, source/gain/pan/loop/fade schedule,
+PCM channel clipping/rounding/RIFF bytes and returned Blob type retain their
+existing implementation. No loader, recording URL, cache or UI cancellation
+policy is added to the leaf. The registered WAV tests consume it and preserve
+the root composer's two-name namespace plus renderer identity; every prior test
+name/assertion remains. The original composer scenario still exercises the
+supported renderer API through the real UI host.
+
+Exact canonical admission, authority/server negatives and packed root/canonical
+GET/HEAD/invalid-path checks extend the existing guards. Pure musical definitions,
+clock scheduling and offline output now have distinct audio responsibilities,
+without a generic utilities module or another barrel. The composer API remains
+supported under the consumer/inventory/identified-release retirement criteria
+above; only its renderer implementation moved. Listening/rendered acceptance
+is separate from the source/CPU/package milestone.
+At this dated checkpoint composer shrinks from 263 to 190 lines and the audio
+rendering leaf is 76 lines. The graph is 238 modules/469 local edges with zero
+cycles; all 1,456 prior selections remain plus canonical WAV syntax. These are
+responsibility/compatibility measurements, not full-suite or listening results.
+
+#### Composer client UI organization
+
+Against containing merge `3cd321e5`, the remaining DOM implementation lives in
+[client/audio/composer.mjs](../src/client/audio/composer.mjs), whose only named
+export is `mountAudioComposer`. All UI/helper bodies are unchanged; only the
+three relative model/WAV/lazy-player imports adjust to the new home. The root
+`audio-composer.mjs` explicitly forwards its existing two bindings from the
+client UI and presentation WAV leaves. This preserves supported API identity
+without making either canonical responsibility an API barrel.
+
+The one dynamic import in `audio-library-ui.mjs` loads the canonical UI at its
+same asynchronous position. Library stale-tab/connection checks, persistence,
+the `./src/audio-composer.css` URL, preview generations, save callbacks, export
+requests, download/revocation and DOM/player/context disposal retain their bytes.
+Original preview/export/WAV contracts exercise the canonical mount and check
+its sole export plus both legacy binding identities. The browser fixture and
+composer scenario retain the supported root API. No test is renamed.
+
+Import inventory and exact public GET/HEAD admission include the client UI;
+authority/server negatives and packed invalid/private paths retain the existing
+boundary policy. The dated checkpoint is a 189-line client implementation and
+three-line compatibility entry, 239 runtime modules/471 edges/zero cycles, with
+all 1,459 prior selections retained plus canonical syntax. These measurements
+track responsibilities and compatibility, not an absolute root-file limit.
+Retirement follows the inventory/owner/identified-release criteria above.
+
+This completes the bounded composition queue. The next whole-library store/home
+slice below is separately allocated; the error lane's map-import handler is
+outside its scope. The main audio lazy caller stays on its supported root API.
+Game audio host/cache disposal and audio asset metadata remain separate active
+responsibilities. Listening/rendered acceptance remains separately owned.
+
+#### Audio library store client organization
+
+Against containing merge `dd759f62`, the complete 223-line library implementation
+lives in [client/audio/library-store.mjs](../src/client/audio/library-store.mjs).
+Only its schema-validator import changes to `../../audio-assets.mjs`. The root
+entry explicitly forwards the same `createAudioLibraryStore`, `exportAudioPack`
+and `parseAudioPackArchive` function bindings. Store import/export directly reuse
+the archive functions and `savePack` also uses the Blob validator; keeping these
+bodies together preserves the existing responsibility without another validation
+interface or duplicate helper. Pack/composition validators retain their homes.
+
+Studio and Zones change only their static store import literals. Main's
+`getAudioLibraryStore` keeps its lazy root import, cached promise and map-audio
+generation/fallback behavior. The Studio, shipped-audio and Fortified browser
+tools retain their supported root imports. No `main.js` handler is edited.
+
+Database name/version, key paths/indexes, six store methods, atomic writes,
+existing Blob reuse, metadata/provenance and deletion selection retain their
+exact bodies. Archive format/iteration/bytes/MIME/limits, first-error order/text,
+error identity/cause, quota mapping, shared-open retry and late abandoned
+connection closure are unchanged. IndexedDB/IDBKeyRange defaults still resolve
+when the factory is called. No catch, persistence policy or codec change is added.
+
+The original registered library script consumes canonical functions and checks
+both three-name namespaces and all legacy binding identities; its prior
+assertions/name remain. Its empty-read/open-lifetime mock does not establish full
+successful CRUD. Keep the real Studio browser save/reload/edit/backup/import/quota
+acceptance distinct from CPU/package proof. The original zone provenance contract
+protects metadata; assets, catalog/defaults and URLs are unchanged.
+
+Client membership, exact canonical/root public GET/HEAD and invalid/private-path
+controls extend existing guards additively. At this dated checkpoint, the graph
+is 240 modules/472 edges/145 browser/103 server/34 shared/zero cycles; all 1,460
+prior CI entries/order remain plus canonical syntax. These are responsibility
+and compatibility ratchets. Root retirement requires migrating main and the
+tracked browser/tool/external consumers under the inventory/owner/identified-
+release criteria above; it is not part of this store-home slice.
+
+#### Audio library UI client organization
+
+Against containing source `02a2d9b5`, the existing 296-line
+`mountAudioLibrary` implementation lives in
+[client/audio/library-ui.mjs](../src/client/audio/library-ui.mjs). It owns pack
+selection/save/edit rollback, raw-source upload/search/preview, assignment and
+backup controls, and composer tab/resource disposal through the existing injected
+store and shared UI state. These closures remain together; no generic DOM helper,
+service or lifetime-controller interface is introduced. Only its schema and
+composer imports change relative paths. Studio changes one static import literal;
+the supported root entry forwards the same sole mount binding. The existing
+`audio-studio-browser.mjs` tool retains its root consumer and prior assertions.
+
+Before extraction, the real original mount passed ten DOM/store consumer cases
+through the existing JSDOM dependency and a bounded store/audio adapter. The same
+fixture in `scripts/fixtures/audio-library-ui-consumer.mjs` executes from the
+original registered `audio-library.test.mjs`, preserving all earlier store/archive
+assertions. It checks actual click/change listeners, selection and close/reopen,
+failed edit/source/backup feedback and retry, Blob identity, assignment controls,
+confirmation and store-call order, preview cleanup, the 30-second backup revoke,
+and composer lazy-tab guards/save/reopen/disposal. This is CPU consumer evidence;
+successful real-browser IndexedDB CRUD/listening/rendered acceptance remains open.
+
+The complete body retains its errors, callback order, state and existing async
+completion behavior. Document-relative CSS/links, preview URL cleanup, backup
+timing and composer stylesheet/context lifetime are unchanged; no lifecycle fix
+is mixed with the move. Root retirement follows tracked tool/external consumers
+and identified-release reload compatibility under the existing criteria.
+
+Client membership and exact root/canonical public GET/HEAD, suffix/doubleslash/map
+and server-private denial extend the existing guards. The dated graph is 244
+modules/476 edges/145 browser/103 server/34 shared/zero cycles. All 1,466 prior CI
+entries/order remain, plus canonical-module and DOM-fixture syntax; the original
+library execution registration stays unchanged. These are responsibility and
+compatibility ratchets. R4, main, assets, package/CI configuration and behavioral
+redesign are excluded; the root lane's non-audio audit integrates shared inventory
+and documentation deltas serially against fresh main. Internal organization has
+no presentation impact; art backing N/A.
+
+#### Allocated audio source batch closure
+
+The six source slices above are integrated and this allocation is closed. Their
+dated source measurements remain historical checkpoints; compatibility entries
+remain subject to the existing consumer/owner/identified-release retirement
+criteria. Source completion does not claim a green full CPU suite: exact public
+CI failures and the cancelled main run are recorded on
+[PR567](https://github.com/lbeezr/thousand-unit-skirmish/pull/567).
+
+The bounded read-only assessment of the remaining audio roots found seven
+compatibility entries and nine implementations, including the two shipped page
+entrypoints. The 734-line `audio.mjs` owns one Web Audio context, bus/node state,
+pack/music/work generations and their common disposal. Its runtime consumers
+remain `game-entry.mjs`, `main.js` and `audio-zones.mjs`. `audio-assets.mjs` is a
+coherent pack/provenance/reference validator consumed by the shipped loader,
+canonical library store and canonical library UI; its local validation helpers
+retain first-error/normalization order. The 48-line shipped loader already
+composes the world reference validator, pack validator and bounded client reader,
+and owns its verified Blob/LRU cache. Remaining cue policy, event-profile policy,
+recognition protocol, shipped catalog and page entrypoints have existing explicit
+consumers and responsibilities. No additional organization-only extraction is
+justified by this assessment; future audio work needs a concrete runtime outcome
+or lifetime contract, rather than a flat-path or line-count target.
+
+The following acceptance gaps remain separately open:
+
+- Authenticated provider-served revision/digest and reload identity; automatic
+  source inclusion and local packed HTTP checks do not establish that observation.
+- Successful real-browser IndexedDB save/reopen/edit/backup/import/quota behavior;
+  the DOM fixture's store/audio adapters establish CPU consumer contracts only.
+- Creative listening, cue recognition and audible playback acceptance.
+- Rendered Audio Studio/game observations on an identified cloud release.
+- R4's separately owned rendered/interface prerequisites; this audio batch does
+  not change or close that excluded lifecycle.
+
+#### Production and research availability rule homes
+
+In [PR569](https://github.com/lbeezr/thousand-unit-skirmish/pull/569), the quality
+rules owner places the existing `productionAction` implementation in
+`src/rules/production-actions.mjs` and the three existing research functions in
+`src/rules/research-actions.mjs`, beside their shared action-rule dependency.
+Only their two relative dependency specifiers change; function bodies, default
+definitions, DTO keys, declaration order and gameplay policy remain identical.
+No extra helper, registry split or combined action framework is introduced.
+
+The server imports both canonical leaves for disclosed choices, accepted
+training/research and upgrade initialization/recovery. Main changes only its
+research import literal for the existing controls and command validation.
+Both root entries explicitly forward the same four bindings. Worker Food Tools
+and other supported runtime/tool/test imports retain those compatibility paths.
+Canonical action contracts exercise the production bodies; legacy namespace
+identity, both-seat affordability/reason order, immutable inputs and existing
+production/research/HUD controls remain acceptance evidence.
+
+Exact public canonical paths join the two already public root paths; rules
+membership and backward-dependency negatives extend existing import guards.
+Private lifecycle/transport admission stays denied. Clean packed byte/hash,
+GET/HEAD and malformed-path checks, independent exact-head review and an
+identified containing automatic staging deployment remain owner-run delivery
+checks. These checks do not establish rendered gameplay. Visual backing: N/A,
+source organization with unchanged controls and policy. Next: inventory retained
+root consumers through their owners before any separate retirement proposal;
+zero tracked imports alone does not retire supported paths. Preserve the
+existing identified-release and compatibility retirement conditions above.
+
+### Remaining organization queue — 6 October 2026
+
+These are scoped proposals for the remaining stages, **not runtime edit
+allocations**. Architecture owns this plan; the parent coordinates the exact
+host/owner overlap before an implementation starts. Testing strategy retains
+`AGENTS.md`, testing-strategy documents, package/CI/workflow/discovery changes.
+Movement/Patrol, construction, Worker action/animation, match ending, HUD and
+active asset binding remain with their current owners. PR529 is a rejected
+movement candidate, not an organization dependency or code to incorporate.
+No runtime path or behavior changes are part of this documentation refresh.
+
+The original eight PRs above supplied the first safe boundaries. The next small
+PRs should be selected from this ordered queue when their named input is ready.
+Each row owns a distinct implementation body; shared manifest/guard and host
+call-site deltas integrate serially. A proposed path is explicitly a destination
+for an existing responsibility, not an already available framework/API.
+
+| Next scoped PR / owner | Exact candidate files and responsibility | Dependency, focused checks and semantic no-change criterion |
+| --- | --- | --- |
+| R1 — agreed AI observation source slice, architecture with PvE owner | `src/pve-opponent.mjs`: `toOpponentObservation`, `decodeVisibility`, normalization and visible resource/forest/objective helpers → `src/simulation/ai/opponent-observation.mjs`. Retain the existing observation/schema exports as named forwarding bindings; both actual policy/socket callers use the canonical projection. Leave seeded decisions, tactical retry state and `attachDeterministicOpponent` in their current owner. | First agree the exact export/helper set and preserve the browser `atob`/existing Node fallback behavior. Run `scripts/pve-opponent-scenario.mjs`, `scripts/pve-wildlife-disclosure.test.mjs` and the affected recorded PvE fixture consumers. Same team-visible DTO keys, sorting, own/enemy exceptions, errors and same-input policy traces; no hidden state, socket, timer or new observation version. Independent of R2–R6 after owner agreement. |
+| R2 — agreed outbound transport source slice, architecture/transport owner | `server.mjs`: `canQueuePeerFrame`, `sendPreparedPeerFrame`, `recordPeerWrite` and the existing state/waypoint coalescing/drain branch in `createPeer` → `src/server/transport/peer-output.mjs`. Explicit peer/socket/frame, existing queue cap and two aggregate metric callbacks; no sessions, gameplay context or inbound command parser. Current `src/networking/websocket-frame.mjs` and deflate API stay stable. | The narrow factory/counter interface was reviewed before edits; no queue/access/negotiation policy changes. Run `scripts/websocket-frame.test.mjs`, `scripts/waypoint-backpressure.test.mjs`, `scripts/map-change-backpressure-scenario.mjs`, `scripts/server-hardening-scenario.mjs` and `scripts/resume-session-scenario.mjs`. Identical bytes, return values, counter increments, termination threshold, retained latest state and drain order. Private module never gets public HTTP admission. |
+| R3 — client welcome/session identity, client/network owner | Only the session token/server-instance/match-id storage and reset-vs-restore decision branches within `src/main.js::connectSocket` → `src/client/networking/welcome-session.mjs`. The independently reviewed factory takes a deferred storage getter and existing resolved room keys. Its separate resume-token read, instance/match identity and seat-token write operations retain their original positions around map rebuilding and return the existing identity flags. Keep map rebuilding, seat selection, lobby, audio, render state and WebSocket callbacks in the host. | Preserve the reviewed storage failure semantics, callback order and stale-connection guard described below. Run `scripts/browser-resume-client.test.mjs`, `scripts/renderer-browser-resume-scenario.test.mjs` and `scripts/resume-session-scenario.mjs`; rendered `scripts/renderer-browser-resume-scenario.mjs` on an identified cloud release remains separate. Same keys/tokens, fresh/reset/restored decisions and original storage catches; no new reconnect policy or protocol. Independent of R2's Node output implementation. |
+| R4 — draft timer/lifetime, authoring owner | `src/main.js`: `persistMapStudioDraft`, `scheduleMapStudioDraftSave` and their actual close/cancel calls → proposed `src/authoring/map-studio-draft-controller.mjs`, composing the existing store/form/history APIs. Keep ordered subpanel capture, import/publish mutation and canvas rendering in the host; own one dirty/timer/flush lifecycle rather than exporting setters for every editor global. | Dependent on the existing rendered draft/recovery observation and an agreed capture/status/clock/timer interface; not ready for an extraction through a broad editor bag. `scripts/resource-brush-controls.test.mjs`, `scripts/fixtures/map-studio-draft-fixture.mjs` and `scripts/map-studio-draft-scenario.mjs` retain real edit/save/close/reopen/import/export controls. Same 160 ms debounce, force-close flush, write order, failure text and v1 bytes; no publish rejection changes owned by the error lane. |
+| R5 — renderer ground resource lifetime, renderer/assets owner | Parent-reconciled ownership and an independently reviewed two-callback factory establish `src/presentation/rendering/ground-surfaces.mjs` for `groundBuffer`, `addGroundQuad`, `finishGroundGeometry` and `createGroundSurfaces`. The environment host retains base selection, atlas/texture cache and URLs; its one-argument public API uses the canonical builder. Client map teardown retains geometry/material/owned-texture disposal. | The source boundary and acceptance contract are recorded below. Preserve vertex/UV/index order, material/shared-texture/clone identity, render/query/time order and water subscription cleanup. Run the existing terrain/water/atmosphere, cliff/shade and art-adoption checks plus parity, imports/types/admission/package. Identified cloud ground/water appearance and disposal remain separate acceptance; no art-path/default changes. |
+| R6 — room-index persistence, server/orchestration owner | The parent reconciled ownership; the independently reviewed factory in `src/server/persistence/room-index-store.mjs` owns the former `persistRoomIndex` body and index read/normalization portion of `loadRooms`. It receives the two host-resolved paths and a document-capture callback using the existing launch-option contract. Worker startup, expiry, routing, access/origin decisions and root path/environment resolution remain in `room-supervisor.mjs`. | The implementation and acceptance contract are recorded below. Serialize host/guard integration and preserve other owners' additive domain entries. Run the existing supervisor, expiry, PvE launch and pregame/recovery scenarios plus queue/error/path, import and packaged private HTTP checks. Same index format/order/defaults, temporary-file/rename behavior, failure recovery and room launch identity; no permission/access or storage-location changes. |
+
+A shared public positional-row codec is a later contract proposal, not a seventh
+forced move. `server.mjs::snapshotUnits` (row slots 0–17), `src/main.js::applyState`,
+`src/pve-opponent.mjs::normalizeUnit`, `src/wildlife-client-state.mjs` and Worker
+receipts have different authority/disclosure responsibilities. Agree an actual
+common serializer/reader consumer first; keep fog filtering, current tick checks,
+transient work grants and visual interpolation outside `src/networking/protocol/`.
+Preserve sparse optional slots, generations, rounding and reason ordering with
+`scripts/snapshot-row-allocation.test.mjs`, its preserved oracle fixture, network
+snapshot and Worker contracts. Do not move transient authoritative journals into
+protocol because they are browser-reachable. Live simulation/domain moves remain
+later owner-run vertical slices; the active movement/construction investigations
+are not path-reorganization opportunities.
+
+For **every runtime row**, retain all prior assertions/registrations and migrate
+only its affected source-slice fixture to the actual canonical export. Inspect
+`node scripts/ci.mjs --list`, run the existing domain checks plus import/type
+checks, and require `scripts/client-asset-allowlist-scenario.mjs` for all five
+shipped browser entries. Update exact public module entries in
+`src/server/client-asset-paths.mjs` only where needed. The existing
+`scripts/railway-release-scenario.mjs` must prove canonical bytes/manifest hashes,
+public GET/HEAD behavior and authenticated private GET/HEAD **404** at both Node
+hosts and compatibility paths. A source file being packaged does not authorize
+serving it. Preserve root entrypoints, static admission and current access policy.
+Review the exact integrated head, package from clean source, and record source
+SHA, release digest, provider source and served identity separately. Blocked cloud
+browser/public access remains a named acceptance gap; no Mac, proxy bypass,
+security changes or paid services are part of this plan.
+
+Tool/test organization continues under the [existing purpose-based stage](#tests-fixtures-scenarios-and-performance-tools),
+not a duplicate testing roadmap. At the current pin, `scripts/` has 909 tracked
+files (875 flat), 332 `*.test.mjs` files and 238 filenames containing `scenario`;
+these are file counts, not CI selection counts. Literal references to `src/main.js`
+and `server.mjs` occur in 97 and 203 JS/MJS script files, including launches as
+well as source-slice fixtures. Keep actual assertions/fixed seeds in domain
+fixtures (`scripts/fixtures/map-studio-draft-fixture.mjs`, preserved snapshot/PvE
+fixtures); telemetry belongs to evidence. First prospective tooling scope is
+`scripts/checkpoint-performance-scenario.mjs` → `scripts/performance/` with its
+current CLI retained, only after the workload/command owner agrees root resolution
+and discovery. Do not relabel correctness scenarios or rename the 332 tests as a
+folder metric. Release tools already moved; broader scenario/browser/authoring/
+asset families follow one real tool interface at a time. Every compatibility
+entry keeps its existing named API until [retirement conditions](#stages-ownership-and-stable-entrypoints)
+are met; zero tracked runtime imports alone is insufficient.
+
+The parent relayed PvE agreement for **R1** against main `5d304723`, including
+no competing projector edit. The canonical module contains the exact 14 projection
+functions, schema v1 constant and three existing portable dependencies. The two
+legacy named bindings resolve to that implementation; the nine remaining policy/
+socket helper bodies and both actual internal projection calls stay unchanged.
+The shared two-line team predicate intentionally remains private in each module,
+as agreed; no general helper export or all-domain utility is introduced.
+
+At this source checkpoint, the canonical module is 344 physical lines and
+`pve-opponent.mjs` is 633 (335 fewer); graph **231 modules / 455 edges / 141
+browser / 101 server / 34 shared / zero cycles**. The new module and old policy
+entry remain HTTP-private under the unchanged exact static allowlist. Its
+portable atob/Node fallback is preserved, while no shipped browser entry acquires
+it. Source checks cover both-seat shape/privacy, malformed-mask/error order,
+immutable input, legacy identity, same-history decisions and native/replay
+consumers. Clean package/private GET/HEAD, exact-head independent review and
+identified delivery remain the implementation owner's checks; source counts do
+not establish rendered gameplay. Later R3/R5/R6 agreements are recorded below;
+R4 retains its named owner interface and rendered-observation dependency.
+No authoritative snapshot, movement, construction, policy, scheduling, art or
+security/access change is part of R1.
+
+The parent reconciled **R2** ownership to the existing source/transport workstream;
+there is no competing output-queue worker. Its reviewed interface is
+`createPeerOutput(maxQueuedBytes, onQueueLimitDisconnect, onQueuedBytes)` in the
+[private peer-output module](../src/server/transport/peer-output.mjs). The factory
+captures only the unchanged host cap and two aggregate metric callbacks. Each
+operation receives its peer/frame explicitly; factory creation performs no queue
+reads, writes or callbacks. The host retains both aggregate counters, peer/session
+creation, control framing, JSON/compression preparation, map/reset clearing,
+inbound parsing, and release/access policy. No broad host context or new protocol
+entrypoint is introduced.
+
+The disconnect callback runs at both original limit sites before `peer.terminate()`.
+The peak callback occupies the second original post-write `writableLength` read,
+after the per-peer peak update; the third read still checks the unchanged strict
+overflow threshold. Prepared bytes, pre-write accounting and exception/return
+order remain unchanged. Drain clears both saved buffers, dispatches the latest
+state through the peer's existing method, then writes the latest waypoint counts
+even if the state re-enters backpressure. The old seven waypoint/map-change
+contracts exercise the real factory and actual host adapter; additional boundary
+cases cover exact-cap admission, metric/read order, overflow, write exceptions
+and closed-peer drain. No test rename or CI/type configuration change is needed.
+
+At this R2 checkpoint against `1509805c`, the host is 9,535 physical lines
+(51 fewer than 9,586); the queue module is 78. The runtime graph is **232
+modules / 457 local edges / 141 browser / 102 server / 34 shared / zero cycles**.
+All 1,441 prior CI selections are retained; the only added entry is the
+automatically discovered canonical syntax check. These counts describe the
+transferred responsibility and dependency ratchet, not absolute size targets.
+
+The new module is a Node-only server responsibility. Existing domain-driven packed
+checks require its presence and private authenticated GET/HEAD denial, while the
+client admission manifest is unchanged. Original native backpressure, hardening
+and session-resume scenarios remain the delivery checks; this source split does
+not restart the archived client-resume task or claim rendered acceptance. Art
+backing is N/A for this behavior-preserving internal boundary.
+
+The parent allocated **R3** against main `a71fcb46` after confirming no active
+client-session implementation overlap. Independent source review approved
+`createWelcomeSession({ getStorage, sessionKey, instanceKey, matchKey })` before
+implementation. It has three operations: `readResumeToken`,
+`recordWelcomeIdentity` and `recordWelcomeSeat`. Import and construction never
+read browser storage; each original storage expression separately evaluates the
+getter. Instance and match operations keep separate catches. A write failure
+retains a change flag already computed from a successful read. Token and last-room
+writes share one catch, so the first failure skips the second and a last-room
+failure retains the preceding token write. Empty string IDs, token truthiness,
+pending-seat retention/deletion, the fixed last-room key and truthy versus strict
+checkpoint recovery decisions remain unchanged.
+
+The host reads the resume token before socket construction, records identity
+before audio/map rebuilding, then records the seat token after rebuilding.
+Synchronous audio/map exceptions therefore keep the identity writes and skip
+seat writes and later callbacks. Stale message/close guards, map validation,
+seat/camera, confirmation, lobby, audio/render/recovery and reconnect callbacks
+remain in `main.js`; the separate HTTP preflight in `connect()` is byte-identical.
+The four extracted-socket fixture consumers bind the real canonical factory.
+The rematch fixture also binds its already-required `clearOwnedBuildingFog`
+production helper; every prior test body and assertion is retained. That binding
+exposes two pre-existing harvested-carcass selection assertion failures, identical
+on the base with the same binding. They remain unresolved wildlife contract
+work, outside the session migration; no assertion is weakened or removed.
+
+Against this base, 1,767 actual old/new socket controls match storage/callback
+traces, getter counts, partial failures, room/protocol values, recovery decisions
+and stale-message behavior. The canonical leaf is 44 physical lines; the host
+is 10,694 (18 fewer than 10,712). The graph is **233 modules / 458 local edges /
+142 browser / 102 server / 34 shared / zero cycles**. All 1,444 prior CI entries
+remain; the only new selection is auto-discovered module syntax. These are
+responsibility/dependency ratchets, not absolute quality or size thresholds.
+
+Only the exact canonical browser file gains public admission. Packed checks
+require canonical bytes, every browser entry's full import/hash closure, public
+GET/HEAD and folder/unknown/suffix/double-slash denial at both hosts; every
+server-private canonical and compatibility path retains authenticated GET/HEAD
+404. No forwarding entry is invented for a formerly inline body: `main.js`
+remains the composition entry and all eleven existing compatibility APIs remain.
+Native resume proves the existing server/protocol contract; adapter CPU tests
+and packed HTTP checks do not establish cloud rendered or public-served
+acceptance. The source owner retains R3 evidence and that separate cloud gap;
+public-served capture remains with its existing owner. Art backing is N/A.
+
+The wildlife owner subsequently corrected the two stale carcass fixtures in
+[PR543](https://github.com/lbeezr/thousand-unit-skirmish/pull/543). R6 starts from
+that merged source; it does not duplicate those fixture or gameplay edits.
+
+### R6 room-index persistence boundary
+
+Against clean main `d9e616af`, the parent reconciled the absence of a competing
+room-index/orchestration implementation. Independent source review approved
+`createRoomIndexStore({ dataDirectory, indexPath, captureDocument })` before
+edits. The [41-line private module](../src/server/persistence/room-index-store.mjs)
+does no construction-time I/O and interprets no environment or module-relative
+paths. The supervisor alone resolves both paths and captures
+`roomIndexDocument([...rooms.values()])` when the queued operation executes.
+
+`persist()` and the host delegate return the queued operation promise directly.
+Each write recovers a preceding rejection, captures the current document,
+creates the existing data directory, serializes compact JSON, writes the same
+`rooms.json.PID.tmp` with the existing `mode: 0o600`, and renames it. The current
+failure propagates unchanged; no failure cleanup, permission change, new retry,
+debounce or storage policy is introduced. `read()` preserves the original
+missing/invalid/valid result: ENOENT is missing; other read, parse or normalization
+failures are invalid; valid v1/v2/v3 data uses the existing normalized room array
+without sorting or waiting for the write queue.
+
+The host retains directory-recovery scans, `Date.now`, sorting, expiry/deletion,
+warnings, room capacity, worker lifecycle, HTTP/upgrade routing and access/origin
+decisions. Its private `persistRoomIndex` composition function remains at every
+existing call site. The root supervisor CLI remains the public process entry;
+no compatibility export is invented for a formerly inline private body.
+
+Source comparison restores every other supervisor byte exactly and passes 229
+old/new queue/error/path/read controls. Existing launch-option tests now exercise
+the real filesystem-backed factory; prior cases and registrations remain.
+The focused persistence/import tests pass 73/73, both checked type boundaries
+and 58 negative type cases pass, and native supervisor/recovery, expiry, PvE
+launch/rematch and 16 pregame controls pass. Neither the new private module nor
+the supervisor is claimed to enter the existing checked-JavaScript scope.
+
+The graph is **234 modules / 460 local edges / 142 browser / 103 server / 34
+shared / zero cycles**; the host is 753 physical lines (18 fewer). At the initial
+`d9e616af` checkpoint, all 1,445 prior CI selections remain (1,446 with this
+module). After integrating PR544's independent observer correction onto
+`8d5afd07`, all 1,447 base selections remain (1,448 with this module). Only
+canonical module syntax is added by R6; PR544's registrations are preserved.
+These dated counts are responsibility ratchets, not size or quality thresholds.
+The guard adds only the exact Node-only and server-domain memberships; it
+preserves other owners' additive classifications, including PR541's movement
+entry when integrated. Public admission remains unchanged. Clean packaging and
+both packed hosts must retain canonical bytes, browser import/manifest hashes
+and authenticated private GET/HEAD 404 before integration acceptance. Source,
+clean release digest, actual merged tree and provider deployment source are
+recorded separately in the implementation PR/evidence. They do not close the
+existing public-served/rendered cloud gap. Art backing is N/A.
+
+### R5 ground-surface construction and resource boundary
+
+Against clean main `a8dad6ed`, the parent reconciled no competing writer of the
+four ground functions. Independent source review approved
+`createGroundSurfaceBuilder({ groundBaseMaterial, groundTexture })` before edits.
+The [canonical presentation module](../src/presentation/rendering/ground-surfaces.mjs)
+captures those two existing host functions; construction performs no policy,
+query, preference or time reads and allocates no geometry/material/texture.
+Its returned one-argument operation contains the existing surface body and
+three private geometry helpers, with unchanged statement/expression order.
+
+The environment host keeps its `createGroundSurfaces(definition)` function
+declaration and every other public export. Its single builder receives the
+actual base selector and texture function. Painted-atlas readiness, selection,
+shared cache, sampling/fallback texture URLs and other resource families remain
+host-owned. No renderer context, alternate asset path or new resource policy is
+introduced. Base selection remains inside each operation before the existing
+query reads; texture lookups retain every original argument and call position.
+
+Blend clones and masks retain `ownedGroundTextures`. Water retains its initial
+reduced-motion read, same change callback, material-dispose listener removal and
+lazy performance time callback. The byte-unchanged client `clearMapObjects`
+traversal owns geometry/material and tagged-texture disposal; scene/fish,
+construction, settlement, vegetation and client lifecycle remain in their
+existing owners. Root texture/cache and art defaults are unchanged.
+
+Thirty actual old/new cases pass 337 controls across flat/raised, paint/forest,
+water/mist/cliff, atlas/fallback, reduced-motion and changing-query fixtures.
+Attribute/index bytes, bounds, material/shader/resource roles, query/texture/time
+traces and the actual unchanged client teardown match. Reconstruction preserves
+every environment-host byte outside the allocated imports/body/constant changes.
+
+The asset-adoption scree probe follows the actual canonical cliff body, verifies
+host composition and graph reachability, and retains both rejection controls;
+painted-atlas/default probes remain on the host. Existing paths, test names,
+assertions and CI registrations remain. Focused ground/water/cliff/shade,
+asset-adoption and import checks pass 77/77; 12 adjacent construction/settlement/
+sampling/atlas contracts pass. Current terrain blend, water geometry and
+atmosphere scenarios, both checked type boundaries and 58 negative type cases
+pass. The unchanged type configurations do not claim coverage of the new leaf
+or full environment host.
+
+The canonical file is 148 physical lines; the environment host is 1,113 (130
+fewer than 1,243). The graph is **235 modules / 465 local edges / 143 browser /
+103 server / 34 shared / zero cycles**. All 1,448 prior CI selections remain;
+only canonical module syntax is auto-discovered. These are dated responsibility
+ratchets rather than absolute file-size or quality thresholds. Exact public
+admission is added only for the canonical file; folder/unknown/suffix/double-slash
+denial, full browser closures/hashes and all server-private GET/HEAD 404 checks
+remain at both packed hosts. No compatibility shim is invented for formerly
+private helpers; the existing environment API remains supported.
+
+Independent exact-head review, clean reviewed and actual merged packing/digests,
+and automatic staging source are recorded separately in the implementation PR
+and evidence. Actual rendered ground/water appearance and disposal acceptance
+remain open with the existing cloud capture workstream. CPU geometry/material
+and teardown parity, source/asset/package checks or provider source SUCCESS do
+not establish those pixels. This internal no-change extraction introduces no
+new art treatment; preserve the existing approved ground/water defaults.
+
+R4 remains dependent on an identified rendered draft/recovery observation and
+the agreed authoring capture/status/clock/timer interface; R5/R6 do not waive
+either dependency or allocate that host's draft lifecycle.
+
 ### Next responsibility checkpoints
 
 At main `0e46e736` (after the reviewed PR378 release tooling and PR380 packed
@@ -849,8 +1529,104 @@ and all unrelated host bytes; it does not incorporate an error-handling change.
 | Map Studio form snapshot controller [PR406](https://github.com/lbeezr/thousand-unit-skirmish/pull/406): `src/authoring/map-studio-form-state.mjs` with the two real draft callers in `src/main.js` | First small implementation of this row. Explicit `createMapStudioFormState({ root, document }) → { capture, restore }` owns only live dialog values; no host-state catch-all, storage, timer, rendering or simulation dependencies. The architecture/authoring owner retains the controller and source/browser acceptance. | Preserve old function bodies apart from closure identifiers/indentation, all draft JSON/version/storage/gesture/import/export/publish behavior and every prior brush case. Fixture uses production initialization; focused form/draft cases, import/privacy guard and exact served/packed bytes establish the source milestone. No new shim and all eleven existing surfaces retained. Normal-sandbox rendered draft acceptance remains incomplete. |
 | Versioned Map Studio draft storage/preflight [PR412](https://github.com/lbeezr/thousand-unit-skirmish/pull/412): `src/authoring/map-studio-draft-store.mjs` and real `main.js` callers | Explicit deferred storage getter, key identity inputs and cached recovery references. Preserve version 1 and old rejection/error ordering; no new file budget, migration, storage service or server checkpoint dependency. Architecture/authoring retains source and rendered recovery ownership. | Current registered brush/form cases plus malformed/old/foreign drafts, interruption/cancel/restore reread, storage failures, real portable import/export parity and native saved-map restart. Preserve every old host byte outside the bounded extraction/calls, all eleven compatibility surfaces and exact public/private packed HTTP policy. |
 | Scenario history coordination [PR415](https://github.com/lbeezr/thousand-unit-skirmish/pull/415), then the editable event-graph queries below: existing `src/authoring/scenario-authoring.mjs` with real main callers | Architecture/authoring owns the applying flag/order and the draft's capture-root/cycle questions. DOM/state assignments remain host callbacks; history, mutation, storage/debounce and publication stay outside the pure queries. New exports are canonical-only; the legacy namespace retains its two original bindings. | Preserve history gating/ordering and query roots, caller cache/visiting identity, partial/cyclic drafts, source eligibility and capturing-team reconciliation. Actual-host contract cases pass before extraction; real template controls and source/packed checks follow. No admission, alias retirement, registry or movement/Patrol body changes. |
-| Remaining Map Studio capture/debounce/recovery presentation and publish seam in `src/main.js`; existing `map-studio-draft-scenario.mjs` consumer | Architecture/authoring retains the concrete lifecycle/publish contract and rendered recovery evidence. Use current form, store and history APIs; preserve ordered subpanel callbacks. Keep checkpoint parsing/XL file/route budgets with their owner, crowd/focused Attack/selected-route movement with their owners and match-ending actions with theirs. Avoid a broad editor context or unused formatter extraction. | Next evidence: real draft edit/save/reopen/publish on an identified containing cloud release when normal-sandbox capability is available. Source/CPU results do not close that recorded startup gap. Further source work needs an independently useful responsibility and real caller contract; current modal behavior and product decisions are not silently changed to manufacture another slice. |
+| Remaining Map Studio capture/debounce/recovery presentation and publish seam in `src/main.js`; existing `map-studio-draft-scenario.mjs` consumer | Architecture/authoring retains the lifecycle/publish contract and rendered recovery evidence. The terrain-cell packing slice below selects the existing capture/export/brush representation boundary with array inputs; ordered subpanel callbacks, form/store/history composition and modal behavior remain host-owned. Keep checkpoint/XL budgets, movement/Patrol and match-ending actions with their owners. | Preserve exact packed cells, rectangle order, defaults and elevation-limit/error ownership through actual draft/export/recovery consumers. Real draft edit/save/reopen/publish on an identified cloud release remains separate at the existing capability gap. Further source work needs a useful responsibility and real caller contract; avoid a broad editor context or unused formatter extraction. |
 | Root tool commands and test/fixture homes: current `package.json`, workflows and `docs/testing.md` consumers | Testing-strategy/command owners own registration migration, discovery and supported commands. Authoring/assets/scenario/performance owners first select an actual workload/API boundary from the purpose-based stage above. | Preserve every existing case, fixed input/seed, coverage floor, command and release consumer; root entries retire only after external/fixture/identified-release obligations clear. Those registries and broad tool/test moves are outside this lane's current write scope. |
+
+### Authoritative map validator contract preparation — 6 October 2026
+
+The next source responsibility after PR524 is the actual 313-line
+`validateMapDefinition(definition, filename)` at main `7628e8f8`. Architecture
+owns this extraction. The parent relayed PvE/replay agreement on its exact
+contract and allocated the narrow default host binding; movement selection,
+construction, Patrol, activation, catalog and restore functions remain outside
+the write scope. This continues the validation queue above, without another
+roadmap or a common authoring/authority validator.
+
+The private canonical [map definition validator](../src/server/map-definition-validator.mjs)
+exports only `createMapDefinitionValidator`. Its eight explicit inputs are the
+seven existing scalar host policies and the existing research lookup callback:
+
+```js
+import { createMapDefinitionValidator } from './src/server/map-definition-validator.mjs';
+
+const authoritativeMapValidator = createMapDefinitionValidator({
+  maxUnits: MAX_UNITS, maxMapObstacles: MAX_MAP_OBSTACLES,
+  maxResourceNodes: MAX_RESOURCE_NODES, maxObjectiveFoodReward: MAX_OBJECTIVE_FOOD_REWARD,
+  maxMapScenarioEvents: MAX_MAP_SCENARIO_EVENTS, maxScenarioEventRepeats: MAX_SCENARIO_EVENT_REPEATS,
+  minScenarioEventRepeatSeconds: MIN_SCENARIO_EVENT_REPEAT_SECONDS, researchRulesFor,
+});
+function validateMapDefinition(definition, filename) {
+  return authoritativeMapValidator(definition, filename);
+}
+```
+
+Construction follows existing scalar/`RESEARCH_RULES` initialization and precedes
+map catalog loading. Pass the actual hoisted `researchRulesFor` function, never
+call it or copy its registry at construction. Its sole validator call remains
+the same short-circuit `technologyReward` check. There is no new input guard,
+fallback policy, global host context, catalog, filesystem, mode, storage, timer,
+Node, renderer, or running match dependency in the canonical module.
+
+The 17 direct imported bindings come from these 11 existing leaves:
+
+| Existing leaf | Actual validator bindings |
+| --- | --- |
+| `economy-profile.mjs` | `resolveEconomyProfileId`, `economyResources` |
+| `world/map-audio-reference.mjs` | `validateMapAudioReference` |
+| `regions.mjs` | `validateMapRegion` |
+| `terrain-materials.mjs` | `TERRAIN_MATERIALS` |
+| `gameplay-definitions.mjs` | `UNIT_DEFINITIONS` |
+| `map-utils.mjs` | `buildElevationGrid`, `findUnreachableCaptureZone`, `findUnreachableResourceNode`, `validateElevationPatches` |
+| `world/capture-prerequisites.mjs` | `findInvalidCapturePrerequisite` |
+| `world/scenario-event-chain.mjs` | `findInvalidScenarioEventChain` |
+| `shore-fishing.mjs` | `findInvalidResourceVariant` |
+| `scenario-regions.mjs` | `validCompletionTrigger`, `validRegionEntryTrigger`, `validateScenarioRegions` |
+| `wildlife-state.mjs` | `validWildlifeNodeDefinition` |
+
+Preserve the entire ordered body, including unprefixed helper errors, filename
+diagnostics, unknown fields, and the two in-place defaults at their existing
+positions before some later rejections. Return a new shallow object, retaining
+nested identities; normalize `terrainSeed` only in the return; retain absent
+`regions` and the existing null/absent array defaults. The 16–256 bound, 2,000
+units, 4,096 obstacles/paint patches, 128 resources, 32 triggers/events, 20 repeats,
+five-second repeat minimum and 10,000 reward cap remain exact. Ordinary catalog
+eligibility and 320 admission stay separate and unchanged.
+
+The retained named host entry is consumed by shipped-map startup, saved-map
+startup, custom-map publication, and the checkpoint envelope (before mode and
+checksum). Both existing replay adapters copy the whole server, rewrite relative
+single-quoted imports to absolute file URLs, and call that same named entry for
+preparation/recovery. Their production bodies and adapter source remain intact;
+no replay or PvE injection is added. The XL boundary and grid-cost audits now
+read/hash the actual private validator for the dimension literal, while asserting
+its host binding and retaining the checkpoint/preflight assertions and all quotas.
+
+Before extraction, additive tests in the registered
+[checkpoint validator contract](../scripts/checkpoint-validator-contract.test.mjs)
+run the actual old function, actual imports, host scalar declarations and research
+registry. After extraction the same adapter evaluates the production wrapper,
+factory binding and actual canonical import. It supplies no substitute policy.
+Existing canonical/effective checkpoint, restore, first-error, live-state and XL
+controls remain unchanged. The private server-domain entry receives no public
+path; the packed-release domain loop checks its physical inclusion and GET/HEAD
+404. Source parity, focused/native consumers, import/type/docs checks, clean
+release identity, independent review and identified staging deployment are
+separate milestones. Ordinary rendered authoring/recovery acceptance remains
+owned at the existing cloud capability gap; the denied public route is unretried.
+
+At this containing base, extraction removes 303 net host lines and creates a
+335-line domain module rather than introducing a line-count quality threshold.
+The graph becomes 228 modules/446 local edges, 141 browser/98 server/34 shared
+modules with zero cycles; the 11 new leaf edges and one composition edge are
+explicit authority dependencies. All 11 compatibility surfaces remain. The
+1,428 existing CI plan entries are identical, with only two automatically
+discovered syntax entries added (private module and test fixture); no package,
+CI registration, testing-strategy, AGENTS, schema, art or static admission changes.
+Actual old/new body-byte parity and 1,805 input/output/error/identity/lookup
+observations pass, including all 32 shipped maps. Focused contract/domain checks,
+native custom-map restart, both strict type boundaries and packed private HTTP
+checks pass. These scoped checks do not claim a complete hosted suite or an
+identified served/rendered match.
 
 ### Checkpoint validator contract preparation — 5 October 2026
 
@@ -1127,6 +1903,141 @@ dependencies become 78 and server's 76; all existing imported names remain.
 Further host extraction still needs a useful interface and concrete write scope;
 this allocation does not authorize construction/Patrol or a broad host refactor.
 
+#### Saved scenario-state checkpoint validation — 6 October 2026
+
+After PR526, the next documented validation responsibility is the 91-line
+ordered block in `validateMatchCheckpoint` from the capture-state table through
+victory-hold state. At containing main `55b83219`, including the disjoint PR527
+construction witness, it needs only the existing effective map, saved state and
+`MAX_UNITS`. Architecture owns this narrow checkpoint hunk. Live capture/event
+evaluation, match result/clock validation, unit/route/forest/building checks,
+movement selection, construction and Patrol functions remain in their hosts
+with their current owners.
+
+The private [scenario-state validator](../src/server/checkpoint-scenario-state.mjs)
+exports `validateCheckpointScenarioState(definition, state, { maxUnits })`.
+Its real default consumer is the retained `validateMatchCheckpoint` entry:
+
+```js
+import { validateCheckpointScenarioState } from './src/server/checkpoint-scenario-state.mjs';
+
+// After nextBuildingId checks, before result/clock and exploration checks:
+validateCheckpointScenarioState(definition, state, { maxUnits: MAX_UNITS });
+```
+
+`definition` remains the effective map returned by the checkpoint envelope;
+passing the canonical map would change Skirmish hold/zone validation. This is
+one existing scalar policy (2,000), not a host-context object or a new limit.
+The only direct imports are `validCompletionTrigger` from `scenario-regions.mjs`
+and `scenarioEventSourceIds` from `world/scenario-event-chain.mjs`. The module
+keeps the exact assertion helper and numeric predicates locally; their existing
+host definitions and other domain consumers remain intact. It creates the same
+temporary ID sets, returns `undefined`, and neither clones nor writes the map,
+saved state or live match. No callback, mode registry, catalog, activation,
+filesystem, Buffer decoding, timer or running simulation dependency is added.
+
+Preserve statement, property and short-circuit order across capture progress,
+repeat counters/schedules, the five activation trigger types, completion team,
+single/joined source inheritance and victory hold. In particular, elapsed time
+is read here before its later host clock validation; do not add an early clock
+guard. Preserve legacy null hold defaulting, unknown saved fields, joined mixed
+teams inheriting `-1`, and the existing `invalid region event entering team`
+diagnostic for region/construction/research team failures. Save shape/version,
+map-size/capacity policy and all other rejection positions remain unchanged.
+
+Four additive cases in the registered checkpoint validator contract first run
+the actual old host: authored/Objective Control restore parity; 26 malformed or
+two-fault cases through validation and restore; and six accepted legacy/boundary
+variants retaining input bytes and state identity. Existing authored/Skirmish,
+canonical/effective, map/default/checksum, live-state and XL controls are retained.
+After extraction the same whole-server fixture resolves the ordinary relative
+private import and executes the actual default caller; neither replay adapter
+is changed or given replacement policy. The XL audit records the canonical
+module hash and asserts the call's effective-map input, original unit cap and
+position between building-ID and result checks, with negative controls.
+
+Server-domain membership creates no public path. The existing packed-release
+loop checks physical inclusion and GET/HEAD 404; all eleven compatibility
+surfaces remain. Source parity, relevant native event/hold recovery, existing
+CI entries, types/imports/docs, clean packaging and independent review precede
+the author-owned merge. Source, provider and served/rendered identities remain
+separate; ordinary rendered acceptance stays open at the existing cloud gap.
+This does not extract the remaining checkpoint domains behind a parameter bag
+or allocate any active movement/Patrol write.
+
+At this containing base, the 91 ordered body lines and every other host byte
+are preserved; the default import/call removes 89 net host lines and creates a
+104-line private domain module. The graph is 229 modules/449 local edges,
+141 browser/99 server/34 shared modules with zero cycles. These are dated
+boundary measurements, not a universal size score. All 1,433 containing-base
+CI entries remain identical, with one automatically discovered syntax entry;
+no package/CI/AGENTS/testing-strategy registration changes occur. The actual
+old/new whole-server validation and restore consumers match in 1,156 observations,
+including accepted/rejected input bytes, errors, state identity and live state.
+The 136 focused checks, both-seat native hold/repeat recovery, native completion
+conditions/recovery, types and documentation checks pass. Hosted full-suite,
+package/deployment and served/rendered observations retain their own evidence.
+
+#### Saved roster and mode-state checkpoint validation — 6 October 2026
+
+The next ready checkpoint responsibility after PR528 is the terminal 40-line
+block that counts living units and queued production, then checks Bannerfall's
+saved roster, zero economy, stronghold result and untouched waiting opening.
+At base `31af0275`, no open source PR overlaps that block. Architecture owns
+this validation call; active movement, construction, Infantry publication and
+Spearman art retain their existing scopes. Their record validation, live
+simulation, death credit, waves and production paths are unchanged.
+
+The private [roster validator](../src/server/checkpoint-roster.mjs) is consumed
+directly by the retained production `validateMatchCheckpoint`:
+
+```js
+import { validateCheckpointRoster } from './src/server/checkpoint-roster.mjs';
+
+// After individual records, references and duplicate footprint checks:
+validateCheckpointRoster(state, savedMatchMode, {
+  maxUnits: MAX_UNITS, maxTeamRoster: MAX_TEAM_ROSTER,
+});
+```
+
+The two policies remain the actual host limits, 2000 and 1000. `savedMatchMode`
+is the already-validated envelope identity. The module directly imports the
+existing unit/building definitions, Bannerfall rules/validator/winner and
+private voluntary-ending reasons; it introduces no rule copy or default policy.
+It returns undefined and changes no saved or live state. Its population counts
+are local, including the separate Town Center and building queues. Bannerfall's
+rule-validator clone remains discarded, preserving the original saved identity.
+
+The 40 ordered body lines are byte-identical. Population checks still precede
+mode rules, which precede roster/economy, stronghold and waiting-state checks.
+Unprefixed delegated Bannerfall errors and the existing checkpoint prefix remain
+distinct. All other host bytes and existing imports remain unchanged; the call
+stays immediately before the original canonical definition/state/explored/mode
+return. No validation tightening, save migration, transport, schema, map limit,
+asset or accepted-tick change belongs to this boundary.
+
+Four additive cases in the already-registered checkpoint contract pass through
+the real host before and after extraction. They cover both teams' living/queued
+caps and dead slots, earlier-error ordering, explicit mode identity, waiting and
+evolved saves, delayed waves, both stronghold outcomes and voluntary endings.
+Malformed saves retain exact validate/restore errors, input bytes and live state;
+accepted saves retain state identity and real restore observations. The XL audit
+hashes the canonical module and checks saved-mode input, both policies and caller
+position with seven negative controls. The private server-domain membership adds
+no public admission; existing packed checks prove physical inclusion and GET/HEAD
+404. All eleven compatibility surfaces and both replay adapters remain intact.
+
+At this source checkpoint, the module has 54 lines and the host loses 38 net
+lines. The graph has 230 modules/453 local edges, 141 browser/100 server/34 shared
+modules and zero cycles. These are responsibility measurements, not size targets.
+All 1,434 existing CI entries are identical, with one automatic syntax check
+added. The actual old/new whole-server consumers agree in 726 observations;
+137 focused checks, native Bannerfall and voluntary-ending recovery, both type
+boundaries and packed HTTP checks pass. Independent review, clean committed
+package, actual merge and staging observations belong in the owned PR. Served
+identity and ordinary rendered recovery remain open at the existing cloud gap;
+the proxy-denied route is unretried and no production promotion is implied.
+
 #### Editable scenario-event graph responsibility — 6 October 2026
 
 After the PR512 caller migration, the next existing authoring responsibility is
@@ -1164,6 +2075,51 @@ path: one authoring→world edge yields 224 modules/429 local edges, unchanged
 140 browser/95 server/34 shared and zero cycles. The helpers have real editing
 consumers; source/pack/deployment proof and ordinary rendered draft acceptance
 remain separate. Do not retire any compatibility surface from these migrations.
+
+#### Terrain-cell packing within the capture/export seam — 6 October 2026
+
+The next responsibility after PR514 is the three actual host algorithms
+`compressEditorGround`, `compressEditorElevation` and `compressEditorObstacles`.
+They convert editable cell arrays into portable rectangular patches, consumed
+by draft capture, `collectEditorMap` and the live resource-brush map read.
+This is part of the existing authoring capture/export queue: it owns the painted
+cell representation, not UI wording or an unused convenience helper. Rectangle
+partition and order affect patch admission and exported map bytes. Ground,
+elevation and obstacles deliberately keep separate algorithms because their
+omission, equality and limit rules differ.
+
+At current main `8dd6ae26`, including Patrol PR520/522 and art PR523, these
+functions need only width/height, their typed cell arrays, material-name arrays
+and the existing elevation-patch limit. The dependency-free canonical
+`authoring/map-studio-terrain-packing.mjs` exposes three named packers; the same
+named host wrappers read current dimensions/arrays for every call. No editor
+context, lifecycle callback, DOM, storage, timer, rendering or simulation input
+is needed. `withCurrentEditorElevation` retains its mutation and exact error;
+collection retains ground/obstacle admission and authority validation.
+
+Contract preparation runs the actual old functions before extraction: ordered
+rectangles across holes, zero/default omission, strict elevation equality,
+live array replacement, input immutability and the first over-limit result.
+The actual draft fixture also saves, downloads and restores the same packed
+ground/elevation/obstacle bytes without changing the running map. After the
+bounded body move it supplies production exports and executes the thin wrappers;
+all previous assertions and CI registrations remain. Preserve algorithm bodies
+apart from names, explicit inputs and identifier forwarding; every other host
+byte and import stays unchanged.
+
+Architecture/authoring owns the module, callers and source/rendered acceptance.
+Core `01a107ba` and caller/construction `01a10933-e913` retain movement/Patrol
+functions; there is no server or movement body edit. The one new pure authoring
+path receives exact client admission and authoring-domain membership, with
+packed bytes and unknown/extra/private GET/HEAD checks. No folder wildcard,
+private-source admission, new entrypoint, compatibility retirement, save/protocol
+version, quota policy, asset, package/CI/AGENTS or testing-strategy change.
+The existing eleven compatibility surfaces stay supported. At this source
+checkpoint the graph grows from 226 modules/433 edges to 227/434, with browser
+140→141, server 97/shared 34 unchanged and zero cycles. This records a new
+responsibility and composition edge rather than a size/performance claim.
+Source/package/provider identity and ordinary rendered draft acceptance remain
+separate; retain the documented cloud capability/public-route limitation.
 
 ### Coupling and size ratchets
 

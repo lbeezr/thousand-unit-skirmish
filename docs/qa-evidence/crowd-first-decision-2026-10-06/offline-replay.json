@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "artifactCompressedSha256": "74ede1895682f64b9f1d512f9fe9fb200e542c77ad1568165aaf8ea38e18b11a",
+  "replayedCalls": [
+    {
+      "label": "baseline",
+      "sourceHead": "31af0275698d369e83705771fdfa6983358a1742",
+      "queryVisits": 12,
+      "returnedBodies": 10,
+      "priorityYield": true,
+      "resultSha256": "42a8cf44c8a90c30ce87f84fc09b352b400fcc24b44cc668a63df0db0318b2b6",
+      "controllerAfterSha256": "6ced42af038d72fa979e8d61143327ba83f50360534912808e95500986d18a7e",
+      "cellAdmitted": true,
+      "staticAdmitted": true,
+      "bodyAdmitted": true,
+      "rawWaypointGain": 0.041581473441066885,
+      "peerSweptMargin": 0.04229498702573126,
+      "minimumQueryBodyMargin": 0.0048433585961620285,
+      "observedAdmission": "crowd-wait",
+      "executorPrefixFinalized": true
+    },
+    {
+      "label": "candidate",
+      "sourceHead": "2882498c096e33549d5f4c52e7a176e5aacd2ed5",
+      "queryVisits": 12,
+      "returnedBodies": 10,
+      "priorityYield": false,
+      "resultSha256": "5f63d2deca0083cea85973327cf36195649f23f2a0536eaf6769e7e96d3bc4d1",
+      "controllerAfterSha256": "6ced42af038d72fa979e8d61143327ba83f50360534912808e95500986d18a7e",
+      "cellAdmitted": true,
+      "staticAdmitted": true,
+      "bodyAdmitted": true,
+      "rawWaypointGain": 0.041581473441066885,
+      "peerSweptMargin": 0.04229498702573126,
+      "minimumQueryBodyMargin": 0.0048433585961620285,
+      "observedAdmission": "steering-admitted",
+      "executorPrefixFinalized": false
+    }
+  ],
+  "causal": {
+    "journeyTick": 142,
+    "actor": 28,
+    "peer": 24
+  },
+  "limits": [
+    "Offline replay of retained decision inputs; no new simulation.",
+    "Capture candidate stops after the actual steering write, before clamp/budget finalization.",
+    "This locates the first changed policy and write; it does not prove the full later fairness delay mechanism."
+  ],
+  "status": "passed"
+}

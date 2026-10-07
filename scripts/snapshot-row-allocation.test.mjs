@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createHash } from 'node:crypto';
 import { baselineSnapshot, createSnapshotRowFixture } from './snapshot-row-fixture.mjs';
+import { createUnitPresentationClientFixture } from './unit-presentation-client-fixture.mjs';
+import { toOpponentObservation } from '../src/simulation/ai/opponent-observation.mjs';
+import { WORKER_PERFORMING_ACTION_VERSION } from '../src/worker-performing-action.mjs';
 const shape = rows => Array.from(rows, row => ({ length: row.length, keys: Object.keys(row), entries: Object.entries(row) }));
 function same(old, current) {
   for (const team of [0, 1, null]) {
@@ -60,4 +63,53 @@ test('large fixed rosters preserve sparse optional fields and exact serialized r
   const old = createSnapshotRowFixture({ baseline:true,count:2000,workerSlots:4 });
   const current = createSnapshotRowFixture({ count:2000,workerSlots:4 });
   same(old,current);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: serialized production rows reach the actual client and AI readers`, async () => {
+  const producer = createSnapshotRowFixture({ fog: false, count: 8, workerSlots: 4 });
+  const id = team * 4;
+  Object.assign(producer.units[id + 1], { lastAttackTick: 50, lastAttackX: 7, lastAttackZ: -8 });
+  const state = JSON.parse(JSON.stringify({ type: 'state', tick: 50, fogOfWar: false, food: [0, 0], wood: [0, 0],
+    workerPerformingActionVersion: WORKER_PERFORMING_ACTION_VERSION, units: producer.rows(null) }));
+  const before = JSON.stringify(state);
+  const client = await createUnitPresentationClientFixture({ localTeam: team });
+  try {
+    client.apply(state.units, { initial: true, tick: state.tick, fogOfWar: state.fogOfWar,
+      workerPerformingActionVersion: state.workerPerformingActionVersion });
+    const observation = toOpponentObservation(state, team);
+    const aiWorker = observation.units.friendly.find(unit => unit.id === id);
+    const unit = client.unit(id);
+    assert.equal(observation.units.friendly.length, 4);
+    assert.equal(observation.units.visibleEnemies.length, 4);
+    for (const received of [unit, aiWorker]) {
+      assert.equal(received.team, team);
+      assert.equal(received.kind, 'worker');
+      assert.equal(received.cargo, .0001, 'positive sub-cent cargo reaches both readers');
+      assert.equal(received.cargoType, 'food');
+      assert.equal(received.generation, 1);
+      assert.equal(received.task, 'gathering');
+    }
+    assert.equal(unit.performingAction, 'gather-food');
+    assert.equal(unit.targetedBy, 0);
+    assert.equal(aiWorker.focusedCount, 0);
+    assert.equal(unit.lastPlayedAttackTick, -1);
+    assert.equal(aiWorker.lastAttack, null);
+    assert.deepEqual(state.units.find(row => row[0] === id).slice(11, 14), [null, null, null],
+      'JSON fills the production row holes before the receipt slot');
+    assert.equal(client.unit(id + 1).lastPlayedAttackTick, 50);
+    assert.deepEqual(observation.units.friendly.find(unit => unit.id === id + 1).lastAttack,
+      { tick: 50, x: 7, z: -8 });
+    assert.equal(JSON.stringify(state), before, 'both readers preserve the serialized rows');
+
+    const malformed = state.units.find(row => row[0] === id).slice();
+    malformed[10] = -2; malformed[11] = -.5; malformed[12] = 1; malformed[13] = 2;
+    client.apply([malformed], { tick: 51, fogOfWar: false });
+    const aiMalformed = toOpponentObservation({ ...state, tick: 51, units: [malformed] }, team)
+      .units.friendly[0];
+    assert.equal(client.unit(id).targetedBy, 0, 'client clamps malformed focus counts');
+    assert.equal(client.unit(id).lastPlayedAttackTick, -1, 'client ignores fractional attack ticks');
+    assert.equal(aiMalformed.focusedCount, -2, 'AI retains its existing integer-count normalization');
+    assert.deepEqual(aiMalformed.lastAttack, { tick: -.5, x: 1, z: 2 },
+      'AI retains its existing finite-attack normalization');
+  } finally { client.dispose(); }
 });

@@ -1,6 +1,21 @@
 import assert from 'node:assert/strict';
 import { validateAudioPack } from '../src/audio-assets.mjs';
-import { createAudioLibraryStore, exportAudioPack, parseAudioPackArchive } from '../src/audio-library-store.mjs';
+import { createAudioLibraryStore, exportAudioPack, parseAudioPackArchive } from '../src/client/audio/library-store.mjs';
+import * as libraryApi from '../src/audio-library-store.mjs';
+import * as canonicalLibraryApi from '../src/client/audio/library-store.mjs';
+import { mountAudioLibrary } from '../src/client/audio/library-ui.mjs';
+import * as libraryUiApi from '../src/audio-library-ui.mjs';
+import * as canonicalLibraryUiApi from '../src/client/audio/library-ui.mjs';
+import { verifyAudioLibraryUiConsumers } from './fixtures/audio-library-ui-consumer.mjs';
+
+assert.deepEqual(Object.keys(libraryApi), ['createAudioLibraryStore', 'exportAudioPack', 'parseAudioPackArchive']);
+assert.deepEqual(Object.keys(canonicalLibraryApi), Object.keys(libraryApi));
+assert.equal(libraryApi.createAudioLibraryStore, createAudioLibraryStore);
+assert.equal(libraryApi.exportAudioPack, exportAudioPack);
+assert.equal(libraryApi.parseAudioPackArchive, parseAudioPackArchive);
+assert.deepEqual(Object.keys(libraryUiApi), ['mountAudioLibrary']);
+assert.deepEqual(Object.keys(canonicalLibraryUiApi), Object.keys(libraryUiApi));
+assert.equal(libraryUiApi.mountAudioLibrary, mountAudioLibrary);
 
 const pack = {
   schemaVersion: 1, id: 'pack-test', name: 'Fixture',
@@ -154,3 +169,6 @@ for (const failure of ['blocked', 'error', 'programmer-fault']) {
   assert.equal(requests.length, 2);
 }
 console.log('Audio library database-open failure, shared retry and abandoned-connection cleanup checks passed');
+
+const consumerCases = await verifyAudioLibraryUiConsumers(mountAudioLibrary);
+console.log(`Audio library DOM/store consumer controls passed: ${consumerCases.length} cases (no browser CRUD/listening/rendered claim).`);

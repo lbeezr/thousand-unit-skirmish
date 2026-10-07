@@ -6,6 +6,7 @@ import {UNIT_DEFINITIONS} from '../src/gameplay-definitions.mjs';
 import {ordinaryCrowdBodyRadius} from '../src/unit-crowd-steering.mjs';
 import {constructionServerBindings} from './construction-server-fixture.mjs';
 import {workerPatrolAcquiredMovementActive} from '../src/combat-movement.mjs';
+import {workerEconomyBodyRadius} from '../src/unit-movement.mjs';
 
 const source=readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
 const start=source.indexOf('function getMoveVector('),end=source.indexOf('\nfunction ',start+1);
@@ -29,19 +30,25 @@ function fixture({heading=[0,1],team=0,count=2,offset=.095}={}) {
     for(const u of units){const b=Math.floor((u.z+half)/bucketSize)*columns+Math.floor((u.x+half)/bucketSize);
       next[u.id]=heads[b];heads[b]=u.id;}
   }
-  const context=vm.createContext({...constructionServerBindings(),workerPatrolAcquiredMovementActive,units,UNIT_DEFINITIONS,ordinaryCrowdBodyRadius,STEP_SECONDS:1/30,MAP_WIDTH:width,
+  const context=vm.createContext({...constructionServerBindings(),workerPatrolAcquiredMovementActive,workerEconomyBodyRadius,units,UNIT_DEFINITIONS,ordinaryCrowdBodyRadius,STEP_SECONDS:1/30,MAP_WIDTH:width,
     MAP_HALF_X:half,MAP_HALF_Z:half,MIN_SEPARATION:.56,SPATIAL_BUCKET_SIZE:bucketSize,
     spatialBucketColumns:columns,spatialBucketRows:columns,spatialBucketHeads:heads,spatialBucketNext:next,
     SEPARATION_DIAGNOSTICS_ENABLED:false,cellToWorld:point,worldToCell:cell});
   vm.runInContext(source.slice(workerRadiusStart,workerRadiusEnd),context);
   vm.runInContext(source.slice(start,end),context);rebuild();
-  return {units,vector:()=>context.getMoveVector(units[0]),step(){
+  return {units,bodyRadius:unit=>context.workerLocalBodyRadius(unit),vector:()=>context.getMoveVector(units[0]),step(){
     const u=units[0],move=context.getMoveVector(u);if(!move)return;
     if(move.reachedWaypoint){u.x=move.target.x;u.z=move.target.z;u.pathIndex++;}
     else {u.x+=move.x*move.stepDistance;u.z+=move.z*move.stepDistance;}
     rebuild();
   }};
 }
+test('the extracted local-body seam retains the real economy Worker footprint',()=>{
+  const f=fixture(),worker={...f.units[0],kind:'worker',gatherPhase:'to-base',cargo:1};
+  assert.equal(f.bodyRadius(worker),constructionServerBindings().LAND_CLEARANCE_PROFILE.radiusByKind.worker);
+  assert.equal(f.bodyRadius({...worker,cargo:0}),0,'node-free empty Return has no economy body');
+  assert.equal(f.bodyRadius({...worker,kind:'infantry'}),0,'Infantry does not adopt the economy Worker body');
+});
 for(const team of [0,1])for(const heading of [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]]) {
   test(`seat ${team}, heading ${heading}: stacked parked Infantry cannot reverse or trap a route`,()=>{
     const f=fixture({team,heading}),u=f.units[0],parked=structuredClone(f.units.slice(1));

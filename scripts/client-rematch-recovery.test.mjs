@@ -16,6 +16,9 @@ import { fixedMatchArmySize } from '../src/match-mode-controls.mjs';
 import { matchRecap, renderMatchRecap } from '../src/client/hud/match-recap.mjs';
 import { JSDOM } from 'jsdom';
 import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
+import { createWelcomeSession } from '../src/client/networking/welcome-session.mjs';
+import { clearOwnedBuildingFog } from '../src/building-fog-composition.mjs';
+import { formatResourceStock } from '../src/client/hud/resource-format.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const declaration = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`\nfunction ${next}(`));
@@ -65,7 +68,7 @@ function fixture(team) {
     close() {}
   }
   const noop = () => {};
-  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS, fixedMatchArmySize, renderMatchRecap, matchDecisions: { update() {}, disconnect() {}, feedback() {}, close() {} },
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), clearOwnedBuildingFog, formatResourceStock, readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS, fixedMatchArmySize, renderMatchRecap, matchDecisions: { update() {}, disconnect() {}, feedback() {}, close() {} },
     applyLobby() {}, applyWaypointQueueCounts() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
@@ -99,6 +102,8 @@ function fixture(team) {
     setConnection:noop,setMapCatalog:noop,loadMapAudio:noop,updateRoomUI:noop,showToast:noop,scheduleReconnect:noop,
     zoom:1.7,defaultCameraZoom:0.91,cameraMinZoom:0.1,mapFitActive:false,resize:noop,centerCameraOnHomeBase:noop,
   });
+  context.welcomeSession = createWelcomeSession({ getStorage: () => context.sessionStorage,
+    sessionKey: context.ROOM_SESSION_STORAGE_KEY, instanceKey: 'fixture-instance', matchKey: 'fixture-match' });
   vm.runInContext([
     declaration('updateMatchArmySizeControls','applyLobby'),
     wildlifeClientFunctionSource(source), declaration('clearActiveControlGroup','assignControlGroup'),
@@ -237,7 +242,6 @@ const wildlifeLosses = [
   ['missing resource table', () => ({ resourceNodes: undefined })],
   ['recaptured row', f => ({ resourceNodes: [{ ...f.disclosed, wildlifeTeam: 1 - f.context.localTeam }] })],
   ['neutral row', f => ({ resourceNodes: [{ ...f.disclosed, wildlifeTeam: null }] })],
-  ['harvested carcass', f => ({ resourceNodes: [{ ...f.disclosed, stock: 40, wildlifeState: 'carcass', wildlifeActivity: undefined }] })],
   ['depleted food', f => ({ resourceNodes: [{ ...f.disclosed, stock: 0, wildlifeState: 'depleted', wildlifeActivity: undefined }] })],
   ['malformed pose', f => ({ resourceNodes: [{ ...f.disclosed, x: null }] })],
   ['resource epoch transition', () => ({ forestEpoch: 8, resourceNodes: [] })],
@@ -251,6 +255,68 @@ for (const team of [0, 1]) {
     assertWildlifeCleared(f);
     connection.message(f.packet({ forestEpoch: patch.forestEpoch ?? 7 }));
     assert.equal(f.context.latestWildlifeView.rows.has(f.node.id), true, 'later disclosure can make the Sheep eligible again');
+    assertWildlifeCleared(f);
+  });
+
+  test(`seat ${team}: visible positive-Food carcasses retain shared inspection without Herd/Stop authority`, t => {
+    const f = wildlifeFixture(team, t), connection = f.connections[0];
+    f.context.sendTrackedOrder = () => assert.fail('inspection must not send a live Sheep order');
+    // PR482 separates shared carcass inspection from owned live Sheep commands.
+    for (const wildlifeTeam of [team, 1 - team, null]) {
+      for (const [stock, food] of [[40, '40'], [12.25, '12'], [0.004, '<1']]) {
+        f.context.tapOrderArmed = true;
+        f.context.tapOrderPointer = { id: 3 };
+        connection.message(f.packet({ resourceNodes: [{ ...f.disclosed, stock, wildlifeTeam,
+          wildlifeState: 'carcass', wildlifeActivity: undefined }] }));
+        const carcass = f.context.latestWildlifeView.rows.get(f.node.id);
+        assert.equal(f.context.selectedWildlifeId, f.node.id);
+        assert.equal(f.context.selectedWildlife(), carcass);
+        assert.equal(carcass.wildlifeState, 'carcass');
+        assert.equal(carcass.wildlifeTeam, wildlifeTeam);
+        assert.equal(carcass.stock, stock, 'inspection preserves exact remaining Food');
+        assert.equal(f.context.wildlifeSelectionSummary(carcass),
+          `Sheep carcass · ${food} food remaining · Harvest with Workers`);
+        assert.equal(f.context.selected.size, 0, 'inspection stays outside army selection');
+        assert.equal(f.context.tapOrderArmed, false);
+        assert.equal(f.context.tapOrderPointer, null);
+        for (const type of ['herd', 'stopWildlife']) {
+          assert.equal(f.context.issueWildlifeOrder(type, f.disclosed), false);
+          assert.equal(f.context.createWildlifeCommand(type, f.node.id,
+            f.context.selectedWildlifeView, f.context.latestWildlifeView, f.disclosed,
+            { isVisible: () => true, isLegalEndpoint: () => true }), null);
+        }
+      }
+    }
+  });
+
+  const carcassLosses = [
+    ['zero-Food carcass', f => ({ resourceNodes: [{ ...f.disclosed, stock: 0, wildlifeState: 'carcass', wildlifeActivity: undefined }] })],
+    ['depleted food', f => ({ resourceNodes: [{ ...f.disclosed, stock: 0, wildlifeState: 'depleted', wildlifeActivity: undefined }] })],
+    ['unseen current cell', f => ({ visibility: f.visibility(0) })],
+    ['explored current cell', f => ({ visibility: f.visibility(1) })],
+    ['resource epoch transition', () => ({ forestEpoch: 8 })],
+  ];
+  for (const [reason, change] of carcassLosses) test(`seat ${team}: inspected carcass clears on ${reason} without revival`, t => {
+    const f = wildlifeFixture(team, t), connection = f.connections[0];
+    const carcass = { ...f.disclosed, stock: 40, wildlifeState: 'carcass', wildlifeTeam: null,
+      wildlifeActivity: undefined };
+    connection.message(f.packet({ resourceNodes: [carcass] }));
+    assert.equal(f.context.selectedWildlifeId, f.node.id);
+    assert.equal(f.context.selectedWildlife().stock, 40);
+    const patch = change(f);
+    connection.message(f.packet({ resourceNodes: [carcass], ...patch }));
+    assertWildlifeCleared(f);
+    if (reason === 'depleted food') {
+      const depleted = f.context.latestWildlifeView.rows.get(f.node.id);
+      assert.equal(depleted.wildlifeState, 'depleted', 'valid depletion stays disclosed');
+      assert.equal(depleted.stock, 0);
+    } else if (reason === 'zero-Food carcass') {
+      assert.equal(f.context.latestWildlifeView.rows.has(f.node.id), false,
+        'zero Food cannot retain the positive-Food carcass lifecycle');
+    }
+    connection.message(f.packet({ resourceNodes: [carcass], forestEpoch: patch.forestEpoch ?? 7 }));
+    assert.equal(f.context.latestWildlifeView.rows.has(f.node.id), true,
+      'later disclosure restores inspection eligibility, not selection');
     assertWildlifeCleared(f);
   });
 

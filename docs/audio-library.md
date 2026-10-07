@@ -2,9 +2,13 @@
 
 Audio Studio is a standalone authoring page at `audio-studio.html`. Create a pack, import individual audio recordings, label and tag the raw sources, then assign variants to unit, building, or existing cue events. The Composer tab loads the separate composition editor when that module is installed. Packs are local to this browser until exported and installed elsewhere. A map references a pack and profile by ID; multiplayer does not transfer recordings automatically.
 
+Its existing UI mount lives in [`src/client/audio/library-ui.mjs`](../src/client/audio/library-ui.mjs). Studio imports it directly; `src/audio-library-ui.mjs` retains the same sole `mountAudioLibrary` binding for supported browser tools. Store calls, listeners, errors, preview/backup URLs, composer resource lifetime and document-relative links retain their existing behavior.
+
 ## Storage and portable format
 
 `createAudioLibraryStore()` uses IndexedDB database `tus-audio-library-v1`. Pack metadata and source Blobs are in separate stores; `savePack` changes them in one read/write transaction. Source bytes are preserved when metadata changes, and new sources require a Blob. `loadPack(id)` returns `{pack, sourceBlobs}` or `null`. `listPacks()` returns summary rows. `deletePack(id)` removes the pack and its source bytes.
+
+The implementation lives in [`src/client/audio/library-store.mjs`](../src/client/audio/library-store.mjs). Its supported root entry `src/audio-library-store.mjs` forwards the same `createAudioLibraryStore`, `exportAudioPack` and `parseAudioPackArchive` bindings. Studio and Zones use the canonical home; main and existing browser tools retain the root API. Database/archive formats, original bytes, provenance, limits and storage/error behavior are unchanged.
 
 Use **Export backup** before clearing browser data or moving to another machine. A `.audio-pack.json` archive contains `{format:"tus-audio-pack-v1", pack, sources}` with each source's original bytes encoded as base64. **Import pack backup** validates IDs, references, versions, declared byte lengths and binary data before saving. It rejects an existing pack ID so a backup cannot silently overwrite local edits. The browser's storage quota still applies; quota errors are shown in Audio Studio.
 
@@ -12,7 +16,7 @@ Limits are 128 sources, 16 MiB per source, 64 MiB of audio per pack, and 90 MiB 
 
 The library uses the shared `validateComposition` contract by default for storage and backups, then checks source and profile references. Composer save failures remain visible in the editor and preserve its unsaved state. Audio Studio and its modules are included in the server allowlist and release image.
 
-Run `node scripts/audio-library.test.mjs` for validation and portable byte round-trip checks. Browser acceptance should create/import a WAV, assign `unit.worker.gather.wood`, reload the page, export the pack, clear it, and import the backup to confirm original bytes and metadata survive.
+Run `node scripts/audio-library.test.mjs` for validation, portable byte round-trip and the real mount's DOM/store consumer controls in `scripts/fixtures/audio-library-ui-consumer.mjs`. The DOM adapter checks selection/edit rollback, import feedback/retry, original Blob identity, store-call order, preview/backup URL cleanup, assignment listeners and composer close/reopen/disposal. These CPU controls use an injected store/audio adapter; they do not establish successful browser IndexedDB CRUD, listening or rendered acceptance. Browser acceptance should create/import a WAV, assign `unit.worker.gather.wood`, reload the page, export the pack, clear it, and import the backup to confirm original bytes and metadata survive.
 
 ## Vaelora regional source collection
 

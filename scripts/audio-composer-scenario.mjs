@@ -1,5 +1,9 @@
 import assert from 'node:assert/strict';
-import {compileComposition, validateComposition} from '../src/audio-composition.mjs';
+import {compileComposition, validateComposition} from '../src/presentation/audio/composition.mjs';
+import * as compatibility from '../src/audio-composition.mjs';
+assert.deepEqual(Object.keys(compatibility).sort(), ['compileComposition', 'validateComposition']);
+assert.equal(compatibility.compileComposition, compileComposition);
+assert.equal(compatibility.validateComposition, validateComposition);
 import {renderCompositionWav} from '../src/audio-composer.mjs';
 
 const composition = {schemaVersion:1,id:'fixture',name:'Two instruments',bpm:120,beatsPerBar:4,lengthBars:2,tracks:[

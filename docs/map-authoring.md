@@ -144,10 +144,38 @@ service belongs to this extraction.
 recovery-envelope validator in
 [`map-studio/draft/v1/contract.mjs`](../src/authoring/map-studio/draft/v1/contract.mjs).
 The version is the saved draft format, rather than the whole editor or storage
-implementation. The dependency-free contract has two named exports:
+implementation. The contract has two named exports:
 `MAP_STUDIO_DRAFT_VERSION` and `requireRecovery(draft, sourceMapId)`.
-The validator body, error, 16–256 ceiling and returned references are preserved.
-It does not add migration, deep map validation, storage or capture behavior.
+The existing envelope/collection guards, 16–256 ceiling and returned references
+are preserved. After those guards, recovery calls the existing
+`validateElevationPatches` through `../../../../map-utils.mjs` before editor
+population can mutate history, forms or grids. Malformed shape, bounds, level,
+overlap and limit retain the population helper's exact diagnostics. The import
+test pins this pure world dependency closure to map-utils, elevation,
+capture-prerequisites and scenario-event-chain, with no external imports; all
+authority/server rejection assertions remain. This adds no elevation rule,
+migration, storage or capture behavior.
+
+After the elevation check, recovery rejects literal null entries in ground paint
+patches, obstacles, triggers, scenario events and resource nodes, in that order,
+using the portable import validator's existing
+field-specific diagnostics before population can clear history or replace grids.
+It retains unfinished non-null entries and the existing optional-collection falsy
+container fallbacks; it does not filter entries or introduce deep map validation.
+After all those checks, recovery rejects an explicit null `formValues` envelope
+with the existing generic saved-draft diagnostic before population mutates state.
+Omitted/undefined, successful primitive/array empty-snapshot behavior and
+incomplete object snapshots remain supported. The form controller's direct
+`restore(null)` TypeError and native setter errors remain unchanged.
+Normal capture omits file inputs. For corrupted stored drafts, preflight also
+rejects only an own enumerable `studio-import-file` entry whose own data `value`
+is a nonempty string, using the same generic diagnostic before mutation.
+Empty/non-string/incomplete entries remain supported. Descriptor inspection
+does not invoke field getters; accessor snapshots retain their deferred behavior
+and original error identity. No file access, strict object-only requirement or
+broader field-entry schema is added.
+Raw saved bytes remain
+available for explicit repair/retry. The dependency closure is unchanged.
 
 The existing `map-studio-draft-store.mjs` remains the public host API. It re-exports
 the same constant and delegates recovery through the same per-store two-argument
@@ -211,6 +239,32 @@ Storage, debounce, publication, DOM synchronization, live match state, save/prot
 formats and all compatibility paths remain outside this extraction. Source/packed
 checks do not close the existing rendered draft/publish acceptance gap.
 
+### Terrain-cell packing
+
+`authoring/map-studio-terrain-packing.mjs` owns the three existing grid-to-patch
+algorithms used by draft capture, validated export and resource-brush reads:
+`packGroundPaint(width, height, groundMaterials, terrainMaterials)`,
+`packGroundElevation(width, height, groundLevels, maxElevationPatches)` and
+`packTerrainObstacles(width, height, cellMaterials, cellElevations, obstacleMaterials)`.
+Inputs are current dimensions and typed cell/material-name arrays. Outputs are
+new, ordered rectangle lists; no input or running match is mutated. Host wrappers
+retain the old private names and read the live arrays on every call.
+
+Row-first, maximal-width packing, negative ground/obstacle omission, zero elevation
+omission, strict material/elevation equality and exactly the default obstacle
+height's omission are preserved. Elevation packing returns after the first
+over-limit patch; `withCurrentEditorElevation` keeps the existing error and
+definition mutation. Ground/obstacle count admission and authority validation
+remain in their existing collection callers. This introduces no schema, cap,
+default terrain, brush behavior or map-size policy change.
+
+Actual-host golden cases pass before extraction. The production draft fixture
+then receives the canonical packers and covers identical saved/downloaded/recovered
+patch bytes with every prior case retained. The new browser-safe path is admitted
+exactly; all compatibility paths and server-private denials remain. Architecture/
+authoring retains source and identified-release rendered acceptance at the existing
+cloud capability gap; a pure/packed check does not establish ordinary-game use.
+
 ### Portable-map validator boundary
 
 The source slice based on main `fec90d44` places the existing 298-line
@@ -234,6 +288,18 @@ compatibility paths remain supported. Architecture/authoring retains local
 review, source/packed acceptance and the existing unverified browser import/export/
 publish observation at an identified release. Storage/recovery lifecycle and
 versioned draft organization remain separate boundaries.
+
+The next authoritative validator contract is prepared separately in the
+[architecture guide](architecture.md#authoritative-map-validator-contract-preparation--6-october-2026).
+The private `server/map-definition-validator.mjs` owns this validation body;
+`server.mjs` retains its existing `validateMapDefinition(definition, filename)`
+entry and every default consumer. It mutates `victoryMode`/`fogOfWar` defaults
+before some later errors and returns a shallow normalized map; the portable
+importer clones input and has different diagnostics and ordering. Preserve both
+contracts rather than sharing their implementations. The same contract tests
+execute the actual authoritative body/imports/limits before extraction and the
+default wrapper/canonical binding after extraction. Authoring validation, replay
+fixtures, map admission and live movement retain their existing contracts.
 
 ## Coordinates and terrain
 

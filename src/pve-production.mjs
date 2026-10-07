@@ -64,13 +64,56 @@ export function createProductionPolicy(seed) {
   let nextAttemptTick = 0;
   let retryTicks = limits.retryTicks;
   let siteAttempt = 0;
+  let firstBarracksBuilder = null;
+  let observedBarracks = false;
+  const ownedDropoff = (observation, worker) => observation.buildings.friendly.some(building =>
+    building.team === observation.team && building.hp > 0 && building.complete
+      && BUILDING_DEFINITIONS[building.type]?.dropoff?.includes(worker.cargoType));
+  // Public observations cannot identify a Gather job. Retain delivery evidence
+  // only through its observable gathering/returning episode, never across an
+  // observed interruption, identity replacement, disappearance or rewind.
+  const expansionWorkers = new Map();
+  let expansionTick = null;
+  const observeExpansionWorkers = (observation) => {
+    if (expansionTick !== null && observation.tick < expansionTick) expansionWorkers.clear();
+    expansionTick = observation.tick;
+    const present = new Set();
+    for (const worker of observation.units?.friendly ?? []) {
+      if (worker.team !== observation.team || worker.hp <= 0 || worker.kind !== 'worker') continue;
+      present.add(worker.id);
+      const previous = expansionWorkers.get(worker.id);
+      if (previous?.generation === worker.generation && observation.tick === previous.tick) {
+        // Conflicting samples at one tick cannot establish a transition. Drop
+        // that episode's evidence rather than making their order meaningful.
+        if (previous.task !== worker.task || previous.cargo !== worker.cargo) {
+          previous.task = null; previous.cargo = 0; previous.delivered = false;
+        }
+        continue;
+      }
+      const active = ['gathering', 'returning'].includes(worker.task);
+      const continuous = previous?.generation === worker.generation
+        && ['gathering', 'returning'].includes(previous.task);
+      const delivered = continuous && previous.cargo > 0
+        && (worker.cargo === 0 && ['gathering', 'idle'].includes(worker.task)
+          || previous.task === 'returning' && worker.task === 'gathering');
+      expansionWorkers.set(worker.id, {
+        generation: worker.generation, tick: observation.tick, task: worker.task,
+        cargo: worker.cargo, delivered: active && continuous && (previous.delivered || delivered),
+      });
+    }
+    for (const id of expansionWorkers.keys()) if (!present.has(id)) expansionWorkers.delete(id);
+  };
   const postpone = (tick) => {
     nextAttemptTick = tick + retryTicks;
     retryTicks = Math.min(retryTicks * 2, limits.maxRetryTicks);
   };
   return {
+    reservedBuilder() {
+      return firstBarracksBuilder && { id: firstBarracksBuilder.id, generation: firstBarracksBuilder.generation };
+    },
     next(observation) {
       firstTick ??= observation.tick;
+      observeExpansionWorkers(observation);
       // Partial synthetic observations and maps without an economy cannot spend.
       if (!observation.resources || !observation.buildings) return [];
       const friendly = observation.units.friendly.filter((unit) => unit.hp > 0);
@@ -81,6 +124,13 @@ export function createProductionPolicy(seed) {
       const barracks = observation.buildings.friendly
         .filter((building) => building.type === 'barracks' && building.hp > 0)
         .sort((a, b) => a.id - b.id)[0];
+      observedBarracks ||= Boolean(barracks);
+      const prepared = firstBarracksBuilder && workers.find(worker => worker.id === firstBarracksBuilder.id
+        && worker.generation === firstBarracksBuilder.generation);
+      if (firstBarracksBuilder && (barracks || !prepared
+        || !['idle', 'gathering', 'returning'].includes(prepared.task)
+        || observation.resources.wood < limits.barracksWoodCost + limits.woodReserve
+        || prepared.cargo > 0 && !ownedDropoff(observation, prepared))) firstBarracksBuilder = null;
       if (observation.tick - firstTick < limits.openingDelayTicks) return [];
       if (barracks?.queue > 0 || workers.some((worker) => ['building', 'repairing'].includes(worker.task))) {
         retryTicks = limits.retryTicks;
@@ -179,10 +229,27 @@ export function createProductionPolicy(seed) {
         // Reserves and backoff still bound spending while gathering pauses.
         if (!home || workers.length === 0
           || observation.resources.wood < limits.barracksWoodCost + limits.woodReserve) return [];
-        const builder = workers.find((worker) => ['idle', 'gathering'].includes(worker.task) && worker.cargo === 0);
-        if (!builder) return [];
+        const reserved = firstBarracksBuilder && workers.find(worker => worker.id === firstBarracksBuilder.id
+          && worker.generation === firstBarracksBuilder.generation);
+        const builder = reserved
+          ? ['idle', 'gathering'].includes(reserved.task) && reserved.cargo === 0 ? reserved : null
+          : workers.find((worker) => ['idle', 'gathering'].includes(worker.task) && worker.cargo === 0);
+        const carrier = !builder && (reserved || (!observedBarracks && workers.find(worker => worker.cargo > 0
+          && ['gathering', 'returning'].includes(worker.task) && ownedDropoff(observation, worker))));
+        if (!builder && (!carrier || reserved?.task === 'returning')) return [];
         const sites = candidateSites(observation, home, seed);
         if (!sites.length) { postpone(observation.tick); return []; }
+        if (!builder) {
+          // A live Gather job can deposit and resume before the next AI turn.
+          // Prepare one generation-bound actor with the conserving normal
+          // Return command; other Workers retain their jobs and cargo.
+          firstBarracksBuilder ??= { id: carrier.id, generation: carrier.generation,
+            nextReturnTick: observation.tick, retryTicks: limits.retryTicks };
+          if (observation.tick < firstBarracksBuilder.nextReturnTick) return [];
+          firstBarracksBuilder.nextReturnTick = observation.tick + firstBarracksBuilder.retryTicks;
+          firstBarracksBuilder.retryTicks = Math.min(firstBarracksBuilder.retryTicks * 2, limits.maxRetryTicks);
+          return [{ type: 'returnCargo', ids: [carrier.id], unitGenerations: [carrier.generation] }];
+        }
         const point = sites[siteAttempt++ % sites.length];
         postpone(observation.tick);
         return [{ type: 'build', ids: [builder.id], unitGenerations: [builder.generation], buildingType: 'barracks', ...point }];
@@ -211,10 +278,13 @@ export function createProductionPolicy(seed) {
         }
       }
       const expansion = observation.buildings.friendly.find((building) => building.type === 'town-center' && !building.home && building.hp > 0);
-      if (remoteResource && economyBuilder && storehouse?.complete && friendly.length >= 8) {
+      const expansionBuilder = workers.find(worker => worker.team === observation.team && worker.task === 'idle' && worker.cargo === 0)
+        ?? workers.find(worker => worker.team === observation.team && worker.task === 'gathering' && worker.cargo === 0
+          && expansionWorkers.get(worker.id)?.delivered);
+      if (remoteResource && expansionBuilder && storehouse?.complete && friendly.length >= 8) {
         if (expansion && !expansion.complete) {
           postpone(observation.tick);
-          return [{ type: 'build', ids: [economyBuilder.id], unitGenerations: [economyBuilder.generation], buildingId: expansion.id }];
+          return [{ type: 'build', ids: [expansionBuilder.id], unitGenerations: [expansionBuilder.generation], buildingId: expansion.id }];
         }
         const center = BUILDING_DEFINITIONS['town-center'];
         if (!expansion && observation.resources.wood >= center.cost.wood + limits.woodReserve
@@ -222,7 +292,7 @@ export function createProductionPolicy(seed) {
           const sites = candidateSites(observation, remoteResource, seed, center.id);
           if (sites.length) {
             const point = sites[siteAttempt++ % sites.length]; postpone(observation.tick);
-            return [{ type: 'build', ids: [economyBuilder.id], unitGenerations: [economyBuilder.generation], buildingType: center.id, ...point }];
+            return [{ type: 'build', ids: [expansionBuilder.id], unitGenerations: [expansionBuilder.generation], buildingType: center.id, ...point }];
           }
         }
       }

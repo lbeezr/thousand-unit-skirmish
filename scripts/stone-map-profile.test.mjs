@@ -25,6 +25,23 @@ import { findInvalidResourceVariant } from '../src/shore-fishing.mjs';
 import { TERRAIN_MATERIALS } from '../src/terrain-materials.mjs';
 import { validWildlifeNodeDefinition } from '../src/wildlife-state.mjs';
 
+function simulationAdvancedAfterCheckpoint(snapshot, previous) {
+  return snapshot.sequence > previous.sequence && snapshot.state.tickNumber > previous.state.tickNumber;
+}
+
+test('post-restart checkpoint selection rejects shutdown and single-counter advances', () => {
+  const shutdown = { sequence: 2, state: { tickNumber: 10 } };
+  assert.equal(simulationAdvancedAfterCheckpoint(shutdown, shutdown), false);
+  assert.equal(simulationAdvancedAfterCheckpoint({ sequence: 3, state: { tickNumber: 10 } }, shutdown), false);
+  assert.equal(simulationAdvancedAfterCheckpoint({ sequence: 2, state: { tickNumber: 11 } }, shutdown), false);
+});
+
+test('post-restart checkpoint selection accepts a newer record from resumed simulation', () => {
+  const shutdown = { sequence: 2, state: { tickNumber: 10 } };
+  const resumed = { sequence: 3, state: { tickNumber: 11 } };
+  assert.equal(simulationAdvancedAfterCheckpoint(resumed, shutdown), true);
+});
+
 test('typed offline Stone placement preserves historical geometry and splits the agreed 200 budget', async () => {
   const historical = await createStoneAuthoringFixture(), before = JSON.stringify(historical.baseMap);
   const map = { ...historical.baseMap, economyProfileId: STONE_ECONOMY_PROFILE_ID };
@@ -381,11 +398,12 @@ test('internal Practice selects shipped Stone and both seats naturally pay, refu
     && snapshot.state.buildings.every(building => building.type === 'watchtower' && building.complete));
   conserved(completed);
   for (const team of [0, 1]) assert.ok(Math.abs(completed.state.teamStone[team] - (150 - spent[team])) < 1e-7);
-  await room.stop(); await room.start(); clients = [await room.connect(0, tokens[0]), await room.connect(1, tokens[1])];
-  const final = await room.checkpoint(snapshot => snapshot.sequence > completed.sequence); conserved(final);
+  await room.stop(); const shutdown = JSON.parse(await readFile(room.checkpointPath, 'utf8'));
+  await room.start(); clients = [await room.connect(0, tokens[0]), await room.connect(1, tokens[1])];
+  const final = await room.checkpoint(snapshot => simulationAdvancedAfterCheckpoint(snapshot, shutdown)); conserved(final);
   assert.equal(final.matchId, depleted.matchId); assert.deepEqual(final.state.teamStone, completed.state.teamStone);
   assert.deepEqual(final.state.resourceNodes, completed.state.resourceNodes);
-  // Simulation resumes before the next checkpoint; its combat timer may tick.
+  // Selection requires resumed simulation; its combat timer may tick.
   const structuralDefense = ({ attackCooldown, ...building }) => building;
   assert.deepEqual(final.state.buildings.map(structuralDefense), completed.state.buildings.map(structuralDefense));
   assert.ok(final.state.buildings.every(building => Number.isFinite(building.attackCooldown)

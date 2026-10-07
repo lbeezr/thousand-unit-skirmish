@@ -197,12 +197,13 @@ export function normalizeRoomIndex(index) {
   const seenIds = new Set();
   const rooms = [];
   for (const entry of index.rooms) {
-    if (!entry || typeof entry !== 'object'
-      || !ROOM_ID_PATTERN.test(entry.id || '')
+    if (!entry || typeof entry !== 'object') return null;
+    const id = entry.id;
+    if (typeof id !== 'string' || !ROOM_ID_PATTERN.test(id)
       || !Number.isFinite(entry.createdAt)
       || !Number.isFinite(entry.lastActiveAt)
-      || seenIds.has(entry.id)) return null;
-    seenIds.add(entry.id);
+      || seenIds.has(id)) return null;
+    seenIds.add(id);
     if (index.version < 3 && (hasMatchModeFields(entry) || hasMatchModeFields(entry.launchOptions)
       || hasMatchModeFields(entry.roomMetadata))) return null;
     let launchOptions;
@@ -214,7 +215,7 @@ export function normalizeRoomIndex(index) {
     const roomMetadata = index.version >= 2 ? normalizeRoomMetadata(entry) : null;
     if (index.version >= 2 && (entry.mapId != null || hasMatchModeFields(entry)) && !roomMetadata) return null;
     rooms.push({
-      id: entry.id,
+      id,
       createdAt: entry.createdAt,
       lastActiveAt: entry.lastActiveAt,
       launchOptions,

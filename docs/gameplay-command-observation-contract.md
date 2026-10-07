@@ -52,8 +52,11 @@ positions; renderer headings and interpolation consume the resulting snapshots.
 
 ## PvE observation v1
 
-`toOpponentObservation` in `src/pve-opponent.mjs` builds an allow-listed DTO from
-the assigned seat's filtered state. The deterministic policy runs at most once
+`toOpponentObservation` in `src/simulation/ai/opponent-observation.mjs` builds
+an allow-listed DTO from the assigned seat's filtered state. The existing
+`src/pve-opponent.mjs` entry retains the identical projection/schema bindings
+and still owns seeded policy and socket lifecycle. Both paths remain HTTP-private;
+portable decoding does not grant client-serving admission. The deterministic policy runs at most once
 per second. Snapshots can be coalesced; consumers must tolerate skipped ticks.
 
 Exact top-level fields:

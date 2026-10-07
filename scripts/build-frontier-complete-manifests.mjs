@@ -1,6 +1,8 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { isDeepStrictEqual } from 'node:util';
+import { validateBuildingLifecycle } from './validate-building-lifecycle.mjs';
 
 export function validateCaptureFamily(rows) {
   if (rows.length !== 8) throw new Error('Expected eight registered views');
@@ -31,7 +33,19 @@ export function validateCaptureFamily(rows) {
   }
 }
 
+// Rebuilding Complete metadata must never erase a family's admitted lifecycle.
+export function preserveAdmittedLifecycle(generated, existing) {
+  if (!existing?.stateOrder?.some(state => state !== 'complete')) return generated;
+  validateBuildingLifecycle(existing);
+  if (existing.asset !== generated.asset || !isDeepStrictEqual(existing.camera, generated.camera)
+    || !isDeepStrictEqual(existing.completeState, generated.completeState)) {
+    throw new Error(`Existing lifecycle differs from approved Complete capture: ${generated.asset}`);
+  }
+  return existing;
+}
+
 async function main() {
+const outputs = [];
 const packs = ['frontier-civilization-scale-pilot-v1', 'frontier-civilization-models-v1', 'frontier-civilization-military-models-v1'];
 for (const pack of packs) {
   const root = new URL(`../assets/buildings/${pack}/`, import.meta.url);
@@ -56,10 +70,18 @@ for (const pack of packs) {
         azimuthDegrees: row.camera.azimuthDegrees, path: `captures/${row.file}`, sha256: row.sha256, bytes: row.bytes })) },
       limitations: ['No team masks', 'No construction or damage views', 'Source scale remains subject to doorway and unit review'],
     };
-    await writeFile(new URL(`${asset}-complete-renderer.json`, root), JSON.stringify(manifest, null, 2)+'\n');
+    const file = new URL(`${asset}-complete-renderer.json`, root);
+    let existing, original;
+    try { original = await readFile(file, 'utf8'); existing = JSON.parse(original); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+    const selected = preserveAdmittedLifecycle(manifest, existing);
+    // Preserve the exact reviewed manifest bytes when retaining its lifecycle.
+    outputs.push({ file, text: selected === existing ? original : JSON.stringify(selected, null, 2)+'\n' });
   }
 }
-console.log('Built eight Complete-only manifests for the existing game renderer.');
+// Validate every family before writing any output.
+for (const output of outputs) await writeFile(output.file, output.text);
+console.log('Verified eight Complete families; retained existing admitted lifecycle states.');
 
 }
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) await main();

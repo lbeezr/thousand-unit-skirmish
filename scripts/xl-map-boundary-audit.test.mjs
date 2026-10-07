@@ -3,7 +3,9 @@ import { readFile, readdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { generateFarMarches, XL_LAYOUT as layout } from './generate-far-marches.mjs';
-import { runXlBoundaryAudit, crossingTopology, assertCheckpointEnvelopeConsumer } from './xl-map-boundary-audit.mjs';
+import { runXlBoundaryAudit, crossingTopology, assertCheckpointEnvelopeConsumer,
+  assertAuthoritativeMapValidatorConsumer, assertCheckpointScenarioStateConsumer,
+  assertCheckpointRosterConsumer } from './xl-map-boundary-audit.mjs';
 import { buildElevationGrid, validateElevationPatches } from '../src/map-utils.mjs';
 import { planWallLine } from '../src/wall-line-planner.mjs';
 import { compressGroundLevels } from '../src/terrain-authoring.mjs';
@@ -104,6 +106,23 @@ test('all current dimension consumers agree on256 and reject both320 rectangular
     points: Array.from({ length: 257 }, () => ({ column: 0, row: 0 })) }), TypeError);
 });
 
+test('authority dimension evidence follows the actual module and unchanged host policy binding', async () => {
+  const expected = createHash('sha256').update(await readFile(new URL('../src/server/map-definition-validator.mjs', import.meta.url))).digest('hex');
+  assert.equal(report.sourceInputSha256['src/server/map-definition-validator.mjs'], expected);
+  assert.equal(report.gridCostProvenance.sourceInputSha256['src/server/map-definition-validator.mjs'], expected);
+  assert.doesNotThrow(() => assertAuthoritativeMapValidatorConsumer(authoritySource));
+  for (const [before, after] of [
+    ["from './src/server/map-definition-validator.mjs'", "from './src/authoring/map-import-validator.mjs'"],
+    ['maxUnits: MAX_UNITS, maxMapObstacles: MAX_MAP_OBSTACLES,', 'maxUnits: 4000, maxMapObstacles: MAX_MAP_OBSTACLES,'],
+    ['MIN_SCENARIO_EVENT_REPEAT_SECONDS, researchRulesFor,', 'MIN_SCENARIO_EVENT_REPEAT_SECONDS, researchRulesFor: researchRulesFor(),'],
+    ['return authoritativeMapValidator(definition, filename);', 'return definition;'],
+  ]) {
+    assert.ok(authoritySource.includes(before), before);
+    assert.throws(() => assertAuthoritativeMapValidatorConsumer(authoritySource.replace(before, after)),
+      /Authoritative map validator binding\/policy moved/);
+  }
+});
+
 test('draft restore dimension evidence follows the bound helper and actual recovery acceptance', () => {
   const store = createMapStudioDraftStore({ getStorage: () => {
     throw new Error('The guard must not access browser storage.');
@@ -133,10 +152,43 @@ test('checkpoint audit follows the actual private envelope binding, limits and p
   ]) assert.throws(() => assertCheckpointEnvelopeConsumer(source, envelope), /XL checkpoint preflight consumer\/ordering changed/);
 });
 
+test('scenario-state audit retains the effective map, actual unit cap and surrounding rejection order', async () => {
+  const source = await readFile(new URL('../src/server/checkpoint-scenario-state.mjs', import.meta.url), 'utf8');
+  assert.equal(report.sourceInputSha256['src/server/checkpoint-scenario-state.mjs'], createHash('sha256').update(source).digest('hex'));
+  assert.doesNotThrow(() => assertCheckpointScenarioStateConsumer(authoritySource));
+  const call = '  validateCheckpointScenarioState(definition, state, { maxUnits: MAX_UNITS });\n';
+  assert.ok(authoritySource.includes(call));
+  for (const changed of [
+    authoritySource.replace("from './src/server/checkpoint-scenario-state.mjs'", "from './src/server/checkpoint-envelope.mjs'"),
+    authoritySource.replace(call, call.replace('(definition,', '(canonicalDefinition,')),
+    authoritySource.replace(call, call.replace('MAX_UNITS', '4000')),
+    authoritySource.replace(call, ''),
+    authoritySource.replace(call, '').replace('function validateMatchCheckpoint(snapshot) {', `function validateMatchCheckpoint(snapshot) {\n${call}`),
+    authoritySource.replace(call, '').replace('  return { definition: canonicalDefinition, state, explored, savedMatchMode };', `${call}  return { definition: canonicalDefinition, state, explored, savedMatchMode };`),
+  ]) assert.throws(() => assertCheckpointScenarioStateConsumer(changed), /Checkpoint scenario-state consumer\/ordering changed/);
+});
+
 test('both XL audit input hashes include the bound checkpoint envelope bytes', () => {
   const expected = createHash('sha256').update(envelopeSource).digest('hex');
   assert.equal(report.sourceInputSha256['src/server/checkpoint-envelope.mjs'], expected);
   assert.equal(report.checkpoint.xlJsonEnvelope.sourceInputSha256['src/server/checkpoint-envelope.mjs'], expected);
+});
+
+test('roster audit retains saved mode, actual population caps and terminal rejection order', async () => {
+  const source = await readFile(new URL('../src/server/checkpoint-roster.mjs', import.meta.url), 'utf8');
+  assert.equal(report.sourceInputSha256['src/server/checkpoint-roster.mjs'], createHash('sha256').update(source).digest('hex'));
+  assert.doesNotThrow(() => assertCheckpointRosterConsumer(authoritySource));
+  const call = '  validateCheckpointRoster(state, savedMatchMode, { maxUnits: MAX_UNITS, maxTeamRoster: MAX_TEAM_ROSTER });\n';
+  assert.ok(authoritySource.includes(call));
+  for (const changed of [
+    authoritySource.replace("from './src/server/checkpoint-roster.mjs'", "from './src/server/checkpoint-envelope.mjs'"),
+    authoritySource.replace(call, call.replace('savedMatchMode,', 'matchMode,')),
+    authoritySource.replace(call, call.replace('MAX_UNITS', '4000')),
+    authoritySource.replace(call, call.replace('MAX_TEAM_ROSTER', '2000')),
+    authoritySource.replace(call, ''),
+    authoritySource.replace(call, '').replace('function validateMatchCheckpoint(snapshot) {', `function validateMatchCheckpoint(snapshot) {\n${call}`),
+    authoritySource.replace(call, '').replace('  return { definition: canonicalDefinition, state, explored, savedMatchMode };', `  return { definition: canonicalDefinition, state, explored, savedMatchMode };\n${call}`),
+  ]) assert.throws(() => assertCheckpointRosterConsumer(changed), /Checkpoint roster consumer\/ordering changed/);
 });
 
 test('source-bound route/save/wire envelope distinguishes finite validation from observed cost', () => {

@@ -1298,6 +1298,106 @@ still owns PR520 activation and the original kill/loss/native recovery deadline
 qualification; this input alone does not close that outcome. Construction
 liveness and rendered acceptance remain separate. Art backing is N/A.
 
+### Queued-wall temporal movement witness — 6 October 2026
+
+The subsequent [queued-wall temporal witness](qa-construction-temporal-witness-2026-10-06.md)
+retains the one authorized new current-source run after closed, unmerged
+[PR #525](https://github.com/lbeezr/thousand-unit-skirmish/pull/525). Actor75's
+558–678 progress-credit interval contains real movement; at594 far-goal priority
+discards a physically admitted .023663 fixed-waypoint gain even while the
+claimant's current waypoint direction has a positive route dot product.
+The complete public actor/query/controller receipt replays185actual calls without
+starting another match. Core proposes only current-route opposition semantics
+at that causal discard; crowd reviews the temporal case before any correction.
+Original completion, 150-tick fairness and physical limits remain unchanged.
+
+Independent qualification subsequently
+[rejected the directed-join exception in PR529](qa-crowd-directed-join-rejection-2026-10-06.md),
+exact preserved head `2882498c`. Both baseline and candidate pass 5/8 original
+journeys, but formerly passing seat 1 gate arrival regresses 64→1 at 2700 and the
+reported fairness gap 35→239 exceeds 150 despite zero contacts. The seat 0 queued
+wall improvement is not an overall success. PR529 remains draft/unmerged;
+PR525 remains retired. Core owns the first-divergence diagnosis from retained
+qualification evidence, coordinated through the parent with the existing crowd
+owner; no new runtime condition or repeated broad journey batch is justified
+from aggregate counts. Safety, deadline and fairness contracts remain unchanged.
+
+The independently reviewed [bounded paired forest capture](qa-crowd-first-decision-2026-10-06.md)
+now identifies the first changed decision at journey142, actor28 on seat1:
+PR529 exempts claimant24 through its directed join, keeps the same admitted
+northward best and commits a .0433333 step where baseline waits. The paired
+inputs and4,906 preceding calls match; both captured calls replay offline
+without a new match. This locates the first branch/write difference, not the
+complete mechanism of the later fairness failure. Core retains the next
+refinement-or-retirement decision; crowd retains sealed diagnostic/replay
+qualification. No fix, changed contract or broader rerun is included.
+
+The next [source-only queue geometry contract](qa-crowd-queue-geometry-2026-10-06.md)
+replays forest142 and wall594 while retaining both production waits. A claimant
+ahead inside the combined body-width lane keeps ordinary following priority;
+outside-lane inward waypoint progress is only lateral-rejoin geometry, not a
+waiver. The wall proposal itself enters the following lane, so this distinction
+does not yet justify a runtime exception or establish continued progress. Core
+owns the semantic refinement; crowd owns later unchanged journey/fairness
+qualification after an explicit supported-candidate handoff. No PR529 merge,
+fresh journey or inference about the later239-tick gap is included.
+
+Independent semantic review at `9f23c1a7` then rejected a concrete continuation
+proposal: allow an outside-lane inward step only when its resulting gap reserves
+the claimant's full next-tick travel budget, and terminate permission on lane
+entry. The reserve is derived from both body radii and authoritative speed ×
+fixed step, not a witness-specific distance. Forest142 fails it (.482295 gap
+versus .526667 required); wall594 passes with .030095 surplus. This proves only
+pair clearance for one fixed budget. Moving the entrant can change the peer's
+closest-eight tangent candidates even when all immediate headings remain clear.
+Wall594 enters the following lane after that half-step, where ordinary priority
+can stop the same tick's remaining execution. Extending permission to its raw
+waypoint is unsupported: that point intrudes .108256 into peer73's remaining
+waypoint corridor. No runtime candidate implements either proposal.
+
+Waiting can persist because the lower-ID far-goal claim discards the admitted
+best, all ten recovery proposals fail, and a crowd wait ends execution without
+body-only route repair. Neither admitted proposal beats historical
+`bestDistance - .02`; movement does not itself reset progress age. The existing
+forward-follower exception protects the actor ahead of compatible followers;
+the transverse-waypoint exception requires different geometry. Passage leases
+protect an isolated dependency beside parked bodies, excluding these 10/16
+moving-peer queries. A fresh peer progress timestamp measures historical
+distance at selector entry, not a promised next executed step.
+
+The **single missing architectural constraint is a bounded movement entitlement
+for the ahead claimant in moving-only crowds**: specify which route progress
+that peer retains, how ingress preserves it, and what consumes or releases the
+entitlement before another grant. Current identity, waypoint and progress
+records do not encode that promise. A next counterfactual peer73 decision could
+falsify this ingress, but would not define the general contract. Core owns that
+contract decision at the existing transient steering/arbitration boundary;
+prefer its bounded queries and lease/offer state after their semantics are
+specified. Crowd remains the sole original journey/fairness qualification owner
+after independent semantic review and explicit supported-candidate handoff.
+PR529 stays rejected; physical guards, progress credit, original deadlines and
+fairness are unchanged. No new helper, game, capture or qualification run is
+justified by this analysis.
+
+The subsequent design task now supplies a concrete
+[moving-crowd entitlement contract](crowd-moving-entitlement-contract.md) and an
+executable model at the existing offer/lease boundary. It reserves one named,
+freshly admitted positive next-tick peer step, preserves its swept capsule across
+recipient route/profile changes, and consumes or cancels on the first next-tick
+attempt without waiting for acknowledgement. Rotating failed allocation probes,
+exact-object acknowledgement, shared proposal limits and real finalized progress
+receipts define the bounded policy. This is usable engineering design, not runtime
+adoption or a deadlock/fairness/completion guarantee. Forest142 stays following;
+wall594 remains request-only without a retained legal peer step.
+
+Core owns the reference model and the later host-finalization/pre-write adapter;
+crowd `01a10933-c2b0` owns ordinary steering adoption and unchanged qualification
+after a supported-candidate handoff. All relevant land writes and safety-only
+state across route resets must be bound before any runtime permission is enabled.
+The model tests use the two pinned receipts plus bounded adversarial sequences;
+no game rerun, production integration or source/package/render acceptance is
+claimed by this design milestone. PR529 stays rejected.
+
 ### Forest cell-gap characterization — 4 October 2026
 
 The bounded experiment measures the current cell-based behavior before U4/U5

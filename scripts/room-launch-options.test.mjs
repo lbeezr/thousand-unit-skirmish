@@ -1,5 +1,17 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { existsSync, readFileSync } from 'node:fs';
+import { spawn } from 'node:child_process';
+import { EventEmitter, once } from 'node:events';
+import { createServer, request as httpRequest } from 'node:http';
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { setTimeout as delay } from 'node:timers/promises';
+import vm from 'node:vm';
+import ts from 'typescript';
+import { createRoomIndexStore } from '../src/server/persistence/room-index-store.mjs';
 import {
   buildRoomWorkerEnvironment,
   completeRoomLaunchOptions,
@@ -15,6 +27,472 @@ import { normalizeMatchMode } from '../src/match-modes.mjs';
 import { PVE_MAP_IDS, readPveLaunchOptions, selectPveMapId } from '../src/pve-match.mjs';
 
 const roomId = 'a'.repeat(32);
+
+function workerReadyFixture() {
+  const source = readFileSync(new URL('../room-supervisor.mjs', import.meta.url), 'utf8');
+  const parsed = ts.createSourceFile('room-supervisor.mjs', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const names = ['startWorker', 'readWorkerHealth'];
+  const functions = parsed.statements.filter(statement =>
+    ts.isFunctionDeclaration(statement) && names.includes(statement.name?.text));
+  assert.deepEqual(functions.map(statement => statement.name.text), names);
+  const timeoutDeclaration = parsed.statements.find(statement => ts.isVariableStatement(statement)
+    && statement.declarationList.declarations.some(declaration => declaration.name.getText(parsed) === 'WORKER_START_TIMEOUT_MS'));
+  assert.ok(timeoutDeclaration);
+  const child = new EventEmitter();
+  child.exitCode = null;
+  child.pid = 1;
+  const kills = [], timers = [], cleared = [], updates = [];
+  child.kill = signal => { kills.push(signal); return true; };
+  const workerProcesses = new Set();
+  // Execute the actual startup/health functions and timeout constant. Only the
+  // child IPC transport and startup clock are synthetic; health uses Node HTTP.
+  const context = vm.createContext({ buildRoomWorkerEnvironment, normalizeRoomMetadata,
+    NORMAL_HUMAN_MATCH_MODE: { matchModeId: 'skirmish', matchModeVersion: 1 },
+    process: { env: {}, execPath: process.execPath }, ROOT: fileURLToPath(new URL('../', import.meta.url)),
+    WORKER_PATH: 'server.mjs', workerProcesses, spawn: () => child,
+    logWorkerOutput: () => {}, console: { log: () => {} }, httpRequest,
+    setTimeout: (callback, milliseconds) => {
+      const timer = { callback, milliseconds }; timers.push(timer); return timer;
+    },
+    clearTimeout: timer => { cleared.push(timer); },
+  });
+  vm.runInContext([timeoutDeclaration, ...functions].map(statement => statement.getFullText(parsed)).join('\n'), context);
+  const pending = context.startWorker('/tmp/ready-contract-maps', '/tmp/ready-contract-match', 'contract',
+    { mode: 'pvp' }, (metadata, worker) => updates.push({ metadata, worker }));
+  assert.equal(timers.length, 1);
+  assert.equal(timers[0].milliseconds, 15_000);
+  return { child, pending, kills, timers, cleared, updates, workerProcesses, readHealth: context.readWorkerHealth };
+}
+
+test('worker ready ignores malformed ports and accepts later valid readiness with unchanged metadata', async () => {
+  for (const port of [undefined, null, '4173', false, -1, 0, .5, NaN, Infinity, 65536, 70000, Number.MAX_SAFE_INTEGER]) {
+    const fixture = workerReadyFixture();
+    const initial = { mapId: 'underbough-rootways', matchModeId: 'skirmish', matchModeVersion: 1 };
+    fixture.child.emit('message', { type: 'ready', port, roomMetadata: initial });
+    await Promise.resolve();
+    assert.equal(fixture.cleared.length, 0, 'malformed readiness leaves the startup timeout active');
+    assert.deepEqual(fixture.kills, []);
+    assert.deepEqual(fixture.updates, []);
+    fixture.child.emit('message', { type: 'ready', port: 4173, roomMetadata: initial });
+    const worker = await fixture.pending;
+    assert.equal(worker.port, 4173);
+    assert.equal(worker.child, fixture.child);
+    assert.equal(JSON.stringify(worker.roomMetadata), JSON.stringify(initial));
+    assert.deepEqual(fixture.cleared, [fixture.timers[0]]);
+    fixture.child.emit('message', { type: 'ready', port: 65535 });
+    assert.equal(worker.port, 4173, 'duplicate readiness cannot replace the worker');
+    const updated = { mapId: 'veyrholds-terraced-vale', matchModeId: 'authored', matchModeVersion: 1 };
+    fixture.child.emit('message', { type: 'roomMetadata', roomMetadata: updated });
+    assert.equal(fixture.updates.length, 1);
+    assert.equal(fixture.updates[0].worker, worker);
+    assert.equal(JSON.stringify(worker.roomMetadata), JSON.stringify(updated));
+    fixture.child.emit('message', { type: 'roomMetadata', roomMetadata: { mapId: '../invalid' } });
+    assert.equal(fixture.updates.length, 1);
+    fixture.child.emit('error', new Error('late child error'));
+    fixture.timers[0].callback();
+    assert.deepEqual(fixture.cleared, [fixture.timers[0]], 'settled startup retains its original cleanup');
+    fixture.child.emit('exit', 0, null);
+    assert.equal(fixture.workerProcesses.size, 0);
+    assert.deepEqual(fixture.kills, []);
+  }
+});
+
+test('worker ready retains port endpoints and existing timeout, error and early-exit cleanup', async () => {
+  for (const port of [1, 65535]) {
+    const fixture = workerReadyFixture();
+    fixture.child.emit('message', { type: 'ready', port });
+    assert.equal((await fixture.pending).port, port);
+    fixture.child.emit('exit', 0, null);
+    assert.equal(fixture.workerProcesses.size, 0);
+  }
+  for (const stage of ['timeout', 'error', 'exit']) {
+    const fixture = workerReadyFixture();
+    fixture.child.emit('message', { type: 'ready', port: 65536 });
+    const failure = new Error('child startup error');
+    const rejected = assert.rejects(fixture.pending, error => stage === 'error'
+      ? error === failure : error.message === (stage === 'timeout'
+        ? 'contract did not become ready in time.' : 'contract exited before startup (code 1, signal none).'));
+    if (stage === 'timeout') fixture.timers[0].callback();
+    else if (stage === 'error') fixture.child.emit('error', failure);
+    else fixture.child.emit('exit', 1, null);
+    await rejected;
+    assert.deepEqual(fixture.kills, ['SIGTERM']);
+    assert.deepEqual(fixture.cleared, [fixture.timers[0]]);
+    if (stage !== 'exit') fixture.child.emit('exit', 1, null);
+    assert.equal(fixture.workerProcesses.size, 0);
+  }
+});
+
+test('later valid worker readiness reaches the actual health consumer successfully', async t => {
+  const server = createServer((request, response) => {
+    assert.equal(request.url, '/health');
+    response.end(JSON.stringify({ ok: true }));
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const fixture = workerReadyFixture();
+  fixture.child.emit('message', { type: 'ready', port: 70000 });
+  let reads = 0;
+  fixture.child.emit('message', { type: 'ready', get port() { return ++reads === 1 ? server.address().port : 70000; } });
+  const worker = await fixture.pending;
+  assert.equal(worker.port, server.address().port);
+  assert.equal(reads, 1, 'worker keeps the port that passed validation');
+  assert.equal((await fixture.readHealth(worker)).ok, true);
+  fixture.child.exitCode = 0;
+  fixture.child.emit('exit', 0, null);
+  assert.equal(await fixture.readHealth(worker), null);
+  assert.equal(fixture.workerProcesses.size, 0);
+});
+
+function workerHealthConsumerFixture(worker, request = httpRequest) {
+  const source = readFileSync(new URL('../room-supervisor.mjs', import.meta.url), 'utf8');
+  const parsed = ts.createSourceFile('room-supervisor.mjs', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const names = ['sendJson', 'readWorkerHealth', 'handleRequest'];
+  const functions = parsed.statements.filter(statement =>
+    ts.isFunctionDeclaration(statement) && names.includes(statement.name?.text));
+  assert.deepEqual(functions.map(statement => statement.name.text), names);
+  const buildIdentity = { sourceRevision: 'health-contract' };
+  const context = vm.createContext({ httpRequest: request, Buffer, URL,
+    stopping: false, HOST: '127.0.0.1', PORT: 1, BUILD_IDENTITY: buildIdentity, MAX_ROOMS: 8,
+    rooms: new Map([['invite', { worker, activeConnections: 2 }], ['idle', { worker: null, activeConnections: 0 }]]),
+    ensureDefaultWorker: async () => worker,
+    // Private-health aggregation runs after the existing access gate grants access.
+    hasAccess: () => true,
+  });
+  vm.runInContext(functions.map(statement => statement.getFullText(parsed)).join('\n'), context);
+  return {
+    readHealth: context.readWorkerHealth,
+    buildIdentity,
+    status: async (pathname = '/ready', method = 'GET') => {
+      const result = {};
+      const response = {
+        writeHead(status, headers) { Object.assign(result, { status, headers }); },
+        end(body) { result.body = JSON.parse(body.toString()); },
+      };
+      await context.handleRequest({ url: pathname, method, headers: { host: '127.0.0.1' } }, response);
+      return result;
+    },
+  };
+}
+
+test('actual readiness rejects non-boolean worker ok and retains malformed-response handling', async t => {
+  let body = '', status = 200;
+  const server = createServer((request, response) => {
+    assert.equal(request.url, '/health');
+    response.writeHead(status);
+    response.end(body);
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const worker = { port: server.address().port, child: { exitCode: null } };
+  const fixture = workerHealthConsumerFixture(worker);
+  for (const invalid of ['false', 1, [], {}]) {
+    body = JSON.stringify({ ok: invalid });
+    const result = await fixture.status();
+    assert.equal(result.status, 503, JSON.stringify(invalid));
+    assert.deepEqual(result.body, { ok: false });
+    assert.equal(await fixture.readHealth(worker), null);
+  }
+  for (const invalid of [{ ok: false }, { ok: null }, { ok: 0 }, { ok: '' }, {}, null, [], true, 'healthy']) {
+    body = JSON.stringify(invalid);
+    const result = await fixture.status();
+    assert.equal(result.status, 503);
+    assert.deepEqual(result.body, { ok: false });
+  }
+  body = '{';
+  assert.equal((await fixture.status()).status, 503, 'malformed JSON remains unavailable');
+  body = JSON.stringify({ ok: true, connected: 1 });
+  for (const code of [201, 503]) {
+    status = code;
+    assert.equal((await fixture.status()).status, 503, 'only HTTP 200 is healthy');
+  }
+  status = 200;
+  assert.deepEqual((await fixture.status('/ready', 'HEAD')).body, { ok: true });
+  assert.equal((await fixture.status('/ready', 'POST')).status, 405);
+  worker.child.exitCode = 0;
+  assert.equal(await fixture.readHealth(worker), null);
+  assert.equal((await fixture.status()).status, 503, 'exited worker remains unavailable');
+  assert.equal(await fixture.readHealth(null), null);
+});
+
+test('worker health timeout and request error retain one settlement and unchanged cleanup', async () => {
+  for (const stage of ['timeout', 'error']) {
+    const upstream = new EventEmitter();
+    let onTimeout, timeoutMs, ended = 0, destroyed = 0;
+    upstream.setTimeout = (milliseconds, callback) => { timeoutMs = milliseconds; onTimeout = callback; };
+    upstream.end = () => {
+      ended++;
+      queueMicrotask(() => stage === 'timeout' ? onTimeout() : upstream.emit('error', new Error('request failed')));
+    };
+    upstream.destroy = () => { destroyed++; upstream.emit('error', new Error('request closed')); };
+    const fixture = workerHealthConsumerFixture({ port: 4173, child: { exitCode: null } }, () => upstream);
+    const result = await fixture.status();
+    assert.equal(timeoutMs, 1500);
+    assert.equal(ended, 1);
+    assert.equal(result.status, 503);
+    assert.deepEqual(result.body, { ok: false });
+    assert.equal(destroyed, stage === 'timeout' ? 1 : 0);
+    upstream.emit('error', new Error('late request error'));
+    assert.deepEqual(result.body, { ok: false });
+  }
+});
+
+test('actual readiness and health aggregation accept a real worker producer response', { timeout: 20_000 }, async t => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'worker-health-producer-'));
+  const child = spawn(process.execPath, [fileURLToPath(new URL('../server.mjs', import.meta.url))], {
+    cwd: fileURLToPath(new URL('../', import.meta.url)),
+    env: { PATH: process.env.PATH, PORT: '0', RTS_HOST: '127.0.0.1', RTS_MANAGED_WORKER: '1',
+      RTS_CUSTOM_MAP_DIRECTORY: path.join(root, 'custom-maps') },
+    stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
+  });
+  const exited = once(child, 'exit');
+  let output = '';
+  child.stdout.on('data', chunk => { output += chunk; });
+  child.stderr.on('data', chunk => { output += chunk; });
+  t.after(async () => {
+    if (child.exitCode === null && child.signalCode === null) {
+      child.kill('SIGINT');
+      await Promise.race([exited, delay(8000, null, { ref: false })]);
+      if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
+    }
+    await exited;
+    await rm(root, { recursive: true, force: true });
+  });
+  const ready = await Promise.race([
+    once(child, 'message'),
+    exited.then(() => assert.fail(`Worker exited before readiness: ${output}`)),
+    delay(10_000, null, { ref: false }).then(() => assert.fail(`Worker readiness timed out: ${output}`)),
+  ]);
+  assert.equal(ready[0].type, 'ready');
+  const worker = { port: ready[0].port, child };
+  const producerResponse = await fetch(`http://127.0.0.1:${worker.port}/health`);
+  assert.equal(producerResponse.status, 200);
+  const producer = await producerResponse.json();
+  assert.equal(producer.ok, true);
+  const fixture = workerHealthConsumerFixture(worker);
+  const accepted = await fixture.readHealth(worker);
+  for (const key of ['ok', 'map', 'matchId', 'matchModeId', 'matchModeVersion', 'connected']) {
+    assert.deepEqual(accepted[key], producer[key], key);
+  }
+  const readyStatus = await fixture.status();
+  assert.equal(readyStatus.status, 200);
+  assert.deepEqual(readyStatus.body, { ok: true });
+  const health = await fixture.status('/health');
+  assert.equal(health.status, 200);
+  assert.equal(health.body.map, producer.map);
+  assert.equal(health.body.matchId, producer.matchId);
+  assert.deepEqual(health.body.buildIdentity, fixture.buildIdentity);
+  assert.equal(health.body.roomCount, 2);
+  assert.equal(health.body.roomLimit, 8);
+  assert.equal(health.body.liveRoomProcesses, 1);
+  assert.equal(health.body.connectedInvitePeers, 2);
+});
+
+async function roomIndexFixture(t) {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'room-index-store-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const dataDirectory = path.join(root, 'data');
+  const indexPath = path.join(dataDirectory, 'rooms.json');
+  return { root, dataDirectory, indexPath, temporaryPath: `${indexPath}.${process.pid}.tmp` };
+}
+
+test('room index store captures live state when each serialized write executes', async t => {
+  const fixture = await roomIndexFixture(t);
+  let timestamp = 1;
+  const priorDocuments = [];
+  const store = createRoomIndexStore({ ...fixture, captureDocument: () => {
+    priorDocuments.push(existsSync(fixture.indexPath) ? readFileSync(fixture.indexPath, 'utf8') : null);
+    return roomIndexDocument([{ id: roomId, createdAt: 0, lastActiveAt: timestamp++, launchOptions: { mode: 'pvp' } }]);
+  } });
+  assert.equal(existsSync(fixture.dataDirectory), false, 'construction performs no I/O');
+  const first = store.persist();
+  const second = store.persist();
+  timestamp = 10;
+  assert.equal(priorDocuments.length, 0, 'enqueueing does not capture the document');
+  await Promise.all([first, second]);
+  const bytes = await readFile(fixture.indexPath, 'utf8');
+  assert.equal(priorDocuments[0], null);
+  assert.equal(JSON.parse(priorDocuments[1]).rooms[0].lastActiveAt, 10, 'next capture follows the previous rename');
+  assert.equal(JSON.parse(bytes).rooms[0].lastActiveAt, 11);
+  assert.equal(bytes, JSON.stringify(JSON.parse(bytes)), 'the persisted document remains compact');
+  assert.equal((await stat(fixture.indexPath)).mode & 0o777, 0o600);
+  assert.equal(existsSync(fixture.temporaryPath), false, 'successful rename consumes the PID temporary file');
+});
+
+test('room index store propagates the current capture error and recovers the next queued write', async t => {
+  const fixture = await roomIndexFixture(t);
+  const failure = new Error('capture failed');
+  let captures = 0;
+  const store = createRoomIndexStore({ ...fixture, captureDocument: () => {
+    if (++captures === 1) throw failure;
+    return roomIndexDocument([]);
+  } });
+  const failed = store.persist();
+  const recovered = store.persist();
+  await assert.rejects(failed, error => error === failure);
+  await recovered;
+  assert.equal(captures, 2);
+  assert.deepEqual(JSON.parse(await readFile(fixture.indexPath, 'utf8')), roomIndexDocument([]));
+});
+
+test('room index serialization remains after directory creation and preserves its error', async t => {
+  const fixture = await roomIndexFixture(t);
+  const failure = new Error('serialization failed');
+  const store = createRoomIndexStore({ ...fixture, captureDocument: () => ({ toJSON() {
+    assert.equal(existsSync(fixture.dataDirectory), true);
+    throw failure;
+  } }) });
+  await assert.rejects(store.persist(), error => error === failure);
+  assert.equal(existsSync(fixture.temporaryPath), false);
+});
+
+test('room index store propagates mkdir, write and rename faults without adding cleanup', async t => {
+  for (const stage of ['mkdir', 'write', 'rename']) {
+    await t.test(stage, async t => {
+      const fixture = await roomIndexFixture(t);
+      if (stage === 'mkdir') await writeFile(fixture.dataDirectory, 'directory collision');
+      else await mkdir(fixture.dataDirectory);
+      if (stage === 'write') await mkdir(fixture.temporaryPath);
+      if (stage === 'rename') await mkdir(fixture.indexPath);
+      const store = createRoomIndexStore({ ...fixture, captureDocument: () => roomIndexDocument([]) });
+      await assert.rejects(store.persist(), error => ['EEXIST', 'EISDIR', 'ENOTDIR'].includes(error.code));
+      assert.equal(existsSync(fixture.temporaryPath), stage !== 'mkdir', stage);
+      if (stage === 'rename') {
+        assert.equal(await readFile(fixture.temporaryPath, 'utf8'), JSON.stringify(roomIndexDocument([])),
+          'rename failure leaves the existing temporary payload');
+      }
+      await rm(stage === 'mkdir' ? fixture.dataDirectory : stage === 'write' ? fixture.temporaryPath : fixture.indexPath,
+        { recursive: true });
+      await store.persist();
+      assert.deepEqual(JSON.parse(await readFile(fixture.indexPath, 'utf8')), roomIndexDocument([]));
+    });
+  }
+});
+
+test('room index read classifies missing and invalid data without creating or repairing files', async t => {
+  const fixture = await roomIndexFixture(t);
+  const store = createRoomIndexStore({ ...fixture, captureDocument: () => { throw new Error('read captured a write'); } });
+  assert.deepEqual(await store.read(), { savedRooms: [], validIndex: false, indexState: 'missing' });
+  assert.equal(existsSync(fixture.dataDirectory), false);
+  await mkdir(fixture.dataDirectory);
+  for (const bytes of ['{', JSON.stringify({ version: 99, rooms: [] }), JSON.stringify({ version: 1,
+    rooms: [{ id: roomId, createdAt: 1, lastActiveAt: 2 }, { id: roomId, createdAt: 1, lastActiveAt: 2 }] })]) {
+    await writeFile(fixture.indexPath, bytes);
+    assert.deepEqual(await store.read(), { savedRooms: [], validIndex: false, indexState: 'invalid' });
+    assert.equal(await readFile(fixture.indexPath, 'utf8'), bytes, 'invalid input is retained for host recovery policy');
+  }
+  await rm(fixture.indexPath);
+  await mkdir(fixture.indexPath);
+  assert.deepEqual(await store.read(), { savedRooms: [], validIndex: false, indexState: 'invalid' });
+});
+
+test('room index read preserves version migrations and document order', async t => {
+  const fixture = await roomIndexFixture(t);
+  await mkdir(fixture.dataDirectory);
+  const store = createRoomIndexStore({ ...fixture, captureDocument: () => roomIndexDocument([]) });
+  for (const version of [1, 2, 3]) {
+    const document = { version, rooms: [
+      { id: roomId, createdAt: 1, lastActiveAt: 2, ...(version === 1 ? {} : { launchOptions: { mode: 'pvp' } }) },
+      { id: 'b'.repeat(32), createdAt: 1, lastActiveAt: 9, ...(version === 1 ? {} : { launchOptions: { mode: 'pvp' } }) },
+    ] };
+    await writeFile(fixture.indexPath, JSON.stringify(document));
+    assert.deepEqual(await store.read(), {
+      savedRooms: normalizeRoomIndex(document).rooms, validIndex: true, indexState: 'valid',
+    });
+  }
+});
+
+test('room index IDs require primitive strings without coercion across supported versions', () => {
+  for (const version of [1, 2, 3]) {
+    const entry = id => ({ id, createdAt: 1, lastActiveAt: 2,
+      ...(version === 1 ? {} : { launchOptions: { mode: 'pvp' } }) });
+    for (const id of [roomId, 'A9_-'.repeat(8), '_'.repeat(32), '-'.repeat(32)]) {
+      const document = JSON.parse(JSON.stringify({ version, rooms: [entry(id)] }));
+      assert.deepEqual(normalizeRoomIndex(document), {
+        version: 3, rooms: [{ ...entry(id), launchOptions: { mode: 'pvp' } }],
+      });
+      assert.deepEqual(document.rooms[0], entry(id), 'normalization does not mutate the caller');
+      assert.equal(normalizeRoomIndex({ version, rooms: [entry(id), entry(id)] }), null,
+        'duplicate valid string IDs reject the entire document');
+    }
+    for (const id of [[roomId], [[roomId]], [], {}, null, undefined, 0, true,
+      new String(roomId), { toString() { return roomId; } },
+      { toString() { throw new Error('must not coerce an ID'); } },
+      Symbol('room'), 1n, '', 'a'.repeat(31), 'a'.repeat(33), 'a'.repeat(31) + '/']) {
+      assert.equal(normalizeRoomIndex({ version, rooms: [entry(id)] }), null);
+    }
+    const duplicateArrays = JSON.parse(JSON.stringify({ version, rooms: [entry([roomId]), entry([roomId])] }));
+    assert.equal(normalizeRoomIndex(duplicateArrays), null, 'coercible arrays cannot bypass string duplicate checks');
+    let reads = 0;
+    const changing = { ...entry(roomId), get id() { return ++reads === 1 ? roomId : [roomId]; } };
+    assert.equal(normalizeRoomIndex({ version, rooms: [changing] }).rooms[0].id, roomId,
+      'the returned ID is the primitive string that passed validation');
+    assert.equal(reads, 1);
+  }
+});
+
+test('room index store classifies coercible JSON IDs as invalid without rewriting', async t => {
+  const fixture = await roomIndexFixture(t);
+  await mkdir(fixture.dataDirectory);
+  const store = createRoomIndexStore({ ...fixture, captureDocument: () => { throw new Error('read captured a write'); } });
+  for (const version of [1, 2, 3]) for (const id of [[roomId], [[roomId]], [], {}, null, true, 0]) {
+    const bytes = JSON.stringify({ version, rooms: [{ id, createdAt: 1, lastActiveAt: 2,
+      ...(version === 1 ? {} : { launchOptions: { mode: 'pvp' } }) }] });
+    await writeFile(fixture.indexPath, bytes);
+    assert.deepEqual(await store.read(), { savedRooms: [], validIndex: false, indexState: 'invalid' });
+    assert.equal(await readFile(fixture.indexPath, 'utf8'), bytes);
+    assert.equal(existsSync(fixture.temporaryPath), false);
+  }
+});
+
+test('actual supervisor recovers room directories after an index contains an array ID', { timeout: 20_000 }, async t => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'room-index-id-recovery-'));
+  const dataDirectory = path.join(root, 'room-data');
+  const directory = path.join(dataDirectory, 'rooms', roomId);
+  await mkdir(directory, { recursive: true });
+  const retainedPath = path.join(directory, 'retained-data.txt');
+  await writeFile(retainedPath, 'existing room data');
+  const now = Date.now();
+  await writeFile(path.join(dataDirectory, 'rooms.json'), JSON.stringify({ version: 3,
+    rooms: [{ id: [roomId], createdAt: now, lastActiveAt: now, launchOptions: { mode: 'pvp' } }] }));
+  const child = spawn(process.execPath, [fileURLToPath(new URL('../room-supervisor.mjs', import.meta.url))], {
+    cwd: fileURLToPath(new URL('../', import.meta.url)),
+    env: { PATH: process.env.PATH, PORT: '0', RTS_HOST: '127.0.0.1',
+      RTS_ROOM_DATA_DIRECTORY: dataDirectory, RTS_CUSTOM_MAP_DIRECTORY: path.join(root, 'custom-maps') },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  const exited = once(child, 'exit');
+  let output = '';
+  child.stdout.on('data', chunk => { output += chunk; });
+  child.stderr.on('data', chunk => { output += chunk; });
+  t.after(async () => {
+    if (child.exitCode === null && child.signalCode === null) {
+      child.kill('SIGINT');
+      await Promise.race([exited, delay(8000, null, { ref: false })]);
+      if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
+    }
+    await exited;
+    await rm(root, { recursive: true, force: true });
+  });
+  const deadline = Date.now() + 10_000;
+  let address;
+  while (Date.now() < deadline) {
+    assert.equal(child.exitCode, null, output);
+    address = output.match(/RTS room supervisor listening at (http:\/\/127\.0\.0\.1:\d+) · 1 invite rooms/)?.[1];
+    if (address && output.includes('[default room] RTS prototype server listening')) break;
+    await delay(20);
+  }
+  assert.ok(address && output.includes('[default room] RTS prototype server listening'), output);
+  assert.equal((await fetch(address)).status, 200);
+  assert.match(output, /Room index is malformed or unsupported; preserving room directories and rebuilding the index/);
+  assert.match(output, /Recovered 1 room directory missing from the index/);
+  assert.equal(await readFile(retainedPath, 'utf8'), 'existing room data');
+  const rebuilt = JSON.parse(await readFile(path.join(dataDirectory, 'rooms.json'), 'utf8'));
+  assert.equal(rebuilt.version, 3);
+  assert.deepEqual(rebuilt.rooms.map(entry => entry.id), [roomId]);
+  assert.deepEqual(rebuilt.rooms[0].launchOptions, { mode: 'pvp' });
+  assert.deepEqual(normalizeRoomIndex(rebuilt), rebuilt);
+});
 
 test('room launch options default to PvP and validate PvE mode and uint32 seeds', () => {
   assert.deepEqual(normalizeRoomLaunchOptions(), { mode: 'pvp' });

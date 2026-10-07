@@ -2,16 +2,81 @@ import { normalizeMatchMode, assertMatchModeCompatibility, matchModeDefinition }
 
 export const LOBBY_ARMY_SIZES = Object.freeze([250, 500, 1000, 2000]);
 
+/**
+ * @typedef {object} PregameCheckpoint
+ * @property {'lobby' | 'running'} phase
+ * @property {number} revision Nonnegative safe integer, checked at the boundary.
+ */
+
+/** @param {unknown} value @returns {value is Record<string, unknown>} */
+function isPregameCheckpointRecord(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+/** @param {unknown} value @returns {value is PregameCheckpoint['phase']} */
+function isPregameCheckpointPhase(value) {
+  return value === 'lobby' || value === 'running';
+}
+
+/** @param {unknown} value @returns {value is number} */
+function isPregameCheckpointRevision(value) {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+}
+
+/**
+ * Return only the field values that passed validation. Capturing each once
+ * prevents changing accessors from substituting unchecked values in the result.
+ * @param {unknown} value
+ * @returns {PregameCheckpoint | null}
+ */
 export function validatePregameCheckpoint(value) {
   if (value === null) return null;
-  if (!value || typeof value !== 'object' || Array.isArray(value)
-    || Object.keys(value).some(key => !['phase', 'revision'].includes(key))
-    || !['lobby', 'running'].includes(value.phase)
-    || !Number.isSafeInteger(value.revision) || value.revision < 0) {
+  if (!isPregameCheckpointRecord(value)
+    || Object.keys(value).some(key => !['phase', 'revision'].includes(key))) {
     throw new TypeError('Invalid pregame checkpoint.');
   }
-  return { phase: value.phase, revision: value.revision };
+  const phase = value.phase;
+  if (!isPregameCheckpointPhase(phase)) throw new TypeError('Invalid pregame checkpoint.');
+  const revision = value.revision;
+  if (!isPregameCheckpointRevision(revision)) throw new TypeError('Invalid pregame checkpoint.');
+  return { phase, revision };
 }
+
+/**
+ * Projected metadata stays unknown: this class does not validate its kinds.
+ * Seat metadata is open; only the added readiness value is guaranteed.
+ * @typedef {PregameCheckpoint & {
+ * mapId: unknown, armySize: unknown, matchModeId: unknown, matchModeVersion: unknown,
+ * mode: 'pvp', canLaunch: boolean,
+ * seats: Array<Record<string, unknown> & {ready: boolean}>
+ * }} PregamePayload
+ */
+
+/**
+ * Dependencies required by a checked projection receiver. This does not enroll
+ * the constructor, mutators, checkpoint or launch implementation in checkJs.
+ * @typedef {{
+ * checkpoint: () => PregameCheckpoint,
+ * mapId: unknown, armySize: unknown,
+ * matchModeId?: unknown, matchModeVersion?: unknown,
+ * canLaunch: () => boolean,
+ * seats: ReadonlyArray<Readonly<Record<string, unknown>>>, readyIds: ReadonlySet<unknown>
+ * }} PregamePayloadSource
+ */
+
+/**
+ * Trusted host sessions supply these fields; this is not runtime admission.
+ * @typedef {{id: string, team: 0 | 1, connected: boolean}} PregameSeat
+ */
+
+/**
+ * Receiver dependencies for the checked seat projection only. Other class
+ * implementations and the payload's open metadata remain outside this contract.
+ * @typedef {{
+ * seats: ReadonlyArray<Readonly<PregameSeat>>,
+ * phase: PregameCheckpoint['phase'], invalidate: () => void
+ * }} PregameSeatSyncSource
+ */
 
 /** Uses the worker's existing seat sessions; never allocates identities or seats. */
 export class RoomPregame {
@@ -32,6 +97,12 @@ export class RoomPregame {
     this.readyIds.clear();
   }
 
+  /**
+   * Extra input metadata may be unknown or null; only the three seat fields project.
+   * @this {PregameSeatSyncSource}
+   * @param {ReadonlyArray<Readonly<PregameSeat> & Readonly<Record<string, unknown>>>} seats
+   * @returns {boolean}
+   */
   syncSeats(seats) {
     const next = seats.map(({ id, team, connected }) => ({ id, team, connected }))
       .sort((a, b) => a.team - b.team);
@@ -123,6 +194,7 @@ export class RoomPregame {
 
   checkpoint() { return { phase: this.phase, revision: this.revision }; }
 
+  /** @this {PregamePayloadSource} @returns {PregamePayload} */
   payload() {
     return {
       ...this.checkpoint(), mapId: this.mapId, armySize: this.armySize,

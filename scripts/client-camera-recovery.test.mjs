@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
+import { createWelcomeSession } from '../src/client/networking/welcome-session.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const socketSource = source.slice(source.indexOf('function connectSocket('),
@@ -39,6 +40,8 @@ function fixture() {
     setPlayer(player) { context.localTeam = Number.isInteger(player.team) ? player.team : null; },
     centerCameraOnHomeBase() { centers.push(context.localTeam); },
   });
+  context.welcomeSession = createWelcomeSession({ getStorage: () => context.sessionStorage,
+    sessionKey: context.ROOM_SESSION_STORAGE_KEY, instanceKey: 'fixture-instance', matchKey: 'fixture-match' });
   vm.runInContext(socketSource, context);
   const connect = () => {
     vm.runInContext('connectSocket()', context);

@@ -5,6 +5,8 @@ import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import './pve-contested-wood-raid.test.mjs';
+import { CONTESTED_RAID_TICKS, publicRaidWaypoints } from './pve-contested-wood-case.mjs';
 
 const helper = fileURLToPath(new URL('./pve-contested-wood-case.mjs', import.meta.url));
 
@@ -27,6 +29,10 @@ for (const team of [0, 1]) test(`Medium seat ${team}: native forest Worker loss,
       const r = branch.result, { stages } = r;
       assert.equal(branch.loop.result.depositWitness.bankIncrease, 10, 'ordinary paid depletion/discovery/deposit precedes the raid');
       assert.equal(r.prepared.state.resourceNodes.find(n => n.id === `s${team}-home-wood`).stock, 0);
+      assert.ok(stages.casualty > r.initialTick && stages.casualty <= r.initialTick + CONTESTED_RAID_TICKS,
+        'public search, pursuit and native casualty fit the original 180-second raid window');
+      const map = JSON.parse(await readFile(new URL('../maps/veyrholds-riven-escarpment.json', import.meta.url)));
+      assert.deepEqual(r.raidWaypoints, publicRaidWaypoints(map, team), 'exploration uses only reproducible authored terrain');
       assert.ok(r.focusWitness.raiderView.units.some(u => u[0] === r.casualty.id && u[8] === r.casualty.generation && u[4] > 0), 'focused Attack names a currently disclosed living generation');
       for (const row of r.trace.slice(0,r.setupTraceLength)) {
         if (row.command.type === 'attack') assert.ok(row.playerView.units.some(u => u[0] === row.command.targetId
@@ -36,6 +42,15 @@ for (const team of [0, 1]) test(`Medium seat ${team}: native forest Worker loss,
           assert.ok(row.searchWitness.tick <= row.tick);
           assert.ok(raiderView.units.some(u => u[0] === target.id && u[8] === target.generation && u[2] === target.x && u[3] === target.z));
           assert.deepEqual({x:row.command.x,z:row.command.z},{x:target.x,z:target.z}, 'search Move uses only the retained last-seen position');
+        }
+        if (row.explorationWitness) {
+          assert.equal(row.command.type, 'move');
+          assert.equal(row.explorationWitness.kind, 'authored-map');
+          assert.deepEqual(row.explorationWitness.point, r.raidWaypoints[row.explorationWitness.waypointIndex]);
+          assert.deepEqual({ x: row.command.x, z: row.command.z }, row.explorationWitness.point);
+        }
+        if (row.team === 1-team && row.command.type === 'move' && row.tick < stages.casualty) {
+          assert.ok(row.searchWitness || row.explorationWitness, 'every raid Move has disclosed pursuit or authored exploration provenance');
         }
       }
       assert.equal(r.lossWitness.worker.workIntent.sourceKind, 'forest-group');

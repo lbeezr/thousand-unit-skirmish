@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
-import { canTraverseUnitStep, canTraverseStaticBodySegment, workerEconomyBodyRadius, activeLandMovementBodyRadius } from '../src/unit-movement.mjs';
-import { STONE_ECONOMY_PROFILE_ID } from '../src/economy-profile.mjs';
+import { canTraverseUnitStep, canTraverseStaticBodySegment, workerEconomyBodyRadius, activeLandMovementBodyRadius,
+  LAND_CLEARANCE_PROFILE, pointSegmentDistanceSquared } from '../src/unit-movement.mjs';
+import { canTraverseCrowdBodySegment } from '../src/unit-crowd-steering.mjs';
+import { STONE_ECONOMY_PROFILE_ID, acceptsProfileDropoff } from '../src/economy-profile.mjs';
 import { canTraverseFlatUnitSegment, shortcutFlatUnitPath } from '../src/unit-path-line.mjs';
 
 process.env.RTS_MAP='maps/open-field.json';process.env.RTS_GAME_MODE='pvp';process.env.RTS_PREGAME='0';
@@ -17,14 +19,17 @@ function command(r,u,extra) {
   const notices = r.order(u.team,{ids:[u.id],unitGenerations:[u.generation],...extra});
   r.drain(); assert.ok(notices.some(n=>/ORDER|WAYPOINT QUEUED/.test(n.message)),JSON.stringify(notices));
 }
-function until(r,predicate,label,limit=5000) {
-  for(let tick=0;tick<limit;tick++){if(predicate())return;stepWorkers(r);}
+function until(r,predicate,label,limit=5000,step=()=>stepWorkers(r)) {
+  for(let tick=0;tick<limit;tick++){if(predicate())return;step();}
   assert.fail(`Timeout: ${label}`);
 }
-function checkWorkerSteps(r,id) {
-  for(const s of r.landSteps.filter(s=>s.id===id))
+function checkWorkerSteps(r,id,bodies=false) {
+  for(const s of r.landSteps.filter(s=>s.id===id)) {
     assert.ok(canTraverseStaticBodySegment(s.from,s.to,.18,160,160,r.isWalkable,{allowEscape:true}),
       `actual ${s.reason} step has compatible Worker clearance`);
+    if(bodies)assert.ok(canTraverseCrowdBodySegment(s.from,s.to,.18,s.neighbours),
+      `actual ${s.reason} substep has strict swept body clearance`);
+  }
 }
 function stepWorkers(r) {
   const active=new Set(r.units.filter(u=>u.kind==='worker'&&activeLandMovementBodyRadius(u)).map(u=>u.id));
@@ -33,33 +38,108 @@ function stepWorkers(r) {
   for(const s of r.landSteps.filter(s=>active.has(s.id)))
     assert.ok(canTraverseStaticBodySegment(s.from,s.to,.18,160,160,r.isWalkable,{allowEscape:true}));
 }
-function trackLeg(r,u,finish) {
-  const start={x:u.x,z:u.z},goal=r.point(u.path.at(-1)); let samples=0;
+function legIdentity(r,u) {
+  return {generation:u.generation,revision:u.orderRevision,workIntent:structuredClone(u.workIntent),
+    node:u.gatherNodeId,forest:u.gatherForestCell,phase:u.gatherPhase,dropoff:u.dropoffBuildingId,
+    goal:u.moveGoalCell,tail:u.path.at(-1),queue:structuredClone(u.queuedWaypoints),navigation:r.navigationRevision};
+}
+function checkAcceptedLeg(r,u,accepted) {
+  assert.deepEqual(legIdentity(r,u),accepted,'accepted work and selected goal remain unchanged before transition');
+}
+function checkStraightLeg(start,goal,u) {
   const dx=goal.x-start.x,dz=goal.z-start.z,length=Math.hypot(dx,dz);
+  assert.ok(Math.abs((u.x-start.x)*dz-(u.z-start.z)*dx)/length<1e-7,
+    'work trajectory follows its direct selected leg');
+}
+function checkClearCorridor(r,u,goal) {
+  assert.ok(canTraverseStaticBodySegment(u,goal,.18,160,160,r.isWalkable),'clear control has legal whole static corridor');
+  for(const peer of r.units.filter(v=>v!==u&&v.hp>0&&v.movementDomain!=='water'))
+    assert.ok(Math.sqrt(pointSegmentDistanceSquared(peer,u,goal))>=.18+LAND_CLEARANCE_PROFILE.radiusByKind[peer.kind],
+      'clear control has no body in its whole selected corridor');
+}
+function parkedPeers(r,id) {
+  return r.units.filter(u=>u.id!==id).map(u=>({id:u.id,generation:u.generation,x:u.x,z:u.z,
+    team:u.team,kind:u.kind,hp:u.hp,cargo:u.cargo,cargoType:u.cargoType,
+    revision:u.orderRevision,path:[...u.path],pathIndex:u.pathIndex,queue:structuredClone(u.queuedWaypoints),
+    phase:u.gatherPhase,workIntent:structuredClone(u.workIntent),holding:u.holdingPosition}));
+}
+function checkFoodConservation(r) {
+  const stock=[...r.resources.values()].filter(n=>n.type==='food').reduce((sum,n)=>sum+n.stock,0);
+  const cargo=r.units.filter(u=>u.cargoType==='food').reduce((sum,u)=>sum+u.cargo,0);
+  assert.ok(Math.abs(stock+cargo+r.food.reduce((sum,v)=>sum+v-100,0)-24)<1e-7,
+    'finite Food stock, all cargo and both banks conserved throughout journey');
+}
+function checkDeposit(r,before,after,previousBank) {
+  const credit=r.food[after.team]-previousBank;
+  if(credit===0&&before.cargo<=after.cargo)return;
+  assert.ok(credit>0&&Math.abs(credit-before.cargo+after.cargo)<1e-8,'real deposit credits exactly removed cargo');
+  const building=r.dropoffBuilding(before.dropoffBuildingId);
+  assert.ok(before.gatherPhase==='to-base'&&before.cargoType==='food'&&building?.complete
+    &&building.team===before.team&&acceptsProfileDropoff(building.type,before.cargoType)
+    &&r.buildingDistance(before,building.id)<=1.5,'real deposit uses pre-step eligible owned interaction edge');
+}
+function journeyStep(r,u,peers) {
+  const before={x:u.x,z:u.z,team:u.team,cargo:u.cargo,cargoType:u.cargoType,
+    gatherPhase:u.gatherPhase,dropoffBuildingId:u.dropoffBuildingId},bank=r.food[u.team];
+  const work=structuredClone(u.workIntent),generation=u.generation;
+  r.step();checkWorkerSteps(r,u.id,true);checkDeposit(r,before,u,bank);checkFoodConservation(r);
+  assert.equal(u.generation,generation);assert.deepEqual(u.workIntent,work,'native steps retain accepted work');
+  assert.deepEqual(parkedPeers(r,u.id),peers,'parked peers keep their poses and accepted orders');
+}
+function trackLeg(r,u,finish,{straight=true,bodies=false,clear=false,step=()=>r.step()}={}) {
+  const start={x:u.x,z:u.z},goal=r.point(u.path.at(-1)); let samples=0;
+  const accepted=legIdentity(r,u);
+  assert.equal(accepted.goal,accepted.tail,'accepted selected goal matches the route tail');
+  if(clear)checkClearCorridor(r,u,goal);
   for(let tick=0;tick<5000&&!finish();tick++) {
-    const before={x:u.x,z:u.z,cell:r.cell(u.x,u.z)};r.step();checkWorkerSteps(r,u.id);samples++;
+    const before={x:u.x,z:u.z,cell:r.cell(u.x,u.z)};step();checkWorkerSteps(r,u.id,bodies);samples++;
     assert.ok(canTraverseUnitStep(before.cell,r.cell(u.x,u.z),map.width,r.levels,r.isWalkable),'legal authoritative step');
     // Deposit/resumption may switch targets and move in the same authoritative tick.
-    if(!finish())assert.ok(Math.abs((u.x-start.x)*dz-(u.z-start.z)*dx)/length<1e-7,JSON.stringify({ label:'work trajectory follows its direct selected leg', start,goal,before,after:{x:u.x,z:u.z,phase:u.gatherPhase,cargo:u.cargo,path:u.path},bank:r.food[u.team],tick,cross:Math.abs((u.x-start.x)*dz-(u.z-start.z)*dx)/length }));
+    if(!finish()) {
+      checkAcceptedLeg(r,u,accepted);
+      if(straight)checkStraightLeg(start,goal,u);
+    }
   }
   assert.ok(finish(),'direct work leg finishes');
   assert.ok(samples>3);
 }
-for(const team of [0,1])test(`seat ${team}: manual, gather, drop-off, Return and resumed work use direct flat legs with recovery`,async()=>{
+for(const clear of [false,true])for(const team of [0,1])test(`seat ${team}: ${clear?'body-clear direct':'crowded body-safe'} Gather, drop-off, Return and resumed work with recovery`,async t=>{
   const f=await createPathingReplayFixture(map,{traceLandSteps:true}),r=f.replay;
   try {
     let u=r.units.find(u=>u.team===team&&u.kind==='worker');
     // Explicit initial-position geometry fixture; stock/cargo/banks are never injected.
     Object.assign(u,{x:-8.27,z:-9.19});r.step();
+    assert.deepEqual([0,1].map(seat=>r.units.filter(v=>v.team===seat&&v.kind==='worker').length),[4,4]);
+    if(clear) {
+      // A separate control uses real orders to clear the corridor before measurement.
+      // The original crowded scene and its peers are never repositioned.
+      const peers=r.units.filter(v=>v!==u);
+      const identity=()=>r.units.map(v=>({id:v.id,generation:v.generation,team:v.team,kind:v.kind,hp:v.hp,cargo:v.cargo,cargoType:v.cargoType}));
+      const original=identity(),food=[...r.food],wood=[...r.wood],stock=r.resources.get('food').stock;
+      for(const peer of peers)command(r,peer,{type:'move',x:-60.5+peer.id*3,z:55.5});
+      until(r,()=>peers.every(v=>!v.movePlanningPending&&v.pathIndex===v.path.length
+        &&v.x===-60.5+v.id*3&&v.z===55.5),'clear-control peers reach their exact parking targets');
+      for(const peer of peers)command(r,peer,{type:'stop'});
+      assert.deepEqual({x:u.x,z:u.z},{x:-8.27,z:-9.19},'parking peers leaves the original fractional start unchanged');
+      assert.deepEqual(identity(),original,'parking preserves roster identity, HP and cargo');
+      assert.deepEqual(r.food,food);assert.deepEqual(r.wood,wood);assert.equal(r.resources.get('food').stock,stock);
+    }
     const initial=r.checkpoint(),id=u.id;
+    const peers=parkedPeers(r,id),stats={steps:0,safeWrites:0,deposits:0};
+    const step=()=>{const bank=r.food[team];journeyStep(r,u,peers);stats.steps++;
+      stats.safeWrites+=r.landSteps.filter(s=>s.id===id).length;if(r.food[team]>bank)stats.deposits++;};
+    const options={straight:clear,bodies:true,clear,step};
     command(r,u,{type:'move',x:13.5,z:11.5});assert.equal(u.path.length,1,'manual direct control');
     r.restore(initial);u=r.units[id];
     command(r,u,{type:'gather',nodeId:'food'});
     assert.equal(u.path.length,1,'Gather must match the direct manual route on identical geometry');
     assert.equal(u.gatherNodeId,'food');
-    trackLeg(r,u,()=>u.gatherPhase==='gathering');
+    const work=structuredClone(u.workIntent);
+    // The original outbound corridor is clear in both rosters; retain exact straightness here too.
+    trackLeg(r,u,()=>u.gatherPhase==='gathering',{...options,straight:true,clear:true});
     assert.ok(Math.hypot(u.x-13.5,u.z-11.5)<=1.5,'existing interaction radius stops the approach');
-    until(r,()=>u.cargo>=10&&u.gatherPhase==='to-base','real full cargo starts automatic drop-off');
+    until(r,()=>u.cargo>=10&&u.gatherPhase==='to-base','real full cargo starts automatic drop-off',5000,step);
+    assert.deepEqual(u.workIntent,work);
     assert.equal(u.path.length,1,'automatic cargo drop-off keeps the chosen reachable endpoint');
     const carrying=r.checkpoint(),views=[r.snapshot(0),r.snapshot(1)];
     assert.ok(r.validate(carrying));r.restore(carrying);u=r.units[id];
@@ -69,20 +149,63 @@ for(const team of [0,1])test(`seat ${team}: manual, gather, drop-off, Return and
       for(const row of expected.units)if(row[5]==='worker'&&Object.hasOwn(row,17))row[17]=null;
       assert.deepEqual(actual,expected,'seat disclosure only clears transient work receipts on restore');
     }
-    trackLeg(r,u,()=>r.food[team]===110);
+    trackLeg(r,u,()=>r.food[team]===110,options);
+    assert.deepEqual(u.workIntent,work,'automatic deposit preserves the accepted Gather job');
     assert.equal(u.gatherPhase,'to-node');assert.equal(u.path.length,1,'automatic resumption is direct');
-    trackLeg(r,u,()=>u.gatherPhase==='gathering');
-    until(r,()=>u.cargo>.5,'real partial Food');command(r,u,{type:'stop'});
+    trackLeg(r,u,()=>u.gatherPhase==='gathering',options);
+    until(r,()=>u.cargo>.5,'real partial Food',5000,step);command(r,u,{type:'stop'});
     const stopped=r.checkpoint(),cargo=u.cargo;
     command(r,u,{type:'returnCargo'});assert.equal(u.path.length,1,'explicit Return is direct');
     const returnGoal=u.path.at(-1);
     r.restore(stopped);u=r.units[id];command(r,u,{type:'move',...r.point(returnGoal)});
     assert.equal(u.path.length,1);assert.equal(u.path.at(-1),returnGoal,'same legal endpoint as manual control');
     r.restore(stopped);u=r.units[id];command(r,u,{type:'returnCargo'});
-    trackLeg(r,u,()=>u.cargo===0);
+    trackLeg(r,u,()=>u.cargo===0,options);
     assert.ok(Math.abs(r.food[team]-110-cargo)<1e-8);assert.equal(u.gatherNodeId,null);
     const stock=r.resources.get('food').stock;
     assert.ok(Math.abs(stock+r.food.reduce((sum,v)=>sum+v-100,0)-24)<1e-7,'finite stock and deposits conserved');
+    assert.equal(stats.deposits,2,'real full and fractional deposits both observed');
+    assert.ok(stats.safeWrites>3);t.diagnostic(JSON.stringify({team,clear,...stats}));
+  } finally {await f.dispose();}
+});
+
+test('journey guards reject corrupt observations and a stalled deposit without relaxing limits',async t=>{
+  const f=await createPathingReplayFixture(map,{traceLandSteps:true}),r=f.replay;
+  try {
+    const u=r.units.find(v=>v.team===0&&v.kind==='worker');
+    Object.assign(u,{x:-8.27,z:-9.19});r.step();command(r,u,{type:'gather',nodeId:'food'});
+    const start={x:u.x,z:u.z},goal=r.point(u.path.at(-1)),accepted=legIdentity(r,u);
+    checkClearCorridor(r,u,goal);r.step();checkWorkerSteps(r,u.id,true);checkStraightLeg(start,goal,u);
+    await t.test('unsafe swept overlap fails the actual-substep guard',()=>{
+      const write=structuredClone(r.landSteps.find(s=>s.id===u.id));
+      const distance=Math.hypot(write.to.x-write.from.x,write.to.z-write.from.z);
+      write.neighbours=[{...write.neighbours[0],kind:'worker',
+        x:write.from.x+.37*(write.to.x-write.from.x)/distance,
+        z:write.from.z+.37*(write.to.z-write.from.z)/distance}];
+      assert.throws(()=>checkWorkerSteps({landSteps:[write],isWalkable:r.isWalkable},u.id,true),/strict swept body clearance/);
+    });
+    await t.test('an unintended clear-space detour fails exact collinearity',()=>{
+      assert.throws(()=>checkStraightLeg(start,goal,{x:u.x+.01,z:u.z}),/direct selected leg/);
+    });
+    await t.test('lost or substituted goal fails accepted-leg identity',()=>{
+      checkAcceptedLeg(r,u,accepted);
+      for(const goal of [-1,u.moveGoalCell+1])assert.throws(()=>checkAcceptedLeg(r,{...u,moveGoalCell:goal},accepted),/selected goal remain unchanged/);
+      assert.throws(()=>trackLeg(r,{...u,path:[u.moveGoalCell+1]},()=>false),/selected goal matches the route tail/);
+    });
+    trackLeg(r,u,()=>u.gatherPhase==='gathering');
+    until(r,()=>u.cargo===10&&u.gatherPhase==='to-base','negative-control real full cargo');
+    await t.test('missing or premature deposit fails and a stalled bank hits the original 5000-step bound',()=>{
+      const before=structuredClone(u),after={...u,cargo:0,cargoType:null},bank=r.food[u.team];
+      assert.throws(()=>checkDeposit(r,before,after,bank),/credits exactly removed cargo/);
+      // Counterfactual bank credit while still at the node cannot count as eligible delivery.
+      const early={food:[bank+10,100],dropoffBuilding:id=>r.dropoffBuilding(id),buildingDistance:(p,id)=>r.buildingDistance(p,id)};
+      assert.throws(()=>checkDeposit(early,before,after,bank),/pre-step eligible owned interaction edge/);
+      let calls=0;
+      const frozen={point:r.point,cell:r.cell,levels:r.levels,isWalkable:r.isWalkable,
+        navigationRevision:r.navigationRevision,food:[...r.food],landSteps:[],step(){calls++;}};
+      assert.throws(()=>trackLeg(frozen,structuredClone(u),()=>frozen.food[u.team]===110,{straight:false,bodies:true}),/direct work leg finishes/);
+      assert.equal(calls,5000,'nondeposit is rejected at the unchanged deadline');
+    });
   } finally {await f.dispose();}
 });
 

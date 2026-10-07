@@ -1,0 +1,13 @@
+{
+  "docs/qa-evidence/crowd-first-decision-2026-10-06/baseline-observer.mjs.gz": "c8d0157fd3255e417414931b08f923e6ec4c2729c058e7e394e66c293766b613",
+  "docs/qa-evidence/crowd-first-decision-2026-10-06/candidate-observer.mjs.gz": "d6e380529905f46607faaf6ac644082b9bfd2538a0e35f1ade18cc37938a1b8b",
+  "docs/qa-evidence/crowd-first-decision-2026-10-06/capture.mjs.gz": "533770d4711132d1baddae0c0b47526405dd7412354da9f58bfc5f0ddb377d78",
+  "docs/qa-evidence/crowd-first-decision-2026-10-06/failed-start.json": "f740e87a7c3856f90776d31e1b1eaec2cd902614a7d2a53f0091e677279fe244",
+  "docs/qa-evidence/crowd-first-decision-2026-10-06/first-decision.json.gz": "74ede1895682f64b9f1d512f9fe9fb200e542c77ad1568165aaf8ea38e18b11a",
+  "docs/qa-evidence/crowd-first-decision-2026-10-06/offline-replay.json": "f1266a898d42cca97fb0bea1c7b49a955177b4076a0709fae571d22b2c9313f1",
+  "docs/qa-evidence/crowd-first-decision-2026-10-06/prepare.py.gz": "2cbe71f0d0fc7e39e15fbebc7f6f21f3bcde0fc4e179c643f205c03093b59144",
+  "scripts/crowd-first-decision-observer.mjs": "1ec69a1291c2dc2a4631ad3ec7d5b50455aaca1fac523729a2f46253ea12907d",
+  "scripts/crowd-first-decision-context.mjs": "2f39507ad728d829182156316f1922b093c45fbf9578460ffc6b346af948dc8c",
+  "scripts/crowd-first-decision-replay.mjs": "981de5783f399fc90115bc53558ab2f1a6a7fea96e10b9250a9361bf3277cd80",
+  "docs/qa-crowd-first-decision-2026-10-06.md": "11116fa69cb50069546977f20683082f89e7160958747d36ce2f35e27b38fe1c"
+}

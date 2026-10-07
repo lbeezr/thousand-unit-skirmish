@@ -79,6 +79,8 @@ run(['--test', 'scripts/stone-authoring-fixture.test.mjs'], 'Proposed Stone layo
 run(['--test', 'scripts/stone-map-profile.test.mjs'], 'Typed Stone layout and map profile compatibility');
 run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush preview and editor transactions');
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
+run(['--test', 'scripts/map-studio-draft-recovery.test.mjs'], 'Map Studio draft recovery container preflight');
+run(['--test', 'scripts/map-studio-import-errors.test.mjs'], 'Map Studio import read and parse failure contracts');
 run(['--test', 'scripts/map-publish-feedback.test.mjs'], 'Map Studio rejected publish feedback and explicit retry');
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/public-gameplay.test.mjs'], 'Default-off anonymous gameplay and protected private routes');
@@ -135,6 +137,7 @@ run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach
 run(['--test', 'scripts/unit-movement.test.mjs', 'scripts/land-body-clearance.test.mjs', 'scripts/unit-crowd-steering.test.mjs', 'scripts/crowd-projected-route-ranking.test.mjs', 'scripts/crowd-parallel-route-yield.test.mjs', 'scripts/crowd-wait-lease.test.mjs', 'scripts/crowd-body-journeys.test.mjs'], 'Unit separation terrain boundaries');
 run(['--test', 'scripts/crowd-forward-progress.test.mjs'], 'Parked crowd route progress and preserved idle actors');
 run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals and team reservation');
+run(['--test', 'scripts/pathing-replay-observer.test.mjs'], 'Replay observation preserves land admissions');
 run(['--test', 'scripts/unit-path-line.test.mjs', 'scripts/open-ground-move.test.mjs', 'scripts/worker-flat-flow-routes.test.mjs', 'scripts/fractional-move-endpoints.test.mjs'], 'Direct open-ground trajectories and safe long waypoint repair');
 run(['--test', 'scripts/move-planning-slices.test.mjs'], 'Clock-independent route planning, stale results and fair queue turns');
 run(['--test', 'scripts/move-planning-tick.test.mjs', 'scripts/move-planning-tick-error.test.mjs', 'scripts/pathing-arrival.test.mjs'], 'Opt-in planning tick budgets, order invalidation, topology and recovery');
@@ -163,6 +166,8 @@ run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites')
 run(['--test', 'scripts/frontier-economy-art.test.mjs'], 'Frontier economy lifecycle and depletion capture integrity');
 run(['--test', 'scripts/captured-building-picking.test.mjs'], 'Visible building pixels and hidden fallback picking');
 run(['--test', 'scripts/frontier-building-default.test.mjs'], 'Normal finished Frontier building art, fallback and shared depth');
+run(['--test', 'scripts/military-lifecycle-integration.test.mjs'], 'Exact private military runtime transfer and lifecycle preservation');
+run(['--test', 'scripts/military-lifecycle-pixels.test.mjs'], 'Military lifecycle decoded art and zoom alpha picking');
 run(['scripts/frontier-building-acceptance-map-scenario.mjs'], 'Ordinary building acceptance map admission and legal pads');
 run(['--test', 'scripts/building-occlusion-fixture.test.mjs'], 'Building occlusion QA controls, HTTP assets and timing evidence');
 run(['--test', 'scripts/captured-building-state-race.test.mjs', 'scripts/captured-building-manifest-retry.test.mjs', 'scripts/frontier-building-renderer.test.mjs', 'scripts/frontier-building-preview.test.mjs', 'scripts/building-lifecycle-validation.test.mjs'], 'Captured building lifecycle and source contracts');
@@ -239,6 +244,8 @@ run(['--test', 'scripts/population.test.mjs'], 'Population reservations and capa
 run(['--test', 'scripts/population-readout.test.mjs'], 'Owned population presentation');
 run(['--test', 'scripts/population-ai.test.mjs'], 'AI capacity construction and recovery');
 run(['--test', 'scripts/pve-worker-recovery.test.mjs'], 'PvE last-slot Worker recovery and fixed-tick economy replay');
+run(['--test', 'scripts/pve-first-barracks-preparation.test.mjs'], 'PvE selected first-Barracks cargo return and conserving construction');
+run(['--test', 'scripts/pve-expansion-builder-priority.test.mjs'], 'PvE expansion builder delivery priority and native paid replay');
 run(['--test', 'scripts/pve-farm-policy.test.mjs'], 'PvE finite paid Farm starvation recovery and replant replay');
 run(['--test', 'scripts/pve-home-defense.test.mjs'], 'PvE visible economic raids, bounded defense and objective recovery replay');
 run(['--test', 'scripts/pve-regroup.test.mjs'], 'PvE bounded regroup after wipeout, paid recovery and restart replay');
@@ -302,6 +309,9 @@ run(['scripts/attack-queue-native-scenario.mjs'], 'Native both-seat queued attac
 run(['--test', 'scripts/watchtower-targeting.test.mjs'], 'Bounded defense targeting and sight');
 run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservation');
 run(['--test', 'scripts/return-cargo.test.mjs'], 'Explicit cargo return authority and controls');
+run(['--test', 'scripts/worker-economy-body-handoff.test.mjs'], 'Worker economy body clearance and construction handoff');
+run(['--test', 'scripts/worker-economy-perimeter-access.test.mjs'], 'Bounded Worker perimeter selection and conserving paid Farm delivery');
+run(['--test', 'scripts/worker-economy-perimeter-recovery.test.mjs'], 'Bounded late-occupied Worker perimeter recovery and fair transient retries');
 run(['--test', 'scripts/queued-cargo-return.test.mjs'], 'Delivery completion, queued routes and preserved cargo');
 run(['scripts/queued-cargo-return-native-scenario.mjs'], 'Native both-seat queued cargo delivery and restart');
 run(['scripts/interrupted-cargo-return-scenario.mjs'], 'Interrupted final sheep-food delivery and restart');

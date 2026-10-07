@@ -4,6 +4,7 @@ import { compareServedBuildIdentity } from './release/check-served-build-identit
 import { BROWSER_ENTRYPOINTS, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS } from './check-runtime-imports.mjs';
 import { CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH } from '../src/server/client-asset-paths.mjs';
 import assert from 'node:assert/strict';
+import {validateBuildingLifecycle} from './validate-building-lifecycle.mjs';
 import { createHash, randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { request as httpRequest } from 'node:http';
@@ -152,7 +153,9 @@ try {
     assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
       `exact client admission must deny: ${filename}`);
   }
-  for (const filename of ['src/gameplay-action-rules.mjs', 'src/rules/gameplay-action-rules.mjs']) {
+  for (const filename of ['src/gameplay-action-rules.mjs', 'src/rules/gameplay-action-rules.mjs',
+    'src/production-actions.mjs', 'src/rules/production-actions.mjs',
+    'src/research-actions.mjs', 'src/rules/research-actions.mjs']) {
     const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
     assert.equal(response.status, 200, filename);
     assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
@@ -161,7 +164,19 @@ try {
     assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),
       createHash('sha256').update(await readFile(path.join(sourceRoot, filename))).digest('hex'), filename);
   }
-  for (const filename of ['src/environment-art.mjs', 'src/presentation/assets/interactive-runtime-image.mjs']) {
+  for (const filename of ['src/rules/', 'src/rules/unknown.mjs',
+    'src/rules/production-actions.mjs/extra', 'src/rules/research-actions.mjs.map',
+    'src/rules//production-actions.mjs', 'SRC/rules/research-actions.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
+        404, `action-rule admission remains exact (${method}): ${filename}`);
+    }
+  }
+  for (const filename of ['src/environment-art.mjs', 'src/presentation/assets/interactive-runtime-image.mjs',
+    'src/presentation/assets/plant-packs/podvine-low-pack.mjs', 'src/podvine-low-pack.mjs',
+    'src/presentation/assets/plant-packs/veilcap-worked-pack.mjs', 'src/veilcap-worked-pack.mjs',
+    'src/presentation/assets/plant-packs/sunbloom-low-pack.mjs', 'src/sunbloom-low-pack.mjs',
+    'src/presentation/rendering/ground-surfaces.mjs']) {
     const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
     assert.equal(response.status, 200, filename);
     assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
@@ -172,7 +187,13 @@ try {
     assert.deepEqual(bytes, await readFile(path.join(sourceRoot, filename)), filename);
   }
   for (const filename of ['src/presentation/assets/', 'src/presentation/assets/unknown.mjs',
-    'src/presentation/assets/interactive-runtime-image.mjs/extra', 'src/presentation//assets/interactive-runtime-image.mjs']) {
+    'src/presentation/assets/plant-packs/', 'src/presentation/assets/plant-packs/unknown.mjs',
+    'src/presentation/assets/plant-packs/podvine-low-pack.mjs/extra',
+    'src/presentation/assets/plant-packs/../plant-packs/podvine-low-pack.mjs.map',
+    'src/presentation/assets/plant-packs//sunbloom-low-pack.mjs',
+    'src/presentation/assets/interactive-runtime-image.mjs/extra', 'src/presentation//assets/interactive-runtime-image.mjs',
+    'src/presentation/rendering/', 'src/presentation/rendering/unknown.mjs',
+    'src/presentation/rendering/ground-surfaces.mjs/extra', 'src/presentation//rendering/ground-surfaces.mjs']) {
     for (const method of ['GET', 'HEAD']) {
       assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
         404, `image-loading admission remains exact (${method}): ${filename}`);
@@ -223,11 +244,46 @@ try {
         404, `audio admission remains exact (${method}): ${filename}`);
     }
   }
+  // Composition has one canonical implementation and a supported old API path.
+  for (const filename of ['src/audio-composition.mjs', 'src/presentation/audio/composition.mjs',
+    'src/audio-composition-player.mjs', 'src/presentation/audio/composition-player.mjs',
+    'src/audio-composer.mjs', 'src/presentation/audio/composition-wav.mjs',
+    'src/client/audio/composer.mjs', 'src/audio-library-store.mjs',
+    'src/client/audio/library-store.mjs', 'src/audio-library-ui.mjs',
+    'src/client/audio/library-ui.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+      assert.equal(response.status, 200, `${method}: ${filename}`);
+      assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
+      assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+      assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+      if (method === 'GET') {
+        const bytes = Buffer.from(await response.arrayBuffer());
+        assert.deepEqual(bytes, await readFile(path.join(root, filename)), filename);
+        assert.deepEqual(bytes, await readFile(path.join(sourceRoot, filename)), filename);
+      }
+    }
+  }
+  for (const filename of ['src/presentation/audio/', 'src/presentation/audio/unknown.mjs',
+    'src/presentation/audio/composition.mjs/extra', 'src/presentation//audio/composition.mjs',
+    'src/presentation/audio/composition-player.mjs/extra', 'src/presentation//audio/composition-player.mjs',
+    'src/presentation/audio/composition-wav.mjs/extra', 'src/presentation//audio/composition-wav.mjs',
+    'src/client/audio/', 'src/client/audio/unknown.mjs', 'src/client/audio/composer.mjs/extra',
+    'src/client//audio/composer.mjs', 'src/client/audio/library-store.mjs/extra',
+    'src/client//audio/library-store.mjs', 'src/audio-library-ui.mjs/extra',
+    'src/client/audio/library-ui.mjs/extra', 'src/client//audio/library-ui.mjs',
+    'src/client/audio/library-ui.mjs.map']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
+        404, `composition admission remains exact (${method}): ${filename}`);
+    }
+  }
   // Both old browser imports and canonical authoring paths must survive packing
   // with the source bytes and the same exact-path GET/HEAD policy.
   for (const filename of ['src/scenario-authoring.mjs', 'src/map-resize.mjs',
     'src/authoring/scenario-authoring.mjs', 'src/authoring/map-resize.mjs',
     'src/authoring/map-studio-form-state.mjs', 'src/authoring/map-studio-draft-store.mjs',
+    'src/authoring/map-studio-terrain-packing.mjs',
     'src/authoring/map-studio/draft/v1/contract.mjs']) {
     const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
     assert.equal(response.status, 200, filename);
@@ -238,6 +294,7 @@ try {
       createHash('sha256').update(await readFile(path.join(sourceRoot, filename))).digest('hex'), filename);
   }
   for (const filename of ['src/authoring/map-studio-form-state.mjs/extra',
+    'src/authoring/map-studio-terrain-packing.mjs/extra',
     'src/authoring/map-studio-draft-store.mjs/extra',
     'src/authoring/map-studio/draft/v1/contract.mjs/extra',
     'src/authoring/map-studio/draft/v1/unknown.mjs',
@@ -247,6 +304,17 @@ try {
     for (const method of ['GET', 'HEAD']) {
       assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
         404, `form controller admission remains exact (${method}): ${filename}`);
+    }
+  }
+  const welcomeSessionPath = 'src/client/networking/welcome-session.mjs';
+  const welcomeSession = await fetch(`${base}/${welcomeSessionPath}`, { headers: { authorization } });
+  assert.equal(welcomeSession.status, 200);
+  assert.deepEqual(Buffer.from(await welcomeSession.arrayBuffer()), await readFile(path.join(root, welcomeSessionPath)));
+  for (const filename of ['src/client/networking/', 'src/client/networking/unknown.mjs',
+    `${welcomeSessionPath}/extra`, 'src/client//networking/welcome-session.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
+        404, `welcome session admission remains exact (${method}): ${filename}`);
     }
   }
   // Both compatibility and canonical HUD entries must retain exact packed bytes.
@@ -437,6 +505,7 @@ try {
   // HTTP admission denies both methods, including pure negotiation and shims.
   const privateModules = [...RUNTIME_DOMAINS.server,
     'src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs',
+    'src/pve-opponent.mjs', 'src/simulation/ai/opponent-observation.mjs',
     'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs', 'src/forest-fringe.mjs',
     ...Object.entries(RUNTIME_DOMAIN_HOSTS).filter(([, domain]) => domain === 'server').map(([filename]) => filename)];
   for (const filename of privateModules) {
@@ -468,9 +537,9 @@ try {
     const response = await fetch(`${base}/${manifestPath}`, { headers: { authorization } });
     assert.equal(response.status, 200); assert.match(response.headers.get('content-type'), /application\/json/);
     const frontier = await response.json();
-    assert.equal(frontier.asset, family); assert.deepEqual(frontier.stateOrder, ['complete']);
+    assert.equal(frontier.asset, family); validateBuildingLifecycle(frontier);
     assert.equal(frontier.completeState.views.length, 8); frontierPaths.push(manifestPath);
-    for (const view of frontier.completeState.views) {
+    for (const view of [frontier.completeState, ...frontier.states].flatMap(state => state.views)) {
       const assetPath = frontierRoot + view.path; frontierPaths.push(assetPath);
       assert.ok(contextRules.includes('!' + assetPath), `${assetPath} must be explicitly admitted`);
       const frame = await fetch(`${base}/${assetPath}`, { headers: { authorization } });
@@ -482,7 +551,7 @@ try {
   const releaseManifest = JSON.parse(await readFile(path.join(root, 'release-manifest.json'), 'utf8'));
   assert.deepEqual(releaseManifest.files.filter(file => frontierRoots.some(root => file.startsWith(root))).sort(), frontierPaths.sort(),
     'package exactly the selected registered sprites, without source models or galleries');
-  assert.equal(frontierPaths.length, 72, 'eight manifests and 64 original frames');
+  assert.ok(frontierPaths.length >= 72, 'eight manifests and at least 64 original frames');
   for (const frontierRoot of frontierRoots) for (const absent of ['model-provenance.json', 'meshy_output/house.glb', 'preview.html', 'source/build_military.py', 'models/barracks-complete.glb']) {
     assert.equal((await fetch(`${base}/${frontierRoot}${absent}`, { headers: { authorization } })).status, 404);
   }

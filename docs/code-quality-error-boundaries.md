@@ -13,7 +13,63 @@ contents or secrets. No noisy logging, telemetry service or broad rewrite.
 Combat, lobby, animation, modes, Skiff and shared-hotspot refactors are outside
 the current write scope. The shipped-audio reader already has its own owner.
 
-## Ranked backlog
+## Current queue — 6 October 2026
+
+The quality swarm's error lane now owns bounded persistence/import diagnostics.
+The only allocated main-client change is `importEditorMap` read-versus-parse
+handling. R4 draft timers/save/close, publishing, other editor globals and the
+audio organization lane remain outside this slice.
+
+| Priority/outcome | Evidence and boundary | Next action/owner |
+| --- | --- | --- |
+| 1 — map import failure acceptance | [PR #561](https://github.com/lbeezr/thousand-unit-skirmish/pull/561) separates native file-read failures from JSON syntax failures, retains exact causes and unexpected-error identity, and preserves the existing input handler and draft-save scheduling. Unchanged main `c1a51059` fails 13 of the 16 new production-consumer controls; all 16 pass with the correction. | Error owner tracks exact review, normal source merge, clean package and automatic staging inclusion in the PR; native file-picker/status observation remains separate and open. |
+| 2 — draft recovery rendered acceptance | [PR #554](https://github.com/lbeezr/thousand-unit-skirmish/pull/554), merge `f657383c45c67479e791c9f18dd31efe6188c398`, rejects four malformed collection containers before editor mutation. Verified containing source `c1a51059eb500d3c52eb4561ddce24f6e8dd27e8` reached normal staging `SUCCESS` in deployment `1f3302c6-b93f-4e8a-8d6e-d3ee0f05a8d7` at 18:57:48 UTC on 6 October, with the recovery contract/tests unchanged and no manual rollout or config change. | Error owner retains Restore failure/repair/retry observation on an identified release. Provider-reported staging inclusion does not establish authenticated served identity, deployed-byte digest or rendered acceptance. |
+| 3 — elevation recovery source integrated | [PR #566](https://github.com/lbeezr/thousand-unit-skirmish/pull/566), merge `04efee2bb8337b264f0942a4286d5af85cc23088`, reuses the existing elevation validator before population, retaining shape/bounds/level/overlap/limit diagnostics and unexpected-error identity. | Exact-head review, focused repair/retry tests, clean package and exact-source automatic staging `SUCCESS` are recorded in the PR. Error owner retains rendered Restore observation. |
+| 4 — null-entry recovery source integrated | [PR #570](https://github.com/lbeezr/thousand-unit-skirmish/pull/570), merge `9f525426adbd297355b828b52ebf7419b7b13cef`, rejects literal null terrain/obstacle entries before mutation, retaining validation order, unfinished entries, import diagnostics and stored bytes. | Independent exact-head review, actual Restore preservation/repair tests, clean package and exact-source automatic staging `SUCCESS` are recorded in the PR. Error owner retains native/rendered acceptance. |
+| 5 — selector-entry recovery source integrated | [PR #573](https://github.com/lbeezr/thousand-unit-skirmish/pull/573), merge `a73800c94ba6afb71cf987fd1b22183647adbb16`, rejects literal null trigger/event/resource entries before mutation in that order. Falsy optional containers, unfinished entries, stored bytes and unexpected-error identity remain intact. | Independent exact-head review, actual state/history/repair tests and clean package are recorded in the PR. Containing source `c76ca030f69e6fd8b158afce96c881e334fb649b` reached automatic staging `SUCCESS`; the exact merge deployment was superseded before success. Error owner retains rendered acceptance. |
+| 6 — null form recovery source integrated | [PR #576](https://github.com/lbeezr/thousand-unit-skirmish/pull/576), merge `335ed0a405eeee7a5253fcd0df0d5231d0471d8e`, rejects only explicit null after all previous checks with the existing generic saved-draft diagnostic. Successful absent/primitive/array/incomplete-object behavior and unexpected getter identity remain intact. | Actual state/form/history/storage preservation and incomplete-form repair/retry pass; existing direct-controller assertions remain. Independent exact-head review, clean package and exact-source automatic staging `SUCCESS` are recorded in the PR. Error owner retains native/rendered acceptance. |
+| Allocated follow-up — corrupted file-field draft | Normal draft capture excludes file inputs. Crafted stored data with an own enumerable `studio-import-file` entry and a nonempty string data value reaches the file setter after population replaces editor state/history. The narrow preflight rejects it with the existing generic diagnostic before mutation, after every earlier guard. | Error owner owns actual Restore state/history/storage preservation, explicit repair/retry, empty/non-string/incomplete and getter/enumerability controls, independent exact-head review and normal source/package integration. Direct controller setter exceptions remain; no file access, schema expansion, controller/main/lifecycle/storage or security-policy change. Served/rendered acceptance remains open. |
+
+### Allocated recovery-validation batch closed — 6 October 2026
+
+The source batch in PRs #554/#566/#570/#573/#576 is delivered. All five merges
+are included in `335ed0a405eeee7a5253fcd0df0d5231d0471d8e`; the linked PRs
+retain independent exact-head reviews, unchanged assertions, focused positive/
+negative Restore controls and packaging evidence. The final merged recovery
+registration passes 69/69, the focused suite 192/192, and independent review
+180/180, with zero skips. Its clean 1,481-file package digest is
+`sha256:93aa1d5648af1e0b80cab0ea96e5105900483d7dd96e7ce4c9bf375b8474f8aa`.
+Exact final source reached automatic staging `SUCCESS` at 21:07:37 UTC on
+6 October, with zero service issues and no manual rollout/configuration change.
+
+[Hosted run 37530633663](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37530633663)
+finished with 1,471 selected / 1,124 passed / three failed registrations /
+344 unrun. Five pathing/wall assertions match retained baseline failures.
+Stone's unchanged native checkpoint test timed out; deterministic baseline
+failure is unproven, and its intermittent timeout remains unresolved with the
+existing owner, outside this error lane. Hosted recovery/planning registrations
+were unrun after Stone failed; hosted package steps and optional dispatch were
+skipped. Focused/local proofs do not establish full-suite success.
+
+Source delivery closes this allocation, not runtime acceptance. Error owner
+retains Restore failure/repair/retry and native import observation on an
+identified release when browser capability is available. Authenticated served
+identity, deployed-byte attestation and native/rendered acceptance remain open;
+provider staging metadata proves inclusion only. Do not retry the unchanged
+blocked browser path. The closure itself reserves no further runtime correction;
+the separately allocated corrupted-file follow-up is recorded in the queue above.
+
+The dedicated import regression is registered additively in the normal CI suite;
+all existing registrations and assertions remain. Direct import failures preserve
+editor/form/history/raw storage/timers/redraw state. A bubbling file-input change
+retains the host's existing dirty flag, `SAVING DRAFT…` status and debounced write,
+even on failure; this is compatibility evidence, not a draft-lifecycle change.
+The import PR records focused checks and independent exact-head review separately
+from hosted full-suite failures/skips, clean packaging and runtime acceptance.
+Historical native acceptance still depends on the recorded browser capability;
+no unchanged blocked browser or denied metadata route is retried by this slice.
+
+## Historical queue — 5 October 2026
 
 | Rank/status | Reproduction and outcome | Write boundary | Next action/dependency | Acceptance owner |
 | --- | --- | --- | --- | --- |
@@ -212,8 +268,9 @@ remaining issue, and state the concrete condition. Never invent work or expand
 spending, access, publication rights or repository permissions to continue.
 
 Historical input/capture fixes and PRs #450/#455/#458 have source integration
-evidence; they do not remain in the ready source queue. Current source work is
-limited to the reproduced Publish rejection feedback above. Native/deployed
-acceptance remains blocked by the recorded browser failure and unidentified
-coordinated release. Resume acceptance when both dependencies are available;
+evidence; they do not remain in the ready source queue. The current bounded
+authoring scope and remaining acceptance are recorded in the 6 October queue
+above. Earlier Publish/audio observations retain their historical browser and
+release dependencies; they do not authorize edits to those lanes. Resume native
+acceptance when the required capability and identified release are available;
 select another source fix only after concrete reproduction and ownership checks.

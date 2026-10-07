@@ -1,0 +1,57 @@
+{
+  "sourceRevision": "518ba4af776b5aebefdb9dce50c3559d2ac9abb5",
+  "sourceDirty": true,
+  "packageDigest": "sha256:71abcdd0c74e8b29f2c4258ec02f8e6a1b3650fe450267ca40bea3561d7ecdc5",
+  "releaseEntries": 1457,
+  "militaryRuntimeFileCount": 82,
+  "runtimeTransferMissing": false,
+  "noCurrentLifecycleImageDelivery": false,
+  "focusedChecks": {
+    "command": "node --test scripts/military-lifecycle-pixels.test.mjs scripts/military-lifecycle-integration.test.mjs scripts/frontier-building-renderer.test.mjs scripts/frontier-building-default.test.mjs scripts/building-lifecycle-validation.test.mjs scripts/captured-building-state-race.test.mjs scripts/captured-building-manifest-retry.test.mjs scripts/captured-building-picking.test.mjs scripts/building-orientation.test.mjs scripts/building-orientation-client.test.mjs",
+    "passed": 59,
+    "failed": 0
+  },
+  "adoptionChecks": {
+    "command": "node --test scripts/audit-asset-adoption.test.mjs",
+    "passed": 12,
+    "failed": 0,
+    "staticRegistryBuildingCount": 8,
+    "explicitCompatibilityBuildingCount": 11
+  },
+  "packedHttpScenario": "Passed: exact current military 82-file set served with MIME/length/SHA256; private source paths 404",
+  "types": "passed",
+  "runtimeDependencies": "passed",
+  "independentReview": "independent-review.md",
+  "completePngBytesChanged": 0,
+  "gameFramesProduced": 0,
+  "deploymentChanged": false,
+  "githubRequests": 0,
+  "paidProviderCalls": 0,
+  "fullCpuSuiteClaimed": false,
+  "nextAction": "Keep private checkpoint durable; identified ordinary-game visual acceptance remains blocked by prior cloud sandbox/storage startup failure. No publication or denied access retry.",
+  "localLifecyclePngCount": 64,
+  "originalRuntimePngBytesRecovered": false,
+  "approvedCompletePngCount": 16,
+  "privateDurableSave": "Confirmed same private Library checkpoint now retains 64 runtime PNGs, 2 manifests, all 16 approved Complete images, restored recipes and reproducible inputs; exact identities stay in private receipt",
+  "cancelRepairChecks": {
+    "testsPassed": 8,
+    "nativeScenario": "passed"
+  },
+  "decodedArtPicking": {
+    "frames": 80,
+    "zooms": [
+      0.5,
+      1,
+      2
+    ],
+    "transparentPaddingExcluded": true,
+    "evidence": "CPU alpha raycast against decoded actual runtime PNGs; no WebGL frame"
+  },
+  "independentRecaptureReview": {
+    "sourceArt": "passed",
+    "runtimeTransfer": "66/66 exact",
+    "maxAnchorDeviationPixels": 0.00046568568495786167,
+    "httpValidationP2": "fixed and independently rechecked",
+    "gameFrames": 0
+  }
+}

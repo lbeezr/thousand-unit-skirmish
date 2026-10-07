@@ -1,0 +1,12 @@
+{
+  "status": "failed-before-paired-observation",
+  "baselineJourneyTick": 1,
+  "candidateJourneyTicksExecuted": 0,
+  "matchedCalls": 0,
+  "error": "ReferenceError: replayAdmission is not defined",
+  "rawFailureSha256": "bce9a923c620798eaff4cc7352b94c9fe16fed425e7e67700c52b6321bc8f3d4",
+  "remedy": "Add admission-hook import to generated server test copy; preserve first failed start, then repeat the same case and185 bound.",
+  "failedAttempt": 1,
+  "completedAttempt": 2,
+  "totalCaptureStarts": 2
+}
