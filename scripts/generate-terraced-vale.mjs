@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { compressGroundLevels } from '../src/terrain-authoring.mjs';
 import { seedTerracedValeSheep } from '../src/terraced-vale-sheep.mjs';
+import { seededMirroredResourceClusters } from '../src/resource-cluster-authoring.mjs';
 
 export async function generateTerracedVale() {
   const width = 160, height = 160;
@@ -60,7 +61,7 @@ export async function generateTerracedVale() {
     ]) resourceNodes.push({ id: `s${team}-${id}`, x: sign * x, z, type, stock });
   }
   const audio = JSON.parse(await readFile(new URL('../maps/veyrholds-slate-saddle.json', import.meta.url))).audio;
-  return {
+  const map = {
     id: 'veyrholds-terraced-vale', name: 'Veyrholds · Terraced Vale', region: 'veyrholds',
     summary: 'Tiny · 160 × 160 · broad passes, high flanks and expansion shelves · elimination; bonus-only posts',
     width, height, terrainSeed: 93025, fogOfWar: true, terrainBase: 'scree',
@@ -78,6 +79,17 @@ export async function generateTerracedVale() {
     ],
     scenarioEvents: [], victoryMode: 'any', audio,
   };
+  // A small registered grove lets the existing Wood job continue locally.
+  // Redistribute the opening budget; retain original anchors and expansion intent.
+  const groves = seededMirroredResourceClusters(map, {
+    seed: map.terrainSeed, nodesPerPatch: 3, radius: 4, spawnClearance: 6,
+    patches: [{ type: 'wood', x: -51.5, z: -5.5, stock: 975 }],
+  }).map(node => ({ ...node, id: node.id.replace(/-0(?=-|$)/, '-home-wood') }));
+  const anchors = new Map(groves.map(node => [node.id, node]));
+  map.resourceNodes = map.resourceNodes.map(node => anchors.has(node.id)
+    ? { ...node, stock: anchors.get(node.id).stock } : node)
+    .concat(groves.filter(node => /-wood-[12]$/.test(node.id)));
+  return map;
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {

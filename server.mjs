@@ -15,7 +15,7 @@ import { cancelWildlifeHerd, startWildlifeHerd, stepWildlifeHerd, validWildlifeH
 import { migrateWildlifeMotionCheckpoint, sameWildlifeCell, wildlifeCell, wildlifeStepUnoccupied, stepWildlifeMotion, validWildlifeMotion } from './src/wildlife-motion.mjs';
 import { migrateWildlifeHeadingCheckpoint } from './src/wildlife-heading.mjs';
 import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
-import { migrateTerracedValeSheepCheckpoint } from './src/terraced-vale-sheep.mjs';
+import { migrateTerracedValeSheepCheckpoint, isHistoricalTerracedValeDefinition } from './src/terraced-vale-sheep.mjs';
 import { isHistoricalConfluenceDefinition } from './src/confluence-opening-compat.mjs';
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
@@ -3023,7 +3023,8 @@ function restoreMatchCheckpoint(snapshot) {
       ({ definition, state, explored, savedMatchMode } = validateMatchCheckpoint(snapshot));
     }
     assertSnapshot(matchMapHash(shippedDefinition) === snapshot.mapHash
-      || isHistoricalConfluenceDefinition(definition, shippedDefinition, matchMapHash),
+      || isHistoricalConfluenceDefinition(definition, shippedDefinition, matchMapHash)
+      || isHistoricalTerracedValeDefinition(definition, shippedDefinition, matchMapHash),
     'shipped map changed since checkpoint');
   } else {
     mapCatalog.set(definition.id, definition);

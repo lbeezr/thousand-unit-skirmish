@@ -78,7 +78,7 @@ test('mirrored seats have equal stock, home access and two progressively farther
     assert.equal(node.stock, mirror.stock);
     assert.deepEqual(node.shortestCostRouteWorldLengths, [...mirror.shortestCostRouteWorldLengths].reverse());
     const route = node.shortestCostRouteWorldLengths[0];
-    assert.ok(node.id.includes('home') ? route === 12 : node.id.includes('terrace') ? route >= 30 && route <= 45 : route >= 65 && route <= 90);
+    assert.ok(node.id.includes('home') ? (/-wood-[12]$/.test(node.id) ? route >= 12 && route <= 18 : route === 12) : node.id.includes('terrace') ? route >= 30 && route <= 45 : route >= 65 && route <= 90);
   }
 });
 
@@ -87,4 +87,74 @@ test('authored default already has elimination and bonus-only objectives, with n
   assert.equal(map.victoryHoldSeconds, undefined); assert.equal(map.timedVictory, undefined);
   assert.equal(map.scenarioEvents.length, 0);
   for (const objective of report.travel.objectives) for (const route of objective.travelBySeat) assert.ok(route);
+});
+
+test('opening groves retain anchors/budgets and provide two reachable registered continuations', async () => {
+  const { priorTerracedValeGroves, TERRACED_VALE_PRE_GROVE_MAP_HASH } = await import('../src/terraced-vale-sheep.mjs');
+  const { nearbyWoodSources, woodWorkArea } = await import('../src/gather-work-area.mjs');
+  const prior = priorTerracedValeGroves(map);
+  assert.equal(createHash('sha256').update(JSON.stringify(prior)).digest('base64url'), TERRACED_VALE_PRE_GROVE_MAP_HASH);
+  assert.equal(map.resourceNodes.length, 16); assert.equal(prior.resourceNodes.length, 12);
+  assert.deepEqual({ ...map, resourceNodes: prior.resourceNodes }, prior, 'geometry, forest, terrain, rules and food are unchanged');
+  for (const team of [0, 1]) {
+    const anchor = map.resourceNodes.find(node => node.id === `s${team}-home-wood`);
+    const old = prior.resourceNodes.find(node => node.id === anchor.id);
+    assert.deepEqual({ ...anchor, stock: old.stock }, old);
+    const candidates = nearbyWoodSources(woodWorkArea(anchor), anchor, map.resourceNodes.filter(node => node.id !== anchor.id));
+    assert.equal(candidates.length, 2);
+    assert.equal(anchor.stock + candidates.reduce((sum, node) => sum + node.stock, 0), 975);
+    for (const node of candidates) {
+      assert.equal(node.stock, 325);
+      assert.ok(Math.hypot(node.x - anchor.x, node.z - anchor.z) <= 4);
+      assert.equal(blocked[cell(node)], 0); assert.equal(levels[cell(node)], levels[cell(anchor)]);
+      assert.ok(map.spawnPoints.every(spawn => Math.max(Math.abs(node.x - spawn.x), Math.abs(node.z - spawn.z)) > 6));
+      for (const team of [0, 1]) assert.ok(searchGrid(160, 160, blocked, levels, cell(map.spawnPoints[team]), false).distance[cell(node)] >= 0);
+    }
+  }
+});
+
+test('historical Tiny admission is exact and does not mutate either definition', async () => {
+  const { priorTerracedValeGroves, isHistoricalTerracedValeDefinition } = await import('../src/terraced-vale-sheep.mjs');
+  const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('base64url');
+  const prior = priorTerracedValeGroves(map), before = structuredClone(prior);
+  assert.equal(isHistoricalTerracedValeDefinition(prior, map, hash), true);
+  assert.equal(isHistoricalTerracedValeDefinition(map, map, hash), false);
+  assert.deepEqual(prior, before);
+  for (const mutate of [
+    m => { m.terrainSeed++; }, m => { m.resourceNodes[0].stock++; },
+    m => { m.resourceNodes.at(-1).x++; }, m => { m.resourceNodes.at(-1).stock++; },
+    m => { m.resourceNodes[1].stock++; }, m => { m.resourceNodes.push({ ...m.resourceNodes[0] }); },
+    m => { m.startingResources.wood++; }, m => { m.spawnPoints[0].x++; },
+  ]) {
+    const shipped = structuredClone(map); mutate(shipped); const original = structuredClone(shipped);
+    assert.equal(isHistoricalTerracedValeDefinition(prior, shipped, hash), false);
+    assert.deepEqual(shipped, original);
+  }
+  const altered = structuredClone(prior); altered.resourceNodes[1].stock--;
+  assert.equal(isHistoricalTerracedValeDefinition(altered, map, hash), false);
+});
+
+test('valid old paid Houses at new satellite sites recover with exact old geometry and stock', async () => {
+  const { priorTerracedValeGroves } = await import('../src/terraced-vale-sheep.mjs');
+  const { createPathingReplayFixture } = await import('./pathing-replay-fixture.mjs');
+  for (const site of map.resourceNodes.filter(node => /-home-wood-[12]$/.test(node.id))) {
+    const fixture = await createPathingReplayFixture(priorTerracedValeGroves(map));
+    try {
+      const r = fixture.replay, team = site.id.startsWith('s1') ? 1 : 0;
+      const worker = r.units.find(row => row.team === team && row.kind === 'worker');
+      const notices = r.order(team, { type: 'build', buildingType: 'house', ids: [worker.id],
+        unitGenerations: [worker.generation], x: site.x, z: site.z }); r.drain();
+      assert.ok(notices.some(row => /HOUSE PLACED/.test(row.message)), JSON.stringify(notices));
+      const paid = r.checkpoint(); assert.equal(paid.state.teamWood[team], 175);
+      assert.equal(r.validate(structuredClone(paid)).definition.id, map.id);
+      r.restore(structuredClone(paid)); const recovered = r.checkpoint();
+      assert.deepEqual(recovered.mapDefinition, paid.mapDefinition); assert.equal(recovered.mapHash, paid.mapHash);
+      for (const key of ['resourceNodes', 'buildings', 'units', 'teamWood', 'teamFood']) assert.deepEqual(recovered.state[key], paid.state[key]);
+    } finally { await fixture.dispose(); }
+  }
+});
+
+test('ordinary default both-seat wood jobs naturally exhaust the whole grove and recover', { timeout: 90_000 }, async () => {
+  const { runTerracedValeGroveScenario } = await import('./terraced-vale-groves-scenario.mjs');
+  await runTerracedValeGroveScenario();
 });
