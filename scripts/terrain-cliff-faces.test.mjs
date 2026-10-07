@@ -57,6 +57,26 @@ test('face texel density never normalizes to wall height and phases agree across
   geometry.dispose();
 });
 
+test('painted cliff facets follow the ground renderer light direction on both axes', () => {
+  const geometry = buildTerrainCliffGeometry(vale, 'scree');
+  const { normal, color } = geometry.attributes;
+  const directions = new Set();
+  let checked = 0;
+  for (let i = 0; i < normal.count; i++) {
+    const nx = normal.getX(i), ny = normal.getY(i), nz = normal.getZ(i);
+    // A taper can end in a zero-area triangle; it contributes no visible facet.
+    if (nx === 0 && ny === 0 && nz === 0) continue;
+    const shade = THREE.MathUtils.clamp(.85 + .15 * ny + .2 * (-.6 * nx + .4 * nz), .68, 1.15);
+    for (const actual of [color.getX(i), color.getY(i), color.getZ(i)]) {
+      assert.ok(Math.abs(actual - shade) < 1e-6, `facet ${nx},${ny},${nz} must share the ground light direction`);
+    }
+    directions.add([nx, nz].join(',')); checked++;
+  }
+  assert.equal(checked, 1632);
+  assert.deepEqual([...directions].sort(), ['-1,0', '0,-1', '0,1', '1,0']);
+  geometry.dispose();
+});
+
 test('flat terrain and smooth ramps gain no wall; uncovered regions retain their plain material', () => {
   const flat = { width: 8, height: 8, terrainBase: 'scree', obstacles: [] };
   const ramp = { ...flat, elevationPatches: [{ column: 0, row: 0, width: 4, height: 8, level: 1 }] };

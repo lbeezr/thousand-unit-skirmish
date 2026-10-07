@@ -1,0 +1,31 @@
+{
+  "scope": "independent triangle-cross-product CPU audit; single-agent execution, not separate human/agent review",
+  "baselineSource": "ac4a09dd4e27a8c355726f5fd4b53a25fc364590",
+  "candidateFiles": [
+    "src/terrain-cliff-faces.mjs",
+    "scripts/terrain-cliff-faces.test.mjs",
+    "docs/qa-painted-terrace-faces.md"
+  ],
+  "baselineWrongVisibleVertices": 264,
+  "candidateWrongVisibleVertices": 0,
+  "visibleVertices": 1632,
+  "zeroAreaVertices": 72,
+  "changedColorVertices": 336,
+  "directions": {
+    "-1,0,0": 684,
+    "1,0,0": 684,
+    "0,0,1": 156,
+    "0,0,-1": 108
+  },
+  "unchangedAttributes": {
+    "position": "fef64ba2e212a89a674072006ed12d1c9b54f634cb992aef3e824b24b8c8d8f5",
+    "uv": "a2e9109878884fbe04000cdcfc1d6cf390a59ed2381629772ee95b0098dd3249",
+    "cliffEdgeDistances": "e611caa0175889e07ccb391c997e1c60b3c760f84905f2e989104d6008e94cbd",
+    "cliffUpperColor": "5cbaf5770f374f806bed35196e07f3905dafe93152e4a7c3e4d9fa3ca100c39e",
+    "cliffLowerColor": "d8afa511714fb20c3ba1a371fed10b87be4e9d10ad91d6edb0f59f7992c6dbfd",
+    "normal": "d381a6e26205905b6a4e93817c7b82e07e3f3fdcbc3be1f270f64ac8395d5740"
+  },
+  "mapSha256": "2e352328e0b6795c04a11505672d17971231cc2e7ad34a858ff6418423d5d1f6",
+  "renderedGameFrames": 0,
+  "screenshots": 0
+}

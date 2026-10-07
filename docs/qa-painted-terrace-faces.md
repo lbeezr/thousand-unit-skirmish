@@ -70,6 +70,57 @@ Meshy job, new material pack or private publication is involved.
 
 ## Ordinary-game acceptance remains open
 
+### Directional shading correction — 7 October 2026
+
+The new cliff-presentation audit at clean source
+`ac4a09dd4e27a8c355726f5fd4b53a25fc364590` confirms that the earlier raw,
+untextured-face gap is already addressed by PR295's default approved scree
+binding. The actual consumer is now
+[`presentation/rendering/ground-surfaces.mjs`](../src/presentation/rendering/ground-surfaces.mjs),
+through `environment-art.mjs`; no replacement texture or material redesign is
+justified without rendered evidence.
+
+One reproducible presentation defect remains: the cliff shade assumes +Z
+winding where the original triangles point toward -Z when the preceding cell
+is higher. Compared with the normal ground renderer's world light direction,
+156 +Z vertices use 0.77 instead of 0.93, and 108 -Z vertices use 0.93 instead
+of 0.77. The 1,368 X-facing vertices already agree. Another 72 vertices belong
+to zero-area taper triangles and contribute no visible facet.
+
+The bounded correction changes only that Z coefficient sign. Its selected
+treatment reuses the [approved painted scree source](../assets/environment/frontier-v1/scree.png),
+the [atlas/provenance](../assets/environment/frontier-painted-material-atlas-v1/README.md)
+and [Veyrholds art backing](art-direction/vaelora-v1/README.md), with the existing
+ground renderer as the directional-value comparison. Acceptance: all 1,632
+nondegenerate cliff vertices agree with the ground's normal-based shading;
+the baseline positions, normals, 12-world-unit UVs, corner phases, lip offsets,
+edge bands, atlas/fallback, opaque depth and picking contracts still pass.
+Map elevation, pathability, sight, resource placement and identity stay untouched.
+No shader reads, attributes, images or geometry are added. Runtime files are
+the cliff helper alone; tests, this note and its CPU receipt are the other edits.
+
+The [independent triangle-cross-product audit](qa-evidence/cliff-directional-shading-2026-10-07/geometry-review.json)
+derives directions from original position triples, independently of the helper's
+axis branch and stored normals: the baseline has 264 wrongly shaded visible
+vertices and the correction has zero. All six non-color attribute buffers
+byte-match baseline, including the original positions/normals and UVs; the
+Terraced Vale map SHA-256 is unchanged. This is single-agent CPU/source review,
+not an independent reviewer or GPU evidence. A separate reviewer remains needed.
+The 26 focused cliff/atlas/adoption tests, both atlas scenarios, terrain blend,
+type, import, docs and asset-adoption checks pass. The broader native elevation
+scenario fails at `elevation-scenario.mjs:184` (a route contains a repeated cell,
+`0 !== 1` for adjacent steps); it is outside this render-only diff and remains
+with the active movement owner. No full CPU-suite pass is claimed.
+
+The saved cloud environment's one supported Chromium launch reports
+`sandbox-unavailable` and `storage-unavailable`: **zero game frames and zero
+screenshots**. `game-dev` is unavailable. No restrictions were bypassed.
+This CPU-reproduced correction does not claim visual acceptance. The cliff
+presentation owner retains ordinary Terraced Vale Tiny capture on an identified
+containing release: both wall orientations and corners at normal/strategic zoom,
+ground contact, mip transitions and depth/fog coverage. Publication is a separate
+draft; ready/merge and staging delivery are outside this slice.
+
 [PR295](https://github.com/lbeezr/thousand-unit-skirmish/pull/295) merged at
 `db4648120be92db0a3d372b457e0b78fff22cbf2`. That exact merge passed the 18
 face/atlas/adoption tests and packaged HTTP/client admission checks. Its clean

@@ -26,7 +26,9 @@ export function buildTerrainCliffGeometry(definition, base, painted = true) {
     const topColor = painted && new THREE.Color(regionalGroundColor(definition, labels[hereHigher ? here : there]));
     const bottomColor = painted && new THREE.Color(regionalGroundColor(definition, labels[hereHigher ? there : here]));
     const normal = hereHigher ? 1 : -1;
-    const shade = .85 + .2 * (axis === 'x' ? -.6 : .4) * normal;
+    // The wall winding points toward +X but -Z when here is higher.
+    // Use the ground renderer's world-light direction on both orientations.
+    const shade = .85 + .2 * (axis === 'x' ? -.6 : -.4) * normal;
     for (const [point, endpoint] of [[a, 0], [b, 1], [c, 1], [a, 0], [c, 1], [d, 0]]) {
       vertices.push(...point);
       if (!painted) continue;
