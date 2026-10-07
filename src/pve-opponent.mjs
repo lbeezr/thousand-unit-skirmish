@@ -1,11 +1,11 @@
 import { OPPONENT_OBSERVATION_SCHEMA_VERSION, toOpponentObservation } from './simulation/ai/opponent-observation.mjs';
 export { OPPONENT_OBSERVATION_SCHEMA_VERSION, toOpponentObservation } from './simulation/ai/opponent-observation.mjs';
-import { createReconnaissancePolicy } from './pve-reconnaissance.mjs';
-import { createHomeDefensePolicy } from './pve-home-defense.mjs';
-import { createRegroupPolicy } from './pve-regroup.mjs';
-import { createSkirmishTargetPolicy } from './pve-skirmish-targets.mjs';
+import { createReconnaissancePolicy } from './simulation/ai/policies/reconnaissance.mjs';
+import { createHomeDefensePolicy } from './simulation/ai/policies/home-defense.mjs';
+import { createRegroupPolicy } from './simulation/ai/policies/regroup.mjs';
+import { createSkirmishTargetPolicy } from './simulation/ai/policies/skirmish-targets.mjs';
 import { matchModeDefinition, normalizeMatchMode } from './match-modes.mjs';
-import { createObjectiveRotationPolicy } from './pve-objective-rotation.mjs';
+import { createObjectiveRotationPolicy } from './simulation/ai/policies/objective-rotation.mjs';
 import { TECHNOLOGY_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 /**
  * Team-visible adapter and deterministic opening policy for an ordinary RTS

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
-import { createHomeDefensePolicy, PVE_HOME_DEFENSE_LIMITS } from '../src/pve-home-defense.mjs';
+import { createHomeDefensePolicy, PVE_HOME_DEFENSE_LIMITS } from '../src/simulation/ai/policies/home-defense.mjs';
 
 process.env.RTS_MAP = 'maps/open-field.json';
 process.env.RTS_GAME_MODE = 'pvp';

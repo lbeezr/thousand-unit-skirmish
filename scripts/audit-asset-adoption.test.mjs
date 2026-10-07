@@ -72,6 +72,20 @@ test('building adoption cannot report declared lifecycle states without correspo
   await assert.rejects(audit({registry: {...registry, records: [record]}, loadManifest: async () => manifest}), /Lifecycle entries differ/);
 });
 
+test('building adoption rejects transition drift before claiming the actual lifecycle is admitted', async () => {
+  const record = registry.records.find(row => row.id === 'frontier-mill');
+  const manifest = JSON.parse(await readFile(path.join(root, record.manifest)));
+  for (const mapping of [
+    {construction: {foundationAtOrBelow: 1}},
+    {health: {criticalAtOrBelow: .8, damagedAtOrBelow: .4}},
+    {health: {damagedAtOrBelow: .2}},
+  ]) {
+    const candidate = structuredClone(manifest); candidate.stateMapping = mapping;
+    await assert.rejects(audit({registry: {...registry, records: [record]}, loadManifest: async () => candidate}),
+      /Invalid .* transition threshold|Critical threshold must be below Damaged/);
+  }
+});
+
 test('painted ground guard rejects a missing authored mip and a disconnected default binding', async () => {
   await assert.rejects(audit({ releaseFiles: release.files.filter(file => !file.endsWith('frontier-painted-material-atlas-mip-5.webp')) }),
     /frontier-painted-material-atlas-v1: default runtime dependency omitted from release/);

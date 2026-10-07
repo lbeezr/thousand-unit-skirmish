@@ -1,5 +1,4 @@
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './gameplay-definitions.mjs';
-import { buildingSpriteUrl } from './building-sprites.mjs';
 import { formatResourceRequirement, formatResourceStock } from './client/hud/resource-format.mjs';
 
 // Byte-identical approved illustrations; framing is a CSS viewport, not an atlas face crop.
@@ -154,11 +153,33 @@ export function updateProductionPortrait(button, kind, appearanceRole, text) {
   updatePortraitFrame(frame, portrait);
 }
 
-// Same shipped building identity and lifecycle frames as the battlefield.
+// Fixed illustrative view of the admitted default Barracks family. As for the
+// Farm, yaw and owner standards remain battlefield cues, not inferred HUD facts.
 export const BARRACKS_PORTRAIT = Object.freeze({
-  entryId: 'building.barracks', sourceWidth: 640,
-  cropX: 32, cropY: 64, cropSize: 576,
+  entryId: 'building.barracks', sourceWidth: 1024,
+  cropX: 212, cropY: 246, cropSize: 600,
 });
+export const BARRACKS_PORTRAITS = Object.freeze(Object.fromEntries([
+  'foundation', 'frame', 'complete', 'damaged', 'critical',
+].map(state => [state, Object.freeze({
+  ...BARRACKS_PORTRAIT, state,
+  asset: `/assets/buildings/frontier-civilization-military-models-v1/${state === 'complete' ? 'captures' : 'runtime'}/barracks-${state}-view-01.png`,
+})])));
+
+export function barracksSelectionPortrait(building) {
+  if (building?.type !== 'barracks') return null;
+  // Completion must be authoritative; progress alone cannot claim a ready
+  // producer. Thresholds follow the admitted family's renderer manifest.
+  if (building.complete !== true) {
+    if (!Number.isFinite(building.progress)) return null;
+    return BARRACKS_PORTRAITS[building.progress <= 0.275 ? 'foundation' : 'frame'];
+  }
+  const maxHp = building.maxHp ?? BUILDING_DEFINITIONS.barracks.maxHp;
+  if (!Number.isFinite(building.hp) || building.hp <= 0
+    || !Number.isFinite(maxHp) || maxHp <= 0) return null;
+  const ratio = building.hp / maxHp;
+  return BARRACKS_PORTRAITS[ratio <= 0.3 ? 'critical' : ratio <= 0.6 ? 'damaged' : 'complete'];
+}
 
 // Fixed illustrative view of the admitted default Farm, with its actual state.
 // Camera yaw/team standards remain battlefield cues, not inferred HUD facts.
@@ -267,7 +288,7 @@ export function updateSelectionPortrait(root, context, unit, appearanceRole) {
     && context.building.hp > 0 ? context.building : null;
   const farmPortrait = building?.type === 'farm' ? farmSelectionPortrait(building) : null;
   const portrait = building?.type === 'farm' ? farmPortrait || FARM_SYMBOL : building
-    ? { ...BARRACKS_PORTRAIT, asset: buildingSpriteUrl(building).replace(/^\.\//, '/') } : selectedPortrait;
+    ? barracksSelectionPortrait(building) : selectedPortrait;
   const art = root.querySelector('[data-building-art]');
   const description = root.querySelector('[data-building-description]');
   const instruction = root.querySelector('[data-building-instruction]');

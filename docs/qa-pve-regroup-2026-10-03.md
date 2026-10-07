@@ -41,7 +41,7 @@ checkpoint/trace/policy hashes and per-generation replacement deaths.
 
 ## Bounded policy and native regression
 
-The [policy](../src/pve-regroup.mjs) rallies replacements until five available
+The [policy](../src/simulation/ai/policies/regroup.mjs) rallies replacements until five available
 combat troops exist, or 120 seconds have passed since the first available
 replacement. It preserves urgent home defense, focused/recent combat, roles,
 ownership, generations and ordinary paid recruitment. It uses owned positions

@@ -1,5 +1,5 @@
-import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
-import { mapSizeIdentity } from './map-size-policy.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../../../gameplay-definitions.mjs';
+import { mapSizeIdentity } from '../../../map-size-policy.mjs';
 
 /** One fragile scout explores a bounded frontier using only its filtered observation. */
 export function createReconnaissancePolicy(seed) {

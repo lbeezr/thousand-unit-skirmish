@@ -34,7 +34,7 @@ its original point only when held; it does not add new local unknown terrain.
 
 ## Policy change and limits
 
-[The target policy](../src/pve-skirmish-targets.mjs) preserves the admitted Tiny
+[The target policy](../src/simulation/ai/policies/skirmish-targets.mjs) preserves the admitted Tiny
 policy and applies this larger-map qualification only to Small-or-larger public
 size tiers; Tiny and internal fixture tiers keep their previous policy. It
 extends a goal only when its

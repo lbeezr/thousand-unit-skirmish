@@ -58,18 +58,16 @@ function validateSource(value, path) {
   };
 }
 
-function validateProfile(value, path, sourceIds, compositionIds) {
+function validateBindings(value, path, sourceIds) {
   if (!isObject(value)) fail(path, 'must be an object');
-  if (!isObject(value.bindings)) fail(`${path}.bindings`, 'must be an object');
-  if (!isObject(value.music)) fail(`${path}.music`, 'must be an object');
   const bindings = {};
-  const entries = Object.entries(value.bindings);
-  if (entries.length > 128) fail(`${path}.bindings`, 'too many events');
+  const entries = Object.entries(value);
+  if (entries.length > 128) fail(`${path}`, 'too many events');
   for (const [key, binding] of entries) {
-    if (!/^(?:unit\.[a-z0-9-]+\.[a-z0-9.-]+|building\.[a-z0-9-]+\.select|cue\.[a-z0-9-]+)$/.test(key)) fail(`${path}.bindings.${key}`, 'invalid event key');
-    if (!isObject(binding)) fail(`${path}.bindings.${key}`, 'must be an object');
-    const variants = array(binding.variants, `${path}.bindings.${key}.variants`, 16).map((variant, i) => {
-      const p = `${path}.bindings.${key}.variants[${i}]`;
+    if (!/^(?:unit\.[a-z0-9-]+\.[a-z0-9.-]+|building\.[a-z0-9-]+\.select|cue\.[a-z0-9-]+)$/.test(key)) fail(`${path}.${key}`, 'invalid event key');
+    if (!isObject(binding)) fail(`${path}.${key}`, 'must be an object');
+    const variants = array(binding.variants, `${path}.${key}.variants`, 16).map((variant, i) => {
+      const p = `${path}.${key}.variants[${i}]`;
       if (!isObject(variant)) fail(p, 'must be an object');
       const sourceId = id(variant.sourceId, `${p}.sourceId`);
       if (!sourceIds.has(sourceId)) fail(`${p}.sourceId`, `unknown source ${sourceId}`);
@@ -83,13 +81,21 @@ function validateProfile(value, path, sourceIds, compositionIds) {
         ...(variant.caption == null ? {} : { caption: text(variant.caption, `${p}.caption`, 300) }),
       };
     });
-    if (!variants.length) fail(`${path}.bindings.${key}.variants`, 'add at least one variant');
-    if (!['voice', 'effects', 'ambience'].includes(binding.bus)) fail(`${path}.bindings.${key}.bus`, 'must be voice, effects or ambience');
+    if (!variants.length) fail(`${path}.${key}.variants`, 'add at least one variant');
+    if (!['voice', 'effects', 'ambience'].includes(binding.bus)) fail(`${path}.${key}.bus`, 'must be voice, effects or ambience');
     bindings[key] = { variants, bus: binding.bus,
-      ...(binding.cooldownMs == null ? {} : { cooldownMs: number(binding.cooldownMs, `${path}.bindings.${key}.cooldownMs`, 0, 600000) }),
-      ...(binding.priority == null ? {} : { priority: number(binding.priority, `${path}.bindings.${key}.priority`, -100, 100) }),
+      ...(binding.cooldownMs == null ? {} : { cooldownMs: number(binding.cooldownMs, `${path}.${key}.cooldownMs`, 0, 600000) }),
+      ...(binding.priority == null ? {} : { priority: number(binding.priority, `${path}.${key}.priority`, -100, 100) }),
     };
   }
+  return bindings;
+}
+
+function validateProfile(value, path, sourceIds, compositionIds) {
+  if (!isObject(value)) fail(path, 'must be an object');
+  if (!isObject(value.bindings)) fail(`${path}.bindings`, 'must be an object');
+  if (!isObject(value.music)) fail(`${path}.music`, 'must be an object');
+  const bindings = validateBindings(value.bindings, `${path}.bindings`, sourceIds);
   const music = {};
   if (value.music.defaultCompositionId != null) {
     music.defaultCompositionId = id(value.music.defaultCompositionId, `${path}.music.defaultCompositionId`);
@@ -103,7 +109,20 @@ function validateProfile(value, path, sourceIds, compositionIds) {
       if (!compositionIds.has(ambience.defaultCompositionId)) fail(`${path}.ambience.defaultCompositionId`, 'unknown composition');
     }
   }
-  return { id: id(value.id, `${path}.id`), name: text(value.name, `${path}.name`), bindings, music, ...(value.ambience === undefined ? {} : { ambience }) };
+  let civilizationBindings;
+  if (value.civilizationBindings !== undefined) {
+    const at = `${path}.civilizationBindings`;
+    if (!isObject(value.civilizationBindings)) fail(at, 'must be an object');
+    const entries = Object.entries(value.civilizationBindings);
+    if (entries.length > 32) fail(at, 'must have at most 32 civilizations');
+    civilizationBindings = Object.fromEntries(entries.map(([key, value]) => {
+      if (id(key, `${at}.${key}`) !== key) fail(`${at}.${key}`, 'must use an unpadded stable civilization ID');
+      return [key, validateBindings(value, `${at}.${key}`, sourceIds)];
+    }));
+  }
+  return { id: id(value.id, `${path}.id`), name: text(value.name, `${path}.name`), bindings, music,
+    ...(value.ambience === undefined ? {} : { ambience }),
+    ...(civilizationBindings === undefined ? {} : { civilizationBindings }) };
 }
 
 // Use the same composition contract for storage, import, editing and playback.

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { createSkirmishTargetPolicy, selectSkirmishTarget } from '../src/pve-skirmish-targets.mjs';
+import { createSkirmishTargetPolicy, selectSkirmishTarget } from '../src/simulation/ai/policies/skirmish-targets.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { loadDefenderAssault, replayDefenderAssault } from './pve-defender-assault-case.mjs';
 

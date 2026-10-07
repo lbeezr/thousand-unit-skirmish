@@ -1,6 +1,7 @@
 import { buildElevationGrid, findUnreachableResourceNode } from './map-utils.mjs';
 import { townCenterFootprintCells } from './town-center-spawn.mjs';
 import { economyResources } from './economy-profile.mjs';
+import { canTraverseElevation } from './elevation.mjs';
 
 // Patch totals, not per-marker stocks. Ordinary nodes remain editable in Map Studio.
 export const MILLRACE_RESOURCE_CLUSTERS = Object.freeze({
@@ -22,6 +23,29 @@ function rank(seed, patch, dx, dz) {
   return (value ^ value >>> 16) >>> 0;
 }
 
+// A common component is reachable from both seats. Scan it once, rather than
+// rebuilding connectivity for every seed-ranked candidate (at most 197 offsets).
+function reachableClusterCells(map, blocked, elevation, cell) {
+  const { width, height } = map;
+  const reachable = new Uint8Array(blocked.length), queue = new Int32Array(blocked.length);
+  const spawn = map.spawnPoints.find(point => point.team === 0);
+  const start = cell(spawn.x, spawn.z);
+  if (blocked[start]) return reachable;
+  let head = 0, tail = 0;
+  reachable[start] = 1; queue[tail++] = start;
+  while (head < tail) {
+    const current = queue[head++], column = current % width, row = Math.floor(current / width);
+    for (const next of [column > 0 ? current - 1 : -1, column + 1 < width ? current + 1 : -1,
+      row > 0 ? current - width : -1, row + 1 < height ? current + width : -1]) {
+      if (next < 0 || blocked[next] || reachable[next] || !canTraverseElevation(elevation, current, next)) continue;
+      reachable[next] = 1; queue[tail++] = next;
+    }
+  }
+  const opponent = map.spawnPoints.find(point => point.team === 1);
+  if (!reachable[cell(opponent.x, opponent.z)]) reachable.fill(0);
+  return reachable;
+}
+
 function clusterGround(map) {
   const { width, height } = map;
   const cell = (x, z) => Math.floor(z + height / 2) * width + Math.floor(x + width / 2);
@@ -35,7 +59,8 @@ function clusterGround(map) {
   }
   for (const team of [0, 1]) for (const index of townCenterFootprintCells(map.spawnPoints, team, width, height)) blocked[index] = 1;
   const elevation = buildElevationGrid(width, height, map.elevationPatches);
-  return { width, height, cell, inside, blocked, paint, elevation };
+  const reachable = reachableClusterCells(map, blocked, elevation, cell);
+  return { width, height, cell, inside, blocked, paint, elevation, reachable };
 }
 
 function orderedOffsets(seed, patch, radius, distribution) {
@@ -64,7 +89,7 @@ export function seededMirroredResourceClusters(map, settings = MILLRACE_RESOURCE
     || !Array.isArray(patches) || !patches.length || patches.length * count * 2 > 128) {
     throw new Error('Invalid resource cluster settings or node budget.');
   }
-  const { width, height, cell, inside, blocked, paint, elevation } = clusterGround(map);
+  const { width, height, cell, inside, blocked, paint, elevation, reachable } = clusterGround(map);
   const taken = new Set();
   for (const patch of patches) {
     if (!resourceIds.includes(patch.type) || !Number.isInteger(patch.stock) || patch.stock < count
@@ -75,6 +100,9 @@ export function seededMirroredResourceClusters(map, settings = MILLRACE_RESOURCE
     }
     taken.add(cell(patch.x, patch.z)); taken.add(cell(-patch.x, patch.z));
   }
+  if (patches.some(patch => !reachable[cell(patch.x, patch.z)] || !reachable[cell(-patch.x, patch.z)])) {
+    throw new Error('Resource clusters must remain reachable from both seats with Town Centers present.');
+  }
   const teams = [[], []];
   for (const [index, patch] of patches.entries()) {
     const positions = [{ dx: 0, dz: 0 }];
@@ -82,7 +110,7 @@ export function seededMirroredResourceClusters(map, settings = MILLRACE_RESOURCE
       if (positions.length === count) break;
       const x = patch.x + candidate.dx, z = patch.z + candidate.dz;
       if (!inside(x, z) || x >= 0 || positions.some(p => Math.hypot(p.dx - candidate.dx, p.dz - candidate.dz) < 2)) continue;
-      if ([x, -x].some(px => blocked[cell(px, z)] || taken.has(cell(px, z)) || paint[cell(px, z)] === 'dirt'
+      if ([x, -x].some(px => !reachable[cell(px, z)] || taken.has(cell(px, z)) || paint[cell(px, z)] === 'dirt'
         || elevation[cell(px, z)] !== elevation[cell(px < 0 ? patch.x : -patch.x, patch.z)]
         || map.spawnPoints.some(s => Math.max(Math.abs(px - s.x), Math.abs(z - s.z)) <= spawnClearance))) continue;
       positions.push(candidate); taken.add(cell(x, z)); taken.add(cell(-x, z));
@@ -117,7 +145,7 @@ export function appendSeededResourceCluster(map, settings = {}) {
     || !Array.isArray(existing) || existing.length + count > 128) {
     throw new Error('Invalid additive resource cluster settings, total stock or node budget.');
   }
-  const { width, height, cell, inside, blocked, paint, elevation } = clusterGround(map);
+  const { width, height, cell, inside, blocked, paint, elevation, reachable } = clusterGround(map);
   const occupied = new Set(), ids = new Set();
   for (const node of existing) {
     if (!node || typeof node.id !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(node.id)
@@ -134,11 +162,14 @@ export function appendSeededResourceCluster(map, settings = {}) {
     && map.spawnPoints.every(s => Math.max(Math.abs(px - s.x), Math.abs(pz - s.z)) > spawnClearance)
     && existing.every(n => Math.hypot(px - n.x, pz - n.z) >= 2);
   if (!safe(x, z)) throw new Error('Unsafe or occupied additive resource cluster anchor.');
+  if (!reachable[cell(x, z)] || existing.some(node => !reachable[cell(node.x, node.z)])) {
+    throw new Error('Additive resource clusters must remain reachable from both seats with Town Centers present.');
+  }
   const positions = [{ x, z }];
   for (const { dx, dz } of orderedOffsets(seed, 0, radius, distribution)) {
     if (positions.length === count) break;
     const px = x + dx, pz = z + dz;
-    if (safe(px, pz) && positions.every(p => Math.hypot(px - p.x, pz - p.z) >= 2)) {
+    if (safe(px, pz) && reachable[cell(px, pz)] && positions.every(p => Math.hypot(px - p.x, pz - p.z) >= 2)) {
       positions.push({ x: px, z: pz });
     }
   }

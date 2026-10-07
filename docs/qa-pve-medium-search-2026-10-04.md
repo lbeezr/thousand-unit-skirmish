@@ -43,7 +43,7 @@ they do not justify increasing it to force completion.
 
 ## Bounded policy change
 
-[The target policy](../src/pve-skirmish-targets.mjs) prefers unknown ground over
+[The target policy](../src/simulation/ai/policies/skirmish-targets.mjs) prefers unknown ground over
 remembered ground within its existing 64-candidate scan. If no unknown candidate
 is available, the original remembered fallback advances the cursor by one
 candidate. Current visible enemies still take priority; no hidden entities,

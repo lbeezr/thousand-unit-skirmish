@@ -7,6 +7,27 @@ const digest = value => typeof value === 'string' && /^[a-f0-9]{64}$/i.test(valu
 const pair = value => Array.isArray(value) && value.length === 2;
 const requireContract = (condition, message) => { if (!condition) throw new Error(message); };
 
+function validateTransitionBands(mapping) {
+  const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+  if (mapping === undefined) return;
+  requireContract(object(mapping), 'Invalid lifecycle state mapping');
+  for (const section of ['construction', 'health']) {
+    requireContract(mapping[section] === undefined || object(mapping[section]), `Invalid ${section} mapping`);
+  }
+  const threshold = (section, key, fallback) => {
+    const value = mapping[section]?.[key];
+    // The consumer uses || defaults: zero would silently select another band.
+    // Strict interior bounds also leave both neighboring states reachable.
+    requireContract(value === undefined || (Number.isFinite(value) && value > 0 && value < 1),
+      `Invalid ${section}.${key} transition threshold`);
+    return value === undefined ? fallback : value;
+  };
+  threshold('construction', 'foundationAtOrBelow', .275);
+  const critical = threshold('health', 'criticalAtOrBelow', .3);
+  const damaged = threshold('health', 'damagedAtOrBelow', .6);
+  requireContract(critical < damaged, 'Critical threshold must be below Damaged threshold');
+}
+
 // Metadata admission only: images, mask pixels and visual registration need separate review.
 export function validateBuildingLifecycle(manifest, {requireLifecycle = false, requireTeamMasks = false} = {}) {
   requireContract(manifest?.schema === 'thousand-unit-skirmish.building-lifecycle-reference.v1', 'Unsupported building lifecycle schema');
@@ -18,6 +39,7 @@ export function validateBuildingLifecycle(manifest, {requireLifecycle = false, r
   const azimuths = camera.azimuthDegrees;
   requireContract(Array.isArray(azimuths) && azimuths.length > 0 && azimuths.every(n => Number.isFinite(n) && n >= 0 && n < 360)
     && new Set(azimuths).size === azimuths.length, 'Invalid or duplicate camera directions');
+  validateTransitionBands(manifest.stateMapping);
   const order = manifest.stateOrder;
   const harvest = manifest.stateMapping?.harvest;
   if (harvest !== undefined) requireContract(manifest.asset === 'farm'
