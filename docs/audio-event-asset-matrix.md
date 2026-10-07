@@ -3,8 +3,9 @@
 [Runtime and pack contract](audio-runtime-packs.md) · [Sound direction](ui-audio-direction.md) · [Current factions/rosters](../src/gameplay-definitions.mjs) · [Source catalogue](../assets/audio/vaelora-zones-v1/catalog.json)
 
 This is the canonical coverage and missing-asset matrix for scalable civilization
-audio. Audited main `7df6b204` on 7 October 2026, then updated for this bounded
-building-selection slice. It replaces neither the gameplay registry nor the
+audio. Audited main `7df6b204` on 7 October 2026, then updated for the bounded
+building-selection slice and Worker Gather context against main `86d66396`.
+It replaces neither the gameplay registry nor the
 dated [3 October audit](qa-audio-coverage-2026-10-03.md). “Implemented” below means
 source routing/scheduling exists; it does not mean a recording is produced,
 creatively accepted, deployed, heard or recognizable.
@@ -61,8 +62,10 @@ are not new assets or a delivered assignment. Resolution is:
 1. Resolve the event's `civilizationId`, otherwise the audio instance's ID, otherwise
    current `frontier`. Future gameplay owners must pass the local actor's registered
    civilization; do not infer it from team color, region, enemy appearance or fog.
-2. In that civilization's layer, try exact building selection, or role/action/resource,
-   then role/action, then `cue.<name>` (`ready` also tries `cue.complete`).
+2. In that civilization's layer, try exact building selection, or Worker food
+   Gather's recognized job key before role/action/resource, then role/action,
+   then `cue.<name>` (`ready` also tries `cue.complete`). The optional job retains
+   `resource: food`; absent/unknown jobs and other roles/cues use the old chain.
 3. If no match, repeat that chain in common `bindings`. Unknown IDs and missing
    override events retain common behavior. Own-property lookup prevents inherited
    names such as `constructor` from being treated as civilization layers.
@@ -93,9 +96,9 @@ sample priority remains urgent 10/other 0, with explicit pack overrides allowed.
 | `unit.<kind>.move`, `.patrol`, `.follow`, `.stop`, `.hold` | Issued token speaks only after matching authoritative applied notice; planning/rejection/duplicate success silent. | Generic synthesis/technical ticks; role acknowledgements missing. | P1; one applied order, not one/unit; local issuing player; move 90 ms, other listed actions 170 ms. |
 | `unit.<kind>.attack` | Applied Attack/Attack Building/Attack Move token. | Existing compact synthesized commitment; technical iron contact. Role combat voice missing. | P1; one/group; no claim that a hit landed; 120 ms. |
 | `unit.worker.gather.wood` | Applied forest/node Gather order supplies wood context. | Technical wood token or generic gather synthesis; wood voice/foley missing. | P1; one/order; local intent, no hidden forest/enemy observer; 140 ms. |
-| Worker farming acknowledgement | Applied Gather on a generated Farm node exists. Current order metadata searches authored map nodes, so dynamically generated Farm IDs can fall through to generic `unit.worker.gather`. | Farm-specific acknowledgement/context and voice remain missing; do not label the technical food pluck as farming. | P1; future `unit.worker.gather.farm` requires a coordinated caller slice using owned disclosed Farm context, not a new server observer. |
-| Worker sheep harvest / requested hunting | Existing carcass Gather uses the applied token and generic/coarse food context. Live sheep management is herding; this audit does not establish a hostile hunt/predator encounter. | Distinct sheep harvest/hunting metadata and recordings missing. Generic food is not a bleat or hunting voice. | P1; one/order; owned worker and already disclosed sheep/carcass; do not infer animals outside vision. |
-| Worker shore fishing / Skiff fishing | Applied Gather exists; authored fish sources expose coarse food. Skiff kind can resolve `.gather.food`, but technical food binding is worker-only. | Fish-specific acknowledgement/voice/splash missing. Worker and Skiff retain their generic fallbacks. | P1; no per-fish loop; local order only; gather 140 ms. |
+| `unit.worker.gather.farm` | Matching applied Gather token preserves `gatherJob: farm` plus `resource: food` for an actual owned complete living stocked Farm via `farmHarvestNode`. Authored food IDs do not imply farming. | Context/key implemented; Farm-specific recording remains missing. Existing generic food/role/cue and synthesis remain fallback; the technical food pluck is generic food. | P1; one/order; living owned representative Worker; no new server observer/protocol; gather 140 ms. |
+| `unit.worker.gather.sheep-carcass` / requested hunting | Matching applied Gather token preserves `gatherJob: sheep-carcass` plus food only for a current disclosed visible stocked sheep carcass at its actual pose. Live sheep management is herding; no hunting event is introduced. | Carcass context/key implemented; harvest recording and any supported hunting action remain missing. Generic food is not a bleat or hunting voice. | P1; one/order; living owned representative Worker; missing/hidden/stale/live/depleted rows retain coarse food with no job. |
+| `unit.worker.gather.fish` / Skiff fishing | Worker applied Gather preserves `gatherJob: fish` plus food from a currently visible authored shore-fish node. Skiff sends Gather but receives `FISHING ORDER`, outside the current gate's applied list. | Worker context/key implemented; fish voice/splash missing. Existing Worker food fallback stays. Skiff-specific applied acknowledgement is a separate caller/gate gap, not an asset-only task. | P1; one/order; living owned representative Worker; no per-fish loop or inferred hidden target; gather 140 ms. |
 | `unit.worker.gather.stone` | Authored Stone Gather supplies node type. | Generic synthesis; distinct Stone voice/foley missing. | P1; applied token/local worker; 140 ms. |
 | `unit.worker.build`, `.repair` | Applied Build/Resume/Wall Build/Repair token. Wall segments do not each acknowledge. | Generic build/repair synthesis; technical repair latch; building/construction voices missing. | P1; one/order; no premature construction success; 170 ms. |
 | `unit.worker.work.wood`, `.food`, `.repair` | Actual execution from living local worker row 14 within 24 world units of camera; resource set aggregates. Stone is excluded by the current execution-audio route. | Technical three trims when assigned; variant-specific Farm/sheep/fish work palette missing. Stone needs both routing and material. Richer execution metadata does not automatically become an audio binding. | P3; at most three resources every 1.5 s; legacy/hidden enemy execution silent; task/map/mute/hide/death cancel. |
@@ -191,20 +194,31 @@ callback. Visible warning captions require captions enabled; Main's
 `showAudioCaption` otherwise returns immediately. Hidden pages do not queue warning
 callbacks for replay.
 
-This source slice owns default building-selection delivery and sparse override
+The preceding building-selection slice owns default delivery and sparse override
 validation/resolution. Its backing is the existing short selection gesture and
 [sound specification](ui-audio-direction.md#routine-commands); no held source is
 published or rebound. The selection HUD owns panel presentation; Main and its
-selection/event hooks remain unchanged. Focused tests execute the committed
+selection/event hooks were unchanged in that slice. Focused tests execute the committed
 selection consumer with injected presentation boundaries, all thirteen defaults,
 sample precedence/decode failure, unknown fallback, shared cooldown, mute/focus
 return and existing warning aggregation. The muted-warning assertion observes
 `onCueDecision`, not caption UI. These CPU scheduling/callback checks do not
 establish UI rendering, audible playback or recognition.
 
-Next justified source task: coordinate worker acknowledgement context for dynamic
-Farm/sheep/fish before editing `sendTrackedOrder`; use existing applied-token
-semantics and disclosed own context. Next asset task: choose/cast/audition the
+The Worker context slice changes only `sendTrackedOrder` metadata and the event
+key resolver, using its existing Farm/fish/disclosure imports. Main imports and
+water-module paths remain unchanged; there is no server producer or protocol
+edit. `scripts/audio-execution.test.mjs`, already in the CPU registry, executes
+the actual committed caller and fog predicate with the real Farm/wildlife/token
+adapters for both seats. It covers distinct jobs, disclosure loss, unknown
+context, planning/queued intent, rejection, duplicate success, unsent orders,
+civilization/common/food/role/cue fallback and shared speech limits. Existing
+recordings/manifests and all 30 proposed voice-guide takes stay unchanged.
+This is an engineering context contract; native listening remains open.
+
+Next justified source task: review the separate Skiff `FISHING ORDER` audio-gate
+gap with the naval owner before changing its applied-notice boundary. Next asset
+task: choose/cast/audition the
 listed Frontier voice slots, then publish only separately authorized material.
 Native audible playback/recognition, identified packaged/served release and future
 civilization selection/state integration remain open with the audio owner. Cloud

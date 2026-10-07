@@ -7072,12 +7072,32 @@ function applyOrderNotice(token, message) {
 function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
   const token = beginOrderStatus(label, count, unitName);
   if (sendCommand({ ...command, clientOrderToken: token })) {
+    const actor = units[command.ids?.[0]];
+    const nodeGather = command.type === 'gather' && command.forestCell === undefined;
+    const node = nodeGather ? mapDefinition?.resourceNodes?.find(node => node.id === command.nodeId) : null;
+    const farm = nodeGather && !node ? latestBuildings.filter(building => building.team === localTeam)
+      .map(farmHarvestNode).find(node => node?.id === command.nodeId) : null;
+    const resource = command.type === 'gather'
+      ? (command.forestCell !== undefined ? 'wood' : node?.type ?? farm?.type) : undefined;
+    let gatherJob;
+    // Optional acknowledgement context uses current disclosure, never an ID/name
+    // guess or remembered wildlife pose. Food remains the compatibility fallback.
+    if (resource === 'food' && actor?.kind === 'worker' && actor.hp > 0
+      && [0, 1].includes(localTeam) && actor.team === localTeam) {
+      if (farm?.stock > 0) gatherJob = 'farm';
+      else if (node?.wildlifeSpecies === undefined && isShoreFish(node)
+        && wildlifePointVisible(node)) gatherJob = 'fish';
+      else if (node?.wildlifeSpecies === 'bellweather-sheep'
+        && latestWildlifeView?.map === mapDefinition && latestWildlifeView.team === localTeam) {
+        const disclosed = latestWildlifeView.rows.get(node.id);
+        if (disclosed?.wildlifeState === 'carcass' && disclosed.stock > 0
+          && wildlifePointVisible(disclosed)) gatherJob = 'sheep-carcass';
+      }
+    }
     orderAudioGate.sent(token, { cue: command.type === 'stop' || command.type === 'stopWildlife' ? 'stop' : command.type === 'holdPosition' ? 'hold' : command.type === 'patrol' ? 'patrol' : command.type === 'follow' ? 'follow' : command.type === 'repairBuilding' ? 'repair' : command.type === 'build' || command.type === 'buildWall' ? 'build'
       : command.type === 'gather' ? 'gather'
         : command.type === 'attack' || command.type === 'attackBuilding' || command.type === 'attackMove'
-          ? 'attack' : 'move', kind: units[command.ids?.[0]]?.kind,
-      resource: command.type === 'gather' ? (command.forestCell !== undefined ? 'wood'
-        : mapDefinition?.resourceNodes?.find((node) => node.id === command.nodeId)?.type) : undefined });
+          ? 'attack' : 'move', kind: actor?.kind, resource, gatherJob });
     audio.play('send');
     return token;
   }
