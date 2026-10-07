@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { forestHabitatDepth, forestCanopyFactor } from '../src/forest-habitat.mjs';
+import { forestHabitatDepth, forestCanopyFactor } from '../src/presentation/rendering/forest/habitat.mjs';
 const map = { width: 9, height: 9, obstacles: [{ column: 1, row: 1, width: 7, height: 7, material: 'forest' }] };
 const original = JSON.stringify(map);
 const depth = forestHabitatDepth(map);

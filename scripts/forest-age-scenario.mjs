@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {forestAgeFactors} from '../src/forest-age-composition.mjs';
+import {forestAgeFactors} from '../src/presentation/rendering/forest/age-composition.mjs';
 const points=Array.from({length:900},(_,cell)=>({cell,x:cell%30+Math.sin(cell*3.1)*.39,z:Math.floor(cell/30)+Math.cos(cell*1.7)*.39}));
 const original=JSON.stringify(points),factors=forestAgeFactors(points,93002),mature=points.filter(p=>factors.get(p.cell)===1.05);
 assert.equal(factors.size,points.length);assert.equal(JSON.stringify(points),original);

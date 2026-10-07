@@ -4,7 +4,7 @@
  *   material: string}>} TerrainPaintPatch
  * @typedef {Readonly<{width: number, height: number, terrainSeed?: number,
  *   terrainPatches?: ReadonlyArray<TerrainPaintPatch> | null,
- *   obstacles?: ReadonlyArray<import('./forest-habitat.mjs').ForestObstacle> | null}>} TerrainMaskMap
+ *   obstacles?: ReadonlyArray<import('./presentation/rendering/forest/habitat.mjs').ForestObstacle> | null}>} TerrainMaskMap
  * @typedef {{material: string, width: number, height: number, pixels: Uint8Array}} TerrainBlendMask
  */
 const KERNEL = [1, 4, 6, 4, 1];

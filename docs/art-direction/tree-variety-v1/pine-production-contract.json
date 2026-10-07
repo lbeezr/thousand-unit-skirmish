@@ -166,7 +166,7 @@
   "sourceComplete": false,
   "variation": {
     "version": 1,
-    "selector": "src/forest-age-composition.mjs#pineViewVariation",
+    "selector": "src/presentation/rendering/forest/age-composition.mjs#pineViewVariation",
     "key": [
       "terrainSeed",
       "forestCell"

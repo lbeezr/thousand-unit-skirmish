@@ -7,6 +7,27 @@ and scale selection. The shared runtime binding awaits the terrain owner;
 same-design lifecycle captures require private source bytes that are absent.
 No generation, purchases, provider access, private upload or Mac work occurred.
 
+## Forest helper source organization — 7 October 2026
+
+The source-organization lane moves the existing pure
+[habitat](../src/presentation/rendering/forest/habitat.mjs),
+[species composition](../src/presentation/rendering/forest/composition.mjs), and
+[age composition](../src/presentation/rendering/forest/age-composition.mjs)
+bodies into the production forest rendering home. `environment-art` consumes
+the canonical exports directly; `terrain-blend` uses the canonical obstacle
+type. Habitat runs normally on Underbough/Vesperra unless `forestHabitat=flat`;
+species composition drives Underbough mosaic/grove rendering. Age factors run
+only for Underbough `forestAges=irregular|young`, while `pockets` stays a separate
+host branch. These are shipped presentation helpers, not standalone studies.
+
+The 171 implementation lines, selectors, flags and call order are unchanged.
+Pine variation remains prepared and unbound. Existing strict type coverage and
+version-1 vectors are retained; canonical admission/package tests and retired
+root guards cover the path migration. Lifecycle atlas, resource rules, map
+generation, asset bytes and dated inventories are unchanged. Source/package
+checks establish no rendered equivalence or identified provider deployment;
+ordinary-game frames remain a separate acceptance gap for the rendering owner.
+
 ## Current flora delivery ownership — 5 October 2026
 
 Canonical main first audited at `6ee1cce46d0ac4f4fcc4610a0d2b1a2bee928690`;
@@ -217,7 +238,7 @@ effectiveScale2.6772325393714684, normalized dimensions
 Keep this fit, lighting and registration across states. Camera orbit indices
 from v1 cannot be substituted for v3 yaw labels. No symmetry reuse is asserted.
 
-[`pineViewVariation`](../src/forest-age-composition.mjs) is a prepared pure
+[`pineViewVariation`](../src/presentation/rendering/forest/age-composition.mjs) is a prepared pure
 selector, version1. It takes only unsigned32-bit `terrainSeed` and the original
 authoritative row-major forest cell. Independent integer-hash salts select one
 existing physical view and uniform scale in `[0.7,1.0]`; flip=false and card

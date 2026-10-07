@@ -540,6 +540,37 @@ try {
       if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
     }
   }
+  // Forest presentation bodies move with their real browser callers and exact URLs.
+  for (const name of ['habitat', 'composition', 'age-composition']) {
+    const filename = `src/presentation/rendering/forest/${name}.mjs`;
+    assert.ok(packedManifest.files.includes(filename), `packed forest module: ${filename}`);
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+      assert.equal(response.status, 200, `${method}: ${filename}`);
+      assert.match(response.headers.get('content-type') || '', /javascript/, filename);
+      assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+      assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+      const bytes = Buffer.from(await response.arrayBuffer());
+      if (method === 'HEAD') assert.equal(bytes.length, 0, filename);
+      else {
+        assert.deepEqual(bytes, await readFile(path.join(root, filename)), filename);
+        assert.deepEqual(bytes, await readFile(path.join(sourceRoot, filename)), filename);
+      }
+    }
+  }
+  for (const filename of ['src/forest-habitat.mjs', 'src/forest-composition.mjs', 'src/forest-age-composition.mjs']) {
+    assert.equal(packedManifest.files.includes(filename), false, `retired forest module: ${filename}`);
+  }
+  for (const filename of ['src/forest-habitat.mjs', 'src/forest-composition.mjs', 'src/forest-age-composition.mjs',
+    'src/presentation/rendering/forest/', 'src/presentation/rendering/forest/unknown.mjs',
+    'src/presentation/rendering/forest/habitat.mjs/extra', 'src/presentation/rendering/forest/composition.mjs.map',
+    'src/presentation/rendering/forest//age-composition.mjs', 'SRC/presentation/rendering/forest/habitat.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+      assert.equal(response.status, 404, `exact forest admission (${method}): ${filename}`);
+      if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
+    }
+  }
   // Default finished families retain exact source PNGs; no GLB/gallery/source upload.
   const frontierRoots = ['frontier-civilization-scale-pilot-v1', 'frontier-civilization-models-v1', 'frontier-civilization-military-models-v1']
     .map(pack => `assets/buildings/${pack}/`);

@@ -10,9 +10,9 @@
     "lib": ["ES2022"]
   },
   "files": [
-    "src/forest-age-composition.mjs",
-    "src/forest-habitat.mjs",
-    "src/forest-composition.mjs",
+    "src/presentation/rendering/forest/age-composition.mjs",
+    "src/presentation/rendering/forest/habitat.mjs",
+    "src/presentation/rendering/forest/composition.mjs",
     "src/resource-visual-state.mjs",
     "src/terrain-blend.mjs",
     "scripts/type-contracts/canopy-valid.mjs",
