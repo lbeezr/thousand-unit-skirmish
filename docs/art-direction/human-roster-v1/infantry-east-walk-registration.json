@@ -88,12 +88,6 @@
   },
   "sourceReview": "Independent actual-pixel source and half-size review approves these exact ordered contact/support/passing poses as a rough own-facing source slice. No rendered playback approval.",
   "acceptance": {
-    "default": "locally-wired",
-    "packaging": "pending",
-    "publication": "parent-owned; PR CLI Forbidden, no retry",
-    "deployment": "unverified",
-    "rendered": "pending",
-    "owner": "delegated default Infantry lane",
-    "captureOwner": "01a10378"
+    "rendered": "pending"
   }
 }

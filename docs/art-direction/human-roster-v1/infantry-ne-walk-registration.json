@@ -56,15 +56,9 @@
     "restRecompositionExact": true,
     "paintedDonorPixels": 0,
     "equipmentMirrored": false,
-    "perFrameFitting": false,
-    "process": "Private retained masks, explicit anatomical knee/ankle/toe controls and iterations; no provider operation."
+    "perFrameFitting": false
   },
   "acceptance": {
-    "default": "wired",
-    "packaging": "pending",
-    "deployment": "unverified",
-    "rendered": "pending",
-    "owner": "delegated default Infantry lane",
-    "captureOwner": "01a10378"
+    "rendered": "pending"
   }
 }

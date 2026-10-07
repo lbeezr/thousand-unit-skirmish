@@ -194,12 +194,12 @@
     "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; Pillow source-UV leg articulation from public NE seed",
     "providerVisibility": "historical-settings-not-recorded",
     "trainingPermission": "unknown",
-    "notes": "Existing repository source and manifests retained; provider privacy settings are not a no-training receipt. Explicit reviewed NE revision retains all32 established poses; private generator comparison remains rejected and unpublished. Explicit reviewed own-east local increment; no provider job or publication operation. Explicit reviewed own-north local increment; no provider job or publication operation. Explicit reviewed own-south local increment; no provider job or publication operation. Explicit reviewed own-west local increment; no provider job or publication operation. Explicit reviewed own-north-west local increment; no provider job or publication operation. Explicit reviewed own-south-west local increment; no provider job or publication operation."
+    "notes": "Existing public repository sources are retained. Seven reviewed own-view walk revisions preserve all 32 established poses. Source review does not establish rendered gameplay acceptance; provider visibility and training permission remain independently recorded."
   },
   "publication": {
     "state": "existing-public-runtime-only",
     "newUploadsAuthorized": false,
-    "scope": "Existing public repository sources and admitted runtime files only. New private material and provider uploads need separate authority. Selected independently reviewed runtime NE derivative reuses only existing public seed samples; private studies/masks/iterations are not published. No new private/provider upload or generation authority."
+    "scope": "Existing public repository sources and admitted runtime files only. Source models and working material are excluded; no provider generation or upload authority is granted."
   },
   "requiredStates": [
     "idle",
@@ -402,7 +402,7 @@
   },
   "integration": {
     "owner": "Human foot-unit art lane",
-    "stateOwner": "01a103d4",
+    "stateOwner": "Infantry animation runtime owner",
     "runtimeVersion": "v3",
     "defaultBinding": "wired",
     "packaging": "existing-admitted",
@@ -416,6 +416,6 @@
       "crowded-scene"
     ],
     "evidence": [],
-    "owner": "Human foot-unit art lane with parent environment support"
+    "owner": "Human Infantry art and gameplay validation owners"
   }
 }
