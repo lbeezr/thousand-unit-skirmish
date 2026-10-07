@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { appendSeededResourceCluster, seededMirroredResourceClusters, MILLRACE_RESOURCE_CLUSTERS as settings } from '../src/resource-cluster-authoring.mjs';
-import { buildElevationGrid } from '../src/map-utils.mjs';
+import { buildElevationGrid, findUnreachableResourceNode } from '../src/map-utils.mjs';
 import { canTraverseElevation } from '../src/elevation.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { settlementGround } from '../src/settlement-authoring.mjs';
@@ -256,5 +256,106 @@ test('partial placement and final both-seat connectivity failures leave all stat
     rejectsUnchanged(additiveMap(), { ...options, nodesPerPatch: 6, radius: 2 }, /insufficient safe space/);
     rejectsUnchanged({ ...additiveMap([]), obstacles: [{ column: 32, row: 0, width: 1, height: 64, material: 'stone' }] },
       options, /reachable from both seats/);
+  }
+});
+
+function encloseCandidate(input, candidate, kind, mirrored = false) {
+  const targets = [candidate, ...(mirrored ? [{ ...candidate, x: -candidate.x }] : [])];
+  const ring = targets.flatMap(target => {
+    const { column, row } = pointCell(target);
+    return [[-1, 0], [1, 0], [0, -1], [0, 1]].map(([dx, dz]) => ({
+      column: column + dx, row: row + dz, width: 1, height: 1,
+    }));
+  });
+  return { ...input, ...(kind === 'stone'
+    ? { obstacles: ring.map(rect => ({ ...rect, material: 'stone' })) }
+    : { elevationPatches: ring.map(rect => ({ ...rect, level: 2 })) }) };
+}
+
+function clusterPaths(input, team) {
+  const { width, height } = input, blocked = new Uint8Array(width * height);
+  const cell = p => Math.floor(p.z + height / 2) * width + Math.floor(p.x + width / 2);
+  for (const rect of input.obstacles) for (let row = rect.row; row < rect.row + rect.height; row++)
+    blocked.fill(1, row * width + rect.column, row * width + rect.column + rect.width);
+  for (const seat of [0, 1]) for (const index of townCenterFootprintCells(input.spawnPoints, seat, width, height)) blocked[index] = 1;
+  const levels = buildElevationGrid(width, height, input.elevationPatches);
+  const distances = new Int32Array(blocked.length).fill(-1), queue = [cell(input.spawnPoints.find(p => p.team === team))];
+  distances[queue[0]] = 0;
+  for (let head = 0; head < queue.length; head++) {
+    const current = queue[head], column = current % width, row = Math.floor(current / width);
+    for (const next of [column > 0 ? current - 1 : -1, column + 1 < width ? current + 1 : -1,
+      row > 0 ? current - width : -1, row + 1 < height ? current + width : -1]) {
+      if (next < 0 || blocked[next] || distances[next] >= 0 || !canTraverseElevation(levels, current, next)) continue;
+      distances[next] = distances[current] + 1; queue.push(next);
+    }
+  }
+  return { cell, distances, blocked, levels };
+}
+
+test('additive placement skips isolated satellites and replays reachable stock-preserving alternatives', () => {
+  for (const seed of [0, 93000, 0xffffffff]) for (const distribution of ['uniform', 'core-falloff']) {
+    const options = freeze({ ...additiveSettings, seed, distribution });
+    const original = appendSeededResourceCluster(additiveMap(), options), candidate = original[3];
+    for (const kind of ['stone', 'elevation']) {
+      const input = freeze(encloseCandidate(additiveMap(), candidate, kind)), before = JSON.stringify(input);
+      const nodes = appendSeededResourceCluster(input, options), added = nodes.slice(input.resourceNodes.length);
+      assert.deepEqual(nodes, appendSeededResourceCluster(input, options));
+      // A placement-only exclusion supplies an independent feasible witness on
+      // identical blocked/elevation ground, so no stock/count increase is needed.
+      assert.deepEqual(nodes, appendSeededResourceCluster({ ...input,
+        terrainPatches: [{ ...pointCell(candidate), material: 'dirt' }] }, options));
+      assert.deepEqual(nodes.slice(0, input.resourceNodes.length), input.resourceNodes);
+      assert.equal(added.length, 5); assert.equal(total(added, 'food'), 101);
+      assert.equal(JSON.stringify(input), before);
+      const { cell, blocked, levels } = clusterPaths(input, 0);
+      assert.equal(findUnreachableResourceNode(64, 64, blocked, input.spawnPoints, nodes, levels), null);
+      assert.ok(added.every(n => cell(n) !== cell(candidate)));
+      for (const [index, node] of added.entries()) {
+        assert.ok(Math.hypot(node.x - options.x, node.z - options.z) <= (options.radius ?? 4));
+        for (const other of added.slice(index + 1)) assert.ok(Math.hypot(node.x - other.x, node.z - other.z) >= 2);
+      }
+    }
+  }
+});
+
+test('mirrored placement skips either inaccessible half and retains replay, stock and symmetric route fairness', () => {
+  const settings = { seed: 93000, nodesPerPatch: 5, radius: 4, spawnClearance: 6,
+    patches: [{ type: 'food', x: -8.5, z: -10.5, stock: 101 }] };
+  for (const seed of [0, 93000, 0xffffffff]) for (const distribution of ['uniform', 'core-falloff']) {
+    const options = freeze({ ...settings, seed, distribution });
+    const candidate = seededMirroredResourceClusters(additiveMap([]), options)[1];
+    for (const kind of ['stone', 'elevation']) for (const mirrored of [false, true]) {
+      // One-sided ground deliberately encloses only the positive half: the
+      // negative candidate remains reachable but the paired choice must skip.
+      const target = { ...candidate, x: -candidate.x };
+      const input = freeze(encloseCandidate(additiveMap([]), target, kind, mirrored)), before = JSON.stringify(input);
+      const nodes = seededMirroredResourceClusters(input, options);
+      assert.deepEqual(nodes, seededMirroredResourceClusters(input, options));
+      assert.deepEqual(nodes, seededMirroredResourceClusters({ ...input,
+        terrainPatches: [{ ...pointCell(target), material: 'dirt' }] }, options));
+      assert.equal(nodes.length, 10); assert.equal(total(nodes, 'food'), 202);
+      assert.equal(JSON.stringify(input), before);
+      const paths = [clusterPaths(input, 0), clusterPaths(input, 1)];
+      assert.equal(findUnreachableResourceNode(64, 64, paths[0].blocked, input.spawnPoints, nodes, paths[0].levels), null);
+      assert.ok(nodes.every(n => paths[0].cell(n) !== paths[0].cell(target)));
+      for (const node of nodes.filter(n => n.id.startsWith('s0-'))) {
+        const opposite = nodes.find(n => n.id === node.id.replace('s0-', 's1-'));
+        assert.deepEqual(opposite, { ...node, id: node.id.replace('s0-', 's1-'), x: -node.x });
+        if (mirrored) assert.equal(paths[0].distances[paths[0].cell(node)], paths[1].distances[paths[1].cell(opposite)]);
+      }
+    }
+  }
+});
+
+test('unreachable existing stock or fixed anchors still reject atomically before alternative placement', () => {
+  const input = additiveMap(), existing = input.resourceNodes[1];
+  rejectsUnchanged(encloseCandidate(input, existing, 'stone'), additiveSettings, /reachable from both seats/);
+  rejectsUnchanged(encloseCandidate(additiveMap([]), additiveSettings, 'elevation'), additiveSettings, /reachable from both seats/);
+  const options = freeze({ seed: 93000, nodesPerPatch: 5, radius: 4, spawnClearance: 6,
+    patches: [{ type: 'food', x: -8.5, z: -10.5, stock: 101 }] });
+  for (const kind of ['stone', 'elevation']) {
+    const input = freeze(encloseCandidate(additiveMap([]), options.patches[0], kind)), before = JSON.stringify(input);
+    assert.throws(() => seededMirroredResourceClusters(input, options), /reachable from both seats/);
+    assert.equal(JSON.stringify(input), before);
   }
 });
