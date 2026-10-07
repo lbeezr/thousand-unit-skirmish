@@ -64,6 +64,40 @@ export function createProductionPolicy(seed) {
   let nextAttemptTick = 0;
   let retryTicks = limits.retryTicks;
   let siteAttempt = 0;
+  // Public observations cannot identify a Gather job. Retain delivery evidence
+  // only through its observable gathering/returning episode, never across an
+  // observed interruption, identity replacement, disappearance or rewind.
+  const expansionWorkers = new Map();
+  let expansionTick = null;
+  const observeExpansionWorkers = (observation) => {
+    if (expansionTick !== null && observation.tick < expansionTick) expansionWorkers.clear();
+    expansionTick = observation.tick;
+    const present = new Set();
+    for (const worker of observation.units?.friendly ?? []) {
+      if (worker.team !== observation.team || worker.hp <= 0 || worker.kind !== 'worker') continue;
+      present.add(worker.id);
+      const previous = expansionWorkers.get(worker.id);
+      if (previous?.generation === worker.generation && observation.tick === previous.tick) {
+        // Conflicting samples at one tick cannot establish a transition. Drop
+        // that episode's evidence rather than making their order meaningful.
+        if (previous.task !== worker.task || previous.cargo !== worker.cargo) {
+          previous.task = null; previous.cargo = 0; previous.delivered = false;
+        }
+        continue;
+      }
+      const active = ['gathering', 'returning'].includes(worker.task);
+      const continuous = previous?.generation === worker.generation
+        && ['gathering', 'returning'].includes(previous.task);
+      const delivered = continuous && previous.cargo > 0
+        && (worker.cargo === 0 && ['gathering', 'idle'].includes(worker.task)
+          || previous.task === 'returning' && worker.task === 'gathering');
+      expansionWorkers.set(worker.id, {
+        generation: worker.generation, tick: observation.tick, task: worker.task,
+        cargo: worker.cargo, delivered: active && continuous && (previous.delivered || delivered),
+      });
+    }
+    for (const id of expansionWorkers.keys()) if (!present.has(id)) expansionWorkers.delete(id);
+  };
   const postpone = (tick) => {
     nextAttemptTick = tick + retryTicks;
     retryTicks = Math.min(retryTicks * 2, limits.maxRetryTicks);
@@ -71,6 +105,7 @@ export function createProductionPolicy(seed) {
   return {
     next(observation) {
       firstTick ??= observation.tick;
+      observeExpansionWorkers(observation);
       // Partial synthetic observations and maps without an economy cannot spend.
       if (!observation.resources || !observation.buildings) return [];
       const friendly = observation.units.friendly.filter((unit) => unit.hp > 0);
@@ -211,10 +246,13 @@ export function createProductionPolicy(seed) {
         }
       }
       const expansion = observation.buildings.friendly.find((building) => building.type === 'town-center' && !building.home && building.hp > 0);
-      if (remoteResource && economyBuilder && storehouse?.complete && friendly.length >= 8) {
+      const expansionBuilder = workers.find(worker => worker.team === observation.team && worker.task === 'idle' && worker.cargo === 0)
+        ?? workers.find(worker => worker.team === observation.team && worker.task === 'gathering' && worker.cargo === 0
+          && expansionWorkers.get(worker.id)?.delivered);
+      if (remoteResource && expansionBuilder && storehouse?.complete && friendly.length >= 8) {
         if (expansion && !expansion.complete) {
           postpone(observation.tick);
-          return [{ type: 'build', ids: [economyBuilder.id], unitGenerations: [economyBuilder.generation], buildingId: expansion.id }];
+          return [{ type: 'build', ids: [expansionBuilder.id], unitGenerations: [expansionBuilder.generation], buildingId: expansion.id }];
         }
         const center = BUILDING_DEFINITIONS['town-center'];
         if (!expansion && observation.resources.wood >= center.cost.wood + limits.woodReserve
@@ -222,7 +260,7 @@ export function createProductionPolicy(seed) {
           const sites = candidateSites(observation, remoteResource, seed, center.id);
           if (sites.length) {
             const point = sites[siteAttempt++ % sites.length]; postpone(observation.tick);
-            return [{ type: 'build', ids: [economyBuilder.id], unitGenerations: [economyBuilder.generation], buildingType: center.id, ...point }];
+            return [{ type: 'build', ids: [expansionBuilder.id], unitGenerations: [expansionBuilder.generation], buildingType: center.id, ...point }];
           }
         }
       }
