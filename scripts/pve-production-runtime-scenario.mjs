@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
-import { PVE_REGROUP_LIMITS } from '../src/pve-regroup.mjs';
+import { PVE_REGROUP_LIMITS } from '../src/simulation/ai/policies/regroup.mjs';
 
 const mapId = process.argv[2] || 'forked-vale';
 assert.ok(['forked-vale', 'woodland-expanse', 'bellweather-millrace', 'underbough-rootways'].includes(mapId));

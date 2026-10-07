@@ -1,4 +1,4 @@
-import { UNIT_DEFINITIONS } from './gameplay-definitions.mjs';
+import { UNIT_DEFINITIONS } from '../../../gameplay-definitions.mjs';
 
 export const PVE_REGROUP_LIMITS = Object.freeze({ units: 5, maxWaitTicks: 3600, retryTicks: 300 });
 const key = unit => `${unit.id}:${unit.generation}`;

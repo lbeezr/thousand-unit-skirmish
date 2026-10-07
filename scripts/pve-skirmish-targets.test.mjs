@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createSkirmishTargetPolicy, selectSkirmishTarget, PVE_SKIRMISH_LIMITS as limits } from '../src/pve-skirmish-targets.mjs';
+import { createSkirmishTargetPolicy, selectSkirmishTarget, PVE_SKIRMISH_LIMITS as limits } from '../src/simulation/ai/policies/skirmish-targets.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
 import { replayRememberedSearch } from './pve-remembered-search-case.mjs';
 import { replayProgressSearch } from './pve-progress-search-case.mjs';

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { createReconnaissancePolicy } from '../src/pve-reconnaissance.mjs';
+import { createReconnaissancePolicy } from '../src/simulation/ai/policies/reconnaissance.mjs';
 import { createDeterministicPolicy } from '../src/pve-opponent.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';

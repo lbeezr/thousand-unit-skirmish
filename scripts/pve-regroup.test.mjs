@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRegroupPolicy, PVE_REGROUP_LIMITS as limits } from '../src/pve-regroup.mjs';
+import { createRegroupPolicy, PVE_REGROUP_LIMITS as limits } from '../src/simulation/ai/policies/regroup.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 

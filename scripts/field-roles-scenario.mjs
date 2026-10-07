@@ -1,4 +1,4 @@
-import { createReconnaissancePolicy } from '../src/pve-reconnaissance.mjs';
+import { createReconnaissancePolicy } from '../src/simulation/ai/policies/reconnaissance.mjs';
 import { toOpponentObservation } from '../src/pve-opponent.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { initializeCombatStance } from '../src/combat-stance.mjs';

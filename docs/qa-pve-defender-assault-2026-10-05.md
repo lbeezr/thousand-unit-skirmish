@@ -52,7 +52,7 @@ normal-policy comparison with no forced attack, resource grant or deadline edit.
 The comparison starts after the failed full-match deadline; both forks remain
 ongoing and do not establish the entire match's cause or completion.
 
-The [runtime selector](../src/pve-skirmish-targets.mjs) reads only current public
+The [runtime selector](../src/simulation/ai/policies/skirmish-targets.mjs) reads only current public
 positions, kind definitions and the existing available assault cohort. It keeps
 stable target ties, generation binding, combat protection, retry/search bounds,
 contact expiry and the caller's defense/reconnaissance/rally reservations. It

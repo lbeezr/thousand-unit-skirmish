@@ -59,6 +59,20 @@ Keep independent streams moving in parallel; agree on shared interfaces before o
 edits. Use short-lived incremental branches, and own conflicts and fix-forward work. Do not
 accumulate a large disconnected PR or turn the producer into an approval queue.
 
+## Source organization
+
+Use [source roles and conventions](docs/source-organization.md) for new files and
+bounded migrations, alongside the [architecture boundaries](docs/architecture.md#stages-ownership-and-stable-entrypoints).
+Place new implementations in their owning subsystem; keep editor controls and
+standalone studies distinct from production runtime. Establish a file's role
+from real entrypoints, consumers, flags and packaging, not its name. Record
+unknown roles without deleting presumed dead code. Keep pinned versions within
+their feature directory and generated outputs beside their owning asset pack.
+Retain a root entry or forwarding module only for an identified compatibility
+need; record consumers, owner and retirement conditions. Coordinate active-file
+migrations with the affected owner, update real callers and exact domain/path
+guards, and verify behavior and release admission at the final source head.
+
 ## Testing and completion
 
 Use the [testing strategy](docs/testing-strategy.md) and existing
