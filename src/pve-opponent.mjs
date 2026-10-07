@@ -240,8 +240,10 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED, matchMod
   }
 
   function nextGatherCommands(observation) {
+    const reserved = productionPolicy.reservedBuilder();
     const workers = observation.units.friendly
-      .filter((unit) => unit.kind === 'worker' && unit.hp > 0)
+      .filter((unit) => unit.kind === 'worker' && unit.hp > 0
+        && !(reserved && unit.id === reserved.id && unit.generation === reserved.generation))
       .sort((left, right) => left.id - right.id);
     const liveKeys = new Set(workers.map((worker) => `${worker.id}:${worker.generation}`));
     for (const key of gatherAssignments.keys()) {
