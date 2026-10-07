@@ -114,3 +114,67 @@ test('Farm exhaustion requires complete, damage and critical entries and stays F
     assert.throws(() => validateBuildingLifecycle(invalid, strict));
   }
 });
+
+test('lifecycle transition bands must leave Foundation, Frame, Critical, Damaged and Complete reachable', () => {
+  const mapping = {construction: {foundationAtOrBelow: .275},
+    health: {criticalAtOrBelow: .3, damagedAtOrBelow: .6}};
+  for (const [section, key] of [['construction', 'foundationAtOrBelow'],
+    ['health', 'criticalAtOrBelow'], ['health', 'damagedAtOrBelow']]) {
+    for (const value of [null, false, '', '.3', NaN, Infinity, -Infinity, -1, 0, 1, 2]) {
+      const manifest = fixture(); manifest.stateMapping = structuredClone(mapping);
+      manifest.stateMapping[section][key] = value;
+      assert.throws(() => validateBuildingLifecycle(manifest), /Invalid .* transition threshold/,
+        `${section}.${key}: ${String(value)}`);
+    }
+  }
+  for (const health of [{criticalAtOrBelow: .6, damagedAtOrBelow: .3},
+    {criticalAtOrBelow: .3, damagedAtOrBelow: .3}, {criticalAtOrBelow: .7}, {damagedAtOrBelow: .2}]) {
+    const manifest = fixture(); manifest.stateMapping = {health};
+    assert.throws(() => validateBuildingLifecycle(manifest), /Critical threshold must be below Damaged/);
+  }
+});
+
+test('absent transition bands retain runtime defaults and valid custom bands remain supported', () => {
+  for (const mapping of [undefined, {}, {construction: {}, health: {}},
+    {construction: {foundationAtOrBelow: .4}, health: {criticalAtOrBelow: .2, damagedAtOrBelow: .7}},
+    {health: {criticalAtOrBelow: .4}}, {health: {damagedAtOrBelow: .4}}]) {
+    const manifest = fixture(); manifest.stateMapping = mapping;
+    assert.doesNotThrow(() => validateBuildingLifecycle(manifest));
+  }
+  for (const value of [null, [], true, 'mapping', 1]) {
+    for (const section of [null, 'construction', 'health']) {
+      const manifest = fixture(); manifest.stateMapping = section ? {[section]: value} : value;
+      assert.throws(() => validateBuildingLifecycle(manifest), /Invalid .* mapping/);
+    }
+  }
+});
+
+test('every actual default building manifest and the retained Town Center fallback satisfy transition admission', async () => {
+  const {BUILDING_DEFINITIONS} = await import('../src/gameplay-definitions.mjs');
+  const {frontierBuildingManifestUrl} = await import('../src/frontier-building-preview.mjs');
+  let count = 0;
+  for (const type of Object.keys(BUILDING_DEFINITIONS)) {
+    const url = frontierBuildingManifestUrl(type);
+    if (!url) continue;
+    const manifest = JSON.parse(await readFile(fileURLToPath(url), 'utf8'));
+    assert.equal(validateBuildingLifecycle(manifest).asset, type); count++;
+  }
+  assert.equal(count, 11);
+  const fallback = JSON.parse(await readFile(new URL('../assets/buildings/town-center-lifecycle-meshy-v1/lifecycle-grid.json', import.meta.url)));
+  assert.doesNotThrow(() => validateBuildingLifecycle(fallback, strict));
+});
+
+test('CLI rejects unreachable lifecycle transition bands instead of reporting successful metadata admission', async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'building-threshold-test-'));
+  try {
+    const file = path.join(directory, 'candidate.json');
+    const manifest = fixture();
+    manifest.stateMapping = {health: {criticalAtOrBelow: .8, damagedAtOrBelow: .4}};
+    await writeFile(file, JSON.stringify(manifest));
+    const result = spawnSync(process.execPath,
+      [fileURLToPath(new URL('./validate-building-lifecycle.mjs', import.meta.url)), file], {encoding: 'utf8'});
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Critical threshold must be below Damaged/);
+    assert.equal(result.stdout, '');
+  } finally { await rm(directory, {recursive: true, force: true}); }
+});
