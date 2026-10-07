@@ -93,6 +93,7 @@ the build they name.
 | Add selected-unit portraits or connect future field notes | [Worker HUD art and integration contract](hud-art-integration.md) |
 | Change cues or captions | [Audio design](audio-design.md) |
 | Design each command, notice, alert and result sound | [UI sound direction](ui-audio-direction.md) |
+| Review proposed civilization voices, phrases and language development | [Civilization voice/language guide](civilization-voice-language-guide.md): proposed performance and 30 audition takes; no canon or recording approval |
 | Produce reusable effects and music | [Audio kit plan](audio-kit-plan.md) |
 | Plan Vaelora regional music, ambience and generation requests | [Zone audio plan](vaelora-zone-audio-plan.md) |
 | Build Audio Studio and sampled playback | [Audio Studio implementation](audio-studio-implementation-plan.md) |
