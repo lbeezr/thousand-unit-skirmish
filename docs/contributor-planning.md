@@ -52,6 +52,11 @@ with its affected owner before changing shared hot spots.
 
 ### Continuing workstream, bounded PR
 
+OpenAI's [A model guide for the GPT-6 family](https://openai.com/index/practical-guide-building-gpt-6/)
+(2 October 2026) inspires the persistence and steering guidance here. The
+checkpoint format, integration transitions and timing diagnostics below are
+repository-specific recommendations, not requirements from that article.
+
 A workstream goal outlives any one PR. Keep a short ranked backlog in its owning
 guide or task, with the next action, write scope, dependencies and observable
 acceptance for each justified item. After a reviewed, verified merge, refresh
@@ -59,8 +64,11 @@ main and choose the highest useful ready item without another parent approval
 queue. A new PR keeps its own bounded outcome; the backlog is not a giant PR
 or an invitation to manufacture refactors.
 
-Record meaningful checkpoints with the exact source/check result, next scope
-and concrete blocker. Share results and blockers with the parent when the user
+Keep a current checkpoint in the owning task, PR or guide: UTC timestamp,
+branch and exact head, evidence links/results, current action, next transition
+and any scope change. Update it when the action or evidence changes. If waiting,
+name the dependency, responsible owner and concrete resume condition. Share
+results and blockers with the parent when the user
 requests check-ins; agree shared interfaces with the affected owner before
 overlapping edits. Pause dependent work for missing authorization, an unresolved
 ownership/interface conflict, unavailable execution, or no justified remaining
@@ -68,12 +76,31 @@ item, and report that actual condition. Continue independent ready work. Tooling
 outcomes require tool/check acceptance; runtime outcomes retain deployment and
 in-game acceptance ownership.
 
+When instructions change or a task resumes, reconcile current main, scope,
+branch/head and outstanding operations before another write. Steering does not
+cancel a running tool; it may still finish. Inspect its result before dependent
+work and reconcile completed effects with the current instructions.
+
+Once a bounded slice is complete, immediately take its next authorized
+integration step: review, publication, merge or verification, as applicable.
+Do not expand scope or wait for a routine parent response in place of that
+step. An actual hold or dependency belongs in the checkpoint with its owner
+and resume condition.
+
 Keep branches short-lived and PRs incremental. Refresh main before dependent
 work and before merging. The author resolves conflicts, runs proportionate
 checks, obtains independent review, merges under existing authority and handles
 fix-forward work. Do not collect unrelated finished tasks into one large PR or
 wait for a parent to grant permission already held. Respect actual branch/access
 restrictions and identify their source, scope and next action when blocked.
+
+Use existing review/PR, merge and staging-verification timestamps to report
+elapsed time from review-ready to merged and from merged to verified staging
+for the identified revision. Note waiting dependencies to explain delays. Mark
+missing timestamps or staging evidence as unavailable; PR creation and
+deployment start are not substitutes for readiness or verification. These
+measurements diagnose workflow friction, with no new gates, deadlines,
+permissions or approval layers.
 
 ## Closing and handing off
 
