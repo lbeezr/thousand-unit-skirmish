@@ -5065,6 +5065,10 @@ function updateRosterBuildingOptions(container) {
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'economy-action build-action'; button.dataset.building = definition.id;
       button.addEventListener('click', () => {
+        // Retained inspectable choices recheck current selection/stock/research
+        // before activation, including changes that arrived before a UI refresh.
+        updateRosterBuildingOptions(container);
+        if (isHudActionUnavailable(button)) return;
         if (buildPlacementActive && buildPlacementType === definition.id) cancelBuildPlacement();
         else beginBuildPlacement(definition.id);
       });
@@ -5076,10 +5080,30 @@ function updateRosterBuildingOptions(container) {
     const cost = constructionCostForProfile(definition.id, mapDefinition?.economyProfileId);
     const workers = selectedWorkerIds();
     const missing = (definition.requires || []).filter((id) => !latestTeamResearch[localTeam]?.[TECHNOLOGY_DEFINITIONS[id].upgradeKey]);
-    button.disabled = localTeam === null || matchWinner >= 0 || buildPlacementPending || !workers.length || missing.length > 0
+    const unavailable = localTeam === null || matchWinner >= 0 || buildPlacementPending || !workers.length || missing.length > 0
       || (definition.id !== 'palisade-wall' && (latestFood[localTeam] < cost.food || latestWood[localTeam] < cost.wood
         || (cost.stone !== undefined && latestStone[localTeam] < cost.stone)));
-    button.textContent = `Build ${definition.label} · ${cost.wood} WOOD${cost.food ? ` + ${cost.food} FOOD` : ''}${cost.stone !== undefined ? ` + ${cost.stone} STONE` : ''}${missing.length ? ' · RESEARCH REQUIRED' : ''}`;
+    let reason = '';
+    // The registered Workshop gate is discoverable even before it is unlocked.
+    // Keep this stable action reachable like the contextual research controls.
+    if (definition.requires?.length) {
+      const prerequisites = missing.map(id => {
+        const technology = TECHNOLOGY_DEFINITIONS[id];
+        return `${technology.label} at ${BUILDING_DEFINITIONS[technology.building].label}`;
+      });
+      const shortfall = ['food', 'wood', 'stone'].flatMap(resource => {
+        const stock = resource === 'food' ? latestFood[localTeam] : resource === 'wood' ? latestWood[localTeam] : latestStone[localTeam];
+        return cost[resource] > stock ? [`${formatResourceRequirement(cost[resource] - stock)} ${resource}`] : [];
+      });
+      reason = localTeam === null ? 'Join a team' : matchWinner >= 0 ? 'Match finished'
+        : buildPlacementPending ? 'Waiting for construction request'
+        : !workers.length ? 'Select living Workers'
+        : missing.length ? `Requires ${prerequisites.join(' + ')}`
+        : shortfall.length ? `Need ${shortfall.join(' + ')}` : '';
+      setHudActionAvailability(button, unavailable, true);
+    } else button.disabled = unavailable;
+    button.textContent = `Build ${definition.label} · ${cost.wood} WOOD${cost.food ? ` + ${cost.food} FOOD` : ''}${cost.stone !== undefined ? ` + ${cost.stone} STONE` : ''}${reason ? ` · ${reason}` : ''}`;
+    if (definition.requires?.length) button.title = button.textContent;
     const active = buildPlacementActive && buildPlacementType === definition.id;
     button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
   }

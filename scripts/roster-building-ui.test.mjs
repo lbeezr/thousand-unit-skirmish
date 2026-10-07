@@ -4,13 +4,17 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 import { BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { formatResourceRequirement } from '../src/resource-format.mjs';
+import { isHudActionUnavailable } from '../src/hud-layout.mjs';
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const fn = source.slice(source.indexOf('function updateRosterBuildingOptions('), source.indexOf('function updateEconomyUI('));
 for (const team of [0, 1]) test(`registry building menu preserves focus and exact costs for seat ${team}`, () => {
   const placements = [];
   const container = { children: [], replaceChildren() { this.children = []; }, append(button) { this.children.push(button); } };
-  const context = vm.createContext({ ...economyClientBindings(), BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
-    document: { createElement() { return { dataset: {}, classList: { toggle() {} }, setAttribute() {}, addEventListener(_, callback) { this.click = callback; } }; } },
+  const context = vm.createContext({ ...economyClientBindings(), BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, formatResourceRequirement,
+    document: { createElement() { const attributes = new Map(); return { dataset: {}, classList: { toggle() {} },
+      getAttribute(name) { return attributes.get(name) ?? null; }, setAttribute(name, value) { attributes.set(name, value); },
+      removeAttribute(name) { attributes.delete(name); }, addEventListener(_, callback) { this.click = callback; } }; } },
     localTeam: team, teamUnits: [[{ kind: 'worker', hp: 100 }], [{ kind: 'worker', hp: 100 }]],
     selectedWorkerIds: () => [0],
     latestFood: [500, 500], latestWood: [100, 100], latestTeamResearch: [{}, {}],
@@ -53,5 +57,5 @@ for (const team of [0, 1]) test(`registry building menu preserves focus and exac
   context.updateRosterBuildingOptions(container); button.click(); assert.equal(placements.at(-1), 'cancel');
   context.selectedWorkerIds = () => [];
   context.updateRosterBuildingOptions(container);
-  assert.ok(container.children.every(row => row.disabled), 'construction needs explicit worker selection');
+  assert.ok(container.children.every(isHudActionUnavailable), 'construction needs explicit worker selection');
 });
