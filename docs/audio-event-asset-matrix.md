@@ -183,10 +183,13 @@ profile uses 900 ms. At most two simultaneous voices/eight samples are retained;
 urgent synthesis uses the existing 20-note budget versus 12 routine notes and
 ducks the background. Effects/master mute, overall zero, hidden pages, stale
 pack/decode generations and disposal remain in force. Return never replays stale
-selection/order samples; a fresh eligible event can schedule. Critical warning
-decisions still invoke the decision callback while muted/locked. Visible warning
-captions require captions enabled; Main's `showAudioCaption` otherwise returns
-immediately. Hidden pages do not queue warning callbacks for replay.
+selection/order samples; a fresh eligible event can schedule. Normal synthesized
+warnings invoke the decision callback while the page is visible, including muted
+or locked output. Eligible sampled warnings invoke it only when captions are
+enabled or master audio is disabled; lock or bus mute alone does not guarantee a
+callback. Visible warning captions require captions enabled; Main's
+`showAudioCaption` otherwise returns immediately. Hidden pages do not queue warning
+callbacks for replay.
 
 This source slice owns default building-selection delivery and sparse override
 validation/resolution. Its backing is the existing short selection gesture and
