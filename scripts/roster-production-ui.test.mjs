@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
+import { JSDOM } from 'jsdom';
+import { updateProductionPortrait } from '../src/selection-portrait.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { formatResourceRequirement } from '../src/resource-format.mjs';
 import { setHudActionAvailability, isHudActionUnavailable } from '../src/hud-layout.mjs';
@@ -53,6 +55,51 @@ for (const team of [0, 1]) test(`roster production choices follow definitions an
   assert.equal(container.hidden, false, 'the production panel retains its roster catalog');
   assert.ok(container.children.some(button => button.dataset.product === 'spearman'));
   assert.ok(container.children.some(button => button.dataset.product === 'siege-engine'));
+});
+
+for (const team of [0, 1]) test(`seat ${team}: catalog names registered producers without changing eligibility, focus or commands`, t => {
+  const dom = new JSDOM(readFileSync(new URL('../index.html', import.meta.url), 'utf8'), { runScripts: 'outside-only' });
+  t.after(() => dom.window.close());
+  const w = dom.window, catalog = w.document.querySelector('#roster-production-options'), commands = [];
+  Object.assign(w, { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, formatResourceRequirement,
+    setHudActionAvailability, isHudActionUnavailable, updateProductionPortrait,
+    castPreview: false, humanRosterPreview: false, localTeam: team, latestBuildings: [],
+    teamUnits: [[], []], latestFood: [500, 500], latestWood: [500, 500],
+    latestWorkerProduction: [null, null], latestPopulation: [null, null], latestRosterSize: 0,
+    BARRACKS_QUEUE_LIMIT: 5, MAX_PER_TEAM: 1000, MAX_UNITS: 2000, matchWinner: -1,
+    getBuildingQueueLength: row => row.queue, sendCommand: command => commands.push(command) });
+  w.eval(source.slice(source.indexOf('function updateRosterProductionOptions('), source.indexOf('function updateBuildingLifecycleActions(')));
+  const expected = { 'siege-engine': 'Workshop', scout: 'Stable', rider: 'Stable', skiff: 'Dock', spearman: 'Barracks' };
+  const producers = ['workshop', 'stable', 'dock', 'barracks'].map((type, index) => ({ id: 10 + index, type, team, complete: true, queue: 0 }));
+  w.updateRosterProductionOptions(catalog, null, true);
+  const buttons = new Map([...catalog.children].map(button => [button.dataset.product, button]));
+  const inspect = unavailable => {
+    for (const [kind, name] of Object.entries(expected)) {
+      const button = catalog.querySelector(`[data-product="${kind}"]`);
+      assert.equal(button, buttons.get(kind)); assert.match(button.textContent, new RegExp(` at ${name} ·`));
+      assert.equal(button.disabled, unavailable); assert.equal(button.hasAttribute('aria-disabled'), false);
+      if (unavailable) button.click();
+    }
+  };
+  inspect(true); assert.equal(commands.length, 0, 'absent producer cannot train');
+  w.latestBuildings = producers.map(row => ({ ...row, team: 1 - team }));
+  w.updateRosterProductionOptions(catalog, null, true); inspect(true); assert.equal(commands.length, 0, 'enemy producers cannot train');
+  w.latestBuildings = producers.map(row => ({ ...row, complete: false }));
+  w.updateRosterProductionOptions(catalog, null, true); inspect(true); assert.equal(commands.length, 0, 'unfinished producers cannot train');
+  w.latestBuildings = producers; w.updateRosterProductionOptions(catalog, null, true); inspect(false);
+  const scout = buttons.get('scout'); scout.focus(); assert.equal(w.document.activeElement, scout);
+  w.updateRosterProductionOptions(catalog, null, true); inspect(false); assert.equal(w.document.activeElement, scout);
+  for (const kind of Object.keys(expected)) buttons.get(kind).click();
+  assert.deepEqual(JSON.parse(JSON.stringify(commands)), Object.keys(expected).map(kind => ({
+    type: 'trainUnit', kind, buildingId: producers.find(row => BUILDING_DEFINITIONS[row.type].products.includes(kind)).id,
+  })));
+  const contextual = w.document.querySelector('[data-context-products]');
+  w.updateRosterProductionOptions(contextual, producers[1]);
+  const contextualScout = contextual.querySelector('[data-product="scout"]');
+  assert.doesNotMatch(contextualScout.textContent, / at Stable/); assert.equal(contextualScout.disabled, false);
+  contextualScout.focus(); w.updateRosterProductionOptions(contextual, producers[1]);
+  assert.equal(w.document.activeElement, contextualScout); contextualScout.click();
+  assert.deepEqual(JSON.parse(JSON.stringify(commands.at(-1))), { type: 'trainUnit', kind: 'scout', buildingId: 11 });
 });
 
 for (const team of [0, 1]) test(`Stable exposes both mounted products and weighted population for seat ${team}`, () => {

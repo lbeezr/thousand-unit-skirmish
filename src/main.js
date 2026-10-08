@@ -4994,8 +4994,10 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
     const role = localTeam !== null && castPreview
       && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
       ? unitSpriteRuntime.roleForUnit({ kind: definition.id, team: localTeam }) : null;
+    const producerNames = catalog && !selectedProducer ? Object.values(BUILDING_DEFINITIONS)
+      .filter(building => building.products?.includes(definition.id)).map(building => building.label).join(' / ') : '';
     updateProductionPortrait(button, definition.id, role,
-      `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`);
+      `Train ${definition.label}${producerNames ? ` at ${producerNames}` : ''} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`);
   }
   container.hidden = products.length === 0;
 }

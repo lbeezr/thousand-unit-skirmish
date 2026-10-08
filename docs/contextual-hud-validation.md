@@ -404,3 +404,22 @@ Shift-wheel, native horizontal wheel/thumb drag, dismissal and selection retenti
 Record source/deployed revisions, browser, rectangles, PNG/hash and observations.
 The HUD owner retains implementation/source checks; the receiving Railway owner
 retains delivery of the identified user build. No deployment is part of this slice.
+
+## Catalog producer names — 7 October 2026
+
+The default Build & train roster catalog now names each product's registered
+producer in its existing label: Scout/Rider at Stable, Siege Engine at Workshop,
+Skiff at Dock and Spearman at Barracks. The same name remains visible with absent,
+enemy or unfinished producers. Availability, automatic producer choice, prices,
+reason precedence and command payloads are unchanged. Selected-building and
+contextual production labels retain their existing treatment.
+
+Backing is the existing labelled compact HUD and admitted production portraits;
+this adds text without new art or controls. Both-seat DOM tests in
+`roster-production-ui.test.mjs` use the shipped HTML, production label writer and
+menu function. They cover the producer states above, stable buttons/focus through
+eligible updates, unchanged successful commands and contextual labels/focus.
+DOM/source, packaging and HTTP checks do not establish readable rendered text,
+real keyboard activation or a containing deployed revision. The existing cloud
+sandbox/storage capability blocker remains open; the HUD owner retains ordinary
+game acceptance at an identified containing cloud release.
