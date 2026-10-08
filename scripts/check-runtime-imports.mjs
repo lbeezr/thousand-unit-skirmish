@@ -28,6 +28,7 @@ export const RETIRED_RUNTIME_PATHS = Object.freeze([
   'src/pve-reconnaissance.mjs', 'src/pve-regroup.mjs', 'src/pve-skirmish-targets.mjs',
   'src/water-surface-study.mjs', 'src/water-study-state.mjs',
   'src/water-study-fish-binding.mjs', 'src/water-surface-geometry.mjs',
+  'src/forest-habitat.mjs', 'src/forest-composition.mjs', 'src/forest-age-composition.mjs',
 ]);
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
 export const NODE_ONLY_MODULES = [
@@ -98,8 +99,9 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'building-production-cue', 'building-sprites', 'building-visual-state', 'building-fog-composition',
     'camera-controls', 'captured-building-art', 'environment-art', 'asset-readability', 'catalog-barracks-observation',
     'environment-instance-picking',
-    'environment-plant-assets', 'forest-age-composition', 'forest-composition', 'forest-lifecycle-atlas',
-    'forest-habitat', 'gameplay-presentation', 'garden-vegetation', 'meadow-vegetation',
+    'environment-plant-assets', 'forest-lifecycle-atlas',
+    'presentation/rendering/forest/age-composition', 'presentation/rendering/forest/composition',
+    'presentation/rendering/forest/habitat', 'gameplay-presentation', 'garden-vegetation', 'meadow-vegetation',
     'neutral-wildlife-renderer', 'oak-depletion-atlas-runtime',
     'painted-material-atlas', 'painted-material-atlas-runtime', 'palisade-gate-visual', 'palisade-construction-ground',
     'podvine-low-pack', 'podvine-view-pack', 'podvine-worked-pack',

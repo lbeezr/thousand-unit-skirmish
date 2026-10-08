@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { underboughForestSpecies } from '../src/forest-composition.mjs';
-import { forestHabitatDepth } from '../src/forest-habitat.mjs';
+import { underboughForestSpecies } from '../src/presentation/rendering/forest/composition.mjs';
+import { forestHabitatDepth } from '../src/presentation/rendering/forest/habitat.mjs';
 const map = JSON.parse(await readFile(new URL('../maps/underbough-rootways.json',import.meta.url)));
 const original=JSON.stringify(map),depth=forestHabitatDepth(map),slots=new Map(),counts={};
 for(const rect of map.obstacles.filter(o=>o.material==='forest')) for(let row=rect.row;row<rect.row+rect.height;row++) for(let column=rect.column;column<rect.column+rect.width;column++) {

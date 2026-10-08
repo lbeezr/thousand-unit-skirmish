@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {readFileSync} from 'node:fs';
-import {pineViewVariation} from '../src/forest-age-composition.mjs';
+import {pineViewVariation} from '../src/presentation/rendering/forest/age-composition.mjs';
 import {auditTreePilot} from './tree-art-production-contract.mjs';
 
 const contract=JSON.parse(readFileSync(new URL('../docs/art-direction/tree-variety-v1/pine-production-contract.json',import.meta.url)));
@@ -20,7 +20,7 @@ test('pine samples are order-independent, seed-sensitive, uniform, bounded and n
   const cells=Array.from({length:2048},(_,cell)=>cell);
   const values=cells.map(cell=>pineViewVariation(cell,93002));
   assert.deepEqual([...cells].reverse().map(cell=>pineViewVariation(cell,93002)).reverse(),values);
-  const fresh=await import('../src/forest-age-composition.mjs?pine-fresh-selector');
+  const fresh=await import('../src/presentation/rendering/forest/age-composition.mjs?pine-fresh-selector');
   assert.deepEqual(cells.map(cell=>fresh.pineViewVariation(cell,93002)),values,'fresh module has no session state');
   assert.notDeepEqual(cells.map(cell=>pineViewVariation(cell,93003)),values);
   const counts=Array(8).fill(0);

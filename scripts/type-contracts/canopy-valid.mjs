@@ -1,5 +1,5 @@
 // Compile-only consumer: keep numeric cell identity, world x/z and optional lookups checked.
-import { forestAgeFactors } from '../../src/forest-age-composition.mjs';
+import { forestAgeFactors } from '../../src/presentation/rendering/forest/age-composition.mjs';
 
 const points = Object.freeze([
   Object.freeze({ cell: 7, x: 1.5, z: -2, species: 'hornbeam', scale: 0.9 }),

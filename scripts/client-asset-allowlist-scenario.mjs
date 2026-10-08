@@ -15,6 +15,17 @@ const server = readFileSync(path.join(root, 'server.mjs'), 'utf8');
 const environmentArt = readFileSync(path.join(root, 'src/environment-art.mjs'), 'utf8');
 assert.ok(Object.isFrozen(CLIENT_ASSET_PATHS), 'client admission paths must remain immutable');
 const allowed = new Set(CLIENT_ASSET_PATHS);
+for (const [retired, name] of [['forest-habitat', 'habitat'], ['forest-composition', 'composition'],
+  ['forest-age-composition', 'age-composition']]) {
+  const canonical = `src/presentation/rendering/forest/${name}.mjs`;
+  assert.ok(allowed.has(canonical), `forest rendering stays public: ${canonical}`);
+  for (const invalid of [`src/${retired}.mjs`, `${canonical}/extra`, `${canonical}.map`,
+    `src/presentation/rendering/forest//${name}.mjs`, `SRC/presentation/rendering/forest/${name}.mjs`]) {
+    assert.ok(!allowed.has(invalid), `forest module admission stays exact: ${invalid}`);
+  }
+}
+assert.ok(!allowed.has('src/presentation/rendering/forest/'));
+assert.ok(!allowed.has('src/presentation/rendering/forest/unknown.mjs'));
 for (const name of ['production-actions', 'research-actions']) {
   assert.ok(allowed.has(`src/${name}.mjs`), `legacy action module stays public: ${name}`);
   assert.ok(allowed.has(`src/rules/${name}.mjs`), `canonical action module is public: ${name}`);
