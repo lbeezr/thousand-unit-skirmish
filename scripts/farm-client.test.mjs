@@ -11,6 +11,17 @@ import { constructionTargetingFixture } from './construction-targeting-fixture.m
 import { farmSelectionFacts } from '../src/selection-portrait.mjs';
 import { battlefieldCursor } from '../src/battlefield-cursor.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
+import { constructionCostForProfile } from '../src/economy-profile.mjs';
+import { formatResourceRequirement } from '../src/resource-format.mjs';
+import { setHudActionAvailability, isHudActionUnavailable } from '../src/hud-layout.mjs';
+const lifecycleBindings = { constructionCostForProfile, formatResourceRequirement, setHudActionAvailability,
+  isHudActionUnavailable, latestWood: [500, 500], mapDefinition: {} };
+function lifecycleButton() {
+  const attributes = new Map();
+  return { dataset: {}, setAttribute(name, value) { attributes.set(name, value); },
+    getAttribute(name) { return attributes.get(name) ?? null; },
+    addEventListener(type, callback) { this.click = callback; } };
+}
 const main = readFileSync(process.env.FARM_CLIENT_SOURCE || new URL('../src/main.js', import.meta.url), 'utf8');
 function fn(name) {
   const start = main.indexOf(`function ${name}(`), end = main.indexOf('\nfunction ', start + 1);
@@ -29,9 +40,9 @@ for (const team of [0, 1]) test(`seat ${team} can target its completed Farm and 
   farm.team = team; farm.complete = false; assert.equal(context.pickResourceNodeAt(50, 50), null);
   farm.complete = true;
   const container = { dataset: {}, children: [], replaceChildren() { this.children = []; }, append(button) { this.children.push(button); } };
-  Object.assign(context, { BUILDING_DEFINITIONS, ui: { buildingLifecycleActions: container }, selectedBuildingId: farm.id,
+  Object.assign(context, { ...lifecycleBindings, BUILDING_DEFINITIONS, ui: { buildingLifecycleActions: container }, selectedBuildingId: farm.id,
     latestTeamResearch: [{}, {}], getBuildingQueueLength: () => 0,
-    document: { createElement: () => ({ dataset: {}, addEventListener() {} }) }, matchWinner: -1,
+    document: { createElement: lifecycleButton }, matchWinner: -1, selectedWorkerIds: () => [],
     teamUnits: [[], []] });
   vm.runInContext(fn('updateBuildingLifecycleActions'), context);
   context.updateBuildingLifecycleActions(); assert.equal(container.children.length, 0, 'productive Farm cannot be cleared/refunded');
@@ -190,8 +201,8 @@ for (const team of [0, 1]) test(`seat ${team} explicitly selected Workers surviv
   const f = constructionTargetingFixture({ team, units, selection: [0, 1, 2], buildings: [farm] });
   const statuses = [], submitted = [];
   const container = {dataset:{},children:[],replaceChildren(){this.children=[];},append(button){this.children.push(button);}};
-  Object.assign(f.context, {ui:{buildingLifecycleActions:container},latestTeamResearch:[{},{}],
-    getBuildingQueueLength:()=>0, document:{createElement:()=>({dataset:{},addEventListener(type,fn){this.click=fn;}})},
+  Object.assign(f.context, {...lifecycleBindings,ui:{buildingLifecycleActions:container},latestTeamResearch:[{},{}],
+    getBuildingQueueLength:()=>0, document:{createElement:lifecycleButton},
     teamUnits:[[],[]],clearWildlifeSelection(){},clearActiveControlGroup(){},syncSelectionMesh(){},
     updateSelectionUI(){},updateBuildingSelectionVisual(){},window:{matchMedia:()=>({matches:false})},
     currentOrderToken:700,beginOrderStatus:(...args)=>{submitted.push(args);return 700;},
@@ -218,8 +229,8 @@ for (const team of [0, 1]) test(`seat ${team} explicitly selected Workers surviv
   assert.deepEqual(statuses.at(-1),[700,'FARM REPLANTED · 60 WOOD · 1 WORKERS · HARVEST AFTER CONSTRUCTION','applied']);
   f.selected.clear(); container.children[0].click();
   assert.equal(f.payloads.length,1,'no selected Worker sends no order');
-  assert.match(f.toasts.at(-1),/SELECT IDLE WORKERS.*60 WOOD/);
-  assert.equal(f.toasts.at(-1),'SELECT IDLE WORKERS, THEN SELECT THIS EXHAUSTED PLOT · REPLANT COSTS 60 WOOD');
+  assert.match(container.children[0].textContent,/Select living Workers.*exhausted plot/);
+  assert.equal(container.children[0].getAttribute('aria-disabled'),'true');
   assert.equal(submitted.length,1,'no selected Worker starts no tracked order');
   farm.harvestStock=1; f.selected.add(0); f.context.selectBuilding(farm);
   assert.equal(f.selected.size,0,'productive plot retains ordinary exclusive building selection');
