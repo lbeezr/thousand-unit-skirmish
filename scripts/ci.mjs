@@ -83,6 +83,7 @@ run(['--test', 'scripts/map-studio-draft-recovery.test.mjs'], 'Map Studio draft 
 run(['--test', 'scripts/map-studio-import-errors.test.mjs'], 'Map Studio import read and parse failure contracts');
 run(['--test', 'scripts/map-publish-feedback.test.mjs'], 'Map Studio rejected publish feedback and explicit retry');
 run(['scripts/check-docs.mjs'], 'Documentation links');
+run(['--test', 'scripts/cloud-install.test.mjs'], 'Cloud install paths, failure propagation and Start skill');
 run(['--test', 'scripts/public-gameplay.test.mjs'], 'Default-off anonymous gameplay and protected private routes');
 run(['--test', 'scripts/tiny-match-pacing.test.mjs'], 'Paid Tiny pacing measurement and non-completion labels');
 run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default bindings and release dependencies');

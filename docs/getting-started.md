@@ -56,6 +56,10 @@ for checkpoint behavior.
 
 ## Common problems
 
+For repeatable cloud task setup and repository Start skill discovery, see
+[cloud environment setup](cloud-environment.md). That recipe separates locked
+dependency installation from optional browser readiness.
+
 In a restricted cloud workspace, npm's default cache under the home directory
 may be unwritable. If `npm ci` reports a cache-path `ENOENT` or `EACCES`, choose
 a writable cache directory while keeping the locked install:
