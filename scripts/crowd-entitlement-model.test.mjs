@@ -81,8 +81,8 @@ test('publication and consumption respect an actor serving both roles in a reser
   // An already published second promise must also pass inherited obligation at take.
   const next={owner:u,from:p(u),to,radius:.22,stamp:movementStart(u,s.c).stamp,tick:1,
     winner:follower,request:null,attempted:false};
-  s.model.state(u).offer.reservation=next;
-  s.model.state(follower).lease={generation:follower.generation,reservation:next,pending:false};
+  s.model.state(u).offer.moving.reservation=next;
+  s.model.state(follower).lease={kind:'ingress-obligation',generation:follower.generation,reservation:next,pending:false};
   const takeBudget=entitlementBudget();assert.equal(s.model.take(u,s.c,takeBudget),null);
   assert.ok(takeBudget.reservationVisits>0,'consumption reached and failed the inherited capsule guard');
   assert.ok(s.model.obligation(u,s.c));
@@ -142,7 +142,7 @@ test('same-pose new promise cannot inherit the exact-object acknowledgement of a
   const s=scene(),u=s.units[1];s.request(u);const first=s.publish();s.ingress(u);
   // Isolate the identity rule with a different promise at the same owner pose.
   const next={...first,tick:2,to:{x:first.to.x-.01,z:first.to.z+.01}};
-  s.model.state(s.peer).offer.reservation=next;s.c.tick=3;
+  s.model.state(s.peer).offer.moving.reservation=next;s.c.tick=3;
   assert.equal(s.model.obligation(u,s.c),null);
   assert.equal(s.model.take(s.peer,s.c,entitlementBudget()),null);
 });
@@ -159,7 +159,7 @@ test('finalized ingress and service receipts cannot delay permission across its 
   a.c.tick=3;const delayed=movementStart(a.peer,a.c);move(a.peer,promised.to,a.c);
   assert.equal(a.model.finish(a.peer,finalizedProgress(a.peer,delayed,a.c),a.c),false,
     'take admission cannot carry claimed service past expiry');
-  assert.equal(a.model.state(a.peer).offer.reservation,null);
+  assert.equal(a.model.state(a.peer).offer.moving.reservation,null);
   assert.equal(a.model.obligation(a.units[1],a.c),null);
 });
 
@@ -172,7 +172,7 @@ test('a missing service finalizer rejects duplicate selection but expires or inv
     if(change==='route')s.peer.path=[...s.peer.path];
     if(change==='epoch')s.c.epoch++;
     assert.equal(s.model.take(s.peer,s.c,entitlementBudget()),null,change);
-    assert.equal(s.model.state(s.peer).offer.reservation,null);
+    assert.equal(s.model.state(s.peer).offer.moving.reservation,null);
     assert.equal(s.model.take(s.peer,s.c,entitlementBudget()),null);
   }
 });
@@ -243,7 +243,7 @@ for(const change of ['new-priority','route','generation','footprint','pose','nav
     if(change==='overflow')s.c.overflow=true;
     if(change==='budget')budget=entitlementBudget(128);
     const before=p(s.peer);assert.equal(s.model.take(s.peer,s.c,budget),null);assert.deepEqual(p(s.peer),before);
-    assert.equal(s.model.obligation(u,s.c),null);assert.equal(s.model.state(s.peer).offer.reservation,null);
+    assert.equal(s.model.obligation(u,s.c),null);assert.equal(s.model.state(s.peer).offer.moving.reservation,null);
   });
 
 test('reciprocal requests cannot form a grant cycle; an unrelated claimant keeps its veto',()=>{

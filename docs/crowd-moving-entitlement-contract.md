@@ -174,3 +174,92 @@ Next gate: independent runtime-candidate review and focused host/state tests. On
 does crowd run its unchanged small/large crowd qualification. Packaging, identified
 deployment and actual normal-game screenshots/replays remain separate acceptance.
 This design merge does not ship the protocol, reopen PR529 or close universal movement.
+
+
+## Production adapter candidate — 6 October 2026
+
+The next delegated slice assigns core `01a107ba-7977` the complete candidate,
+including the existing steering/lease boundaries and host adapters; crowd
+`01a10933-c2b0` retains unchanged qualification. This supersedes the proposed
+runtime file allocation above for this candidate. It remains draft and unmerged
+until that qualification passes. PR529 remains rejected.
+
+`src/crowd-moving-entitlement.mjs` is now the single protocol implementation.
+The reference test host subclasses it; production consumes it through the existing
+steering WeakMap. `offer.moving` stores request/reservation/cursor/issue metadata,
+while legacy `offer.passage` and the tagged `lease` keep their distinct meanings.
+Recipient route, index, Hold and profile resets preserve a live birth-bound safety
+lease and its actual grant history. Peer route/command/nav/epoch/pose changes retire
+authority. Passive neighbor reads neither initialize records nor refresh history.
+
+| Live writer | Candidate admission / finalization |
+| --- | --- |
+| Terminal waypoint, including fractional endpoints | Original cell/static/Worker/automatic checks, then capsule admission. A zero-position arrival consumes its waypoint without travel or proposal cost. |
+| Ordinary steering | Original physical checks, then fresh capsule admission and authoritative travel accounting. |
+| Terrain fallback | Its original guards plus the same admission; a moved fallback retains safety and earns no ingress credit. |
+| Final map clamp | Raw segment and clamp segment are admitted together before either write; both lengths count. |
+| Same-cell combat closure | Existing combat policy plus supplemental capsule admission. |
+| Post-executor interaction separation | Existing combat/economy/build/repair policy plus supplemental capsule admission. |
+| Restore relocation | Replacement actor objects and changed planning epoch retire transient authority; no protocol enters a checkpoint. |
+
+The host finalizes receipts after each actor's complete executor writes/clamp.
+Only an unchanged nonterminal ordinary actor with no queued route repair can
+publish. It cannot participate in later interaction separation or queued advance
+that tick, because both require a finished path. Publication continues the actual
+heading once and requires positive fixed raw-waypoint gain. The next projected
+controller must remain nonzero ordinary steering: arrival, static repair,
+parked-endpoint wait, a new parked-body detour, and active detour/contour/passage
+lease all retain their original gates. Service bypasses only tangent ranking.
+Its admitted endpoint is carried explicitly through `getMoveVector` to the actual
+write; normalization is only steering metadata and never reconstructs that point.
+A due promise also retires after a first executor call preempted by arrival,
+repair or parked-endpoint wait, even when no named admission was attempted.
+
+A single fixed-tick work record shares 128 segment admissions across selection,
+request, publication, ingress/service and actual writes. Selection leaves three
+admissions available for request/write/publication; exhaustion cancels or waits.
+Reservation comparisons retain the model bound of 128×65+64. Production also has
+explicit additional controller work: each adapter context caches at most65 actor
+contexts (publication's owner-next preview and up to64 current requesters), each
+projection uses at most22 point probes and20×64 body checks, plus at most64 parked
+endpoint checks,64 direct-blocker classifications,64 direct body sweeps and64
+arrival body checks. Priority calls
+visit at most128 bodies each. The host records `controllerActors`,
+`controllerPoints`, `controllerBodyVisits`, `priorityCalls` and `priorityVisits`
+separately; these are additional work, not included in the reservation bound.
+The existing spatial query remains capped at128 roster visits/64 neighbors.
+
+Ordinary actors share their actual fixed-tick travel budget; publication previews
+the next full budget, and priority age advances to tick+1 using the original .02
+observation reset. Other callers retain their original separate travel policies.
+During a protected tick every supplemental nonzero write must remain within .25
+tiles for query completeness; longer writes and query overflow fail closed. A
+remote promise does not combine combat closure and interaction travel into one
+ordinary-Move budget.
+
+Broad-phase proof: the ordinary owner moves at most4.5/30=.15 tiles, its named
+capsule is at most.15 and land radii are at most.35. Any protected segment of length
+≤.25 can intersect only owners within .25+.15+.35+.35=1.10 of its live origin;
+start-of-tick owner drift adds .15, below the2.25 bucket radius and2.1 live retention.
+For donor-query recipient probes, the original near-claim bound is at most
+.35+.35+.15+.1=.95. Recipient travel≤.15 plus capsule/body reach1.0 gives donor
+reach≤1.95, below2.1; removing the recipient and including the donor keeps the
+physical peer set at64. The actor's captured obligation is also checked outside
+the query. These numeric bounds depend on the existing ordinary speed/radius rules.
+
+Focused acceptance executes the real selector and extracted actual land executor
+without starting a match/server. It verifies publication/ingress/exact service,
+command/profile safety, zero arrival, invalidation/current-budget/overflow/ack
+cancellation, fresh original priority, passive reads and nonordinary travel policy.
+The host fixture starts with the donor's current budget exhausted to record a
+passive request before its next real progress; it does not fabricate a finalized
+receipt or a peer step. Both historical first decisions and all185 wall decisions
+retain their exact original results/state fields; only newly added protocol/work
+namespaces are excluded from historical state comparison. Packed artifact hashes,
+deadlines, safety thresholds and original crowd qualification remain unchanged.
+
+This candidate does not qualify gate completion, fairness, large crowds, rendered
+matches, packaging or deployment. Next: independent exact-head review and bounded
+checks, then the crowd owner's original eight journey cases without altered gates
+or deadlines. Release/deployed identity and normal-game screenshots/replays remain
+separate downstream evidence; universal movement liveness remains open.

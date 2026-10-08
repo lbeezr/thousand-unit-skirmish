@@ -1,3 +1,4 @@
+import { crowdMovementStart, finalizedCrowdProgress } from '../src/crowd-moving-entitlement.mjs';
 // Reconstruct only the retained production decision, never a new match/journey.
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
@@ -38,7 +39,7 @@ export function frameContext(frame, record, observed, dependencies, host) {
   const cell=(x,z)=>Math.floor(z+height/2)*width+Math.floor(x+width/2);
   const point=c=>({x:c%width-width/2+.5,z:Math.floor(c/width)-height/2+.5});
   const context=vm.createContext({...movement,...observed,UNIT_DEFINITIONS,constructionMovementActive,
-    workerPatrolAcquiredMovementActive,units,STEP_SECONDS:1/30,MAP_WIDTH:width,MAP_HEIGHT:height,
+    workerPatrolAcquiredMovementActive,crowdMovementStart,finalizedCrowdProgress,automaticPositionAllowed:()=>true,units,STEP_SECONDS:1/30,MAP_WIDTH:width,MAP_HEIGHT:height,
     MAP_HALF_X:width/2,MAP_HALF_Z:height/2,SPATIAL_BUCKET_SIZE:size,
     spatialBucketColumns:columns,spatialBucketRows:rows,spatialBucketHeads:heads,spatialBucketNext:links,
     spatialBucketColumn:x=>Math.max(0,Math.min(columns-1,Math.floor((x+width/2)/size))),

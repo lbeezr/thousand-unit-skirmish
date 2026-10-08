@@ -2104,3 +2104,15 @@ resource and source-qualified local/staging recipes are in the
 [proposal's acceptance record](movement-tick-phase-proposal.md#deployed-and-rendered-acceptance-retained).
 The existing harness is sufficient once that runtime is available. Native progress
 tests and platform deployment status do not close the rendered acceptance gap.
+
+
+### Moving entitlement host candidate — 6 October 2026
+
+The [production adapter candidate](crowd-moving-entitlement-contract.md#production-adapter-candidate--6-october-2026)
+now connects the shared protocol to existing steering state and all live land
+write admissions. Core owns this complete candidate and its independent exact-head
+review; crowd `01a10933-c2b0` owns the unchanged qualification. The delegated hold
+is draft/unmerged until qualification passes. This source candidate preserves
+PR529's rejection and provides no gate-completion, universal-liveness, release,
+deployed or rendered-match acceptance. See the contract for exact caller bindings,
+query/work bounds and bounded regression command.

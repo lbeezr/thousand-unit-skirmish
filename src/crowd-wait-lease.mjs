@@ -8,6 +8,7 @@ export function crowdWaitLease({ unit, state, tick, neighbors, radius, radiusOf,
   readState, admit, escapeAllowed = () => true, blockedBy, blockedByFrom = () => true,
   peerNeedsRoom = () => false, failedBlocker = () => null,
   heading, stepDistance, target, stats }) {
+  if (state.lease?.kind === 'ingress-obligation') return null;
   const active = other => radiusOf(other) > 0;
   const failure = (lease, blocker = null) => ({ peer: lease.peer, generation: lease.generation,
     revision: lease.revision, path: lease.path, pathIndex: lease.pathIndex,
@@ -82,12 +83,14 @@ export function crowdWaitLease({ unit, state, tick, neighbors, radius, radiusOf,
     const separation = Math.hypot(to.x - peer.x, to.z - peer.z) - before;
     if (separation > EPSILON && separation > best) { best = separation; offer = { x, z, length }; }
   }
-  state.offerTick = tick; state.offer = offer;
+  state.offerTick = tick;
+  if (state.offer?.moving) state.offer.passage = offer;
+  else state.offer = offer;
   if (!offer) return null;
   for (const other of neighbors) {
     stats.arbitrationVisits++;
     const observed = active(other) && readState(other);
-    if (!observed?.offer || observed.offerTick < tick - 1) continue;
+    if (!(observed?.offer?.moving ? observed.offer.passage : observed?.offer) || observed.offerTick < tick - 1) continue;
     if (observed.lastGrantTick < state.lastGrantTick
       || (observed.lastGrantTick === state.lastGrantTick && other.id < unit.id)) return null;
   }

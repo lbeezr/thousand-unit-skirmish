@@ -136,7 +136,7 @@ run(['--test', 'scripts/food-job-continuation.test.mjs'], 'Plain neutral Food co
 run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 'Worker work receipt commands, client frames, exhausted repair delivery and recovery');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');
-run(['--test', 'scripts/unit-movement.test.mjs', 'scripts/land-body-clearance.test.mjs', 'scripts/unit-crowd-steering.test.mjs', 'scripts/crowd-projected-route-ranking.test.mjs', 'scripts/crowd-parallel-route-yield.test.mjs', 'scripts/crowd-wait-lease.test.mjs', 'scripts/crowd-body-journeys.test.mjs'], 'Unit separation terrain boundaries');
+run(['--test', 'scripts/unit-movement.test.mjs', 'scripts/land-body-clearance.test.mjs', 'scripts/unit-crowd-steering.test.mjs', 'scripts/crowd-projected-route-ranking.test.mjs', 'scripts/crowd-parallel-route-yield.test.mjs', 'scripts/crowd-wait-lease.test.mjs', 'scripts/crowd-entitlement-host.test.mjs', 'scripts/crowd-body-journeys.test.mjs'], 'Unit separation terrain boundaries');
 run(['--test', 'scripts/crowd-forward-progress.test.mjs'], 'Parked crowd route progress and preserved idle actors');
 run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals and team reservation');
 run(['--test', 'scripts/pathing-replay-observer.test.mjs'], 'Replay observation preserves land admissions');

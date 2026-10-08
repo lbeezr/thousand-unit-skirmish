@@ -5,6 +5,7 @@ import { gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
 import vm from 'node:vm';
 import * as movement from '../src/unit-movement.mjs';
+import { crowdMovementStart, finalizedCrowdProgress } from '../src/crowd-moving-entitlement.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { constructionMovementActive } from '../src/construction-work-intent.mjs';
 import { workerPatrolAcquiredMovementActive } from '../src/combat-movement.mjs';
@@ -17,6 +18,14 @@ const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const start = server.indexOf('function getMoveVector('), end = server.indexOf('function stationaryWorkerCellsNear(', start);
 assert.ok(start >= 0 && end > start);
 const host = server.slice(start, end);
+// Added live protocol/work records are outside this historical decision receipt.
+// Strip only those namespaces; preserve every original state field and decision.
+function historicalState(value) {
+  if (!value || typeof value !== 'object') return value;
+  const {execution,...state}=value;
+  if (state.offer?.moving) state.offer=state.offer.passage;
+  return state;
+}
 const distance = (a,b) => Math.hypot(a.x-b.x,a.z-b.z);
 
 function frameContext(frame, row, observed) {
@@ -58,7 +67,7 @@ function frameContext(frame, row, observed) {
   const cell=(x,z)=>Math.floor(z+height/2)*width+Math.floor(x+width/2);
   const point=c=>({x:c%width-width/2+.5,z:Math.floor(c/width)-height/2+.5});
   const context=vm.createContext({...movement,...observed,UNIT_DEFINITIONS,constructionMovementActive,
-    workerPatrolAcquiredMovementActive,units,STEP_SECONDS:1/30,MAP_WIDTH:width,MAP_HEIGHT:height,
+    workerPatrolAcquiredMovementActive,crowdMovementStart,finalizedCrowdProgress,automaticPositionAllowed:()=>true,units,STEP_SECONDS:1/30,MAP_WIDTH:width,MAP_HEIGHT:height,
     MAP_HALF_X:width/2,MAP_HALF_Z:height/2,SPATIAL_BUCKET_SIZE:size,
     spatialBucketColumns:columns,spatialBucketRows:rows,spatialBucketHeads:heads,spatialBucketNext:links,
     spatialBucketColumn:x=>Math.max(0,Math.min(columns-1,Math.floor((x+width/2)/size))),
@@ -110,7 +119,7 @@ test('all retained temporal decisions replay through real host queries and produ
       const [replayed]=f.observed.drainReplayFrames();
       assert.deepEqual(structuredClone(result),decode(frame.result),`tick${row.tick} complete production decision`);
       if(frame.selection) {
-        assert.deepEqual(replayed.afterState,frame.afterState,`tick${row.tick} actual controller transition`);
+        assert.deepEqual(historicalState(replayed.afterState),frame.afterState,`tick${row.tick} actual controller transition`);
         const events=frame.events.filter(e=>e.type!=='host-oracle');
         assert.deepEqual(replayed.events,events,`tick${row.tick} actual proposal, body-visit, score and priority sequence`);
       }
