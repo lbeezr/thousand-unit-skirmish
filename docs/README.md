@@ -39,6 +39,7 @@ the build they name.
 | Task | Guide |
 | --- | --- |
 | Install, run locally, host on LAN, troubleshoot | [Local setup](getting-started.md) |
+| Configure cloud dependency setup, task variables and Start skill | [Cloud environment setup](cloud-environment.md) |
 | Learn controls, economy, objectives, and rematches | [Player guide](playing.md) |
 | Start a fresh game, join a room, or explicitly resume a saved seat | [Main menu entry](game-entry.md) |
 | Create a PvP lobby, ready and launch; inspect its protocol | [Pregame rooms](room-lobby.md) |

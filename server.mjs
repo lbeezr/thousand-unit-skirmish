@@ -15,7 +15,7 @@ import { cancelWildlifeHerd, startWildlifeHerd, stepWildlifeHerd, validWildlifeH
 import { migrateWildlifeMotionCheckpoint, sameWildlifeCell, wildlifeCell, wildlifeStepUnoccupied, stepWildlifeMotion, validWildlifeMotion } from './src/wildlife-motion.mjs';
 import { migrateWildlifeHeadingCheckpoint } from './src/wildlife-heading.mjs';
 import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
-import { migrateTerracedValeSheepCheckpoint } from './src/terraced-vale-sheep.mjs';
+import { migrateTerracedValeSheepCheckpoint, isHistoricalTerracedValeDefinition } from './src/terraced-vale-sheep.mjs';
 import { isHistoricalConfluenceDefinition } from './src/confluence-opening-compat.mjs';
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
@@ -1644,7 +1644,8 @@ function resetArmy(count = currentArmySize) {
 // changes and ongoing same-ID selection must not adopt new canonical positions.
 function resetExplicitMatchWorld() {
   const shipped = mapCatalog.get(authoredMapDefinition.id);
-  const mapChanged = isHistoricalConfluenceDefinition(authoredMapDefinition, shipped, matchMapHash);
+  const mapChanged = isHistoricalConfluenceDefinition(authoredMapDefinition, shipped, matchMapHash)
+    || isHistoricalTerracedValeDefinition(authoredMapDefinition, shipped, matchMapHash);
   if (mapChanged) activateMap(shipped);
   resetArmy(currentArmySize);
   return mapChanged;
@@ -3023,7 +3024,8 @@ function restoreMatchCheckpoint(snapshot) {
       ({ definition, state, explored, savedMatchMode } = validateMatchCheckpoint(snapshot));
     }
     assertSnapshot(matchMapHash(shippedDefinition) === snapshot.mapHash
-      || isHistoricalConfluenceDefinition(definition, shippedDefinition, matchMapHash),
+      || isHistoricalConfluenceDefinition(definition, shippedDefinition, matchMapHash)
+      || isHistoricalTerracedValeDefinition(definition, shippedDefinition, matchMapHash),
     'shipped map changed since checkpoint');
   } else {
     mapCatalog.set(definition.id, definition);
@@ -7632,7 +7634,8 @@ async function handleCommand(player, command) {
             : mapCatalog;
           if (pregame.configure(player, command, choices)) {
             const catalogDefinition = mapCatalog.get(pregame.mapId);
-            const retainedDefinition = isHistoricalConfluenceDefinition(authoredMapDefinition, catalogDefinition, matchMapHash)
+            const retainedDefinition = (isHistoricalConfluenceDefinition(authoredMapDefinition, catalogDefinition, matchMapHash)
+              || isHistoricalTerracedValeDefinition(authoredMapDefinition, catalogDefinition, matchMapHash))
               ? authoredMapDefinition : catalogDefinition;
             matchMode = normalizeMatchMode(pregame);
             activateMap(retainedDefinition);

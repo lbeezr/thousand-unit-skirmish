@@ -1,5 +1,31 @@
 # Empty-selection command visibility
 
+## Workshop Build prerequisite disclosure — 7 October 2026
+
+The registered Workshop construction choice in Build & train now stays
+keyboard-focusable when unavailable, using the existing inspectable-action
+pattern. Its visible label and matching tooltip name **MILITARY TIER II at
+Town Center**, rather than only “RESEARCH REQUIRED”. Once unlocked, it shows
+the current rounded-up resource shortfall, or why team/Worker selection,
+pending construction or the ended match prevents activation. Completion uses
+the registered technology upgrade key; no prerequisite or price changes.
+
+Stable buttons retain focus through stock/research updates. Activation refreshes
+current eligibility before entering or cancelling placement, so keyboard,
+pointer and retained stale controls cannot start unavailable construction.
+Mixed selection retains its eligible Workers; empty, foreign, dead or stale IDs
+do not. Other catalog buildings retain their existing native-disabled treatment.
+
+Both-seat tests in `contextual-hud.test.mjs` exercise these transitions through
+the actual menu handlers; `roster-building-ui.test.mjs` retains exact-price and
+placement/cancellation checks. Backing is the existing labelled compact HUD,
+44px actions and focusable research/production reason pattern described below.
+DOM/source checks do not establish rendered readability or an identified
+deployed build. The previously recorded cloud sandbox/storage capability
+blocker remains open; the HUD owner retains ordinary-game acceptance.
+
+## Selection visibility
+
 When no living friendly units or owned building are selected, the selection
 command bar is hidden. The existing Quick commands row appears instead:
 Commands, Production, Army and Idle workers. Commands opens the remembered

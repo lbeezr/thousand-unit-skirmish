@@ -15,11 +15,21 @@ const town = registry.records.find(row => row.id === 'frontier-town-center');
 const manifests = [JSON.parse(await read(town.manifest))];
 const contract = JSON.parse(await read('docs/art-direction/human-roster-v1/infantry-production-contract.json'));
 const footManifest = JSON.parse(await read(contract.manifest));
+// Eight idle and eight reviewed walk bearings, plus SE attack/defeat: 18 of 32.
+// Keep the missing-cell oracle independent of the sidecar and catalog calculation.
+const expectedInfantryMissingCells = [
+  'attack|north', 'attack|north-east', 'attack|east', 'attack|south',
+  'attack|south-west', 'attack|west', 'attack|north-west',
+  'defeat|north', 'defeat|north-east', 'defeat|east', 'defeat|south',
+  'defeat|south-west', 'defeat|west', 'defeat|north-west',
+];
 
 test('catalog consumes the existing sidecar pins, style and missing cells independently of descriptions', async () => {
   const before = productionReadabilityStatus(contract, footManifest, 'v3');
-  assert.equal(before.requiredCells, 32); assert.equal(before.declaredAuthoredCells, 11);
-  assert.equal(before.declaredMissingCells.length, 21); assert.equal(before.readability, 'unverified');
+  assert.equal(before.requiredCells, 32); assert.equal(before.declaredAuthoredCells, 18);
+  assert.equal(before.declaredMissingCells.length, 14);
+  assert.deepEqual(before.declaredMissingCells, expectedInfantryMissingCells);
+  assert.equal(before.renderAcceptance, 'pending'); assert.equal(before.readability, 'unverified');
   for (const file of contract.identity.approvedRuntimeFiles) {
     assert.equal(createHash('sha256').update(await read(file.path)).digest('hex'), file.sha256);
   }
@@ -94,7 +104,12 @@ test('catalog consumes existing normal controls, preserves live state, and only 
     f.review.update(1000);
     assert.equal(f.review.snapshot.building.defaultBinding, true);
     assert.equal(f.review.snapshot.building.readability, 'unverified');
-    assert.equal(f.review.snapshot.production.declaredMissingCells.length, 21);
+    assert.equal(f.review.snapshot.production.declaredAuthoredCells, 18);
+    assert.equal(f.review.snapshot.production.declaredMissingCells.length, 14);
+    assert.deepEqual(f.review.snapshot.production.declaredMissingCells, expectedInfantryMissingCells);
+    assert.equal(f.review.snapshot.production.renderAcceptance, 'pending');
+    assert.equal(f.review.snapshot.production.readability, 'unverified');
+    assert.match(root.textContent, /18\/32 source cells; 14 missing/);
     assert.equal(f.review.snapshot.icon.productionContract, 'not-recorded');
     const images = [...root.querySelectorAll('img')];
     assert.deepEqual(images.map(image => [image.width, image.height]), [[16, 16], [20, 20], [24, 24]]);

@@ -6,7 +6,7 @@ Owner: building/catalog workstream. This is a small read-only debug view in the
 existing game, covering **Town Center Complete art and the Follow glyph**.
 It adds no CMS, art generation, private source publication or second runtime
 asset registry. It also reads PR318's existing Infantry manifest and production
-sidecar as a metadata pilot. Foot owner `01a10469` retains character source identity,
+sidecar as a metadata pilot. The Infantry owner retains character source identity,
 action × direction and timing schemas; this slice leaves all unit manifests,
 animation selectors and their coverage contracts untouched. HUD owner retains
 novice-flow tests and command semantics. Shared presentation consumes their
@@ -49,9 +49,13 @@ source coverage/timing and configured default version separately from rendered
 acceptance.
 
 Infantry retains the sidecar's exact style/provenance/publication fields and
-**11 declared authored cells / 32 required, 21 missing**. PR318's owner retains
-decoded source auditing; all 63 family gaps and normal-game acceptance remain
-open. The catalog does not claim new poses, validate timing a second way or
+**18 declared authored cells / 32 required, 14 missing**: eight idle bearings,
+eight reviewed walk bearings, and the SE attack/defeat cells. The remaining
+cells are the seven non-SE attacks and seven non-SE defeats. PR318's original
+pilot declared 11/32 authored cells and 21 missing; those counts are historical.
+The Infantry owner retains decoded source auditing and normal-game acceptance;
+other foot families retain their own source matrices. The catalog does not
+claim rendered readability, validate timing a second way or
 load private sources. Its publication check admits only that existing public
 pilot; its pins cover only the already admitted runtime PNG and mask.
 

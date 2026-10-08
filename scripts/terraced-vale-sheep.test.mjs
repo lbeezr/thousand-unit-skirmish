@@ -3,12 +3,14 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { TERRACED_VALE_SHEEP_IDS, TERRACED_VALE_PRE_SHEEP_MAP_HASH,
-  seedTerracedValeSheep, migrateTerracedValeSheepCheckpoint } from '../src/terraced-vale-sheep.mjs';
+  seedTerracedValeSheep, migrateTerracedValeSheepCheckpoint, priorTerracedValeGroves } from '../src/terraced-vale-sheep.mjs';
 import { validWildlifeMotion } from '../src/wildlife-motion.mjs';
 import { authoredWildlifeBodyHeading } from '../src/wildlife-heading.mjs';
 import { validWildlifeNodeState } from '../src/wildlife-state.mjs';
 
-const map = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+const shipped = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+// Preserve the exact original Sheep adoption contract independently of the new grove.
+const map = priorTerracedValeGroves(shipped);
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('base64url');
 const ordinary = nodes => nodes.map(node => {
   const { wildlifeSpecies, wildlifeState, wildlifeTeam, wildlifeMotion, wildlifeHerd, wildlifeGrazeAnchor,

@@ -592,6 +592,20 @@ export function createGameAudio({
     }
   }
 
+  // Readiness only: never unlock, decode, queue or consume a binding cooldown.
+  // Captions can present warnings even when sound is intentionally unavailable.
+  function canPresentEvent(event) {
+    if (disposed || doc?.hidden || !(event?.cue in COOLDOWN_MS)) return false;
+    if (settings.captions) return true;
+    if (!settings.enabled || settings.volume <= 0 || context?.state !== 'running') return false;
+    const binding = resolveEventBinding(activeProfile, {
+      ...event, civilizationId: event?.civilizationId ?? civilizationId,
+    })?.binding;
+    if (!binding) return settings.effectsLevel > 0;
+    const bus = binding.bus === 'voice' ? 'voice' : binding.bus === 'ambience' ? 'ambience' : 'effects';
+    return isSampleBusAudible(bus);
+  }
+
   function playEvent(event) {
     if (disposed) return false;
     event = { ...event, civilizationId: event?.civilizationId ?? civilizationId };
@@ -720,7 +734,7 @@ export function createGameAudio({
   doc?.addEventListener?.('visibilitychange', onVisibilityChange);
 
   return {
-    play, playEvent, stopWork, updateWork, getInspector: () => ({ status: packStatus, profileId: activeProfile?.id || null, bindings: Object.entries(activeProfile?.bindings || {}).map(([key, binding]) => ({ key, bus: binding.bus, sources: binding.variants.map(({ sourceId }) => ({ sourceId, available: activeSourceBlobs?.[sourceId] instanceof Blob })) })), activeSamples: activeSamples.size, activeVoices: activeVoiceSamples.size, activeWork: activeWorkSamples.size, ...decodedCache.getStats(), decisions: [...decisions] }), setMapAudio, getPackStatus: () => packStatus, preview, previewAmbience, unlock, setSettings,
+    play, playEvent, canPresentEvent, stopWork, updateWork, getInspector: () => ({ status: packStatus, profileId: activeProfile?.id || null, bindings: Object.entries(activeProfile?.bindings || {}).map(([key, binding]) => ({ key, bus: binding.bus, sources: binding.variants.map(({ sourceId }) => ({ sourceId, available: activeSourceBlobs?.[sourceId] instanceof Blob })) })), activeSamples: activeSamples.size, activeVoices: activeVoiceSamples.size, activeWork: activeWorkSamples.size, ...decodedCache.getStats(), decisions: [...decisions] }), setMapAudio, getPackStatus: () => packStatus, preview, previewAmbience, unlock, setSettings,
     getSettings: () => ({ ...settings }), getStatus: status,
     dispose() {
       if (disposed) return;

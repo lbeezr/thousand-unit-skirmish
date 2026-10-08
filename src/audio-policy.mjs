@@ -50,18 +50,20 @@ export class CombatAudioGate {
     this.lastBaseAt = -Infinity;
   }
 
-  observe({ friendlyDamage = 0, selectedDamage = 0, buildingDamage = 0 }, now) {
-    if (buildingDamage > 0 && now - this.lastBaseAt >= 12000) {
+  observe({ friendlyDamage = 0, selectedDamage = 0, buildingDamage = 0, canPresent = () => true }, now) {
+    // Unpresentable damage must not consume the warning cadence. No event is
+    // queued: a later fresh damage observation can warn once output is available.
+    if (buildingDamage > 0 && now - this.lastBaseAt >= 12000 && canPresent('base-alert')) {
       this.lastBaseAt = now;
       this.lastDamageAt = now;
       return 'base-alert';
     }
-    if (selectedDamage > 0 && now - this.lastSelectedAt >= 12000) {
+    if (selectedDamage > 0 && now - this.lastSelectedAt >= 12000 && canPresent('selected-alert')) {
       this.lastSelectedAt = now;
       this.lastDamageAt = now;
       return 'selected-alert';
     }
-    if (friendlyDamage > 0) {
+    if (friendlyDamage > 0 && canPresent('battle-alert')) {
       const newEngagement = now - this.lastDamageAt >= 9000;
       this.lastDamageAt = now;
       if (newEngagement) return 'battle-alert';

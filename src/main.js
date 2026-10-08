@@ -4819,7 +4819,8 @@ function applyState(state, initial = false, resuming = false) {
   const buildingDamage = Array.isArray(state.buildings) ? reconcileBuildings([...state.buildings, ...(state.homeTownCenters || [])], audioReset) : 0;
   if (audioReset) combatAudioGate.reset();
   else {
-    const cue = combatAudioGate.observe({ friendlyDamage, selectedDamage, buildingDamage }, performance.now());
+    const cue = combatAudioGate.observe({ friendlyDamage, selectedDamage, buildingDamage,
+      canPresent: cue => canPresentLiveFeedback() && audio.canPresentEvent({ cue }) }, performance.now());
     if (cue) audio.playEvent({ cue });
   }
   if (Number.isInteger(state.winner)) {
@@ -5004,10 +5005,12 @@ function updateBuildingLifecycleActions() {
   if (!container) return;
   const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
   const active = building && latestTeamResearch[localTeam]?.active?.buildingId === building.id;
+  const replantCost = building?.type === 'farm'
+    ? constructionCostForProfile('farm', mapDefinition?.economyProfileId).wood : 0;
   const choices = !building ? [] : [
     ...(!building.complete ? [{ type: 'cancelConstruction', label: 'Cancel construction · refund unfinished work' }] : []),
     ...(building.type === 'farm' && building.complete && building.harvestStock === 0
-      ? [{ type: 'replantFarm', label: 'Replant · 60 wood' }, { type: 'cancelConstruction', label: 'Clear exhausted Farm · no refund' }] : []),
+      ? [{ type: 'replantFarm', label: `Replant · ${replantCost} wood` }, { type: 'cancelConstruction', label: 'Clear exhausted Farm · no refund' }] : []),
     ...(building.complete && getBuildingQueueLength(building) > 0 ? [{ type: 'cancelTraining', label: 'Cancel last queued unit' }] : []),
     ...(building.complete && building.type === 'palisade-gate' ? [{ type: 'setGateOpen', label: building.gateOpen ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass' }] : []),
     ...(active ? [{ type: 'cancelResearch', label: 'Cancel research · refund unfinished work' }] : []),
@@ -5030,9 +5033,14 @@ function updateBuildingLifecycleActions() {
           command.open = !current.gateOpen;
         }
         if (choice.type === 'replantFarm') {
+          const current = latestBuildings.find(row => row.id === building.id && row.team === localTeam);
+          if (selectedBuildingId !== building.id || !current || current.type !== 'farm'
+            || !current.complete || current.hp <= 0 || current.harvestStock !== 0) return;
+          updateBuildingLifecycleActions();
+          const action = [...container.children].find(child => child.dataset.action === 'replantFarm');
+          if (!action || isHudActionUnavailable(action)) return;
           const ids = selectedWorkerIds();
-          if (!ids.length) { showToast('SELECT IDLE WORKERS, THEN SELECT THIS EXHAUSTED PLOT · REPLANT COSTS 60 WOOD'); return; }
-          sendTrackedOrder({ ...command, ids }, 'REPLANT · 60 WOOD', ids.length, 'WORKERS'); return;
+          sendTrackedOrder({ ...command, ids }, `REPLANT · ${replantCost} WOOD`, ids.length, 'WORKERS'); return;
         }
         if (choice.type === 'repairBuilding') {
           command.ids = teamUnits[localTeam].filter((unit) => unit.hp > 0 && unit.kind === 'worker').map((unit) => unit.id);
@@ -5044,6 +5052,15 @@ function updateBuildingLifecycleActions() {
     }
   }
   for (const button of container.children) {
+    if (button.dataset.action === 'replantFarm') {
+      const reason = matchWinner >= 0 ? 'Match finished' : building.hp <= 0 ? 'Farm destroyed'
+        : !selectedWorkerIds().length ? 'Select living Workers, then select this exhausted plot'
+        : latestWood[localTeam] < replantCost ? `Need ${formatResourceRequirement(replantCost - latestWood[localTeam])} wood` : '';
+      setHudActionAvailability(button, Boolean(reason), true);
+      button.textContent = `Replant · ${replantCost} wood${reason ? ` · ${reason}` : ''}`;
+      button.title = button.textContent;
+      continue;
+    }
     button.disabled = matchWinner >= 0
       || (button.dataset.action === 'repairBuilding' && !teamUnits[localTeam].some(unit => unit.hp > 0 && unit.kind === 'worker'));
     if (button.dataset.action === 'setGateOpen') button.textContent = building.gateOpen
@@ -5065,6 +5082,10 @@ function updateRosterBuildingOptions(container) {
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'economy-action build-action'; button.dataset.building = definition.id;
       button.addEventListener('click', () => {
+        // Retained inspectable choices recheck current selection/stock/research
+        // before activation, including changes that arrived before a UI refresh.
+        updateRosterBuildingOptions(container);
+        if (isHudActionUnavailable(button)) return;
         if (buildPlacementActive && buildPlacementType === definition.id) cancelBuildPlacement();
         else beginBuildPlacement(definition.id);
       });
@@ -5076,10 +5097,30 @@ function updateRosterBuildingOptions(container) {
     const cost = constructionCostForProfile(definition.id, mapDefinition?.economyProfileId);
     const workers = selectedWorkerIds();
     const missing = (definition.requires || []).filter((id) => !latestTeamResearch[localTeam]?.[TECHNOLOGY_DEFINITIONS[id].upgradeKey]);
-    button.disabled = localTeam === null || matchWinner >= 0 || buildPlacementPending || !workers.length || missing.length > 0
+    const unavailable = localTeam === null || matchWinner >= 0 || buildPlacementPending || !workers.length || missing.length > 0
       || (definition.id !== 'palisade-wall' && (latestFood[localTeam] < cost.food || latestWood[localTeam] < cost.wood
         || (cost.stone !== undefined && latestStone[localTeam] < cost.stone)));
-    button.textContent = `Build ${definition.label} · ${cost.wood} WOOD${cost.food ? ` + ${cost.food} FOOD` : ''}${cost.stone !== undefined ? ` + ${cost.stone} STONE` : ''}${missing.length ? ' · RESEARCH REQUIRED' : ''}`;
+    let reason = '';
+    // The registered Workshop gate is discoverable even before it is unlocked.
+    // Keep this stable action reachable like the contextual research controls.
+    if (definition.requires?.length) {
+      const prerequisites = missing.map(id => {
+        const technology = TECHNOLOGY_DEFINITIONS[id];
+        return `${technology.label} at ${BUILDING_DEFINITIONS[technology.building].label}`;
+      });
+      const shortfall = ['food', 'wood', 'stone'].flatMap(resource => {
+        const stock = resource === 'food' ? latestFood[localTeam] : resource === 'wood' ? latestWood[localTeam] : latestStone[localTeam];
+        return cost[resource] > stock ? [`${formatResourceRequirement(cost[resource] - stock)} ${resource}`] : [];
+      });
+      reason = localTeam === null ? 'Join a team' : matchWinner >= 0 ? 'Match finished'
+        : buildPlacementPending ? 'Waiting for construction request'
+        : !workers.length ? 'Select living Workers'
+        : missing.length ? `Requires ${prerequisites.join(' + ')}`
+        : shortfall.length ? `Need ${shortfall.join(' + ')}` : '';
+      setHudActionAvailability(button, unavailable, true);
+    } else button.disabled = unavailable;
+    button.textContent = `Build ${definition.label} · ${cost.wood} WOOD${cost.food ? ` + ${cost.food} FOOD` : ''}${cost.stone !== undefined ? ` + ${cost.stone} STONE` : ''}${reason ? ` · ${reason}` : ''}`;
+    if (definition.requires?.length) button.title = button.textContent;
     const active = buildPlacementActive && buildPlacementType === definition.id;
     button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
   }

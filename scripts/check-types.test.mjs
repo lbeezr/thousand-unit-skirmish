@@ -39,7 +39,7 @@ const cases = [
   { name: 'factor stored as text', code: 2345,
     source: "forestAgeFactors([]).set(7, '1.05');" },
   { name: 'mutation of a caller-owned point', code: 2540,
-    source: "/** @type {import('../../src/forest-age-composition.mjs').CanopyPoint} */ const point = {cell: 7, x: 1, z: 2}; point.cell = 8;" },
+    source: "/** @type {import('../../src/presentation/rendering/forest/age-composition.mjs').CanopyPoint} */ const point = {cell: 7, x: 1, z: 2}; point.cell = 8;" },
   { name: 'string map width', code: 2322,
     source: "forestHabitatDepth({width: '9', height: 9});" },
   { name: 'missing map height', code: 2345,
@@ -65,7 +65,7 @@ const cases = [
   { name: 'string grove spacing', code: 2345,
     source: "underboughForestSpecies(4, 4, 93002, 1, '6');" },
   { name: 'misspelled species identity', code: 2820,
-    source: "/** @type {import('../../src/forest-composition.mjs').UnderboughForestSpecies} */ const typo = 'underbough-brambel';" },
+    source: "/** @type {import('../../src/presentation/rendering/forest/composition.mjs').UnderboughForestSpecies} */ const typo = 'underbough-brambel';" },
   { name: 'string resource stock', code: 2345,
     source: "resourceVisualStage('66', 100);" },
   { name: 'string starting stock', code: 2345,
@@ -81,7 +81,7 @@ const cases = [
   { name: 'mutation of canonical resource stages', code: 2339,
     source: "RESOURCE_VISUAL_STAGES.push('full');" },
   { name: 'resource stage confused with an unrelated species ID', code: 2322,
-    source: "/** @type {import('../../src/forest-composition.mjs').UnderboughForestSpecies} */ const wrongKind = resourceVisualStage(66, 100);" },
+    source: "/** @type {import('../../src/presentation/rendering/forest/composition.mjs').UnderboughForestSpecies} */ const wrongKind = resourceVisualStage(66, 100);" },
   { name: 'string paint-mask width', code: 2322,
     source: "buildTerrainBlendMasks({width: '4', height: 4}, ['meadow'], 'meadow');" },
   { name: 'missing paint-mask height', code: 2345,
@@ -109,9 +109,9 @@ const cases = [
 ];
 const fixturePath = path.join(root, 'scripts/type-contracts/canopy-invalid.mjs');
 const fixtureImports = [
-  "import { forestAgeFactors } from '../../src/forest-age-composition.mjs';",
-  "import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from '../../src/forest-habitat.mjs';",
-  "import { underboughForestSpecies } from '../../src/forest-composition.mjs';",
+  "import { forestAgeFactors } from '../../src/presentation/rendering/forest/age-composition.mjs';",
+  "import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from '../../src/presentation/rendering/forest/habitat.mjs';",
+  "import { underboughForestSpecies } from '../../src/presentation/rendering/forest/composition.mjs';",
   "import { RESOURCE_VISUAL_STAGES, resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages } from '../../src/resource-visual-state.mjs';",
   "import { buildTerrainBlendMasks, buildForestGroundMask } from '../../src/terrain-blend.mjs';",
 ];

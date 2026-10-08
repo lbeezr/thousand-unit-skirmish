@@ -41,6 +41,46 @@ test('every canonical AI policy rejects static, lazy and re-export dependencies 
   }
 });
 
+const FOREST_RENDER_MODULES = {
+  'src/forest-habitat.mjs': 'src/presentation/rendering/forest/habitat.mjs',
+  'src/forest-composition.mjs': 'src/presentation/rendering/forest/composition.mjs',
+  'src/forest-age-composition.mjs': 'src/presentation/rendering/forest/age-composition.mjs',
+};
+
+test('forest presentation leaves have real canonical callers and no retired root copies', async () => {
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  const hostImports = moduleImports(sources.get('src/environment-art.mjs'), 'src/environment-art.mjs');
+  for (const [retired, canonical] of Object.entries(FOREST_RENDER_MODULES)) {
+    assert.ok(sources.has(canonical), canonical);
+    assert.equal(sources.has(retired), false, retired);
+    assert.ok(RUNTIME_DOMAINS.presentation.includes(canonical), canonical);
+    assert.equal(RUNTIME_DOMAINS.presentation.includes(retired), false, retired);
+    assert.ok(RETIRED_RUNTIME_PATHS.includes(retired), retired);
+    assert.deepEqual(moduleImports(sources.get(canonical), canonical), [], canonical);
+    assert.ok(hostImports.includes(`./${canonical.slice(4)}`), canonical);
+    for (const source of ['', `export * from './${canonical.slice(4)}';`]) {
+      assert.throws(() => check({ [retired]: source, [canonical]: '' }), /retired implementation path/, retired);
+    }
+  }
+});
+
+test('forest rendering cannot become an authoritative dependency through any import form', () => {
+  for (const target of Object.values(FOREST_RENDER_MODULES)) {
+    for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+      'src/simulation/movement/formation-assignment.mjs', 'src/simulation/ai/policies/regroup.mjs',
+      'server.mjs', 'room-supervisor.mjs']) {
+      const relative = path.posix.relative(path.posix.dirname(root), target);
+      const specifier = relative.startsWith('.') ? relative : `./${relative}`;
+      for (const source of [`import '${specifier}';`, `export * from '${specifier}';`, `const later = () => import('${specifier}');`]) {
+        assert.throws(() => check({ [root]: source, [target]: '' },
+          { serverEntrypoints: root === 'server.mjs' || root === 'room-supervisor.mjs' ? [root] : [] }),
+          /(?:rules|world|simulation|ai) domain cannot reach presentation domain|server host reaches presentation domain/,
+          `${root} -> ${target}`);
+      }
+    }
+  }
+});
+
 const WATER_RENDER_MODULES = {
   'src/water-surface-study.mjs': 'src/presentation/rendering/water/surface.mjs',
   'src/water-study-state.mjs': 'src/presentation/rendering/water/state.mjs',

@@ -6,9 +6,38 @@ import { BELLWEATHER_SHEEP_SPECIES } from './wildlife-state.mjs';
 export const TERRACED_VALE_SHEEP_IDS = Object.freeze([0, 1].flatMap(team =>
   ['home', 'terrace'].map(place => `s${team}-${place}-food`)));
 export const TERRACED_VALE_PRE_SHEEP_MAP_HASH = 'ImVzTpuwRCVYvUSkyoNbcCYPNbOKANQOgyyTlL6AwHk';
+export const TERRACED_VALE_PRE_GROVE_MAP_HASH = 'xEcOHiBDv8y07ddWm72BRzibVp_4kkAyjDxvWxYW4yk';
 const MAP_ID = 'veyrholds-terraced-vale';
 const WILDLIFE_FIELDS = ['wildlifeSpecies', 'wildlifeState', 'wildlifeTeam',
   'wildlifeMotion', 'wildlifeHerd', 'wildlifeGrazeAnchor', 'wildlifeHeading', 'wildlifeActivity'];
+
+// Exact preceding authored layout. Recovery must keep its legal building sites,
+// moved Sheep, resource stock and worker orders; only new games adopt the grove.
+export function priorTerracedValeGroves(shipped) {
+  if (shipped?.id !== MAP_ID || !Array.isArray(shipped.resourceNodes)
+    || shipped.resourceNodes.length !== 16) return null;
+  const prior = structuredClone(shipped), satellites = new Set();
+  for (const team of [0, 1]) for (const [suffix, x, z] of [
+    ['', 51.5, -5.5], ['-1', 51.5, -7.5], ['-2', 49.5, -5.5],
+  ]) {
+    const id = `s${team}-home-wood${suffix}`;
+    const matches = prior.resourceNodes.filter(node => node?.id === id), node = matches[0];
+    if (matches.length !== 1 || node.type !== 'wood' || node.stock !== 325
+      || node.x !== x * (team ? 1 : -1) || node.z !== z
+      || Object.keys(node).sort().join(',') !== 'id,stock,type,x,z') return null;
+    if (suffix) satellites.add(id);
+    else node.stock = 975;
+  }
+  prior.resourceNodes = prior.resourceNodes.filter(node => !satellites.has(node.id));
+  return prior;
+}
+
+export function isHistoricalTerracedValeDefinition(saved, shipped, hashMap) {
+  if (saved?.id !== MAP_ID || typeof hashMap !== 'function'
+    || hashMap(saved) !== TERRACED_VALE_PRE_GROVE_MAP_HASH) return false;
+  const prior = priorTerracedValeGroves(shipped);
+  return prior !== null && hashMap(prior) === TERRACED_VALE_PRE_GROVE_MAP_HASH;
+}
 
 export function seedTerracedValeSheep(nodes) {
   if (!Array.isArray(nodes)) throw new Error('Terraced Vale food markers must be an array.');
@@ -25,7 +54,7 @@ export function seedTerracedValeSheep(nodes) {
 }
 
 // Called only after complete checkpoint migration/validation. Admit exactly the
-// preceding shipped Tiny map with these four identity additions; never restock
+// pre-Sheep Tiny map with these four identity additions; never restock
 // or repair an old ordinary food node, motion, order, cargo or bank.
 export function migrateTerracedValeSheepCheckpoint(snapshot, shipped, hashMap) {
   if (![29, 30].includes(snapshot?.schemaVersion) || snapshot.mapDefinition?.id !== MAP_ID
@@ -33,7 +62,8 @@ export function migrateTerracedValeSheepCheckpoint(snapshot, shipped, hashMap) {
     || snapshot.mapHash !== TERRACED_VALE_PRE_SHEEP_MAP_HASH
     || hashMap(snapshot.mapDefinition) !== TERRACED_VALE_PRE_SHEEP_MAP_HASH
     || !Array.isArray(shipped.resourceNodes) || !Array.isArray(snapshot.state?.resourceNodes)) return false;
-  const prior = structuredClone(shipped), savedNodes = snapshot.state.resourceNodes;
+  const target = priorTerracedValeGroves(shipped) ?? shipped;
+  const prior = structuredClone(target), savedNodes = snapshot.state.resourceNodes;
   const oldDefinitions = new Map(snapshot.mapDefinition.resourceNodes.map(node => [node.id, node]));
   if (savedNodes.length !== snapshot.mapDefinition.resourceNodes.length
     || new Set(savedNodes.map(node => node?.id)).size !== savedNodes.length
@@ -64,8 +94,8 @@ export function migrateTerracedValeSheepCheckpoint(snapshot, shipped, hashMap) {
   }
   if (hashMap(prior) !== TERRACED_VALE_PRE_SHEEP_MAP_HASH) return false;
   // All guards and private state construction finish before the first write.
-  snapshot.mapDefinition = structuredClone(shipped);
-  snapshot.mapHash = hashMap(shipped);
+  snapshot.mapDefinition = structuredClone(target);
+  snapshot.mapHash = hashMap(target);
   snapshot.state.resourceNodes = savedNodes.map(node => selected.get(node.id) ?? node);
   return true;
 }

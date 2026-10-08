@@ -55,6 +55,28 @@ ordinary proportional refund and creates no food stock. Destruction loses the
 remaining crop; already-carried food stays real cargo and routes to a friendly
 drop-off. Repair follows the existing paid wood/HP contract and never refills stock.
 
+### Replant action disclosure — 7 October 2026
+
+The existing selected-Farm lifecycle action now remains keyboard-focusable when
+unavailable. Its label and matching tooltip explain the missing selected living
+Workers, current rounded-up wood shortage or finished match before activation.
+Eligible activation retains **Replant · 60 wood**, using the current economy
+profile's construction price. Stable controls preserve focus through bank and
+selection updates; retained stale controls recheck the selected owned completed
+exhausted plot, Workers and bank before sending a tracked order. The action
+recruits nobody. Server authority still decides reachability, busy-order
+eligibility, identity replacement and exactly-once payment.
+
+Backing is the existing authored Farm lifecycle/selection treatment above and
+the compact labelled inspectable-action pattern in
+[contextual HUD validation](contextual-hud-validation.md). Both-seat DOM tests in
+`base-lifecycle-ui.test.mjs` cover the actual action handler; Farm client and
+authority checks preserve mixed selection and rejection/recovery contracts.
+These checks do not establish rendered keyboard/readability acceptance or a
+containing deployed release. The previously recorded cloud sandbox/storage and
+staging access blockers remain open; the HUD owner retains ordinary-game
+acceptance of this text/focus change at an identified containing release.
+
 ## Resource and recovery boundary
 
 `harvestStock` on the building is the single persisted crop pool. A `farm:<id>`

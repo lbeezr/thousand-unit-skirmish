@@ -34,9 +34,9 @@ accepts the same shard option for coverage inspection.
 `noEmit`. Browser-compatible leaves keep `types: []`. The explicit file list in
 [`tsconfig.check-js.json`](../tsconfig.check-js.json) names each checked module
 and compile-only consumer explicitly. The current boundary covers
-[`canopy ages`](../src/forest-age-composition.mjs),
-[`woodland habitat`](../src/forest-habitat.mjs) and
-[`Underbough species`](../src/forest-composition.mjs), plus
+[`canopy ages`](../src/presentation/rendering/forest/age-composition.mjs),
+[`woodland habitat`](../src/presentation/rendering/forest/habitat.mjs) and
+[`Underbough species`](../src/presentation/rendering/forest/composition.mjs), plus
 [`resource stages`](../src/resource-visual-state.mjs) and
 [`terrain masks`](../src/terrain-blend.mjs): numeric cell identity and
 world/grid coordinates, immutable authored rectangles, a row-major depth grid,

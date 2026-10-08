@@ -114,6 +114,30 @@ this Worker context slice does not close that separate acknowledgement gap.
 Check: `node --test scripts/audio-execution.test.mjs` (actual committed producer,
 disclosure/token adapters, fallback and scheduling decisions; no hearing claim).
 
+### Damage-warning presentation recovery
+
+Main derives friendly/selected damage from disclosed owned-unit HP loss and base
+damage from owned building HP loss, with one aggregate warning decision per
+snapshot. Camera distance is not an eligibility condition and the warning carries
+no attacker identity/location. Base and selected alerts keep their 12 s policy
+gates; battle first-contact keeps its 9 s quiet-gap rule. The latter still describes
+a new engagement, not a repeating alarm during an already presented engagement.
+
+The gate now receives output readiness through `audio.canPresentEvent`: enabled
+captions, or audible master/context plus the selected binding's bus (effects for
+synthesis). Hidden, recovering, locked or intentionally muted output with captions
+off cannot consume a warning. This fixes lost first contact when an off-camera
+Worker continues taking damage after unmuting: a subsequent fresh HP decrease can
+warn. Restoring settings/unlock/focus alone queues or replays nothing. Captions
+remain opt-in and can present a muted warning; configured sample cooldowns and
+ordinary playback limits still apply. Readiness is eligibility, not proof that a
+sample decoded or a player heard it.
+
+Check: `node --test scripts/audio-settings.test.mjs`. The actual Main snapshot and
+caption consumers run with real policy and modeled output. Existing sound assets
+and synthesis remain unchanged. Actual hostile-wildlife attack and listening
+acceptance require separate evidence; no animal cause is inferred from HP loss.
+
 Ready comes from a newly alive local unit generation; death requires an explicit
 alive-to-dead local row. Missing enemy rows never mean death. Initial/reconnect,
 map/reset and rematch baselines are silent; repeated or older ticks are ignored.

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "revisions": [
+    {
+      "heading": "north-east",
+      "registration": "docs/art-direction/human-roster-v1/infantry-ne-walk-registration.json"
+    },
+    {
+      "heading": "east",
+      "registration": "docs/art-direction/human-roster-v1/infantry-east-walk-registration.json"
+    },
+    {
+      "heading": "north",
+      "registration": "docs/art-direction/human-roster-v1/infantry-north-walk-registration.json"
+    },
+    {
+      "heading": "south",
+      "registration": "docs/art-direction/human-roster-v1/infantry-south-walk-registration.json"
+    },
+    {
+      "heading": "west",
+      "registration": "docs/art-direction/human-roster-v1/infantry-west-walk-registration.json"
+    },
+    {
+      "heading": "north-west",
+      "registration": "docs/art-direction/human-roster-v1/infantry-north-west-walk-registration.json"
+    },
+    {
+      "heading": "south-west",
+      "registration": "docs/art-direction/human-roster-v1/infantry-south-west-walk-registration.json"
+    }
+  ]
+}

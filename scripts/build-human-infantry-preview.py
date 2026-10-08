@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
-"""Pack Human Infantry appearance + available SE motion candidates, not coverage acceptance."""
+"""Legacy 0.5.0 baseline builder; never overwrite a reviewed later Infantry pack."""
 from PIL import Image
 from pathlib import Path
 import json,copy,hashlib
-root=Path(__file__).resolve().parents[1];out=root/'assets/units/infantry-sprite-v3';out.mkdir(exist_ok=True)
+root=Path(__file__).resolve().parents[1];out=root/'assets/units/infantry-sprite-v3'
+existing_manifest=out/'sprite-atlas-pack-v1.json'
+if existing_manifest.exists():
+ existing_version=json.loads(existing_manifest.read_text()).get('packVersion')
+ if existing_version!='0.5.0':
+  raise SystemExit(f'Baseline-only builder refuses to overwrite reviewed Infantry pack {existing_version}. Preserve the registered poses and use a separately reviewed append step.')
+out.mkdir(exist_ok=True)
 p=json.loads((root/'assets/units/cast-human-sprite-v2/sprite-atlas-pack-v1.json').read_text())
 p=json.loads(json.dumps(p).replace('cast-human','infantry').replace('cast-atlas','infantry-atlas'))
 a=p['assets'][0];a['id']='infantry';a['layers'][0]['batchKey']='unit.infantry';template=copy.deepcopy(a['frames'][0]);a['frames']=[]

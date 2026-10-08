@@ -13,9 +13,9 @@ import { createPalisadeConstructionGroundMesh } from './palisade-construction-gr
 import { groundTextureName, loadPaintedMaterialAtlas } from './painted-material-atlas-runtime.mjs';
 import { loadOakDepletionAtlas, oakDepletionStage, applyOakDepletionSampling } from './oak-depletion-atlas-runtime.mjs';
 import { WATER_LEVEL } from './presentation/rendering/water/geometry.mjs';
-import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from './forest-habitat.mjs';
-import { forestAgeFactors } from './forest-age-composition.mjs';
-import { underboughForestSpecies } from './forest-composition.mjs';
+import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from './presentation/rendering/forest/habitat.mjs';
+import { forestAgeFactors } from './presentation/rendering/forest/age-composition.mjs';
+import { underboughForestSpecies } from './presentation/rendering/forest/composition.mjs';
 import { shorePlantPositions } from './shore-vegetation.mjs';
 import { meadowPlantGroups, drylandPlantGroups, snowPlantGroups, ridgePlantGroups, lunarPlantGroups, marshPlantGroups, junglePlantGroups } from './meadow-vegetation.mjs';
 import { gardenPlantGroups } from './garden-vegetation.mjs';

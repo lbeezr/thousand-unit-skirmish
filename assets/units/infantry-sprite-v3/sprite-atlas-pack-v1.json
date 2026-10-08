@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "packId": "infantry-sprite",
-  "packVersion": "0.5.0",
+  "packVersion": "0.12.0",
   "maturity": "runtime-candidate",
   "provenance": {
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
     "source": "Vaelora Human roster role and action sheets",
-    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging",
-    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations."
+    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; reviewed CPU public-seed NE cutout articulation",
+    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four reviewed NE contact/passing keys reuse the exact public Infantry NE identity. All32 original poses and31 other clips remain. SE timing/poses unchanged; six walk headings remain idle. Source review does not establish rendered gait/planting or deployed acceptance. Four reviewed own-east source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified. Four reviewed own-north source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified. Current local pack0.8.0 has four source walks (SE/NE/E/N); four walk holds and14 non-SE attack/defeat gaps remain. Historical earlier counts describe their dated increments. Four reviewed own-south source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified. Four reviewed own-west source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified. Four reviewed own-north-west source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified. Four reviewed own-south-west source-UV keys admitted locally; all preceding poses/other clips retained. Publication/deployment/rendered acceptance unverified."
   },
   "files": [
     {
@@ -17,9 +17,9 @@
       "format": "png",
       "dimensionsPx": {
         "width": 2048,
-        "height": 1024
+        "height": 2048
       },
-      "sha256": "8579fbba5e13f439a208295416c38947bc094dfe0bbe52ac5f9a300aec094978"
+      "sha256": "3488fffb857259184b39b792742165c4da8955930afd9d07c1f893769008aa4d"
     },
     {
       "id": "infantry-atlas-runtime",
@@ -28,9 +28,9 @@
       "format": "png",
       "dimensionsPx": {
         "width": 2048,
-        "height": 1024
+        "height": 2048
       },
-      "sha256": "8579fbba5e13f439a208295416c38947bc094dfe0bbe52ac5f9a300aec094978"
+      "sha256": "3488fffb857259184b39b792742165c4da8955930afd9d07c1f893769008aa4d"
     },
     {
       "id": "infantry-team-mask",
@@ -39,9 +39,9 @@
       "format": "png",
       "dimensionsPx": {
         "width": 2048,
-        "height": 1024
+        "height": 2048
       },
-      "sha256": "454f752f9eabe65b6365ea208069fbd2a897bd77612865865fe08ab6ee5f808e"
+      "sha256": "e7e746011b4aa5eb384e36b062d5d0689172afe30d3a2e0a40cd35696ea12d0b"
     }
   ],
   "pages": [
@@ -52,7 +52,7 @@
       "maskFileId": "infantry-team-mask",
       "dimensionsPx": {
         "width": 2048,
-        "height": 1024
+        "height": 2048
       },
       "colorSpace": "srgb",
       "pixelFormat": "rgba8",
@@ -86,7 +86,7 @@
           0.55
         ]
       },
-      "heightWorld": 1.2266708900188577,
+      "heightWorld": 1.2371552566002153,
       "sortAnchorWorld": [
         0,
         0,
@@ -1499,6 +1499,1210 @@
             }
           ],
           "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-north-east-0",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 63,
+            "y": 16,
+            "width": 149,
+            "height": 236
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 0,
+              "y": 1024,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 0,
+                "y": 1024,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-north-east-1",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 63,
+            "y": 16,
+            "width": 149,
+            "height": 236
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 256,
+              "y": 1024,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 256,
+                "y": 1024,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-north-east-2",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 63,
+            "y": 16,
+            "width": 149,
+            "height": 228
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 512,
+              "y": 1024,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 512,
+                "y": 1024,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-north-east-3",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 63,
+            "y": 16,
+            "width": 149,
+            "height": 228
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 768,
+              "y": 1024,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 768,
+                "y": 1024,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-0",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 50,
+            "y": 20,
+            "width": 120,
+            "height": 225
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 1024,
+              "y": 1024,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 1024,
+                "y": 1024,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-1",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 50,
+            "y": 20,
+            "width": 120,
+            "height": 225
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 1280,
+              "y": 1024,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 1280,
+                "y": 1024,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-2",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 50,
+            "y": 20,
+            "width": 120,
+            "height": 225
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 1536,
+              "y": 1024,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 1536,
+                "y": 1024,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-3",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 50,
+            "y": 20,
+            "width": 120,
+            "height": 219
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 1792,
+              "y": 1024,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 1792,
+                "y": 1024,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-north-0",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 44,
+            "y": 15,
+            "width": 151,
+            "height": 230
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 0,
+              "y": 1280,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 0,
+                "y": 1280,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-north-1",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 44,
+            "y": 15,
+            "width": 151,
+            "height": 224
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 256,
+              "y": 1280,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 256,
+                "y": 1280,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-north-2",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 44,
+            "y": 15,
+            "width": 151,
+            "height": 230
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 512,
+              "y": 1280,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 512,
+                "y": 1280,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-north-3",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 44,
+            "y": 15,
+            "width": 151,
+            "height": 230
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 768,
+              "y": 1280,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 768,
+                "y": 1280,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-south-0",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 69,
+            "y": 15,
+            "width": 142,
+            "height": 229
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 1024,
+              "y": 1280,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 1024,
+                "y": 1280,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-south-1",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 69,
+            "y": 15,
+            "width": 142,
+            "height": 229
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 1280,
+              "y": 1280,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 1280,
+                "y": 1280,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-south-2",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 69,
+            "y": 15,
+            "width": 142,
+            "height": 229
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 1536,
+              "y": 1280,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 1536,
+                "y": 1280,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-south-3",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 69,
+            "y": 15,
+            "width": 142,
+            "height": 223
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 1792,
+              "y": 1280,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 1792,
+                "y": 1280,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-west-0",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 41,
+            "y": 14,
+            "width": 140,
+            "height": 231
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 0,
+              "y": 1536,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 0,
+                "y": 1536,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-west-1",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 41,
+            "y": 14,
+            "width": 140,
+            "height": 225
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 256,
+              "y": 1536,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 256,
+                "y": 1536,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-west-2",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 41,
+            "y": 14,
+            "width": 140,
+            "height": 231
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 512,
+              "y": 1536,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 512,
+                "y": 1536,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-west-3",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 41,
+            "y": 14,
+            "width": 140,
+            "height": 231
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 768,
+              "y": 1536,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 768,
+                "y": 1536,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-north-west-0",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 84,
+            "y": 15,
+            "width": 117,
+            "height": 230
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 1024,
+              "y": 1536,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 1024,
+                "y": 1536,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-north-west-1",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 84,
+            "y": 15,
+            "width": 116,
+            "height": 224
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 1280,
+              "y": 1536,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 1280,
+                "y": 1536,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-north-west-2",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 84,
+            "y": 15,
+            "width": 111,
+            "height": 230
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 1536,
+              "y": 1536,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 1536,
+                "y": 1536,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-north-west-3",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 84,
+            "y": 15,
+            "width": 113,
+            "height": 230
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 1792,
+              "y": 1536,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 1792,
+                "y": 1536,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-south-west-0",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 36,
+            "y": 14,
+            "width": 152,
+            "height": 228
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 0,
+              "y": 1792,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 0,
+                "y": 1792,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-south-west-1",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 36,
+            "y": 14,
+            "width": 152,
+            "height": 231
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 256,
+              "y": 1792,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 256,
+                "y": 1792,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-south-west-2",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 36,
+            "y": 14,
+            "width": 152,
+            "height": 234
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 512,
+              "y": 1792,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 512,
+                "y": 1792,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-south-west-3",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 246
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 36,
+            "y": 14,
+            "width": 152,
+            "height": 224
+          },
+          "fallbackRectPx": {
+            "pageId": "infantry-color",
+            "rectPx": {
+              "x": 768,
+              "y": 1792,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "infantry-color",
+              "rectPx": {
+                "x": 768,
+                "y": 1792,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
         }
       ],
       "clips": [
@@ -1596,8 +2800,20 @@
           "loop": true,
           "sequence": [
             {
-              "frameId": "idle-east-0",
-              "durationMs": 1000
+              "frameId": "walk-east-0",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-east-1",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-east-2",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-east-3",
+              "durationMs": 200
             }
           ]
         },
@@ -1646,8 +2862,20 @@
           "loop": true,
           "sequence": [
             {
-              "frameId": "idle-north-east-0",
-              "durationMs": 1000
+              "frameId": "walk-north-east-0",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-north-east-1",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-north-east-2",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-north-east-3",
+              "durationMs": 200
             }
           ]
         },
@@ -1657,8 +2885,20 @@
           "loop": true,
           "sequence": [
             {
-              "frameId": "idle-north-0",
-              "durationMs": 1000
+              "frameId": "walk-north-0",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-north-1",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-north-2",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-north-3",
+              "durationMs": 200
             }
           ]
         },
@@ -1668,8 +2908,20 @@
           "loop": true,
           "sequence": [
             {
-              "frameId": "idle-north-west-0",
-              "durationMs": 1000
+              "frameId": "walk-north-west-0",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-north-west-1",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-north-west-2",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-north-west-3",
+              "durationMs": 200
             }
           ]
         },
@@ -1679,8 +2931,20 @@
           "loop": true,
           "sequence": [
             {
-              "frameId": "idle-west-0",
-              "durationMs": 1000
+              "frameId": "walk-west-0",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-west-1",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-west-2",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-west-3",
+              "durationMs": 200
             }
           ]
         },
@@ -1690,8 +2954,20 @@
           "loop": true,
           "sequence": [
             {
-              "frameId": "idle-south-west-0",
-              "durationMs": 1000
+              "frameId": "walk-south-west-0",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-south-west-1",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-south-west-2",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-south-west-3",
+              "durationMs": 200
             }
           ]
         },
@@ -1701,8 +2977,20 @@
           "loop": true,
           "sequence": [
             {
-              "frameId": "idle-south-0",
-              "durationMs": 1000
+              "frameId": "walk-south-0",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-south-1",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-south-2",
+              "durationMs": 200
+            },
+            {
+              "frameId": "walk-south-3",
+              "durationMs": 200
             }
           ]
         },
