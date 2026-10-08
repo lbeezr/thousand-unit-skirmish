@@ -221,6 +221,26 @@ Stop the disposable server and remove only the fixture map afterwards. The cloud
 browser's documented sandbox/storage block remains; no cloud browser was awaited
 or bypassed for this change. Native readability and VoiceOver acceptance are open.
 
+## Research prerequisite location — 8 October 2026
+
+Research choices whose current reason is the registered missing prerequisite now
+also say **Research MILITARY TIER II at Town Center**. The hint uses prerequisite
+technology and building labels from the registry. The selected authoritative
+reason remains first; a different authoritative rejection does not receive the
+local hint. Completed, researching, unfinished-building and finished-match
+states retain their existing reasons without a stale prerequisite hint.
+
+The default drawer and compact contextual callers share this text-only change.
+Availability, commands, signatures, button identity and focus treatment are
+unchanged. Both-seat DOM tests in `research-ui.test.mjs` exercise the shipped
+HTML/menu handler through locked/unlocked states, repeated updates, authoritative
+rejections and the states above for Armor, Mounted Forging and Siege Engineering.
+Backing is the existing labelled compact research/action treatment. No art or
+controls are added. DOM/source, package and HTTP checks do not establish rendered
+readability, native keyboard activation or a containing deployed revision. The
+existing cloud sandbox/storage blocker remains open; the HUD owner retains
+ordinary-game acceptance at an identified containing cloud release.
+
 ## Inspectable contextual research — 3 October 2026
 
 At baseline `ae88e0f`, resource or research-state updates moved focus from an
