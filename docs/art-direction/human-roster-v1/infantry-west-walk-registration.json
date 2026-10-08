@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "heading": "west",
+  "packVersion": "0.10.0",
+  "sourceRevision": "7c7f0cf632fd9a1c572914d4f731ace59b1d6fbe",
+  "sourceKind": "independently-reviewed-own-public-seed-source-UV-cutout",
+  "sourceFrameId": "idle-west-0",
+  "sourceSheet": "docs/art-direction/human-roster-v1/source/infantry-idle-facings.png",
+  "sourceSheetSHA256": "0a94a11f2dffd4b722d3a732aa4d3117283d3fa41c89aac6f03487d7a7930b38",
+  "priorFrameCount": 48,
+  "priorFramesSHA256": "9f781dfb2d2d1ddd7994584309ee01df27fb090d1e82031ad50350ef83fb110f",
+  "priorOtherClipsSHA256": "84e7d800160c28e37af7b3294744242b84d5e6c1b379a31093e1c6eebd4da98d",
+  "priorWalkClip": {
+    "stateId": "walk",
+    "directionId": "west",
+    "loop": true,
+    "sequence": [
+      {
+        "frameId": "idle-west-0",
+        "durationMs": 1000
+      }
+    ]
+  },
+  "priorAtlasSizePx": [
+    2048,
+    1536
+  ],
+  "priorAtlasRgbaSHA256": "b2315f564085b9b7ad0c2a12c38dbe375d320afbc107a88e15dc6a8ed178ecb1",
+  "priorMaskSHA256": "bbd05cf6097ac9b1f89ea29d2542c1b7b67ee46848393895f5a9e43fa1f621e5",
+  "newRectsPx": [
+    {
+      "x": 0,
+      "y": 1536,
+      "width": 256,
+      "height": 256
+    },
+    {
+      "x": 256,
+      "y": 1536,
+      "width": 256,
+      "height": 256
+    },
+    {
+      "x": 512,
+      "y": 1536,
+      "width": 256,
+      "height": 256
+    },
+    {
+      "x": 768,
+      "y": 1536,
+      "width": 256,
+      "height": 256
+    }
+  ],
+  "reviewedRgbaSHA256": [
+    "4820a862cd6acacf3a7a402884595760008af087333613e9c8abac7179ad50d2",
+    "cf139ce20ff80ae254923ec00e38bae2d4e65e923fdbc9667f53ea3b118b9a62",
+    "aae1c33232f21f0531fcdb9fe00a0f656d2344c08b3c47c7018286adb15531ff",
+    "06de654f2973d281497598f57084f401325c99a33050fbb2fe5ac8803421d6c0"
+  ],
+  "canvasPx": {
+    "width": 256,
+    "height": 256
+  },
+  "groundPivotPx": {
+    "x": 128,
+    "y": 246
+  },
+  "worldPerPixel": 0.005242183290678879,
+  "durationsMs": [
+    200,
+    200,
+    200,
+    200
+  ],
+  "authoring": {
+    "tool": "Pillow CPU source-UV articulation",
+    "sourceOwnership": {
+      "body": 16312,
+      "right": 959,
+      "left": 1567
+    },
+    "restRecompositionExact": true,
+    "paintedDonorPixels": 0,
+    "mirror": false,
+    "perFrameFitting": false
+  },
+  "sourceReview": "Independent actual-pixel source and half-size review approves these exact ordered contact/support/passing poses as a rough own-facing source slice. No rendered playback approval.",
+  "acceptance": {
+    "rendered": "pending"
+  },
+  "gaitSpec": {
+    "heading": "west",
+    "regions": {
+      "right": [
+        128,
+        192,
+        209,
+        225
+      ],
+      "left": [
+        50,
+        128,
+        232,
+        256
+      ]
+    },
+    "contactRows": {
+      "right": 217,
+      "left": 243
+    },
+    "forwardSign": -1
+  },
+  "frozenSourceRegions": [
+    [
+      0,
+      0,
+      256,
+      185
+    ],
+    [
+      50,
+      185,
+      128,
+      205
+    ]
+  ]
+}

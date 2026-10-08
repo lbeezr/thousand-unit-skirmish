@@ -10,7 +10,7 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 test('CPU temporal integration and fault controls require neither a browser nor Python', { timeout: 120000 }, async t => {
   const directory = mkdtempSync(path.join(os.tmpdir(), 'rts-temporal-ci-'));
   try {
-    for (const [name, failures] of [['positive', 0], ['frozen-clock', 96], ['wrong-heading', 84], ['duplicate-cells', 68]]) {
+    for (const [name, failures] of [['positive', 0], ['frozen-clock', 96], ['wrong-heading', 84], ['duplicate-cells', 96]]) {
       await t.test(name, () => {
         const output = path.join(directory, name);
         const run = spawnSync(process.execPath, ['scripts/unit-displacement-animation-scenario.mjs',
@@ -23,9 +23,11 @@ test('CPU temporal integration and fault controls require neither a browser nor 
         assert.equal(report.rows.length, 96);
         assert.equal(report.failures.length, failures, 'fault detection cannot silently regress');
         if (!failures) {
-          assert.equal(report.missingArt.length, 7, 'actual default Infantry missing gait remains explicitly incomplete');
-          assert.deepEqual(report.authoredWalkHeadings,{human:8,infantry:1,spearman:8});
-          assert.deepEqual(report.missingArt.map(m=>[m.role,m.direction]),['north','north-east','east','south','south-west','west','north-west'].map(h=>['infantry',h]));
+          assert.equal(report.missingArt.length, 0, 'actual default Infantry missing gait remains explicitly incomplete');
+          assert.deepEqual(report.authoredWalkHeadings,{human:8,infantry:8,spearman:8});
+          assert.deepEqual(report.missingArt.map(m=>[m.role,m.direction]),[].map(h=>['infantry',h]));
+          assert.ok(report.rows.filter(r=>r.role==='infantry'&&['north-east','east','north','south','west','north-west','south-west'].includes(r.requestedHeading))
+            .every(r=>r.distinctFrameKeys===4&&r.distinctVisibleCells===4&&r.distinctSilhouettes===4));
           assert.ok(report.rows.filter(r => r.role === 'human' || r.requestedHeading === 'south-east')
             .every(r => r.distinctFrameKeys === 8 && r.distinctVisibleCells === 8 && r.distinctSilhouettes === 8));
         } else {

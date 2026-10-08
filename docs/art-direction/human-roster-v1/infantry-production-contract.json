@@ -33,11 +33,11 @@
     "approvedRuntimeFiles": [
       {
         "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
-        "sha256": "8579fbba5e13f439a208295416c38947bc094dfe0bbe52ac5f9a300aec094978"
+        "sha256": "3488fffb857259184b39b792742165c4da8955930afd9d07c1f893769008aa4d"
       },
       {
         "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
-        "sha256": "454f752f9eabe65b6365ea208069fbd2a897bd77612865865fe08ab6ee5f808e"
+        "sha256": "e7e746011b4aa5eb384e36b062d5d0689172afe30d3a2e0a40cd35696ea12d0b"
       }
     ],
     "anchors": [
@@ -50,21 +50,156 @@
         "rgbaSha256": "9f2197fd73abf6f8fe53b86bafd5f2060e8e65eb1e2389de176e728cd69bef57"
       }
     ],
-    "registeredFramesSha256": "99855c4234be473cc93172d3b9109d62414d11debb91c179bd349720447dec70"
+    "registeredFramesSha256": "2974bf2c95d0b4afcbff7eebdc1a6728255e04ad70b9e1e4bc9b32c59f7d65cc",
+    "revisions": [
+      {
+        "id": "reviewed-ne-public-seed-cutout-v1",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-ne-walk-registration.json",
+        "previousRuntimeFiles": [
+          {
+            "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+            "sha256": "8579fbba5e13f439a208295416c38947bc094dfe0bbe52ac5f9a300aec094978"
+          },
+          {
+            "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+            "sha256": "454f752f9eabe65b6365ea208069fbd2a897bd77612865865fe08ab6ee5f808e"
+          }
+        ],
+        "previousRegisteredFramesSha256": "99855c4234be473cc93172d3b9109d62414d11debb91c179bd349720447dec70",
+        "previousRegistrationSha256": "403b00e980025ebab498215579c6a775f2526cf559cb8cab650f24d344f967ed",
+        "retainedFrames": 32,
+        "newFrames": 4,
+        "originalSourcePinsUnchanged": true
+      },
+      {
+        "id": "reviewed-east-public-seed-cutout-v1",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-east-walk-registration.json",
+        "previousRuntimeFiles": [
+          {
+            "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+            "sha256": "56192faba2266acc8ef8925884c162adf0d0638a1b4e72b52da990c62b0a45c3"
+          },
+          {
+            "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+            "sha256": "6a7b444ba178b25223f4353af13cf58d8dda7c49ef800e19445c62f04eb6297b"
+          }
+        ],
+        "previousRegisteredFramesSha256": "6025e8560bc8de23b18d6035e2aeccc38637f86dbddbe09cd7b49cf1166be645",
+        "previousRegistrationSha256": "535b6d429327252184e83f1843bca0304be24d06935d49dd9465daacda62ee85",
+        "retainedFrames": 36,
+        "newFrames": 4,
+        "originalSourcePinsUnchanged": true
+      },
+      {
+        "id": "reviewed-north-public-seed-cutout-v1",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-north-walk-registration.json",
+        "previousRuntimeFiles": [
+          {
+            "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+            "sha256": "62a67cf277ced75e8ed475b647d5fdfa00ad23be0ba7e21c528953516ee9c92d"
+          },
+          {
+            "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+            "sha256": "6a7b444ba178b25223f4353af13cf58d8dda7c49ef800e19445c62f04eb6297b"
+          }
+        ],
+        "previousRegisteredFramesSha256": "e4c95865b2b713f5a2ee8bc89d9178d0e905229f2aed12017bc2ca86714150d0",
+        "previousRegistrationSha256": "568f2721e4f4b33babc8e767559a2f1f768802ba54efd2085c416e32a98dccf3",
+        "retainedFrames": 40,
+        "newFrames": 4,
+        "originalSourcePinsUnchanged": true
+      },
+      {
+        "id": "reviewed-south-public-seed-cutout-v1",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-south-walk-registration.json",
+        "previousRuntimeFiles": [
+          {
+            "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+            "sha256": "882c1bddce16ead1ec76f039dec8205b0f345009a4a25b42ecc382a6dc1909e9"
+          },
+          {
+            "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+            "sha256": "38be0ef9fa157be7144711e28ae797935e3f13305c1dd0c900c8051d15779827"
+          }
+        ],
+        "previousRegisteredFramesSha256": "1adda9a5daf0c7b6a8a9f6d20f5fb291358cf02ab96f62f3ed0708e2476850f0",
+        "previousRegistrationSha256": "21165e864269d75ba3f702afe35096b38d277baba512514b874e419ff07845f3",
+        "retainedFrames": 44,
+        "newFrames": 4,
+        "originalSourcePinsUnchanged": true
+      },
+      {
+        "id": "reviewed-west-public-seed-cutout-v1",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-west-walk-registration.json",
+        "previousRuntimeFiles": [
+          {
+            "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+            "sha256": "ddc48f0f835e35bb2318503cdcd6a4fd23f7d7738a1262d1b8d9ba5045586de2"
+          },
+          {
+            "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+            "sha256": "38be0ef9fa157be7144711e28ae797935e3f13305c1dd0c900c8051d15779827"
+          }
+        ],
+        "previousRegisteredFramesSha256": "59b21af5e88744f46da0d44f7bcb5e6f8831b907f2d3e272de137d44864991a3",
+        "previousRegistrationSha256": "e197ba01c17ea044b862dd2da97d7376a767f82a58c3f7cf06785b07edef4f30",
+        "retainedFrames": 48,
+        "newFrames": 4,
+        "originalSourcePinsUnchanged": true
+      },
+      {
+        "id": "reviewed-north-west-public-seed-cutout-v1",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-north-west-walk-registration.json",
+        "previousRuntimeFiles": [
+          {
+            "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+            "sha256": "deac58771b2e4bd9217c4411142db268845202c0bfe1f3bb23644f241862d517"
+          },
+          {
+            "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+            "sha256": "973f091729859e19f83f4065211297afd68ef9fe533008b282b0261907e040aa"
+          }
+        ],
+        "previousRegisteredFramesSha256": "c581fb9a0b6a9ce08f55a949d8de3073a70b2a43a33c6caf7c3f0c81ad9d8097",
+        "previousRegistrationSha256": "a391050719ab6066b682e232af40990feccf3f7a83c733dbd4d3ef875dd20555",
+        "retainedFrames": 52,
+        "newFrames": 4,
+        "originalSourcePinsUnchanged": true
+      },
+      {
+        "id": "reviewed-south-west-public-seed-cutout-v1",
+        "sourceReview": "docs/art-direction/human-roster-v1/infantry-south-west-walk-registration.json",
+        "previousRuntimeFiles": [
+          {
+            "path": "assets/units/infantry-sprite-v3/infantry-atlas-runtime.png",
+            "sha256": "995b20d643ab05c804e97a163b505a5895743518cd033d4f06259151ad44cc46"
+          },
+          {
+            "path": "assets/units/infantry-sprite-v3/team-accent-mask.png",
+            "sha256": "973f091729859e19f83f4065211297afd68ef9fe533008b282b0261907e040aa"
+          }
+        ],
+        "previousRegisteredFramesSha256": "aa35f707cbb809013407cce303496eada41f9b399353b8f282e7b7bb82398eb2",
+        "previousRegistrationSha256": "d8ad3ca24715f904d287aad91a708c06fe990d8b03353f516b298c74795b61e6",
+        "retainedFrames": 56,
+        "newFrames": 4,
+        "originalSourcePinsUnchanged": true
+      }
+    ]
   },
   "provenance": {
-    "version": "retained-source-v1",
+    "version": "retained-source-v1-ne-public-seed-cutout-v1",
     "sourceRecord": "docs/art-direction/human-roster-v1/README.md",
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
-    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging",
+    "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging; Pillow source-UV leg articulation from public NE seed",
     "providerVisibility": "historical-settings-not-recorded",
     "trainingPermission": "unknown",
-    "notes": "Existing repository source and manifests retained; provider privacy settings are not a no-training receipt."
+    "notes": "Existing public repository sources are retained. Seven reviewed own-view walk revisions preserve all 32 established poses. Source review does not establish rendered gameplay acceptance; provider visibility and training permission remain independently recorded."
   },
   "publication": {
     "state": "existing-public-runtime-only",
     "newUploadsAuthorized": false,
-    "scope": "Existing public repository sources and admitted runtime files only. New private material and provider uploads need separate authority."
+    "scope": "Existing public repository sources and admitted runtime files only. Source models and working material are excluded; no provider generation or upload authority is granted."
   },
   "requiredStates": [
     "idle",
@@ -84,13 +219,6 @@
   ],
   "sourceComplete": false,
   "missingSourceCells": [
-    "walk|north",
-    "walk|north-east",
-    "walk|east",
-    "walk|south",
-    "walk|south-west",
-    "walk|west",
-    "walk|north-west",
     "attack|north",
     "attack|north-east",
     "attack|east",
@@ -132,7 +260,100 @@
       "durationMs": 800,
       "playbackFPS": 10,
       "sourceFPS": null,
-      "notes": "Retained explicit 2D key timing; no sampled rig FPS is known."
+      "notes": "Retained explicit 2D key timing; no sampled rig FPS is known.",
+      "directions": {
+        "north-east": {
+          "mode": "timed-keys",
+          "frameDurationsMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "durationMs": 800,
+          "sourceFPS": null,
+          "playbackFPS": null,
+          "notes": "Four independently reviewed NE cutout keys; retained SE eight100ms cadence unchanged."
+        },
+        "east": {
+          "mode": "timed-keys",
+          "frameDurationsMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "durationMs": 800,
+          "sourceFPS": null,
+          "playbackFPS": null,
+          "notes": "Four independently reviewed own-east cutout keys; preceding source cadence unchanged."
+        },
+        "north": {
+          "mode": "timed-keys",
+          "frameDurationsMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "durationMs": 800,
+          "sourceFPS": null,
+          "playbackFPS": null,
+          "notes": "Four independently reviewed own-north cutout keys; preceding source cadence unchanged."
+        },
+        "south": {
+          "mode": "timed-keys",
+          "frameDurationsMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "durationMs": 800,
+          "sourceFPS": null,
+          "playbackFPS": null,
+          "notes": "Four independently reviewed own-south cutout keys; preceding source cadence unchanged."
+        },
+        "west": {
+          "mode": "timed-keys",
+          "frameDurationsMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "durationMs": 800,
+          "sourceFPS": null,
+          "playbackFPS": null,
+          "notes": "Four independently reviewed own-west cutout keys; preceding source cadence unchanged."
+        },
+        "north-west": {
+          "mode": "timed-keys",
+          "frameDurationsMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "durationMs": 800,
+          "sourceFPS": null,
+          "playbackFPS": null,
+          "notes": "Four independently reviewed own-north-west cutout keys; preceding source cadence unchanged."
+        },
+        "south-west": {
+          "mode": "timed-keys",
+          "frameDurationsMs": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "durationMs": 800,
+          "sourceFPS": null,
+          "playbackFPS": null,
+          "notes": "Four independently reviewed own-south-west cutout keys; preceding source cadence unchanged."
+        }
+      }
     },
     "attack": {
       "mode": "timed-keys",
@@ -172,7 +393,7 @@
   "calibration": {
     "worldPerPixel": 0.005242183290678879,
     "bodyBaselineWorld": 1.2161865234375,
-    "registrationSha256": "403b00e980025ebab498215579c6a775f2526cf559cb8cab650f24d344f967ed",
+    "registrationSha256": "bd550aafb5166a925a1672805a8683608bd581772ddad3f1d851327746e74b8b",
     "pivotStatus": "unreviewed-estimate",
     "cameraStatus": "prompt-only",
     "cameraRecipe": null,
@@ -181,7 +402,7 @@
   },
   "integration": {
     "owner": "Human foot-unit art lane",
-    "stateOwner": "01a103d4",
+    "stateOwner": "Infantry animation runtime owner",
     "runtimeVersion": "v3",
     "defaultBinding": "wired",
     "packaging": "existing-admitted",
@@ -195,6 +416,6 @@
       "crowded-scene"
     ],
     "evidence": [],
-    "owner": "Human foot-unit art lane with parent environment support"
+    "owner": "Human Infantry art and gameplay validation owners"
   }
 }
