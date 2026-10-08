@@ -169,8 +169,10 @@ extends existing point inspection to the last selected disclosed building.
 After native sight termination, coordinate AttackMove regains real Town Center
 sight and damage in both controlled seats. The 300-tick bound, original-cohort
 clearing, visible priority, hidden-input equivalence and fresh-policy forgetting
-remain. This source-only proof does not close full Tiny completion, rendered
-acceptance, or held PR583's separate production/movement diagnosis.
+remain. This source-only proof does not close full Tiny completion or rendered
+acceptance. [PR583](https://github.com/lbeezr/thousand-unit-skirmish/pull/583)
+merged at `daf4f78d` with separate first-Barracks preparation source/native/package
+checks; served and ordinary rendered acceptance remain separate.
 
 The identity/checkpoint bridge and explicit Skirmish target branch are merged in
 [PR195](https://github.com/lbeezr/thousand-unit-skirmish/pull/195) and
