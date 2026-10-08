@@ -4819,7 +4819,8 @@ function applyState(state, initial = false, resuming = false) {
   const buildingDamage = Array.isArray(state.buildings) ? reconcileBuildings([...state.buildings, ...(state.homeTownCenters || [])], audioReset) : 0;
   if (audioReset) combatAudioGate.reset();
   else {
-    const cue = combatAudioGate.observe({ friendlyDamage, selectedDamage, buildingDamage }, performance.now());
+    const cue = combatAudioGate.observe({ friendlyDamage, selectedDamage, buildingDamage,
+      canPresent: cue => canPresentLiveFeedback() && audio.canPresentEvent({ cue }) }, performance.now());
     if (cue) audio.playEvent({ cue });
   }
   if (Number.isInteger(state.winner)) {

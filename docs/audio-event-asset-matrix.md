@@ -5,6 +5,7 @@
 This is the canonical coverage and missing-asset matrix for scalable civilization
 audio. Audited main `7df6b204` on 7 October 2026, then updated for the bounded
 building-selection slice and Worker Gather context against main `86d66396`.
+Warning-output recovery was reproduced against merged main `ac4a09dd`.
 It replaces neither the gameplay registry nor the
 dated [3 October audit](qa-audio-coverage-2026-10-03.md). “Implemented” below means
 source routing/scheduling exists; it does not mean a recording is produced,
@@ -107,13 +108,41 @@ sample priority remains urgent 10/other 0, with explicit pack overrides allowed.
 | `cue.building-complete` | Friendly observed incomplete-to-complete transition; aggregated per reconciliation. | Generic completion. Caller omits building type and binding schema only supports typed selection; typed completion is missing, not an asset-only task. | P1; initial/reset silent; 2.6 s; no queued-build success claim. |
 | `cue.queue`, `.research-complete` | Registered unit queue notices and local-team registered technology completion notices. | Existing synthesis; contextual producer/technology voice missing. | P1; issuing/local team only; 170 ms/2.6 s; cancellation is not ready. |
 | `cue.rally`, `.send`, `.reject` | Existing local control/applied notice or pending neutral send; rejection stays failure. | Existing synthesis; future civilization gesture palette unproduced. | P1/P2; 550/90/250 ms; no accepted-order claim from send. |
-| `cue.battle-alert` / first damage contact | Existing own-unit HP decrease aggregation, including an exploring worker/unit. Attacker identity/cause is not read. A new engagement emits after 9 s without another friendly damage observation. | Existing attention synthesis; contextual unit/worker voice missing. No new alarm needed. Actual hostile-wildlife behavior/hearing remains unverified. | P0; one aggregate snapshot decision; not distance-gated despite current “BATTLE NEARBY” caption; no hidden enemy count/location/type. |
+| `cue.battle-alert` / first damage contact | Existing own-unit HP decrease aggregation, including an exploring worker/unit. Attacker identity/cause is not read. A new engagement emits after 9 s without another presentable friendly damage observation. Unavailable output no longer consumes this cadence; fresh damage after restoring output can warn. | Existing attention synthesis; contextual unit/worker voice missing. No new alarm needed. Actual hostile-wildlife behavior/hearing remains unverified. | P0; one aggregate snapshot decision; not distance-gated despite current “BATTLE NEARBY” caption; no hidden enemy count/location/type. |
 | `cue.selected-alert` | Existing selected owned units lose HP. | Existing attention synthesis; selected-force voice missing. | P0; shared selected-damage aggregate; policy 12 s, playback 11 s. |
 | `cue.base-alert` | Existing owned building HP decreases. Takes precedence over selected/battle alert. | Existing rounded repeated attention synthesis; civilization building-danger voice missing. | P0; one aggregate; policy 12 s, playback 11 s; attacker source/location never exposed. |
 | First sight of an enemy / animal-specific attack callout | No dedicated disclosed-first-sight reducer or predator identity event found. Cause-agnostic own HP warning above already works for a reported loss. | Missing specialized event/asset. Do not invent an enemy/wildlife presence observer or claim native animal-attack coverage. | Future P0/P1; only actual local disclosure, not terrain/fog/AI-private state; bounded deduplication required. |
 | `cue.resource-empty`, `.base-lost` | Existing local depletion/own producer-destruction notices. | Existing synthesis; civilization notice voice missing. | P0/P1; 8 s/2 s; recipient filtering retained. |
 | `cue.objective`, `.objective-lost`, `.scenario-reward` | Existing live objective and affected-team reward events. | Existing synthesis; regional signature originals are audition-only, not assigned. | P0; 1.2/1.2/2.4 s; no opponent-only reward cue. |
 | `cue.victory`, `.defeat`, `.draw` | Authoritative match result; existing result card wins over duplicate caption. | Existing synthesized cadences; civilization outcome voices missing. | P0; 5 s; current match/reset/recovery boundaries retained. |
+
+## Warning-output recovery
+
+Warning readiness is a bounded client correction, not a new alert family. On
+`ac4a09dd`, an unselected Worker at `(30, -20)` taking disclosed HP loss while
+master audio/captions were muted consumed `battle-alert`; continued damage after
+unmuting at 10 s scheduled no warning through 20 s. The actual path is Main's
+owned HP comparison (independent of camera and selection), `CombatAudioGate`,
+`audio.playEvent`, and the synthesis/sample plus enabled-caption consumers.
+`audio.canPresentEvent` now reads visibility, captions, master/context readiness
+and the selected civilization/common binding bus without unlocking, decoding,
+queueing or consuming a sample cooldown. Main also requires visible live browser
+feedback. The gate advances only for an eligible warning. Restoring output alone
+does not replay damage: the acceptance condition is a warning on a subsequent
+fresh disclosed HP loss. Existing first-contact/quiet-gap, selected/base priority,
+cooldowns and mute choices remain in force. Caption-enabled muted warnings still
+consume the cadence because they have an enabled presentation route.
+
+The registered `scripts/audio-settings.test.mjs` executes the committed Main HP
+aggregation and caption consumer with real warning/audio policy and modeled
+Web Audio/DOM boundaries. It covers locked/muted/zero-level output, fresh damage
+after restoration, enabled captions, hidden/recovering presentation, sparse
+civilization bus choice and unchanged warning priority/aggregation. These checks
+do not establish audible/native or rendered acceptance. No simulation producer,
+attacker metadata, wildlife action, sound asset or voice take changes. Current
+sheep lifecycle supplies no hostile-animal attack producer; Boughward's wolf art
+is not evidence of a new wildlife action. Listening and cause-specific gameplay
+evidence remain open with the audio owner.
 
 ## Registered units and proposed exact voice slots
 
