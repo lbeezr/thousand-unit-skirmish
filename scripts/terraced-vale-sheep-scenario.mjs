@@ -5,7 +5,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 import { wildlifeControlsFixture } from './wildlife-client-controls-fixture.mjs';
-import { TERRACED_VALE_SHEEP_IDS, TERRACED_VALE_PRE_SHEEP_MAP_HASH } from '../src/terraced-vale-sheep.mjs';
+import { TERRACED_VALE_SHEEP_IDS, TERRACED_VALE_PRE_SHEEP_MAP_HASH, priorTerracedValeGroves } from '../src/terraced-vale-sheep.mjs';
 
 // Ordinary default HTTP/WS entry and production input bodies, followed by bounded
 // fixed ticks for full 650-food pools. No position, food stock or bank is injected.
@@ -30,8 +30,8 @@ const frozen = row => ({ ...point(row), wildlifeState: row.wildlifeState, wildli
   wildlifeMotion: structuredClone(row.wildlifeMotion) });
 const command = (team, value, pattern) => clients[team].command({ ...value, clientOrderToken: nextToken++ }, pattern);
 const emit = (stage, detail = {}) => console.log(JSON.stringify({ stage, ...detail }));
-function conserved(saved) {
-  assert.deepEqual(saved.state.resourceNodes.map(row => row.id).sort(), canonical.resourceNodes.map(row => row.id).sort());
+function conserved(saved, definition = canonical) {
+  assert.deepEqual(saved.state.resourceNodes.map(row => row.id).sort(), definition.resourceNodes.map(row => row.id).sort());
   const stock = saved.state.resourceNodes.filter(row => row.type === 'food').reduce((sum, row) => sum + row.stock, 0);
   const bank = saved.state.teamFood.reduce((sum, value) => sum + value, 0);
   const cargo = saved.state.units.filter(row => row.cargoType === 'food').reduce((sum, row) => sum + row.cargo, 0);
@@ -223,7 +223,8 @@ try {
   // checkpoint. Only its validated match descriptor selects historical Skirmish;
   // stock, poses, units, cargo and banks come from ordinary production ticks.
   phase = 'exact previous Tiny map cold migration';
-  const legacyMap = structuredClone(canonical);
+  const historicalSheepMap = priorTerracedValeGroves(canonical);
+  const legacyMap = structuredClone(historicalSheepMap);
   for (const row of legacyMap.resourceNodes) if (TERRACED_VALE_SHEEP_IDS.includes(row.id)) delete row.wildlifeSpecies;
   assert.equal(hashMap(legacyMap), TERRACED_VALE_PRE_SHEEP_MAP_HASH);
   legacyFixture = await createPathingReplayFixture(legacyMap);
@@ -232,7 +233,7 @@ try {
   for (const team of [0, 1]) replayOrder(old, team, 'gather', [oldWorkers[team]], { nodeId: homeIds[team] });
   await until(old, () => oldWorkers.every(id => old.units.find(row => row.id === id).cargo >= 1), 'ordinary old food creates natural partial cargo');
   for (const team of [0, 1]) replayOrder(old, team, 'stop', [oldWorkers[team]]);
-  const legacy = old.checkpoint(); conserved(legacy);
+  const legacy = old.checkpoint(); conserved(legacy, legacyMap);
   // A restore would run adoption immediately. Set only the historical match
   // descriptor on the naturally produced old-map capture, then validate it.
   legacy.matchModeId = 'skirmish'; legacy.matchModeVersion = 1;
@@ -243,8 +244,9 @@ try {
   await fixture.start(); clients = [await fixture.connect(0), await fixture.connect(1)];
   assert.ok(clients.every(client => client.welcome.recoveredFromCheckpoint));
   assert.ok(clients.every(client => client.welcome.matchModeId === 'skirmish'));
-  const migrated = await fixture.checkpoint(saved => saved.mapHash === hashMap(canonical));
-  conserved(migrated);
+  const migrated = await fixture.checkpoint(saved => saved.mapHash === hashMap(historicalSheepMap));
+  conserved(migrated, historicalSheepMap);
+  assert.deepEqual(migrated.mapDefinition, historicalSheepMap, 'old saves retain pre-grove building sites');
   for (const id of TERRACED_VALE_SHEEP_IDS) {
     assert.equal(node(migrated, id).stock, node(legacy, id).stock);
     assert.equal(node(migrated, id).wildlifeSpecies, 'bellweather-sheep');
