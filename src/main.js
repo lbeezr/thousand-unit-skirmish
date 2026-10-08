@@ -1848,8 +1848,14 @@ function updateResearchOptions(container, building) {
     const button = container.children[index]; const definition = TECHNOLOGY_DEFINITIONS[option.upgrade];
     const authoritative = building.researchOptions?.find(row => row.upgrade === option.upgrade);
     const reason = authoritative?.available === false ? authoritative.reason : option.reason;
+    const locationHint = reason === option.reason && reason?.startsWith('REQUIRES ')
+      ? option.missingPrerequisites.map(id => {
+        const prerequisite = TECHNOLOGY_DEFINITIONS[id];
+        return `Research ${prerequisite.label} at ${BUILDING_DEFINITIONS[prerequisite.building].label}`;
+      }).join(' + ') : '';
     setHudActionAvailability(button, !option.available || authoritative?.available === false, contextual);
     button.textContent = `${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason ? ` · ${reason}` : ''}`;
+    if (locationHint) button.textContent += ` · ${locationHint}`;
     if (definition.description) button.textContent += ` · ${definition.durationSeconds}s · ${definition.description}`;
   }
 }
