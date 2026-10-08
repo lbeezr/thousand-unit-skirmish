@@ -236,6 +236,51 @@ for (const team of [0, 1]) test(`seat ${team}: selection immediately refreshes p
   w.buildPlacementPending = false; w.updateSelectionUI(); assertDisabled(false);
 });
 
+for (const team of [0, 1]) test(`seat ${team}: Workshop Build explains its prerequisite and remains inspectable through live changes`, t => {
+  const f = economyFixture(team), w = f.w; t.after(() => f.dom.window.close());
+  const placements = [];
+  w.beginBuildPlacement = type => { placements.push(type); w.buildPlacementActive = true; w.buildPlacementType = type; };
+  w.cancelBuildPlacement = () => { placements.push('cancel'); w.buildPlacementActive = false; };
+  f.select([team * 2]); w.selectDockTab('economy', true);
+  const button = w.ui.rosterBuildingOptions.querySelector('[data-building="workshop"]');
+  button.focus(); assert.equal(f.d.activeElement, button);
+  assert.equal(button.disabled, false); assert.equal(button.getAttribute('aria-disabled'), 'true');
+  assert.match(button.textContent, /Requires MILITARY TIER II at Town Center/);
+  assert.equal(button.title, button.textContent);
+  for (const detail of [0, 1]) button.dispatchEvent(new w.MouseEvent('click', { bubbles: true, detail }));
+  assert.deepEqual(placements, []);
+  w.latestTeamResearch[team].militaryTier2 = true;
+  w.latestWood[team] = 249.99; w.updateEconomyUI();
+  assert.equal(w.ui.rosterBuildingOptions.querySelector('[data-building="workshop"]'), button);
+  assert.equal(f.d.activeElement, button); assert.match(button.textContent, /Need 1 wood/);
+  assert.doesNotMatch(button.title, /MILITARY TIER II/); assert.equal(button.title, button.textContent);
+  button.click(); assert.deepEqual(placements, []);
+  w.latestWood[team] = 250; w.updateEconomyUI();
+  assert.equal(button.getAttribute('aria-disabled'), 'false'); assert.equal(f.d.activeElement, button);
+  button.click(); button.click(); assert.deepEqual(placements, ['workshop', 'cancel']);
+  assert.deepEqual([...w.selected], [team * 2]); assert.equal(w.sentCommands.length, 0);
+  // A retained control must recheck eligibility even before the next render.
+  w.latestTeamResearch[team].militaryTier2 = false;
+  button.click(); assert.equal(placements.length, 2); assert.match(button.title, /Requires MILITARY TIER II at Town Center/);
+  w.latestTeamResearch[team].militaryTier2 = true;
+  w.selected = new w.Set([team * 2 + 1]);
+  button.click(); assert.equal(placements.length, 2); assert.match(button.title, /Select living Workers/);
+  w.selected = new w.Set([team * 2, team * 2 + 1]); w.updateSelectionUI();
+  assert.equal(button.getAttribute('aria-disabled'), 'false', 'mixed selection retains its eligible Worker');
+  w.buildPlacementPending = true; button.click(); assert.equal(placements.length, 2);
+  assert.match(button.title, /Waiting for construction request/);
+  w.buildPlacementPending = false; w.matchWinner = team; button.click(); assert.equal(placements.length, 2);
+  assert.match(button.title, /Match finished/);
+  w.matchWinner = -1;
+  for (const ids of [[], [(1 - team) * 2], [team * 2 + 1], [900]]) {
+    w.selected = new w.Set(ids); button.click(); assert.equal(placements.length, 2);
+    assert.match(button.title, /Select living Workers/);
+  }
+  w.selected = new w.Set([team * 2]); w.units[team * 2].hp = 0;
+  button.click(); assert.equal(placements.length, 2); assert.match(button.title, /Select living Workers/);
+  w.localTeam = null; button.click(); assert.equal(placements.length, 2); assert.match(button.title, /Join a team/);
+});
+
 for (const team of [0, 1]) test(`seat ${team}: selected Range production follows completion, resources and authoritative availability`, t => {
   const f = economyFixture(team), w = f.w; t.after(() => f.dom.window.close());
   const barracks = { id: 7, team, type: 'barracks', complete: true, productionQueue: [] };
