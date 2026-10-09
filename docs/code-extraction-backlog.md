@@ -78,11 +78,54 @@ test/matrix, QA registration1476, diagnostic tests, movement, HUD and held
 PR541/546/548 are separate owners. Reconcile fresh main before final qualification
 without editing their files. Art backing is N/A because presentation is unchanged.
 
-Next transition: independent review, exact-head imports/types and affected
-entry/admission guards, clean package and packed serving, then a qualified draft
-PR. Exact source, check receipts and release digest belong in that PR. The parent
-retains merge/deployment; source checks establish no browser pixels or ordinary
-rendered acceptance. Existing movement CI failures remain with their owner.
+Integrated in [PR619](https://github.com/lbeezr/thousand-unit-skirmish/pull/619)
+at `743e1030caf44698ee4cd300b60a13313921e65f`, after qualification at
+`8dad9dd2f2df9122c1ba760ae018851dae891c57` over `f2ab964c`. Their tree IDs
+match. Imports and packed controller serving passed again at the merge; exact-head
+145/145 affected tests and independent 59/59 review receipts remain in the PR.
+The parent retains downstream integration/deployment; no rendered proof is claimed.
+
+## Standalone environment pilot helper — 9 October 2026
+
+The same organization owner continues the inventory's explicit
+`environment-pilot.mjs` → `src/studies/environment/` destination on
+`codex/environment-study-pilot-home-20261009`, from PR619 merge
+`743e1030caf44698ee4cd300b60a13313921e65f`. Its 74-line implementation moves
+byte-for-byte to `src/studies/environment/pilot.mjs`; the existing study controller
+imports `./pilot.mjs`. There are no normal game/server consumers. Shader strings,
+texture URLs, creation/update/disposal order and uniforms stay unchanged. No art,
+asset, default terrain binding or production renderer change belongs to this slice.
+
+The sole new forwarding entry replaces the old implementation at
+`src/environment-pilot.mjs`, explicitly exporting only `createEnvironmentPilot`.
+Owner: the organization lane in source task
+`01a0f784-c5d7-72e0-82e8-1747b4c840c1`. Its identified compatibility consumers
+are the published exact module URL/API and the preserved
+[historical cliff audit link](art-runtime-audit-2026-10-03.md). Retain that path and
+its existing static access semantics. The canonical path receives the same exact
+static admission; the study controller remains authenticated-only.
+
+No retirement is planned here. Before removing this entry, its owner must inventory
+tracked and supported external imports, preserve the historical source/reference
+at its pinned revision without breaking its link, verify canonical coverage and
+source/packed/served imports without the alias, and identify a containing release
+that passes those checks. Zero current runtime callers alone does not retire it.
+The existing 21 forwarding entries stay unchanged; this named entry makes 22.
+Root count remains 178 files (173 JavaScript and five CSS), while one study body
+leaves the root. Generated descriptors and historical evidence remain unchanged.
+
+Write scope: the canonical helper, single root forwarding entry, controller import,
+client domain/exact HTTP registrations, existing import/export/negative/admission
+and packed-serving guards, and this canonical note. PR619 must integrate first.
+Audio, QA registration1476/Frontier fixture PR620, diagnostics, movement, HUD,
+gameplay records and held experiments keep their separate owners.
+
+Next transition: independent review, exact-head imports/types, affected export and
+negative checks, clean packed GET/HEAD serving of both paths, then a qualified
+draft PR. Receipts and exact release digest belong in that PR; the parent retains
+merge/deployment. Art backing is N/A because presentation is unchanged. Browser
+pixels and ordinary rendered acceptance are unclaimed; baseline movement CI remains
+with its owner.
 
 ## Integrated code milestones
 

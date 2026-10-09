@@ -145,9 +145,47 @@ test('standalone environment controller has its own study home and no runtime mo
     assert.throws(() => checkRuntimeImports(new Map(sources).set(retired, source)), /retired implementation path/);
   }
   const graph = runtimeImportGraph(sources);
-  assert.deepEqual(graph.get(canonical).local, ['src/camera-controls.mjs', 'src/environment-pilot.mjs']);
+  assert.deepEqual(graph.get(canonical).local, ['src/camera-controls.mjs', 'src/studies/environment/pilot.mjs']);
   for (const [consumer, node] of graph) {
     assert.equal(node.local.includes(canonical), false, `${consumer}: study controller remains an HTML-only entry`);
+  }
+});
+
+test('environment pilot implementation has a canonical study consumer and one named compatibility binding', async () => {
+  const canonical = 'src/studies/environment/pilot.mjs';
+  const compatibility = 'src/environment-pilot.mjs';
+  const legacy = await import('../src/environment-pilot.mjs');
+  const current = await import('../src/studies/environment/pilot.mjs');
+  assert.deepEqual(Object.keys(legacy), ['createEnvironmentPilot']);
+  assert.deepEqual(Object.keys(current), ['createEnvironmentPilot']);
+  assert.equal(legacy.createEnvironmentPilot, current.createEnvironmentPilot);
+  assert.ok(RUNTIME_DOMAINS.client.includes(canonical));
+  assert.ok(RUNTIME_DOMAINS.client.includes(compatibility));
+  assert.equal(RETIRED_RUNTIME_PATHS.includes(compatibility), false, 'supported study entry stays available');
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  const graph = runtimeImportGraph(sources);
+  assert.deepEqual(graph.get(compatibility), { local: [canonical], external: [] });
+  assert.deepEqual(graph.get(canonical), { local: [], external: ['three'] });
+  assert.deepEqual([...graph].filter(([, node]) => node.local.includes(canonical)).map(([name]) => name),
+    [compatibility, 'src/studies/environment/review.mjs']);
+  assert.deepEqual([...graph].filter(([, node]) => node.local.includes(compatibility)), [],
+    'actual study caller uses the canonical helper');
+});
+
+test('both pilot import paths remain outside authority and server host dependencies', () => {
+  for (const target of ['src/environment-pilot.mjs', 'src/studies/environment/pilot.mjs']) {
+    for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
+      'src/simulation/movement/formation-assignment.mjs', 'src/simulation/ai/policies/regroup.mjs',
+      'server.mjs', 'room-supervisor.mjs']) {
+      const relative = path.posix.relative(path.posix.dirname(root), target);
+      const specifier = relative.startsWith('.') ? relative : `./${relative}`;
+      for (const source of [`import '${specifier}';`, `export * from '${specifier}';`, `const later = () => import('${specifier}');`]) {
+        assert.throws(() => check({ [root]: source, [target]: '' },
+          { serverEntrypoints: root === 'server.mjs' || root === 'room-supervisor.mjs' ? [root] : [] }),
+          /(?:rules|world|simulation|ai) domain cannot reach client domain|server host reaches client domain/,
+          `${root} -> ${target}`);
+      }
+    }
   }
 });
 
