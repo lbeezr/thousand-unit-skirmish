@@ -505,6 +505,7 @@ try {
   // Private host/transport and server-consumed helpers must be packaged while exact
   // HTTP admission denies both methods, including pure negotiation and shims.
   const privateModules = [...RUNTIME_DOMAINS.server,
+    'src/world/practice-entry-catalog.mjs',
     'src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs',
     'src/pve-opponent.mjs', 'src/simulation/ai/opponent-observation.mjs',
     'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs', 'src/forest-fringe.mjs',
@@ -514,6 +515,19 @@ try {
     for (const method of ['GET', 'HEAD']) {
       const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
       assert.equal(response.status, 404, `server-private module must not be served (${method}): ${filename}`);
+      if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
+    }
+  }
+  const practiceCatalog = 'src/world/practice-entry-catalog.mjs';
+  assert.ok(packedManifest.files.includes(practiceCatalog), 'canonical Practice catalog is packaged');
+  assert.deepEqual(await readFile(path.join(root, practiceCatalog)), await readFile(path.join(sourceRoot, practiceCatalog)),
+    'canonical Practice catalog bytes must match the qualified source');
+  assert.equal(packedManifest.files.includes('src/practice-entry-catalog.mjs'), false, 'retired Practice catalog is absent');
+  for (const filename of ['src/practice-entry-catalog.mjs', `${practiceCatalog}/extra`, `${practiceCatalog}.map`,
+    'src/world//practice-entry-catalog.mjs', 'SRC/world/practice-entry-catalog.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+      assert.equal(response.status, 404, `private/retired Practice catalog path (${method}): ${filename}`);
       if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
     }
   }

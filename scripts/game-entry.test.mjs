@@ -4,7 +4,7 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { bootGameEntry } from '../src/game-entry.mjs';
 import { isGameEntry, savedRoomSession, LAST_ROOM_STORAGE_KEY, SESSION_STORAGE_PREFIX } from '../src/game-entry-session.mjs';
-import { practiceEntryCatalog } from '../src/practice-entry-catalog.mjs';
+import { practiceEntryCatalog } from '../src/world/practice-entry-catalog.mjs';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const room = 'R'.repeat(32), token = 'T'.repeat(43);

@@ -1,5 +1,5 @@
-import { normalizeMatchMode, matchModeCatalog } from './match-modes.mjs';
-import { mapSizeIdentity } from './map-size-policy.mjs';
+import { normalizeMatchMode, matchModeCatalog } from '../match-modes.mjs';
+import { mapSizeIdentity } from '../map-size-policy.mjs';
 
 // Use the configured canonical fresh-room map, never a current player's map.
 // The menu needs victory rules and capability descriptors, not terrain data.

@@ -120,12 +120,47 @@ and packed-serving guards, and this canonical note. PR619 must integrate first.
 Audio, QA registration1476/Frontier fixture PR620, diagnostics, movement, HUD,
 gameplay records and held experiments keep their separate owners.
 
-Next transition: independent review, exact-head imports/types, affected export and
-negative checks, clean packed GET/HEAD serving of both paths, then a qualified
-draft PR. Receipts and exact release digest belong in that PR; the parent retains
-merge/deployment. Art backing is N/A because presentation is unchanged. Browser
-pixels and ordinary rendered acceptance are unclaimed; baseline movement CI remains
-with its owner.
+Integrated in [PR621](https://github.com/lbeezr/thousand-unit-skirmish/pull/621)
+at `b6d619c3b5e6ef3965dd62a70c186bc205d79c11`, after qualification at
+`531ebb0e97d6d5b10e6428ccc5f135885156a0fa` over `8ac6cb3c`. Their tree IDs
+match. Imports, named legacy/canonical export identity and packed serving passed
+again at the merge; 148/148 affected tests, independent 62/62 review and clean
+release receipts remain in the PR. The alias stays owned under the retirement
+conditions above. No browser pixels or provider deployment are claimed.
+
+## Private Practice catalog world home — 9 October 2026
+
+The same organization owner continues the source inventory's explicit
+`practice-entry-catalog.mjs` → `src/world/` destination on
+`codex/practice-catalog-world-home-20261009`, starting from PR621 merge
+`b6d619c3b5e6ef3965dd62a70c186bc205d79c11`. Move the 27-line implementation
+to `src/world/practice-entry-catalog.mjs` and update its only runtime consumer,
+`room-supervisor.mjs`, plus `scripts/game-entry.test.mjs` and
+`scripts/practice-entry.test.mjs`. Its two import targets remain `match-modes.mjs`
+and `map-size-policy.mjs`; their implementations do not change.
+
+This is portable map/mode metadata used by the supervisor's existing configured
+fresh-room setup. Preserve `practiceEntryCatalog`, DTO keys/data, preset order,
+optional-field omission, defaults, clones and errors. No normal browser or
+match-worker module reaches it before or after the move. Both source URLs stay
+outside exact public admission; canonical bytes still belong in the package.
+No root forwarding entry is needed: the only identified imports are the three
+internal consumers moved together, and no supported external API/URL or CLI was
+found. The old root path retires with a guard against copies or stubs.
+
+Write scope: the module, three consumer imports, exact world/retired memberships,
+existing import/export/client-admission/public-denial/packed-private-path guards,
+and this canonical note. Root count becomes 177 files (172 JavaScript and five
+CSS); all 22 forwarding entries, six generated descriptors and historical evidence
+remain unchanged. Main, map/mode rules, worker simulation, bootstrap bodies,
+movement, audio PR622, QA1476, diagnostic tests and private HUD work remain outside
+this slice. Art backing is N/A because behavior and presentation are unchanged.
+
+Next transition: independent review and exact-head imports/types/docs, focused
+catalog/game-entry tests and real menu/Practice launch, then clean package/private
+GET/HEAD validation and a qualified draft PR. Exact source/check receipts and
+release digest belong in that PR. Parent retains integration/deployment; baseline
+movement CI and ordinary-game rendered acceptance remain separate.
 
 ## Integrated code milestones
 
