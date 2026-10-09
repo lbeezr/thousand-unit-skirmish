@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { ownedPopulationReadout } from '../src/client/hud/population-readout.mjs';
 import { teamPopulation } from '../src/population.mjs';
-import { privateProductionView } from '../src/snapshot-private-production.mjs';
+import { privateProductionView } from '../src/simulation/economy/snapshot-private-production.mjs';
 
 test('population compatibility preserves only the existing named binding', async () => {
   const legacy = await import('../src/population-readout.mjs');

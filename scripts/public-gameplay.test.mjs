@@ -15,6 +15,8 @@ const root = path.resolve(import.meta.dirname, '..');
 const secret = 'test-release-password-please-change';
 const authorization = `Basic ${Buffer.from(`players:${secret}`).toString('base64')}`;
 const publicOrigin = 'https://public-fixture.up.railway.app';
+const privateProductionPaths = ['/src/snapshot-private-production.mjs',
+  '/src/simulation/economy/snapshot-private-production.mjs'];
 const privatePaths = ['/health', '/health?tickSamples=1', '/admin', '/api/admin',
   '/api/rooms', '/server.mjs', '/room-supervisor.mjs', '/package.json', '/.env',
   '/src/server/build-identity.mjs', '/src/server/release-identity.json',
@@ -48,6 +50,14 @@ test('anonymous admission default-denies private paths and unsupported methods',
   for (const method of ['PUT', 'DELETE', 'OPTIONS', 'PATCH']) {
     assert.equal(isAnonymousGameplayRequest(method, new URL('/', publicOrigin)), false);
     assert.equal(isAnonymousGameplayRequest(method, new URL('/api/rooms', publicOrigin)), false);
+  }
+});
+
+test('canonical and retired private production helpers deny anonymous GET and HEAD', () => {
+  for (const pathname of privateProductionPaths) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal(isAnonymousGameplayRequest(method, new URL(pathname, publicOrigin)), false, `${method}: ${pathname}`);
+    }
   }
 });
 
@@ -113,6 +123,14 @@ test('enabled anonymous gameplay and disabled authentication contracts', async (
         assert.equal((await fetch(base + pathname)).status, enabled ? 200 : 401, `${mode}: ${pathname}`);
       }
       for (const pathname of privatePaths) assert.equal((await fetch(base + pathname)).status, 401, pathname);
+      for (const pathname of privateProductionPaths) {
+        for (const method of ['GET', 'HEAD']) {
+          assert.equal((await fetch(base + pathname, { method })).status, 401, `${mode}: anonymous ${method} ${pathname}`);
+          const authenticated = await fetch(base + pathname, { method, headers: { authorization } });
+          assert.equal(authenticated.status, 404, `${mode}: authenticated ${method} ${pathname}`);
+          if (method === 'HEAD') assert.equal((await authenticated.arrayBuffer()).byteLength, 0, pathname);
+        }
+      }
       for (const filename of ['src/environment-pilot.mjs', 'src/studies/environment/pilot.mjs',
         'src/population.mjs', 'src/rules/population.mjs',
         'src/economy-ledger.mjs', 'src/rules/economy-ledger.mjs']) {
