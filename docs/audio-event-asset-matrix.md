@@ -101,7 +101,7 @@ sample priority remains urgent 10/other 0, with explicit pack overrides allowed.
 | `unit.worker.gather.wood` | Applied forest/node Gather order supplies wood context. | Technical wood token or generic gather synthesis; wood voice/foley missing. | P1; one/order; local intent, no hidden forest/enemy observer; 140 ms. |
 | `unit.worker.gather.farm` | Matching applied Gather token preserves `gatherJob: farm` plus `resource: food` for an actual owned complete living stocked Farm via `farmHarvestNode`. Authored food IDs do not imply farming. | Context/key implemented; Farm-specific recording remains missing. Existing generic food/role/cue and synthesis remain fallback; the technical food pluck is generic food. | P1; one/order; living owned representative Worker; no new server observer/protocol; gather 140 ms. |
 | `unit.worker.gather.sheep-carcass` / requested hunting | Matching applied Gather token preserves `gatherJob: sheep-carcass` plus food only for a current disclosed visible stocked sheep carcass at its actual pose. Live sheep management is herding; no hunting event is introduced. | Carcass context/key implemented; harvest recording and any supported hunting action remain missing. Generic food is not a bleat or hunting voice. | P1; one/order; living owned representative Worker; missing/hidden/stale/live/depleted rows retain coarse food with no job. |
-| `unit.worker.gather.fish` / Skiff fishing | Worker applied Gather preserves `gatherJob: fish` plus food from a currently visible authored shore-fish node. Skiff sends Gather but receives `FISHING ORDER`, outside the current gate's applied list. | Worker context/key implemented; fish voice/splash missing. Existing Worker food fallback stays. Skiff-specific applied acknowledgement is a separate caller/gate gap, not an asset-only task. | P1; one/order; living owned representative Worker; no per-fish loop or inferred hidden target; gather 140 ms. |
+| `unit.worker.gather.fish` / `unit.skiff.gather.food` | Worker applied Gather preserves `gatherJob: fish` plus food from a currently visible authored shore-fish node. A matching `FISHING ORDER` consumes a locally issued Skiff Gather event once, retaining its food resource without Worker job context. | Worker context/key and Skiff applied acknowledgement implemented; fish voice/splash missing. Existing role/cue and synthesis fallback stays. | P1; one/order; local issuing player; no per-fish loop or inferred hidden target; gather 140 ms. |
 | `unit.worker.gather.stone` | Authored Stone Gather supplies node type. | Generic synthesis; distinct Stone voice/foley missing. | P1; applied token/local worker; 140 ms. |
 | `unit.worker.build`, `.repair` | Applied Build/Resume/Wall Build/Repair token. Wall segments do not each acknowledge. | Generic build/repair synthesis; technical repair latch; building/construction voices missing. | P1; one/order; no premature construction success; 170 ms. |
 | `unit.worker.work.wood`, `.food`, `.repair` | Actual execution from living local worker row 14 within 24 world units of camera; resource set aggregates. Stone is excluded by the current execution-audio route. | Technical three trims when assigned; variant-specific Farm/sheep/fish work palette missing. Stone needs both routing and material. Richer execution metadata does not automatically become an audio binding. | P3; at most three resources every 1.5 s; legacy/hidden enemy execution silent; task/map/mute/hide/death cancel. |
@@ -275,9 +275,25 @@ civilization/common/food/role/cue fallback and shared speech limits. Existing
 recordings/manifests and all 30 proposed voice-guide takes stay unchanged.
 This is an engineering context contract; native listening remains open.
 
-Next justified source task: review the separate Skiff `FISHING ORDER` audio-gate
-gap with the naval owner before changing its applied-notice boundary. Next asset
-task: choose/cast/audition the
+The audio owner reconciled the Skiff notice boundary with naval owner thread
+`01a101c2-cc88-75bc-a26d-973995694006` on 9 October 2026 at 13:50 UTC:
+no active or unpublished naval work touches the applied-notice gate or token
+matching; PR260 is merged and the remaining naval candidate changes map coordinates.
+The correction starts from main `8485db5d`. `OrderAudioGate` now admits the
+existing server `FISHING ORDER · ...` notice only for a pending Skiff Gather
+event with the matching locally issued token. It consumes that event once;
+planning, unknown tokens, failure/cancellation, reset and duplicate success stay
+silent. Worker Gather and other Skiff commands retain their existing routes.
+The actual committed caller fixture checks both seats and exact
+`{cue: gather, kind: skiff, resource: food, gatherJob: undefined}` metadata, with
+Skiff food/role/cue binding fallback and no new Worker job or asset.
+Server notices, command metadata, recordings and synthesis remain unchanged.
+This is source acknowledgement admission, not proof of fishing execution,
+deposited food, audible playback or caption rendering. The audio owner retains
+listening and ordinary-game acceptance at an identified containing release;
+the parent task retains draft-to-ready/merge transitions.
+
+Next asset task: choose/cast/audition the
 listed Frontier voice slots, then publish only separately authorized material.
 Native audible playback/recognition, identified packaged/served release and future
 civilization selection/state integration remain open with the audio owner. Cloud
