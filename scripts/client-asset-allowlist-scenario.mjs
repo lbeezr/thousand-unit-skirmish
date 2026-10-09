@@ -15,6 +15,12 @@ const server = readFileSync(path.join(root, 'server.mjs'), 'utf8');
 const environmentArt = readFileSync(path.join(root, 'src/environment-art.mjs'), 'utf8');
 assert.ok(Object.isFrozen(CLIENT_ASSET_PATHS), 'client admission paths must remain immutable');
 const allowed = new Set(CLIENT_ASSET_PATHS);
+assert.ok(allowed.has('src/studies/water/preview.mjs'), 'standalone water study keeps exact admission');
+for (const invalid of ['src/water-study-preview.mjs', 'src/studies/water/', 'src/studies/water/unknown.mjs',
+  'src/studies/water/preview.mjs/extra', 'src/studies/water/preview.mjs.map',
+  'src/studies/water//preview.mjs', 'SRC/studies/water/preview.mjs']) {
+  assert.ok(!allowed.has(invalid), `water study admission stays exact: ${invalid}`);
+}
 for (const [retired, name] of [['forest-habitat', 'habitat'], ['forest-composition', 'composition'],
   ['forest-age-composition', 'age-composition']]) {
   const canonical = `src/presentation/rendering/forest/${name}.mjs`;

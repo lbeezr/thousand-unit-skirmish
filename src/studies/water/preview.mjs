@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { buildWaterSurfaceGeometry } from './presentation/rendering/water/geometry.mjs';
-import { createWaterSurfaceStudy } from './presentation/rendering/water/surface.mjs';
-import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
-import { waterRaster } from './water-contours.mjs';
+import { buildWaterSurfaceGeometry } from '../../presentation/rendering/water/geometry.mjs';
+import { createWaterSurfaceStudy } from '../../presentation/rendering/water/surface.mjs';
+import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from '../../shore-fishing-placeholder.mjs';
+import { waterRaster } from '../../water-contours.mjs';
 
 const ui = Object.fromEntries(['stage', 'status', 'quality', 'animate', 'time', 'reduced', 'fish', 'water', 'depleted']
   .map(id => [id, document.getElementById(id)]));

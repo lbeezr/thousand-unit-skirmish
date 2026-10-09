@@ -135,8 +135,8 @@ The default match renderer lives in `src/presentation/rendering/water/`:
 
 Ground surfaces, Main, environment construction and fishing-contact presentation
 consume these canonical modules. The separate `/water-study.html` comparison
-still uses `src/water-study-preview.mjs`; only its shared production dependencies
-move. Existing exported bindings, `waterStudy` object fields and quality/time
+uses [the standalone controller](../src/studies/water/preview.mjs) under
+`src/studies/water/`; shared renderer dependencies retain their production homes. Existing exported bindings, `waterStudy` object fields and quality/time
 query compatibility are retained. All tracked module/URL consumers move together;
 the four former root implementation paths retire without forwarding stubs.
 
