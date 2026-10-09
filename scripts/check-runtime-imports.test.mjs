@@ -278,6 +278,29 @@ test('population accounting has its pure rules home, sole server caller and supp
   assert.throws(() => check({ [canonical]: "import 'node:fs';" }), /Node builtin/, canonical);
 });
 
+test('resource credits have a dependency-free rules home, exact production callers and supported forwarder', async () => {
+  const canonical = 'src/rules/economy-ledger.mjs';
+  const legacy = 'src/economy-ledger.mjs';
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  assert.ok(RUNTIME_DOMAINS.rules.includes(canonical));
+  assert.ok(RUNTIME_DOMAINS.rules.includes(legacy));
+  assert.equal(RETIRED_RUNTIME_PATHS.includes(legacy), false);
+  const graph = runtimeImportGraph(sources);
+  assert.deepEqual(graph.get(canonical), { local: [], external: [] });
+  assert.deepEqual(graph.get(legacy), { local: [canonical], external: [] });
+  assert.deepEqual([...graph].filter(([, node]) => node.local.includes(canonical)).map(([name]) => name).sort(),
+    ['server.mjs', legacy, 'src/economy-profile.mjs', 'src/skiff-fishing.mjs']);
+  assert.deepEqual([...graph].filter(([, node]) => node.local.includes(legacy)).map(([name]) => name), [],
+    'production callers use the rules implementation; scripts retain the supported public entry');
+  for (const [target, domain] of [['src/client/hud/resource-format.mjs', 'client'],
+    ['src/presentation/rendering/ground-surfaces.mjs', 'presentation'], ['src/unit-movement.mjs', 'simulation']]) {
+    const relative = path.posix.relative(path.posix.dirname(canonical), target);
+    assert.throws(() => check({ [canonical]: `import '${relative}';`, [target]: '' }),
+      new RegExp(`rules domain cannot reach ${domain} domain`), canonical);
+  }
+  assert.throws(() => check({ [canonical]: "import 'node:fs';" }), /Node builtin/, canonical);
+});
+
 test('canonical plant descriptors stay in presentation with real renderer callers and no authority imports', async () => {
   const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
   for (const name of ['podvine-low-pack', 'veilcap-worked-pack', 'sunbloom-low-pack']) {

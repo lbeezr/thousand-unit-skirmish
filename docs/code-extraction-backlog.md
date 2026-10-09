@@ -203,12 +203,68 @@ audio, movement algorithms, Skiff runtime, QA1476, diagnostic tests, assets,
 security/access decisions and held experiments remain outside this slice.
 Art backing is N/A because behavior and presentation are unchanged.
 
-Next transition: independent review, exact-head imports/types/docs and focused
-population/readout/production/privacy/Skiff contracts; native both-seat
-population/Skiff scenarios; exact legacy/canonical GET/HEAD and negative paths;
-then a clean package and qualified draft PR with exact source/check/digest
-receipts. Parent retains ready/merge and downstream deployment. Baseline
-movement failures and ordinary rendered acceptance remain separately owned.
+Integrated in [PR625](https://github.com/lbeezr/thousand-unit-skirmish/pull/625)
+at `24f4809150aa216f04becf402d812591ea9f3839`, with reviewed tree
+`70066ab3c502a107db0def4852e72aba45b4223b` unchanged from qualified
+head `77cb60bc`. Merged imports, export identity, five focused population/public
+tests and packed GET/HEAD serving passed again. The 178/178 affected tests,
+77/77 independent review, native population/Skiff and clean package receipts
+remain in the PR. Parent confirmed exact-base hosted CI has only the added
+passing syntax check and the same nine movement assertions. The alias stays
+owned under the conditions above; no deployed/rendered acceptance is claimed.
+
+## Resource credit ledger rules home — 9 October 2026
+
+The same organization owner continues the explicit `economy-ledger.mjs` →
+`src/rules/` destination in architecture and the source inventory, from PR625
+merge `24f48091`, on `codex/economy-ledger-rules-home-20261009`. Qualification
+uses containing main `fb0f5126` after disjoint audio PR626 integrated; its
+policy/test/matrix bytes remain untouched. The parent reserved only the three `creditResourceBalance` import lines in `server.mjs`,
+`src/economy-profile.mjs` and `src/skiff-fishing.mjs`. Current local branches,
+main and the open PR626/541/546/548 diffs showed no edits to those lines.
+Naval ownership confirmed its only unpublished candidate is map coordinates;
+the current movement correction owns crowd-steering lifecycle/regression and
+PR626 owns audio-policy/test/matrix. This slice changes none of those bodies.
+
+Move the complete seven-line implementation byte-for-byte to
+`src/rules/economy-ledger.mjs`. It remains a dependency-free pure rule with the
+sole `creditResourceBalance` export. Preserve addition, whole-balance rounding,
+the existing 16× relative epsilon and exact fractional, nonfinite, signed-zero
+and error behavior. Worker bank selection/validation, refund validation/order
+and fishing cargo/drop-off transitions remain at their existing call sites.
+
+The normal browser reaches this rule through `economy-profile`; server Worker
+deposits and Skiff delivered-food credits also use it. All three production
+callers use the canonical path. Six script imports and the Stone-profile HTTP
+check retain the supported root path, as does the dated mineral-readiness link.
+Keep a sole named forwarding export, exact public admission for both paths and
+byte-checked release inclusion. Root count remains 177 files (172 JavaScript
+and five CSS); forwarding entries become 24, with all prior 23 and the six
+generated descriptors unchanged. The organization owner retains this alias
+until script/documented/external API and URL consumers are reconciled with their
+owners, a containing release is verified and retirement is explicitly decided.
+
+Write scope: implementation/forwarder, the three production import lines,
+exact rules/public-path memberships, existing ledger/export/dependency/public
+admission/packed-serving guards and this canonical record. Existing script
+consumers, test files/cases/registrations and historical evidence remain.
+No general resource registry, arithmetic abstraction, new validation or type
+policy is introduced. Art backing is N/A; behavior/presentation are unchanged.
+
+[PR583](https://github.com/lbeezr/thousand-unit-skirmish/pull/583) merged at
+`daf4f78d115895572877291298d4519160585c74` and is an ancestor of this base;
+first-Barracks preparation is not a held dependency for this slice. The stale
+held wording in the separate economy/content guide remains with that record's
+owner; its receipt and ordinary served/rendered acceptance are distinct.
+
+Next transition: independent review and exact-head imports/types/docs;
+fractional conservation, typed refunds/deposits, cargo/Mill, Stone-profile and
+Skiff fishing contracts; native both-seat fishing stock/cargo/recovery and
+typed Food/Stone deposit recovery; then exact canonical/legacy GET/HEAD,
+negative paths and a clean package/draft with source/check/digest receipts.
+Parent retains ready/merge and deployment. Movement algorithms, audio PR626,
+HUD, diagnostics, assets and held experiments remain outside this slice;
+existing movement failures and ordinary rendered acceptance keep their owners.
 
 ## Integrated code milestones
 

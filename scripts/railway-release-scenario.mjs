@@ -156,7 +156,8 @@ try {
   for (const filename of ['src/gameplay-action-rules.mjs', 'src/rules/gameplay-action-rules.mjs',
     'src/production-actions.mjs', 'src/rules/production-actions.mjs',
     'src/research-actions.mjs', 'src/rules/research-actions.mjs',
-    'src/population.mjs', 'src/rules/population.mjs']) {
+    'src/population.mjs', 'src/rules/population.mjs',
+    'src/economy-ledger.mjs', 'src/rules/economy-ledger.mjs']) {
     assert.ok(packedManifest.files.includes(filename), `public rules module is packaged: ${filename}`);
     const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
     assert.equal(response.status, 200, filename);
@@ -171,7 +172,10 @@ try {
     'src/rules//production-actions.mjs', 'SRC/rules/research-actions.mjs',
     'src/population.mjs/extra', 'src/population.mjs.map', 'src//population.mjs', 'SRC/population.mjs',
     'src/rules/population.mjs/extra', 'src/rules/population.mjs.map',
-    'src/rules//population.mjs', 'SRC/rules/population.mjs']) {
+    'src/rules//population.mjs', 'SRC/rules/population.mjs',
+    'src/economy-ledger.mjs/extra', 'src/economy-ledger.mjs.map', 'src//economy-ledger.mjs', 'SRC/economy-ledger.mjs',
+    'src/rules/economy-ledger.mjs/extra', 'src/rules/economy-ledger.mjs.map',
+    'src/rules//economy-ledger.mjs', 'SRC/rules/economy-ledger.mjs']) {
     for (const method of ['GET', 'HEAD']) {
       assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
         404, `action-rule admission remains exact (${method}): ${filename}`);

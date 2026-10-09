@@ -48,7 +48,7 @@ for (const [retired, name] of [['forest-habitat', 'habitat'], ['forest-compositi
 }
 assert.ok(!allowed.has('src/presentation/rendering/forest/'));
 assert.ok(!allowed.has('src/presentation/rendering/forest/unknown.mjs'));
-for (const name of ['production-actions', 'research-actions', 'population']) {
+for (const name of ['production-actions', 'research-actions', 'population', 'economy-ledger']) {
   assert.ok(allowed.has(`src/${name}.mjs`), `legacy action module stays public: ${name}`);
   assert.ok(allowed.has(`src/rules/${name}.mjs`), `canonical action module is public: ${name}`);
   for (const invalid of [`src/rules/${name}.mjs/extra`, `src/rules/${name}.mjs.map`,

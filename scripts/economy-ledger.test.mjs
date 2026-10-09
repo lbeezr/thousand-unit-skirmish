@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { creditResourceBalance } from '../src/economy-ledger.mjs';
+
+test('public ledger compatibility preserves the sole canonical named binding', async () => {
+  const legacy = await import('../src/economy-ledger.mjs');
+  const current = await import('../src/rules/economy-ledger.mjs');
+  assert.deepEqual(Object.keys(legacy), ['creditResourceBalance']);
+  assert.deepEqual(Object.keys(current), ['creditResourceBalance']);
+  assert.equal(legacy.creditResourceBalance, current.creditResourceBalance);
+});
+
 test('split fractional Worker cargo conserves the depleted node total', () => {
   const deposits = [40, 10 / 3, 10 / 3, 10 - 20 / 3];
   assert.equal(deposits.reduce(creditResourceBalance, 0), 50);

@@ -32,7 +32,7 @@ import { createMapDefinitionValidator } from './src/server/map-definition-valida
 import { readMatchCheckpointFile } from './src/server/checkpoint-file-reader.mjs';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/rules/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
-import { creditResourceBalance } from './src/economy-ledger.mjs';
+import { creditResourceBalance } from './src/rules/economy-ledger.mjs';
 import { STONE_ECONOMY_PROFILE_ID, resolveEconomyProfileId, economyResources, economyRulesetRevision, constructionCostForProfile, acceptsProfileDropoff, debitEconomyCost, proportionalEconomyRefund, creditEconomyRefund } from './src/economy-profile.mjs';
 import { migrateEconomyCheckpoint } from './src/economy-checkpoint.mjs';
 import { workerFoodGatherMultiplier, migrateFoodToolsCheckpoint } from './src/server/worker-food-tools.mjs';
