@@ -251,6 +251,31 @@ test('private lobby authority has canonical server homes, sole host callers and 
   }
 });
 
+test('private launch contract has its Node orchestration home, exact callers and no retired entry', async () => {
+  const canonical = 'src/server/orchestration/room-launch-options.mjs';
+  const retired = 'src/room-launch-options.mjs';
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  assert.ok(sources.has(canonical));
+  assert.equal(sources.has(retired), false);
+  assert.ok(NODE_ONLY_MODULES.includes(canonical));
+  assert.equal(NODE_ONLY_MODULES.includes(retired), false);
+  assert.ok(RUNTIME_DOMAINS.server.includes(canonical));
+  assert.equal(RUNTIME_DOMAINS.server.includes(retired), false);
+  assert.ok(RETIRED_RUNTIME_PATHS.includes(retired));
+  assert.deepEqual(Object.keys(await import('../src/server/orchestration/room-launch-options.mjs')), [
+    'FRESH_PVE_UNSUPPORTED_REASON', 'buildRoomWorkerEnvironment', 'completeRoomLaunchOptions',
+    'freshRoomLaunchOptions', 'normalizeRoomIndex', 'normalizeRoomLaunchOptions',
+    'normalizeRoomMetadata', 'roomIndexDocument', 'roomResponseMetadata',
+  ]);
+  for (const source of ['', "export * from './server/orchestration/room-launch-options.mjs';"]) {
+    assert.throws(() => checkRuntimeImports(new Map(sources).set(retired, source)), /retired implementation path/);
+  }
+  const graph = runtimeImportGraph(sources);
+  assert.deepEqual(graph.get(canonical), { local: ['src/match-modes.mjs'], external: ['node:crypto'] });
+  assert.deepEqual([...graph].filter(([, node]) => node.local.includes(canonical)).map(([name]) => name).sort(),
+    ['room-supervisor.mjs', 'src/server/persistence/room-index-store.mjs']);
+});
+
 test('water rendering stays outside authoritative domains and server hosts through every import form', () => {
   for (const target of Object.values(WATER_RENDER_MODULES)) {
     for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',

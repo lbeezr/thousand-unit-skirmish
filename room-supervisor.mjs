@@ -20,7 +20,7 @@ import {
   roomIndexDocument,
   roomResponseMetadata,
   freshRoomLaunchOptions,
-} from './src/room-launch-options.mjs';
+} from './src/server/orchestration/room-launch-options.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const BUILD_IDENTITY = await loadBuildIdentity(ROOT);

@@ -1,5 +1,5 @@
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
-import { normalizeRoomIndex } from '../../room-launch-options.mjs';
+import { normalizeRoomIndex } from '../orchestration/room-launch-options.mjs';
 
 // Paths are already resolved by the supervisor. Capture the document when its
 // queued write executes so pending writes observe the existing live room state.
