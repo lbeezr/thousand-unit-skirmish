@@ -51,7 +51,7 @@ export const NODE_ONLY_MODULES = [
 export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   rules: [
     'rules/base-lifecycle', 'rules/gameplay-action-rules',
-    'rules/production-actions', 'rules/research-actions',
+    'rules/production-actions', 'rules/research-actions', 'rules/population',
     'bannerfall-rules', 'base-lifecycle', 'combat-rules', 'economy-ledger',
     'economy-profile', 'farm-harvest', 'gameplay-action-rules', 'gameplay-definitions',
     'match-modes', 'palisade-gate', 'palisade-profile', 'population',
