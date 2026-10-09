@@ -398,8 +398,9 @@ Worker-seconds → 200 food on that same building is implemented. Left-click
 selects the Farm and clears unit selection; select Workers again, then right-click
 its body/base (or arm Gather / move and tap) to harvest. Clicking the selected
 Farm cannot produce another plot. Mill, Storehouse or Town Center receive carried
-food; only delivery credits the bank. Repair never refills it. Clear exhaustion
-without refund, then build a fresh paid Farm to replant.
+food; only delivery credits the bank. Repair never refills it. At exhaustion,
+select eligible Workers and the owned plot for the explicit paid Replant action;
+clear without refund followed by a fresh paid Build Farm remains available.
 
 Two narrow client defects reproduced on both seats against the inspected source:
 visible Farm body hits outside the 26-pixel base target issue Move, and its card
@@ -428,7 +429,7 @@ refer to the existing [test command guide](testing.md) and CPU registry.
 
 | Building / role | Requirements / building price / work / footprint | Implemented production, research, upgrades and unlocks | Target / feedback / persistent effect | Missing design versus missing wiring | Default integration / tests / actual playable acceptance |
 | --- | --- | --- | --- | --- | --- |
-| Town Center — economy hub / expansion | 100F + 400W; 60s; 5 × 5 expansion. Authored home retains existing bounds and compatibility queue. | Worker 50F, 25s, 1 pop; Military Tier II 200F + 150W, 35s. Rally; +5 capacity; F/W drop-off (+S in Stone profile). Tier unlocks Workshop, armor and mounted forging. | Select owned center → contextual Train / research; reachable land rally. Population, depot, units and research recover; other viable forces/producers can survive home loss. | No new age tree required. No missing action handler found. Training card omits secondary functions; proposed B2 addresses role summaries. | A; registry/actions/server/main. `town-center-scenario`, `worker-production-spawn-scenario`, `expansion-ai-runtime-scenario`, `progression-scenario`; [integrated F1–F3 proof](#2026-09-30--f1f3-integrated-completion). Fresh normal-entry expansion/unassisted proof pending. |
+| Town Center — economy hub / expansion | 100F + 400W; 60s; 5 × 5 expansion. Authored home retains existing bounds and compatibility queue. | Worker 50F, 25s, 1 pop; Military Tier II 200F + 150W, 35s. Rally; +5 capacity; F/W drop-off (+S in Stone profile). Tier unlocks Workshop, armor and mounted forging. | Select owned center → contextual Train / research; reachable land rally. Population, depot, units and research recover; other viable forces/producers can survive home loss. | No new age tree required. No missing action handler found. Training card omits secondary functions; B2's local role-summary patch `fb2dafeb` is preserved but unshipped. | A; registry/actions/server/main. `town-center-scenario`, `worker-production-spawn-scenario`, `expansion-ai-runtime-scenario`, `progression-scenario`; [integrated F1–F3 proof](#2026-09-30--f1f3-integrated-completion). Fresh normal-entry expansion/unassisted proof pending. |
 | House — population | 75W; 15s; 3 × 3 | +8 completed capacity. No units/research. | Select → capacity role. Completion adds cap; destruction reduces it without deleting living units. | No missing production design: training controls intentionally absent. No capacity wiring gap found. | A; registry/population/server/main. `population-scenario`, contextual HUD tests, integrated F2 and paid settlement. Ordinary population-block/recovery observation pending. |
 | Storehouse — mixed depot | 100W; 20s; 3 × 3 | F/W drop-off (+S in Stone profile). No units, research or gather bonus. | Workers choose reachable completed friendly depot; selected card lists accepted resources; loss replans carried cargo. | Economy upgrades are future design, not disconnected buttons. No depot handler gap found. | A; registry/profile/routing/server. `storehouse-routing.test`, `storehouse-scenario`, economy tests; [depot study](qa-mill-depot-economy-2026-10-03.md). Ordinary travel-choice proof pending; routes remain Resource-owned. |
 | Mill — food depot / food research | 75W; 15s; 3 × 3 | Food-only drop-off. Completed owned Mill offers Food Tools: 100F + 75W, 25s, ×1.2 land Worker food gathering. No military tier prerequisite, passive supply, plots or units. | Workers return food automatically; research cost/effect and active/completed state appear on selected Mill. Wood/Stone need another compatible depot. Completion affects current/new Workers; flags/work recover. | Food Tools is the new bounded economy design adopted at restart; broader depot/economy upgrades remain proposals. | P (House); registry/profile/server/main. `mill-contract.test`, `mill-scenario`, `food-tools.test`, `food-tools-scenario` (both profiles); [historical paid Mill QA](qa-mill-food-dropoff-2026-10-03.md). Current native/default/deployment and rendered acceptance are recorded separately in the slice PR. |
@@ -498,7 +499,8 @@ mounted research; engineering gates Siege Engine. Empty Tier/Engineering effect
 arrays create real unlocks. Completion feedback was inaccurate, not missing stat
 implementation. No unconsumed registered product/research action was found.
 Utility destruction still emits generic `PRODUCTION QUEUE LOST` with no queue;
-B2 retains that small feedback cleanup rather than inventing a capability.
+B2's local destruction-notice patch `fa8e54f` is preserved but unshipped. The
+delivery record below retains its owner and blocked transition.
 
 Default/source boundary: all thirteen roles are normal roster/menu/server content
 without preview flags. Eight Complete families use
@@ -537,7 +539,7 @@ second queue. Owner IDs retain existing task lanes.
 | --- | --- | --- | --- |
 | B0 — narrow correction implemented here | Visible-body Farm Gather; truthful utility selection and six-tech completion. `src/main.js`, one server notice, existing Farm/HUD/research/audio tests and owning guides only. | Action/production owner (this task); preserves Resource routes, Forest work, Universal movement. Retains exact-head independent review, clean pack and authorized integration. | Both-seat pre-fix controls fail with Move/+0. Corrected actual Three picking/serialization and DOM role checks pass. All six actual completion handlers set flags/preserve audio without false damage promises. Exact-head/native/package results belong in the PR; no pixels inferred. |
 | B1 — next ordinary acceptance | Paid Farm build/gather/clear/replant from normal Tiny entry; execute each producer's real queue/research choice through proposed progression. Existing native scenarios plus one separately owned ordinary-capture adapter; no shared renderer rewrite. | Action/production retains completion; HUD01a101f7-35be owns novice capture. [PR323](https://github.com/lbeezr/thousand-unit-skirmish/pull/323) supplies qualified packed renderer; [ordinary adapter PR331](https://github.com/lbeezr/thousand-unit-skirmish/pull/331) supplies execution after integration. Resource01a101f7-5683 retains route acceptance. | Frozen reviewed source/clean digest, actual normal entry, screenshot plus button/target/state and bank/crop/cargo assertions, no injected bank/stock. Both seats for ownership; cold recovery; fresh-player Farm/Mill explanation. Qualification alone cannot close this feature. |
-| B2 — compact role/effect explanations, partly implemented | Food Tools prices/effect are explained; the research-only Mill's existing progress and Details controls are now exposed independently of rally/unit production. Remaining: secondary producer capacity/depot summaries, exact Workshop prerequisite, and no queue-loss text for queue-less utility destruction. Existing text/buttons/notices only. | Action/production + HUD; reproduced both-seat hidden Mill progress at `968c7bdd` justifies the bounded correction below; further confusion fixes follow B0/B1 observations. No new tech/assets/architecture. | Thirteen-building capability checks, inspectable locks, shortages, active project/completion/cancellation and retained focus. Exact review/default evidence belongs in the correction PR; normal narrow HUD acceptance remains B1. |
+| B2 — compact role/effect explanations, source partly merged | Food Tools and Mill progress/Details remain implemented. Workshop prerequisite disclosure (PR605), Replant eligibility (PR608), catalog producer names (PR612) and research prerequisite location (PR613) are merged. Town Center role summary `fb2dafeb` and queue-less destruction notice `fa8e54f` remain preserved local patches, unshipped. Existing text/buttons/notices only. | HUD implementation owner retains ordinary-game completion; Action/production retains the authority contract. See [current delivery record](#building-feedback-delivery-record--9-october-2026) for heads, evidence, dependencies and next transitions. No new tech/assets/architecture. | Both-seat DOM/source contracts and exact package/serving receipts establish merged source behavior. They do not establish ordinary rendered readability, real keyboard use or novice acceptance; those remain B1. |
 | B3 — progression/balance observation, proposed | Paired Tiny openings compare neutral food versus Farm, Mill/Storehouse trips and one Tier II siege decision; record spend/deposits/labor/travel/exhaustion/losses/player alternatives. Retain tuning absent evidence. | Action/production + Maps; B1, [paired Farm measurement](qa-paired-farm-food-2026-10-04.md) and paid AI Farm tests. | Contested/recovery records distinguish conservation/usefulness from timing/balance. Current AI already plants/replants one bounded starvation Farm; no broad farm optimization is silently added. |
 | B4 — farmhouse/regrowth decision, deferred proposal | Decide only if B1/B3 expose need; settle plot lifecycle/parent-child contract before any new registered action. One paid recoverable plot cycle first. | Product decision + Action/production; Building owns any resulting brief; depends on observed use. | Small written contract and executable paid acceptance precede a button. No automatic economic tier, giant tech tree, paid generation, gold/copper ledger or new service follows. |
 
@@ -547,6 +549,40 @@ by `sandbox-unavailable` and `storage-unavailable`: zero game frames/screenshots
 PR323's qualified hosted path is separate capability, not a current Farm capture.
 Deployment identity/digest and ordinary rendered acceptance remain separate B1
 evidence; a merge does not establish them.
+
+### Building feedback delivery record — 9 October 2026
+
+Current source inspection is main
+`af77e33476c16e42f6114e3eee50425daee3d88a`. Its tree
+`91e6d303b900a43e8a7238a99d68813bc259a566` exactly matches the independently
+reviewed PR614/616 combination. The four HUD changes below are ancestors of
+this main; the two local patch heads are parent-supplied preserved receipt
+identifiers, not merged commits or artifacts copied into this repository.
+This updates B2's stale status without closing B1 or changing its scope.
+
+| Outcome / present owner | Artifact / source status | Next permitted transition / dependency | Acceptance evidence / remaining gap |
+| --- | --- | --- | --- |
+| Workshop Build disclosure / HUD implementation owner | [PR605](https://github.com/lbeezr/thousand-unit-skirmish/pull/605), reviewed head `c2f85ed5`, merged `e6d4a0e5`. Default Build & train names Military Tier II at Town Center and retains inspectable reasons. | Verify ordinary focus, unavailable reasons and activation at an identified containing cloud release; delivery owner supplies release/deployment identity, supported rendering supplies the capture. No further prerequisite implementation is queued. | Exact-head 268 focused checks, independent review and clean packed GET/HEAD receipt; combined final-main UI smoke also passed. Real Enter/Space and rendered readability remain unverified. |
+| Exhausted Farm Replant disclosure / HUD implementation owner; Farm owner retains renewal authority | [PR608](https://github.com/lbeezr/thousand-unit-skirmish/pull/608), reviewed head `18224608`, merged `b1e7a092`. Missing Workers, wood and finished-match reasons are disclosed before activation. | Run the existing ordinary Farm cycle through actual Worker/plot selection, Replant and first depot credit at the identified release; depends on supported capture and containing release identity. | Exact-head 227 focused checks, final independent review, clean pack/HTTP receipt and combined lifecycle UI smoke passed. Earlier native renewal is a separate pre-final-head receipt; ordinary keyboard/readability and paid rendered cycle remain open. |
+| Catalog producer names / HUD implementation owner | [PR612](https://github.com/lbeezr/thousand-unit-skirmish/pull/612), reviewed head `3379930e`, merged `0f814b65`. Build & train names each registered producer without changing selection or commands. | Observe readable labels and keyboard activation in ordinary Build & train at the identified containing cloud release; depends on release identity and supported rendering. | Exact-head 205 focused checks, independent review and clean pack/HTTP receipt; producer/research smoke passed 12/12 on merged main `2c0fcb4e`. No rendered or novice observation is supplied. |
+| Research prerequisite location / HUD implementation owner | [PR613](https://github.com/lbeezr/thousand-unit-skirmish/pull/613), reviewed head `fc6788e9`, merged `2c0fcb4e`. Locked drawer/contextual choices identify the prerequisite's registered research building. | Observe locked/unlocked choice, focus and actual research activation at the identified containing cloud release; depends on supported rendering and release identity. | Exact-head 207 focused checks, independent review, clean pack/HTTP receipt and the same merged-main 12/12 smoke passed. Authoritative reason precedence is preserved; readable rendered hints and native keyboard acceptance remain open. |
+| Town Center secondary role summary / HUD implementation owner | Preserved local head `fb2dafeb`; **unshipped**, no containing main or release established. | Retain the original owner-held artifact. Resume publication/integration through the permitted artifact path when the existing transfer block is resolved; do not reconstruct or transfer this patch here. | Parent-supplied preservation receipt only in this reconciliation; no new patch inspection, test result, source merge, deployment or ordinary acceptance is claimed. |
+| Queue-less utility destruction notice / HUD implementation owner with Action/production notice contract | Preserved local head `fa8e54f`; **unshipped**. Current main still emits the generic queue-loss notice. | Retain the original owner-held artifact and resume its permitted publication/integration after the existing transfer block is resolved. Depends on that artifact and the real queue/research-loss contract; no duplicate implementation. | Parent-supplied preservation receipt plus current-source notice inspection; no new patch test, merge, release or rendered-notice acceptance is claimed. |
+
+The merged-source receipts retain clean 1,484-file releases: final main `09b7dea2`
+for PR605/608 used digest
+`sha256:de3a1f1b39461f579e7edaaa39d5a0e5fa7ceb6db27cd1758eb714226bb958c8`;
+main `2c0fcb4e` including PR612/613 used
+`sha256:d169475480246d0b279c6ea8152c18896f81c878994e9deb46590b40579e3001`.
+Package/serving checks passed at those named sources. These are dated release
+receipts, not a newly packed `af77e334` release or provider deployment proof.
+The prior cloud renderer attempt's `sandbox-unavailable`/`storage-unavailable`
+result supplied zero frames; supported ordinary capture remains a dependency.
+The separately recorded anonymous staging check matched main `2c0fcb4e` HTML
+and client bytes, but authenticated health returned 401; it did not attest the
+whole deployed SHA or establish rendered play. No deployment or new capture is
+performed by this record correction, and focused checks do not establish full
+CI green.
 
 ### Food Tools progression slice — 4 October 2026
 
