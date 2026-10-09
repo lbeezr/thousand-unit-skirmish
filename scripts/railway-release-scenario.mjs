@@ -516,6 +516,7 @@ try {
   const privateModules = [...RUNTIME_DOMAINS.server,
     'src/world/practice-entry-catalog.mjs',
     'src/simulation/economy/snapshot-private-production.mjs',
+    'src/simulation/economy/economy-checkpoint.mjs',
     'src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs',
     'src/pve-opponent.mjs', 'src/simulation/ai/opponent-observation.mjs',
     'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs', 'src/forest-fringe.mjs',
@@ -554,6 +555,22 @@ try {
         `private production path requires authentication (${method}): ${filename}`);
       const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
       assert.equal(response.status, 404, `private/retired production path is not served (${method}): ${filename}`);
+      if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
+    }
+  }
+  const economyCheckpoint = 'src/simulation/economy/economy-checkpoint.mjs';
+  assert.ok(packedManifest.files.includes(economyCheckpoint), 'canonical private economy checkpoint is packaged');
+  assert.deepEqual(await readFile(path.join(root, economyCheckpoint)), await readFile(path.join(sourceRoot, economyCheckpoint)),
+    'canonical economy checkpoint bytes must match the qualified source');
+  assert.equal(packedManifest.files.includes('src/economy-checkpoint.mjs'), false, 'retired economy checkpoint root is absent');
+  for (const filename of [economyCheckpoint, 'src/economy-checkpoint.mjs',
+    `${economyCheckpoint}/extra`, `${economyCheckpoint}.map`,
+    'src/simulation/economy//economy-checkpoint.mjs', 'SRC/simulation/economy/economy-checkpoint.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method })).status, 401,
+        `economy checkpoint path requires authentication (${method}): ${filename}`);
+      const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+      assert.equal(response.status, 404, `private/retired economy checkpoint is not served (${method}): ${filename}`);
       if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
     }
   }

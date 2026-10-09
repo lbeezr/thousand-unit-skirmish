@@ -1,5 +1,5 @@
-import { GAMEPLAY_RULESET_REVISION } from './gameplay-definitions.mjs';
-import { DEFAULT_ECONOMY_PROFILE_ID, STONE_ECONOMY_PROFILE_ID, resolveEconomyProfileId, economyRulesetRevision, economyResources } from './economy-profile.mjs';
+import { GAMEPLAY_RULESET_REVISION } from '../../gameplay-definitions.mjs';
+import { DEFAULT_ECONOMY_PROFILE_ID, STONE_ECONOMY_PROFILE_ID, resolveEconomyProfileId, economyRulesetRevision, economyResources } from '../../economy-profile.mjs';
 
 /** Run after exact supported legacy content migration. Never alter authored map bytes. */
 export function migrateEconomyCheckpoint(snapshot) {

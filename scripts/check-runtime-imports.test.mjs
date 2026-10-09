@@ -227,6 +227,28 @@ test('private production projection has its simulation home, sole server caller 
     ['server.mjs'], 'private seat projection stays outside every browser closure');
 });
 
+test('private economy checkpoint has its simulation home, exact authority callers and no retired entry', async () => {
+  const canonical = 'src/simulation/economy/economy-checkpoint.mjs';
+  const retired = 'src/economy-checkpoint.mjs';
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  assert.ok(sources.has(canonical));
+  assert.equal(sources.has(retired), false);
+  assert.ok(RUNTIME_DOMAINS.simulation.includes(canonical));
+  assert.equal(RUNTIME_DOMAINS.simulation.includes(retired), false);
+  assert.ok(RETIRED_RUNTIME_PATHS.includes(retired));
+  assert.deepEqual(Object.keys(await import('../src/simulation/economy/economy-checkpoint.mjs')),
+    ['migrateEconomyCheckpoint', 'validateEconomyCheckpoint']);
+  for (const source of ['', "export * from './simulation/economy/economy-checkpoint.mjs';"]) {
+    assert.throws(() => checkRuntimeImports(new Map(sources).set(retired, source)), /retired implementation path/);
+  }
+  const graph = runtimeImportGraph(sources);
+  assert.deepEqual(graph.get(canonical), {
+    local: ['src/economy-profile.mjs', 'src/gameplay-definitions.mjs'], external: [],
+  });
+  assert.deepEqual([...graph].filter(([, node]) => node.local.includes(canonical)).map(([name]) => name).sort(),
+    ['server.mjs', 'src/server/checkpoint-envelope.mjs']);
+});
+
 test('private lobby authority has canonical server homes, sole host callers and no retired entries', async () => {
   const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
   const graph = runtimeImportGraph(sources);

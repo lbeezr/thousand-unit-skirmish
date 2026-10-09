@@ -20,6 +20,7 @@ const privateProductionPaths = ['/src/snapshot-private-production.mjs',
 const privateLobbyPaths = ['/src/room-pregame.mjs', '/src/room-lobby-chat.mjs',
   '/src/server/orchestration/room-pregame.mjs', '/src/server/orchestration/room-lobby-chat.mjs'];
 const privateLaunchPaths = ['/src/room-launch-options.mjs', '/src/server/orchestration/room-launch-options.mjs'];
+const privateEconomyCheckpointPaths = ['/src/economy-checkpoint.mjs', '/src/simulation/economy/economy-checkpoint.mjs'];
 const privatePaths = ['/health', '/health?tickSamples=1', '/admin', '/api/admin',
   '/api/rooms', '/server.mjs', '/room-supervisor.mjs', '/package.json', '/.env',
   '/src/server/build-identity.mjs', '/src/server/release-identity.json',
@@ -74,6 +75,14 @@ test('canonical and retired lobby authority denies anonymous GET and HEAD', () =
 
 test('canonical and retired launch contract denies anonymous GET and HEAD', () => {
   for (const pathname of privateLaunchPaths) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal(isAnonymousGameplayRequest(method, new URL(pathname, publicOrigin)), false, `${method}: ${pathname}`);
+    }
+  }
+});
+
+test('canonical and retired economy checkpoint denies anonymous GET and HEAD', () => {
+  for (const pathname of privateEconomyCheckpointPaths) {
     for (const method of ['GET', 'HEAD']) {
       assert.equal(isAnonymousGameplayRequest(method, new URL(pathname, publicOrigin)), false, `${method}: ${pathname}`);
     }
@@ -142,7 +151,7 @@ test('enabled anonymous gameplay and disabled authentication contracts', async (
         assert.equal((await fetch(base + pathname)).status, enabled ? 200 : 401, `${mode}: ${pathname}`);
       }
       for (const pathname of privatePaths) assert.equal((await fetch(base + pathname)).status, 401, pathname);
-      for (const pathname of [...privateProductionPaths, ...privateLobbyPaths, ...privateLaunchPaths]) {
+      for (const pathname of [...privateProductionPaths, ...privateLobbyPaths, ...privateLaunchPaths, ...privateEconomyCheckpointPaths]) {
         for (const method of ['GET', 'HEAD']) {
           assert.equal((await fetch(base + pathname, { method })).status, 401, `${mode}: anonymous ${method} ${pathname}`);
           const authenticated = await fetch(base + pathname, { method, headers: { authorization } });
