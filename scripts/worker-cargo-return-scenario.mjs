@@ -96,7 +96,9 @@ try {
   if (frontier) {
     for (const [team, client] of clients.entries()) {
       const worker = client.latest.units.find(u => u[1] === team && u[5] === 'worker');
-      send(client, { type: 'move', ids: [worker[0]], x: map.spawnPoints[team].x, z: -33 });
+      // Gather selects the nearest visible tree in the clicked forest group.
+      // Align with its middle tree so the Barracks covers every open approach.
+      send(client, { type: 'move', ids: [worker[0]], x: (team ? 133 : 26) - map.width / 2 + .5, z: -33 });
     }
     await checkpointWith(checkpointPath, cp => [0, 125].every(id => cp.state.units[id].z < -32));
   }
@@ -114,6 +116,18 @@ try {
       z: (frontier ? 43 : 38) - map.height / 2 + .5, clientOrderToken: 2 });
     const placement = await client.wait(m => m.type === 'notice' && m.clientOrderToken === 2 && !m.message.startsWith('PLANNING'));
     assert.match(placement.message, frontier ? /BUILD REJECTED · WOULD BLOCK A ROUTE/ : /BARRACKS PLACED/);
+    if (frontier) {
+      const preserved = await checkpointWith(checkpointPath, cp =>
+        cp.state.units[workers[0][0]].gatherForestCell >= 0);
+      const gatherer = preserved.state.units[workers[0][0]];
+      assert.equal(gatherer.gatherForestCell, cell, 'the blocked approaches belong to the actual selected tree');
+      assert.equal(gatherer.workIntent.sourceKind, 'forest-group');
+      assert.deepEqual(gatherer.workIntent.anchor, {
+        x: column - map.width / 2 + .5, z: row - map.height / 2 + .5,
+      });
+      assert.equal(preserved.state.buildings.length, 0, 'rejected footprints never become buildings');
+      assert.deepEqual(preserved.state.teamWood, [175, 175], 'rejected footprints never debit Wood');
+    }
   }
   await checkpointWith(checkpointPath, cp => targets.every(cell =>
     cp.state.forestStocks.some(([id, stock]) => id === cell && stock === 0)));
