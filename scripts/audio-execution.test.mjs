@@ -234,9 +234,77 @@ test('current shipped metadata keeps generic-food binding and absent packs retai
   }
 });
 
-test('Skiff fishing keeps its current distinct notice boundary without claiming a new acknowledgement', () => {
-  const f = orderFixture({ mutate: data => { data.units[0].kind = 'skiff'; } });
-  const token = f.sendOrder(gatherCommand('bank'), 'FISH', 1);
-  assert.equal(f.gate.pending.get(token).gatherJob, undefined);
-  assert.equal(f.gate.observe(token, 'FISHING ORDER · 1 SKIFFS · FINITE FOOD TO OWNED DOCK'), null);
+const fishingNotice = 'FISHING ORDER · 1 SKIFFS · FINITE FOOD TO OWNED DOCK';
+const skiffFixture = (options = {}) => orderFixture({ ...options,
+  mutate: data => { data.units[0].kind = 'skiff'; },
+});
+for (const team of [0, 1]) test(`seat ${team}: actual Skiff Gather caller acknowledges matching applied fishing exactly once`, () => {
+  const f = skiffFixture({ team });
+  const command = gatherCommand('bank'), token = f.sendOrder(command, 'FISH', 1, 'SKIFFS');
+  const event = { cue: 'gather', kind: 'skiff', resource: 'food', gatherJob: undefined };
+  assert.deepEqual(f.commands, [{ ...command, clientOrderToken: token }]);
+  assert.deepEqual(f.cues, ['send']);
+  assert.deepEqual(f.gate.pending.get(token), event);
+  const pending = f.gate.pending.get(token);
+  assert.equal(new OrderAudioGate().observe(token, fishingNotice), null, 'unissued tokens cannot acknowledge');
+  assert.equal(f.gate.observe(token + 1, fishingNotice), null, 'other tokens cannot consume local intent');
+  for (const message of ['PLANNING FISHING · 1 SKIFFS', 'FISHING QUEUED · 1 SKIFFS', 'FISHING ORDER']) {
+    assert.equal(f.gate.observe(token, message), null);
+    assert.deepEqual(f.gate.pending.get(token), event, 'planning/non-applied notices retain the pending event');
+  }
+  const applied = f.gate.observe(token, fishingNotice);
+  assert.deepEqual(applied, event);
+  assert.equal(applied, pending, 'consume the caller event without replacing its metadata');
+  assert.equal(f.gate.pending.has(token), false);
+  assert.equal(f.gate.observe(token, fishingNotice), null, 'duplicate notices stay silent');
+  assert.deepEqual(bindingKeysForEvent(applied), ['unit.skiff.gather.food', 'unit.skiff.gather', 'cue.gather']);
+  for (const key of bindingKeysForEvent(applied)) {
+    const selected = binding(key);
+    const resolved = resolveEventBinding({ bindings: { [key]: selected } }, applied);
+    assert.equal(resolved.key, key);
+    assert.equal(resolved.binding, selected, 'existing role/cue fallback remains, without Worker job context');
+  }
+  assert.equal(resolveEventBinding({}, applied), null, 'absent bindings retain synthesis fallback');
+});
+
+test('applied Skiff fishing without a bound pack retains synthesized Gather feedback', () => {
+  const f = skiffFixture(), token = f.sendOrder(gatherCommand('bank'), 'FISH', 1, 'SKIFFS');
+  const audio = createGameAudio({ storage: null, doc: { hidden: false, addEventListener() {}, removeEventListener() {} } });
+  try {
+    audio.playEvent(f.gate.observe(token, fishingNotice));
+    assert.equal(audio.getInspector().decisions.at(-1).outcome, 'synthesized fallback');
+  } finally { audio.dispose(); }
+});
+
+for (const team of [0, 1]) test(`seat ${team}: failed, cancelled, reset and unsent Skiff orders cannot acknowledge fishing`, () => {
+  for (const message of ['FISHING FAILED · BAD TARGET', 'FISHING REJECTED · BAD TARGET',
+    'FISHING UNAVAILABLE · NO DOCK', 'RESOURCE NODE UNREACHABLE · BANK', 'RESOURCE NODE EMPTY · BANK',
+    'ORDER SUPERSEDED', 'ORDER CANCELLED', 'MATCH OVER']) {
+    const f = skiffFixture({ team }), token = f.sendOrder(gatherCommand('bank'), 'FISH', 1, 'SKIFFS');
+    assert.equal(f.gate.observe(token, message), null);
+    assert.equal(f.gate.pending.has(token), false);
+    assert.equal(f.gate.observe(token, fishingNotice), null);
+  }
+  const f = skiffFixture({ team }), token = f.sendOrder(gatherCommand('bank'), 'FISH', 1, 'SKIFFS');
+  f.gate.reset();
+  assert.equal(f.gate.observe(token, fishingNotice), null);
+  const unsent = skiffFixture({ team, send: false });
+  assert.equal(unsent.sendOrder(gatherCommand('bank'), 'FISH', 1, 'SKIFFS'), null);
+  assert.equal(unsent.gate.observe(1, fishingNotice), null);
+  assert.equal(unsent.gate.pending.size, 0);
+  assert.deepEqual(unsent.cues, []);
+  assert.equal(unsent.statuses[0][2], 'failed');
+});
+
+test('fishing notice cannot consume Worker Gather or a different Skiff command', () => {
+  const workerOrder = orderFixture(), workerToken = workerOrder.sendOrder(gatherCommand('bank'), 'GATHER', 1);
+  assert.equal(workerOrder.gate.observe(workerToken, fishingNotice), null);
+  assert.deepEqual(workerOrder.gate.observe(workerToken, 'GATHER ORDER · 1 WORKERS'), {
+    cue: 'gather', kind: 'worker', resource: 'food', gatherJob: 'fish',
+  });
+  const skiff = skiffFixture(), token = skiff.sendOrder({ type: 'move', ids: [0], x: 1, z: 1 }, 'MOVE', 1, 'SKIFFS');
+  assert.equal(skiff.gate.observe(token, fishingNotice), null);
+  assert.deepEqual(skiff.gate.observe(token, 'MOVE ORDER · 1 SKIFFS'), {
+    cue: 'move', kind: 'skiff', resource: undefined, gatherJob: undefined,
+  });
 });
