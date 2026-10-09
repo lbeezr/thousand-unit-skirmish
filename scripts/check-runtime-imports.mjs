@@ -29,6 +29,7 @@ export const RETIRED_RUNTIME_PATHS = Object.freeze([
   'src/water-surface-study.mjs', 'src/water-study-state.mjs',
   'src/water-study-fish-binding.mjs', 'src/water-surface-geometry.mjs',
   'src/water-study-preview.mjs', 'src/environment-review.mjs', 'src/practice-entry-catalog.mjs',
+  'src/snapshot-private-production.mjs',
   'src/forest-habitat.mjs', 'src/forest-composition.mjs', 'src/forest-age-composition.mjs',
 ]);
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
@@ -70,7 +71,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'simulation/movement/formation-assignment',
     'simulation/movement/military-endpoint-availability',
     'millrace-sheep', 'skiff-fishing', 'skiff-group-orders', 'skiff-waypoints',
-    'snapshot-private-production', 'terraced-vale-sheep', 'unit-movement', 'unit-crowd-steering',
+    'simulation/economy/snapshot-private-production', 'terraced-vale-sheep', 'unit-movement', 'unit-crowd-steering',
     'crowd-wait-lease', 'crowd-parked-contour',
     'server/voluntary-endings',
     'server/worker-food-tools', // Productive food labor and exact prior-content recovery; no route planning.

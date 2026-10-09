@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
-import { privateProductionView } from '../src/snapshot-private-production.mjs';
+import { privateProductionView } from '../src/simulation/economy/snapshot-private-production.mjs';
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const policy = server.slice(server.indexOf('const PERSISTENT_PLAN_BUDGET'), server.indexOf('// Stationary orders'));
 function follower(id = 0) {

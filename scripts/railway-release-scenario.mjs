@@ -515,6 +515,7 @@ try {
   // HTTP admission denies both methods, including pure negotiation and shims.
   const privateModules = [...RUNTIME_DOMAINS.server,
     'src/world/practice-entry-catalog.mjs',
+    'src/simulation/economy/snapshot-private-production.mjs',
     'src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs',
     'src/pve-opponent.mjs', 'src/simulation/ai/opponent-observation.mjs',
     'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs', 'src/forest-fringe.mjs',
@@ -537,6 +538,22 @@ try {
     for (const method of ['GET', 'HEAD']) {
       const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
       assert.equal(response.status, 404, `private/retired Practice catalog path (${method}): ${filename}`);
+      if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
+    }
+  }
+  const privateProduction = 'src/simulation/economy/snapshot-private-production.mjs';
+  assert.ok(packedManifest.files.includes(privateProduction), 'canonical private production projection is packaged');
+  assert.deepEqual(await readFile(path.join(root, privateProduction)), await readFile(path.join(sourceRoot, privateProduction)),
+    'canonical private production bytes must match the qualified source');
+  assert.equal(packedManifest.files.includes('src/snapshot-private-production.mjs'), false, 'retired private production root is absent');
+  for (const filename of [privateProduction, 'src/snapshot-private-production.mjs',
+    `${privateProduction}/extra`, `${privateProduction}.map`,
+    'src/simulation/economy//snapshot-private-production.mjs', 'SRC/simulation/economy/snapshot-private-production.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method })).status, 401,
+        `private production path requires authentication (${method}): ${filename}`);
+      const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+      assert.equal(response.status, 404, `private/retired production path is not served (${method}): ${filename}`);
       if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
     }
   }

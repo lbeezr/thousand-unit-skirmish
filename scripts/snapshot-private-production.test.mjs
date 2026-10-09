@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { privateProductionView } from '../src/snapshot-private-production.mjs';
+import { privateProductionView } from '../src/simulation/economy/snapshot-private-production.mjs';
 for (const team of [0, 1]) test(`no-fog broadcast withholds enemy queue contents for seat ${team} while sharing roster storage`, () => {
   const payload = { units: [[0, 0]], population: [{ capacity: 15 }, { capacity: 23 }],
     buildings: [0, 1].map((owner) => ({ id: owner, team: owner, queue: 2, productionQueue: ['infantry', 'spearman'],

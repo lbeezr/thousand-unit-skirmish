@@ -208,6 +208,25 @@ test('private Practice catalog has its world home, exact supervisor consumer and
     ['room-supervisor.mjs'], 'browser and match worker cannot acquire this supervisor catalog');
 });
 
+test('private production projection has its simulation home, sole server caller and no retired entry', async () => {
+  const canonical = 'src/simulation/economy/snapshot-private-production.mjs';
+  const retired = 'src/snapshot-private-production.mjs';
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  assert.ok(sources.has(canonical));
+  assert.equal(sources.has(retired), false);
+  assert.ok(RUNTIME_DOMAINS.simulation.includes(canonical));
+  assert.equal(RUNTIME_DOMAINS.simulation.includes(retired), false);
+  assert.ok(RETIRED_RUNTIME_PATHS.includes(retired));
+  assert.deepEqual(Object.keys(await import('../src/simulation/economy/snapshot-private-production.mjs')), ['privateProductionView']);
+  for (const source of ['', "export { privateProductionView } from './simulation/economy/snapshot-private-production.mjs';"]) {
+    assert.throws(() => checkRuntimeImports(new Map(sources).set(retired, source)), /retired implementation path/);
+  }
+  const graph = runtimeImportGraph(sources);
+  assert.deepEqual(graph.get(canonical), { local: [], external: [] });
+  assert.deepEqual([...graph].filter(([, node]) => node.local.includes(canonical)).map(([name]) => name),
+    ['server.mjs'], 'private seat projection stays outside every browser closure');
+});
+
 test('water rendering stays outside authoritative domains and server hosts through every import form', () => {
   for (const target of Object.values(WATER_RENDER_MODULES)) {
     for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',

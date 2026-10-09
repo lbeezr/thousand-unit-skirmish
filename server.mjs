@@ -67,7 +67,7 @@ import { createDeterministicPolicy, toOpponentObservation } from './src/pve-oppo
 import { readPveLaunchOptions } from './src/pve-match.mjs';
 import { townCenterSpawnPosition, townCenterFootprintCells } from './src/town-center-spawn.mjs';
 import { advanceTickDeadline } from './simulation-scheduler.mjs';
-import { privateProductionView } from './src/snapshot-private-production.mjs';
+import { privateProductionView } from './src/simulation/economy/snapshot-private-production.mjs';
 import { RoomPregame, validatePregameCheckpoint } from './src/room-pregame.mjs';
 import { RoomLobbyChat } from './src/room-lobby-chat.mjs';
 import { normalizeMatchMode, matchModeDefinition, assertMatchModeCompatibility,

@@ -266,6 +266,68 @@ Parent retains ready/merge and deployment. Movement algorithms, audio PR626,
 HUD, diagnostics, assets and held experiments remain outside this slice;
 existing movement failures and ordinary rendered acceptance keep their owners.
 
+The ledger integrated through [PR627](https://github.com/lbeezr/thousand-unit-skirmish/pull/627)
+at `39e28f242b88a722150c694f9503bcbef6348e45`; its tree
+`662a3c8e011eade06ffa08eaf99d024d3d0fe58c` equals the independently reviewed
+source tree. Canonical/legacy export identity and exact GET/HEAD admission pass
+on the containing source. The parent independently confirmed exact-base hosted
+CI parity, with only the additional passing ledger syntax entry.
+
+## Seat-private production projection home — 9 October 2026
+
+The same organization owner takes the architecture and source inventory's
+explicit simulation destination for `snapshot-private-production.mjs`, on
+`codex/private-production-simulation-home-20261009` from containing main
+`39e28f242b88a722150c694f9503bcbef6348e45`. The parent reserved the sole server
+import and confirmed no other active owner reserves it. Qualification rebases
+onto containing main `d91919e3ce70174e53f28021172c6f29dad963f4` after the
+disjoint caption merge. Movement is a separate read-only audit;
+integrated [PR628](https://github.com/lbeezr/thousand-unit-skirmish/pull/628)
+owns `src/main.js`, `scripts/audio-settings.test.mjs` and the audio matrix.
+Those files and held PR541/546/548 remain outside this slice; inspected diffs
+change neither this helper nor its import line.
+
+Move the complete dependency-free 19-line implementation byte-for-byte from
+`src/snapshot-private-production.mjs` to
+`src/simulation/economy/snapshot-private-production.mjs`. The existing
+`broadcastState` no-fog branch is its sole production caller: it shares the
+public roster while projecting each seat's private production/population and
+persistent orders. Preserve the sole `privateProductionView` export, all
+payload keys and optional-field omission, spectator payload identity, own-seat
+row identity, shared roster storage, enemy queue/options masking, owned-order
+filtering and input nonmutation. No disclosure framework or protocol is added.
+
+Update the server import and the three imports in
+`scripts/snapshot-private-production.test.mjs`,
+`scripts/population-readout.test.mjs` and `scripts/persistent-command.test.mjs`;
+retain their assertions, workloads and CI commands. No supported old-path
+API, module URL or external consumer was identified. Both paths are private,
+so retire the old root without a copy or forwarding entry and enforce its
+absence. Root files reduce from 177 to 176 (171 JavaScript and five CSS), while
+all 24 supported root aliases and six generated descriptors remain unchanged.
+
+Write scope: the moved leaf, four import lines, exact simulation/retired-path
+membership, additive existing import/public-admission/packed-serving guards and
+this canonical record. Public allowlist and production admission policy remain
+unchanged. Test authenticated GET/HEAD denial and anonymous denial in every
+existing public-mode fixture; require canonical package/source byte equality
+and absence of the retired path. Art backing is N/A for this internal move.
+
+The unchanged fresh-main baseline ran 372 tests: 371 passed and the existing
+Worker acquired Patrol exclusion assertion failed with
+`workerEconomyBodyRadius is not defined` in
+`scripts/worker-patrol-acquired-clearance.test.mjs`, loaded by the persistent
+command suite. Privacy/snapshot cases passed. Preserve that movement failure
+and compare its exact signature at final head rather than changing its fixture.
+
+Next transition: independent exact-head review; baseline/implementation privacy
+comparisons including optional arrays, spectators, sharing and nonmutation;
+both-seat native production/population and snapshot receipt; imports, both
+configured type gates, docs and exact private-path clean package checks; then a
+draft PR with source/test/digest evidence. Parent retains ready/merge and
+deployment in source task `01a0f784-c5d7-72e0-82e8-1747b4c840c1`; delivered
+ordinary-match acceptance remains distinct from local native/package proof.
+
 ## Integrated code milestones
 
 | Slice | Merge and evidence | Remaining acceptance |
