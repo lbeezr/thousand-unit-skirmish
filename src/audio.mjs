@@ -94,7 +94,7 @@ export function createGameAudio({
     const now = workNow();
     if (now - lastWorkAt < 1500) return;
     lastWorkAt = now;
-    for (const event of events.slice(0, 3)) playEvent(event);
+    for (const event of events.slice(0, 4)) playEvent(event);
   }
   let packStatus = 'No audio pack assigned';
   let profileMusicReady = false;

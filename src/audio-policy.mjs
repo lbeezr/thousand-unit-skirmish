@@ -125,7 +125,7 @@ export function workAudioEvents(rows, { localTeam, x = 0, z = 0, radius = 24 } =
   for (const row of rows || []) {
     if (row[1] !== localTeam || row[4] <= 0 || row[5] !== 'worker'
       || (row[2] - x) ** 2 + (row[3] - z) ** 2 > radius ** 2) continue;
-    if (['wood', 'food', 'repair'].includes(row[14])) resources.add(row[14]);
+    if (['wood', 'food', 'repair', 'stone'].includes(row[14])) resources.add(row[14]);
   }
   return [...resources].sort().map((resource) => ({ cue: 'work', kind: 'worker', resource }));
 }
