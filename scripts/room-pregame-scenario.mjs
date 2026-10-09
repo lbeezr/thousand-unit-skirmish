@@ -458,7 +458,13 @@ try {
     assert.ok(response.headers.get('content-type').includes(mime));
     assert.ok((await response.text()).length > 100);
   }
-  assert.equal((await fetch(`${origin}/src/room-pregame.mjs`)).status, 404, 'server authority module stays private');
+  for (const filename of ['src/server/orchestration/room-pregame.mjs', 'src/room-pregame.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${origin}/${filename}`, { method });
+      assert.equal(response.status, 404, `server authority module stays private (${method}): ${filename}`);
+      if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
+    }
+  }
   console.log(JSON.stringify({ passed: ['two-seat authority and settings validation',
     'versioned mode change clears both seats and projects bonus-only posts',
     'atomic mode/map rejection and effective metadata without launch option mutation',

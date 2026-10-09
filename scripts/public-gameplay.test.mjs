@@ -17,6 +17,8 @@ const authorization = `Basic ${Buffer.from(`players:${secret}`).toString('base64
 const publicOrigin = 'https://public-fixture.up.railway.app';
 const privateProductionPaths = ['/src/snapshot-private-production.mjs',
   '/src/simulation/economy/snapshot-private-production.mjs'];
+const privateLobbyPaths = ['/src/room-pregame.mjs', '/src/room-lobby-chat.mjs',
+  '/src/server/orchestration/room-pregame.mjs', '/src/server/orchestration/room-lobby-chat.mjs'];
 const privatePaths = ['/health', '/health?tickSamples=1', '/admin', '/api/admin',
   '/api/rooms', '/server.mjs', '/room-supervisor.mjs', '/package.json', '/.env',
   '/src/server/build-identity.mjs', '/src/server/release-identity.json',
@@ -55,6 +57,14 @@ test('anonymous admission default-denies private paths and unsupported methods',
 
 test('canonical and retired private production helpers deny anonymous GET and HEAD', () => {
   for (const pathname of privateProductionPaths) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal(isAnonymousGameplayRequest(method, new URL(pathname, publicOrigin)), false, `${method}: ${pathname}`);
+    }
+  }
+});
+
+test('canonical and retired lobby authority denies anonymous GET and HEAD', () => {
+  for (const pathname of privateLobbyPaths) {
     for (const method of ['GET', 'HEAD']) {
       assert.equal(isAnonymousGameplayRequest(method, new URL(pathname, publicOrigin)), false, `${method}: ${pathname}`);
     }
@@ -123,7 +133,7 @@ test('enabled anonymous gameplay and disabled authentication contracts', async (
         assert.equal((await fetch(base + pathname)).status, enabled ? 200 : 401, `${mode}: ${pathname}`);
       }
       for (const pathname of privatePaths) assert.equal((await fetch(base + pathname)).status, 401, pathname);
-      for (const pathname of privateProductionPaths) {
+      for (const pathname of [...privateProductionPaths, ...privateLobbyPaths]) {
         for (const method of ['GET', 'HEAD']) {
           assert.equal((await fetch(base + pathname, { method })).status, 401, `${mode}: anonymous ${method} ${pathname}`);
           const authenticated = await fetch(base + pathname, { method, headers: { authorization } });

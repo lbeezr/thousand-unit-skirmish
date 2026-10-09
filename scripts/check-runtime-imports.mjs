@@ -30,6 +30,7 @@ export const RETIRED_RUNTIME_PATHS = Object.freeze([
   'src/water-study-fish-binding.mjs', 'src/water-surface-geometry.mjs',
   'src/water-study-preview.mjs', 'src/environment-review.mjs', 'src/practice-entry-catalog.mjs',
   'src/snapshot-private-production.mjs',
+  'src/room-pregame.mjs', 'src/room-lobby-chat.mjs',
   'src/forest-habitat.mjs', 'src/forest-composition.mjs', 'src/forest-age-composition.mjs',
 ]);
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
@@ -152,7 +153,8 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   ],
   server: [
     'networking/websocket-deflate-offer', 'networking/websocket-frame',
-    'pve-model-proposal', 'room-launch-options', 'room-lobby-chat', 'room-pregame',
+    'pve-model-proposal', 'room-launch-options',
+    'server/orchestration/room-lobby-chat', 'server/orchestration/room-pregame',
     'server/build-identity', 'server/client-asset-paths', 'server/pve-model-proposal',
     'server/client-static-assets', 'server/public-gameplay',
     'server/vision-coverage-cache', 'server/checkpoint-route-budget',

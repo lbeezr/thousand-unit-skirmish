@@ -163,8 +163,14 @@ try {
   assert.deepEqual(host.welcome.lobbyChat, [], 'worker restart clears the ephemeral history');
   await host.exchange(chatCommand('after-restart'), ack('after-restart'));
   assert.equal(host.chat.length, 1);
-  for (const [url, status] of [['/src/room-lobby-chat-ui.mjs', 200], ['/src/room-lobby-chat.mjs', 404]]) {
+  for (const [url, status] of [['/src/room-lobby-chat-ui.mjs', 200], ['/src/room-lobby-chat.mjs', 404],
+    ['/src/server/orchestration/room-lobby-chat.mjs', 404]]) {
     assert.equal((await fetch(`${origin}${url}`)).status, status);
+    if (status === 404) {
+      const response = await fetch(`${origin}${url}`, { method: 'HEAD' });
+      assert.equal(response.status, 404, url);
+      assert.equal((await response.arrayBuffer()).byteLength, 0, url);
+    }
   }
   console.log(JSON.stringify({ passed: ['two-seat identity and read-only spectators', 'plain-text validation and atomic rejection',
     'room isolation and legacy admission', 'retry acknowledgement and rate limits across rejoin', 'readiness unchanged by chat',

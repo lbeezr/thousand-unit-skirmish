@@ -227,6 +227,30 @@ test('private production projection has its simulation home, sole server caller 
     ['server.mjs'], 'private seat projection stays outside every browser closure');
 });
 
+test('private lobby authority has canonical server homes, sole host callers and no retired entries', async () => {
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  const graph = runtimeImportGraph(sources);
+  for (const [name, bindings, dependencies] of [
+    ['room-pregame', ['LOBBY_ARMY_SIZES', 'RoomPregame', 'validatePregameCheckpoint'], ['src/match-modes.mjs']],
+    ['room-lobby-chat', ['LOBBY_CHAT_LIMITS', 'RoomLobbyChat'], []],
+  ]) {
+    const canonical = `src/server/orchestration/${name}.mjs`;
+    const retired = `src/${name}.mjs`;
+    assert.ok(sources.has(canonical));
+    assert.equal(sources.has(retired), false);
+    assert.ok(RUNTIME_DOMAINS.server.includes(canonical));
+    assert.equal(RUNTIME_DOMAINS.server.includes(retired), false);
+    assert.ok(RETIRED_RUNTIME_PATHS.includes(retired));
+    assert.deepEqual(Object.keys(await import(`../${canonical}`)), bindings);
+    for (const source of ['', `export * from './server/orchestration/${name}.mjs';`]) {
+      assert.throws(() => checkRuntimeImports(new Map(sources).set(retired, source)), /retired implementation path/);
+    }
+    assert.deepEqual(graph.get(canonical), { local: dependencies, external: [] });
+    assert.deepEqual([...graph].filter(([, node]) => node.local.includes(canonical)).map(([filename]) => filename),
+      ['server.mjs'], 'lobby authority stays outside every browser closure');
+  }
+});
+
 test('water rendering stays outside authoritative domains and server hosts through every import form', () => {
   for (const target of Object.values(WATER_RENDER_MODULES)) {
     for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
