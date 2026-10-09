@@ -19,6 +19,7 @@ const privatePaths = ['/health', '/health?tickSamples=1', '/admin', '/api/admin'
   '/api/rooms', '/server.mjs', '/room-supervisor.mjs', '/package.json', '/.env',
   '/src/server/build-identity.mjs', '/src/server/release-identity.json',
   '/src/server/public-gameplay.mjs', '/src/server/client-static-assets.mjs',
+  '/src/practice-entry-catalog.mjs', '/src/world/practice-entry-catalog.mjs',
   '/release-manifest.json', '/environment-review.html', '/water-study.html',
   '/src/studies/water/preview.mjs', '/src/water-study-preview.mjs',
   '/src/studies/environment/review.mjs', '/src/environment-review.mjs',

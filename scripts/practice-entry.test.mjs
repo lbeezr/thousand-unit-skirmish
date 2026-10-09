@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { bootGameEntry } from '../src/game-entry.mjs';
-import { practiceEntryCatalog } from '../src/practice-entry-catalog.mjs';
+import { practiceEntryCatalog } from '../src/world/practice-entry-catalog.mjs';
 import { mapVictoryRule } from '../src/objective-summary.mjs';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');

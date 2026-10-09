@@ -15,6 +15,9 @@ const server = readFileSync(path.join(root, 'server.mjs'), 'utf8');
 const environmentArt = readFileSync(path.join(root, 'src/environment-art.mjs'), 'utf8');
 assert.ok(Object.isFrozen(CLIENT_ASSET_PATHS), 'client admission paths must remain immutable');
 const allowed = new Set(CLIENT_ASSET_PATHS);
+for (const filename of ['src/practice-entry-catalog.mjs', 'src/world/practice-entry-catalog.mjs']) {
+  assert.ok(!allowed.has(filename), `supervisor Practice catalog must stay outside public admission: ${filename}`);
+}
 for (const filename of ['src/environment-pilot.mjs', 'src/studies/environment/pilot.mjs']) {
   assert.ok(allowed.has(filename), `pilot helper stays admitted exactly: ${filename}`);
   for (const invalid of [`${filename}/extra`, `${filename}.map`, filename.replace('src/', 'SRC/'),

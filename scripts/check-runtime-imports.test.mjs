@@ -189,6 +189,25 @@ test('both pilot import paths remain outside authority and server host dependenc
   }
 });
 
+test('private Practice catalog has its world home, exact supervisor consumer and no retired entry', async () => {
+  const canonical = 'src/world/practice-entry-catalog.mjs';
+  const retired = 'src/practice-entry-catalog.mjs';
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  assert.ok(sources.has(canonical));
+  assert.equal(sources.has(retired), false);
+  assert.ok(RUNTIME_DOMAINS.world.includes(canonical));
+  assert.equal(RUNTIME_DOMAINS.world.includes(retired), false);
+  assert.ok(RETIRED_RUNTIME_PATHS.includes(retired));
+  assert.deepEqual(Object.keys(await import('../src/world/practice-entry-catalog.mjs')), ['practiceEntryCatalog']);
+  for (const source of ['', "export { practiceEntryCatalog } from './world/practice-entry-catalog.mjs';"]) {
+    assert.throws(() => checkRuntimeImports(new Map(sources).set(retired, source)), /retired implementation path/);
+  }
+  const graph = runtimeImportGraph(sources);
+  assert.deepEqual(graph.get(canonical), { local: ['src/map-size-policy.mjs', 'src/match-modes.mjs'], external: [] });
+  assert.deepEqual([...graph].filter(([, node]) => node.local.includes(canonical)).map(([name]) => name),
+    ['room-supervisor.mjs'], 'browser and match worker cannot acquire this supervisor catalog');
+});
+
 test('water rendering stays outside authoritative domains and server hosts through every import form', () => {
   for (const target of Object.values(WATER_RENDER_MODULES)) {
     for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',

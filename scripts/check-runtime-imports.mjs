@@ -28,7 +28,7 @@ export const RETIRED_RUNTIME_PATHS = Object.freeze([
   'src/pve-reconnaissance.mjs', 'src/pve-regroup.mjs', 'src/pve-skirmish-targets.mjs',
   'src/water-surface-study.mjs', 'src/water-study-state.mjs',
   'src/water-study-fish-binding.mjs', 'src/water-surface-geometry.mjs',
-  'src/water-study-preview.mjs', 'src/environment-review.mjs',
+  'src/water-study-preview.mjs', 'src/environment-review.mjs', 'src/practice-entry-catalog.mjs',
   'src/forest-habitat.mjs', 'src/forest-composition.mjs', 'src/forest-age-composition.mjs',
 ]);
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
@@ -60,7 +60,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   world: [
     'building-orientation', 'dock-placement', 'elevation', 'map-size-policy', 'map-utils', 'regions',
     'world/map-audio-reference', 'world/scenario-event-chain', 'world/capture-prerequisites',
-    'practice-entry-catalog', 'scenario-regions', 'shore-fishing', 'shore-fishing-placement', 'terrain-materials',
+    'world/practice-entry-catalog', 'scenario-regions', 'shore-fishing', 'shore-fishing-placement', 'terrain-materials',
     'town-center-spawn', 'unit-heading', 'water-contours', 'water-route-graph',
   ],
   simulation: [
