@@ -351,7 +351,8 @@ test('room index persistence is explicitly Node-only and excluded from every shi
   const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
   for (const entry of BROWSER_ENTRYPOINTS) {
     const changed = new Map(sources);
-    changed.set(entry, `${sources.get(entry)}\nimport './server/persistence/room-index-store.mjs';`);
+    const relative = path.posix.relative(path.posix.dirname(entry), canonical);
+    changed.set(entry, `${sources.get(entry)}\nimport '${relative.startsWith('.') ? relative : `./${relative}`}';`);
     assert.throws(() => checkRuntimeImports(changed), /browser reaches a Node-only adapter/, entry);
   }
   for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
@@ -420,7 +421,8 @@ test('every shipped browser entry rejects both offline adapter paths', async () 
   for (const entry of BROWSER_ENTRYPOINTS) {
     for (const adapter of ['pve-model-proposal.mjs', 'server/pve-model-proposal.mjs']) {
       const changed = new Map(sources);
-      changed.set(entry, `${sources.get(entry)}\nimport './${adapter}';`);
+      const relative = path.posix.relative(path.posix.dirname(entry), `src/${adapter}`);
+      changed.set(entry, `${sources.get(entry)}\nimport '${relative.startsWith('.') ? relative : `./${relative}`}';`);
       assert.throws(() => checkRuntimeImports(changed), /browser reaches a Node-only adapter/,
         `${entry} -> ${adapter}`);
     }
@@ -433,7 +435,8 @@ test('every shipped browser entry rejects private manifest and transport paths, 
     for (const privateModule of ['server/client-asset-paths.mjs',
       'networking/websocket-deflate-offer.mjs', 'networking/websocket-frame.mjs']) {
       const changed = new Map(sources);
-      changed.set(entry, `${sources.get(entry)}\nimport('./${privateModule}');`);
+      const relative = path.posix.relative(path.posix.dirname(entry), `src/${privateModule}`);
+      changed.set(entry, `${sources.get(entry)}\nimport('${relative.startsWith('.') ? relative : `./${relative}`}');`);
       assert.throws(() => checkRuntimeImports(changed), /browser reaches a server-private module/,
         `${entry} -> ${privateModule}`);
     }
