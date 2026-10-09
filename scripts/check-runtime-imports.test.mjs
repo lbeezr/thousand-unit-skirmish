@@ -103,7 +103,7 @@ test('default water renderer has canonical production consumers and no retired r
     ['src/main.js', ['fish-binding']], ['src/environment-art.mjs', ['geometry']],
     ['src/worker-fishing-contact.mjs', ['geometry']],
     ['src/presentation/rendering/ground-surfaces.mjs', ['geometry', 'surface']],
-    ['src/water-study-preview.mjs', ['geometry', 'surface']],
+    ['src/studies/water/preview.mjs', ['geometry', 'surface']],
   ]) {
     const imports = moduleImports(sources.get(consumer), consumer);
     for (const name of names) {
@@ -111,8 +111,24 @@ test('default water renderer has canonical production consumers and no retired r
       assert.ok(imports.includes(relative.startsWith('.') ? relative : `./${relative}`), `${consumer}: ${name}`);
     }
   }
-  assert.ok(BROWSER_ENTRYPOINTS.includes('src/water-study-preview.mjs'), 'standalone study keeps its entrypoint');
-  assert.ok(RUNTIME_DOMAINS.client.includes('src/water-study-preview.mjs'));
+  assert.ok(BROWSER_ENTRYPOINTS.includes('src/studies/water/preview.mjs'), 'standalone study keeps its entrypoint');
+  assert.ok(RUNTIME_DOMAINS.client.includes('src/studies/water/preview.mjs'));
+  const retired = 'src/water-study-preview.mjs';
+  assert.equal(sources.has(retired), false);
+  assert.equal(RUNTIME_DOMAINS.client.includes(retired), false);
+  assert.ok(RETIRED_RUNTIME_PATHS.includes(retired));
+  for (const source of ['', "import './studies/water/preview.mjs';"]) {
+    assert.throws(() => checkRuntimeImports(new Map(sources).set(retired, source)), /retired implementation path/);
+  }
+  const graph = runtimeImportGraph(sources);
+  const reachable = new Set();
+  const visit = filename => {
+    if (reachable.has(filename)) return;
+    reachable.add(filename);
+    for (const dependency of graph.get(filename).local) visit(dependency);
+  };
+  for (const entry of ['src/game-entry.mjs', 'server.mjs', 'room-supervisor.mjs']) visit(entry);
+  assert.equal(reachable.has('src/studies/water/preview.mjs'), false, 'comparison controller stays outside normal game/server closures');
 });
 
 test('water rendering stays outside authoritative domains and server hosts through every import form', () => {
@@ -335,7 +351,8 @@ test('room index persistence is explicitly Node-only and excluded from every shi
   const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
   for (const entry of BROWSER_ENTRYPOINTS) {
     const changed = new Map(sources);
-    changed.set(entry, `${sources.get(entry)}\nimport './server/persistence/room-index-store.mjs';`);
+    const relative = path.posix.relative(path.posix.dirname(entry), canonical);
+    changed.set(entry, `${sources.get(entry)}\nimport '${relative.startsWith('.') ? relative : `./${relative}`}';`);
     assert.throws(() => checkRuntimeImports(changed), /browser reaches a Node-only adapter/, entry);
   }
   for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
@@ -404,7 +421,8 @@ test('every shipped browser entry rejects both offline adapter paths', async () 
   for (const entry of BROWSER_ENTRYPOINTS) {
     for (const adapter of ['pve-model-proposal.mjs', 'server/pve-model-proposal.mjs']) {
       const changed = new Map(sources);
-      changed.set(entry, `${sources.get(entry)}\nimport './${adapter}';`);
+      const relative = path.posix.relative(path.posix.dirname(entry), `src/${adapter}`);
+      changed.set(entry, `${sources.get(entry)}\nimport '${relative.startsWith('.') ? relative : `./${relative}`}';`);
       assert.throws(() => checkRuntimeImports(changed), /browser reaches a Node-only adapter/,
         `${entry} -> ${adapter}`);
     }
@@ -417,7 +435,8 @@ test('every shipped browser entry rejects private manifest and transport paths, 
     for (const privateModule of ['server/client-asset-paths.mjs',
       'networking/websocket-deflate-offer.mjs', 'networking/websocket-frame.mjs']) {
       const changed = new Map(sources);
-      changed.set(entry, `${sources.get(entry)}\nimport('./${privateModule}');`);
+      const relative = path.posix.relative(path.posix.dirname(entry), `src/${privateModule}`);
+      changed.set(entry, `${sources.get(entry)}\nimport('${relative.startsWith('.') ? relative : `./${relative}`}');`);
       assert.throws(() => checkRuntimeImports(changed), /browser reaches a server-private module/,
         `${entry} -> ${privateModule}`);
     }

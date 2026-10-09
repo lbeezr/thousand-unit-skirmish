@@ -10,7 +10,7 @@ export { moduleImports } from './module-imports.mjs';
 // Entry modules loaded by the five shipped HTML pages. main.js is reached lazily.
 export const BROWSER_ENTRYPOINTS = [
   'src/game-entry.mjs', 'src/audio-studio.mjs', 'src/audio-zones.mjs',
-  'src/environment-review.mjs', 'src/water-study-preview.mjs',
+  'src/environment-review.mjs', 'src/studies/water/preview.mjs',
 ];
 // Native ESM package imports are scoped to each HTML document's import map.
 export const BROWSER_PACKAGE_IMPORTS = {
@@ -18,7 +18,7 @@ export const BROWSER_PACKAGE_IMPORTS = {
   'src/audio-studio.mjs': [],
   'src/audio-zones.mjs': [],
   'src/environment-review.mjs': ['three'],
-  'src/water-study-preview.mjs': ['three'],
+  'src/studies/water/preview.mjs': ['three'],
 };
 export const SERVER_ENTRYPOINTS = ['room-supervisor.mjs', 'server.mjs'];
 // Reviewed migrations update every tracked consumer. Reject returning copies
@@ -28,6 +28,7 @@ export const RETIRED_RUNTIME_PATHS = Object.freeze([
   'src/pve-reconnaissance.mjs', 'src/pve-regroup.mjs', 'src/pve-skirmish-targets.mjs',
   'src/water-surface-study.mjs', 'src/water-study-state.mjs',
   'src/water-study-fish-binding.mjs', 'src/water-surface-geometry.mjs',
+  'src/water-study-preview.mjs',
   'src/forest-habitat.mjs', 'src/forest-composition.mjs', 'src/forest-age-composition.mjs',
 ]);
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
@@ -135,7 +136,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'order-feedback', 'population-readout', 'practice-entry-controls', 'pve-entry',
     'resource-format', 'room-lobby-chat-ui', 'room-lobby-ui', 'room-presence',
     'selection-context', 'selection-portrait', 'unit-selection', 'wall-placement',
-    'water-study-preview',
+    'studies/water/preview',
   ],
   authoring: [
     'authoring/scenario-authoring', 'authoring/map-resize',

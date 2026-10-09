@@ -20,6 +20,7 @@ const privatePaths = ['/health', '/health?tickSamples=1', '/admin', '/api/admin'
   '/src/server/build-identity.mjs', '/src/server/release-identity.json',
   '/src/server/public-gameplay.mjs', '/src/server/client-static-assets.mjs',
   '/release-manifest.json', '/environment-review.html', '/water-study.html',
+  '/src/studies/water/preview.mjs', '/src/water-study-preview.mjs',
   '/audio-studio.html', '/audio-zones.html', '/assets/ui/preview.html',
   '/assets/units/worker-sprite-v3/source-records.json',
   '/assets/wildlife/bellweather-sheep-static-v1/source/sheep-yaw-000.png',

@@ -518,7 +518,7 @@ try {
     }
   }
   await checkClientImports(base, { authorization, entrypoints: BROWSER_ENTRYPOINTS.map(filename => `/${filename}`) });
-  for (const file of ['water-study.html', 'src/water-study-preview.mjs',
+  for (const file of ['water-study.html', 'src/studies/water/preview.mjs',
     'src/presentation/rendering/water/surface.mjs', 'src/presentation/rendering/water/state.mjs',
     'src/presentation/rendering/water/fish-binding.mjs', 'src/presentation/rendering/water/geometry.mjs',
     'src/shore-bank-shade.mjs']) {
@@ -531,7 +531,10 @@ try {
       createHash('sha256').update(await readFile(path.join(sourceRoot, file))).digest('hex'),
       `packed water study bytes must match ${file}`);
   }
-  for (const filename of ['src/water-surface-study.mjs', 'src/water-study-state.mjs',
+  for (const filename of ['src/studies/water/', 'src/studies/water/unknown.mjs',
+    'src/studies/water/preview.mjs/extra', 'src/studies/water/preview.mjs.map',
+    'src/studies/water//preview.mjs', 'SRC/studies/water/preview.mjs',
+    'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs',
     'src/water-study-fish-binding.mjs', 'src/water-surface-geometry.mjs']) {
     assert.equal(packedManifest.files.includes(filename), false, `retired water implementation must not be packed: ${filename}`);
     for (const method of ['GET', 'HEAD']) {
