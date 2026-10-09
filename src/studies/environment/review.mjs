@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { CAMERA_VIEW_DIRECTION } from './camera-controls.mjs';
-import { createEnvironmentPilot } from './environment-pilot.mjs';
+import { CAMERA_VIEW_DIRECTION } from '../../camera-controls.mjs';
+import { createEnvironmentPilot } from '../../environment-pilot.mjs';
 
 const stage = document.querySelector('#stage');
 const status = document.querySelector('#status');

@@ -17,7 +17,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/palisade-construction-ground.mjs', 'src/settlement-wear.mjs',
   'src/asset-readability.mjs', 'src/catalog-barracks-observation.mjs', 'docs/art-direction/human-roster-v1/infantry-production-contract.json', 'assets/ui/icons/actions/manifest.json',
   'src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/wildlife-motion.mjs', 'src/wildlife-heading.mjs', 'src/wildlife-herding.mjs', 'src/wildlife-client-state.mjs', 'src/sheep-static-preview.mjs',
-  'environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs',
+  'environment-review.html', 'src/studies/environment/review.mjs', 'src/environment-pilot.mjs',
   'water-study.html', 'src/studies/water/preview.mjs', 'src/presentation/rendering/water/surface.mjs', 'src/presentation/rendering/water/state.mjs',
   'src/presentation/rendering/water/fish-binding.mjs',
   'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',

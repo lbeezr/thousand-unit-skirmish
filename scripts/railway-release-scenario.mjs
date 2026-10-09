@@ -543,6 +543,27 @@ try {
       if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
     }
   }
+  for (const filename of ['environment-review.html', 'src/studies/environment/review.mjs', 'src/environment-pilot.mjs']) {
+    assert.ok(packedManifest.files.includes(filename), `environment study release must contain ${filename}`);
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+      assert.equal(response.status, 200, `packed environment study must serve (${method}): ${filename}`);
+      assert.match(response.headers.get('content-type'), filename.endsWith('.html') ? /text\/html/ : /javascript/);
+      const bytes = Buffer.from(await response.arrayBuffer());
+      if (method === 'HEAD') assert.equal(bytes.length, 0, filename);
+      else assert.deepEqual(bytes, await readFile(path.join(sourceRoot, filename)), `packed environment study bytes: ${filename}`);
+    }
+  }
+  for (const filename of ['src/environment-review.mjs', 'src/studies/environment/', 'src/studies/environment/unknown.mjs',
+    'src/studies/environment/review.mjs/extra', 'src/studies/environment/review.mjs.map',
+    'src/studies/environment//review.mjs', 'SRC/studies/environment/review.mjs']) {
+    assert.equal(packedManifest.files.includes(filename), false, `environment study admission must stay exact: ${filename}`);
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+      assert.equal(response.status, 404, `environment study denied path (${method}): ${filename}`);
+      if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
+    }
+  }
   // Forest presentation bodies move with their real browser callers and exact URLs.
   for (const name of ['habitat', 'composition', 'age-composition']) {
     const filename = `src/presentation/rendering/forest/${name}.mjs`;
