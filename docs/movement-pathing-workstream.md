@@ -1510,6 +1510,65 @@ chokes have long queues. Every eventual-arrival fixture names its finite deadlin
 and keeps timed-out actors/goals visible. Existing 30 Hz / 33.333 ms qualification
 and retained failures remain separate from diagnostic harness limits.
 
+**9 October 2026 — rejected detour-arrival candidate and open Highland diagnosis.**
+Local candidate `1da77bf123d93efc4f59201fc0cb49cd93f3c4ca` on public baseline
+`8485db5d32b18580d699acaa764f1c6f00aa667f` is rejected and unmerged: native
+single-choke arrival changed from 64/64 to 51/64, and a previously passing
+fixed-tick seat-1 closing-gate case reached only 3/64. The candidate's exact
+temporary-detour arrival assertion imposed a new contract; it was not existing
+acceptance. Do not revive this candidate/lookahead family or infer an exact
+detour-point requirement from the final-point policy above.
+
+Highland [worker-cargo-return-scenario.mjs](../scripts/worker-cargo-return-scenario.mjs)
+has mixed native outcomes and remains unresolved.
+Two native runs on unchanged public `fb0f5126dd2d3af648995f54f8a1f586dfe96c0f` failed the original 45-second
+clicked-tree depletion predicate: one retained both workers with stock 6,
+cargo 0 and no useful late net approach; the other captured productive contour
+travel and late observed harvesting with incomplete depletion. One independently reviewed run on
+`373b063a00bafe778ca786efaf08eda079864819` passed that predicate at tick 960 after 31,873 ms and completed
+once-only banking of all drawn Wood. The relevant movement/map/fixture sources
+were unchanged; the server differed only by two import relocations. These
+bounded outcomes preserve failures alongside the pass, without establishing
+consistent passing or attributing variation to source behavior or observation.
+
+The passing run retains worker-0 ticks 72–101: 30 admitted displacements,
+29 opposing successive pairs, 2.6 units travelled and 0.00250782 net displacement
+with unchanged route cursor. Exact chosen/returned/written agreement survives
+for decisions 73–101; tick 72 has only its predecessor-write witness. This is
+bounded oscillation, not proof of zero progress or prior-timeout causation.
+Coverage reached tick 1050; the 192-first/64-tail per-worker retention cap
+dropped 272 worker-0 events across ticks 279–665. Worker 125 dropped none;
+metadata overflow and observer errors were zero.
+Measured ledger cost excludes other hook overhead and native asynchronous
+interleaving remains uncontrolled, including the native candidate comparison.
+
+The precise missing failure witness is a correlated command-receipt → synchronous
+WorkerFlow publication/route-serial → actual selector return/arbitration →
+physical admission and contour creation/stage/expiry/invalidation → harvest/deadline
+history from the same failed original 45-second execution. Neither the older
+checkpoint-only failure, the productive twelve-tick contour window, nor the
+passing ledger with dropped transitions provides it. No fixture or movement fix
+is justified; the blocker remains open. QA diagnosis stays with the current
+delegation (source thread `01a0f784-c5d7-72e0-82e8-1747b4c840c1`); core
+`01a107ba` retains Worker/shared movement and crowd `01a10933-c2b0` retains its
+selector boundary. This document-only correction proceeds to parent draft-PR review and
+ready/merge handling. The Highland investigation remains stopped. Further runs,
+candidates and held artifact-access retries remain stopped; any new investigation
+requires separate authorization and reviewed observation bounds.
+
+Source references are the pinned public scenario at
+[`fb0f5126`](https://github.com/lbeezr/thousand-unit-skirmish/blob/fb0f5126dd2d3af648995f54f8a1f586dfe96c0f/scripts/worker-cargo-return-scenario.mjs)
+and [`373b063a`](https://github.com/lbeezr/thousand-unit-skirmish/blob/373b063a00bafe778ca786efaf08eda079864819/scripts/worker-cargo-return-scenario.mjs),
+[selector](../src/unit-crowd-steering.mjs), [contour](../src/crowd-parked-contour.mjs),
+[host](../server.mjs) and [Highland map](../maps/highland-grove.json).
+The original scenario entrypoint is `node scripts/worker-cargo-return-scenario.mjs`;
+the native candidate control is `node scripts/pathing-native-scenario.mjs single-choke`,
+and the fixed-tick gate assertion is in [queued-gate-pathing.mjs](../scripts/queued-gate-pathing.mjs).
+These identify source and workload; the observations used private review-approved
+hooks whose raw receipts remain private. Plain reruns need not reproduce those
+instrumented executions and none is authorized by this note. No result is claimed
+for the documentation branch's containing main `52bdb70f966ca188d433770727a03074fc20978d`.
+
 Use 16×17/lab and representative Tiny160, Large256, then experimental planned320;
 exercise 100/500/1,000/2,000 total actors with distributed armies, opposing narrow
 streams, mixed-speed formations and long economy/combat/naval soaks. A primitive
