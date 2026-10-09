@@ -26,6 +26,33 @@ the role and the execution condition. Package presence and HTTP admission are
 separate facts. The whole `src/` tree is copied into the release; the exact
 client allowlist determines which modules can be requested publicly.
 
+## Current retained reference roles — 9 October 2026
+
+The dated inventory's two unknown roles now have verified contract/test consumers:
+
+- `src/building-production-cue.mjs` is dormant in gameplay and retained for
+  compatibility regression equivalence. [Its introduction](https://github.com/lbeezr/thousand-unit-skirmish/commit/a79351aa0f6bc6eca04db3910eb126ee1bd4e5f5)
+  added a real main-client caller; [the replacement](https://github.com/lbeezr/thousand-unit-skirmish/commit/bf3aac412b8692193745d4dfc284a3f8e650e3c8)
+  switched gameplay to `building-visual-state.mjs` and deliberately retained
+  [the CI scenario](../scripts/building-production-cue-scenario.mjs), which compares
+  the original helper with current cue states, translating `idle` to `hidden`.
+- `src/painted-material-atlas.mjs` is a CPU tool/test reference for the production
+  shader contract. [Its introduction](https://github.com/lbeezr/thousand-unit-skirmish/commit/8460bef2faaf5b285edc688c7d054b7bb4cb473b)
+  supplied mirrored UV/tessellation helpers and [the UV scenario](../scripts/painted-material-atlas-uv-scenario.mjs).
+  [The later default atlas adoption](https://github.com/lbeezr/thousand-unit-skirmish/commit/fdf6a9c6a6e2361e1ed8b1aa87541020c42f10f5)
+  uses the separate loader and sampling shader; [runtime tests](../scripts/painted-material-atlas-runtime.test.mjs)
+  import the CPU UV helper to check shader-cell coordinate expectations.
+  The inventory's `validate-painted-material-atlas.mjs` entry is a path/name
+  mention, not an import of this helper: [that CLI](../scripts/validate-painted-material-atlas.mjs)
+  imports `scripts/painted-material-atlas-contract.mjs`.
+
+Neither has a current tracked runtime/HTML caller or exact public module entry;
+both are packaged. The [renderer cue contract](renderer-state-contract.md) and
+[painted-ground adoption owner](qa-painted-ground-atlas-adoption.md) retain the
+surrounding semantics and acceptance. Individual root-helper retirement ownership
+and removal decisions remain undecided. This annotation preserves the dated
+inventory, both files and their existing APIs/admission; it allocates no migration.
+
 ## Subsystem homes and names
 
 Use the existing [destination map](architecture.md#module-dependencies-and-gradual-organization)
