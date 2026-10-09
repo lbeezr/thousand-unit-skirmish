@@ -22,7 +22,7 @@ import {
   normalizeRoomMetadata,
   roomIndexDocument,
   roomResponseMetadata,
-} from '../src/room-launch-options.mjs';
+} from '../src/server/orchestration/room-launch-options.mjs';
 import { normalizeMatchMode } from '../src/match-modes.mjs';
 import { PVE_MAP_IDS, readPveLaunchOptions, selectPveMapId } from '../src/pve-match.mjs';
 

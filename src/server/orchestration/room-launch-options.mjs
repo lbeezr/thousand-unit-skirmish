@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import { matchModeDefinition, normalizeMatchMode, NORMAL_HUMAN_MATCH_MODE } from './match-modes.mjs';
+import { matchModeDefinition, normalizeMatchMode, NORMAL_HUMAN_MATCH_MODE } from '../../match-modes.mjs';
 
 export const FRESH_PVE_UNSUPPORTED_REASON = 'New Play vs AI matches support only 160 × 160 Terraced Vale with Skirmish@1. Existing AI rooms can still be resumed.';
 

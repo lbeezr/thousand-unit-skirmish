@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from '../src/match-modes.mjs';
-import { FRESH_PVE_UNSUPPORTED_REASON } from '../src/room-launch-options.mjs';
+import { FRESH_PVE_UNSUPPORTED_REASON } from '../src/server/orchestration/room-launch-options.mjs';
 
 const fixture = await createFortifiedFixture({ supervisor: true,
   mapPath: 'maps/veyrholds-threefold-basin.json', timeoutMs: 45000 });

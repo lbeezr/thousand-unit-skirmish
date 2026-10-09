@@ -400,6 +400,60 @@ source/check/package evidence. Parent retains ready/merge and deployment in sour
 task `01a0f784-c5d7-72e0-82e8-1747b4c840c1`; local DOM/native process proof does
 not establish ordinary-match browser acceptance on a delivered release.
 
+The private lobby authority pair integrated through
+[PR631](https://github.com/lbeezr/thousand-unit-skirmish/pull/631) at
+`79e64fee2a1be947b0f6ce84a21203554ff5ec8d`; tree
+`84e6d70d28cbebc5562e6c9f4407dc30ea6d0d20` equals the independently reviewed
+source tree. Six compact authority/private-serving checks and imports pass on
+that merge. The parent retains hosted baseline-red parity and delivered acceptance;
+this is not a full-green claim.
+
+## Private launch/index contract home — 9 October 2026
+
+The organization owner takes the coherent 226-line private launch/index leaf on
+`codex/private-room-launch-home-20261009`, from containing main
+`79e64fee2a1be947b0f6ce84a21203554ff5ec8d`. The types/contracts owner
+`01a11265-7c21-71a4-8345-611bf0318011` explicitly released the module and
+associated import/type-fixture paths at 15:20 UTC from retained records; no active
+or unpublished work overlaps. The parent reserved the supervisor/index-store
+imports and ordinary-floor/Tiny scenario import lines. Audio completion PR632 and
+the Highland diagnosis remain disjoint; their implementations and evidence are
+untouched. Qualification uses containing main
+`52bdb70f966ca188d433770727a03074fc20978d` after PR632 integrated; its six audio,
+Main, test and matrix paths retain their containing-main bytes.
+
+Move `src/room-launch-options.mjs` to
+`src/server/orchestration/room-launch-options.mjs`. Its only production consumers
+are `room-supervisor.mjs` and `src/server/persistence/room-index-store.mjs`;
+the direct launch-option test and ordinary-floor/Tiny native scenarios also import
+it. All nine exports, declarations, function bodies and errors remain identical
+apart from the relative `match-modes.mjs` import. Preserve seed generation order
+and randomness, fresh-versus-restored admission, worker environment values,
+metadata validation/getter capture and room-index versions 1–3. No abstraction,
+type enrollment, compiler settings, timer, command, public UI or admission change.
+
+No supported public URL or external consumer of the root entry was identified.
+Retire it without a forwarding entry; root files reduce from 174 to 173 (168
+JavaScript and five CSS), with all 24 supported aliases and six generated
+descriptors unchanged. Exact server membership, Node-only enrollment, the two
+runtime callers and retired-path guards follow the canonical home. Additive
+existing public/package regressions cover canonical and retired private GET/HEAD,
+unchanged admission, canonical source/manifest identity and retired-root absence.
+Historical inventories and PR563 QA evidence remain pinned.
+
+Write scope: this leaf, five consumer import paths, existing runtime/public/package
+guards, this canonical record and the current architecture source reference.
+The initial unchanged launch/index baseline is
+43/43 passing tests. Next transition: independent exact-head review, affected
+launch/lobby/UI/type/import tests, both configured type gates, docs and client
+allowlist; existing supervisor, expiry, PvE launch, pregame, ordinary-floor and
+Tiny AI-entry native scenarios; clean packed private-serving proof; then a draft
+PR with exact source and release evidence. Movement and the held radius repair,
+held experiments, local HUD, asset publication and all other active lanes remain
+outside the slice. Art backing is N/A for this internal placement change. Parent
+task `01a0f784-c5d7-72e0-82e8-1747b4c840c1` retains ready/merge and deployment;
+local native/package proof does not establish delivered browser acceptance.
+
 ## Integrated code milestones
 
 | Slice | Merge and evidence | Remaining acceptance |

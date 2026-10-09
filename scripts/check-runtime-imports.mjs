@@ -31,6 +31,7 @@ export const RETIRED_RUNTIME_PATHS = Object.freeze([
   'src/water-study-preview.mjs', 'src/environment-review.mjs', 'src/practice-entry-catalog.mjs',
   'src/snapshot-private-production.mjs',
   'src/room-pregame.mjs', 'src/room-lobby-chat.mjs',
+  'src/room-launch-options.mjs',
   'src/forest-habitat.mjs', 'src/forest-composition.mjs', 'src/forest-age-composition.mjs',
 ]);
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
@@ -38,7 +39,7 @@ export const NODE_ONLY_MODULES = [
   'src/server/client-static-assets.mjs', // Shared exact static admission uses Node path semantics.
   'src/server/build-identity.mjs', // Reads only the private generated release declaration.
   'src/server/checkpoint-file-reader.mjs', // Bounded private filesystem recovery adapter.
-  'src/room-launch-options.mjs', // Node crypto-backed launch seeds.
+  'src/server/orchestration/room-launch-options.mjs', // Node crypto-backed launch seeds.
   'src/pve-model-proposal.mjs', // Compatibility entry for the offline Node adapter.
   'src/server/pve-model-proposal.mjs', // Offline Node model-request implementation.
   'src/networking/websocket-frame.mjs', // Server-only Node Buffer wire encoding.
@@ -153,7 +154,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   ],
   server: [
     'networking/websocket-deflate-offer', 'networking/websocket-frame',
-    'pve-model-proposal', 'room-launch-options',
+    'pve-model-proposal', 'server/orchestration/room-launch-options',
     'server/orchestration/room-lobby-chat', 'server/orchestration/room-pregame',
     'server/build-identity', 'server/client-asset-paths', 'server/pve-model-proposal',
     'server/client-static-assets', 'server/public-gameplay',

@@ -557,7 +557,7 @@ try {
       if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
     }
   }
-  for (const name of ['room-pregame', 'room-lobby-chat']) {
+  for (const name of ['room-pregame', 'room-lobby-chat', 'room-launch-options']) {
     const canonical = `src/server/orchestration/${name}.mjs`;
     const retired = `src/${name}.mjs`;
     assert.ok(packedManifest.files.includes(canonical), `canonical lobby authority is packaged: ${canonical}`);
