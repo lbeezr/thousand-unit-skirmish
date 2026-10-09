@@ -3,7 +3,7 @@ import { isClientStaticAsset } from './client-static-assets.mjs';
 const ROOM_ID = '[A-Za-z0-9_-]{32}';
 const ROOM_LOOKUP = new RegExp(`^/api/rooms/${ROOM_ID}$`);
 const REVIEW_MODULES = new Set([
-  'src/environment-review.mjs', 'src/studies/water/preview.mjs',
+  'src/studies/environment/review.mjs', 'src/studies/water/preview.mjs',
   'src/audio-zones.mjs',
 ]);
 

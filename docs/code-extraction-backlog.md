@@ -24,7 +24,7 @@ entry is the controller's only runtime consumer. Production geometry, surface,
 state and live fish binding stay in `src/presentation/rendering/water/`.
 This completes only the water controller portion of the
 [source-role inventory's standalone-page proposal](source-organization-inventory-2026-10-07.md#proposed-next-batches-and-ownership).
-Environment study controllers remain a separate unallocated candidate; audio,
+The environment controller continuation is scoped below; audio,
 diagnostics, movement, HUD and active PR614/616 integrations are outside this slice.
 
 The refreshed root inventory at that baseline has 180 files: 175 JavaScript
@@ -42,13 +42,47 @@ semantics, asset URLs and production renderer bytes. Exact path replacement in
 the review-only admission set retains authenticated-only study access; it does
 not grant anonymous access or widen directory admission.
 
-Next transition: independent review and exact-head import/type, affected water,
-public-route, client-admission and packed-release checks, then a qualified draft
-PR. The PR retains exact source/check receipts and clean release digest. Art
-backing is N/A because there is no presentation change. Source organization is
-the scoped outcome; no merge, provider deployment, asset publication, native Mac
-or ordinary rendered acceptance is authorized or claimed here. Existing movement
-CI failures remain owned by the movement lane.
+Integrated in [PR617](https://github.com/lbeezr/thousand-unit-skirmish/pull/617)
+at `fe86f05cba09568a0420eae2cbdf31b8136f68c4`, after qualification at
+`3c3d5638c6b425456a95b47b98faffa161aad0fc` over `af77e334`. The final merged
+tree exactly matches that qualified tree. Imports and packed controller serving
+passed again at the merge; the original 166/166 affected checks and independent
+review receipts remain in the PR. Parent integration review confirmed hosted
+failures also exist on the baseline. Source organization is the completed scoped
+milestone; no provider deployment or ordinary rendered acceptance is claimed.
+
+## Standalone environment review controller — 9 October 2026
+
+The same organization owner continues the
+[source-role inventory's standalone-page proposal](source-organization-inventory-2026-10-07.md#proposed-next-batches-and-ownership)
+on `codex/environment-study-controller-home-20261009`, starting from PR617 merge
+`fe86f05cba09568a0420eae2cbdf31b8136f68c4`. Move only the 114-line controller
+from `src/environment-review.mjs` to `src/studies/environment/review.mjs`.
+The retained `/environment-review.html` is its only executable consumer; the
+controller exports no module API and is outside normal game/server closures.
+The two relative imports retain their targets, `camera-controls.mjs` and
+`environment-pilot.mjs`, alongside the same mapped `three` package.
+
+Write scope is that controller and HTML entry, exact browser/package/domain and
+HTTP path registrations, existing import/admission/packed-release guards, and
+this canonical note. Preserve the body, controls, asset URLs, camera/probe timing
+and authenticated-only controller admission. Retire its old root path without a
+stub; no supported CLI or external module API was identified. Root files become
+178 (173 JavaScript and five CSS); 21 forwarding entries and six generated
+descriptors remain. The review-only pilot stays in place; its implementation,
+shaders, asset paths and historical audit links are outside this slice.
+
+PR617 supplies the nested-entry boundary fixtures and integrates the shared
+registration files before this move. PR618's gameplay documentation, audio's
+test/matrix, QA registration1476, diagnostic tests, movement, HUD and held
+PR541/546/548 are separate owners. Reconcile fresh main before final qualification
+without editing their files. Art backing is N/A because presentation is unchanged.
+
+Next transition: independent review, exact-head imports/types and affected
+entry/admission guards, clean package and packed serving, then a qualified draft
+PR. Exact source, check receipts and release digest belong in that PR. The parent
+retains merge/deployment; source checks establish no browser pixels or ordinary
+rendered acceptance. Existing movement CI failures remain with their owner.
 
 ## Integrated code milestones
 

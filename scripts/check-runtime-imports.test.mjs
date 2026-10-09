@@ -131,6 +131,26 @@ test('default water renderer has canonical production consumers and no retired r
   assert.equal(reachable.has('src/studies/water/preview.mjs'), false, 'comparison controller stays outside normal game/server closures');
 });
 
+test('standalone environment controller has its own study home and no runtime module consumers', async () => {
+  const canonical = 'src/studies/environment/review.mjs';
+  const retired = 'src/environment-review.mjs';
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  assert.ok(sources.has(canonical));
+  assert.equal(sources.has(retired), false);
+  assert.ok(BROWSER_ENTRYPOINTS.includes(canonical));
+  assert.ok(RUNTIME_DOMAINS.client.includes(canonical));
+  assert.equal(RUNTIME_DOMAINS.client.includes(retired), false);
+  assert.ok(RETIRED_RUNTIME_PATHS.includes(retired));
+  for (const source of ['', "import './studies/environment/review.mjs';"]) {
+    assert.throws(() => checkRuntimeImports(new Map(sources).set(retired, source)), /retired implementation path/);
+  }
+  const graph = runtimeImportGraph(sources);
+  assert.deepEqual(graph.get(canonical).local, ['src/camera-controls.mjs', 'src/environment-pilot.mjs']);
+  for (const [consumer, node] of graph) {
+    assert.equal(node.local.includes(canonical), false, `${consumer}: study controller remains an HTML-only entry`);
+  }
+});
+
 test('water rendering stays outside authoritative domains and server hosts through every import form', () => {
   for (const target of Object.values(WATER_RENDER_MODULES)) {
     for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
