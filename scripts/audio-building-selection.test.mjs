@@ -99,6 +99,35 @@ test('civilization selection retains shared cooldown, random nonrepeat and urgen
   assert.notEqual(second.variant.sourceId, first.variant.sourceId);
 });
 
+test('same-event cooldown is shared across civilization override and common fallback', () => {
+  let now = 1000;
+  const gate = createProfileDecisionGate({ now: () => now });
+  const common = binding('common-worker-select');
+  const frontier = binding('frontier-worker-select');
+  const profile = { bindings: { 'unit.worker.select': common },
+    civilizationBindings: { frontier: { 'unit.worker.select': frontier } } };
+  const event = civilizationId => ({ cue: 'select', kind: 'worker', civilizationId });
+  function accepted(civilizationId, expected) {
+    const choice = gate.choose(profile, event(civilizationId));
+    assert.ok(choice);
+    assert.equal(choice.key, 'unit.worker.select');
+    assert.equal(choice.binding, expected);
+    assert.equal(choice.variant.sourceId, expected.variants[0].sourceId);
+    assert.equal(gate.getReason(), null, 'successful choice clears any previous rejection');
+  }
+  accepted('frontier', frontier);
+  now = 1449;
+  assert.equal(gate.choose(profile, event('unknown-civilization')), null);
+  assert.equal(gate.getReason(), 'binding cooldown');
+  now = 1450; accepted('unknown-civilization', common);
+  now = 1899;
+  assert.equal(gate.choose(profile, event('frontier')), null);
+  assert.equal(gate.getReason(), 'binding cooldown');
+  now = 1900; accepted('frontier', frontier);
+  gate.reset();
+  accepted('frontier', frontier);
+});
+
 test('actual building selection uses distinct default synthesis and the existing lifetime rules', async t => {
   const originalContext = Object.getOwnPropertyDescriptor(globalThis, 'AudioContext');
   let clock = 1000; t.mock.method(performance, 'now', () => clock);

@@ -77,7 +77,9 @@ are not new assets or a delivered assignment. Resolution is:
 Existing `Math.random` choice avoids an immediate same-source repeat when
 alternatives exist; it does not promise deterministic rotation. Cooldowns and voice
 priority remain shared within the active profile; changing civilization does not
-create a per-unit sound loop or bypass the same-key cooldown. The current default
+create a per-unit sound loop or bypass the same-key cooldown. The gate tracks
+the resolved event key, shared by civilization overrides and common fallback,
+rather than civilization or source identity. The current default
 is Frontier and current source packs have no override layer. The API supports a
 future mixed-civilization caller; faction selection/state transport and production
 of civilization voices are separate work, not claimed here.
@@ -233,6 +235,19 @@ sample precedence/decode failure, unknown fallback, shared cooldown, mute/focus
 return and existing warning aggregation. The muted-warning assertion observes
 `onCueDecision`, not caption UI. These CPU scheduling/callback checks do not
 establish UI rendering, audible playback or recognition.
+
+The audio test-contract owner (this cloud task) retains the bounded same-event
+civilization-switch regression in `scripts/audio-building-selection.test.mjs`,
+checked against main `8ac6cb3c` on 9 October 2026. Its effects-only
+`unit.worker.select` fixture uses distinct Frontier/common sources and a 450 ms
+cooldown: Frontier at 1000 ms succeeds, unknown-civilization fallback at 1449
+rejects for binding cooldown and at 1450 succeeds; Frontier at 1899 rejects and
+at 1900 succeeds. After reset, another Frontier choice at 1900 succeeds. Accepted
+choices retain the exact key, binding identity and source and clear the rejection
+reason; reset itself makes no rejection-reason promise. This covers the existing
+gate contract without changing playback or adding assets. Review and focused
+source checks are this owner's delivery evidence; audible recognition and native
+listening remain with the audio outcome owner at an identified containing release.
 
 The Worker context slice changes only `sendTrackedOrder` metadata and the event
 key resolver, using its existing Farm/fish/disclosure imports. Main imports and
