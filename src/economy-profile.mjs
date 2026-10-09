@@ -1,5 +1,5 @@
 import { GAMEPLAY_DEFINITIONS, GAMEPLAY_RULESET_REVISION, gameplayRulesetRevision } from './gameplay-definitions.mjs';
-import { creditResourceBalance } from './economy-ledger.mjs';
+import { creditResourceBalance } from './rules/economy-ledger.mjs';
 
 export const DEFAULT_ECONOMY_PROFILE_ID = 'food-wood-v1';
 export const STONE_ECONOMY_PROFILE_ID = 'stone-defense-v1';

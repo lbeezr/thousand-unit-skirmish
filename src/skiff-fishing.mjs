@@ -2,7 +2,7 @@ import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.m
 import { isShoreFish } from './shore-fishing.mjs';
 import { shoreFishSitePositions } from './shore-fishing-placement.mjs';
 import { createDockPlacementContext, dockBerthOrientation } from './dock-placement.mjs';
-import { creditResourceBalance } from './economy-ledger.mjs';
+import { creditResourceBalance } from './rules/economy-ledger.mjs';
 
 const at = (unit, point) => point && Math.hypot(unit.x - point.x, unit.z - point.z) < 1e-7;
 const moving = unit => unit.pathIndex < unit.path.length;
