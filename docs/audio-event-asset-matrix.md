@@ -104,7 +104,7 @@ sample priority remains urgent 10/other 0, with explicit pack overrides allowed.
 | `unit.worker.gather.fish` / `unit.skiff.gather.food` | Worker applied Gather preserves `gatherJob: fish` plus food from a currently visible authored shore-fish node. A matching `FISHING ORDER` consumes a locally issued Skiff Gather event once, retaining its food resource without Worker job context. | Worker context/key and Skiff applied acknowledgement implemented; fish voice/splash missing. Existing role/cue and synthesis fallback stays. | P1; one/order; local issuing player; no per-fish loop or inferred hidden target; gather 140 ms. |
 | `unit.worker.gather.stone` | Authored Stone Gather supplies node type. | Generic synthesis; distinct Stone voice/foley missing. | P1; applied token/local worker; 140 ms. |
 | `unit.worker.build`, `.repair` | Applied Build/Resume/Wall Build/Repair token. Wall segments do not each acknowledge. | Generic build/repair synthesis; technical repair latch; building/construction voices missing. | P1; one/order; no premature construction success; 170 ms. |
-| `unit.worker.work.wood`, `.food`, `.repair` | Actual execution from living local worker row 14 within 24 world units of camera; resource set aggregates. Stone is excluded by the current execution-audio route. | Technical three trims when assigned; variant-specific Farm/sheep/fish work palette missing. Stone needs both routing and material. Richer execution metadata does not automatically become an audio binding. | P3; at most three resources every 1.5 s; legacy/hidden enemy execution silent; task/map/mute/hide/death cancel. |
+| `unit.worker.work.wood`, `.food`, `.repair`, `.stone` | Actual execution from living local worker row 14 within 24 world units of camera; resource set aggregates. | Technical three trims when assigned; distinct Stone material and variant-specific Farm/sheep/fish work palette missing. Stone uses existing exact/role/cue binding resolution and generic synthesis when unbound. Richer execution metadata does not automatically become an audio binding. | P3; at most four resources every 1.5 s; legacy/hidden enemy execution silent; task/map/mute/hide/death cancel. |
 | `building.<type>.select` | Existing caller passes the authoritative selected building type. This slice preserves it through synthesis and decode failure, with distinct defaults for all thirteen types below. | Exact civilization recordings missing. Configured common generic sample remains a deliberate pack choice. | P2; one selection; own/disclosed building; same 55 ms gesture/90 ms cue cooldown/gain, different type pitches; centered. |
 | `unit.<kind>.ready`, `.death` | Local authoritative generation appears alive, or explicit alive-to-dead row; one representative/cue/snapshot. Initial/reset/older tick and fog absence silent. | Generic rise/fall and technical horn/latch; role voices missing. | P1; ready/death 2.2 s; no enemy death inference. |
 | `cue.building-complete` | Friendly observed incomplete-to-complete transition; aggregated per reconciliation. | Generic completion. Caller omits building type and binding schema only supports typed selection; typed completion is missing, not an asset-only task. | P1; initial/reset silent; 2.6 s; no queued-build success claim. |
@@ -304,6 +304,21 @@ This is source acknowledgement admission, not proof of fishing execution,
 deposited food, audible playback or caption rendering. The audio owner retains
 listening and ordinary-game acceptance at an identified containing release;
 the parent task retains draft-to-ready/merge transitions.
+
+The Stone execution correction starts from containing main `d91919e3` on
+9 October 2026. It adds Stone to the existing row-14 resource set and raises
+the work scheduler's bound from three to four, so simultaneous Food, Repair,
+Stone and Wood all reach the existing playback route. Locality, liveness,
+aggregation, 1.5 s cadence, cancellation, binding fallbacks and the global sample
+limit remain unchanged; gameplay, server and economy producers are untouched.
+The registered actual-Main CPU fixture covers both seats, mixed resources,
+aggregation and enemy/distant/dead/legacy/stopped Stone silence. The existing
+playback scenario uses synthetic fixture bytes to exercise four bound samples,
+cadence boundaries, task/reset/mute/hide/map/dispose cancellation and unbound
+fallback. It does not establish distinct Stone sound or native hearing. Existing
+work-feedback treatment backs this bounded routing correction; no new media is
+created. The audio owner retains listening and ordinary-game acceptance at an
+identified containing release; the parent task retains ready/merge/deployment.
 
 Next asset task: choose/cast/audition the
 listed Frontier voice slots, then publish only separately authorized material.

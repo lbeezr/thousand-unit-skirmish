@@ -9,14 +9,74 @@ import { validateAudioPack } from '../src/audio-assets.mjs';
 import { farmHarvestNode } from '../src/farm-harvest.mjs';
 import { isShoreFish } from '../src/shore-fishing.mjs';
 import { readDisclosedWildlife } from '../src/wildlife-client-state.mjs';
+import { createUnitPresentationClientFixture, workerSnapshotRow } from './unit-presentation-client-fixture.mjs';
 const worker = (id, task, team = 0, x = 1) => [id, team, x, 0, 100, 'worker', 0, null, 1, null, 0, null, null, null, task];
 test('execution is aggregated, local and nearby, with old snapshots, stopped and dead workers silent', () => {
   const rows = Array.from({ length: 1000 }, (_, id) => worker(id, 'wood'));
   rows.push(worker(1001, 'food'), worker(1002, 'repair'), worker(1003, 'food', 1), worker(1004, 'repair', 0, 100));
   assert.deepEqual(workAudioEvents(rows, { localTeam: 0 }), ['food', 'repair', 'wood'].map((resource) => ({ cue: 'work', kind: 'worker', resource })));
+  rows.push(worker(1005, 'stone'), worker(1006, 'stone'));
+  assert.deepEqual(workAudioEvents(rows, { localTeam: 0 }), ['food', 'repair', 'stone', 'wood'].map((resource) => ({ cue: 'work', kind: 'worker', resource })));
   assert.deepEqual(workAudioEvents(rows, { localTeam: null }), []);
   const dead = worker(0, 'wood'); dead[4] = 0;
   assert.deepEqual(workAudioEvents([dead, worker(1, null), worker(2, 'wood').slice(0, 14)], { localTeam: 0 }), []);
+});
+
+for (const team of [0, 1]) {
+  test(`seat ${team}: actual Main consumes all four owned nearby work resources without dropping Wood`, async () => {
+    const f = await createUnitPresentationClientFixture({ localTeam: team });
+    let clock = 10000;
+    const audio = createGameAudio({ storage: null, workNow: () => clock,
+      doc: { hidden: false, addEventListener() {}, removeEventListener() {} } });
+    f.context.audio = audio;
+    f.context.workAudioEvents = workAudioEvents;
+    const resources = ['food', 'repair', 'stone', 'wood'];
+    const rows = resources.map((resource, id) => workerSnapshotRow({ id, team, x: 1, audioExecution: resource }));
+    try {
+      f.apply(rows.map(row => row.map((value, index) => index === 14 ? null : value)), { initial: true });
+      assert.deepEqual(audio.getInspector().decisions, [], 'idle receipt is silent');
+      f.apply(rows);
+      assert.deepEqual(audio.getInspector().decisions, resources.map(resource => ({
+        cue: 'work', resource, key: null, outcome: 'synthesized fallback',
+      })), 'all four events reach the unchanged fallback route; this is not a hearing claim');
+      f.apply(rows);
+      assert.equal(audio.getInspector().decisions.length, 4, 'repeated snapshots retain the aggregate cadence');
+      clock += 1500;
+      f.apply(rows.map(row => row.map((value, index) => index === 14 ? 'stone' : value)));
+      assert.equal(audio.getInspector().decisions.length, 5, 'four Stone workers aggregate to one event');
+      assert.equal(audio.getInspector().decisions.at(-1).resource, 'stone');
+      clock += 1500;
+      f.apply(rows.map(row => row.map((value, index) => index === 14 ? null : value)));
+      assert.equal(audio.getInspector().decisions.length, 5, 'stopped work remains silent');
+    } finally { audio.dispose(); f.dispose(); }
+  });
+
+  test(`seat ${team}: actual Main keeps enemy, distant, dead, legacy and stopped Stone execution silent`, async () => {
+    for (const options of [{ team: 1 - team }, { x: 100 }, { hp: 0 }, { legacy: true }, { audioExecution: null }]) {
+      const f = await createUnitPresentationClientFixture({ localTeam: team });
+      const audio = createGameAudio({ storage: null, workNow: () => 10000,
+        doc: { hidden: false, addEventListener() {}, removeEventListener() {} } });
+      f.context.audio = audio;
+      f.context.workAudioEvents = workAudioEvents;
+      try {
+        f.apply([workerSnapshotRow({ team })], { initial: true });
+        let row = workerSnapshotRow({ team, audioExecution: 'stone', ...options });
+        if (options.legacy) row = row.slice(0, 14);
+        f.apply([row]);
+        assert.deepEqual(audio.getInspector().decisions, [], JSON.stringify(options));
+      } finally { audio.dispose(); f.dispose(); }
+    }
+  });
+}
+
+test('Stone work keeps exact, role, cue and unbound fallback resolution', () => {
+  const event = { cue: 'work', kind: 'worker', resource: 'stone' };
+  const keys = ['unit.worker.work.stone', 'unit.worker.work', 'cue.work'];
+  assert.deepEqual(bindingKeysForEvent(event), keys);
+  for (const key of keys) {
+    assert.equal(resolveEventBinding({ bindings: { [key]: { bus: 'effects', variants: [{ sourceId: 'fixture' }] } } }, event).key, key);
+  }
+  assert.equal(resolveEventBinding({}, event), null);
 });
 test('spoken success only follows applied token, ignores planning and rejects exactly once', () => {
   const gate = new OrderAudioGate();
