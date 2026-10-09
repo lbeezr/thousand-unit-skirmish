@@ -237,7 +237,8 @@ return and existing warning aggregation. The muted-warning assertion observes
 establish UI rendering, audible playback or recognition.
 
 The audio test-contract owner (this cloud task) retains the bounded same-event
-civilization-switch regression in `scripts/audio-building-selection.test.mjs`,
+civilization-switch regression, merged in
+[PR622](https://github.com/lbeezr/thousand-unit-skirmish/pull/622), in `scripts/audio-building-selection.test.mjs`,
 checked against main `8ac6cb3c` on 9 October 2026. Its effects-only
 `unit.worker.select` fixture uses distinct Frontier/common sources and a 450 ms
 cooldown: Frontier at 1000 ms succeeds, unknown-civilization fallback at 1449
@@ -248,6 +249,20 @@ reason; reset itself makes no rejection-reason promise. This covers the existing
 gate contract without changing playback or adding assets. Review and focused
 source checks are this owner's delivery evidence; audible recognition and native
 listening remain with the audio outcome owner at an identified containing release.
+
+The same test-contract owner retains the cross-event voice-priority regression,
+checked against containing main `7cfb34b8` on 9 October 2026 after PR622 merged.
+The production gate accepts routine selection at 1000 ms and an urgent base
+alert (default priority 10) at 1001. A distinct move binding with explicit
+priority 0 or 10 rejects at 1002 and 2250 for speech cooldown, then succeeds at
+2251: exactly 1250 ms after the alert. Explicit priority 11 is admitted at 1002
+within that window, then rejects at 2251 and succeeds at 2252: its accepted voice
+starts the next window. Rejected choices never extend it. Each accepted choice
+asserts the exact key, binding identity and source; success clears the rejection
+reason. These are existing decision-gate rules, not a new priority design or
+proof of audible sample interruption. Runtime, assets and listening acceptance
+are unchanged; independent review and focused source checks remain this owner's
+delivery evidence.
 
 The Worker context slice changes only `sendTrackedOrder` metadata and the event
 key resolver, using its existing Farm/fish/disclosure imports. Main imports and

@@ -128,6 +128,41 @@ test('same-event cooldown is shared across civilization override and common fall
   accepted('frontier', frontier);
 });
 
+for (const priority of [0, 10, 11]) test(`cross-event speech after an urgent warning respects command priority ${priority} and exact recovery`, () => {
+  let now = 1000;
+  const gate = createProfileDecisionGate({ now: () => now });
+  const selection = binding('routine-worker-select', 'voice');
+  const warning = binding('urgent-base-alert', 'voice');
+  const command = { ...binding('routine-worker-move', 'voice'), priority };
+  const profile = { bindings: { 'unit.worker.select': selection,
+    'cue.base-alert': warning, 'unit.worker.move': command } };
+  const move = { cue: 'move', kind: 'worker' };
+  function accepted(event, key, expected) {
+    const choice = gate.choose(profile, event);
+    assert.ok(choice);
+    assert.equal(choice.key, key);
+    assert.equal(choice.binding, expected);
+    assert.equal(choice.variant.sourceId, expected.variants[0].sourceId);
+    assert.equal(gate.getReason(), null, 'successful choice clears any previous rejection');
+  }
+  accepted({ cue: 'select', kind: 'worker' }, 'unit.worker.select', selection);
+  now = 1001;
+  accepted({ cue: 'base-alert' }, 'cue.base-alert', warning);
+  now = 1002;
+  if (priority > 10) accepted(move, 'unit.worker.move', command);
+  else {
+    assert.equal(gate.choose(profile, move), null);
+    assert.equal(gate.getReason(), 'speech cooldown');
+  }
+  // The last accepted voice starts the window; rejected choices never extend it.
+  const recoveryAt = priority > 10 ? 2252 : 2251;
+  now = recoveryAt - 1;
+  assert.equal(gate.choose(profile, move), null);
+  assert.equal(gate.getReason(), 'speech cooldown');
+  now = recoveryAt;
+  accepted(move, 'unit.worker.move', command);
+});
+
 test('actual building selection uses distinct default synthesis and the existing lifetime rules', async t => {
   const originalContext = Object.getOwnPropertyDescriptor(globalThis, 'AudioContext');
   let clock = 1000; t.mock.method(performance, 'now', () => clock);
