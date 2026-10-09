@@ -155,7 +155,9 @@ try {
   }
   for (const filename of ['src/gameplay-action-rules.mjs', 'src/rules/gameplay-action-rules.mjs',
     'src/production-actions.mjs', 'src/rules/production-actions.mjs',
-    'src/research-actions.mjs', 'src/rules/research-actions.mjs']) {
+    'src/research-actions.mjs', 'src/rules/research-actions.mjs',
+    'src/population.mjs', 'src/rules/population.mjs']) {
+    assert.ok(packedManifest.files.includes(filename), `public rules module is packaged: ${filename}`);
     const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
     assert.equal(response.status, 200, filename);
     assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
@@ -166,7 +168,10 @@ try {
   }
   for (const filename of ['src/rules/', 'src/rules/unknown.mjs',
     'src/rules/production-actions.mjs/extra', 'src/rules/research-actions.mjs.map',
-    'src/rules//production-actions.mjs', 'SRC/rules/research-actions.mjs']) {
+    'src/rules//production-actions.mjs', 'SRC/rules/research-actions.mjs',
+    'src/population.mjs/extra', 'src/population.mjs.map', 'src//population.mjs', 'SRC/population.mjs',
+    'src/rules/population.mjs/extra', 'src/rules/population.mjs.map',
+    'src/rules//population.mjs', 'SRC/rules/population.mjs']) {
     for (const method of ['GET', 'HEAD']) {
       assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
         404, `action-rule admission remains exact (${method}): ${filename}`);

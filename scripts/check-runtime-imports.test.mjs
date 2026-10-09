@@ -255,6 +255,29 @@ test('production and research use pure canonical rules with explicit legacy edge
     .includes('../research-actions.mjs'), 'existing Worker compatibility consumer stays unchanged');
 });
 
+test('population accounting has its pure rules home, sole server caller and supported forwarding entry', async () => {
+  const canonical = 'src/rules/population.mjs';
+  const legacy = 'src/population.mjs';
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  assert.ok(RUNTIME_DOMAINS.rules.includes(canonical));
+  assert.ok(RUNTIME_DOMAINS.rules.includes(legacy));
+  assert.equal(RETIRED_RUNTIME_PATHS.includes(legacy), false);
+  const graph = runtimeImportGraph(sources);
+  assert.deepEqual(graph.get(canonical), { local: ['src/gameplay-definitions.mjs'], external: [] });
+  assert.deepEqual(graph.get(legacy), { local: [canonical], external: [] });
+  assert.deepEqual([...graph].filter(([, node]) => node.local.includes(canonical)).map(([name]) => name).sort(),
+    ['server.mjs', legacy], 'server consumes the rules implementation; the supported path forwards it');
+  assert.deepEqual([...graph].filter(([, node]) => node.local.includes(legacy)).map(([name]) => name), [],
+    'normal browser and worker runtime no longer consume the compatibility entry');
+  for (const [target, domain] of [['src/client/hud/population-readout.mjs', 'client'],
+    ['src/presentation/rendering/ground-surfaces.mjs', 'presentation'], ['src/unit-movement.mjs', 'simulation']]) {
+    const relative = path.posix.relative(path.posix.dirname(canonical), target);
+    assert.throws(() => check({ [canonical]: `import '${relative}';`, [target]: '' }),
+      new RegExp(`rules domain cannot reach ${domain} domain`), canonical);
+  }
+  assert.throws(() => check({ [canonical]: "import 'node:fs';" }), /Node builtin/, canonical);
+});
+
 test('canonical plant descriptors stay in presentation with real renderer callers and no authority imports', async () => {
   const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
   for (const name of ['podvine-low-pack', 'veilcap-worked-pack', 'sunbloom-low-pack']) {

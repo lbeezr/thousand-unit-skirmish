@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { teamPopulation } from '../src/population.mjs';
+
+test('public population compatibility preserves the sole canonical named binding', async () => {
+  const legacy = await import('../src/population.mjs');
+  const current = await import('../src/rules/population.mjs');
+  assert.deepEqual(Object.keys(legacy), ['teamPopulation']);
+  assert.deepEqual(Object.keys(current), ['teamPopulation']);
+  assert.equal(legacy.teamPopulation, current.teamPopulation);
+});
+
 function fixture() {
   return { openingArmySize: 24, units: Array.from({ length: 12 }, () => ({ team: 0, kind: 'infantry', hp: 100 })),
     buildings: [{ team: 0, type: 'barracks', complete: true, productionQueue: ['infantry', 'spearman', 'infantry'] }],

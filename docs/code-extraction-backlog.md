@@ -156,11 +156,59 @@ remain unchanged. Main, map/mode rules, worker simulation, bootstrap bodies,
 movement, audio PR622, QA1476, diagnostic tests and private HUD work remain outside
 this slice. Art backing is N/A because behavior and presentation are unchanged.
 
-Next transition: independent review and exact-head imports/types/docs, focused
-catalog/game-entry tests and real menu/Practice launch, then clean package/private
-GET/HEAD validation and a qualified draft PR. Exact source/check receipts and
-release digest belong in that PR. Parent retains integration/deployment; baseline
-movement CI and ordinary-game rendered acceptance remain separate.
+Integrated in [PR624](https://github.com/lbeezr/thousand-unit-skirmish/pull/624)
+at `8485db5d32b18580d699acaa764f1c6f00aa667f`. The merge tree is
+`8807f2307c39fa7c41c0010f44187fa656371e3f`, identical to the qualified
+combination of reviewed head `3aae8f38` and containing audio main `004cf382`.
+All catalog blobs and both audio blobs were preserved; 109/109 affected
+catalog/import/public-entry tests, docs and allowlist passed on that tree.
+The original 195/195 affected checks, independent review, clean package and
+real menu/Practice entry receipts remain in the PR. Parent confirmed terminal
+hosted CI matches the actual base's nine movement assertions; this slice adds
+none. No provider deployment or ordinary-game rendered acceptance is claimed.
+
+## Population accounting rules home — 9 October 2026
+
+The same organization owner takes the source inventory and architecture's
+explicit `population.mjs` → `src/rules/` destination on
+`codex/population-rules-home-20261009`, from PR624 merge `8485db5d` above.
+The parent reserved the one production `server.mjs` import line after catalog
+integration. Move the existing 15-line implementation to
+`src/rules/population.mjs`; its registry dependency still resolves to
+`src/gameplay-definitions.mjs`. Keep the sole `teamPopulation` export, weighted
+living units, FIFO and Worker reservations, completed friendly capacity,
+opening defaults, 1,000 cap, returned fields and existing errors unchanged.
+The function remains pure accounting; production, command, checkpoint and
+simulation policies stay with their owners.
+
+`server.mjs` is the only runtime consumer and changes to the canonical import.
+The four existing script consumers (population, population readout, Skiff
+contracts and Skiff scenario) retain the supported root import. The root URL is
+already publicly admitted and architecture records that path, so retain exactly
+one named forwarding export without a wrapper or duplicate implementation.
+Both paths belong to the exact rules domain and public admission, and both are
+packed. No normal browser reaches this implementation before or after the move;
+public availability does not establish runtime invocation. Root count remains
+177 files (172 JavaScript and five CSS), with 23 forwarding entries and all six
+generated descriptors unchanged. The organization owner retains this alias:
+retirement requires reconciling all script/documented/external import and public
+URL consumers with their owners, a containing release check, and a separate
+explicit retirement decision. Zero runtime callers alone is insufficient.
+
+Write scope: implementation and named forwarder, the single server import,
+exact rules/static-path registrations, existing population/export/dependency/
+anonymous-admission/packed-serving guards, and this canonical note. Existing
+test files, registrations, cases and historical evidence remain. Main/HUD,
+audio, movement algorithms, Skiff runtime, QA1476, diagnostic tests, assets,
+security/access decisions and held experiments remain outside this slice.
+Art backing is N/A because behavior and presentation are unchanged.
+
+Next transition: independent review, exact-head imports/types/docs and focused
+population/readout/production/privacy/Skiff contracts; native both-seat
+population/Skiff scenarios; exact legacy/canonical GET/HEAD and negative paths;
+then a clean package and qualified draft PR with exact source/check/digest
+receipts. Parent retains ready/merge and downstream deployment. Baseline
+movement failures and ordinary rendered acceptance remain separately owned.
 
 ## Integrated code milestones
 

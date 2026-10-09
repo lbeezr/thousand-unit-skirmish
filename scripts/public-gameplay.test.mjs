@@ -51,8 +51,9 @@ test('anonymous admission default-denies private paths and unsupported methods',
   }
 });
 
-test('canonical and legacy pilot helper paths preserve public static admission', () => {
-  for (const filename of ['src/environment-pilot.mjs', 'src/studies/environment/pilot.mjs']) {
+test('canonical and legacy pilot and population helper paths preserve public static admission', () => {
+  for (const filename of ['src/environment-pilot.mjs', 'src/studies/environment/pilot.mjs',
+    'src/population.mjs', 'src/rules/population.mjs']) {
     for (const method of ['GET', 'HEAD']) {
       assert.equal(isAnonymousGameplayRequest(method, new URL(`/${filename}`, publicOrigin)), true, filename);
       for (const invalid of [`${filename}/extra`, `${filename}.map`, filename.replace('src/', 'SRC/'),
@@ -111,7 +112,8 @@ test('enabled anonymous gameplay and disabled authentication contracts', async (
         assert.equal((await fetch(base + pathname)).status, enabled ? 200 : 401, `${mode}: ${pathname}`);
       }
       for (const pathname of privatePaths) assert.equal((await fetch(base + pathname)).status, 401, pathname);
-      for (const filename of ['src/environment-pilot.mjs', 'src/studies/environment/pilot.mjs']) {
+      for (const filename of ['src/environment-pilot.mjs', 'src/studies/environment/pilot.mjs',
+        'src/population.mjs', 'src/rules/population.mjs']) {
         for (const method of ['GET', 'HEAD']) {
           const anonymous = await fetch(`${base}/${filename}`, { method });
           assert.equal(anonymous.status, enabled ? 200 : 401, `${mode}: ${method} ${filename}`);

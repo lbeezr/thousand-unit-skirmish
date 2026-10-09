@@ -38,7 +38,7 @@ import { migrateEconomyCheckpoint } from './src/economy-checkpoint.mjs';
 import { workerFoodGatherMultiplier, migrateFoodToolsCheckpoint } from './src/server/worker-food-tools.mjs';
 import { unfinishedRefund, buildingRepairStep } from './src/rules/base-lifecycle.mjs';
 import { productionAction } from './src/rules/production-actions.mjs';
-import { teamPopulation } from './src/population.mjs';
+import { teamPopulation } from './src/rules/population.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION, DEFAULT_FACTION_ID, UNIT_WIRE_IDS, missingGameplayPrerequisites } from './src/gameplay-definitions.mjs';
 import { validBuildingOrientation, orderedBuildingExitCells, legalBuildingExitCells, nearbyBuildingExitCell } from './src/building-orientation.mjs';
 import { validateMapAudioReference } from './src/world/map-audio-reference.mjs';
