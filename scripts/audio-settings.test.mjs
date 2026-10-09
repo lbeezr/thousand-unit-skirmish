@@ -179,8 +179,8 @@ test('fresh disclosed damage warns after presentation returns, without replaying
     async resume() { this.state = 'running'; }
     async close() { this.state = 'closed'; }
   };
-  async function fixture(settings = {}) {
-    const f = await createUnitPresentationClientFixture();
+  async function fixture(settings = {}, { team = 0, x = 30, z = -20 } = {}) {
+    const f = await createUnitPresentationClientFixture({ localTeam: team });
     const listeners = new Map(), scheduled = [], events = [];
     const visibleDoc = { hidden: false, addEventListener: (event, fn) => listeners.set(event, fn), removeEventListener() {} };
     const audio = createGameAudio({ storage: memoryStorage(JSON.stringify({ ...defaults, musicLevel: 0, ambience: false, ...settings })), doc: visibleDoc, onCue: cue => scheduled.push(cue),
@@ -196,7 +196,7 @@ test('fresh disclosed damage warns after presentation returns, without replaying
     const playEvent = audio.playEvent;
     audio.playEvent = event => { events.push(event); return playEvent(event); };
     let hp = 100, now = 0;
-    const row = () => workerSnapshotRow({ x: 30, z: -20, hp });
+    const row = () => workerSnapshotRow({ team, x, z, hp });
     f.apply([row()], { initial: true, now });
     return { ...f, audio, scheduled, events, visibleDoc,
       damage() { hp--; now += 1000; f.apply([row()], { now }); },
@@ -235,11 +235,37 @@ test('fresh disclosed damage warns after presentation returns, without replaying
         f.damage(); assert.deepEqual(f.events.map(event => event.cue), ['battle-alert']);
         assert.deepEqual(f.scheduled, []);
         assert.equal(f.context.ui.audioCaption.hidden, false);
-        assert.equal(f.context.ui.audioCaption.textContent, 'SOUND · BATTLE NEARBY');
+        assert.equal(f.context.ui.audioCaption.textContent, 'SOUND · YOUR UNITS TOOK DAMAGE');
         for (let i = 0; i < 10; i++) f.damage();
         assert.equal(f.events.length, 1);
       } finally { f.dispose(); }
     });
+    for (const team of [0, 1]) for (const [position, x, z] of [['near', 1, 1], ['far', 30, -20]]) {
+      await t.test(`seat ${team}: ${position} owned damage uses the accurate caption without inferring proximity or attacker`, async () => {
+        const f = await fixture({ enabled: false, captions: true }, { team, x, z });
+        try {
+          assert.equal(f.context.localTeam, team);
+          assert.equal(f.context.selected.size, 0);
+          assert.deepEqual([f.context.cameraTarget.x, f.context.cameraTarget.z], [0, 0]);
+          const ownRow = workerSnapshotRow({ team, x, z });
+          f.apply([ownRow, workerSnapshotRow({ id: 1, team: 1 - team, x, z })], { now: 100 });
+          f.apply([ownRow, workerSnapshotRow({ id: 1, team: 1 - team, x, z, hp: 99 })], { now: 200 });
+          assert.deepEqual(f.events, [], 'opponent HP loss does not describe your units');
+          assert.equal(f.context.ui.audioCaption.hidden, true);
+          f.unchanged();
+          assert.deepEqual(f.events, [], 'unchanged owned HP stays silent');
+          f.damage();
+          assert.deepEqual(f.events.map(event => event.cue), ['battle-alert']);
+          assert.deepEqual(Object.keys(f.events[0]), ['cue'], 'no proximity, attacker or allied-unit metadata');
+          assert.equal(f.context.ui.audioCaption.hidden, false);
+          assert.equal(f.context.ui.audioCaption.textContent, 'SOUND · YOUR UNITS TOOK DAMAGE');
+          assert.deepEqual(f.scheduled, [], 'caption-enabled master mute retains silence');
+          for (let i = 0; i < 10; i++) f.damage();
+          assert.equal(f.events.length, 1, 'existing warning aggregation remains unchanged');
+          assert.deepEqual([f.context.cameraTarget.x, f.context.cameraTarget.z], [0, 0], 'warning does not move the camera');
+        } finally { f.dispose(); }
+      });
+    }
     await t.test('hidden or recovering observations stay unpresented; return needs fresh damage', async () => {
       for (const mode of ['hidden', 'recovering']) {
         const f = await fixture(); f.audio.unlock();

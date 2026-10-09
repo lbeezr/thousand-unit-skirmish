@@ -110,7 +110,7 @@ sample priority remains urgent 10/other 0, with explicit pack overrides allowed.
 | `cue.building-complete` | Friendly observed incomplete-to-complete transition; aggregated per reconciliation. | Generic completion. Caller omits building type and binding schema only supports typed selection; typed completion is missing, not an asset-only task. | P1; initial/reset silent; 2.6 s; no queued-build success claim. |
 | `cue.queue`, `.research-complete` | Registered unit queue notices and local-team registered technology completion notices. | Existing synthesis; contextual producer/technology voice missing. | P1; issuing/local team only; 170 ms/2.6 s; cancellation is not ready. |
 | `cue.rally`, `.send`, `.reject` | Existing local control/applied notice or pending neutral send; rejection stays failure. | Existing synthesis; future civilization gesture palette unproduced. | P1/P2; 550/90/250 ms; no accepted-order claim from send. |
-| `cue.battle-alert` / first damage contact | Existing own-unit HP decrease aggregation, including an exploring worker/unit. Attacker identity/cause is not read. A new engagement emits after 9 s without another presentable friendly damage observation. Unavailable output no longer consumes this cadence; fresh damage after restoring output can warn. | Existing attention synthesis; contextual unit/worker voice missing. No new alarm needed. Actual hostile-wildlife behavior/hearing remains unverified. | P0; one aggregate snapshot decision; not distance-gated despite current “BATTLE NEARBY” caption; no hidden enemy count/location/type. |
+| `cue.battle-alert` / first damage contact | Existing own-unit HP decrease aggregation, including an exploring worker/unit. Attacker identity/cause is not read. A new engagement emits after 9 s without another presentable friendly damage observation. Unavailable output no longer consumes this cadence; fresh damage after restoring output can warn. | Existing attention synthesis; caption “YOUR UNITS TOOK DAMAGE” describes only observed owned-unit HP loss. Contextual unit/worker voice missing; actual hostile-wildlife behavior/hearing remains unverified. | P0; one aggregate snapshot decision; no camera-distance gate or proximity/attacker/allied-unit claim; no hidden enemy count/location/type. |
 | `cue.selected-alert` | Existing selected owned units lose HP. | Existing attention synthesis; selected-force voice missing. | P0; shared selected-damage aggregate; policy 12 s, playback 11 s. |
 | `cue.base-alert` | Existing owned building HP decreases. Takes precedence over selected/battle alert. | Existing rounded repeated attention synthesis; civilization building-danger voice missing. | P0; one aggregate; policy 12 s, playback 11 s; attacker source/location never exposed. |
 | First sight of an enemy / animal-specific attack callout | No dedicated disclosed-first-sight reducer or predator identity event found. Cause-agnostic own HP warning above already works for a reported loss. | Missing specialized event/asset. Do not invent an enemy/wildlife presence observer or claim native animal-attack coverage. | Future P0/P1; only actual local disclosure, not terrain/fog/AI-private state; bounded deduplication required. |
@@ -274,6 +274,18 @@ context, planning/queued intent, rejection, duplicate success, unsent orders,
 civilization/common/food/role/cue fallback and shared speech limits. Existing
 recordings/manifests and all 30 proposed voice-guide takes stay unchanged.
 This is an engineering context contract; native listening remains open.
+
+The warning-caption correction starts from main `fb0f5126` on 9 October 2026.
+It changes only the generic `battle-alert` caption from “BATTLE NEARBY” to
+“YOUR UNITS TOOK DAMAGE”: the producer observes disclosed HP decreases for
+`unit.team === localTeam`, without establishing proximity or attacker identity.
+The existing actual-consumer regression covers both seats with near/far owned
+Workers, unchanged HP and opponent-only damage, caption-enabled master mute,
+unchanged aggregation and a stationary camera. Warning triggers, sound,
+cooldowns and selected/base priority remain unchanged. Existing caption UI is
+the presentation backing; CPU DOM/audio boundaries do not establish rendered
+or listening acceptance. Retained Town Center role and queue-less destruction
+patches remain separate, held outcomes; this correction does not reconstruct them.
 
 The audio owner reconciled the Skiff notice boundary with naval owner thread
 `01a101c2-cc88-75bc-a26d-973995694006` on 9 October 2026 at 13:50 UTC:

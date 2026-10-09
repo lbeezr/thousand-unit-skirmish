@@ -9035,7 +9035,7 @@ const AUDIO_CAPTIONS = Object.freeze({
   'objective-lost': 'OBJECTIVE LOST',
   'resource-empty': 'RESOURCE NODE DEPLETED',
   'base-lost': 'PRODUCTION BUILDING LOST',
-  'battle-alert': 'BATTLE NEARBY',
+  'battle-alert': 'YOUR UNITS TOOK DAMAGE',
   'selected-alert': 'SELECTED FORCE UNDER ATTACK',
   'base-alert': 'BASE UNDER ATTACK',
   victory: 'MATCH VICTORY',
