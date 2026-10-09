@@ -22,6 +22,14 @@ function conserved(saved) {
   const cargo = saved.state.units.filter(unit => unit.cargoType === 'food').reduce((sum, unit) => sum + unit.cargo, 0);
   assert.ok(Math.abs(stock + bank + cargo - 3100) < 1e-6, '2,800 authored food plus 300 starting bank remains conserved');
 }
+function returnedCargo(saved, captured, workers) {
+  for (const team of [0, 1]) {
+    const carried = captured.state.units.find(unit => unit.id === workers[team]).cargo;
+    const legacyBank = captured.state.teamFood[team];
+    assert.ok(Math.abs(saved.state.teamFood[team] - legacyBank - carried) < 1e-6,
+      `seat ${team}: returned cargo credits the captured Food bank exactly once`);
+  }
+}
 function checkOpening(client, team) {
   assert.equal(client.welcome.map.id, 'bellweather-millrace');
   assert.ok(client.welcome.maps.some(map => map.id === 'bellweather-millrace' && /Millrace/.test(map.name)));
@@ -93,6 +101,7 @@ try {
   assert.ok(clients.every(client => client.welcome.recoveredFromCheckpoint && client.welcome.matchId === matchId));
   const recovered = await fixture.checkpoint(saved => saved.sequence > legacy.sequence);
   conserved(recovered);
+  assert.deepEqual(recovered.state.teamFood, legacy.state.teamFood, 'legacy restart preserves both captured Food banks');
   assert.equal(recovered.mapHash, hash(clients[0].welcome.map));
   for (const id of MILLRACE_SHEEP_IDS) {
     const old = savedNode(legacy, id), row = savedNode(recovered, id);
@@ -105,9 +114,21 @@ try {
   for (const team of [0, 1]) await command(clients[team], { type: 'returnCargo', ids: [workers[team]] }, /RETURN CARGO ORDER/);
   const delivered = await fixture.checkpoint(saved => workers.every(id => saved.state.units.find(unit => unit.id === id)?.cargo === 0));
   conserved(delivered);
+  returnedCargo(delivered, legacy, workers);
+  // Reject accounting faults against both the global pool and each captured
+  // seat's bank. Transferring a credit to the other seat conserves the global
+  // pool, so it must still fail the per-seat return assertion.
   for (const team of [0, 1]) {
     const carried = legacy.state.units.find(unit => unit.id === workers[team]).cargo;
-    assert.ok(Math.abs(delivered.state.teamFood[team] - 150 - carried) < 1e-6);
+    const lost = structuredClone(delivered); lost.state.teamFood[team] -= carried;
+    assert.throws(() => conserved(lost), /starting bank remains conserved/);
+    assert.throws(() => returnedCargo(lost, legacy, workers), /captured Food bank exactly once/);
+    const duplicate = structuredClone(delivered); duplicate.state.teamFood[team] += carried;
+    assert.throws(() => conserved(duplicate), /starting bank remains conserved/);
+    assert.throws(() => returnedCargo(duplicate, legacy, workers), /captured Food bank exactly once/);
+    const misassigned = structuredClone(lost); misassigned.state.teamFood[1 - team] += carried;
+    conserved(misassigned);
+    assert.throws(() => returnedCargo(misassigned, legacy, workers), /captured Food bank exactly once/);
   }
   await fixture.stop(); await fixture.start();
   clients = [await fixture.connect(0, sessions[0]), await fixture.connect(1, sessions[1])];
@@ -132,7 +153,10 @@ try {
   console.log(JSON.stringify({ scenario: 'explicit historical Millrace Sheep', map: 'Bellweather · Millrace', sheep: 6, foodStock: 2800,
     bothSeatOpeningVisibleAndStaticArtReady: true, bothSeatNaturalHarvestAndReturnCargo: true,
     exactLegacyMapStockCargoAndIdentityPreserved: true, currentRestartCreditsOnce: true,
+    bothSeatLostDuplicateAndMisassignedCreditControlsRejected: true,
     rematchRestoresSixSheep: true, unrelatedMapDriftRejectedAndArchived: true,
+    capturedBanks: legacy.state.teamFood,
+    capturedCargo: workers.map(id => legacy.state.units.find(unit => unit.id === id).cargo),
     deliveredBanks: delivered.state.teamFood, nativeWebGLAppearance: false }));
 } finally {
   renderer?.dispose(); globalThis.Image = originalImage; await fixture.dispose();
