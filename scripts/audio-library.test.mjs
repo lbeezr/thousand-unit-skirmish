@@ -30,6 +30,30 @@ const pack = {
 const original = new Blob([Uint8Array.from([0, 1, 2, 127, 128, 255, 0, 42])], { type: 'audio/wav' });
 const normalized = validateAudioPack(pack);
 assert.deepEqual(normalized, pack);
+const completionPack = structuredClone(pack);
+const completionBinding = { bus: 'effects', variants: [{ sourceId: 'wood' }] };
+completionPack.profiles[0].bindings['building.barracks.complete'] = completionBinding;
+completionPack.profiles[0].bindings['building.barracks.select'] = completionBinding;
+completionPack.profiles[0].civilizationBindings = { frontier: {
+  'building.watchtower.complete': completionBinding,
+} };
+assert.deepEqual(validateAudioPack(completionPack), completionPack, 'common and civilization completion keys are admitted without changing schema version');
+const completionArchive = await exportAudioPack(completionPack, { wood: original });
+const completionImported = await parseAudioPackArchive(completionArchive);
+assert.deepEqual(completionImported.pack, completionPack);
+assert.deepEqual(new Uint8Array(await completionImported.sourceBlobs.wood.arrayBuffer()), new Uint8Array(await original.arrayBuffer()),
+  'typed completion admission preserves existing source bytes');
+for (const key of ['building.barracks.ready', 'building.barracks.building-complete', 'building.barracks.destroy', 'building.barracks.complete.extra']) {
+  for (const layer of ['bindings', 'civilizationBindings']) {
+    const invalid = structuredClone(completionPack);
+    const target = layer === 'bindings' ? invalid.profiles[0].bindings : invalid.profiles[0].civilizationBindings.frontier;
+    target[key] = completionBinding;
+    assert.throws(() => validateAudioPack(invalid), /invalid event key/, `${layer}: ${key}`);
+  }
+}
+const unknownCompletionSource = structuredClone(completionPack);
+unknownCompletionSource.profiles[0].bindings['building.barracks.complete'].variants[0].sourceId = 'missing';
+assert.throws(() => validateAudioPack(unknownCompletionSource), /unknown source missing/);
 const archive = await exportAudioPack(pack, { wood: original });
 const imported = await parseAudioPackArchive(archive);
 assert.deepEqual(imported.pack, pack);

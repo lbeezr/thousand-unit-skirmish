@@ -12,6 +12,7 @@ export function bindingKeysForEvent({ cue, kind, buildingType, resource, gatherJ
   const building = BUILDING_BY_TYPE[buildingType] || (typeof buildingType === 'string' ? buildingType : null);
   const role = ROLE_BY_KIND[kind] || (typeof kind === 'string' ? kind : null);
   if (building && cue === 'select') keys.push(`building.${building}.select`);
+  if (building && cue === 'building-complete') keys.push(`building.${building}.complete`);
   if (role && cue) {
     if (role === 'worker' && cue === 'gather' && resource === 'food' && WORKER_FOOD_JOBS.has(gatherJob)) {
       keys.push(`unit.worker.gather.${gatherJob}`);
