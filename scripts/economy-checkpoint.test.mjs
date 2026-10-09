@@ -3,7 +3,7 @@ import test from 'node:test';
 import './checkpoint-validator-contract.test.mjs';
 import './checkpoint-envelope.test.mjs';
 import { createHash } from 'node:crypto';
-import { migrateEconomyCheckpoint, validateEconomyCheckpoint } from '../src/economy-checkpoint.mjs';
+import { migrateEconomyCheckpoint, validateEconomyCheckpoint } from '../src/simulation/economy/economy-checkpoint.mjs';
 import { GAMEPLAY_RULESET_REVISION } from '../src/gameplay-definitions.mjs';
 import { DEFAULT_ECONOMY_PROFILE_ID as BASE, STONE_ECONOMY_PROFILE_ID as STONE, economyRulesetRevision } from '../src/economy-profile.mjs';
 

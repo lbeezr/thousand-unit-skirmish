@@ -30,6 +30,7 @@ export const RETIRED_RUNTIME_PATHS = Object.freeze([
   'src/water-study-fish-binding.mjs', 'src/water-surface-geometry.mjs',
   'src/water-study-preview.mjs', 'src/environment-review.mjs', 'src/practice-entry-catalog.mjs',
   'src/snapshot-private-production.mjs',
+  'src/economy-checkpoint.mjs',
   'src/room-pregame.mjs', 'src/room-lobby-chat.mjs',
   'src/room-launch-options.mjs',
   'src/forest-habitat.mjs', 'src/forest-composition.mjs', 'src/forest-age-composition.mjs',
@@ -67,7 +68,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'town-center-spawn', 'unit-heading', 'water-contours', 'water-route-graph',
   ],
   simulation: [
-    'combat-movement', 'combat-stance', 'confluence-opening-compat', 'construction-work-intent', 'economy-checkpoint',
+    'combat-movement', 'combat-stance', 'confluence-opening-compat', 'construction-work-intent', 'simulation/economy/economy-checkpoint',
     'economy-perimeter-access', 'economy-perimeter-recovery',
     'forest-fringe', 'forest-gather-group', 'formation-assignment', 'gather-work-area', 'match-mode-checkpoint',
     'simulation/movement/formation-assignment',

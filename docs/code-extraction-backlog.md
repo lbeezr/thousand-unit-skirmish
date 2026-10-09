@@ -454,6 +454,72 @@ outside the slice. Art backing is N/A for this internal placement change. Parent
 task `01a0f784-c5d7-72e0-82e8-1747b4c840c1` retains ready/merge and deployment;
 local native/package proof does not establish delivered browser acceptance.
 
+The private launch/index leaf integrated through
+[PR633](https://github.com/lbeezr/thousand-unit-skirmish/pull/633) at
+`fc106ee072c86e4168eb320d7e98639a271b094f`; tree
+`70cd8326786540e9eaa965c40215050c93df38d2` equals the independently reviewed
+source tree. Three compact launch/private-serving tests and imports pass on the
+merge. Parent independent CI matched the actual base exactly. Preserve the initial
+candidate supervisor movement-message timeout, the pristine containing-base
+checkpoint timeout and the later final-head pass as distinct receipts: their
+assertions differ, and the flaky behavior is not resolved. Neither exact-base
+parity nor local native/package proof establishes delivered browser acceptance.
+
+## Private economy checkpoint home — 9 October 2026
+
+The organization owner takes the existing planned private simulation/economy
+leaf on `codex/private-economy-checkpoint-home-20261009`, from containing main
+`fc106ee072c86e4168eb320d7e98639a271b094f`, after PR633 integrated. Resource/economy
+owner `01a101f7-5683-70da-8e3b-b87022e5a008` and envelope implementer
+`01a10711-c427-7353-93a0-97cf57561023` explicitly released the module, two
+server/envelope imports and associated test/guard/record paths from retained
+records; neither has active or unpublished work on this boundary. The parent
+reserves these exact import lines. QA's movement evidence documentation remains
+disjoint and has no runtime host edits. Final qualification uses containing main
+`39e01649968598482f770aefd0de7f38b808d8de` after documentation-only PR634 merged;
+its movement evidence insertion is retained unchanged, and all baseline runtime
+bytes remain identical to the initial containing source.
+
+Move the 42-line `src/economy-checkpoint.mjs` to
+`src/simulation/economy/economy-checkpoint.mjs`, beside the existing private
+production projection. Its only production consumers are `server.mjs`'s ordered
+legacy migration handoff and `src/server/checkpoint-envelope.mjs`'s existing
+validation call before faction/remaining envelope checks. The direct economy
+checkpoint test imports the same two exports. Both rule dependencies retain
+their targets through corrected relative imports; no runtime body, declaration,
+JSDoc, validation order or error changes.
+
+Preserve schema-22 eligibility/no-op cases, in-place schema/profile/Stone-bank
+migration, object identity and authored-map bytes; preserve explicit economy
+identity/ruleset matching, finite two-seat typed bank and baseline mineral rules,
+supported cargo/resource validation and first-error behavior. Host migration
+ordering, capture/restore/envelope policy, schemas, caps, gameplay rules and content
+remain unchanged. No new abstraction, type enrollment or broad checkpoint split.
+
+No supported public URL or external root consumer was identified. Retire the root
+without an alias; root files reduce from 173 to 172 (167 JavaScript and five CSS).
+All 24 supported aliases, six generated descriptors, startup commands and exact
+public admission remain unchanged. Existing simulation membership and retired-path
+guards follow the canonical home. Existing source and packed HTTP fixtures add
+canonical/retired anonymous denial and authenticated GET/HEAD 404, canonical
+source/manifest byte identity and retired-root absence. Historical inventory and
+Stone recovery QA records remain pinned.
+
+Write scope: this leaf, two production imports, one direct test import, additive
+existing runtime/public/package guards and this record. The unchanged containing
+baseline passes 67/67 checkpoint/profile/server/native-recovery/registry/ruleset
+tests, including the actual authority/envelope fixtures imported by those tests.
+Next transition: independent exact-head review; the same affected contracts plus
+existing type/import/public guards, both configured type gates, docs and client
+allowlist; native ruleset checkpoint and queued-cargo recovery; clean packed
+private-serving proof; then a draft PR with exact source and release evidence.
+Movement implementation and unresolved supervisor timing, held radius repair,
+HUD, audio, assets, security/configuration and held experiments remain outside it.
+Art backing is N/A for internal placement. Parent task
+`01a0f784-c5d7-72e0-82e8-1747b4c840c1` retains ready/merge and deployment;
+native declared recovery fixtures are distinct from natural economy/rendered
+acceptance on a delivered build. No green full-CI claim is made.
+
 ## Integrated code milestones
 
 | Slice | Merge and evidence | Remaining acceptance |

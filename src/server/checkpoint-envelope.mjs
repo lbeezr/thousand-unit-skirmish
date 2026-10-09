@@ -1,6 +1,6 @@
 import { preflightXlCheckpointRoutes } from './checkpoint-route-budget.mjs';
 import { preflightXlCheckpointState } from './checkpoint-json-budget.mjs';
-import { validateEconomyCheckpoint } from '../economy-checkpoint.mjs';
+import { validateEconomyCheckpoint } from '../simulation/economy/economy-checkpoint.mjs';
 import { DEFAULT_FACTION_ID } from '../gameplay-definitions.mjs';
 import { validateMatchModeCheckpoint } from '../match-mode-checkpoint.mjs';
 import { assertMatchModeCompatibility, effectiveMapForMatchMode } from '../match-modes.mjs';
