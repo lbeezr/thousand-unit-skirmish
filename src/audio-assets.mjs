@@ -64,7 +64,7 @@ function validateBindings(value, path, sourceIds) {
   const entries = Object.entries(value);
   if (entries.length > 128) fail(`${path}`, 'too many events');
   for (const [key, binding] of entries) {
-    if (!/^(?:unit\.[a-z0-9-]+\.[a-z0-9.-]+|building\.[a-z0-9-]+\.select|cue\.[a-z0-9-]+)$/.test(key)) fail(`${path}.${key}`, 'invalid event key');
+    if (!/^(?:unit\.[a-z0-9-]+\.[a-z0-9.-]+|building\.[a-z0-9-]+\.(?:select|complete)|cue\.[a-z0-9-]+)$/.test(key)) fail(`${path}.${key}`, 'invalid event key');
     if (!isObject(binding)) fail(`${path}.${key}`, 'must be an object');
     const variants = array(binding.variants, `${path}.${key}.variants`, 16).map((variant, i) => {
       const p = `${path}.${key}.variants[${i}]`;

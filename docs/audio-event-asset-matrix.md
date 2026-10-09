@@ -107,7 +107,7 @@ sample priority remains urgent 10/other 0, with explicit pack overrides allowed.
 | `unit.worker.work.wood`, `.food`, `.repair`, `.stone` | Actual execution from living local worker row 14 within 24 world units of camera; resource set aggregates. | Technical three trims when assigned; distinct Stone material and variant-specific Farm/sheep/fish work palette missing. Stone uses existing exact/role/cue binding resolution and generic synthesis when unbound. Richer execution metadata does not automatically become an audio binding. | P3; at most four resources every 1.5 s; legacy/hidden enemy execution silent; task/map/mute/hide/death cancel. |
 | `building.<type>.select` | Existing caller passes the authoritative selected building type. This slice preserves it through synthesis and decode failure, with distinct defaults for all thirteen types below. | Exact civilization recordings missing. Configured common generic sample remains a deliberate pack choice. | P2; one selection; own/disclosed building; same 55 ms gesture/90 ms cue cooldown/gain, different type pitches; centered. |
 | `unit.<kind>.ready`, `.death` | Local authoritative generation appears alive, or explicit alive-to-dead row; one representative/cue/snapshot. Initial/reset/older tick and fog absence silent. | Generic rise/fall and technical horn/latch; role voices missing. | P1; ready/death 2.2 s; no enemy death inference. |
-| `cue.building-complete` | Friendly observed incomplete-to-complete transition; aggregated per reconciliation. | Generic completion. Caller omits building type and binding schema only supports typed selection; typed completion is missing, not an asset-only task. | P1; initial/reset silent; 2.6 s; no queued-build success claim. |
+| `building.<type>.complete` / `cue.building-complete` | Friendly observed incomplete-to-complete transition; one event per reconciliation. Type is included only when all contributing transitions have the same registered type, stable type/ownership, explicit prior incomplete state and positive prior/current HP. Mixed or ambiguous transitions retain the generic event. | Typed routing/schema implemented; type-specific recording missing. Existing civilization/common/cue and generic synthesis fallback stays. | P1; initial/reset/enemy/unseen silent; synthesis 2.6 s, samples use their binding cooldown and shared routine-voice limit; no queued-build success claim. |
 | `cue.queue`, `.research-complete` | Registered unit queue notices and local-team registered technology completion notices. | Existing synthesis; contextual producer/technology voice missing. | P1; issuing/local team only; 170 ms/2.6 s; cancellation is not ready. |
 | `cue.rally`, `.send`, `.reject` | Existing local control/applied notice or pending neutral send; rejection stays failure. | Existing synthesis; future civilization gesture palette unproduced. | P1/P2; 550/90/250 ms; no accepted-order claim from send. |
 | `cue.battle-alert` / first damage contact | Existing own-unit HP decrease aggregation, including an exploring worker/unit. Attacker identity/cause is not read. A new engagement emits after 9 s without another presentable friendly damage observation. Unavailable output no longer consumes this cadence; fresh damage after restoring output can warn. | Existing attention synthesis; caption “YOUR UNITS TOOK DAMAGE” describes only observed owned-unit HP loss. Contextual unit/worker voice missing; actual hostile-wildlife behavior/hearing remains unverified. | P0; one aggregate snapshot decision; no camera-distance gate or proximity/attacker/allied-unit claim; no hidden enemy count/location/type. |
@@ -319,6 +319,26 @@ fallback. It does not establish distinct Stone sound or native hearing. Existing
 work-feedback treatment backs this bounded routing correction; no new media is
 created. The audio owner retains listening and ordinary-game acceptance at an
 identified containing release; the parent task retains ready/merge/deployment.
+
+The typed building-completion slice starts from main `373b063a` on
+9 October 2026. It preserves the existing completion trigger and single-event
+aggregation while attaching `buildingType` only for unambiguous same-type owned
+completions. Differing or unknown metadata remains generic; unregistered rows
+remain excluded by the existing producer filter. The resolver and portable
+schema admit `building.<canonical-type>.complete` before the generic cue, with
+existing aliases, civilization precedence and synthesis fallback. Main's actual
+receipt/reconciliation tests cover both seats, order permutations, repeated and
+ambiguous transitions, initial/resume/resize/rematch and disclosure controls.
+Existing library tests cover common/civilization admission, archive byte parity,
+unrelated-action rejection and source validation. No playback policy, recordings,
+manifest, authoritative construction rule or HUD layout changes. Synthesis keeps
+its 2.6 s cue cooldown; bound samples keep per-key cooldowns (450 ms default) and
+the routine voice gate (1,250 ms), rather than acquiring a universal completion
+cadence. Existing generic completion feedback is the presentation backing.
+The HUD owner released only this metadata boundary at 15:08 UTC; held role and
+destruction-notice patches remain untouched. Exact-source tests/package/review
+establish routing only; native hearing and distinct completion material remain
+with the audio owner, while the parent retains merge/deployment.
 
 Next asset task: choose/cast/audition the
 listed Frontier voice slots, then publish only separately authorized material.

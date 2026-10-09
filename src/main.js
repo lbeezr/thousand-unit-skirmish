@@ -1691,6 +1691,8 @@ function reconcileBuildings(buildings = [], initial = false) {
   const previousBuildings = new Map(latestBuildings.map((building) => [building.id, building]));
   let buildingDamage = 0;
   let finishedFriendlyConstruction = false;
+  const completedFriendlyBuildingTypes = new Set();
+  let ambiguousCompletionType = false;
   const priorSelectedRallyCell = latestBuildings.find((building) => building.id === selectedBuildingId)?.rallyCell ?? -1;
   if (selectedBuildingId !== null && !rows.some((building) => building.id === selectedBuildingId
     && building.team === localTeam)) selectedBuildingId = null;
@@ -1699,7 +1701,13 @@ function reconcileBuildings(buildings = [], initial = false) {
     const previous = previousBuildings.get(building.id);
     if (previous && building.team === localTeam) {
       if (Number.isFinite(previous.hp) && Number.isFinite(building.hp) && building.hp < previous.hp) buildingDamage++;
-      if (previous.complete !== true && building.complete === true) finishedFriendlyConstruction = true;
+      if (previous.complete !== true && building.complete === true) {
+        finishedFriendlyConstruction = true;
+        if (previous.team === localTeam && previous.type === building.type
+          && previous.complete === false && previous.hp > 0 && building.hp > 0) {
+          completedFriendlyBuildingTypes.add(building.type);
+        } else ambiguousCompletionType = true;
+      }
     }
     seen.add(building.id);
     let visual = buildingVisuals.get(building.id);
@@ -1736,7 +1744,11 @@ function reconcileBuildings(buildings = [], initial = false) {
     buildingVisuals.delete(id);
   }
   latestBuildings = rows;
-  if (!initial && finishedFriendlyConstruction) audio.playEvent({ cue: 'building-complete' });
+  if (!initial && finishedFriendlyConstruction) {
+    const buildingType = !ambiguousCompletionType && completedFriendlyBuildingTypes.size === 1
+      ? completedFriendlyBuildingTypes.values().next().value : null;
+    audio.playEvent({ cue: 'building-complete', ...(buildingType ? { buildingType } : {}) });
+  }
   // Unit births, rather than queue decreases/cancellations, emit ready feedback.
   const selectedBuilding = rows.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;

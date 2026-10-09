@@ -9,6 +9,7 @@ import { validateAudioPack } from '../src/audio-assets.mjs';
 import { farmHarvestNode } from '../src/farm-harvest.mjs';
 import { isShoreFish } from '../src/shore-fishing.mjs';
 import { readDisclosedWildlife } from '../src/wildlife-client-state.mjs';
+import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { createUnitPresentationClientFixture, workerSnapshotRow } from './unit-presentation-client-fixture.mjs';
 const worker = (id, task, team = 0, x = 1) => [id, team, x, 0, 100, 'worker', 0, null, 1, null, 0, null, null, null, task];
 test('execution is aggregated, local and nearby, with old snapshots, stopped and dead workers silent', () => {
@@ -105,6 +106,129 @@ const actualFunction = name => {
   assert.ok(node, `actual ${name} remains discoverable`);
   return mainSource.slice(node.start, node.end);
 };
+
+// Run actual applyState and reconciliation; only building visuals/HUD are injected.
+async function completionFixture(team) {
+  const f = await createUnitPresentationClientFixture({ localTeam: team });
+  const events = [], resets = [];
+  const audio = createGameAudio({ storage: null,
+    doc: { hidden: false, addEventListener() {}, removeEventListener() {} } });
+  const playEvent = audio.playEvent;
+  audio.playEvent = event => { events.push(event); return playEvent(event); };
+  f.context.audio = audio;
+  f.context.setArmySize = size => { resets.push(size); f.context.currentArmySize = size; };
+  f.context.renderMatchRecap = () => {};
+  f.context.reconcileBuildings = Function('BUILDING_DEFINITIONS', 'localTeam', 'audio', `
+    let latestBuildings = [], selectedBuildingId = null; const buildingVisuals = new Map();
+    const createGameplayBuildingVisual = b => ({ type: b.type }), buildingPresentation = () => ({ role: 'none' });
+    const disposeBuildingVisual = () => {}, updateArcheryRangeVisual = () => {}, updateBuildingRallyMarker = () => {};
+    const updateBuildingSelectionVisual = () => {}, updateBuildingCombatFeedback = () => {}, updateConstructionGroundBatches = () => {};
+    const settlementWearMesh = null, settlementWearCache = null, mapObjects = [];
+    const updateLandVegetationOccupation = () => {}, buildingFootprint = () => 1, updateCommandUI = () => {}, updateEconomyUI = () => {};
+    const buildPlacementPending = false, drawMinimap = () => {};
+    ${actualFunction('reconcileBuildings')}
+    return reconcileBuildings;
+  `)(BUILDING_DEFINITIONS, team, audio);
+  return { ...f, audio, events, resets,
+    applyBuildings(buildings, { initial = false, resuming = false, ...state } = {}) {
+      f.context.applyState({ mapId: 'unit-presentation-fixture', units: [], buildings, ...state }, initial, resuming);
+    }, dispose() { audio.dispose(); f.dispose(); } };
+}
+const buildingRow = (id, team, type = 'barracks', complete = false) => ({ id, team, type, complete, hp: 100, x: id, z: 0 });
+for (const team of [0, 1]) {
+  test(`seat ${team}: actual Main completion aggregates deterministically and consumes typed or generic fallback`, async () => {
+    for (const types of [['barracks'], ['barracks', 'barracks'], ['barracks', 'watchtower']]) {
+      for (const reversed of [false, true]) {
+        const f = await completionFixture(team);
+        try {
+          const rows = types.map((type, i) => buildingRow(i + 1, team, type));
+          f.applyBuildings(rows, { initial: true });
+          assert.deepEqual(f.events, []);
+          const complete = rows.map(row => ({ ...row, complete: true }));
+          f.applyBuildings(reversed ? complete.toReversed() : complete);
+          const event = { cue: 'building-complete', ...(new Set(types).size === 1 ? { buildingType: types[0] } : {}) };
+          assert.deepEqual(f.events, [event]);
+          assert.equal(f.audio.getInspector().decisions.at(-1).outcome, 'synthesized fallback');
+          f.applyBuildings(complete);
+          assert.deepEqual(f.events, [event], 'repeated completion is silent');
+        } finally { f.dispose(); }
+      }
+    }
+  });
+
+  test(`seat ${team}: ambiguous completion identity retains one generic event`, async () => {
+    for (const [before, after] of [
+      [{ complete: undefined }, {}], [{ team: 1 - team }, {}], [{ type: 'watchtower' }, {}],
+      [{ hp: 0 }, {}], [{}, { hp: 0 }],
+    ]) {
+      const f = await completionFixture(team);
+      try {
+        // Include a valid same-type completion to ensure any ambiguity keeps the aggregate generic.
+        f.applyBuildings([{ ...buildingRow(1, team), ...before }, buildingRow(2, team)], { initial: true });
+        f.applyBuildings([{ ...buildingRow(1, team, 'barracks', true), ...after }, buildingRow(2, team, 'barracks', true)]);
+        assert.deepEqual(f.events, [{ cue: 'building-complete' }]);
+      } finally { f.dispose(); }
+    }
+  });
+
+  test(`seat ${team}: actual Main initial/resume/resize/rematch resets and disclosure controls suppress completion`, async () => {
+    for (const control of ['initial', 'resume', 'resize', 'winner-restart', 'clock-restart', 'unseen', 'disclosure-return', 'enemy', 'unknown']) {
+      const f = await completionFixture(team);
+      try {
+        const row = buildingRow(1, control === 'enemy' ? 1 - team : team, control === 'unknown' ? 'unregistered' : 'barracks');
+        if (control !== 'unseen') f.applyBuildings([row], { initial: true });
+        if (control === 'disclosure-return') f.applyBuildings([]);
+        if (control === 'winner-restart') f.context.matchWinner = 0;
+        if (control === 'clock-restart') f.context.latestMatchElapsedSeconds = 100;
+        const options = control === 'initial' ? { initial: true } : control === 'resume' ? { resuming: true }
+          : control === 'resize' ? { armySize: 48 } : control === 'winner-restart' ? { winner: -1 }
+            : control === 'clock-restart' ? { matchElapsedSeconds: 0 } : {};
+        f.applyBuildings([{ ...row, complete: true }], options);
+        assert.deepEqual(f.events, [], control);
+        if (control === 'resize') assert.deepEqual(f.resets, [48]);
+        f.applyBuildings([{ ...row, complete: true }]);
+        assert.deepEqual(f.events, [], `${control} does not replay after reset or disclosure`);
+      } finally { f.dispose(); }
+    }
+  });
+}
+test('spectator completion remains silent', async () => {
+  const f = await completionFixture(null);
+  try {
+    f.applyBuildings([buildingRow(1, 0)], { initial: true });
+    f.applyBuildings([buildingRow(1, 0, 'barracks', true)]);
+    assert.deepEqual(f.events, []);
+  } finally { f.dispose(); }
+});
+
+test('typed completion preserves aliases, civilization/common/cue/unbound fallback and separate sample limits', () => {
+  const common = { bus: 'effects', variants: [{ sourceId: 'common' }] };
+  const regional = { bus: 'effects', variants: [{ sourceId: 'regional' }] };
+  const generic = { bus: 'effects', variants: [{ sourceId: 'generic' }] };
+  const profile = { bindings: { 'building.barracks.complete': common, 'cue.building-complete': generic },
+    civilizationBindings: { frontier: { 'building.barracks.complete': regional }, boughward: {} } };
+  const event = { cue: 'building-complete', buildingType: 'barracks' };
+  assert.deepEqual(bindingKeysForEvent(event), ['building.barracks.complete', 'cue.building-complete']);
+  for (const [alias, canonical] of [['townCenter', 'town-center'], ['archeryRange', 'archery-range'], ['watchtower', 'watchtower']]) {
+    assert.deepEqual(bindingKeysForEvent({ ...event, buildingType: alias }), [`building.${canonical}.complete`, 'cue.building-complete']);
+  }
+  assert.equal(resolveEventBinding(profile, event).binding, regional);
+  for (const civilizationId of ['boughward', 'unknown']) assert.equal(resolveEventBinding(profile, { ...event, civilizationId }).binding, common);
+  assert.equal(resolveEventBinding(profile, { cue: 'building-complete' }).binding, generic);
+  assert.equal(resolveEventBinding({ bindings: { 'cue.building-complete': generic } }, event).binding, generic);
+  assert.equal(resolveEventBinding({}, event), null);
+  let now = 1000;
+  const gate = createProfileDecisionGate({ now: () => now });
+  assert.ok(gate.choose(profile, event)); now = 1449;
+  assert.equal(gate.choose(profile, event), null); now = 1450;
+  assert.ok(gate.choose(profile, event), 'bound effects retain their 450 ms default, separate from synthesis');
+  const voiceProfile = { bindings: { 'building.barracks.complete': { ...common, bus: 'voice', cooldownMs: 0 },
+    'building.watchtower.complete': { ...regional, bus: 'voice', cooldownMs: 0 } } };
+  gate.reset(); now = 2000; assert.ok(gate.choose(voiceProfile, event)); now = 3249;
+  assert.equal(gate.choose(voiceProfile, { ...event, buildingType: 'watchtower' }), null);
+  assert.equal(gate.getReason(), 'speech cooldown'); now = 3250;
+  assert.ok(gate.choose(voiceProfile, { ...event, buildingType: 'watchtower' }));
+});
 const gatherCommand = nodeId => ({ type: 'gather', ids: [0], nodeId });
 function orderFixture({ team = 0, mutate = () => {}, send = true } = {}) {
   const map = { id: 'audio-context', width: 20, height: 20, fogOfWar: true, resourceNodes: [
