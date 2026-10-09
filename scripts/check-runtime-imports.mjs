@@ -130,7 +130,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'audio-library-ui', 'audio-policy', 'audio-recognition-check',
     'audio-shipped-catalog', 'audio-shipped-loader', 'audio-shipped-response',
     'audio-studio', 'audio-zones', 'battlefield-cursor', 'browser-state-recovery', 'combat-stance-ui',
-    'economy-client', 'environment-pilot', 'studies/environment/review',
+    'economy-client', 'environment-pilot', 'studies/environment/pilot', 'studies/environment/review',
     'building-placement-preview', 'building-rotation-controls', 'frontier-building-preview', 'game-entry', 'game-entry-session', 'hud-layout',
     'match-mode-controls', 'navigation-settings', 'objective-summary',
     'order-feedback', 'population-readout', 'practice-entry-controls', 'pve-entry',

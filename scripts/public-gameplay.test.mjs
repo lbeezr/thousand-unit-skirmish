@@ -50,6 +50,18 @@ test('anonymous admission default-denies private paths and unsupported methods',
   }
 });
 
+test('canonical and legacy pilot helper paths preserve public static admission', () => {
+  for (const filename of ['src/environment-pilot.mjs', 'src/studies/environment/pilot.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal(isAnonymousGameplayRequest(method, new URL(`/${filename}`, publicOrigin)), true, filename);
+      for (const invalid of [`${filename}/extra`, `${filename}.map`, filename.replace('src/', 'SRC/'),
+        filename.replace(/\/([^/]+)$/, '//$1')]) {
+        assert.equal(isAnonymousGameplayRequest(method, new URL(`/${invalid}`, publicOrigin)), false, invalid);
+      }
+    }
+  }
+});
+
 test('public mode retains Railway password validation before startup', async () => {
   const volume = await mkdtemp(path.join(os.tmpdir(), 'rts-public-startup-'));
   try {
@@ -98,6 +110,15 @@ test('enabled anonymous gameplay and disabled authentication contracts', async (
         assert.equal((await fetch(base + pathname)).status, enabled ? 200 : 401, `${mode}: ${pathname}`);
       }
       for (const pathname of privatePaths) assert.equal((await fetch(base + pathname)).status, 401, pathname);
+      for (const filename of ['src/environment-pilot.mjs', 'src/studies/environment/pilot.mjs']) {
+        for (const method of ['GET', 'HEAD']) {
+          const anonymous = await fetch(`${base}/${filename}`, { method });
+          assert.equal(anonymous.status, enabled ? 200 : 401, `${mode}: ${method} ${filename}`);
+          const authenticated = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+          assert.equal(authenticated.status, 200, `${mode}: authenticated ${method} ${filename}`);
+          if (method === 'HEAD') assert.equal((await authenticated.arrayBuffer()).byteLength, 0, filename);
+        }
+      }
       assert.equal((await fetch(`${base}/health`, { headers: { authorization } })).status, 200);
       assert.equal((await fetch(`${base}/server.mjs`, { headers: { authorization } })).status, 404);
       assert.deepEqual(await (await fetch(`${base}/ready`)).json(), { ok: true });

@@ -543,7 +543,8 @@ try {
       if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
     }
   }
-  for (const filename of ['environment-review.html', 'src/studies/environment/review.mjs', 'src/environment-pilot.mjs']) {
+  for (const filename of ['environment-review.html', 'src/studies/environment/review.mjs',
+    'src/studies/environment/pilot.mjs', 'src/environment-pilot.mjs']) {
     assert.ok(packedManifest.files.includes(filename), `environment study release must contain ${filename}`);
     for (const method of ['GET', 'HEAD']) {
       const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
@@ -556,7 +557,10 @@ try {
   }
   for (const filename of ['src/environment-review.mjs', 'src/studies/environment/', 'src/studies/environment/unknown.mjs',
     'src/studies/environment/review.mjs/extra', 'src/studies/environment/review.mjs.map',
-    'src/studies/environment//review.mjs', 'SRC/studies/environment/review.mjs']) {
+    'src/studies/environment//review.mjs', 'SRC/studies/environment/review.mjs',
+    'src/environment-pilot.mjs/extra', 'src/environment-pilot.mjs.map', 'src//environment-pilot.mjs', 'SRC/environment-pilot.mjs',
+    'src/studies/environment/pilot.mjs/extra', 'src/studies/environment/pilot.mjs.map',
+    'src/studies/environment//pilot.mjs', 'SRC/studies/environment/pilot.mjs']) {
     assert.equal(packedManifest.files.includes(filename), false, `environment study admission must stay exact: ${filename}`);
     for (const method of ['GET', 'HEAD']) {
       const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
