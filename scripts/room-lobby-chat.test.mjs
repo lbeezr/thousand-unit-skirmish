@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { LOBBY_CHAT_LIMITS, RoomLobbyChat } from '../src/room-lobby-chat.mjs';
+import { LOBBY_CHAT_LIMITS, RoomLobbyChat } from '../src/server/orchestration/room-lobby-chat.mjs';
 
 const host = { id: 'player-1', team: 0 }, guest = { id: 'player-2', team: 1 };
 const lobby = () => ({ phase: 'lobby', seats: [{ ...host, connected: true }, { ...guest, connected: true }] });

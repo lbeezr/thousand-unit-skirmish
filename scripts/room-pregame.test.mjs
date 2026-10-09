@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { RoomPregame, validatePregameCheckpoint } from '../src/room-pregame.mjs';
+import { RoomPregame, validatePregameCheckpoint } from '../src/server/orchestration/room-pregame.mjs';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
@@ -12,7 +12,7 @@ function checkpointDiagnostics(source) {
   assert.equal(config.error, undefined);
   const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, fileURLToPath(root));
   assert.deepEqual(parsed.errors, []);
-  const modulePath = fileURLToPath(new URL('src/room-pregame.mjs', root));
+  const modulePath = fileURLToPath(new URL('src/server/orchestration/room-pregame.mjs', root));
   const moduleSource = ts.createSourceFile(modulePath, readFileSync(modulePath, 'utf8'),
     ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
   const names = ['isPregameCheckpointRecord', 'isPregameCheckpointPhase',
@@ -38,7 +38,7 @@ function checkpointDiagnostics(source) {
 
 test('checkpoint boundary declarations and checked restore consumer compile with existing strict options', () => {
   const { diagnostics } = checkpointDiagnostics(`
-import { validatePregameCheckpoint } from '../../src/room-pregame.mjs';
+import { validatePregameCheckpoint } from '../../src/server/orchestration/room-pregame.mjs';
 /** @param {unknown} input */
 function restore(input) {
   const saved = validatePregameCheckpoint(input);
@@ -47,7 +47,7 @@ function restore(input) {
   /** @type {number} */ const revision = saved.revision;
   return { phase, revision: Number(revision.toFixed(0)) };
 }
-/** @type {import('../../src/room-pregame.mjs').PregameCheckpoint} */
+/** @type {import('../../src/server/orchestration/room-pregame.mjs').PregameCheckpoint} */
 const checkpoint = { phase: 'running', revision: 1 };
 restore(checkpoint);
 restore({ phase: 'invalid', revision: 'unchecked boundary input' });
@@ -60,12 +60,12 @@ test('checked checkpoint consumers reject nullable and incorrectly typed results
     { source: 'validatePregameCheckpoint(null).phase;', code: 2531 },
     { source: "const a = validatePregameCheckpoint({}); if (a) a.phase.toFixed(0);", code: 2551 },
     { source: 'const b = validatePregameCheckpoint({}); if (b) b.revision.toUpperCase();', code: 2339 },
-    { source: "/** @type {import('../../src/room-pregame.mjs').PregameCheckpoint} */ const c = { phase: 'launching', revision: 0 };", code: 2322 },
-    { source: "/** @type {import('../../src/room-pregame.mjs').PregameCheckpoint} */ const d = { phase: 'lobby', revision: '0' };", code: 2322 },
+    { source: "/** @type {import('../../src/server/orchestration/room-pregame.mjs').PregameCheckpoint} */ const c = { phase: 'launching', revision: 0 };", code: 2322 },
+    { source: "/** @type {import('../../src/server/orchestration/room-pregame.mjs').PregameCheckpoint} */ const d = { phase: 'lobby', revision: '0' };", code: 2322 },
     { source: 'const e = validatePregameCheckpoint({}); if (e) e.ready;', code: 2339 },
   ];
   const { fixturePath, diagnostics } = checkpointDiagnostics([
-    "import { validatePregameCheckpoint } from '../../src/room-pregame.mjs';",
+    "import { validatePregameCheckpoint } from '../../src/server/orchestration/room-pregame.mjs';",
     ...cases.map(item => item.source),
   ].join('\n'));
   assert.equal(diagnostics.length, cases.length);
@@ -382,7 +382,7 @@ function payloadDiagnostics(source, { mutation, omitNormalizer = false } = {}) {
     assert.equal(selected.length, 1, `${name} production import`);
     return `import { ${name} } from '${specifier}';\n`;
   };
-  const room = readAst('src/room-pregame.mjs');
+  const room = readAst('src/server/orchestration/room-pregame.mjs');
   const classes = room.statements.filter(statement => ts.isClassDeclaration(statement)
     && statement.name?.text === 'RoomPregame');
   assert.equal(classes.length, 1);
@@ -399,7 +399,7 @@ function payloadDiagnostics(source, { mutation, omitNormalizer = false } = {}) {
   const banner = readAst('src/bannerfall-rules.mjs');
   // Keep actual declarations and their JSDoc. Only envelopes/imports are generated;
   // no producer, normalizer, registry or constant is replaced with a test stub.
-  const roomSource = requiredImport(room, 'normalizeMatchMode', './match-modes.mjs')
+  const roomSource = requiredImport(room, 'normalizeMatchMode', '../../match-modes.mjs')
     + functions(room, ['isPregameCheckpointRecord', 'isPregameCheckpointPhase',
       'isPregameCheckpointRevision', 'validatePregameCheckpoint'])
     + room.text.slice(declaration.getFullStart(), declaration.getStart())
@@ -408,7 +408,7 @@ function payloadDiagnostics(source, { mutation, omitNormalizer = false } = {}) {
   const modeSource = requiredImport(modes, 'BANNERFALL_RULES', './bannerfall-rules.mjs')
     + variables(modes, ['NORMAL_MATCH_MAP_ID', 'definitions']) + (omitNormalizer ? '' : normalizer);
   const sources = new Map([
-    [path('src/room-pregame.mjs'), roomSource],
+    [path('src/server/orchestration/room-pregame.mjs'), roomSource],
     [path('src/match-modes.mjs'), modeSource],
     [path('src/bannerfall-rules.mjs'), variables(banner, ['BANNERFALL_RULES'])],
   ]);
@@ -425,12 +425,12 @@ function payloadDiagnostics(source, { mutation, omitNormalizer = false } = {}) {
     .filter(file => file.startsWith(path('src/'))).sort());
   // Every diagnostic is returned. A positive program must be entirely clean;
   // controls assert exact diagnostics rather than filtering unselected errors.
-  return { fixturePath, modulePath: path('src/room-pregame.mjs'),
+  return { fixturePath, modulePath: path('src/server/orchestration/room-pregame.mjs'),
     modePath: path('src/match-modes.mjs'), diagnostics: ts.getPreEmitDiagnostics(program) };
 }
 
-const payloadConsumerPrefix = `import { RoomPregame } from '../../src/room-pregame.mjs';
-/** @param {import('../../src/room-pregame.mjs').PregamePayloadSource & RoomPregame} room */
+const payloadConsumerPrefix = `import { RoomPregame } from '../../src/server/orchestration/room-pregame.mjs';
+/** @param {import('../../src/server/orchestration/room-pregame.mjs').PregamePayloadSource & RoomPregame} room */
 function consume(room) {
 const checkpoint = room.checkpoint();
 const payload = room.payload();
@@ -481,7 +481,7 @@ test('payload result controls reject fourteen unchecked kinds without inventing 
 
 test('partial payload DTO admits open/missing/nonstandard metadata and preserves runtime passthrough', () => {
   const { diagnostics } = payloadDiagnostics(`
-/** @type {import('../../src/room-pregame.mjs').PregamePayload} */
+/** @type {import('../../src/server/orchestration/room-pregame.mjs').PregamePayload} */
 const metadata = { phase: 'lobby', revision: 0, mapId: 42, armySize: 'eight',
   matchModeId: null, matchModeVersion: false, mode: 'pvp', canLaunch: false,
   seats: [{ ready: false }, { id: 7, team: '0', connected: 'yes', extra: true, ready: true }] };
@@ -532,9 +532,9 @@ test('actual host pregamePayload consumer preserves checked projection results w
   // Host binding slots describe dependencies, not stand-in implementations.
   // The actual host declaration retains its null guard, sync call and full spread.
   const { diagnostics } = payloadDiagnostics(`
-import { RoomPregame } from '../../src/room-pregame.mjs';
+import { RoomPregame } from '../../src/server/orchestration/room-pregame.mjs';
 /** @param {{
- * pregame: (import('../../src/room-pregame.mjs').PregamePayloadSource & RoomPregame) | null,
+ * pregame: (import('../../src/server/orchestration/room-pregame.mjs').PregamePayloadSource & RoomPregame) | null,
  * syncPregameSeats: () => void,
  * DEFAULT_FACTION_ID: unknown, mapCatalogPayload: () => unknown,
  * matchModeCatalog: (input: unknown) => unknown, matchModeDefinition: (input: unknown) => unknown,
@@ -563,7 +563,7 @@ function seatSyncDiagnostics(source, mutation) {
   assert.equal(config.error, undefined);
   const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, fileURLToPath(root));
   assert.deepEqual(parsed.errors, []);
-  const modulePath = path('src/room-pregame.mjs');
+  const modulePath = path('src/server/orchestration/room-pregame.mjs');
   const room = ts.createSourceFile(modulePath, readFileSync(modulePath, 'utf8'),
     ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
   const names = ['isPregameCheckpointRecord', 'isPregameCheckpointPhase',
@@ -601,8 +601,8 @@ function seatSyncDiagnostics(source, mutation) {
   return { fixturePath, modulePath, diagnostics: ts.getPreEmitDiagnostics(program) };
 }
 
-const seatSyncPrefix = `import { RoomPregame } from '../../src/room-pregame.mjs';
-/** @param {import('../../src/room-pregame.mjs').PregameSeatSyncSource & RoomPregame} room */
+const seatSyncPrefix = `import { RoomPregame } from '../../src/server/orchestration/room-pregame.mjs';
+/** @param {import('../../src/server/orchestration/room-pregame.mjs').PregameSeatSyncSource & RoomPregame} room */
 function consume(room) {
 `;
 
@@ -665,9 +665,9 @@ const seatHostDeclarations = seatHostAst.statements.filter(statement => ts.isFun
   && statement.name?.text === 'syncPregameSeats');
 assert.equal(seatHostDeclarations.length, 1);
 const seatHostDeclaration = seatHostDeclarations[0].getFullText(seatHostAst);
-const seatHostPrefix = `import { RoomPregame } from '../../src/room-pregame.mjs';
+const seatHostPrefix = `import { RoomPregame } from '../../src/server/orchestration/room-pregame.mjs';
 /** @param {{
- * pregame: (import('../../src/room-pregame.mjs').PregameSeatSyncSource & RoomPregame) | null,
+ * pregame: (import('../../src/server/orchestration/room-pregame.mjs').PregameSeatSyncSource & RoomPregame) | null,
  * sessions: ReadonlyMap<string, Readonly<{id: string, team: 0 | 1,
  * peer: Readonly<{closed: unknown}> | null, expiresAt: number, metadata?: unknown}>>,
  * dirty: boolean

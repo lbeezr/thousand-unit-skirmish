@@ -328,6 +328,78 @@ draft PR with source/test/digest evidence. Parent retains ready/merge and
 deployment in source task `01a0f784-c5d7-72e0-82e8-1747b4c840c1`; delivered
 ordinary-match acceptance remains distinct from local native/package proof.
 
+The seat-private projection integrated through
+[PR629](https://github.com/lbeezr/thousand-unit-skirmish/pull/629) at
+`56be560061e9658b0c8cb39d14254d738ee1affa`; tree
+`fcd774d1ed41888272383828b6f5007099cdabbe` equals the independently reviewed
+source tree. Five compact privacy/import/real private-serving checks pass on
+the containing source. The parent independently confirmed hosted exact-base
+parity across all nine existing failure assertions and every check outcome,
+apart from passing syntax-path relocation; this is not a full-green claim.
+
+## Private lobby authority homes — 9 October 2026
+
+The same organization owner takes the source inventory's coherent private
+server/orchestration pair on `codex/private-lobby-authority-home-20261009`,
+from containing main `56be560061e9658b0c8cb39d14254d738ee1affa`. The parent
+reserved only the two corresponding `server.mjs` import lines and reconciled
+the types/contracts owner `01a11265-7c21-71a4-8345-611bf0318011`, who released
+the pregame/chat modules and fixture paths after PR588 integrated; no retained
+active or unpublished work overlaps. Qualification uses containing main
+`373b063a00bafe778ca786efaf08eda079864819` after disjoint audio PR630 merged;
+its audio policy, playback, execution/native tests and matrix bytes remain
+untouched.
+
+Move `src/room-pregame.mjs` (206 lines) and `src/room-lobby-chat.mjs` (56 lines)
+to `src/server/orchestration/` with the same filenames. These are the actual
+server-owned invite-lobby authority, separate from public lobby UI. The existing
+worker creates `RoomPregame` for configured pregame sessions and restored phase;
+`RoomLobbyChat.send` consumes that room's phase and existing connected seats.
+Both leaves have only `server.mjs` as a runtime importer. Chat remains byte-for-byte
+identical; pregame changes only its relative import of `match-modes.mjs`.
+All method/function bodies, declarations, JSDoc and named exports stay intact.
+
+Preserve revision invalidation, getter validation order, checked checkpoint,
+seat/payload projections and exact diagnostic codes; preserve map/mode/readiness,
+launch races and restored phases. Chat retains plain-text validation, connected
+sender authority, retry acknowledgement, rate/window/history bounds, room
+isolation, rematch retention and ephemeral restart semantics. No type enrollment,
+new validation, access expansion, timer/session logic or gameplay change.
+
+Update the two host imports, the existing authority tests' direct/source/type
+paths and the pregame fixture's matching relative import expectation. Preserve
+its actual-declaration selection, positive/negative programs, compiler settings
+and exact diagnostic assertions. Native scenarios retain their existing
+authority/UI workloads and commands; their private-route checks cover both
+canonical and retired paths with GET/HEAD. The current architecture source
+reference follows the canonical file; dated inventory and QA evidence stay pinned.
+
+Neither root path is a supported public module URL or external import identified
+by the consumer audit. Retire both without copies or forwarding entries; root
+files reduce from 176 to 174 (169 JavaScript and five CSS). All 24 supported
+aliases and six generated descriptors remain unchanged. Exact server membership,
+sole-worker reachability and retired-root guards follow the pair. The production
+public allowlist and admission implementation are unchanged; existing public-mode
+fixtures and clean package checks prove anonymous denial, authenticated GET/HEAD
+404, canonical source/manifest byte identity and absence of both retired roots.
+
+Write scope: the pair, two host imports, required paths in the two authority tests
+and native scenarios, additive existing runtime/public/package guards, this record
+and the current architecture filename reference. Public UI implementations,
+launch options, supervisor, index/persistence, compiler/CI/discovery configuration,
+audio, movement, held experiments and historical evidence remain outside it.
+The held `workerEconomyBodyRadius` repair is not reconstructed or adopted here.
+Art backing is N/A for this internal placement change.
+
+Fresh-main baseline: 99/99 existing pregame/chat authority, UI and launch-option
+tests pass. Next transition: independently review the implemented exact head;
+run the same authority/UI/type contracts and focused import/public regressions,
+both existing native lobby scenarios, imports, both configured type gates, docs,
+client allowlist and clean packed private serving; then a draft PR with exact
+source/check/package evidence. Parent retains ready/merge and deployment in source
+task `01a0f784-c5d7-72e0-82e8-1747b4c840c1`; local DOM/native process proof does
+not establish ordinary-match browser acceptance on a delivered release.
+
 ## Integrated code milestones
 
 | Slice | Merge and evidence | Remaining acceptance |

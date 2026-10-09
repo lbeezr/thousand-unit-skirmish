@@ -1,4 +1,4 @@
-import { normalizeMatchMode, assertMatchModeCompatibility, matchModeDefinition } from './match-modes.mjs';
+import { normalizeMatchMode, assertMatchModeCompatibility, matchModeDefinition } from '../../match-modes.mjs';
 
 export const LOBBY_ARMY_SIZES = Object.freeze([250, 500, 1000, 2000]);
 

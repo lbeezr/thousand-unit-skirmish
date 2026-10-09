@@ -557,6 +557,24 @@ try {
       if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
     }
   }
+  for (const name of ['room-pregame', 'room-lobby-chat']) {
+    const canonical = `src/server/orchestration/${name}.mjs`;
+    const retired = `src/${name}.mjs`;
+    assert.ok(packedManifest.files.includes(canonical), `canonical lobby authority is packaged: ${canonical}`);
+    assert.deepEqual(await readFile(path.join(root, canonical)), await readFile(path.join(sourceRoot, canonical)),
+      `canonical lobby authority bytes match qualified source: ${canonical}`);
+    assert.equal(packedManifest.files.includes(retired), false, `retired lobby root is absent: ${retired}`);
+    for (const filename of [canonical, retired, `${canonical}/extra`, `${canonical}.map`,
+      `src/server/orchestration//${name}.mjs`, `SRC/server/orchestration/${name}.mjs`]) {
+      for (const method of ['GET', 'HEAD']) {
+        assert.equal((await fetch(`${base}/${filename}`, { method })).status, 401,
+          `lobby authority path requires authentication (${method}): ${filename}`);
+        const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+        assert.equal(response.status, 404, `private/retired lobby authority is not served (${method}): ${filename}`);
+        if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
+      }
+    }
+  }
   await checkClientImports(base, { authorization, entrypoints: BROWSER_ENTRYPOINTS.map(filename => `/${filename}`) });
   for (const file of ['water-study.html', 'src/studies/water/preview.mjs',
     'src/presentation/rendering/water/surface.mjs', 'src/presentation/rendering/water/state.mjs',

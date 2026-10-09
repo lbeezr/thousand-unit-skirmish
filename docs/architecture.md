@@ -2222,7 +2222,7 @@ and write atomically. Schema/rules validation decides whether a checkpoint can
 be migrated, restored, or rejected.
 
 [Pregame invite rooms](room-lobby.md) use the existing seat sessions and isolated
-workers. `src/room-pregame.mjs` owns revisions, readiness and the launch gate;
+workers. `src/server/orchestration/room-pregame.mjs` owns revisions, readiness and the launch gate;
 the client panel is in `src/room-lobby-ui.mjs`. Schema 22 adds the optional
 pregame phase and migrates schema 21 matches without resetting their running
 state. Both unit simulation and scenario execution wait for explicit launch.
