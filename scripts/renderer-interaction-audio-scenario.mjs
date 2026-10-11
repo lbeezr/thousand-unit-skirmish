@@ -159,7 +159,7 @@ async function control(page, selector) {
 // rendered bounds without changing selection or advancing stacked-unit picks.
 export function interactionTargetPoint(kind, id) {
   const state = window.__rtsInteractionAudioSnapshot();
-  const target = (kind === 'unit' ? state.workers : state.buildings).find(row => row.id === id);
+  const target = (kind === 'unit' ? state.units ?? state.workers : state.buildings).find(row => row.id === id);
   if (!target) return null;
   const candidates = target.point ? [target.point] : [];
   if (target.bounds) {

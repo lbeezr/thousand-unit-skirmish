@@ -10645,6 +10645,13 @@ window.markPrototypeReady();
 // Read-only observations for the shared source-bound cloud capture. No world,
 // clock, focus or visibility mutation is exposed through this diagnostic.
 if (window.__rtsCaptureDiagnostics === true) {
+  window.__rtsInteractionAudioProject = (x, z, lift = 0) => {
+    if (![x, z, lift].every(Number.isFinite)) return null;
+    const rect = renderer.domElement.getBoundingClientRect();
+    const p = new THREE.Vector3(x, groundHeight(x, z) + lift, z).project(camera);
+    const point = { x: rect.left + (p.x + 1) * rect.width / 2, y: rect.top + (1 - p.y) * rect.height / 2 };
+    return Math.abs(p.z) < 1 && document.elementFromPoint(point.x, point.y) === renderer.domElement ? point : null;
+  };
   window.__rtsInteractionAudioPick = (x, y) => {
     if (!Number.isFinite(x) || !Number.isFinite(y)
       || document.elementFromPoint(x, y) !== renderer.domElement) return null;
@@ -10657,11 +10664,7 @@ if (window.__rtsCaptureDiagnostics === true) {
   // On-demand reads avoid a per-frame debugger breakpoint slowing audio loads.
   window.__rtsInteractionAudioSnapshot = () => {
     const rect = renderer.domElement.getBoundingClientRect();
-    const project = (x, z, lift = 0) => {
-      const p = new THREE.Vector3(x, groundHeight(x, z) + lift, z).project(camera);
-      const point = { x: rect.left + (p.x + 1) * rect.width / 2, y: rect.top + (1 - p.y) * rect.height / 2 };
-      return Math.abs(p.z) < 1 && document.elementFromPoint(point.x, point.y) === renderer.domElement ? point : null;
-    };
+    const project = window.__rtsInteractionAudioProject;
     const buildingBounds = building => {
       const group = buildingVisuals.get(building.id)?.group;
       if (!group?.visible) return null;
@@ -10678,9 +10681,11 @@ if (window.__rtsCaptureDiagnostics === true) {
     };
     return { observedAt: performance.now(), mapId: mapDefinition?.id, team: localTeam, status: audio.getStatus(),
       inspector: audio.getInspector(), settings: audio.getSettings(),
+      units: units.filter(u => u?.team === localTeam && u.hp > 0).slice(0, 128)
+        .map(u => ({ id: u.id, kind: u.kind, selected: selected.has(u.id), point: project(u.renderX, u.renderZ, .65) })),
       workers: units.filter(u => u?.team === localTeam && u.kind === 'worker' && u.hp > 0).slice(0, 4)
         .map(u => ({ id: u.id, selected: selected.has(u.id), point: project(u.renderX, u.renderZ, .65) })),
-      buildings: latestBuildings.filter(b => b.team === localTeam && b.hp > 0 && ['town-center', 'barracks'].includes(b.type))
+      buildings: latestBuildings.filter(b => b.team === localTeam && b.hp > 0).slice(0, 64)
         .map(b => ({ id: b.id, type: b.type, complete: b.complete, selected: b.id === selectedBuildingId,
           point: project(b.x, b.z), bounds: buildingBounds(b) })),
     };
