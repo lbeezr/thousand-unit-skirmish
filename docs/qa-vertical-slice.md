@@ -29,12 +29,15 @@ Remaining in-match surfaces and wildlife have 186 focused checks
 ([receipt](qa-evidence/match-ui-2026-10-11/focused-checks.json)), merged PR647 and
 [staged source/bytes at `3886719f`](qa-evidence/match-ui-2026-10-11/staging-receipt.json).
 The complete containing rollout has 141 resolving client imports and 16 matching
-actual response hashes; normal-game appearance is still unobserved.
+actual response hashes. Subsequent authorized local in-app checks cover actual
+Worker/building/army/mixed/Skiff controls, wildlife and both seats in bounded
+states: [review and screenshots](qa-evidence/hud-iab-2026-10-11/review.json).
 The continuation and normal-game matrix are owned in the
 [HUD checkpoint](hud-controls-backlog.md#army-mixed-selection-and-skiffs--11-october-2026).
 Source, DOM and served-byte evidence do not claim rendered appearance; the
-hosted capture/sign-in route remains paused. The HUD owner retains appearance
-and both-seat action checks at an identified containing build.
+user resumed hosted checks and allowed bounded in-app browser checks. Staging
+native acceptance and the remaining lifecycle/viewport matrix stay incomplete;
+the HUD owner retains those checks at an identified containing build.
 
 ## Persistent tactical orders — 30 September 2026
 

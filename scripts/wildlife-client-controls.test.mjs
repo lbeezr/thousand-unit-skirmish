@@ -13,24 +13,45 @@ async function fixture(t,team=0,options={}) {
   const f=await wildlifeControlsFixture(team,options);t.after(()=>f.close());return f;
 }
 
-test('shared input fixture renders terminal recap with seat privacy and clears it on result reset', async t => {
+test('shared input fixture renders terminal recap with seat privacy, closes open panels once and clears recap on result reset', async t => {
   for (const team of [0, 1, null]) {
     const f = await fixture(t, team), document = f.w.document;
     const terminal = controlsState(f.map, { winner: 2, winnerReason: 'stronghold-destruction',
       matchElapsedSeconds: 123, food: [12, 98], wood: [34, 76], alive: [2, 2], objectives: [] });
     const before = structuredClone(terminal);
-    f.w.applyState(terminal, false);
-    assert.equal(document.querySelector('#match-result-title').textContent, 'DRAW');
-    assert.equal(document.querySelector('#match-recap').hidden, false);
-    assert.equal(document.querySelector('#match-recap-duration').textContent, 'Duration 2:03');
-    const resources = document.querySelector('#match-recap-resources');
-    assert.equal(resources.textContent, team === null ? ''
-      : `Your remaining resources: ${terminal.food[team]} Food · ${terminal.wood[team]} Wood`);
-    assert.equal(resources.hidden, team === null, 'spectators receive no player bank recap');
-    assert.deepEqual(terminal, before, 'recap rendering does not mutate the accepted DTO');
-    f.w.updateMatchResult(-1);
-    assert.equal(document.querySelector('#match-recap').hidden, true);
-    assert.equal(resources.textContent, '');
+    for (const [panel, toggle] of [[f.w.matchMenu, f.w.matchMenuToggle], [f.w.helpPanel, f.w.helpToggle]]) {
+      toggle.click();
+      assert.equal(panel.hidden, false);
+      assert.equal(f.w.hudScrim.hidden, false);
+      assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+      f.w.heldCameraKeys.press('ArrowRight');
+      f.w.lastKeyboardPanTime = 100;
+      f.w.applyState(terminal, false);
+      assert.equal(f.w.matchMenu.hidden, true, 'terminal transition closes Match Controls');
+      assert.equal(f.w.helpPanel.hidden, true, 'terminal transition closes Help');
+      assert.equal(f.w.hudScrim.hidden, true, 'terminal transition removes the panel scrim');
+      assert.equal(f.w.matchMenuToggle.getAttribute('aria-expanded'), 'false');
+      assert.equal(f.w.helpToggle.getAttribute('aria-expanded'), 'false');
+      assert.deepEqual(f.w.heldCameraKeys.pressed, []);
+      assert.equal(f.w.lastKeyboardPanTime, 0);
+      assert.equal(document.querySelector('#match-result-title').textContent, 'DRAW');
+      assert.equal(document.querySelector('#match-recap').hidden, false);
+      assert.equal(document.querySelector('#match-recap-duration').textContent, 'Duration 2:03');
+      const resources = document.querySelector('#match-recap-resources');
+      assert.equal(resources.textContent, team === null ? ''
+        : `Your remaining resources: ${terminal.food[team]} Food · ${terminal.wood[team]} Wood`);
+      assert.equal(resources.hidden, team === null, 'spectators receive no player bank recap');
+      assert.deepEqual(terminal, before, 'recap rendering does not mutate the accepted DTO');
+      toggle.click();
+      f.w.applyState(terminal, false);
+      assert.equal(panel.hidden, false, 'a player can reopen panels after the result');
+      assert.equal(f.w.hudScrim.hidden, false, 'repeated terminal receipts preserve the reopened panel scrim');
+      assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+      f.w.updateMatchResult(-1);
+      assert.equal(document.querySelector('#match-recap').hidden, true);
+      assert.equal(resources.textContent, '');
+      f.w.closeHudPanels();
+    }
   }
 });
 
@@ -74,6 +95,35 @@ for (const team of [0,1]) {
     }
     assert.equal(f.sent.length,0,'selection creates no order or optimistic claim');
     assert.ok(f.w.controlGroups.every(group=>group.size===0));
+  });
+
+  for (const armed of [false, true]) test(`seat ${team}: selected Sheep becomes a carcass with ${armed ? 'armed' : 'unarmed'} targeting and refreshes field guidance`,async t=>{
+    const f=await fixture(t,team),node=own(team),document=f.w.document;
+    f.click(node);selected(f,node.id);
+    assert.equal(f.w.ui.fieldHintSecondary.textContent,'HERD / STOP · S');
+    if (armed) f.w.ui.orderTargetToggle.click();
+    assert.equal(f.w.tapOrderArmed,armed);
+    assert.equal(f.w.ui.fieldHintSecondaryKey.textContent,armed?'ESC':'RMB');
+    assert.equal(f.w.ui.fieldHintSecondary.textContent,armed?'CANCEL TARGET':'HERD / STOP · S');
+
+    f.receive(rowState(f,{wildlifeState:'carcass',wildlifeActivity:undefined,stock:42.5},{tick:31}));
+    assert.equal(f.w.selectedWildlifeId,node.id,'authoritative lifecycle change retains inspectable selection');
+    assert.equal(f.w.ui.selected.textContent,'1 CARCASS');
+    assert.equal(f.w.tapOrderArmed,false);
+    assert.equal(f.w.tapOrderPointer,null);
+    assert.equal(f.w.ui.fieldHintSecondaryKey.textContent,'HARVEST');
+    assert.equal(f.w.ui.fieldHintSecondary.textContent,'NEAREST IDLE WORKER');
+    assert.equal(document.querySelector('[data-wildlife-name]').textContent,'Sheep carcass');
+    assert.equal(document.querySelector('[data-context-proxy="order-target-toggle"]').hidden,true);
+    assert.equal(document.querySelector('[data-stationary-order="stop"]').hidden,true);
+    const harvest=document.querySelector('[data-harvest-wildlife]');
+    assert.equal(harvest.hidden,false);assert.equal(harvest.disabled,false);
+    assert.equal(f.sent.length,0,'receipt refresh does not submit an order');
+
+    f.receive(rowState(f,{wildlifeState:'depleted',wildlifeActivity:undefined,stock:0},{tick:32}));
+    cleared(f);
+    assert.equal(f.w.ui.fieldHintSecondaryKey.textContent,'RMB');
+    assert.equal(f.w.ui.fieldHintSecondary.textContent,'MOVE / ATTACK');
   });
 
   test(`seat ${team}: RMB Herd and S/Stop use exact epoch/string IDs and production tracked ACK feedback`,async t=>{
@@ -277,8 +327,13 @@ test('production input → HTTP/WS authoritative two-seat natural claim, Herd mo
   const observedHerd=new Map(),stopAnchors=new Map();
   for(const [team,client]of clients.entries()) {
     const f=await fixture(t,team,{map,state:client.latest,onSend:command=>client.send(command)});
-    const bridge=event=>f.receive(JSON.parse(event.data));client.socket.addEventListener('message',bridge);
-    t.after(()=>client.socket.removeEventListener('message',bridge));
+    let frame=null;
+    const bridge=event=>{
+      f.receive(JSON.parse(event.data),false);
+      frame ??= setTimeout(()=>{frame=null;f.present();},16);
+    };
+    client.socket.addEventListener('message',bridge);
+    t.after(()=>{clearTimeout(frame);client.socket.removeEventListener('message',bridge);});
     f.welcome(client.latest,map,team);
     // Inspect the animal at a normal local zoom. At a whole-160-map overview,
     // nearby friendly units correctly win the existing pixel-sized pick radius.
@@ -296,13 +351,15 @@ test('production input → HTTP/WS authoritative two-seat natural claim, Herd mo
     assert.equal(f.w.ui.orderStatus.dataset.state,'applied');
     const movedState=await client.state(state=>state.resourceNodes.some(row=>row.id===source.id&&Math.hypot(row.x-source.x,row.z-source.z)>.3),
       'real Sheep position moves after ordinary client input');
+    f.present();
     const moved=f.w.latestWildlifeView.rows.get(source.id);assert.ok(Math.hypot(moved.x-source.x,moved.z-source.z)>.3);
     observedHerd.set(source.id,{start:{x:source.x,z:source.z},pose:{x:moved.x,z:moved.z},tick:movedState.tick});
     const stopAfter=client.messages.length;
     if(team===0)f.key('s');else f.w.document.querySelector('[data-stationary-order="stop"]').click();
     const stop=f.sent.at(-1);payload(stop,'stopWildlife',source.id,client.latest.forestEpoch);
-    await client.wait(message=>message.type==='notice'&&message.clientOrderToken===stop.clientOrderToken
-      &&/^SHEEP STOP ORDER/.test(message.message),'normal input Stop acknowledged',stopAfter);
+    const stopNotice=await client.wait(message=>message.type==='notice'&&message.clientOrderToken===stop.clientOrderToken,
+      'normal input Stop receipt',stopAfter);
+    assert.match(stopNotice.message,/^SHEEP STOP ORDER/,`seat ${team}: native Stop must be acknowledged`);
     assert.equal(f.w.ui.orderStatus.dataset.state,'applied');
     const stopSaved=await server.checkpoint(saved=>saved.mapDefinition.id===map.id&&saved.state.tickNumber>=movedState.tick
       &&saved.state.resourceNodes.find(row=>row.id===source.id)?.wildlifeHerd===null);
