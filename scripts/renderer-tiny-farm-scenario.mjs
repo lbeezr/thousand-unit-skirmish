@@ -207,10 +207,15 @@ export async function enterTinyFarmRoom({ page, openPage, origin }, { click = cl
   assert.equal(await page.cdp.evaluate("document.querySelector('#lobby-match-mode').value"), 'skirmish@1');
   // The ordinary invite is used privately to admit the other human seat. Never
   // write this URL or capture the lobby carrying its invitation.
-  onStage('second-seat'); const roomUrl = await page.cdp.evaluate('location.href');
-  const guest = await openPage(); await install(guest);
+  onStage('second-seat-url'); const roomUrl = await page.cdp.evaluate('location.href');
+  onStage('second-seat-open'); const guest = await openPage();
+  onStage('second-seat-blank'); assert.equal(await guest.cdp.evaluate('location.href'), 'about:blank');
+  onStage('second-seat-observer'); await install(guest);
+  onStage('second-seat-navigation');
   await guest.cdp.call('Page.navigate', { url: roomUrl });
+  onStage('second-seat-ready');
   await guest.wait("document.querySelector('#room-lobby')?.open && !document.querySelector('#lobby-ready')?.disabled", 'ordinary second human seat');
+  onStage('second-seat-identity');
   assert.equal(await page.cdp.evaluate('window.__rtsTinyFarm.team'), 0);
   assert.equal(await guest.cdp.evaluate('window.__rtsTinyFarm.team'), 1);
   onStage('ready-seats'); await click(page, '#lobby-ready');
@@ -386,18 +391,52 @@ export function farmFailureCategory(error) {
   return 'execution';
 }
 
+export function farmCdpFault(error) {
+  const message = error?.message ?? '';
+  const timeout = /^(Runtime\.evaluate|Page\.navigate|Page\.getFrameTree|Target\.getTargetInfo) timeout$/.exec(message);
+  if (timeout) return { kind: 'cdp-timeout', method: timeout[1] };
+  if (message === 'CDP closed') return { kind: 'cdp-closed' };
+  if (/Method not found|wasn't found/.test(message)) return { kind: 'cdp-method-unavailable' };
+  return { kind: farmFailureCategory(error) };
+}
+
+export function observeFarmCdpEvents(page) {
+  const receipt = { supported: typeof page.cdp.on === 'function', contextCreated: 0,
+    contextDestroyed: 0, domLoaded: 0, loaded: 0, crashed: 0, detached: 0 };
+  for (const [event, key] of [['Runtime.executionContextCreated', 'contextCreated'],
+    ['Runtime.executionContextDestroyed', 'contextDestroyed'], ['Page.domContentEventFired', 'domLoaded'],
+    ['Page.loadEventFired', 'loaded'], ['Inspector.targetCrashed', 'crashed'], ['Inspector.detached', 'detached']])
+    if (receipt.supported) page.cdp.on(event, () => { receipt[key] = Math.min(100, receipt[key] + 1); });
+  return receipt;
+}
+
+// Independent read-only protocol receipts separate a lost/unresponsive runtime
+// from an unavailable API. Never retain target/frame URLs, titles, IDs or errors.
+export async function readFarmCdpHealth(page) {
+  const probe = async (method, project) => {
+    try { return { status: 'available', ...project(await page.cdp.call(method)) }; }
+    catch (error) { return { status: 'unavailable', fault: farmCdpFault(error) }; }
+  };
+  const [target, frame] = await Promise.all([
+    probe('Target.getTargetInfo', value => ({ page: value.targetInfo?.type === 'page', attached: value.targetInfo?.attached === true })),
+    probe('Page.getFrameTree', value => ({ rootPresent: Boolean(value.frameTree?.frame) })),
+  ]);
+  return { target, frame };
+}
+
 export async function run(value, { identify = checkServedBuildIdentity, enter = enterTinyFarmRoom,
   execute = runTinyFarmLifecycle, record = writeFile } = {}) {
   const context = validateCaptureContext(value), { origin, source } = context;
   const openedPages = [context.page];
+  const pageEvents = [observeFarmCdpEvents(context.page)], stages = [];
   let stage = 'served-identity';
   try {
   const identity = await identify(origin, { sourceRevision: source.revision, digest: source.digest });
   assert.equal(identity.ok, true, 'served source and pack must match'); assert.equal(identity.served.sourceDirty, false);
   stage = 'ordinary-entry';
   const pages = await enter({ ...context, openPage: async () => {
-    const page = await context.openPage(); openedPages.push(page); return page;
-  } }, { onStage: step => { stage = `entry-${step}`; } });
+    const page = await context.openPage(); openedPages.push(page); pageEvents.push(observeFarmCdpEvents(page)); return page;
+  } }, { onStage: step => { stage = `entry-${step}`; if (stages.length < 32) stages.push(stage); } });
   assert.equal(pages.length, 2); assert.equal(pages[0], context.page); assert.notEqual(pages[0], pages[1]);
   stage = 'farm-lifecycle';
   const result = await execute(context, pages);
@@ -415,7 +454,8 @@ export async function run(value, { identify = checkServedBuildIdentity, enter = 
   } catch (error) {
     // The shared qualifier intentionally hides CDP exception text. Retain safe
     // Farm stage/DOM facts without error strings, source expressions or invites.
-    const pageBoots = await Promise.all(openedPages.map(page => page.cdp.evaluate(`(()=>{const d=document.documentElement?.dataset??{};
+    const snapshotFaults = openedPages.map(() => null);
+    const snapshot = (page, index) => page.cdp.evaluate(`(()=>{const d=document.documentElement?.dataset??{};
       return {entry:['menu','game'].includes(d.entry)?d.entry:null,ready:d.boot==='ready',
         createPresent:!!document.querySelector('#menu-create-room'),createDisabled:document.querySelector('#menu-create-room')?.disabled===true,
         lobbyOpen:document.querySelector('#room-lobby')?.open===true,mapPresent:!!document.querySelector('#lobby-map'),
@@ -424,9 +464,15 @@ export async function run(value, { identify = checkServedBuildIdentity, enter = 
         skirmishSelected:document.querySelector('#lobby-match-mode')?.value==='skirmish@1',
         ownSeatRow:[...document.querySelectorAll('#room-lobby li')].some(n=>n.textContent.includes(' · You')),
         observerInstalled:!!window.__rtsTinyFarm,
-        team:[0,1].includes(window.__rtsTinyFarm?.team)?window.__rtsTinyFarm.team:null};})()`).catch(() => null)));
+        team:[0,1].includes(window.__rtsTinyFarm?.team)?window.__rtsTinyFarm.team:null};})()`).catch(error => {
+          snapshotFaults[index] = farmCdpFault(error); return null;
+        });
+    const [pageBoots, pageHealth] = await Promise.all([
+      Promise.all(openedPages.map(snapshot)), Promise.all(openedPages.map(readFarmCdpHealth)),
+    ]);
     await record(path.join(context.evidenceDirectory, 'tiny-farm-failure.json'), JSON.stringify({ source,
-      status: 'failed', stage, category: farmFailureCategory(error), boot: pageBoots[0], pageBoots }, null, 2) + '\n', { flag: 'wx' });
+      status: 'failed', stage, stages, category: farmFailureCategory(error), fault: farmCdpFault(error),
+      boot: pageBoots[0], pageBoots, snapshotFaults, pageEvents, pageHealth }, null, 2) + '\n', { flag: 'wx' });
     throw error;
   }
 }

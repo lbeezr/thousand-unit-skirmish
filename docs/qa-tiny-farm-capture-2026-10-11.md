@@ -137,11 +137,32 @@ execution or Farm acceptance follows from it. The local Chromium helper remains
 the recorded `nobody`-owned sandbox blocker; this slice does not relaunch that
 unchanged browser or modify its provisioning.
 
-Next transition: diagnose the unavailable second-seat CDP evidence through the
-shared capture owner before choosing a further source correction. The Farm owner
-retains ordinary rendered verification. The draft PR retains the reviewed source,
-focused checks, pack identity and failed run/artifact links. No unchanged-head
-capture retry, readiness relaxation or deadline increase is justified here.
+The authorized follow-up refreshed public main
+`3886719fae1f1a388ca4a8d3b94370c971a3307d`, bringing its already-owned audio/HUD
+changes into the capture branch without changing their implementation. Existing
+[version1 context](../scripts/renderer-capture-context.mjs),
+[page acquisition](../scripts/renderer-qualification.mjs) and
+[CDP fixture](../scripts/fortified-browser-fixture.mjs) explicitly support one
+primary and four additional isolated owned pages. This is not an established
+framework API gap. Prior receipts do not distinguish a guest runtime stall,
+channel closure or boot/readiness refusal.
+
+Farm-only diagnostics now divide guest admission into URL, acquisition, blank
+heartbeat, observer installation, navigation, readiness and identity stages.
+On failure, parallel read-only target/frame queries retain only booleans or fixed
+fault kinds, and DOM snapshot failures retain their safe fault separately.
+Existing CDP event subscriptions count context/load/crash/detach events up to100;
+no event payloads, frame/target IDs, URLs, titles, DOM text or exception text are
+retained. Controls distinguish missing methods from runtime timeout/channel
+closure and prove the diagnostic does not turn absent evidence into readiness.
+No new API authority, browser flags or deadline increase is required. One
+targeted capture follows exact-head current-main integration checks and
+independent review; no unchanged failed source is repeated.
+
+The Farm owner retains ordinary rendered verification. The draft PR preserves
+the reviewed source, focused checks, pack identity and failed run/artifact links.
+Further lifecycle corrections still require the diagnostic receipt, and eventual
+PR merge requires another current-main refresh and exact integration checks.
 
 Even a successful automated capture leaves appearance inspection, touch input,
 fresh-player Farm/Mill explanation and cold **process** recovery in the same

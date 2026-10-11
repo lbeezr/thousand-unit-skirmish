@@ -7,7 +7,7 @@ import { JSDOM } from 'jsdom';
 import { bootGameEntry } from '../src/game-entry.mjs';
 import { createRoomLobby } from '../src/room-lobby-ui.mjs';
 import { matchModeCatalog } from '../src/match-modes.mjs';
-import { bracketFarmPhase, enterTinyFarmRoom, farmFailureCategory, installFarmObserver, reduceFarmOrder, reduceFarmState, run, TINY_FARM_MAP,
+import { bracketFarmPhase, enterTinyFarmRoom, farmCdpFault, farmFailureCategory, installFarmObserver, observeFarmCdpEvents, readFarmCdpHealth, reduceFarmOrder, reduceFarmState, run, TINY_FARM_MAP,
   tinyFarmSites, validateFarmArt, validateFarmBuild, validateFarmEconomy, validateFarmFoundation, validateFarmSupply } from './renderer-tiny-farm-scenario.mjs';
 import { loadCaptureCases } from './renderer-feature-capture.mjs';
 import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
@@ -244,7 +244,9 @@ test('actual Tiny entry runs normal Create Room, two-seat Ready and Launch witho
   try {
     const pages = await enterTinyFarmRoom(f.context, { onStage: step => f.stages.push(step) });
     assert.equal(pages.length, 2); assert.equal(f.launches(), 1);
-    assert.deepEqual(f.stages, ['install-host-observer', 'host-menu', 'create-room', 'select-tiny', 'second-seat', 'ready-seats', 'launch-tiny']);
+    assert.deepEqual(f.stages, ['install-host-observer', 'host-menu', 'create-room', 'select-tiny',
+      'second-seat-url', 'second-seat-open', 'second-seat-blank', 'second-seat-observer',
+      'second-seat-navigation', 'second-seat-ready', 'second-seat-identity', 'ready-seats', 'launch-tiny']);
     assert.equal(f.requests.filter(r => r.method === 'POST').length, 1);
     assert.ok(f.pages.every(p => new URL(p.dom.window.location.href).searchParams.get('room') === 'R'.repeat(32)));
   } finally { f.close(); }
@@ -304,7 +306,7 @@ test('second-seat failure receipt evaluates bounded DOM facts on both real entry
     await assert.rejects(() => run(context, { identify: async () => ({ ok: true, served: { sourceDirty: false } }),
       record: async (_, json) => records.push(JSON.parse(json)) }));
     const receipt = records.at(-1);
-    assert.equal(receipt.stage, 'entry-second-seat'); assert.equal(receipt.pageBoots.length, 2);
+    assert.equal(receipt.stage, 'entry-second-seat-ready'); assert.equal(receipt.pageBoots.length, 2);
     assert.equal(receipt.pageBoots[0].lobbyOpen, true); assert.equal(receipt.pageBoots[1].lobbyOpen, false);
     assert.deepEqual(receipt.pageBoots.map(p => p.team), [0, 1]);
     assert.ok(receipt.pageBoots.every(p => p.observerInstalled && p.readyPresent && p.ownSeatRow));
@@ -317,6 +319,55 @@ test('entry failure categories never retain arbitrary CDP payloads or exception 
     ['ReferenceError: private-secret', 'browser-reference'], ['TypeError: private-secret', 'browser-type'],
     ['private-secret timeout', 'deadline'], ['private-secret', 'execution']])
     assert.equal(farmFailureCategory(new Error(message)), expected);
+});
+
+test('CDP health distinguishes an available page target from a stalled runtime or missing API without private metadata', async () => {
+  const calls = [], page = { cdp: { call: async method => {
+    calls.push(method);
+    if (method === 'Target.getTargetInfo') return { targetInfo: { type: 'page', attached: true,
+      url: 'http://private-secret/?room=private-secret', title: 'private-secret', targetId: 'private-secret' } };
+    throw new Error('Page.getFrameTree timeout');
+  } } };
+  const health = await readFarmCdpHealth(page);
+  assert.deepEqual(calls.sort(), ['Page.getFrameTree', 'Target.getTargetInfo']);
+  assert.deepEqual(health.target, { status: 'available', page: true, attached: true });
+  assert.deepEqual(health.frame, { status: 'unavailable', fault: { kind: 'cdp-timeout', method: 'Page.getFrameTree' } });
+  const missing = await readFarmCdpHealth({ cdp: { call: async () => { throw new Error("Method not found private-secret"); } } });
+  assert.equal(missing.frame.fault.kind, 'cdp-method-unavailable');
+  assert.deepEqual(farmCdpFault(new Error('Runtime.evaluate timeout')), { kind: 'cdp-timeout', method: 'Runtime.evaluate' });
+  assert.deepEqual(farmCdpFault(new Error('CDP closed')), { kind: 'cdp-closed' });
+  assert.deepEqual(farmCdpFault(new Error('private-secret timeout')), { kind: 'deadline' });
+  assert.doesNotMatch(JSON.stringify({ health, missing }), /private-secret|targetId|url|title|room=/);
+});
+
+test('guest runtime timeout retains target/frame and bounded lifecycle evidence rather than labelling it absent readiness', async () => {
+  const listeners = new Map(), guest = { cdp: { on: (event, fn) => listeners.set(event, fn),
+    evaluate: async () => { throw new Error('Runtime.evaluate timeout'); },
+    call: async method => method === 'Target.getTargetInfo'
+      ? { targetInfo: { type: 'page', attached: true, url: 'private-secret' } }
+      : { frameTree: { frame: { id: 'private-secret', url: 'private-secret' } } },
+  }, wait: async () => {} };
+  const page = { cdp: { call: async () => ({}), evaluate: async () => ({}) }, wait: async () => {} }, records = [];
+  const context = { page, openPage: async () => guest, version: 1, origin: 'http://127.0.0.1:1234',
+    capture: async () => ({}), evidenceDirectory: '/tmp/cpu-farm-cdp-failure',
+    source: Object.freeze({ revision: 'a'.repeat(40), digest: `sha256:${'b'.repeat(64)}` }) };
+  await assert.rejects(() => run(context, { identify: async () => ({ ok: true, served: { sourceDirty: false } }),
+    record: async (_, json) => records.push(JSON.parse(json)),
+    enter: async ({ openPage }, { onStage }) => {
+      const guest = await openPage(); onStage('second-seat-blank');
+      for (let i = 0; i < 110; i++) listeners.get('Runtime.executionContextCreated')({ private: 'private-secret' });
+      listeners.get('Inspector.targetCrashed')({ private: 'private-secret' });
+      await guest.cdp.evaluate('location.href');
+    } }));
+  const receipt = records.at(-1);
+  assert.equal(receipt.stage, 'entry-second-seat-blank'); assert.equal(receipt.pageBoots[1], null);
+  assert.deepEqual(receipt.fault, { kind: 'cdp-timeout', method: 'Runtime.evaluate' });
+  assert.deepEqual(receipt.snapshotFaults[1], receipt.fault);
+  assert.equal(receipt.pageHealth[1].target.page, true); assert.equal(receipt.pageHealth[1].frame.rootPresent, true);
+  assert.equal(receipt.pageEvents[1].contextCreated, 100); assert.equal(receipt.pageEvents[1].crashed, 1);
+  assert.equal(receipt.pageEvents[0].supported, false);
+  assert.doesNotMatch(JSON.stringify(receipt), /private-secret|room=|http:|targetId|expression/);
+  assert.equal(observeFarmCdpEvents(page).supported, false);
 });
 
 test('Farm registration preserves the existing sandbox/deadline and audio adapter', async () => {
