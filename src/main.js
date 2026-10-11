@@ -33,6 +33,7 @@ import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvai
 import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from './client/hud/objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateWorkerHud, workerBuildChoices, workerSelectionKey } from './client/hud/worker-hud.mjs';
+import { updateBuildingHud } from './client/hud/building-hud.mjs';
 import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts } from './selection-portrait.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
@@ -3982,6 +3983,8 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     updateProductionPortrait(button, kind, role);
   }
   bar.dataset.context = context.kind;
+  bar.dataset.hudTheme = ['workers', 'building'].includes(context.kind) ? 'obsidian' : '';
+  bar.dataset.hudTeam = String(localTeam);
   if (bar.hidden !== (context.kind === 'none')) bar.hidden = context.kind === 'none';
   if (quickAccess.hidden !== !bar.hidden) quickAccess.hidden = !bar.hidden;
   updateCombatStanceUI();
@@ -4056,6 +4059,19 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     button.setAttribute('aria-label', `Recall group ${controlGroupKeyLabel(index)}, ${controlGroups[index].size} units`);
   }
   updateWorkerHud(document, workerHudState(context), handleWorkerHudAction);
+  updateBuildingHud(document, {
+    building, team: localTeam, connected: socket?.readyState === WebSocket.OPEN,
+    matchFinished: matchWinner >= 0, research: latestTeamResearch[localTeam],
+    rallySupported: Boolean(building && buildingSupportsRally(building.type)),
+    targeting: tapOrderArmed, profileId: mapDefinition?.economyProfileId,
+  }, action => {
+    if (action === 'details') { selectDockTab('selection', true); return; }
+    const current = latestBuildings.find(row => row.id === selectedBuildingId && row.team === localTeam);
+    if (!current || current.id !== building?.id || current.hp <= 0 || matchWinner >= 0
+      || socket?.readyState !== WebSocket.OPEN) return;
+    if (action === 'rally') setTapOrderArmed(!tapOrderArmed);
+    if (action === 'clear-rally') ui.clearBuildingRally.click();
+  });
   const currentFocus = document.activeElement;
   const commandHasFocus = (bar.contains(currentFocus) || quickAccess?.contains(currentFocus))
     && currentFocus.isConnected && !currentFocus.disabled && !currentFocus.closest('[hidden]');
@@ -5069,8 +5085,24 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
       ? unitSpriteRuntime.roleForUnit({ kind: definition.id, team: localTeam }) : null;
     const producerNames = catalog && !selectedProducer ? Object.values(BUILDING_DEFINITIONS)
       .filter(building => building.products?.includes(definition.id)).map(building => building.label).join(' / ') : '';
-    updateProductionPortrait(button, definition.id, role,
-      `Train ${definition.label}${producerNames ? ` at ${producerNames}` : ''} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`);
+    const explanation = authoritativeReason || reason || populationReason;
+    const cost = `${definition.cost.food} food / ${definition.cost.wood} wood`;
+    if (contextual) {
+      updateProductionPortrait(button, definition.id, role);
+      let label = button.querySelector('[data-production-label]');
+      if (!label) {
+        label = document.createElement('span'); label.dataset.productionLabel = '';
+        for (const part of ['name', 'cost', 'reason']) {
+          const span = document.createElement('span'); span.setAttribute(`data-production-${part}`, ''); label.append(span);
+        }
+        button.append(label);
+      }
+      label.querySelector('[data-production-name]').textContent = `Train ${definition.label}`;
+      label.querySelector('[data-production-cost]').textContent = ` · ${cost}`;
+      label.querySelector('[data-production-reason]').textContent = explanation ? ` · ${explanation}` : '';
+      button.title = `Train ${definition.label} · ${cost}${explanation ? ` · ${explanation}` : ''}`;
+    } else updateProductionPortrait(button, definition.id, role,
+      `Train ${definition.label}${producerNames ? ` at ${producerNames}` : ''} · ${cost}${explanation ? ` · ${explanation}` : ''}`);
   }
   container.hidden = products.length === 0;
 }
@@ -5089,7 +5121,7 @@ function updateBuildingLifecycleActions() {
     ...(building.complete && getBuildingQueueLength(building) > 0 ? [{ type: 'cancelTraining', label: 'Cancel last queued unit' }] : []),
     ...(building.complete && building.type === 'palisade-gate' ? [{ type: 'setGateOpen', label: building.gateOpen ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass' }] : []),
     ...(active ? [{ type: 'cancelResearch', label: 'Cancel research · refund unfinished work' }] : []),
-    ...(building.complete && building.hp < building.maxHp ? [{ type: 'repairBuilding', label: 'Repair with Workers · costs wood' }] : []),
+    ...(building.complete && building.hp < building.maxHp ? [{ type: 'repairBuilding', label: 'Repair · all living Workers · costs wood' }] : []),
   ];
   const signature = JSON.stringify([building?.id, choices.map((choice) => choice.type)]);
   const focusedAction = document.activeElement?.parentElement === container

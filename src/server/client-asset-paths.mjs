@@ -1,5 +1,6 @@
 // Exact public client paths; add explicit entries rather than admitting folders.
 export const CLIENT_ASSET_PATHS = Object.freeze([
+  'src/client/hud/building-hud.mjs', 'src/client/hud/building-hud.css', 'src/client/hud/selection-hud.css',
   'src/client/hud/worker-hud.mjs', 'src/client/hud/worker-hud.css',
   'assets/ui/fonts/dm-sans.ttf', 'assets/ui/fonts/barlow-condensed-medium.ttf',
   'assets/ui/fonts/dm-sans-OFL.txt', 'assets/ui/fonts/barlow-condensed-OFL.txt',

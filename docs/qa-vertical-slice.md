@@ -9,8 +9,12 @@ has independent code review and 157 focused HUD/input/capture-contract checks.
 The clean local trial reports the exact packaged identity and serves matching
 client bytes: [receipt](qa-evidence/worker-hud-pilot-2026-10-11/local-trial.json).
 Normal entry is New Game → select a Worker on Veyrhold's Terraced Vale.
-Rendered layout, real gameplay use and hosted staging are **not observed** for
-this pilot. [The HUD owner checkpoint](hud-controls-backlog.md#worker-pilot--11-october-2026)
+The merged pilot `819044363ad0d4270fbb99e95777c40770d7c5c1` was verified on
+staging with matching served bytes ([receipt](qa-evidence/worker-hud-pilot-2026-10-11/staging-receipt.json)).
+The user then reported that it “does feel way better” and authorized wider
+HUD/UI rollout. This is user-reported game usability acceptance; the exact
+browser revision at that observation and the full seat/action/viewport matrix
+were not independently captured. [The HUD owner checkpoint](hud-controls-backlog.md#worker-pilot--11-october-2026)
 records publication access and hosted-capture dependencies and retains follow-up.
 
 ## Persistent tactical orders — 30 September 2026

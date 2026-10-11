@@ -199,7 +199,7 @@ its own production, queue, research and rally. Global economy and navigation sta
 stable, while unrelated entity actions leave the selection area. The
 [11 October design-system plan](ui-design-system.md) develops this intent
 from interactive studies. The user approved the Obsidian Worker pilot with a
-72px portrait. Its default client binding is implemented; the
+72px portrait. The user accepted the staged pilot and requested rollout across the HUD/UI; the
 [HUD checkpoint](hud-controls-backlog.md#worker-pilot--11-october-2026) records
 local trial delivery and the remaining hosted/ordinary-game acceptance.
 Barracks and broader visual coverage remain later slices.
