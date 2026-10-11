@@ -145,10 +145,12 @@ try {
     assert.match(response.headers.get('content-type') || '', filename.endsWith('.html') ? /text\/html/
       : filename.endsWith('.css') ? /text\/css/ : filename.endsWith('.json') ? /application\/json/
         : filename.endsWith('.png') ? /image\/png/ : filename.endsWith('.webp') ? /image\/webp/
+          : filename.endsWith('.ttf') ? /font\/ttf/ : filename.endsWith('.txt') ? /text\/plain/
           : /(?:java|ecma)script/, filename);
     assert.equal((await response.arrayBuffer()).byteLength, 0, `HEAD must omit the body: ${filename}`);
   }
   for (const filename of ['server.mjs', 'scripts/check-runtime-imports.mjs', 'src/server/client-asset-paths.mjs',
+    'src/server/persistence/room-archive-store.mjs', 'room-data/archived-rooms/example/room-archive.json',
     'src/server/build-identity.mjs', 'src/server/release-identity.json', 'release-manifest.json',
     'src/room-launch-options.mjs', 'src/main.js.map', 'src/main.js/extra', 'SRC/main.js', 'src//main.js']) {
     assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,

@@ -76,6 +76,8 @@ try {
   assert.ok(Date.now() < deadline, 'fixture must admit the pending join before its original expiry');
   const joining = upgrade(Number(port), pendingId);
   await until(() => pausedPid, 'paused starting worker');
+  assert.equal((await fetch(`http://127.0.0.1:${port}/api/admin/rooms/${pendingId}/archive`, { method: 'POST' })).status,
+    409, 'operator archive also protects an admitted join during worker startup');
   await delay(Math.max(0, deadline - Date.now() + 100));
   const lookup = await fetch(`http://127.0.0.1:${port}/api/rooms/${pendingId}`);
   assert.equal(lookup.status, 200, 'a join admitted before expiry must protect its starting worker and saved maps');
@@ -87,6 +89,8 @@ try {
   assert.equal((await fetch(`http://127.0.0.1:${port}/api/rooms/${expiredId}`)).status, 404);
   const status = await fetch(`http://127.0.0.1:${port}/api/rooms/status`).then((response) => response.json());
   assert.equal(status.roomCount, 1, 'expiry should reclaim room capacity');
+  assert.equal(await readFile(path.join(data, 'archived-rooms', expiredId, 'custom-maps', 'preserved.txt'), 'utf8'),
+    'player map', 'expiry preserves room data in the recoverable archive');
   console.log(JSON.stringify({ passed: ['pending join retains room and maps across idle deadline', 'expired direct WebSocket rejected before worker launch', 'expired room capacity reclaimed'] }));
 } finally {
   if (pausedPid) { try { process.kill(pausedPid, 'SIGCONT'); } catch {} }

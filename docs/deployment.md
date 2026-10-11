@@ -209,13 +209,18 @@ wait for another exit event. See the [signal shutdown regression](qa-worker-shut
 
 Invite IDs and custom maps persist with room data. The supervisor can rebuild a
 missing/invalid room index from valid directories; lowering the cap does not
-delete saved rooms. By default an invite room idle for six hours is removed
-with its checkpoint and maps. HTTP lookup and direct WebSocket joins enforce
-the same idle deadline. A join admitted before that deadline reserves its room
-through worker startup, so expiry cannot delete its checkpoint or maps while
-recovery is in progress. See the [idle-expiry regression](qa-room-expiry-2026-09-27.md).
+delete saved rooms. By default an invite room idle for six hours is archived
+on the same volume with its checkpoint, maps and launch metadata intact, releasing
+its retained-room slot. HTTP lookup and direct WebSocket joins enforce the same
+idle deadline; creation also reclaims due slots before checking capacity. A join
+admitted before that deadline reserves its room through worker startup. Worker
+exit and deployment shutdown do not renew idle activity. Authenticated operators
+can archive a disconnected room early or restore an archive into a free slot.
+See [room lifecycle and operator recovery](room-lifecycle.md) for the exact controls,
+storage-failure behavior and disk-retention responsibility. The earlier
+[idle-expiry regression](qa-room-expiry-2026-09-27.md) remains historical evidence.
 
-- Railway: back up the volume containing both `room-data` and `custom-maps`.
+- Railway: back up the volume containing both `room-data` (including `archived-rooms`) and `custom-maps`.
 - Compose: back up both `room_data` and `custom_maps`; Caddy's volumes retain
   certificates and configuration.
 - Rehearse restoration in an isolated environment and verify the map catalog,

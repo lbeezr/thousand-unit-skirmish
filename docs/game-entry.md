@@ -91,6 +91,13 @@ progress and ordinary saved-seat recovery. Create Room retains its two-ready
 pregame launch gate. An AI map-change rejection directs players to Main Menu →
 Practice rather than pretending an unsupported AI map can be selected in place.
 
+When fresh creation reaches capacity, Resume and existing invites remain usable.
+Reuse an owned Practice room's battlefield controls or rematch for sequential
+tests. Main Menu/Leave preserves the room and does not immediately free its slot.
+Idle expiry archives the match; an operator can archive a disconnected room early
+or restore an archive when capacity permits. The [room lifecycle guide](room-lifecycle.md)
+explains player recovery, operator controls and preserved checkpoint/map data.
+
 The pregame host chooses **Victory mode** from the server's compatible catalog.
 Objective Control keeps that map's authored capture, hold and deadline rules;
 Skirmish uses recovery-aware land-force elimination and keeps capture posts as
