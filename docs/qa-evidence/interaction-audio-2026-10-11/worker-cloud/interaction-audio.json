@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "revision": "8e4e54a9053393ef395f8eb33a08583184e9b471",
+    "digest": "sha256:248705f96c62556f07ffaf0b4967a13b1b6e3d965147176131d471292a083a05"
+  },
+  "mapId": "veyrholds-terraced-vale",
+  "status": "failed",
+  "recordings": [],
+  "issues": [
+    {
+      "stage": "town-center-click",
+      "code": "interaction-audio-capture-failed",
+      "reason": "wait-timeout",
+      "errorType": "Error"
+    }
+  ],
+  "listeningReview": "pending",
+  "diagnostic": {
+    "entry": "game",
+    "boot": "ready",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "newGame": {
+      "disabled": true,
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "probe": true,
+    "faults": [],
+    "mapId": "veyrholds-terraced-vale",
+    "team": 0,
+    "observationAgeMs": 0.7999999999883585,
+    "audioStatus": "running",
+    "packStatus": "Audio pack The Veyrholds regional soundscape ready. Shipped content loads automatically for both players.",
+    "bindingCount": 85,
+    "workers": [
+      {
+        "id": 0,
+        "selected": false,
+        "point": {
+          "x": 577.1681352672925,
+          "y": 373.671823765455
+        }
+      },
+      {
+        "id": 1,
+        "selected": false,
+        "point": {
+          "x": 600.8716701201656,
+          "y": 390.55978374735076
+        }
+      },
+      {
+        "id": 2,
+        "selected": false,
+        "point": {
+          "x": 557.7743340240329,
+          "y": 387.48924556882423
+        }
+      },
+      {
+        "id": 3,
+        "selected": false,
+        "point": {
+          "x": 581.477868876906,
+          "y": 404.37720555072
+        }
+      }
+    ],
+    "buildings": [
+      {
+        "id": 1000000000,
+        "type": "town-center",
+        "complete": true,
+        "selected": false,
+        "point": {
+          "x": 546.9999999999997,
+          "y": 372.94531250000006
+        }
+      }
+    ]
+  },
+  "diagnosticImage": {
+    "file": "failure-town-center-click.png",
+    "sha256": "7ef7dc07d12302ca34bb99bfcbad35b622669cef97dedef4812fb31e1ec5f99d",
+    "scope": "failure-diagnostic-only"
+  },
+  "downloads": []
+}

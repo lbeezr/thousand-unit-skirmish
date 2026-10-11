@@ -67,6 +67,32 @@ export function safeRequestPath(value, origin, files) {
   } catch { return null; }
 }
 
+const RESOURCE_TYPES = new Set(['Document', 'Stylesheet', 'Image', 'Media', 'Font', 'Script', 'TextTrack',
+  'XHR', 'Fetch', 'Prefetch', 'EventSource', 'WebSocket', 'Manifest', 'SignedExchange', 'Ping',
+  'CSPViolationReport', 'Preflight', 'Other']);
+
+// An unknown path can still identify an inline image, room API or external
+// request. Retain only fixed categories, never blob IDs, room codes or hosts.
+export function safeRequestDiagnostic(value, origin, files, resourceType) {
+  const result = { path: safeRequestPath(value, origin, files), scheme: 'unknown', route: 'unknown',
+    resourceType: RESOURCE_TYPES.has(resourceType) ? resourceType : 'unknown' };
+  try {
+    const url = new URL(value), protocol = url.protocol.slice(0, -1);
+    result.scheme = ['http', 'https', 'ws', 'wss', 'blob', 'data', 'about', 'file'].includes(protocol) ? protocol : 'other';
+    if (['blob', 'data', 'about', 'file'].includes(protocol)) result.route = 'browser-resource';
+    else if (!['http', 'https', 'ws', 'wss'].includes(protocol)) result.route = 'other-scheme';
+    else if (url.origin !== origin && !(['ws', 'wss'].includes(protocol) && url.host === new URL(origin).host)) result.route = 'external';
+    else if (url.pathname === '/') result.route = 'entry';
+    else if (url.pathname === '/api/rooms/status') result.route = 'room-status';
+    else if (url.pathname === '/api/rooms') result.route = 'rooms-api';
+    else if (/^\/api\/rooms\/[^/]+$/.test(url.pathname)) result.route = 'room-api';
+    else if (url.pathname === '/api/session') result.route = 'session-api';
+    else if (url.pathname === '/ws') result.route = 'game-socket';
+    else result.route = result.path ? 'static' : 'unclassified-local';
+  } catch { /* Unknown remains a fixed category, without the rejected value. */ }
+  return result;
+}
+
 export function validateFrame(frame, png, canvasPng) {
   assert.match(frame.version ?? '', /^WebGL 2\.0/, 'game must use WebGL2');
   assert.equal(frame.contextLost, false, 'game WebGL context was lost');
@@ -245,7 +271,8 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
       });
       const requests = new Map();
       page.cdp.on('Network.requestWillBeSent', event => {
-        if (requests.size < 2000) requests.set(event.requestId, safeRequestPath(event.request.url, origin, pack.files));
+        if (requests.size < 2000) requests.set(event.requestId,
+          safeRequestDiagnostic(event.request.url, origin, pack.files, event.type));
       });
       page.cdp.on('Network.responseReceived', event => {
         if (event.response.status >= 400) {
@@ -257,7 +284,9 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
       });
       page.cdp.on('Network.loadingFinished', event => requests.delete(event.requestId));
       page.cdp.on('Network.loadingFailed', event => {
-        recordBrowserEvent({ kind: 'request-failed', path: requests.get(event.requestId) ?? null, canceled: event.canceled === true });
+        const diagnostic = requests.get(event.requestId) ?? safeRequestDiagnostic(null, origin, pack.files, event.type);
+        recordBrowserEvent({ kind: 'request-failed', ...diagnostic,
+          resourceType: RESOURCE_TYPES.has(event.type) ? event.type : diagnostic.resourceType, canceled: event.canceled === true });
         requests.delete(event.requestId);
       });
       return page;

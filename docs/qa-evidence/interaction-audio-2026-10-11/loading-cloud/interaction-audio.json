@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "revision": "e1e63ee3cfd8dea96deaf2a2d1d1c32d278d5fcd",
+    "digest": "sha256:c771c5933f5856d564858cb63111c442041e71f8fe72a2eb0c30b5090a6ea468"
+  },
+  "mapId": "veyrholds-terraced-vale",
+  "status": "failed",
+  "recordings": [],
+  "issues": [
+    {
+      "stage": "default-audio-ready",
+      "code": "interaction-audio-capture-failed",
+      "reason": "wait-timeout",
+      "errorType": "Error"
+    }
+  ],
+  "listeningReview": "pending",
+  "diagnostic": {
+    "entry": "game",
+    "boot": "ready",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "newGame": {
+      "disabled": true,
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "probe": true,
+    "faults": [],
+    "mapId": "veyrholds-terraced-vale",
+    "team": 0,
+    "audioStatus": "waiting",
+    "packStatus": "Loading audio pack vaelora-veyrholds…",
+    "workers": [
+      {
+        "id": 0,
+        "selected": false,
+        "point": {
+          "x": 577.1681352672925,
+          "y": 373.671823765455
+        }
+      },
+      {
+        "id": 1,
+        "selected": false,
+        "point": {
+          "x": 600.8716701201656,
+          "y": 390.55978374735076
+        }
+      },
+      {
+        "id": 2,
+        "selected": false,
+        "point": {
+          "x": 557.7743340240329,
+          "y": 387.48924556882423
+        }
+      },
+      {
+        "id": 3,
+        "selected": false,
+        "point": {
+          "x": 581.477868876906,
+          "y": 404.37720555072
+        }
+      }
+    ],
+    "buildings": [
+      {
+        "id": 1000000000,
+        "type": "town-center",
+        "complete": true,
+        "selected": false,
+        "point": {
+          "x": 546.9999999999997,
+          "y": 372.94531250000006
+        }
+      }
+    ]
+  },
+  "diagnosticImage": {
+    "file": "failure-default-audio-ready.png",
+    "sha256": "2c2b5851c30ddb6213a253ffffed824a32eb753a2e71c1995d17b2753bd8ffff",
+    "scope": "failure-diagnostic-only"
+  }
+}

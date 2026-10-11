@@ -7,7 +7,7 @@ import path from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
 import { isGameEntry } from '../src/game-entry-session.mjs';
-import { installReadbackProbe, qualifyRendererCapability, safeRequestPath, validateFrame, validateMotion, validateRelease } from './renderer-qualification.mjs';
+import { installReadbackProbe, qualifyRendererCapability, safeRequestDiagnostic, safeRequestPath, validateFrame, validateMotion, validateRelease } from './renderer-qualification.mjs';
 
 const source = { revision: 'a'.repeat(40), dirty: false };
 const pack = { sourceRevision: source.revision, sourceDirty: false, digest: `sha256:${'b'.repeat(64)}`,
@@ -40,6 +40,26 @@ test('request evidence retains exact local known paths without queries, credenti
   assert.equal(safeRequestPath(`${origin}/favicon.ico`, origin, pack.files), '/favicon.ico');
   for (const url of ['invalid', 'https://remote.invalid/src/main.js', `${origin}/api/rooms/private-invite`, `${origin}/private-token`]) {
     assert.equal(safeRequestPath(url, origin, pack.files), null);
+  }
+});
+
+test('canceled-request categories distinguish schemes and routes without private identifiers', () => {
+  const origin = 'http://127.0.0.1:4321';
+  for (const [url, type, scheme, route, publicPath] of [
+    [`${origin}/src/main.js?token=private-token`, 'Script', 'http', 'static', '/src/main.js'],
+    [`${origin}/?room=private-room`, 'Document', 'http', 'entry', '/'],
+    [`${origin}/api/rooms/private-room?token=private-token`, 'Fetch', 'http', 'room-api', null],
+    [`${origin}/api/session?room=private-room`, 'Fetch', 'http', 'session-api', null],
+    [`ws://127.0.0.1:4321/ws?room=private-room`, 'WebSocket', 'ws', 'game-socket', null],
+    [`blob:${origin}/private-blob-id`, 'Image', 'blob', 'browser-resource', null],
+    ['data:image/png;base64,private-inline-content', 'Image', 'data', 'browser-resource', null],
+    ['https://private-host.invalid/private-path?token=private-token', 'Fetch', 'https', 'external', null],
+    [`${origin}/private-path`, 'private-type', 'http', 'unclassified-local', null],
+    ['private-invalid-url', 'Image', 'unknown', 'unknown', null],
+  ]) {
+    const result = safeRequestDiagnostic(url, origin, pack.files, type);
+    assert.deepEqual(result, { path: publicPath, scheme, route, resourceType: type === 'private-type' ? 'unknown' : type });
+    assert.doesNotMatch(JSON.stringify(result), /private|token=|room=|127\.0\.0\.1/);
   }
 });
 
@@ -196,8 +216,13 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
         listeners.get('Network.responseReceived')({ response: { status: iconMode ? mode === 'optional-icon' ? 404 : 403 : 503,
           url: `http://127.0.0.1:4321/${iconMode ? 'favicon.ico' : 'src/main.js'}?token=private-token` } });
         if (!iconMode) {
-          listeners.get('Network.requestWillBeSent')({ requestId: '1', request: { url: 'http://127.0.0.1:4321/src/main.js?token=private-token' } });
+          listeners.get('Network.requestWillBeSent')({ requestId: '1', type: 'Script', request: { url: 'http://127.0.0.1:4321/src/main.js?token=private-token' } });
           listeners.get('Network.loadingFailed')({ requestId: '1', canceled: true });
+          if (mode === 'asset-timeout') {
+            listeners.get('Network.requestWillBeSent')({ requestId: '2', type: 'Image', request: { url: 'blob:http://127.0.0.1:4321/private-blob-id' } });
+            listeners.get('Network.loadingFailed')({ requestId: '2', canceled: true });
+            listeners.get('Network.loadingFailed')({ requestId: 'untracked', type: 'Fetch', canceled: true });
+          }
         }
       },
       evaluate: async expression => {
@@ -308,6 +333,16 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
       }
       assert.ok(report.browserEvents.some(e => e.kind === 'http-error' && e.status === 503));
       assert.ok(report.browserEvents.some(e => e.kind === 'request-failed' && e.path === '/src/main.js'));
+      const failedScript = report.browserEvents.find(e => e.kind === 'request-failed' && e.path === '/src/main.js');
+      assert.equal(failedScript.scheme, 'http'); assert.equal(failedScript.route, 'static'); assert.equal(failedScript.resourceType, 'Script');
+      if (mode === 'asset-timeout') {
+        assert.ok(report.browserEvents.some(e => e.kind === 'request-failed' && e.path === null
+          && e.scheme === 'blob' && e.resourceType === 'Image' && e.canceled));
+        assert.ok(report.browserEvents.some(e => e.kind === 'request-failed' && e.path === null
+          && e.scheme === 'unknown' && e.resourceType === 'Fetch' && e.canceled));
+        assert.equal(report.unexpectedBrowserEvent, true, 'classification must not excuse canceled requests');
+        assert.ok(report.issues.some(i => i.code === 'browser-errors'));
+      }
       assert.ok(report.browserEvents.some(e => e.kind === 'exception' && e.count === 1));
       if (mode === 'evidence-fault') assert.ok(report.issues.some(i => i.code === 'browser-evidence-unavailable'));
       else assert.ok(report.browserEvents.some(e => e.kind === 'resource-error'));

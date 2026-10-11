@@ -384,10 +384,12 @@ is owned by chat `01a12b6b-d181-79b1-97b4-05de79523245`. First increment:
 `audio/frontier-feedback-v1` and `audio/runtime/frontier-feedback/v1` supply
 Worker selection/Wood Gather speech and Barracks/Town Center selection sounds.
 Default Main binding, exact HTTP admission and Docker/release inputs are implemented;
-**integration, containing deployment and actual in-game listening remain incomplete**.
+**actual in-game output and listening remain incomplete**. Staging serves merged
+`b4ad36cf` and all 119 selected recordings are hash-verified over HTTP.
 The [first source/clean-pack receipt](qa-interaction-audio-2026-10-11.md) passes;
 The CLI rejected the branch push under `lbliii`; the user-corrected app check
-confirms write access for `lbeezr`. Publication proceeds through the app.
+confirms write access for `lbeezr`. App publication succeeded in
+[PR638](https://github.com/lbeezr/thousand-unit-skirmish/pull/638), merged as `b4ad36cf`.
 The local second increment, [Worker action voices](../assets/audio/frontier-worker-actions-v1/README.md),
 adds fourteen meanings with 28 assigned takes and advances the default to
 `audio/runtime/frontier-feedback/v2` (39 sources total). All 56 new originals and
@@ -398,12 +400,15 @@ adds the other seven role voices, eleven building selections and Worker/Skiff
 Return Cargo, with 253 preserved originals and 80 selected takes. Default
 `frontier-feedback/v3` contains 119 recordings / 85 bindings covering all eight
 current unit roles and all thirteen building selections. Static admission and
-Docker inputs are implemented; the owner next publishes, verifies containing
-delivery and captures/listens to the full roster in ordinary gameplay. The
+Docker inputs and identified staging delivery are verified; the owner next
+captures/listens to the full roster in ordinary gameplay. The
 existing prepared cloud capture covers only its four initial cases; it is not
-a full-roster or already-executed acceptance receipt. Source `22c6d7fb` has a clean
+a full-roster acceptance receipt. Its first cloud execution failed before any
+recording; safe diagnostics and a correctly bounded load wait are the next action.
+Source `22c6d7fb` has a clean
 release and packed HTTP verification of all 119 recordings / 146 client modules,
-recorded in the same QA receipt. Deployment and actual hearing remain incomplete.
+recorded in the same QA receipt, alongside merged `b4ad36cf` clean-pack and
+served-source receipts. Actual hearing remains incomplete.
 The older regional/pilot rows below retain their separate source/listening scope.
 
 | Package/family | Actual use and release | Incomplete work → owner / next action |

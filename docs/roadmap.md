@@ -11,13 +11,14 @@ owns [delivery across the roster](audio-event-asset-matrix.md#interaction-delive
 beginning with Worker selection/Wood Gather and Barracks/Town Center. Recorded
 assets, default integration and actual deployed listening are separate receipts;
 regional-music audition does not close this outcome.
-The local third increment completes selection/supported-command material for
+The third increment, merged in [PR638](https://github.com/lbeezr/thousand-unit-skirmish/pull/638), completes selection/supported-command material for
 all eight registered unit roles and selection material for all thirteen current
 buildings in `frontier-feedback/v3`, including Worker/Skiff Return Cargo routing.
-The GitHub app connection has confirmed write access; the CLI uses a different
-read-only identity. Publication proceeds through the app. The same owner retains
-identified delivery, full-roster ordinary-game output capture and listening;
-local source coverage is not a claim that the user's running game contains it.
+The GitHub app published the change; the CLI uses a different read-only identity.
+Staging serves merged `b4ad36cf`, with all 119 recording hashes verified. The
+same owner retains full-roster ordinary-game output capture and listening; the
+first cloud case reached game boot but failed before recording. Its diagnostic
+follow-up remains separate from the verified asset delivery.
 
 Build a reusable gameplay foundation and one complete faction. The
 [gameplay foundation plan](gameplay-foundation-plan.md) defines the implementation
