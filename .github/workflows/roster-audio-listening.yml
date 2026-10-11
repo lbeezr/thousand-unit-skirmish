@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       subset:
-        description: Bounded ordinary audio subset, or the complete matrix
+        description: Bounded ordinary audio subset, or all subsets sequentially in one owned room
         type: string
         default: all
         required: true
@@ -20,8 +20,6 @@ jobs:
   plan:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    outputs:
-      subsets: ${{ steps.plan.outputs.subsets }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -36,18 +34,14 @@ jobs:
         env:
           SUBSET: ${{ inputs.subset }}
         run: |
-          node --test scripts/renderer-roster-audio-capture.test.mjs
+          node --test scripts/renderer-roster-audio-capture.test.mjs scripts/renderer-roster-audio-batch.test.mjs
           node scripts/renderer-roster-audio-staging.mjs --matrix "$SUBSET" > "${{ runner.temp }}/subsets.json"
-          echo "subsets=$(cat "${{ runner.temp }}/subsets.json")" >> "$GITHUB_OUTPUT"
   capture:
     needs: plan
-    strategy:
-      fail-fast: false
-      max-parallel: 3
-      matrix:
-        subset: ${{ fromJSON(needs.plan.outputs.subsets) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Fourteen independent 300-second caps in a single owned room, plus setup
+    # and artifact upload. A lost entry/deadline stops the batch immediately.
+    timeout-minutes: 85
     steps:
       - uses: actions/checkout@v7
         with:
@@ -63,9 +57,9 @@ jobs:
         run: |
           test "$(id -u)" -gt 0
           node scripts/renderer-qualification.mjs --preflight "$PREFLIGHT"
-      - name: Record fresh public staging room through normal gameplay
+      - name: Record public staging through normal gameplay in one owned room
         env:
-          SUBSET: ${{ matrix.subset }}
+          SUBSET: ${{ inputs.subset }}
           REVISION: ${{ github.sha }}
           EVIDENCE: ${{ runner.temp }}/roster-audio
           PREFLIGHT: ${{ runner.temp }}/roster-preflight/preflight.json
@@ -74,7 +68,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: roster-audio-${{ matrix.subset }}-${{ github.sha }}
+          name: roster-audio-${{ inputs.subset }}-${{ github.sha }}
           path: |
             ${{ runner.temp }}/roster-audio/
             ${{ runner.temp }}/roster-preflight/preflight.json

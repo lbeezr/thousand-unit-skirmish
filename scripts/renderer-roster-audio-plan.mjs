@@ -5,6 +5,8 @@ import { matureSettlementPlan } from './mature-settlement-scenario.mjs';
 
 export const STAGING_ORIGIN = 'https://game-staging-21f9.up.railway.app';
 export const SUBSET_TIMEOUT_MS = 300000;
+export const ROSTER_MAP_SIDE = 160;
+export const ROSTER_PLAY_AREA_SIDE = 64;
 export const buildingGroups = Object.freeze({
   home: ['town-center', 'house', 'storehouse', 'mill'],
   training: ['barracks', 'archery-range', 'stable'],
@@ -14,7 +16,7 @@ export const buildingGroups = Object.freeze({
 export const rosterSubsets = Object.freeze([
   ...Object.keys(U).map(kind => `unit-${kind}`),
   ...Object.keys(buildingGroups).map(group => `buildings-${group}`),
-  'worker-jobs',
+  'worker-jobs', 'worker-repair',
 ]);
 export function validateStagingOrigin(value) {
   assert.equal(value, STAGING_ORIGIN, 'only the reviewed public staging origin is admitted');
@@ -24,10 +26,11 @@ export function rosterPlan(subset) {
   assert.ok(rosterSubsets.includes(subset), 'unknown audio subset');
   const kind = subset.startsWith('unit-') ? subset.slice(5) : null;
   const workerJobs = subset === 'worker-jobs';
-  const buildings = kind || workerJobs ? [] : buildingGroups[subset.slice(10)];
+  const repair = subset === 'worker-repair';
+  const buildings = kind || workerJobs || repair ? [] : buildingGroups[subset.slice(10)];
   const actions = kind === 'skiff' ? ['ready', 'select', 'move', 'stop', 'hold', 'gather.food', 'return-cargo']
     : kind ? ['ready', 'select', 'move', 'stop', 'hold', 'patrol', 'follow', 'attack', ...(kind === 'worker' ? ['gather.wood'] : [])] : [];
-  return { subset, kind, buildings, workerJobs, keys: workerJobs
+  return { subset, kind, buildings, workerJobs, repair, keys: repair ? ['unit.worker.repair'] : workerJobs
     ? ['build', 'gather.food', 'return-cargo', 'gather.farm', 'gather.fish', 'gather.stone', 'gather.sheep-carcass'].map(action => `unit.worker.${action}`)
     : kind ? actions.map(action => `unit.${kind}.${action}`)
     : buildings.map(type => `building.${type}.select`), timeoutMs: SUBSET_TIMEOUT_MS };
@@ -36,10 +39,14 @@ export function rosterMap(subset) {
   const plan = rosterPlan(subset);
   const map = structuredClone(matureSettlementPlan.map);
   map.id = `audio-${subset}`; map.name = `Audio ${subset}`;
+  // Ordinary public publishing admits Tiny or larger. Keep the established
+  // compact world positions inside that map, with no extra units or terrain.
+  map.width = ROSTER_MAP_SIDE; map.height = ROSTER_MAP_SIDE;
   map.terrainBase = 'meadow';
   // Existing finite Skiff fishing proof's shoreline and paid Dock coordinates.
   if (plan.kind === 'skiff' || plan.buildings.includes('dock') || plan.workerJobs) {
-    map.obstacles = [18, 43].map(column => ({ column, row: 42, width: 6, height: 8, material: 'water' }));
+    const offset = (ROSTER_MAP_SIDE - ROSTER_PLAY_AREA_SIDE) / 2;
+    map.obstacles = [18, 43].map(column => ({ column: column + offset, row: 42 + offset, width: 6, height: 8, material: 'water' }));
     map.resourceNodes.push({ id: 'audio-fish', type: 'food', resourceVariant: 'shore-fish', x: -9.5, z: 9.5, stock: 200 });
   }
   if (plan.workerJobs) {

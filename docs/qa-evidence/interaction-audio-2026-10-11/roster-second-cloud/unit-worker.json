@@ -1,0 +1,876 @@
+{
+  "runId": 38161341341,
+  "sourceRevision": "82174783da76635ed65ba055a09944e26f0ef216",
+  "originalReportSha256": "89279db416bf79cfaf9d79615eafecb0dcf6e6b7dce3ab4a36e25843247460da",
+  "publicIdentity": {
+    "expectedRevision": "82174783da76635ed65ba055a09944e26f0ef216",
+    "identityScope": "exact-public-file-hashes",
+    "deployedRevision": null,
+    "releaseDigest": null,
+    "files": [
+      {
+        "path": "/assets/audio/frontier-feedback-v1/sources/barracks-select-4.mp3",
+        "bytes": 50188,
+        "sha256": "c7d0507c82c47968be2ad72301a9f32e1a19e26e9b02b1db7569dfe265faf97d"
+      },
+      {
+        "path": "/assets/audio/frontier-feedback-v1/sources/town-center-select-1.mp3",
+        "bytes": 50188,
+        "sha256": "3453ea7bf7a57578fdbe1fbc7680340c7a26b75bc2caa8ab5c891ad45dd33f23"
+      },
+      {
+        "path": "/assets/audio/frontier-feedback-v1/sources/town-center-select-4.mp3",
+        "bytes": 50188,
+        "sha256": "099febfdb6e55752876d1087dbe155a4e8c1f8ccfd30fd7d2ed863c592270fab"
+      },
+      {
+        "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-1.mp3",
+        "bytes": 37650,
+        "sha256": "f86ff881e7ffb6857511084b3659d62fd4960c6a0a11590cadb892e78f9d3985"
+      },
+      {
+        "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-2.mp3",
+        "bytes": 36814,
+        "sha256": "9e7e60ed5d992f2184d69c430e0ec59c3303b9becae54ee60a71cdbf3a5c8087"
+      },
+      {
+        "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-3.mp3",
+        "bytes": 36814,
+        "sha256": "f98723ef362ab0c8157af5fce31d3d62e0796bf7f155675435ae6966d7cdc25b"
+      },
+      {
+        "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-4.mp3",
+        "bytes": 37650,
+        "sha256": "082ec82a647cff33aa33c493c65b816e84a3ec042e7151016691b0366c129cf6"
+      },
+      {
+        "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-1.mp3",
+        "bytes": 38068,
+        "sha256": "5aaf6e689ce1b4acc3fb9c6e16c0857018eba66dd7f0d17e6bfee7c706bf93e5"
+      },
+      {
+        "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-2.mp3",
+        "bytes": 37650,
+        "sha256": "946e51bd83ea67642d73fe13e0ebb3975b3a02740f3cc568f59af002f847c819"
+      },
+      {
+        "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-3.mp3",
+        "bytes": 38903,
+        "sha256": "c401b213da3bb10dcf54e1828ef341f69f1d10533cd0ef3a02b93e8e8bb09943"
+      },
+      {
+        "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-4.mp3",
+        "bytes": 36814,
+        "sha256": "adac9581e2bfcf6ea76db5a16fdc410940a9e27c826299bdf3cf4b1f860a6f0b"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-attack-1.mp3",
+        "bytes": 35978,
+        "sha256": "fdea154febf58bcd5672b30e264db50e98bdf4f3ebccd52372bf1de6501007f8"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-attack-3.mp3",
+        "bytes": 35142,
+        "sha256": "1254b265a906169f4da010fd103e200a5f0fea036632e921dc11a791a12910b0"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-follow-2.mp3",
+        "bytes": 37650,
+        "sha256": "700f1bcbe84d9f05459aef597b7768a02d5b22fcd90fc2ad010ac335632c9c65"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-hold-4.mp3",
+        "bytes": 38903,
+        "sha256": "c75eb33c6d5dc97439615a8c42770ebb3484458ec92a795e0faf147905de26b5"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-move-3.mp3",
+        "bytes": 42665,
+        "sha256": "16ac5d9ab7feef0c7a85d2c56d8a1d79a8ac15b167091ccc6b7bac8b7767ec0c"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-patrol-1.mp3",
+        "bytes": 40575,
+        "sha256": "a6c7b323982f873567b96a4feef86f4ae08e8df264af1a6df3697e8cb4094c7b"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-ready-3.mp3",
+        "bytes": 35978,
+        "sha256": "100d34ea3802be2347abfa237d1d2636c6dd7a17c485c04a2428c3f992cb3767"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-select-2.mp3",
+        "bytes": 39739,
+        "sha256": "7e1b9e99f7e70c44dbd42e463c9d5efb6430dece103d73fa9f3a3c636d908cb6"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-select-3.mp3",
+        "bytes": 35978,
+        "sha256": "090b720fb2d64a15b881895d8eb4dec0ac8952bfabb4ffff42c4401fd4025c0e"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-stop-4.mp3",
+        "bytes": 33888,
+        "sha256": "d8557d119d40e1708ea99fae63c6adc4601ca26a54e1e966936469a694a0fdc1"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/archery-range-select-1.mp3",
+        "bytes": 50188,
+        "sha256": "833fb232f86afef1b9677169c4f87490c08142a0b3b6b8210bc66e78ff31c47f"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/dock-select-1.mp3",
+        "bytes": 50188,
+        "sha256": "d66b08d49c5b2c2ee05ef0f13063b8a852a716d06dd0921c8539f260f3c5e7d5"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/farm-select-3.mp3",
+        "bytes": 50188,
+        "sha256": "a5c0e7bbd32a0dccea3f62fc73ba2e1d142a30415d9579eb89b8d4656a88b026"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/house-select-4.mp3",
+        "bytes": 50188,
+        "sha256": "bd633f07c3ed6ebfa5f9e2c37557fa031ee0e20fdf655ca97a46d705fc6bf2b7"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-attack-1.mp3",
+        "bytes": 35142,
+        "sha256": "085fc8d63890a7dc928c1ff4565169d7bc50cba0028943a7b1754dfb184aab63"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-attack-3.mp3",
+        "bytes": 35142,
+        "sha256": "00c6f44c38dc68e5195d04a96e3cb0353b9bbb07bddde4ab1743f5440ee68991"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-follow-1.mp3",
+        "bytes": 32216,
+        "sha256": "42f76483da4addeebcf780481d24a6083a945be8fa3f933c5691a419b70841e5"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-hold-1.mp3",
+        "bytes": 37650,
+        "sha256": "c5fe3362b335bb2fddb144a5d333540d0a0d781e58b7e7db2d54f1a73a887cdf"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-move-4.mp3",
+        "bytes": 33888,
+        "sha256": "7e04b35f3484b6cb1f71d77c55da46d5c87a1360c00688d0756aa3fe46f0e0c2"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-patrol-2.mp3",
+        "bytes": 37650,
+        "sha256": "d00a348a0e112d7639fd63f025035d0c241ecd86a5dd742d0377a83768acc957"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-ready-2.mp3",
+        "bytes": 37650,
+        "sha256": "97ac8e89cec3041e6e6135c805ad7275375c00b107f1db4e8387bd40115e7977"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-select-1.mp3",
+        "bytes": 33052,
+        "sha256": "606864139c4cae3dc2fd568665f7c282e7a5300691604c16d5e3d89d5f5e1f7b"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-select-4.mp3",
+        "bytes": 33052,
+        "sha256": "1828595c529bd366d561bb0a3885a7a9afeda0c3b364906176d9f3dc1266aeb5"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-stop-1.mp3",
+        "bytes": 32216,
+        "sha256": "8238a8ff6063c76fd732e42f100b2896f9b80e049c8a10b88407a3fa98d6f0f7"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/mill-select-4.mp3",
+        "bytes": 50188,
+        "sha256": "9fd34053a7150054f97bb177e8d1e93635ebf5bce3a021dfa5c3bb32a0b1533d"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/palisade-gate-select-2.mp3",
+        "bytes": 50188,
+        "sha256": "390f23ddc4a1816de5eab0a6cde457ebc053b230b79bae9362bab0188c9fb4bd"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/palisade-wall-select-4.mp3",
+        "bytes": 50188,
+        "sha256": "0d1d0012c62ee9187d7fa7e54eacc0f80549437b56f3787f7b25fe6da5d84093"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-attack-2.mp3",
+        "bytes": 36814,
+        "sha256": "94f4bce17c3319997e5be7135c254aeaa1f8e9afa03fdeed9872c6332b854b8f"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-attack-3.mp3",
+        "bytes": 36814,
+        "sha256": "c285fa0c8e5eeaedb56087c06b76848ba19b4f14a256cf804121cf33fcfabbee"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-follow-2.mp3",
+        "bytes": 34724,
+        "sha256": "b042c714451bbfdb53254cee2df61c4be07d9d6e7d7fb810f6e1621333552562"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-hold-2.mp3",
+        "bytes": 33052,
+        "sha256": "b9d78baed3caa0d836b731ac542426c568f11bb844c2882ce92a782bfa883a4f"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-move-2.mp3",
+        "bytes": 33052,
+        "sha256": "1e25f5abce019c9ac0e3b89117225f7c63e64d50cf8425e139e0a499680d222a"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-patrol-1.mp3",
+        "bytes": 37650,
+        "sha256": "b86e9aa70e5f6ff03d846b7f9ffb9036849bdc3e6f99295a76b4fc9b1612e002"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-ready-3.mp3",
+        "bytes": 33052,
+        "sha256": "3961857f341f787f78776e4ce553aa15ad335583d75b4c23b2969bb165a6f348"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-select-2.mp3",
+        "bytes": 33888,
+        "sha256": "8ed027439ae4db97e50d6912e90ed1b22ce5f2816331654ecd9d88570dbf18f6"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-select-3.mp3",
+        "bytes": 34724,
+        "sha256": "d2e029c581a44fbd3ae37d9dab5eb63ad4c94c570cde150552c92901e23827be"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-stop-1.mp3",
+        "bytes": 33052,
+        "sha256": "16b00f9136c1a462699343ece3f59cf092aef07e44c1ef980b740204fd56708a"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-attack-2.mp3",
+        "bytes": 37650,
+        "sha256": "74a146ceec23eb5d1b107c2e1a045bf938c3ec6b0abffbea983e19182c909674"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-attack-3.mp3",
+        "bytes": 41411,
+        "sha256": "c60ba63ec1507ccd6c3223a853ceea7b75eff91643d32899c643b3d09629ff64"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-follow-2.mp3",
+        "bytes": 33052,
+        "sha256": "5bf560af550098160a1df6bb3fd7c7c722a5eff27b0c625075b74878f075f89b"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-hold-1.mp3",
+        "bytes": 35142,
+        "sha256": "113bddee12860442a0e4e0ead967c5b9d0a91bdc09d976f89590e097a1729726"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-move-1.mp3",
+        "bytes": 35142,
+        "sha256": "941fe04bf3c44f291fd7008c89ba1784be6d47137be5d61de5c6ecbcbe720472"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-patrol-4.mp3",
+        "bytes": 39739,
+        "sha256": "c9f82981ac7a440ffc0dfd60a149172ef26526c597cfe8912056a04ec7ca89a2"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-ready-2.mp3",
+        "bytes": 33888,
+        "sha256": "9c779ece9bec5fbe70192bdae5a6d56f7f507e5e74c308fe2dafcec5c88c7ab2"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-select-3.mp3",
+        "bytes": 33888,
+        "sha256": "3afe7368e47ec747a3e6eef404945d7a959a16d42180d86d3d69c1512b8f066e"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-select-4.mp3",
+        "bytes": 33888,
+        "sha256": "5219bdc499ceb330704a0096e60c2751f02ae0591b0ab7628b1fa6136519423e"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-stop-2.mp3",
+        "bytes": 35142,
+        "sha256": "498b3b40c584a706bc793a7434ea0290a8e0c7a5ec622765f7b5219fc74275e0"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-attack-2.mp3",
+        "bytes": 39739,
+        "sha256": "14d6c6f604f657297c66c84795025f38045e210fe87b8f599ee06055dd67ef03"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-attack-4.mp3",
+        "bytes": 36814,
+        "sha256": "9303f0c52f112270bcdbc979754f604953efe7f0770068850f048cbe41365ac8"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-follow-1.mp3",
+        "bytes": 38068,
+        "sha256": "fe265bfb58cffc0c0617b8c63d85855cf9076f4562e6edc1db7a5e9d4442918b"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-hold-1.mp3",
+        "bytes": 35978,
+        "sha256": "b044395835ed5714474318d6b343edf97b290120e6ce7c398b8ff9324413422a"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-move-3.mp3",
+        "bytes": 33052,
+        "sha256": "86daa2e49ccd8ce38184737179cf580b619de7291b4eaaa4846ddbfd66e976f0"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-patrol-1.mp3",
+        "bytes": 36814,
+        "sha256": "375aa5e394a7d6e4a973bf92f15292892c987ba49a718310991cb6d6cf1a4014"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-ready-4.mp3",
+        "bytes": 38903,
+        "sha256": "0879e4eee85ba65949aafcac15210bdf3f160add69eea1b872c8f0ef790240ad"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-select-3.mp3",
+        "bytes": 32216,
+        "sha256": "c8993c5d3152b6479454cd89b5ecd54c4a20fcec279d89f9d3d40eac42a08ba2"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-select-4.mp3",
+        "bytes": 33052,
+        "sha256": "29a62082ed093129532127b7c0c5e32952467eecce4ca74e8de9dd83d3218d38"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-stop-4.mp3",
+        "bytes": 38903,
+        "sha256": "56f14eb538f783a85d73539953a544693df2c7d50fee1fe0407c06e5afa3e5d8"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-gather-food-2.mp3",
+        "bytes": 35978,
+        "sha256": "027f59808e0363b6d5c5157308ab8623fec640ae7e3b09f10ab778dece81ddc4"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-hold-2.mp3",
+        "bytes": 32216,
+        "sha256": "e77818779bd11fdd27cb7e8c04ce161cc7f7e1998ac118f082fce0beff714c0e"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-move-4.mp3",
+        "bytes": 33052,
+        "sha256": "f3adcf5fffaee09e2986d80431ba9a15ad38977f811aeefafec459508e3dd327"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-ready-4.mp3",
+        "bytes": 32216,
+        "sha256": "8ea5dc782c434593792b7d847e4dbc5ba7f2b93a03e8b8c355782d75912dc279"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-return-cargo-3.mp3",
+        "bytes": 35978,
+        "sha256": "bf4738bcf7401d54f96ea132bb69def2fe27a0ebb6d27f0b6be9d46cd0a832a0"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-select-1.mp3",
+        "bytes": 30126,
+        "sha256": "91bce0630d12ad009cf9a8550b98b213958d8edc41a98c67ab7b6f8aeaf15856"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-select-3.mp3",
+        "bytes": 32216,
+        "sha256": "d13c3a247867cf4969ba09ab1e0e2e1c003bedc72b60c75e38e1ba354a399f2a"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-stop-4.mp3",
+        "bytes": 33888,
+        "sha256": "5ee9958e2b79e7960859db80b9d2857ac72056e99f7ff8163b40b4043e407566"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-attack-2.mp3",
+        "bytes": 35142,
+        "sha256": "aff6fb898323c40653fdfcfe4d614549a2b1b4b07c37759024c3db3ed7f74dfb"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-attack-3.mp3",
+        "bytes": 37650,
+        "sha256": "8e457f45da1d6d72fa004f7e860d3876bffac6c976931e968c8b111889ac9272"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-follow-1.mp3",
+        "bytes": 38903,
+        "sha256": "bbc67baeb51fe0d34d338fa7875918a33eb667099fca88bbbec19633fc3f3199"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-hold-3.mp3",
+        "bytes": 36814,
+        "sha256": "81fe9081571b1dd7dca558f03447cb4c38f8de6f831c68ffdf34c2b33c59c0e8"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-move-1.mp3",
+        "bytes": 33888,
+        "sha256": "d98af50c5ee7bbe773e6e9389e66723c976e5ae9f918fd3fa3aebf2e37382e29"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-patrol-3.mp3",
+        "bytes": 38068,
+        "sha256": "275cc157565274e9e7f0ecaa9f73cad8e145c602e8c9d012abd857612af523cf"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-ready-3.mp3",
+        "bytes": 33888,
+        "sha256": "a4215bde63be79d3e25ea287c2487330b93d9d26d33f3bb9e1c0cd28dc27ab4e"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-select-1.mp3",
+        "bytes": 32216,
+        "sha256": "44ded6035f9140a730f4689adb2690b9ca95ab01b724199dd8ba3ea1bd482204"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-select-3.mp3",
+        "bytes": 31380,
+        "sha256": "64993262d264128b2a741917cf49a8679e5b106694359dc4ae054a0b458e4788"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-stop-2.mp3",
+        "bytes": 37650,
+        "sha256": "c047ea5be3b7a0b8da0334c197a6daf965b42e9ce15801175576baba1510a9dd"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/stable-select-4.mp3",
+        "bytes": 50188,
+        "sha256": "9b6adaa5b1d030374fc2671bfb6ae5910906ffcaf2049269159705c27feea78a"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/storehouse-select-3.mp3",
+        "bytes": 50188,
+        "sha256": "5dfef7661e793cf127c29218b9ffe386fcc9ba0a8c1547e9e2d11849f53f5e61"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/watchtower-select-1.mp3",
+        "bytes": 50188,
+        "sha256": "94fa3d56544bc7524071e8e1b70401eb122757f26e6b2fddf9c9840f31e68829"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/worker-return-cargo-4.mp3",
+        "bytes": 39739,
+        "sha256": "75b87b33de0ba6557ec0477cd84f8c8e66cbf6b335bba9c9fb23920b8e5ad9b1"
+      },
+      {
+        "path": "/assets/audio/frontier-roster-feedback-v1/sources/workshop-select-2.mp3",
+        "bytes": 50188,
+        "sha256": "e67976dccb2ee30cea291ab61d0fd780b4f8d58743874da12caa8aadc216d861"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-attack-3.mp3",
+        "bytes": 33052,
+        "sha256": "2cc416f389193070ee703220aafc6db9fb3b249183d464d2717b66eb020ca427"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-attack-4.mp3",
+        "bytes": 33052,
+        "sha256": "d675a10e5ae3147471a8176779b22444d0c4940b67c545a142d177731572f266"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-build-3.mp3",
+        "bytes": 35142,
+        "sha256": "6193deeb2d76f4d7b5d63ad0d54a0e99ad147c09ecc9b787e242031c28fee889"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-build-4.mp3",
+        "bytes": 35142,
+        "sha256": "25d79461fd67e617518660ac1b212e9202c67b30d48e345319dd1e21c15b97a4"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-follow-1.mp3",
+        "bytes": 37650,
+        "sha256": "0317f7add9f694387be4b8b3ba6fb8eff458b441e811147af205088f60bfc3b1"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-follow-3.mp3",
+        "bytes": 38068,
+        "sha256": "3db3a4bb3655e5961eba710f07b0dc69cec57ee6b0903b3e36475ce1754cbc23"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-farm-1.mp3",
+        "bytes": 41411,
+        "sha256": "0f63dad95cee517ccd9f49cb9e688759b1e408a05ce46e59e53d6445180ce1da"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-farm-2.mp3",
+        "bytes": 38903,
+        "sha256": "1485b9bd42b6cd86f59d81574b115cd46a3273298303ae85f04ed15d18ca2cdc"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-fish-2.mp3",
+        "bytes": 35978,
+        "sha256": "55a76fe3b27ae10d99132e849ea34890f41254dbf023b5f398bc9f3396f4a43f"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-fish-3.mp3",
+        "bytes": 36814,
+        "sha256": "1c0671c007ebb8472b0245b657b9867d6f24f97e69b064594ea4136528fd73ff"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-food-1.mp3",
+        "bytes": 38068,
+        "sha256": "f74d9eb7ccba305aaff47a007612699b4383dd893d22492e8814f08666537fdf"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-food-2.mp3",
+        "bytes": 38903,
+        "sha256": "3fbe9643d8940f210306453ad231c90ba37556a4fc9c6317d0542fdfe24045a5"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-sheep-carcass-2.mp3",
+        "bytes": 38903,
+        "sha256": "3657ec89064584110e464a9c54b0ed1cf826dedb1bb7e647db0c97ffc1aa1090"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-sheep-carcass-4.mp3",
+        "bytes": 38903,
+        "sha256": "48aa04c41ac74c97efd9143fc795f66211dc0fddac4a91e196831361cdacf321"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-stone-2.mp3",
+        "bytes": 40575,
+        "sha256": "9b1b082fe4d2e7ebc162b94d67bb684c98f42b9fa5c7d7a7ef899528231570c2"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-stone-3.mp3",
+        "bytes": 41411,
+        "sha256": "2e49eabe0cb89d19731b817ed8677b5a7cc3fe7d7887892a9eb9b3a656404997"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-hold-1.mp3",
+        "bytes": 37650,
+        "sha256": "b33364c2fa996907c21fc8121e60eb17a3e4f48cd0eddaf90e1384406f9deaf7"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-hold-2.mp3",
+        "bytes": 36814,
+        "sha256": "fc5c2b23a60d733a6822e8137491c0a1d432bcd95f5cc836cd6d442e29d6ae34"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-move-1.mp3",
+        "bytes": 34724,
+        "sha256": "a479f2cdc21972461ea5af4b765e9e73522a9a2cd0fb9878560c1400de1719dc"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-move-2.mp3",
+        "bytes": 33052,
+        "sha256": "ea1f86f49f144a380833cbc0dfeb986fa4e676bd43638735c3b810fce26d75ef"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-patrol-1.mp3",
+        "bytes": 36814,
+        "sha256": "5db70dca16f2d8f97c6a031c9100ba377350b611f2a897cc11ae911d79013a28"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-patrol-3.mp3",
+        "bytes": 36814,
+        "sha256": "089c666a1184bc3d14d5cede2c0b1e4a7080dd79ce9bdcb036057bf3eb543491"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-ready-2.mp3",
+        "bytes": 34724,
+        "sha256": "ce1baef09ed3bc988716b8cfce5d0ccb292a0b19e28385d50ad0efffc2ee84ab"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-ready-4.mp3",
+        "bytes": 35978,
+        "sha256": "bca136fefbbfe8cd7e5c3d4c7f10564d93018956d0ef912d41a618525d9b16b0"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-repair-1.mp3",
+        "bytes": 34724,
+        "sha256": "fc3ac22c5fafa4b3ea4eb4004b13bb24dc3f68c699ed60c28e317059a15f336f"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-repair-2.mp3",
+        "bytes": 34724,
+        "sha256": "0b1073e0b38c250313502ef1f20edcb69d0b080a5c4d47b24ccf8814bbf55798"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-stop-1.mp3",
+        "bytes": 35142,
+        "sha256": "7023041e6e761003ac2a6a8ea6a6b45e63d38a6073235efd8241164a7876a16e"
+      },
+      {
+        "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-stop-4.mp3",
+        "bytes": 35142,
+        "sha256": "076aaee9731bb7aff543d9f9972d0797987f8c6c572ae91630cc6a3a4896474b"
+      },
+      {
+        "path": "/assets/audio/runtime/frontier-feedback/v3/manifest.json",
+        "bytes": 141857,
+        "sha256": "ac8b054bdd5dcd0865eccea0eefd34b56316d8df58104cdcc065b5ed6e9828cb"
+      },
+      {
+        "path": "/src/audio-policy.mjs",
+        "bytes": 6843,
+        "sha256": "b7bc70447d3e6e65a5f5cc5af2e824b33fbbed038bc172aa2a9403ccd677f5ee"
+      },
+      {
+        "path": "/src/audio-shipped-catalog.mjs",
+        "bytes": 2572,
+        "sha256": "b8ef912e79708be1c9e6371e0a408e2b61f0fde76f7639d4cffcaf77ced4207d"
+      },
+      {
+        "path": "/src/audio-shipped-loader.mjs",
+        "bytes": 4218,
+        "sha256": "28223cee29349c1650231f664dad0112d759028528b72125be572c80c4c3677f"
+      },
+      {
+        "path": "/src/audio.mjs",
+        "bytes": 40060,
+        "sha256": "6d919f01d654dee8fa4eda287aadcb7ecef1ab0fee72a456143f7044951eb62f"
+      },
+      {
+        "path": "/src/client/audio/shipped-audio-worker-client.mjs",
+        "bytes": 4153,
+        "sha256": "41ccf6870949d8a7865ff1696f7865a550887ccecfcea02d059ffde123dee21b"
+      },
+      {
+        "path": "/src/client/audio/shipped-audio-worker.mjs",
+        "bytes": 2068,
+        "sha256": "db06db1ed3010faf89b0132cf6baae0613a719a4d4a98a13f4e6e991925b2a00"
+      },
+      {
+        "path": "/src/main.js",
+        "bytes": 543975,
+        "sha256": "2d64920c693d5ea64b593d915ad43785be6c6824d0f9500454bb27f1b39ddc51"
+      }
+    ]
+  },
+  "report": {
+    "schemaVersion": 1,
+    "subset": "unit-worker",
+    "status": "failed",
+    "expectedRevision": "82174783da76635ed65ba055a09944e26f0ef216",
+    "mapId": "audio-unit-worker",
+    "maxDurationMs": 300000,
+    "recordings": [],
+    "paidSteps": [],
+    "issues": [
+      {
+        "stage": "ordinary-entry-save-and-play",
+        "code": "wait-timeout"
+      }
+    ],
+    "coverage": {
+      "plannedKeys": [
+        "unit.worker.ready",
+        "unit.worker.select",
+        "unit.worker.move",
+        "unit.worker.stop",
+        "unit.worker.hold",
+        "unit.worker.patrol",
+        "unit.worker.follow",
+        "unit.worker.attack",
+        "unit.worker.gather.wood"
+      ],
+      "capturedKeys": [],
+      "missingPlannedKeys": [
+        "unit.worker.ready",
+        "unit.worker.select",
+        "unit.worker.move",
+        "unit.worker.stop",
+        "unit.worker.hold",
+        "unit.worker.patrol",
+        "unit.worker.follow",
+        "unit.worker.attack",
+        "unit.worker.gather.wood"
+      ],
+      "missingRuntimeKeys": [
+        "unit.worker.select",
+        "unit.worker.gather.wood",
+        "building.barracks.select",
+        "building.town-center.select",
+        "unit.worker.move",
+        "unit.worker.patrol",
+        "unit.worker.follow",
+        "unit.worker.stop",
+        "unit.worker.hold",
+        "unit.worker.attack",
+        "unit.worker.gather.food",
+        "unit.worker.gather.farm",
+        "unit.worker.gather.sheep-carcass",
+        "unit.worker.gather.fish",
+        "unit.worker.gather.stone",
+        "unit.worker.build",
+        "unit.worker.repair",
+        "unit.worker.ready",
+        "unit.infantry.select",
+        "unit.infantry.move",
+        "unit.infantry.patrol",
+        "unit.infantry.follow",
+        "unit.infantry.stop",
+        "unit.infantry.hold",
+        "unit.infantry.attack",
+        "unit.infantry.ready",
+        "unit.spearman.select",
+        "unit.spearman.move",
+        "unit.spearman.patrol",
+        "unit.spearman.follow",
+        "unit.spearman.stop",
+        "unit.spearman.hold",
+        "unit.spearman.attack",
+        "unit.spearman.ready",
+        "unit.archer.select",
+        "unit.archer.move",
+        "unit.archer.patrol",
+        "unit.archer.follow",
+        "unit.archer.stop",
+        "unit.archer.hold",
+        "unit.archer.attack",
+        "unit.archer.ready",
+        "unit.scout.select",
+        "unit.scout.move",
+        "unit.scout.patrol",
+        "unit.scout.follow",
+        "unit.scout.stop",
+        "unit.scout.hold",
+        "unit.scout.attack",
+        "unit.scout.ready",
+        "unit.rider.select",
+        "unit.rider.move",
+        "unit.rider.patrol",
+        "unit.rider.follow",
+        "unit.rider.stop",
+        "unit.rider.hold",
+        "unit.rider.attack",
+        "unit.rider.ready",
+        "unit.siege-engine.select",
+        "unit.siege-engine.move",
+        "unit.siege-engine.patrol",
+        "unit.siege-engine.follow",
+        "unit.siege-engine.stop",
+        "unit.siege-engine.hold",
+        "unit.siege-engine.attack",
+        "unit.siege-engine.ready",
+        "unit.skiff.select",
+        "unit.skiff.move",
+        "unit.skiff.stop",
+        "unit.skiff.hold",
+        "unit.skiff.gather.food",
+        "unit.skiff.ready",
+        "building.palisade-wall.select",
+        "building.palisade-gate.select",
+        "building.house.select",
+        "building.archery-range.select",
+        "building.storehouse.select",
+        "building.mill.select",
+        "building.farm.select",
+        "building.dock.select",
+        "building.watchtower.select",
+        "building.stable.select",
+        "building.workshop.select",
+        "unit.worker.return-cargo",
+        "unit.skiff.return-cargo"
+      ],
+      "listeningReview": "pending",
+      "humanPlaytest": "not-performed"
+    },
+    "elapsedMs": 71212,
+    "entryStage": "save-and-play",
+    "diagnostic": {
+      "boot": "ready",
+      "mapId": "veyrholds-terraced-vale",
+      "audioStatus": "running",
+      "studioOpen": true,
+      "importObserved": true,
+      "bindingCount": 85,
+      "decisions": [],
+      "nativeStarts": [
+        {
+          "sha256": "198c2acfc9f4b3f3bc8da8cd0b2c2314341449badc4296cd56c86f5b86895e00",
+          "time": 40655.3,
+          "duration": 30
+        },
+        {
+          "sha256": "2a4426d0ae22f3c2525f4ea3a50abb0174989f08b11105f70d55d9f3844cd3e2",
+          "time": 40660.59999999999,
+          "duration": 29.99997732426304
+        }
+      ],
+      "faults": [],
+      "recordingPhase": null
+    }
+  },
+  "qualification": {
+    "schemaVersion": 1,
+    "subset": "unit-worker",
+    "expectedRevision": "82174783da76635ed65ba055a09944e26f0ef216",
+    "status": "failed",
+    "deployedRevision": null,
+    "releaseDigest": null,
+    "sandbox": "enabled",
+    "maxDurationMs": 300000,
+    "scope": "public-staging-native-audio",
+    "listeningReview": "pending",
+    "issues": [
+      {
+        "code": "incomplete-capture-or-browser-errors"
+      }
+    ],
+    "browser": "Chrome/154.0.8037.97",
+    "captureStatus": "failed",
+    "browserObservation": {
+      "events": [
+        {
+          "kind": "http-error",
+          "status": 401,
+          "path": "/favicon.ico",
+          "scheme": "https",
+          "route": "static",
+          "resourceType": "Other"
+        },
+        {
+          "kind": "http-error",
+          "status": 401,
+          "path": "/favicon.ico",
+          "scheme": "https",
+          "route": "static",
+          "resourceType": "Other"
+        },
+        {
+          "kind": "http-error",
+          "status": 401,
+          "path": "/favicon.ico",
+          "scheme": "https",
+          "route": "static",
+          "resourceType": "Other"
+        },
+        {
+          "kind": "request-failed",
+          "path": null,
+          "scheme": "https",
+          "route": "room-api",
+          "resourceType": "Fetch",
+          "canceled": true
+        },
+        {
+          "kind": "http-error",
+          "status": 401,
+          "path": "/favicon.ico",
+          "scheme": "https",
+          "route": "static",
+          "resourceType": "Other"
+        },
+        {
+          "kind": "request-failed",
+          "path": null,
+          "scheme": "https",
+          "route": "room-api",
+          "resourceType": "Fetch",
+          "canceled": true
+        }
+      ],
+      "overflow": false,
+      "passed": false
+    }
+  }
+}
