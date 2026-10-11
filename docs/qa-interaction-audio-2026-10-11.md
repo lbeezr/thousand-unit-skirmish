@@ -153,6 +153,35 @@ advancing stack selection. Loading is now verified; no recording or listening
 pass is inferred. Worker network requests are outside the page CDP session, so
 the empty page-download list does not measure their transfers.
 
+The worker/reconnect fix is merged in [PR639](https://github.com/lbeezr/thousand-unit-skirmish/pull/639)
+as `7d4a588c502a87048f64552c516836fc94197bb5`, including the separately merged
+Worker HUD pilot. At that exact merged source, 403 focused audio/recovery/HUD
+tests and both type projects pass. [Cloud run seven](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38156525628)
+has clean release digest
+`sha256:d21088cbeb9ae60685c092982f8feb4eb54ff3e4f758fbda05eed36a71b90f64`.
+Its [case receipt](qa-evidence/interaction-audio-2026-10-11/merged-worker-cloud/interaction-audio.json)
+records actual native starts for Worker selection and the correctly selected
+Town Center. The strict visual checkpoint then rejects the syncing page before
+the recording is saved. This is native start evidence, not a saved-output or
+listening pass. The previously unidentified canceled requests are now classified
+as room-API fetches; they remain qualification failures.
+
+The capture follow-up arms the recorder for the exact expected recording hash,
+so slow input/decode work cannot use up its recording window before playback.
+Each verified output is saved before attempting the final screenshot; a later
+failure or case deadline leaves the partial evidence explicitly incomplete.
+
+Staging deployment `5b93b8bd-1795-4d6b-a4ba-eff9033c2bcd` is **SUCCESS** for
+`7d4a588c`. Its [served verification](qa-evidence/interaction-audio-2026-10-11/staging-worker-served.json)
+confirms the exact source, all 119 recording hashes, 138 recursively discovered
+client modules and both worker module bytes matching the reviewed source.
+Public gameplay/readiness and private health/source admission checks pass.
+Runtime digest/cleanliness remain unknown for Railway Git identity; the clean
+cloud digest above is separate. After refreshing their confirmed staging address,
+the user answered **“Yes, both responses work”** for villager selection and the
+wood-chopping order. This is human hearing acceptance for those two meanings on
+the identified staging deployment, not a full-roster/building listening pass.
+
 The staging HTTP check passed source `b4ad36cf`, public gameplay/readiness and
 protected health, default v3 manifest/source verification (119 recordings),
 136 recursively discovered client modules, and private source/catalog rejection.
