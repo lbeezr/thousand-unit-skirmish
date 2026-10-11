@@ -182,6 +182,17 @@ the user answered **“Yes, both responses work”** for villager selection and 
 wood-chopping order. This is human hearing acceptance for those two meanings on
 the identified staging deployment, not a full-roster/building listening pass.
 
+[Run eight](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38157245378)
+at `1daa1f6d` has the same runtime release digest as merged `7d4a588c` because
+only capture tooling/docs changed. Its
+[receipt](qa-evidence/interaction-audio-2026-10-11/armed-cloud/interaction-audio.json)
+again records native Worker and Town Center starts, but a wait times out before
+any native-output file is saved. The shared CDP helper limits an awaited call to
+15 seconds, so the next capture polls recorder completion within a separate
+45-second bound before retrieving the resolved value. Separate schedule/output/
+receipt stages and recorder state make that hypothesis diagnosable; no passing
+recording or exact timeout cause is inferred from this run.
+
 The staging HTTP check passed source `b4ad36cf`, public gameplay/readiness and
 protected health, default v3 manifest/source verification (119 recordings),
 136 recursively discovered client modules, and private source/catalog rejection.

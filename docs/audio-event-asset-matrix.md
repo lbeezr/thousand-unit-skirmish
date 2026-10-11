@@ -50,13 +50,12 @@ acceptance must be recorded separately. The source audit below remains a dated
 
 The [11 October receipt](qa-interaction-audio-2026-10-11.md) records source
 `4d50d4d1`, its clean release digest, 246 passing audio tests and eleven verified
-packed recordings. **GitHub publication is blocked:** branch push returned
-`permission denied`; repository metadata reports `push: false`. No PR, merge or
-containing deployment exists. The user has been asked to restore write access;
-the owner retains independent local production and integration preparation.
+packed recordings. The CLI's `lbliii` identity rejected publication, but the
+user-corrected GitHub app check verified the existing `lbeezr` write access.
+Publication succeeded through that connection; no access expansion was required.
 Follow-up code `b8e0878b` adds source-ID isolation and the prepared ordinary
 click/output capture. Its clean pack and checks are recorded in the same receipt;
-write access still reports false after the user's acknowledgement at 15:03 UTC.
+the earlier CLI rejection is historical, not a current blocker.
 
 The second local increment is [Worker action voices](../assets/audio/frontier-worker-actions-v1/README.md):
 fourteen additional meanings for Move/Patrol/Follow/Stop/Hold/Attack,
@@ -79,9 +78,17 @@ recordings across 85 event bindings**, 4,485,737 bytes. Its 253 new originals an
 the earlier 72 stay preserved; 15 additional alternate starts were rate-limited
 without a provider session and were not retried. All selections remain provisional.
 
-Next: publish and verify these increments, then complete native output capture
-and listening across the registered roster. Actual listening, captions-off recognition, rapid-order mix,
-fresh-client/default-map loading and solo/human 1v1 acceptance stay with this owner.
+All increments merged in [PR638](https://github.com/lbeezr/thousand-unit-skirmish/pull/638).
+[PR639](https://github.com/lbeezr/thousand-unit-skirmish/pull/639) preserves loading
+across same-map reconnects and moves verified downloads to a browser worker.
+Staging source `7d4a588c` is served and hash-verified, including all 119 recordings
+and both worker modules. After refreshing that staging address, the user confirmed
+villager selection and wood-order speech both work. Cloud evidence independently
+records native starts of the intended Worker and Town Center sources.
+
+Next: retain complete native output and finish building/full-roster listening.
+The first two meanings have user hearing acceptance; captions-off recognition,
+rapid-order mix and broader solo/human 1v1 acceptance remain with this owner.
 
 ### Preserved 7–9 October source audit
 

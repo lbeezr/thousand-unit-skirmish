@@ -83,13 +83,14 @@ export function installInteractionAudioProbe() {
         const bytes = new Uint8Array(await new Blob(chunks).arrayBuffer());
         for (const byte of bytes) binary += String.fromCharCode(byte);
       } catch { probe.faults.push('recorder-data-error'); }
-      finish({ base64: btoa(binary), mimeType: recorder.mimeType, peak: record.peak,
+      record.result = { base64: btoa(binary), mimeType: recorder.mimeType, peak: record.peak,
         rms: Math.sqrt(record.energy / Math.max(1, record.samples)), meteredSamples: record.samples,
         armedAt: record.armedAt, beganAt: record.began, endedAt: record.ended,
         elapsedMs: record.began === null || record.ended === null ? 0 : record.ended - record.began,
         starts: record.began === null ? [] : probe.starts.slice(record.from)
           .filter(start => start.time >= record.began && start.time <= record.ended),
-        faults: [...probe.faults] });
+        faults: [...probe.faults] };
+      finish(record.result);
     };
     const expire = () => { probe.faults.push('recording-arm-timeout'); void settle(); };
     recorder.ondataavailable = event => {
@@ -235,8 +236,14 @@ export async function run(value) {
       const allowed = bindings[key].variants.map(v => manifest.downloads[v.sourceId].sha256);
       await page.cdp.evaluate(`window.__rtsInteractionAudio.begin(${JSON.stringify(allowed)})`);
       await action();
+      stage = `${checkpoint}-scheduled`;
       await page.wait(`window.__rtsInteractionAudioSnapshot().inspector.decisions.filter(d => d.key === ${JSON.stringify(key)} && d.outcome === 'sample scheduled').length > ${before}`, 'ordinary click schedules its exact recording');
+      // Poll a settled value instead of holding a Runtime.evaluate promise past
+      // the shared CDP transport's 15-second call deadline on a busy renderer.
+      stage = `${checkpoint}-output`;
+      await page.wait('Boolean(window.__rtsInteractionAudio.recording?.result)', 'native recording finalized', 45000);
       const output = await page.cdp.evaluate('window.__rtsInteractionAudio.finish()');
+      stage = `${checkpoint}-receipt`;
       report.lastOutput = { key, armedAt: output.armedAt, beganAt: output.beganAt, endedAt: output.endedAt, elapsedMs: output.elapsedMs,
         starts: output.starts, faults: output.faults, peak: output.peak, rms: output.rms, meteredSamples: output.meteredSamples };
       await persistReport();
@@ -310,6 +317,8 @@ export async function run(value) {
           bindingCount: last?.inspector?.bindings?.length ?? 0,
           decisions: last?.inspector?.decisions?.slice(-12) ?? [],
           nativeStarts: probe?.starts?.slice(-12) ?? [],
+          recording: probe?.recording ? { phase: probe.recording.phase, armedAt: probe.recording.armedAt,
+            beganAt: probe.recording.began, endedAt: probe.recording.ended, ready: Boolean(probe.recording.result) } : null,
           workers: last?.workers ?? [], buildings: last?.buildings ?? [] };
       })()`);
       // Entry may fail before a rendered game frame exists. Retain a raw

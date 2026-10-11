@@ -384,18 +384,20 @@ is owned by chat `01a12b6b-d181-79b1-97b4-05de79523245`. First increment:
 `audio/frontier-feedback-v1` and `audio/runtime/frontier-feedback/v1` supply
 Worker selection/Wood Gather speech and Barracks/Town Center selection sounds.
 Default Main binding, exact HTTP admission and Docker/release inputs are implemented;
-**actual in-game output and listening remain incomplete**. Staging serves merged
-`b4ad36cf` and all 119 selected recordings are hash-verified over HTTP.
+**full-roster output and listening remain incomplete**. Staging serves merged
+`7d4a588c`; all 119 selected recordings and both background-loader modules are
+verified over HTTP. The user confirmed villager selection and wood-order speech
+after refreshing this identified staging deployment.
 The [first source/clean-pack receipt](qa-interaction-audio-2026-10-11.md) passes;
 The CLI rejected the branch push under `lbliii`; the user-corrected app check
 confirms write access for `lbeezr`. App publication succeeded in
 [PR638](https://github.com/lbeezr/thousand-unit-skirmish/pull/638), merged as `b4ad36cf`.
-The local second increment, [Worker action voices](../assets/audio/frontier-worker-actions-v1/README.md),
+The second increment, [Worker action voices](../assets/audio/frontier-worker-actions-v1/README.md),
 adds fourteen meanings with 28 assigned takes and advances the default to
 `audio/runtime/frontier-feedback/v2` (39 sources total). All 56 new originals and
 their provenance remain preserved. Exact admission, Docker inputs and default
-bindings are implemented; this does not change the missing deployment/listening
-evidence. The [third local increment](../assets/audio/frontier-roster-feedback-v1/README.md)
+bindings are implemented and deployed; its additional meanings still need
+listening acceptance. The [third increment](../assets/audio/frontier-roster-feedback-v1/README.md)
 adds the other seven role voices, eleven building selections and Worker/Skiff
 Return Cargo, with 253 preserved originals and 80 selected takes. Default
 `frontier-feedback/v3` contains 119 recordings / 85 bindings covering all eight
@@ -404,11 +406,14 @@ Docker inputs and identified staging delivery are verified; the owner next
 captures/listens to the full roster in ordinary gameplay. The
 existing prepared cloud capture covers only its four initial cases; it is not
 a full-roster acceptance receipt. Its first cloud execution failed before any
-recording; safe diagnostics and a correctly bounded load wait are the next action.
+recording. The worker/reconnect correction in PR639 now loads all 85 bindings in
+the actual packed game. Native Worker/Town Center starts are recorded; the next
+capture retains audio independently of a later syncing-screen rejection.
 Source `22c6d7fb` has a clean
 release and packed HTTP verification of all 119 recordings / 146 client modules,
 recorded in the same QA receipt, alongside merged `b4ad36cf` clean-pack and
-served-source receipts. Actual hearing remains incomplete.
+served-source receipts. Full building/roster hearing remains incomplete; the
+villager selection/Wood Gather pair has the user's staging confirmation.
 The older regional/pilot rows below retain their separate source/listening scope.
 
 | Package/family | Actual use and release | Incomplete work → owner / next action |
