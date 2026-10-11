@@ -105,7 +105,8 @@ run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio impor
 run(['--test', 'scripts/audio-building-selection.test.mjs'], 'Civilization fallback and authoritative building selection audio');
 run(['--test', 'scripts/audio-default-feedback.test.mjs', 'scripts/audio-shipped-worker.test.mjs'], 'Default interaction recordings and click-to-order speech');
 run(['--test', 'scripts/renderer-interaction-audio-scenario.test.mjs'], 'Ordinary interaction audio output receipt contracts');
-run(['--test', 'scripts/renderer-roster-audio-capture.test.mjs'], 'Bounded public staging roster audio and partial evidence contracts');
+run(['--test', 'scripts/renderer-roster-audio-capture.test.mjs', 'scripts/renderer-roster-audio-batch.test.mjs'], 'Bounded public staging roster audio and partial evidence contracts');
+run(['--test', 'scripts/renderer-hud-staging.test.mjs'], 'Bounded public staging HUD capture contracts');
 run(['--test', 'scripts/audio-composer-preview.test.mjs'], 'Audio composer preview resume cancellation and retry');
 run(['--test', 'scripts/audio-composer-wav.test.mjs'], 'Audio composer WAV read/decode diagnostics and retry');
 run(['--test', 'scripts/audio-composer-export-lifecycle.test.mjs'], 'Audio composer export completion ownership and retry');
@@ -351,6 +352,7 @@ run(['scripts/construction-selection-scenario.mjs'], 'Both-seat selected builder
 run(['--test', 'scripts/client-rematch-recovery.test.mjs'], 'Client roster and ownership after rematch');
 run(['--test', 'scripts/voluntary-endings.test.mjs', 'scripts/match-decisions-ui.test.mjs'], 'Voluntary match decisions and explicit player confirmation');
 run(['--test', 'scripts/client-camera-recovery.test.mjs'], 'Camera ownership through seat recovery');
+run(['--test', 'scripts/client-room-lookup.test.mjs'], 'Complete room lookup response before socket admission');
 run(['--test', 'scripts/unit-health-visual.test.mjs'], 'Visible damaged-unit health indicators');
 run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation settings and controls');
 

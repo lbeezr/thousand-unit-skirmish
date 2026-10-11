@@ -20,8 +20,8 @@ Reuse the ordinary Map Studio import/Save & Play path in a fresh anonymous
 staging room with a small fixture. Construct buildings and train units through
 paid gameplay; select and issue orders through native browser input. The cloud
 runner keeps normal sandboxing, default audio and real authoritative receipts.
-Separate bounded roster subsets preserve partial output and explicit missing
-keys; a partial run cannot establish full coverage. No debug command or direct
+Sequential bounded roster subsets reuse that one owned room and preserve
+partial output and explicit missing keys; a partial run cannot establish full coverage. No debug command or direct
 audio-play call may masquerade as an ordinary action. No staging credentials
 are copied into the cloud runner.
 
@@ -120,3 +120,41 @@ time without retaining private URLs so those failures can be diagnosed. The
 [served identity receipt](qa-evidence/interaction-audio-2026-10-11/roster-staging-96fd31f4.json)
 separately verifies that deployment and all 119 recordings; it does not claim
 a clean release digest or gameplay acceptance.
+
+
+### Capacity and one-room capture follow-through
+
+[Run 38162075786](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38162075786)
+used corrected fixture source `63c1fc57` against staging `448f1630`, passed
+capability and public source checks, then received HTTP 429 while creating its
+room. It never reached the corrected map and recorded zero interactions. The
+[failed attempt](qa-evidence/interaction-audio-2026-10-11/roster-third-cloud.json)
+and [separate served identity](qa-evidence/interaction-audio-2026-10-11/roster-staging-448f1630.json)
+are retained. Staging had eight saved rooms at its eight-room cap; the default
+idle lifetime is six hours. Existing rooms cannot safely be attributed to this
+attempt and are preserved.
+
+The user explicitly authorized a temporary tenth room slot for audio, following
+the HUD task's separate ninth-slot approval, and authorized a coordination
+message to that task. HUD run `38162536764` completed before the audio setting
+change; HUD leaves its expected nine for this transition. This audio owner must
+restore the configured and served cap to eight after the capture no longer
+needs ten, without deleting saved rooms. This is a temporary capacity change,
+not a new permanent room limit.
+
+The full roster now runs sequentially in one owned room. Each subset retains
+its 300-second deadline; native reload preserves the browser's own room session
+and resets capture instrumentation, then ordinary Studio import/Save & Play
+resets the authored map. No room code or session credential is retained in the
+artifacts. Lost entry/context stops the batch; individual cue or browser failures
+remain failed evidence even when later subsets can safely continue. Source
+hashes are checked around each subset to detect a deployment during the pass.
+
+The room lookup client now consumes its successful finite response body under
+the existing ten-second deadline before opening the socket, and rechecks stale
+attempt/navigation state afterward. This corrects an abandoned-response path;
+previous canceled requests remain failures, and this change alone does not prove
+their cause. Seven focused tests cover completion, interrupted bodies, stale
+attempts and unchanged 401/404/503 behavior. Longer paid training queues are
+observed in progress before recording is armed, retaining the existing
+30-second audio arm limit.

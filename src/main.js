@@ -10351,6 +10351,10 @@ async function connect() {
         return;
       }
       if (!response.ok) throw new Error('Room service is temporarily unavailable.');
+      // Finish the finite lookup response under the same deadline before
+      // opening the socket; leaving its body unread can be aborted later.
+      await response.arrayBuffer();
+      if (pageLeaving || attempt !== connectionAttempt) return;
     } catch {
       if (pageLeaving || attempt !== connectionAttempt) return;
       scheduleReconnect();

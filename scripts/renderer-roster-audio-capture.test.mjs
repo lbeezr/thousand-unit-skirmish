@@ -162,6 +162,43 @@ test('ordinary Save & Play reports a server rejection immediately and never proc
     assert.equal(stages.at(-1), 'save-and-play'); assert.ok(!stages.includes('frame-play-area'));
   } finally { dom.window.close(); }
 });
+test('reuse reloads only the same owned Studio room and waits for a new document', async () => {
+  const room = 'private'.padEnd(32, 'x'), calls = [], sentinel = new Error('stop before import');
+  const context = { URL, location: { href: `${STAGING_ORIGIN}/?room=${room}` },
+    performance: { timeOrigin: 10 }, window: { __rtsInteractionAudioSnapshot: () => ({ team: 0 }) },
+    document: { documentElement: { dataset: { entry: 'game' } }, querySelector: () => ({ open: true }) } };
+  const page = { cdp: {
+    evaluate: async expression => runInNewContext(expression, context),
+    call: async (method, args) => { calls.push({ method, args }); if (method === 'DOM.getDocument') throw sentinel; },
+  }, wait: async (expression, description) => {
+    if (description === 'same owned room reopens Studio') return true;
+    assert.equal(runInNewContext(expression, context), false, 'old document cannot satisfy reload');
+    context.performance.timeOrigin = 20;
+    assert.equal(runInNewContext(expression, context), true);
+    return true;
+  } };
+  const stages = [];
+  await assert.rejects(enterRosterRoom(page, STAGING_ORIGIN, rosterMap('unit-worker'), '/tmp/owned.json',
+    Buffer.from('{}'), async stage => stages.push(stage), true), error => error === sentinel);
+  assert.deepEqual(stages, ['owned-room-reload', 'import-map']);
+  assert.deepEqual(calls.map(call => call.method), ['Page.reload', 'DOM.getDocument']);
+  assert.ok(!JSON.stringify(calls).includes(room), 'private room stays inside the browser');
+});
+test('reuse refuses an unrelated origin, malformed room or different seat', async () => {
+  for (const [origin, room, studio, team] of [
+    ['https://other.test', 'x'.repeat(32), '1', 0],
+    [STAGING_ORIGIN, 'invalid', '1', 0], [STAGING_ORIGIN, 'x'.repeat(32), '1', 1],
+  ]) {
+    let calls = 0;
+    const page = { cdp: { evaluate: async expression => runInNewContext(expression, {
+      URL, location: { href: `${origin}/?room=${room}&studio=${studio}` },
+      window: { __rtsInteractionAudioSnapshot: () => ({ team }) },
+    }), call: async () => { calls++; } } };
+    await assert.rejects(enterRosterRoom(page, STAGING_ORIGIN, rosterMap('unit-worker'), '/tmp/owned.json',
+      Buffer.from('{}'), undefined, true));
+    assert.equal(calls, 0);
+  }
+});
 test('paid production includes real technology dependencies, population headroom and sufficient opening bank', () => {
   for (const kind of Object.keys(U)) {
     const steps = paidUnitPlan(kind), research = new Set(), buildings = new Set(['town-center']);

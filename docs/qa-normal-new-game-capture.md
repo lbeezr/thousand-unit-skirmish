@@ -90,9 +90,74 @@ The inspected failure PNG shows the real menu's initial unavailable/loading
 state; it establishes no game or HUD acceptance. The predicate now waits for an
 existing enabled control, with absent/disabled/enabled CPU regression coverage.
 Normal-entry game PNG acceptance and the broader HUD matrix remain **pending**.
+The corrected readiness check reached enabled New Game in
+[run 38161108989](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38161108989)
+at `96fd31f4946fc072b3c1da720e700fc40a85165c` (same release digest), then the
+legacy assertion rejected a precreated hidden game canvas. The inspected PNG
+shows the enabled menu without the battlefield. The observer now checks canvas
+visibility; CPU coverage distinguishes precreated hidden and visible canvases.
 Inspect every retained PNG at the exact reviewed source/release before claiming
 this interaction passed. Record admitted seeds/map/mode, served identity and
 Worker/command/feedback/displacement evidence. A supplied player-pathing
 reproduction needs its own map/units/destination record; this nearby Tiny Move
 does not establish broad pathing reliability. Gather/build/train, combat,
 both-seat Objectives, victory/rematch and unassisted first play remain open.
+
+## Staging rollout capture — 11 October 2026
+
+The HUD redesign owner retains a separate
+[manual staging workflow](../.github/workflows/hud-staging-capture.yml) and
+[runner](../scripts/renderer-hud-staging.mjs). It uses the same qualified,
+sandboxed Linux Chromium fixture, a fixed staging origin, fresh owned rooms,
+and no credentials or provider changes. It leaves the shared packed-loopback
+capture context unchanged. Each case is bounded to five minutes, serial within
+the run, with completed and failed screenshots retained before cleanup.
+
+The [scenario](../scripts/renderer-hud-staging-scenario.mjs) enters through the
+normal Map Studio menu, imports a disclosed 64 × 64 derivative of the existing
+mature-settlement fixture, then uses Save & Play, actual picks and enabled HUD
+controls. Buildings and production are paid ordinary actions; no runtime world,
+bank or command handler is changed. This authored-room entry is separate from
+the uninterrupted normal New Game proof above.
+
+| Case | Native interaction and images |
+| --- | --- |
+| `selections` | Worker, Build disclosure, military, confirmed Defensive stance, Shift-selected Worker/military mix, empty selection |
+| `buildings` | Town Center, paid Worker queue, paid completed Barracks, Infantry queue, research disclosure |
+| `panels` | Worker with Help, Settings and Objectives, then 1920 × 1080 and 1024 × 768 viewport captures |
+
+The runner verifies exact public HUD source/font file hashes before and after
+the case. Those hashes bind the visible code to the selected checkout; deployed
+revision and clean release digest deliberately remain separate provider evidence.
+Reports contain bounded numeric UI geometry, known state/action categories and
+image hashes. Room codes, query strings, tokens, headers and arbitrary errors are
+excluded. Passing execution means **captured-needs-review**, never an automatic
+appearance pass. Inspect every PNG against the approved
+[72px Obsidian specimen](art-direction/hud-design-system-2026-10-11/component-specimen.html)
+and retain defects, visible clipping/overlap and unresolved coverage.
+
+This first bounded matrix covers seat 0 at DPR 1. Both-seat behavior, Skiffs,
+wildlife/carcasses, land/water mixes, large UI scale, recovery, long queues,
+shortages, lifecycle and victory remain explicit follow-up coverage. It creates
+no new player-facing presentation and changes no server or access configuration.
+
+The first staging dispatch,
+[run 38161563912](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38161563912),
+passed sandboxed WebGL2 but all three cases stopped at room creation with HTTP
+429. The public status read confirmed 8 saved rooms against a limit of 8; no
+existing rooms were changed. The user authorized a temporary staging limit of 9.
+`all` now runs the three groups sequentially in one fresh owned `rollout` room,
+within the existing five-minute deadline, so this check consumes only one slot.
+The HUD owner restores the limit to 8 afterward. The extra saved test room uses
+ordinary idle expiry; reducing the limit does not delete saved rooms.
+
+The separate normal-entry
+[run 38161591020](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38161591020)
+at `448f163092be4e4247fd57ec5b8857be9b590f4e` (same clean release digest above)
+reached Tiny Terraced Vale and native Worker selection. Its reviewed images show
+the 72px Worker portrait and six primary actions without visible clipping at
+1280 × 720, but also `SYNCING CURRENT STATE`; the selection image disables orders
+while reconnecting. The shared synchronized checkpoint failed before Move, and
+two canceled room-API fetches remain unresolved. This is partial appearance
+evidence, **not an interaction pass**. HUD retains the ordinary-entry follow-up;
+no recovery or browser-error gate is weakened to accept these frames.
