@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "revision": "92b2288d8c3c41b0f706d8d7096e47e654b4ca28",
+    "digest": "sha256:d21088cbeb9ae60685c092982f8feb4eb54ff3e4f758fbda05eed36a71b90f64"
+  },
+  "mapId": "veyrholds-terraced-vale",
+  "status": "failed",
+  "recordings": [
+    {
+      "key": "building.town-center.select",
+      "file": "town-center-click.webm",
+      "sha256": "b3cf862a4cf87eb6b674c93a1131b0631cd2b1d1c7ba6f327655f0114b3a91ff",
+      "sourceSha256": "3453ea7bf7a57578fdbe1fbc7680340c7a26b75bc2caa8ab5c891ad45dd33f23",
+      "peak": 0.005733142606914043,
+      "rms": 0.0023723967038295143,
+      "elapsedMs": 8354.799999999988,
+      "settings": {
+        "enabled": true,
+        "captions": false,
+        "volume": 0.5,
+        "effectsLevel": 1,
+        "voiceLevel": 1,
+        "musicLevel": 1,
+        "ambience": true,
+        "ambienceLevel": 1
+      }
+    },
+    {
+      "key": "unit.worker.select",
+      "file": "worker-click.webm",
+      "sha256": "71058f02efcab55c1db398662acaf204ff85e15dcca04164122a03ba266d8f4f",
+      "sourceSha256": "5aaf6e689ce1b4acc3fb9c6e16c0857018eba66dd7f0d17e6bfee7c706bf93e5",
+      "peak": 0.024936867877840996,
+      "rms": 0.009956677239115846,
+      "elapsedMs": 8238.600000000006,
+      "settings": {
+        "enabled": true,
+        "captions": false,
+        "volume": 0.5,
+        "effectsLevel": 1,
+        "voiceLevel": 1,
+        "musicLevel": 1,
+        "ambience": true,
+        "ambienceLevel": 1
+      }
+    }
+  ],
+  "issues": [
+    {
+      "stage": "worker-wood-order",
+      "code": "interaction-audio-capture-failed",
+      "reason": "wait-timeout",
+      "errorType": "Error"
+    },
+    {
+      "stage": "worker-wood-order",
+      "code": "failure-diagnostic-unavailable"
+    }
+  ],
+  "listeningReview": "pending",
+  "diagnostic": {
+    "entry": "game",
+    "boot": "ready",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "newGame": {
+      "disabled": true,
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "probe": true,
+    "faults": [],
+    "mapId": "veyrholds-terraced-vale",
+    "team": 0,
+    "observationAgeMs": 0.5,
+    "audioStatus": "running",
+    "packStatus": "Audio pack The Veyrholds regional soundscape ready. Shipped content loads automatically for both players.",
+    "bindingCount": 85,
+    "decisions": [
+      {
+        "cue": "select",
+        "key": "unit.worker.select",
+        "outcome": "resolved"
+      },
+      {
+        "cue": "select",
+        "key": "unit.worker.select",
+        "outcome": "sample scheduled"
+      },
+      {
+        "cue": "select",
+        "key": "building.town-center.select",
+        "outcome": "resolved"
+      },
+      {
+        "cue": "select",
+        "key": "building.town-center.select",
+        "outcome": "sample scheduled"
+      },
+      {
+        "cue": "select",
+        "key": "unit.worker.select",
+        "outcome": "resolved"
+      },
+      {
+        "cue": "select",
+        "key": "unit.worker.select",
+        "outcome": "sample scheduled"
+      }
+    ],
+    "nativeStarts": [
+      {
+        "sha256": "198c2acfc9f4b3f3bc8da8cd0b2c2314341449badc4296cd56c86f5b86895e00",
+        "time": 43131.30000000002,
+        "duration": 30
+      },
+      {
+        "sha256": "2a4426d0ae22f3c2525f4ea3a50abb0174989f08b11105f70d55d9f3844cd3e2",
+        "time": 43135.399999999994,
+        "duration": 29.99997732426304
+      },
+      {
+        "sha256": "3453ea7bf7a57578fdbe1fbc7680340c7a26b75bc2caa8ab5c891ad45dd33f23",
+        "time": 62136.80000000002,
+        "duration": 2
+      },
+      {
+        "sha256": "2a4426d0ae22f3c2525f4ea3a50abb0174989f08b11105f70d55d9f3844cd3e2",
+        "time": 75916.1,
+        "duration": 29.99997732426304
+      },
+      {
+        "sha256": "198c2acfc9f4b3f3bc8da8cd0b2c2314341449badc4296cd56c86f5b86895e00",
+        "time": 75916.30000000002,
+        "duration": 30
+      },
+      {
+        "sha256": "2a4426d0ae22f3c2525f4ea3a50abb0174989f08b11105f70d55d9f3844cd3e2",
+        "time": 103017.70000000001,
+        "duration": 29.99997732426304
+      },
+      {
+        "sha256": "198c2acfc9f4b3f3bc8da8cd0b2c2314341449badc4296cd56c86f5b86895e00",
+        "time": 103017.80000000002,
+        "duration": 30
+      },
+      {
+        "sha256": "5aaf6e689ce1b4acc3fb9c6e16c0857018eba66dd7f0d17e6bfee7c706bf93e5",
+        "time": 103020.6,
+        "duration": 1.253877551020408
+      },
+      {
+        "sha256": "2a4426d0ae22f3c2525f4ea3a50abb0174989f08b11105f70d55d9f3844cd3e2",
+        "time": 130431.80000000002,
+        "duration": 29.99997732426304
+      },
+      {
+        "sha256": "198c2acfc9f4b3f3bc8da8cd0b2c2314341449badc4296cd56c86f5b86895e00",
+        "time": 130431.80000000002,
+        "duration": 30
+      },
+      {
+        "sha256": "2a4426d0ae22f3c2525f4ea3a50abb0174989f08b11105f70d55d9f3844cd3e2",
+        "time": 163277.80000000002,
+        "duration": 29.99997732426304
+      },
+      {
+        "sha256": "198c2acfc9f4b3f3bc8da8cd0b2c2314341449badc4296cd56c86f5b86895e00",
+        "time": 163277.9,
+        "duration": 30
+      }
+    ],
+    "recording": {
+      "phase": "armed",
+      "armedAt": 144306.30000000002,
+      "beganAt": null,
+      "endedAt": null,
+      "ready": false
+    },
+    "workers": [
+      {
+        "id": 0,
+        "selected": true,
+        "point": {
+          "x": 577.1681352672925,
+          "y": 373.671823765455
+        }
+      },
+      {
+        "id": 1,
+        "selected": false,
+        "point": {
+          "x": 600.8716701201656,
+          "y": 390.55978374735076
+        }
+      },
+      {
+        "id": 2,
+        "selected": false,
+        "point": {
+          "x": 557.7743340240329,
+          "y": 387.48924556882423
+        }
+      },
+      {
+        "id": 3,
+        "selected": false,
+        "point": {
+          "x": 581.477868876906,
+          "y": 404.37720555072
+        }
+      }
+    ],
+    "buildings": [
+      {
+        "id": 1000000000,
+        "type": "town-center",
+        "complete": true,
+        "selected": false,
+        "point": {
+          "x": 546.9999999999997,
+          "y": 372.94531250000006
+        },
+        "bounds": {
+          "left": 462.7621980610212,
+          "right": 631.2378019389781,
+          "top": 269.78632004577946,
+          "bottom": 475.3558612732048
+        }
+      }
+    ]
+  },
+  "downloads": []
+}

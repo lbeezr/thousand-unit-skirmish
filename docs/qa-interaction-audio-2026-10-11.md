@@ -7,6 +7,11 @@ retains the full goal; this receipt covers the first four meanings, the fourteen
 Worker action/readiness meanings and the subsequent 67 current-roster meanings.
 Source coverage does not close deployment or listening acceptance.
 
+Current acceptance: the user has confirmed villager selection, Wood Gather,
+Town Center and Barracks sounds on staging. All 119 default recordings are served
+and hash-verified at `3a68649d`. The remaining roster/building listening is open;
+the cloud case has two complete recordings but is not an overall pass.
+
 ## Source and delivery identity
 
 | Boundary | Observation |
@@ -192,6 +197,41 @@ any native-output file is saved. The shared CDP helper limits an awaited call to
 45-second bound before retrieving the resolved value. Separate schedule/output/
 receipt stages and recorder state make that hypothesis diagnosable; no passing
 recording or exact timeout cause is inferred from this run.
+
+### Retained native output and four confirmed meanings
+
+The next [cloud run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38157939526)
+at `92b2288d8c3c41b0f706d8d7096e47e654b4ca28` retains complete actual game output:
+[Town Center selection](qa-evidence/interaction-audio-2026-10-11/recorded-cloud/town-center-click.webm)
+and [Worker selection](qa-evidence/interaction-audio-2026-10-11/recorded-cloud/worker-click.webm).
+The [case receipt](qa-evidence/interaction-audio-2026-10-11/recorded-cloud/interaction-audio.json)
+binds each WebM hash to its expected source hash, full native playback interval,
+nonzero output meter and unchanged default mix (volume 0.5, captions off).
+The intervals are 8.35 and 8.24 seconds on this slow software renderer. The later
+wood-order step timed out before an accepted-order response; the three-minute
+case deadline then ended the run. The [qualification](qa-evidence/interaction-audio-2026-10-11/recorded-cloud/qualification.json)
+also retains canceled room-API fetches. No final screenshot or overall browser
+pass is claimed. The clean runtime digest remains
+`sha256:d21088cbeb9ae60685c092982f8feb4eb54ff3e4f758fbda05eed36a71b90f64`.
+These artifacts establish recorded output, not an editorial listening judgment.
+
+The user subsequently answered **“Yes, both buildings play sounds”** when asked
+whether Town Center and Barracks each play a distinct sound on the same staging
+site. Together with the earlier villager selection/Wood Gather confirmation,
+the first four meanings have human playback acceptance. A new page revision
+was not read from the user's browser after each later deployment; do not turn
+this into a claim that they rechecked every subsequent source revision.
+
+[PR642](https://github.com/lbeezr/thousand-unit-skirmish/pull/642) merged the capture
+fix as `3a68649d2ae74d7b095014ed3770cabfee03a939`, including the separately merged
+building HUD. At this merged source, 201 focused audio/HUD/capture tests, both
+type projects and documentation checks pass. Staging deployment
+`cf0ee0f5-b137-4a20-9d64-7c622fe5e85c` is SUCCESS; its
+[served receipt](qa-evidence/interaction-audio-2026-10-11/staging-verification-served.json)
+verifies that exact source, all 119 recordings, 139 discovered client modules
+and both unchanged worker modules. Railway runtime digest/cleanliness remain
+unknown and separate from the earlier cloud pack. Broader roster/building
+listening, rapid-order mix and solo/human 1v1 acceptance remain with this owner.
 
 The staging HTTP check passed source `b4ad36cf`, public gameplay/readiness and
 protected health, default v3 manifest/source verification (119 recordings),

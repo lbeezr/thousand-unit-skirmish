@@ -385,9 +385,11 @@ is owned by chat `01a12b6b-d181-79b1-97b4-05de79523245`. First increment:
 Worker selection/Wood Gather speech and Barracks/Town Center selection sounds.
 Default Main binding, exact HTTP admission and Docker/release inputs are implemented;
 **full-roster output and listening remain incomplete**. Staging serves merged
-`7d4a588c`; all 119 selected recordings and both background-loader modules are
+`3a68649d`; all 119 selected recordings and both background-loader modules are
 verified over HTTP. The user confirmed villager selection and wood-order speech
-after refreshing this identified staging deployment.
+after refreshing staging for the loading fix, followed by Town Center and
+Barracks selection sounds. This hearing confirmation does not identify a fresh
+page revision after every later deployment; the served-byte receipts are separate.
 The [first source/clean-pack receipt](qa-interaction-audio-2026-10-11.md) passes;
 The CLI rejected the branch push under `lbliii`; the user-corrected app check
 confirms write access for `lbeezr`. App publication succeeded in
@@ -407,13 +409,14 @@ captures/listens to the full roster in ordinary gameplay. The
 existing prepared cloud capture covers only its four initial cases; it is not
 a full-roster acceptance receipt. Its first cloud execution failed before any
 recording. The worker/reconnect correction in PR639 now loads all 85 bindings in
-the actual packed game. Native Worker/Town Center starts are recorded; the next
-capture retains audio independently of a later syncing-screen rejection.
+the actual packed game. Complete native Worker/Town Center output is now retained
+at cloud source `92b2288d`; the later wood-order step timed out and the overall
+case remains failed. See the linked QA receipt for both recordings and limits.
 Source `22c6d7fb` has a clean
 release and packed HTTP verification of all 119 recordings / 146 client modules,
 recorded in the same QA receipt, alongside merged `b4ad36cf` clean-pack and
 served-source receipts. Full building/roster hearing remains incomplete; the
-villager selection/Wood Gather pair has the user's staging confirmation.
+villager selection/Wood Gather and Town Center/Barracks have the user's staging confirmation.
 The older regional/pilot rows below retain their separate source/listening scope.
 
 | Package/family | Actual use and release | Incomplete work → owner / next action |
