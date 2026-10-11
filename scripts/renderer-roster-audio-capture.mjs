@@ -470,6 +470,11 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
       await gatherNode('audio-sheep');
       await page.wait('window.__rtsEnvironmentStateSnapshot.resourceNodes.some(n => n.id === "audio-sheep" && n.wildlifeState === "carcass" && n.stock > 0)', 'ordinary harvest creates disclosed carcass', 45000);
       await key(page, 's');
+      await page.wait(`(() => { const u=window.__rtsBrowserRecoverySnapshot().worker;
+        return u?.id === ${JSON.stringify(worker.id)} && u.task === 'idle'; })()`, 'ordinary Stop applies before carcass order');
+      // Stop and Gather share voice priority. Let the real 1,250 ms speech
+      // cooldown pass before testing the next response; never advance clocks.
+      await new Promise(resolve => setTimeout(resolve, 1350));
       await record('unit.worker.gather.sheep-carcass', () => gatherNode('audio-sheep'));
     } else if (plan.kind) {
       let trainedUnitId = null;
