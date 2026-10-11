@@ -24,8 +24,12 @@ Railway `5ae7146d-a47e-46bc-ae0d-e6e76ffed345`, with 190 focused checks,
 independent review, clean packaging and matching actual client response hashes:
 [receipt](qa-evidence/building-hud-2026-10-11/staging-receipt.json).
 Army/mixed/Skiff PR646 merged at `3310f31c` with 196 focused checks and independent
-review. Remaining in-match surfaces and wildlife have 186 focused checks
-([receipt](qa-evidence/match-ui-2026-10-11/focused-checks.json)).
+review and [staged source/bytes](qa-evidence/unit-hud-2026-10-11/staging-receipt.json).
+Remaining in-match surfaces and wildlife have 186 focused checks
+([receipt](qa-evidence/match-ui-2026-10-11/focused-checks.json)), merged PR647 and
+[staged source/bytes at `3886719f`](qa-evidence/match-ui-2026-10-11/staging-receipt.json).
+The complete containing rollout has 141 resolving client imports and 16 matching
+actual response hashes; normal-game appearance is still unobserved.
 The continuation and normal-game matrix are owned in the
 [HUD checkpoint](hud-controls-backlog.md#army-mixed-selection-and-skiffs--11-october-2026).
 Source, DOM and served-byte evidence do not claim rendered appearance; the

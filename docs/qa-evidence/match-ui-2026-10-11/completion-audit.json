@@ -1,0 +1,88 @@
+{
+  "auditedMain": "f0817e6e221d093e03c7fe92debca9440f5a0e19",
+  "verifiedContainingSource": "3886719fae1f1a388ca4a8d3b94370c971a3307d",
+  "owner": "HUD redesign chat 01a12b67-645a-7a33-8fb2-8e8979756ac1",
+  "requirements": [
+    {
+      "requirement": "Approved 72px Obsidian adoption across selected buildings, army, mixed units and Skiffs",
+      "status": "source and delivery proven; rendered acceptance open",
+      "evidence": [
+        "src/client/hud/selection-hud.css",
+        "src/client/hud/building-hud.mjs",
+        "src/client/hud/unit-hud.mjs",
+        "index.html",
+        "staging-receipt.json"
+      ]
+    },
+    {
+      "requirement": "Stable global navigation and authoritative gameplay consumer reuse",
+      "status": "source and focused DOM/command evidence proven; native input/layout acceptance open",
+      "evidence": [
+        "src/main.js",
+        "scripts/contextual-hud.test.mjs",
+        "../unit-hud-2026-10-11/focused-checks.json"
+      ]
+    },
+    {
+      "requirement": "Preserved visual backing",
+      "status": "proven",
+      "evidence": [
+        "docs/ui-design-system.md",
+        "docs/art-direction/hud-design-system-2026-10-11/README.md",
+        "docs/art-direction/hud-design-system-2026-10-11/component-specimen.html"
+      ]
+    },
+    {
+      "requirement": "Focused checks and independent review",
+      "status": "proven within stated scope; no full-suite claim",
+      "evidence": [
+        "../building-hud-2026-10-11/focused-checks.json",
+        "../unit-hud-2026-10-11/focused-checks.json",
+        "focused-checks.json"
+      ],
+      "pullRequests": [
+        644,
+        646,
+        647
+      ]
+    },
+    {
+      "requirement": "Integration, clean packaging and staging delivery",
+      "status": "proven at identified revisions",
+      "evidence": [
+        "../building-hud-2026-10-11/staging-receipt.json",
+        "../unit-hud-2026-10-11/staging-receipt.json",
+        "staging-receipt.json"
+      ]
+    },
+    {
+      "requirement": "Remaining in-match UI coverage explicit",
+      "status": "implemented and staged; rendered acceptance open",
+      "evidence": [
+        "src/client/hud/match-ui.css",
+        "src/client/hud/wildlife-hud.mjs",
+        "docs/hud-controls-backlog.md"
+      ],
+      "exclusions": [
+        "Front-door main menu portal",
+        "Editing studios"
+      ],
+      "fallbacks": [
+        "Skiff text fallback",
+        "Food glyph for Sheep/carcass",
+        "Building symbols when matching portrait art is unavailable"
+      ]
+    },
+    {
+      "requirement": "Ordinary-game in-game verification retained by implementation owner",
+      "status": "incomplete; blocked by existing specific hosted capture/sign-in decision",
+      "evidence": [
+        "docs/qa-normal-new-game-capture.md:80",
+        "docs/renderer-qualification.md:96"
+      ],
+      "nextAction": "User lifts the specific capture/sign-in pause; HUD owner performs the documented both-seat action/viewport matrix through the approved route at an identified containing build."
+    }
+  ],
+  "complete": false,
+  "sourceOrDomEvidenceSubstitutesForVisualAcceptance": false
+}
