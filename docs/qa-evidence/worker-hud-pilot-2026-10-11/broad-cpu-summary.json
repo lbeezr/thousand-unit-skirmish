@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "lane": "full",
+  "shard": {
+    "index": 1,
+    "count": 1
+  },
+  "source": {
+    "revision": "f80793d1f20f247daaf84540e9ae3ac0acd445ea",
+    "dirty": true
+  },
+  "status": "failed",
+  "selectedCount": 1511,
+  "laneCount": 1511,
+  "passedCount": 1170,
+  "unrunCount": 340,
+  "fullCpuSuitePassed": false,
+  "lastCheck": {
+    "label": "Worker work receipt commands, client frames, exhausted repair delivery and recovery",
+    "status": "failed",
+    "exitCode": null,
+    "reason": "Check exited unknown (SIGINT)."
+  },
+  "interpretation": "Intentionally interrupted after focused pilot checks, review, packaging and local served identity passed. This is not a full-suite pass or a discovered gameplay regression.",
+  "implementationRevision": "e0b8c5dab8fa33fd0a3178598705354ef1f8f34f",
+  "sourceNote": "The broad run began with the review corrections uncommitted. The clean implementation revision and focused/HTTP evidence are recorded separately."
+}

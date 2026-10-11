@@ -1,0 +1,129 @@
+{
+  "revision": "e0ced8ad21081cdbd221561b784f16575035e5da",
+  "bytes": 841287,
+  "sha256": "4c3851cc2c2fd91b41bc64bb6aa92e0625671985f2ee0ecb4ea868b3fad5cb4c",
+  "inputs": {
+    "src/gameplay-definitions.mjs": "d6fdbf89268ec11e36ea9e671180c33353a7a4c6bb4f6d1d7077856b9ae9b46f",
+    "src/combat-stance-ui.mjs": "691a1ad29d9e610b6bb39bd6199c946d55dd52f95641bcb38bf434360f9fe8f4",
+    "src/selection-portrait.mjs": "4f6944a8da29232c801e18bf2d8fd24cd8627d3e5edb905e020c2a91fe800051",
+    "src/rules/production-actions.mjs": "6fa320992cc8ea4ff3733140e8d2cffa23335437033586925521152e08d4136b",
+    "src/rules/research-actions.mjs": "bb34fa066cb0fb09c99f91670f9d4bb8d05b7acef92f8f632ff4363d2efa3db3",
+    "src/rules/gameplay-action-rules.mjs": "7750cba6b1fec8f218fe53f52e64648db43894a973c8d117b5da0da1f83a14ca",
+    "src/rules/base-lifecycle.mjs": "70adeb69b5c9fba27d830f7bc9c81d683d8f3c5c77ef62a49bb5632f92aadfe3",
+    "src/palisade-profile.mjs": "76066571828f6eadf40869eb5150b74d2908a21e580db26d990656ccf1abc1c0",
+    "src/farm-harvest.mjs": "1495e02a93eb52ad1e746e85977275c0e3aa80c9d072cf43c16f931baf058bb8",
+    "src/main.js": "00905f1b013ec99c79952f43a47e4e7d36689453ca7a3c477fc9533428df6307",
+    "server.mjs": "1061e609d2e888e459ad77d5a46314a95ae14df54686a29c5b082ddc85cc1132",
+    "index.html": "1ac149cbf5d607a3c4b7d068874daf6d3e8205d3edd1b289b6dfb41c56017dcc"
+  },
+  "facts": {
+    "revision": "e0ced8ad21081cdbd221561b784f16575035e5da",
+    "queueLimit": 5,
+    "carryCapacity": 10,
+    "bindings": {
+      "patrol": "P",
+      "follow": "F",
+      "stop": "S",
+      "hold": "H",
+      "attack": "M"
+    },
+    "formations": [
+      {
+        "id": "box",
+        "label": "Box"
+      },
+      {
+        "id": "line",
+        "label": "Line"
+      },
+      {
+        "id": "column",
+        "label": "Column"
+      }
+    ],
+    "stances": [
+      {
+        "id": "aggressive",
+        "label": "Aggressive",
+        "hint": "Military only: acquire visible enemies within 4.8 cells; pursue up to 8 cells from the anchor."
+      },
+      {
+        "id": "defensive",
+        "label": "Defensive",
+        "hint": "Military only: acquire within 3 cells or weapon range; travel up to 3 cells from the anchor, then return."
+      },
+      {
+        "id": "standGround",
+        "label": "Stand ground",
+        "hint": "Military only: acquire in weapon range; never chase, even with focused Attack."
+      },
+      {
+        "id": "noAttack",
+        "label": "No attack",
+        "hint": "Military only: no automatic acquisition; explicit focused Attack still works."
+      }
+    ],
+    "portraits": {
+      "worker": {
+        "entryId": "unit.worker",
+        "appearanceFamily": "Human",
+        "asset": "/assets/ui/portraits/human-worker-source.png",
+        "sourceWidth": 1774,
+        "cropX": 970,
+        "cropY": 0,
+        "cropSize": 270
+      },
+      "infantry": {
+        "entryId": "unit.infantry",
+        "appearanceFamily": "Human",
+        "asset": "/assets/ui/portraits/human-infantry-source.png",
+        "sourceWidth": 1774,
+        "cropX": 970,
+        "cropY": 0,
+        "cropSize": 310
+      }
+    }
+  },
+  "scope": "Actual registered definitions and rule functions, simulated match fixtures. No gameplay network, geometry, production HUD integration or deployment.",
+  "fragment": {
+    "name": "hud-component-specimen.html",
+    "bytes": 841287,
+    "sha256": "4c3851cc2c2fd91b41bc64bb6aa92e0625671985f2ee0ecb4ea868b3fad5cb4c"
+  },
+  "standalone": {
+    "name": "component-specimen.html",
+    "bytes": 935987,
+    "sha256": "a3794b916649599e706c832f7e4b2ea7f915b49054bcea37a79141b649742965"
+  },
+  "studyInputs": {
+    "src/studies/hud-component-specimen/build.mjs": {
+      "bytes": 4773,
+      "sha256": "f77a7f5f0d855f546c72bac4628b266afc9ab4e1f09a32f15835862955ad1c0e"
+    },
+    "src/studies/hud-component-specimen/runtime.js": {
+      "bytes": 25090,
+      "sha256": "fdf414db3e665030f350c2f310b8803cbc04fd47f27e9ee623fd2b478f18b277"
+    },
+    "src/studies/hud-component-specimen/specimen.html": {
+      "bytes": 14697,
+      "sha256": "85b4ca765f0dd12ab29bc7a2723382b1efee8e831986fc3f5a8a037d416949fc"
+    },
+    "src/studies/hud-component-specimen/assets/barracks.png": {
+      "bytes": 51175,
+      "sha256": "9044b95858dc09f82929cb293d20a7325849946dfdcc428effbfc0619db852c1"
+    },
+    "src/studies/hud-component-specimen/assets/battlefield.jpg": {
+      "bytes": 292098,
+      "sha256": "aef5941c597a113631ea2d4aa8f06e3e3c859733bab091a86246ed0e97bbf43e"
+    },
+    "src/studies/hud-component-specimen/assets/infantry.png": {
+      "bytes": 126250,
+      "sha256": "486e20805ab431c810489077ab2465ad06782d277034fcbafca9e86e89182ec4"
+    },
+    "src/studies/hud-component-specimen/assets/worker.png": {
+      "bytes": 114213,
+      "sha256": "4973832c7521843762f30ec25747738770b4b04ecb8a68f566f2670929c99950"
+    }
+  },
+  "artProvenance": "src/studies/hud-component-specimen/README.md#art-sources"
+}

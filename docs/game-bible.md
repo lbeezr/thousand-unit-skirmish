@@ -193,6 +193,17 @@ detail drawer retains selection and returns focus to an available command.
 Resources, population, minimap and independent urgent feedback stay outside
 that visibility switch. See the [contextual HUD contract](contextual-hud-validation.md).
 
+The intended redesign makes the selected entity the organizing principle: a
+Worker foregrounds its task, cargo and applicable actions; a Barracks foregrounds
+its own production, queue, research and rally. Global economy and navigation stay
+stable, while unrelated entity actions leave the selection area. The
+[11 October design-system plan](ui-design-system.md) develops this intent
+from interactive studies. The user approved the Obsidian Worker pilot with a
+72px portrait. Its default client binding is implemented; the
+[HUD checkpoint](hud-controls-backlog.md#worker-pilot--11-october-2026) records
+local trial delivery and the remaining hosted/ordinary-game acceptance.
+Barracks and broader visual coverage remain later slices.
+
 Left-click or drag on the tactical map navigates the camera. Right-click moves
 only the living selected units owned by the player; Shift plus right-click
 queues a destination. These are ground movement orders, including in unexplored

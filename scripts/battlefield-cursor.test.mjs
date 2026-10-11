@@ -36,3 +36,15 @@ test('selection modifier and idle states', () => {
   assert.equal(cursor({ ...selected, shift: true, friendly: true, alreadySelected: true }), 'select-remove');
   assert.equal(cursor({ ...selected, shift: true, friendly: true, armed: true }), 'move-queued');
 });
+
+test('explicit Worker actions keep hover feedback consistent with their target contract', () => {
+  const worker = { canOrder: true, count: 1, workers: true, armed: true };
+  assert.equal(cursor({ ...worker, workerTargetMode: 'move', enemy: true, shift: true }), 'move-queued');
+  assert.equal(cursor({ ...worker, workerTargetMode: 'repair', enemy: true }), 'unavailable');
+  assert.equal(cursor({ ...worker, workerTargetMode: 'repair', repairTarget: true }), 'build-valid');
+  assert.equal(cursor({ ...worker, workerTargetMode: 'gather', enemy: true }), 'unavailable');
+  assert.equal(cursor({ ...worker, workerTargetMode: 'gather', resource: 'wood' }), 'gather-wood');
+  assert.equal(cursor({ ...worker, workerTargetMode: 'gather', forest: true }), 'gather-wood');
+  assert.equal(cursor({ ...worker, workerTargetMode: 'gather', resource: 'food' }), 'gather');
+  assert.equal(cursor({ ...worker, workerTargetMode: 'repair', repairTarget: true, panning: true }), 'panning');
+});

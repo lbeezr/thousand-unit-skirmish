@@ -1,0 +1,114 @@
+<div id="hud-component-specimen">
+  <div class="viz-carousel" aria-label="HUD portrait treatments">
+    <section data-variant="Compact · 52px" aria-label="Compact portrait specimen"><div class="hs-shell" data-treatment="compact"></div></section>
+    <section data-variant="Expressive · 72px" aria-label="Larger portrait specimen" hidden><div class="hs-shell" data-treatment="expressive"></div></section>
+  </div>
+</div>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=DM+Sans:wght@400;500;600;700&display=swap');
+#hud-component-specimen .hs-shell{--hs-base:#101a22;--hs-raised:#17252e;--hs-hover:#23333d;--hs-text:#f2f4ee;--hs-muted:#b2c1c5;--hs-accent:#a4e7c5;--hs-line:#38505a;--hs-warning:#edc77c;--hs-danger:#ec8d83;--hs-team:#5aa7d7;--hs-portrait:52px;color:var(--hs-text);background:var(--hs-base);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.4;color-scheme:dark;border-radius:3px;overflow:hidden}
+#hud-component-specimen .hs-shell[data-treatment="expressive"]{--hs-portrait:72px}
+#hud-component-specimen .hs-shell *{box-sizing:border-box}
+#hud-component-specimen [hidden]{display:none!important}
+#hud-component-specimen button,#hud-component-specimen select{font:inherit;color:inherit}
+#hud-component-specimen button{border:1px solid var(--hs-line);background:var(--hs-raised);border-radius:2px;min-height:34px;padding:6px 10px;transition:background 120ms,border-color 120ms}
+#hud-component-specimen button:hover{background:var(--hs-hover);border-color:var(--hs-accent)}
+#hud-component-specimen button[aria-pressed="true"]{background:#263e3c;border-color:var(--hs-accent);color:var(--hs-accent)}
+#hud-component-specimen button[aria-disabled="true"]{color:var(--hs-muted);background:var(--hs-base);border-color:#30424c}
+#hud-component-specimen button:focus-visible,#hud-component-specimen select:focus-visible{outline:2px solid var(--hs-accent);outline-offset:3px}
+#hud-component-specimen select{background:var(--hs-raised);border:1px solid var(--hs-line);border-radius:2px;min-height:34px;padding:4px 22px 4px 7px;max-width:100%}
+#hud-component-specimen .hs-review{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--hs-line)}
+#hud-component-specimen .hs-review-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;letter-spacing:.02em;font-weight:500}
+#hud-component-specimen .hs-review-label{font-size:12px;color:var(--hs-muted);margin-left:8px}
+#hud-component-specimen .hs-state-label{display:flex;gap:7px;align-items:center;font-size:12px;color:var(--hs-muted)}
+#hud-component-specimen .hs-field{position:relative;isolation:isolate;min-height:530px;display:flex;flex-direction:column;background-size:cover;background-position:center 42%}
+#hud-component-specimen .hs-field:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#0a151d12 10%,#08121b26 50%,#08121bcc 100%);pointer-events:none}
+#hud-component-specimen .hs-shell[data-light="dusk"] .hs-field:before{background:#0816248c}
+#hud-component-specimen .hs-match{display:flex;justify-content:space-between;align-items:start;gap:10px;padding:14px 16px;pointer-events:none}
+#hud-component-specimen .hs-resources{display:flex;gap:17px;align-items:center;background:#101a22f5;padding:8px 13px;border-top:2px solid var(--hs-team);font-variant-numeric:tabular-nums}
+#hud-component-specimen .hs-resource{display:flex;gap:6px;align-items:center;white-space:nowrap}
+#hud-component-specimen .hs-resource img{width:18px;height:18px}
+#hud-component-specimen .hs-resource small{color:var(--hs-muted);font-size:12px}
+#hud-component-specimen .hs-over-cap{color:var(--hs-warning)}
+#hud-component-specimen .hs-mode{font-size:12px;background:#101a22ed;padding:8px 10px;max-width:210px}
+#hud-component-specimen .hs-mode span{display:block;color:var(--hs-muted);font-size:11px;margin-top:2px}
+#hud-component-specimen .hs-selectors{display:flex;gap:6px;flex-wrap:wrap;align-self:center;background:#101a22e8;padding:6px;margin:12px 16px 0;max-width:calc(100% - 32px)}
+#hud-component-specimen .hs-selectors button{background:transparent;font-size:13px}
+#hud-component-specimen .hs-target-area{flex:1;min-height:110px;display:flex;align-items:center;justify-content:center;padding:18px 16px 12px;position:relative}
+#hud-component-specimen .hs-target{background:#101a22f5;border-color:var(--hs-accent);box-shadow:0 5px 28px #0005;display:flex;align-items:center;gap:9px;max-width:100%;text-align:left}
+#hud-component-specimen .hs-target img{width:22px;height:22px}
+#hud-component-specimen .hs-target small{display:block;color:var(--hs-muted);font-size:12px;margin-top:3px}
+#hud-component-specimen .hs-feedback{background:#101a22f2;max-width:440px;padding:8px 13px;font-size:13px;text-align:center;color:var(--hs-accent)}
+#hud-component-specimen .hs-feedback[data-error="true"]{color:var(--hs-warning)}
+#hud-component-specimen .hs-lower{margin:0 16px 14px;display:flex;gap:12px;align-items:flex-end;position:relative}
+#hud-component-specimen .hs-map{width:112px;height:112px;flex:none;background:#102129e8;border:1px solid #62766d;position:relative;overflow:hidden}
+#hud-component-specimen .hs-map img{width:100%;height:100%;object-fit:cover;filter:brightness(.55) saturate(.55)}
+#hud-component-specimen .hs-map-frame{position:absolute;inset:30% 20% 20% 26%;border:1px solid #e6efc5}
+#hud-component-specimen .hs-map-name{position:absolute;bottom:3px;left:5px;font-size:11px;color:#edf3d5}
+#hud-component-specimen .hs-workspace{flex:1;min-width:0;position:relative}
+#hud-component-specimen .hs-dock{background:var(--hs-base);border-top:2px solid var(--hs-team);box-shadow:0 6px 30px #0005;display:grid;grid-template-columns:225px minmax(0,1fr);min-height:150px}
+#hud-component-specimen .hs-shell[data-treatment="expressive"] .hs-dock{grid-template-columns:250px minmax(0,1fr);min-height:154px}
+#hud-component-specimen .hs-identity{padding:12px;min-width:0;border-right:1px solid var(--hs-line);position:relative}
+#hud-component-specimen .hs-id-top{display:flex;gap:10px;align-items:center}
+#hud-component-specimen .hs-portrait{width:var(--hs-portrait);height:var(--hs-portrait);flex:none;position:relative;overflow:hidden;background:#243539;padding:0;min-height:0;border:1px solid #71826d}
+#hud-component-specimen .hs-shell[data-treatment="expressive"] .hs-portrait{border-color:#b4b696;box-shadow:inset 0 0 0 3px #202f34,0 0 0 2px #0a141c;transform:translateY(-5px)}
+#hud-component-specimen .hs-portrait img{position:absolute;max-width:none}
+#hud-component-specimen .hs-name{font-family:'Barlow Condensed',sans-serif;font-size:24px;line-height:1.1;font-weight:500;margin:0;overflow-wrap:anywhere}
+#hud-component-specimen .hs-role{color:var(--hs-muted);font-size:12px;margin-bottom:4px}
+#hud-component-specimen .hs-health{display:flex;align-items:center;gap:7px;margin-top:6px;font-size:11px;font-variant-numeric:tabular-nums}
+#hud-component-specimen .hs-health-track{background:#2a3d39;height:3px;flex:1;min-width:30px}
+#hud-component-specimen .hs-health-fill{height:100%;background:var(--hs-accent)}
+#hud-component-specimen .hs-status{font-size:12px;color:var(--hs-muted);margin:10px 0 0;display:flex;flex-direction:column;gap:3px}
+#hud-component-specimen .hs-status b{color:var(--hs-text);font-weight:500}
+#hud-component-specimen .hs-actions{padding:10px;min-width:0}
+#hud-component-specimen .hs-command-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+#hud-component-specimen .hs-command{display:flex;align-items:center;gap:7px;min-width:0;text-align:left;min-height:44px;padding:7px 8px;font-size:14px}
+#hud-component-specimen .hs-command img{width:21px;height:21px;object-fit:contain;flex:none}
+#hud-component-specimen .hs-command span{min-width:0;overflow-wrap:anywhere}
+#hud-component-specimen kbd{font:11px 'DM Sans',sans-serif;color:var(--hs-muted);margin-left:auto}
+#hud-component-specimen .hs-command-primary{border-color:#63897b;background:#233a35}
+#hud-component-specimen .hs-command small{display:block;font-size:11px;color:var(--hs-muted);margin-top:3px;font-variant-numeric:tabular-nums}
+#hud-component-specimen .hs-more-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
+#hud-component-specimen .hs-more-row button{padding:4px 8px;font-size:12px;min-height:30px}
+#hud-component-specimen .hs-current{color:var(--hs-muted);font-size:11px;margin-right:auto}
+#hud-component-specimen .hs-drawer{background:var(--hs-base);border:1px solid var(--hs-line);box-shadow:0 8px 26px #0006;margin-bottom:7px;padding:12px;position:relative;animation:hs-in 160ms ease-out}
+#hud-component-specimen .hs-drawer-heading{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:14px;font-weight:500}
+#hud-component-specimen .hs-close{min-height:26px!important;padding:2px 7px!important;font-size:12px!important}
+#hud-component-specimen .hs-categories{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+#hud-component-specimen .hs-categories button{font-size:12px;min-height:30px}
+#hud-component-specimen .hs-products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#hud-component-specimen .hs-product{padding:9px!important;text-align:left;font-size:14px!important;min-height:58px!important}
+#hud-component-specimen .hs-product small{display:block;font-size:11px;color:var(--hs-muted);margin-top:4px}
+#hud-component-specimen .hs-product .hs-reason{color:var(--hs-warning);font-size:11px;line-height:1.35;text-transform:none}
+#hud-component-specimen .hs-producer{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#hud-component-specimen .hs-queue{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}
+#hud-component-specimen .hs-queue-label{font-size:11px;color:var(--hs-muted);min-width:50px}
+#hud-component-specimen .hs-queue button{width:31px;min-height:30px;padding:2px;position:relative;font-size:12px}
+#hud-component-specimen .hs-queue button:first-of-type{border-color:var(--hs-accent)}
+#hud-component-specimen .hs-queue-fill{position:absolute;bottom:0;left:0;height:3px;background:var(--hs-accent)}
+#hud-component-specimen .hs-queue-empty{font-size:12px;color:var(--hs-muted)}
+#hud-component-specimen .hs-queue-time{font-size:11px;color:var(--hs-accent);margin-left:auto}
+#hud-component-specimen .hs-research-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+#hud-component-specimen .hs-stances{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:8px}
+#hud-component-specimen .hs-stances button{font-size:11px;min-height:32px;padding:5px 3px}
+#hud-component-specimen .hs-note{font-size:12px;color:var(--hs-muted);margin-top:9px}
+#hud-component-specimen .hs-empty{padding:19px 15px;background:var(--hs-base);border-top:2px solid var(--hs-team);min-height:90px}
+#hud-component-specimen .hs-empty strong{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:500;display:block;margin-bottom:5px}
+#hud-component-specimen .hs-empty small{font-size:12px;color:var(--hs-muted)}
+#hud-component-specimen .hs-connection{background:#583c26;color:#ffe3af;padding:7px 16px;font-size:12px}
+#hud-component-specimen .hs-specs{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;background:var(--hs-base);border-top:1px solid var(--hs-line);font-size:11px;color:var(--hs-muted)}
+#hud-component-specimen .hs-specs strong{color:var(--hs-accent);font-weight:500}
+#hud-component-specimen .hs-data{padding:10px 16px;background:var(--hs-base);font-size:12px;color:var(--hs-muted)}
+#hud-component-specimen .hs-data summary{min-height:24px;cursor:default}
+#hud-component-specimen .hs-data-content{display:flex;flex-wrap:wrap;gap:16px;margin-top:9px;line-height:1.7}
+#hud-component-specimen .hs-data-content div{flex:1;min-width:180px}
+#hud-component-specimen .hs-data-content b{color:var(--hs-text);font-weight:500}
+@keyframes hs-in{from{transform:translateY(4px)}to{transform:translateY(0)}}
+@media(max-width:800px){#hud-component-specimen .hs-map{display:none}#hud-component-specimen .hs-dock{grid-template-columns:205px minmax(0,1fr)}#hud-component-specimen .hs-shell[data-treatment="expressive"] .hs-dock{grid-template-columns:230px minmax(0,1fr)}#hud-component-specimen .hs-command-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:580px){#hud-component-specimen .hs-review{padding:10px;gap:7px}#hud-component-specimen .hs-review-label{margin-left:0;display:block}#hud-component-specimen .hs-review-name{font-size:18px}#hud-component-specimen .hs-review select{font-size:12px}#hud-component-specimen .hs-match{padding:10px;flex-wrap:wrap}#hud-component-specimen .hs-resources{gap:12px;font-size:13px}#hud-component-specimen .hs-mode{font-size:11px;padding:6px 8px}#hud-component-specimen .hs-mode span{display:none}#hud-component-specimen .hs-field{min-height:570px}#hud-component-specimen .hs-selectors{margin:6px 10px 0;max-width:calc(100% - 20px)}#hud-component-specimen .hs-selectors button{font-size:12px;padding:6px 8px}#hud-component-specimen .hs-lower{margin:0 10px 10px}#hud-component-specimen .hs-dock,#hud-component-specimen .hs-shell[data-treatment="expressive"] .hs-dock{grid-template-columns:1fr}#hud-component-specimen .hs-identity{border-right:0;border-bottom:1px solid var(--hs-line);display:flex;align-items:center;gap:10px;padding:10px}#hud-component-specimen .hs-id-top{flex:1}#hud-component-specimen .hs-status{margin:0;max-width:43%;font-size:11px}#hud-component-specimen .hs-name{font-size:23px}#hud-component-specimen .hs-role{font-size:11px}#hud-component-specimen .hs-products{grid-template-columns:repeat(2,minmax(0,1fr))}#hud-component-specimen .hs-target-area{min-height:90px}#hud-component-specimen .hs-shell[data-treatment="expressive"] .hs-portrait{transform:none}#hud-component-specimen .hs-research-grid{grid-template-columns:1fr}#hud-component-specimen .hs-specs{padding:9px 10px}#hud-component-specimen .hs-data{padding:8px 10px}#hud-component-specimen .hs-command{padding:6px;font-size:11px;gap:5px}#hud-component-specimen .hs-command img{width:18px;height:18px}}
+@media(max-width:380px){#hud-component-specimen .hs-identity{display:block}#hud-component-specimen .hs-status{max-width:none;margin-top:9px}#hud-component-specimen .hs-command-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#hud-component-specimen .hs-command{font-size:13px}#hud-component-specimen .hs-stances{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){#hud-component-specimen *{animation:none!important;transition:none!important}}
+</style>
+<script>
+/* SPECIMEN_BOOT */
+</script>

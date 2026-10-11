@@ -7,7 +7,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { clickNovicePoint, noviceBeforeScript, readNoviceUi, reduceNoviceCommand,
   reduceNoviceMessage, runNoviceScenario, validateNoviceFrames, validateNoviceOrder } from './renderer-qualification-novice.mjs';
-import { contextVersion, id, run } from './renderer-novice-flow-scenario.mjs';
+import { contextVersion, id, run, validateWorkerPilot } from './renderer-novice-flow-scenario.mjs';
 import { loadCaptureCases, runFeatureBatch } from './renderer-feature-capture.mjs';
 
 const revision = 'a'.repeat(40), digest = `sha256:${'b'.repeat(64)}`;
@@ -181,6 +181,19 @@ test('rejected origin/build/nonfresh-page preconditions cannot read or capture u
   }
 });
 
+const workerPilotReceipt = { context: 'workers', visible: true, portrait: { visible: true, width: 72, height: 72 },
+  legacyHidden: true, actions: ['build', 'gather', 'repair', 'return', 'move', 'stop'],
+  clipped: false, withinViewport: true, clearOfMinimap: true, fonts: true };
+
+test('Worker pilot capture rejects missing 72px art, unrelated actions, clipping and missing fonts', () => {
+  validateWorkerPilot(workerPilotReceipt);
+  for (const change of [{ visible: false }, { portrait: { visible: true, width: 52, height: 52 } },
+    { legacyHidden: false }, { actions: ['build', 'train'] }, { clipped: true },
+    { withinViewport: false }, { clearOfMinimap: false }, { fonts: false }]) {
+    assert.throws(() => validateWorkerPilot({ ...workerPilotReceipt, ...change }));
+  }
+});
+
 // Adapted from independent review's CPU positive/late-fault orchestration probe.
 // Synthetic PNG headers and injected boundaries establish no rendering claim.
 function orchestrationPage(lateFault) {
@@ -206,6 +219,7 @@ function orchestrationPage(lateFault) {
   }, cdp: { on: (name, listener) => listeners.set(name, listener),
     call: async name => name === 'Page.captureScreenshot' ? { data: png(++screens).toString('base64') } : {},
     evaluate: async expression => {
+      if (expression.includes('readWorkerPilot')) return workerPilotReceipt;
       if (expression === 'location.href') return 'about:blank';
       if (expression.includes('readNoviceUi')) {
         const result = view();
@@ -256,7 +270,7 @@ test('actual positive orchestration rejects final-read network/probe faults and 
 test('registered case binds source and real selection checkpoint, rejecting missing evidence or hidden capture failure', async () => {
   assert.equal(id, 'novice-flow');
   assert.equal(contextVersion, 1);
-  const page = {}, captures = [], context = { version: 1, page, origin: 'http://127.0.0.1:4321',
+  const page = { cdp: { evaluate: async () => workerPilotReceipt } }, captures = [], context = { version: 1, page, origin: 'http://127.0.0.1:4321',
     source: Object.freeze({ revision, digest }), evidenceDirectory: '/owned/novice-flow',
     capture: async options => captures.push(options) };
   let executions = 0;

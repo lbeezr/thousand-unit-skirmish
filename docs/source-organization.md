@@ -109,3 +109,17 @@ separate evidence. Do not count retained stubs as migrated implementation.
 The current five-policy slice changes no AI decisions, protocol, type rollout,
 asset, map, gameplay balance, security policy or deployment. Remaining subsystem
 batches and owners are recorded in the inventory, not allocated by this guide.
+
+### Worker HUD and retained design specimen — 11 October 2026
+
+`src/client/hud/worker-hud.mjs` and its stylesheet own the default Worker selection
+view, consuming disclosed state and registered construction definitions. `main.js`
+retains the existing command senders and target picking. Exact HTTP admission
+lives in `src/server/client-asset-paths.mjs`.
+
+The source-only comparison stays in `src/studies/hud-component-specimen/`; its
+Node builder is `scripts/build-hud-component-specimen.mjs`. Its only consumers
+are that builder and the preserved standalone HTML. No game imports the study;
+its JS/HTML and provenance are not public server assets. The old study builder
+path has no compatibility consumer and is retired. Original review artifacts
+and hashes remain dated historical evidence.

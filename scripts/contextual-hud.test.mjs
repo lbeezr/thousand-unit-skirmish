@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
+import { updateWorkerHud, workerBuildChoices, workerSelectionKey } from '../src/client/hud/worker-hud.mjs';
 import { selectionContext } from '../src/selection-context.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from '../src/combat-stance-ui.mjs';
 import { updateSelectionPortrait, updateProductionPortrait, barracksSelectionPortrait, BARRACKS_PORTRAITS, farmSelectionFacts, farmSelectionPortrait, FARM_PORTRAITS, workerRoleFacts, WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SCOUT_PORTRAITS, RIDER_PORTRAITS, SIEGE_ENGINE_PORTRAITS, SPEARMAN_PORTRAITS } from '../src/selection-portrait.mjs';
@@ -15,6 +16,7 @@ import { livingIdleWorkerIds, livingUnitIdsOfKinds } from '../src/unit-selection
 import { formatResourceStock, formatResourceRequirement } from '../src/resource-format.mjs';
 import { ownedPopulationReadout } from '../src/population-readout.mjs';
 import { objectiveSummary } from '../src/client/hud/objective-summary.mjs';
+import { battlefieldCursor } from '../src/battlefield-cursor.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
@@ -49,7 +51,7 @@ function fixture(team = 0) {
   w.ui = {};
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
   Object.assign(w, { ...economyClientBindings(), ...wildlifeClientBindings(),
-    selectionContext, updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
+    selectionContext, updateWorkerHud, workerBuildChoices, workerSelectionKey, updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
     applyUnitStances, updateCombatStanceControls, bindCombatStanceControls, socket: { readyState: 1 },
     castPreview: true, humanRosterPreview: true, roomPageUrl: new URL('http://localhost/'),
     matchMedia: () => ({ matches: false }),
@@ -66,7 +68,7 @@ function fixture(team = 0) {
     selected: new w.Set(), selectedBuildingId: null, latestBuildings: [],
     controlGroups: Array.from({ length: 10 }, () => new w.Set()),
     buildingVisuals: new w.Map(), activeControlGroup: null, lastControlGroupRecall: null,
-    tapOrderArmed: false, persistentTargetMode: null, buildPlacementActive: false,
+    tapOrderArmed: false, workerTargetMode: null, persistentTargetMode: null, buildPlacementActive: false, buildPlacementPending: false, buildPlacementType: 'house',
     commandDock: d.querySelector('#command-deck'), dockToggle: d.querySelector('#dock-toggle'),
     dockTabs: [...d.querySelectorAll('[data-dock-tab]')], appShell: d.querySelector('.app-shell'),
     matchMenu: d.querySelector('#match-menu'), helpPanel: d.querySelector('#help-panel'),
@@ -86,7 +88,8 @@ function fixture(team = 0) {
     buildingLabel: type => BUILDING_DEFINITIONS[type].label,
     closeScenarioBrief() { w.scenarioBriefPanel.hidden = true; },
     closeHudPanels() { w.matchMenu.hidden = w.helpPanel.hidden = true; },
-    setTapOrderArmed(value) { w.tapOrderArmed = value; },
+    setTapOrderArmed(value) { w.tapOrderArmed = value; if (!value) w.workerTargetMode = null; },
+    syncTargetOrderUI() {}, syncBattlefieldCursor() {},
     cancelBuildPlacement() { w.buildPlacementActive = false; },
     centerCameraOnControlGroup() {}, revalidateControlGroups() {},
     updateControlGroupUI() { w.updateContextualCommands(); },
@@ -172,7 +175,7 @@ function economyFixture(team) {
     BARRACKS_WOOD_COST: BUILDING_DEFINITIONS.barracks.cost.wood,
     ARCHERY_RANGE_WOOD_COST: BUILDING_DEFINITIONS['archery-range'].cost.wood,
     WORKER_QUEUE_LIMIT: 5, ARCHERY_RANGE_QUEUE_LIMIT: 5,
-    syncTargetOrderUI() {}, syncBattlefieldCursor() {},
+    syncTargetOrderUI() {}, syncBattlefieldCursor() {}, syncBattlefieldCursor() {},
   });
   w.eval([
     fn('findTrainableArcheryRange', 'buildingLabel'),
@@ -912,7 +915,7 @@ for (const team of [0, 1]) test(`seat ${team}: live Worker snapshots preserve lo
 
 for (const team of [0, 1]) test(`seat ${team}: Formation / route remains an operable stable focus target in the command strip`, t => {
   const f = fixture(team); t.after(() => f.dom.window.close());
-  const own = team * 2, route = f.bar.querySelector('[data-context-details]');
+  const own = team * 2 + 1, route = f.bar.querySelector('[data-context-details]');
   const image = route.querySelector('img'), label = route.querySelector('[data-context-details-label]');
   f.select([own]);
   assert.equal(route.hidden, false); assert.equal(route.textContent, 'Formation / route');
@@ -1228,16 +1231,16 @@ test('Worker → Barracks → unsupported building → group keeps only current 
 
 test('decorative command icons preserve text, hotkeys, target states and the existing proxy action', t => {
   const f = fixture(); t.after(() => f.dom.window.close());
-  f.select([0]);
+  f.select([1]);
   const target = f.bar.querySelector('[data-context-proxy="order-target-toggle"]');
   const image = target.querySelector('img');
-  assert.equal(target.textContent, 'Gather / move');
+  assert.equal(target.textContent, 'Target battlefield');
   let activations = 0;
   f.d.querySelector('#order-target-toggle').addEventListener('click', () => { activations++; f.w.tapOrderArmed = !f.w.tapOrderArmed; });
   f.click(target);
   assert.equal(activations, 1); assert.equal(target.textContent, 'Cancel target');
   assert.equal(target.querySelector('img'), image);
-  f.click(target); assert.equal(activations, 2); assert.equal(target.textContent, 'Gather / move');
+  f.click(target); assert.equal(activations, 2); assert.equal(target.textContent, 'Target battlefield');
   f.select([], { id: 8, team: 0, type: 'barracks', complete: true, hp: 1800, productionQueue: [] });
   assert.equal(target.textContent, 'Set rally'); assert.equal(target.querySelector('img'), image);
   f.select([1]); assert.equal(target.textContent, 'Target battlefield');
@@ -1349,7 +1352,7 @@ for (const team of [0, 1]) test(`seat ${team}: empty → Worker → army → bui
     assert.equal(f.w.getComputedStyle(kind === 'none' ? f.bar : f.quick).display, 'none');
     assert.deepEqual([...f.w.selected], ids); assert.equal(f.w.selectedBuildingId, selectedBuilding?.id ?? null);
     assert.deepEqual(protectedElements.map(s => f.d.querySelector(s).outerHTML), protectedMarkup);
-    const opener = kind === 'none' ? f.w.dockToggle : f.bar.querySelector('[data-context-panel="economy"]');
+    const opener = kind === 'none' ? f.w.dockToggle : kind === 'workers' ? f.bar.querySelector('[data-selection-portrait]') : f.bar.querySelector('[data-context-panel="economy"]');
     f.click(opener); assert.equal(f.w.commandDock.hidden, false);
     f.escape(); assert.equal(f.w.commandDock.hidden, true); assert.equal(f.d.activeElement, opener);
     assert.deepEqual([...f.w.selected], ids); assert.equal(f.w.selectedBuildingId, selectedBuilding?.id ?? null);
@@ -1412,7 +1415,7 @@ for (const team of [0, 1]) test(`seat ${team}: minimap browser proof selects fou
 test('closing a drawer whose opener became hidden, disabled or disconnected restores visible focus', t => {
   const f = fixture(); t.after(() => f.dom.window.close());
   for (const unavailable of ['hidden', 'disabled', 'disconnected']) {
-    f.select([0]); const opener = f.bar.querySelector('[data-context-build]'); f.click(opener);
+    f.select([0]); const opener = f.bar.querySelector('[data-selection-portrait]'); f.click(opener);
     if (unavailable === 'hidden') f.select([]);
     if (unavailable === 'disabled') opener.disabled = true;
     if (unavailable === 'disconnected') opener.remove();
@@ -1482,13 +1485,13 @@ test('battlefield Escape cancels target modes before clearing selection; editing
     f.w[mode] = value; f.escape();
     assert.ok(!f.w[mode]); assert.deepEqual([...f.w.selected], [0]); assert.equal(f.bar.hidden, false);
   }
-  f.click(f.bar.querySelector('[data-context-panel="economy"]'));
+  f.click(f.bar.querySelector('[data-selection-portrait]'));
   const editing = f.d.querySelector('#assign-group-slot');
   f.w.selectDockTab('selection'); editing.focus();
   f.escape(); assert.deepEqual([...f.w.selected], [0]); assert.equal(f.w.commandDock.hidden, true);
   // A closed-drawer editing target is artificial, but independently covers the input guard.
   editing.focus(); f.escape(); assert.deepEqual([...f.w.selected], [0]);
-  f.bar.querySelector('[data-context-panel="economy"]').focus(); f.escape();
+  f.bar.querySelector('[data-selection-portrait]').focus(); f.escape();
   assert.deepEqual([...f.w.selected], []); assert.equal(f.quick.hidden, false);
 });
 
@@ -1666,13 +1669,18 @@ test('unavailable research prerequisites remain focusable for their explanation'
   research.click(); assert.equal(f.w.sentCommands.length, 0);
 });
 
-for (const team of [0, 1]) test(`seat ${team}: Build already opens inspectable details with no resources and restores focus`, t => {
+for (const team of [0, 1]) test(`seat ${team}: Worker Build opens a local inspectable palette with no resources`, t => {
   const f = fixture(team); t.after(() => f.dom.window.close());
   f.w.latestFood[team] = f.w.latestWood[team] = 0; f.select([team * 2]);
-  const build = f.bar.querySelector('[data-context-build]');
-  assert.equal(build.disabled, false); f.click(build);
-  assert.equal(f.w.commandDock.hidden, false); assert.equal(f.w.commandDock.dataset.activePanel, 'economy');
-  f.escape(); assert.equal(f.d.activeElement, build); assert.deepEqual([...f.w.selected], [team * 2]);
+  const build = f.bar.querySelector('[data-worker-action="build"]');
+  assert.equal(build.getAttribute('aria-disabled'), 'false'); f.click(build);
+  assert.equal(f.w.commandDock.hidden, true);
+  assert.equal(f.d.querySelector('#worker-build-palette').hidden, false);
+  const house = f.d.querySelector('[data-worker-build="house"]');
+  house.focus(); assert.equal(house.getAttribute('aria-disabled'), 'true');
+  assert.match(house.textContent, /Need 75 wood/);
+  f.escape(); assert.equal(f.d.querySelector('#worker-build-palette').hidden, true);
+  assert.equal(f.d.activeElement, build); assert.deepEqual([...f.w.selected], [team * 2]);
 });
 
 for (const team of [0, 1]) test(`seat ${team}: selected Stone cargo keeps its label and real Return cargo action`, t => {
@@ -1685,14 +1693,14 @@ for (const team of [0, 1]) test(`seat ${team}: selected Stone cargo keeps its la
   Object.assign(f.w.units[own], { cargoType: 'stone', cargo: 3.125, generation: 17 });
   f.select([own]);
   assert.match(f.bar.querySelector('[data-context-summary]').textContent, /Cargo 0 food \/ 0 wood \/ 3 stone/);
-  const button = f.bar.querySelector('[data-return-cargo]');
+  const button = f.bar.querySelector('[data-worker-action="return"]');
   assert.equal(button.hidden, false); assert.equal(button.disabled, false);
   f.click(button);
   assert.equal(orders.at(-1).type, 'returnCargo');
   assert.deepEqual([...orders.at(-1).ids], [own]);
   assert.equal(f.w.units[own].cargo, 3.125, 'issuing the order never grants a bank or discards cargo');
   f.w.mapDefinition = {}; f.w.updateSelectionUI();
-  assert.equal(button.hidden, true); assert.doesNotMatch(f.bar.querySelector('[data-context-summary]').textContent, /stone/);
+  assert.equal(button.getAttribute('aria-disabled'), 'true'); assert.doesNotMatch(f.bar.querySelector('[data-worker-cargo]').textContent, /stone/);
 });
 
 for (const team of [0, 1]) test(`seat ${team}: owned Sheep uses the existing compact Herd/Stop strip and returns cleanly to army context`, t => {
@@ -1724,4 +1732,81 @@ for (const team of [0, 1]) test(`seat ${team}: owned Sheep uses the existing com
   assert.equal(f.bar.dataset.context, 'workers');
   assert.equal(f.bar.querySelector('[data-context-build]').hidden, false);
   assert.equal(f.bar.querySelector('[data-context-groups]').hidden, false);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: Worker pilot sends only the chosen target action and clears it on selection/reconnect`, t => {
+  const f = fixture(team), w = f.w, own = team * 2; t.after(() => f.dom.window.close());
+  const orders = [], targets = { resource: null, building: null };
+  Object.assign(w, {
+    renderer: { domElement: { getBoundingClientRect: () => ({ left: 0, top: 0 }) } },
+    battlefieldCursor, pan: null, spaceDown: false, drag: null, movedPointer: false,
+    cursorPointer: { x: 10, y: 10 }, cursorShift: false,
+    setBattlefieldCursor: mode => { w.cursorMode = mode; },
+    selectedWaterUnits: () => false,
+    worldAt: () => ({ x: 12, z: 14 }), pickAt: () => ({ unit: w.units[(1 - team) * 2] }),
+    pickBuildingAt: (_x, _y, predicate) => targets.building && predicate(targets.building) ? targets.building : null,
+    pickHarvestableTreeAt: () => null, pickResourceNodeAt: () => targets.resource, pickForestCellAt: () => null,
+    issueMove: (...args) => orders.push(['move', ...args]), issueGather: node => orders.push(['gather', node.id]),
+    issueForestGather: cell => orders.push(['forest', cell]), issueAttack: enemy => orders.push(['attack', enemy.id]),
+    sendTrackedOrder: command => { orders.push(JSON.parse(JSON.stringify(command))); return 1; },
+  });
+  w.eval(fn('setTapOrderArmed', 'issueMove')); w.eval(fn('issueContextOrder', 'buildPlacementAt'));
+  w.eval(fn('syncBattlefieldCursor', 'cancelBuildPlacement'));
+  const click = action => f.click(f.d.querySelector(`[data-worker-action="${action}"]`));
+  f.select([own]); click('gather');
+  assert.equal(w.tapOrderArmed, true); assert.equal(w.workerTargetMode.mode, 'gather');
+  w.syncBattlefieldCursor(); assert.equal(w.cursorMode, 'unavailable', 'empty ground is not a Gather target');
+  w.issueContextOrder(10, 10); assert.equal(orders.length, 0, 'Gather never falls through to Move/Attack');
+  targets.resource = { id: 90, type: 'food' }; w.issueContextOrder(10, 10);
+  w.syncBattlefieldCursor(); assert.equal(w.cursorMode, 'gather');
+  assert.deepEqual(orders.pop(), ['gather', 90]);
+  click('move'); w.issueContextOrder(10, 10);
+  w.syncBattlefieldCursor(); assert.equal(w.cursorMode, 'move', 'explicit Move overrides an enemy hover');
+  assert.equal(orders.at(-1)[0], 'move'); assert.equal(orders.at(-1)[3], true, 'Move overrides attack/persistent modes');
+  click('repair'); targets.building = { id: 40, team: 1 - team, hp: 30, maxHp: 100, complete: true };
+  w.syncBattlefieldCursor(); assert.equal(w.cursorMode, 'unavailable');
+  const before = orders.length; w.issueContextOrder(10, 10); assert.equal(orders.length, before);
+  targets.building.team = team; w.issueContextOrder(10, 10);
+  w.syncBattlefieldCursor(); assert.equal(w.cursorMode, 'build-valid', 'Repair reuses the authored tool cursor');
+  assert.deepEqual(orders.at(-1), { type: 'repairBuilding', ids: [own], buildingId: 40 });
+  click('gather'); f.select([own + 1]); assert.equal(w.workerTargetMode, null); assert.equal(w.tapOrderArmed, false);
+  assert.equal(f.d.querySelector('[data-worker-hud]').hidden, true);
+  f.select([own]); click('move'); w.units[own].generation = 100; w.updateSelectionUI();
+  assert.equal(w.workerTargetMode, null); assert.equal(w.tapOrderArmed, false);
+  click('move'); w.socket.readyState = 3; w.updateContextualCommands();
+  assert.equal(w.tapOrderArmed, false); assert.match(f.d.querySelector('[data-worker-hint]').textContent, /Reconnecting/);
+});
+
+for (const order of ['patrol', 'follow']) test(`Worker ${order} cancels both target states on Escape and disclosure changes`, t => {
+  const f = fixture(), w = f.w; t.after(() => f.dom.window.close());
+  w.selectedWaterUnits = () => false;
+  w.eval(fn('setPersistentTargetMode', 'setAttackMoveMode'));
+  w.eval(fn('setTapOrderArmed', 'issueMove'));
+  f.select([0]);
+  const click = action => f.click(f.d.querySelector(`[data-worker-action="${action}"]`));
+  for (const cancel of ['escape', 'build', 'more']) {
+    click('more'); click(order);
+    assert.equal(w.persistentTargetMode, order); assert.equal(w.tapOrderArmed, true);
+    if (cancel === 'escape') f.escape(); else click(cancel);
+    assert.equal(w.persistentTargetMode, null); assert.equal(w.tapOrderArmed, false);
+    assert.deepEqual([...w.selected], [0], 'cancellation preserves the Worker selection');
+    assert.doesNotMatch(f.d.querySelector('[data-worker-hint]').textContent, /Choose ground to patrol|Choose a friendly unit/);
+    if (cancel !== 'escape') f.escape();
+  }
+});
+
+test('Worker palette rechecks current construction authority and More retains Formation focus', t => {
+  const f = fixture(), w = f.w, placements = []; t.after(() => f.dom.window.close());
+  w.beginBuildPlacement = type => placements.push(type);
+  f.select([0]);
+  const build = f.d.querySelector('[data-worker-action="build"]'); f.click(build);
+  const house = f.d.querySelector('[data-worker-build="house"]');
+  w.latestWood[0] = 0; f.click(house); assert.deepEqual(placements, [], 'stale enabled control rechecks the current bank');
+  w.latestWood[0] = 75; w.updateContextualCommands(); f.click(build); f.click(house);
+  assert.deepEqual(placements, ['house']); assert.deepEqual([...w.selected], [0]);
+  const more = f.d.querySelector('[data-worker-action="more"]'), route = f.d.querySelector('[data-worker-action="formation"]');
+  f.click(more); f.click(route); assert.equal(w.commandDock.dataset.activePanel, 'command');
+  f.escape(); assert.equal(w.commandDock.hidden, true); assert.equal(f.d.activeElement, route);
+  f.escape(); assert.equal(f.d.querySelector('#worker-more-orders').hidden, true); assert.equal(f.d.activeElement, more);
+  assert.deepEqual([...w.selected], [0]);
 });

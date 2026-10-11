@@ -25,7 +25,7 @@ export function constructionTargetingFixture({ team = 0, units = [], selection =
     groundHit: new THREE.Vector3(), terrainSurface: null,
     renderer: { domElement: { getBoundingClientRect: () => rect } },
     selectedWildlifeId: null, selectedBuildingId: null, matchWinner: -1,
-    attackMoveMode: false, persistentTargetMode: null, buildPlacementActive: false,
+    attackMoveMode: false, workerTargetMode: null, persistentTargetMode: null, buildPlacementActive: false,
     selectedWaterUnits: () => false, pickAt: () => ({ unit: null }),
     pickResourceNodeAt: () => null, pickForestCellAt: () => null, pickHarvestableTreeAt: () => null,
     issueAttack: unit => payloads.push({ type: 'attack', targetId: unit.id }),

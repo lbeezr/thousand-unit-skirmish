@@ -7,6 +7,12 @@ export function battlefieldCursor(s) {
   if (s.building) return s.buildValid ? 'build-valid' : 'build-blocked';
   if (s.selectedBuilding) return s.rallySupported ? 'rally' : 'unavailable';
   if (!s.count) return s.friendly && s.shift ? (s.alreadySelected ? 'select-remove' : 'select-add') : 'select';
+  if (s.workerTargetMode === 'move') return s.shift ? 'move-queued' : 'move';
+  if (s.workerTargetMode === 'repair') return s.repairTarget ? 'build-valid' : 'unavailable';
+  if (s.workerTargetMode === 'gather') {
+    if (!s.resource && !s.forest) return 'unavailable';
+    return s.forest || s.resource === 'wood' ? 'gather-wood' : 'gather';
+  }
   if (s.farmTargetMode === 'patrol') return 'move';
   if (s.farmTargetMode === 'follow') return s.farmFollowTarget ? 'move' : 'unavailable';
   if (s.enemy) return 'attack';
