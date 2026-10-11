@@ -156,3 +156,17 @@ test('source preflight failure opens no browser and records every subset as unru
   assert.equal(f.opened, 0); assert.equal(f.calls.length, 0); assert.equal(result.results.length, 0);
   assert.equal(result.notRunSubsets.length, rosterSubsets.length); assert.equal(result.status, 'failed');
 });
+test('private review room reaches only first capture and never enters batch or qualification artifacts', async t => {
+  const room = 'private-review'.padEnd(32, 'x'), f = await fixture(t);
+  f.dependencies.reviewRoom = room;
+  const result = await f.run();
+  assert.equal(result.status, 'captured-needs-listening'); assert.equal(f.calls[0].reviewRoom, room);
+  assert.ok(f.calls.slice(1).every(args => args.reviewRoom === null && args.reuseRoom === true));
+  assert.ok(!JSON.stringify(result).includes(room));
+  for (const args of f.calls) assert.ok(!JSON.stringify(await f.read(args.subset)).includes(room));
+});
+test('invalid private review room fails before any source request, browser or room creation', async t => {
+  const f = await fixture(t); f.dependencies.reviewRoom = 'private-invalid-room';
+  await assert.rejects(f.run(), error => error.message === 'Invalid private review room code.');
+  assert.equal(f.identified, 0); assert.equal(f.opened, 0); assert.equal(f.calls.length, 0);
+});

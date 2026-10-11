@@ -137,10 +137,13 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
     try {
       const room = inviteRoomId(joinDialog.querySelector('input').value, win.location.href);
       busy = true; controls(); feedback.textContent = 'Checking the room…';
-      const response = await fetchImpl(`/api/rooms/${room}`, { cache: 'no-store' });
+      const response = await fetchImpl(`/api/rooms/${room}`, { cache: 'no-store', signal: AbortSignal.timeout(10000) });
       if (intent !== intentRevision || !joinDialog.open) return;
       requireEntryAuthentication(response);
       if (!response.ok) throw new Error(response.status === 404 ? 'Room expired or not found.' : 'Room service is unavailable.');
+      // Finish this finite lookup before navigation can cancel its body.
+      await response.arrayBuffer();
+      if (intent !== intentRevision || !joinDialog.open) return;
       navigate(roomEntryUrl(win.location.href, room).href);
     } catch (error) { if (intent === intentRevision) { busy = false; controls(); feedback.textContent = String(error.message); } }
   });
