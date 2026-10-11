@@ -4,8 +4,10 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { readFile } from 'node:fs/promises';
 import { installFarmObserver, reduceFarmOrder, reduceFarmState, run, TINY_FARM_MAP,
-  validateFarmArt, validateFarmBuild, validateFarmEconomy, validateFarmSupply } from './renderer-tiny-farm-scenario.mjs';
+  tinyFarmSites, validateFarmArt, validateFarmBuild, validateFarmEconomy, validateFarmSupply } from './renderer-tiny-farm-scenario.mjs';
 import { loadCaptureCases } from './renderer-feature-capture.mjs';
+import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
+import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 const clone = value => structuredClone(value);
 function state(team = 0) {
@@ -161,4 +163,53 @@ test('Farm registration preserves the existing sandbox/deadline and audio adapte
   assert.doesNotMatch(workflow, /no-sandbox|secrets\.|sudo/);
   assert.doesNotMatch(source, /__rtsEnvironmentCaptureCommand|publishMap|setInterval|spawn\(/);
   assert.match(source, /runFarmRenewalCaptureStep/); assert.match(source, /coldProcessRecovery: 'not-exposed-by-v1-capture-context'/);
+});
+
+test('canonical Tiny pads pass actual client and server placement for both seats; sheep pad refuses', async () => {
+  const map = JSON.parse(await readFile(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  const main = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
+  const begin = main.indexOf('function buildPlacementAt('), end = main.indexOf('\nfunction ', begin + 1);
+  assert.ok(begin >= 0 && end > begin);
+  const fixture = await createPveHeadlessFixture(map, { matchModeId: 'skirmish', matchModeVersion: 1 });
+  const r = fixture.replay, snapshot = () => r.checkpoint().state;
+  const workers = team => snapshot().units.filter(u => u.team === team && u.kind === 'worker');
+  const order = (team, type, site) => r.order(team, { type: 'build', buildingType: type, ...site,
+    ids: workers(team).map(w => w.id), unitGenerations: workers(team).map(w => w.generation) });
+  const clientPlacement = (team, type, site) => {
+    const live = snapshot(), observation = r.observe(team);
+    const units = live.units.map(u => ({ ...u, serverX: u.x, serverZ: u.z, visible: true }));
+    const context = vm.createContext({ mapDefinition: map, localTeam: team, BUILDING_DEFINITIONS,
+      MAP_WIDTH: map.width, MAP_HEIGHT: map.height, MAP_HALF_X: map.width / 2, MAP_HALF_Z: map.height / 2,
+      worldAt: () => site, buildingFootprint: t => BUILDING_DEFINITIONS[t].footprint,
+      buildingWoodCost: t => BUILDING_DEFINITIONS[t].cost.wood,
+      constructionCostForProfile: t => BUILDING_DEFINITIONS[t].cost,
+      buildPlacementType: type, latestWood: live.teamWood, latestFood: live.teamFood,
+      selectedIds: () => workers(team).map(w => w.id), units: Object.fromEntries(units.map(u => [u.id, u])),
+      teamUnits: [0, 1].map(t => units.filter(u => u.team === t)),
+      latestBuildings: [...observation.buildings, ...observation.homeTownCenters],
+      latestForestStocks: new Map(), constructionResourceNodes: () => map.resourceNodes,
+      latestResourceStocks: new Map(map.resourceNodes.map(n => [n.id, n.stock])),
+    });
+    vm.runInContext(main.slice(begin, end), context);
+    return context.buildPlacementAt(0, 0);
+  };
+  try {
+    for (const team of [0, 1]) {
+      const pads = tinyFarmSites(map, team);
+      assert.equal(clientPlacement(team, 'mill', pads.mill).valid, true, 'real client admits Mill pad');
+      assert.ok((await order(team, 'mill', pads.mill)).some(n => /PLACED/.test(n.message)), 'real server admits Mill pad');
+    }
+    for (let tick = 0; tick < 900 && !snapshot().buildings.every(b => b.complete); tick++) r.step();
+    assert.equal(snapshot().buildings.length, 2); assert.ok(snapshot().buildings.every(b => b.complete));
+    for (const team of [0, 1]) {
+      const pads = tinyFarmSites(map, team), spawn = map.spawnPoints.find(s => s.team === team);
+      const badPad = { x: pads.farm.x, z: spawn.z + 5 }, before = snapshot();
+      assert.match(clientPlacement(team, 'farm', badPad).blockedReason, /RESOURCE/);
+      assert.ok((await order(team, 'farm', badPad)).some(n => /RESOURCE NODE IN FOOTPRINT/.test(n.message)), 'old sheep pad must stay rejected');
+      assert.deepEqual(snapshot().teamWood, before.teamWood); assert.equal(snapshot().buildings.length, 2 + team);
+      assert.equal(clientPlacement(team, 'farm', pads.farm).valid, true, 'real client admits corrected Farm pad');
+      assert.ok((await order(team, 'farm', pads.farm)).some(n => /PLACED/.test(n.message)), 'real server admits corrected Farm pad');
+      assert.equal(snapshot().teamWood[team], 115, 'only the real Mill and Farm spend opening wood');
+    }
+  } finally { await fixture.dispose(); }
 });

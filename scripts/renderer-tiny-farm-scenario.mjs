@@ -19,6 +19,15 @@ const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const wire = 'window.__rtsTinyFarm.latest';
 const environment = 'window.__rtsEnvironmentStateSnapshot';
 
+export function tinyFarmSites(definition, team) {
+  assert.equal(definition.id, TINY_FARM_MAP); assert.ok([0, 1].includes(team));
+  const spawn = definition.spawnPoints.find(s => s.team === team);
+  assert.ok(spawn, 'canonical Tiny spawn required');
+  // Keep the Farm clear of the home-food sheep at (spawn.x ±6, spawn.z+6).
+  return { mill: { x: spawn.x, z: spawn.z + 5 },
+    farm: { x: spawn.x + (team === 0 ? 6 : -6), z: spawn.z } };
+}
+
 // Only current own-seat economy and identities leave the socket observer. Never
 // retain envelopes, session tokens, invite URLs, chat or opponent resources.
 export function reduceFarmState(message, team) {
@@ -247,14 +256,13 @@ export async function runTinyFarmLifecycle(context, pages, { renew = runFarmRene
     const initial = validateFarmEconomy(await page.cdp.evaluate(wire), team);
     assert.deepEqual(initial.bank, { food: 150, wood: 250 });
     assert.deepEqual(initial.buildings, []); assert.ok(initial.workers.every(w => w.task === 'idle' && w.cargo === 0));
-    const ids = initial.workers.map(w => w.id), spawn = definition.spawnPoints.find(s => s.team === team);
+    const ids = initial.workers.map(w => w.id);
     await page.cdp.evaluate(`(async()=>{const THREE=await import('/vendor/three.module.js');(${installMinimapCameraProbe.toString()})(THREE,window.__rtsTinyFarm);return true;})()`);
     await click(page, '#camera-home-base');
     await page.wait('window.__rtsTinyFarm.cameraSamples>0', 'read-only native camera observation');
     await click(page, '#quick-idle');
     assert.deepEqual((await ownedSnapshot(page)).selected.slice().sort((a, b) => a - b), ids.slice().sort((a, b) => a - b));
-    return { team, page, ids, initial, sites: { mill: { x: spawn.x, z: spawn.z + 5 },
-      farm: { x: spawn.x + (team === 0 ? 6 : -6), z: spawn.z + 5 } } };
+    return { team, page, ids, initial, sites: tinyFarmSites(definition, team) };
   };
   const build = async (seat, type) => {
     const { page, team, ids, sites } = seat, before = await page.cdp.evaluate(wire);

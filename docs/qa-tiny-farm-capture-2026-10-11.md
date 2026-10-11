@@ -41,6 +41,13 @@ post-render WebGL2 readbacks. Frame observations bracket screenshots; this is
 not a claim of a same-frame authoritative snapshot. Invitation URLs, session
 tokens, raw socket envelopes and opponent banks are excluded.
 
+Independent source review identified that the initial Farm pad overlapped Tiny's
+home-food sheep. The corrected pad is `(spawn.x ± 6, spawn.z)`; the Mill remains
+at `(spawn.x, spawn.z + 5)`. A registered both-seat control executes the real
+client placement function and fixed-tick production server admission: corrected
+Mill/Farm pads must accept, while the original sheep pad must refuse without
+charging or creating a foundation. No gameplay placement rule was changed.
+
 ## Evidence boundaries and next transition
 
 Preparation and CPU failure controls do not establish a rendered pass. The
