@@ -122,6 +122,22 @@ This tests possible instrumentation overhead without extending audio deadlines
 or changing gameplay. Playback remains unverified. The user confirms that the
 staging address above is their intended game environment.
 
+[The fifth run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38154999260)
+at `da5770a4` removes the debugger, but its
+[case receipt](qa-evidence/interaction-audio-2026-10-11/no-debugger-cloud/interaction-audio.json)
+still shows the same download scheduling gaps and timeout. The fresh snapshot
+is only 0.1 ms old, so the stale-observer hypothesis does not explain loading.
+Default bindings remain absent while the smaller regional pack becomes ready.
+This motivates the worker-loading correction: the existing verified loader now
+runs in a dedicated browser worker, with the same four-transfer concurrency,
+byte/hash/MIME checks, two-pack cache and 30-second deadline. A separate client
+watchdog bounds worker startup; cancellation IDs and disposal retain ownership.
+Ten worker protocol/canonical-loader/runtime-disposal tests join the existing
+audio and recovery checks: 365 pass. Both type projects, 65 import-boundary tests
+and actual HTTP serving of all 119 default sources and both worker modules pass.
+These CPU/HTTP results do not establish native-worker playback; that cloud run
+remains the next acceptance step.
+
 The staging HTTP check passed source `b4ad36cf`, public gameplay/readiness and
 protected health, default v3 manifest/source verification (119 recordings),
 136 recursively discovered client modules, and private source/catalog rejection.

@@ -138,8 +138,9 @@ test wire bytes independently of HTTP/gameplay orchestration. Browser closures c
 Node adapter or unmapped package, and server closures cannot reach Three or a
 browser entrypoint. Package imports must match every consuming page's import
 map; the audio pages have no Three mapping. A contract test checks the five
-registered entrypoints against their shipped HTML. Register a new entrypoint
-and its document's package policy together. This checks import edges, not browser globals, injected
+registered page entrypoints against their shipped HTML. The shipped-audio module
+worker is a separate browser entrypoint with no document import map. Register a
+new entrypoint and its package policy together. This checks import edges, not browser globals, injected
 callbacks, runtime asset fetches or gameplay semantics. It also scans unreferenced
 `src` modules and nested folders, so new files cannot evade the cycle check.
 
@@ -215,8 +216,8 @@ Acorn is a pinned development dependency; production installs omit it.
 separate renderer-module path. A client-module owner updates that small manifest
 instead of the HTTP host. The host retains membership/equality checks and all
 authorization, decoding, normalization, MIME and non-client asset rules. The
-source allowlist and packed import audit cover all five registered browser
-entrypoints; real packed HTTP tests check every declared path and denied paths,
+source allowlist and packed import audit cover all five registered page
+entrypoints and the audio worker; real packed HTTP tests check every declared path and denied paths,
 including the manifest itself and offline Node adapters.
 The audio pack builder generates `src/server/roster-audio-sources.mjs` as an
 exact server-only admission list for the selected current-roster recordings.
@@ -224,6 +225,16 @@ Its consumer is `client-static-assets.mjs`; it does not admit the source catalog
 production plan or unselected comparison takes. The owning
 [source pack](../assets/audio/frontier-roster-feedback-v1/README.md) preserves
 the originals and rebuilds this list with the hash-bound runtime manifest.
+The normal audio runtime owns one lazy module worker through
+`client/audio/shipped-audio-worker-client.mjs`. Its
+`client/audio/shipped-audio-worker.mjs` endpoint runs the canonical shipped loader,
+including four concurrent transfers, hash/MIME/size validation and the two-pack
+verified cache. Fetch/read/hash work can progress while rendering occupies the
+game thread. Request IDs isolate cancellation; disposal terminates the worker.
+Both the canonical loader and client startup watchdog retain 30-second limits.
+An unavailable Worker API uses the direct loader; a worker failure is reported
+without an automatic network retry. An unchanged-map welcome preserves pending
+or ready audio; an actual map change retains cancellation and replacement.
 The source and served audits share [`module-imports.mjs`](../scripts/module-imports.mjs)
 for static imports, re-exports and literal lazy imports. Comments/string/regular
 expression text cannot create edges; compact syntax and escaped specifiers must

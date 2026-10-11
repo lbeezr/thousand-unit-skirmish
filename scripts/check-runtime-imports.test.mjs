@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
-import { BROWSER_ENTRYPOINTS, BROWSER_PACKAGE_IMPORTS, NODE_ONLY_MODULES, RETIRED_RUNTIME_PATHS, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS, checkRuntimeImports, moduleImports, readRuntimeSources, runtimeImportGraph, cyclicEdges } from './check-runtime-imports.mjs';
+import { BROWSER_ENTRYPOINTS, BROWSER_WORKER_ENTRYPOINTS, BROWSER_PACKAGE_IMPORTS, NODE_ONLY_MODULES, RETIRED_RUNTIME_PATHS, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS, checkRuntimeImports, moduleImports, readRuntimeSources, runtimeImportGraph, cyclicEdges } from './check-runtime-imports.mjs';
 
 const AI_POLICIES = ['home-defense', 'objective-rotation', 'reconnaissance', 'regroup', 'skirmish-targets'];
 
@@ -1011,7 +1011,8 @@ test('registered browser package policies match the five shipped HTML entrypoint
       }
     } finally { dom.window.close(); }
   }
-  assert.deepEqual(registered.sort(), [...BROWSER_ENTRYPOINTS].sort());
+  assert.deepEqual(registered.sort(), BROWSER_ENTRYPOINTS.filter(entry => !BROWSER_WORKER_ENTRYPOINTS.includes(entry)).sort());
+  for (const entry of BROWSER_WORKER_ENTRYPOINTS) assert.deepEqual(BROWSER_PACKAGE_IMPORTS[entry], [], 'workers cannot inherit a document import map');
 });
 
 test('browser closure rejects a transitive Node adapter with the full dependency path', () => {

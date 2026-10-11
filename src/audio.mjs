@@ -1,4 +1,4 @@
-import { loadShippedAudio } from './audio-shipped-loader.mjs';
+import { createShippedAudioLoader } from './client/audio/shipped-audio-worker-client.mjs';
 import { createProfileDecisionGate, resolveEventBinding } from './audio-event-profile.mjs';
 import { createDecodedAudioCache } from './client/audio/audio-decoded-cache.mjs';
 import { buildingSelectionTone } from './client/audio/building-selection.mjs';
@@ -53,9 +53,11 @@ export function readAudioSettings(storage = browserStorage()) {
 
 export function createGameAudio({
   civilizationId = 'frontier',
-  defaultReference = null, loadShippedPack = loadShippedAudio,
+  defaultReference = null, loadShippedPack = null,
   storage = browserStorage(), doc = globalThis.document, onStatusChange, onCue, onCueDecision, onProfileCaption, onPackStatus, workNow = () => performance.now(),
 } = {}) {
+  const ownedShippedLoader = loadShippedPack ? null : createShippedAudioLoader();
+  loadShippedPack ||= ownedShippedLoader.load;
   let settings = readAudioSettings(storage);
   let disposed = false;
   let context = null;
@@ -783,6 +785,7 @@ export function createGameAudio({
       disposed = true; packGeneration++;
       decodedCache.clear();
       packAbort?.abort(); stopWork();
+      ownedShippedLoader?.dispose();
       doc?.removeEventListener?.('visibilitychange', onVisibilityChange);
       if (musicTimer !== null) globalThis.clearInterval(musicTimer);
       if (duckTimer !== null) globalThis.clearTimeout(duckTimer);

@@ -7,10 +7,13 @@ import { moduleImports } from './module-imports.mjs';
 // Preserve the existing audit helper's public import path.
 export { moduleImports } from './module-imports.mjs';
 
-// Entry modules loaded by the five shipped HTML pages. main.js is reached lazily.
+// Module workers have their own import scope, independent of HTML import maps.
+export const BROWSER_WORKER_ENTRYPOINTS = ['src/client/audio/shipped-audio-worker.mjs'];
+// Five shipped HTML pages plus the audio worker. main.js is reached lazily.
 export const BROWSER_ENTRYPOINTS = [
   'src/game-entry.mjs', 'src/audio-studio.mjs', 'src/audio-zones.mjs',
   'src/studies/environment/review.mjs', 'src/studies/water/preview.mjs',
+  ...BROWSER_WORKER_ENTRYPOINTS,
 ];
 // Native ESM package imports are scoped to each HTML document's import map.
 export const BROWSER_PACKAGE_IMPORTS = {
@@ -19,6 +22,7 @@ export const BROWSER_PACKAGE_IMPORTS = {
   'src/audio-zones.mjs': [],
   'src/studies/environment/review.mjs': ['three'],
   'src/studies/water/preview.mjs': ['three'],
+  'src/client/audio/shipped-audio-worker.mjs': [],
 };
 export const SERVER_ENTRYPOINTS = ['room-supervisor.mjs', 'server.mjs'];
 // Reviewed migrations update every tracked consumer. Reject returning copies
@@ -126,6 +130,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'client/hud/match-recap', 'client/hud/match-decisions',
     'client/hud/resource-format', 'client/hud/population-readout', 'client/hud/objective-summary',
     'client/audio/audio-decoded-cache', 'client/audio/audio-shipped-response',
+    'client/audio/shipped-audio-worker-client', 'client/audio/shipped-audio-worker',
     'client/audio/composer',
     'client/audio/library-store',
     'client/audio/library-ui',
