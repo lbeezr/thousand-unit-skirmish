@@ -245,3 +245,55 @@ and [Skiff identity](qa-evidence/hud-iab-2026-10-11/skiff-corrected.jpg).
 The measured wrapped header is 95px; the visible notice begins at 121px. Dock
 selection now omits unsupported rally guidance while Barracks retains it.
 The temporary tab and local supervisor were closed after review.
+
+
+A further native check used clean merged source `978ebb6531b639a8ab48390d0e8ba2435c1fbac1`
+with the same `5815075e…` runtime digest and the retained
+[160-cell wildlife fixture](qa-evidence/hud-iab-2026-10-11/hud-wildlife-review.json).
+Azure naturally claimed and herded Sheep, then harvested a carcass through its
+contextual action. Comfortable spacing was reviewed at 1024, 1280 and a genuine
+full-page 1920×1080 frame. Ember joined the same owned local room through ordinary
+Join UI and verified paid Barracks/House construction, population blocking,
+training cancellation/refund, full five-unit queue, army/mixed selection and the
+Boughward Worker portrait. The [dated review](qa-evidence/hud-iab-2026-10-11/review.json)
+records exact observations and image hashes. These checks narrow the local gap;
+they do not establish staging acceptance or an exhaustive state/viewport matrix.
+
+The comfortable 1024 frame exposed a long notice overlapping the objective/camera
+row and carcass guidance still offering Herd/Stop. The bounded correction follows
+the existing measured controls bottom, wraps notices inside the viewport, removes
+duplicated harvest copy, and refreshes guidance when the selected Sheep becomes a
+carcass. Visual backing is the retained Obsidian specimen and before/after frames.
+
+
+Correction review used clean source `000bae00ed7018da957fff11eaa11a079f1a4c12`,
+release digest `sha256:595dcec5ac7c7768ee944c731260f88a70ca7b08d371f8f4a02701ec74cd57e9`.
+Native Ember Gather turned the selected Sheep into a carcass without reselection;
+the guidance switched immediately to Harvest. The
+[corrected notice](qa-evidence/hud-iab-2026-10-11/carcass-notice-corrected-1024.jpg)
+sits at y173 below the objective/camera row, with the full text inside 1024×768.
+The [transition frame](qa-evidence/hud-iab-2026-10-11/carcass-transition-corrected-1024.jpg)
+retains the authoritative food stock and contextual Harvest action. Armed transition
+coverage is CPU/DOM evidence; the attempted native arm arrived after Herd was hidden.
+
+
+The user then explicitly authorized resignation of the disposable local Ember
+seat. Both teams received the correct defeat/victory result and private-bank recap
+at 1024×768 comfortable spacing. The retained
+[initial defeat frame](qa-evidence/hud-iab-2026-10-11/ember-defeat-1024.jpg)
+exposed Match Controls covering the result; the correction closes HUD panels once
+on the running-to-terminal transition, preserving postmatch menu use thereafter.
+
+
+The final result correction was verified at clean source
+`bd60c63c8bbee3f93d95b9c428b554ce163a9a93`, runtime digest
+`sha256:b526b5ab75a3a0f1a60cd937952841a078fa8aec87009a4a307c90465abc4f1d`.
+After host Play again in the same owned room, Ember's authorized resignation
+closed Match Controls automatically and exposed the
+[complete defeat panel](qa-evidence/hud-iab-2026-10-11/ember-defeat-corrected-1024.jpg).
+Postmatch settings remained usable; both origins were restored to Compact,
+viewport overrides reset, temporary game tabs closed and the owned server drained.
+All 289 focused HUD/layout/input/result tests passed, including real HTTP/WebSocket
+Herd/Stop, plus type, architecture and documentation checks. Startup texture and
+House foundation-art warnings are retained; no full-suite or staging-render pass
+is claimed. Independent review has no remaining actionable finding in this slice.

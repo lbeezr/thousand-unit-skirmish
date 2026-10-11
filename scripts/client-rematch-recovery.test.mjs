@@ -79,6 +79,8 @@ function fixture(team) {
     mapDefinition:map, currentArmySize:24, matchWinner:-1, matchWinnerReason:null,
     activeMatchMode: {}, knownMaps: [], matchModeView: { update(value) { modeViews.push(value); } },
     latestMatchElapsedSeconds:0, matchResult:element('result'), TEAM_NAMES:['Azure','Ember'],
+    matchMenu:element('match-menu'),helpPanel:element('help-panel'),hudScrim:element('hud-scrim'),
+    matchMenuToggle:element('match-menu-toggle'),helpToggle:element('help-toggle'),clearHeldCameraKeys:noop,
     buildPlacementActive:false, buildPlacementPending:false, attackMoveMode:false, tapOrderArmed:false,
     persistentTargetMode:null,tapOrderPointer:null,selectedBuildingId:null,
     activeControlGroup:null,lastControlGroupRecall:null,buildingVisuals:new Map(),
@@ -105,6 +107,7 @@ function fixture(team) {
   context.welcomeSession = createWelcomeSession({ getStorage: () => context.sessionStorage,
     sessionKey: context.ROOM_SESSION_STORAGE_KEY, instanceKey: 'fixture-instance', matchKey: 'fixture-match' });
   vm.runInContext([
+    declaration('closeHudPanels','closeScenarioBrief'),
     declaration('updateMatchArmySizeControls','applyLobby'),
     wildlifeClientFunctionSource(source), declaration('clearActiveControlGroup','assignControlGroup'),
     declaration('syncMatchResultActions','updateMatchResult'),declaration('updateMatchResult','updateCommandUI'),

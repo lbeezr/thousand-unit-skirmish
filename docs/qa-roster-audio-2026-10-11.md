@@ -233,3 +233,29 @@ the imported map, without claiming gameplay acceptance. Additional frame,
 transport-lifecycle and pending-state observations are needed to distinguish
 missing refresh delivery from a delayed presentation frame. The normal
 publication gate remains enforced.
+
+The [seventh run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38166757436)
+at runner source `f66ec36e` reached the same failure on served `978ebb65`.
+Its [timing receipt](qa-evidence/interaction-audio-2026-10-11/roster-seventh-cloud.json)
+records 74 native frames, a 3,183 ms final frame gap and a 6,166 ms maximum,
+with only twelve units. The page remained visible and focused. One socket
+closed abnormally (1006), and recovery had applied zero frame updates. These
+observations establish a severe frame stall; they do not separately attribute
+CPU versus GPU cost or the transport closure. The displayed FPS is not a valid
+measurement here because its frame delta is clamped to 0.1 seconds.
+
+The bounded candidate keeps animation-frame scheduling, authoritative state
+application, waypoint updates and connection recovery running while Map Studio
+is open, then skips the obscured battlefield's animation/render work and all
+post-render evidence counters. The editor canvas remains event-driven. Closing
+Studio resumes the ordinary presentation path on its next native frame.
+The real Main-loop regression consumes a correlated fresh recovery reply while
+editing and confirms the closed-dialog path resumes. Validation includes 67
+focused tests; staging candidate acceptance is still pending.
+
+Visual backing is the inspected [existing Studio treatment](qa-evidence/interaction-audio-2026-10-11/roster-studio-before.png).
+The intended sequence retains this editor and the last battlefield frame behind
+its backdrop while editing, then resumes the live battlefield after close.
+No assets, style, editor layout or gameplay state change. The next ordinary
+open/import/Save & Play run must establish recovery and the returned game frame;
+this source change alone does not close the audio goal.

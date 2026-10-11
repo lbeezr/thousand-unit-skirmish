@@ -2,8 +2,42 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
+import { parse } from 'acorn';
+import { runInNewContext } from 'node:vm';
+import { BrowserStateRecovery } from '../src/browser-state-recovery.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
+
+test('Studio consumes fresh recovery state without rendering and resumes the battlefield when closed', () => {
+  const declaration = parse(source, { ecmaVersion: 'latest', sourceType: 'module' }).body
+    .find(node => node.type === 'FunctionDeclaration' && node.id.name === 'animate');
+  const recovery = new BrowserStateRecovery();
+  const state = { serverInstanceId: 'server', matchId: 'match', tick: 1, lobby: null };
+  recovery.reset(state, 0); recovery.frame(0);
+  recovery.resume(3000); const request = recovery.poll(3000);
+  const current = { ...state, tick: 100, stateRefreshId: request.stateRefreshId };
+  recovery.receive(current, 3010);
+  const scheduled = [], applied = [], polls = [];
+  const battlefield = new Error('Reached ordinary battlefield presentation');
+  const context = { requestAnimationFrame: callback => scheduled.push(callback),
+    document: { visibilityState: 'visible' }, browserStateRecovery: recovery,
+    clearSuspendedInput() {}, applyLobby() {}, applyState: (...args) => applied.push(args),
+    applyWaypointQueueCounts() {}, serviceBrowserRecovery: () => polls.push(true),
+    ui: { mapStudio: { open: true } }, previousTime: 0,
+    cursorPointer: null, wallKeyboardCell: null, wallPlacementGesture: {}, pendingWallPreview: null,
+    moveKeyboardCamera() { throw battlefield; } };
+  const animate = runInNewContext(`(${source.slice(declaration.start, declaration.end)})`, context);
+  animate(3020);
+  assert.equal(recovery.recovering, false, 'fresh state is applied while editing');
+  assert.deepEqual(applied, [[current, false, true]]);
+  assert.equal(context.previousTime, 3020);
+  animate(3036);
+  assert.equal(polls.length, 2, 'connection service continues on each editor frame');
+  assert.equal(scheduled.length, 2, 'the ordinary animation loop stays scheduled');
+  context.ui.mapStudio.open = false;
+  assert.throws(() => animate(3052), error => error === battlefield);
+  assert.equal(scheduled.length, 3, 'closing Studio resumes the ordinary presentation path');
+});
 function between(start, end) {
   const a = source.indexOf(start), b = source.indexOf(end, a + start.length);
   assert.ok(a >= 0 && b > a, `Production boundary: ${start}`);

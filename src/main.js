@@ -4494,6 +4494,7 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
   const isDraw = winner === 2 && ['capture-hold', 'elimination', 'timed-control', 'stronghold-destruction', 'agreed-draw'].includes(reason);
   matchWinner = Number.isInteger(winner) && ([0, 1].includes(winner) || isDraw) ? winner : -1;
   if (previousWinner < 0 && matchWinner >= 0) {
+    closeHudPanels();
     audio.playEvent({ cue: matchWinner === 2 ? 'draw' : matchWinner === localTeam ? 'victory' : 'defeat' });
   }
   matchWinnerReason = matchWinner >= 0 ? reason : null;
@@ -7733,12 +7734,15 @@ function applyWildlifeState(state, initial = false) {
     latestWildlifeView = wildlifePositionMemory = null;
   }
   const view = readDisclosedWildlife(mapDefinition, state, localTeam, wildlifePointVisible);
+  const previousLifecycle = latestWildlifeView?.rows.get(selectedWildlifeId)?.wildlifeState;
   if (selectedWildlifeId !== null
     && reconcileWildlifeSelection(selectedWildlifeId, selectedWildlifeView, view) === null) clearWildlifeSelection();
   if (view?.rows.get(selectedWildlifeId)?.wildlifeState === 'carcass') {
     tapOrderArmed = false; tapOrderPointer = null;
   }
   latestWildlifeView = view;
+  if (selectedWildlifeId !== null && previousLifecycle !== view?.rows.get(selectedWildlifeId)?.wildlifeState)
+    updateBuildPlacementHint();
   wildlifePositionMemory = updateWildlifePositionMemory(wildlifePositionMemory, view);
   wildlifeRenderer.reconcile(view ? [...view.rows.values()] : [], wildlifePointVisible);
   for (const node of mapDefinition?.resourceNodes || []) {
@@ -7775,7 +7779,7 @@ function selectWildlife(node) {
   updateCommandUI();
   updateEconomyUI();
   showToast(selectedWildlife().wildlifeState === 'carcass'
-    ? `${wildlifeSelectionSummary(selectedWildlife())} · HARVEST WITH WORKERS`
+    ? wildlifeSelectionSummary(selectedWildlife())
     : 'SHEEP SELECTED · HERD TO VISIBLE CLEAR LAND · STOP · S');
   updateBuildPlacementHint();
   audio.playEvent({ cue: 'select' });
@@ -8248,6 +8252,7 @@ function updateBuildPlacementGhost(clientX, clientY) {
 
 function updateBuildPlacementHint() {
   const guidance = document.querySelector('.field-hint');
+  const wildlife = selectedWildlife();
   const forced = buildPlacementActive || tapOrderArmed;
   guidance.classList.toggle('guidance-dismissed', guidanceDismissed && !forced);
   const guidanceToggle = document.querySelector('#guidance-toggle');
@@ -8265,10 +8270,12 @@ function updateBuildPlacementHint() {
   if (ui.fieldHintAction) ui.fieldHintAction.textContent = buildPlacementActive ? `PLACE ${activeLabel}`
     : tapOrderArmed ? 'ISSUE ORDER' : coarsePointer ? 'SELECT UNITS' : 'DRAG TO SELECT';
   if (ui.fieldHintSecondaryKey) ui.fieldHintSecondaryKey.textContent = buildPlacementActive
-    ? coarsePointer ? 'BUILD' : 'RMB / ESC' : tapOrderArmed ? 'ESC' : coarsePointer ? 'ORDERS' : 'RMB';
+    ? coarsePointer ? 'BUILD' : 'RMB / ESC' : tapOrderArmed ? 'ESC'
+      : wildlife?.wildlifeState === 'carcass' ? 'HARVEST' : coarsePointer ? 'ORDERS' : 'RMB';
   if (ui.fieldHintSecondary) ui.fieldHintSecondary.textContent = buildPlacementActive
     ? coarsePointer ? 'TAP BUTTON TO CANCEL' : 'CANCEL'
-    : tapOrderArmed ? 'CANCEL TARGET' : selectedWildlife() ? 'HERD / STOP · S' : coarsePointer ? 'TAP TARGET' : 'MOVE / ATTACK';
+    : tapOrderArmed ? 'CANCEL TARGET' : wildlife?.wildlifeState === 'carcass' ? 'NEAREST IDLE WORKER'
+      : wildlife ? 'HERD / STOP · S' : coarsePointer ? 'TAP TARGET' : 'MOVE / ATTACK';
   if (ui.placementStatus) {
     ui.placementStatus.hidden = !buildPlacementActive;
     ui.placementStatus.textContent = wall ? 'DRAG A LINE · SHIFT: OTHER BEND · ARROWS / ENTER: KEYBOARD'
@@ -10770,6 +10777,12 @@ function animate(now) {
   const waypointCounts = browserStateRecovery.takeWaypointCounts();
   if (waypointCounts !== null) applyWaypointQueueCounts(waypointCounts);
   serviceBrowserRecovery();
+  // Studio owns the foreground canvas. Keep authoritative state/recovery live,
+  // but do not spend a slow GPU frame redrawing the obscured battlefield.
+  if (ui.mapStudio.open) {
+    previousTime = now;
+    return;
+  }
   if ((cursorPointer || wallKeyboardCell || wallPlacementGesture.anchor || pendingWallPreview) && now - lastCursorSample >= 100) {
     lastCursorSample = now;
     if (buildPlacementActive) updateBuildPlacementGhost(cursorPointer?.x, cursorPointer?.y);

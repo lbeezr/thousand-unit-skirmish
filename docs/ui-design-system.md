@@ -2,8 +2,10 @@
 
 **Status — 11 October 2026:** the user selected the **72px portrait** and
 accepted the **Obsidian Worker HUD pilot** in staging and authorized wider
-HUD/UI rollout. The selected-building dock is the next implementation slice;
-army/mixed and remaining surfaces follow in incremental changes. Owner: HUD redesign task
+HUD/UI rollout. Building, army/mixed/Skiff and shared match surfaces are now
+staged. The authorized local game review covers their principal interactions;
+remaining hosted and both-seat coverage is explicit in the
+[acceptance record](qa-evidence/hud-iab-2026-10-11/review.json). Owner: HUD redesign task
 `01a12b67-645a-7a33-8fb2-8e8979756ac1`.
 
 The user's central complaint is that unrelated global controls obscure the
