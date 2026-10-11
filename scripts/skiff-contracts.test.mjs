@@ -90,12 +90,29 @@ for (const team of [0, 1]) test(`Dock/Skiff command controls state their usable 
   });
   vm.runInContext(wildlifeClientFunctionSource(client) + extract(client, 'buildingSupportsRally', 'appendUnitFromState'), context);
   assert.equal(context.buildingSupportsRally('dock'), false); assert.equal(context.buildingSupportsRally('barracks'), true);
-  context.updateCommandUI(); assert.match(context.ui.commandHint.textContent, /Train a Skiff \(placeholder\)/);
+  assert.equal(UNIT_DEFINITIONS.skiff.label, 'Skiff');
+  context.updateCommandUI(); assert.equal(context.ui.commandHint.textContent, 'Train a Skiff · owned boats deliver food at this Dock · no rally.');
   assert.equal(context.ui.buildingCommandDetails.hidden, true);
   context.selectedBuildingId = null; context.attackMoveMode = true; context.persistentTargetMode = 'patrol'; context.updateCommandUI();
   assert.equal(context.attackMoveMode, false); assert.equal(context.persistentTargetMode, null);
   assert.match(context.ui.commandHint.textContent, /Select Skiffs/); assert.equal(context.ui.attackMoveToggle.disabled, true);
   assert.ok(buttons.every(button => button.disabled)); assert.equal(context.ui.formationSelect.disabled, true);
+});
+
+test('Dock selection notice avoids unsupported rally instructions while Barracks keeps them', () => {
+  const notices = [];
+  const context = vm.createContext({ BUILDING_DEFINITIONS, selected: new Set(), localTeam: 0,
+    buildingVisuals: new Map(), clearWildlifeSelection() {}, clearActiveControlGroup() {},
+    syncSelectionMesh() {}, updateSelectionUI() {}, showToast: text => notices.push(text),
+    buildingLabel: type => BUILDING_DEFINITIONS[type].label,
+    window: { matchMedia: () => ({ matches: false }) }, audio: { playEvent() {} },
+  });
+  vm.runInContext(extract(client, 'buildingSupportsRally', 'buildingSupportsResearch')
+    + extract(client, 'selectBuilding', 'pickFriendly'), context);
+  context.selectBuilding({ id: 1, team: 0, type: 'dock' });
+  assert.equal(notices.at(-1), 'Dock SELECTED');
+  context.selectBuilding({ id: 2, team: 0, type: 'barracks' });
+  assert.equal(notices.at(-1), 'Barracks SELECTED · RIGHT-CLICK GROUND TO SET RALLY');
 });
 
 test('Skiff right-click admits a shore fish source, otherwise water Move, without combat/follow picking', () => {

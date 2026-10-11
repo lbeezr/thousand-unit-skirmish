@@ -1,5 +1,5 @@
 {
-  "reviewedAt": "2026-10-11T18:27:45.460054+00:00",
+  "reviewedAt": "2026-10-11T18:43:41.582196+00:00",
   "owner": "HUD redesign chat 01a12b67-645a-7a33-8fb2-8e8979756ac1",
   "authorization": "User explicitly allowed the bounded in-app browser HUD check on the Mac. This overrides the start skill restriction for this check only.",
   "environment": "Local packaged game through Codex in-app browser; no staging game acceptance",
@@ -36,6 +36,21 @@
       "issue": "Unfinished selected Barracks says SELECT A COMPLETED BUILDING THAT PRODUCES THIS UNIT.",
       "fix": "FINISH CONSTRUCTION TO TRAIN, with unchanged action availability.",
       "status": "fixed; verified through normal paid construction in a second ordinary New Game"
+    },
+    {
+      "issue": "Dock training notice is partly obscured by wrapped 94px header at 1280x720.",
+      "fix": "Position notice below the existing measured header height, preserving 80px placement for the default 54px header.",
+      "status": "fixed and visually verified in clean integrated package"
+    },
+    {
+      "issue": "Skiff name and Dock hint expose placeholder production wording.",
+      "fix": "Use Skiff in player-facing name and hint; retain provisional art documentation.",
+      "status": "fixed and visually verified in clean integrated package"
+    },
+    {
+      "issue": "Dock selection toast offered unsupported rally action.",
+      "fix": "Use existing buildingSupportsRally predicate for selection notices.",
+      "status": "fixed; actual selection toast reads DOCK SELECTED; Barracks guidance retained by regression test"
     }
   ],
   "console": {
@@ -50,7 +65,6 @@
   },
   "remaining": [
     "Staging native interaction and rendered acceptance",
-    "Skiff and land/water mixed selection",
     "Owned wildlife and carcasses",
     "Seat 1, comfortable HUD spacing, long queues, lifecycle and victory",
     "Full-width 1920 screenshot"
@@ -191,6 +205,70 @@
         720
       ],
       "sha256": "a3652542c72670205f4f20fcf78acf25f844a00ab0c6e01f1ad5b780096f4971"
+    },
+    {
+      "file": "dock-training.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "5c6a73b2ba733b3c6e8c76ac13400f8ff2dc10b9a822e7c8e6a43ff047a239c9"
+    },
+    {
+      "file": "skiff.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "1350c2f53adb910a9be076ae0a923e92a6a9fa206a3407b71f17077561e1efaf"
+    },
+    {
+      "file": "skiff-moving.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "ac4f041b210d4e15206a24fbd303e1bb55c6e9b33c1b8bbf5425e6dfa5c4c0d3"
+    },
+    {
+      "file": "skiff-arrived.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "7bace48670fa16d24ce25fd8a6e1a202188a53b3a5a6cc0d5a46e4aa3f640787"
+    },
+    {
+      "file": "skiff-worker-mixed.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "4bdc82e4d13c1709d1b8515f03c4f545a64d371de706190f9597301e51635ffb"
+    },
+    {
+      "file": "dock-notice-corrected.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "f08fc3bd1bc3add322c3c43712216a790426660cb1df4a4cfb8304a614bad91a"
+    },
+    {
+      "file": "dock-selection-corrected.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "ce48de03bb591ac8d0c9aaeeccb8acfb0f6b6215229fe7bdb356cda92e87ee35"
+    },
+    {
+      "file": "skiff-corrected.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "800e3f454689efc6502edec1497c700da89bbf86ffc515fe31abaf50760f4e24"
     }
   ],
   "complete": false,
@@ -207,5 +285,67 @@
     "observation": "Barracks selected at 66\u201368% construction. Both training actions remain disabled with FINISH CONSTRUCTION TO TRAIN.",
     "file": "barracks-construction-corrected.jpg"
   },
-  "cleanup": "Temporary test tab closed, viewport override reset, owned local supervisor drained; saved test rooms preserved in temporary data directory."
+  "cleanup": "All temporary test tabs closed, viewport override reset, owned local supervisors drained; saved test rooms preserved in temporary data directory.",
+  "skiffCheck": {
+    "environment": "Local clean packaged ordinary game, native in-app browser input",
+    "identity": {
+      "status": "identified",
+      "origin": "packed-manifest",
+      "sourceRevision": "eb437cc22d823bf4dbf3f9e2cd7e4e74130e38ae",
+      "sourceDirty": false,
+      "digest": "sha256:fb6389185bbb828956ca1e4e7fc3c6b54230c3cff7be6263cef9c1d871950c6f"
+    },
+    "entry": "Map Studio Import JSON, Save & Play, owned fresh room, Azure seat 0, waiting for player 2",
+    "fixture": "hud-skiff-review.json",
+    "observations": [
+      "Published 160x160 HUD Skiff Review fixture through ordinary Map Studio controls.",
+      "Paid 100 wood for Dock; construction progressed from 33% to Ready. Paid 75 wood to train Skiff; queue completed and population rose 12 to 13.",
+      "Selected Skiff shows Water Economy, 120/120 health, cargo, water orders, and disabled empty-cargo Return; army combat buttons absent.",
+      "Native right-click water Move changed Skiff position through arrival. Native Stop confirmed.",
+      "Shift-click Worker produced land/water mixed selection: Target, Attack move, Patrol and Follow blocked with Select land units or Skiffs separately; Stop/Hold available."
+    ],
+    "limits": [
+      "Basic Skiff orders and mixed-domain HUD only; fishing/cargo cycle not verified.",
+      "Local browser tab closed unexpectedly after training; rejoining the same owned room retained the paid Skiff."
+    ],
+    "screenshots": [
+      "dock-training.jpg",
+      "skiff.jpg",
+      "skiff-moving.jpg",
+      "skiff-arrived.jpg",
+      "skiff-worker-mixed.jpg"
+    ]
+  },
+  "noticeCorrectionCheck": {
+    "identity": {
+      "status": "identified",
+      "origin": "packed-manifest",
+      "sourceRevision": "b7b896b7a748cb07fb920e3bc7ce003141c7e38a",
+      "sourceDirty": false,
+      "digest": "sha256:5815075e64cd7db21d15890bc22bb701a6ebc61c21004d9fda74ef049b43812b"
+    },
+    "observations": [
+      "Dock selection notice reads DOCK SELECTED with no unsupported rally instruction.",
+      "Wrapped header CSS height is 95px; visible notice top measured 121px, clearing it by 26px.",
+      "Skiff selection identity, composition and Dock training button show Skiff without internal placeholder wording.",
+      "All corrected screenshots visually reviewed."
+    ],
+    "screenshots": [
+      "dock-selection-corrected.jpg",
+      "skiff-corrected.jpg"
+    ],
+    "intermediateCheck": {
+      "sourceRevision": "ccb504867857e4508f4e72d4e84ab152cf1c263e",
+      "digest": "sha256:40e0d2635cb5cd5ac0db8b00ca5bd7f5dd0e12565aac588b42ad3d1ba5ae813e",
+      "file": "dock-notice-corrected.jpg",
+      "observation": "Paid second Skiff; visible queue notice cleared wrapped header. This check exposed the separate Dock rally toast and preceded its correction."
+    },
+    "checks": [
+      "138 focused building/unit/context/Skiff tests passed before rally correction",
+      "10 Skiff tests passed with final rally correction",
+      "47 Skiff and Join Room tests plus both type projects passed after main integration",
+      "Architecture, documentation and whitespace checks passed",
+      "Independent review approved all runtime corrections"
+    ]
+  }
 }
