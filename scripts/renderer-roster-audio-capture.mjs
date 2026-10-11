@@ -19,6 +19,60 @@ const sourcePaths = ['src/main.js', 'src/game-entry.mjs', 'src/audio.mjs', 'src/
   'src/audio-shipped-loader.mjs', 'src/client/audio/shipped-audio-worker-client.mjs', 'src/client/audio/shipped-audio-worker.mjs'];
 const manifestPath = `assets/audio/runtime/${DEFAULT_GAME_AUDIO_REFERENCE.packId}/${DEFAULT_GAME_AUDIO_REFERENCE.version}/manifest.json`;
 
+// Observe native scheduling and transport lifecycle without reading URLs,
+// messages or close reasons. Each document stops observing after five minutes.
+export function installRosterTimingProbe() {
+  const startedAt = performance.now(), maximumMs = 300000;
+  const probe = window.__rtsRosterTiming = { active: true, frames: 0, lastGapMs: 0, maxGapMs: 0,
+    socketOpens: 0, socketCloses: 0, closeCodes: {} };
+  let lastFrame = null, frameId;
+  const sockets = new Set(), NativeWebSocket = window.WebSocket;
+  const active = () => probe.active && performance.now() - startedAt < maximumMs;
+  const knownCodes = new Set([1000, 1001, 1002, 1003, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1015, 4001, 4002]);
+  const ObservedWebSocket = new Proxy(NativeWebSocket, { construct(target, args, newTarget) {
+    const socket = Reflect.construct(target, args, newTarget);
+    if (!active()) return socket;
+    const opened = () => { if (active()) probe.socketOpens = Math.min(1000, probe.socketOpens + 1); };
+    const cleanup = () => { socket.removeEventListener('open', opened); socket.removeEventListener('close', closed); sockets.delete(cleanup); };
+    const closed = event => {
+      if (active()) {
+        probe.socketCloses = Math.min(1000, probe.socketCloses + 1);
+        const code = knownCodes.has(event.code) ? String(event.code) : 'other';
+        probe.closeCodes[code] = Math.min(1000, (probe.closeCodes[code] || 0) + 1);
+      }
+      cleanup();
+    };
+    socket.addEventListener('open', opened); socket.addEventListener('close', closed); sockets.add(cleanup);
+    return socket;
+  } });
+  window.WebSocket = ObservedWebSocket;
+  const stop = () => {
+    probe.active = false; cancelAnimationFrame(frameId);
+    for (const cleanup of sockets) cleanup();
+    if (window.WebSocket === ObservedWebSocket) window.WebSocket = NativeWebSocket;
+  };
+  const frame = now => {
+    if (!active() || probe.frames >= 20000) { stop(); return; }
+    if (Number.isFinite(now)) {
+      const gap = lastFrame === null ? 0 : Math.max(0, now - lastFrame);
+      probe.frames++; probe.lastGapMs = gap; probe.maxGapMs = Math.max(probe.maxGapMs, gap); lastFrame = now;
+    }
+    frameId = requestAnimationFrame(frame);
+  };
+  frameId = requestAnimationFrame(frame);
+  setTimeout(stop, maximumMs);
+}
+
+const entryStages = new Set(['menu', 'join-owned-review-room', 'owned-room-reload', 'open-studio',
+  'open-match-menu', 'menu-open', 'open-studio-control', 'studio-open', 'import-map',
+  'publish-readiness', 'publish-control', 'publish-result', 'frame-play-area']);
+export function appendRosterEntryProgress(report, step, elapsedMs) {
+  assert.ok(entryStages.has(step) && Number.isFinite(elapsedMs) && elapsedMs >= 0, 'fixed entry stage and finite elapsed time required');
+  report.entryStage = step;
+  report.entryProgress ??= [];
+  if (report.entryProgress.length < 32) report.entryProgress.push({ stage: step, elapsedMs });
+}
+
 // Deliberately no access to protected /health, cookies, tokens or auth headers.
 // These public bytes bind evidence to checkout files, not to a deployment SHA
 // or clean-release digest. The owner records those identities separately.
@@ -138,7 +192,13 @@ export function rosterEntryControls() {
     return { present: true, disabled: element.disabled === true || element.getAttribute('aria-disabled') === 'true',
       visible, inViewport, hit: inViewport && element.contains(document.elementFromPoint(x, y)) };
   };
-  return { menuHidden: document.querySelector('#match-menu')?.hidden ?? null,
+  const number = selector => {
+    const value = document.querySelector(selector)?.textContent.trim().replaceAll(',', '') ?? '';
+    return /^\d+(?:\.\d+)?$/.test(value) && Number.isFinite(Number(value)) && Number(value) <= 1000000000 ? Number(value) : null;
+  };
+  return { focused: document.hasFocus(), visible: document.visibilityState === 'visible',
+    unitTotal: number('#unit-total'), fps: number('#fps-value'), draws: number('#draw-value'),
+    menuHidden: document.querySelector('#match-menu')?.hidden ?? null,
     menuExpanded: document.querySelector('#match-menu-toggle')?.getAttribute('aria-expanded') === 'true',
     scrimHidden: document.querySelector('#hud-scrim')?.hidden ?? null,
     dialogs: { anyOpen: Boolean(document.querySelector('dialog[open]')),
@@ -182,7 +242,7 @@ export async function enterRosterRoom(page, origin, map, mapFile, mapBytes, prog
   } else {
     assert.equal(await page.cdp.evaluate('location.href'), 'about:blank', 'fresh isolated context required');
     await page.cdp.call('Page.addScriptToEvaluateOnNewDocument', { source: `window.__rtsCaptureDiagnostics=true;
-      (${installInteractionAudioProbe.toString()})();(${installCatalogImportObserver.toString()})()` });
+      (${installInteractionAudioProbe.toString()})();(${installCatalogImportObserver.toString()})();(${installRosterTimingProbe.toString()})()` });
     await progress('menu');
     await page.cdp.call('Page.navigate', { url: `${origin}/` });
     await page.wait(`document.documentElement?.dataset.entry === "menu" && document.querySelector(${JSON.stringify(joiningReviewRoom ? '#menu-join' : '#menu-studio')})?.disabled === false`, 'ordinary menu');
@@ -375,7 +435,7 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
   }
   try {
     report.entry = await enterRosterRoom(page, origin, map, mapFile, mapBytes,
-      async step => { stage = `ordinary-entry-${step}`; report.entryStage = step; await persist(); }, reuseRoom, reviewRoom);
+      async step => { stage = `ordinary-entry-${step}`; appendRosterEntryProgress(report, step, Date.now() - startedAt); await persist(); }, reuseRoom, reviewRoom);
     await persist();
     stage = 'default-audio-ready';
     await page.wait(`${stateExpression}.inspector.bindings.length === ${Object.keys(bindings).length} && ${stateExpression}.inspector.bindings.every(b => b.sources.every(s => s.available))`, 'all default samples available', 35000);
@@ -485,7 +545,9 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
         return { boot:document.documentElement?.dataset.boot ?? null, mapId:s?.mapId ?? null, audioStatus:s?.status ?? null,
         recovery:recovery ? { recovering:recovery.recovering, socketState:recovery.socketState,
           tick:recovery.tick, applied:recovery.applied, visible:recovery.visibility === 'visible',
+          pendingCount:recovery.pendingCount,refreshPending:recovery.refreshPending,coalesced:recovery.coalesced,
           status:[null,'BACKGROUND','SYNCING CURRENT STATE','AWAITING SERVER RESPONSE','SERVER NOT ADVANCING'].includes(recovery.status) ? recovery.status : 'unknown' } : null,
+        timing:window.__rtsRosterTiming ?? null,
         studioOpen:document.querySelector('#map-studio')?.open === true, importObserved:window.__rtsCatalogMapImport?.ok === true,
         entryControls:(${rosterEntryControls.toString()})(),
         studioFailureCode:${studioFailureExpression},

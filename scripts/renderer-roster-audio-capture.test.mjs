@@ -13,7 +13,7 @@ import { createMapDefinitionValidator } from '../src/server/map-definition-valid
 import { mapSizeIdentity } from '../src/map-size-policy.mjs';
 import { assertMatchModeCompatibility } from '../src/match-modes.mjs';
 import { buildingPad, buildingGroups, paidUnitPlan, recordingCoverage, rosterMap, rosterPlan, rosterSubsets, STAGING_ORIGIN, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
-import { captureRosterStudioFailure, enterRosterRoom, frameRosterArea, identifyPublicAudioSource, openRosterStudio, persistRosterRecording, rosterCaptureFailureCode, rosterControlPoint, rosterEntryControls, rosterPublishReady, rosterStudioFailureCode, rosterStudioFailureView, validateReviewRoom, validateRosterFrame } from './renderer-roster-audio-capture.mjs';
+import { appendRosterEntryProgress, captureRosterStudioFailure, enterRosterRoom, frameRosterArea, identifyPublicAudioSource, installRosterTimingProbe, openRosterStudio, persistRosterRecording, rosterCaptureFailureCode, rosterControlPoint, rosterEntryControls, rosterPublishReady, rosterStudioFailureCode, rosterStudioFailureView, validateReviewRoom, validateRosterFrame } from './renderer-roster-audio-capture.mjs';
 import { observeRosterBrowser, rosterMatrix, runRosterStaging, validateRosterCapability } from './renderer-roster-audio-staging.mjs';
 import { captureWorkerRepair, repairBuildingPoint, validateRepairHealth } from './renderer-roster-audio-repair.mjs';
 
@@ -24,6 +24,54 @@ const validator = createMapImportValidator({ maxPerTeam: 1000, maxResourceNodes:
   maxScenarioEventRepeats: 20, minScenarioEventRepeatSeconds: 5, maxObjectiveFoodReward: 10000, maxTriggerUnitReward: 25,
   obstacleMaterials: ['stone', 'forest', 'water'] });
 const capability = () => ({ status: 'ready', webglReadbackPassed: true, sandbox: 'enabled', launchAttempts: 1, source: { revision, dirty: false } });
+
+test('timing probe preserves native socket construction and observes only bounded frame and transport facts', () => {
+  let now = 0, next = 0, timeout;
+  const frames = new Map(), instances = [];
+  class NativeSocket {
+    static OPEN = 1;
+    constructor(...args) { this.args = args; this.listeners = new Map(); instances.push(this); }
+    addEventListener(name, handler) { this.listeners.set(name, handler); }
+    removeEventListener(name, handler) { if (this.listeners.get(name) === handler) this.listeners.delete(name); }
+    emit(name, fields = {}) { this.listeners.get(name)?.(fields); }
+  }
+  const window = { WebSocket: NativeSocket };
+  const context = { window, performance: { now: () => now },
+    requestAnimationFrame: callback => { frames.set(++next, callback); return next; },
+    cancelAnimationFrame: id => frames.delete(id), setTimeout: (callback, delay) => { assert.equal(delay, 300000); timeout = callback; } };
+  runInNewContext(`(${installRosterTimingProbe.toString()})()`, context);
+  const original = window.WebSocket, socket = new window.WebSocket('wss://private-room.test/?token=private', ['private-session']);
+  assert.ok(socket instanceof NativeSocket); assert.equal(window.WebSocket.OPEN, 1);
+  assert.deepEqual(socket.args, ['wss://private-room.test/?token=private', ['private-session']]);
+  const frame = time => { now = time; const [id, callback] = frames.entries().next().value; frames.delete(id); callback(time); };
+  frame(16); frame(32); frame(5000);
+  assert.equal(window.__rtsRosterTiming.frames, 3); assert.equal(window.__rtsRosterTiming.lastGapMs, 4968);
+  assert.equal(window.__rtsRosterTiming.maxGapMs, 4968);
+  socket.emit('open'); socket.emit('close', { code: 4002, reason: 'private secret URL' });
+  assert.equal(window.__rtsRosterTiming.socketOpens, 1); assert.equal(window.__rtsRosterTiming.closeCodes['4002'], 1);
+  assert.equal(socket.listeners.size, 0);
+  const second = new window.WebSocket('wss://another-private.test'); second.emit('close', { code: 4999 });
+  assert.equal(window.__rtsRosterTiming.closeCodes.other, 1);
+  const waiting = new window.WebSocket('wss://private-waiting.test');
+  frame(300000);
+  assert.equal(window.__rtsRosterTiming.active, false); assert.equal(window.__rtsRosterTiming.frames, 3);
+  assert.equal(window.WebSocket, NativeSocket); assert.equal(waiting.listeners.size, 0); assert.equal(frames.size, 0);
+  assert.ok(!JSON.stringify(window.__rtsRosterTiming).includes('private'));
+  // A retained constructor reference still forwards natively after the bound,
+  // but cannot reattach observers or extend the capture lifetime.
+  const after = new original('wss://private-after.test'); assert.equal(after.listeners.size, 0);
+  timeout(); assert.equal(window.WebSocket, NativeSocket); assert.equal(instances.length, 4);
+});
+test('entry progress stores only finite elapsed times and fixed stages with a bounded history', () => {
+  const report = {};
+  appendRosterEntryProgress(report, 'menu', 0); appendRosterEntryProgress(report, 'publish-readiness', 12345);
+  assert.deepEqual(report.entryProgress, [{ stage: 'menu', elapsedMs: 0 }, { stage: 'publish-readiness', elapsedMs: 12345 }]);
+  assert.throws(() => appendRosterEntryProgress(report, 'private-room-value', 5));
+  for (const invalid of [NaN, Infinity, -1]) assert.throws(() => appendRosterEntryProgress(report, 'menu', invalid));
+  for (let i = 0; i < 40; i++) appendRosterEntryProgress(report, 'menu-open', i);
+  assert.equal(report.entryProgress.length, 32); assert.equal(report.entryStage, 'menu-open');
+  assert.ok(!JSON.stringify(report).includes('private'));
+});
 
 test('bounded matrix includes every current selection and ordinary supported role orders', () => {
   const planned = rosterSubsets.flatMap(subset => rosterPlan(subset).keys);
@@ -245,12 +293,14 @@ test('ordinary Studio opening distinguishes each control and resulting UI state'
   }
 });
 test('entry controls retain fixed booleans for disabled, hidden, clipped and covered controls without private content', () => {
-  const dom = new JSDOM('<button id="match-menu-toggle" aria-expanded="false">MENU</button><aside id="match-menu" hidden><button id="map-studio-open" disabled>Studio</button></aside><button id="hud-scrim" hidden></button><dialog id="menu-join-dialog"><input value="private-room-token"></dialog><dialog id="room-lobby"></dialog><dialog id="map-studio"></dialog>');
+  const dom = new JSDOM('<button id="match-menu-toggle" aria-expanded="false">MENU</button><aside id="match-menu" hidden><button id="map-studio-open" disabled>Studio</button></aside><button id="hud-scrim" hidden></button><dialog id="menu-join-dialog"><input value="private-room-token"></dialog><dialog id="room-lobby"></dialog><dialog id="map-studio"></dialog><b id="unit-total">1,000</b><strong id="fps-value">—</strong><strong id="draw-value">private-token</strong>');
   const document = dom.window.document, menu = document.querySelector('#match-menu'), toggle = document.querySelector('#match-menu-toggle'), studio = document.querySelector('#map-studio-open');
   toggle.getBoundingClientRect = studio.getBoundingClientRect = () => ({ x: 20, y: 30, width: 80, height: 40 });
   document.elementFromPoint = () => toggle;
   const observe = () => runInNewContext(`(${rosterEntryControls.toString()})()`, { document, innerWidth: 1280, innerHeight: 720 });
   let result = observe();
+  assert.equal(result.unitTotal, 1000); assert.equal(result.fps, null); assert.equal(result.draws, null);
+  assert.equal(typeof result.focused, 'boolean'); assert.equal(typeof result.visible, 'boolean');
   assert.equal(result.menuHidden, true); assert.equal(result.menuToggle.hit, true); assert.equal(result.studioControl.visible, false);
   menu.hidden = false; toggle.setAttribute('aria-expanded', 'true');
   result = observe(); assert.equal(result.menuExpanded, true); assert.equal(result.studioControl.disabled, true); assert.equal(result.studioControl.hit, false);

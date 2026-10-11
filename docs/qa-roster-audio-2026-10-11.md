@@ -222,3 +222,14 @@ keeps all thirteen later subsets not run. Its combined opening stage cannot
 identify which control or modal prevented progress. The next runner revision
 records the individual menu/control transitions and fixed UI states to resolve
 this without inferring an audio failure or changing gameplay speculatively.
+
+Runner-only [run 38166129247](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38166129247)
+at `c64353ec` matched the same served runtime, opened Studio and imported the
+160-cell map. It failed at `publish-readiness` after 109.694 seconds with the
+socket open but recovery still `SYNCING CURRENT STATE`; Studio retained its
+disconnect message. The [sixth-run receipt](qa-evidence/interaction-audio-2026-10-11/roster-sixth-cloud.json)
+has no recorded cues. Its guarded Studio screenshot was inspected and confirms
+the imported map, without claiming gameplay acceptance. Additional frame,
+transport-lifecycle and pending-state observations are needed to distinguish
+missing refresh delivery from a delayed presentation frame. The normal
+publication gate remains enforced.
