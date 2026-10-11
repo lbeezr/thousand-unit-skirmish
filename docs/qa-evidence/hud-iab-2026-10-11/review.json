@@ -65,8 +65,7 @@
   },
   "remaining": [
     "Staging native interaction and rendered acceptance",
-    "Full lifecycle/research coverage across both seats and viewport matrix; current checks are bounded, not exhaustive",
-    "Skiff fishing and cargo cycle"
+    "Full lifecycle/research coverage across both seats and viewport matrix; current checks are bounded, not exhaustive"
   ],
   "screenshots": [
     {
@@ -618,6 +617,62 @@
     "warnings": [
       "Two preexisting Azure startup texture-without-image warnings",
       "Both seats reported Captured building state foundation is missing from house during paid House construction. Art fallback remains outside this HUD correction."
+    ]
+  },
+  "skiffCargoCheck": {
+    "reviewedAt": "2026-10-11T19:20:35.436289+00:00",
+    "environment": "Local clean packaged game, native in-app browser input; Azure seat 0 at 1280x720 Compact spacing",
+    "identity": {
+      "status": "identified",
+      "origin": "packed-manifest",
+      "sourceRevision": "b3f55928d7410a948a2725b1b910b84b178bd749",
+      "sourceDirty": false,
+      "digest": "sha256:ff8a0033a15d2ad604ae9eeef898f653eab91798c277b001a44d5f456ffeb0ed"
+    },
+    "entry": "Resumed the preserved owned HUD Skiff Review room through its normal room URL. Its Dock and two Skiffs had been paid for in the earlier native review.",
+    "fixture": "hud-skiff-review.json",
+    "observations": [
+      "Selected one Skiff: 120/120 HP, Water Economy, empty cargo, Return disabled with No cargo to return.",
+      "Native right-click on the visible fish node produced a FISHING ORDER acknowledgement. Cargo changed to 6 food and Return became available for 1 Skiff.",
+      "Native Stop retained 10 food. Native Return cargo deposited that load at the owned Dock: bank 2000 to 2010, cargo Empty, Return disabled again.",
+      "A new native fishing order completed an automatic Dock delivery: bank 2010 to 2020, followed by 3 food on the next load in the accessibility observation and 7 food in the saved frame. No additional Return input was sent during that cycle.",
+      "The final Stop retained 7 food. No overlap or clipping appeared in the inspected cargo/return states."
+    ],
+    "console": {
+      "capturedErrors": 0,
+      "capturedWarnings": 0
+    },
+    "screenshots": [
+      {
+        "file": "skiff-cargo-stopped.jpg",
+        "pixels": [
+          1280,
+          720
+        ],
+        "sha256": "cb73c2f596d71120aa5e893677b7b533ad75169739788331e9949b555d51661f"
+      },
+      {
+        "file": "skiff-cargo-deposited.jpg",
+        "pixels": [
+          1280,
+          720
+        ],
+        "sha256": "71b43e5c2a64119585b4c17f1fce4bb858b907daadf53ed254cdbf7c455b6e08"
+      },
+      {
+        "file": "skiff-fishing-cycle.jpg",
+        "pixels": [
+          1280,
+          720
+        ],
+        "sha256": "81ee308233b93556c4a98385e51e17e3de144ad94cbf03a1811579c673b7fcfb"
+      }
+    ],
+    "cleanup": "Test Skiff stopped, temporary tab closed and owned supervisor drained cleanly. Saved room/checkpoint data preserved. No HUD preference, viewport override, staging room or provider setting changed.",
+    "limits": [
+      "Azure seat 0 at 1280x720 only; no Ember cargo or broader viewport claim.",
+      "Local native evidence does not close staging rendered acceptance.",
+      "Uses the existing provisional Skiff visual fallback; no new art claim."
     ]
   }
 }

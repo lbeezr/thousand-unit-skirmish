@@ -297,3 +297,20 @@ All 289 focused HUD/layout/input/result tests passed, including real HTTP/WebSoc
 Herd/Stop, plus type, architecture and documentation checks. Startup texture and
 House foundation-art warnings are retained; no full-suite or staging-render pass
 is claimed. Independent review has no remaining actionable finding in this slice.
+
+
+A further bounded local check resumed the saved Skiff room at clean source
+`b3f55928d7410a948a2725b1b910b84b178bd749`, release digest
+`sha256:ff8a0033a15d2ad604ae9eeef898f653eab91798c277b001a44d5f456ffeb0ed`.
+The server health identity matched that package. Azure's selected Skiff accepted
+native fishing input, accumulated food and enabled Return. Stop retained ten
+food; [Return deposited it](qa-evidence/hud-iab-2026-10-11/skiff-cargo-deposited.jpg),
+raising the bank from 2,000 to 2,010 and disabling empty-cargo Return. A new
+fishing order [automatically delivered another load and resumed collecting](qa-evidence/hud-iab-2026-10-11/skiff-fishing-cycle.jpg),
+raising the bank to 2,020 while the next load accumulated. The
+[stopped-cargo frame](qa-evidence/hud-iab-2026-10-11/skiff-cargo-stopped.jpg) and
+[structured review](qa-evidence/hud-iab-2026-10-11/review.json) preserve this
+1280×720 Compact, seat-0 evidence. Captured console logs contained no errors or
+warnings. The boat was stopped, temporary tab closed and owned supervisor drained;
+room/checkpoint data were preserved. Staging native acceptance and the broader
+both-seat/action/viewport matrix remain incomplete.
