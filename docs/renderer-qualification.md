@@ -90,6 +90,7 @@ explicit registry and batch report. Feature owners own only these adapter files:
 | `site-composition` | Site composition owner | `scripts/renderer-site-composition-scenario.mjs` |
 | `tree-targeting` | Tree targeting owner | `scripts/renderer-tree-targeting-scenario.mjs` |
 | `browser-resume` | Browser lifecycle owner | `scripts/renderer-browser-resume-scenario.mjs` |
+| `tiny-farm` | Farm renewal owner `01a0f784` | `scripts/renderer-tiny-farm-scenario.mjs` |
 
 The workflow has a thirty-minute outer bound for the expanded registry; each
 case retains its three-minute deadline. Registration and CPU import/contracts

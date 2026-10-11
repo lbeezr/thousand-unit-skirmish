@@ -21,6 +21,7 @@ on:
           - tree-targeting
           - browser-resume
           - interaction-audio
+          - tiny-farm
 
 permissions:
   contents: read
