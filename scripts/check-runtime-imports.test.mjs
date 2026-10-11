@@ -295,7 +295,8 @@ test('private launch contract has its Node orchestration home, exact callers and
   const graph = runtimeImportGraph(sources);
   assert.deepEqual(graph.get(canonical), { local: ['src/match-modes.mjs'], external: ['node:crypto'] });
   assert.deepEqual([...graph].filter(([, node]) => node.local.includes(canonical)).map(([name]) => name).sort(),
-    ['room-supervisor.mjs', 'src/server/persistence/room-index-store.mjs']);
+    ['room-supervisor.mjs', 'src/server/persistence/room-archive-store.mjs',
+      'src/server/persistence/room-index-store.mjs']);
 });
 
 test('water rendering stays outside authoritative domains and server hosts through every import form', () => {
