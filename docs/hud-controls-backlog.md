@@ -371,3 +371,16 @@ deployment is authorized.
 
 Review current main and new native/command evidence before choosing another
 slice. Do not add speculative work to keep a worker busy.
+
+
+## Skiff cargo acceptance — 11 October 2026
+
+The HUD owner resumed the preserved local Skiff test room at clean `b3f55928`.
+Native fishing, cargo growth, Stop retaining cargo, explicit Return, disabled
+empty-cargo Return and automatic Dock delivery passed at 1280×720 for Azure.
+[Exact identity and screenshots](qa-evidence/hud-iab-2026-10-11/review.json)
+close this bounded local gap. No runtime change was needed. Staging native
+acceptance and broader seat/research/lifecycle/viewport coverage remain open;
+the implementation owner retains them. PR659 already delivered the notice,
+carcass-guidance and result-panel fixes at `a0e3caa7` with 17 served-file hash
+matches and 141 client imports; its PR body retains the exact staging receipt.

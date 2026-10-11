@@ -81,7 +81,7 @@
         "docs/qa-evidence/hud-hosted-2026-10-11/review.json",
         "docs/qa-evidence/hud-iab-2026-10-11/review.json"
       ],
-      "nextAction": "HUD owner completes staging native acceptance and remaining lifecycle/viewport coverage. Local normal-entry, construction, Skiff movement, wildlife harvest, comfortable 1024/1280/1920 layouts and Ember full-queue/army/Worker evidence are retained separately from failed hosted runs."
+      "nextAction": "HUD owner completes staging native acceptance and remaining lifecycle/viewport coverage. Local normal-entry, construction, Skiff movement/fishing/cargo delivery, wildlife harvest, comfortable 1024/1280/1920 layouts and Ember full-queue/army/Worker evidence are retained separately from failed hosted runs."
     }
   ],
   "complete": false,
