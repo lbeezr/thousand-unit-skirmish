@@ -93,8 +93,11 @@ explicit registry and batch report. Feature owners own only these adapter files:
 
 The workflow has a thirty-minute outer bound for the expanded registry; each
 case retains its three-minute deadline. Registration and CPU import/contracts
-do not establish ordinary-game, appearance or deployed acceptance. Dispatch
-and sign-in remain paused under the current access decision.
+do not establish ordinary-game, appearance or deployed acceptance. The user
+lifted the HUD-specific hosted dispatch/sign-in pause on 11 October 2026; the
+[HUD invocation record](qa-normal-new-game-capture.md#checks-and-current-acceptance)
+retains the resumed run and its evidence. This does not change sandbox policy or
+other owners' access decisions.
 
 `browser-resume` uses the browser's default background policy, with every
 background-throttling bypass omitted. The launcher reports its actual policy;

@@ -244,7 +244,7 @@ export async function runNoviceScenario({ origin, page, release, evidenceDirecto
     await page.cdp.call('Page.addScriptToEvaluateOnNewDocument', { source: noviceBeforeScript });
     stage = 'menu'; navigationOwned = true;
     await page.cdp.call('Page.navigate', { url: `${origin}/` });
-    await page.wait(`document.documentElement.dataset.entry==='menu'&&!document.querySelector('#menu-new-game').disabled`, 'ordinary New Game menu');
+    await page.wait(`document.documentElement?.dataset.entry==='menu'&&document.querySelector('#menu-new-game')?.disabled===false`, 'ordinary New Game menu');
     const menu = await read();
     assert.equal(menu.menu.visible, true, 'New Game must be visible'); assert.equal(menu.menu.enabled, true, 'New Game must be enabled');
     assert.equal(menu.canvas, false, 'root menu must precede the game renderer'); assert.equal(menu.diagnosticEntry, false, 'root menu must be ordinary entry');
