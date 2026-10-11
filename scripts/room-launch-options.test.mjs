@@ -153,7 +153,7 @@ function workerHealthConsumerFixture(worker, request = httpRequest) {
   assert.deepEqual(functions.map(statement => statement.name.text), names);
   const buildIdentity = { sourceRevision: 'health-contract' };
   const context = vm.createContext({ httpRequest: request, Buffer, URL,
-    stopping: false, HOST: '127.0.0.1', PORT: 1, BUILD_IDENTITY: buildIdentity, MAX_ROOMS: 8,
+    stopping: false, HOST: '127.0.0.1', PORT: 1, BUILD_IDENTITY: buildIdentity, MAX_ROOMS: 8, ROOM_IDLE_TTL_MS: 21600000,
     rooms: new Map([['invite', { worker, activeConnections: 2 }], ['idle', { worker: null, activeConnections: 0 }]]),
     ensureDefaultWorker: async () => worker,
     // Private-health aggregation runs after the existing access gate grants access.

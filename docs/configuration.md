@@ -16,7 +16,7 @@ and `src/pve-match.mjs` are authoritative.
 | `RTS_MATCH_MODE_ID`, `RTS_MATCH_MODE_VERSION` | Both unset | Complete explicit worker pair. A no-map unconfigured human root uses Tiny Skirmish; an explicit `RTS_MAP` with omitted pair and saved/normalized omission retain Authored. Normal fresh REST human pregame/AI supplies Skirmish explicitly. PvE Skirmish supports only Terraced Vale; historical omitted/Authored direct PvE retains seeded selection. Supervisor clears inherited pairs and passes the room identity. [Mode contract](match-mode-contract.md). |
 | `RTS_MAP` | Mode preset; ordinary Terraced Vale | Initial shipped map; fresh room presets override inherited maps. Historical launch omission and saved canonical checkpoints retain their map. |
 | `RTS_MAX_ROOMS` | `4` | Invite-room cap in addition to the default room. |
-| `RTS_ROOM_IDLE_TTL_MS` | `21600000` | Six-hour idle expiry for invite-room data. |
+| `RTS_ROOM_IDLE_TTL_MS` | `21600000` | Six-hour idle window before an invite room is archived and releases its slot; checkpoint/maps remain recoverable. [Lifecycle](room-lifecycle.md). |
 | `RTS_MAX_PEERS` | `32` | Connections per worker, including spectators; valid range 2–256. Compose defaults to 16. |
 | `RTS_SESSION_GRACE_MS` | `120000` | Seat reconnect window; valid range 1,000–3,600,000 ms. |
 | `RTS_PREGAME` | Unset | Worker pregame opt-in; supervisor supplies `1` for PvP rooms created with `pregame: true`. [Lobby protocol](room-lobby.md). |
