@@ -66,11 +66,12 @@ clients expose no such observer. The existing four-Worker observation remains
 compatible. Nine focused observer/probe tests and independent review pass.
 
 The [dedicated staging workflow](../.github/workflows/roster-audio-listening.yml)
-uses thirteen independently bounded subsets on 64×64, 24-unit authored maps.
-It covers 84 of 85 keys: all eight roles' supported commands/paid Ready cues,
-all thirteen building selections and the other Worker jobs. Repair still needs
-a separate ordinary damaged-building setup; it is explicitly absent from this
-plan. The runner uses no staging credentials and compares seven public runtime
+now plans fourteen independently bounded subsets on flat 160×160, 24-unit
+authored maps, framed around a compact central play area using normal camera
+controls. This covers all 85 keys: all eight roles' supported commands/paid
+Ready cues, all thirteen building selections and Worker jobs, including the
+separate ordinary damaged-building Repair setup described below. Planned
+coverage is not completed playback evidence. The runner uses no staging credentials and compares seven public runtime
 files, the manifest and all 119 source files to the checkout. Deployment SHA
 and release digest stay unknown in those public receipts until linked to the
 owner's separate served-identity check.
@@ -104,3 +105,18 @@ This remains planned coverage until captured. The separately authenticated
 [staging source receipt](qa-evidence/interaction-audio-2026-10-11/roster-staging-9bea9615.json)
 verified `9bea9615`, 141 client modules, both audio workers and all 119 recordings
 before the next deployment. Its clean release digest remains unavailable.
+
+[Run 38161341341](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38161341341)
+used `82174783` against stable staging `96fd31f4`. Worker, Infantry and Skiff
+each reached file import and loaded all 85 bindings, then failed Save & Play
+with the original map still active. Their [retained reports](qa-evidence/interaction-audio-2026-10-11/roster-second-cloud/unit-worker.json)
+contain no interaction recordings. The remaining matrix was canceled after
+identifying the common cause: ordinary server publication requires at least
+160×160; the 64×64 fixture passed the portable importer but was inadmissible to
+an ordinary room. The next fixture uses the existing ordinary floor and keeps
+the flat terrain/small army. Canceled room requests also remain visible and
+fatal; the next receipt adds fixed request purpose, response status and elapsed
+time without retaining private URLs so those failures can be diagnosed. The
+[served identity receipt](qa-evidence/interaction-audio-2026-10-11/roster-staging-96fd31f4.json)
+separately verifies that deployment and all 119 recordings; it does not claim
+a clean release digest or gameplay acceptance.

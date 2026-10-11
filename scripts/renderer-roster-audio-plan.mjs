@@ -5,6 +5,8 @@ import { matureSettlementPlan } from './mature-settlement-scenario.mjs';
 
 export const STAGING_ORIGIN = 'https://game-staging-21f9.up.railway.app';
 export const SUBSET_TIMEOUT_MS = 300000;
+export const ROSTER_MAP_SIDE = 160;
+export const ROSTER_PLAY_AREA_SIDE = 64;
 export const buildingGroups = Object.freeze({
   home: ['town-center', 'house', 'storehouse', 'mill'],
   training: ['barracks', 'archery-range', 'stable'],
@@ -37,10 +39,14 @@ export function rosterMap(subset) {
   const plan = rosterPlan(subset);
   const map = structuredClone(matureSettlementPlan.map);
   map.id = `audio-${subset}`; map.name = `Audio ${subset}`;
+  // Ordinary public publishing admits Tiny or larger. Keep the established
+  // compact world positions inside that map, with no extra units or terrain.
+  map.width = ROSTER_MAP_SIDE; map.height = ROSTER_MAP_SIDE;
   map.terrainBase = 'meadow';
   // Existing finite Skiff fishing proof's shoreline and paid Dock coordinates.
   if (plan.kind === 'skiff' || plan.buildings.includes('dock') || plan.workerJobs) {
-    map.obstacles = [18, 43].map(column => ({ column, row: 42, width: 6, height: 8, material: 'water' }));
+    const offset = (ROSTER_MAP_SIDE - ROSTER_PLAY_AREA_SIDE) / 2;
+    map.obstacles = [18, 43].map(column => ({ column: column + offset, row: 42 + offset, width: 6, height: 8, material: 'water' }));
     map.resourceNodes.push({ id: 'audio-fish', type: 'food', resourceVariant: 'shore-fish', x: -9.5, z: 9.5, stock: 200 });
   }
   if (plan.workerJobs) {

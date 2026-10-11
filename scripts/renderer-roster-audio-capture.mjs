@@ -10,7 +10,7 @@ import { UNIT_DEFINITIONS as U } from '../src/gameplay-definitions.mjs';
 import { installInteractionAudioProbe, interactionTargetPoint, validateAudioObservation } from './renderer-interaction-audio-scenario.mjs';
 import { installCatalogImportObserver } from './renderer-building-catalog-scenario.mjs';
 import { clickNovicePoint } from './renderer-qualification-novice.mjs';
-import { buildingPad, paidUnitPlan, recordingCoverage, rosterMap, rosterPlan, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
+import { buildingPad, paidUnitPlan, recordingCoverage, rosterMap, rosterPlan, ROSTER_MAP_SIDE, ROSTER_PLAY_AREA_SIDE, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
 import { captureWorkerRepair } from './renderer-roster-audio-repair.mjs';
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -80,6 +80,41 @@ async function target(page, kind, id) {
 async function project(page, point) {
   return page.wait(`window.__rtsInteractionAudioProject(${point.x},${point.z})`, 'visible world point');
 }
+// Fit the admitted map, then use the same native wheel gesture as a player to
+// frame its compact central play area. The diagnostics only observe the result.
+export async function frameRosterArea(page) {
+  await rosterControl(page, '#camera-fit-map');
+  const before = await page.wait('window.__rtsBrowserRecoverySnapshot?.().camera.zoom', 'ordinary fitted camera zoom');
+  assert.ok(Number.isFinite(before) && before > 0);
+  const point = await page.wait(`(() => { const p=window.__rtsInteractionAudioProject?.(0,0);
+    return p && document.elementFromPoint(p.x,p.y) === document.querySelector('#viewport canvas') && p; })()`, 'uncovered central world point');
+  const factor = ROSTER_MAP_SIDE / ROSTER_PLAY_AREA_SIDE;
+  await page.cdp.call('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+  await page.cdp.call('Input.dispatchMouseEvent', { type: 'mouseWheel', ...point, deltaX: 0, deltaY: -Math.log(factor) / .001 });
+  await page.wait(`Math.abs(window.__rtsBrowserRecoverySnapshot().camera.zoom - ${before * factor}) < .000001`, 'native wheel frames central play area');
+}
+// Never retain studio text: it may contain imported filenames, map IDs or
+// arbitrary validation content. Only known fixed UI states become evidence.
+export function rosterStudioFailureCode(message, recoveryOpen = false) {
+  if (recoveryOpen) return 'studio-draft-recovery';
+  if (typeof message !== 'string') return null;
+  if (message.startsWith('Map rejected · ')) {
+    if (message.includes('Ordinary maps require at least 160 × 160.')) return 'map-rejected-size';
+    if (message.includes('That map ID is already in the room.')) return 'map-rejected-id-conflict';
+    if (message.includes('Custom map limit reached.')) return 'map-rejected-catalog-limit';
+    if (message.includes('The custom map could not be saved.')) return 'map-rejected-storage';
+    if (message.includes('Play vs AI uses the map selected by its launch seed.')) return 'map-rejected-mode';
+    return 'map-rejected-other';
+  }
+  if (message.startsWith('Map not published. Wait for current server state,')) return 'publish-waiting-for-state';
+  if (message.startsWith('Map not published. Reconnect,')) return 'publish-offline';
+  if (message.startsWith('Map JSON is too large to send safely.')) return 'publish-payload-limit';
+  if (message.startsWith('Server disconnected.')) return 'studio-disconnected';
+  if (message.startsWith('Connection restored. Review your draft and publish again')) return 'studio-reconnected-retry-needed';
+  return null;
+}
+const studioFailureExpression = `(${rosterStudioFailureCode.toString()})(document.querySelector('#studio-message')?.textContent,
+  document.querySelector('#studio-draft-recovery')?.hidden === false)`;
 export async function enterRosterRoom(page, origin, map, mapFile, mapBytes, progress = async () => {}) {
   validateStagingOrigin(origin);
   assert.equal(await page.cdp.evaluate('location.href'), 'about:blank', 'fresh isolated context required');
@@ -100,9 +135,12 @@ export async function enterRosterRoom(page, origin, map, mapFile, mapBytes, prog
   assert.equal(imported.sha256, hash(mapBytes)); assert.equal(imported.bytes, mapBytes.length);
   await progress('save-and-play');
   await rosterControl(page, '#studio-publish');
-  await page.wait(`!document.querySelector('#map-studio')?.open && ${stateExpression}?.mapId === ${JSON.stringify(map.id)} && ${stateExpression}.team === 0`, 'ordinary Save & Play applies map', 35000);
-  await progress('fit-map');
-  await rosterControl(page, '#camera-fit-map');
+  const published = await page.wait(`(() => { const open=document.querySelector('#map-studio')?.open;
+    if (!open && ${stateExpression}?.mapId === ${JSON.stringify(map.id)} && ${stateExpression}.team === 0) return { applied:true };
+    const failureCode=open && ${studioFailureExpression}; return failureCode ? { failureCode } : false; })()`, 'ordinary Save & Play applies map', 35000);
+  if (published.failureCode) throw Object.assign(new Error('ordinary map publish failed'), { studioFailureCode: published.failureCode });
+  await progress('frame-play-area');
+  await frameRosterArea(page);
   return { method: 'menu-studio-file-import-save-and-play', mapId: map.id, mapSha256: hash(mapBytes),
     room: 'fresh-owned-public-room', recovery: 'normal-server-checkpoint', credentialsRetained: false };
 }
@@ -230,7 +268,8 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
     await new Promise(resolve => setTimeout(resolve, 3500));
     if (plan.repair) {
       stage = 'ordinary-two-seat-repair';
-      await captureWorkerRepair({ page, openGuest, origin, mapId: map.id, build, record, control: rosterControl, signal,
+      await captureWorkerRepair({ page, openGuest, origin, mapId: map.id, build, record,
+        control: (targetPage, selector) => selector === '#camera-fit-map' ? frameRosterArea(targetPage) : rosterControl(targetPage, selector), signal,
         evidence: async evidence => { report.repair = evidence; await persist(); } });
     } else if (plan.workerJobs) {
       await record('unit.worker.build', () => build('farm'));
@@ -320,11 +359,12 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
     assert.equal(recordingCoverage(Object.keys(bindings), plan.keys, report.recordings).missingPlannedKeys.length, 0);
     report.status = 'captured-needs-listening';
   } catch (error) {
-    report.issues.push({ stage, code: signal?.aborted ? 'subset-deadline' : /timeout/i.test(error?.message) ? 'wait-timeout' : 'capture-contract-failed' });
+    report.issues.push({ stage, code: signal?.aborted ? 'subset-deadline' : error?.studioFailureCode ?? (/timeout/i.test(error?.message) ? 'wait-timeout' : 'capture-contract-failed') });
     try {
       report.diagnostic = await page.cdp.evaluate(`(() => { const s=window.__rtsInteractionAudioSnapshot?.(), p=window.__rtsInteractionAudio;
         return { boot:document.documentElement?.dataset.boot ?? null, mapId:s?.mapId ?? null, audioStatus:s?.status ?? null,
         studioOpen:document.querySelector('#map-studio')?.open === true, importObserved:window.__rtsCatalogMapImport?.ok === true,
+        studioFailureCode:${studioFailureExpression},
         bindingCount:s?.inspector.bindings.length ?? 0, decisions:s?.inspector.decisions.slice(-12) ?? [],
         nativeStarts:p?.starts.slice(-12) ?? [], faults:p?.faults ?? [], recordingPhase:p?.recording?.phase ?? null }; })()`);
     } catch { report.diagnostic = { unavailable: true }; }

@@ -27,14 +27,29 @@ export function observeRosterBrowser(page, origin, files) {
   page.cdp.on('Network.requestWillBeSent', e => {
     if (!active) return;
     if (requests.size >= 2048) { overflow = true; return; }
-    requests.set(e.requestId, safeRequestDiagnostic(e.request.url, origin, files, e.type));
+    const diagnostic = safeRequestDiagnostic(e.request.url, origin, files, e.type);
+    let purpose = 'other';
+    try {
+      const url = new URL(e.request.url);
+      if (url.origin === origin) purpose = url.pathname === '/api/rooms/status' ? 'room-service-status'
+        : url.pathname === '/api/rooms' ? 'room-create'
+        : /^\/api\/rooms\/[A-Za-z0-9_-]{32}$/.test(url.pathname) ? 'room-lookup'
+        : url.pathname === '/api/session' ? 'session-check' : 'other';
+    } catch {}
+    requests.set(e.requestId, { ...diagnostic, purpose,
+      ...(Number.isFinite(e.timestamp) ? { startedAt: e.timestamp } : {}) });
   });
   page.cdp.on('Network.responseReceived', e => {
+    const request = requests.get(e.requestId);
+    if (request) request.responseStatus = e.response.status;
     if (e.response.status >= 400) record({ kind: 'http-error', status: e.response.status,
       ...safeRequestDiagnostic(e.response.url, origin, files, e.type) });
   });
   page.cdp.on('Network.loadingFailed', e => {
-    record({ kind: 'request-failed', ...(requests.get(e.requestId) ?? { path: null, route: 'unknown', scheme: 'unknown', resourceType: 'unknown' }), canceled: e.canceled === true });
+    const request = requests.get(e.requestId) ?? { path: null, route: 'unknown', scheme: 'unknown', resourceType: 'unknown' };
+    record({ kind: 'request-failed', ...request, canceled: e.canceled === true,
+      ...(Number.isFinite(e.timestamp) && Number.isFinite(request.startedAt)
+        ? { elapsedMs: Math.round((e.timestamp - request.startedAt) * 1000) } : {}) });
     requests.delete(e.requestId);
   });
   page.cdp.on('Network.loadingFinished', e => requests.delete(e.requestId));
