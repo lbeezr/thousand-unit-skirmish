@@ -10,7 +10,7 @@ import { STAGING_ORIGIN } from './renderer-roster-audio-plan.mjs';
 
 const revision='a'.repeat(40);
 test('explicit bounded subsets and authored fixtures cannot dispatch arbitrary work',()=>{
-  assert.deepEqual(hudMatrix('all'),HUD_CASES);
+  assert.deepEqual(hudMatrix('all'),['rollout']);
   for(const id of HUD_CASES) { assert.deepEqual(hudMatrix(id),[id]); const map=hudFixture(id);
     assert.equal(map.id,`hud-${id}`); assert.equal(map.startingArmySize,24); assert.deepEqual(map.scenarioEvents,[]); }
   for(const bad of ['','../secret','all,selections','shell','buildings;echo']) { assert.throws(()=>hudMatrix(bad)); assert.throws(()=>hudFixture(bad)); }

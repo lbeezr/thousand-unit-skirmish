@@ -140,3 +140,24 @@ This first bounded matrix covers seat 0 at DPR 1. Both-seat behavior, Skiffs,
 wildlife/carcasses, land/water mixes, large UI scale, recovery, long queues,
 shortages, lifecycle and victory remain explicit follow-up coverage. It creates
 no new player-facing presentation and changes no server or access configuration.
+
+The first staging dispatch,
+[run 38161563912](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38161563912),
+passed sandboxed WebGL2 but all three cases stopped at room creation with HTTP
+429. The public status read confirmed 8 saved rooms against a limit of 8; no
+existing rooms were changed. The user authorized a temporary staging limit of 9.
+`all` now runs the three groups sequentially in one fresh owned `rollout` room,
+within the existing five-minute deadline, so this check consumes only one slot.
+The HUD owner restores the limit to 8 afterward. The extra saved test room uses
+ordinary idle expiry; reducing the limit does not delete saved rooms.
+
+The separate normal-entry
+[run 38161591020](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38161591020)
+at `448f163092be4e4247fd57ec5b8857be9b590f4e` (same clean release digest above)
+reached Tiny Terraced Vale and native Worker selection. Its reviewed images show
+the 72px Worker portrait and six primary actions without visible clipping at
+1280 × 720, but also `SYNCING CURRENT STATE`; the selection image disables orders
+while reconnecting. The shared synchronized checkpoint failed before Move, and
+two canceled room-API fetches remain unresolved. This is partial appearance
+evidence, **not an interaction pass**. HUD retains the ordinary-entry follow-up;
+no recovery or browser-error gate is weakened to accept these frames.
