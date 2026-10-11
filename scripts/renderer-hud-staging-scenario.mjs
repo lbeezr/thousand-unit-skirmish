@@ -11,7 +11,7 @@ import { installCatalogImportObserver } from './renderer-building-catalog-scenar
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const stateExpression = 'window.__rtsInteractionAudioSnapshot()';
 export function hudFixture(subset) {
-  assert.ok(['selections', 'buildings', 'panels'].includes(subset));
+  assert.ok(['selections', 'buildings', 'panels', 'rollout'].includes(subset));
   const map = structuredClone(matureSettlementPlan.map);
   map.id = `hud-${subset}`; map.name = `HUD ${subset}`; map.terrainBase = 'meadow'; return map;
 }
@@ -112,7 +112,7 @@ export async function captureHudStaging({page,origin,subset,directory,signal}) {
   try {
     await enter(page,origin,map,mapFile,bytes); await persist();
     await worker(); await capture('worker','workers');
-    if(subset==='selections') {
+    if(subset==='selections'||subset==='rollout') {
       await control(page,'[data-worker-action="build"]'); await capture('worker-build','workers'); await key(page,'Escape');
       const army=(await state()).units.find(u=>u.kind!=='worker'&&u.kind!=='skiff'&&u.point); assert.ok(army);
       await select(page,'unit',army.id); await capture('army','military');
@@ -122,7 +122,8 @@ export async function captureHudStaging({page,origin,subset,directory,signal}) {
       const w=(await state()).units.find(u=>u.kind==='worker'&&u.point); assert.ok(w);
       await select(page,'unit',w.id,8); await capture('mixed','mixed');
       await key(page,'Escape'); await capture('empty','none');
-    } else if(subset==='buildings') {
+    }
+    if(subset==='buildings'||subset==='rollout') {
       const town=(await state()).buildings.find(b=>b.type==='town-center'&&b.complete&&b.point); assert.ok(town);
       await select(page,'building',town.id); await capture('town-center','building');
       await control(page,'[data-context-products] [data-product="worker"]');
@@ -141,7 +142,9 @@ export async function captureHudStaging({page,origin,subset,directory,signal}) {
       await page.wait('document.querySelector("[data-building-queue-list]")?.children.length>0','paid Infantry queue');
       await capture('barracks-training','building');
       await control(page,'[data-building-action="research"]'); await capture('barracks-research','building');
-    } else {
+    }
+    if(subset==='panels'||subset==='rollout') {
+      await worker();
       for(const [name,open,close] of [['help','#help-toggle','#help-close'],['settings','#match-menu-toggle','#match-menu-close'],['objectives','#scenario-brief-toggle','#scenario-brief-close']]) {
         await control(page,open); await capture(name,'workers'); await control(page,close);
       }

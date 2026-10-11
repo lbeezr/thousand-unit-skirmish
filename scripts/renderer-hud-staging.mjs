@@ -11,7 +11,7 @@ import { validateRosterCapability, observeRosterBrowser } from './renderer-roste
 import { STAGING_ORIGIN, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
 import { captureHudStaging } from './renderer-hud-staging-scenario.mjs';
 
-export const HUD_CASES = Object.freeze(['selections', 'buildings', 'panels']);
+export const HUD_CASES = Object.freeze(['selections', 'buildings', 'panels', 'rollout']);
 export const HUD_PUBLIC_FILES = Object.freeze(['index.html', 'style.css', 'src/main.js',
   'src/client/hud/selection-hud.css', 'src/client/hud/worker-hud.mjs', 'src/client/hud/worker-hud.css',
   'src/client/hud/building-hud.mjs', 'src/client/hud/building-hud.css',
@@ -20,7 +20,8 @@ export const HUD_PUBLIC_FILES = Object.freeze(['index.html', 'style.css', 'src/m
 export const HUD_TIMEOUT_MS = 300000;
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 export function hudMatrix(requested) {
-  if (requested === 'all') return [...HUD_CASES];
+  // One owned room covers the rollout; saved staging rooms have a shared cap.
+  if (requested === 'all') return ['rollout'];
   assert.ok(HUD_CASES.includes(requested), 'unknown HUD case'); return [requested];
 }
 export async function identifyHudSource(origin, revision, { fetcher = fetch,
