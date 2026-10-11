@@ -10,7 +10,7 @@
 .topbar .resource-icon{width:16px;height:16px;flex-basis:16px}
 .topbar .population-readout{border-color:var(--hud-line);font:11px 'HUD DM Sans',Arial,sans-serif;color:var(--hud-muted);letter-spacing:0}
 .topbar .population-readout strong{color:var(--hud-text);font-size:14px}
-.toast{top:calc(var(--hud-header-height,54px) + 26px)}
+.toast{top:calc(var(--hud-controls-bottom,110px) + 8px);width:max-content;max-width:calc(100% - 32px);white-space:normal;overflow-wrap:anywhere;text-align:center}
 :is(#command-deck,#match-menu,#help-panel,#scenario-brief-panel,#match-result,.minimap-panel){border:1px solid var(--hud-line);border-radius:2px;background:var(--hud-surface);color:var(--hud-text);box-shadow:0 8px 32px #0005;font:14px/1.45 'HUD DM Sans',Arial,sans-serif;font-variant-numeric:tabular-nums}
 :is(#match-menu,#help-panel){width:min(390px,calc(100% - 32px));scrollbar-color:var(--hud-line) var(--hud-surface)}
 :is(#command-deck,#match-menu,#help-panel,#scenario-brief-panel,#match-result) :is(button,select,input:not([type=range]):not([type=checkbox]),.room-action,.map-studio-open){min-height:36px;border:1px solid var(--hud-line);border-radius:2px;background:var(--hud-raised);color:var(--hud-text);font-family:'HUD DM Sans',Arial,sans-serif;font-size:13px;letter-spacing:0;box-shadow:none}

@@ -65,9 +65,8 @@
   },
   "remaining": [
     "Staging native interaction and rendered acceptance",
-    "Owned wildlife and carcasses",
-    "Seat 1, comfortable HUD spacing, long queues, lifecycle and victory",
-    "Full-width 1920 screenshot"
+    "Full lifecycle/research coverage across both seats and viewport matrix; current checks are bounded, not exhaustive",
+    "Skiff fishing and cargo cycle"
   ],
   "screenshots": [
     {
@@ -269,6 +268,158 @@
         720
       ],
       "sha256": "800e3f454689efc6502edec1497c700da89bbf86ffc515fe31abaf50760f4e24"
+    },
+    {
+      "file": "carcass-comfortable-1024.jpg",
+      "pixels": [
+        1024,
+        768
+      ],
+      "sha256": "631dd95afbdb259c66ad91e44ff4e8647d561c6090e9a1dba27204b84074290c"
+    },
+    {
+      "file": "carcass-harvesting.jpg",
+      "pixels": [
+        1024,
+        768
+      ],
+      "sha256": "f02929f309eb162c208fddceb91d6635b0453dc7a4d0671dcc5e69d8d4726da8"
+    },
+    {
+      "file": "ember-army.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "d070c200bebbe32ee0179ac862f266175e9b06443225264d3a898f8d11dd68de"
+    },
+    {
+      "file": "ember-barracks-population.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "899808bf02a6d89b6852e24927f5bdb8296f4cda6b298cc550e15b603c2bb3cf"
+    },
+    {
+      "file": "ember-full-queue.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "7f602c9d1d00f5241c6d4294b38cd23e8d6743481a59c7c876b26b557ca4d7c6"
+    },
+    {
+      "file": "ember-mixed.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "d781a9b97a4e83c0392de30fe9b43c13e59a1acb1d115632828fe5c330ac8212"
+    },
+    {
+      "file": "ember-training-refund.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "723975d7f360bf192da8c90f5ce14a5553865b60f025a8c5a2bee84d934ecc6b"
+    },
+    {
+      "file": "ember-worker.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "16572bf4fc3b0564b0b571643db632229453f7d7174827519abfc9d596dd66dc"
+    },
+    {
+      "file": "sheep-comfortable-1024.jpg",
+      "pixels": [
+        1024,
+        768
+      ],
+      "sha256": "50e388dac808a59a346f15e838fc06102e5e168a1efdc3f6b70b92d093d0fead"
+    },
+    {
+      "file": "sheep-comfortable-1280.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "d9c111b7d1b0a189933e18e460353fc7e9a247e6164b4a358495e0995f5f6e76"
+    },
+    {
+      "file": "sheep-comfortable-1920.jpg",
+      "pixels": [
+        1920,
+        1080
+      ],
+      "sha256": "d905f1ed9aea06b0cb78c4acfbcebf3568465bce2928c9bb4aee1de02ca3adb1"
+    },
+    {
+      "file": "sheep-owned.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "76510ba062b3771320b7d4b3e2377164962d110129fea91eec4730eb24e42739"
+    },
+    {
+      "file": "worker-comfortable-1024.jpg",
+      "pixels": [
+        1024,
+        768
+      ],
+      "sha256": "47462258f442036d2390c60be6c8c2c2d9bfb0f8464e1aa4c34d4297e0f6c90e"
+    },
+    {
+      "file": "carcass-transition-corrected-1024.jpg",
+      "pixels": [
+        1024,
+        768
+      ],
+      "sha256": "37b33b72177f30fe2c6a6e05c5c5d11f20720e85a1b01df02818232298e95c63"
+    },
+    {
+      "file": "carcass-notice-corrected-1024.jpg",
+      "pixels": [
+        1024,
+        768
+      ],
+      "sha256": "962d200efc9e99c5aa9ec1b86be9884343cfeeb76244af9ff6f74d6eac0e4b93"
+    },
+    {
+      "file": "ember-defeat-1024.jpg",
+      "pixels": [
+        1024,
+        768
+      ],
+      "sha256": "a701bdac6ece37577cdd7f49fa12013ea88a4b8cd70891ead49623750dcbf103"
+    },
+    {
+      "file": "ember-defeat-recap-1024.jpg",
+      "pixels": [
+        1024,
+        768
+      ],
+      "sha256": "e0ce14aaebf9c6ff3bc3807ec7231b20abd16952472a74522d523b6a2aace7a2"
+    },
+    {
+      "file": "azure-victory-recap-1024.jpg",
+      "pixels": [
+        1024,
+        768
+      ],
+      "sha256": "2b50aef73c4bdb5642ff742981043aadbc0346cf6150a8e8e9c9adfdad1afb39"
+    },
+    {
+      "file": "ember-defeat-corrected-1024.jpg",
+      "pixels": [
+        1024,
+        768
+      ],
+      "sha256": "c98334cd4b8e493cac4376e31cd9961a8f073bafe7e10f85cd26c08ba8697596"
     }
   ],
   "complete": false,
@@ -285,7 +436,7 @@
     "observation": "Barracks selected at 66\u201368% construction. Both training actions remain disabled with FINISH CONSTRUCTION TO TRAIN.",
     "file": "barracks-construction-corrected.jpg"
   },
-  "cleanup": "All temporary test tabs closed, viewport override reset, owned local supervisors drained; saved test rooms preserved in temporary data directory.",
+  "cleanup": "Both temporary game tabs closed; both origin HUD spacing preferences restored to Compact; viewport override reset; owned local supervisor drained cleanly. Saved local test-room/checkpoint data preserved. No staging rooms or room-limit settings changed.",
   "skiffCheck": {
     "environment": "Local clean packaged ordinary game, native in-app browser input",
     "identity": {
@@ -346,6 +497,127 @@
       "47 Skiff and Join Room tests plus both type projects passed after main integration",
       "Architecture, documentation and whitespace checks passed",
       "Independent review approved all runtime corrections"
+    ]
+  },
+  "wildlifeAndEmberCheck": {
+    "environment": "Local clean packaged ordinary game, native in-app browser input",
+    "identity": {
+      "status": "identified",
+      "origin": "packed-manifest",
+      "sourceRevision": "978ebb6531b639a8ab48390d0e8ba2435c1fbac1",
+      "sourceDirty": false,
+      "digest": "sha256:5815075e64cd7db21d15890bc22bb701a6ebc61c21004d9fda74ef049b43812b"
+    },
+    "fixture": "hud-wildlife-review.json",
+    "entry": "Map Studio Import JSON and Save & Play; Azure on 127.0.0.1 and Ember joined same owned room on localhost through normal Join UI",
+    "observations": [
+      "Azure naturally claimed Sheep with Worker approach, Herd moved the Sheep and Stop acknowledged. Food fallback portrait and Herd/Stop-only controls were rendered.",
+      "Comfortable spacing inspected at 1280x720, 1024x768 and full-width 1920x1080. The new full-page 1920 capture includes the previously missing right edge. Worker actions reflow into two rows at 1024.",
+      "Native Gather changed live Sheep into carcass. Carcass Harvest dispatched one idle Worker, idle count 4 to 3; stock 90 to 50 and food bank 2040 to 2070.",
+      "Ember paid 175 wood for Barracks. Three Infantry reservations blocked further training at population capacity 15. Cancel last queued unit refunded 50 food and released a reservation. Two Infantry completed.",
+      "Ember paid 75 wood for House, raising capacity 15 to 23. Five Spearmen cost 300 food and 100 wood; ordered queue rendered all five and blocked further training with QUEUE FULL 5/5.",
+      "Ember Army selected ten Infantry; Shift-click added one Worker and showed mixed composition. A separated Worker showed Boughward portrait and Worker actions."
+    ],
+    "defects": [
+      "At comfortable 1024, long selection notices overlap objective/camera controls; use the measured controls bottom and constrain/wrap notice width.",
+      "Carcass retains Herd/Stop field hint, including while a selected live Sheep transitions; refresh on lifecycle change and show Harvest nearest idle Worker. Carcass selection notice repeats Harvest with Workers."
+    ],
+    "screenshots": [
+      "carcass-comfortable-1024.jpg",
+      "carcass-harvesting.jpg",
+      "ember-army.jpg",
+      "ember-barracks-population.jpg",
+      "ember-full-queue.jpg",
+      "ember-mixed.jpg",
+      "ember-training-refund.jpg",
+      "ember-worker.jpg",
+      "sheep-comfortable-1024.jpg",
+      "sheep-comfortable-1280.jpg",
+      "sheep-comfortable-1920.jpg",
+      "sheep-owned.jpg",
+      "worker-comfortable-1024.jpg"
+    ],
+    "complete": false
+  },
+  "carcassCorrectionCheck": {
+    "identity": {
+      "status": "identified",
+      "origin": "packed-manifest",
+      "sourceRevision": "000bae00ed7018da957fff11eaa11a079f1a4c12",
+      "sourceDirty": false,
+      "digest": "sha256:595dcec5ac7c7768ee944c731260f88a70ca7b08d371f8f4a02701ec74cd57e9"
+    },
+    "environment": "Authorized local clean-package in-app browser; Ember seat, comfortable 1024x768",
+    "observations": [
+      "Native Worker Gather accepted while live owned Sheep remained selected; the authoritative change to carcass kept selection and immediately replaced Herd/Stop hint with HARVEST / NEAREST IDLE WORKER, without reselection.",
+      "Attempt to arm Herd arrived after the action was already hidden by the carcass transition; armed native coverage is not claimed. Four both-seat CPU/DOM regressions cover armed and unarmed transitions.",
+      "Reselecting the carcass showed Harvest with Workers once. Notice bounds x322.05\u2013701.95, y173\u2013203.5 clear the objective/camera row and remain inside the 1024px viewport.",
+      "Corrected carcass and notice frames visually reviewed."
+    ],
+    "screenshots": [
+      "carcass-transition-corrected-1024.jpg",
+      "carcass-notice-corrected-1024.jpg"
+    ],
+    "checks": [
+      "174 contextual HUD, layout and wall-placement tests passed",
+      "Both strict type projects, runtime architecture and documentation links passed",
+      "Independent review of lifecycle refresh and notice CSS: no remaining actionable finding"
+    ]
+  },
+  "resultPanelCheck": {
+    "identity": {
+      "status": "identified",
+      "origin": "packed-manifest",
+      "sourceRevision": "000bae00ed7018da957fff11eaa11a079f1a4c12",
+      "sourceDirty": false,
+      "digest": "sha256:595dcec5ac7c7768ee944c731260f88a70ca7b08d371f8f4a02701ec74cd57e9"
+    },
+    "authorization": "User explicitly allowed test-match resignation after automatic review requested specific approval. Only the owned local Ember seat conceded.",
+    "observations": [
+      "Ember resignation received DEFEAT / YOU RESIGNED; Azure received VICTORY / YOUR OPPONENT RESIGNED.",
+      "Expanded recaps show the same 8:20 duration and respective private banks: Ember 1660 Food / 2650 Wood; Azure 2130 Food / 3000 Wood.",
+      "Ember shows waiting for host; Azure exposes Play again. Harvest becomes disabled with Match finished.",
+      "Both 1024x768 comfortable recaps fit without clipping after manually closing Match Controls."
+    ],
+    "defect": "Match Controls remains open over the initial defeat panel after resignation. Fix closes existing HUD panels only when the winner transitions from running to terminal; reopened postmatch panels should remain usable.",
+    "screenshots": [
+      "ember-defeat-1024.jpg",
+      "ember-defeat-recap-1024.jpg",
+      "azure-victory-recap-1024.jpg"
+    ],
+    "correctionVerified": true,
+    "correction": {
+      "identity": {
+        "status": "identified",
+        "origin": "packed-manifest",
+        "sourceRevision": "bd60c63c8bbee3f93d95b9c428b554ce163a9a93",
+        "sourceDirty": false,
+        "digest": "sha256:b526b5ab75a3a0f1a60cd937952841a078fa8aec87009a4a307c90465abc4f1d"
+      },
+      "observations": [
+        "Host Play again restarted only the owned local test room. Both seats reloaded the clean corrected package.",
+        "Ember confirmed the authorized test resignation from Match Controls. The result transition closed the menu/scrim automatically; DEFEAT / YOU RESIGNED is fully visible at comfortable 1024x768.",
+        "Reopening Match Controls after the result remained usable across authoritative updates; both origins restored Compact spacing through the normal display control."
+      ],
+      "screenshot": "ember-defeat-corrected-1024.jpg"
+    }
+  },
+  "continuationChecks": {
+    "passed": 289,
+    "scope": [
+      "174 contextual HUD/layout/wall-placement tests",
+      "93 match-decision/client-rematch tests",
+      "22 wildlife controls tests including HTTP/WebSocket two-seat natural claim, Herd and Stop",
+      "Both strict type projects, runtime architecture, documentation and diff checks"
+    ],
+    "review": "Independent review found no remaining actionable issue in lifecycle, notice CSS, terminal transition or updated fixtures.",
+    "limitations": "Focused checks only. The previous main CI has pathing-replay failures recorded in PR657; no full-suite pass is claimed."
+  },
+  "continuationConsole": {
+    "errors": 0,
+    "warnings": [
+      "Two preexisting Azure startup texture-without-image warnings",
+      "Both seats reported Captured building state foundation is missing from house during paid House construction. Art fallback remains outside this HUD correction."
     ]
   }
 }

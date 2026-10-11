@@ -162,12 +162,24 @@ checks do not assert later deployment identity or ordinary-game appearance.
 
 **Completion audit:** [requirement-by-requirement record](qa-evidence/match-ui-2026-10-11/completion-audit.json).
 Source adoption, authoritative consumer reuse, visual backing, focused checks,
-independent review, packaging and staged delivery are evidenced. Normal-game
-visual acceptance remains open. On current main `f0817e6e`, the
-[normal-entry capture guide](qa-normal-new-game-capture.md) still says dispatch
-and sign-in are paused and forbids another route. The same HUD owner retains the
-seat/action/viewport matrix above; resume the approved capture only when that
-specific access decision is lifted. No new code work is required by this audit.
+independent review, packaging and staged delivery are evidenced. The user lifted
+the hosted capture/sign-in pause and subsequently allowed a bounded Mac in-app
+browser check. Local ordinary-game evidence now covers Worker movement, army and
+mixed selection, paid Town Center/Barracks queues, research, match panels and
+Skiff movement/domain restrictions, owned wildlife harvesting, comfortable
+1024/1280/1920 layouts, and Ember queue/refund/army/Worker states. It remains
+separate from failed Linux hosted
+captures and the remaining seat/action/viewport matrix. The
+[current review](qa-evidence/hud-iab-2026-10-11/review.json) records exact sources,
+clean release digests, screenshots and gaps.
+
+[PR657](https://github.com/lbeezr/thousand-unit-skirmish/pull/657) contains the final
+notice/Dock corrections and post-merge staging receipt at `978ebb65`: 17 served
+HUD/font/license files match the clean package and 141 client imports pass.
+The runtime digest matches the locally reviewed package; Railway reports source
+identity without a served manifest digest. The room limit is restored to 8,
+with ten saved rooms preserved. The prior pause notes above remain historical
+checkpoints, not a current access restriction.
 
 The front-door main menu portal and editing studios are separate product
 surfaces, outside this in-match HUD rollout. No studio or portal layout is

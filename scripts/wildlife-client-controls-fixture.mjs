@@ -9,7 +9,7 @@ import * as economyProfile from '../src/economy-profile.mjs';
 import * as economyClient from '../src/economy-client.mjs';
 import { farmHarvestNode } from '../src/farm-harvest.mjs';
 import { isShoreFish } from '../src/shore-fishing.mjs';
-import { applyUnitStances } from '../src/combat-stance-ui.mjs';
+import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from '../src/combat-stance-ui.mjs';
 import { rememberNotice } from '../src/objective-summary.mjs';
 import { classifyOrderNotice } from '../src/order-feedback.mjs';
 import * as audioPolicy from '../src/audio-policy.mjs';
@@ -23,6 +23,14 @@ import { fixedMatchArmySize } from '../src/match-mode-controls.mjs';
 import { browserRecoveryBindings } from './browser-recovery-fixture.mjs';
 import { renderMatchRecap } from '../src/client/hud/match-recap.mjs';
 import { createWelcomeSession } from '../src/client/networking/welcome-session.mjs';
+import { updateWorkerHud, workerBuildChoices, workerSelectionKey } from '../src/client/hud/worker-hud.mjs';
+import { updateBuildingHud } from '../src/client/hud/building-hud.mjs';
+import { updateUnitHud } from '../src/client/hud/unit-hud.mjs';
+import { updateWildlifeHud } from '../src/client/hud/wildlife-hud.mjs';
+import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts } from '../src/selection-portrait.mjs';
+import { buildingCanRotate } from '../src/building-orientation.mjs';
+import { createMatchDecisions } from '../src/client/hud/match-decisions.mjs';
+import { createCameraArrowKeys } from '../src/navigation-settings.mjs';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 export const controlsMap = {
@@ -107,16 +115,19 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
   }
   const query = selector => w.document.querySelector(selector);
   Object.assign(w, {...browserRecoveryBindings(),...selection,...economyProfile,...economyClient,...audioPolicy,...wildlifeClientBindings(),
-    clearOwnedBuildingFog,selectionContext,castPreview:false,updateBuildingLifecycleActions:noop,updateCombatStanceUI:noop,
-    updateSelectionPortrait:noop,updateProductionPortrait:noop,updateRosterProductionOptions:noop,
+    clearOwnedBuildingFog,selectionContext,castPreview:false,updateBuildingLifecycleActions:noop,
+    updateWorkerHud,workerBuildChoices,workerSelectionKey,updateBuildingHud,updateUnitHud,updateWildlifeHud,
+    updateSelectionPortrait,updateProductionPortrait,farmSelectionFacts,buildingCanRotate,
+    updateCombatStanceControls,bindCombatStanceControls,updateRosterProductionOptions:noop,
     updateResearchOptions:noop,commandFocusTarget:()=>canvas,
     THREE,UNIT_DEFINITIONS,BUILDING_DEFINITIONS,TECHNOLOGY_DEFINITIONS,farmHarvestNode,isShoreFish,applyUnitStances,fixedMatchArmySize,
-    rememberNotice,classifyOrderNotice,formatResourceStock,readWorkerPerformingAction,renderMatchRecap,matchDecisions:{update(){}},TextEncoder,WebSocket:WireSocket,
+    rememberNotice,classifyOrderNotice,formatResourceStock,readWorkerPerformingAction,renderMatchRecap,TextEncoder,WebSocket:WireSocket,
     mapDefinition:map,MAP_WIDTH:map.width,MAP_HEIGHT:map.height,MAP_HALF_X:map.width/2,MAP_HALF_Z:map.height/2,
     localTeam:team,cameraSeatTeam:team,isHost:false,matchWinner:-1,matchWinnerReason:null,
     activeMatchMode:{},soloPracticeActive:false,knownMaps:[],matchModeView:{update:noop},
     currentArmySize:packet.armySize,latestMatchElapsedSeconds:0,latestForestEpoch:null,
     latestForestStocks:new Map(),latestResourceStocks:new Map(),latestStone:[0,0],
+    latestFood:packet.food || [0,0],latestWood:packet.wood || [0,0],latestTeamResearch:packet.teamResearch || [null,null],
     selected:new Set(),selectedBuildingId:null,selectedWildlifeId:null,units:[],teamUnits:[[],[]],
     controlGroups:Array.from({length:10},()=>new Set()),activeControlGroup:null,lastControlGroupRecall:null,
     buildingVisuals:new Map(),resourceNodeVisuals:new Map(),latestBuildings:[],
@@ -127,10 +138,13 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     dummy:new THREE.Object3D(),ringRotation:new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),-Math.PI/2),
     selectionDirty:false,lastFriendlyUnitClick:null,lastUnitPickState:null,
     buildPlacementActive:false,buildPlacementType:'house',buildPlacementPending:false,pendingBuildOrderToken:null,
-    pendingWallPreview:null,attackMoveMode:false,workerTargetMode: null, persistentTargetMode:null,tapOrderArmed:false,tapOrderPointer:null,
+    pendingWallPreview:null,guidanceDismissed:false,attackMoveMode:false,workerTargetMode: null, persistentTargetMode:null,tapOrderArmed:false,tapOrderPointer:null,
     spaceDown:false,spaceCenterPending:false,movedPointer:false,pan:null,drag:null,cursorPointer:null,cursorShift:false,lastCursorSample:0,
     wallPlacementGesture:{owner:null},selectionBox:query('#selection-box'),viewport:query('#viewport'),
     appShell:query('.app-shell'),matchMenu:query('#match-menu'),helpPanel:query('#help-panel'),
+    matchMenuToggle:query('#match-menu-toggle'),helpToggle:query('#help-toggle'),hudScrim:query('#hud-scrim'),
+    scenarioBriefToggle:query('#scenario-brief-toggle'),dockToggle:query('#dock-toggle'),dockOpener:query('#dock-toggle'),
+    heldCameraKeys:createCameraArrowKeys(),lastKeyboardPanTime:0,
     scenarioBriefPanel:query('#scenario-brief-panel'),matchResult:query('#match-result'),
     commandDock:query('.control-dock'),TEAM_NAMES:['Azure','Ember'],
     minimapCanvas:minimap,minimapPointerId:null,zoom:1,mapFitActive:false,cameraTarget:new THREE.Vector3(),
@@ -151,7 +165,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     setConnection:noop,applyLobby:noop,updateLobbyHostControls:noop,roomLobby:{updateChat:noop,disconnect:noop},
     setMapCatalog:noop,loadMapAudio:noop,updateRoomUI:noop,scheduleReconnect:noop,resize:noop,centerCameraOnHomeBase:noop,
     setCamera:noop,drawMinimap:noop,updateContextualCommands:noop,updateBuildingResearchControls:noop,
-    updateBuildPlacementHint:noop,syncBattlefieldCursor:noop,updateEconomyUI:noop,updateEnvironmentStateCaptureSnapshot:noop,
+    syncBattlefieldCursor:noop,updateEconomyUI:noop,updateEnvironmentStateCaptureSnapshot:noop,
     updateObjectives:noop,updateVictoryHoldCard:noop,
     updateScenarioEventCards(_events,elapsed) {if(Number.isFinite(elapsed))w.latestMatchElapsedSeconds=elapsed;},
     setUnitInstanceCount:noop,setUnitTint:noop,updateUnitTransform:noop,updateUnitCargoCueColor:noop,
@@ -179,6 +193,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     'buildingSupportsRally','buildingSupportsResearch','clearActiveControlGroup','revalidateControlGroups','clearControlGroups','controlGroupKeyLabel',
     'assignControlGroup','recallControlGroup','centerCameraOnControlGroup','syncSelectionMesh',
     'updateStationaryOrderControls','updateContextualCommands','updateSelectionUI','updateCommandUI','syncTargetOrderUI',
+    'combatStanceContext','updateCombatStanceUI','workerHudState','handleWorkerHudAction','updateBuildPlacementHint',
     'issueStationaryOrder','issueReturnCargo','setPersistentTargetMode','setAttackMoveMode','setTapOrderArmed',
     'issueMove','issueBuildingRallyPoint','issueAttack','issueAttackBuilding','issueGather','issueForestGather','issueContextOrder',
     'minimapMapRect','worldFromMinimap','focusCameraFromMinimap','canIssueMinimapMove','finishMinimapPointer','finishPointer','captureBattlefieldPointer',
@@ -186,12 +201,15 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     'keyboardTargetIsEditing','controlGroupIndexFromKey','selectionCenterShortcutAllowed',
     'showToast','setOrderStatus','armOrderStatusTimeout','beginOrderStatus','finishOrderStatus','applyOrderNotice','sendTrackedOrder','sendCommand',
     'appendUnitFromState','applyState','applyWaypointQueueCounts','updateFogFromState','applyForestState',
+    'closeHudPanels','clearHeldCameraKeys','closeScenarioBrief','closeDockDetails','toggleHudPanel',
     'syncMatchResultActions','updateMatchResult','formatVictoryHoldTime','updateMatchArmySizeControls','setPlayer','connectSocket'];
   // Control-group painting is a layout side effect; group contents are changed
   // only by production assign/recall/revalidation bodies above.
   w.pickHarvestableTreeAt=()=>null; // This Sheep fixture has no rendered tree crowns.
   w.updateControlGroupUI=noop;w.cameraNavigationKeydown=()=>false;w.wallPlacementKeydown=()=>false;
   w.eval([wildlifeClientFunctionSource(source),...names.map(declaration)].join('\n'));
+  w.matchDecisions=createMatchDecisions(w.document,w.sendCommand);
+  bindCombatStanceControls(w.document,w.combatStanceContext,w.sendCommand);
   const listeners=program.filter(node=>{
     if(node.type==='ForOfStatement') return source.slice(node.start,node.end).includes("querySelectorAll('[data-stationary-order]')");
     if(node.type!=='ExpressionStatement')return false;
@@ -202,6 +220,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
       || (target==='minimapCanvas.addEventListener' && ['contextmenu','pointerdown','pointermove','pointerup','pointercancel','lostpointercapture'].includes(event))
       || (target==='window.addEventListener' && event==='keydown' && text.includes('controlGroupIndexFromKey(event)'))
       || (target==='ui.orderTargetToggle.addEventListener' && event==='click')
+      || (['matchMenuToggle.addEventListener','helpToggle.addEventListener'].includes(target) && event==='click')
       || (event==='click' && text.includes('[data-harvest-wildlife]'));
   });
   assert.ok(listeners.length>=10,'production battlefield, minimap, keyboard and button handlers');
@@ -224,20 +243,25 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     Object.defineProperties(event,{pointerId:{value:id},pointerType:{value:pointerType}});
     element.dispatchEvent(event);checkErrors();return event;
   }
-  // This input fixture samples a visible presentation frame per receipt. Real
-  // suspension timing is covered by browser-state-recovery and cloud captures.
+  // CPU cases present immediately. The native socket bridge may batch receipts
+  // through the same recovery coalescer before presenting, as the browser does;
+  // JSDOM HUD work must not force a full frame for every queued network packet.
+  // Real suspension timing stays in browser-state-recovery and cloud captures.
   let presentationTime = w.performance.now();
-  const receive=value=>{
-    if (value.type === 'state' || value.type === 'stateRefresh') value = identify(value);
-    if (value.state) value = { ...value, state: identify(value.state) };
-    connections.at(-1).message(value);
+  const present=()=>{
     const update = w.browserStateRecovery.frame(presentationTime += 16);
     if (update) w.applyState(update.state, false, update.snap);
     const counts = w.browserStateRecovery.takeWaypointCounts();
     if (counts !== null) w.applyWaypointQueueCounts(counts);
     wildlifeRenderer.update(camera);checkErrors();
   };
-  return {w,dom,canvas,minimap,sent,notices,connections,map,packet,screen,pointer,receive,
+  const receive=(value,presentNow=true)=>{
+    if (value.type === 'state' || value.type === 'stateRefresh') value = identify(value);
+    if (value.state) value = { ...value, state: identify(value.state) };
+    connections.at(-1).message(value);checkErrors();
+    if (presentNow) present();
+  };
+  return {w,dom,canvas,minimap,sent,notices,connections,map,packet,screen,pointer,receive,present,
     click(point,extra={}) {const p=screen(point);pointer(canvas,'pointerdown',{...p,...extra});pointer(canvas,'pointerup',{...p,...extra});},
     right(point,extra={}) {return pointer(canvas,'pointerdown',{...screen(point),button:2,...extra});},
     key(key,extra={}) {const event=new w.KeyboardEvent('keydown',{key,code:extra.code||key,bubbles:true,cancelable:true,...extra});w.dispatchEvent(event);checkErrors();return event;},

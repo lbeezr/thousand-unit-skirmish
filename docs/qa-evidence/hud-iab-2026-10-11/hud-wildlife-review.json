@@ -1,0 +1,47 @@
+{
+  "id": "hud-wildlife-review",
+  "name": "HUD Wildlife Review",
+  "width": 160,
+  "height": 160,
+  "terrainSeed": 19,
+  "fogOfWar": false,
+  "startingArmySize": 24,
+  "startingResources": {
+    "food": 2000,
+    "wood": 3000
+  },
+  "spawnPoints": [
+    {
+      "team": 0,
+      "x": -20.5,
+      "z": 0
+    },
+    {
+      "team": 1,
+      "x": 20.5,
+      "z": 0
+    }
+  ],
+  "obstacles": [],
+  "triggers": [],
+  "scenarioEvents": [],
+  "resourceNodes": [
+    {
+      "id": "review-sheep-0",
+      "type": "food",
+      "stock": 130,
+      "x": -16.5,
+      "z": 4.5,
+      "wildlifeSpecies": "bellweather-sheep"
+    },
+    {
+      "id": "review-sheep-1",
+      "type": "food",
+      "stock": 130,
+      "x": 16.5,
+      "z": 4.5,
+      "wildlifeSpecies": "bellweather-sheep"
+    }
+  ],
+  "terrainBase": "meadow"
+}
