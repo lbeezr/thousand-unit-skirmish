@@ -313,3 +313,37 @@ passing subsets. Eighty focused runner, batch, interaction and building-selectio
 tests pass after integration with `e128775e`. The temporary room secret still
 needs removal after the remaining captures. Capacity stays eight; saved rooms
 are preserved.
+
+The room-lifecycle owner used the agreed 19:57–20:02 UTC between-pass window
+for PR #662. Railway deployment `677e7fe5-04cf-4f31-8273-415502db1b2e` reached
+SUCCESS with source `e128775ed17fb8050fbb1e89ad2dbef9bec5cb6b`; the separate
+[served receipt](qa-evidence/interaction-audio-2026-10-11/roster-staging-e128775e.json)
+verifies all 119 recordings, 141 client modules and both audio workers. Its
+clean release digest remains unavailable. Corrected
+[run 38170842734](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38170842734)
+was dispatched at 20:06 UTC on runner `ed7f584eb9f7f284f400186d14f5cd2dbac8f9e1`,
+requesting only the eight previously failed subsets, sequentially in the same
+owned room. This is a planned retry, not additional qualified coverage yet.
+
+An additional [source/output waveform comparison](qa-evidence/interaction-audio-2026-10-11/roster-eighth-cloud/waveform-comparison.json)
+checks the actual final-mix signal, independently of the native start receipt.
+At 8 kHz mono, full-source normalized correlation is 0.813–0.999 for all 52
+saved clips, with positive fitted gain and 7–10 ms best-match offsets. This
+supports presence of the expected recordings in the output instead of merely
+nonzero unrelated background audio. It does not upgrade the nine failed-case
+clips or claim intelligibility or perceived mix. The read-only
+[measurement script](../scripts/audio-native-waveform-audit.py) verifies both
+file hashes and a deterministic known-delay/gain/noise fixture. It requires
+NumPy and FFmpeg, runs from the repository root, accepts the evidence directory
+and optional `--ffmpeg PATH`, and writes only its JSON result to stdout.
+
+Independent review found an acceptance weakness in the original output probe:
+its nominal source duration could fit the capture interval even if runtime later
+called `stop()` early. The probe now passively records successful native stop
+times, preserves native arguments/results/errors and scheduled-stop replacement,
+and rejects premature interruption. New receipts declare `native-stop-v1`;
+legacy receipts remain `unavailable` and are not retroactively strengthened.
+Eighty-six focused tests cover the combined runner/selection contracts, including
+interrupted output, rescheduled stops, native exceptions, clock precision and
+immutable completed receipts. Both type projects pass. Run #10 remains pinned
+to its earlier probe; source/output comparison remains its separate evidence.

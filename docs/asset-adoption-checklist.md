@@ -385,9 +385,9 @@ is owned by chat `01a12b6b-d181-79b1-97b4-05de79523245`. First increment:
 `audio/frontier-feedback-v1` and `audio/runtime/frontier-feedback/v1` supply
 Worker selection/Wood Gather speech and Barracks/Town Center selection sounds.
 Default Main binding, exact HTTP admission and Docker/release inputs are implemented;
-**full-roster output and listening remain incomplete**. Staging serves merged
-`3a68649d`; all 119 selected recordings and both background-loader modules are
-verified over HTTP. The user confirmed villager selection and wood-order speech
+**full-roster output and listening remain incomplete**. The earlier staging
+receipt at merged `3a68649d` verifies all 119 selected recordings and both
+background-loader modules over HTTP. The user confirmed villager selection and wood-order speech
 after refreshing staging for the loading fix, followed by Town Center and
 Barracks selection sounds. This hearing confirmation does not identify a fresh
 page revision after every later deployment; the served-byte receipts are separate.
@@ -418,6 +418,16 @@ release and packed HTTP verification of all 119 recordings / 146 client modules,
 recorded in the same QA receipt, alongside merged `b4ad36cf` clean-pack and
 served-source receipts. Full building/roster hearing remains incomplete; the
 villager selection/Wood Gather and Town Center/Barracks have the user's staging confirmation.
+The [remaining-roster receipt](qa-roster-audio-2026-10-11.md) now retains all
+105 voice-source transcripts, waveforms for all 119 sources, and 52 native
+staging recordings. Forty-three keys pass full capture qualification across
+Infantry, Spearman, Archer, Scout, Rider, Barracks, Archery Range and Stable.
+The nine partial clips do not close failed cases. Owner-run retries cover the
+remaining 42 keys in the same owned room after correcting ordinary target and
+training-panel assumptions. Served source `e128775e` and all audio hashes are
+separately verified; no clean release digest is exposed by that Railway build.
+The assistant cannot directly hear the recordings, so source transcription,
+waveform correlation and output meters do not claim subjective listening.
 The older regional/pilot rows below retain their separate source/listening scope.
 
 | Package/family | Actual use and release | Incomplete work → owner / next action |
