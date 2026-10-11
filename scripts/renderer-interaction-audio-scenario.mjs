@@ -87,6 +87,7 @@ export function installInteractionAudioProbe() {
 export function observeInteractionAudio() {
   const probe = window.__rtsInteractionAudio;
   if (!probe) return false;
+  try {
   const rect = renderer.domElement.getBoundingClientRect();
   const project = (x, z, lift = 0) => {
     const p = new THREE.Vector3(x, groundHeight(x, z) + lift, z).project(camera);
@@ -100,6 +101,10 @@ export function observeInteractionAudio() {
     buildings: latestBuildings.filter(b => b.team === localTeam && b.hp > 0 && ['town-center', 'barracks'].includes(b.type))
       .map(b => ({ id: b.id, type: b.type, complete: b.complete, selected: b.id === selectedBuildingId, point: project(b.x, b.z) })),
   };
+  } catch (error) {
+    const fault = `observation-${error?.name || 'Error'}`;
+    if (!probe.faults.includes(fault)) probe.faults.push(fault);
+  }
   return false;
 }
 
@@ -141,15 +146,18 @@ export async function run(value) {
       condition: `(${observeInteractionAudio.toString()})()` });
     stage = 'ordinary-entry';
     await page.cdp.call('Page.navigate', { url: origin + '/' });
-    await page.wait('document.querySelector("#menu-new-game")?.disabled === false', 'ordinary New Game');
+    await page.wait('document.documentElement.dataset.entry === "menu" && document.querySelector("#menu-new-game")?.disabled === false', 'ordinary New Game');
     await control(page, '#menu-new-game');
+    stage = 'opening-workers';
     await page.wait(`window.__rtsInteractionAudio?.last?.mapId === '${mapId}' && window.__rtsInteractionAudio.last.workers.some(w => w.point)`, 'normal opening Workers');
-    await page.wait('window.__rtsInteractionAudio.last.inspector.bindings.some(b => b.key === "unit.worker.gather.wood" && b.sources.every(s => s.available))', 'default recordings ready');
+    stage = 'default-audio-ready';
+    await page.wait('window.__rtsInteractionAudio.last.inspector.bindings.some(b => b.key === "unit.worker.gather.wood" && b.sources.every(s => s.available))', 'default recordings ready', 35000);
     const state = () => page.cdp.evaluate('window.__rtsInteractionAudio.last');
     // The first ordinary battlefield gesture unlocks the game audio context.
     // Record a subsequent genuine click after its normal selection cooldown.
     let worker = (await state()).workers.find(w => w.point);
     await clickNovicePoint(page, worker.point);
+    stage = 'gesture-unlock';
     await page.wait('window.__rtsInteractionAudio.last.status === "running" && window.__rtsInteractionAudio.stream', 'gesture-unlocked native output');
     await page.cdp.evaluate('new Promise(resolve => setTimeout(resolve, 1500))');
     const recordClick = async (key, checkpoint, action) => {
@@ -201,7 +209,21 @@ export async function run(value) {
     await recordClick('building.barracks.select', 'barracks-click', () => clickNovicePoint(page, barracks.point));
     assert.deepEqual(report.recordings.map(r => r.key).sort(), [...interactionKeys].sort());
     report.status = 'captured-needs-listening';
-  } catch { report.issues.push({ stage, code: 'interaction-audio-capture-failed' }); }
+  } catch {
+    report.issues.push({ stage, code: 'interaction-audio-capture-failed' });
+    try {
+      report.diagnostic = await page.cdp.evaluate(`(() => {
+        const probe = window.__rtsInteractionAudio, last = probe?.last;
+        return { entry: document.documentElement.dataset.entry ?? null,
+          boot: document.documentElement.dataset.boot ?? null,
+          probe: Boolean(probe), faults: probe?.faults ?? [],
+          mapId: last?.mapId ?? null, team: last?.team ?? null,
+          audioStatus: last?.status ?? null, packStatus: last?.inspector?.status ?? null,
+          workers: last?.workers ?? [], buildings: last?.buildings ?? [] };
+      })()`);
+      await capture({ page, mapId, checkpoint: `failure-${stage}` });
+    } catch { report.issues.push({ stage, code: 'failure-diagnostic-unavailable' }); }
+  }
   await writeFile(path.join(evidenceDirectory, 'interaction-audio.json'), JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
   const passed = report.status === 'captured-needs-listening';
   return { status: passed ? 'passed' : 'failed', checks: [{ id: 'ordinary-clicks-native-output-recorded', passed }] };

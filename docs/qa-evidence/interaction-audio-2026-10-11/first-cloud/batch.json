@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "contextVersion": 1,
+  "scope": "ordinary-feature-batch",
+  "requestedCases": [
+    "interaction-audio"
+  ],
+  "status": "failed",
+  "issues": [],
+  "cases": [
+    {
+      "id": "interaction-audio",
+      "status": "failed",
+      "source": {
+        "revision": "b4ad36cf80ca923ed808c06df113ae6bdad5c997",
+        "dirty": false
+      },
+      "release": {
+        "sourceRevision": "b4ad36cf80ca923ed808c06df113ae6bdad5c997",
+        "digest": "sha256:c771c5933f5856d564858cb63111c442041e71f8fe72a2eb0c30b5090a6ea468",
+        "files": 1821
+      },
+      "result": {
+        "status": "failed",
+        "checks": [
+          {
+            "id": "ordinary-clicks-native-output-recorded",
+            "passed": false
+          }
+        ],
+        "captures": []
+      },
+      "qualification": "interaction-audio/qualification.json"
+    }
+  ]
+}

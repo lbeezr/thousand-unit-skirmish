@@ -23,8 +23,10 @@ Source coverage does not close deployment or listening acceptance.
 | Current-roster clean release | `sourceDirty: false`, digest `sha256:ea62ef2e6536e5104f9fc7deaf99eeac88264995c94cd2218835c39ee38f837f`; 1,816 files. Real packed server hash-verifies all 119 default recordings and serves all 146 imported client modules. |
 | Audio manifest | `frontier-feedback/v1`, profile `interactions`, SHA-256 `b13cb7b0f5a0e89fa0d8c03d86923964ed78f8a3260d6a3ba035def5aad4f55c`; eleven sources, 450,927 source bytes. |
 | Publication | The CLI identity `lbliii` rejects the fork push and reports `push: false`. On the user's correction, the GitHub app connection was checked separately and confirms `admin: true`, `push: true` for `lbeezr/thousand-unit-skirmish`. Publication is proceeding through that already-authorized app; no permission expansion is needed. |
-| Containing deployment | **Not deployed yet.** The CLI-only access diagnosis was incomplete; app publication and delivery remain owned here. |
-| Ordinary-game listening | **Incomplete.** No cloud game browser, game-output recording or user listening acceptance occurred. |
+| Publication / merge | [PR638](https://github.com/lbeezr/thousand-unit-skirmish/pull/638), published through the GitHub app at `53be9499ccf788594dd08d11d5e3d213c6c76abd`, merged as `b4ad36cf80ca923ed808c06df113ae6bdad5c997`. The published tree exactly matches independently reviewed local `48d4fe37`; all 365 uploaded blob hashes were checked. |
+| Merged clean release | Source `b4ad36cf80ca923ed808c06df113ae6bdad5c997`, `sourceDirty: false`, digest `sha256:c771c5933f5856d564858cb63111c442041e71f8fe72a2eb0c30b5090a6ea468`, 1,821 files. This includes current main's separately merged portal. |
+| Containing deployment | Staging deployment `36e172c3-0439-4507-b596-7fe6bb924f53` serves `b4ad36cf`. The [authenticated served receipt](qa-evidence/interaction-audio-2026-10-11/staging-served.json) verifies exact source identity and all 119 recording hashes. Railway Git identity leaves runtime digest/cleanliness unknown; the clean local/cloud pack digest is separate. |
+| Ordinary-game listening | **Incomplete.** [Cloud native-output run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38153340669) at `b4ad36cf` passed sandboxed WebGL2 and packing but failed during the broad ordinary-entry stage, before any recording or screenshot. [Raw case receipt](qa-evidence/interaction-audio-2026-10-11/first-cloud/interaction-audio/interaction-audio.json). |
 
 The original production sources and editorial selections are retained in
 [Frontier feedback v1](../assets/audio/frontier-feedback-v1/README.md).
@@ -57,6 +59,39 @@ duplicate, reset, unknown-token and unsent orders. The reviewer cleared the
 three-file fix with all 38 audio execution tests passing; the execution/default
 pair passes 50 tests and both type projects pass. No new audio generation was
 needed. This is event-routing evidence, not a listening claim.
+
+All 259 audio tests pass after the fix. Main advanced to `ac9e5579` during
+publication; its portal changes merged cleanly. All 292 combined audio/entry
+tests, both type projects, docs, import boundaries, client static admission and
+cloud-adapter precheck pass on local integration `09fb1abd`. Its tree
+`1368f6129167631f5bc2253c49df93456a2ce86b` exactly matches merged `b4ad36cf`.
+Hosted CI was running at merge; main had no required branch protections or
+rules, and no hosted/full-suite pass is claimed.
+
+### First cloud execution and served delivery
+
+The first actual cloud run used Linux uid 1001, Chromium 154 with its sandbox
+enabled, and a software WebGL2 renderer. Capability readbacks passed. Its clean
+release digest matches the local merged pack exactly. Game boot reached ready
+with a canvas, but the case failed before recording. Its broad `ordinary-entry`
+stage does not distinguish opening-worker observation, default source loading or
+gesture unlock. The [qualification receipt](qa-evidence/interaction-audio-2026-10-11/first-cloud/interaction-audio/qualification.json)
+also reports an unknown-path canceled request; that independent browser event
+remains unresolved. No audio failure or success is inferred from this receipt.
+
+The follow-up adapter adds specific wait stages, safe probe error names and
+bounded state/screenshot diagnostics. Its source-ready wait now allows 35 seconds,
+exceeding the shipped loader's 30-second deadline. These changes make the next
+cloud run diagnosable; they do not change production audio or assert a fix.
+
+The staging HTTP check passed source `b4ad36cf`, public gameplay/readiness and
+protected health, default v3 manifest/source verification (119 recordings),
+136 recursively discovered client modules, and private source/catalog rejection.
+This served-import count differs from the local architecture graph's 146-module
+set because the checks have different entry coverage. Both are bounded receipts.
+The exact merged local pack also passes the real-server audio scenario. The
+audio owner retains full-roster ordinary interaction output and listening, rapid
+order mix, caption-free recognition and solo/1v1 acceptance.
 
 ### Current-roster source increment
 
