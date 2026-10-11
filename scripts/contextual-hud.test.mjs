@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
+import { updateWildlifeHud } from '../src/client/hud/wildlife-hud.mjs';
 import { updateUnitHud } from '../src/client/hud/unit-hud.mjs';
 import { updateBuildingHud } from '../src/client/hud/building-hud.mjs';
 import { updateWorkerHud, workerBuildChoices, workerSelectionKey } from '../src/client/hud/worker-hud.mjs';
@@ -53,7 +54,7 @@ function fixture(team = 0) {
   w.ui = {};
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
   Object.assign(w, { ...economyClientBindings(), ...wildlifeClientBindings(),
-    selectionContext, updateUnitHud, updateBuildingHud, updateWorkerHud, workerBuildChoices, workerSelectionKey, updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
+    selectionContext, updateWildlifeHud, updateUnitHud, updateBuildingHud, updateWorkerHud, workerBuildChoices, workerSelectionKey, updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
     applyUnitStances, updateCombatStanceControls, bindCombatStanceControls, socket: { readyState: 1 },
     castPreview: true, humanRosterPreview: true, roomPageUrl: new URL('http://localhost/'),
     matchMedia: () => ({ matches: false }),
@@ -1708,7 +1709,7 @@ for (const team of [0, 1]) test(`seat ${team}: selected Stone cargo keeps its la
   assert.equal(button.getAttribute('aria-disabled'), 'true'); assert.doesNotMatch(f.bar.querySelector('[data-worker-cargo]').textContent, /stone/);
 });
 
-for (const team of [0, 1]) test(`seat ${team}: owned Sheep uses the existing compact Herd/Stop strip and returns cleanly to army context`, t => {
+for (const team of [0, 1]) test(`seat ${team}: Sheep and carcass use focused identity and supported actions then return cleanly to units`, t => {
   const f = fixture(team); t.after(() => f.dom.window.close());
   const node = { id: 'owned-hud-sheep', type: 'food', stock: 100, x: 2.5, z: 3.5,
     wildlifeSpecies: 'bellweather-sheep' };
@@ -1723,6 +1724,9 @@ for (const team of [0, 1]) test(`seat ${team}: owned Sheep uses the existing com
   f.w.selectWildlife(row);
   assert.equal(f.w.selected.size, 0); assert.equal(f.w.selectedBuildingId, null);
   assert.equal(f.bar.hidden, false); assert.equal(f.bar.dataset.context, 'wildlife');
+  assert.equal(f.bar.dataset.hudTheme, 'obsidian');
+  assert.equal(f.bar.querySelector('[data-wildlife-identity]').hidden, false);
+  assert.equal(f.bar.querySelector('[data-wildlife-name]').textContent, 'Bellweather Sheep');
   assert.match(f.bar.querySelector('[data-context-summary]').textContent,
     new RegExp(`Bellweather Sheep · ${team === 0 ? 'Azure' : 'Ember'} · 100 food`));
   const target = f.bar.querySelector('[data-context-proxy="order-target-toggle"]');
@@ -1732,9 +1736,27 @@ for (const team of [0, 1]) test(`seat ${team}: owned Sheep uses the existing com
   const visible = [...f.bar.querySelectorAll('button')].filter(button => !button.closest('[hidden]'));
   assert.deepEqual(visible.map(button => button.dataset.stationaryOrder || button.dataset.contextProxy), ['order-target-toggle', 'stop']);
   assert.equal(f.d.querySelector('#assign-selected-group').disabled, true);
+  target.focus(); f.w.tapOrderArmed = true; f.w.updateContextualCommands();
+  assert.match(f.bar.querySelector('[data-wildlife-hint]').textContent, /visible clear land.*Esc/);
+  f.w.socket.readyState = 3; f.w.updateContextualCommands();
+  assert.match(f.bar.querySelector('[data-wildlife-hint]').textContent, /Reconnecting/);
+  f.w.socket.readyState = 1; f.w.tapOrderArmed = false;
+  const carcass = { ...row, wildlifeState: 'carcass', stock: 42.5 };
+  delete carcass.wildlifeActivity;
+  f.w.applyWildlifeState({ mapId: 'sheep-hud', forestEpoch: 7, resourceNodes: [carcass] });
+  f.w.updateWildlifeHarvestControl();
+  f.w.updateContextualCommands();
+  assert.equal(f.bar.querySelector('[data-wildlife-name]').textContent, 'Sheep carcass');
+  assert.match(f.bar.querySelector('[data-wildlife-summary]').textContent, /42 food remaining/);
+  assert.equal(target.hidden, true); assert.equal(stop.hidden, true);
+  assert.equal(f.bar.querySelector('[data-harvest-wildlife]').hidden, false);
+  assert.match(f.bar.querySelector('[data-wildlife-hint]').textContent, /nearest idle Worker with empty cargo/);
+  assert.equal(f.d.activeElement.closest('[hidden]'), null, 'disappearing Herd restores visible focus');
   f.w.selectWorkers();
   assert.equal(f.w.selectedWildlifeId, null); assert.deepEqual([...f.w.selected], [team * 2]);
   assert.equal(f.bar.dataset.context, 'workers');
+  assert.equal(f.bar.querySelector('[data-wildlife-identity]').hidden, true);
+  assert.equal(f.bar.querySelector('[data-wildlife-hint]').hidden, true);
   assert.equal(f.bar.querySelector('[data-context-build]').hidden, false);
   assert.equal(f.bar.querySelector('[data-context-groups]').hidden, false);
 });

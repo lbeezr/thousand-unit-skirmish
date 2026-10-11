@@ -171,6 +171,11 @@ runtime binding and clean local trial are recorded in the
 the pilot is merged, staged and accepted by the user. The exact user-observed
 browser revision and full viewport/action capture matrix remain unmeasured.
 
+The shared tokens live in `selection-hud.css` and now also serve match settings,
+help, objectives, results, resources and minimap controls through `match-ui.css`.
+Wildlife uses an explicit Food-symbol fallback with the same 72px identity area.
+These consuming surfaces preserve their existing input and preference behavior.
+
 The building slice is staged with exact served-byte evidence. Army/mixed/Skiff
 adoption reuses the retained composition and recovery storyboard, keeps global
 navigation in the header and discloses each command's eligible subset. The

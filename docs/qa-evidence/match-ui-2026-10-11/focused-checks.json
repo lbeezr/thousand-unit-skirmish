@@ -1,0 +1,25 @@
+{
+  "scope": "match-ui-focused-cpu",
+  "baseSource": "3310f31c1b6586fb478e498b22244786fd476600",
+  "testsPassed": 186,
+  "testsFailed": 0,
+  "groups": [
+    "contextual-hud",
+    "hud-layout",
+    "match-decisions-ui",
+    "navigation-settings"
+  ],
+  "execution": "184 passed in the combined run; its two new carcass cases used invalid non-alive wildlifeActivity data. After correcting only the fixture, both cases passed in a focused rerun.",
+  "checks": [
+    "runtime dependency boundaries",
+    "strict JS types",
+    "strict Node types",
+    "documentation links",
+    "changed JS syntax",
+    "exact public admission",
+    "git diff whitespace"
+  ],
+  "independentReview": "No remaining actionable findings after coarse-pointer specificity correction; live-to-carcass, reconnect and focus transitions rechecked.",
+  "renderedAcceptance": false,
+  "fullCpuSuitePassed": false
+}

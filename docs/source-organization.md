@@ -133,4 +133,7 @@ Worker disclosures; `building-hud.*` owns building presentation only, and
 order controls. Header navigation and selected entity controls have separate
 layout ownership. Existing
 client production/research/lifecycle handlers remain authoritative consumers.
+`wildlife-hud.mjs` is a presentation-only consumer of already disclosed Sheep/
+carcass state; it does not choose recipients or change wildlife authority.
+`match-ui.css` applies shared tokens to existing in-match panels and readouts.
 These files are exactly admitted by `src/server/client-asset-paths.mjs`.

@@ -205,7 +205,9 @@ staged delivery and remaining ordinary-game acceptance. Selected buildings now
 own their production, queue, research and lifecycle surface. Army, mixed and
 Skiff selections use the same identity and command vocabulary, with eligible
 subsets disclosed. Global navigation stays in the header; formation and stance
-changes retain their existing authoritative rules.
+changes retain their existing authoritative rules. Sheep/carcass selection,
+match settings, help, objectives, results, resource readouts and tactical-map
+controls share this visual vocabulary while preserving match input behavior.
 
 Left-click or drag on the tactical map navigates the camera. Right-click moves
 only the living selected units owned by the player; Shift plus right-click

@@ -33,6 +33,7 @@ import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvai
 import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from './client/hud/objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateWorkerHud, workerBuildChoices, workerSelectionKey } from './client/hud/worker-hud.mjs';
+import { updateWildlifeHud } from './client/hud/wildlife-hud.mjs';
 import { updateUnitHud } from './client/hud/unit-hud.mjs';
 import { updateBuildingHud } from './client/hud/building-hud.mjs';
 import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts } from './selection-portrait.mjs';
@@ -3984,7 +3985,7 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     updateProductionPortrait(button, kind, role);
   }
   bar.dataset.context = context.kind;
-  bar.dataset.hudTheme = ['workers', 'building', 'military', 'mixed', 'boats'].includes(context.kind) ? 'obsidian' : '';
+  bar.dataset.hudTheme = ['workers', 'building', 'military', 'mixed', 'boats', 'wildlife'].includes(context.kind) ? 'obsidian' : '';
   bar.dataset.hudTeam = String(localTeam);
   if (bar.hidden !== (context.kind === 'none')) bar.hidden = context.kind === 'none';
   quickAccess.hidden = false;
@@ -4079,6 +4080,11 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     formation: ui.formationSelect.value, targeting: tapOrderArmed,
     attackMove: attackMoveMode, orderMode: persistentTargetMode,
   }, formation => { ui.formationSelect.value = formation; updateContextualCommands(); });
+  updateWildlifeHud(document, {
+    wildlife, summary: wildlife ? wildlifeSelectionSummary(wildlife) : '',
+    connected: socket?.readyState === WebSocket.OPEN, matchFinished: matchWinner >= 0,
+    targeting: tapOrderArmed,
+  });
   const currentFocus = document.activeElement;
   const commandHasFocus = (bar.contains(currentFocus) || quickAccess?.contains(currentFocus))
     && currentFocus.isConnected && !currentFocus.disabled && !currentFocus.closest('[hidden]');
