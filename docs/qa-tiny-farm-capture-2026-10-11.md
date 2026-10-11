@@ -112,6 +112,22 @@ pages, retaining only safe booleans, fixed entry values and seat0/1/null. A real
 entry control proves healthy host and broken guest remain distinguishable without
 retaining invite/session data. No guest-readiness correction is guessed.
 
+The two-page diagnostic at clean
+`167361413571a77c4e2216685bdd0d3600c1718e`, independently approved with
+52 Farm and 29 shared controls (owner focused67/67),
+[run38159468158](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38159468158),
+failed at 17:26:44 UTC at `entry-second-seat` / `deadline`.
+[Artifact11709198433](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38159468158/artifacts/11709198433)
+was created at 17:26:41 UTC, ZIP digest
+`sha256:a14e55b2186995a5f1263c0dcb0af4a28c6f7410841015c3d225279dcdd8c42c`.
+The downloaded ZIP hash matches. It retains zero frames, a healthy host lobby
+(Tiny/Skirmish selected, ready enabled, owned seat0, observer installed), and a
+null guest observation because guest CDP evaluation failed. Shared qualification
+likewise could not retain the guest boot evidence; canceled requests remain
+failures. The specific guest cause remains unestablished. Further UI changes or
+a rendered Farm pass cannot be justified by this receipt. Preserve all four
+run artifacts and worktrees; do not repeat this unchanged failed capture.
+
 The existing supported Actions capability receipt is
 [run38153340669](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38153340669),
 artifact11706704507 created at 15:57:42 UTC: Linux uid1001, Chrome154.0.8037.97,
@@ -121,11 +137,11 @@ execution or Farm acceptance follows from it. The local Chromium helper remains
 the recorded `nobody`-owned sandbox blocker; this slice does not relaunch that
 unchanged browser or modify its provisioning.
 
-Next: independently review the exact Farm head, run focused registered controls,
-pack clean source and dispatch only `tiny-farm` on that exact branch through the
-existing authorized workflow. The draft PR retains exact head, check results,
-pack digest and any run/artifact links. If dispatch is unavailable or denied,
-record the precise failed action once and preserve the adapter without retries.
+Next transition: diagnose the unavailable second-seat CDP evidence through the
+shared capture owner before choosing a further source correction. The Farm owner
+retains ordinary rendered verification. The draft PR retains the reviewed source,
+focused checks, pack identity and failed run/artifact links. No unchanged-head
+capture retry, readiness relaxation or deadline increase is justified here.
 
 Even a successful automated capture leaves appearance inspection, touch input,
 fresh-player Farm/Mill explanation and cold **process** recovery in the same
