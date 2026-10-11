@@ -197,7 +197,7 @@ export async function enterTinyFarmRoom({ page, openPage, origin }, { click = cl
   onStage('install-host-observer'); await install(page);
   assert.equal(await page.cdp.evaluate('location.href'), 'about:blank');
   onStage('host-menu'); await page.cdp.call('Page.navigate', { url: origin + '/' });
-  await page.wait("document.documentElement.dataset.entry==='menu' && !document.querySelector('#menu-create-room')?.disabled", 'ordinary Create Room menu');
+  await page.wait("document.documentElement?.dataset.entry==='menu' && document.querySelector('#menu-create-room')?.disabled===false", 'ordinary Create Room menu');
   onStage('create-room'); await click(page, '#menu-create-room');
   await page.wait("document.querySelector('#room-lobby')?.open && !document.querySelector('#lobby-map')?.disabled", 'ordinary host lobby');
   onStage('select-tiny'); assert.equal(await page.cdp.evaluate(`(()=>{const select=document.querySelector('#lobby-map');
@@ -218,7 +218,7 @@ export async function enterTinyFarmRoom({ page, openPage, origin }, { click = cl
   await click(guest, '#lobby-ready');
   await page.wait("!document.querySelector('#lobby-launch')?.disabled", 'both human seats ready');
   onStage('launch-tiny'); await click(page, '#lobby-launch');
-  const running = `!document.querySelector('#room-lobby')?.open && document.documentElement.dataset.boot==='ready'
+  const running = `!document.querySelector('#room-lobby')?.open && document.documentElement?.dataset.boot==='ready'
     && ${wire}?.mapId===${JSON.stringify(TINY_FARM_MAP)} && ${environment}?.fogOfWar===true`;
   await Promise.all([page.wait(running, 'host ordinary Tiny match'), guest.wait(running, 'guest ordinary Tiny match')]);
   return [page, guest];
@@ -412,7 +412,7 @@ export async function run(value, { identify = checkServedBuildIdentity, enter = 
   } catch (error) {
     // The shared qualifier intentionally hides CDP exception text. Retain safe
     // Farm stage/DOM facts without error strings, source expressions or invites.
-    const boot = await context.page.cdp.evaluate(`(()=>{const d=document.documentElement.dataset;
+    const boot = await context.page.cdp.evaluate(`(()=>{const d=document.documentElement?.dataset??{};
       return {entry:['menu','game'].includes(d.entry)?d.entry:null,ready:d.boot==='ready',
         createPresent:!!document.querySelector('#menu-create-room'),createDisabled:document.querySelector('#menu-create-room')?.disabled===true,
         lobbyOpen:document.querySelector('#room-lobby')?.open===true,mapPresent:!!document.querySelector('#lobby-map'),

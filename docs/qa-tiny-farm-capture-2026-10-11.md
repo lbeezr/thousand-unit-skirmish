@@ -78,8 +78,22 @@ menu, absent lobby readiness and unavailable Launch refuse. These are not pixels
 Paid foundation captures now enforce expected identity, unfinished state, zero
 Farm crop and exact debit on both observations bracketing the screenshot. A
 completion-during-capture control retains the failed partial evidence and refuses
-to qualify it as a foundation phase. Diagnostic recapture follows exact-head
-tests and independent review; any specific UI correction requires that receipt.
+to qualify it as a foundation phase.
+
+The diagnostic [run38158673958](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38158673958)
+at clean `a606e40574818cfe3964f1fdff3301a03158765e` failed at 17:13:42 UTC.
+[Artifact11709403105](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38158673958/artifacts/11709403105)
+was created at 17:13:39 UTC, ZIP digest
+`sha256:fbe0cc58c5cf0479ac66b7d321e7e6a204d163b49b914035e221c46e291237a3`.
+It retains zero frames and the safe receipt `entry-host-menu` / `browser-type`:
+menu entry, no Create Room control, not ready. The unchanged clean pack and
+normal-sandbox preflight passed. CPU reproduction of the actual entry predicate
+throws TypeError while navigation has no document root and incorrectly accepts
+a partial menu without Create Room. The Farm-only correction safely waits for
+the document root and an explicitly present, enabled Create Room control. A
+regression exercises missing document, partial menu and disabled Create Room
+before the actual menu/lobby orchestration. It strengthens readiness; no deadline
+or browser policy changes. Subsequent capture follows exact-head checks/review.
 
 The existing supported Actions capability receipt is
 [run38153340669](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38153340669),

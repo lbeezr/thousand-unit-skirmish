@@ -161,7 +161,7 @@ test('completion during screenshot keeps failed partial evidence and refuses a f
 // CPU CDP boundary: actual serialized entry expressions, the real menu entry
 // handler and pointer helper run against a DOM. Layout/lobby/network scheduling
 // are modeled; this establishes orchestration, never browser/render acceptance.
-async function entryFixture({ unavailable = false, brokenLobby = false, noLaunch = false } = {}) {
+async function entryFixture({ unavailable = false, brokenLobby = false, noLaunch = false, transientMenu = false } = {}) {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8'), pages = [], requests = [], stages = [];
   const roomUrl = 'http://127.0.0.1:1234/?room=' + 'R'.repeat(32);
   const ready = new Set(); let launches = 0;
@@ -219,7 +219,18 @@ async function entryFixture({ unavailable = false, brokenLobby = false, noLaunch
         return {};
       },
     };
-    page.wait = async (expression, label) => { await new Promise(resolve => setImmediate(resolve)); const value = await page.cdp.evaluate(expression);
+    page.wait = async (expression, label) => {
+      if (transientMenu && label === 'ordinary Create Room menu') {
+        const original = page.dom;
+        for (const html of ['', '<html data-entry="menu"><head></head><body></body></html>',
+          '<html data-entry="menu"><body><button id="menu-create-room" disabled></button></body></html>']) {
+          page.dom = new JSDOM(html, { runScripts: 'outside-only' });
+          if (!html) page.dom.window.document.documentElement.remove();
+          try { assert.equal(Boolean(await page.cdp.evaluate(expression)), false, 'navigation cannot qualify an absent or disabled Create Room'); }
+          finally { page.dom.window.close(); page.dom = original; }
+        }
+      }
+      await new Promise(resolve => setImmediate(resolve)); const value = await page.cdp.evaluate(expression);
       assert.ok(value, `CPU orchestration refuses absent readiness: ${label}`); return value; };
     pages.push(page); return page;
   };
@@ -237,6 +248,12 @@ test('actual Tiny entry runs normal Create Room, two-seat Ready and Launch witho
     assert.equal(f.requests.filter(r => r.method === 'POST').length, 1);
     assert.ok(f.pages.every(p => new URL(p.dom.window.location.href).searchParams.get('room') === 'R'.repeat(32)));
   } finally { f.close(); }
+});
+
+test('actual entry waits through missing navigation document and partial menu without a TypeError or false readiness', async () => {
+  const f = await entryFixture({ transientMenu: true });
+  try { assert.equal((await enterTinyFarmRoom(f.context)).length, 2); assert.equal(f.launches(), 1); }
+  finally { f.close(); }
 });
 for (const options of [{ unavailable: true }, { brokenLobby: true }, { noLaunch: true }])
   test(`actual Tiny entry refuses unavailable menu/lobby/launch: ${JSON.stringify(options)}`, async () => {
