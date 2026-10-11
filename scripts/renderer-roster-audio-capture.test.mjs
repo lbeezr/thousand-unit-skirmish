@@ -13,7 +13,7 @@ import { createMapDefinitionValidator } from '../src/server/map-definition-valid
 import { mapSizeIdentity } from '../src/map-size-policy.mjs';
 import { assertMatchModeCompatibility } from '../src/match-modes.mjs';
 import { buildingPad, buildingGroups, paidUnitPlan, recordingCoverage, rosterMap, rosterPlan, rosterSubsets, STAGING_ORIGIN, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
-import { enterRosterRoom, frameRosterArea, identifyPublicAudioSource, persistRosterRecording, rosterControlPoint, rosterStudioFailureCode, validateRosterFrame } from './renderer-roster-audio-capture.mjs';
+import { captureRosterStudioFailure, enterRosterRoom, frameRosterArea, identifyPublicAudioSource, persistRosterRecording, rosterCaptureFailureCode, rosterControlPoint, rosterPublishReady, rosterStudioFailureCode, rosterStudioFailureView, validateReviewRoom, validateRosterFrame } from './renderer-roster-audio-capture.mjs';
 import { observeRosterBrowser, rosterMatrix, runRosterStaging, validateRosterCapability } from './renderer-roster-audio-staging.mjs';
 import { captureWorkerRepair, repairBuildingPoint, validateRepairHealth } from './renderer-roster-audio-repair.mjs';
 
@@ -143,6 +143,92 @@ test('studio classification retains fixed failure codes and discards private mes
   assert.equal(rosterStudioFailureCode('Loaded private-file.json'), null);
   assert.equal(rosterStudioFailureCode('Validating, saving to the custom map library, and syncing it to both players…'), null);
 });
+test('publication readiness matches actual sendCommand admission, including welcome before first frame', async () => {
+  const source = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
+  const declaration = parse(source, { ecmaVersion: 'latest', sourceType: 'module' }).body
+    .find(node => node.type === 'FunctionDeclaration' && node.id.name === 'sendCommand');
+  assert.ok(declaration);
+  for (const recovering of [false, true]) for (const socketState of [0, 1, 3])
+    for (const status of [null, 'AWAITING SERVER RESPONSE', 'SERVER NOT ADVANCING']) {
+      let sent = 0;
+      const send = runInNewContext(`(${source.slice(declaration.start, declaration.end)})`, {
+        browserStateRecovery: { recovering, status: () => status }, performance: { now: () => 1 },
+        socket: { readyState: socketState, send() { sent++; } }, WebSocket: { OPEN: 1 },
+        ui: { studioMessage: {} }, showToast() {}, audio: { playEvent() {} }, TextEncoder,
+      });
+      const accepted = send({ type: 'publishMap', map: {} });
+      assert.equal(rosterPublishReady({ recovering, socketState, status, applied: 0 }), accepted);
+      assert.equal(sent, accepted ? 1 : 0);
+    }
+  assert.equal(rosterPublishReady(undefined), false);
+});
+test('capture failure codes distinguish stalled CDP from unsatisfied state without retaining private error text', () => {
+  assert.equal(rosterCaptureFailureCode(new Error('Runtime.evaluate timeout')), 'cdp-evaluation-timeout');
+  assert.equal(rosterCaptureFailureCode(new Error('ordinary publication timeout; private room')), 'state-wait-timeout');
+  assert.equal(rosterCaptureFailureCode(new Error('private room')), 'capture-contract-failed');
+});
+test('optional private review room validation accepts only the exact code and never quotes rejected values', () => {
+  const room = 'private-review'.padEnd(32, 'x');
+  assert.equal(validateReviewRoom(room), room);
+  for (const empty of [undefined, null, '']) assert.equal(validateReviewRoom(empty), null);
+  for (const value of [room + 'x', room.slice(1), ` ${room}`, `${STAGING_ORIGIN}/?room=${room}`, 32, {}]) {
+    assert.throws(() => validateReviewRoom(value), error => error.message === 'Invalid private review room code.');
+  }
+});
+function reviewRoomEntryFixture({ observedRoom, origin = STAGING_ORIGIN, team = 0, observer = true } = {}) {
+  const room = 'private-review'.padEnd(32, 'x'), calls = [], selectors = [], stages = [];
+  const map = rosterMap('unit-worker'), bytes = Buffer.from(JSON.stringify(map));
+  const page = { cdp: {
+    evaluate: async expression => { assert.equal(expression, 'location.href'); return 'about:blank'; },
+    call: async (method, args) => {
+      calls.push({ method, args });
+      if (method === 'DOM.getDocument') return { root: { nodeId: 1 } };
+      if (method === 'DOM.querySelector') return { nodeId: 2 };
+      return {};
+    },
+  }, wait: async (expression, description) => {
+    new Function(`return (${expression});`);
+    if (description === 'visible enabled public control') {
+      selectors.push(JSON.parse(expression.slice(expression.lastIndexOf(')(') + 2, -1)));
+      return { x: 100, y: 50 };
+    }
+    if (description === 'same owned review room admits host seat') {
+      const result = await runInNewContext(expression, { URL, crypto: globalThis.crypto, TextEncoder, Uint8Array,
+        location: { href: `${origin}/?room=${observedRoom ?? room}` },
+        document: { documentElement: { dataset: { entry: 'game' } } },
+        window: observer ? { __rtsInteractionAudioSnapshot: () => ({ team }) } : {} });
+      if (!result) throw new Error('same owned review room admission timeout');
+      return result;
+    }
+    if (description === 'ordinary authored map import') return { bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex') };
+    if (description === 'ordinary Save & Play applies map') return { applied: true };
+    if (description === 'ordinary fitted camera zoom') return .2;
+    if (description === 'uncovered central world point') return { x: 500, y: 300 };
+    return true;
+  } };
+  return { room, calls, selectors, stages,
+    run: () => enterRosterRoom(page, STAGING_ORIGIN, map, '/tmp/owned-map.json', bytes, async stage => stages.push(stage), false, room) };
+}
+test('private review room joins through native input, verifies the exact host room and uses ordinary Studio controls', async () => {
+  const f = reviewRoomEntryFixture(), entry = await f.run();
+  assert.equal(entry.method, 'joined-owned-review-room'); assert.equal(entry.room, 'joined-owned-review-room');
+  assert.equal(entry.credentialsRetained, false);
+  assert.deepEqual(f.selectors.slice(0, 5), ['#menu-join', '#menu-join-dialog input',
+    '#menu-join-dialog button[type="submit"]', '#match-menu-toggle', '#map-studio-open']);
+  assert.ok(!f.selectors.includes('#menu-studio'));
+  assert.deepEqual(f.calls.filter(call => call.method === 'Input.insertText').map(call => call.args.text), [f.room]);
+  assert.deepEqual(f.calls.filter(call => call.method === 'Page.navigate').map(call => call.args.url), [`${STAGING_ORIGIN}/`]);
+  assert.ok(!JSON.stringify({ entry, stages: f.stages, calls: f.calls.filter(call => call.method !== 'Input.insertText') }).includes(f.room));
+});
+test('wrong review room, origin or seat never falls back to creating a new room', async () => {
+  for (const options of [{ observedRoom: 'wrong'.padEnd(32, 'x') }, { origin: 'https://other.test' }, { team: 1 }, { team: null }, { observer: false }]) {
+    const f = reviewRoomEntryFixture(options);
+    await assert.rejects(f.run(), /admission timeout/);
+    assert.ok(!f.selectors.includes('#menu-studio') && !f.selectors.includes('#map-studio-open'));
+    assert.equal(f.stages.at(-1), 'join-owned-review-room');
+    assert.equal(f.calls.filter(call => call.method === 'Page.navigate').length, 1);
+  }
+});
 test('ordinary Save & Play reports a server rejection immediately and never proceeds to gameplay framing', async () => {
   const map = rosterMap('unit-worker'), bytes = Buffer.from(JSON.stringify(map));
   const dom = new JSDOM('<dialog id="map-studio" open><p id="studio-message">Map rejected · Ordinary maps require at least 160 × 160. Use Practice for internal lab maps.</p></dialog>');
@@ -159,7 +245,7 @@ test('ordinary Save & Play reports a server rejection immediately and never proc
   try {
     await assert.rejects(enterRosterRoom(page, STAGING_ORIGIN, map, '/tmp/owned-authored-map.json', bytes,
       async stage => stages.push(stage)), error => error.studioFailureCode === 'map-rejected-size');
-    assert.equal(stages.at(-1), 'save-and-play'); assert.ok(!stages.includes('frame-play-area'));
+    assert.equal(stages.at(-1), 'publish-result'); assert.ok(!stages.includes('frame-play-area'));
   } finally { dom.window.close(); }
 });
 test('reuse reloads only the same owned Studio room and waits for a new document', async () => {
@@ -174,6 +260,10 @@ test('reuse reloads only the same owned Studio room and waits for a new document
     if (description === 'same owned room reopens Studio') return true;
     assert.equal(runInNewContext(expression, context), false, 'old document cannot satisfy reload');
     context.performance.timeOrigin = 20;
+    const observer = context.window.__rtsInteractionAudioSnapshot;
+    delete context.window.__rtsInteractionAudioSnapshot;
+    assert.equal(runInNewContext(expression, context), false, 'new document waits for Main observer without throwing');
+    context.window.__rtsInteractionAudioSnapshot = observer;
     assert.equal(runInNewContext(expression, context), true);
     return true;
   } };
@@ -239,6 +329,8 @@ test('public content qualification checks actual selected files and all 119 sour
   const result = await identifyPublicAudioSource(STAGING_ORIGIN, revision, { fetcher });
   assert.equal(maximum, 4); assert.equal(result.identity.deployedRevision, null); assert.equal(result.identity.releaseDigest, null);
   assert.equal(result.identity.files.filter(row => row.path.endsWith('.mp3')).length, 119);
+  assert.equal(result.identity.files.filter(row => /\.(?:mjs|js)$/.test(row.path)).length, 8);
+  assert.ok(result.identity.files.some(row => row.path === '/src/game-entry.mjs'));
   assert.ok(requests.every(url => !url.includes('/health') && !url.includes('?')));
   await assert.rejects(identifyPublicAudioSource(STAGING_ORIGIN, revision, { fetcher: async () => new Response('wrong release') }), /differs/);
 });
@@ -251,6 +343,38 @@ test('visible control lookup rejects hidden, covered and aria-disabled duplicate
   assert.deepEqual(JSON.parse(JSON.stringify(find('[data-test]'))), { x: 60, y: 50 });
   document.elementFromPoint = () => document.body; assert.equal(find('[data-test]'), null);
   dom.window.close();
+});
+test('failure screenshot view excludes Join Room, wrong origin, preboot and hidden Studio', () => {
+  const dom = new JSDOM('<dialog id="map-studio" open></dialog><dialog id="menu-join-dialog"><input value="private-code"></dialog>');
+  const document = dom.window.document, studio = document.querySelector('#map-studio');
+  document.documentElement.dataset.boot = 'ready'; document.documentElement.dataset.entry = 'game';
+  studio.getBoundingClientRect = () => ({ x: 80, y: 40, width: 1120, height: 660 });
+  const context = { document, location: { origin: STAGING_ORIGIN }, innerWidth: 1280, innerHeight: 720, performance: { timeOrigin: 10 } };
+  const observe = () => runInNewContext(`(${rosterStudioFailureView.toString()})(${JSON.stringify(STAGING_ORIGIN)})`, context);
+  assert.deepEqual(JSON.parse(JSON.stringify(observe())), { timeOrigin: 10, clip: { x: 80, y: 40, width: 1120, height: 660, scale: 1 } });
+  const join = document.querySelector('#menu-join-dialog'); join.open = true; assert.equal(observe(), null); join.open = false;
+  context.location.origin = 'https://other.test'; assert.equal(observe(), null); context.location.origin = STAGING_ORIGIN;
+  document.documentElement.dataset.boot = 'loading'; assert.equal(observe(), null); document.documentElement.dataset.boot = 'ready';
+  document.documentElement.dataset.entry = 'menu'; assert.equal(observe(), null); document.documentElement.dataset.entry = 'game';
+  studio.open = false; assert.equal(observe(), null); dom.window.close();
+});
+test('failure screenshot captures only guarded bounds and discards a document change', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'roster-studio-failure-'));
+  const view = { timeOrigin: 10, clip: { x: 80, y: 40, width: 1120, height: 660, scale: 1 } };
+  const bytes = Buffer.from('89504e470d0a1a0a', 'hex'), calls = [];
+  let read = 0, changed = true, admitted = true;
+  const page = { cdp: { evaluate: async () => !admitted ? null : ++read % 2 === 0 && changed ? { ...view, timeOrigin: 20 } : view,
+    call: async (method, args) => { calls.push({ method, args }); return { data: bytes.toString('base64') }; } } };
+  try {
+    assert.equal(await captureRosterStudioFailure(page, STAGING_ORIGIN, directory), null);
+    assert.deepEqual(await readdir(directory), []);
+    changed = false; const receipt = await captureRosterStudioFailure(page, STAGING_ORIGIN, directory);
+    assert.equal(receipt.acceptance, false); assert.equal(receipt.scope, 'studio-dialog-only');
+    assert.deepEqual(await readFile(path.join(directory, receipt.file)), bytes);
+    assert.ok(calls.every(call => call.method === 'Page.captureScreenshot' && JSON.stringify(call.args.clip) === JSON.stringify(view.clip)));
+    admitted = false; const count = calls.length;
+    assert.equal(await captureRosterStudioFailure(page, STAGING_ORIGIN, directory), null); assert.equal(calls.length, count);
+  } finally { await rm(directory, { recursive: true, force: true }); }
 });
 function output() {
   const bytes = Buffer.alloc(2048); Buffer.from('1a45dfa3', 'hex').copy(bytes);

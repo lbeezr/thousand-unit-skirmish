@@ -168,6 +168,33 @@ test('join checks same-server links, expiry and pending duplicate submits', asyn
   assert.deepEqual(f.navigations, []);
 });
 
+for (const outcome of ['complete', 'cancel', 'pagehide', 'interrupted']) test(`Join waits for the finite lookup body and handles ${outcome}`, async () => {
+  let finish, fail;
+  const body = new Promise((resolve, reject) => { finish = resolve; fail = reject; });
+  const f = await fixture({ handler: (path, options) => {
+    if (path === '/api/rooms/status') return json({ enabled: true });
+    assert.ok(options.signal instanceof AbortSignal);
+    return { ok: true, status: 200, arrayBuffer: () => body };
+  } });
+  try {
+    f.node('menu-join').click(); const dialog = f.node('menu-join-dialog');
+    dialog.querySelector('input').value = room;
+    dialog.querySelector('form').dispatchEvent(new f.win.Event('submit', { cancelable: true }));
+    await turn(); assert.deepEqual(f.navigations, []);
+    if (outcome === 'cancel') dialog.querySelector('[data-close]').click();
+    if (outcome === 'pagehide') f.win.dispatchEvent(new f.win.PageTransitionEvent('pagehide'));
+    if (outcome === 'interrupted') fail(new Error('Room lookup interrupted.'));
+    else finish(new ArrayBuffer(0));
+    await turn();
+    assert.equal(f.navigations.length, outcome === 'complete' ? 1 : 0);
+    if (outcome === 'complete') assert.equal(new URL(f.navigations[0]).searchParams.get('room'), room);
+    if (outcome === 'interrupted') {
+      assert.match(dialog.querySelector('[role=status]').textContent, /interrupted/);
+      assert.equal(f.node('menu-join').disabled, false);
+    }
+  } finally { f.win.close(); }
+});
+
 test('cancel and browser-back restoration invalidate unfinished navigation', async () => {
   let release;
   const f = await fixture({ handler: (path, options) => path === '/api/rooms/status' ? json({ enabled: true, ordinarySetup: { pve: { available: true } } })

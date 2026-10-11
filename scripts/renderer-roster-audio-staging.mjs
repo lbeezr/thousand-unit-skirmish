@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createFortifiedBrowser } from './fortified-browser-fixture.mjs';
 import { safeRequestDiagnostic } from './renderer-qualification.mjs';
-import { captureRosterSubset, identifyPublicAudioSource } from './renderer-roster-audio-capture.mjs';
+import { captureRosterSubset, identifyPublicAudioSource, validateReviewRoom } from './renderer-roster-audio-capture.mjs';
 import { rosterPlan, rosterSubsets, STAGING_ORIGIN, SUBSET_TIMEOUT_MS } from './renderer-roster-audio-plan.mjs';
 
 export function rosterMatrix(requested) {
@@ -71,7 +71,7 @@ async function validatePrerequisites({ revision, directory, preflightFile }, { s
   const actual = source(); assert.equal(actual.revision, revision); assert.equal(actual.dirty, false);
   validateRosterCapability(JSON.parse(await readFile(preflightFile, 'utf8')), revision, platform);
 }
-async function runOwnedRosterCase({ browser, page, verified, subset, revision, directory, reuseRoom = false }, capture) {
+async function runOwnedRosterCase({ browser, page, verified, subset, revision, directory, reuseRoom = false, reviewRoom = null }, capture) {
   const plan = rosterPlan(subset);
   let timer, observation, result;
   const qualification = { schemaVersion: 1, subset, expectedRevision: revision, status: 'failed',
@@ -106,7 +106,7 @@ async function runOwnedRosterCase({ browser, page, verified, subset, revision, d
       if (controller.signal.aborted) { await owned.dispose(); controller.signal.throwIfAborted(); }
       return owned;
     };
-    result = await capture({ page, origin: STAGING_ORIGIN, revision, subset, directory, reuseRoom,
+    result = await capture({ page, origin: STAGING_ORIGIN, revision, subset, directory, reuseRoom, reviewRoom,
       manifest: verified.manifest, identity: verified.identity, signal: controller.signal, openGuest });
     clearTimeout(timer);
     qualification.captureStatus = result.status;
@@ -146,14 +146,16 @@ async function runOwnedRosterCase({ browser, page, verified, subset, revision, d
 export async function runRosterStaging(options, {
   openBrowser = createFortifiedBrowser, identify = identifyPublicAudioSource,
   source = checkoutSource, platform = process.platform, capture = captureRosterSubset,
+  reviewRoom = process.env.RTS_AUDIO_REVIEW_ROOM,
 } = {}) {
+  reviewRoom = validateReviewRoom(reviewRoom);
   const { subset, revision, directory } = options; rosterPlan(subset);
   await validatePrerequisites(options, { source, platform }); await mkdir(directory);
   let browser, qualification;
   try {
     const verified = await identify(STAGING_ORIGIN, revision);
     browser = await openBrowser(); const page = await browser.page('about:blank');
-    ({ qualification } = await runOwnedRosterCase({ browser, page, verified, subset, revision, directory }, capture));
+    ({ qualification } = await runOwnedRosterCase({ browser, page, verified, subset, revision, directory, reviewRoom }, capture));
   } catch {
     qualification = { schemaVersion: 1, subset, expectedRevision: revision, status: 'failed', listeningReview: 'pending',
       issues: [{ code: 'staging-roster-contract-failed' }] };
@@ -170,7 +172,9 @@ export async function runRosterStaging(options, {
 export async function runRosterStagingBatch(options, {
   openBrowser = createFortifiedBrowser, identify = identifyPublicAudioSource,
   source = checkoutSource, platform = process.platform, capture = captureRosterSubset,
+  reviewRoom = process.env.RTS_AUDIO_REVIEW_ROOM,
 } = {}) {
+  reviewRoom = validateReviewRoom(reviewRoom);
   const { revision, directory } = options;
   await validatePrerequisites(options, { source, platform }); await mkdir(directory);
   const subsets = ['unit-worker', 'buildings-home', ...rosterSubsets.filter(subset => !['unit-worker', 'buildings-home'].includes(subset))];
@@ -189,7 +193,8 @@ export async function runRosterStagingBatch(options, {
     for (const [index, subset] of subsets.entries()) {
       const caseDirectory = path.join(directory, subset); await mkdir(caseDirectory);
       const outcome = await runOwnedRosterCase({ browser, page, verified, subset, revision,
-        directory: caseDirectory, reuseRoom: index > 0 }, capture);
+        directory: caseDirectory, reuseRoom: index > 0, reviewRoom: index === 0 ? reviewRoom : null }, capture);
+      reviewRoom = null;
       const { qualification, entrySucceeded, reusable } = outcome;
       const caseStatus = qualification.status;
       qualification.status = 'failed';

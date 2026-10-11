@@ -59,6 +59,7 @@ jobs:
           node scripts/renderer-qualification.mjs --preflight "$PREFLIGHT"
       - name: Record public staging through normal gameplay in one owned room
         env:
+          RTS_AUDIO_REVIEW_ROOM: ${{ secrets.RTS_AUDIO_REVIEW_ROOM }}
           SUBSET: ${{ inputs.subset }}
           REVISION: ${{ github.sha }}
           EVIDENCE: ${{ runner.temp }}/roster-audio

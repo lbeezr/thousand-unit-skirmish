@@ -71,7 +71,7 @@ authored maps, framed around a compact central play area using normal camera
 controls. This covers all 85 keys: all eight roles' supported commands/paid
 Ready cues, all thirteen building selections and Worker jobs, including the
 separate ordinary damaged-building Repair setup described below. Planned
-coverage is not completed playback evidence. The runner uses no staging credentials and compares seven public runtime
+coverage is not completed playback evidence. The runner uses no staging administration credentials and compares eight public runtime
 files, the manifest and all 119 source files to the checkout. Deployment SHA
 and release digest stay unknown in those public receipts until linked to the
 owner's separate served-identity check.
@@ -158,3 +158,49 @@ their cause. Seven focused tests cover completion, interrupted bodies, stale
 attempts and unchanged 401/404/503 behavior. Longer paid training queues are
 observed in progress before recording is armed, retaining the existing
 30-second audio arm limit.
+
+PR [#652](https://github.com/lbeezr/thousand-unit-skirmish/pull/652) merged at
+`8367e5cc23a73f568dd2a76e664932bf3a3797fe`. Railway deployment
+`c08d2b43-30b5-4e43-bd4f-3d07fd5fa669` reached SUCCESS; the separate
+[served receipt](qa-evidence/interaction-audio-2026-10-11/roster-staging-8367e5cc.json)
+verified that exact source, 141 client modules, both audio workers and all 119
+recordings. Its clean release digest is unavailable. The public room service
+reported nine saved rooms and the authorized temporary limit of ten.
+
+Full-roster [run 38163794135](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38163794135)
+was dispatched on this exact source with `all`, sequentially in one room. It
+passed capability, public hashes before/after and browser-error checks, but
+stopped during Save & Play after 67.528 seconds with zero recordings. The
+[retained report](qa-evidence/interaction-audio-2026-10-11/roster-fourth-cloud.json)
+keeps all remaining subsets explicitly not run. Studio retained the original
+map, and the final recovery observation showed an open socket and applied state.
+The old combined timeout classification cannot distinguish a stalled CDP read,
+readiness wait, control wait or publication wait. The initial welcome itself
+writes the reconnect message; that text does not prove publication was sent.
+
+The follow-up mirrors actual `sendCommand` readiness: a welcome can already be
+publishable before the first animation-frame counter increment. It separates
+readiness/control/result stages and CDP/state-wait timeout codes. Join Room also
+finishes its finite successful lookup body under a ten-second deadline and
+rechecks cancellation before navigating. These are bounded corrections, not
+evidence that the remaining playback or exact prior timeout cause is solved.
+
+One POST 201 and three subsequent room lookups in the run's exact time window
+shared the cloud browser's source address and user agent and identified one
+owned room. No room identifier is retained here. The user explicitly authorized
+adding its invitation code as temporary repository Actions secret
+`RTS_AUDIO_REVIEW_ROOM` and deleting that secret after the run. The next capture
+uses ordinary Join Room and requires the host seat; it must never create a
+replacement room when joining fails. All later subsets reuse that same session.
+The restore-to-eight deployment `4fa5f604-a62d-4466-9f7c-6a497769ae14`
+reached SUCCESS on source `7a0a59938b278b6b911cc12427190dbb2a67843b`.
+The public room service then reported `roomLimit: 8` and `roomCount: 10`,
+confirming restored capacity while retaining every saved room. The setting
+change and served observation both completed; no saved room was deleted.
+
+The retry code passed 79 focused tests, both type-check projects, runtime-import
+checks and independent review. It also safely waits for the new document's
+observer and records a failed Studio dialog only when its origin/document are
+stable and no other modal is open. Such a diagnostic screenshot cannot count
+as ordinary gameplay or listening acceptance. The temporary Actions secret
+was added with user approval and still needs removal after the retry.

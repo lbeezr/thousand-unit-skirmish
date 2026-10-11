@@ -15,7 +15,7 @@ import { captureWorkerRepair } from './renderer-roster-audio-repair.mjs';
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const stateExpression = 'window.__rtsInteractionAudioSnapshot()';
-const sourcePaths = ['src/main.js', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-shipped-catalog.mjs',
+const sourcePaths = ['src/main.js', 'src/game-entry.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-shipped-catalog.mjs',
   'src/audio-shipped-loader.mjs', 'src/client/audio/shipped-audio-worker-client.mjs', 'src/client/audio/shipped-audio-worker.mjs'];
 const manifestPath = `assets/audio/runtime/${DEFAULT_GAME_AUDIO_REFERENCE.packId}/${DEFAULT_GAME_AUDIO_REFERENCE.version}/manifest.json`;
 
@@ -115,20 +115,36 @@ export function rosterStudioFailureCode(message, recoveryOpen = false) {
 }
 const studioFailureExpression = `(${rosterStudioFailureCode.toString()})(document.querySelector('#studio-message')?.textContent,
   document.querySelector('#studio-draft-recovery')?.hidden === false)`;
-export async function enterRosterRoom(page, origin, map, mapFile, mapBytes, progress = async () => {}, reuseRoom = false) {
+export function rosterPublishReady(state) {
+  return state?.socketState === 1 && state.recovering === false && state.status !== 'SERVER NOT ADVANCING';
+}
+export function rosterCaptureFailureCode(error) {
+  if (error?.studioFailureCode) return error.studioFailureCode;
+  if (/^Runtime\.evaluate timeout$/.test(error?.message ?? '')) return 'cdp-evaluation-timeout';
+  return /timeout/i.test(error?.message ?? '') ? 'state-wait-timeout' : 'capture-contract-failed';
+}
+export function validateReviewRoom(value) {
+  if (value === undefined || value === null || value === '') return null;
+  if (typeof value !== 'string' || !/^[A-Za-z0-9_-]{32}$/.test(value)) throw new Error('Invalid private review room code.');
+  return value;
+}
+export async function enterRosterRoom(page, origin, map, mapFile, mapBytes, progress = async () => {}, reuseRoom = false, reviewRoom = null) {
   validateStagingOrigin(origin);
+  reviewRoom = validateReviewRoom(reviewRoom);
+  assert.ok(!reuseRoom || reviewRoom === null, 'review room join is first-context only');
+  const joiningReviewRoom = reviewRoom !== null;
   if (reuseRoom) {
     // Only the batch owner can request reuse after its first successful entry.
     // Keep the room code/session inside the owned browser; no new room request.
     assert.equal(await page.cdp.evaluate(`(() => { const url=new URL(location.href);
       return url.origin === ${JSON.stringify(origin)} && /^[A-Za-z0-9_-]{32}$/.test(url.searchParams.get('room') || '')
-        && ${stateExpression}?.team === 0; })()`), true);
+        && window.__rtsInteractionAudioSnapshot?.()?.team === 0; })()`), true);
     const priorDocument = await page.cdp.evaluate('performance.timeOrigin');
     assert.ok(Number.isFinite(priorDocument));
     await progress('owned-room-reload');
     await page.cdp.call('Page.reload', {});
     await page.wait(`performance.timeOrigin !== ${priorDocument} && document.documentElement?.dataset.entry === "game"
-      && ${stateExpression}?.team === 0`, 'same owned room reloads', 35000);
+      && window.__rtsInteractionAudioSnapshot?.()?.team === 0`, 'same owned room reloads', 35000);
     if (!await page.cdp.evaluate('document.querySelector("#map-studio")?.open === true')) {
       await rosterControl(page, '#match-menu-toggle');
       await rosterControl(page, '#map-studio-open');
@@ -140,10 +156,32 @@ export async function enterRosterRoom(page, origin, map, mapFile, mapBytes, prog
       (${installInteractionAudioProbe.toString()})();(${installCatalogImportObserver.toString()})()` });
     await progress('menu');
     await page.cdp.call('Page.navigate', { url: `${origin}/` });
-    await page.wait('document.documentElement?.dataset.entry === "menu" && document.querySelector("#menu-studio")?.disabled === false', 'ordinary menu');
-    await progress('open-studio');
-    await rosterControl(page, '#menu-studio');
-    await page.wait('document.documentElement?.dataset.entry === "game" && document.querySelector("#map-studio")?.open', 'new owned studio room', 35000);
+    await page.wait(`document.documentElement?.dataset.entry === "menu" && document.querySelector(${JSON.stringify(joiningReviewRoom ? '#menu-join' : '#menu-studio')})?.disabled === false`, 'ordinary menu');
+    if (joiningReviewRoom) {
+      await progress('join-owned-review-room');
+      await rosterControl(page, '#menu-join');
+      await rosterControl(page, '#menu-join-dialog input');
+      // Native entry only. Compare a hash inside the new document so no URL or
+      // room code is returned by an observation or retained in a failure receipt.
+      const expectedRoomHash = hash(Buffer.from(reviewRoom));
+      await page.cdp.call('Input.insertText', { text: reviewRoom }); reviewRoom = null;
+      await rosterControl(page, '#menu-join-dialog button[type="submit"]');
+      await page.wait(`(async () => { if (document.documentElement?.dataset.entry !== 'game'
+        || window.__rtsInteractionAudioSnapshot?.()?.team !== 0) return false;
+        const url=new URL(location.href), room=url.searchParams.get('room') || '';
+        if (url.origin !== ${JSON.stringify(origin)} || !/^[A-Za-z0-9_-]{32}$/.test(room)) return false;
+        const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(room));
+        return Array.from(new Uint8Array(bytes), b=>b.toString(16).padStart(2,'0')).join('') === ${JSON.stringify(expectedRoomHash)};
+      })()`, 'same owned review room admits host seat', 35000);
+      await progress('open-studio');
+      await rosterControl(page, '#match-menu-toggle');
+      await rosterControl(page, '#map-studio-open');
+      await page.wait('document.querySelector("#map-studio")?.open === true', 'joined owned review room opens Studio');
+    } else {
+      await progress('open-studio');
+      await rosterControl(page, '#menu-studio');
+      await page.wait('document.documentElement?.dataset.entry === "game" && document.querySelector("#map-studio")?.open', 'new owned studio room', 35000);
+    }
   }
   await progress('import-map');
   const { root } = await page.cdp.call('DOM.getDocument');
@@ -152,18 +190,22 @@ export async function enterRosterRoom(page, origin, map, mapFile, mapBytes, prog
   await page.cdp.call('DOM.setFileInputFiles', { nodeId, files: [mapFile] });
   const imported = await page.wait(`window.__rtsCatalogMapImport?.ok && document.querySelector('#studio-id')?.value === ${JSON.stringify(map.id)} && window.__rtsCatalogMapImport`, 'ordinary authored map import');
   assert.equal(imported.sha256, hash(mapBytes)); assert.equal(imported.bytes, mapBytes.length);
-  await progress('save-and-play');
-  await page.wait(`(() => { const s=window.__rtsBrowserRecoverySnapshot?.();
-    return s?.socketState === 1 && s.recovering === false && s.status === null && s.applied > 0; })()`, 'current live state admits ordinary publication', 35000);
+  await progress('publish-readiness');
+  // Welcome applies authoritative state before the first animation frame.
+  // Match ordinary sendCommand admission; RAF's applied counter is not a gate.
+  await page.wait(`(${rosterPublishReady.toString()})(window.__rtsBrowserRecoverySnapshot?.())`, 'current live state admits ordinary publication', 35000);
+  await progress('publish-control');
   await rosterControl(page, '#studio-publish');
+  await progress('publish-result');
   const published = await page.wait(`(() => { const open=document.querySelector('#map-studio')?.open;
     if (!open && ${stateExpression}?.mapId === ${JSON.stringify(map.id)} && ${stateExpression}.team === 0) return { applied:true };
     const failureCode=open && ${studioFailureExpression}; return failureCode ? { failureCode } : false; })()`, 'ordinary Save & Play applies map', 35000);
   if (published.failureCode) throw Object.assign(new Error('ordinary map publish failed'), { studioFailureCode: published.failureCode });
   await progress('frame-play-area');
   await frameRosterArea(page);
-  return { method: 'menu-studio-file-import-save-and-play', mapId: map.id, mapSha256: hash(mapBytes),
-    room: reuseRoom ? 'reused-owned-public-room' : 'fresh-owned-public-room', recovery: 'normal-server-checkpoint', credentialsRetained: false };
+  return { method: joiningReviewRoom ? 'joined-owned-review-room' : 'menu-studio-file-import-save-and-play', mapId: map.id, mapSha256: hash(mapBytes),
+    room: reuseRoom ? 'reused-owned-public-room' : joiningReviewRoom ? 'joined-owned-review-room' : 'fresh-owned-public-room',
+    recovery: 'normal-server-checkpoint', credentialsRetained: false };
 }
 
 export async function persistRosterRecording({ report, directory, key: cue, output, allowedHashes, persist }) {
@@ -214,7 +256,36 @@ export function validateRosterFrame(view, mapId, base64) {
   assert.ok(data && end, 'complete native PNG required'); return bytes;
 }
 
-export async function captureRosterSubset({ page, openGuest, origin, revision, subset, directory, manifest, identity, signal, reuseRoom = false }) {
+// Failure evidence is restricted to the authored Studio dialog. Never capture
+// the room-entry UI, browser chrome, another origin, or a changed document.
+export function rosterStudioFailureView(origin) {
+  const dialog = document.querySelector('#map-studio');
+  if (location.origin !== origin || document.documentElement?.dataset.boot !== 'ready'
+    || document.documentElement?.dataset.entry !== 'game' || !dialog?.open
+    || document.querySelector('dialog[open]:not(#map-studio)')) return null;
+  const r = dialog.getBoundingClientRect();
+  if (![r.x, r.y, r.width, r.height, innerWidth, innerHeight, performance.timeOrigin].every(Number.isFinite)) return null;
+  const x = Math.max(0, Math.ceil(r.x)), y = Math.max(0, Math.ceil(r.y));
+  const width = Math.min(innerWidth, Math.floor(r.x + r.width)) - x;
+  const height = Math.min(innerHeight, Math.floor(r.y + r.height)) - y;
+  if (width <= 0 || height <= 0 || width > 1280 || height > 720) return null;
+  return { timeOrigin: performance.timeOrigin, clip: { x, y, width, height, scale: 1 } };
+}
+export async function captureRosterStudioFailure(page, origin, directory) {
+  validateStagingOrigin(origin);
+  const expression = `(${rosterStudioFailureView.toString()})(${JSON.stringify(origin)})`;
+  const before = await page.cdp.evaluate(expression); if (!before) return null;
+  const screenshot = await page.cdp.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false, clip: before.clip });
+  const after = await page.cdp.evaluate(expression);
+  if (JSON.stringify(before) !== JSON.stringify(after)) return null;
+  const bytes = Buffer.from(screenshot.data, 'base64');
+  assert.ok(bytes.length <= 4000000 && bytes.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex')));
+  await writeFile(path.join(directory, 'studio-failure.png'), bytes, { flag: 'wx' });
+  return { file: 'studio-failure.png', sha256: hash(bytes), width: before.clip.width, height: before.clip.height,
+    scope: 'studio-dialog-only', acceptance: false };
+}
+
+export async function captureRosterSubset({ page, openGuest, origin, revision, subset, directory, manifest, identity, signal, reuseRoom = false, reviewRoom = null }) {
   const startedAt = Date.now();
   const plan = rosterPlan(subset), map = rosterMap(subset), mapBytes = Buffer.from(JSON.stringify(map, null, 2) + '\n');
   const bindings = manifest.pack.profiles.find(profile => profile.id === 'interactions').bindings;
@@ -278,7 +349,7 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
   }
   try {
     report.entry = await enterRosterRoom(page, origin, map, mapFile, mapBytes,
-      async step => { stage = `ordinary-entry-${step}`; report.entryStage = step; await persist(); }, reuseRoom);
+      async step => { stage = `ordinary-entry-${step}`; report.entryStage = step; await persist(); }, reuseRoom, reviewRoom);
     await persist();
     stage = 'default-audio-ready';
     await page.wait(`${stateExpression}.inspector.bindings.length === ${Object.keys(bindings).length} && ${stateExpression}.inspector.bindings.every(b => b.sources.every(s => s.available))`, 'all default samples available', 35000);
@@ -381,7 +452,7 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
     assert.equal(recordingCoverage(Object.keys(bindings), plan.keys, report.recordings).missingPlannedKeys.length, 0);
     report.status = 'captured-needs-listening';
   } catch (error) {
-    report.issues.push({ stage, code: signal?.aborted ? 'subset-deadline' : error?.studioFailureCode ?? (/timeout/i.test(error?.message) ? 'wait-timeout' : 'capture-contract-failed') });
+    report.issues.push({ stage, code: signal?.aborted ? 'subset-deadline' : rosterCaptureFailureCode(error) });
     try {
       report.diagnostic = await page.cdp.evaluate(`(() => { const s=window.__rtsInteractionAudioSnapshot?.(), p=window.__rtsInteractionAudio;
         const recovery=window.__rtsBrowserRecoverySnapshot?.();
@@ -394,6 +465,10 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
         bindingCount:s?.inspector.bindings.length ?? 0, decisions:s?.inspector.decisions.slice(-12) ?? [],
         nativeStarts:p?.starts.slice(-12) ?? [], faults:p?.faults ?? [], recordingPhase:p?.recording?.phase ?? null }; })()`);
     } catch { report.diagnostic = { unavailable: true }; }
+    if (!signal?.aborted && report.diagnostic.studioOpen === true) {
+      try { report.failureFrame = await captureRosterStudioFailure(page, origin, directory); }
+      catch { report.failureFrame = { unavailable: true }; }
+    }
   }
   await persist(); return report;
 }
