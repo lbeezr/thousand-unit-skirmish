@@ -128,6 +128,36 @@ export function validateReviewRoom(value) {
   if (typeof value !== 'string' || !/^[A-Za-z0-9_-]{32}$/.test(value)) throw new Error('Invalid private review room code.');
   return value;
 }
+export function rosterEntryControls() {
+  const control = selector => {
+    const element = document.querySelector(selector);
+    if (!element) return { present: false };
+    const r = element.getBoundingClientRect(), x = r.x + r.width / 2, y = r.y + r.height / 2;
+    const visible = r.width > 0 && r.height > 0 && !element.closest('[hidden]');
+    const inViewport = visible && Number.isFinite(x) && Number.isFinite(y) && x > 0 && x < innerWidth && y > 0 && y < innerHeight;
+    return { present: true, disabled: element.disabled === true || element.getAttribute('aria-disabled') === 'true',
+      visible, inViewport, hit: inViewport && element.contains(document.elementFromPoint(x, y)) };
+  };
+  return { menuHidden: document.querySelector('#match-menu')?.hidden ?? null,
+    menuExpanded: document.querySelector('#match-menu-toggle')?.getAttribute('aria-expanded') === 'true',
+    scrimHidden: document.querySelector('#hud-scrim')?.hidden ?? null,
+    dialogs: { anyOpen: Boolean(document.querySelector('dialog[open]')),
+      entryJoinOpen: document.querySelector('#menu-join-dialog')?.open === true,
+      roomJoinOpen: document.querySelector('#room-dialog')?.open === true,
+      lobbyOpen: document.querySelector('#room-lobby')?.open === true,
+      studioOpen: document.querySelector('#map-studio')?.open === true },
+    menuToggle: control('#match-menu-toggle'), studioControl: control('#map-studio-open') };
+}
+export async function openRosterStudio(page, progress = async () => {}) {
+  await progress('open-match-menu');
+  await rosterControl(page, '#match-menu-toggle');
+  await progress('menu-open');
+  await page.wait('document.querySelector("#match-menu")?.hidden === false && document.querySelector("#match-menu-toggle")?.getAttribute("aria-expanded") === "true"', 'ordinary match menu opens');
+  await progress('open-studio-control');
+  await rosterControl(page, '#map-studio-open');
+  await progress('studio-open');
+  await page.wait('document.querySelector("#map-studio")?.open === true', 'owned review room opens Studio');
+}
 export async function enterRosterRoom(page, origin, map, mapFile, mapBytes, progress = async () => {}, reuseRoom = false, reviewRoom = null) {
   validateStagingOrigin(origin);
   reviewRoom = validateReviewRoom(reviewRoom);
@@ -146,8 +176,7 @@ export async function enterRosterRoom(page, origin, map, mapFile, mapBytes, prog
     await page.wait(`performance.timeOrigin !== ${priorDocument} && document.documentElement?.dataset.entry === "game"
       && window.__rtsInteractionAudioSnapshot?.()?.team === 0`, 'same owned room reloads', 35000);
     if (!await page.cdp.evaluate('document.querySelector("#map-studio")?.open === true')) {
-      await rosterControl(page, '#match-menu-toggle');
-      await rosterControl(page, '#map-studio-open');
+      await openRosterStudio(page, progress);
     }
     await page.wait('document.querySelector("#map-studio")?.open === true', 'same owned room reopens Studio');
   } else {
@@ -173,10 +202,7 @@ export async function enterRosterRoom(page, origin, map, mapFile, mapBytes, prog
         const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(room));
         return Array.from(new Uint8Array(bytes), b=>b.toString(16).padStart(2,'0')).join('') === ${JSON.stringify(expectedRoomHash)};
       })()`, 'same owned review room admits host seat', 35000);
-      await progress('open-studio');
-      await rosterControl(page, '#match-menu-toggle');
-      await rosterControl(page, '#map-studio-open');
-      await page.wait('document.querySelector("#map-studio")?.open === true', 'joined owned review room opens Studio');
+      await openRosterStudio(page, progress);
     } else {
       await progress('open-studio');
       await rosterControl(page, '#menu-studio');
@@ -461,6 +487,7 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
           tick:recovery.tick, applied:recovery.applied, visible:recovery.visibility === 'visible',
           status:[null,'BACKGROUND','SYNCING CURRENT STATE','AWAITING SERVER RESPONSE','SERVER NOT ADVANCING'].includes(recovery.status) ? recovery.status : 'unknown' } : null,
         studioOpen:document.querySelector('#map-studio')?.open === true, importObserved:window.__rtsCatalogMapImport?.ok === true,
+        entryControls:(${rosterEntryControls.toString()})(),
         studioFailureCode:${studioFailureExpression},
         bindingCount:s?.inspector.bindings.length ?? 0, decisions:s?.inspector.decisions.slice(-12) ?? [],
         nativeStarts:p?.starts.slice(-12) ?? [], faults:p?.faults ?? [], recordingPhase:p?.recording?.phase ?? null }; })()`);

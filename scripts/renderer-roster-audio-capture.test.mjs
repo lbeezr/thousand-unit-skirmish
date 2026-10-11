@@ -13,7 +13,7 @@ import { createMapDefinitionValidator } from '../src/server/map-definition-valid
 import { mapSizeIdentity } from '../src/map-size-policy.mjs';
 import { assertMatchModeCompatibility } from '../src/match-modes.mjs';
 import { buildingPad, buildingGroups, paidUnitPlan, recordingCoverage, rosterMap, rosterPlan, rosterSubsets, STAGING_ORIGIN, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
-import { captureRosterStudioFailure, enterRosterRoom, frameRosterArea, identifyPublicAudioSource, persistRosterRecording, rosterCaptureFailureCode, rosterControlPoint, rosterPublishReady, rosterStudioFailureCode, rosterStudioFailureView, validateReviewRoom, validateRosterFrame } from './renderer-roster-audio-capture.mjs';
+import { captureRosterStudioFailure, enterRosterRoom, frameRosterArea, identifyPublicAudioSource, openRosterStudio, persistRosterRecording, rosterCaptureFailureCode, rosterControlPoint, rosterEntryControls, rosterPublishReady, rosterStudioFailureCode, rosterStudioFailureView, validateReviewRoom, validateRosterFrame } from './renderer-roster-audio-capture.mjs';
 import { observeRosterBrowser, rosterMatrix, runRosterStaging, validateRosterCapability } from './renderer-roster-audio-staging.mjs';
 import { captureWorkerRepair, repairBuildingPoint, validateRepairHealth } from './renderer-roster-audio-repair.mjs';
 
@@ -228,6 +228,39 @@ test('wrong review room, origin or seat never falls back to creating a new room'
     assert.equal(f.stages.at(-1), 'join-owned-review-room');
     assert.equal(f.calls.filter(call => call.method === 'Page.navigate').length, 1);
   }
+});
+test('ordinary Studio opening distinguishes each control and resulting UI state', async () => {
+  const expected = ['open-match-menu', 'menu-open', 'open-studio-control', 'studio-open'];
+  for (const failAt of [...expected, null]) {
+    const stages = [], calls = [];
+    const page = { wait: async (expression, description) => {
+      new Function(`return (${expression});`);
+      if (stages.at(-1) === failAt) throw new Error('bounded fixture timeout');
+      return description === 'visible enabled public control' ? { x: 100, y: 50 } : true;
+    }, cdp: { call: async (method, args) => { calls.push({ method, args }); } } };
+    const run = openRosterStudio(page, async stage => stages.push(stage));
+    if (failAt) await assert.rejects(run, /fixture timeout/); else await run;
+    assert.deepEqual(stages, failAt ? expected.slice(0, expected.indexOf(failAt) + 1) : expected);
+    assert.ok(calls.every(call => ['Page.bringToFront', 'Input.dispatchMouseEvent'].includes(call.method)));
+  }
+});
+test('entry controls retain fixed booleans for disabled, hidden, clipped and covered controls without private content', () => {
+  const dom = new JSDOM('<button id="match-menu-toggle" aria-expanded="false">MENU</button><aside id="match-menu" hidden><button id="map-studio-open" disabled>Studio</button></aside><button id="hud-scrim" hidden></button><dialog id="menu-join-dialog"><input value="private-room-token"></dialog><dialog id="room-lobby"></dialog><dialog id="map-studio"></dialog>');
+  const document = dom.window.document, menu = document.querySelector('#match-menu'), toggle = document.querySelector('#match-menu-toggle'), studio = document.querySelector('#map-studio-open');
+  toggle.getBoundingClientRect = studio.getBoundingClientRect = () => ({ x: 20, y: 30, width: 80, height: 40 });
+  document.elementFromPoint = () => toggle;
+  const observe = () => runInNewContext(`(${rosterEntryControls.toString()})()`, { document, innerWidth: 1280, innerHeight: 720 });
+  let result = observe();
+  assert.equal(result.menuHidden, true); assert.equal(result.menuToggle.hit, true); assert.equal(result.studioControl.visible, false);
+  menu.hidden = false; toggle.setAttribute('aria-expanded', 'true');
+  result = observe(); assert.equal(result.menuExpanded, true); assert.equal(result.studioControl.disabled, true); assert.equal(result.studioControl.hit, false);
+  studio.disabled = false; document.elementFromPoint = () => studio;
+  assert.equal(observe().studioControl.hit, true);
+  studio.getBoundingClientRect = () => ({ x: 20, y: 730, width: 80, height: 40 });
+  assert.equal(observe().studioControl.inViewport, false);
+  document.querySelector('#menu-join-dialog').open = true; document.querySelector('#room-lobby').open = true;
+  result = observe(); assert.equal(result.dialogs.entryJoinOpen, true); assert.equal(result.dialogs.lobbyOpen, true);
+  assert.ok(!JSON.stringify(result).includes('private')); dom.window.close();
 });
 test('ordinary Save & Play reports a server rejection immediately and never proceeds to gameplay framing', async () => {
   const map = rosterMap('unit-worker'), bytes = Buffer.from(JSON.stringify(map));

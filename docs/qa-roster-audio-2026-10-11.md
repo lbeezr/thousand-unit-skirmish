@@ -204,3 +204,21 @@ observer and records a failed Studio dialog only when its origin/document are
 stable and no other modal is open. Such a diagnostic screenshot cannot count
 as ordinary gameplay or listening acceptance. The temporary Actions secret
 was added with user approval and still needs removal after the retry.
+
+PR [#656](https://github.com/lbeezr/thousand-unit-skirmish/pull/656) merged at
+`9e31a840b1af1049039c033e4d1b729f3cfffb83`. The subsequent HUD merge
+`978ebb6531b639a8ab48390d0e8ba2435c1fbac1` deployed successfully as Railway
+`ec98f461-7b8b-49f8-aeb9-11ef0233b6f2`. Its separate
+[served receipt](qa-evidence/interaction-audio-2026-10-11/roster-staging-978ebb65.json)
+verifies that source, 141 client modules, both audio workers and all 119
+recordings; the clean release digest remains unavailable.
+
+[Run 38165638835](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38165638835)
+on that source joined the existing owned room as host, loaded all 85 bindings
+and passed browser-error/public-hash checks. It stopped at `open-studio` with
+a state-wait timeout after 46.125 seconds, before importing the map or recording
+any cue. The [fifth-run receipt](qa-evidence/interaction-audio-2026-10-11/roster-fifth-cloud.json)
+keeps all thirteen later subsets not run. Its combined opening stage cannot
+identify which control or modal prevented progress. The next runner revision
+records the individual menu/control transitions and fixed UI states to resolve
+this without inferring an audio failure or changing gameplay speculatively.
