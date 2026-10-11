@@ -217,6 +217,7 @@ run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor state
 run(['--test', 'scripts/hud-action-icons.test.mjs'], 'Default HUD action glyphs and semantics');
 run(['scripts/hud-action-icons-serving-scenario.mjs'], 'Default HUD action glyph HTTP bytes');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
+run(['--test', 'scripts/room-archive-store.test.mjs', 'scripts/room-connection-reservation.test.mjs'], 'Non-destructive room archive storage and connection reservations');
 run(['--test', 'scripts/match-modes.test.mjs', 'scripts/match-mode-controls.test.mjs'], 'Versioned match modes and supported UI choices');
 run(['--test', 'scripts/game-entry.test.mjs', 'scripts/game-navigation.test.mjs', 'scripts/room-presence.test.mjs', 'scripts/practice-entry.test.mjs'], 'Explicit main menu, mode-aware Practice, session entry and room presence');
 run(['--test', 'scripts/bannerfall-rules.test.mjs'], 'Bounded Bannerfall waves, evolution and stronghold rules');
@@ -486,6 +487,7 @@ const scenarios = [
   ['scripts/large-skirmish-entry-scenario.mjs', 'Reviewed Large normal human paid entry, cold recovery, rematch and Skirmish Practice'],
   ['scripts/checkpoint-storage-recovery-scenario.mjs', 'Checkpoint storage failure and recovery'],
   ['scripts/room-expiry-scenario.mjs', 'Invite expiry and pending reconnect protection'],
+  ['scripts/room-lifecycle-scenario.mjs', 'Room archive, admission and recovery lifecycle'],
   ['scripts/impaired-connection-scenario.mjs', 'Delayed two-seat transport and interrupted-order recovery'],
   ['scripts/pve-room-launch-scenario.mjs', 'PvE room launch and rematch integration'],
   ['scripts/tiny-skirmish-pve-entry-scenario.mjs', 'Fresh Tiny Skirmish AI admission, paid economy and cold resume'],

@@ -272,6 +272,9 @@ from source/candidate packs. Then use the relevant contract:
 
 ## Keep these docs useful
 
+Room admission, idle archives and authenticated restore/QA cleanup belong in the
+[room lifecycle guide](room-lifecycle.md); menu actions remain in [game entry](game-entry.md).
+
 - Put instructions in the guide for that task; link to them instead of copying them.
 - Keep runtime claims tied to code. A generated asset is not necessarily integrated.
 - Keep proposals explicit. A milestone needs its stated evidence, not a feature count.

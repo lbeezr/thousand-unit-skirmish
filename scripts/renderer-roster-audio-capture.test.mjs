@@ -13,9 +13,9 @@ import { createMapDefinitionValidator } from '../src/server/map-definition-valid
 import { mapSizeIdentity } from '../src/map-size-policy.mjs';
 import { assertMatchModeCompatibility } from '../src/match-modes.mjs';
 import { buildingPad, buildingGroups, paidUnitPlan, recordingCoverage, rosterMap, rosterPlan, rosterSubsets, STAGING_ORIGIN, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
-import { appendRosterEntryProgress, captureRosterStudioFailure, enterRosterRoom, frameRosterArea, identifyPublicAudioSource, installRosterTimingProbe, openRosterStudio, persistRosterRecording, rosterCaptureFailureCode, rosterControlPoint, rosterEntryControls, rosterPublishReady, rosterStudioFailureCode, rosterStudioFailureView, validateReviewRoom, validateRosterFrame } from './renderer-roster-audio-capture.mjs';
+import { appendRosterEntryProgress, captureRosterStudioFailure, enterRosterRoom, frameRosterArea, identifyPublicAudioSource, installRosterTimingProbe, openRosterStudio, persistRosterRecording, rosterCaptureFailureCode, rosterControlPoint, rosterEntryControls, rosterPublishReady, rosterOrderNoticeDiagnostic, rosterStudioFailureCode, rosterStudioFailureView, validateReviewRoom, validateRosterFrame } from './renderer-roster-audio-capture.mjs';
 import { observeRosterBrowser, rosterMatrix, runRosterStaging, validateRosterCapability } from './renderer-roster-audio-staging.mjs';
-import { captureWorkerRepair, repairBuildingPoint, validateRepairHealth } from './renderer-roster-audio-repair.mjs';
+import { captureWorkerRepair, repairAttackPoint, repairBuildingPoint, validateRepairHealth } from './renderer-roster-audio-repair.mjs';
 
 const revision = 'a'.repeat(40), sourceHash = 'b'.repeat(64);
 const manifest = JSON.parse(await readFile(new URL('../assets/audio/runtime/frontier-feedback/v3/manifest.json', import.meta.url)));
@@ -83,7 +83,11 @@ test('bounded matrix includes every current selection and ordinary supported rol
   assert.deepEqual(Object.keys(bindings).filter(key => !planned.includes(key)), []);
   assert.ok(!rosterPlan('unit-skiff').keys.some(key => /patrol|follow|attack/.test(key)));
   assert.deepEqual(rosterMatrix('unit-worker'), ['unit-worker']); assert.deepEqual(rosterMatrix('all'), rosterSubsets);
-  for (const value of ['../unit-worker', 'all,unit-worker', 'unit-villager', 'buildings-castle']) assert.throws(() => rosterMatrix(value));
+  assert.deepEqual(rosterMatrix('buildings-special, unit-worker,unit-skiff'), ['buildings-special', 'unit-worker', 'unit-skiff']);
+  assert.deepEqual(rosterMatrix(rosterSubsets.join(',')), rosterSubsets);
+  for (const value of [undefined, null, '', ' ', ',', 'unit-worker,', ',unit-worker', 'unit-worker,,unit-skiff',
+    'unit-worker,unit-worker', 'unit-worker, unit-worker', '../unit-worker', 'all,unit-worker', 'unit-worker,all',
+    'unit-villager', 'buildings-castle', Array(15).fill('unit-worker').join(',')]) assert.throws(() => rosterMatrix(value));
 });
 test('all fixture maps pass actual portable import rules without authoring runtime states', () => {
   for (const subset of rosterSubsets) {
@@ -564,6 +568,20 @@ test('Repair target observation requires the exact building and never mutates th
   assert.deepEqual(pick, { kind: 'building', id: 42 });
   assert.equal(find(42, Infinity, 0), null); assert.equal(find(-1, 0, 0), null);
 });
+test('guest attack projects disclosed House body without asking the friendly-only picker', () => {
+  let visible = true;
+  const window = {
+    __rtsInteractionAudioProject: (x, z, lift) => {
+      assert.equal(x, -26.5); assert.equal(z, 12.5); assert.equal(lift, 1);
+      return visible ? { x: 100, y: 200 } : null;
+    },
+    __rtsInteractionAudioPick: () => { throw Error('enemy buildings cannot pass the friendly-only picker'); },
+  };
+  const find = runInNewContext(`(${repairAttackPoint.toString()})`, { window });
+  assert.deepEqual(JSON.parse(JSON.stringify(find(-26.5, 12.5))), { x: 100, y: 200 });
+  visible = false; assert.equal(find(-26.5, 12.5), null);
+  assert.equal(find(Infinity, 12.5), null); assert.equal(find(-26.5, NaN), null);
+});
 const repairHouse = hp => ({ id: 42, team: 0, type: 'house', x: -26.5, z: 12.5, complete: true, hp, maxHp: 800 });
 test('Repair acceptance requires prior real damage and increased health of the same owned complete House', () => {
   assert.deepEqual(validateRepairHealth(repairHouse(789), repairHouse(795), 42), { buildingId: 42, beforeHp: 789, afterHp: 795, maxHp: 800 });
@@ -575,7 +593,7 @@ test('Repair acceptance requires prior real damage and increased health of the s
   }
 });
 function repairFixture({ failAt = null } = {}) {
-  const calls = [], evidence = [], controls = [], privateRoom = 'owned-room'.padEnd(32, 'x');
+  const calls = [], evidence = [], controls = [], stages = [], privateRoom = 'owned-room'.padEnd(32, 'x');
   let hp = 800, attacked = false, stopped = false, repairing = false, disposed = 0;
   const makePage = side => ({
     cdp: {
@@ -601,6 +619,16 @@ function repairFixture({ failAt = null } = {}) {
       // result. This catches interpolation of negative world coordinates.
       new Function(`return (${_expression});`);
       if (description === failAt) throw Error('bounded fixture failure');
+      if (description === 'visible disclosed enemy House body pixel') {
+        assert.equal(side, 'guest');
+        return runInNewContext(_expression, { window: {
+          __rtsInteractionAudioProject: (x, z, lift) => {
+            assert.equal(x, -26.5); assert.equal(z, 12.5); assert.equal(lift, 1);
+            return { x: 100, y: 100 };
+          },
+          __rtsInteractionAudioPick: () => { throw Error('guest cannot observe enemy through friendly picker'); },
+        } });
+      }
       if (description === 'actual enemy hits damage paid House') { assert.ok(attacked); hp = 789; return repairHouse(hp); }
       if (description === 'paid Repair increases health') return repairHouse(hp);
       if (/pixel|parking point/.test(description)) return { x: 100, y: 100 };
@@ -609,12 +637,13 @@ function repairFixture({ failAt = null } = {}) {
     dispose: async () => { disposed++; },
   });
   const page = makePage('host'), guest = makePage('guest');
-  return { calls, evidence, controls, privateRoom, disposed: () => disposed,
+  return { calls, evidence, controls, stages, privateRoom, disposed: () => disposed,
     run: () => captureWorkerRepair({ page, openGuest: async () => guest, origin: STAGING_ORIGIN,
       mapId: 'audio-worker-repair', build: async type => { assert.equal(type, 'house'); return { id: 42 }; },
       record: async (cue, action) => { assert.equal(cue, 'unit.worker.repair'); assert.ok(stopped); await action(); },
       control: async (controlled, selector) => { controls.push(selector); if (selector === '[data-worker-action="repair"]') { assert.equal(controlled, page); repairing = true; } },
       evidence: async value => evidence.push(structuredClone(value)), signal: new AbortController().signal,
+      progress: async stage => stages.push(stage),
     }),
   };
 }
@@ -630,6 +659,10 @@ test('ordinary Repair sequence joins second seat, attacks, stops, repairs, prove
   assert.ok(f.calls.every(call => ['Page.bringToFront', 'Page.addScriptToEvaluateOnNewDocument', 'Page.navigate',
     'Input.dispatchKeyEvent', 'Input.dispatchMouseEvent', 'Input.insertText'].includes(call.method)));
   assert.ok(f.evidence.some(row => row.status === 'damaged' && row.damagedHp === 789));
+  assert.deepEqual(f.stages, ['build-house', 'house-ready', 'clear-host-units', 'host-stop',
+    'guest-open', 'guest-menu', 'guest-join', 'guest-seat', 'guest-camera', 'guest-unit',
+    'guest-target', 'guest-attack', 'house-damage', 'guest-stop', 'host-worker',
+    'repair-recording', 'repair-order', 'repair-health']);
 });
 test('failed guest join still disposes the owned guest and never publishes its room code', async () => {
   const f = repairFixture({ failAt: 'fresh guest owns only the second seat' });
@@ -637,6 +670,19 @@ test('failed guest join still disposes the owned guest and never publishes its r
   assert.equal(f.evidence.at(-1).guestDisposed, true);
   assert.ok(!f.evidence.some(row => row.status === 'repaired'));
   assert.ok(!JSON.stringify(f.evidence).includes(f.privateRoom));
+  assert.equal(f.stages.at(-1), 'guest-seat');
+});
+test('guest attack acknowledgement and actual House damage remain required after projection', async () => {
+  for (const [failAt, stage] of [
+    ['ordinary guest building attack applied', 'guest-attack'],
+    ['actual enemy hits damage paid House', 'house-damage'],
+  ]) {
+    const f = repairFixture({ failAt });
+    await assert.rejects(f.run());
+    assert.equal(f.stages.at(-1), stage); assert.equal(f.disposed(), 1);
+    assert.ok(!f.evidence.some(row => row.status === 'damaged' || row.status === 'repaired'));
+    assert.ok(!f.controls.includes('[data-worker-action="repair"]'));
+  }
 });
 test('Repair runner admits one isolated guest and keeps guest browser errors fatal', async () => {
   const temporary = await mkdtemp(path.join(tmpdir(), 'roster-repair-runner-'));
@@ -659,4 +705,14 @@ test('Repair runner admits one isolated guest and keeps guest browser errors fat
     assert.equal(pages, 2); assert.equal(guestDisposed, 1); assert.equal(result.status, 'failed');
     assert.equal(result.guestObservations[0].passed, false); assert.ok(!JSON.stringify(result).includes('private error'));
   } finally { await rm(temporary, { recursive: true, force: true }); }
+});
+
+test('order failure diagnostics retain only fixed state, command and reason codes', () => {
+  assert.deepEqual(rosterOrderNoticeDiagnostic('PATROL ORDER · NO VALID UNITS', 'failed'),
+    { state: 'failed', command: 'patrol', reason: 'no-valid-units' });
+  assert.deepEqual(rosterOrderNoticeDiagnostic('SERVER DID NOT CONFIRM · STATUS UNKNOWN', 'failed'),
+    { state: 'failed', command: null, reason: 'unconfirmed' });
+  assert.deepEqual(rosterOrderNoticeDiagnostic('arbitrary private player text', 'private'),
+    { state: null, command: null, reason: null });
+  assert.deepEqual(rosterOrderNoticeDiagnostic(null, 'ready'), { state: 'ready', command: null, reason: null });
 });

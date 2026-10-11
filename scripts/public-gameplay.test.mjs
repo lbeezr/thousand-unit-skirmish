@@ -23,6 +23,8 @@ const privateLaunchPaths = ['/src/room-launch-options.mjs', '/src/server/orchest
 const privateEconomyCheckpointPaths = ['/src/economy-checkpoint.mjs', '/src/simulation/economy/economy-checkpoint.mjs'];
 const privatePaths = ['/health', '/health?tickSamples=1', '/admin', '/api/admin',
   '/api/rooms', '/server.mjs', '/room-supervisor.mjs', '/package.json', '/.env',
+  '/api/admin/rooms', `/api/admin/rooms/${'a'.repeat(32)}/archive`, `/api/admin/rooms/${'a'.repeat(32)}/restore`,
+  '/src/server/persistence/room-archive-store.mjs', '/room-data/archived-rooms/example/room-archive.json',
   '/src/server/build-identity.mjs', '/src/server/release-identity.json',
   '/src/server/public-gameplay.mjs', '/src/server/client-static-assets.mjs',
   '/src/practice-entry-catalog.mjs', '/src/world/practice-entry-catalog.mjs',

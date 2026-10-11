@@ -12,6 +12,7 @@ import { NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from './src/match-modes.
 import { isAnonymousGameplayRequest } from './src/server/public-gameplay.mjs';
 import { loadBuildIdentity } from './src/server/build-identity.mjs';
 import { createRoomIndexStore } from './src/server/persistence/room-index-store.mjs';
+import { createRoomArchiveStore } from './src/server/persistence/room-archive-store.mjs';
 import { ORDINARY_MAP_MIN_SIDE, MAP_SIZE_TIERS } from './src/map-size-policy.mjs';
 import {
   buildRoomWorkerEnvironment,
@@ -41,6 +42,7 @@ const ACCESS_HASH = ACCESS_PASSWORD
 const ROOM_DATA_DIRECTORY = path.resolve(ROOT, process.env.RTS_ROOM_DATA_DIRECTORY
   || (VOLUME_MOUNT_PATH ? path.join(VOLUME_MOUNT_PATH, 'room-data') : 'room-data'));
 const ROOM_DIRECTORY = path.join(ROOM_DATA_DIRECTORY, 'rooms');
+const ROOM_ARCHIVE_DIRECTORY = path.join(ROOM_DATA_DIRECTORY, 'archived-rooms');
 const ROOM_INDEX_PATH = path.join(ROOM_DATA_DIRECTORY, 'rooms.json');
 const DEFAULT_MATCH_STATE_PATH = path.join(ROOM_DATA_DIRECTORY, 'default-match-state.json');
 const DEFAULT_MAP_DIRECTORY = path.resolve(ROOT, process.env.RTS_CUSTOM_MAP_DIRECTORY
@@ -91,6 +93,8 @@ if (!Number.isFinite(ROOM_IDLE_TTL_MS) || ROOM_IDLE_TTL_MS < 60_000 || ROOM_IDLE
 }
 
 const rooms = new Map();
+const restoringRooms = new Set();
+const roomArchiveStore = createRoomArchiveStore({ roomDirectory: ROOM_DIRECTORY, archiveDirectory: ROOM_ARCHIVE_DIRECTORY });
 const workerProcesses = new Set();
 const proxySockets = new Set();
 let stopping = false;
@@ -122,6 +126,7 @@ function makeRoom(id, values = {}) {
     pendingConnections: 0,
     worker: null,
     starting: null,
+    archiving: null,
   };
 }
 
@@ -138,13 +143,17 @@ async function loadRooms() {
     savedRooms.sort((a, b) => b.lastActiveAt - a.lastActiveAt);
     for (const entry of savedRooms) {
       const directory = path.join(ROOM_DIRECTORY, entry.id);
-      if (now - entry.lastActiveAt >= ROOM_IDLE_TTL_MS) {
-        await rm(directory, { recursive: true, force: true });
-        continue;
-      }
       try {
         if (!(await stat(directory)).isDirectory()) continue;
       } catch { continue; }
+      if (now - entry.lastActiveAt >= ROOM_IDLE_TTL_MS) {
+        try {
+          await roomArchiveStore.archive(entry, 'idle-expiry');
+          continue;
+        } catch (error) {
+          console.error('Could not archive expired room; retaining its data and capacity:', error);
+        }
+      }
       rooms.set(entry.id, makeRoom(entry.id, entry));
       retained.add(entry.id);
     }
@@ -162,7 +171,8 @@ async function loadRooms() {
     } catch { continue; }
     // Keep directories omitted by an old index. Without trustworthy activity
     // timestamps, restarting their idle window is safer than deleting player data.
-    rooms.set(entry.name, makeRoom(entry.name, { createdAt: now, lastActiveAt: now }));
+    const restored = await roomArchiveStore.recover(entry.name).catch(() => null);
+    rooms.set(entry.name, makeRoom(entry.name, { ...(restored || { createdAt: now }), lastActiveAt: now }));
     retained.add(entry.name);
     recoveredCount++;
   }
@@ -177,12 +187,18 @@ async function loadRooms() {
 }
 
 function roomExpired(room, now = Date.now()) {
-  return room.activeConnections === 0 && room.pendingConnections === 0
+  return !room.archiving && !room.starting && room.activeConnections === 0 && room.pendingConnections === 0
     && now - room.lastActiveAt >= ROOM_IDLE_TTL_MS;
 }
 
 function touchRoom(room) {
-  room.lastActiveAt = Date.now();
+  if (!stopping) room.lastActiveAt = Date.now();
+}
+
+function capacityError() {
+  const error = new Error('Room capacity reached. Resume or join an existing room, or retry after idle rooms expire. Returning to Main Menu preserves a room; ask the server operator to archive an unused room if needed.');
+  error.statusCode = 429;
+  return error;
 }
 
 function sameOrigin(request) {
@@ -255,11 +271,9 @@ async function readRoomLaunchOptions(request) {
 }
 
 async function createRoom(launchOptions = { mode: 'pvp' }) {
-  if (rooms.size >= MAX_ROOMS) {
-    const error = new Error('Room capacity reached. Close an idle invite room and try again later.');
-    error.statusCode = 429;
-    throw error;
-  }
+  // Reclaim due slots now, rather than refusing until the next minute's sweep.
+  await archiveExpiredRooms();
+  if (rooms.size + restoringRooms.size >= MAX_ROOMS) throw capacityError();
   let id;
   do { id = randomBytes(24).toString('base64url'); } while (rooms.has(id));
   const room = makeRoom(id, { launchOptions: completeRoomLaunchOptions(launchOptions) });
@@ -383,7 +397,7 @@ async function ensureRoomWorker(room) {
     worker.child.once('exit', () => {
       if (room.worker !== worker) return;
       room.worker = null;
-      touchRoom(room);
+      // Worker shutdown/crash and metadata/session probes are not player activity.
       void persistRoomIndex().catch((error) => console.error('Could not save room index:', error));
     });
     return worker;
@@ -474,11 +488,19 @@ function rejectUpgrade(socket, status, phrase) {
 function proxyUpgrade(request, socket, head, worker, room = null) {
   const upstream = connectTcp(worker.port, '127.0.0.1');
   proxySockets.add(socket);
+  let reserved = Boolean(room);
+  if (room) room.pendingConnections++;
+  const releaseReservation = () => {
+    if (!reserved) return;
+    reserved = false;
+    room.pendingConnections--;
+  };
   let counted = false;
   let finished = false;
   const finish = () => {
     if (finished) return;
     finished = true;
+    releaseReservation();
     proxySockets.delete(socket);
     if (counted && room) {
       room.activeConnections = Math.max(0, room.activeConnections - 1);
@@ -515,6 +537,7 @@ function proxyUpgrade(request, socket, head, worker, room = null) {
       touchRoom(room);
       counted = true;
     }
+    releaseReservation();
   });
   socket.on('close', () => { clearTimeout(connectTimeout); upstream.destroy(); finish(); });
   socket.on('error', () => { clearTimeout(connectTimeout); upstream.destroy(); finish(); });
@@ -554,6 +577,7 @@ async function handleRequest(request, response) {
       roomLimit: MAX_ROOMS,
       liveRoomProcesses: [...rooms.values()].filter((room) => room.worker?.child.exitCode === null).length,
       connectedInvitePeers: [...rooms.values()].reduce((total, room) => total + room.activeConnections, 0),
+      roomIdleTtlMs: ROOM_IDLE_TTL_MS,
     });
     return;
   }
@@ -562,8 +586,41 @@ async function handleRequest(request, response) {
     requireAccess(response); return;
   }
 
+  if (url.pathname === '/api/admin/rooms' && request.method === 'GET') {
+    // This route remains behind operator authentication in public-gameplay mode.
+    sendJson(response, 200, { roomLimit: MAX_ROOMS, roomIdleTtlMs: ROOM_IDLE_TTL_MS,
+      rooms: [...rooms.values()].map(room => ({
+        ...roomIndexDocument([room]).rooms[0], state: room.archiving ? 'archiving' : 'retained',
+        activeConnections: room.activeConnections, pendingConnections: room.pendingConnections,
+        workerRunning: Boolean(room.worker), expiresAt: room.lastActiveAt + ROOM_IDLE_TTL_MS,
+      })), archives: await roomArchiveStore.list() });
+    return;
+  }
+
+  const managementMatch = url.pathname.match(/^\/api\/admin\/rooms\/([A-Za-z0-9_-]{32})\/(archive|restore)$/);
+  if (managementMatch && request.method === 'POST') {
+    request.resume();
+    if (!sameOrigin(request)) { sendJson(response, 403, { error: 'Cross-origin room management is not allowed.' }); return; }
+    const [, id, action] = managementMatch;
+    try {
+      if (action === 'archive') {
+        const room = rooms.get(id);
+        if (!room) { sendJson(response, 404, { error: 'Room not found.' }); return; }
+        if (!await archiveRoom(room, 'operator')) {
+          sendJson(response, 409, { error: 'Room is connected, joining, or already being archived. Leave all clients before archiving.' }); return;
+        }
+      } else {
+        await restoreRoom(id);
+      }
+      sendJson(response, 200, { ok: true, roomId: id, state: action === 'archive' ? 'archived' : 'retained' });
+    } catch (error) {
+      sendJson(response, error.statusCode || (error.code === 'ENOENT' ? 404 : 503), { error: String(error.message || error) });
+    }
+    return;
+  }
+
   if (url.pathname === '/api/rooms/status' && request.method === 'GET') {
-    sendJson(response, 200, { enabled: true, roomCount: rooms.size, roomLimit: MAX_ROOMS, practiceSetup: await practiceSetup,
+    sendJson(response, 200, { enabled: true, roomCount: rooms.size, roomLimit: MAX_ROOMS, roomIdleTtlMs: ROOM_IDLE_TTL_MS, practiceSetup: await practiceSetup,
       ordinarySetup: { minimumSide: ORDINARY_MAP_MIN_SIDE, defaultMapId: NORMAL_MATCH_MAP_ID,
         ...NORMAL_HUMAN_MATCH_MODE, mapSizeTiers: MAP_SIZE_TIERS,
         pve: { available: true, mapId: NORMAL_MATCH_MAP_ID,
@@ -574,13 +631,13 @@ async function handleRequest(request, response) {
   if (url.pathname === '/api/session' && request.method === 'GET' && url.searchParams.has('room')) {
     const id = url.searchParams.get('room');
     const room = ROOM_ID_PATTERN.test(id || '') ? rooms.get(id) : null;
-    if (!room || roomExpired(room)) { sendJson(response, 404, { valid: false }); return; }
+    if (!room || room.archiving || roomExpired(room)) { sendJson(response, 404, { valid: false }); return; }
     room.pendingConnections++;
+    response.once('close', () => { room.pendingConnections--; });
     try {
       const worker = await ensureRoomWorker(room);
       proxyHttp(request, response, worker);
     } catch { sendJson(response, 503, { valid: false }); }
-    finally { room.pendingConnections--; }
     return;
   }
 
@@ -604,9 +661,9 @@ async function handleRequest(request, response) {
   if (roomMatch && request.method === 'GET') {
     const id = roomMatch[1];
     const room = ROOM_ID_PATTERN.test(id) ? rooms.get(id) : null;
-    if (!room) { sendJson(response, 404, { error: 'Room not found.' }); return; }
+    if (!room || room.archiving) { sendJson(response, 404, { error: 'Room not found or archived. Ask the server operator about restoring an archived invite.' }); return; }
     if (roomExpired(room)) {
-      await deleteRoom(room);
+      await archiveRoom(room, 'idle-expiry');
       sendJson(response, 404, { error: 'Room expired.' });
       return;
     }
@@ -649,9 +706,9 @@ async function handleUpgrade(request, socket, head) {
   }
   if (!ROOM_ID_PATTERN.test(roomId)) { rejectUpgrade(socket, 400, 'Bad Request'); return; }
   const room = rooms.get(roomId);
-  if (!room) { rejectUpgrade(socket, 404, 'Not Found'); return; }
+  if (!room || room.archiving) { rejectUpgrade(socket, 404, 'Not Found'); return; }
   if (roomExpired(room)) {
-    try { await deleteRoom(room); }
+    try { await archiveRoom(room, 'idle-expiry'); }
     catch (error) { console.error(`Could not expire room ${roomId.slice(0, 8)}:`, error); }
     rejectUpgrade(socket, 404, 'Not Found');
     return;
@@ -673,13 +730,50 @@ async function handleUpgrade(request, socket, head) {
   }
 }
 
-async function deleteRoom(room) {
-  if (rooms.get(room.id) !== room || room.activeConnections > 0 || room.pendingConnections > 0) return;
-  rooms.delete(room.id);
-  await stopWorker(room.worker);
-  room.worker = null;
-  await rm(room.directory, { recursive: true, force: true });
-  await persistRoomIndex();
+async function archiveRoom(room, reason) {
+  if (rooms.get(room.id) !== room || room.archiving || room.starting || room.activeConnections > 0 || room.pendingConnections > 0) return false;
+  // Set before the first await: joins and competing archive requests cannot race
+  // worker shutdown, checkpoint flush or the atomic move out of the active set.
+  room.archiving = (async () => {
+    await stopWorker(room.worker);
+    room.worker = null;
+    await roomArchiveStore.archive(room, reason);
+    rooms.delete(room.id);
+    await persistRoomIndex();
+    return true;
+  })();
+  try { return await room.archiving; }
+  finally { room.archiving = null; }
+}
+
+async function archiveExpiredRooms() {
+  for (const room of rooms.values()) {
+    if (!roomExpired(room)) continue;
+    try { await archiveRoom(room, 'idle-expiry'); }
+    catch (error) { console.error('Could not archive expired room; preserving data:', error); }
+  }
+}
+
+async function restoreRoom(id) {
+  if (rooms.has(id) || restoringRooms.has(id)) {
+    const error = new Error('Room is already retained or being restored.');
+    error.statusCode = 409;
+    throw error;
+  }
+  await archiveExpiredRooms();
+  // Recheck after asynchronous expiry, then reserve capacity before disk I/O.
+  if (rooms.has(id) || restoringRooms.has(id)) {
+    const error = new Error('Room is already retained or being restored.');
+    error.statusCode = 409;
+    throw error;
+  }
+  if (rooms.size + restoringRooms.size >= MAX_ROOMS) throw capacityError();
+  restoringRooms.add(id);
+  try {
+    const entry = await roomArchiveStore.restore(id);
+    rooms.set(id, makeRoom(id, entry));
+    await persistRoomIndex();
+  } finally { restoringRooms.delete(id); }
 }
 
 async function stopWorker(worker) {
@@ -710,7 +804,13 @@ if (ROOM_DATA_DIRECTORY === SHIPPED_MAP_DIRECTORY
 await mkdir(ROOM_DATA_DIRECTORY, { recursive: true });
 await loadRooms();
 await mkdir(DEFAULT_MAP_DIRECTORY, { recursive: true });
-const server = createServer((request, response) => { void handleRequest(request, response); });
+const server = createServer((request, response) => {
+  void handleRequest(request, response).catch(error => {
+    console.error('Room request failed:', error);
+    if (!response.headersSent) sendJson(response, 503, { error: 'Room storage is unavailable. Existing data has been preserved; retry or contact the server operator.' });
+    else response.destroy();
+  });
+});
 server.on('upgrade', (request, socket, head) => { void handleUpgrade(request, socket, head); });
 await new Promise((resolve, reject) => {
   server.once('error', reject);
@@ -728,12 +828,7 @@ const indexTimer = setInterval(() => {
 indexTimer.unref();
 
 const roomSweepTimer = setInterval(() => {
-  const now = Date.now();
-  for (const room of rooms.values()) {
-    if (roomExpired(room, now)) {
-      void deleteRoom(room).catch((error) => console.error(`Could not expire room ${room.id.slice(0, 8)}:`, error));
-    }
-  }
+  void archiveExpiredRooms();
 }, ROOM_SWEEP_INTERVAL_MS);
 roomSweepTimer.unref();
 
@@ -747,6 +842,8 @@ async function shutdown(signal) {
   await persistRoomIndex().catch((error) => console.error('Could not save room index:', error));
   await Promise.all([...workerProcesses].map((child) => stopWorker({ child })));
   for (const socket of proxySockets) socket.destroy();
+  await Promise.allSettled([...rooms.values()].map(room => room.archiving).filter(Boolean));
+  await persistRoomIndex().catch((error) => console.error('Could not save room index:', error));
   server.closeAllConnections?.();
   console.log('RTS room supervisor shutdown complete.');
 }
