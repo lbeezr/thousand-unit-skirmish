@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 1,
+  "run": "https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38166129247",
+  "servedRevision": "978ebb6531b639a8ab48390d0e8ba2435c1fbac1",
+  "qualification": {
+    "schemaVersion": 1,
+    "subset": "unit-worker",
+    "expectedRevision": "c64353ec152dcd8968bcb5b4fde9338c1f680fc4",
+    "status": "failed",
+    "deployedRevision": null,
+    "releaseDigest": null,
+    "sandbox": "enabled",
+    "maxDurationMs": 300000,
+    "scope": "public-staging-native-audio",
+    "listeningReview": "pending",
+    "issues": [
+      {
+        "code": "incomplete-capture-or-browser-errors"
+      },
+      {
+        "code": "owned-room-entry-missing"
+      }
+    ],
+    "browser": "Chrome/154.0.8037.97",
+    "captureStatus": "failed",
+    "browserObservation": {
+      "events": [
+        {
+          "kind": "http-error",
+          "status": 401,
+          "path": "/favicon.ico",
+          "scheme": "https",
+          "route": "static",
+          "resourceType": "Other"
+        },
+        {
+          "kind": "http-error",
+          "status": 401,
+          "path": "/favicon.ico",
+          "scheme": "https",
+          "route": "static",
+          "resourceType": "Other"
+        },
+        {
+          "kind": "http-error",
+          "status": 401,
+          "path": "/favicon.ico",
+          "scheme": "https",
+          "route": "static",
+          "resourceType": "Other"
+        }
+      ],
+      "overflow": false,
+      "passed": true
+    },
+    "sourceCheck": {
+      "beforeMatch": true,
+      "afterMatch": true
+    }
+  },
+  "capture": {
+    "schemaVersion": 1,
+    "subset": "unit-worker",
+    "status": "failed",
+    "source": {
+      "expectedRevision": "c64353ec152dcd8968bcb5b4fde9338c1f680fc4",
+      "identityScope": "exact-public-file-hashes",
+      "deployedRevision": null,
+      "releaseDigest": null
+    },
+    "expectedRevision": "c64353ec152dcd8968bcb5b4fde9338c1f680fc4",
+    "mapId": "audio-unit-worker",
+    "maxDurationMs": 300000,
+    "recordings": [],
+    "paidSteps": [],
+    "issues": [
+      {
+        "stage": "ordinary-entry-publish-readiness",
+        "code": "state-wait-timeout"
+      }
+    ],
+    "coverage": {
+      "plannedKeys": [
+        "unit.worker.ready",
+        "unit.worker.select",
+        "unit.worker.move",
+        "unit.worker.stop",
+        "unit.worker.hold",
+        "unit.worker.patrol",
+        "unit.worker.follow",
+        "unit.worker.attack",
+        "unit.worker.gather.wood"
+      ],
+      "capturedKeys": [],
+      "missingPlannedKeys": [
+        "unit.worker.ready",
+        "unit.worker.select",
+        "unit.worker.move",
+        "unit.worker.stop",
+        "unit.worker.hold",
+        "unit.worker.patrol",
+        "unit.worker.follow",
+        "unit.worker.attack",
+        "unit.worker.gather.wood"
+      ],
+      "missingRuntimeKeys": [
+        "unit.worker.select",
+        "unit.worker.gather.wood",
+        "building.barracks.select",
+        "building.town-center.select",
+        "unit.worker.move",
+        "unit.worker.patrol",
+        "unit.worker.follow",
+        "unit.worker.stop",
+        "unit.worker.hold",
+        "unit.worker.attack",
+        "unit.worker.gather.food",
+        "unit.worker.gather.farm",
+        "unit.worker.gather.sheep-carcass",
+        "unit.worker.gather.fish",
+        "unit.worker.gather.stone",
+        "unit.worker.build",
+        "unit.worker.repair",
+        "unit.worker.ready",
+        "unit.infantry.select",
+        "unit.infantry.move",
+        "unit.infantry.patrol",
+        "unit.infantry.follow",
+        "unit.infantry.stop",
+        "unit.infantry.hold",
+        "unit.infantry.attack",
+        "unit.infantry.ready",
+        "unit.spearman.select",
+        "unit.spearman.move",
+        "unit.spearman.patrol",
+        "unit.spearman.follow",
+        "unit.spearman.stop",
+        "unit.spearman.hold",
+        "unit.spearman.attack",
+        "unit.spearman.ready",
+        "unit.archer.select",
+        "unit.archer.move",
+        "unit.archer.patrol",
+        "unit.archer.follow",
+        "unit.archer.stop",
+        "unit.archer.hold",
+        "unit.archer.attack",
+        "unit.archer.ready",
+        "unit.scout.select",
+        "unit.scout.move",
+        "unit.scout.patrol",
+        "unit.scout.follow",
+        "unit.scout.stop",
+        "unit.scout.hold",
+        "unit.scout.attack",
+        "unit.scout.ready",
+        "unit.rider.select",
+        "unit.rider.move",
+        "unit.rider.patrol",
+        "unit.rider.follow",
+        "unit.rider.stop",
+        "unit.rider.hold",
+        "unit.rider.attack",
+        "unit.rider.ready",
+        "unit.siege-engine.select",
+        "unit.siege-engine.move",
+        "unit.siege-engine.patrol",
+        "unit.siege-engine.follow",
+        "unit.siege-engine.stop",
+        "unit.siege-engine.hold",
+        "unit.siege-engine.attack",
+        "unit.siege-engine.ready",
+        "unit.skiff.select",
+        "unit.skiff.move",
+        "unit.skiff.stop",
+        "unit.skiff.hold",
+        "unit.skiff.gather.food",
+        "unit.skiff.ready",
+        "building.palisade-wall.select",
+        "building.palisade-gate.select",
+        "building.house.select",
+        "building.archery-range.select",
+        "building.storehouse.select",
+        "building.mill.select",
+        "building.farm.select",
+        "building.dock.select",
+        "building.watchtower.select",
+        "building.stable.select",
+        "building.workshop.select",
+        "unit.worker.return-cargo",
+        "unit.skiff.return-cargo"
+      ],
+      "listeningReview": "pending",
+      "humanPlaytest": "not-performed"
+    },
+    "elapsedMs": 109694,
+    "entryStage": "publish-readiness",
+    "diagnostic": {
+      "boot": "ready",
+      "mapId": "veyrholds-terraced-vale",
+      "audioStatus": "running",
+      "recovery": {
+        "recovering": true,
+        "socketState": 1,
+        "tick": 30512,
+        "applied": 0,
+        "visible": true,
+        "status": "SYNCING CURRENT STATE"
+      },
+      "studioOpen": true,
+      "importObserved": true,
+      "entryControls": {
+        "menuHidden": true,
+        "menuExpanded": false,
+        "scrimHidden": true,
+        "dialogs": {
+          "anyOpen": true,
+          "entryJoinOpen": false,
+          "roomJoinOpen": false,
+          "lobbyOpen": false,
+          "studioOpen": true
+        },
+        "menuToggle": {
+          "present": true,
+          "disabled": false,
+          "visible": true,
+          "inViewport": true,
+          "hit": false
+        },
+        "studioControl": {
+          "present": true,
+          "disabled": false,
+          "visible": false,
+          "inViewport": false,
+          "hit": false
+        }
+      },
+      "studioFailureCode": "studio-disconnected",
+      "bindingCount": 85,
+      "decisions": [],
+      "nativeStarts": [
+        {
+          "sha256": "2a4426d0ae22f3c2525f4ea3a50abb0174989f08b11105f70d55d9f3844cd3e2",
+          "time": 50251.70000000001,
+          "duration": 29.99997732426304
+        },
+        {
+          "sha256": "198c2acfc9f4b3f3bc8da8cd0b2c2314341449badc4296cd56c86f5b86895e00",
+          "time": 66707.29999999999,
+          "duration": 30
+        },
+        {
+          "sha256": "2a4426d0ae22f3c2525f4ea3a50abb0174989f08b11105f70d55d9f3844cd3e2",
+          "time": 82908.40000000002,
+          "duration": 29.99997732426304
+        }
+      ],
+      "faults": [],
+      "recordingPhase": null
+    },
+    "failureFrame": {
+      "file": "studio-failure.png",
+      "sha256": "71bd7a728d5dd119481d47838b8d92044708a4827f25706cf6caa72ce865e833",
+      "width": 1100,
+      "height": 684,
+      "scope": "studio-dialog-only",
+      "acceptance": false
+    }
+  }
+}

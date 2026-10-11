@@ -204,3 +204,58 @@ observer and records a failed Studio dialog only when its origin/document are
 stable and no other modal is open. Such a diagnostic screenshot cannot count
 as ordinary gameplay or listening acceptance. The temporary Actions secret
 was added with user approval and still needs removal after the retry.
+
+PR [#656](https://github.com/lbeezr/thousand-unit-skirmish/pull/656) merged at
+`9e31a840b1af1049039c033e4d1b729f3cfffb83`. The subsequent HUD merge
+`978ebb6531b639a8ab48390d0e8ba2435c1fbac1` deployed successfully as Railway
+`ec98f461-7b8b-49f8-aeb9-11ef0233b6f2`. Its separate
+[served receipt](qa-evidence/interaction-audio-2026-10-11/roster-staging-978ebb65.json)
+verifies that source, 141 client modules, both audio workers and all 119
+recordings; the clean release digest remains unavailable.
+
+[Run 38165638835](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38165638835)
+on that source joined the existing owned room as host, loaded all 85 bindings
+and passed browser-error/public-hash checks. It stopped at `open-studio` with
+a state-wait timeout after 46.125 seconds, before importing the map or recording
+any cue. The [fifth-run receipt](qa-evidence/interaction-audio-2026-10-11/roster-fifth-cloud.json)
+keeps all thirteen later subsets not run. Its combined opening stage cannot
+identify which control or modal prevented progress. The next runner revision
+records the individual menu/control transitions and fixed UI states to resolve
+this without inferring an audio failure or changing gameplay speculatively.
+
+Runner-only [run 38166129247](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38166129247)
+at `c64353ec` matched the same served runtime, opened Studio and imported the
+160-cell map. It failed at `publish-readiness` after 109.694 seconds with the
+socket open but recovery still `SYNCING CURRENT STATE`; Studio retained its
+disconnect message. The [sixth-run receipt](qa-evidence/interaction-audio-2026-10-11/roster-sixth-cloud.json)
+has no recorded cues. Its guarded Studio screenshot was inspected and confirms
+the imported map, without claiming gameplay acceptance. Additional frame,
+transport-lifecycle and pending-state observations are needed to distinguish
+missing refresh delivery from a delayed presentation frame. The normal
+publication gate remains enforced.
+
+The [seventh run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38166757436)
+at runner source `f66ec36e` reached the same failure on served `978ebb65`.
+Its [timing receipt](qa-evidence/interaction-audio-2026-10-11/roster-seventh-cloud.json)
+records 74 native frames, a 3,183 ms final frame gap and a 6,166 ms maximum,
+with only twelve units. The page remained visible and focused. One socket
+closed abnormally (1006), and recovery had applied zero frame updates. These
+observations establish a severe frame stall; they do not separately attribute
+CPU versus GPU cost or the transport closure. The displayed FPS is not a valid
+measurement here because its frame delta is clamped to 0.1 seconds.
+
+The bounded candidate keeps animation-frame scheduling, authoritative state
+application, waypoint updates and connection recovery running while Map Studio
+is open, then skips the obscured battlefield's animation/render work and all
+post-render evidence counters. The editor canvas remains event-driven. Closing
+Studio resumes the ordinary presentation path on its next native frame.
+The real Main-loop regression consumes a correlated fresh recovery reply while
+editing and confirms the closed-dialog path resumes. Validation includes 67
+focused tests; staging candidate acceptance is still pending.
+
+Visual backing is the inspected [existing Studio treatment](qa-evidence/interaction-audio-2026-10-11/roster-studio-before.png).
+The intended sequence retains this editor and the last battlefield frame behind
+its backdrop while editing, then resumes the live battlefield after close.
+No assets, style, editor layout or gameplay state change. The next ordinary
+open/import/Save & Play run must establish recovery and the returned game frame;
+this source change alone does not close the audio goal.

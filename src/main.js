@@ -10777,6 +10777,12 @@ function animate(now) {
   const waypointCounts = browserStateRecovery.takeWaypointCounts();
   if (waypointCounts !== null) applyWaypointQueueCounts(waypointCounts);
   serviceBrowserRecovery();
+  // Studio owns the foreground canvas. Keep authoritative state/recovery live,
+  // but do not spend a slow GPU frame redrawing the obscured battlefield.
+  if (ui.mapStudio.open) {
+    previousTime = now;
+    return;
+  }
   if ((cursorPointer || wallKeyboardCell || wallPlacementGesture.anchor || pendingWallPreview) && now - lastCursorSample >= 100) {
     lastCursorSample = now;
     if (buildPlacementActive) updateBuildPlacementGhost(cursorPointer?.x, cursorPointer?.y);
