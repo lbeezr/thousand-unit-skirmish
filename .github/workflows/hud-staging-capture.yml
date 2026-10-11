@@ -1,0 +1,74 @@
+name: Staging HUD capture
+on:
+  workflow_dispatch:
+    inputs:
+      subset:
+        description: Bounded HUD case
+        type: choice
+        default: all
+        required: true
+        options: [all, selections, buildings, panels]
+permissions:
+  contents: read
+concurrency:
+  group: staging-hud-capture
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      cases: ${{ steps.plan.outputs.cases }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: npm ci
+      - id: plan
+        env:
+          SUBSET: ${{ inputs.subset }}
+        run: |
+          node --test scripts/renderer-hud-staging.test.mjs
+          node scripts/renderer-hud-staging.mjs --matrix "$SUBSET" > "${{ runner.temp }}/hud-cases.json"
+          echo "cases=$(cat "${{ runner.temp }}/hud-cases.json")" >> "$GITHUB_OUTPUT"
+  capture:
+    needs: plan
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        case: ${{ fromJSON(needs.plan.outputs.cases) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: npm ci
+      - name: Qualify normal sandbox WebGL2 once
+        run: |
+          test "$(id -u)" -gt 0
+          node scripts/renderer-qualification.mjs --preflight "${{ runner.temp }}/hud-preflight"
+      - name: Capture native staging HUD interactions
+        env:
+          SUBSET: ${{ matrix.case }}
+          REVISION: ${{ github.sha }}
+        run: node scripts/renderer-hud-staging.mjs "$SUBSET" "$REVISION" "${{ runner.temp }}/hud-capture" "${{ runner.temp }}/hud-preflight/preflight.json"
+      - name: Retain completed and partial evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: hud-${{ matrix.case }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hud-capture/
+            ${{ runner.temp }}/hud-preflight/preflight.json
+          retention-days: 1
+          if-no-files-found: warn

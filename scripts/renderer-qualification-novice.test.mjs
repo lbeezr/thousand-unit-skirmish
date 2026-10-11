@@ -132,6 +132,17 @@ test('UI evidence omits diagnostic values, unknown feedback and unrelated DOM te
   assert.equal(actual.feedback.text, null); assert.doesNotMatch(JSON.stringify(actual), /private|token|room=/);
 });
 
+test('menu visibility accepts a precreated hidden canvas and rejects a visible game canvas', () => {
+  for (const rendered of [false, true]) {
+    const context = vm.createContext({ window: {}, URL, performance: { now: () => 1 },
+      location: { href: 'http://127.0.0.1:4321/' }, getComputedStyle: () => ({ display: 'block', visibility: 'visible', opacity: '1' }),
+      document: { documentElement: { dataset: { entry: 'menu', boot: 'ready' } },
+        querySelector: selector => selector === '#viewport canvas' ? { hidden: false, getClientRects: () => rendered ? [{}] : [] } : null } });
+    const view = vm.runInContext(`(${readNoviceUi.toString()})()`, context);
+    assert.equal(view.canvas, rendered);
+  }
+});
+
 test('actual adapter preserves the first failure and bounded capture before returning, with no launch or command injection', async () => {
   for (const captureFails of [false, true]) {
     const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-novice-test-')), calls = [];
