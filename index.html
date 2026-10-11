@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./src/room-lobby.css" />
     <link rel="stylesheet" href="./src/game-menu.css" />
+    <link rel="stylesheet" href="./src/client/hud/worker-hud.css" />
     <script>
       window.reportPrototypeError = (message) => {
         window.clearTimeout(window.prototypeStartupTimeout);
@@ -197,7 +198,28 @@
           <div class="contextual-identity">
             <button type="button" class="selection-portrait" data-selection-portrait data-context-panel="selection" aria-controls="command-deck" aria-label="Selection details" hidden><span class="selection-portrait-art" aria-hidden="true"><img alt="" decoding="async"></span></button>
             <div class="contextual-identity-text"><strong data-worker-health hidden></strong><div class="contextual-summary" data-context-summary></div></div>
+            <div data-worker-identity hidden>
+              <span data-worker-portrait-fallback aria-hidden="true" hidden>W</span>
+              <div class="worker-identity-copy"><small>Economy · Builder</small><strong data-worker-name>Worker</strong><span class="worker-health"><span class="worker-health-track" aria-hidden="true"><span data-worker-hp-fill></span></span><span data-worker-hp></span></span></div>
+              <div class="worker-task"><span data-worker-task></span><small data-worker-cargo></small></div>
+            </div>
           </div>
+          <section data-worker-hud aria-label="Worker commands" hidden>
+            <div class="worker-command-heading"><span>Orders</span><button type="button" data-worker-action="more" aria-expanded="false" aria-controls="worker-more-orders">More orders</button></div>
+            <div class="worker-primary-actions">
+              <button type="button" data-worker-action="build" aria-expanded="false" aria-controls="worker-build-palette"><img src="/assets/ui/icons/build.svg" alt=""><span>Build</span><small>Structures</small></button>
+              <button type="button" data-worker-action="gather" aria-pressed="false" data-description="Choose a resource or planted Farm to gather"><img src="/assets/ui/icons/gather.svg" alt=""><span>Gather</span><small>Resources</small></button>
+              <button type="button" data-worker-action="repair" aria-pressed="false" data-description="Choose a damaged friendly building · costs wood"><img src="/assets/ui/icons/build.svg" alt=""><span>Repair</span><small>Costs wood</small></button>
+              <button type="button" data-worker-action="return" data-description="Deliver carried resources to an available drop-off"><img src="/assets/ui/icons/actions/return-cargo.svg" alt=""><span>Return</span><small data-worker-return-note>Empty</small></button>
+              <button type="button" data-worker-action="move" aria-pressed="false" data-description="Move to a ground destination"><img src="/assets/ui/icons/move.svg" alt=""><span>Move</span><small>Destination</small></button>
+              <button type="button" data-worker-action="stop" data-description="Clear current tasks and queued routes · S"><img src="/assets/ui/icons/actions/stop.svg" alt=""><span>Stop</span><small>S</small></button>
+            </div>
+            <p data-worker-hint role="status" aria-live="polite"></p>
+            <section id="worker-build-palette" data-worker-disclosure="build" aria-label="Worker construction" hidden><div class="worker-palette-heading">Construction <small>Choose a structure, then place it · Esc to close</small></div><div data-worker-build-list></div></section>
+            <section id="worker-more-orders" data-worker-disclosure="more" aria-label="Additional Worker orders" hidden>
+              <button type="button" data-worker-action="patrol">Patrol <small>P</small></button><button type="button" data-worker-action="follow">Follow <small>F</small></button><button type="button" data-worker-action="hold">Hold position <small>H</small></button><button type="button" data-worker-action="formation">Formation / route</button><button type="button" data-worker-action="details">Role details</button>
+            </section>
+          </section>
           <div class="contextual-actions">
             <button type="button" data-context-proxy="select-idle-workers">Idle workers</button>
             <button type="button" data-context-proxy="select-military">Army</button>

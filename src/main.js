@@ -32,6 +32,7 @@ import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from './hud-layout.mjs';
 import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from './client/hud/objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
+import { updateWorkerHud, workerBuildChoices, workerSelectionKey } from './client/hud/worker-hud.mjs';
 import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts } from './selection-portrait.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
@@ -626,6 +627,7 @@ let matchWinnerReason = null;
 let attackMoveMode = false;
 let persistentTargetMode = null;
 let tapOrderArmed = false;
+let workerTargetMode = null;
 let tapOrderPointer = null;
 let knownMaps = [];
 let editorDefinition = null;
@@ -3907,6 +3909,52 @@ function combatStanceContext() {
 function updateCombatStanceUI() {
   updateCombatStanceControls(document, combatStanceContext());
 }
+function workerHudState(context) {
+  const workers = selectedWorkerIds().map(id => units[id]);
+  return { active: context.kind === 'workers' && selectedWildlifeId === null,
+    workers, team: localTeam, connected: socket?.readyState === WebSocket.OPEN,
+    matchFinished: matchWinner >= 0, resources: { food: latestFood[localTeam], wood: latestWood[localTeam], stone: latestStone[localTeam] },
+    profileId: mapDefinition?.economyProfileId, research: latestTeamResearch[localTeam],
+    placementPending: buildPlacementPending, placementActive: buildPlacementActive ? buildPlacementType : null,
+    targetMode: tapOrderArmed ? workerTargetMode?.mode : null,
+    orderMode: tapOrderArmed ? persistentTargetMode : null };
+}
+
+function handleWorkerHudAction(action, buildingType) {
+  const building = latestBuildings.find(row => row.id === selectedBuildingId);
+  const state = workerHudState(selectionContext(units, selected, localTeam, building, mapDefinition?.economyProfileId));
+  if (!state.active) return;
+  if (action === 'details' || action === 'formation') {
+    selectDockTab(action === 'details' ? 'selection' : 'command', true); return;
+  }
+  if (action === 'dismiss-target') {
+    persistentTargetMode = null;
+    setTapOrderArmed(false, false);
+    updateContextualCommands();
+    return;
+  }
+  if (!state.connected || state.matchFinished || state.placementPending) return;
+  if (action === 'construct') {
+    const choice = workerBuildChoices(state).find(choice => choice.id === buildingType);
+    if (!choice || choice.reason) return;
+    if (buildPlacementActive && buildPlacementType === buildingType) cancelBuildPlacement();
+    else beginBuildPlacement(buildingType);
+  } else if (['gather', 'repair', 'move'].includes(action)) {
+    if (buildPlacementActive) return;
+    const cancel = tapOrderArmed && workerTargetMode?.mode === action;
+    persistentTargetMode = null; attackMoveMode = false;
+    workerTargetMode = cancel ? null : { mode: action, key: workerSelectionKey(state.workers) };
+    setTapOrderArmed(!cancel, false);
+  } else {
+    if (buildPlacementActive) cancelBuildPlacement(false);
+    setTapOrderArmed(false, false);
+    if (action === 'return') issueReturnCargo();
+    else if (action === 'stop' || action === 'hold') issueStationaryOrder(action === 'stop' ? 'stop' : 'holdPosition');
+    else if (action === 'patrol' || action === 'follow') { setPersistentTargetMode(action); setTapOrderArmed(true, false); }
+  }
+  updateContextualCommands();
+}
+
 function updateContextualCommands(priorFocus = document.activeElement) {
   const bar = document.querySelector('.contextual-command-bar');
   const quickAccess = document.querySelector('.hud-quick-access');
@@ -3917,6 +3965,11 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   const context = selectionContext(units, selected, localTeam, building, mapDefinition?.economyProfileId);
   const wildlife = selectedWildlife();
   if (wildlife) context.kind = 'wildlife';
+  if (workerTargetMode && (context.kind !== 'workers' || localTeam === null || matchWinner >= 0
+    || socket?.readyState !== WebSocket.OPEN || workerTargetMode.key !== workerSelectionKey(selectedWorkerIds().map(id => units[id])))) {
+    workerTargetMode = null; tapOrderArmed = false; tapOrderPointer = null;
+    syncTargetOrderUI(); syncBattlefieldCursor();
+  }
   const portraitUnit = context.total === 1 && !building ? units[selectedIds()[0]] : null;
   const portraitRole = portraitUnit && castPreview
     && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
@@ -4002,6 +4055,7 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     button.textContent = `${controlGroupKeyLabel(index)} · ${controlGroups[index].size}`;
     button.setAttribute('aria-label', `Recall group ${controlGroupKeyLabel(index)}, ${controlGroups[index].size} units`);
   }
+  updateWorkerHud(document, workerHudState(context), handleWorkerHudAction);
   const currentFocus = document.activeElement;
   const commandHasFocus = (bar.contains(currentFocus) || quickAccess?.contains(currentFocus))
     && currentFocus.isConnected && !currentFocus.disabled && !currentFocus.closest('[hidden]');
@@ -5402,6 +5456,7 @@ function showBrowserRecoveryStatus() {
 
 function setConnection(status) {
   updateCombatStanceUI();
+  updateContextualCommands();
   ui.networkStatus.parentElement.dataset.urgent = String(['OFFLINE', 'RECONNECTING', 'SEAT ACTIVE ELSEWHERE', 'INVALID ROOM LINK', 'ROOM NOT FOUND'].includes(status));
   ui.networkStatus.textContent = status;
   ui.matchStatus.textContent = status;
@@ -7768,6 +7823,7 @@ function setPersistentTargetMode(type) {
   if (selectedWildlifeId !== null) { showToast('SHEEP SUPPORTS HERD AND STOP'); return; }
   if (selectedWaterUnits()) { showToast('SKIFF SUPPORTS MOVE AND STOP'); return; }
   if (localTeam === null || matchWinner >= 0 || !selectedIds().length) return;
+  workerTargetMode = null;
   attackMoveMode = false;
   persistentTargetMode = persistentTargetMode === type ? null : type;
   updateCommandUI();
@@ -7783,7 +7839,7 @@ function setAttackMoveMode(enabled, announce = true) {
   if (enabled && selectedWildlifeId !== null) { showToast('SHEEP SUPPORTS HERD AND STOP'); return; }
   if (enabled && selectedWaterUnits()) { showToast('SKIFF SUPPORTS MOVE AND STOP'); return; }
   if (enabled && (localTeam === null || matchWinner >= 0)) return;
-  if (enabled) persistentTargetMode = null;
+  if (enabled) { persistentTargetMode = null; workerTargetMode = null; }
   attackMoveMode = Boolean(enabled);
   updateCommandUI();
   if (announce) showToast(attackMoveMode
@@ -7803,6 +7859,7 @@ function setTapOrderArmed(enabled, announce = true) {
     }
   }
   tapOrderArmed = Boolean(enabled);
+  if (!tapOrderArmed) workerTargetMode = null;
   tapOrderPointer = null;
   updateCommandUI();
   updateBuildPlacementHint();
@@ -7940,6 +7997,26 @@ function issueContextOrder(clientX, clientY, queueWaypoint = false) {
     if (!ids.length) { showToast('SELECT FOLLOWERS OTHER THAN THE LEADER'); return; }
     if (sendTrackedOrder({ type: 'follow', ids, targetId: friendly.id }, 'FOLLOW', ids.length)) {
       persistentTargetMode = null; setTapOrderArmed(false, false); updateCommandUI();
+    }
+    return;
+  }
+  if (workerTargetMode && tapOrderArmed) {
+    if (workerTargetMode.mode === 'move') {
+      const point = worldAt(clientX, clientY);
+      if (point) issueMove(point, queueWaypoint, true);
+    } else if (workerTargetMode.mode === 'repair') {
+      const building = pickBuildingAt(x, y, row => row.team === localTeam && row.complete === true && row.hp > 0 && row.hp < row.maxHp);
+      if (building) {
+        const ids = selectedWorkerIds();
+        if (ids.length) sendTrackedOrder({ type: 'repairBuilding', ids, buildingId: building.id }, 'REPAIR', ids.length, 'WORKERS');
+      } else showToast('REPAIR NEEDS A DAMAGED FRIENDLY BUILDING');
+    } else {
+      const tree = pickHarvestableTreeAt(x, y);
+      const node = tree?.node || pickResourceNodeAt(x, y);
+      const forestCell = tree?.forestCell ?? (node ? null : pickForestCellAt(x, y));
+      if (node) issueGather(node);
+      else if (forestCell !== null) issueForestGather(forestCell);
+      else showToast('GATHER NEEDS A RESOURCE OR PLANTED FARM');
     }
     return;
   }
@@ -8183,6 +8260,7 @@ function syncBattlefieldCursor() {
     count: ids.length + (selectedWildlife() ? 1 : 0), workers: ids.some((id) => units[id].kind === 'worker'),
     military: ids.some((id) => units[id].kind !== 'worker'),
     attackMove: attackMoveMode, armed: tapOrderArmed, shift: cursorShift,
+    workerTargetMode: tapOrderArmed ? workerTargetMode?.mode : null,
   };
   if (selectedWildlife() && state.canOrder && !state.panning && !state.panReady && !state.dragging) {
     const point = cursorPointer ? worldAt(cursorPointer.x, cursorPointer.y) : null;
@@ -8194,6 +8272,18 @@ function syncBattlefieldCursor() {
       && !state.building && !state.selectedBuilding) {
     const rect = renderer.domElement.getBoundingClientRect();
     const x = cursorPointer.x - rect.left, y = cursorPointer.y - rect.top;
+    if (state.workerTargetMode) {
+      if (state.workerTargetMode === 'repair') {
+        state.repairTarget = Boolean(pickBuildingAt(x, y, row => row.team === localTeam
+          && row.complete === true && row.hp > 0 && row.hp < row.maxHp));
+      } else if (state.workerTargetMode === 'gather') {
+        const tree = pickHarvestableTreeAt(x, y);
+        state.resource = tree?.node?.type || pickResourceNodeAt(x, y)?.type;
+        state.forest = tree?.forestCell !== undefined || (!state.resource && pickForestCellAt(x, y) !== null);
+      }
+      setBattlefieldCursor(battlefieldCursor(state));
+      return;
+    }
     const hoveredBuilding = pickBuildingAt(x, y, building => building.hp > 0);
     const farm = hoveredBuilding?.type === 'farm' ? hoveredBuilding : null;
     const farmFacts = farm?.team === localTeam ? farmSelectionFacts(farm) : null;
@@ -9421,7 +9511,12 @@ window.addEventListener('keydown', (event) => {
   if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
     && event.key.toLowerCase() === 'a') selectWholeTeam();
   if (event.key === 'Escape') {
-    if (persistentTargetMode) { persistentTargetMode = null; updateCommandUI(); return; }
+    if (persistentTargetMode) {
+      persistentTargetMode = null;
+      setTapOrderArmed(false, false);
+      updateContextualCommands();
+      return;
+    }
     if (tapOrderArmed) {
       setTapOrderArmed(false);
       return;

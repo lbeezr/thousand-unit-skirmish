@@ -90,6 +90,7 @@ the build they name.
 | Change owned population feedback | [Population header behavior and validation](population-header-validation.md) |
 | Change selection-dependent command visibility | [Contextual HUD behavior and validation](contextual-hud-validation.md) |
 | Continue the compact HUD and controls lane | [Ranked HUD backlog and interfaces](hud-controls-backlog.md) |
+| Plan the HUD visual system, components and selection behavior | [Design-system proposal](ui-design-system.md), [interactive studies](art-direction/hud-design-system-2026-10-11/README.md) |
 | Change match endings or terminal recap facts | [Endings decision, data and ownership contract](match-endings-and-recaps.md) |
 | Observe unprompted building choices, failed orders and postgame understanding | [Uncoached match companion and private evidence template](uncoached-match-playtest.md) |
 | Add selected-unit portraits or connect future field notes | [Worker HUD art and integration contract](hud-art-integration.md) |

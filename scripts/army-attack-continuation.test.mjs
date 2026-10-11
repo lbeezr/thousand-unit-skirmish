@@ -60,7 +60,7 @@ for (const team of [0, 1]) for (const control of ['keyboard', 'button']) for (co
     const canvas = { getBoundingClientRect: () => ({ left: 0, top: 0 }),
       addEventListener: (type, callback) => { canvasHandlers[type] = callback; } };
     const context = vm.createContext({ ...wildlifeClientBindings(), localTeam: team, matchWinner: -1, selectedBuildingId: null,
-      attackMoveMode: false, persistentTargetMode: null, tapOrderArmed: false, buildPlacementActive: false,
+      attackMoveMode: false, workerTargetMode: null, persistentTargetMode: null, tapOrderArmed: false, buildPlacementActive: false,
       window: { addEventListener: (type, callback) => { handlers[type] = callback; }, matchMedia: () => ({ matches: false }) },
       document: { fullscreenElement: null }, appShell: {}, renderer: { domElement: canvas },
       ui: { formationSelect: { value: 'box' }, attackMoveToggle: { addEventListener: (type, cb) => { handlers[type] = cb; } } },

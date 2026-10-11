@@ -196,7 +196,7 @@ test('canonical actual crown pixels issue existing forest/node Gather IDs and re
       MAP_WIDTH: 160, MAP_HEIGHT: 160, resourceVisualStage, pickEnvironmentInstance: picker,
       woodTreeMeshes: new Map(), woodTreeNodeStages: new Map(), woodTreeNodeSlots: new Map(),
       selectedWildlifeId: null, selectedBuildingId: null, selectedWaterUnits: () => false,
-      persistentTargetMode: null, attackMoveMode: false, pickAt: () => ({ unit: null }), pickBuildingAt: () => null,
+      workerTargetMode: null, persistentTargetMode: null, attackMoveMode: false, pickAt: () => ({ unit: null }), pickBuildingAt: () => null,
       selectedWorkerIds: () => ['worker-1'], selectedIds: () => ['worker-1'], units: { 'worker-1': { kind: 'worker' } },
       BUILDING_DEFINITIONS: {}, setAttackMoveMode() {}, showToast() {},
       sendTrackedOrder: command => { commands.push(JSON.parse(JSON.stringify(command))); return true; },

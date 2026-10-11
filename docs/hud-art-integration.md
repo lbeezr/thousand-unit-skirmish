@@ -1,4 +1,16 @@
-# Selection identity and future field notes
+# HUD art integration
+
+**11 October Worker pilot:** the user approved the 72px Obsidian treatment. The
+Worker-only runtime dock reuses the portrait descriptors below at 72px, with
+live task/cargo/health and contextual commands. Other contexts retain 52px.
+[Delivery and acceptance](hud-controls-backlog.md#worker-pilot--11-october-2026)
+separate source/package checks from pending ordinary-game visual verification.
+
+
+The [11 October design system](ui-design-system.md) selects an Obsidian
+HUD foundation with compact versus stronger portrait framing. Its
+[preserved studies](art-direction/hud-design-system-2026-10-11/README.md) are visual
+backing only; the following describes the existing integration and its evidence.
 
 One selected living friendly Worker, Infantry, Archer, Spearman, Scout, Rider or Siege Engine has a compact portrait, name and live HP.
 The portrait opens the existing dismissible Selection drawer with practical role
@@ -31,8 +43,8 @@ record reuse of already public art; no new concept image was published.
 
 ## Small integration contract
 
-The Worker entry uses these boundaries without enlarging the default HUD or
-creating a separate rules registry:
+The Worker entry uses these boundaries and the approved 72px identity viewport,
+without creating a separate rules registry:
 
 | Field | Owner and current Worker value |
 | --- | --- |

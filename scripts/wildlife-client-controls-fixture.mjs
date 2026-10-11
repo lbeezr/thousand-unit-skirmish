@@ -127,7 +127,7 @@ export async function wildlifeControlsFixture(team = 0, options = {}) {
     dummy:new THREE.Object3D(),ringRotation:new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),-Math.PI/2),
     selectionDirty:false,lastFriendlyUnitClick:null,lastUnitPickState:null,
     buildPlacementActive:false,buildPlacementType:'house',buildPlacementPending:false,pendingBuildOrderToken:null,
-    pendingWallPreview:null,attackMoveMode:false,persistentTargetMode:null,tapOrderArmed:false,tapOrderPointer:null,
+    pendingWallPreview:null,attackMoveMode:false,workerTargetMode: null, persistentTargetMode:null,tapOrderArmed:false,tapOrderPointer:null,
     spaceDown:false,spaceCenterPending:false,movedPointer:false,pan:null,drag:null,cursorPointer:null,cursorShift:false,lastCursorSample:0,
     wallPlacementGesture:{owner:null},selectionBox:query('#selection-box'),viewport:query('#viewport'),
     appShell:query('.app-shell'),matchMenu:query('#match-menu'),helpPanel:query('#help-panel'),

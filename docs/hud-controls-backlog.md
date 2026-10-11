@@ -4,9 +4,97 @@ Owner: HUD integration owner. This is the ranked work list for the ongoing HUD
 lane, under [planning rules](contributor-planning.md). Keep small reviewed PRs
 and exact evidence beside each item; a merged source milestone does not close
 an in-game outcome. Dense, subtle, dismissible controls and retained labels
-remain the direction. No final visual redesign has been approved.
+remain the direction. The 72px Obsidian Worker pilot is approved; wider context redesigns follow later.
 
-## Ranked work
+## Design-system plan — 11 October 2026
+
+Owner: HUD redesign task `01a12b67-645a-7a33-8fb2-8e8979756ac1` owns the
+[design-system proposal](ui-design-system.md) and retained
+[interactive explorations](art-direction/hud-design-system-2026-10-11/README.md).
+The user reviewed the real-data interactive specimen, selected **72px**, and
+authorized implementing the **Obsidian Worker HUD pilot** in the game on 11 October.
+The preserved comparisons remain the visual backing; there is no runtime preview flag.
+
+| Order | Reviewable outcome and acceptance | Dependencies and bounded write scope |
+| --- | --- | --- |
+| 1 — specimen reviewed | [Real-data component specimen](art-direction/hud-design-system-2026-10-11/component-specimen.html) compares 52px and 72px portrait framing, Worker/Build, Barracks/queue/shortage, army/mixed, empty and recovery contexts. [Bounded checks](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026) pass. | User chose the expressive 72px portrait for the Worker pilot. Study source is isolated in `src/studies/hud-component-specimen/`; game rules and runtime consumers are unchanged. |
+| 2 — Worker pilot in progress | Tokens and the new selection dock serve a real Worker: task, cargo, Build, Repair, Return and all other supported orders remain reachable. Selecting a different context clears Worker disclosures. | Agreed baseline; existing availability/focus contracts. New code in `src/client/hud/` with bounded existing DOM/style/binding edits; same owner retains package, delivery and game checks. |
+| 3 — Barracks | Selected producer owns products, live queue, research, rally and lifecycle actions; shortages, cancellation and rejection remain truthful. | Worker dock primitives and real economy/lifecycle bindings. Extend production components and their existing consumers; do not copy rules or introduce multi-producer execution. |
+| 4 — Army and mixed selection | Composition, eligible actions, formations and all existing stance states remain readable; repeated snapshots, death and selection changes preserve focus and authority. | Existing selection/stance/command contracts. Extend the dock and its targeted regression checks. |
+| 5 — Coverage and reuse | Remaining buildings, boats, wildlife and lifecycle states use the same vocabulary; then apply proven foundations to pause/settings and other menus. | Inventory actual supported contexts first. Small consuming-surface slices; no speculative framework or theme system. |
+
+Each implementation slice must include focused checks, source/release/served
+identity and an ordinary-game observation at its relevant build. The HUD owner
+retains those steps; an artifact, source merge or handoff does not close them.
+The older functional defects and acceptance gaps below remain open according to
+their own evidence and can be resolved within the affected redesign slice.
+
+## Worker pilot — 11 October 2026
+
+Owner: HUD redesign task `01a12b67-645a-7a33-8fb2-8e8979756ac1`.
+Branch: `codex/worker-hud-pilot`, based on `7524a0e1` plus the preserved studies.
+
+- **Outcome:** selecting one or several owned Workers shows a 72px identity area,
+  actual health/task/typed cargo and six primary commands: Build, Gather, Repair,
+  Return, Move and Stop. More orders retains Patrol, Follow, Hold, formation/route
+  and role details. Other selections keep their existing command surfaces.
+- **Backing:** [72px specimen and state storyboard](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026),
+  chosen explicitly by the user. Existing authored portraits/glyphs are reused;
+  Repair shares the study's Build glyph pending a dedicated icon. Self-hosted
+  [DM Sans and Barlow Condensed](../assets/ui/fonts/README.md) retain their licenses.
+- **Scope:** `src/client/hud/worker-hud.*`, bounded `index.html`/`src/main.js`
+  bindings, exact public asset admission, HUD tests and the owned novice capture.
+  The specimen builder moves to `scripts/build-hud-component-specimen.mjs` under
+  source-role conventions; the preserved HTML/provenance are historical records.
+- **Acceptance:** normal New Game → select Worker → inspect task/cargo → build
+  palette → cancel/submit placement → Gather/Repair/Return/Move/Stop; selection
+  changes, repeated snapshots, offline and match-finished states retain authority
+  and usable focus. Check both seats, 1280×720, 1920×1080 and 1024×768 plus UI scale.
+- **Delivery:** default binding, exact HTTP admission and clean release required.
+  Source/release/local served identities are recorded below. Hosted delivery and
+  ordinary-game observations remain incomplete; the HUD owner retains them.
+- **Capture dependency:** the [existing hosted capture](renderer-qualification.md#ordinary-build-feature-adapter-and-dispatch)
+  records dispatch/sign-in paused under the access decision. The established
+  novice-flow adapter is the intended cloud proof; stopped Mac game testing is
+  not a fallback. Continue CPU, package, source integration and authorized staging
+  checks while retaining the specific capture gap.
+
+**Checkpoint — 11 October 2026, 16:22 UTC:** implementation revision
+`e0b8c5dab8fa33fd0a3178598705354ef1f8f34f` contains the default Worker binding
+and independent review corrections: defined minimap spacing, complete target
+cancellation on Escape/Build/More, and cursors matching Gather/Repair/Move.
+The independent correction review has no remaining actionable code findings.
+All 144 focused HUD/cursor/Farm/environment/default-building checks and 13 novice
+capture contract checks pass. These include both seats and real client command
+bindings; they do not establish rendered appearance.
+
+The extra full CPU run was intentionally interrupted after 1,170 of 1,511
+registered checks passed; 340 remained unrun and the active Worker work-receipt
+scenario received SIGINT. [Partial run summary](qa-evidence/worker-hud-pilot-2026-10-11/broad-cpu-summary.json).
+It is **not a full-suite pass**. The earlier attempt stopped at the baseline
+macOS `/var` versus `/private/var` temporary-path assertion; the normalized-TMPDIR
+rerun passed that check. Focused pilot qualification above is the relevant
+completed acceptance, separate from both broad CPU and rendered-game evidence.
+
+The clean 1,836-file release has digest
+`sha256:2150aab7428d5e24e6d8518fc491849ea636c60390c0a41be66c4cb379914fd5`.
+The local trial supervisor at `http://127.0.0.1:4173` reports that exact clean
+revision/digest, and actual served HTML, main client, Worker module/CSS and cursor
+bytes match the package. [Local identity receipt](qa-evidence/worker-hud-pilot-2026-10-11/local-trial.json).
+This server is retained for the user's New Game → select Worker trial; no Mac
+browser capture or ordinary-game visual pass is claimed.
+
+**Publication route correction:** the CLI's origin push was rejected and its
+repository permission response reported `pull:true, push:false`. The user then
+identified the existing GitHub app connection; that connection confirms
+`push:true` on `lbeezr/thousand-unit-skirmish`. The CLI result does not establish
+a repository-wide restriction. The HUD owner is publishing the reviewed tree
+through the app and retains merge/staging verification. Read-only Railway inspection found
+the staging `main` auto-deploy trigger enabled and no production trigger; no
+provider settings or deployments were changed. Staging deployment
+`c18608c2-6e55-4e69-afb8-8c7b89ccfb5c` predates this pilot.
+
+## Existing ranked functional work
 
 | Rank | Outcome and current evidence | Next action and write boundary | Dependencies and acceptance |
 | --- | --- | --- | --- |

@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-11",
+  "owner": "01a12b67-645a-7a33-8fb2-8e8979756ac1",
+  "status": "Preserved exploratory studies. Obsidian recommended as a working baseline; final treatment and production implementation remain unapproved.",
+  "sourceRevision": "e0ced8ad21081cdbd221561b784f16575035e5da",
+  "userDirection": "Explore a contemporary 2026 RTS look without being constrained to current visual fit; retain selection-owned information and actions; review mocks before implementation.",
+  "directions": {
+    "Obsidian": "Condensed typography, dark mineral surfaces, mint emphasis, compact two-row action grid.",
+    "Ivory": "Warm pale information surfaces, editorial serif names, selection ribbon and horizontal action strip.",
+    "Citadel": "Framed portraits, brass edge details, inset command tiles, circular minimap."
+  },
+  "files": [
+    {
+      "file": "hud-studies.html",
+      "original": "/Users/lb/.codex/visualizations/2026/10/11/01a12b67-645a-7a33-8fb2-8e8979756ac1/rts-style-preview.html",
+      "bytes": 968467,
+      "sha256": "b50babf9e63cad74d6928c3a50623cd7ad03b489fb0bcc90515ad824405aec7d"
+    },
+    {
+      "file": "battlefield-concept.png",
+      "original": "/Users/lb/.codex/visualizations/2026/10/11/01a12b67-645a-7a33-8fb2-8e8979756ac1/hud-assets/battlefield-original.png",
+      "bytes": 3909575,
+      "sha256": "fa095c97f1226640bd7c2b29cc93988f0006303f0bd7538319218fcd4dfeee32"
+    }
+  ],
+  "illustration": {
+    "tool": "image_gen",
+    "prompt": "Premium contemporary fantasy RTS battlefield background plate, 16:9 elevated orthographic camera with no horizon. Stylized 3D lit materials and simplified readable shapes. Sunlit grassy meadow, branching pale dirt roads, turquoise creek toward upper right, slate outcrops and pine/birch edges. Ivory stone frontier village with dark teal roofs upper left; broad barracks and drill yard center right; open meadow across lower half. Warm afternoon light, small blue building flags, few tiny human silhouettes. No UI, labels, logos, frames or selection rings.",
+    "original": "battlefield-concept.png",
+    "usage": "Illustrative backdrop embedded as a compressed JPEG in the study; not an actual game frame or selected world-art replacement."
+  },
+  "repositoryArtSources": [
+    "assets/ui/portraits/human-worker-source.png",
+    "assets/ui/portraits/human-infantry-source.png",
+    "assets/ui/portraits/human-spearman-source.png",
+    "assets/buildings/frontier-civilization-military-models-v1/captures/barracks-complete-view-01.png"
+  ],
+  "externalVisualReferences": [
+    "https://classic.battle.net/war3/images/human/screens/ss005.jpg",
+    "https://interfaceingame.com/screenshots/northgard-build/",
+    "https://forums.ageofempires.com/uploads/default/original/3X/8/9/8987a23892d441c9ecec8bfce357da87b6d88d5c.jpeg"
+  ],
+  "fonts": "Google Fonts: DM Sans, Barlow Condensed, Fraunces.",
+  "icons": "Host Lucide icons used for functional command studies; bespoke final icon art remains future work.",
+  "delivery": "Standalone HTML embeds artwork and uses external font/icon libraries. Original fragment and earlier selection-layout alternatives remain in the originating task visualization directory.",
+  "storyboard": [
+    "Select Worker: identity, health, task, cargo, economy orders.",
+    "Build: palette opens above dock; Economy, Military and Defenses categories.",
+    "Choose building and click field: wood decreases, Worker task changes, target marker appears.",
+    "Select Barracks: construction palette closes; production queue, products, research and rally replace worker controls.",
+    "Train: costs deducted and queue extended. Cancel: item removed and costs refunded.",
+    "Low food/population full: products unavailable with local explanation.",
+    "Army: composition, stances and military orders only; targeting updates order state.",
+    "Esc: closes disclosure, then cancels target, then clears selection.",
+    "Right click field: Move for units, Rally for Barracks."
+  ],
+  "historicalMockVerification": {
+    "browser": "Codex in-app browser, standalone sandboxed wrapper",
+    "widths": [
+      1280,
+      1024,
+      390,
+      320
+    ],
+    "result": "Passed bounded appearance and interaction checks. No browser errors observed.",
+    "observations": [
+      "All three directions rendered.",
+      "Worker build menu closed when Barracks selected.",
+      "Infantry training reduced food 420 to 370; cancel refunded 50.",
+      "House placement reduced wood 275 to 175 and set task to Building House.",
+      "Army Move updated current order; deselect removed commands.",
+      "320px Ivory/Citadel content width and scroll width both 288px.",
+      "Research requirements visible on narrow Citadel.",
+      "Low-food fixture displayed 20 food and Not enough food in a dusk scene."
+    ],
+    "staticValidation": "JavaScript syntax checked with node --check; fragment under 1 MB."
+  },
+  "limits": [
+    "UI-only prototype, no real gameplay simulation.",
+    "Queue progress, clock and income rates are illustrative fixed values.",
+    "No ordinary-game acceptance, implementation, deployment or balance claims.",
+    "Painting of final icons, final type sizes at actual game resolution, collision-safe placement and live queue timing remain implementation work.",
+    "Mock costs, bindings, requirements, stance options and Escape sequencing are illustrative, not authoritative game specifications.",
+    "Copy preservation verifies file hashes, not a new browser playtest."
+  ],
+  "next": "Create a single real-data component/state specimen and compare portrait framing before production HUD implementation."
+}

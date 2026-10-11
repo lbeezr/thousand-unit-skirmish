@@ -48,6 +48,16 @@ try {
   for (const file of ['docs/README.md', 'assets/ui/PROVENANCE.md', 'meshy_output/town-center.glb']) {
     assert.equal((await fetch(`${base}/${file}`)).status, 404, `${file} stays outside public admission`);
   }
+  for (const [file, mime] of [
+    ['src/client/hud/worker-hud.mjs', 'text/javascript'], ['src/client/hud/worker-hud.css', 'text/css'],
+    ['assets/ui/fonts/dm-sans.ttf', 'font/ttf'], ['assets/ui/fonts/barlow-condensed-medium.ttf', 'font/ttf'],
+    ['assets/ui/fonts/dm-sans-OFL.txt', 'text/plain'], ['assets/ui/fonts/barlow-condensed-OFL.txt', 'text/plain'],
+  ]) {
+    const response = await fetch(`${base}/${file}`);
+    assert.equal(response.status, 200, file);
+    assert.ok(response.headers.get('content-type').startsWith(mime), `${file}: MIME`);
+    assert.equal(hash(Buffer.from(await response.arrayBuffer())), hash(await readFile(path.join(root, file))), file);
+  }
   for (const action of manifest.actions) {
     assert.ok(html.includes(`src="/${action.source}"`), `${action.id} is in the default served HTML`);
     const bytes = await readFile(path.join(root, action.source));

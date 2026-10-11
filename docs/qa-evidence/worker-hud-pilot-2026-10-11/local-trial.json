@@ -1,0 +1,15 @@
+{
+  "verifiedAt": "2026-10-11T16:21:58.074Z",
+  "origin": "http://127.0.0.1:4173",
+  "sourceRevision": "e0b8c5dab8fa33fd0a3178598705354ef1f8f34f",
+  "sourceDirty": false,
+  "digest": "sha256:2150aab7428d5e24e6d8518fc491849ea636c60390c0a41be66c4cb379914fd5",
+  "hashes": {
+    "index.html": "8fde422f60731dba7eb2d3c27090727005753e86067a0ac6e99c8d05c0bfd13d",
+    "src/main.js": "cfe2f3beae2174c30889fd59c240d5632a2c91ed1ca870d3591ebc4bff83182c",
+    "src/client/hud/worker-hud.mjs": "d7761569b4997791865ba7fafb3ec1d6ae3a437b920e39086bea229d0a497faa",
+    "src/client/hud/worker-hud.css": "a5a5e396b99e0e2706a8cbe3d88bc41a517c53e75ba10b969e6231eec7efa732",
+    "src/battlefield-cursor.mjs": "4404d3d9d2822c948ad0c2c16d3cd69afeb75565009ec7d201a2573568513b7d"
+  },
+  "scope": "Local supervisor health and served byte identity only; no browser/rendered-game acceptance."
+}

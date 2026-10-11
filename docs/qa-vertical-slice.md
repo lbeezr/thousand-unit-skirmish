@@ -2,6 +2,17 @@
 
 [Documentation index](README.md) · [Testing commands](testing.md) · [Roadmap](roadmap.md)
 
+## Worker HUD pilot — 11 October 2026
+
+Approved 72px Obsidian source `e0b8c5dab8fa33fd0a3178598705354ef1f8f34f`
+has independent code review and 157 focused HUD/input/capture-contract checks.
+The clean local trial reports the exact packaged identity and serves matching
+client bytes: [receipt](qa-evidence/worker-hud-pilot-2026-10-11/local-trial.json).
+Normal entry is New Game → select a Worker on Veyrhold's Terraced Vale.
+Rendered layout, real gameplay use and hosted staging are **not observed** for
+this pilot. [The HUD owner checkpoint](hud-controls-backlog.md#worker-pilot--11-october-2026)
+records publication access and hosted-capture dependencies and retains follow-up.
+
 ## Persistent tactical orders — 30 September 2026
 
 The tactical command lane now has engineering evidence for Patrol/Follow:

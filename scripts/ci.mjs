@@ -231,6 +231,7 @@ run(['--test', 'scripts/minimap-browser-probe.test.mjs'], 'Minimap browser proof
 run(['--test', 'scripts/selection-center-shortcut.test.mjs'], 'Selection camera shortcut and preserved Space drag');
 run(['--test', 'scripts/objective-summary.test.mjs', 'scripts/completion-event-labels.test.mjs'], 'Compact objectives and event feedback');
 run(['--test', 'scripts/selection-context.test.mjs'], 'Contextual selection');
+run(['--test', 'scripts/worker-hud.test.mjs'], 'Worker HUD model, context ownership and construction gates');
 run(['--test', 'scripts/contextual-hud.test.mjs'], 'Empty selection HUD and command focus');
 run(['--test', 'scripts/roster-production-ui.test.mjs'], 'Roster production choices');
 run(['--test', 'scripts/building-placement-forest.test.mjs'], 'Disclosed forest building placement');
