@@ -81,3 +81,26 @@ Runtime/network errors, incomplete maps, expired bounds and missing output
 remain failures. Eleven runner tests and nine existing observer/probe tests
 pass. This is capture infrastructure; no new native roster result is claimed
 until the cloud run produces it.
+
+### First staging attempt and Repair follow-up
+
+[Run 38160844233](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38160844233)
+at `30b253d1` passed normal-sandbox WebGL2 capability and all 119 public audio
+hash checks, then failed during ordinary entry after 80.5 seconds with no
+recordings. [The retained receipt](qa-evidence/interaction-audio-2026-10-11/roster-first-cloud/qualification.json)
+contains three HTTP 502s and canceled room requests during the concurrent
+Railway rollout. The capture remained on the original map. Retry after a stable
+deployment; no playback result follows from this attempt. Anonymous staging
+also returned 401 for its absent optional `/favicon.ico`; the runner now retains
+that diagnostic alongside the existing 404 exception. Gameplay errors and
+canceled room requests remain fatal. Entry substeps are now recorded separately.
+
+The Repair follow-up expands the plan to fourteen subsets and all 85 keys. A
+second ordinary player damages a paid House, stops attacking, and the host's
+Worker receives Repair through its visible controls. Acceptance requires the
+native cue and increased health of that same previously damaged House. No
+health/state injection is used; the guest is disposed within the shared bound.
+This remains planned coverage until captured. The separately authenticated
+[staging source receipt](qa-evidence/interaction-audio-2026-10-11/roster-staging-9bea9615.json)
+verified `9bea9615`, 141 client modules, both audio workers and all 119 recordings
+before the next deployment. Its clean release digest remains unavailable.

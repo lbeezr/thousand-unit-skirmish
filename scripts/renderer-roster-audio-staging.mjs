@@ -40,9 +40,11 @@ export function observeRosterBrowser(page, origin, files) {
   page.cdp.on('Network.loadingFinished', e => requests.delete(e.requestId));
   return { finish() {
     active = false;
-    // Match the existing optional-favicon exception; canceled room API requests
-    // still fail the browser gate, even when some valid recordings survive.
-    const unexpected = events.filter(e => !(e.kind === 'http-error' && e.path === '/favicon.ico' && e.status === 404));
+    // Anonymous staging rejects this absent optional icon at its authentication
+    // boundary (401); local qualification returns 404. Retain both diagnostics.
+    // All gameplay assets/authentication errors and canceled room API requests
+    // still fail the browser gate, even when valid recordings survive.
+    const unexpected = events.filter(e => !(e.kind === 'http-error' && e.path === '/favicon.ico' && [401, 404].includes(e.status)));
     return { events, overflow, passed: !overflow && unexpected.length === 0 };
   } };
 }
@@ -53,7 +55,7 @@ export async function runRosterStaging({ subset, revision, directory, preflightF
     dirty: execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim() !== '' }),
   platform = process.platform, capture = captureRosterSubset,
 } = {}) {
-  rosterPlan(subset); assert.match(revision, /^[a-f0-9]{40}$/);
+  const plan = rosterPlan(subset); assert.match(revision, /^[a-f0-9]{40}$/);
   assert.ok(path.isAbsolute(directory) && path.isAbsolute(preflightFile));
   const actual = source(); assert.equal(actual.revision, revision); assert.equal(actual.dirty, false);
   const capability = JSON.parse(await readFile(preflightFile, 'utf8'));
@@ -64,6 +66,8 @@ export async function runRosterStaging({ subset, revision, directory, preflightF
     deployedRevision: null, releaseDigest: null, sandbox: 'enabled', maxDurationMs: SUBSET_TIMEOUT_MS,
     scope: 'public-staging-native-audio', listeningReview: 'pending', issues: [] };
   const controller = new AbortController();
+  let guestOpened = false;
+  const guests = new Set(), guestObservations = [];
   try {
     const verified = await identify(STAGING_ORIGIN, revision);
     await writeFile(path.join(directory, 'public-source.json'), JSON.stringify(verified.identity, null, 2) + '\n', { flag: 'wx' });
@@ -73,14 +77,31 @@ export async function runRosterStaging({ subset, revision, directory, preflightF
     // Dispose the owned context to interrupt a CDP wait when the case expires;
     // await its failure/persistence path before ending the process or artifacts.
     timer = setTimeout(() => {
-      controller.abort(); void page.dispose().catch(() => {});
+      controller.abort();
+      for (const owned of [page, ...guests]) void owned.dispose().catch(() => {});
     }, SUBSET_TIMEOUT_MS);
+    const openGuest = async () => {
+      assert.ok(plan.repair && !guestOpened, 'only Repair may open its one owned guest');
+      guestOpened = true; controller.signal.throwIfAborted();
+      const guest = await browser.page('about:blank');
+      const observed = observeRosterBrowser(guest, STAGING_ORIGIN, verified.identity.files.map(file => file.path.slice(1)));
+      let disposed = false;
+      const owned = { ...guest, dispose: async () => {
+        if (disposed) return;
+        disposed = true; guests.delete(owned); guestObservations.push(observed.finish()); await guest.dispose();
+      } };
+      guests.add(owned);
+      if (controller.signal.aborted) { await owned.dispose(); controller.signal.throwIfAborted(); }
+      return owned;
+    };
     const result = await capture({ page, origin: STAGING_ORIGIN, revision, subset, directory,
-      manifest: verified.manifest, identity: verified.identity, signal: controller.signal });
+      manifest: verified.manifest, identity: verified.identity, signal: controller.signal, openGuest });
     clearTimeout(timer);
     qualification.captureStatus = result.status;
     qualification.browserObservation = observation.finish(); observation = null;
-    if (!controller.signal.aborted && result.status === 'captured-needs-listening' && qualification.browserObservation.passed) {
+    if (plan.repair) qualification.guestObservations = guestObservations;
+    if (!controller.signal.aborted && result.status === 'captured-needs-listening' && qualification.browserObservation.passed
+      && (!plan.repair || guestOpened && guests.size === 0 && guestObservations.length === 1 && guestObservations[0].passed)) {
       qualification.status = 'captured-needs-listening';
     } else qualification.issues.push({ code: controller.signal.aborted ? 'subset-deadline' : 'incomplete-capture-or-browser-errors' });
   } catch {
@@ -88,6 +109,11 @@ export async function runRosterStaging({ subset, revision, directory, preflightF
   } finally {
     clearTimeout(timer);
     if (observation) qualification.browserObservation = observation.finish();
+    for (const guest of [...guests]) {
+      try { await guest.dispose(); }
+      catch { qualification.status = 'failed'; qualification.issues.push({ code: 'owned-guest-cleanup-failed' }); }
+    }
+    if (plan.repair) qualification.guestObservations = guestObservations;
     try { await browser?.dispose(); }
     catch { qualification.status = 'failed'; qualification.issues.push({ code: 'owned-browser-cleanup-failed' }); }
     await writeFile(path.join(directory, 'qualification.json'), JSON.stringify(qualification, null, 2) + '\n', { flag: 'wx' });

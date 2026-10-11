@@ -10,6 +10,7 @@ import { createMapImportValidator } from '../src/authoring/map-import-validator.
 import { buildingPad, buildingGroups, paidUnitPlan, recordingCoverage, rosterMap, rosterPlan, rosterSubsets, STAGING_ORIGIN, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
 import { identifyPublicAudioSource, persistRosterRecording, rosterControlPoint, validateRosterFrame } from './renderer-roster-audio-capture.mjs';
 import { observeRosterBrowser, rosterMatrix, runRosterStaging, validateRosterCapability } from './renderer-roster-audio-staging.mjs';
+import { captureWorkerRepair, repairBuildingPoint, validateRepairHealth } from './renderer-roster-audio-repair.mjs';
 
 const revision = 'a'.repeat(40), sourceHash = 'b'.repeat(64);
 const manifest = JSON.parse(await readFile(new URL('../assets/audio/runtime/frontier-feedback/v3/manifest.json', import.meta.url)));
@@ -26,7 +27,7 @@ test('bounded matrix includes every current selection and ordinary supported rol
   for (const type of Object.keys(B)) assert.ok(planned.includes(`building.${type}.select`));
   assert.deepEqual(Object.values(buildingGroups).flat().sort(), Object.keys(B).sort());
   assert.ok(planned.every(key => Object.hasOwn(bindings, key)));
-  assert.deepEqual(Object.keys(bindings).filter(key => !planned.includes(key)), ['unit.worker.repair']);
+  assert.deepEqual(Object.keys(bindings).filter(key => !planned.includes(key)), []);
   assert.ok(!rosterPlan('unit-skiff').keys.some(key => /patrol|follow|attack/.test(key)));
   assert.deepEqual(rosterMatrix('unit-worker'), ['unit-worker']); assert.deepEqual(rosterMatrix('all'), rosterSubsets);
   for (const value of ['../unit-worker', 'all,unit-worker', 'unit-villager', 'buildings-castle']) assert.throws(() => rosterMatrix(value));
@@ -137,6 +138,16 @@ test('browser diagnostic keeps failed room requests fatal while removing all pri
   assert.ok(!JSON.stringify(result).includes('private'));
   listeners.get('Runtime.exceptionThrown')({}); assert.equal(result.events.length, 1, 'cleanup produces no case errors');
 });
+test('only the absent optional favicon admits anonymous staging 401; gameplay and server failures remain fatal', () => {
+  for (const [file, status, expected] of [['favicon.ico', 401, true], ['favicon.ico', 404, true],
+    ['favicon.ico', 502, false], ['src/main.js', 401, false], ['src/main.js', 404, false]]) {
+    const listeners = new Map(), page = { cdp: { on: (name, handler) => listeners.set(name, handler) } };
+    const observer = observeRosterBrowser(page, STAGING_ORIGIN, ['src/main.js']);
+    listeners.get('Network.responseReceived')({ response: { status, url: `${STAGING_ORIGIN}/${file}` }, type: 'Other' });
+    const result = observer.finish();
+    assert.equal(result.passed, expected); assert.equal(result.events.length, 1, 'exception remains in the evidence');
+  }
+});
 test('staging runner retains failed capture receipt and disposes only its owned browser', async () => {
   const temporary = await mkdtemp(path.join(tmpdir(), 'roster-audio-runner-'));
   try {
@@ -165,4 +176,112 @@ test('ordinary frame receipt cannot pass a stale map, reconnect overlay, wrong o
     assert.throws(() => validateRosterFrame({ ...view, ...change }, view.mapId, png()));
   }
   assert.throws(() => validateRosterFrame(view, view.mapId, png().slice(0, -16)));
+});
+
+test('Repair target observation requires the exact building and never mutates the scene', () => {
+  let pick = { kind: 'unit', id: 42 };
+  const window = { __rtsInteractionAudioProject: () => ({ x: 100, y: 200 }), __rtsInteractionAudioPick: () => pick };
+  const find = runInNewContext(`(${repairBuildingPoint.toString()})`, { window });
+  assert.equal(find(42, -26.5, 12.5), null);
+  pick = { kind: 'building', id: 43 }; assert.equal(find(42, -26.5, 12.5), null);
+  pick = { kind: 'building', id: 42 };
+  assert.deepEqual(JSON.parse(JSON.stringify(find(42, -26.5, 12.5))), { x: 100, y: 200 });
+  assert.deepEqual(pick, { kind: 'building', id: 42 });
+  assert.equal(find(42, Infinity, 0), null); assert.equal(find(-1, 0, 0), null);
+});
+const repairHouse = hp => ({ id: 42, team: 0, type: 'house', x: -26.5, z: 12.5, complete: true, hp, maxHp: 800 });
+test('Repair acceptance requires prior real damage and increased health of the same owned complete House', () => {
+  assert.deepEqual(validateRepairHealth(repairHouse(789), repairHouse(795), 42), { buildingId: 42, beforeHp: 789, afterHp: 795, maxHp: 800 });
+  for (const before of [repairHouse(800), repairHouse(0), { ...repairHouse(789), complete: false }, { ...repairHouse(789), team: 1 }]) {
+    assert.throws(() => validateRepairHealth(before, repairHouse(795), 42));
+  }
+  for (const after of [repairHouse(788), repairHouse(789), repairHouse(801), { ...repairHouse(795), id: 43 }, { ...repairHouse(795), maxHp: 900 }]) {
+    assert.throws(() => validateRepairHealth(repairHouse(789), after, 42));
+  }
+});
+function repairFixture({ failAt = null } = {}) {
+  const calls = [], evidence = [], controls = [], privateRoom = 'owned-room'.padEnd(32, 'x');
+  let hp = 800, attacked = false, stopped = false, repairing = false, disposed = 0;
+  const makePage = side => ({
+    cdp: {
+      evaluate: async expression => {
+        if (expression.includes('searchParams.get("room")')) return privateRoom;
+        if (expression === 'location.href') return 'about:blank';
+        if (expression.includes('__rtsEnvironmentStateSnapshot')) return repairHouse(hp);
+        if (expression === 'window.__rtsInteractionAudioSnapshot()') return { units: [{ id: side === 'host' ? 1 : 2,
+          kind: side === 'host' ? 'worker' : 'infantry', point: { x: 100, y: 100 } }] };
+        throw Error('unexpected evaluation');
+      },
+      call: async (method, args) => {
+        calls.push({ side, method, args });
+        if (side === 'guest' && method === 'Input.dispatchMouseEvent' && args.type === 'mouseReleased' && args.button === 'right') attacked = true;
+        if (side === 'guest' && method === 'Input.dispatchKeyEvent' && args.type === 'keyDown' && args.key === 's') { assert.ok(attacked); stopped = true; }
+        if (side === 'host' && method === 'Input.dispatchMouseEvent' && args.type === 'mouseReleased' && args.button === 'left' && repairing) {
+          assert.ok(attacked && stopped && hp < 800); hp = 795;
+        }
+      },
+    },
+    wait: async (_expression, description) => {
+      // CDP compiles every expression even when fixture state supplies the
+      // result. This catches interpolation of negative world coordinates.
+      new Function(`return (${_expression});`);
+      if (description === failAt) throw Error('bounded fixture failure');
+      if (description === 'actual enemy hits damage paid House') { assert.ok(attacked); hp = 789; return repairHouse(hp); }
+      if (description === 'paid Repair increases health') return repairHouse(hp);
+      if (/pixel|parking point/.test(description)) return { x: 100, y: 100 };
+      return true;
+    },
+    dispose: async () => { disposed++; },
+  });
+  const page = makePage('host'), guest = makePage('guest');
+  return { calls, evidence, controls, privateRoom, disposed: () => disposed,
+    run: () => captureWorkerRepair({ page, openGuest: async () => guest, origin: STAGING_ORIGIN,
+      mapId: 'audio-worker-repair', build: async type => { assert.equal(type, 'house'); return { id: 42 }; },
+      record: async (cue, action) => { assert.equal(cue, 'unit.worker.repair'); assert.ok(stopped); await action(); },
+      control: async (controlled, selector) => { controls.push(selector); if (selector === '[data-worker-action="repair"]') { assert.equal(controlled, page); repairing = true; } },
+      evidence: async value => evidence.push(structuredClone(value)), signal: new AbortController().signal,
+    }),
+  };
+}
+test('ordinary Repair sequence joins second seat, attacks, stops, repairs, proves health and disposes guest', async () => {
+  const f = repairFixture(), result = await f.run();
+  assert.equal(result.status, 'repaired'); assert.equal(result.guestDisposed, true); assert.equal(f.disposed(), 1);
+  assert.deepEqual(result.health, { buildingId: 42, beforeHp: 789, afterHp: 795, maxHp: 800 });
+  assert.ok(f.controls.includes('#menu-join') && f.controls.includes('#menu-join-dialog input')
+    && f.controls.includes('#menu-join-dialog button[type="submit"]'));
+  const typed = f.calls.filter(call => call.method === 'Input.insertText');
+  assert.equal(typed.length, 1); assert.equal(typed[0].args.text, f.privateRoom);
+  assert.ok(!JSON.stringify(f.evidence).includes(f.privateRoom));
+  assert.ok(f.calls.every(call => ['Page.bringToFront', 'Page.addScriptToEvaluateOnNewDocument', 'Page.navigate',
+    'Input.dispatchKeyEvent', 'Input.dispatchMouseEvent', 'Input.insertText'].includes(call.method)));
+  assert.ok(f.evidence.some(row => row.status === 'damaged' && row.damagedHp === 789));
+});
+test('failed guest join still disposes the owned guest and never publishes its room code', async () => {
+  const f = repairFixture({ failAt: 'fresh guest owns only the second seat' });
+  await assert.rejects(f.run()); assert.equal(f.disposed(), 1);
+  assert.equal(f.evidence.at(-1).guestDisposed, true);
+  assert.ok(!f.evidence.some(row => row.status === 'repaired'));
+  assert.ok(!JSON.stringify(f.evidence).includes(f.privateRoom));
+});
+test('Repair runner admits one isolated guest and keeps guest browser errors fatal', async () => {
+  const temporary = await mkdtemp(path.join(tmpdir(), 'roster-repair-runner-'));
+  try {
+    const preflightFile = path.join(temporary, 'preflight.json'); await writeFile(preflightFile, JSON.stringify(capability()));
+    let pages = 0, guestDisposed = 0; const guestListeners = new Map();
+    const result = await runRosterStaging({ subset: 'worker-repair', revision, directory: path.join(temporary, 'evidence'), preflightFile }, {
+      platform: 'linux', source: () => ({ revision, dirty: false }), identify: async () => ({ manifest, identity: { files: [] } }),
+      openBrowser: async () => ({ version: { product: 'test-contract' }, dispose: async () => {}, page: async () => {
+        const guest = ++pages === 2;
+        return { cdp: { on: (name, callback) => { if (guest) guestListeners.set(name, callback); } },
+          dispose: async () => { if (guest) guestDisposed++; } };
+      } }),
+      capture: async ({ openGuest }) => {
+        const guest = await openGuest(); await assert.rejects(openGuest(), /one owned guest/);
+        guestListeners.get('Runtime.exceptionThrown')({ exceptionDetails: { text: 'private error' } });
+        await guest.dispose(); await guest.dispose(); return { status: 'captured-needs-listening' };
+      },
+    });
+    assert.equal(pages, 2); assert.equal(guestDisposed, 1); assert.equal(result.status, 'failed');
+    assert.equal(result.guestObservations[0].passed, false); assert.ok(!JSON.stringify(result).includes('private error'));
+  } finally { await rm(temporary, { recursive: true, force: true }); }
 });

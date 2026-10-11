@@ -14,7 +14,7 @@ export const buildingGroups = Object.freeze({
 export const rosterSubsets = Object.freeze([
   ...Object.keys(U).map(kind => `unit-${kind}`),
   ...Object.keys(buildingGroups).map(group => `buildings-${group}`),
-  'worker-jobs',
+  'worker-jobs', 'worker-repair',
 ]);
 export function validateStagingOrigin(value) {
   assert.equal(value, STAGING_ORIGIN, 'only the reviewed public staging origin is admitted');
@@ -24,10 +24,11 @@ export function rosterPlan(subset) {
   assert.ok(rosterSubsets.includes(subset), 'unknown audio subset');
   const kind = subset.startsWith('unit-') ? subset.slice(5) : null;
   const workerJobs = subset === 'worker-jobs';
-  const buildings = kind || workerJobs ? [] : buildingGroups[subset.slice(10)];
+  const repair = subset === 'worker-repair';
+  const buildings = kind || workerJobs || repair ? [] : buildingGroups[subset.slice(10)];
   const actions = kind === 'skiff' ? ['ready', 'select', 'move', 'stop', 'hold', 'gather.food', 'return-cargo']
     : kind ? ['ready', 'select', 'move', 'stop', 'hold', 'patrol', 'follow', 'attack', ...(kind === 'worker' ? ['gather.wood'] : [])] : [];
-  return { subset, kind, buildings, workerJobs, keys: workerJobs
+  return { subset, kind, buildings, workerJobs, repair, keys: repair ? ['unit.worker.repair'] : workerJobs
     ? ['build', 'gather.food', 'return-cargo', 'gather.farm', 'gather.fish', 'gather.stone', 'gather.sheep-carcass'].map(action => `unit.worker.${action}`)
     : kind ? actions.map(action => `unit.${kind}.${action}`)
     : buildings.map(type => `building.${type}.select`), timeoutMs: SUBSET_TIMEOUT_MS };
