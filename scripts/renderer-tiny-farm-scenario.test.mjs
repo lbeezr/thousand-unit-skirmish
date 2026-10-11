@@ -3,8 +3,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
 import { readFile } from 'node:fs/promises';
-import { installFarmObserver, reduceFarmOrder, reduceFarmState, run, TINY_FARM_MAP,
-  tinyFarmSites, validateFarmArt, validateFarmBuild, validateFarmEconomy, validateFarmSupply } from './renderer-tiny-farm-scenario.mjs';
+import { JSDOM } from 'jsdom';
+import { bootGameEntry } from '../src/game-entry.mjs';
+import { createRoomLobby } from '../src/room-lobby-ui.mjs';
+import { matchModeCatalog } from '../src/match-modes.mjs';
+import { bracketFarmPhase, enterTinyFarmRoom, farmFailureCategory, installFarmObserver, reduceFarmOrder, reduceFarmState, run, TINY_FARM_MAP,
+  tinyFarmSites, validateFarmArt, validateFarmBuild, validateFarmEconomy, validateFarmFoundation, validateFarmSupply } from './renderer-tiny-farm-scenario.mjs';
 import { loadCaptureCases } from './renderer-feature-capture.mjs';
 import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
@@ -134,6 +138,113 @@ test('Farm state frames require admitted decoded art, depth and ownership standa
   }
 });
 
+test('completion during screenshot keeps failed partial evidence and refuses a foundation claim', async () => {
+  for (const type of ['mill', 'farm']) {
+    const before = state(), after = state(); before.bank.wood = after.bank.wood = type === 'farm' ? 55 : 175;
+    before.buildings = [plot(0, { type, complete: false, harvestStock: type === 'farm' ? 0 : null })];
+    after.buildings = [{ ...before.buildings[0], complete: true, harvestStock: type === 'farm' ? 200 : null }];
+    const expected = { team: 0, type, id: 7, wood: before.bank.wood, site: before.buildings[0] }, retained = [];
+    const snapshots = [before, after]; let captures = 0;
+    await assert.rejects(() => bracketFarmPhase({ observe: async () => snapshots.shift(),
+      take: async () => { captures++; return { image: 'retained-png' }; },
+      validate: s => validateFarmFoundation(s, expected), retain: async r => retained.push(r) }));
+    assert.equal(captures, 1); assert.equal(retained[0].phaseVerified, false);
+    assert.equal(retained[0].before.buildings[0].complete, false); assert.equal(retained[0].after.buildings[0].complete, true);
+    for (const change of [{ id: 8 }, { team: 1 }, { harvestStock: type === 'farm' ? 1 : null }]) {
+      if (type === 'mill' && Object.hasOwn(change, 'harvestStock')) continue;
+      const bad = clone(before); Object.assign(bad.buildings[0], change);
+      assert.throws(() => validateFarmFoundation(bad, expected));
+    }
+  }
+});
+
+// CPU CDP boundary: actual serialized entry expressions, the real menu entry
+// handler and pointer helper run against a DOM. Layout/lobby/network scheduling
+// are modeled; this establishes orchestration, never browser/render acceptance.
+async function entryFixture({ unavailable = false, brokenLobby = false, noLaunch = false } = {}) {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8'), pages = [], requests = [], stages = [];
+  const roomUrl = 'http://127.0.0.1:1234/?room=' + 'R'.repeat(32);
+  const ready = new Set(); let launches = 0;
+  const definition = JSON.parse(await readFile(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  let lobbyState = { phase: 'lobby', revision: 1, mapId: TINY_FARM_MAP, armySize: 24,
+    matchModeId: 'skirmish', matchModeVersion: 1, matchModes: matchModeCatalog(definition),
+    maps: [{ ...definition, matchModes: matchModeCatalog(definition) }], canLaunch: false,
+    seats: [0, 1].map(team => ({ id: `cpu-seat-${team}`, team, connected: true, ready: false })) };
+  const acknowledge = () => pages.forEach(p => p.lobby?.update(lobbyState, { id: `cpu-seat-${p.team}`, team: p.team }, true, definition));
+  const makePage = team => {
+    const page = { team, scripts: [], dom: new JSDOM('', { url: 'about:blank', runScripts: 'outside-only' }) };
+    const prepare = async url => {
+      page.dom.window.close(); page.dom = new JSDOM(html, { url, runScripts: 'outside-only' });
+      const w = page.dom.window, doc = w.document;
+      for (const script of page.scripts) w.eval(script);
+      const layout = () => {
+        for (const [i, button] of [...doc.querySelectorAll('button')].entries()) button.getBoundingClientRect = () => ({ left: 10, top: i * 10, width: 100, height: 9 });
+      };
+      layout();
+      doc.elementFromPoint = (x, y) => [...doc.querySelectorAll('button')].find(button => { const r = button.getBoundingClientRect(); return x >= r.left && x <= r.left + r.width && y >= r.top && y <= r.top + r.height; }) ?? null;
+      for (const dialog of doc.querySelectorAll('dialog')) { dialog.showModal = () => { dialog.open = true; }; dialog.close = () => { dialog.open = false; }; }
+      if (!new URL(url).searchParams.has('room')) {
+        await bootGameEntry({ win: w, navigate: next => { page.navigation = prepare(next); page.navigation.catch(() => {}); }, loadGame: async () => {},
+          fetchImpl: async (target, options) => { requests.push({ target, method: options?.method });
+            return new Response(JSON.stringify(options?.method === 'POST' ? { roomId: 'R'.repeat(32) } : { enabled: !unavailable })); } });
+      } else {
+        doc.documentElement.dataset.entry = 'game'; doc.documentElement.dataset.boot = 'ready';
+        const lobby = doc.querySelector('#room-lobby');
+        page.lobby = createRoomLobby({ root: lobby, copyInvite: () => {}, send: command => {
+          if (command.type === 'configureLobby') lobbyState = { ...lobbyState, revision: lobbyState.revision + 1 };
+          if (command.type === 'setReady') {
+            ready.add(team); lobbyState = { ...lobbyState, canLaunch: !noLaunch && ready.size === 2,
+              seats: lobbyState.seats.map(s => ({ ...s, ready: ready.has(s.team) })) };
+          }
+          if (command.type === 'launchMatch') {
+            launches++; lobbyState = { ...lobbyState, phase: 'running' };
+            for (const p of pages) { const win = p.dom.window;
+              win.__rtsTinyFarm.latest = { mapId: TINY_FARM_MAP }; win.__rtsEnvironmentStateSnapshot = { fogOfWar: true }; }
+          }
+          setImmediate(acknowledge); return true;
+        } });
+        acknowledge(); layout(); if (brokenLobby) lobby.open = false;
+        w.__rtsTinyFarm.team = team;
+      }
+    };
+    page.cdp = {
+      evaluate: async expression => page.dom.window.eval(expression),
+      call: async (method, params) => {
+        if (method === 'Page.addScriptToEvaluateOnNewDocument') { new vm.Script(params.source); page.scripts.push(params.source); }
+        if (method === 'Page.navigate') await prepare(params.url);
+        if (method === 'Input.dispatchMouseEvent' && params.type === 'mouseReleased') {
+          page.dom.window.document.elementFromPoint(params.x, params.y)?.click();
+          await new Promise(resolve => setImmediate(resolve)); if (page.navigation) await page.navigation;
+        }
+        return {};
+      },
+    };
+    page.wait = async (expression, label) => { await new Promise(resolve => setImmediate(resolve)); const value = await page.cdp.evaluate(expression);
+      assert.ok(value, `CPU orchestration refuses absent readiness: ${label}`); return value; };
+    pages.push(page); return page;
+  };
+  const page = makePage(0);
+  return { context: { page, openPage: async () => makePage(1), origin: 'http://127.0.0.1:1234' },
+    stages, requests, roomUrl, pages, launches: () => launches, close: () => pages.forEach(p => p.dom.window.close()) };
+}
+
+test('actual Tiny entry runs normal Create Room, two-seat Ready and Launch without injected map', async () => {
+  const f = await entryFixture();
+  try {
+    const pages = await enterTinyFarmRoom(f.context, { onStage: step => f.stages.push(step) });
+    assert.equal(pages.length, 2); assert.equal(f.launches(), 1);
+    assert.deepEqual(f.stages, ['install-host-observer', 'host-menu', 'create-room', 'select-tiny', 'second-seat', 'ready-seats', 'launch-tiny']);
+    assert.equal(f.requests.filter(r => r.method === 'POST').length, 1);
+    assert.ok(f.pages.every(p => new URL(p.dom.window.location.href).searchParams.get('room') === 'R'.repeat(32)));
+  } finally { f.close(); }
+});
+for (const options of [{ unavailable: true }, { brokenLobby: true }, { noLaunch: true }])
+  test(`actual Tiny entry refuses unavailable menu/lobby/launch: ${JSON.stringify(options)}`, async () => {
+    const f = await entryFixture(options);
+    try { await assert.rejects(() => enterTinyFarmRoom(f.context)); assert.equal(f.launches(), 0); }
+    finally { f.close(); }
+  });
+
 const phases = ['mill-paid-foundation', 'farm-paid-foundation', 'farm-complete', 'farm-exhausted',
   'farm-renewal-selected', 'farm-renewal-foundation', 'farm-renewal-first-delivery', 'renewed-strategic'];
 test('actual registered wrapper requires clean served identity, two pages and every seat checkpoint', async () => {
@@ -142,18 +253,32 @@ test('actual registered wrapper requires clean served identity, two pages and ev
     origin: 'http://127.0.0.1:1234', evidenceDirectory: '/tmp/cpu-farm-context', capture: async () => ({}),
     source: Object.freeze({ revision: 'a'.repeat(40), digest: `sha256:${'b'.repeat(64)}` }) };
   const result = { status: 'captured-needs-review', appearance: 'unreviewed', seats: [{ team: 0 }, { team: 1 }],
-    frames: [0, 1].flatMap(team => phases.map(checkpoint => ({ team, checkpoint }))) };
-  const deps = { identify: async () => ({ ok: true, served: { sourceDirty: false } }),
+    frames: [0, 1].flatMap(team => phases.map(checkpoint => ({ team, checkpoint, phaseVerified: true }))) };
+  const records = [];
+  const deps = { record: async (_, json) => records.push(JSON.parse(json)), identify: async () => ({ ok: true, served: { sourceDirty: false } }),
     enter: async () => [page, guest], execute: async () => result };
   const loaded = await loadCaptureCases('tiny-farm'); assert.deepEqual(loaded.issues, []);
   assert.equal((await run(context, deps)).status, 'passed');
   for (const change of [{ status: 'failed' }, { appearance: 'approved' }, { seats: [{ team: 0 }] },
-    { frames: result.frames.slice(1) }, { frames: result.frames.filter(f => f.team === 0) }])
+    { frames: result.frames.slice(1) }, { frames: result.frames.filter(f => f.team === 0) },
+    { frames: result.frames.map((frame, index) => ({ ...frame, phaseVerified: index !== 1 })) }])
     await assert.rejects(() => run(context, { ...deps, execute: async () => ({ ...result, ...change }) }));
   for (const identity of [{ ok: false, served: { sourceDirty: false } }, { ok: true, served: { sourceDirty: true } }])
     await assert.rejects(() => run(context, { ...deps, identify: async () => identity,
       enter: async () => assert.fail('no navigation for mismatched source') }));
   await assert.rejects(() => run(context, { ...deps, enter: async () => [page, page] }));
+  await assert.rejects(() => run(context, { ...deps, enter: async (_, { onStage }) => {
+    onStage('create-room'); throw new Error('TypeError: private-secret');
+  } }));
+  assert.equal(records.at(-1).stage, 'entry-create-room'); assert.equal(records.at(-1).category, 'browser-type');
+  assert.doesNotMatch(JSON.stringify(records), /private-secret/);
+});
+
+test('entry failure categories never retain arbitrary CDP payloads or exception text', () => {
+  for (const [message, expected] of [['SyntaxError: private-secret', 'browser-syntax'],
+    ['ReferenceError: private-secret', 'browser-reference'], ['TypeError: private-secret', 'browser-type'],
+    ['private-secret timeout', 'deadline'], ['private-secret', 'execution']])
+    assert.equal(farmFailureCategory(new Error(message)), expected);
 });
 
 test('Farm registration preserves the existing sandbox/deadline and audio adapter', async () => {

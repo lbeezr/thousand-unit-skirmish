@@ -57,6 +57,30 @@ both seats depleted naturally, paid renewal exactly once, rejected stale replay,
 survived a cold process restart and credited renewed Food. That authored 64×64
 authority fixture remains behavior reference, separate from normal Tiny pixels.
 
+The first exact-head Farm execution,
+[run38157309567](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38157309567),
+completed failure at 16:56:40 UTC on clean `603de03624a3fcb9913d23f2cb5b37214439e795`.
+[Artifact11709575748](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38157309567/artifacts/11709575748)
+was created at 16:56:37 UTC (one-day retention), ZIP digest
+`sha256:6fc14e0d44c3d57285ad17ad7552cb872276618677f807910d4bece463f20619`.
+Sandboxed Chrome154 preflight passed; clean pack digest was
+`sha256:2150aab7428d5e24e6d8518fc491849ea636c60390c0a41be66c4cb379914fd5`
+with 1,836 files. The Farm case failed after approximately 4.3 seconds, before
+lifecycle entry, with zero frames/captures and one page still at menu, not ready
+and without a canvas. The generic scenario Error does not identify a UI cause.
+No deadline or readiness assertion is relaxed to get beyond it.
+
+A Farm-only failure sidecar now covers served identity and each menu/lobby step,
+retaining only a fixed stage, error category and safe DOM booleans/seat. Actual
+entry expressions and pointer orchestration run in CPU controls using the real
+menu and lobby modules with modeled CDP/network/layout boundaries; unavailable
+menu, absent lobby readiness and unavailable Launch refuse. These are not pixels.
+Paid foundation captures now enforce expected identity, unfinished state, zero
+Farm crop and exact debit on both observations bracketing the screenshot. A
+completion-during-capture control retains the failed partial evidence and refuses
+to qualify it as a foundation phase. Diagnostic recapture follows exact-head
+tests and independent review; any specific UI correction requires that receipt.
+
 The existing supported Actions capability receipt is
 [run38153340669](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38153340669),
 artifact11706704507 created at 15:57:42 UTC: Linux uid1001, Chrome154.0.8037.97,

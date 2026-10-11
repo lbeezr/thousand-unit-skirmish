@@ -157,6 +157,25 @@ export function validateFarmArt(observation, plotId, state) {
   assert.match(art.sha256, /^[a-f0-9]{64}$/);
 }
 
+export function validateFarmFoundation(state, { team, type, id, wood, site }) {
+  validateFarmEconomy(state, team);
+  const building = state.buildings.find(b => b.id === id);
+  assert.ok(building?.team === team && building.type === type && building.complete === false,
+    'foundation checkpoint must retain the expected unfinished paid identity');
+  assert.equal(state.bank.wood, wood, 'foundation checkpoint retains the exact debit');
+  assert.ok(Math.hypot(building.x - site.x, building.z - site.z) < 1);
+  if (type === 'farm') assert.equal(building.harvestStock, 0, 'foundation crop must remain zero');
+}
+
+export async function bracketFarmPhase({ observe, take, validate, retain }) {
+  const before = await observe(); validate(before);
+  const capture = await take(), after = await observe();
+  let failure;
+  try { validate(after); } catch (error) { failure = error; }
+  await retain({ before, after, capture, phaseVerified: !failure });
+  if (failure) throw failure;
+}
+
 export async function projectFarmGround(site) {
   const THREE = await import('/vendor/three.module.js');
   const { groundHeight } = await import('/src/terrain-height.mjs');
@@ -171,34 +190,34 @@ export async function projectFarmGround(site) {
   return p.z >= -1 && p.z <= 1 && document.elementFromPoint(point.x, point.y) === canvas ? point : null;
 }
 
-export async function enterTinyFarmRoom({ page, openPage, origin }, { click = clickControl } = {}) {
+export async function enterTinyFarmRoom({ page, openPage, origin }, { click = clickControl, onStage = () => {} } = {}) {
   const install = p => p.cdp.call('Page.addScriptToEvaluateOnNewDocument', {
     source: `(${installFarmObserver.toString()})(${reduceFarmState.toString()},${reduceFarmOrder.toString()})`,
   });
-  await install(page);
+  onStage('install-host-observer'); await install(page);
   assert.equal(await page.cdp.evaluate('location.href'), 'about:blank');
-  await page.cdp.call('Page.navigate', { url: origin + '/' });
+  onStage('host-menu'); await page.cdp.call('Page.navigate', { url: origin + '/' });
   await page.wait("document.documentElement.dataset.entry==='menu' && !document.querySelector('#menu-create-room')?.disabled", 'ordinary Create Room menu');
-  await click(page, '#menu-create-room');
+  onStage('create-room'); await click(page, '#menu-create-room');
   await page.wait("document.querySelector('#room-lobby')?.open && !document.querySelector('#lobby-map')?.disabled", 'ordinary host lobby');
-  assert.equal(await page.cdp.evaluate(`(()=>{const select=document.querySelector('#lobby-map');
+  onStage('select-tiny'); assert.equal(await page.cdp.evaluate(`(()=>{const select=document.querySelector('#lobby-map');
     if(select.disabled||![...select.options].some(o=>o.value===${JSON.stringify(TINY_FARM_MAP)}&&!o.disabled))return false;
     select.value=${JSON.stringify(TINY_FARM_MAP)};select.dispatchEvent(new Event('change',{bubbles:true}));return true;})()`), true);
   await page.wait(`document.querySelector('#lobby-map')?.value===${JSON.stringify(TINY_FARM_MAP)} && !document.querySelector('#lobby-ready')?.disabled`, 'host Tiny selection accepted');
   assert.equal(await page.cdp.evaluate("document.querySelector('#lobby-match-mode').value"), 'skirmish@1');
   // The ordinary invite is used privately to admit the other human seat. Never
   // write this URL or capture the lobby carrying its invitation.
-  const roomUrl = await page.cdp.evaluate('location.href');
+  onStage('second-seat'); const roomUrl = await page.cdp.evaluate('location.href');
   const guest = await openPage(); await install(guest);
   await guest.cdp.call('Page.navigate', { url: roomUrl });
   await guest.wait("document.querySelector('#room-lobby')?.open && !document.querySelector('#lobby-ready')?.disabled", 'ordinary second human seat');
   assert.equal(await page.cdp.evaluate('window.__rtsTinyFarm.team'), 0);
   assert.equal(await guest.cdp.evaluate('window.__rtsTinyFarm.team'), 1);
-  await click(page, '#lobby-ready');
+  onStage('ready-seats'); await click(page, '#lobby-ready');
   await page.wait("document.querySelector('#lobby-ready')?.textContent==='Not ready'", 'host readiness accepted');
   await click(guest, '#lobby-ready');
   await page.wait("!document.querySelector('#lobby-launch')?.disabled", 'both human seats ready');
-  await click(page, '#lobby-launch');
+  onStage('launch-tiny'); await click(page, '#lobby-launch');
   const running = `!document.querySelector('#room-lobby')?.open && document.documentElement.dataset.boot==='ready'
     && ${wire}?.mapId===${JSON.stringify(TINY_FARM_MAP)} && ${environment}?.fogOfWar===true`;
   await Promise.all([page.wait(running, 'host ordinary Tiny match'), guest.wait(running, 'guest ordinary Tiny match')]);
@@ -225,10 +244,11 @@ export async function runTinyFarmLifecycle(context, pages, { renew = runFarmRene
     coldProcessRecovery: 'not-exposed-by-v1-capture-context', touch: 'not-captured' };
   const record = async (page, team, name, validate = () => {}) => {
     await page.cdp.call('Page.bringToFront');
-    const before = await ownedSnapshot(page);
-    validateFarmEconomy(before.state, team); validate(before);
-    assert.equal(before.fogOfWar, true); assert.equal(before.alternateEntry, false);
-    assert.deepEqual(before.errors, []);
+    return bracketFarmPhase({ observe: () => ownedSnapshot(page), validate: observation => {
+      validateFarmEconomy(observation.state, team); validate(observation);
+      assert.equal(observation.fogOfWar, true); assert.equal(observation.alternateEntry, false);
+      assert.deepEqual(observation.errors, []);
+    }, take: async () => {
     const frame = await page.cdp.evaluate('window.__rtsQualification.request().then(frame=>frame)');
     const canvas = Buffer.from(frame.canvasPng, 'base64'); delete frame.canvasPng;
     const receipt = await capture({ page, mapId: TINY_FARM_MAP, checkpoint: `team-${team}-${name}` });
@@ -239,18 +259,19 @@ export async function runTinyFarmLifecycle(context, pages, { renew = runFarmRene
     const png = await readFile(path.join(receipt.directory, receipt.manifest.image.file));
     assert.equal(hash(png), receipt.manifest.image.sha256);
     validateWorkCycleFrame(frame, png, canvas);
-    const after = await ownedSnapshot(page); validateFarmEconomy(after.state, team); validate(after);
-    assert.ok(after.state.tick >= before.state.tick); assert.deepEqual(after.errors, []);
-    assert.equal(after.fogOfWar, true); assert.equal(after.alternateEntry, false);
+    return { frame, canvas, receipt };
+    }, retain: async ({ before, after, capture: { frame, canvas, receipt }, phaseVerified }) => {
+    assert.ok(after.state.tick >= before.state.tick);
     const previous = report.frames.filter(f => f.team === team).at(-1);
     if (previous) assert.ok(frame.number > previous.number && frame.time > previous.time, 'own-seat render identity must advance');
     await writeFile(path.join(receipt.directory, 'farm-canvas.png'), canvas, { flag: 'wx' });
-    const evidence = { source, team, checkpoint: name, before, after, frame,
+    const evidence = { source, team, checkpoint: name, phaseVerified, before, after, frame,
       image: receipt.manifest.image, canvas: { file: 'farm-canvas.png', sha256: hash(canvas) },
       correlation: 'readback and owned-seat observations bracket screenshot; not a same-frame authority claim' };
     await writeFile(path.join(receipt.directory, 'farm-state.json'), JSON.stringify(evidence, null, 2) + '\n', { flag: 'wx' });
-    report.frames.push({ team, checkpoint: name, number: frame.number, time: frame.time,
+    report.frames.push({ team, checkpoint: name, phaseVerified, number: frame.number, time: frame.time,
       image: receipt.manifest.image, canvasSha256: hash(canvas) });
+    } });
   };
   const setup = async (page, team) => {
     const initial = validateFarmEconomy(await page.cdp.evaluate(wire), team);
@@ -276,8 +297,8 @@ export async function runTinyFarmLifecycle(context, pages, { renew = runFarmRene
     assert.equal(order?.type, 'build'); assert.equal(order.buildingType, type);
     assert.deepEqual(order.ids.slice().sort((a, b) => a - b), ids.slice().sort((a, b) => a - b));
     await record(page, team, `${type}-paid-foundation`, observation => {
-      assert.equal(observation.state.bank.wood, before.bank.wood - (type === 'farm' ? 60 : 75));
-      assert.ok(observation.state.buildings.some(b => b.id === building.id));
+      validateFarmFoundation(observation.state, { team, type, id: building.id, site: sites[type],
+        wood: before.bank.wood - (type === 'farm' ? 60 : 75) });
     });
     return building;
   };
@@ -315,11 +336,19 @@ export async function runTinyFarmLifecycle(context, pages, { renew = runFarmRene
     // Start both real Replant orders before waiting for either renewed delivery.
     await Promise.all(report.seats.map(async seat => {
       const { page, team, ids, farm } = seat;
+      let renewalId;
       seat.renewal = await renew({ page, team, plotId: farm.id, workerIds: ids,
         capture: async name => record(page, team, name, o => {
           if (name === 'farm-renewal-selected') {
             assert.equal(o.replant?.visible, true); assert.equal(o.replant.disabled, false);
             assert.equal(o.replant.text, 'Replant · 60 wood');
+          }
+          if (name === 'farm-renewal-foundation') {
+            const fresh = o.state.buildings.find(b => b.type === 'farm' && b.id !== farm.id && b.x === farm.x && b.z === farm.z);
+            assert.ok(fresh, 'fresh renewal identity required'); renewalId ??= fresh.id;
+            assert.ok(o.state.buildings.every(b => b.id !== farm.id), 'stale planting must remain absent');
+            validateFarmFoundation(o.state, { team, type: 'farm', id: renewalId,
+              wood: seat.depleted.bank.wood - 60, site: farm });
           }
         }) }, { click: (p, selector) => click(p, selector === '[data-context-proxy="select-idle-workers"]' ? '#quick-idle' : selector) });
       seat.final = await page.cdp.evaluate(wire);
@@ -348,15 +377,30 @@ export async function runTinyFarmLifecycle(context, pages, { renew = runFarmRene
   return report;
 }
 
-export async function run(value, { identify = checkServedBuildIdentity, enter = enterTinyFarmRoom, execute = runTinyFarmLifecycle } = {}) {
+export function farmFailureCategory(error) {
+  if (error instanceof assert.AssertionError) return 'assertion';
+  if (/SyntaxError:/.test(error?.message ?? '')) return 'browser-syntax';
+  if (/ReferenceError:/.test(error?.message ?? '')) return 'browser-reference';
+  if (/TypeError:/.test(error?.message ?? '')) return 'browser-type';
+  if (/timeout/i.test(error?.message ?? '')) return 'deadline';
+  return 'execution';
+}
+
+export async function run(value, { identify = checkServedBuildIdentity, enter = enterTinyFarmRoom,
+  execute = runTinyFarmLifecycle, record = writeFile } = {}) {
   const context = validateCaptureContext(value), { origin, source } = context;
+  let stage = 'served-identity';
+  try {
   const identity = await identify(origin, { sourceRevision: source.revision, digest: source.digest });
   assert.equal(identity.ok, true, 'served source and pack must match'); assert.equal(identity.served.sourceDirty, false);
-  const pages = await enter(context);
+  stage = 'ordinary-entry';
+  const pages = await enter(context, { onStage: step => { stage = `entry-${step}`; } });
   assert.equal(pages.length, 2); assert.equal(pages[0], context.page); assert.notEqual(pages[0], pages[1]);
+  stage = 'farm-lifecycle';
   const result = await execute(context, pages);
   assert.equal(result.status, 'captured-needs-review');
   assert.equal(result.appearance, 'unreviewed');
+  assert.ok(result.frames.every(frame => frame.phaseVerified === true), 'failed phase brackets cannot qualify a capture');
   assert.deepEqual(result.seats.map(s => s.team), [0, 1]);
   for (const team of [0, 1]) assert.deepEqual(result.frames.filter(f => f.team === team).map(f => f.checkpoint), [
     'mill-paid-foundation', 'farm-paid-foundation', 'farm-complete', 'farm-exhausted',
@@ -365,4 +409,16 @@ export async function run(value, { identify = checkServedBuildIdentity, enter = 
   return { status: 'passed', checks: ['normal-tiny-two-human-seats', 'paid-mill-and-farm-pointer-build',
     'farm-pointer-gather-natural-depletion', 'selected-worker-explicit-paid-replant', 'renewed-crop-bank-cargo-conservation',
     'two-seat-source-bound-ordinary-strategic-captures'].map(id => ({ id, passed: true })) };
+  } catch (error) {
+    // The shared qualifier intentionally hides CDP exception text. Retain safe
+    // Farm stage/DOM facts without error strings, source expressions or invites.
+    const boot = await context.page.cdp.evaluate(`(()=>{const d=document.documentElement.dataset;
+      return {entry:['menu','game'].includes(d.entry)?d.entry:null,ready:d.boot==='ready',
+        createPresent:!!document.querySelector('#menu-create-room'),createDisabled:document.querySelector('#menu-create-room')?.disabled===true,
+        lobbyOpen:document.querySelector('#room-lobby')?.open===true,mapPresent:!!document.querySelector('#lobby-map'),
+        team:[0,1].includes(window.__rtsTinyFarm?.team)?window.__rtsTinyFarm.team:null};})()`).catch(() => null);
+    await record(path.join(context.evidenceDirectory, 'tiny-farm-failure.json'), JSON.stringify({ source,
+      status: 'failed', stage, category: farmFailureCategory(error), boot }, null, 2) + '\n', { flag: 'wx' });
+    throw error;
+  }
 }
