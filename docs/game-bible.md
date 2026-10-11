@@ -212,6 +212,15 @@ text controls, menus and dialogs retain their keyboard behavior.
 
 The working world name is **Vaelora**. Its visual identity combines warm, expressive everyday life with tangible remnants of immense lost power. The [art checkpoint](art-direction/vaelora-v1/README.md) defines ten regional palettes and ecology references, from Bellweather's farms and Ellionar's stepped gardens to the Pale Meridian's observatories and Ru’Lora's petrified jungle.
 
+The [Vaelora brand and interface bible](vaelora-brand.md) applies this world name to
+the player-facing entry and compact game lockup, with the proposed promise
+“A living world. Yours to command.” The user selected world-first presentation
+and cited World of Warcraft and League of Legends as references for immersive,
+functional clients. The first treatment uses Bellweather art, pine, parchment
+and brass. The bible also specifies proposed semantic colors, materials, button
+families and interaction states; these extensions remain distinct from delivered
+components. Source, delivery and rendered acceptance remain separate records.
+
 Regions define terrain and ecology; cultures define craft and architecture; factions define allegiance. Sun, moon and star elves, desert humans and explored bull/jackal peoples are worldbuilding directions, not new implemented rosters. Author-story continuity questions and working faction names remain explicit in the checkpoint.
 
 The author's stories deeply inspire the world's voice, naming, humor and material imagination; literal reuse of their histories is optional under the user's 30 September direction. The [lore wiki](lore/README.md) is the current reference for the world, regions, cultures, institutions, history and supernatural anchors. It distinguishes selected direction, working lore, in-world belief and open questions. The earlier [foundation package](lore-foundation-m1.md) remains a dated drafting record. New lore adds no gameplay requirements.

@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-11",
+  "scope": "documentation DOM behavior and solid-color calculations; not browser layout or textured-composite acceptance",
+  "paletteChoices": 3,
+  "selectionToggle": "passed",
+  "sampleFeedback": "passed",
+  "localAssets": "resolved",
+  "anchors": "resolved",
+  "contrast": [
+    {
+      "foreground": "--v-ink",
+      "background": "--v-brass",
+      "ratio": 8.4,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "--v-ink",
+      "background": "--v-brass-hover",
+      "ratio": 10.51,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "--v-ink",
+      "background": "--v-brass-pressed",
+      "ratio": 6.13,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "--v-paper",
+      "background": "--v-danger",
+      "ratio": 6.76,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "--v-paper",
+      "background": "--v-danger-hover",
+      "ratio": 5.12,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "--v-paper",
+      "background": "--v-danger-pressed",
+      "ratio": 8.73,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "--v-selected",
+      "background": "--v-pine",
+      "ratio": 8.8,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "--v-error-text",
+      "background": "--v-error-wash",
+      "ratio": 8.97,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "--v-warning",
+      "background": "--v-warning-wash",
+      "ratio": 7.27,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "--v-success",
+      "background": "--v-success-wash",
+      "ratio": 7.17,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "--v-info",
+      "background": "--v-pine",
+      "ratio": 8.77,
+      "minimum": 4.5
+    },
+    {
+      "foreground": "--v-line",
+      "background": "--v-pine",
+      "ratio": 4.56,
+      "minimum": 3
+    },
+    {
+      "foreground": "--v-focus",
+      "background": "--v-ink",
+      "ratio": 13.53,
+      "minimum": 3
+    }
+  ]
+}

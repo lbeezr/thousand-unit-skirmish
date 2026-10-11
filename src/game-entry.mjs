@@ -177,8 +177,13 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
   win.addEventListener('pageshow', event => { if (event.persisted) void refresh(); });
   win.markPrototypeReady?.();
   await refresh();
-  if (doc.activeElement === doc.body) (creationButtons.find(button => !button.disabled)
-    || root.querySelector('#menu-settings')).focus();
+  if (doc.activeElement === doc.body) {
+    const initial = creationButtons.find(button => !button.disabled) || root.querySelector('#menu-settings');
+    const bounds = initial.getBoundingClientRect();
+    // Preserve the hero without leaving keyboard focus on an off-screen action.
+    if (bounds.width > 0 && bounds.height > 0 && bounds.top >= 0 && bounds.left >= 0
+      && bounds.bottom <= win.innerHeight && bounds.right <= win.innerWidth) initial.focus({ preventScroll: true });
+  }
   return { refresh };
 }
 

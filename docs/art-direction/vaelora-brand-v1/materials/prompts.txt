@@ -1,0 +1,17 @@
+11 October 2026 · built-in image_gen; separate calls; immersive-client-study.png used as style reference.
+
+oak — transparent_background=true
+Use case: stylized-concept
+Asset type: isolated transparent foreground foliage layer for Vaelora's fantasy game client.
+Input image 1 is the approved Vaelora interface study, a STYLE REFERENCE only. Make ONE separate oak-branch corner asset, matching its subtle painterly foliage around the right edge of the brass framed launcher.
+Composition: square canvas. A naturally bent thin branch follows an inverted L along the TOP and RIGHT sides. Leaves occupy only the outer 22 percent of each edge, tapering toward the top-left and bottom-right. Leave the center and entire lower-left area truly transparent. All leaf tips contained with 4 percent transparent margin around the canvas. Use clusters of readable lobed oak leaves, a few tiny acorns, fine twigs, irregular spacing. The bend at the top-right is the densest area, organically crossing the two imaginary frame lines. No actual metal frame.
+Palette: muted sage and deep moss green with warm ochre leaf edges, softly sunlit from upper-left. Hand-painted botanical detail, restrained depth, believable matte leaves; nostalgic illustrated strategy-game finish. Neither shiny nor cartoonish.
+Constraints: actual transparent alpha background, no checkerboard, no backdrop, no text, no UI, no border, no logo. Only one delicate oak corner. This will be displayed around 180 CSS pixels wide; maintain a clear silhouette.
+
+brass — transparent_background=false
+Use case: stylized-concept
+Asset type: isolated material surface for the New Game button in Vaelora.
+Input image 1 is the approved interface study, a STYLE REFERENCE only. Produce ONLY the warm textured gold-brass material from its primary New Game button as a square, edge-to-edge flat material swatch.
+Primary request: a beautifully hand-worked satin brass surface, softly hammered grain and tiny old burnished flecks, almost parchment-like warmth. Broad mellow honey-gold midtones with subtly lighter center. Quiet, low contrast texture suitable behind dark live text. Handcrafted classic fantasy strategy-game finish, not industrial metal.
+Palette: warm antique gold close to #d0b376 through #e1c997; keep darkest areas no darker than ochre #b39761, highlights pale warm brass. Even diffuse front lighting, no strong directional gradient or large stains. Texture detail is fine and organic.
+Constraints: fills the entire square, no text or letters, no arrow, no UI, no frame, no bevel, no objects, no icon, no watermark. Do not reproduce the webpage. This is a reusable material layer, not a finished button.

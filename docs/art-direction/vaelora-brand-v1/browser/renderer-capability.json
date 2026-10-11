@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "scope": "renderer-capability-only",
+  "status": "ready",
+  "source": {
+    "revision": "b9e86bcd3b5b4464b4d88690be332ee232a2c762",
+    "dirty": false
+  },
+  "backend": "Chromium/CDP",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "sandbox": "enabled",
+  "maxLaunchAttempts": 1,
+  "launchAttempts": 1,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/154.0.8037.99",
+    "revision": "@45889d77830582727fe00dbfd614bcb7aac35caa",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+    "jsVersion": "15.4.80.20"
+  },
+  "renderer": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "vendor": "WebKit",
+    "name": "WebKit WebGL",
+    "unmaskedName": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)"
+  },
+  "softwareRenderer": false,
+  "webglReadbackPassed": true,
+  "renderedGameFrames": 0,
+  "screenshots": 0,
+  "consoleErrors": [],
+  "issues": []
+}

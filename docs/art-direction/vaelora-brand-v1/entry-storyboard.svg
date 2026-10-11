@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+<title id="title">Vaelora entry state and responsive storyboard</title><desc id="desc">Desktop world and launcher, narrow stacked entry, and the existing ready, pending, error, Resume and dialog flows.</desc>
+<rect width="1200" height="760" fill="#f3eddf"/>
+<g font-family="sans-serif" fill="#102c27">
+<text x="36" y="42" font-size="24">VAELORA · Entry storyboard · schematic, not a rendered capture</text>
+<rect x="36" y="70" width="780" height="375" fill="#102c27"/>
+<text x="60" y="100" fill="#d0b376" font-family="serif" font-size="20" letter-spacing="4">VAELORA</text>
+<text x="545" y="100" fill="#f3eddf" font-size="14">Play · The world · Field guide</text>
+<rect x="56" y="120" width="425" height="280" fill="#426659"/>
+<path d="M56 300 176 180 280 285 400 155 481 240V400H56Z" fill="#73886a"/>
+<text x="80" y="340" fill="#f3eddf" font-family="serif" font-size="44" letter-spacing="4">VAELORA</text>
+<text x="80" y="370" fill="#f3eddf" font-size="15">A living world. Yours to command.</text>
+<rect x="504" y="120" width="290" height="280" fill="#0b201c" stroke="#d0b376"/>
+<text x="525" y="152" fill="#f3eddf" font-family="serif" font-size="24">Make your next move.</text>
+<text x="525" y="180" fill="#bcc9bd" font-size="13">Resume appears only after validation</text>
+<rect x="524" y="195" width="250" height="52" fill="#d0b376"/>
+<text x="540" y="216" font-size="17">New Game →</text><text x="540" y="237" font-size="12">Actual server AI/map/rules description</text>
+<text x="525" y="274" fill="#f3eddf" font-size="15">Practice + optional rules</text>
+<text x="525" y="308" fill="#f3eddf" font-size="15">Create Room     Join Room</text>
+<text x="525" y="345" fill="#bcc9bd" font-size="14">Map Studio · Settings</text>
+<text x="525" y="378" fill="#d0b376" font-size="13">Live status / errors wrap here</text>
+<text x="60" y="428" fill="#bcc9bd" font-size="14">World concept attribution · Ordinary gameplay starts only on an explicit choice</text>
+<rect x="850" y="70" width="310" height="375" fill="#102c27"/>
+<text x="870" y="101" fill="#d0b376" font-size="16">VAELORA     Play · World</text>
+<rect x="870" y="118" width="270" height="105" fill="#426659"/>
+<text x="887" y="178" fill="#f3eddf" font-family="serif" font-size="34">VAELORA</text>
+<text x="870" y="253" fill="#f3eddf" font-size="17">Make your next move.</text>
+<rect x="870" y="270" width="270" height="46" fill="#d0b376"/>
+<text x="890" y="299" font-size="18">New Game →</text>
+<text x="870" y="347" fill="#f3eddf" font-size="14">Controls stack; no horizontal scroll</text>
+<text x="870" y="380" fill="#bcc9bd" font-size="14">World + field guide continue below</text>
+<text x="870" y="425" fill="#d0b376" font-size="14">Narrow/short: compact art, then play</text>
+<text x="36" y="490" font-size="21">Interaction sequence · existing authority stays intact</text>
+<g font-size="15">
+<text x="36" y="530">1. Initial → Check availability; New Game disabled until admitted. No renderer or seat allocation.</text>
+<text x="36" y="566">2. Ready → New Game / Practice / friend rooms. Valid saved token → reveal Resume above New Game.</text>
+<text x="36" y="602">3. Click → Disable launch controls; live pending message → navigate only after accepted response.</text>
+<text x="36" y="638">4. Failure → Stay in entry; explain failure in text; restore eligible controls and existing focus behavior.</text>
+<text x="36" y="674">5. Join / Settings → native modal, focus contained, Escape/Cancel returns. No new ambient motion.</text>
+<text x="36" y="710">6. Hover/focus → 140ms border/color; reduced motion → instant. World links never create a room.</text>
+</g></g></svg>

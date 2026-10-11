@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Vaelora — Brand and interface reference</title><link rel="stylesheet" href="interface-reference.css"></head>
+<body>
+<header>
+  <p class="eyebrow">Vaelora / Design reference / 0.2</p>
+  <h1>A world you can feel.<br>A language you can use.</h1>
+  <p class="intro">Pine, warm brass, parchment and living edges. A practical reference for the colors, materials and controls that make the client part of Vaelora.</p>
+  <span class="status">Selected materials · Proposed UI system</span>
+  <nav aria-label="Reference sections"><a href="#colors">Color roles</a><a href="#actions">Action direction</a><a href="#states">Button states</a><a href="#families">Button families</a><a href="#materials">Materials</a><a href="#feedback">Feedback</a></nav>
+</header>
+<main>
+<section id="colors">
+  <p class="eyebrow">01 / Identity and meaning</p><h2>Every color has a job.</h2>
+  <p class="section-lead">Pine and oak establish the world. Brass gives the main action weight. Celadon marks a choice; crimson marks a destructive action. Labels and shapes carry meaning alongside color.</p>
+  <div class="palette">
+    <div class="swatch" style="--swatch:#102c27"><div class="color"></div><p>Pine · surfaces<code>#102C27</code></p></div>
+    <div class="swatch" style="--swatch:#f3eddf"><div class="color"></div><p>Parchment · type<code>#F3EDDF</code></p></div>
+    <div class="swatch" style="--swatch:#d0b376"><div class="color"></div><p>Brass · primary action<code>#D0B376</code></p></div>
+    <div class="swatch" style="--swatch:#a8d0bd"><div class="color"></div><p>Celadon · selection<code>#A8D0BD</code></p></div>
+    <div class="swatch" style="--swatch:#902f3e"><div class="color"></div><p>Crimson · destructive<code>#902F3E</code></p></div>
+    <div class="swatch" style="--swatch:#985d3b"><div class="color"></div><p>Copper · editorial<code>#985D3B</code></p></div>
+  </div>
+</section>
+<section id="actions">
+  <p class="eyebrow">02 / Compare in context</p><h2>What should “begin” feel like?</h2>
+  <p class="section-lead">Brass carries forward the selected portal direction. Compare celadon and crimson without changing the game's theme. These buttons are documentation samples.</p>
+  <div class="choices" role="group" aria-label="Compare primary action colors">
+    <button class="choice" type="button" data-direction-choice="brass" aria-pressed="true">Brass · recommended</button>
+    <button class="choice" type="button" data-direction-choice="celadon" aria-pressed="false">Celadon · exploration</button>
+    <button class="choice" type="button" data-direction-choice="crimson" aria-pressed="false">Crimson · exploration</button>
+  </div>
+  <div class="sample-stage" id="direction-stage" data-direction="brass">
+    <div class="sample-context"><p class="eyebrow">Your next chapter</p><h3>Make your next move.</h3><p>Raise a settlement. Command your army.</p></div>
+    <div class="action-row"><button type="button" class="spec-btn primary" data-demo="Primary action"><span>New Game &nbsp; →</span></button><button type="button" class="spec-btn" data-demo="Secondary action">Join Room</button></div>
+    <p id="direction-note" class="state-note" aria-live="polite">Brass: crafted warmth and a clear focal point. Keep broad gold fills rare.</p>
+    <div class="states" id="states">
+      <div><span class="state-label">Rest</span><button class="spec-btn primary" type="button" data-demo="Rest"><span>New Game</span></button><p class="state-note">Warm material, fine inset rule.</p></div>
+      <div><span class="state-label">Hover</span><button class="spec-btn primary" type="button" data-state="hover" data-demo="Hover"><span>New Game</span></button><p class="state-note">Lighter face; same size.</p></div>
+      <div><span class="state-label">Pressed</span><button class="spec-btn primary" type="button" data-state="pressed" data-demo="Pressed"><span>New Game</span></button><p class="state-note">Darker face, inset shadow.</p></div>
+      <div><span class="state-label">Keyboard focus</span><button class="spec-btn primary" type="button" data-state="focus" data-demo="Focus"><span>New Game</span></button><p class="state-note">Celadon ring with a dark gap.</p></div>
+      <div><span class="state-label">Pending</span><button class="spec-btn primary" type="button" aria-disabled="true" aria-busy="true"><span>Creating…</span></button><p class="state-note">Progress label; repeat activation blocked.</p></div>
+      <div><span class="state-label">Unavailable</span><button class="spec-btn primary" type="button" disabled><span>New Game</span></button><p class="state-note">Room service unavailable.</p></div>
+    </div>
+    <p class="feedback" id="sample-feedback" role="status">Samples only · no game session will be created.</p>
+  </div>
+</section>
+<section id="families">
+  <p class="eyebrow">03 / A small shared vocabulary</p><h2>Five button families.</h2>
+  <div class="families">
+    <article><h3>Primary</h3><button class="spec-btn primary" type="button" data-demo="Primary action"><span>New Game &nbsp; →</span></button><p>One dominant next step in a decision group. Use brass, restrained texture and an inset rule.</p></article>
+    <article><h3>Secondary</h3><button class="spec-btn" type="button" data-demo="Secondary action">Join Room</button><p>Alternatives remain easy to find. Pine surface, readable border, parchment label.</p></article>
+    <article><h3>Quiet utility</h3><button class="spec-btn quiet" type="button" data-demo="Quiet utility">Settings ↗</button><p>Persistent tools and reading links. Keep a 44px target and a visible text cue.</p></article>
+    <article><h3>Destructive</h3><button class="spec-btn danger" type="button" data-demo="Destructive action">Discard changes</button><p>Use explicit consequence wording. Crimson is a flat lacquer surface; important loss also needs confirmation.</p></article>
+    <article><h3>Selected choice</h3><button class="spec-btn selected" id="selection-example" type="button" aria-pressed="true">✓ Skirmish</button><p>A celadon edge and check mark record a persistent choice. Pressed is a moment; selected is a state.</p></article>
+  </div>
+</section>
+<section id="materials">
+  <p class="eyebrow">04 / Materials with purpose</p><h2>Depth comes from separate layers.</h2>
+  <div class="materials">
+    <article class="material"><div class="material-sample brass" role="img" aria-label="Warm hammered brass texture"></div><h3>Worked brass</h3><p>Primary action and sparse edges. Keep the texture quiet under live labels. One shared surface asset.</p></article>
+    <article class="material"><div class="material-sample pine" role="img" aria-label="Subtle texture beneath a deep pine wash"></div><h3>Dark pine surface</h3><p>Stable backing for controls. The same texture under a near-opaque wash gives depth without busy grain.</p></article>
+    <article class="material"><div class="material-sample oak" role="img" aria-label="Isolated oak branch around a transparent corner"></div><h3>Living edges</h3><p>Separate alpha foliage. Overlap the frame, clear the labels, shrink on mobile. Reserve it for entry and reading surfaces.</p></article>
+  </div>
+  <p class="muted">Landscape → material panel → brass rules → foliage → live controls. The decoration never receives pointer input.</p>
+</section>
+<section id="feedback">
+  <p class="eyebrow">05 / Function stays literal</p><h2>Color supports the message.</h2>
+  <div class="feedback-grid">
+    <div class="feedback success">✓ Saved · Your changes are ready.</div>
+    <div class="feedback warning">! Unsaved changes · Save before leaving.</div>
+    <div class="feedback error">! Could not join · Check the room code.</div>
+    <div class="feedback">i Checking room availability…</div>
+  </div>
+  <ul class="rules"><li>Do not recolor the whole panel when an error happens. Place feedback beside the failed task.</li><li>Keep team identity separate from brand and status. Azure and Ember retain their gameplay cues.</li><li>Decorative borders can be quiet; a border needed to recognize a control must stay visible.</li><li>Textures, motion and color cannot be the only explanation of an interaction state.</li></ul>
+</section>
+</main>
+<footer><p><a href="../../vaelora-brand.md">Read the brand and interface bible</a> · <a href="brand-research.md">Research and selection reasons</a> · <a href="README.md">Art and provenance</a></p><p>This is an internal documentation specimen. Semantic extensions and alternate action colors are proposals; the production portal keeps its current bindings.</p></footer>
+<script>
+const stage = document.querySelector('#direction-stage');
+const notes = {
+  brass: 'Brass: crafted warmth and a clear focal point. Keep broad gold fills rare.',
+  celadon: 'Celadon exploration: a stronger botanical identity. A full rollout would need a distinct persistent-selection treatment.',
+  crimson: 'Crimson exploration: a stronger martial emphasis. Using it for entry would require rethinking its destructive-action role.'
+};
+for (const choice of document.querySelectorAll('[data-direction-choice]')) {
+  choice.addEventListener('click', () => {
+    stage.dataset.direction = choice.dataset.directionChoice;
+    for (const peer of document.querySelectorAll('[data-direction-choice]')) peer.setAttribute('aria-pressed', String(peer === choice));
+    document.querySelector('#direction-note').textContent = notes[stage.dataset.direction];
+  });
+}
+for (const demo of document.querySelectorAll('[data-demo]')) demo.addEventListener('click', () => {
+  document.querySelector('#sample-feedback').textContent = `${demo.dataset.demo} sample activated · no game session created.`;
+});
+const selected = document.querySelector('#selection-example');
+selected.addEventListener('click', () => {
+  const next = selected.getAttribute('aria-pressed') !== 'true';
+  selected.setAttribute('aria-pressed', String(next)); selected.classList.toggle('selected', next);
+  selected.textContent = next ? '✓ Skirmish' : 'Skirmish';
+});
+</script>
+</body>
+</html>

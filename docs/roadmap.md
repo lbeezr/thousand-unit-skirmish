@@ -10,6 +10,12 @@ sequence and acceptance criteria. Existing solo/two-seat checks are the regressi
 floor; expansion of gameplay functionality is the next development outcome.
 Art proceeds separately against stable presentation interfaces.
 
+The user-requested [Vaelora brand and portal](vaelora-brand.md) is a bounded
+world-first entry outcome owned by chat `01a12b79`: deliver the front page using
+preserved regional art and existing play/room/Resume contracts, then verify its
+identified served revision. Subsequent lobby and identity refinement are separate
+slices; no new account, matchmaking or game-mode system is implied.
+
 The [canonical building action matrix](gameplay-foundation-plan.md#canonical-building-action-coverage--4-october-2026)
 owns all thirteen roles, six technologies, finite Farm diagnosis and small B0–B4
 action/production/ordinary-acceptance slices in the existing Interface/Content

@@ -213,7 +213,31 @@ assert.ok(allowed.has('src/game-menu.css'), 'entry menu stylesheet must be serve
 const menuSources = new Set([
   WORKER_PORTRAITS.human.asset,
   `/${buildingSpriteUrl({ type: 'barracks', team: 0, complete: true, hp: 1800, maxHp: 1800 }).slice(2)}`,
+  '/assets/ui/vaelora-brand-v1/bellweather-map.png',
+  '/assets/ui/vaelora-brand-v1/brass-surface.webp',
+  '/assets/ui/vaelora-brand-v1/oak-corner.webp',
 ]);
+const menuMaterials = JSON.parse(readFileSync(path.join(root, 'assets/ui/vaelora-brand-v1/materials-manifest.json'), 'utf8'));
+for (const material of menuMaterials.assets) {
+  assert.ok(allowed.has(material.runtime), `Vaelora material has exact public admission: ${material.runtime}`);
+  for (const [asset, hash, length] of [[material.runtime, material.sha256, material.bytes],
+    [material.source, material.sourceSha256, material.sourceBytes]]) {
+    const bytes = readFileSync(path.join(root, asset));
+    assert.equal(bytes.length, length);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), hash);
+  }
+  assert.ok(!allowed.has(material.source), 'generated material sources stay private');
+}
+const menuWorldArt = 'assets/ui/vaelora-brand-v1/bellweather-map.png';
+assert.ok(allowed.has(menuWorldArt), 'Vaelora menu art has exact public admission');
+assert.deepEqual(readFileSync(path.join(root, menuWorldArt)),
+  readFileSync(path.join(root, 'docs/art-direction/vaelora-v1/bellweather-map.png')),
+  'Vaelora menu preserves the selected Bellweather source bytes');
+for (const privateSource of ['assets/ui/vaelora-brand-v1/README.md',
+  'assets/ui/vaelora-brand-v1/materials-manifest.json',
+  'docs/art-direction/vaelora-brand-v1/immersive-client-study.png', `${menuWorldArt}/extra`]) {
+  assert.ok(!allowed.has(privateSource), `brand source/private paths remain outside public admission: ${privateSource}`);
+}
 for (const [, asset] of menuStyle.matchAll(/url\(['"]([^'"]+)['"]\)/g)) {
   assert.ok(menuSources.has(asset), `menu art must reuse a verified shipped source: ${asset}`);
   assert.ok(statSync(path.join(root, asset.slice(1))).isFile(), `menu art is missing: ${asset}`);

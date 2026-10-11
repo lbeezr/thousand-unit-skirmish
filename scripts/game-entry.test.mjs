@@ -41,8 +41,13 @@ test('New Game follows the published AI capability through refresh while Resume 
   assert.equal(new URL(f.navigations.at(-1)).searchParams.get('resume'), '1');
   f.win.close();
 });
-async function fixture({ url = 'http://game.test/', stored = {}, handler } = {}) {
+async function fixture({ url = 'http://game.test/', stored = {}, handler, prepare } = {}) {
   const dom = new JSDOM(html, { url }), win = dom.window;
+  // JSDOM does not lay out controls; ordinary entry fixtures model visible buttons.
+  for (const button of win.document.querySelectorAll('#game-menu button')) {
+    button.getBoundingClientRect = () => new win.DOMRect(24, 24, 240, 64);
+  }
+  prepare?.(win);
   for (const [key, value] of Object.entries(stored)) win.sessionStorage.setItem(key, value);
   const requests = [], navigations = [], loaded = [];
   for (const dialog of win.document.querySelectorAll('dialog')) {
@@ -76,6 +81,28 @@ test('a fresh profile never loads the renderer or joins the shared battlefield',
   assert.deepEqual(f.requests.map(row => row.path), ['/api/rooms/status']);
   assert.equal(f.node('menu-resume').hidden, true);
   assert.equal(f.win.document.activeElement, f.node('menu-new-game'));
+});
+
+test('initial keyboard focus stays at the document when the ready action is below the viewport', async () => {
+  const f = await fixture({ prepare: win => {
+    win.document.getElementById('menu-new-game').getBoundingClientRect = () => new win.DOMRect(24, win.innerHeight - 10, 240, 64);
+  } });
+  assert.equal(f.win.document.activeElement, f.win.document.body);
+  assert.equal(f.win.document.querySelector('#game-menu a').getAttribute('href'), '#menu-play');
+  f.win.close();
+});
+
+test('an unavailable service does not focus an off-screen Settings fallback or steal an existing focus', async () => {
+  for (const retainFocus of [false, true]) {
+    const f = await fixture({ handler: () => json({ error: 'Temporarily unavailable' }, 503), prepare: win => {
+      win.document.getElementById('menu-settings').getBoundingClientRect = () => new win.DOMRect(24, win.innerHeight + 100, 240, 64);
+      if (retainFocus) win.document.querySelector('#game-menu a').focus();
+    } });
+    assert.equal(f.win.document.activeElement, retainFocus ? f.win.document.querySelector('#game-menu a') : f.win.document.body);
+    assert.equal(f.node('menu-new-game').disabled, true);
+    assert.match(f.node('game-menu-status').textContent, /unavailable/i);
+    f.win.close();
+  }
 });
 
 test('stale profiles retain saved bytes and hide unconfirmed Resume without joining', async () => {

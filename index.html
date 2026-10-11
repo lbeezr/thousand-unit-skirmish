@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#101713" />
-    <title>Thousand Unit Skirmish</title>
+    <meta name="theme-color" content="#102c27" />
+    <meta name="description" content="Enter Vaelora, a painterly fantasy world of settlements and strategy. Play solo, invite a friend, or shape a battlefield in Map Studio." />
+    <title>Vaelora — A living world. Yours to command.</title>
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./src/room-lobby.css" />
     <link rel="stylesheet" href="./src/game-menu.css" />
@@ -40,22 +41,57 @@
   </head>
   <body>
     <main id="game-menu" aria-labelledby="game-menu-title">
-      <div class="game-menu-brand"><div class="eyebrow">FIELD COMMAND · FRONTIER</div><h1 id="game-menu-title">Thousand Unit<br>Skirmish</h1><p>Gather. Build. Command.</p></div>
-      <section class="game-menu-actions" aria-label="Main menu">
-        <button id="menu-new-game" data-create-game="pve" type="button" disabled><strong>New Game</strong><span>Checking Play vs AI availability…</span></button>
-        <button id="menu-practice" data-create-game="practice" type="button" disabled><strong>Practice</strong><span>All maps, including labs · one player, no AI commander</span></button>
-        <details id="practice-mode-setup" hidden><summary>Practice rules</summary>
-          <p data-map></p><label>Victory mode<select id="practice-match-mode" aria-describedby="practice-mode-rule"></select></label>
-          <p id="practice-mode-rule" data-rule></p>
-          <p>Authored Rules keeps lab map access. During play, map choices keep the selected rules; return to Main Menu to choose another mode.</p>
-        </details>
-        <button id="menu-create-room" data-create-game="pvp" type="button" disabled><strong>Create Room</strong><span>Invite a friend · Frontier 1v1 pregame lobby</span></button>
-        <button id="menu-join" type="button" disabled><strong>Join Room</strong><span>Use a room code or invite link</span></button>
-        <button id="menu-resume" type="button" hidden><strong>Resume</strong><span>Return to your saved player session</span></button>
-        <div class="game-menu-tools"><button id="menu-studio" data-create-game="studio" type="button" disabled>Map Studio</button><button id="menu-settings" type="button">Settings</button></div>
-        <p id="game-menu-status" role="status" aria-live="polite"></p>
+      <a class="game-menu-skip" href="#menu-play">Skip to play</a>
+      <header class="game-menu-header">
+        <a class="game-menu-wordmark" href="#game-menu" aria-label="Vaelora home"><b aria-hidden="true">V</b><span>Vaelora</span></a>
+        <nav aria-label="Vaelora"><a class="game-menu-play-link" href="#menu-play">Play</a><a href="#menu-world">The world</a><a href="#menu-guide">Field guide</a></nav>
+        <span class="game-menu-development">In development</span>
+      </header>
+      <div class="game-menu-hero">
+        <div class="game-menu-landscape" aria-hidden="true"></div>
+        <div class="game-menu-brand">
+          <p class="game-menu-kicker">A world of settlements &amp; strategy</p>
+          <h1 id="game-menu-title">Vaelora</h1>
+          <div class="game-menu-rule" aria-hidden="true">◇</div>
+          <p class="game-menu-promise">A living world.<br> Yours to command.</p>
+          <p class="game-menu-art-caption">Bellweather · World concept art</p>
+        </div>
+        <section id="menu-play" class="game-menu-launcher" aria-labelledby="menu-play-title" tabindex="-1">
+          <div class="game-menu-frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <div class="game-menu-foliage game-menu-foliage-top" aria-hidden="true"></div>
+          <div class="game-menu-foliage game-menu-foliage-bottom" aria-hidden="true"></div>
+          <div class="game-menu-launcher-heading"><p class="game-menu-kicker">Your next chapter</p><h2 id="menu-play-title">Make your<br> next move.</h2><p>Raise a settlement. Command your army.<br>Find your own way through Vaelora.</p></div>
+          <div class="game-menu-actions" aria-label="Main menu">
+            <button id="menu-resume" type="button" hidden><strong>Resume</strong><span>Return to your saved player session</span></button>
+            <button id="menu-new-game" data-create-game="pve" type="button" disabled><strong>New Game</strong><span>Checking Play vs AI availability…</span></button>
+            <button id="menu-practice" data-create-game="practice" type="button" disabled><strong>Practice</strong><span>All maps, including labs · one player, no AI commander</span></button>
+            <details id="practice-mode-setup" hidden><summary>Practice rules</summary>
+              <p data-map></p><label>Victory mode<select id="practice-match-mode" aria-describedby="practice-mode-rule"></select></label>
+              <p id="practice-mode-rule" data-rule></p>
+              <p>Authored Rules keeps lab map access. During play, map choices keep the selected rules; return to Main Menu to choose another mode.</p>
+            </details>
+            <button id="menu-create-room" data-create-game="pvp" type="button" disabled><strong>Create Room</strong><span>Invite a friend · Frontier 1v1 pregame lobby</span></button>
+            <button id="menu-join" type="button" disabled><strong>Join Room</strong><span>Use a room code or invite link</span></button>
+            <div class="game-menu-tools"><button id="menu-studio" data-create-game="studio" type="button" disabled>Map Studio <i aria-hidden="true">↗</i></button><button id="menu-settings" type="button">Settings <i aria-hidden="true">↗</i></button></div>
+            <p id="game-menu-status" role="status" aria-live="polite"></p>
+          </div>
+          <noscript><p>Enable JavaScript to create or join a game. You can still explore the world and field guide below.</p></noscript>
+        </section>
+      </div>
+      <section id="menu-world" class="game-menu-world" aria-labelledby="menu-world-title" tabindex="-1">
+        <div class="game-menu-section-heading"><div><p class="game-menu-kicker">From the atlas</p><h2 id="menu-world-title">Ordinary lives.<br>Extraordinary ground.</h2></div><p>Orchards and old powers. Shaded courts and silent forests. Discover the places people have made their own.</p></div>
+        <div class="game-menu-regions">
+          <article><span class="game-menu-region-number" aria-hidden="true">01 /</span><h3>Bellweather</h3><p>Orchards, river crossings and towns built around the work of everyday life.</p><details class="game-menu-region-note"><summary>Explore Bellweather</summary><p>Broad oaks, pear trees, barley fields and sheep pasture give this country its generous character. Its colors are sage, butter yellow and cream.</p></details></article>
+          <article><span class="game-menu-region-number" aria-hidden="true">02 /</span><h3>The Underbough</h3><p>A woodland of exposed roots and close paths. Life makes room among the trees.</p><details class="game-menu-region-note"><summary>Explore the Underbough</summary><p>Exposed roots, brambles, fungi and moss shape this close woodland. Burgundy and copper-orange distinguish it from the deeper canopy of Vesperra.</p></details></article>
+          <article><span class="game-menu-region-number" aria-hidden="true">03 /</span><h3>The Pale Meridian</h3><p>Cold plateaus, long winter nights and an astronomical inheritance kept close to warm communal rooms.</p><details class="game-menu-region-note"><summary>Explore the Meridian</summary><p>Hardy plants and shaggy pack animals inhabit a cold northern plateau. Long winter nights favor observation; long summer days also shape work and rest.</p></details></article>
+        </div>
+        <a class="game-menu-atlas-link" href="https://github.com/lbeezr/thousand-unit-skirmish/blob/main/docs/lore/README.md" target="_blank" rel="noopener noreferrer">A larger world awaits · Open the lore atlas <span aria-hidden="true">↗</span><span class="game-menu-sr-only"> (opens in a new tab)</span></a>
       </section>
-      <p class="game-menu-footer">Two opposing seats · Frontier faction</p>
+      <section id="menu-guide" class="game-menu-guide" aria-labelledby="menu-guide-title" tabindex="-1">
+        <div><p class="game-menu-kicker">Field guide</p><h2 id="menu-guide-title">Every army begins<br>with a settlement.</h2><a href="https://github.com/lbeezr/thousand-unit-skirmish/blob/main/docs/playing.md" target="_blank" rel="noopener noreferrer">Read the player guide <span aria-hidden="true">↗</span><span class="game-menu-sr-only"> (opens in a new tab)</span></a></div>
+        <ol><li><h3>Gather</h3><p>Put your Workers to work. Food and wood keep a settlement growing.</p></li><li><h3>Build</h3><p>Raise Houses, train units and choose where to expand.</p></li><li><h3>Command</h3><p>Scout the ground, move your army and fight for the match objective.</p></li></ol>
+      </section>
+      <footer class="game-menu-footer"><span class="game-menu-footer-name">Vaelora</span><p>Solo play · Friend rooms · Map Studio</p><a href="#menu-play">Back to play <span aria-hidden="true">↑</span></a></footer>
     </main>
     <dialog id="menu-join-dialog" class="game-menu-dialog" aria-labelledby="menu-join-title"><form>
       <h2 id="menu-join-title">Join Room</h2><label>Room code or invite link<input type="text" autocomplete="off" spellcheck="false" required></label>
@@ -78,7 +114,7 @@
           <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
           <div>
             <div class="eyebrow">FIELD COMMAND <span>01</span></div>
-            <h1>Thousand Unit Skirmish</h1>
+            <h1>Vaelora</h1>
           </div>
         </div>
         <div class="topbar-center"><span id="connection-dot" class="live-dot waiting"></span><span id="network-status">CONNECTING</span><span class="topbar-divider">/</span></div>
