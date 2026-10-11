@@ -106,8 +106,21 @@ even for an unchanged map, aborting all pending source downloads and clearing
 the active bindings. The follow-up preserves audio on an unchanged-map welcome;
 actual map changes still reset it. This is independently justified by the
 reconnect path, but the third receipt alone does not distinguish a reconnect
-abort from the loader's 30-second timeout. Bounded, public-path-only network
-timings in the next run will retain that distinction. Playback remains unverified.
+abort from the loader's 30-second timeout. The reconnect correction passes 355
+audio/recovery tests, both type projects and independent review.
+
+[The fourth run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38154650347)
+at `7a881513` contains that correction. Its
+[download timings](qa-evidence/interaction-audio-2026-10-11/reconnect-cloud/interaction-audio.json)
+show one default-pack attempt: source transfers complete in 2–13 ms, but the
+next batch starts 8–10 seconds later. The load still times out; the observation
+was already 3.27 seconds old. The clean pack digest is
+`sha256:8596db541b0bb68f285ba9484db571f73c4fe9d75dd55ff1e899fbb2252703b1`.
+The next adapter revision removes the per-frame debugger breakpoint in favor
+of an on-demand, read-only snapshot under the existing capture-diagnostics flag.
+This tests possible instrumentation overhead without extending audio deadlines
+or changing gameplay. Playback remains unverified. The user confirms that the
+staging address above is their intended game environment.
 
 The staging HTTP check passed source `b4ad36cf`, public gameplay/readiness and
 protected health, default v3 manifest/source verification (119 recordings),
@@ -223,7 +236,7 @@ The `interaction-audio` case in the existing Ordinary game capture workflow
 starts from New Game on Tiny Terraced Vale, clicks an ordinary Worker and a
 disclosed wood target, selects the Town Center, and pays for/completes/selects
 a Barracks. It uses the existing packed-release/cloud capability runner.
-Read-only post-render diagnostics observe the actual audio decisions. A parallel
+On-demand read-only diagnostics observe the actual audio decisions. A parallel
 tap preserves the normal speaker connection and records four short WebM/Opus
 outputs, screenshots, source hashes and observed final-output levels. Native
 decode/start hashes distinguish the intended recording from synthesized fallback.

@@ -6,7 +6,6 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { DEFAULT_GAME_AUDIO_REFERENCE } from '../src/audio-shipped-catalog.mjs';
 import { validateCaptureContext } from './renderer-capture-context.mjs';
-import { postRenderLine } from './renderer-worker-animation-scenario.mjs';
 import { clickNovicePoint } from './renderer-qualification-novice.mjs';
 import { findTreePixel } from './renderer-tree-targeting-scenario.mjs';
 
@@ -23,7 +22,7 @@ export const interactionKeys = Object.freeze([
 // native decoding/playback; do not fabricate speech, unlock audio or change mix.
 // Only this disposable page is instrumented. No microphone or device capture.
 export function installInteractionAudioProbe() {
-  const probe = window.__rtsInteractionAudio = { last: null, starts: [], faults: [], recording: null };
+  const probe = window.__rtsInteractionAudio = { starts: [], faults: [], recording: null };
   const decoded = new WeakMap(), tapped = new WeakSet();
   const nativeDecode = BaseAudioContext.prototype.decodeAudioData;
   BaseAudioContext.prototype.decodeAudioData = function (bytes, ...callbacks) {
@@ -83,31 +82,6 @@ export function installInteractionAudioProbe() {
   probe.finish = async () => { const result = await probe.recording.done; probe.recording = null; return result; };
 }
 
-// Non-pausing read-only observation in the real Main module after rendering.
-export function observeInteractionAudio() {
-  const probe = window.__rtsInteractionAudio;
-  if (!probe) return false;
-  try {
-  const rect = renderer.domElement.getBoundingClientRect();
-  const project = (x, z, lift = 0) => {
-    const p = new THREE.Vector3(x, groundHeight(x, z) + lift, z).project(camera);
-    const point = { x: rect.left + (p.x + 1) * rect.width / 2, y: rect.top + (1 - p.y) * rect.height / 2 };
-    return Math.abs(p.z) < 1 && document.elementFromPoint(point.x, point.y) === renderer.domElement ? point : null;
-  };
-  probe.last = { observedAt: performance.now(), mapId: mapDefinition?.id, team: localTeam, status: audio.getStatus(),
-    inspector: audio.getInspector(), settings: audio.getSettings(),
-    workers: units.filter(u => u?.team === localTeam && u.kind === 'worker' && u.hp > 0).slice(0, 4)
-      .map(u => ({ id: u.id, selected: selected.has(u.id), point: project(u.renderX, u.renderZ, .65) })),
-    buildings: latestBuildings.filter(b => b.team === localTeam && b.hp > 0 && ['town-center', 'barracks'].includes(b.type))
-      .map(b => ({ id: b.id, type: b.type, complete: b.complete, selected: b.id === selectedBuildingId, point: project(b.x, b.z) })),
-  };
-  } catch (error) {
-    const fault = `observation-${error?.name || 'Error'}`;
-    if (!probe.faults.includes(fault)) probe.faults.push(fault);
-  }
-  return false;
-}
-
 export function validateAudioObservation(record, allowedHashes) {
   assert.equal(record.mimeType, 'audio/webm;codecs=opus');
   assert.ok(typeof record.base64 === 'string' && record.base64.length < 1000000);
@@ -156,38 +130,34 @@ export async function run(value) {
   });
   let stage = 'source';
   try {
-    const main = await (await fetch(`${origin}/src/main.js`)).text();
     const reference = DEFAULT_GAME_AUDIO_REFERENCE;
     const manifestBytes = Buffer.from(await (await fetch(`${origin}/assets/audio/runtime/${reference.packId}/${reference.version}/manifest.json`)).arrayBuffer());
     assert.equal(hash(manifestBytes), DEFAULT_GAME_AUDIO_REFERENCE.sha256);
     const manifest = JSON.parse(manifestBytes), bindings = manifest.pack.profiles.find(p => p.id === 'interactions').bindings;
     await page.cdp.call('Page.addScriptToEvaluateOnNewDocument', { source: `(${installInteractionAudioProbe.toString()})()` });
-    await page.cdp.call('Debugger.enable');
-    await page.cdp.call('Debugger.setBreakpointByUrl', { url: `${origin}/src/main.js`, lineNumber: postRenderLine(main),
-      condition: `(${observeInteractionAudio.toString()})()` });
     stage = 'ordinary-entry';
     await page.cdp.call('Page.navigate', { url: origin + '/' });
     await page.wait('document.documentElement?.dataset.entry === "menu" && document.querySelector("#menu-new-game")?.disabled === false', 'ordinary New Game');
     stage = 'new-game-click';
     await control(page, '#menu-new-game');
     stage = 'opening-workers';
-    await page.wait(`window.__rtsInteractionAudio?.last?.mapId === '${mapId}' && window.__rtsInteractionAudio.last.workers.some(w => w.point)`, 'normal opening Workers');
+    await page.wait(`window.__rtsInteractionAudioSnapshot?.()?.mapId === '${mapId}' && window.__rtsInteractionAudioSnapshot().workers.some(w => w.point)`, 'normal opening Workers');
     stage = 'default-audio-ready';
-    await page.wait('window.__rtsInteractionAudio.last.inspector.bindings.some(b => b.key === "unit.worker.gather.wood" && b.sources.every(s => s.available))', 'default recordings ready', 35000);
-    const state = () => page.cdp.evaluate('window.__rtsInteractionAudio.last');
+    await page.wait('window.__rtsInteractionAudioSnapshot().inspector.bindings.some(b => b.key === "unit.worker.gather.wood" && b.sources.every(s => s.available))', 'default recordings ready', 35000);
+    const state = () => page.cdp.evaluate('window.__rtsInteractionAudioSnapshot()');
     // The first ordinary battlefield gesture unlocks the game audio context.
     // Record a subsequent genuine click after its normal selection cooldown.
     let worker = (await state()).workers.find(w => w.point);
     await clickNovicePoint(page, worker.point);
     stage = 'gesture-unlock';
-    await page.wait('window.__rtsInteractionAudio.last.status === "running" && window.__rtsInteractionAudio.stream', 'gesture-unlocked native output');
+    await page.wait('window.__rtsInteractionAudioSnapshot().status === "running" && window.__rtsInteractionAudio.stream', 'gesture-unlocked native output');
     await page.cdp.evaluate('new Promise(resolve => setTimeout(resolve, 1500))');
     const recordClick = async (key, checkpoint, action) => {
       stage = checkpoint;
       const before = (await state()).inspector.decisions.filter(d => d.key === key && d.outcome === 'sample scheduled').length;
       await page.cdp.evaluate('window.__rtsInteractionAudio.begin()');
       await action();
-      await page.wait(`window.__rtsInteractionAudio.last.inspector.decisions.filter(d => d.key === ${JSON.stringify(key)} && d.outcome === 'sample scheduled').length > ${before}`, 'ordinary click schedules its exact recording');
+      await page.wait(`window.__rtsInteractionAudioSnapshot().inspector.decisions.filter(d => d.key === ${JSON.stringify(key)} && d.outcome === 'sample scheduled').length > ${before}`, 'ordinary click schedules its exact recording');
       await capture({ page, mapId, checkpoint });
       const output = await page.cdp.evaluate('window.__rtsInteractionAudio.finish()');
       const allowed = bindings[key].variants.map(v => manifest.downloads[v.sourceId].sha256);
@@ -227,7 +197,7 @@ export async function run(value) {
     }
     assert.ok(site, 'an ordinary valid Barracks site must be found');
     await clickNovicePoint(page, site);
-    const barracks = await page.wait('window.__rtsInteractionAudio.last.buildings.find(b => b.type === "barracks" && b.complete && b.point)', 'paid Barracks completes', 60000);
+    const barracks = await page.wait('window.__rtsInteractionAudioSnapshot().buildings.find(b => b.type === "barracks" && b.complete && b.point)', 'paid Barracks completes', 60000);
     await recordClick('building.barracks.select', 'barracks-click', () => clickNovicePoint(page, barracks.point));
     assert.deepEqual(report.recordings.map(r => r.key).sort(), [...interactionKeys].sort());
     report.status = 'captured-needs-listening';
@@ -238,7 +208,7 @@ export async function run(value) {
     report.issues.push({ stage, code: 'interaction-audio-capture-failed', reason, errorType: error?.name || 'Error' });
     try {
       report.diagnostic = await page.cdp.evaluate(`(() => {
-        const probe = window.__rtsInteractionAudio, last = probe?.last;
+        const probe = window.__rtsInteractionAudio, last = window.__rtsInteractionAudioSnapshot?.();
         return { entry: document.documentElement?.dataset.entry ?? null,
           boot: document.documentElement?.dataset.boot ?? null,
           viewport: { width: innerWidth, height: innerHeight },
