@@ -3,7 +3,7 @@ import test from 'node:test';
 import { readFile } from 'node:fs/promises';
 import { createHash, webcrypto } from 'node:crypto';
 import { runInNewContext } from 'node:vm';
-import { installInteractionAudioProbe, validateAudioObservation, interactionKeys } from './renderer-interaction-audio-scenario.mjs';
+import { installInteractionAudioProbe, validateAudioObservation, interactionKeys, interactionTargetPoint } from './renderer-interaction-audio-scenario.mjs';
 import { loadCaptureCases } from './renderer-feature-capture.mjs';
 import { DEFAULT_GAME_AUDIO_REFERENCE } from '../src/audio-shipped-catalog.mjs';
 
@@ -12,8 +12,8 @@ const sourceSha256 = 'a'.repeat(64);
 function output() {
   const bytes = Buffer.alloc(2048); Buffer.from('1a45dfa3', 'hex').copy(bytes);
   return { base64: bytes.toString('base64'), mimeType: 'audio/webm;codecs=opus', faults: [],
-    peak: .2, rms: .02, elapsedMs: 3500, meteredSamples: 4096,
-    starts: [{ sha256: sourceSha256, duration: 1.3 }] };
+    peak: .2, rms: .02, beganAt: 0, endedAt: 3500, elapsedMs: 3500, meteredSamples: 4096,
+    starts: [{ sha256: sourceSha256, time: 500, duration: 1.3 }] };
 }
 test('output receipt requires native media, actual signal and one matching recording start', () => {
   const valid = validateAudioObservation(output(), [sourceSha256]);
@@ -26,6 +26,7 @@ test('output receipt requires native media, actual signal and one matching recor
     { starts: [] }, { starts: [{ sha256: 'b'.repeat(64), duration: 1 }] },
     { starts: [...output().starts, ...output().starts] },
     { starts: [{ sha256: sourceSha256, duration: 0 }] },
+    ...[-100, 3000, 4000].map(time => ({ starts: [{ ...output().starts[0], time }] })),
   ]) assert.throws(() => validateAudioObservation({ ...output(), ...changed }, [sourceSha256]));
 });
 test('ordinary audio adapter is registered without executing browser or provider work on import', async () => {
@@ -35,6 +36,23 @@ test('ordinary audio adapter is registered without executing browser or provider
   const manifest = JSON.parse(await readFile(new URL(`../assets/audio/runtime/${ref.packId}/${ref.version}/manifest.json`, import.meta.url)));
   const bindings = manifest.pack.profiles.find(p => p.id === 'interactions').bindings;
   for (const key of interactionKeys) assert.ok(bindings[key]?.variants.every(v => manifest.downloads[v.sourceId]));
+});
+test('ordinary target observation skips overlapping units and requires the exact visible building', () => {
+  const center = { x: 100, y: 100 };
+  const window = {
+    __rtsInteractionAudioSnapshot: () => ({ workers: [{ id: 4, point: center }],
+      buildings: [{ id: 10, point: center, bounds: { left: 80, right: 120, top: 60, bottom: 110 } }] }),
+    __rtsInteractionAudioPick: (x, y) => y < 80 ? { kind: 'building', id: 10 } : { kind: 'unit', id: 4 },
+  };
+  const find = (kind, id) => runInNewContext(`(${interactionTargetPoint.toString()})(${JSON.stringify(kind)}, ${id})`, { window });
+  assert.equal(find('unit', 4), center);
+  const roof = find('building', 10);
+  assert.ok(roof.y < 80 && roof.x > 80 && roof.x < 120);
+  assert.equal(find('building', 11), null);
+  window.__rtsInteractionAudioPick = () => ({ kind: 'building', id: 12 });
+  assert.equal(find('building', 10), null, 'a nearby different building cannot satisfy the click');
+  window.__rtsInteractionAudioPick = () => null;
+  assert.equal(find('building', 10), null, 'covered or offscreen art cannot satisfy the click');
 });
 test('page probe preserves native decoding, start and speaker connection while recording a parallel output', async () => {
   const connections = [], starts = [], intervals = [], timers = [];
@@ -46,6 +64,7 @@ test('page probe preserves native decoding, start and speaker connection while r
   class NativeSource extends NativeNode { start(...args) { starts.push(args); } }
   class NativeContext {
     destination = {};
+    currentTime = 10;
     decodeAudioData() { nativeBuffer = { duration: 1.3 }; return Promise.resolve(nativeBuffer); }
     createMediaStreamDestination() { return { stream: {} }; }
     createAnalyser() { return { getFloatTimeDomainData(data) { data.fill(.1); } }; }

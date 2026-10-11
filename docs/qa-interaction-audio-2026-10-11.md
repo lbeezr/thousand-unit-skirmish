@@ -138,6 +138,21 @@ and actual HTTP serving of all 119 default sources and both worker modules pass.
 These CPU/HTTP results do not establish native-worker playback; that cloud run
 remains the next acceptance step.
 
+[The sixth run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38155874639)
+at `8e4e54a9` verifies native worker loading in the actual packed game: all 85
+default bindings become available and the audio context reaches `running` after
+an ordinary gesture. Its clean release digest is
+`sha256:248705f96c62556f07ffaf0b4967a13b1b6e3d965147176131d471292a083a05`.
+The [receipt](qa-evidence/interaction-audio-2026-10-11/worker-cloud/interaction-audio.json)
+then fails at Town Center selection. The
+[frame](qa-evidence/interaction-audio-2026-10-11/worker-cloud/failure-town-center-click.png)
+shows Infantry selected instead: an overlapping unit wins the normal picker at
+the building's projected ground center. The next adapter scans rendered building
+bounds with a read-only observation of the same unit-first picker, without
+advancing stack selection. Loading is now verified; no recording or listening
+pass is inferred. Worker network requests are outside the page CDP session, so
+the empty page-download list does not measure their transfers.
+
 The staging HTTP check passed source `b4ad36cf`, public gameplay/readiness and
 protected health, default v3 manifest/source verification (119 recordings),
 136 recursively discovered client modules, and private source/catalog rejection.

@@ -38,7 +38,9 @@ export function installInteractionAudioProbe() {
   AudioBufferSourceNode.prototype.start = function (...args) {
     const result = nativeStart.apply(this, args);
     const sha256 = decoded.get(this.buffer);
-    if (sha256 && probe.starts.length < 128) probe.starts.push({ sha256, time: performance.now(), duration: this.buffer.duration });
+    if (sha256 && probe.starts.length < 128) probe.starts.push({ sha256,
+      time: performance.now() + Math.max(0, (Number(args[0]) || 0) - (this.context.currentTime || 0)) * 1000,
+      duration: this.buffer.duration });
     return result;
   };
   const nativeConnect = AudioNode.prototype.connect;
@@ -74,9 +76,11 @@ export function installInteractionAudioProbe() {
       let binary = ''; for (const byte of bytes) binary += String.fromCharCode(byte);
       finish({ base64: btoa(binary), mimeType: recorder.mimeType, peak: record.peak,
         rms: Math.sqrt(record.energy / Math.max(1, record.samples)), meteredSamples: record.samples,
-        elapsedMs: performance.now() - record.began, starts: probe.starts.slice(record.from), faults: [...probe.faults] });
+        beganAt: record.began, endedAt: record.ended, elapsedMs: record.ended - record.began,
+        starts: probe.starts.slice(record.from).filter(start => start.time >= record.began && start.time <= record.ended),
+        faults: [...probe.faults] });
     };
-    recorder.start(); setTimeout(() => recorder.stop(), 3500);
+    recorder.start(); setTimeout(() => { record.ended = performance.now(); recorder.stop(); }, 3500);
     return true;
   };
   probe.finish = async () => { const result = await probe.recording.done; probe.recording = null; return result; };
@@ -89,11 +93,16 @@ export function validateAudioObservation(record, allowedHashes) {
   assert.ok(bytes.length > 1000 && bytes.subarray(0, 4).equals(Buffer.from('1a45dfa3', 'hex')), 'native WebM output is required');
   assert.deepEqual(record.faults, []);
   assert.ok(record.elapsedMs >= 3000 && record.elapsedMs < 10000, 'bounded real output duration required');
+  assert.ok(Number.isFinite(record.beganAt) && Number.isFinite(record.endedAt)
+    && Math.abs(record.endedAt - record.beganAt - record.elapsedMs) < 1, 'recording interval must be explicit');
   assert.ok(record.meteredSamples >= 2048 && Number.isFinite(record.peak) && record.peak > .001 && record.peak < 1
     && Number.isFinite(record.rms) && record.rms > .0001 && record.rms <= record.peak + 1e-6, 'nonzero bounded metered output required');
   const matching = record.starts.filter(sample => allowedHashes.includes(sample.sha256));
   assert.equal(matching.length, 1, 'one native start of the expected hash-verified recording is required');
   assert.ok(matching[0].duration > .2 && matching[0].duration < 5);
+  assert.ok(matching[0].time >= record.beganAt
+    && matching[0].time + matching[0].duration * 1000 <= record.endedAt,
+  'the entire expected recording must play within the captured interval');
   return { bytes, sha256: hash(bytes), sourceSha256: matching[0].sha256 };
 }
 
@@ -102,6 +111,26 @@ async function control(page, selector) {
     if (!e || e.disabled || e.hidden) return null; e.scrollIntoView({block:'nearest'});
     const r = e.getBoundingClientRect(); return r.width && r.height ? {x:r.x+r.width/2,y:r.y+r.height/2} : null; })()`);
   await clickNovicePoint(page, point);
+}
+
+// Observe the same unit-first picker used by a normal left click. A building's
+// projected ground center can be occupied by a nearby unit; scan its actual
+// rendered bounds without changing selection or advancing stacked-unit picks.
+export function interactionTargetPoint(kind, id) {
+  const state = window.__rtsInteractionAudioSnapshot();
+  const target = (kind === 'unit' ? state.workers : state.buildings).find(row => row.id === id);
+  if (!target) return null;
+  const candidates = target.point ? [target.point] : [];
+  if (target.bounds) {
+    const { left, right, top, bottom } = target.bounds;
+    for (let row = 0; row < 8; row++) for (let col = 0; col < 9; col++) {
+      candidates.push({ x: left + (right - left) * (col + .5) / 9, y: top + (bottom - top) * (row + .5) / 8 });
+    }
+  }
+  return candidates.find(point => {
+    const pick = window.__rtsInteractionAudioPick(point.x, point.y);
+    return pick?.kind === kind && pick.id === id;
+  }) ?? null;
 }
 
 export async function run(value) {
@@ -145,10 +174,15 @@ export async function run(value) {
     stage = 'default-audio-ready';
     await page.wait('window.__rtsInteractionAudioSnapshot().inspector.bindings.some(b => b.key === "unit.worker.gather.wood" && b.sources.every(s => s.available))', 'default recordings ready', 35000);
     const state = () => page.cdp.evaluate('window.__rtsInteractionAudioSnapshot()');
+    const targetPoint = async (kind, id) => {
+      const point = await page.cdp.evaluate(`(${interactionTargetPoint.toString()})(${JSON.stringify(kind)}, ${id})`);
+      assert.ok(point, 'the ordinary picker must identify a visible target pixel');
+      return point;
+    };
     // The first ordinary battlefield gesture unlocks the game audio context.
     // Record a subsequent genuine click after its normal selection cooldown.
     let worker = (await state()).workers.find(w => w.point);
-    await clickNovicePoint(page, worker.point);
+    await clickNovicePoint(page, await targetPoint('unit', worker.id));
     stage = 'gesture-unlock';
     await page.wait('window.__rtsInteractionAudioSnapshot().status === "running" && window.__rtsInteractionAudio.stream', 'gesture-unlocked native output');
     await page.cdp.evaluate('new Promise(resolve => setTimeout(resolve, 1500))');
@@ -171,10 +205,12 @@ export async function run(value) {
     // Clicking the Town Center clears the first Worker selection legitimately.
     const town = (await state()).buildings.find(b => b.type === 'town-center' && b.complete && b.point);
     assert.ok(town, 'ordinary opening Town Center must be visible');
-    await recordClick('building.town-center.select', 'town-center-click', () => clickNovicePoint(page, town.point));
+    const townPoint = await targetPoint('building', town.id);
+    await recordClick('building.town-center.select', 'town-center-click', () => clickNovicePoint(page, townPoint));
     worker = (await state()).workers.find(w => w.id === worker.id && w.point);
     assert.ok(worker);
-    await recordClick('unit.worker.select', 'worker-click', () => clickNovicePoint(page, worker.point));
+    const workerPoint = await targetPoint('unit', worker.id);
+    await recordClick('unit.worker.select', 'worker-click', () => clickNovicePoint(page, workerPoint));
     const trees = await page.cdp.evaluate('window.__rtsTreeTargetCapture.snapshot()');
     const target = await findTreePixel(page, trees, 'node') || await findTreePixel(page, trees, 'forest');
     assert.ok(target, 'a disclosed ordinary wood target must be visible');
@@ -198,7 +234,8 @@ export async function run(value) {
     assert.ok(site, 'an ordinary valid Barracks site must be found');
     await clickNovicePoint(page, site);
     const barracks = await page.wait('window.__rtsInteractionAudioSnapshot().buildings.find(b => b.type === "barracks" && b.complete && b.point)', 'paid Barracks completes', 60000);
-    await recordClick('building.barracks.select', 'barracks-click', () => clickNovicePoint(page, barracks.point));
+    const barracksPoint = await targetPoint('building', barracks.id);
+    await recordClick('building.barracks.select', 'barracks-click', () => clickNovicePoint(page, barracksPoint));
     assert.deepEqual(report.recordings.map(r => r.key).sort(), [...interactionKeys].sort());
     report.status = 'captured-needs-listening';
   } catch (error) {
@@ -220,6 +257,8 @@ export async function run(value) {
           observationAgeMs: last ? performance.now() - last.observedAt : null,
           audioStatus: last?.status ?? null, packStatus: last?.inspector?.status ?? null,
           bindingCount: last?.inspector?.bindings?.length ?? 0,
+          decisions: last?.inspector?.decisions?.slice(-12) ?? [],
+          nativeStarts: probe?.starts?.slice(-12) ?? [],
           workers: last?.workers ?? [], buildings: last?.buildings ?? [] };
       })()`);
       // Entry may fail before a rendered game frame exists. Retain a raw
