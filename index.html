@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./src/client/hud/worker-hud.css" />
     <link rel="stylesheet" href="./src/client/hud/building-hud.css" />
     <link rel="stylesheet" href="./src/client/hud/unit-hud.css" />
+    <link rel="stylesheet" href="./src/client/hud/match-ui.css" />
     <script>
       window.reportPrototypeError = (message) => {
         window.clearTimeout(window.prototypeStartupTimeout);
@@ -217,6 +218,11 @@
               <div class="hud-identity-copy"><small data-building-role>Structure</small><strong class="hud-entity-name" data-building-name></strong><span class="hud-health"><span class="hud-health-track" aria-hidden="true"><span class="hud-hp-fill" data-building-hp-fill></span></span><span data-building-hp></span></span></div>
               <div class="building-state"><strong data-building-state></strong><small data-building-description-short></small></div>
             </div>
+            <div data-wildlife-identity hidden>
+              <span class="hud-portrait-fallback" aria-hidden="true"><img src="/assets/ui/icons/food.svg" alt=""></span>
+              <div class="hud-identity-copy"><small data-wildlife-role></small><strong class="hud-entity-name" data-wildlife-name></strong></div>
+              <div class="wildlife-summary" data-wildlife-summary></div>
+            </div>
             <div data-unit-identity hidden>
               <span class="hud-portrait-fallback" data-unit-fallback aria-hidden="true"></span>
               <div class="hud-identity-copy"><small data-unit-role></small><strong class="hud-entity-name" data-unit-name></strong><span class="hud-health"><span class="hud-health-track" aria-hidden="true"><span class="hud-hp-fill" data-unit-hp-fill></span></span><span data-unit-hp></span></span></div>
@@ -290,6 +296,7 @@
             <button type="button" data-context-proxy="clear-building-rally">Clear rally</button>
             <button type="button" class="contextual-icon-command" data-context-details data-context-panel="command"><img data-context-formation-icon src="/assets/ui/icons/actions/formation.svg" alt="" width="20" height="20" hidden><span data-context-details-label>Details / formation</span></button>
             <p data-unit-hint data-unit-only role="status" aria-live="polite" hidden></p>
+            <p data-wildlife-hint hidden></p>
           </div>
           <small id="context-action-reason" data-context-reason></small>
           <small data-context-research hidden></small>
@@ -629,8 +636,9 @@
           <div class="help-heading"><div><div class="eyebrow">FIELD GUIDE</div><h2>Controls</h2></div><button id="help-close" class="hud-panel-close" type="button" aria-label="Close controls">×</button></div>
           <p>Hold the arrow keys to move the camera. Tap Space to center your selection; middle drag or Space + drag pans. Scroll to zoom toward the pointer. Edge scroll is on by default and can be changed in Match Controls. Use the Center selection, Home base, and Fit map buttons on the battlefield.</p>
           <p>On the tactical map, left-click or drag to navigate the camera. Right-click to move selected units; hold Shift to queue another destination. You can order movement into unexplored ground.</p>
-          <p>Touch controls: select friendly units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource. Drag the tactical map to move the camera.</p>
-          <p>Gather food or wood: select workers, then right-click a resource, or use Orders → Target battlefield and tap it. Build a Barracks or Archery Range from Build &amp; train, then choose a clear site; the field hint explains why a spot is blocked.</p>
+          <p>Touch controls: select friendly units and use their selection dock. Workers have Gather, Move and Repair; military units and Skiffs have Target battlefield. Choose a command, then tap its target. Drag the tactical map to move the camera.</p>
+          <p>Gather resources: select Workers, choose Gather and target food, wood or available stone. Build opens their construction palette; choose a structure and a clear site. Select a completed producer to train its units, inspect its queue or research. The field hint explains blocked sites and unavailable actions.</p>
+          <p>Military orders: M toggles Attack move; P prepares Patrol; F prepares Follow. Right-click the destination or friendly leader. S stops; H holds position. Escape cancels a pending order before clearing selection. Choose a formation before the next Move, Attack move or Patrol order.</p>
             <div class="command-footnote"><span class="keycap">PAUSE + CLICK</span> Cycle stack <span class="footnote-sep">·</span> <span class="keycap">DOUBLE-CLICK</span> Select type<br><span class="keycap">SHIFT + DOUBLE-CLICK</span> Add type <span class="footnote-sep">·</span> <span class="keycap">SHIFT + RMB</span> Queue waypoint<br><span class="keycap">L→R DRAG</span> Enclosed <span class="footnote-sep">·</span> <span class="keycap">R→L DRAG</span> Crossing<br><span class="keycap">SHIFT + DRAG</span> Add selection <span class="footnote-sep">·</span> <span class="keycap">A</span> Select all</div>
         </aside>
       </main>

@@ -23,7 +23,10 @@ Buildings are staged at `9f76585c1d95fa65b30f270b007506296228ffa8` via
 Railway `5ae7146d-a47e-46bc-ae0d-e6e76ffed345`, with 190 focused checks,
 independent review, clean packaging and matching actual client response hashes:
 [receipt](qa-evidence/building-hud-2026-10-11/staging-receipt.json).
-The army/mixed/Skiff continuation and normal-game matrix are owned in the
+Army/mixed/Skiff PR646 merged at `3310f31c` with 196 focused checks and independent
+review. Remaining in-match surfaces and wildlife have 186 focused checks
+([receipt](qa-evidence/match-ui-2026-10-11/focused-checks.json)).
+The continuation and normal-game matrix are owned in the
 [HUD checkpoint](hud-controls-backlog.md#army-mixed-selection-and-skiffs--11-october-2026).
 Source, DOM and served-byte evidence do not claim rendered appearance; the
 hosted capture/sign-in route remains paused. The HUD owner retains appearance

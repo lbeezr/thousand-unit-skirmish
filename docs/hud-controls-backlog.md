@@ -20,8 +20,8 @@ The preserved comparisons remain the visual backing; there is no runtime preview
 | 1 — specimen reviewed | [Real-data component specimen](art-direction/hud-design-system-2026-10-11/component-specimen.html) compares 52px and 72px portrait framing, Worker/Build, Barracks/queue/shortage, army/mixed, empty and recovery contexts. [Bounded checks](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026) pass. | User chose the expressive 72px portrait for the Worker pilot. Study source is isolated in `src/studies/hud-component-specimen/`; game rules and runtime consumers are unchanged. |
 | 2 — Worker pilot accepted | Tokens and the new selection dock serve a real Worker: task, cargo, Build, Repair, Return and all other supported orders remain reachable. Selecting a different context clears Worker disclosures. | Agreed baseline; existing availability/focus contracts. New code in `src/client/hud/` with bounded existing DOM/style/binding edits; same owner retains package, delivery and game checks. |
 | 3 — Buildings staged | Selected producer owns products, live queue, research, rally and lifecycle actions; shortages, cancellation and rejection remain truthful. | Worker dock primitives and real economy/lifecycle bindings. Extend production components and their existing consumers; do not copy rules or introduce multi-producer execution. |
-| 4 — Army, mixed and Skiffs in progress | Composition, eligible actions, formations and all existing stance states remain readable; repeated snapshots, death and selection changes preserve focus and authority. | Existing selection/stance/command contracts. Extend the dock and its targeted regression checks. |
-| 5 — Coverage and reuse | Remaining buildings, boats, wildlife and lifecycle states use the same vocabulary; then apply proven foundations to pause/settings and other menus. | Inventory actual supported contexts first. Small consuming-surface slices; no speculative framework or theme system. |
+| 4 — Army, mixed and Skiffs merged | Composition, eligible actions, formations and all existing stance states remain readable; repeated snapshots, death and selection changes preserve focus and authority. | Existing selection/stance/command contracts. Extend the dock and its targeted regression checks. |
+| 5 — Remaining match surfaces in progress | Remaining buildings, boats, wildlife and lifecycle states use the same vocabulary; then apply proven foundations to pause/settings and other menus. | Inventory actual supported contexts first. Small consuming-surface slices; no speculative framework or theme system. |
 
 Each implementation slice must include focused checks, source/release/served
 identity and an ordinary-game observation at its relevant build. The HUD owner
@@ -108,12 +108,48 @@ activation, targeting/cancellation, glyph retention and header placement.
 Boundaries, both strict type checks, docs, syntax and whitespace pass.
 Independent review has no remaining actionable findings after correcting Attack
 move Escape cancellation and live Target tooltip restoration. [Focused receipt](qa-evidence/unit-hud-2026-10-11/focused-checks.json).
-This is source/DOM evidence; publication, clean packaging and staged identity are
-next, with ordinary-game appearance retained separately.
+This is source/DOM evidence. [PR646](https://github.com/lbeezr/thousand-unit-skirmish/pull/646)
+merged at `3310f31c1b6586fb478e498b22244786fd476600`; staged identity is next,
+with ordinary-game appearance retained separately.
 
-Remaining consuming surfaces are wildlife, match details/settings/help and
-broader menu consistency. They retain their own bounded outcomes; the new main
-menu portal is a separate active design and is not silently overwritten here.
+## Remaining match surfaces — 11 October 2026
+
+Owner: HUD redesign task `01a12b67-645a-7a33-8fb2-8e8979756ac1`.
+Base: merged units `3310f31c`; branch `codex/match-ui`.
+
+- **Outcome:** resource/population header, minimap, objectives, command details,
+  match settings, help and result panels adopt the same colors, type, square
+  controls, selected/unavailable states and focus treatment as the accepted dock.
+  The shared tokens now have one owner in `selection-hud.css`. Existing measured
+  positions, density/map preferences, alerts, input exclusions and handlers stay
+  in place; touch controls retain their 44px target minimums.
+- **Wildlife:** selected owned Sheep and visible carcasses get a 72px Food-symbol
+  identity and the authoritative remaining-food summary. Herd/Stop versus
+  nearest-idle-Worker harvest remains the actual existing eligibility boundary.
+  State, targeting, reconnect and selection transitions clear stale identity.
+  No fabricated HP, new art, ownership or command rule is introduced.
+- **Backing:** the [approved Obsidian component study](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026)
+  supplies panel/typography/action/recovery treatment; the admitted Food glyph
+  is explicitly a symbol fallback, not a new Sheep portrait. These are consuming
+  surfaces of the approved system. Help now describes local Worker Build/Gather,
+  selected producer controls and military command cancellation.
+- **Scope:** `match-ui.css`, presentation-only `wildlife-hud.mjs`, bounded HTML/
+  main consumers and exact admission. Independent review and focused existing
+  selection, layout, navigation and match-decision tests precede packaging and
+  identified staged delivery. HUD owner retains ordinary-game appearance at the
+  resulting build under the existing capture/sign-in pause.
+
+**Review-ready checkpoint:** 186 focused checks pass (184 in the combined run,
+then both new carcass cases after correcting invalid fixture disclosure data).
+Runtime boundaries, strict JS/Node types, docs, syntax, exact public admission
+and whitespace pass. Independent review has no remaining actionable findings
+following the touch-target specificity correction. [Focused receipt](qa-evidence/match-ui-2026-10-11/focused-checks.json).
+Publication, clean packaging and staged identity follow; normal-game appearance
+remains explicitly unverified.
+
+The front-door main menu portal and editing studios are separate product
+surfaces, outside this in-match HUD rollout. No studio or portal layout is
+changed by this slice.
 
 ## Worker pilot — 11 October 2026
 
