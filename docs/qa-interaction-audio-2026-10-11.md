@@ -11,6 +11,8 @@ Current acceptance: the user has confirmed villager selection, Wood Gather,
 Town Center and Barracks sounds on staging. All 119 default recordings are served
 and hash-verified at `3a68649d`. The remaining roster/building listening is open;
 the cloud case has two complete recordings but is not an overall pass.
+The resumed [remaining-roster verification](qa-roster-audio-2026-10-11.md)
+tracks full source transcription and bounded staging playback checks.
 
 ## Source and delivery identity
 

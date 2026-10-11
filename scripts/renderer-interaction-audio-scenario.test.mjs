@@ -6,6 +6,7 @@ import { runInNewContext } from 'node:vm';
 import { installInteractionAudioProbe, validateAudioObservation, interactionKeys, interactionTargetPoint } from './renderer-interaction-audio-scenario.mjs';
 import { loadCaptureCases } from './renderer-feature-capture.mjs';
 import { DEFAULT_GAME_AUDIO_REFERENCE } from '../src/audio-shipped-catalog.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 // These are receipt-contract tests, not a native decode or listening claim.
 const sourceSha256 = 'a'.repeat(64);
@@ -54,6 +55,49 @@ test('ordinary target observation skips overlapping units and requires the exact
   assert.equal(find('building', 10), null, 'a nearby different building cannot satisfy the click');
   window.__rtsInteractionAudioPick = () => null;
   assert.equal(find('building', 10), null, 'covered or offscreen art cannot satisfy the click');
+  window.__rtsInteractionAudioSnapshot = () => ({ units: [{ id: 7, kind: 'archer', point: center }], workers: [], buildings: [] });
+  window.__rtsInteractionAudioPick = () => ({ kind: 'unit', id: 7 });
+  assert.equal(find('unit', 7), center, 'the roster observer supports non-Worker units');
+});
+
+test('gated audio observation covers the owned roster with bounded read-only projection', async () => {
+  const main = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
+  const begin = main.indexOf('if (window.__rtsCaptureDiagnostics === true) {');
+  const end = main.indexOf('  window.__rtsBrowserRecoverySnapshot =', begin);
+  assert.ok(begin > 0 && end > begin);
+  const code = main.slice(begin, end) + '}';
+  const kinds = Object.keys(UNIT_DEFINITIONS), types = Object.keys(BUILDING_DEFINITIONS);
+  const units = Array.from({ length: 160 }, (_, id) => ({ id, team: 0, hp: 10,
+    kind: kinds[id % kinds.length], renderX: 0, renderZ: 0 }));
+  units.unshift({ id: 200, team: 1, hp: 10, kind: 'worker' }, { id: 201, team: 0, hp: 0, kind: 'worker' });
+  const latestBuildings = Array.from({ length: 80 }, (_, id) => ({ id, type: types[id % types.length], team: 0, hp: 10, x: 0, z: 0, complete: true }));
+  latestBuildings.unshift({ id: 200, team: 1, hp: 10 }, { id: 201, team: 0, hp: 0 });
+  const selected = new Set([1]), before = JSON.stringify({ units, latestBuildings, selected: [...selected] });
+  const canvas = { getBoundingClientRect: () => ({ left: 0, top: 0, width: 800, height: 600 }) };
+  let covered = false;
+  const globals = { window: { __rtsCaptureDiagnostics: true }, localTeam: 0, units, latestBuildings, selected,
+    selectedBuildingId: 1, buildingVisuals: new Map(), camera: {}, groundHeight: () => 0,
+    mapDefinition: { id: 'audio-roster-fixture' }, renderer: { domElement: canvas }, performance: { now: () => 123 },
+    audio: { getStatus: () => 'running', getInspector: () => ({}), getSettings: () => ({ enabled: true }) },
+    document: { elementFromPoint: () => covered ? null : canvas },
+    THREE: { Vector3: class { constructor(x, y, z) { Object.assign(this, { x, y, z }); }
+      project() { return { x: this.x / 100, y: this.y / 100, z: this.z / 100 }; } } },
+  };
+  runInNewContext(code, globals);
+  const snapshot = globals.window.__rtsInteractionAudioSnapshot();
+  assert.equal(snapshot.units.length, 128); assert.equal(snapshot.buildings.length, 64); assert.equal(snapshot.workers.length, 4);
+  assert.deepEqual([...new Set(snapshot.units.map(u => u.kind))].sort(), kinds.sort());
+  assert.deepEqual([...new Set(snapshot.buildings.map(b => b.type))].sort(), types.sort());
+  assert.ok(!snapshot.units.some(u => u.id >= 200) && !snapshot.buildings.some(b => b.id >= 200));
+  assert.equal(snapshot.units.find(u => u.id === 1).selected, true);
+  assert.equal(snapshot.buildings.find(b => b.id === 1).selected, true);
+  const project = globals.window.__rtsInteractionAudioProject;
+  assert.ok(project(0, 0)); assert.equal(project(NaN, 0), null); assert.equal(project(0, Infinity), null);
+  assert.equal(project(0, 0, Infinity), null); assert.equal(project(0, 200), null);
+  covered = true; assert.equal(project(0, 0), null);
+  assert.equal(JSON.stringify({ units, latestBuildings, selected: [...selected] }), before);
+  const disabled = { window: {} }; runInNewContext(code, disabled);
+  assert.deepEqual(Object.keys(disabled.window), [], 'normal clients expose none of the audit observations');
 });
 function probeFixture({ delayedStop = false, recorderStartFails = false, dataBytes = 2048 } = {}) {
   const connections = [], starts = [], events = [], timers = new Map(), stopped = [];

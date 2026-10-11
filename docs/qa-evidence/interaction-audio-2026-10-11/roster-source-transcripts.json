@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "scope": "automated-source-transcription-not-human-listening-or-gameplay",
+  "sourceRevision": "3310f31c1b6586fb478e498b22244786fd476600",
+  "manifestSha256": "ac8b054bdd5dcd0865eccea0eefd34b56316d8df58104cdcc065b5ed6e9828cb",
+  "provider": "ElevenLabs",
+  "flowUrl": "https://elevenlabs.io/app/flows/0bo6lWRxFGH3dvWXjaVQ",
+  "uploadApproval": "User explicitly approved uploading nine review reels of119existing recordings to ElevenLabs on11October2026.",
+  "transformation": "decode mono PCM; append one-second digital silence after each complete source; no gain or content edits",
+  "rows": [
+    {
+      "role": "worker",
+      "sourceCount": 37,
+      "sourceIds": [
+        "frontier-worker-select-1",
+        "frontier-worker-select-2",
+        "frontier-worker-select-3",
+        "frontier-worker-select-4",
+        "frontier-worker-gather-wood-1",
+        "frontier-worker-gather-wood-2",
+        "frontier-worker-gather-wood-3",
+        "frontier-worker-gather-wood-4",
+        "frontier-worker-move-1",
+        "frontier-worker-move-2",
+        "frontier-worker-patrol-1",
+        "frontier-worker-patrol-3",
+        "frontier-worker-follow-1",
+        "frontier-worker-follow-3",
+        "frontier-worker-stop-1",
+        "frontier-worker-stop-4",
+        "frontier-worker-hold-1",
+        "frontier-worker-hold-2",
+        "frontier-worker-attack-3",
+        "frontier-worker-attack-4",
+        "frontier-worker-gather-food-1",
+        "frontier-worker-gather-food-2",
+        "frontier-worker-gather-farm-1",
+        "frontier-worker-gather-farm-2",
+        "frontier-worker-gather-sheep-carcass-2",
+        "frontier-worker-gather-sheep-carcass-4",
+        "frontier-worker-gather-fish-2",
+        "frontier-worker-gather-fish-3",
+        "frontier-worker-gather-stone-2",
+        "frontier-worker-gather-stone-3",
+        "frontier-worker-build-3",
+        "frontier-worker-build-4",
+        "frontier-worker-repair-1",
+        "frontier-worker-repair-2",
+        "frontier-worker-ready-2",
+        "frontier-worker-ready-4",
+        "frontier-worker-return-cargo-4"
+      ],
+      "reelSha256": "32405b10943552b3e9dd72f838ef81faee2370a4e0a623a17e0ac60ee73ba964",
+      "durationSeconds": 80.42131519274372,
+      "transcriptionGenerationId": "YQyWE72nn4Nc4iuDwe7T",
+      "model": "eleven_scribe_v1",
+      "language": "eng",
+      "transcript": "What needs doing? What needs doing? What needs doing? What needs doing? I'll cut wood. I'll cut wood. I'll cut wood. I'll cut wood. On my way. On my way. I'll keep watch. I'll keep watch. Right behind you. Right behind you. Stopping here. Stopping here. I'll stay here. I'll stay here. I'll fight. I'll fight. I'll gather food. I'll gather food. I'll tend the crops. I'll tend the crops. I'll collect the meat. I'll collect the meat. I'll catch fish. I'll catch fish. I'll quarry stone. I'll quarry stone. I'll build it. I'll build it. I'll mend it. I'll mend it. Ready to work. Ready to work. I'll bring this back",
+      "expectedSpeech": "What needs doing? What needs doing? What needs doing? What needs doing? I'll cut wood. I'll cut wood. I'll cut wood. I'll cut wood. On my way. On my way. I'll keep watch. I'll keep watch. Right behind you. Right behind you. Stopping here. Stopping here. I'll stay here. I'll stay here. I'll fight. I'll fight. I'll gather food. I'll gather food. I'll tend the crops. I'll tend the crops. I'll collect the meat. I'll collect the meat. I'll catch fish. I'll catch fish. I'll quarry stone. I'll quarry stone. I'll build it. I'll build it. I'll mend it. I'll mend it. Ready to work. Ready to work. I'll bring this back.",
+      "exactNormalizedSpeechMatch": true
+    },
+    {
+      "role": "buildings",
+      "sourceCount": 14,
+      "sourceIds": [
+        "frontier-barracks-select-4",
+        "frontier-town-center-select-1",
+        "frontier-town-center-select-4",
+        "frontier-palisade-wall-select-4",
+        "frontier-palisade-gate-select-2",
+        "frontier-house-select-4",
+        "frontier-archery-range-select-1",
+        "frontier-storehouse-select-3",
+        "frontier-mill-select-4",
+        "frontier-farm-select-3",
+        "frontier-dock-select-1",
+        "frontier-watchtower-select-1",
+        "frontier-stable-select-4",
+        "frontier-workshop-select-2"
+      ],
+      "reelSha256": "94752cdf0c1b7f291ef2eb620364dd77a734afbbdf4e8860d9880975bf17ddf7",
+      "durationSeconds": 42,
+      "transcriptionGenerationId": "zbaZe0XwJYFocDn18pqF",
+      "model": "eleven_scribe_v1",
+      "language": "eng",
+      "transcript": "",
+      "expectedSpeech": null,
+      "exactNormalizedSpeechMatch": null
+    },
+    {
+      "role": "infantry",
+      "sourceCount": 10,
+      "sourceIds": [
+        "frontier-infantry-select-1",
+        "frontier-infantry-select-4",
+        "frontier-infantry-move-4",
+        "frontier-infantry-patrol-2",
+        "frontier-infantry-follow-1",
+        "frontier-infantry-stop-1",
+        "frontier-infantry-hold-1",
+        "frontier-infantry-attack-1",
+        "frontier-infantry-attack-3",
+        "frontier-infantry-ready-2"
+      ],
+      "reelSha256": "f7572f1fb5e8c7590a971664f29a8c25e8381b45458b7653b5c6cd5cdfd949e5",
+      "durationSeconds": 20.35609977324263,
+      "transcriptionGenerationId": "v68BRxulYCj09LKrj1TY",
+      "model": "eleven_scribe_v1",
+      "language": "eng",
+      "transcript": "Line ready. Line ready. Moving out. I'll patrol here. With you. Stopping. Holding the line. Into the fight. Into the fight. Infantry ready",
+      "expectedSpeech": "Line ready. Line ready. Moving out. I'll patrol here. With you. Stopping. Holding the line. Into the fight. Into the fight. Infantry ready.",
+      "exactNormalizedSpeechMatch": true
+    },
+    {
+      "role": "spearman",
+      "sourceCount": 10,
+      "sourceIds": [
+        "frontier-spearman-select-1",
+        "frontier-spearman-select-3",
+        "frontier-spearman-move-1",
+        "frontier-spearman-patrol-3",
+        "frontier-spearman-follow-1",
+        "frontier-spearman-stop-2",
+        "frontier-spearman-hold-3",
+        "frontier-spearman-attack-2",
+        "frontier-spearman-attack-3",
+        "frontier-spearman-ready-3"
+      ],
+      "reelSha256": "a500c6687233e3a82b23785a59cd668053c391e24a8a061ac3f545d5935d0767",
+      "durationSeconds": 20.866938775510203,
+      "transcriptionGenerationId": "jfdwK9JCMbvwcvL3X540",
+      "model": "eleven_scribe_v1",
+      "language": "eng",
+      "transcript": "Spear ready. Spear ready. On the march. I'll watch this route. Following you. Stopping here. Holding firm. Spears forward. Spears forward. Spearman ready",
+      "expectedSpeech": "Spear ready. Spear ready. On the march. I'll watch this route. Following you. Stopping here. Holding firm. Spears forward. Spears forward. Spearman ready.",
+      "exactNormalizedSpeechMatch": true
+    },
+    {
+      "role": "archer",
+      "sourceCount": 10,
+      "sourceIds": [
+        "frontier-archer-select-2",
+        "frontier-archer-select-3",
+        "frontier-archer-move-3",
+        "frontier-archer-patrol-1",
+        "frontier-archer-follow-2",
+        "frontier-archer-stop-4",
+        "frontier-archer-hold-4",
+        "frontier-archer-attack-1",
+        "frontier-archer-attack-3",
+        "frontier-archer-ready-3"
+      ],
+      "reelSha256": "bb520a01cd4ee78ef8ae8bf28e9dbfe376b78e0e993869c6ed51a908babc5070",
+      "durationSeconds": 22.167256235827665,
+      "transcriptionGenerationId": "OGhkbM54wrNtqLdG15qv",
+      "model": "eleven_scribe_v1",
+      "language": "eng",
+      "transcript": "Bow at hand. Bow at hand. Moving to position. I'll watch the path. On your trail. Stopping. Holding position. Taking aim. Taking aim. Archer ready",
+      "expectedSpeech": "Bow at hand. Bow at hand. Moving to position. I'll watch the path. On your trail. Stopping. Holding position. Taking aim. Taking aim. Archer ready.",
+      "exactNormalizedSpeechMatch": true
+    },
+    {
+      "role": "scout",
+      "sourceCount": 10,
+      "sourceIds": [
+        "frontier-scout-select-3",
+        "frontier-scout-select-4",
+        "frontier-scout-move-1",
+        "frontier-scout-patrol-4",
+        "frontier-scout-follow-2",
+        "frontier-scout-stop-2",
+        "frontier-scout-hold-1",
+        "frontier-scout-attack-2",
+        "frontier-scout-attack-3",
+        "frontier-scout-ready-2"
+      ],
+      "reelSha256": "89df179244678e59c22008941613efb78962595a2f2d6a56a164025013c1393f",
+      "durationSeconds": 21.052698412698412,
+      "transcriptionGenerationId": "QknfBbIY9f62q5uHOmMm",
+      "model": "eleven_scribe_v1",
+      "language": "eng",
+      "transcript": "Where next? Where next? On my way. I'll scout this route. I'll follow. Stopping here. I'll keep watch. Moving to attack. Moving to attack. Scout ready.",
+      "expectedSpeech": "Where next? Where next? On my way. I'll scout this route. I'll follow. Stopping here. I'll keep watch. Moving to attack. Moving to attack. Scout ready.",
+      "exactNormalizedSpeechMatch": true
+    },
+    {
+      "role": "rider",
+      "sourceCount": 10,
+      "sourceIds": [
+        "frontier-rider-select-2",
+        "frontier-rider-select-3",
+        "frontier-rider-move-2",
+        "frontier-rider-patrol-1",
+        "frontier-rider-follow-2",
+        "frontier-rider-stop-1",
+        "frontier-rider-hold-2",
+        "frontier-rider-attack-2",
+        "frontier-rider-attack-3",
+        "frontier-rider-ready-3"
+      ],
+      "reelSha256": "13e19667be7a32c77831cdc0ee38693f64a8f22c0e41965e75dac49007cbeebf",
+      "durationSeconds": 20.263219954648523,
+      "transcriptionGenerationId": "EYvaP5ek04suV9DYffSC",
+      "model": "eleven_scribe_v1",
+      "language": "eng",
+      "transcript": "Ready to ride. Ready to ride. Riding out. I'll ride this route. Riding with you. Reining in. Holding here. Riding to attack. Riding to attack. Rider ready",
+      "expectedSpeech": "Ready to ride. Ready to ride. Riding out. I'll ride this route. Riding with you. Reining in. Holding here. Riding to attack. Riding to attack. Rider ready.",
+      "exactNormalizedSpeechMatch": true
+    },
+    {
+      "role": "siege-engine",
+      "sourceCount": 10,
+      "sourceIds": [
+        "frontier-siege-engine-select-3",
+        "frontier-siege-engine-select-4",
+        "frontier-siege-engine-move-3",
+        "frontier-siege-engine-patrol-1",
+        "frontier-siege-engine-follow-1",
+        "frontier-siege-engine-stop-4",
+        "frontier-siege-engine-hold-1",
+        "frontier-siege-engine-attack-2",
+        "frontier-siege-engine-attack-4",
+        "frontier-siege-engine-ready-4"
+      ],
+      "reelSha256": "8fc1e9df307d05b66050fc9a2e9aa99fd3af08eb2a8a3e27140f229753ced62a",
+      "durationSeconds": 21.377777777777773,
+      "transcriptionGenerationId": "sJ3zFc08BR4OUsrjUY1l",
+      "model": "eleven_scribe_v1",
+      "language": "eng",
+      "transcript": "Crew ready. Crew ready. Rolling out. We'll patrol here. Following your lead. Stopping the wheels. Holding position. Preparing to fire. Preparing to fire. Siege crew ready.",
+      "expectedSpeech": "Crew ready. Crew ready. Rolling out. We'll patrol here. Following your lead. Stopping the wheels. Holding position. Preparing to fire. Preparing to fire. Siege crew ready.",
+      "exactNormalizedSpeechMatch": true
+    },
+    {
+      "role": "skiff",
+      "sourceCount": 8,
+      "sourceIds": [
+        "frontier-skiff-select-1",
+        "frontier-skiff-select-3",
+        "frontier-skiff-move-4",
+        "frontier-skiff-stop-4",
+        "frontier-skiff-hold-2",
+        "frontier-skiff-gather-food-2",
+        "frontier-skiff-ready-4",
+        "frontier-skiff-return-cargo-3"
+      ],
+      "reelSha256": "6324d2611e6610129613a6570e292fff5a70ae61b293fe8498b494448e3dadea",
+      "durationSeconds": 15.523265306122449,
+      "transcriptionGenerationId": "IELKKDEVD5xuyJY87ZZM",
+      "model": "eleven_scribe_v1",
+      "language": "eng",
+      "transcript": "Skiff here. Skiff here. Rowing out. Stopping here. Holding here. I'll bring in fish. Skiff ready. Returning the catch",
+      "expectedSpeech": "Skiff here. Skiff here. Rowing out. Stopping here. Holding here. I'll bring in fish. Skiff ready. Returning the catch.",
+      "exactNormalizedSpeechMatch": true
+    }
+  ],
+  "reportedPrices": [
+    {
+      "generationId": "YQyWE72nn4Nc4iuDwe7T",
+      "price": {
+        "credits": 442.31723356009076,
+        "price_cents": 8.042131519274378,
+        "cost_fiat_currency": "usd"
+      }
+    },
+    {
+      "generationId": "zbaZe0XwJYFocDn18pqF",
+      "price": {
+        "credits": 231,
+        "price_cents": 4.2,
+        "cost_fiat_currency": "usd"
+      }
+    },
+    {
+      "generationId": "v68BRxulYCj09LKrj1TY",
+      "price": {
+        "credits": 111.95854875283447,
+        "price_cents": 2.0356099773242633,
+        "cost_fiat_currency": "usd"
+      }
+    },
+    {
+      "generationId": "jfdwK9JCMbvwcvL3X540",
+      "price": {
+        "credits": 114.76816326530611,
+        "price_cents": 2.08669387755102,
+        "cost_fiat_currency": "usd"
+      }
+    },
+    {
+      "generationId": "OGhkbM54wrNtqLdG15qv",
+      "price": {
+        "credits": 121.91990929705216,
+        "price_cents": 2.2167256235827666,
+        "cost_fiat_currency": "usd"
+      }
+    },
+    {
+      "generationId": "QknfBbIY9f62q5uHOmMm",
+      "price": {
+        "credits": 115.78984126984126,
+        "price_cents": 2.105269841269841,
+        "cost_fiat_currency": "usd"
+      }
+    },
+    {
+      "generationId": "EYvaP5ek04suV9DYffSC",
+      "price": {
+        "credits": 111.44770975056689,
+        "price_cents": 2.0263219954648526,
+        "cost_fiat_currency": "usd"
+      }
+    },
+    {
+      "generationId": "sJ3zFc08BR4OUsrjUY1l",
+      "price": {
+        "credits": 117.57777777777777,
+        "price_cents": 2.1377777777777776,
+        "cost_fiat_currency": "usd"
+      }
+    },
+    {
+      "generationId": "IELKKDEVD5xuyJY87ZZM",
+      "price": {
+        "credits": 85.37795918367347,
+        "price_cents": 1.552326530612245,
+        "cost_fiat_currency": "usd"
+      }
+    }
+  ]
+}
