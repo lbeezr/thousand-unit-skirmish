@@ -95,6 +95,23 @@ regression exercises missing document, partial menu and disabled Create Room
 before the actual menu/lobby orchestration. It strengthens readiness; no deadline
 or browser policy changes. Subsequent capture follows exact-head checks/review.
 
+The reviewed navigation correction at clean
+`446af04c93a4170f3f0067170ecb8611c8e94323` advanced both pages to game entry
+in [run38159011993](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38159011993),
+but failed at 17:19:48 UTC while waiting for second-seat lobby readiness.
+[Artifact11709723360](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38159011993/artifacts/11709723360)
+was created at 17:19:45 UTC, ZIP digest
+`sha256:00a2244751b1a2dbc18c7829163d1f41d5d16f99746e60d83c0201d203409a9a`.
+It retains zero frames and `entry-second-seat` / `deadline`; both shared page
+boots are game/ready/canvas, while the owner receipt only describes the healthy
+host lobby. This local wait failure does not establish why the guest was absent
+or disabled, nor a three-minute case deadline failure. Canceled asset requests
+remain qualification failures, including audio paths; no audio change or separate
+audio capture is made here. The owner failure receipt now observes both opened
+pages, retaining only safe booleans, fixed entry values and seat0/1/null. A real
+entry control proves healthy host and broken guest remain distinguishable without
+retaining invite/session data. No guest-readiness correction is guessed.
+
 The existing supported Actions capability receipt is
 [run38153340669](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38153340669),
 artifact11706704507 created at 15:57:42 UTC: Linux uid1001, Chrome154.0.8037.97,

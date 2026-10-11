@@ -389,12 +389,15 @@ export function farmFailureCategory(error) {
 export async function run(value, { identify = checkServedBuildIdentity, enter = enterTinyFarmRoom,
   execute = runTinyFarmLifecycle, record = writeFile } = {}) {
   const context = validateCaptureContext(value), { origin, source } = context;
+  const openedPages = [context.page];
   let stage = 'served-identity';
   try {
   const identity = await identify(origin, { sourceRevision: source.revision, digest: source.digest });
   assert.equal(identity.ok, true, 'served source and pack must match'); assert.equal(identity.served.sourceDirty, false);
   stage = 'ordinary-entry';
-  const pages = await enter(context, { onStage: step => { stage = `entry-${step}`; } });
+  const pages = await enter({ ...context, openPage: async () => {
+    const page = await context.openPage(); openedPages.push(page); return page;
+  } }, { onStage: step => { stage = `entry-${step}`; } });
   assert.equal(pages.length, 2); assert.equal(pages[0], context.page); assert.notEqual(pages[0], pages[1]);
   stage = 'farm-lifecycle';
   const result = await execute(context, pages);
@@ -412,13 +415,18 @@ export async function run(value, { identify = checkServedBuildIdentity, enter = 
   } catch (error) {
     // The shared qualifier intentionally hides CDP exception text. Retain safe
     // Farm stage/DOM facts without error strings, source expressions or invites.
-    const boot = await context.page.cdp.evaluate(`(()=>{const d=document.documentElement?.dataset??{};
+    const pageBoots = await Promise.all(openedPages.map(page => page.cdp.evaluate(`(()=>{const d=document.documentElement?.dataset??{};
       return {entry:['menu','game'].includes(d.entry)?d.entry:null,ready:d.boot==='ready',
         createPresent:!!document.querySelector('#menu-create-room'),createDisabled:document.querySelector('#menu-create-room')?.disabled===true,
         lobbyOpen:document.querySelector('#room-lobby')?.open===true,mapPresent:!!document.querySelector('#lobby-map'),
-        team:[0,1].includes(window.__rtsTinyFarm?.team)?window.__rtsTinyFarm.team:null};})()`).catch(() => null);
+        readyPresent:!!document.querySelector('#lobby-ready'),readyDisabled:document.querySelector('#lobby-ready')?.disabled===true,
+        tinySelected:document.querySelector('#lobby-map')?.value==='veyrholds-terraced-vale',
+        skirmishSelected:document.querySelector('#lobby-match-mode')?.value==='skirmish@1',
+        ownSeatRow:[...document.querySelectorAll('#room-lobby li')].some(n=>n.textContent.includes(' · You')),
+        observerInstalled:!!window.__rtsTinyFarm,
+        team:[0,1].includes(window.__rtsTinyFarm?.team)?window.__rtsTinyFarm.team:null};})()`).catch(() => null)));
     await record(path.join(context.evidenceDirectory, 'tiny-farm-failure.json'), JSON.stringify({ source,
-      status: 'failed', stage, category: farmFailureCategory(error), boot }, null, 2) + '\n', { flag: 'wx' });
+      status: 'failed', stage, category: farmFailureCategory(error), boot: pageBoots[0], pageBoots }, null, 2) + '\n', { flag: 'wx' });
     throw error;
   }
 }

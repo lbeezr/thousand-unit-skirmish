@@ -161,7 +161,7 @@ test('completion during screenshot keeps failed partial evidence and refuses a f
 // CPU CDP boundary: actual serialized entry expressions, the real menu entry
 // handler and pointer helper run against a DOM. Layout/lobby/network scheduling
 // are modeled; this establishes orchestration, never browser/render acceptance.
-async function entryFixture({ unavailable = false, brokenLobby = false, noLaunch = false, transientMenu = false } = {}) {
+async function entryFixture({ unavailable = false, brokenLobby = false, brokenGuest = false, noLaunch = false, transientMenu = false } = {}) {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8'), pages = [], requests = [], stages = [];
   const roomUrl = 'http://127.0.0.1:1234/?room=' + 'R'.repeat(32);
   const ready = new Set(); let launches = 0;
@@ -203,7 +203,7 @@ async function entryFixture({ unavailable = false, brokenLobby = false, noLaunch
           }
           setImmediate(acknowledge); return true;
         } });
-        acknowledge(); layout(); if (brokenLobby) lobby.open = false;
+        acknowledge(); layout(); if (brokenLobby || (brokenGuest && team === 1)) lobby.open = false;
         w.__rtsTinyFarm.team = team;
       }
     };
@@ -288,7 +288,28 @@ test('actual registered wrapper requires clean served identity, two pages and ev
     onStage('create-room'); throw new Error('TypeError: private-secret');
   } }));
   assert.equal(records.at(-1).stage, 'entry-create-room'); assert.equal(records.at(-1).category, 'browser-type');
+  await assert.rejects(() => run(context, { ...deps, enter: async ({ openPage }, { onStage }) => {
+    await openPage(); onStage('second-seat'); throw new Error('private-secret timeout');
+  } }));
+  assert.equal(records.at(-1).stage, 'entry-second-seat'); assert.equal(records.at(-1).pageBoots.length, 2);
+  assert.equal(records.at(-1).category, 'deadline');
   assert.doesNotMatch(JSON.stringify(records), /private-secret/);
+});
+
+test('second-seat failure receipt evaluates bounded DOM facts on both real entry pages', async () => {
+  const f = await entryFixture({ brokenGuest: true });
+  const records = [], context = { ...f.context, version: 1, evidenceDirectory: '/tmp/cpu-farm-diagnostic', capture: async () => ({}),
+    source: Object.freeze({ revision: 'a'.repeat(40), digest: `sha256:${'b'.repeat(64)}` }) };
+  try {
+    await assert.rejects(() => run(context, { identify: async () => ({ ok: true, served: { sourceDirty: false } }),
+      record: async (_, json) => records.push(JSON.parse(json)) }));
+    const receipt = records.at(-1);
+    assert.equal(receipt.stage, 'entry-second-seat'); assert.equal(receipt.pageBoots.length, 2);
+    assert.equal(receipt.pageBoots[0].lobbyOpen, true); assert.equal(receipt.pageBoots[1].lobbyOpen, false);
+    assert.deepEqual(receipt.pageBoots.map(p => p.team), [0, 1]);
+    assert.ok(receipt.pageBoots.every(p => p.observerInstalled && p.readyPresent && p.ownSeatRow));
+    assert.doesNotMatch(JSON.stringify(receipt), /private-secret|room=|http:|sessionToken|cpu-seat/);
+  } finally { f.close(); }
 });
 
 test('entry failure categories never retain arbitrary CDP payloads or exception text', () => {
