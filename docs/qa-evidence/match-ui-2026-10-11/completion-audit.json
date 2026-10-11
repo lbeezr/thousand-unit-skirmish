@@ -75,12 +75,11 @@
     },
     {
       "requirement": "Ordinary-game in-game verification retained by implementation owner",
-      "status": "incomplete; blocked by existing specific hosted capture/sign-in decision",
+      "status": "incomplete; hosted HUD checks resumed by explicit user authorization on 11 October 2026",
       "evidence": [
-        "docs/qa-normal-new-game-capture.md:80",
-        "docs/renderer-qualification.md:96"
+        "docs/qa-normal-new-game-capture.md#checks-and-current-acceptance"
       ],
-      "nextAction": "User lifts the specific capture/sign-in pause; HUD owner performs the documented both-seat action/viewport matrix through the approved route at an identified containing build."
+      "nextAction": "HUD owner completes native capture and PNG review through the approved hosted routes; current main has two recorded harness failures, neither a game acceptance pass."
     }
   ],
   "complete": false,

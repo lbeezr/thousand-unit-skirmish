@@ -123,7 +123,7 @@ export function readNoviceUi() {
   const seed = key => /^\d{1,10}$/.test(query.get(key) ?? '') && Number(query.get(key)) <= 0xffffffff ? Number(query.get(key)) : null;
   const probe = window.__rtsNovice;
   return { entry: ['menu', 'game'].includes(document.documentElement.dataset.entry) ? document.documentElement.dataset.entry : null,
-    ready: document.documentElement.dataset.boot === 'ready', canvas: Boolean(document.querySelector('#viewport canvas')),
+    ready: document.documentElement.dataset.boot === 'ready', canvas: visible(document.querySelector('#viewport canvas')),
     menu: { visible: visible(button), enabled: Boolean(button && !button.disabled) },
     selected: Number(document.querySelector('#selected-total')?.textContent) || 0,
     context: ['none', 'workers', 'military', 'mixed', 'boats', 'building'].includes(bar?.dataset.context) ? bar.dataset.context : null,
@@ -247,7 +247,7 @@ export async function runNoviceScenario({ origin, page, release, evidenceDirecto
     await page.wait(`document.documentElement?.dataset.entry==='menu'&&document.querySelector('#menu-new-game')?.disabled===false`, 'ordinary New Game menu');
     const menu = await read();
     assert.equal(menu.menu.visible, true, 'New Game must be visible'); assert.equal(menu.menu.enabled, true, 'New Game must be enabled');
-    assert.equal(menu.canvas, false, 'root menu must precede the game renderer'); assert.equal(menu.diagnosticEntry, false, 'root menu must be ordinary entry');
+    assert.equal(menu.canvas, false, 'root menu must hide the game canvas'); assert.equal(menu.diagnosticEntry, false, 'root menu must be ordinary entry');
     report.steps.push({ step: 'menu', entry: menu.entry, visible: menu.menu.visible, enabled: menu.menu.enabled, ...await capture('menu.png') });
     const menuPoint = await page.cdp.evaluate(`(()=>{const e=document.querySelector('#menu-new-game'),r=e.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()`);
     await clickNovicePoint(page, menuPoint);
