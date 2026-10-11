@@ -190,7 +190,29 @@ export async function projectFarmGround(site) {
   return p.z >= -1 && p.z <= 1 && document.elementFromPoint(point.x, point.y) === canvas ? point : null;
 }
 
-export async function enterTinyFarmRoom({ page, openPage, origin }, { click = clickControl, onStage = () => {} } = {}) {
+export async function waitForFarmGuestReady(page, { now = Date.now, delay = ms => new Promise(resolve => setTimeout(resolve, ms)) } = {}) {
+  const started = now(), deadline = started + 20000;
+  let transientCdpTimeouts = 0;
+  while (now() < deadline) {
+    let timer;
+    try {
+      const ready = await Promise.race([
+        page.cdp.evaluate("document.querySelector('#room-lobby')?.open && document.querySelector('#lobby-ready')?.disabled===false"),
+        new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('ordinary second human seat timeout')), deadline - now()); }),
+      ]);
+      if (ready && now() < deadline) return { elapsedMs: now() - started, transientCdpTimeouts };
+    } catch (error) {
+      // A 15-second CDP command timeout is not the existing 20-second readiness
+      // deadline. Require the same real condition within that original window.
+      if (error?.message !== 'Runtime.evaluate timeout') throw error;
+      transientCdpTimeouts++;
+    } finally { clearTimeout(timer); }
+    if (now() < deadline) await delay(Math.min(100, deadline - now()));
+  }
+  throw new Error('ordinary second human seat timeout');
+}
+
+export async function enterTinyFarmRoom({ page, openPage, origin }, { click = clickControl, onStage = () => {}, onReadiness = () => {} } = {}) {
   const install = p => p.cdp.call('Page.addScriptToEvaluateOnNewDocument', {
     source: `(${installFarmObserver.toString()})(${reduceFarmState.toString()},${reduceFarmOrder.toString()})`,
   });
@@ -214,7 +236,7 @@ export async function enterTinyFarmRoom({ page, openPage, origin }, { click = cl
   onStage('second-seat-navigation');
   await guest.cdp.call('Page.navigate', { url: roomUrl });
   onStage('second-seat-ready');
-  await guest.wait("document.querySelector('#room-lobby')?.open && !document.querySelector('#lobby-ready')?.disabled", 'ordinary second human seat');
+  onReadiness(await waitForFarmGuestReady(guest));
   onStage('second-seat-identity');
   assert.equal(await page.cdp.evaluate('window.__rtsTinyFarm.team'), 0);
   assert.equal(await guest.cdp.evaluate('window.__rtsTinyFarm.team'), 1);
@@ -429,6 +451,7 @@ export async function run(value, { identify = checkServedBuildIdentity, enter = 
   const context = validateCaptureContext(value), { origin, source } = context;
   const openedPages = [context.page];
   const pageEvents = [observeFarmCdpEvents(context.page)], stages = [];
+  let guestReadiness;
   let stage = 'served-identity';
   try {
   const identity = await identify(origin, { sourceRevision: source.revision, digest: source.digest });
@@ -436,8 +459,11 @@ export async function run(value, { identify = checkServedBuildIdentity, enter = 
   stage = 'ordinary-entry';
   const pages = await enter({ ...context, openPage: async () => {
     const page = await context.openPage(); openedPages.push(page); pageEvents.push(observeFarmCdpEvents(page)); return page;
-  } }, { onStage: step => { stage = `entry-${step}`; if (stages.length < 32) stages.push(stage); } });
+  } }, { onStage: step => { stage = `entry-${step}`; if (stages.length < 32) stages.push(stage); },
+    onReadiness: receipt => { guestReadiness = receipt; } });
   assert.equal(pages.length, 2); assert.equal(pages[0], context.page); assert.notEqual(pages[0], pages[1]);
+  await record(path.join(context.evidenceDirectory, 'tiny-farm-entry.json'), JSON.stringify({ source,
+    status: 'entered', stages, guestReadiness }, null, 2) + '\n', { flag: 'wx' });
   stage = 'farm-lifecycle';
   const result = await execute(context, pages);
   assert.equal(result.status, 'captured-needs-review');

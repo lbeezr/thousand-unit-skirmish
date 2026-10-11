@@ -7,7 +7,7 @@ import { JSDOM } from 'jsdom';
 import { bootGameEntry } from '../src/game-entry.mjs';
 import { createRoomLobby } from '../src/room-lobby-ui.mjs';
 import { matchModeCatalog } from '../src/match-modes.mjs';
-import { bracketFarmPhase, enterTinyFarmRoom, farmCdpFault, farmFailureCategory, installFarmObserver, observeFarmCdpEvents, readFarmCdpHealth, reduceFarmOrder, reduceFarmState, run, TINY_FARM_MAP,
+import { bracketFarmPhase, enterTinyFarmRoom, farmCdpFault, farmFailureCategory, installFarmObserver, observeFarmCdpEvents, readFarmCdpHealth, reduceFarmOrder, reduceFarmState, run, TINY_FARM_MAP, waitForFarmGuestReady,
   tinyFarmSites, validateFarmArt, validateFarmBuild, validateFarmEconomy, validateFarmFoundation, validateFarmSupply } from './renderer-tiny-farm-scenario.mjs';
 import { loadCaptureCases } from './renderer-feature-capture.mjs';
 import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
@@ -208,7 +208,11 @@ async function entryFixture({ unavailable = false, brokenLobby = false, brokenGu
       }
     };
     page.cdp = {
-      evaluate: async expression => page.dom.window.eval(expression),
+      evaluate: async expression => {
+        if ((brokenLobby || (brokenGuest && team === 1)) && expression.includes("#lobby-ready") && expression.includes('disabled===false'))
+          throw new Error('CPU broken lobby refuses readiness');
+        return page.dom.window.eval(expression);
+      },
       call: async (method, params) => {
         if (method === 'Page.addScriptToEvaluateOnNewDocument') { new vm.Script(params.source); page.scripts.push(params.source); }
         if (method === 'Page.navigate') await prepare(params.url);
@@ -338,6 +342,29 @@ test('CDP health distinguishes an available page target from a stalled runtime o
   assert.deepEqual(farmCdpFault(new Error('CDP closed')), { kind: 'cdp-closed' });
   assert.deepEqual(farmCdpFault(new Error('private-secret timeout')), { kind: 'deadline' });
   assert.doesNotMatch(JSON.stringify({ health, missing }), /private-secret|targetId|url|title|room=/);
+});
+
+test('guest readiness survives only exact transient CDP timeout inside the original twenty-second window', async () => {
+  let clock = 0, calls = 0;
+  const page = { cdp: { evaluate: async expression => {
+    assert.match(expression, /disabled===false/); calls++;
+    if (calls === 1) { clock += 15000; throw new Error('Runtime.evaluate timeout'); }
+    clock += 500; return true;
+  } } };
+  const receipt = await waitForFarmGuestReady(page, { now: () => clock, delay: async ms => { clock += ms; } });
+  assert.deepEqual(receipt, { elapsedMs: 15600, transientCdpTimeouts: 1 }); assert.equal(calls, 2);
+  for (const mode of ['late-ready', 'never-ready', 'closed', 'missing-method', 'type-error']) {
+    let tick = 0, attempts = 0;
+    const blocked = { cdp: { evaluate: async () => {
+      attempts++;
+      if (mode === 'late-ready') { tick = 20000; return true; }
+      if (mode === 'never-ready') { tick += 1000; return false; }
+      throw new Error({ closed: 'CDP closed', 'missing-method': 'Method not found', 'type-error': 'TypeError: private-secret' }[mode]);
+    } } };
+    await assert.rejects(() => waitForFarmGuestReady(blocked, { now: () => tick, delay: async ms => { tick += ms; } }));
+    if (mode === 'never-ready') assert.equal(attempts, 19, 'no further polling after the original deadline');
+    else assert.equal(attempts, 1);
+  }
 });
 
 test('guest runtime timeout retains target/frame and bounded lifecycle evidence rather than labelling it absent readiness', async () => {

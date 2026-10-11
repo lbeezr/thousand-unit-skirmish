@@ -159,6 +159,34 @@ No new API authority, browser flags or deadline increase is required. One
 targeted capture follows exact-head current-main integration checks and
 independent review; no unchanged failed source is repeated.
 
+At reviewed clean `eb82eaec1d5f1e2394e5845212852cd655be0a15`,
+[run38160499137](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38160499137)
+failed at 17:41:44 UTC with zero frames.
+[Artifact11710051737](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38160499137/artifacts/11710051737),
+created17:41:40 UTC, has verified ZIP digest
+`sha256:59b93592245a898b5d918c1f9b24d02fd64f8b967a684074fc0a75271ed55049`.
+Clean pack: 1,845 files,
+`sha256:32bc41bc8492e3fce63368132a6d695fecba28e9b6e04b53f2071d7e68506b0b`.
+Owner69 focused and199 current-main integration controls passed, as did required
+checks and one unchanged native Farm recovery invocation. Independent54 Farm
+and30 shared controls passed. Guest acquisition, blank heartbeat, observer and
+navigation succeeded; the failure at `entry-second-seat-ready` is specifically
+`Runtime.evaluate` timeout. Both target/frame queries responded, both DOM
+snapshots became available, and both lobbies had Tiny/Skirmish, owned seats0/1
+and Ready enabled. This establishes a transient command failure, not an
+unsupported second-page API. It does not establish why the runtime stalled or
+how soon it recovered. Two canceled room-API Fetches remain qualification faults.
+
+The demonstrated capture-control correction distinguishes the fixture's
+15-second command timeout from its existing20-second guest readiness deadline.
+Only that exact transient command fault may be polled again, with a hard
+unchanged20-second overall window and the actual present/enabled guest control
+required. Late readiness, never-ready state, closure, missing method and browser
+TypeError still refuse. A successful entry receipt retains bounded elapsed time
+and transient-timeout count. This changes Farm capture tooling only; no
+gameplay, audio, HUD, browser flag or deadline changes. Recapture requires
+exact-head controls and independent review of that bounded correction.
+
 The Farm owner retains ordinary rendered verification. The draft PR preserves
 the reviewed source, focused checks, pack identity and failed run/artifact links.
 Further lifecycle corrections still require the diagnostic receipt, and eventual
