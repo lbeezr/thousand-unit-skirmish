@@ -15,7 +15,7 @@ import { assertMatchModeCompatibility } from '../src/match-modes.mjs';
 import { buildingPad, buildingGroups, paidUnitPlan, recordingCoverage, rosterMap, rosterPlan, rosterSubsets, STAGING_ORIGIN, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
 import { appendRosterEntryProgress, captureRosterStudioFailure, enterRosterRoom, frameRosterArea, identifyPublicAudioSource, installRosterTimingProbe, openRosterStudio, persistRosterRecording, rosterCaptureFailureCode, rosterControlPoint, rosterEntryControls, rosterPublishReady, rosterOrderNoticeDiagnostic, rosterStudioFailureCode, rosterStudioFailureView, validateReviewRoom, validateRosterFrame } from './renderer-roster-audio-capture.mjs';
 import { observeRosterBrowser, rosterMatrix, runRosterStaging, validateRosterCapability } from './renderer-roster-audio-staging.mjs';
-import { captureWorkerRepair, repairAttackPoint, repairBuildingPoint, validateRepairHealth } from './renderer-roster-audio-repair.mjs';
+import { captureWorkerRepair, centerRepairTarget, repairAttackPoint, repairBuildingPoint, repairMinimapPoint, validateRepairHealth } from './renderer-roster-audio-repair.mjs';
 
 const revision = 'a'.repeat(40), sourceHash = 'b'.repeat(64);
 const manifest = JSON.parse(await readFile(new URL('../assets/audio/runtime/frontier-feedback/v3/manifest.json', import.meta.url)));
@@ -582,6 +582,54 @@ test('guest attack projects disclosed House body without asking the friendly-onl
   visible = false; assert.equal(find(-26.5, 12.5), null);
   assert.equal(find(Infinity, 12.5), null); assert.equal(find(-26.5, NaN), null);
 });
+test('Repair exposes the House through the actual minimap camera handler while preserving selection', async () => {
+  const source = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
+  const nodes = parse(source, { ecmaVersion: 'latest', sourceType: 'module' }).body;
+  const functions = ['minimapMapRect', 'worldFromMinimap', 'focusCameraFromMinimap'].map(name => {
+    const node = nodes.find(row => row.type === 'FunctionDeclaration' && row.id.name === name);
+    assert.ok(node); return source.slice(node.start, node.end);
+  }).join('\n');
+  const listener = nodes.find(node => node.type === 'ExpressionStatement'
+    && node.expression.type === 'CallExpression' && node.expression.arguments[0]?.value === 'pointerdown'
+    && source.slice(node.expression.callee.start, node.expression.callee.end) === 'minimapCanvas.addEventListener');
+  const callback = listener.expression.arguments[1];
+  for (const [bitmapWidth, bitmapHeight] of [[384, 384], [384, 256]]) {
+    const canvas = { width: bitmapWidth, height: bitmapHeight, closest: () => null,
+      getBoundingClientRect: () => ({ left: 990, top: 490, width: 240, height: 170 }), setPointerCapture() {} };
+    const style = { borderLeftWidth: '2px', borderRightWidth: '3px', borderTopWidth: '4px', borderBottomWidth: '5px',
+      paddingLeft: '6px', paddingRight: '7px', paddingTop: '8px', paddingBottom: '9px' };
+    const cameraTarget = { x: 0, z: 0 }, selected = new Set([7]);
+    const context = { MAP_WIDTH: 160, MAP_HEIGHT: 160, MAP_HALF_X: 80, MAP_HALF_Z: 80,
+      mapDefinition: {}, minimapCanvas: canvas, cameraTarget, mapFitActive: true, selected,
+      minimapPointerId: null, tapOrderArmed: false, getComputedStyle: () => style,
+      document: { querySelector: () => canvas, elementFromPoint: () => canvas },
+      THREE: { MathUtils: { clamp: (n, min, max) => Math.max(min, Math.min(max, n)) } },
+      setCamera() {}, drawMinimap() {}, performance: { now: () => 1 },
+      issueMove: () => assert.fail('camera click must not issue an order'),
+      window: { __rtsBrowserRecoverySnapshot: () => ({ camera: cameraTarget }) },
+    };
+    const onPointerDown = runInNewContext(`${functions}\n(${source.slice(callback.start, callback.end)})`, context);
+    const calls = [];
+    const page = { wait: async expression => {
+      const result = runInNewContext(expression, context); assert.ok(result); return result;
+    }, cdp: { call: async (method, args) => {
+      calls.push({ method, args });
+      if (args?.type === 'mousePressed') onPointerDown({ button: 0, pointerId: 7,
+        clientX: args.x, clientY: args.y, preventDefault() {}, stopPropagation() {} });
+    } } };
+    await centerRepairTarget(page, repairHouse(800));
+    assert.ok(Math.hypot(cameraTarget.x + 26.5, cameraTarget.z - 12.5) < 1e-9);
+    assert.deepEqual([...selected], [7]); assert.equal(context.mapFitActive, false);
+    assert.ok(calls.every(call => ['Page.bringToFront', 'Input.dispatchMouseEvent'].includes(call.method)));
+    assert.ok(calls.filter(call => call.method === 'Input.dispatchMouseEvent').every(call => call.args.button === 'left'));
+    const point = runInNewContext(`(${repairMinimapPoint.toString()})`, context);
+    assert.equal(point(NaN, 12.5, 160), null); assert.equal(point(-81, 12.5, 160), null);
+    context.document.elementFromPoint = () => ({});
+    assert.equal(point(-26.5, 12.5, 160), null, 'covered minimap cannot be clicked');
+    canvas.closest = () => ({});
+    assert.equal(point(-26.5, 12.5, 160), null, 'hidden minimap cannot be clicked');
+  }
+});
 const repairHouse = hp => ({ id: 42, team: 0, type: 'house', x: -26.5, z: 12.5, complete: true, hp, maxHp: 800 });
 test('Repair acceptance requires prior real damage and increased health of the same owned complete House', () => {
   assert.deepEqual(validateRepairHealth(repairHouse(789), repairHouse(795), 42), { buildingId: 42, beforeHp: 789, afterHp: 795, maxHp: 800 });
@@ -631,7 +679,7 @@ function repairFixture({ failAt = null } = {}) {
       }
       if (description === 'actual enemy hits damage paid House') { assert.ok(attacked); hp = 789; return repairHouse(hp); }
       if (description === 'paid Repair increases health') return repairHouse(hp);
-      if (/pixel|parking point/.test(description)) return { x: 100, y: 100 };
+      if (/pixel|parking point|position on ordinary minimap/.test(description)) return { x: 100, y: 100 };
       return true;
     },
     dispose: async () => { disposed++; },
@@ -661,7 +709,7 @@ test('ordinary Repair sequence joins second seat, attacks, stops, repairs, prove
   assert.ok(f.evidence.some(row => row.status === 'damaged' && row.damagedHp === 789));
   assert.deepEqual(f.stages, ['build-house', 'house-ready', 'clear-host-units', 'host-stop',
     'guest-open', 'guest-menu', 'guest-join', 'guest-seat', 'guest-camera', 'guest-unit',
-    'guest-target', 'guest-attack', 'house-damage', 'guest-stop', 'host-worker',
+    'guest-focus-house', 'guest-target', 'guest-attack', 'house-damage', 'guest-stop', 'host-worker',
     'repair-recording', 'repair-order', 'repair-health']);
 });
 test('failed guest join still disposes the owned guest and never publishes its room code', async () => {

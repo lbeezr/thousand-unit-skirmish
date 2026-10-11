@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { clickNovicePoint } from './renderer-qualification-novice.mjs';
 import { interactionTargetPoint } from './renderer-interaction-audio-scenario.mjs';
-import { validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
+import { ROSTER_MAP_SIDE, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
 
 // Host Repair uses its normal friendly-building picker. This observer must not
 // validate the guest attack: it deliberately cannot return an enemy building.
@@ -26,6 +26,31 @@ export function repairBuildingPoint(id, x, z) {
 export function repairAttackPoint(x, z) {
   if (![x, z].every(Number.isFinite)) return null;
   return window.__rtsInteractionAudioProject(x, z, 1);
+}
+// Invert the ordinary minimap's bitmap/content-box mapping. Native left-click
+// recenters the camera without changing the selected attacker or issuing an order.
+export function repairMinimapPoint(x, z, side) {
+  if (![x, z, side].every(Number.isFinite) || side <= 0
+    || Math.abs(x) >= side / 2 || Math.abs(z) >= side / 2) return null;
+  const canvas = document.querySelector('#minimap-canvas');
+  if (!canvas || canvas.closest('[hidden]') || !(canvas.width > 0 && canvas.height > 0)) return null;
+  const rect = canvas.getBoundingClientRect(), style = getComputedStyle(canvas);
+  const inset = edge => (parseFloat(style[`border${edge}Width`]) || 0) + (parseFloat(style[`padding${edge}`]) || 0);
+  const left = inset('Left'), top = inset('Top');
+  const width = rect.width - left - inset('Right'), height = rect.height - top - inset('Bottom');
+  if (!(width > 0 && height > 0)) return null;
+  const scale = Math.min(canvas.width / side, canvas.height / side);
+  const point = {
+    x: rect.left + left + ((canvas.width - side * scale) / 2 + (x + side / 2) * scale) * width / canvas.width,
+    y: rect.top + top + ((canvas.height - side * scale) / 2 + (z + side / 2) * scale) * height / canvas.height,
+  };
+  return document.elementFromPoint(point.x, point.y) === canvas ? point : null;
+}
+export async function centerRepairTarget(page, house) {
+  const point = await page.wait(`(${repairMinimapPoint.toString()})(${house.x},${house.z},${ROSTER_MAP_SIDE})`, 'visible House position on ordinary minimap');
+  await clickNovicePoint(page, point);
+  await page.wait(`(() => { const c=window.__rtsBrowserRecoverySnapshot?.().camera;
+    return c && Math.hypot(c.x-(${house.x}),c.z-(${house.z})) < .01; })()`, 'native minimap centers the disclosed House');
 }
 export function validateRepairHealth(before, after, buildingId) {
   for (const row of [before, after]) {
@@ -100,6 +125,8 @@ export async function captureWorkerRepair({ page, openGuest, origin, mapId, buil
     await step('guest-unit');
     const infantry = (await guest.cdp.evaluate(snapshot)).units.find(unit => unit.kind === 'infantry' && unit.point);
     assert.ok(infantry); await selectUnit(guest, infantry.id);
+    await step('guest-focus-house');
+    await centerRepairTarget(guest, house);
     await step('guest-target');
     const attackPoint = await guest.wait(`(${repairAttackPoint.toString()})(${house.x},${house.z})`, 'visible disclosed enemy House body pixel');
     await step('guest-attack');
