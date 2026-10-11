@@ -15,10 +15,12 @@ The third increment, merged in [PR638](https://github.com/lbeezr/thousand-unit-s
 all eight registered unit roles and selection material for all thirteen current
 buildings in `frontier-feedback/v3`, including Worker/Skiff Return Cargo routing.
 The GitHub app published the change; the CLI uses a different read-only identity.
-Staging serves merged `b4ad36cf`, with all 119 recording hashes verified. The
-same owner retains full-roster ordinary-game output capture and listening; the
-first cloud case reached game boot but failed before recording. Its diagnostic
-follow-up remains separate from the verified asset delivery.
+Staging serves merged `7d4a588c`, including the loading/reconnect correction in
+[PR639](https://github.com/lbeezr/thousand-unit-skirmish/pull/639). All 119 recording
+hashes and both worker modules are verified. The user confirmed villager selection
+and Wood Gather speech after refreshing staging. The same owner retains complete
+native-output capture and building/full-roster listening; partial cloud playback
+evidence and the two confirmed meanings do not claim the entire roster accepted.
 
 Build a reusable gameplay foundation and one complete faction. The
 [gameplay foundation plan](gameplay-foundation-plan.md) defines the implementation

@@ -36,8 +36,12 @@ export function installInteractionAudioProbe() {
   };
   const nativeStart = AudioBufferSourceNode.prototype.start;
   AudioBufferSourceNode.prototype.start = function (...args) {
-    const result = nativeStart.apply(this, args);
     const sha256 = decoded.get(this.buffer);
+    // Arming observes the call without changing the native buffer, schedule,
+    // arguments or destination. Capture failures must never prevent playback.
+    try { probe.recording?.start(sha256); }
+    catch { probe.faults.push('recorder-start-error'); }
+    const result = nativeStart.apply(this, args);
     if (sha256 && probe.starts.length < 128) probe.starts.push({ sha256,
       time: performance.now() + Math.max(0, (Number(args[0]) || 0) - (this.context.currentTime || 0)) * 1000,
       duration: this.buffer.duration });
@@ -56,31 +60,66 @@ export function installInteractionAudioProbe() {
     }
     return result;
   };
-  probe.begin = () => {
+  probe.begin = (allowedHashes) => {
     if (!probe.stream || probe.recording) throw Error('Audio output unavailable or capture already active');
+    if (!Array.isArray(allowedHashes) || !allowedHashes.length || allowedHashes.length > 128
+      || !allowedHashes.every(value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value))) {
+      throw Error('Expected recording hashes are required');
+    }
+    const allowed = new Set(allowedHashes);
     const recorder = new MediaRecorder(probe.stream, { mimeType: 'audio/webm;codecs=opus' });
     const chunks = [], samples = new Float32Array(probe.analyser.fftSize);
-    const record = { from: probe.starts.length, peak: 0, energy: 0, samples: 0, began: performance.now() };
-    let finish;
+    const record = { from: probe.starts.length, peak: 0, energy: 0, samples: 0,
+      armedAt: performance.now(), began: null, ended: null, phase: 'armed' };
+    let finish, meter, stopTimer, armTimer, settled = false, byteLength = 0;
     record.done = new Promise(resolve => { finish = resolve; }); probe.recording = record;
-    const meter = setInterval(() => {
-      probe.analyser.getFloatTimeDomainData(samples);
-      for (const sample of samples) { record.peak = Math.max(record.peak, Math.abs(sample)); record.energy += sample * sample; }
-      record.samples += samples.length;
-    }, 20);
-    recorder.ondataavailable = event => { if (event.data.size) chunks.push(event.data); };
-    recorder.onerror = () => { probe.faults.push('recorder-error'); };
-    recorder.onstop = async () => {
+    const settle = async () => {
+      if (settled) return;
+      settled = true; record.phase = 'finished';
+      clearTimeout(armTimer); clearTimeout(stopTimer);
       clearInterval(meter);
-      const bytes = new Uint8Array(await new Blob(chunks).arrayBuffer());
-      let binary = ''; for (const byte of bytes) binary += String.fromCharCode(byte);
-      finish({ base64: btoa(binary), mimeType: recorder.mimeType, peak: record.peak,
+      let binary = '';
+      try {
+        const bytes = new Uint8Array(await new Blob(chunks).arrayBuffer());
+        for (const byte of bytes) binary += String.fromCharCode(byte);
+      } catch { probe.faults.push('recorder-data-error'); }
+      record.result = { base64: btoa(binary), mimeType: recorder.mimeType, peak: record.peak,
         rms: Math.sqrt(record.energy / Math.max(1, record.samples)), meteredSamples: record.samples,
-        beganAt: record.began, endedAt: record.ended, elapsedMs: record.ended - record.began,
-        starts: probe.starts.slice(record.from).filter(start => start.time >= record.began && start.time <= record.ended),
-        faults: [...probe.faults] });
+        armedAt: record.armedAt, beganAt: record.began, endedAt: record.ended,
+        elapsedMs: record.began === null || record.ended === null ? 0 : record.ended - record.began,
+        starts: record.began === null ? [] : probe.starts.slice(record.from)
+          .filter(start => start.time >= record.began && start.time <= record.ended),
+        faults: [...probe.faults] };
+      finish(record.result);
     };
-    recorder.start(); setTimeout(() => { record.ended = performance.now(); recorder.stop(); }, 3500);
+    const expire = () => { probe.faults.push('recording-arm-timeout'); void settle(); };
+    recorder.ondataavailable = event => {
+      if (settled || !event.data.size) return;
+      byteLength += event.data.size;
+      if (byteLength >= 750000) { probe.faults.push('recorder-data-limit'); return; }
+      chunks.push(event.data);
+    };
+    recorder.onerror = () => { probe.faults.push('recorder-error'); };
+    recorder.onstop = settle;
+    record.start = sha256 => {
+      if (record.phase !== 'armed' || !allowed.has(sha256)) return;
+      if (performance.now() - record.armedAt >= 30000) { expire(); return; }
+      clearTimeout(armTimer); record.phase = 'recording'; record.from = probe.starts.length;
+      record.began = performance.now();
+      try { recorder.start(); }
+      catch { probe.faults.push('recorder-start-error'); record.ended = performance.now(); void settle(); return; }
+      meter = setInterval(() => {
+        probe.analyser.getFloatTimeDomainData(samples);
+        for (const sample of samples) { record.peak = Math.max(record.peak, Math.abs(sample)); record.energy += sample * sample; }
+        record.samples += samples.length;
+      }, 20);
+      stopTimer = setTimeout(() => {
+        record.ended = performance.now(); clearInterval(meter);
+        try { recorder.stop(); }
+        catch { probe.faults.push('recorder-stop-error'); void settle(); }
+      }, 3500);
+    };
+    armTimer = setTimeout(expire, 30000);
     return true;
   };
   probe.finish = async () => { const result = await probe.recording.done; probe.recording = null; return result; };
@@ -95,6 +134,8 @@ export function validateAudioObservation(record, allowedHashes) {
   assert.ok(record.elapsedMs >= 3000 && record.elapsedMs < 10000, 'bounded real output duration required');
   assert.ok(Number.isFinite(record.beganAt) && Number.isFinite(record.endedAt)
     && Math.abs(record.endedAt - record.beganAt - record.elapsedMs) < 1, 'recording interval must be explicit');
+  assert.ok(Number.isFinite(record.armedAt) && record.beganAt >= record.armedAt
+    && record.beganAt - record.armedAt < 30000, 'recording must begin within its bounded arming interval');
   assert.ok(record.meteredSamples >= 2048 && Number.isFinite(record.peak) && record.peak > .001 && record.peak < 1
     && Number.isFinite(record.rms) && record.rms > .0001 && record.rms <= record.peak + 1e-6, 'nonzero bounded metered output required');
   const matching = record.starts.filter(sample => allowedHashes.includes(sample.sha256));
@@ -136,6 +177,9 @@ export function interactionTargetPoint(kind, id) {
 export async function run(value) {
   const { page, origin, source, capture, evidenceDirectory } = validateCaptureContext(value);
   const report = { schemaVersion: 1, source, mapId, status: 'failed', recordings: [], issues: [], listeningReview: 'pending' };
+  const reportFile = path.join(evidenceDirectory, 'interaction-audio.json');
+  await writeFile(reportFile, JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
+  const persistReport = () => writeFile(reportFile, JSON.stringify(report, null, 2) + '\n');
   // Only local, public audio paths; never retain query strings, headers or
   // unrelated requests. Completed and aborted transfers distinguish a slow
   // first load from a lifecycle restart without changing browser networking.
@@ -189,18 +233,30 @@ export async function run(value) {
     const recordClick = async (key, checkpoint, action) => {
       stage = checkpoint;
       const before = (await state()).inspector.decisions.filter(d => d.key === key && d.outcome === 'sample scheduled').length;
-      await page.cdp.evaluate('window.__rtsInteractionAudio.begin()');
-      await action();
-      await page.wait(`window.__rtsInteractionAudioSnapshot().inspector.decisions.filter(d => d.key === ${JSON.stringify(key)} && d.outcome === 'sample scheduled').length > ${before}`, 'ordinary click schedules its exact recording');
-      await capture({ page, mapId, checkpoint });
-      const output = await page.cdp.evaluate('window.__rtsInteractionAudio.finish()');
       const allowed = bindings[key].variants.map(v => manifest.downloads[v.sourceId].sha256);
+      await page.cdp.evaluate(`window.__rtsInteractionAudio.begin(${JSON.stringify(allowed)})`);
+      await action();
+      stage = `${checkpoint}-scheduled`;
+      await page.wait(`window.__rtsInteractionAudioSnapshot().inspector.decisions.filter(d => d.key === ${JSON.stringify(key)} && d.outcome === 'sample scheduled').length > ${before}`, 'ordinary click schedules its exact recording');
+      // Poll a settled value instead of holding a Runtime.evaluate promise past
+      // the shared CDP transport's 15-second call deadline on a busy renderer.
+      stage = `${checkpoint}-output`;
+      await page.wait('Boolean(window.__rtsInteractionAudio.recording?.result)', 'native recording finalized', 45000);
+      const output = await page.cdp.evaluate('window.__rtsInteractionAudio.finish()');
+      stage = `${checkpoint}-receipt`;
+      report.lastOutput = { key, armedAt: output.armedAt, beganAt: output.beganAt, endedAt: output.endedAt, elapsedMs: output.elapsedMs,
+        starts: output.starts, faults: output.faults, peak: output.peak, rms: output.rms, meteredSamples: output.meteredSamples };
+      await persistReport();
       const verified = validateAudioObservation(output, allowed);
       const file = `${checkpoint}.webm`;
       await writeFile(path.join(evidenceDirectory, file), verified.bytes, { flag: 'wx' });
       const current = await state();
       report.recordings.push({ key, file, sha256: verified.sha256, sourceSha256: verified.sourceSha256,
         peak: output.peak, rms: output.rms, elapsedMs: output.elapsedMs, settings: current.settings });
+      delete report.lastOutput;
+      // Keep each completed native recording even if a later visual checkpoint
+      // or the bounded case deadline fails. Partial evidence stays incomplete.
+      await persistReport();
     };
     // Clicking the Town Center clears the first Worker selection legitimately.
     const town = (await state()).buildings.find(b => b.type === 'town-center' && b.complete && b.point);
@@ -237,6 +293,8 @@ export async function run(value) {
     const barracksPoint = await targetPoint('building', barracks.id);
     await recordClick('building.barracks.select', 'barracks-click', () => clickNovicePoint(page, barracksPoint));
     assert.deepEqual(report.recordings.map(r => r.key).sort(), [...interactionKeys].sort());
+    stage = 'recorded-audio-checkpoint';
+    await capture({ page, mapId, checkpoint: 'recorded-audio-checkpoint' });
     report.status = 'captured-needs-listening';
   } catch (error) {
     const reason = /pointer point must be inside/.test(error?.message) ? 'pointer-outside-viewport'
@@ -259,6 +317,8 @@ export async function run(value) {
           bindingCount: last?.inspector?.bindings?.length ?? 0,
           decisions: last?.inspector?.decisions?.slice(-12) ?? [],
           nativeStarts: probe?.starts?.slice(-12) ?? [],
+          recording: probe?.recording ? { phase: probe.recording.phase, armedAt: probe.recording.armedAt,
+            beganAt: probe.recording.began, endedAt: probe.recording.ended, ready: Boolean(probe.recording.result) } : null,
           workers: last?.workers ?? [], buildings: last?.buildings ?? [] };
       })()`);
       // Entry may fail before a rendered game frame exists. Retain a raw
@@ -273,7 +333,7 @@ export async function run(value) {
     } catch { report.issues.push({ stage, code: 'failure-diagnostic-unavailable' }); }
   }
   report.downloads = downloads;
-  await writeFile(path.join(evidenceDirectory, 'interaction-audio.json'), JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
+  await persistReport();
   const passed = report.status === 'captured-needs-listening';
   return { status: passed ? 'passed' : 'failed', checks: [{ id: 'ordinary-clicks-native-output-recorded', passed }] };
 }
