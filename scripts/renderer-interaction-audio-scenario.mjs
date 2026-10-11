@@ -146,7 +146,8 @@ export async function run(value) {
       condition: `(${observeInteractionAudio.toString()})()` });
     stage = 'ordinary-entry';
     await page.cdp.call('Page.navigate', { url: origin + '/' });
-    await page.wait('document.documentElement.dataset.entry === "menu" && document.querySelector("#menu-new-game")?.disabled === false', 'ordinary New Game');
+    await page.wait('document.documentElement?.dataset.entry === "menu" && document.querySelector("#menu-new-game")?.disabled === false', 'ordinary New Game');
+    stage = 'new-game-click';
     await control(page, '#menu-new-game');
     stage = 'opening-workers';
     await page.wait(`window.__rtsInteractionAudio?.last?.mapId === '${mapId}' && window.__rtsInteractionAudio.last.workers.some(w => w.point)`, 'normal opening Workers');
@@ -209,19 +210,34 @@ export async function run(value) {
     await recordClick('building.barracks.select', 'barracks-click', () => clickNovicePoint(page, barracks.point));
     assert.deepEqual(report.recordings.map(r => r.key).sort(), [...interactionKeys].sort());
     report.status = 'captured-needs-listening';
-  } catch {
-    report.issues.push({ stage, code: 'interaction-audio-capture-failed' });
+  } catch (error) {
+    const reason = /pointer point must be inside/.test(error?.message) ? 'pointer-outside-viewport'
+      : /Cannot read properties of null/.test(error?.message) ? 'dom-not-ready'
+        : /timeout/i.test(error?.message) ? 'wait-timeout' : 'operation-failed';
+    report.issues.push({ stage, code: 'interaction-audio-capture-failed', reason, errorType: error?.name || 'Error' });
     try {
       report.diagnostic = await page.cdp.evaluate(`(() => {
         const probe = window.__rtsInteractionAudio, last = probe?.last;
-        return { entry: document.documentElement.dataset.entry ?? null,
-          boot: document.documentElement.dataset.boot ?? null,
+        return { entry: document.documentElement?.dataset.entry ?? null,
+          boot: document.documentElement?.dataset.boot ?? null,
+          viewport: { width: innerWidth, height: innerHeight },
+          newGame: (() => { const e = document.querySelector('#menu-new-game');
+            if (!e) return null; const r = e.getBoundingClientRect();
+            return { disabled: e.disabled, x: r.x, y: r.y, width: r.width, height: r.height }; })(),
           probe: Boolean(probe), faults: probe?.faults ?? [],
           mapId: last?.mapId ?? null, team: last?.team ?? null,
           audioStatus: last?.status ?? null, packStatus: last?.inspector?.status ?? null,
           workers: last?.workers ?? [], buildings: last?.buildings ?? [] };
       })()`);
-      await capture({ page, mapId, checkpoint: `failure-${stage}` });
+      // Entry may fail before a rendered game frame exists. Retain a raw
+      // diagnostic viewport without calling it an ordinary-game checkpoint.
+      const screenshot = await page.cdp.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+      const bytes = Buffer.from(screenshot.data, 'base64');
+      assert.ok(bytes.length > 1000 && bytes.length < 10000000
+        && bytes.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex')));
+      const file = `failure-${stage}.png`;
+      await writeFile(path.join(evidenceDirectory, file), bytes, { flag: 'wx' });
+      report.diagnosticImage = { file, sha256: hash(bytes), scope: 'failure-diagnostic-only' };
     } catch { report.issues.push({ stage, code: 'failure-diagnostic-unavailable' }); }
   }
   await writeFile(path.join(evidenceDirectory, 'interaction-audio.json'), JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
