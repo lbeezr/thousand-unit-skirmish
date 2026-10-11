@@ -372,6 +372,33 @@ art evolution. No new art or private files are published by this reconciliation.
 
 ## Resources, terrain and audio
 
+The 11 October [interaction-audio goal](audio-event-asset-matrix.md#interaction-delivery-owner--11-october-2026)
+is owned by chat `01a12b6b-d181-79b1-97b4-05de79523245`. First increment:
+`audio/frontier-feedback-v1` and `audio/runtime/frontier-feedback/v1` supply
+Worker selection/Wood Gather speech and Barracks/Town Center selection sounds.
+Default Main binding, exact HTTP admission and Docker/release inputs are implemented;
+**integration, containing deployment and actual in-game listening remain incomplete**.
+The [first source/clean-pack receipt](qa-interaction-audio-2026-10-11.md) passes;
+The CLI rejected the branch push under `lbliii`; the user-corrected app check
+confirms write access for `lbeezr`. Publication proceeds through the app.
+The local second increment, [Worker action voices](../assets/audio/frontier-worker-actions-v1/README.md),
+adds fourteen meanings with 28 assigned takes and advances the default to
+`audio/runtime/frontier-feedback/v2` (39 sources total). All 56 new originals and
+their provenance remain preserved. Exact admission, Docker inputs and default
+bindings are implemented; this does not change the missing deployment/listening
+evidence. The [third local increment](../assets/audio/frontier-roster-feedback-v1/README.md)
+adds the other seven role voices, eleven building selections and Worker/Skiff
+Return Cargo, with 253 preserved originals and 80 selected takes. Default
+`frontier-feedback/v3` contains 119 recordings / 85 bindings covering all eight
+current unit roles and all thirteen building selections. Static admission and
+Docker inputs are implemented; the owner next publishes, verifies containing
+delivery and captures/listens to the full roster in ordinary gameplay. The
+existing prepared cloud capture covers only its four initial cases; it is not
+a full-roster or already-executed acceptance receipt. Source `22c6d7fb` has a clean
+release and packed HTTP verification of all 119 recordings / 146 client modules,
+recorded in the same QA receipt. Deployment and actual hearing remain incomplete.
+The older regional/pilot rows below retain their separate source/listening scope.
+
 | Package/family | Actual use and release | Incomplete work → owner / next action |
 | --- | --- | --- |
 | `environment/frontier-v1`, `frontier-interactive-v1` | Default grounds, regional forest/depletion atlases, vegetation/scenery and resource states via [environment art](../src/environment-art.mjs); 488/11 files packed. `meshyResources=0` is comparison; young/pocket forest-age modes are experiments. Visible canopy alpha now maps context clicks to existing forest/node IDs; [canonical mapping and source regression](qa-tree-targeting-2026-10-04.md). | **Broader current-build verification incomplete** → environment/renderer owners: map-specific depletion/reset, crossings and normal/strategic views. Terrain owns tree-targeting release/deployment/ordinary cloud capture; CI owns the shared hosted dispatch. Regional decorative plants do not imply distinct harvestable resources. |

@@ -20,6 +20,7 @@ on:
           - site-composition
           - tree-targeting
           - browser-resume
+          - interaction-audio
 
 permissions:
   contents: read

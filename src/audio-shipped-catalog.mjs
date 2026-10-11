@@ -1,4 +1,9 @@
 // Hash-bound shipped recordings; regional sources remain creative candidates.
+// Normal-game interaction audio is independent of a map's music/ambience choice.
+export const DEFAULT_GAME_AUDIO_REFERENCE = Object.freeze({
+  packId: 'frontier-feedback', profileId: 'interactions', version: 'v3',
+  sha256: 'ac8b054bdd5dcd0865eccea0eefd34b56316d8df58104cdcc065b5ed6e9828cb',
+});
 export const SHIPPED_AUDIO_REFERENCES = Object.freeze([
   {
     "packId": "rts-feedback-test",

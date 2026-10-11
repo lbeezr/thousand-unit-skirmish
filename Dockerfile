@@ -9,6 +9,9 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund && apk add --no-cache su-exec
 COPY --chown=node:node server.mjs room-supervisor.mjs origin-policy.mjs simulation-scheduler.mjs index.html audio-studio.html audio-zones.html environment-review.html water-study.html style.css ./
 COPY --chown=node:node assets/audio/runtime/ ./assets/audio/runtime/
+COPY --chown=node:node assets/audio/frontier-feedback-v1/sources/ ./assets/audio/frontier-feedback-v1/sources/
+COPY --chown=node:node assets/audio/frontier-worker-actions-v1/sources/ ./assets/audio/frontier-worker-actions-v1/sources/
+COPY --chown=node:node assets/audio/frontier-roster-feedback-v1/sources/ ./assets/audio/frontier-roster-feedback-v1/sources/
 COPY --chown=node:node assets/audio/vaelora-zones-v1/ ./assets/audio/vaelora-zones-v1/
 COPY --chown=node:node assets/audio/vaelora-pilot-v1/sources/ ./assets/audio/vaelora-pilot-v1/sources/
 COPY --chown=node:node src/ ./src/

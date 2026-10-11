@@ -230,6 +230,77 @@ test('typed completion preserves aliases, civilization/common/cue/unbound fallba
   assert.ok(gate.choose(voiceProfile, { ...event, buildingType: 'watchtower' }));
 });
 const gatherCommand = nodeId => ({ type: 'gather', ids: [0], nodeId });
+
+for (const team of [0, 1]) for (const kind of ['worker', 'skiff']) {
+  test(`seat ${team}: actual ${kind} Return Cargo caller acknowledges only accepted cargo intent`, () => {
+    const f = orderFixture({ team, mutate: data => { data.units[0].kind = kind; } });
+    const command = { type: 'returnCargo', ids: [0] };
+    const token = f.sendOrder(command, 'RETURN CARGO', 1, kind.toUpperCase());
+    assert.deepEqual(f.commands, [{ ...command, clientOrderToken: token }]);
+    assert.deepEqual(f.cues, ['send']);
+    for (const message of ['PLANNING RETURN CARGO · 1', 'RETURN CARGO QUEUED · 1', 'RETURN CARGO ORDER']) {
+      assert.equal(f.gate.observe(token, message), null);
+    }
+    assert.equal(f.gate.observe(token + 1, 'RETURN CARGO ORDER · 1'), null);
+    const event = f.gate.observe(token, 'RETURN CARGO ORDER · 1');
+    assert.equal(event.cue, 'return-cargo'); assert.equal(event.kind, kind);
+    assert.deepEqual(bindingKeysForEvent(event), [`unit.${kind}.return-cargo`, 'cue.return-cargo']);
+    assert.equal(f.gate.observe(token, 'RETURN CARGO ORDER · 1'), null);
+    for (const failure of ['RETURN CARGO REJECTED · EMPTY', 'RETURN CARGO FAILED · UNREACHABLE', 'RETURN CARGO CANCELLED · MATCH OVER']) {
+      const failedToken = f.sendOrder(command, 'RETURN CARGO', 1, kind.toUpperCase());
+      assert.equal(f.gate.observe(failedToken, failure), null);
+      assert.equal(f.gate.observe(failedToken, 'RETURN CARGO ORDER · 1'), null);
+    }
+    const resetToken = f.sendOrder(command, 'RETURN CARGO', 1, kind.toUpperCase());
+    f.gate.reset(); assert.equal(f.gate.observe(resetToken, 'RETURN CARGO ORDER · 1'), null);
+  });
+}
+
+test('Return Cargo notices cannot consume another role or command intent', () => {
+  for (const event of [{ kind: 'infantry', cue: 'return-cargo' }, { kind: 'worker', cue: 'move' }, { kind: 'skiff', cue: 'gather' }]) {
+    const gate = new OrderAudioGate(); gate.sent(1, event);
+    assert.equal(gate.observe(1, 'RETURN CARGO ORDER · 1'), null);
+  }
+});
+
+for (const team of [0, 1]) test(`seat ${team}: actual Farm Replant caller speaks the Worker Build response once after acceptance`, () => {
+  const f = orderFixture({ team });
+  const command = { type: 'replantFarm', ids: [0], buildingId: 9 };
+  const notice = 'FARM REPLANTED · 60 WOOD · 1 WORKERS · HARVEST AFTER CONSTRUCTION';
+  const token = f.sendOrder(command, 'REPLANT FARM', 1, 'WORKER');
+  assert.deepEqual(f.commands, [{ ...command, clientOrderToken: token }]);
+  assert.deepEqual(f.cues, ['send'], 'no spoken success before server acceptance');
+  for (const message of ['PLANNING FARM REPLANT · 1', 'FARM REPLANT QUEUED · 1', 'FARM REPLANTED']) {
+    assert.equal(f.gate.observe(token, message), null);
+  }
+  assert.equal(f.gate.observe(token + 1, notice), null);
+  const event = f.gate.observe(token, notice);
+  assert.equal(event.cue, 'build'); assert.equal(event.kind, 'worker');
+  assert.deepEqual(bindingKeysForEvent(event), ['unit.worker.build', 'cue.build']);
+  assert.equal(f.gate.observe(token, notice), null, 'duplicate acceptance stays silent');
+  for (const failure of ['FARM REPLANT REJECTED · NEED 60 WOOD', 'FARM REPLANT FAILED · UNREACHABLE', 'FARM REPLANT CANCELLED · MATCH OVER']) {
+    const failedToken = f.sendOrder(command, 'REPLANT FARM', 1, 'WORKER');
+    assert.equal(f.gate.observe(failedToken, failure), null);
+    assert.equal(f.gate.observe(failedToken, notice), null, 'failed intent cannot speak later');
+  }
+  const resetToken = f.sendOrder(command, 'REPLANT FARM', 1, 'WORKER');
+  f.gate.reset(); assert.equal(f.gate.observe(resetToken, notice), null);
+});
+
+test('Farm Replant success cannot consume another role or construction intent', () => {
+  for (const event of [
+    { cue: 'build', kind: 'worker' },
+    { cue: 'move', kind: 'worker', buildJob: 'replant' },
+    { cue: 'build', kind: 'infantry', buildJob: 'replant' },
+  ]) {
+    const gate = new OrderAudioGate(); gate.sent(1, event);
+    assert.equal(gate.observe(1, 'FARM REPLANTED · 60 WOOD · 1 WORKERS'), null);
+  }
+  const f = orderFixture({ send: false });
+  assert.equal(f.sendOrder({ type: 'replantFarm', ids: [0], buildingId: 9 }, 'REPLANT FARM', 1), null);
+  assert.equal(f.gate.pending.size, 0); assert.deepEqual(f.cues, []);
+});
+
 function orderFixture({ team = 0, mutate = () => {}, send = true } = {}) {
   const map = { id: 'audio-context', width: 20, height: 20, fogOfWar: true, resourceNodes: [
     { id: 'berries', type: 'food', x: -2, z: 0, stock: 30 },

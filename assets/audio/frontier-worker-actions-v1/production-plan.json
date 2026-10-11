@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "flowId": "A9YBw84WvbCnv9m4GunT",
+  "flowUrl": "https://elevenlabs.io/app/flows/A9YBw84WvbCnv9m4GunT",
+  "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+  "voiceName": "George - Warm, Captivating Storyteller",
+  "model": "eleven_multilingual_v2",
+  "estimatedCredits": 867.9132000000001,
+  "nodes": [
+    {
+      "action": "move",
+      "prompt": "On my way.",
+      "eventKey": "unit.worker.move",
+      "nodeId": "UxLY3scbatGvnH6pV0gt",
+      "sessionIds": [
+        "1wLdxjIfrCihsJoqLtID",
+        "LGS2D7yRLG7CjWHFxo9A",
+        "rPXTV7mLmwaIeHLZQ9l5",
+        "ENyw5i7e1bwPBfTF6YY9"
+      ],
+      "generationIds": [
+        "O0TRHVU034d7WYv2uJ75",
+        "Xevn4xcwfppcUeIKMJrW",
+        "vSCKR4I2NfKYpc37nAIH",
+        "1Eszj9MzJYczjZom3t3F"
+      ]
+    },
+    {
+      "action": "patrol",
+      "prompt": "I'll keep watch.",
+      "eventKey": "unit.worker.patrol",
+      "nodeId": "PcrLhHjBje4UdOW9Y7Gg",
+      "sessionIds": [
+        "Sm4llEmjyqyy81WpexIl",
+        "D5uhQN4bEHdKf8fdIxxV",
+        "1vjOMKK4AhYwlFAEew6d",
+        "xgXdMotjWMRL0rMPeQY2"
+      ],
+      "generationIds": [
+        "RSwpPrtq4N5fTGXTMNDQ",
+        "Zhi38MiqUBr7p5ReGfu5",
+        "mZD5t11GHShQyfFFiIht",
+        "CjAHi772y2YP5KwLNlZJ"
+      ]
+    },
+    {
+      "action": "follow",
+      "prompt": "Right behind you.",
+      "eventKey": "unit.worker.follow",
+      "nodeId": "NvRjVvZfPwWq1UhujOBn",
+      "sessionIds": [
+        "abIUY3Qvr95sT0vcwlgy",
+        "QTKkDMGuMXYuwng4UbqS",
+        "l5m6qJKdHSbiMpexjdLs",
+        "gL4ObDk5biwcWfWieSLq"
+      ],
+      "generationIds": [
+        "w2NK0adGDDlLfMTqRiUF",
+        "N5tguvPOuTCyCh7mdM5C",
+        "pyHVOWJflW5MXv6BYm3p",
+        "AnMMNNrYk0MsyLiRJYId"
+      ]
+    },
+    {
+      "action": "stop",
+      "prompt": "Stopping here.",
+      "eventKey": "unit.worker.stop",
+      "nodeId": "alsl3dye1qZTODQDBP2G",
+      "sessionIds": [
+        "0DYV158vqVxidUHhsbPp",
+        "SIA4FcAHCWN77sxSngT0",
+        "EvAyBlaHKjvkzrP21vV9",
+        "Snw3mKnu0Pja42Xu3XFP"
+      ],
+      "generationIds": [
+        "FU5TyUQIw4AuO5Wq8vbg",
+        "qUnKzT6WIge5sNKxATAr",
+        "kcyFEfHJhcFS710aANRw",
+        "RQCGeA6NbVQmmSyP5eEk"
+      ]
+    },
+    {
+      "action": "hold",
+      "prompt": "I'll stay here.",
+      "eventKey": "unit.worker.hold",
+      "nodeId": "FAf3JUUJb4O3XO9i0iIY",
+      "sessionIds": [
+        "mW4UkJFSpNXaVoaNYY6V",
+        "U9B2nU0DWNHZhGIcLiZD",
+        "lDkSYynJq4ZBu8izqBTt",
+        "H5SDYY5IVUt1hktawXpt"
+      ],
+      "generationIds": [
+        "3UCbXSuI3dxQ9aBXSdQe",
+        "pCL5p7wACxah6NCu1QS6",
+        "NUEFzsYtJIz75oVwYf68",
+        "VTz017ViJb0WgBRzIZH8"
+      ]
+    },
+    {
+      "action": "attack",
+      "prompt": "I'll fight.",
+      "eventKey": "unit.worker.attack",
+      "nodeId": "VECViphePwLZRdbMXrgu",
+      "sessionIds": [
+        "lQ3groXd17ecWCy0QX4v",
+        "1zsFeriMrAWQLwZ9p7pU",
+        "kp9zE3l0TsQPdRaIFRRo",
+        "fOMqXFsFNv9cD7MU7vU6"
+      ],
+      "generationIds": [
+        "sUr3g1Z3LVwWAGLintSF",
+        "vXQHX8CqqgBf0aT9uuzB",
+        "BXzl1cbsGTAaLKJIRWw2",
+        "ljfxOSdRHe4ooMgyTGYm"
+      ]
+    },
+    {
+      "action": "gather-food",
+      "prompt": "I'll gather food.",
+      "eventKey": "unit.worker.gather.food",
+      "nodeId": "GpzpctCj6mkZQN6WGxvu",
+      "sessionIds": [
+        "9f7OWJEKDu3Vp7iosfow",
+        "R6rDKCLJ64DFkWZpowdg",
+        "xCG5M4WUGJKKpv253kHE",
+        "sEfaIK1h79QDyVaM8fDc"
+      ],
+      "generationIds": [
+        "F8NBmfwEkqTKFAPtv5uP",
+        "l1Ydi5HMhprAmQ4tG3Bl",
+        "RJiukBBAzx4lGbEihzuX",
+        "hNpB245E4EbKdg6ggF56"
+      ]
+    },
+    {
+      "action": "gather-farm",
+      "prompt": "I'll tend the crops.",
+      "eventKey": "unit.worker.gather.farm",
+      "nodeId": "IFZVroqZoS4qH8tZvqU4",
+      "sessionIds": [
+        "ZwxwV9NgaxwkgenotC9S",
+        "4OxmCbpVHP5cxEpciCAF",
+        "zBoTjyzMcPU2arBZ5Ry3",
+        "RfznxAZcaFVjmKtSStdt"
+      ],
+      "generationIds": [
+        "a3RsIoK7ECRj3erKIgaz",
+        "sP5hdPk44icYmQcUljq3",
+        "VgfxHJoOb36MlvtuaKWr",
+        "EhllCMz6br9iDPp7zuqd"
+      ]
+    },
+    {
+      "action": "gather-sheep-carcass",
+      "prompt": "I'll collect the meat.",
+      "eventKey": "unit.worker.gather.sheep-carcass",
+      "nodeId": "WENEU4vpDoZLPvef4xGh",
+      "sessionIds": [
+        "k9EjpWUz3NKAhuVTbmXb",
+        "80v0qhXp8ijb6IZi9r0t",
+        "MnXWA6DH0eyGitQ41KSC",
+        "UM9e4esODJ5MMIVGUVL6"
+      ],
+      "generationIds": [
+        "eSmgNQY1clywaIJR0KVg",
+        "76pydydvDqRUuHsYuTBi",
+        "BtNPJpyHHPGhLqQTgOUx",
+        "n2vpQDheUJEl80iOjOQl"
+      ]
+    },
+    {
+      "action": "gather-fish",
+      "prompt": "I'll catch fish.",
+      "eventKey": "unit.worker.gather.fish",
+      "nodeId": "GKXpxvUxNdHcoDoTuLT8",
+      "sessionIds": [
+        "I4Fs1duNrgb7kcQSc3Y0",
+        "2GBfqFrc5L1d456PclGf",
+        "N2YQPOru5E7vjtsZS7fL",
+        "wHFZe1nQH2MdxEsEePw9"
+      ],
+      "generationIds": [
+        "nTqpUe62ltUGJSGYJ43R",
+        "ewKr61gkSXvZ2OIuzBcJ",
+        "jGuTF2AHBlMHzOdPmTmI",
+        "ZlM4rG65ICLuBMOvRvrT"
+      ]
+    },
+    {
+      "action": "gather-stone",
+      "prompt": "I'll quarry stone.",
+      "eventKey": "unit.worker.gather.stone",
+      "nodeId": "ydn3nbjecocBQhsBQuVx",
+      "sessionIds": [
+        "boPqzi3K0MzvbL6vDUKF",
+        "tgdsEeG7Tb8CltNoGKW7",
+        "zjWqB04sio8LftGJD1ax",
+        "de0Out2UH4yo673p4df8"
+      ],
+      "generationIds": [
+        "6Us5OGfUG4ekKtX4NHi1",
+        "eIa3er8RwDsnOdYJ6ejb",
+        "dy2FbKU1g5EyJlWlcl4A",
+        "7C1FqDdAeCcpO5WJvbq2"
+      ]
+    },
+    {
+      "action": "build",
+      "prompt": "I'll build it.",
+      "eventKey": "unit.worker.build",
+      "nodeId": "YoLJoGUuNPzZokp9aAyt",
+      "sessionIds": [
+        "sdE2br8cpiKREq86iPCK",
+        "oX3GKx7V2waDaiTzlAja",
+        "rqIoyXOu4mi4FLxnvz4a",
+        "ruACnpwtlccnhrN1W265"
+      ],
+      "generationIds": [
+        "K24xviQFbKY1NOm1fDQa",
+        "eLOLs7fAq84J7MrHEZA9",
+        "TEKF6iZNSC6FLT49gW1N",
+        "UVqd67IQszwZe4n67UKQ"
+      ]
+    },
+    {
+      "action": "repair",
+      "prompt": "I'll mend it.",
+      "eventKey": "unit.worker.repair",
+      "nodeId": "juDBm7OqfgtYwDSg0ToJ",
+      "sessionIds": [
+        "Kw852s6jg3kRrLZrQ9LD",
+        "TQmRRF31eHnJHMR3ZDDk",
+        "zqYp3fVWVVlgnvHGfAk7",
+        "prCJAxHzoWXg1eaU8TPW"
+      ],
+      "generationIds": [
+        "wkYCaHsv9avVQnr1W59q",
+        "1P2zKP1PG9GtXjx95CTf",
+        "82SWorXfUtnBbFpk5qFT",
+        "6xri9Fb0rn7q3qZSyEZ6"
+      ]
+    },
+    {
+      "action": "ready",
+      "prompt": "Ready to work.",
+      "eventKey": "unit.worker.ready",
+      "nodeId": "LvNvgeiKAxiOJiN2mYRC",
+      "sessionIds": [
+        "RG3AKZptOKy3y3f3dUZQ",
+        "N3zqQQqPHDzCbs6KOiMk",
+        "k1NzTw6L5jsEUYvHb7do",
+        "jKGk76ACB8dtLHAMR2XA"
+      ],
+      "generationIds": [
+        "UQWbKbHGMcGq9xuUDUJz",
+        "0D1D7sURuniLBmAq7V6u",
+        "nFCAHBk1yScwfR1gztQT",
+        "8ZklWajE8AcYFmkNwxl0"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4162 @@
+{
+  "version": "v3",
+  "pack": {
+    "schemaVersion": 1,
+    "id": "frontier-feedback",
+    "name": "Frontier voices and building sounds",
+    "sources": [
+      {
+        "id": "frontier-worker-select-1",
+        "name": "What needs doing?",
+        "fileName": "worker-select-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "sR6loC2Y1jo4MBlFsXEX",
+          "prompt": "What needs doing?",
+          "createdAt": "2026-10-11T14:45:25.226Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-select-2",
+        "name": "What needs doing?",
+        "fileName": "worker-select-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "zUlaN3XtNHJDRbWyAVFs",
+          "prompt": "What needs doing?",
+          "createdAt": "2026-10-11T14:45:25.294Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-select-3",
+        "name": "What needs doing?",
+        "fileName": "worker-select-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "3G48CzR0nwPVCrsiZeMa",
+          "prompt": "What needs doing?",
+          "createdAt": "2026-10-11T14:45:25.323Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-select-4",
+        "name": "What needs doing?",
+        "fileName": "worker-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "U10rVyANEp3z0GteE69d",
+          "prompt": "What needs doing?",
+          "createdAt": "2026-10-11T14:45:25.352Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-wood-1",
+        "name": "I'll cut wood.",
+        "fileName": "worker-gather-wood-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "klIIdEnomqCbtUvXQmO2",
+          "prompt": "I'll cut wood.",
+          "createdAt": "2026-10-11T14:45:59.224Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-wood-2",
+        "name": "I'll cut wood.",
+        "fileName": "worker-gather-wood-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "UcqDaCOGfcMLyRwsznts",
+          "prompt": "I'll cut wood.",
+          "createdAt": "2026-10-11T14:45:59.261Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-wood-3",
+        "name": "I'll cut wood.",
+        "fileName": "worker-gather-wood-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "R7c8Mly6wGhmNX6UlkRV",
+          "prompt": "I'll cut wood.",
+          "createdAt": "2026-10-11T14:45:59.320Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-wood-4",
+        "name": "I'll cut wood.",
+        "fileName": "worker-gather-wood-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "sIUG85khTD9no8BVFpSP",
+          "prompt": "I'll cut wood.",
+          "createdAt": "2026-10-11T14:45:59.363Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-barracks-select-4",
+        "name": "barracks selection",
+        "fileName": "barracks-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "xwdvzjwekY1tPFMeNkAJ",
+          "prompt": "A short close clatter of soldiers lifting worn shields from a wooden rack, dull iron fittings and leather, dry ending, no speech or music.",
+          "createdAt": "2026-10-11T14:48:09.101000+00:00",
+          "attribution": "Generated sound effect"
+        }
+      },
+      {
+        "id": "frontier-town-center-select-1",
+        "name": "town-center selection",
+        "fileName": "town-center-select-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "SrjX7LTzMiuh0N8tJGps",
+          "prompt": "A brief warm murmur of people talking in a busy timber town hall, indistinct words, natural close room acoustics, no music.",
+          "createdAt": "2026-10-11T14:48:09.016000+00:00",
+          "attribution": "Generated sound effect"
+        }
+      },
+      {
+        "id": "frontier-town-center-select-4",
+        "name": "town-center selection",
+        "fileName": "town-center-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "pFHJxUCWdTzyaa2Ot4mU",
+          "prompt": "A brief warm murmur of people talking in a busy timber town hall, indistinct words, natural close room acoustics, no music.",
+          "createdAt": "2026-10-11T14:48:09.103000+00:00",
+          "attribution": "Generated sound effect"
+        }
+      },
+      {
+        "id": "frontier-worker-move-1",
+        "name": "On my way.",
+        "fileName": "worker-move-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "O0TRHVU034d7WYv2uJ75",
+          "prompt": "On my way.",
+          "createdAt": "2026-10-11T15:06:14.889Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-move-2",
+        "name": "On my way.",
+        "fileName": "worker-move-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "Xevn4xcwfppcUeIKMJrW",
+          "prompt": "On my way.",
+          "createdAt": "2026-10-11T15:06:14.998Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-patrol-1",
+        "name": "I'll keep watch.",
+        "fileName": "worker-patrol-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "RSwpPrtq4N5fTGXTMNDQ",
+          "prompt": "I'll keep watch.",
+          "createdAt": "2026-10-11T15:06:14.890Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-patrol-3",
+        "name": "I'll keep watch.",
+        "fileName": "worker-patrol-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "mZD5t11GHShQyfFFiIht",
+          "prompt": "I'll keep watch.",
+          "createdAt": "2026-10-11T15:06:15.115Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-follow-1",
+        "name": "Right behind you.",
+        "fileName": "worker-follow-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "w2NK0adGDDlLfMTqRiUF",
+          "prompt": "Right behind you.",
+          "createdAt": "2026-10-11T15:06:14.889Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-follow-3",
+        "name": "Right behind you.",
+        "fileName": "worker-follow-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "pyHVOWJflW5MXv6BYm3p",
+          "prompt": "Right behind you.",
+          "createdAt": "2026-10-11T15:06:15.136Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-stop-1",
+        "name": "Stopping here.",
+        "fileName": "worker-stop-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "FU5TyUQIw4AuO5Wq8vbg",
+          "prompt": "Stopping here.",
+          "createdAt": "2026-10-11T15:06:14.891Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-stop-4",
+        "name": "Stopping here.",
+        "fileName": "worker-stop-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "RQCGeA6NbVQmmSyP5eEk",
+          "prompt": "Stopping here.",
+          "createdAt": "2026-10-11T15:06:15.328Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-hold-1",
+        "name": "I'll stay here.",
+        "fileName": "worker-hold-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "3UCbXSuI3dxQ9aBXSdQe",
+          "prompt": "I'll stay here.",
+          "createdAt": "2026-10-11T15:06:14.897Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-hold-2",
+        "name": "I'll stay here.",
+        "fileName": "worker-hold-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "pCL5p7wACxah6NCu1QS6",
+          "prompt": "I'll stay here.",
+          "createdAt": "2026-10-11T15:06:15.025Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-attack-3",
+        "name": "I'll fight.",
+        "fileName": "worker-attack-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "BXzl1cbsGTAaLKJIRWw2",
+          "prompt": "I'll fight.",
+          "createdAt": "2026-10-11T15:06:15.197Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-attack-4",
+        "name": "I'll fight.",
+        "fileName": "worker-attack-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "ljfxOSdRHe4ooMgyTGYm",
+          "prompt": "I'll fight.",
+          "createdAt": "2026-10-11T15:06:15.465Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-food-1",
+        "name": "I'll gather food.",
+        "fileName": "worker-gather-food-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "F8NBmfwEkqTKFAPtv5uP",
+          "prompt": "I'll gather food.",
+          "createdAt": "2026-10-11T15:06:14.896Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-food-2",
+        "name": "I'll gather food.",
+        "fileName": "worker-gather-food-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "l1Ydi5HMhprAmQ4tG3Bl",
+          "prompt": "I'll gather food.",
+          "createdAt": "2026-10-11T15:06:15.003Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-farm-1",
+        "name": "I'll tend the crops.",
+        "fileName": "worker-gather-farm-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "a3RsIoK7ECRj3erKIgaz",
+          "prompt": "I'll tend the crops.",
+          "createdAt": "2026-10-11T15:06:14.905Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-farm-2",
+        "name": "I'll tend the crops.",
+        "fileName": "worker-gather-farm-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "sP5hdPk44icYmQcUljq3",
+          "prompt": "I'll tend the crops.",
+          "createdAt": "2026-10-11T15:06:15.034Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-sheep-carcass-2",
+        "name": "I'll collect the meat.",
+        "fileName": "worker-gather-sheep-carcass-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "76pydydvDqRUuHsYuTBi",
+          "prompt": "I'll collect the meat.",
+          "createdAt": "2026-10-11T15:06:14.998Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-sheep-carcass-4",
+        "name": "I'll collect the meat.",
+        "fileName": "worker-gather-sheep-carcass-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "n2vpQDheUJEl80iOjOQl",
+          "prompt": "I'll collect the meat.",
+          "createdAt": "2026-10-11T15:06:15.327Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-fish-2",
+        "name": "I'll catch fish.",
+        "fileName": "worker-gather-fish-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "ewKr61gkSXvZ2OIuzBcJ",
+          "prompt": "I'll catch fish.",
+          "createdAt": "2026-10-11T15:06:15.027Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-fish-3",
+        "name": "I'll catch fish.",
+        "fileName": "worker-gather-fish-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "jGuTF2AHBlMHzOdPmTmI",
+          "prompt": "I'll catch fish.",
+          "createdAt": "2026-10-11T15:06:15.166Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-stone-2",
+        "name": "I'll quarry stone.",
+        "fileName": "worker-gather-stone-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "eIa3er8RwDsnOdYJ6ejb",
+          "prompt": "I'll quarry stone.",
+          "createdAt": "2026-10-11T15:06:15.034Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-stone-3",
+        "name": "I'll quarry stone.",
+        "fileName": "worker-gather-stone-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "dy2FbKU1g5EyJlWlcl4A",
+          "prompt": "I'll quarry stone.",
+          "createdAt": "2026-10-11T15:06:15.177Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-build-3",
+        "name": "I'll build it.",
+        "fileName": "worker-build-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "TEKF6iZNSC6FLT49gW1N",
+          "prompt": "I'll build it.",
+          "createdAt": "2026-10-11T15:06:15.197Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-build-4",
+        "name": "I'll build it.",
+        "fileName": "worker-build-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "UVqd67IQszwZe4n67UKQ",
+          "prompt": "I'll build it.",
+          "createdAt": "2026-10-11T15:06:15.448Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-repair-1",
+        "name": "I'll mend it.",
+        "fileName": "worker-repair-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "wkYCaHsv9avVQnr1W59q",
+          "prompt": "I'll mend it.",
+          "createdAt": "2026-10-11T15:06:14.904Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-repair-2",
+        "name": "I'll mend it.",
+        "fileName": "worker-repair-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "1P2zKP1PG9GtXjx95CTf",
+          "prompt": "I'll mend it.",
+          "createdAt": "2026-10-11T15:06:15.039Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-ready-2",
+        "name": "Ready to work.",
+        "fileName": "worker-ready-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "0D1D7sURuniLBmAq7V6u",
+          "prompt": "Ready to work.",
+          "createdAt": "2026-10-11T15:06:15.039Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-ready-4",
+        "name": "Ready to work.",
+        "fileName": "worker-ready-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "8ZklWajE8AcYFmkNwxl0",
+          "prompt": "Ready to work.",
+          "createdAt": "2026-10-11T15:06:15.446Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-infantry-select-1",
+        "name": "Line ready.",
+        "fileName": "infantry-select-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "infantry",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "6rtw3TtrheZtsy2xQvYj",
+          "prompt": "Line ready.",
+          "createdAt": "2026-10-11T15:21:54.372Z",
+          "attribution": "Voice Harry - Fierce Warrior (SOYHLrjzK2X1ezoPC6cr)"
+        }
+      },
+      {
+        "id": "frontier-infantry-select-4",
+        "name": "Line ready.",
+        "fileName": "infantry-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "infantry",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "gOrP3l5TLDIKUdZiICCj",
+          "prompt": "Line ready.",
+          "createdAt": "2026-10-11T15:21:54.892Z",
+          "attribution": "Voice Harry - Fierce Warrior (SOYHLrjzK2X1ezoPC6cr)"
+        }
+      },
+      {
+        "id": "frontier-infantry-move-4",
+        "name": "Moving out.",
+        "fileName": "infantry-move-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "infantry",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "Kg9OW0pVL0mDCKv8NDdA",
+          "prompt": "Moving out.",
+          "createdAt": "2026-10-11T15:21:54.883Z",
+          "attribution": "Voice Harry - Fierce Warrior (SOYHLrjzK2X1ezoPC6cr)"
+        }
+      },
+      {
+        "id": "frontier-infantry-patrol-2",
+        "name": "I'll patrol here.",
+        "fileName": "infantry-patrol-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "infantry",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "xH19kndTvhoXAwEfgY3F",
+          "prompt": "I'll patrol here.",
+          "createdAt": "2026-10-11T15:21:54.519Z",
+          "attribution": "Voice Harry - Fierce Warrior (SOYHLrjzK2X1ezoPC6cr)"
+        }
+      },
+      {
+        "id": "frontier-infantry-follow-1",
+        "name": "With you.",
+        "fileName": "infantry-follow-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "infantry",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "98JylLaTzms0kK9osqVn",
+          "prompt": "With you.",
+          "createdAt": "2026-10-11T15:21:54.374Z",
+          "attribution": "Voice Harry - Fierce Warrior (SOYHLrjzK2X1ezoPC6cr)"
+        }
+      },
+      {
+        "id": "frontier-infantry-stop-1",
+        "name": "Stopping.",
+        "fileName": "infantry-stop-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "infantry",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "sG0Dui3R9rOa938acRBG",
+          "prompt": "Stopping.",
+          "createdAt": "2026-10-11T15:21:54.373Z",
+          "attribution": "Voice Harry - Fierce Warrior (SOYHLrjzK2X1ezoPC6cr)"
+        }
+      },
+      {
+        "id": "frontier-infantry-hold-1",
+        "name": "Holding the line.",
+        "fileName": "infantry-hold-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "infantry",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "URWhPaM3nlfuf90mca5q",
+          "prompt": "Holding the line.",
+          "createdAt": "2026-10-11T15:21:54.376Z",
+          "attribution": "Voice Harry - Fierce Warrior (SOYHLrjzK2X1ezoPC6cr)"
+        }
+      },
+      {
+        "id": "frontier-infantry-attack-1",
+        "name": "Into the fight.",
+        "fileName": "infantry-attack-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "infantry",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "19LxO5aCORtDNp8GZSoX",
+          "prompt": "Into the fight.",
+          "createdAt": "2026-10-11T15:21:54.376Z",
+          "attribution": "Voice Harry - Fierce Warrior (SOYHLrjzK2X1ezoPC6cr)"
+        }
+      },
+      {
+        "id": "frontier-infantry-attack-3",
+        "name": "Into the fight.",
+        "fileName": "infantry-attack-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "infantry",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "DXJ7QZLwXVJKvS0cBCYr",
+          "prompt": "Into the fight.",
+          "createdAt": "2026-10-11T15:21:54.723Z",
+          "attribution": "Voice Harry - Fierce Warrior (SOYHLrjzK2X1ezoPC6cr)"
+        }
+      },
+      {
+        "id": "frontier-infantry-ready-2",
+        "name": "Infantry ready.",
+        "fileName": "infantry-ready-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "infantry",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "UYztIIZ678L3KN3eVlsg",
+          "prompt": "Infantry ready.",
+          "createdAt": "2026-10-11T15:21:54.588Z",
+          "attribution": "Voice Harry - Fierce Warrior (SOYHLrjzK2X1ezoPC6cr)"
+        }
+      },
+      {
+        "id": "frontier-spearman-select-1",
+        "name": "Spear ready.",
+        "fileName": "spearman-select-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "spearman",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "vjZK1eLTs23F6z9CvSAT",
+          "prompt": "Spear ready.",
+          "createdAt": "2026-10-11T15:21:54.384Z",
+          "attribution": "Voice Adam - Dominant, Firm (pNInz6obpgDQGcFmaJgB)"
+        }
+      },
+      {
+        "id": "frontier-spearman-select-3",
+        "name": "Spear ready.",
+        "fileName": "spearman-select-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "spearman",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "JX7ytnkm0SwcnuEUE3Ff",
+          "prompt": "Spear ready.",
+          "createdAt": "2026-10-11T15:21:54.761Z",
+          "attribution": "Voice Adam - Dominant, Firm (pNInz6obpgDQGcFmaJgB)"
+        }
+      },
+      {
+        "id": "frontier-spearman-move-1",
+        "name": "On the march.",
+        "fileName": "spearman-move-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "spearman",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "ARRFy7kBDSZrCZRcfpAL",
+          "prompt": "On the march.",
+          "createdAt": "2026-10-11T15:21:54.414Z",
+          "attribution": "Voice Adam - Dominant, Firm (pNInz6obpgDQGcFmaJgB)"
+        }
+      },
+      {
+        "id": "frontier-spearman-patrol-3",
+        "name": "I'll watch this route.",
+        "fileName": "spearman-patrol-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "spearman",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "5NYLuHbVsZGrd1vtwmI9",
+          "prompt": "I'll watch this route.",
+          "createdAt": "2026-10-11T15:21:54.782Z",
+          "attribution": "Voice Adam - Dominant, Firm (pNInz6obpgDQGcFmaJgB)"
+        }
+      },
+      {
+        "id": "frontier-spearman-follow-1",
+        "name": "Following you.",
+        "fileName": "spearman-follow-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "spearman",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "4B1Z5DDyPrkabXMUstaw",
+          "prompt": "Following you.",
+          "createdAt": "2026-10-11T15:21:54.386Z",
+          "attribution": "Voice Adam - Dominant, Firm (pNInz6obpgDQGcFmaJgB)"
+        }
+      },
+      {
+        "id": "frontier-spearman-stop-2",
+        "name": "Stopping here.",
+        "fileName": "spearman-stop-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "spearman",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "TEn0i9yBVVbS5JIFPdYm",
+          "prompt": "Stopping here.",
+          "createdAt": "2026-10-11T15:21:54.612Z",
+          "attribution": "Voice Adam - Dominant, Firm (pNInz6obpgDQGcFmaJgB)"
+        }
+      },
+      {
+        "id": "frontier-spearman-hold-3",
+        "name": "Holding firm.",
+        "fileName": "spearman-hold-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "spearman",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "iIhBUqMzgmJ6wD7MuscW",
+          "prompt": "Holding firm.",
+          "createdAt": "2026-10-11T15:21:54.782Z",
+          "attribution": "Voice Adam - Dominant, Firm (pNInz6obpgDQGcFmaJgB)"
+        }
+      },
+      {
+        "id": "frontier-spearman-attack-2",
+        "name": "Spears forward.",
+        "fileName": "spearman-attack-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "spearman",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "5Lp3V4X7pSJMsnHY1ADU",
+          "prompt": "Spears forward.",
+          "createdAt": "2026-10-11T15:21:54.676Z",
+          "attribution": "Voice Adam - Dominant, Firm (pNInz6obpgDQGcFmaJgB)"
+        }
+      },
+      {
+        "id": "frontier-spearman-attack-3",
+        "name": "Spears forward.",
+        "fileName": "spearman-attack-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "spearman",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "uO01KYFUQLuMcu7PWCRl",
+          "prompt": "Spears forward.",
+          "createdAt": "2026-10-11T15:21:54.864Z",
+          "attribution": "Voice Adam - Dominant, Firm (pNInz6obpgDQGcFmaJgB)"
+        }
+      },
+      {
+        "id": "frontier-spearman-ready-3",
+        "name": "Spearman ready.",
+        "fileName": "spearman-ready-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "spearman",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "DE9e1XEYvIiHbwhPv8Fa",
+          "prompt": "Spearman ready.",
+          "createdAt": "2026-10-11T15:21:54.782Z",
+          "attribution": "Voice Adam - Dominant, Firm (pNInz6obpgDQGcFmaJgB)"
+        }
+      },
+      {
+        "id": "frontier-archer-select-2",
+        "name": "Bow at hand.",
+        "fileName": "archer-select-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "archer",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "zyYn9tfXb89Vvvy1xiid",
+          "prompt": "Bow at hand.",
+          "createdAt": "2026-10-11T15:21:54.613Z",
+          "attribution": "Voice Daniel - Steady Broadcaster (onwK4e9ZLuTAKqWW03F9)"
+        }
+      },
+      {
+        "id": "frontier-archer-select-3",
+        "name": "Bow at hand.",
+        "fileName": "archer-select-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "archer",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "oeGs4awuOSIrwiawVEAE",
+          "prompt": "Bow at hand.",
+          "createdAt": "2026-10-11T15:21:54.776Z",
+          "attribution": "Voice Daniel - Steady Broadcaster (onwK4e9ZLuTAKqWW03F9)"
+        }
+      },
+      {
+        "id": "frontier-archer-move-3",
+        "name": "Moving to position.",
+        "fileName": "archer-move-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "archer",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "9cOCYpMUmpxwq4VkWGUY",
+          "prompt": "Moving to position.",
+          "createdAt": "2026-10-11T15:21:54.798Z",
+          "attribution": "Voice Daniel - Steady Broadcaster (onwK4e9ZLuTAKqWW03F9)"
+        }
+      },
+      {
+        "id": "frontier-archer-patrol-1",
+        "name": "I'll watch the path.",
+        "fileName": "archer-patrol-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "archer",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "1f0BnJKS39OXFVTWjIoQ",
+          "prompt": "I'll watch the path.",
+          "createdAt": "2026-10-11T15:21:54.380Z",
+          "attribution": "Voice Daniel - Steady Broadcaster (onwK4e9ZLuTAKqWW03F9)"
+        }
+      },
+      {
+        "id": "frontier-archer-follow-2",
+        "name": "On your trail.",
+        "fileName": "archer-follow-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "archer",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "woaRzWEIODqPeDkvbGVv",
+          "prompt": "On your trail.",
+          "createdAt": "2026-10-11T15:21:54.629Z",
+          "attribution": "Voice Daniel - Steady Broadcaster (onwK4e9ZLuTAKqWW03F9)"
+        }
+      },
+      {
+        "id": "frontier-archer-stop-4",
+        "name": "Stopping.",
+        "fileName": "archer-stop-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "archer",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "s8E7XxlWoFOasjoAnutk",
+          "prompt": "Stopping.",
+          "createdAt": "2026-10-11T15:23:15.478Z",
+          "attribution": "Voice Daniel - Steady Broadcaster (onwK4e9ZLuTAKqWW03F9)"
+        }
+      },
+      {
+        "id": "frontier-archer-hold-4",
+        "name": "Holding position.",
+        "fileName": "archer-hold-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "archer",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "yd0fpBHxRwEdWGlYgK32",
+          "prompt": "Holding position.",
+          "createdAt": "2026-10-11T15:23:15.482Z",
+          "attribution": "Voice Daniel - Steady Broadcaster (onwK4e9ZLuTAKqWW03F9)"
+        }
+      },
+      {
+        "id": "frontier-archer-attack-1",
+        "name": "Taking aim.",
+        "fileName": "archer-attack-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "archer",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "Znk7Acvkp7uzW3sYkKxi",
+          "prompt": "Taking aim.",
+          "createdAt": "2026-10-11T15:23:15.263Z",
+          "attribution": "Voice Daniel - Steady Broadcaster (onwK4e9ZLuTAKqWW03F9)"
+        }
+      },
+      {
+        "id": "frontier-archer-attack-3",
+        "name": "Taking aim.",
+        "fileName": "archer-attack-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "archer",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "TeR1DM0zUtO7zdqcKyT9",
+          "prompt": "Taking aim.",
+          "createdAt": "2026-10-11T15:23:15.427Z",
+          "attribution": "Voice Daniel - Steady Broadcaster (onwK4e9ZLuTAKqWW03F9)"
+        }
+      },
+      {
+        "id": "frontier-archer-ready-3",
+        "name": "Archer ready.",
+        "fileName": "archer-ready-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "archer",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "uJdk15IbwCUKQFwkFU3R",
+          "prompt": "Archer ready.",
+          "createdAt": "2026-10-11T15:23:15.416Z",
+          "attribution": "Voice Daniel - Steady Broadcaster (onwK4e9ZLuTAKqWW03F9)"
+        }
+      },
+      {
+        "id": "frontier-scout-select-3",
+        "name": "Where next?",
+        "fileName": "scout-select-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "scout",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "wbijogpAwV8pejRona7A",
+          "prompt": "Where next?",
+          "createdAt": "2026-10-11T15:23:15.429Z",
+          "attribution": "Voice Liam - Energetic, Social Media Creator (TX3LPaxmHKxFdv7VOQHJ)"
+        }
+      },
+      {
+        "id": "frontier-scout-select-4",
+        "name": "Where next?",
+        "fileName": "scout-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "scout",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "OnhnR3QscVXaIVQawL1k",
+          "prompt": "Where next?",
+          "createdAt": "2026-10-11T15:23:15.519Z",
+          "attribution": "Voice Liam - Energetic, Social Media Creator (TX3LPaxmHKxFdv7VOQHJ)"
+        }
+      },
+      {
+        "id": "frontier-scout-move-1",
+        "name": "On my way.",
+        "fileName": "scout-move-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "scout",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "I0QQ57TLnasuzBw6N2rU",
+          "prompt": "On my way.",
+          "createdAt": "2026-10-11T15:23:15.259Z",
+          "attribution": "Voice Liam - Energetic, Social Media Creator (TX3LPaxmHKxFdv7VOQHJ)"
+        }
+      },
+      {
+        "id": "frontier-scout-patrol-4",
+        "name": "I'll scout this route.",
+        "fileName": "scout-patrol-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "scout",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "GMcw3fvo5mdoKTWjrG4A",
+          "prompt": "I'll scout this route.",
+          "createdAt": "2026-10-11T15:23:15.514Z",
+          "attribution": "Voice Liam - Energetic, Social Media Creator (TX3LPaxmHKxFdv7VOQHJ)"
+        }
+      },
+      {
+        "id": "frontier-scout-follow-2",
+        "name": "I'll follow.",
+        "fileName": "scout-follow-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "scout",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "L7q31xWhw0AYfAUA9jXl",
+          "prompt": "I'll follow.",
+          "createdAt": "2026-10-11T15:23:15.331Z",
+          "attribution": "Voice Liam - Energetic, Social Media Creator (TX3LPaxmHKxFdv7VOQHJ)"
+        }
+      },
+      {
+        "id": "frontier-scout-stop-2",
+        "name": "Stopping here.",
+        "fileName": "scout-stop-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "scout",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "rmg5EuQ5vtCThXYVJU36",
+          "prompt": "Stopping here.",
+          "createdAt": "2026-10-11T15:23:15.352Z",
+          "attribution": "Voice Liam - Energetic, Social Media Creator (TX3LPaxmHKxFdv7VOQHJ)"
+        }
+      },
+      {
+        "id": "frontier-scout-hold-1",
+        "name": "I'll keep watch.",
+        "fileName": "scout-hold-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "scout",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "H4gUNNeVNMVBDnqOePdq",
+          "prompt": "I'll keep watch.",
+          "createdAt": "2026-10-11T15:23:15.262Z",
+          "attribution": "Voice Liam - Energetic, Social Media Creator (TX3LPaxmHKxFdv7VOQHJ)"
+        }
+      },
+      {
+        "id": "frontier-scout-attack-2",
+        "name": "Moving to attack.",
+        "fileName": "scout-attack-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "scout",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "6V846icRzVJLWEhgnkgA",
+          "prompt": "Moving to attack.",
+          "createdAt": "2026-10-11T15:23:15.330Z",
+          "attribution": "Voice Liam - Energetic, Social Media Creator (TX3LPaxmHKxFdv7VOQHJ)"
+        }
+      },
+      {
+        "id": "frontier-scout-attack-3",
+        "name": "Moving to attack.",
+        "fileName": "scout-attack-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "scout",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "JF8BViInPteSAv5U4jwx",
+          "prompt": "Moving to attack.",
+          "createdAt": "2026-10-11T15:23:15.405Z",
+          "attribution": "Voice Liam - Energetic, Social Media Creator (TX3LPaxmHKxFdv7VOQHJ)"
+        }
+      },
+      {
+        "id": "frontier-scout-ready-2",
+        "name": "Scout ready.",
+        "fileName": "scout-ready-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "scout",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "pB6qCHfvHLxJCUwMzaMM",
+          "prompt": "Scout ready.",
+          "createdAt": "2026-10-11T15:23:15.354Z",
+          "attribution": "Voice Liam - Energetic, Social Media Creator (TX3LPaxmHKxFdv7VOQHJ)"
+        }
+      },
+      {
+        "id": "frontier-rider-select-2",
+        "name": "Ready to ride.",
+        "fileName": "rider-select-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "rider",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "wFhPEfjsewTpYhZAQ7Bd",
+          "prompt": "Ready to ride.",
+          "createdAt": "2026-10-11T15:24:03.617Z",
+          "attribution": "Voice Charlie - Deep, Confident, Energetic (IKne3meq5aSn9XLyUdCD)"
+        }
+      },
+      {
+        "id": "frontier-rider-select-3",
+        "name": "Ready to ride.",
+        "fileName": "rider-select-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "rider",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "SE89Gs6WNx8XP4WuF7Sj",
+          "prompt": "Ready to ride.",
+          "createdAt": "2026-10-11T15:24:03.696Z",
+          "attribution": "Voice Charlie - Deep, Confident, Energetic (IKne3meq5aSn9XLyUdCD)"
+        }
+      },
+      {
+        "id": "frontier-rider-move-2",
+        "name": "Riding out.",
+        "fileName": "rider-move-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "rider",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "Esawh9Ao2W214EpEh05b",
+          "prompt": "Riding out.",
+          "createdAt": "2026-10-11T15:24:03.666Z",
+          "attribution": "Voice Charlie - Deep, Confident, Energetic (IKne3meq5aSn9XLyUdCD)"
+        }
+      },
+      {
+        "id": "frontier-rider-patrol-1",
+        "name": "I'll ride this route.",
+        "fileName": "rider-patrol-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "rider",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "fHJVxtvCnZ71QPLlXN8H",
+          "prompt": "I'll ride this route.",
+          "createdAt": "2026-10-11T15:24:03.554Z",
+          "attribution": "Voice Charlie - Deep, Confident, Energetic (IKne3meq5aSn9XLyUdCD)"
+        }
+      },
+      {
+        "id": "frontier-rider-follow-2",
+        "name": "Riding with you.",
+        "fileName": "rider-follow-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "rider",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "xfREpLUpaOYXJFA6RPVR",
+          "prompt": "Riding with you.",
+          "createdAt": "2026-10-11T15:24:03.681Z",
+          "attribution": "Voice Charlie - Deep, Confident, Energetic (IKne3meq5aSn9XLyUdCD)"
+        }
+      },
+      {
+        "id": "frontier-rider-stop-1",
+        "name": "Reining in.",
+        "fileName": "rider-stop-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "rider",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "dj6UnvMAlZR2GYwSP3Rr",
+          "prompt": "Reining in.",
+          "createdAt": "2026-10-11T15:24:03.554Z",
+          "attribution": "Voice Charlie - Deep, Confident, Energetic (IKne3meq5aSn9XLyUdCD)"
+        }
+      },
+      {
+        "id": "frontier-rider-hold-2",
+        "name": "Holding here.",
+        "fileName": "rider-hold-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "rider",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "Bc9Myr8RLB7p1yxkFBuM",
+          "prompt": "Holding here.",
+          "createdAt": "2026-10-11T15:24:03.680Z",
+          "attribution": "Voice Charlie - Deep, Confident, Energetic (IKne3meq5aSn9XLyUdCD)"
+        }
+      },
+      {
+        "id": "frontier-rider-attack-2",
+        "name": "Riding to attack.",
+        "fileName": "rider-attack-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "rider",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "2pmAx1Rjkclh7x1RbzLf",
+          "prompt": "Riding to attack.",
+          "createdAt": "2026-10-11T15:24:03.680Z",
+          "attribution": "Voice Charlie - Deep, Confident, Energetic (IKne3meq5aSn9XLyUdCD)"
+        }
+      },
+      {
+        "id": "frontier-rider-attack-3",
+        "name": "Riding to attack.",
+        "fileName": "rider-attack-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "rider",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "kGR4pvPs0pSM9ajStcCI",
+          "prompt": "Riding to attack.",
+          "createdAt": "2026-10-11T15:24:03.742Z",
+          "attribution": "Voice Charlie - Deep, Confident, Energetic (IKne3meq5aSn9XLyUdCD)"
+        }
+      },
+      {
+        "id": "frontier-rider-ready-3",
+        "name": "Rider ready.",
+        "fileName": "rider-ready-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "rider",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "Xm3eLdLSfXlYzFzPw6mo",
+          "prompt": "Rider ready.",
+          "createdAt": "2026-10-11T15:24:03.703Z",
+          "attribution": "Voice Charlie - Deep, Confident, Energetic (IKne3meq5aSn9XLyUdCD)"
+        }
+      },
+      {
+        "id": "frontier-siege-engine-select-3",
+        "name": "Crew ready.",
+        "fileName": "siege-engine-select-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "siege-engine",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "qKk5kHMDsG5r62oj0KuS",
+          "prompt": "Crew ready.",
+          "createdAt": "2026-10-11T15:24:40.582Z",
+          "attribution": "Voice Brian - Deep, Resonant and Comforting (nPczCjzI2devNBz1zQrb)"
+        }
+      },
+      {
+        "id": "frontier-siege-engine-select-4",
+        "name": "Crew ready.",
+        "fileName": "siege-engine-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "siege-engine",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "RArDvRUizNyqhWylw6wO",
+          "prompt": "Crew ready.",
+          "createdAt": "2026-10-11T15:24:40.639Z",
+          "attribution": "Voice Brian - Deep, Resonant and Comforting (nPczCjzI2devNBz1zQrb)"
+        }
+      },
+      {
+        "id": "frontier-siege-engine-move-3",
+        "name": "Rolling out.",
+        "fileName": "siege-engine-move-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "siege-engine",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "taobCvq7qoxwXrxyFRxy",
+          "prompt": "Rolling out.",
+          "createdAt": "2026-10-11T15:24:40.594Z",
+          "attribution": "Voice Brian - Deep, Resonant and Comforting (nPczCjzI2devNBz1zQrb)"
+        }
+      },
+      {
+        "id": "frontier-siege-engine-patrol-1",
+        "name": "We'll patrol here.",
+        "fileName": "siege-engine-patrol-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "siege-engine",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "scUUMt9MbcMfC0FdVc1a",
+          "prompt": "We'll patrol here.",
+          "createdAt": "2026-10-11T15:24:40.424Z",
+          "attribution": "Voice Brian - Deep, Resonant and Comforting (nPczCjzI2devNBz1zQrb)"
+        }
+      },
+      {
+        "id": "frontier-siege-engine-follow-1",
+        "name": "Following your lead.",
+        "fileName": "siege-engine-follow-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "siege-engine",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "f8NabIlmxk2H71Qj8cTw",
+          "prompt": "Following your lead.",
+          "createdAt": "2026-10-11T15:24:40.421Z",
+          "attribution": "Voice Brian - Deep, Resonant and Comforting (nPczCjzI2devNBz1zQrb)"
+        }
+      },
+      {
+        "id": "frontier-siege-engine-stop-4",
+        "name": "Stopping the wheels.",
+        "fileName": "siege-engine-stop-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "siege-engine",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "uUi3ruQcK88dO30mWbld",
+          "prompt": "Stopping the wheels.",
+          "createdAt": "2026-10-11T15:24:40.658Z",
+          "attribution": "Voice Brian - Deep, Resonant and Comforting (nPczCjzI2devNBz1zQrb)"
+        }
+      },
+      {
+        "id": "frontier-siege-engine-hold-1",
+        "name": "Holding position.",
+        "fileName": "siege-engine-hold-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "siege-engine",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "YPOd62XS5JYpyd0c5MP9",
+          "prompt": "Holding position.",
+          "createdAt": "2026-10-11T15:24:40.435Z",
+          "attribution": "Voice Brian - Deep, Resonant and Comforting (nPczCjzI2devNBz1zQrb)"
+        }
+      },
+      {
+        "id": "frontier-siege-engine-attack-2",
+        "name": "Preparing to fire.",
+        "fileName": "siege-engine-attack-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "siege-engine",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "zTXqUGAxa8c5LPygw4lp",
+          "prompt": "Preparing to fire.",
+          "createdAt": "2026-10-11T15:24:40.525Z",
+          "attribution": "Voice Brian - Deep, Resonant and Comforting (nPczCjzI2devNBz1zQrb)"
+        }
+      },
+      {
+        "id": "frontier-siege-engine-attack-4",
+        "name": "Preparing to fire.",
+        "fileName": "siege-engine-attack-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "siege-engine",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "BdfhTz5BdYicVbjhqqIH",
+          "prompt": "Preparing to fire.",
+          "createdAt": "2026-10-11T15:24:40.665Z",
+          "attribution": "Voice Brian - Deep, Resonant and Comforting (nPczCjzI2devNBz1zQrb)"
+        }
+      },
+      {
+        "id": "frontier-siege-engine-ready-4",
+        "name": "Siege crew ready.",
+        "fileName": "siege-engine-ready-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "siege-engine",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "aN1AkHpLSQbfO14XxSwy",
+          "prompt": "Siege crew ready.",
+          "createdAt": "2026-10-11T15:24:40.659Z",
+          "attribution": "Voice Brian - Deep, Resonant and Comforting (nPczCjzI2devNBz1zQrb)"
+        }
+      },
+      {
+        "id": "frontier-skiff-select-1",
+        "name": "Skiff here.",
+        "fileName": "skiff-select-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "skiff",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "tOBShbpn4xhfuURThVX0",
+          "prompt": "Skiff here.",
+          "createdAt": "2026-10-11T15:25:17.594Z",
+          "attribution": "Voice Eric - Smooth, Trustworthy (cjVigY5qzO86Huf0OWal)"
+        }
+      },
+      {
+        "id": "frontier-skiff-select-3",
+        "name": "Skiff here.",
+        "fileName": "skiff-select-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "skiff",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "C8AvFekJhu4Sov8NtjdR",
+          "prompt": "Skiff here.",
+          "createdAt": "2026-10-11T15:25:18.087Z",
+          "attribution": "Voice Eric - Smooth, Trustworthy (cjVigY5qzO86Huf0OWal)"
+        }
+      },
+      {
+        "id": "frontier-skiff-move-4",
+        "name": "Rowing out.",
+        "fileName": "skiff-move-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "skiff",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "hWdEUc0cwDXpNg6qbfaU",
+          "prompt": "Rowing out.",
+          "createdAt": "2026-10-11T15:25:18.190Z",
+          "attribution": "Voice Eric - Smooth, Trustworthy (cjVigY5qzO86Huf0OWal)"
+        }
+      },
+      {
+        "id": "frontier-skiff-stop-4",
+        "name": "Stopping here.",
+        "fileName": "skiff-stop-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "skiff",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "mfJ1YOqmGAA1uMLgUFEz",
+          "prompt": "Stopping here.",
+          "createdAt": "2026-10-11T15:25:18.186Z",
+          "attribution": "Voice Eric - Smooth, Trustworthy (cjVigY5qzO86Huf0OWal)"
+        }
+      },
+      {
+        "id": "frontier-skiff-hold-2",
+        "name": "Holding here.",
+        "fileName": "skiff-hold-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "skiff",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "TrqhsLgv7nOsiV6XR4tC",
+          "prompt": "Holding here.",
+          "createdAt": "2026-10-11T15:25:17.886Z",
+          "attribution": "Voice Eric - Smooth, Trustworthy (cjVigY5qzO86Huf0OWal)"
+        }
+      },
+      {
+        "id": "frontier-skiff-gather-food-2",
+        "name": "I'll bring in fish.",
+        "fileName": "skiff-gather-food-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "skiff",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "k2GALNzcuLv3a1mBPNek",
+          "prompt": "I'll bring in fish.",
+          "createdAt": "2026-10-11T15:25:17.876Z",
+          "attribution": "Voice Eric - Smooth, Trustworthy (cjVigY5qzO86Huf0OWal)"
+        }
+      },
+      {
+        "id": "frontier-skiff-ready-4",
+        "name": "Skiff ready.",
+        "fileName": "skiff-ready-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "skiff",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "KFk91k0ehcditQcwoIM3",
+          "prompt": "Skiff ready.",
+          "createdAt": "2026-10-11T15:25:18.193Z",
+          "attribution": "Voice Eric - Smooth, Trustworthy (cjVigY5qzO86Huf0OWal)"
+        }
+      },
+      {
+        "id": "frontier-palisade-wall-select-4",
+        "name": "Timber palisade",
+        "fileName": "palisade-wall-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "palisade-wall",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "KGvjBrWDhdnf1SuGDibw",
+          "prompt": "Two-second naturalistic medieval RTS building selection sound. A close solid knock against a thick timber palisade, followed by a brief heavy wooden brace creak. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+          "createdAt": "2026-10-11T15:25:50.919Z"
+        }
+      },
+      {
+        "id": "frontier-palisade-gate-select-2",
+        "name": "Wooden gate latch",
+        "fileName": "palisade-gate-select-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "palisade-gate",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "GZOk9XylItdI2lbgBDgM",
+          "prompt": "Two-second naturalistic medieval RTS building selection sound. A heavy wooden palisade gate swings a short distance on creaking hinges, then a solid wooden latch drops. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+          "createdAt": "2026-10-11T15:25:50.827Z"
+        }
+      },
+      {
+        "id": "frontier-house-select-4",
+        "name": "Cottage hearth",
+        "fileName": "house-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "house",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "QCYmR2Ashs3mFEBA53c7",
+          "prompt": "Two-second naturalistic medieval RTS building selection sound. A cottage door opens softly, with a warm crackling hearth and one pottery cup set down on a wooden table inside. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+          "createdAt": "2026-10-11T15:25:50.931Z"
+        }
+      },
+      {
+        "id": "frontier-archery-range-select-1",
+        "name": "Bow and straw target",
+        "fileName": "archery-range-select-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "archery-range",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "QmyK2Ys1FgkYEYNsp7GO",
+          "prompt": "Two-second naturalistic medieval RTS building selection sound. A bowstring draws and releases, with an arrow swishing briefly into a straw target with a dry thud. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+          "createdAt": "2026-10-11T15:25:50.770Z"
+        }
+      },
+      {
+        "id": "frontier-storehouse-select-3",
+        "name": "Sacks and crates",
+        "fileName": "storehouse-select-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "storehouse",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "7lDFys5cq68RPYV1wPvf",
+          "prompt": "Two-second naturalistic medieval RTS building selection sound. A burlap grain sack is set on a wooden shelf, followed by a short scrape and clunk of a storage crate. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+          "createdAt": "2026-10-11T15:25:50.880Z"
+        }
+      },
+      {
+        "id": "frontier-mill-select-4",
+        "name": "Mill gears and grain",
+        "fileName": "mill-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "mill",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "GC3TnoiSUtMjdWm9ZUby",
+          "prompt": "Two-second naturalistic medieval RTS building selection sound. Wooden mill gears turn with a rhythmic creak and clack, dry grain patters into a hopper. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+          "createdAt": "2026-10-11T15:26:38.747Z"
+        }
+      },
+      {
+        "id": "frontier-farm-select-3",
+        "name": "Wheat harvest",
+        "fileName": "farm-select-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "farm",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "OcreOP7eU7qcrZUXcH75",
+          "prompt": "Two-second naturalistic medieval RTS building selection sound. A hand sickle slices through dry wheat with two crisp swishes and soft rustling stalks in a light breeze. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+          "createdAt": "2026-10-11T15:26:38.641Z"
+        }
+      },
+      {
+        "id": "frontier-dock-select-1",
+        "name": "Water and mooring rope",
+        "fileName": "dock-select-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "dock",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "s17unLQyjmMeMuJSpwsZ",
+          "prompt": "Two-second naturalistic medieval RTS building selection sound. Gentle water laps beneath a timber dock while a mooring rope tightens with a short wooden cleat creak. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+          "createdAt": "2026-10-11T15:26:38.471Z"
+        }
+      },
+      {
+        "id": "frontier-watchtower-select-1",
+        "name": "Lookout platform",
+        "fileName": "watchtower-select-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "watchtower",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "31pUpk95tx724LZOrwk3",
+          "prompt": "Two-second naturalistic medieval RTS building selection sound. Two measured boot steps climb a wooden lookout platform, timber creaks briefly and a small pennant flutters in the breeze. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+          "createdAt": "2026-10-11T15:26:38.462Z"
+        }
+      },
+      {
+        "id": "frontier-stable-select-4",
+        "name": "Horse and tack",
+        "fileName": "stable-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "stable",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "rxerlRtau83k9IOmzZcV",
+          "prompt": "Two-second naturalistic medieval RTS building selection sound. A horse gives one quiet snort and stamps a hoof on packed earth, leather tack and a metal harness ring gently jingle. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+          "createdAt": "2026-10-11T15:26:38.787Z"
+        }
+      },
+      {
+        "id": "frontier-workshop-select-2",
+        "name": "Workshop tools",
+        "fileName": "workshop-select-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "workshop",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "WjtMBjPLQs24lyKYTB2Y",
+          "prompt": "Two-second naturalistic medieval RTS building selection sound. Two measured hand hammer blows on a small iron fitting, followed by a short wooden wheel ratchet clack. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+          "createdAt": "2026-10-11T15:26:38.555Z"
+        }
+      },
+      {
+        "id": "frontier-worker-return-cargo-4",
+        "name": "I'll bring this back.",
+        "fileName": "worker-return-cargo-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "worker",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "Aw6n6vWHyxgl6wmTGLED",
+          "prompt": "I'll bring this back.",
+          "createdAt": "2026-10-11T15:26:38.823Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-skiff-return-cargo-3",
+        "name": "Returning the catch.",
+        "fileName": "skiff-return-cargo-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "skiff",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "dji2I3BhRONm7EFpAMcL",
+          "prompt": "Returning the catch.",
+          "createdAt": "2026-10-11T15:26:38.713Z",
+          "attribution": "Voice Eric - Smooth, Trustworthy (cjVigY5qzO86Huf0OWal)"
+        }
+      }
+    ],
+    "profiles": [
+      {
+        "id": "interactions",
+        "name": "Frontier interactions",
+        "bindings": {
+          "unit.worker.select": {
+            "bus": "voice",
+            "priority": 0,
+            "cooldownMs": 450,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-select-1",
+                "gain": 1.7179,
+                "caption": "What needs doing?"
+              },
+              {
+                "sourceId": "frontier-worker-select-2",
+                "gain": 1.39,
+                "caption": "What needs doing?"
+              },
+              {
+                "sourceId": "frontier-worker-select-3",
+                "gain": 1.4808,
+                "caption": "What needs doing?"
+              },
+              {
+                "sourceId": "frontier-worker-select-4",
+                "gain": 1.5031,
+                "caption": "What needs doing?"
+              }
+            ]
+          },
+          "unit.worker.gather.wood": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-gather-wood-1",
+                "gain": 1.094,
+                "caption": "I'll cut wood."
+              },
+              {
+                "sourceId": "frontier-worker-gather-wood-2",
+                "gain": 1.028,
+                "caption": "I'll cut wood."
+              },
+              {
+                "sourceId": "frontier-worker-gather-wood-3",
+                "gain": 1.7338,
+                "caption": "I'll cut wood."
+              },
+              {
+                "sourceId": "frontier-worker-gather-wood-4",
+                "gain": 1.2064,
+                "caption": "I'll cut wood."
+              }
+            ]
+          },
+          "building.barracks.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-barracks-select-4",
+                "gain": 0.7621
+              }
+            ]
+          },
+          "building.town-center.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-town-center-select-1",
+                "gain": 1.1455
+              },
+              {
+                "sourceId": "frontier-town-center-select-4",
+                "gain": 1.1285
+              }
+            ]
+          },
+          "unit.worker.move": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-move-1",
+                "gain": 1.4375,
+                "caption": "On my way."
+              },
+              {
+                "sourceId": "frontier-worker-move-2",
+                "gain": 1.2033,
+                "caption": "On my way."
+              }
+            ]
+          },
+          "unit.worker.patrol": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-patrol-1",
+                "gain": 1.0355,
+                "caption": "I'll keep watch."
+              },
+              {
+                "sourceId": "frontier-worker-patrol-3",
+                "gain": 0.9943,
+                "caption": "I'll keep watch."
+              }
+            ]
+          },
+          "unit.worker.follow": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-follow-1",
+                "gain": 1.318,
+                "caption": "Right behind you."
+              },
+              {
+                "sourceId": "frontier-worker-follow-3",
+                "gain": 1.3348,
+                "caption": "Right behind you."
+              }
+            ]
+          },
+          "unit.worker.stop": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-stop-1",
+                "gain": 1.0139,
+                "caption": "Stopping here."
+              },
+              {
+                "sourceId": "frontier-worker-stop-4",
+                "gain": 1.132,
+                "caption": "Stopping here."
+              }
+            ]
+          },
+          "unit.worker.hold": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-hold-1",
+                "gain": 1.4503,
+                "caption": "I'll stay here."
+              },
+              {
+                "sourceId": "frontier-worker-hold-2",
+                "gain": 1.5872,
+                "caption": "I'll stay here."
+              }
+            ]
+          },
+          "unit.worker.attack": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-attack-3",
+                "gain": 1.201,
+                "caption": "I'll fight."
+              },
+              {
+                "sourceId": "frontier-worker-attack-4",
+                "gain": 1.0448,
+                "caption": "I'll fight."
+              }
+            ]
+          },
+          "unit.worker.gather.food": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-gather-food-1",
+                "gain": 1.2251,
+                "caption": "I'll gather food."
+              },
+              {
+                "sourceId": "frontier-worker-gather-food-2",
+                "gain": 1.2479,
+                "caption": "I'll gather food."
+              }
+            ]
+          },
+          "unit.worker.gather.farm": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-gather-farm-1",
+                "gain": 1.2499,
+                "caption": "I'll tend the crops."
+              },
+              {
+                "sourceId": "frontier-worker-gather-farm-2",
+                "gain": 1.1839,
+                "caption": "I'll tend the crops."
+              }
+            ]
+          },
+          "unit.worker.gather.sheep-carcass": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-gather-sheep-carcass-2",
+                "gain": 1.3615,
+                "caption": "I'll collect the meat."
+              },
+              {
+                "sourceId": "frontier-worker-gather-sheep-carcass-4",
+                "gain": 1.0821,
+                "caption": "I'll collect the meat."
+              }
+            ]
+          },
+          "unit.worker.gather.fish": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-gather-fish-2",
+                "gain": 1.3295,
+                "caption": "I'll catch fish."
+              },
+              {
+                "sourceId": "frontier-worker-gather-fish-3",
+                "gain": 1.4403,
+                "caption": "I'll catch fish."
+              }
+            ]
+          },
+          "unit.worker.gather.stone": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-gather-stone-2",
+                "gain": 1.2955,
+                "caption": "I'll quarry stone."
+              },
+              {
+                "sourceId": "frontier-worker-gather-stone-3",
+                "gain": 1.2825,
+                "caption": "I'll quarry stone."
+              }
+            ]
+          },
+          "unit.worker.build": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-build-3",
+                "gain": 1.0187,
+                "caption": "I'll build it."
+              },
+              {
+                "sourceId": "frontier-worker-build-4",
+                "gain": 1.5562,
+                "caption": "I'll build it."
+              }
+            ]
+          },
+          "unit.worker.repair": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-repair-1",
+                "gain": 1.2755,
+                "caption": "I'll mend it."
+              },
+              {
+                "sourceId": "frontier-worker-repair-2",
+                "gain": 1.1996,
+                "caption": "I'll mend it."
+              }
+            ]
+          },
+          "unit.worker.ready": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 2200,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-ready-2",
+                "gain": 1.2985,
+                "caption": "Ready to work."
+              },
+              {
+                "sourceId": "frontier-worker-ready-4",
+                "gain": 1.3869,
+                "caption": "Ready to work."
+              }
+            ]
+          },
+          "unit.infantry.select": {
+            "bus": "voice",
+            "priority": 0,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-infantry-select-1",
+                "gain": 1.3947,
+                "caption": "Line ready."
+              },
+              {
+                "sourceId": "frontier-infantry-select-4",
+                "gain": 1.5178,
+                "caption": "Line ready."
+              }
+            ]
+          },
+          "unit.infantry.move": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-infantry-move-4",
+                "gain": 1.6021,
+                "caption": "Moving out."
+              }
+            ]
+          },
+          "unit.infantry.patrol": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-infantry-patrol-2",
+                "gain": 1.3745,
+                "caption": "I'll patrol here."
+              }
+            ]
+          },
+          "unit.infantry.follow": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-infantry-follow-1",
+                "gain": 1.4597,
+                "caption": "With you."
+              }
+            ]
+          },
+          "unit.infantry.stop": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-infantry-stop-1",
+                "gain": 1.4743,
+                "caption": "Stopping."
+              }
+            ]
+          },
+          "unit.infantry.hold": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-infantry-hold-1",
+                "gain": 1.5215,
+                "caption": "Holding the line."
+              }
+            ]
+          },
+          "unit.infantry.attack": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-infantry-attack-1",
+                "gain": 1.7401,
+                "caption": "Into the fight."
+              },
+              {
+                "sourceId": "frontier-infantry-attack-3",
+                "gain": 1.3043,
+                "caption": "Into the fight."
+              }
+            ]
+          },
+          "unit.infantry.ready": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 2200,
+            "variants": [
+              {
+                "sourceId": "frontier-infantry-ready-2",
+                "gain": 1.6829,
+                "caption": "Infantry ready."
+              }
+            ]
+          },
+          "unit.spearman.select": {
+            "bus": "voice",
+            "priority": 0,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-spearman-select-1",
+                "gain": 0.7399,
+                "caption": "Spear ready."
+              },
+              {
+                "sourceId": "frontier-spearman-select-3",
+                "gain": 0.6777,
+                "caption": "Spear ready."
+              }
+            ]
+          },
+          "unit.spearman.move": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-spearman-move-1",
+                "gain": 1.9558,
+                "caption": "On the march."
+              }
+            ]
+          },
+          "unit.spearman.patrol": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-spearman-patrol-3",
+                "gain": 0.8181,
+                "caption": "I'll watch this route."
+              }
+            ]
+          },
+          "unit.spearman.follow": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-spearman-follow-1",
+                "gain": 1.1754,
+                "caption": "Following you."
+              }
+            ]
+          },
+          "unit.spearman.stop": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-spearman-stop-2",
+                "gain": 0.8529,
+                "caption": "Stopping here."
+              }
+            ]
+          },
+          "unit.spearman.hold": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-spearman-hold-3",
+                "gain": 0.7574,
+                "caption": "Holding firm."
+              }
+            ]
+          },
+          "unit.spearman.attack": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-spearman-attack-2",
+                "gain": 0.8742,
+                "caption": "Spears forward."
+              },
+              {
+                "sourceId": "frontier-spearman-attack-3",
+                "gain": 0.8349,
+                "caption": "Spears forward."
+              }
+            ]
+          },
+          "unit.spearman.ready": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 2200,
+            "variants": [
+              {
+                "sourceId": "frontier-spearman-ready-3",
+                "gain": 0.8294,
+                "caption": "Spearman ready."
+              }
+            ]
+          },
+          "unit.archer.select": {
+            "bus": "voice",
+            "priority": 0,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-archer-select-2",
+                "gain": 1.7126,
+                "caption": "Bow at hand."
+              },
+              {
+                "sourceId": "frontier-archer-select-3",
+                "gain": 1.6235,
+                "caption": "Bow at hand."
+              }
+            ]
+          },
+          "unit.archer.move": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-archer-move-3",
+                "gain": 1.4276,
+                "caption": "Moving to position."
+              }
+            ]
+          },
+          "unit.archer.patrol": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-archer-patrol-1",
+                "gain": 1.4937,
+                "caption": "I'll watch the path."
+              }
+            ]
+          },
+          "unit.archer.follow": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-archer-follow-2",
+                "gain": 1.7374,
+                "caption": "On your trail."
+              }
+            ]
+          },
+          "unit.archer.stop": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-archer-stop-4",
+                "gain": 1.2612,
+                "caption": "Stopping."
+              }
+            ]
+          },
+          "unit.archer.hold": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-archer-hold-4",
+                "gain": 1.2851,
+                "caption": "Holding position."
+              }
+            ]
+          },
+          "unit.archer.attack": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-archer-attack-1",
+                "gain": 1.5203,
+                "caption": "Taking aim."
+              },
+              {
+                "sourceId": "frontier-archer-attack-3",
+                "gain": 1.5546,
+                "caption": "Taking aim."
+              }
+            ]
+          },
+          "unit.archer.ready": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 2200,
+            "variants": [
+              {
+                "sourceId": "frontier-archer-ready-3",
+                "gain": 1.4509,
+                "caption": "Archer ready."
+              }
+            ]
+          },
+          "unit.scout.select": {
+            "bus": "voice",
+            "priority": 0,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-scout-select-3",
+                "gain": 1.5351,
+                "caption": "Where next?"
+              },
+              {
+                "sourceId": "frontier-scout-select-4",
+                "gain": 1.3951,
+                "caption": "Where next?"
+              }
+            ]
+          },
+          "unit.scout.move": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-scout-move-1",
+                "gain": 1.4756,
+                "caption": "On my way."
+              }
+            ]
+          },
+          "unit.scout.patrol": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-scout-patrol-4",
+                "gain": 1.3017,
+                "caption": "I'll scout this route."
+              }
+            ]
+          },
+          "unit.scout.follow": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-scout-follow-2",
+                "gain": 1.5028,
+                "caption": "I'll follow."
+              }
+            ]
+          },
+          "unit.scout.stop": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-scout-stop-2",
+                "gain": 1.5444,
+                "caption": "Stopping here."
+              }
+            ]
+          },
+          "unit.scout.hold": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-scout-hold-1",
+                "gain": 1.8722,
+                "caption": "I'll keep watch."
+              }
+            ]
+          },
+          "unit.scout.attack": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-scout-attack-2",
+                "gain": 1.7423,
+                "caption": "Moving to attack."
+              },
+              {
+                "sourceId": "frontier-scout-attack-3",
+                "gain": 1.0997,
+                "caption": "Moving to attack."
+              }
+            ]
+          },
+          "unit.scout.ready": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 2200,
+            "variants": [
+              {
+                "sourceId": "frontier-scout-ready-2",
+                "gain": 1.4805,
+                "caption": "Scout ready."
+              }
+            ]
+          },
+          "unit.rider.select": {
+            "bus": "voice",
+            "priority": 0,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-rider-select-2",
+                "gain": 1.4235,
+                "caption": "Ready to ride."
+              },
+              {
+                "sourceId": "frontier-rider-select-3",
+                "gain": 1.3632,
+                "caption": "Ready to ride."
+              }
+            ]
+          },
+          "unit.rider.move": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-rider-move-2",
+                "gain": 1.4049,
+                "caption": "Riding out."
+              }
+            ]
+          },
+          "unit.rider.patrol": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-rider-patrol-1",
+                "gain": 1.4008,
+                "caption": "I'll ride this route."
+              }
+            ]
+          },
+          "unit.rider.follow": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-rider-follow-2",
+                "gain": 1.4025,
+                "caption": "Riding with you."
+              }
+            ]
+          },
+          "unit.rider.stop": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-rider-stop-1",
+                "gain": 1.0666,
+                "caption": "Reining in."
+              }
+            ]
+          },
+          "unit.rider.hold": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-rider-hold-2",
+                "gain": 1.3292,
+                "caption": "Holding here."
+              }
+            ]
+          },
+          "unit.rider.attack": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-rider-attack-2",
+                "gain": 1.4706,
+                "caption": "Riding to attack."
+              },
+              {
+                "sourceId": "frontier-rider-attack-3",
+                "gain": 1.4826,
+                "caption": "Riding to attack."
+              }
+            ]
+          },
+          "unit.rider.ready": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 2200,
+            "variants": [
+              {
+                "sourceId": "frontier-rider-ready-3",
+                "gain": 1.4871,
+                "caption": "Rider ready."
+              }
+            ]
+          },
+          "unit.siege-engine.select": {
+            "bus": "voice",
+            "priority": 0,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-siege-engine-select-3",
+                "gain": 1.3939,
+                "caption": "Crew ready."
+              },
+              {
+                "sourceId": "frontier-siege-engine-select-4",
+                "gain": 1.2958,
+                "caption": "Crew ready."
+              }
+            ]
+          },
+          "unit.siege-engine.move": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-siege-engine-move-3",
+                "gain": 1.2449,
+                "caption": "Rolling out."
+              }
+            ]
+          },
+          "unit.siege-engine.patrol": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-siege-engine-patrol-1",
+                "gain": 1.5423,
+                "caption": "We'll patrol here."
+              }
+            ]
+          },
+          "unit.siege-engine.follow": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-siege-engine-follow-1",
+                "gain": 1.2102,
+                "caption": "Following your lead."
+              }
+            ]
+          },
+          "unit.siege-engine.stop": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-siege-engine-stop-4",
+                "gain": 1.1388,
+                "caption": "Stopping the wheels."
+              }
+            ]
+          },
+          "unit.siege-engine.hold": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-siege-engine-hold-1",
+                "gain": 1.4127,
+                "caption": "Holding position."
+              }
+            ]
+          },
+          "unit.siege-engine.attack": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-siege-engine-attack-2",
+                "gain": 1.4507,
+                "caption": "Preparing to fire."
+              },
+              {
+                "sourceId": "frontier-siege-engine-attack-4",
+                "gain": 1.3786,
+                "caption": "Preparing to fire."
+              }
+            ]
+          },
+          "unit.siege-engine.ready": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 2200,
+            "variants": [
+              {
+                "sourceId": "frontier-siege-engine-ready-4",
+                "gain": 1.4848,
+                "caption": "Siege crew ready."
+              }
+            ]
+          },
+          "unit.skiff.select": {
+            "bus": "voice",
+            "priority": 0,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-skiff-select-1",
+                "gain": 1.4629,
+                "caption": "Skiff here."
+              },
+              {
+                "sourceId": "frontier-skiff-select-3",
+                "gain": 1.6693,
+                "caption": "Skiff here."
+              }
+            ]
+          },
+          "unit.skiff.move": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-skiff-move-4",
+                "gain": 1.3394,
+                "caption": "Rowing out."
+              }
+            ]
+          },
+          "unit.skiff.stop": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-skiff-stop-4",
+                "gain": 1.0793,
+                "caption": "Stopping here."
+              }
+            ]
+          },
+          "unit.skiff.hold": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-skiff-hold-2",
+                "gain": 1.4635,
+                "caption": "Holding here."
+              }
+            ]
+          },
+          "unit.skiff.gather.food": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-skiff-gather-food-2",
+                "gain": 1.3769,
+                "caption": "I'll bring in fish."
+              }
+            ]
+          },
+          "unit.skiff.ready": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 2200,
+            "variants": [
+              {
+                "sourceId": "frontier-skiff-ready-4",
+                "gain": 1.357,
+                "caption": "Skiff ready."
+              }
+            ]
+          },
+          "building.palisade-wall.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-palisade-wall-select-4",
+                "gain": 0.8274,
+                "caption": "Timber palisade"
+              }
+            ]
+          },
+          "building.palisade-gate.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-palisade-gate-select-2",
+                "gain": 0.7402,
+                "caption": "Wooden gate latch"
+              }
+            ]
+          },
+          "building.house.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-house-select-4",
+                "gain": 1.7419,
+                "caption": "Cottage hearth"
+              }
+            ]
+          },
+          "building.archery-range.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-archery-range-select-1",
+                "gain": 1.0804,
+                "caption": "Bow and straw target"
+              }
+            ]
+          },
+          "building.storehouse.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-storehouse-select-3",
+                "gain": 0.983,
+                "caption": "Sacks and crates"
+              }
+            ]
+          },
+          "building.mill.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-mill-select-4",
+                "gain": 1.0257,
+                "caption": "Mill gears and grain"
+              }
+            ]
+          },
+          "building.farm.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-farm-select-3",
+                "gain": 2,
+                "caption": "Wheat harvest"
+              }
+            ]
+          },
+          "building.dock.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-dock-select-1",
+                "gain": 0.7346,
+                "caption": "Water and mooring rope"
+              }
+            ]
+          },
+          "building.watchtower.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-watchtower-select-1",
+                "gain": 1.4578,
+                "caption": "Lookout platform"
+              }
+            ]
+          },
+          "building.stable.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-stable-select-4",
+                "gain": 1.5964,
+                "caption": "Horse and tack"
+              }
+            ]
+          },
+          "building.workshop.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-workshop-select-2",
+                "gain": 1.7669,
+                "caption": "Workshop tools"
+              }
+            ]
+          },
+          "unit.worker.return-cargo": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-return-cargo-4",
+                "gain": 1.3199,
+                "caption": "I'll bring this back."
+              }
+            ]
+          },
+          "unit.skiff.return-cargo": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-skiff-return-cargo-3",
+                "gain": 1.3149,
+                "caption": "Returning the catch."
+              }
+            ]
+          }
+        },
+        "music": {}
+      }
+    ],
+    "compositions": []
+  },
+  "downloads": {
+    "frontier-worker-select-1": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-1.mp3",
+      "bytes": 38068,
+      "sha256": "5aaf6e689ce1b4acc3fb9c6e16c0857018eba66dd7f0d17e6bfee7c706bf93e5",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-select-2": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-2.mp3",
+      "bytes": 37650,
+      "sha256": "946e51bd83ea67642d73fe13e0ebb3975b3a02740f3cc568f59af002f847c819",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-select-3": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-3.mp3",
+      "bytes": 38903,
+      "sha256": "c401b213da3bb10dcf54e1828ef341f69f1d10533cd0ef3a02b93e8e8bb09943",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-select-4": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-4.mp3",
+      "bytes": 36814,
+      "sha256": "adac9581e2bfcf6ea76db5a16fdc410940a9e27c826299bdf3cf4b1f860a6f0b",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-wood-1": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-1.mp3",
+      "bytes": 37650,
+      "sha256": "f86ff881e7ffb6857511084b3659d62fd4960c6a0a11590cadb892e78f9d3985",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-wood-2": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-2.mp3",
+      "bytes": 36814,
+      "sha256": "9e7e60ed5d992f2184d69c430e0ec59c3303b9becae54ee60a71cdbf3a5c8087",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-wood-3": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-3.mp3",
+      "bytes": 36814,
+      "sha256": "f98723ef362ab0c8157af5fce31d3d62e0796bf7f155675435ae6966d7cdc25b",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-wood-4": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-4.mp3",
+      "bytes": 37650,
+      "sha256": "082ec82a647cff33aa33c493c65b816e84a3ec042e7151016691b0366c129cf6",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-barracks-select-4": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/barracks-select-4.mp3",
+      "bytes": 50188,
+      "sha256": "c7d0507c82c47968be2ad72301a9f32e1a19e26e9b02b1db7569dfe265faf97d",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-town-center-select-1": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/town-center-select-1.mp3",
+      "bytes": 50188,
+      "sha256": "3453ea7bf7a57578fdbe1fbc7680340c7a26b75bc2caa8ab5c891ad45dd33f23",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-town-center-select-4": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/town-center-select-4.mp3",
+      "bytes": 50188,
+      "sha256": "099febfdb6e55752876d1087dbe155a4e8c1f8ccfd30fd7d2ed863c592270fab",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-move-1": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-move-1.mp3",
+      "bytes": 34724,
+      "sha256": "a479f2cdc21972461ea5af4b765e9e73522a9a2cd0fb9878560c1400de1719dc",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-move-2": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-move-2.mp3",
+      "bytes": 33052,
+      "sha256": "ea1f86f49f144a380833cbc0dfeb986fa4e676bd43638735c3b810fce26d75ef",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-patrol-1": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-patrol-1.mp3",
+      "bytes": 36814,
+      "sha256": "5db70dca16f2d8f97c6a031c9100ba377350b611f2a897cc11ae911d79013a28",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-patrol-3": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-patrol-3.mp3",
+      "bytes": 36814,
+      "sha256": "089c666a1184bc3d14d5cede2c0b1e4a7080dd79ce9bdcb036057bf3eb543491",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-follow-1": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-follow-1.mp3",
+      "bytes": 37650,
+      "sha256": "0317f7add9f694387be4b8b3ba6fb8eff458b441e811147af205088f60bfc3b1",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-follow-3": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-follow-3.mp3",
+      "bytes": 38068,
+      "sha256": "3db3a4bb3655e5961eba710f07b0dc69cec57ee6b0903b3e36475ce1754cbc23",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-stop-1": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-stop-1.mp3",
+      "bytes": 35142,
+      "sha256": "7023041e6e761003ac2a6a8ea6a6b45e63d38a6073235efd8241164a7876a16e",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-stop-4": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-stop-4.mp3",
+      "bytes": 35142,
+      "sha256": "076aaee9731bb7aff543d9f9972d0797987f8c6c572ae91630cc6a3a4896474b",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-hold-1": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-hold-1.mp3",
+      "bytes": 37650,
+      "sha256": "b33364c2fa996907c21fc8121e60eb17a3e4f48cd0eddaf90e1384406f9deaf7",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-hold-2": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-hold-2.mp3",
+      "bytes": 36814,
+      "sha256": "fc5c2b23a60d733a6822e8137491c0a1d432bcd95f5cc836cd6d442e29d6ae34",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-attack-3": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-attack-3.mp3",
+      "bytes": 33052,
+      "sha256": "2cc416f389193070ee703220aafc6db9fb3b249183d464d2717b66eb020ca427",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-attack-4": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-attack-4.mp3",
+      "bytes": 33052,
+      "sha256": "d675a10e5ae3147471a8176779b22444d0c4940b67c545a142d177731572f266",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-food-1": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-food-1.mp3",
+      "bytes": 38068,
+      "sha256": "f74d9eb7ccba305aaff47a007612699b4383dd893d22492e8814f08666537fdf",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-food-2": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-food-2.mp3",
+      "bytes": 38903,
+      "sha256": "3fbe9643d8940f210306453ad231c90ba37556a4fc9c6317d0542fdfe24045a5",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-farm-1": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-farm-1.mp3",
+      "bytes": 41411,
+      "sha256": "0f63dad95cee517ccd9f49cb9e688759b1e408a05ce46e59e53d6445180ce1da",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-farm-2": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-farm-2.mp3",
+      "bytes": 38903,
+      "sha256": "1485b9bd42b6cd86f59d81574b115cd46a3273298303ae85f04ed15d18ca2cdc",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-sheep-carcass-2": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-sheep-carcass-2.mp3",
+      "bytes": 38903,
+      "sha256": "3657ec89064584110e464a9c54b0ed1cf826dedb1bb7e647db0c97ffc1aa1090",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-sheep-carcass-4": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-sheep-carcass-4.mp3",
+      "bytes": 38903,
+      "sha256": "48aa04c41ac74c97efd9143fc795f66211dc0fddac4a91e196831361cdacf321",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-fish-2": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-fish-2.mp3",
+      "bytes": 35978,
+      "sha256": "55a76fe3b27ae10d99132e849ea34890f41254dbf023b5f398bc9f3396f4a43f",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-fish-3": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-fish-3.mp3",
+      "bytes": 36814,
+      "sha256": "1c0671c007ebb8472b0245b657b9867d6f24f97e69b064594ea4136528fd73ff",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-stone-2": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-stone-2.mp3",
+      "bytes": 40575,
+      "sha256": "9b1b082fe4d2e7ebc162b94d67bb684c98f42b9fa5c7d7a7ef899528231570c2",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-stone-3": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-gather-stone-3.mp3",
+      "bytes": 41411,
+      "sha256": "2e49eabe0cb89d19731b817ed8677b5a7cc3fe7d7887892a9eb9b3a656404997",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-build-3": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-build-3.mp3",
+      "bytes": 35142,
+      "sha256": "6193deeb2d76f4d7b5d63ad0d54a0e99ad147c09ecc9b787e242031c28fee889",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-build-4": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-build-4.mp3",
+      "bytes": 35142,
+      "sha256": "25d79461fd67e617518660ac1b212e9202c67b30d48e345319dd1e21c15b97a4",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-repair-1": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-repair-1.mp3",
+      "bytes": 34724,
+      "sha256": "fc3ac22c5fafa4b3ea4eb4004b13bb24dc3f68c699ed60c28e317059a15f336f",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-repair-2": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-repair-2.mp3",
+      "bytes": 34724,
+      "sha256": "0b1073e0b38c250313502ef1f20edcb69d0b080a5c4d47b24ccf8814bbf55798",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-ready-2": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-ready-2.mp3",
+      "bytes": 34724,
+      "sha256": "ce1baef09ed3bc988716b8cfce5d0ccb292a0b19e28385d50ad0efffc2ee84ab",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-ready-4": {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-ready-4.mp3",
+      "bytes": 35978,
+      "sha256": "bca136fefbbfe8cd7e5c3d4c7f10564d93018956d0ef912d41a618525d9b16b0",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-infantry-select-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-select-1.mp3",
+      "bytes": 33052,
+      "sha256": "606864139c4cae3dc2fd568665f7c282e7a5300691604c16d5e3d89d5f5e1f7b",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-infantry-select-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-select-4.mp3",
+      "bytes": 33052,
+      "sha256": "1828595c529bd366d561bb0a3885a7a9afeda0c3b364906176d9f3dc1266aeb5",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-infantry-move-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-move-4.mp3",
+      "bytes": 33888,
+      "sha256": "7e04b35f3484b6cb1f71d77c55da46d5c87a1360c00688d0756aa3fe46f0e0c2",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-infantry-patrol-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-patrol-2.mp3",
+      "bytes": 37650,
+      "sha256": "d00a348a0e112d7639fd63f025035d0c241ecd86a5dd742d0377a83768acc957",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-infantry-follow-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-follow-1.mp3",
+      "bytes": 32216,
+      "sha256": "42f76483da4addeebcf780481d24a6083a945be8fa3f933c5691a419b70841e5",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-infantry-stop-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-stop-1.mp3",
+      "bytes": 32216,
+      "sha256": "8238a8ff6063c76fd732e42f100b2896f9b80e049c8a10b88407a3fa98d6f0f7",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-infantry-hold-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-hold-1.mp3",
+      "bytes": 37650,
+      "sha256": "c5fe3362b335bb2fddb144a5d333540d0a0d781e58b7e7db2d54f1a73a887cdf",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-infantry-attack-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-attack-1.mp3",
+      "bytes": 35142,
+      "sha256": "085fc8d63890a7dc928c1ff4565169d7bc50cba0028943a7b1754dfb184aab63",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-infantry-attack-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-attack-3.mp3",
+      "bytes": 35142,
+      "sha256": "00c6f44c38dc68e5195d04a96e3cb0353b9bbb07bddde4ab1743f5440ee68991",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-infantry-ready-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/infantry-ready-2.mp3",
+      "bytes": 37650,
+      "sha256": "97ac8e89cec3041e6e6135c805ad7275375c00b107f1db4e8387bd40115e7977",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-spearman-select-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-select-1.mp3",
+      "bytes": 32216,
+      "sha256": "44ded6035f9140a730f4689adb2690b9ca95ab01b724199dd8ba3ea1bd482204",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-spearman-select-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-select-3.mp3",
+      "bytes": 31380,
+      "sha256": "64993262d264128b2a741917cf49a8679e5b106694359dc4ae054a0b458e4788",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-spearman-move-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-move-1.mp3",
+      "bytes": 33888,
+      "sha256": "d98af50c5ee7bbe773e6e9389e66723c976e5ae9f918fd3fa3aebf2e37382e29",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-spearman-patrol-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-patrol-3.mp3",
+      "bytes": 38068,
+      "sha256": "275cc157565274e9e7f0ecaa9f73cad8e145c602e8c9d012abd857612af523cf",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-spearman-follow-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-follow-1.mp3",
+      "bytes": 38903,
+      "sha256": "bbc67baeb51fe0d34d338fa7875918a33eb667099fca88bbbec19633fc3f3199",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-spearman-stop-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-stop-2.mp3",
+      "bytes": 37650,
+      "sha256": "c047ea5be3b7a0b8da0334c197a6daf965b42e9ce15801175576baba1510a9dd",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-spearman-hold-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-hold-3.mp3",
+      "bytes": 36814,
+      "sha256": "81fe9081571b1dd7dca558f03447cb4c38f8de6f831c68ffdf34c2b33c59c0e8",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-spearman-attack-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-attack-2.mp3",
+      "bytes": 35142,
+      "sha256": "aff6fb898323c40653fdfcfe4d614549a2b1b4b07c37759024c3db3ed7f74dfb",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-spearman-attack-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-attack-3.mp3",
+      "bytes": 37650,
+      "sha256": "8e457f45da1d6d72fa004f7e860d3876bffac6c976931e968c8b111889ac9272",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-spearman-ready-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/spearman-ready-3.mp3",
+      "bytes": 33888,
+      "sha256": "a4215bde63be79d3e25ea287c2487330b93d9d26d33f3bb9e1c0cd28dc27ab4e",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-archer-select-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-select-2.mp3",
+      "bytes": 39739,
+      "sha256": "7e1b9e99f7e70c44dbd42e463c9d5efb6430dece103d73fa9f3a3c636d908cb6",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-archer-select-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-select-3.mp3",
+      "bytes": 35978,
+      "sha256": "090b720fb2d64a15b881895d8eb4dec0ac8952bfabb4ffff42c4401fd4025c0e",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-archer-move-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-move-3.mp3",
+      "bytes": 42665,
+      "sha256": "16ac5d9ab7feef0c7a85d2c56d8a1d79a8ac15b167091ccc6b7bac8b7767ec0c",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-archer-patrol-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-patrol-1.mp3",
+      "bytes": 40575,
+      "sha256": "a6c7b323982f873567b96a4feef86f4ae08e8df264af1a6df3697e8cb4094c7b",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-archer-follow-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-follow-2.mp3",
+      "bytes": 37650,
+      "sha256": "700f1bcbe84d9f05459aef597b7768a02d5b22fcd90fc2ad010ac335632c9c65",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-archer-stop-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-stop-4.mp3",
+      "bytes": 33888,
+      "sha256": "d8557d119d40e1708ea99fae63c6adc4601ca26a54e1e966936469a694a0fdc1",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-archer-hold-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-hold-4.mp3",
+      "bytes": 38903,
+      "sha256": "c75eb33c6d5dc97439615a8c42770ebb3484458ec92a795e0faf147905de26b5",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-archer-attack-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-attack-1.mp3",
+      "bytes": 35978,
+      "sha256": "fdea154febf58bcd5672b30e264db50e98bdf4f3ebccd52372bf1de6501007f8",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-archer-attack-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-attack-3.mp3",
+      "bytes": 35142,
+      "sha256": "1254b265a906169f4da010fd103e200a5f0fea036632e921dc11a791a12910b0",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-archer-ready-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/archer-ready-3.mp3",
+      "bytes": 35978,
+      "sha256": "100d34ea3802be2347abfa237d1d2636c6dd7a17c485c04a2428c3f992cb3767",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-scout-select-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-select-3.mp3",
+      "bytes": 33888,
+      "sha256": "3afe7368e47ec747a3e6eef404945d7a959a16d42180d86d3d69c1512b8f066e",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-scout-select-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-select-4.mp3",
+      "bytes": 33888,
+      "sha256": "5219bdc499ceb330704a0096e60c2751f02ae0591b0ab7628b1fa6136519423e",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-scout-move-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-move-1.mp3",
+      "bytes": 35142,
+      "sha256": "941fe04bf3c44f291fd7008c89ba1784be6d47137be5d61de5c6ecbcbe720472",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-scout-patrol-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-patrol-4.mp3",
+      "bytes": 39739,
+      "sha256": "c9f82981ac7a440ffc0dfd60a149172ef26526c597cfe8912056a04ec7ca89a2",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-scout-follow-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-follow-2.mp3",
+      "bytes": 33052,
+      "sha256": "5bf560af550098160a1df6bb3fd7c7c722a5eff27b0c625075b74878f075f89b",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-scout-stop-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-stop-2.mp3",
+      "bytes": 35142,
+      "sha256": "498b3b40c584a706bc793a7434ea0290a8e0c7a5ec622765f7b5219fc74275e0",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-scout-hold-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-hold-1.mp3",
+      "bytes": 35142,
+      "sha256": "113bddee12860442a0e4e0ead967c5b9d0a91bdc09d976f89590e097a1729726",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-scout-attack-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-attack-2.mp3",
+      "bytes": 37650,
+      "sha256": "74a146ceec23eb5d1b107c2e1a045bf938c3ec6b0abffbea983e19182c909674",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-scout-attack-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-attack-3.mp3",
+      "bytes": 41411,
+      "sha256": "c60ba63ec1507ccd6c3223a853ceea7b75eff91643d32899c643b3d09629ff64",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-scout-ready-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/scout-ready-2.mp3",
+      "bytes": 33888,
+      "sha256": "9c779ece9bec5fbe70192bdae5a6d56f7f507e5e74c308fe2dafcec5c88c7ab2",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-rider-select-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-select-2.mp3",
+      "bytes": 33888,
+      "sha256": "8ed027439ae4db97e50d6912e90ed1b22ce5f2816331654ecd9d88570dbf18f6",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-rider-select-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-select-3.mp3",
+      "bytes": 34724,
+      "sha256": "d2e029c581a44fbd3ae37d9dab5eb63ad4c94c570cde150552c92901e23827be",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-rider-move-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-move-2.mp3",
+      "bytes": 33052,
+      "sha256": "1e25f5abce019c9ac0e3b89117225f7c63e64d50cf8425e139e0a499680d222a",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-rider-patrol-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-patrol-1.mp3",
+      "bytes": 37650,
+      "sha256": "b86e9aa70e5f6ff03d846b7f9ffb9036849bdc3e6f99295a76b4fc9b1612e002",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-rider-follow-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-follow-2.mp3",
+      "bytes": 34724,
+      "sha256": "b042c714451bbfdb53254cee2df61c4be07d9d6e7d7fb810f6e1621333552562",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-rider-stop-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-stop-1.mp3",
+      "bytes": 33052,
+      "sha256": "16b00f9136c1a462699343ece3f59cf092aef07e44c1ef980b740204fd56708a",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-rider-hold-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-hold-2.mp3",
+      "bytes": 33052,
+      "sha256": "b9d78baed3caa0d836b731ac542426c568f11bb844c2882ce92a782bfa883a4f",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-rider-attack-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-attack-2.mp3",
+      "bytes": 36814,
+      "sha256": "94f4bce17c3319997e5be7135c254aeaa1f8e9afa03fdeed9872c6332b854b8f",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-rider-attack-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-attack-3.mp3",
+      "bytes": 36814,
+      "sha256": "c285fa0c8e5eeaedb56087c06b76848ba19b4f14a256cf804121cf33fcfabbee",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-rider-ready-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/rider-ready-3.mp3",
+      "bytes": 33052,
+      "sha256": "3961857f341f787f78776e4ce553aa15ad335583d75b4c23b2969bb165a6f348",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-siege-engine-select-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-select-3.mp3",
+      "bytes": 32216,
+      "sha256": "c8993c5d3152b6479454cd89b5ecd54c4a20fcec279d89f9d3d40eac42a08ba2",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-siege-engine-select-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-select-4.mp3",
+      "bytes": 33052,
+      "sha256": "29a62082ed093129532127b7c0c5e32952467eecce4ca74e8de9dd83d3218d38",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-siege-engine-move-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-move-3.mp3",
+      "bytes": 33052,
+      "sha256": "86daa2e49ccd8ce38184737179cf580b619de7291b4eaaa4846ddbfd66e976f0",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-siege-engine-patrol-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-patrol-1.mp3",
+      "bytes": 36814,
+      "sha256": "375aa5e394a7d6e4a973bf92f15292892c987ba49a718310991cb6d6cf1a4014",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-siege-engine-follow-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-follow-1.mp3",
+      "bytes": 38068,
+      "sha256": "fe265bfb58cffc0c0617b8c63d85855cf9076f4562e6edc1db7a5e9d4442918b",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-siege-engine-stop-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-stop-4.mp3",
+      "bytes": 38903,
+      "sha256": "56f14eb538f783a85d73539953a544693df2c7d50fee1fe0407c06e5afa3e5d8",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-siege-engine-hold-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-hold-1.mp3",
+      "bytes": 35978,
+      "sha256": "b044395835ed5714474318d6b343edf97b290120e6ce7c398b8ff9324413422a",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-siege-engine-attack-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-attack-2.mp3",
+      "bytes": 39739,
+      "sha256": "14d6c6f604f657297c66c84795025f38045e210fe87b8f599ee06055dd67ef03",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-siege-engine-attack-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-attack-4.mp3",
+      "bytes": 36814,
+      "sha256": "9303f0c52f112270bcdbc979754f604953efe7f0770068850f048cbe41365ac8",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-siege-engine-ready-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/siege-engine-ready-4.mp3",
+      "bytes": 38903,
+      "sha256": "0879e4eee85ba65949aafcac15210bdf3f160add69eea1b872c8f0ef790240ad",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-skiff-select-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-select-1.mp3",
+      "bytes": 30126,
+      "sha256": "91bce0630d12ad009cf9a8550b98b213958d8edc41a98c67ab7b6f8aeaf15856",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-skiff-select-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-select-3.mp3",
+      "bytes": 32216,
+      "sha256": "d13c3a247867cf4969ba09ab1e0e2e1c003bedc72b60c75e38e1ba354a399f2a",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-skiff-move-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-move-4.mp3",
+      "bytes": 33052,
+      "sha256": "f3adcf5fffaee09e2986d80431ba9a15ad38977f811aeefafec459508e3dd327",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-skiff-stop-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-stop-4.mp3",
+      "bytes": 33888,
+      "sha256": "5ee9958e2b79e7960859db80b9d2857ac72056e99f7ff8163b40b4043e407566",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-skiff-hold-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-hold-2.mp3",
+      "bytes": 32216,
+      "sha256": "e77818779bd11fdd27cb7e8c04ce161cc7f7e1998ac118f082fce0beff714c0e",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-skiff-gather-food-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-gather-food-2.mp3",
+      "bytes": 35978,
+      "sha256": "027f59808e0363b6d5c5157308ab8623fec640ae7e3b09f10ab778dece81ddc4",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-skiff-ready-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-ready-4.mp3",
+      "bytes": 32216,
+      "sha256": "8ea5dc782c434593792b7d847e4dbc5ba7f2b93a03e8b8c355782d75912dc279",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-palisade-wall-select-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/palisade-wall-select-4.mp3",
+      "bytes": 50188,
+      "sha256": "0d1d0012c62ee9187d7fa7e54eacc0f80549437b56f3787f7b25fe6da5d84093",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-palisade-gate-select-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/palisade-gate-select-2.mp3",
+      "bytes": 50188,
+      "sha256": "390f23ddc4a1816de5eab0a6cde457ebc053b230b79bae9362bab0188c9fb4bd",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-house-select-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/house-select-4.mp3",
+      "bytes": 50188,
+      "sha256": "bd633f07c3ed6ebfa5f9e2c37557fa031ee0e20fdf655ca97a46d705fc6bf2b7",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-archery-range-select-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/archery-range-select-1.mp3",
+      "bytes": 50188,
+      "sha256": "833fb232f86afef1b9677169c4f87490c08142a0b3b6b8210bc66e78ff31c47f",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-storehouse-select-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/storehouse-select-3.mp3",
+      "bytes": 50188,
+      "sha256": "5dfef7661e793cf127c29218b9ffe386fcc9ba0a8c1547e9e2d11849f53f5e61",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-mill-select-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/mill-select-4.mp3",
+      "bytes": 50188,
+      "sha256": "9fd34053a7150054f97bb177e8d1e93635ebf5bce3a021dfa5c3bb32a0b1533d",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-farm-select-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/farm-select-3.mp3",
+      "bytes": 50188,
+      "sha256": "a5c0e7bbd32a0dccea3f62fc73ba2e1d142a30415d9579eb89b8d4656a88b026",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-dock-select-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/dock-select-1.mp3",
+      "bytes": 50188,
+      "sha256": "d66b08d49c5b2c2ee05ef0f13063b8a852a716d06dd0921c8539f260f3c5e7d5",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-watchtower-select-1": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/watchtower-select-1.mp3",
+      "bytes": 50188,
+      "sha256": "94fa3d56544bc7524071e8e1b70401eb122757f26e6b2fddf9c9840f31e68829",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-stable-select-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/stable-select-4.mp3",
+      "bytes": 50188,
+      "sha256": "9b6adaa5b1d030374fc2671bfb6ae5910906ffcaf2049269159705c27feea78a",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-workshop-select-2": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/workshop-select-2.mp3",
+      "bytes": 50188,
+      "sha256": "e67976dccb2ee30cea291ab61d0fd780b4f8d58743874da12caa8aadc216d861",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-return-cargo-4": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/worker-return-cargo-4.mp3",
+      "bytes": 39739,
+      "sha256": "75b87b33de0ba6557ec0477cd84f8c8e66cbf6b335bba9c9fb23920b8e5ad9b1",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-skiff-return-cargo-3": {
+      "path": "/assets/audio/frontier-roster-feedback-v1/sources/skiff-return-cargo-3.mp3",
+      "bytes": 35978,
+      "sha256": "bf4738bcf7401d54f96ea132bb69def2fe27a0ebb6d27f0b6be9d46cd0a832a0",
+      "mimeType": "audio/mpeg"
+    }
+  }
+}

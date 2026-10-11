@@ -218,6 +218,12 @@ authorization, decoding, normalization, MIME and non-client asset rules. The
 source allowlist and packed import audit cover all five registered browser
 entrypoints; real packed HTTP tests check every declared path and denied paths,
 including the manifest itself and offline Node adapters.
+The audio pack builder generates `src/server/roster-audio-sources.mjs` as an
+exact server-only admission list for the selected current-roster recordings.
+Its consumer is `client-static-assets.mjs`; it does not admit the source catalog,
+production plan or unselected comparison takes. The owning
+[source pack](../assets/audio/frontier-roster-feedback-v1/README.md) preserves
+the originals and rebuilds this list with the hash-bound runtime manifest.
 The source and served audits share [`module-imports.mjs`](../scripts/module-imports.mjs)
 for static imports, re-exports and literal lazy imports. Comments/string/regular
 expression text cannot create edges; compact syntax and escaped specifiers must

@@ -13,6 +13,78 @@ creatively accepted, deployed, heard or recognizable.
 
 ## Current material and scope
 
+### Interaction delivery owner — 11 October 2026
+
+The user reports missing speech on unit selection and work orders, and missing
+characteristic building selection sounds. Audited source and Railway staging
+both identify `e0ced8ad21081cdbd221561b784f16575035e5da`; staging deployment
+`7151cde3-db10-4284-afb2-bc53c7661c3c` is SUCCESS. That revision contains routing
+and synthesized tones, but no role speech or building activity recordings.
+
+**Owner:** chat `01a12b6b-d181-79b1-97b4-05de79523245`, Add unit and building audio.
+The active goal retains asset production, default bindings, packaging, integration,
+identified deployment and actual in-game listening across the registered roster.
+The user clarified on 11 October that Marketplace and Castle were examples:
+focus on the thirteen currently registered buildings, with no new building types
+or future-source production required. Town hall maps to the existing Town Center.
+
+The first implementation increment supplies [Frontier feedback v1](../assets/audio/frontier-feedback-v1/README.md):
+Worker selection (“What needs doing?”), applied Wood Gather (“I'll cut wood.”),
+Barracks equipment and Town Center activity. Eleven of sixteen preserved takes
+are provisionally bound. Main loads this interaction pack even on maps without
+audio; exact bindings survive generic regional cue assignments. Existing music
+and ambience stay map-owned. Applied-order priority 1 can interrupt selection
+priority 0, cancelling playing and pending speech. The shared 1.25 s speech
+limit still bounds repeated equal-priority orders; urgent alerts retain precedence.
+
+Write scope: the existing audio runtime/catalog, Main's constructor option,
+exact static admission, Docker inputs, focused audio tests and this asset pack.
+The follow-up scope includes the owned `interaction-audio` cloud capture adapter
+and its explicit workflow/runner registration, retaining native game output for
+listening review. Preparation and CPU tests do not establish a cloud run.
+Backing and sequence are in the pack README and existing voice guide. Source
+routing, hash verification, serving and modeled playback checks pass; source
+integration, clean release identity, containing deployment and native audible
+acceptance must be recorded separately. The source audit below remains a dated
+7–9 October baseline rather than a claim that the new clips were already present.
+
+The [11 October receipt](qa-interaction-audio-2026-10-11.md) records source
+`4d50d4d1`, its clean release digest, 246 passing audio tests and eleven verified
+packed recordings. **GitHub publication is blocked:** branch push returned
+`permission denied`; repository metadata reports `push: false`. No PR, merge or
+containing deployment exists. The user has been asked to restore write access;
+the owner retains independent local production and integration preparation.
+Follow-up code `b8e0878b` adds source-ID isolation and the prepared ordinary
+click/output capture. Its clean pack and checks are recorded in the same receipt;
+write access still reports false after the user's acknowledgement at 15:03 UTC.
+
+The second local increment is [Worker action voices](../assets/audio/frontier-worker-actions-v1/README.md):
+fourteen additional meanings for Move/Patrol/Follow/Stop/Hold/Attack,
+Food/Farm/Sheep Carcass/Fish/Stone Gather, Build/Repair and Ready. It preserves
+56 new original takes and assigns 28 in default `frontier-feedback/v2`, which
+retains the eleven v1 recordings unchanged. Captions match the spoken lines.
+The Worker event resolver selects distinct food jobs before generic food;
+all new responses retain accepted-order/lifecycle admission and shared voice
+limits. Downloads validate all metadata first and fetch at most four sources
+concurrently. Failure cancels peers and cannot admit a partial cache entry.
+
+The third local increment is [current-roster feedback](../assets/audio/frontier-roster-feedback-v1/README.md).
+It supplies the other seven role voices, eleven building selections and Worker/
+Skiff Return Cargo acknowledgements. All eight units now have default selection,
+supported command and readiness recordings; all thirteen buildings have distinct
+selection recordings. Skiff has no unsupported Attack/Patrol/Follow bindings.
+The applied Return Cargo notice now releases the matching tracked voice, closing
+a caller/gate gap discovered during this audit. The v3 default contains **119
+recordings across 85 event bindings**, 4,485,737 bytes. Its 253 new originals and
+the earlier 72 stay preserved; 15 additional alternate starts were rate-limited
+without a provider session and were not retried. All selections remain provisional.
+
+Next: publish and verify these increments, then complete native output capture
+and listening across the registered roster. Actual listening, captions-off recognition, rapid-order mix,
+fresh-client/default-map loading and solo/human 1v1 acceptance stay with this owner.
+
+### Preserved 7–9 October source audit
+
 - Gameplay registers one civilization, `frontier`, eight unit kinds and thirteen
   building types. Azure/Ember are ownership colors, not civilizations. Boughward
   has [art direction](art-direction/boughward-roster-v1/README.md); it is not a

@@ -113,7 +113,11 @@ export class OrderAudioGate {
     if (/(FAILED|REJECTED|UNAVAILABLE|UNREACHABLE|EMPTY|SUPERSEDED|CANCELLED|MATCH OVER)/.test(message)) { this.pending.delete(token); return null; }
     const fishingOrder = event.cue === 'gather' && event.kind === 'skiff'
       && message.startsWith('FISHING ORDER · ');
-    if (!fishingOrder && !/^(?:STOP ORDER|HOLD POSITION ORDER|PATROL ORDER|FOLLOW ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|WAYPOINT QUEUED|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|BUILD ORDER|BUILD RESUME ORDER|WALL BUILD ORDER|REPAIR ORDER) · /.test(message)) return null;
+    const returnCargoOrder = event.cue === 'return-cargo' && ['worker', 'skiff'].includes(event.kind)
+      && message.startsWith('RETURN CARGO ORDER · ');
+    const farmReplantOrder = event.cue === 'build' && event.kind === 'worker' && event.buildJob === 'replant'
+      && message.startsWith('FARM REPLANTED · ');
+    if (!fishingOrder && !returnCargoOrder && !farmReplantOrder && !/^(?:STOP ORDER|HOLD POSITION ORDER|PATROL ORDER|FOLLOW ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|WAYPOINT QUEUED|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|BUILD ORDER|BUILD RESUME ORDER|WALL BUILD ORDER|REPAIR ORDER) · /.test(message)) return null;
     this.pending.delete(token); return event;
   }
 }

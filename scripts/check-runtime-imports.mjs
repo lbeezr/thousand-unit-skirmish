@@ -38,6 +38,7 @@ export const RETIRED_RUNTIME_PATHS = Object.freeze([
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
 export const NODE_ONLY_MODULES = [
   'src/server/client-static-assets.mjs', // Shared exact static admission uses Node path semantics.
+  'src/server/roster-audio-sources.mjs', // Generated exact selection list for private server asset admission.
   'src/server/build-identity.mjs', // Reads only the private generated release declaration.
   'src/server/checkpoint-file-reader.mjs', // Bounded private filesystem recovery adapter.
   'src/server/orchestration/room-launch-options.mjs', // Node crypto-backed launch seeds.
@@ -158,7 +159,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'pve-model-proposal', 'server/orchestration/room-launch-options',
     'server/orchestration/room-lobby-chat', 'server/orchestration/room-pregame',
     'server/build-identity', 'server/client-asset-paths', 'server/pve-model-proposal',
-    'server/client-static-assets', 'server/public-gameplay',
+    'server/client-static-assets', 'server/roster-audio-sources', 'server/public-gameplay',
     'server/vision-coverage-cache', 'server/checkpoint-route-budget',
     'server/checkpoint-envelope', // Ordered private validation handoff; domain state remains caller-owned.
     'server/map-definition-validator', // Authoritative map policy; no browser/public admission.

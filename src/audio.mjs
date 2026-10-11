@@ -9,7 +9,7 @@ const DEFAULT_SETTINGS = Object.freeze({
 });
 const COOLDOWN_MS = Object.freeze({
   send: 90, work: 1200, patrol: 170, follow: 170, stop: 170, hold: 170, ready: 2200, death: 2200, repair: 170, select: 90, move: 90, attack: 120, gather: 140, rally: 550, build: 170,
-  queue: 170, complete: 2200, 'research-complete': 2600, 'scenario-reward': 2400,
+  queue: 170, 'return-cargo': 170, complete: 2200, 'research-complete': 2600, 'scenario-reward': 2400,
   reject: 250, objective: 1200, 'objective-lost': 1200,
   'resource-empty': 8000, 'base-lost': 2000, 'building-complete': 2600,
   victory: 5000, defeat: 5000, draw: 5000,
@@ -53,6 +53,7 @@ export function readAudioSettings(storage = browserStorage()) {
 
 export function createGameAudio({
   civilizationId = 'frontier',
+  defaultReference = null, loadShippedPack = loadShippedAudio,
   storage = browserStorage(), doc = globalThis.document, onStatusChange, onCue, onCueDecision, onProfileCaption, onPackStatus, workNow = () => performance.now(),
 } = {}) {
   let settings = readAudioSettings(storage);
@@ -415,6 +416,7 @@ export function createGameAudio({
         tone(frequency, at, 0.055, { endFrequency, gain: 0.13 });
         break;
       }
+      case 'return-cargo':
       case 'move': tone(310, at, 0.09, { wave: 'triangle', endFrequency: 390, gain: 0.19 }); break;
       case 'attack':
         noiseBurst(at, 0.028, { centerFrequency: 420, gain: 0.025 });
@@ -576,15 +578,51 @@ export function createGameAudio({
     profileGate.reset();
     decodedCache.clear();
     activePack = null; activeProfile = null; activeSourceBlobs = null;
-    if (!reference) { setPackStatus('No audio pack assigned'); return; }
+    // Normal gameplay supplies a small interaction pack independently of the
+    // map's score. Namespace its sources so an imported map cannot accidentally
+    // replace a character recording with an unrelated same-ID source.
+    let defaults = null;
+    if (defaultReference) {
+      try {
+        const loaded = await loadShippedPack(defaultReference, { signal: packAbort.signal });
+        if (ticket !== packGeneration) return;
+        const profile = loaded.pack.profiles.find(item => item.id === defaultReference.profileId);
+        if (!profile) throw new Error('Default interaction profile is missing');
+        const namespaceBindings = bindings => Object.fromEntries(Object.entries(bindings || {}).map(([key, binding]) =>
+          [key, { ...binding, variants: binding.variants.map(variant => ({ ...variant, sourceId: `/default/${variant.sourceId}` })) }]));
+        defaults = {
+          ...profile, bindings: namespaceBindings(profile.bindings),
+          civilizationBindings: Object.fromEntries(Object.entries(profile.civilizationBindings || {}).map(([id, bindings]) => [id, namespaceBindings(bindings)])),
+        };
+        activePack = loaded.pack;
+        activeProfile = defaults;
+        // Slashes are forbidden in portable source IDs, so even an imported
+        // source named "default:select" cannot collide with this internal key.
+        activeSourceBlobs = Object.fromEntries(Object.entries(loaded.sourceBlobs).map(([id, blob]) => [`/default/${id}`, blob]));
+        setPackStatus('Default interaction sounds ready.');
+      } catch (error) {
+        if (ticket !== packGeneration) return;
+        setPackStatus(`Default interaction sounds unavailable: ${error.message}. Synthesized feedback remains available.`);
+      }
+    }
+    if (!reference) { if (!defaultReference) setPackStatus('No audio pack assigned'); return; }
     setPackStatus(`Loading audio pack ${reference.packId}…`);
     try {
-      const loaded = reference.version ? await loadShippedAudio(reference, { signal: packAbort.signal }) : await libraryStore.loadPack(reference.packId);
+      const loaded = reference.version ? await loadShippedPack(reference, { signal: packAbort.signal }) : await libraryStore.loadPack(reference.packId);
       if (ticket !== packGeneration) return;
       if (!loaded) { setPackStatus(`Audio pack ${reference.packId} is missing. Install it in Audio Studio; other players need their own copy.`); return; }
       const profile = loaded.pack.profiles.find((item) => item.id === reference.profileId);
       if (!profile) { setPackStatus(`Audio profile ${reference.profileId} is missing from ${reference.packId}.`); return; }
-      activePack = loaded.pack; activeProfile = profile; activeSourceBlobs = loaded.sourceBlobs;
+      activePack = loaded.pack;
+      // Exact map bindings override defaults; generic map cues do not erase an
+      // exact character/job/building sound. Regional compositions stay intact.
+      activeProfile = defaults ? { ...profile,
+        bindings: { ...defaults.bindings, ...profile.bindings },
+        civilizationBindings: Object.fromEntries([...new Set([
+          ...Object.keys(defaults.civilizationBindings), ...Object.keys(profile.civilizationBindings || {}),
+        ])].map(id => [id, { ...defaults.civilizationBindings[id], ...profile.civilizationBindings?.[id] }])),
+      } : profile;
+      activeSourceBlobs = { ...activeSourceBlobs, ...loaded.sourceBlobs };
       setPackStatus(`Audio pack ${loaded.pack.name} ready. ${reference.version ? 'Shipped content loads automatically for both players.' : 'Other players need their own installed copy.'}`);
       if (context) { await startProfileMusic(); await startProfileAmbience(); }
     } catch (error) {
@@ -622,6 +660,10 @@ export function createGameAudio({
     const bus = binding.bus === 'voice' ? 'voice' : binding.bus === 'ambience' ? 'ambience' : 'effects';
     const destination = bus === 'voice' ? voice : bus === 'ambience' ? atmosphere : effects;
     if (!isSampleBusAudible(bus)) { record(event, 'bus muted', choice.key); return false; }
+    // A higher-priority applied order may speak immediately after selection.
+    // Cancel both playing and still-decoding speech before starting its clip;
+    // otherwise a slow selection decode can speak over the accepted work order.
+    if (bus === 'voice' && (isUrgentCue(cue) || binding.priority > 0)) cancelSampledCues('voice');
     const ticket = packGeneration;
     const workTicket = workGeneration;
     const sampleTicket = sampleGenerations[bus];
