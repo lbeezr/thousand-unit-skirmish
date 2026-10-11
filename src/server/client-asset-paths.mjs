@@ -1,5 +1,8 @@
 // Exact public client paths; add explicit entries rather than admitting folders.
 export const CLIENT_ASSET_PATHS = Object.freeze([
+  'src/client/hud/wildlife-hud.mjs', 'src/client/hud/match-ui.css',
+  'src/client/hud/unit-hud.mjs', 'src/client/hud/unit-hud.css',
+  'src/client/hud/building-hud.mjs', 'src/client/hud/building-hud.css', 'src/client/hud/selection-hud.css',
   'src/client/hud/worker-hud.mjs', 'src/client/hud/worker-hud.css',
   'assets/ui/fonts/dm-sans.ttf', 'assets/ui/fonts/barlow-condensed-medium.ttf',
   'assets/ui/fonts/dm-sans-OFL.txt', 'assets/ui/fonts/barlow-condensed-OFL.txt',
@@ -55,6 +58,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/terrain-cliff-faces.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs', 'src/world/map-audio-reference.mjs',
   'src/audio-shipped-loader.mjs', 'src/audio-shipped-response.mjs', 'src/audio-shipped-catalog.mjs', 'src/audio-decoded-cache.mjs',
   'src/client/audio/audio-decoded-cache.mjs', 'src/client/audio/audio-shipped-response.mjs',
+  'src/client/audio/shipped-audio-worker-client.mjs', 'src/client/audio/shipped-audio-worker.mjs',
   'src/client/audio/composer.mjs',
   'src/client/audio/library-store.mjs',
   'src/client/audio/library-ui.mjs',

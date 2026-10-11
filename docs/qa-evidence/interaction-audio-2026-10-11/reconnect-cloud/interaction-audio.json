@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "revision": "7a881513bcdba14e30ecd8e87d7bb312ca10ebde",
+    "digest": "sha256:8596db541b0bb68f285ba9484db571f73c4fe9d75dd55ff1e899fbb2252703b1"
+  },
+  "mapId": "veyrholds-terraced-vale",
+  "status": "failed",
+  "recordings": [],
+  "issues": [
+    {
+      "stage": "default-audio-ready",
+      "code": "interaction-audio-capture-failed",
+      "reason": "wait-timeout",
+      "errorType": "Error"
+    }
+  ],
+  "listeningReview": "pending",
+  "diagnostic": {
+    "entry": "game",
+    "boot": "ready",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "newGame": {
+      "disabled": true,
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "probe": true,
+    "faults": [],
+    "mapId": "veyrholds-terraced-vale",
+    "team": 0,
+    "observationAgeMs": 3273,
+    "audioStatus": "waiting",
+    "packStatus": "Loading audio pack vaelora-veyrholds…",
+    "bindingCount": 0,
+    "workers": [
+      {
+        "id": 0,
+        "selected": false,
+        "point": {
+          "x": 577.1681352672925,
+          "y": 373.671823765455
+        }
+      },
+      {
+        "id": 1,
+        "selected": false,
+        "point": {
+          "x": 600.8716701201656,
+          "y": 390.55978374735076
+        }
+      },
+      {
+        "id": 2,
+        "selected": false,
+        "point": {
+          "x": 557.7743340240329,
+          "y": 387.48924556882423
+        }
+      },
+      {
+        "id": 3,
+        "selected": false,
+        "point": {
+          "x": 581.477868876906,
+          "y": 404.37720555072
+        }
+      }
+    ],
+    "buildings": [
+      {
+        "id": 1000000000,
+        "type": "town-center",
+        "complete": true,
+        "selected": false,
+        "point": {
+          "x": 546.9999999999997,
+          "y": 372.94531250000006
+        }
+      }
+    ]
+  },
+  "diagnosticImage": {
+    "file": "failure-default-audio-ready.png",
+    "sha256": "2d38f63f97155d0d1355a57c3739202b3d63c648307eac74a1b47f93c5a14574",
+    "scope": "failure-diagnostic-only"
+  },
+  "downloads": [
+    {
+      "path": "/assets/audio/runtime/frontier-feedback/v3/manifest.json",
+      "startedAt": 159.652159,
+      "state": "completed",
+      "elapsedMs": 5.218999999982543,
+      "bytes": 142089
+    },
+    {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-1.mp3",
+      "startedAt": 168.094606,
+      "state": "completed",
+      "elapsedMs": 6.637000000011994,
+      "bytes": 38278
+    },
+    {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-2.mp3",
+      "startedAt": 168.09484,
+      "state": "completed",
+      "elapsedMs": 8.874999999989086,
+      "bytes": 37860
+    },
+    {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-3.mp3",
+      "startedAt": 168.095042,
+      "state": "completed",
+      "elapsedMs": 10.247999999990043,
+      "bytes": 39113
+    },
+    {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-4.mp3",
+      "startedAt": 168.095158,
+      "state": "completed",
+      "elapsedMs": 10.587000000015223,
+      "bytes": 37024
+    },
+    {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-1.mp3",
+      "startedAt": 177.691372,
+      "state": "completed",
+      "elapsedMs": 4.451999999986356,
+      "bytes": 37860
+    },
+    {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-2.mp3",
+      "startedAt": 177.693059,
+      "state": "completed",
+      "elapsedMs": 6.846999999993386,
+      "bytes": 37024
+    },
+    {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-3.mp3",
+      "startedAt": 177.694753,
+      "state": "completed",
+      "elapsedMs": 13.663000000008196,
+      "bytes": 37024
+    },
+    {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-4.mp3",
+      "startedAt": 177.696902,
+      "state": "completed",
+      "elapsedMs": 11.300000000005639,
+      "bytes": 37860
+    },
+    {
+      "path": "/assets/audio/frontier-feedback-v1/sources/barracks-select-4.mp3",
+      "startedAt": 185.823929,
+      "state": "completed",
+      "elapsedMs": 6.433000000015454,
+      "bytes": 50398
+    },
+    {
+      "path": "/assets/audio/frontier-feedback-v1/sources/town-center-select-1.mp3",
+      "startedAt": 185.83318,
+      "state": "completed",
+      "elapsedMs": 2.1500000000003183,
+      "bytes": 50398
+    },
+    {
+      "path": "/assets/audio/frontier-feedback-v1/sources/town-center-select-4.mp3",
+      "startedAt": 185.834535,
+      "state": "completed",
+      "elapsedMs": 3.4180000000105792,
+      "bytes": 50398
+    },
+    {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-move-1.mp3",
+      "startedAt": 185.836192,
+      "state": "completed",
+      "elapsedMs": 2.5009999999952015,
+      "bytes": 34934
+    },
+    {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-move-2.mp3",
+      "startedAt": 192.59548,
+      "state": "canceled",
+      "elapsedMs": 6581.625000000003
+    },
+    {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-patrol-1.mp3",
+      "startedAt": 192.598505,
+      "state": "canceled",
+      "elapsedMs": 6578.688
+    },
+    {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-patrol-3.mp3",
+      "startedAt": 192.599422,
+      "state": "canceled",
+      "elapsedMs": 6577.876000000004
+    },
+    {
+      "path": "/assets/audio/frontier-worker-actions-v1/sources/worker-follow-1.mp3",
+      "startedAt": 192.600495,
+      "state": "canceled",
+      "elapsedMs": 6576.918000000006
+    },
+    {
+      "path": "/assets/audio/runtime/vaelora-veyrholds/v2/manifest.json",
+      "startedAt": 195.888996,
+      "state": "completed",
+      "elapsedMs": 8.62900000001332,
+      "bytes": 5005
+    },
+    {
+      "path": "/assets/audio/vaelora-zones-v1/sources/tus_veyrholds_music_01_v001.mp3",
+      "startedAt": 202.455222,
+      "state": "completed",
+      "elapsedMs": 14.337000000011813,
+      "bytes": 738244
+    },
+    {
+      "path": "/assets/audio/vaelora-zones-v1/sources/tus_veyrholds_terrain_01_v001.mp3",
+      "startedAt": 202.455327,
+      "state": "completed",
+      "elapsedMs": 13.554999999996653,
+      "bytes": 498162
+    }
+  ]
+}

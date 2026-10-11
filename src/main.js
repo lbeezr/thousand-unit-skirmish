@@ -33,6 +33,9 @@ import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvai
 import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from './client/hud/objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateWorkerHud, workerBuildChoices, workerSelectionKey } from './client/hud/worker-hud.mjs';
+import { updateWildlifeHud } from './client/hud/wildlife-hud.mjs';
+import { updateUnitHud } from './client/hud/unit-hud.mjs';
+import { updateBuildingHud } from './client/hud/building-hud.mjs';
 import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts } from './selection-portrait.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
@@ -3982,8 +3985,10 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     updateProductionPortrait(button, kind, role);
   }
   bar.dataset.context = context.kind;
+  bar.dataset.hudTheme = ['workers', 'building', 'military', 'mixed', 'boats', 'wildlife'].includes(context.kind) ? 'obsidian' : '';
+  bar.dataset.hudTeam = String(localTeam);
   if (bar.hidden !== (context.kind === 'none')) bar.hidden = context.kind === 'none';
-  if (quickAccess.hidden !== !bar.hidden) quickAccess.hidden = !bar.hidden;
+  quickAccess.hidden = false;
   updateCombatStanceUI();
   document.querySelector('#assign-selected-group').disabled = !context.total;
   bar.querySelector('[data-context-summary]').textContent = wildlife
@@ -4056,6 +4061,30 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     button.setAttribute('aria-label', `Recall group ${controlGroupKeyLabel(index)}, ${controlGroups[index].size} units`);
   }
   updateWorkerHud(document, workerHudState(context), handleWorkerHudAction);
+  updateBuildingHud(document, {
+    building, team: localTeam, connected: socket?.readyState === WebSocket.OPEN,
+    matchFinished: matchWinner >= 0, research: latestTeamResearch[localTeam],
+    rallySupported: Boolean(building && buildingSupportsRally(building.type)),
+    targeting: tapOrderArmed, profileId: mapDefinition?.economyProfileId,
+  }, action => {
+    if (action === 'details') { selectDockTab('selection', true); return; }
+    const current = latestBuildings.find(row => row.id === selectedBuildingId && row.team === localTeam);
+    if (!current || current.id !== building?.id || current.hp <= 0 || matchWinner >= 0
+      || socket?.readyState !== WebSocket.OPEN) return;
+    if (action === 'rally') setTapOrderArmed(!tapOrderArmed);
+    if (action === 'clear-rally') ui.clearBuildingRally.click();
+  });
+  updateUnitHud(document, {
+    context, units: selectedIds().map(id => units[id]), team: localTeam,
+    connected: socket?.readyState === WebSocket.OPEN, matchFinished: matchWinner >= 0,
+    formation: ui.formationSelect.value, targeting: tapOrderArmed,
+    attackMove: attackMoveMode, orderMode: persistentTargetMode,
+  }, formation => { ui.formationSelect.value = formation; updateContextualCommands(); });
+  updateWildlifeHud(document, {
+    wildlife, summary: wildlife ? wildlifeSelectionSummary(wildlife) : '',
+    connected: socket?.readyState === WebSocket.OPEN, matchFinished: matchWinner >= 0,
+    targeting: tapOrderArmed,
+  });
   const currentFocus = document.activeElement;
   const commandHasFocus = (bar.contains(currentFocus) || quickAccess?.contains(currentFocus))
     && currentFocus.isConnected && !currentFocus.disabled && !currentFocus.closest('[hidden]');
@@ -5069,8 +5098,24 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
       ? unitSpriteRuntime.roleForUnit({ kind: definition.id, team: localTeam }) : null;
     const producerNames = catalog && !selectedProducer ? Object.values(BUILDING_DEFINITIONS)
       .filter(building => building.products?.includes(definition.id)).map(building => building.label).join(' / ') : '';
-    updateProductionPortrait(button, definition.id, role,
-      `Train ${definition.label}${producerNames ? ` at ${producerNames}` : ''} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`);
+    const explanation = authoritativeReason || reason || populationReason;
+    const cost = `${definition.cost.food} food / ${definition.cost.wood} wood`;
+    if (contextual) {
+      updateProductionPortrait(button, definition.id, role);
+      let label = button.querySelector('[data-production-label]');
+      if (!label) {
+        label = document.createElement('span'); label.dataset.productionLabel = '';
+        for (const part of ['name', 'cost', 'reason']) {
+          const span = document.createElement('span'); span.setAttribute(`data-production-${part}`, ''); label.append(span);
+        }
+        button.append(label);
+      }
+      label.querySelector('[data-production-name]').textContent = `Train ${definition.label}`;
+      label.querySelector('[data-production-cost]').textContent = ` · ${cost}`;
+      label.querySelector('[data-production-reason]').textContent = explanation ? ` · ${explanation}` : '';
+      button.title = `Train ${definition.label} · ${cost}${explanation ? ` · ${explanation}` : ''}`;
+    } else updateProductionPortrait(button, definition.id, role,
+      `Train ${definition.label}${producerNames ? ` at ${producerNames}` : ''} · ${cost}${explanation ? ` · ${explanation}` : ''}`);
   }
   container.hidden = products.length === 0;
 }
@@ -5089,7 +5134,7 @@ function updateBuildingLifecycleActions() {
     ...(building.complete && getBuildingQueueLength(building) > 0 ? [{ type: 'cancelTraining', label: 'Cancel last queued unit' }] : []),
     ...(building.complete && building.type === 'palisade-gate' ? [{ type: 'setGateOpen', label: building.gateOpen ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass' }] : []),
     ...(active ? [{ type: 'cancelResearch', label: 'Cancel research · refund unfinished work' }] : []),
-    ...(building.complete && building.hp < building.maxHp ? [{ type: 'repairBuilding', label: 'Repair with Workers · costs wood' }] : []),
+    ...(building.complete && building.hp < building.maxHp ? [{ type: 'repairBuilding', label: 'Repair · all living Workers · costs wood' }] : []),
   ];
   const signature = JSON.stringify([building?.id, choices.map((choice) => choice.type)]);
   const focusedAction = document.activeElement?.parentElement === container
@@ -8889,7 +8934,7 @@ bindCombatStanceControls(document, combatStanceContext, sendCommand);
 if (contextualBar) {
   bindContextualCommandStrip(contextualBar.querySelector(':scope > .contextual-actions'));
   const quickAccess = document.querySelector('.hud-quick-access');
-  const syncContextHeight = () => document.querySelector('.workspace').style.setProperty('--context-bar-height', `${Math.max(contextualBar.getBoundingClientRect().height, quickAccess.getBoundingClientRect().height)}px`);
+  const syncContextHeight = () => document.querySelector('.workspace').style.setProperty('--context-bar-height', `${contextualBar.getBoundingClientRect().height}px`);
   const commandRowObserver = new ResizeObserver(syncContextHeight);
   for (const row of [contextualBar, quickAccess]) commandRowObserver.observe(row);
   syncContextHeight();
@@ -9517,7 +9562,8 @@ window.addEventListener('keydown', (event) => {
       updateContextualCommands();
       return;
     }
-    if (tapOrderArmed) {
+    if (tapOrderArmed || attackMoveMode) {
+      setAttackMoveMode(false);
       setTapOrderArmed(false);
       return;
     }
@@ -10373,7 +10419,9 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
       if (hasPlayerSeat) cameraSeatTeam = message.player.team;
       else if (message.player.resumePending !== true) cameraSeatTeam = null;
       const { matchWasReset, matchWasRestored } = welcomeSession.recordWelcomeIdentity(message);
-      void loadMapAudio(message.map.audio);
+      // A same-map reconnect must retain the verified sounds and any in-flight
+      // downloads. Restarting this load aborts the entire default voice pack.
+      if (mapChanged) void loadMapAudio(message.map.audio);
       if (mapChanged) {
         mapDefinition = message.map;
         buildMap(mapDefinition);
@@ -10603,6 +10651,46 @@ window.markPrototypeReady();
 // Read-only observations for the shared source-bound cloud capture. No world,
 // clock, focus or visibility mutation is exposed through this diagnostic.
 if (window.__rtsCaptureDiagnostics === true) {
+  window.__rtsInteractionAudioPick = (x, y) => {
+    if (!Number.isFinite(x) || !Number.isFinite(y)
+      || document.elementFromPoint(x, y) !== renderer.domElement) return null;
+    const rect = renderer.domElement.getBoundingClientRect();
+    const unit = pickAt(x - rect.left, y - rect.top, u => u.team === localTeam, { advance: false }).unit;
+    if (unit) return { kind: 'unit', id: unit.id };
+    const building = pickBuildingAt(x - rect.left, y - rect.top);
+    return building ? { kind: 'building', id: building.id } : null;
+  };
+  // On-demand reads avoid a per-frame debugger breakpoint slowing audio loads.
+  window.__rtsInteractionAudioSnapshot = () => {
+    const rect = renderer.domElement.getBoundingClientRect();
+    const project = (x, z, lift = 0) => {
+      const p = new THREE.Vector3(x, groundHeight(x, z) + lift, z).project(camera);
+      const point = { x: rect.left + (p.x + 1) * rect.width / 2, y: rect.top + (1 - p.y) * rect.height / 2 };
+      return Math.abs(p.z) < 1 && document.elementFromPoint(point.x, point.y) === renderer.domElement ? point : null;
+    };
+    const buildingBounds = building => {
+      const group = buildingVisuals.get(building.id)?.group;
+      if (!group?.visible) return null;
+      const box = new THREE.Box3().setFromObject(group);
+      if (box.isEmpty()) return null;
+      const points = [];
+      for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) {
+        const p = new THREE.Vector3(x, y, z).project(camera);
+        if (Math.abs(p.z) >= 1) return null;
+        points.push({ x: rect.left + (p.x + 1) * rect.width / 2, y: rect.top + (1 - p.y) * rect.height / 2 });
+      }
+      return { left: Math.min(...points.map(p => p.x)), right: Math.max(...points.map(p => p.x)),
+        top: Math.min(...points.map(p => p.y)), bottom: Math.max(...points.map(p => p.y)) };
+    };
+    return { observedAt: performance.now(), mapId: mapDefinition?.id, team: localTeam, status: audio.getStatus(),
+      inspector: audio.getInspector(), settings: audio.getSettings(),
+      workers: units.filter(u => u?.team === localTeam && u.kind === 'worker' && u.hp > 0).slice(0, 4)
+        .map(u => ({ id: u.id, selected: selected.has(u.id), point: project(u.renderX, u.renderZ, .65) })),
+      buildings: latestBuildings.filter(b => b.team === localTeam && b.hp > 0 && ['town-center', 'barracks'].includes(b.type))
+        .map(b => ({ id: b.id, type: b.type, complete: b.complete, selected: b.id === selectedBuildingId,
+          point: project(b.x, b.z), bounds: buildingBounds(b) })),
+    };
+  };
   window.__rtsBrowserRecoverySnapshot = () => {
     const worker = units.find(unit => unit?.kind === 'worker' && unit.team === localTeam);
     const rect = renderer.domElement.getBoundingClientRect();

@@ -200,6 +200,38 @@ test('actual welcome stores identity before audio/map and seat token before conf
   assert.equal(f.accesses(), 7, 'each original storage expression evaluates the getter');
 });
 
+test('actual same-map reconnect and pending resume preserve audio loading while map changes replace it', () => {
+  const f = welcomeFixture();
+  const audioLoads = () => f.trace.filter(([label]) => label === 'audio').map(([, value]) => value);
+  // An unresolved transfer makes a second call destructive in production:
+  // setMapAudio aborts the prior download before beginning its replacement.
+  f.context.loadMapAudio = value => {
+    f.trace.push(['audio', value]);
+    return new Promise(() => {});
+  };
+  f.connect().message(f.welcome());
+  assert.deepEqual(audioLoads(), ['map-audio'], 'initial welcome starts the transfer');
+
+  f.connect().message(f.welcome({ player: { team: 0, sessionToken: 'resumed-token', resumed: true } }));
+  assert.deepEqual(audioLoads(), ['map-audio'], 'same-map reconnect must not abort and restart the transfer');
+  assert.equal(f.trace.at(-1)[1][0], 'RECONNECTED AS AZURE');
+
+  f.connect().message(f.welcome({ player: { team: null, resumePending: true } }));
+  assert.deepEqual(audioLoads(), ['map-audio'], 'pending resume must retain the same audio transfer');
+  assert.equal(f.context.waitingForResume, true);
+
+  const changed = { ...f.welcome().map, id: 'changed-map', audio: 'changed-audio' };
+  const connection = f.connect();
+  connection.message(f.welcome({ map: changed }));
+  assert.deepEqual(audioLoads(), ['map-audio', 'changed-audio'], 'a changed-map welcome replaces audio');
+
+  f.context.cameraTarget = { set() {} };
+  f.context.resize = () => {};
+  connection.message({ ...f.welcome({ map: changed }), type: 'mapChange' });
+  assert.deepEqual(audioLoads(), ['map-audio', 'changed-audio', 'changed-audio'],
+    'an explicit map change remains an audio replacement even for the same map identity');
+});
+
 test('identity reads and writes fail independently; a failed write retains the computed reset flag', () => {
   for (const [fault, reset] of [['get:instance', false], ['set:instance', true], ['access:2', false], ['access:3', true]]) {
     const f = welcomeFixture(); f.values.set(f.keys.instance, 'instance-a'); f.values.set(f.keys.match, 'match-b');

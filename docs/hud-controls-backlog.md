@@ -4,7 +4,7 @@ Owner: HUD integration owner. This is the ranked work list for the ongoing HUD
 lane, under [planning rules](contributor-planning.md). Keep small reviewed PRs
 and exact evidence beside each item; a merged source milestone does not close
 an in-game outcome. Dense, subtle, dismissible controls and retained labels
-remain the direction. The 72px Obsidian Worker pilot is approved; wider context redesigns follow later.
+remain the direction. The user accepted the staged 72px Obsidian Worker pilot and authorized extending it across the HUD/UI.
 
 ## Design-system plan — 11 October 2026
 
@@ -18,16 +18,138 @@ The preserved comparisons remain the visual backing; there is no runtime preview
 | Order | Reviewable outcome and acceptance | Dependencies and bounded write scope |
 | --- | --- | --- |
 | 1 — specimen reviewed | [Real-data component specimen](art-direction/hud-design-system-2026-10-11/component-specimen.html) compares 52px and 72px portrait framing, Worker/Build, Barracks/queue/shortage, army/mixed, empty and recovery contexts. [Bounded checks](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026) pass. | User chose the expressive 72px portrait for the Worker pilot. Study source is isolated in `src/studies/hud-component-specimen/`; game rules and runtime consumers are unchanged. |
-| 2 — Worker pilot in progress | Tokens and the new selection dock serve a real Worker: task, cargo, Build, Repair, Return and all other supported orders remain reachable. Selecting a different context clears Worker disclosures. | Agreed baseline; existing availability/focus contracts. New code in `src/client/hud/` with bounded existing DOM/style/binding edits; same owner retains package, delivery and game checks. |
-| 3 — Barracks | Selected producer owns products, live queue, research, rally and lifecycle actions; shortages, cancellation and rejection remain truthful. | Worker dock primitives and real economy/lifecycle bindings. Extend production components and their existing consumers; do not copy rules or introduce multi-producer execution. |
-| 4 — Army and mixed selection | Composition, eligible actions, formations and all existing stance states remain readable; repeated snapshots, death and selection changes preserve focus and authority. | Existing selection/stance/command contracts. Extend the dock and its targeted regression checks. |
-| 5 — Coverage and reuse | Remaining buildings, boats, wildlife and lifecycle states use the same vocabulary; then apply proven foundations to pause/settings and other menus. | Inventory actual supported contexts first. Small consuming-surface slices; no speculative framework or theme system. |
+| 2 — Worker pilot accepted | Tokens and the new selection dock serve a real Worker: task, cargo, Build, Repair, Return and all other supported orders remain reachable. Selecting a different context clears Worker disclosures. | Agreed baseline; existing availability/focus contracts. New code in `src/client/hud/` with bounded existing DOM/style/binding edits; same owner retains package, delivery and game checks. |
+| 3 — Buildings staged | Selected producer owns products, live queue, research, rally and lifecycle actions; shortages, cancellation and rejection remain truthful. | Worker dock primitives and real economy/lifecycle bindings. Extend production components and their existing consumers; do not copy rules or introduce multi-producer execution. |
+| 4 — Army, mixed and Skiffs merged | Composition, eligible actions, formations and all existing stance states remain readable; repeated snapshots, death and selection changes preserve focus and authority. | Existing selection/stance/command contracts. Extend the dock and its targeted regression checks. |
+| 5 — Remaining match surfaces in progress | Remaining buildings, boats, wildlife and lifecycle states use the same vocabulary; then apply proven foundations to pause/settings and other menus. | Inventory actual supported contexts first. Small consuming-surface slices; no speculative framework or theme system. |
 
 Each implementation slice must include focused checks, source/release/served
 identity and an ordinary-game observation at its relevant build. The HUD owner
 retains those steps; an artifact, source merge or handoff does not close them.
 The older functional defects and acceptance gaps below remain open according to
 their own evidence and can be resolved within the affected redesign slice.
+
+## Building rollout — 11 October 2026
+
+Owner: HUD redesign task `01a12b67-645a-7a33-8fb2-8e8979756ac1`.
+The user reported that the Worker pilot “does feel way better” in staging and
+requested similar improvements across the HUD/UI. Continue the existing sequence
+without another mock approval gate.
+
+- **Outcome:** the selected building owns its 72px identity, health, lifecycle,
+  registered training choices, ordered live queue, local research, rally and
+  cancellation/repair controls. Includes Barracks, other producers and utility
+  structures; Dock has no rally, Mill has research, and Farm keeps retained
+  selected Workers for replanting. Repair explicitly names all living Workers.
+- **Backing:** the retained [Barracks queue/shortage/research storyboard](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026)
+  and approved Worker treatment. Reuse Barracks/Farm lifecycle portraits and
+  existing glyphs; other structures retain a symbol rather than unrelated art.
+- **Scope/dependencies:** shared skin in `src/client/hud/selection-hud.css`, new
+  `building-hud.*`, bounded HTML/client bindings and existing production/research/
+  lifecycle consumers. No protocol, economy or multi-producer execution changes.
+  Independent review follows the current main-based implementation.
+- **Acceptance:** both seats switch Worker → Barracks → utility → army; live
+  affordability/queue/research updates retain focus; only the selected producer
+  receives commands; research explains local versus elsewhere progress; no
+  offline dispatch; disclosure Escape restores its opener. Check normal New Game
+  with actual buildings, 1280×720/1920×1080/1024×768, both teams and UI scale.
+- **Delivery:** default HTML admission and clean package, reviewed incremental
+  merge and exact staged source/bytes. HUD owner retains ordinary-game review.
+  The documented hosted capture/sign-in pause applies only to that route; it
+  does not hold implementation, publication or staging verification.
+
+**Review-ready checkpoint:** the building slice passes 190 focused CPU checks
+(188 in the combined set plus two real-client producer-switch/reconnect cases),
+runtime boundaries, both strict type boundaries, changed-file syntax and docs.
+Independent review has no remaining actionable findings after the reconnect
+hover-title correction. [Focused receipt](qa-evidence/building-hud-2026-10-11/focused-checks.json).
+**Staged:** [PR644](https://github.com/lbeezr/thousand-unit-skirmish/pull/644)
+merged at `9f76585c1d95fa65b30f270b007506296228ffa8`. The clean 1,841-file
+package digest is `sha256:9c016880767b208b18553403f57402bcb33f375f88c7e7651ec87209e5693baa`.
+Railway staging deployment `5ae7146d-a47e-46bc-ae0d-e6e76ffed345` succeeded;
+authenticated health identifies that exact source, readiness passes, all 139
+client modules resolve and 12 actual HUD/font/license response hashes match.
+[Delivery receipt](qa-evidence/building-hud-2026-10-11/staging-receipt.json).
+The provider does not report a release digest, so the clean local package digest
+is not asserted as its image identity. Ordinary-game appearance remains open
+under the documented hosted capture/sign-in pause; no alternate route was used.
+
+## Army, mixed selection and Skiffs — 11 October 2026
+
+Owner: HUD redesign task `01a12b67-645a-7a33-8fb2-8e8979756ac1`.
+Base: staged buildings `9f76585c`; branch `codex/unit-hud`.
+
+- **Outcome:** a 72px identity, live composition, combined health, typed cargo and
+  queued/persistent-order summary accompanies the actual selected units. Land
+  units expose Target battlefield, Attack move, Stop, Hold, Patrol and Follow;
+  formation sets the next applicable order. Stances name their eligible military
+  subset and reflect confirmed state. Return names carrying Workers or Skiffs.
+- **Boundaries:** mixed land/water routes stay unavailable with a reason; Stop and
+  Hold still address the whole selection. Pure Skiffs show supported orders and
+  the existing 16-Skiff route limit. Missing Skiff portrait uses a text fallback.
+  Commands, Production, Army and Idle navigation remain in the measured header,
+  independent of selection. Worker Formation / route remains reachable.
+- **Backing:** reuse the approved [army/mixed/empty/recovery storyboard](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026),
+  shared Obsidian skin and admitted portraits/glyphs. No new artwork, gameplay
+  rules, optimistic stance state or command protocol.
+- **Scope:** `src/client/hud/unit-hud.*`, existing stable action nodes, bounded
+  main/HTML layout bindings and exact public admission. Escape cancels Attack
+  move before deselection, including combined tap targeting; tooltip state tracks
+  targeting and reconnect. Existing consumers retain actual order dispatch.
+- **Acceptance:** both seats switch Worker → army → mixed → Skiff → building;
+  confirm exact command recipients and generations, input isolation, focus,
+  cancel/reconnect recovery, 1280×720/1920×1080/1024×768 and UI scale in normal
+  New Game. HUD owner retains identified staged delivery and game review. CPU
+  DOM checks cannot establish rendered layout or player comprehension.
+
+**Review-ready checkpoint:** 196 focused CPU checks pass, covering real client
+recipient IDs/generations in both seats, formation synchronization, offline
+activation, targeting/cancellation, glyph retention and header placement.
+Boundaries, both strict type checks, docs, syntax and whitespace pass.
+Independent review has no remaining actionable findings after correcting Attack
+move Escape cancellation and live Target tooltip restoration. [Focused receipt](qa-evidence/unit-hud-2026-10-11/focused-checks.json).
+This is source/DOM evidence. [PR646](https://github.com/lbeezr/thousand-unit-skirmish/pull/646)
+merged at `3310f31c1b6586fb478e498b22244786fd476600`; staged identity is next,
+with ordinary-game appearance retained separately.
+
+## Remaining match surfaces — 11 October 2026
+
+Owner: HUD redesign task `01a12b67-645a-7a33-8fb2-8e8979756ac1`.
+Base: merged units `3310f31c`; branch `codex/match-ui`.
+
+- **Outcome:** resource/population header, minimap, objectives, command details,
+  match settings, help and result panels adopt the same colors, type, square
+  controls, selected/unavailable states and focus treatment as the accepted dock.
+  The shared tokens now have one owner in `selection-hud.css`. Existing measured
+  positions, density/map preferences, alerts, input exclusions and handlers stay
+  in place; touch controls retain their 44px target minimums.
+- **Wildlife:** selected owned Sheep and visible carcasses get a 72px Food-symbol
+  identity and the authoritative remaining-food summary. Herd/Stop versus
+  nearest-idle-Worker harvest remains the actual existing eligibility boundary.
+  State, targeting, reconnect and selection transitions clear stale identity.
+  No fabricated HP, new art, ownership or command rule is introduced.
+- **Backing:** the [approved Obsidian component study](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026)
+  supplies panel/typography/action/recovery treatment; the admitted Food glyph
+  is explicitly a symbol fallback, not a new Sheep portrait. These are consuming
+  surfaces of the approved system. Help now describes local Worker Build/Gather,
+  selected producer controls and military command cancellation.
+- **Scope:** `match-ui.css`, presentation-only `wildlife-hud.mjs`, bounded HTML/
+  main consumers and exact admission. Independent review and focused existing
+  selection, layout, navigation and match-decision tests precede packaging and
+  identified staged delivery. HUD owner retains ordinary-game appearance at the
+  resulting build under the existing capture/sign-in pause.
+
+**Review-ready checkpoint:** 186 focused checks pass (184 in the combined run,
+then both new carcass cases after correcting invalid fixture disclosure data).
+Runtime boundaries, strict JS/Node types, docs, syntax, exact public admission
+and whitespace pass. Independent review has no remaining actionable findings
+following the touch-target specificity correction. [Focused receipt](qa-evidence/match-ui-2026-10-11/focused-checks.json).
+Publication, clean packaging and staged identity follow; normal-game appearance
+remains explicitly unverified.
+
+The front-door main menu portal and editing studios are separate product
+surfaces, outside this in-match HUD rollout. No studio or portal layout is
+changed by this slice.
 
 ## Worker pilot — 11 October 2026
 
@@ -93,6 +215,20 @@ through the app and retains merge/staging verification. Read-only Railway inspec
 the staging `main` auto-deploy trigger enabled and no production trigger; no
 provider settings or deployments were changed. Staging deployment
 `c18608c2-6e55-4e69-afb8-8c7b89ccfb5c` predates this pilot.
+
+**Staged delivery and user trial — 11 October 2026:**
+[PR641](https://github.com/lbeezr/thousand-unit-skirmish/pull/641) merged as
+`819044363ad0d4270fbb99e95777c40770d7c5c1`. Railway deployment
+`efe20fc4-f2eb-4701-94b8-d3b863a58ad1` succeeded; authenticated health, readiness,
+137 client imports and nine actual HUD/font/license file hashes were verified.
+[Staging receipt](qa-evidence/worker-hud-pilot-2026-10-11/staging-receipt.json).
+The merged clean package has the same content digest recorded above; staging
+reports Git source identity without a release digest. The user subsequently
+reported that the pilot “does feel way better” while using staging and approved
+wider rollout. This is firsthand usability acceptance, not a claim that all
+commands, seats, scales or the paused automated capture matrix were inspected.
+The browser revision at that exact user observation was not separately read back.
+The HUD owner retains those broader regression/appearance checks during rollout.
 
 ## Existing ranked functional work
 

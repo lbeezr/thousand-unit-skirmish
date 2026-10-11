@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "revision": "b4ad36cf80ca923ed808c06df113ae6bdad5c997",
+    "digest": "sha256:c771c5933f5856d564858cb63111c442041e71f8fe72a2eb0c30b5090a6ea468"
+  },
+  "mapId": "veyrholds-terraced-vale",
+  "status": "failed",
+  "recordings": [],
+  "issues": [
+    {
+      "stage": "ordinary-entry",
+      "code": "interaction-audio-capture-failed"
+    }
+  ],
+  "listeningReview": "pending"
+}

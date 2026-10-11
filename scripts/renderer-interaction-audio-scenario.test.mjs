@@ -3,7 +3,7 @@ import test from 'node:test';
 import { readFile } from 'node:fs/promises';
 import { createHash, webcrypto } from 'node:crypto';
 import { runInNewContext } from 'node:vm';
-import { installInteractionAudioProbe, validateAudioObservation, interactionKeys } from './renderer-interaction-audio-scenario.mjs';
+import { installInteractionAudioProbe, validateAudioObservation, interactionKeys, interactionTargetPoint } from './renderer-interaction-audio-scenario.mjs';
 import { loadCaptureCases } from './renderer-feature-capture.mjs';
 import { DEFAULT_GAME_AUDIO_REFERENCE } from '../src/audio-shipped-catalog.mjs';
 
@@ -12,8 +12,8 @@ const sourceSha256 = 'a'.repeat(64);
 function output() {
   const bytes = Buffer.alloc(2048); Buffer.from('1a45dfa3', 'hex').copy(bytes);
   return { base64: bytes.toString('base64'), mimeType: 'audio/webm;codecs=opus', faults: [],
-    peak: .2, rms: .02, elapsedMs: 3500, meteredSamples: 4096,
-    starts: [{ sha256: sourceSha256, duration: 1.3 }] };
+    peak: .2, rms: .02, armedAt: 0, beganAt: 0, endedAt: 3500, elapsedMs: 3500, meteredSamples: 4096,
+    starts: [{ sha256: sourceSha256, time: 500, duration: 1.3 }] };
 }
 test('output receipt requires native media, actual signal and one matching recording start', () => {
   const valid = validateAudioObservation(output(), [sourceSha256]);
@@ -23,9 +23,11 @@ test('output receipt requires native media, actual signal and one matching recor
     { base64: Buffer.alloc(2048).toString('base64') }, { mimeType: 'audio/mpeg' },
     { faults: ['recorder-error'] }, { peak: 0, rms: 0 }, { peak: 1 }, { rms: NaN },
     { elapsedMs: 20 }, { elapsedMs: 15000 }, { meteredSamples: 0 },
+    { armedAt: 1 }, { armedAt: -30000 }, { armedAt: NaN },
     { starts: [] }, { starts: [{ sha256: 'b'.repeat(64), duration: 1 }] },
     { starts: [...output().starts, ...output().starts] },
     { starts: [{ sha256: sourceSha256, duration: 0 }] },
+    ...[-100, 3000, 4000].map(time => ({ starts: [{ ...output().starts[0], time }] })),
   ]) assert.throws(() => validateAudioObservation({ ...output(), ...changed }, [sourceSha256]));
 });
 test('ordinary audio adapter is registered without executing browser or provider work on import', async () => {
@@ -36,45 +38,161 @@ test('ordinary audio adapter is registered without executing browser or provider
   const bindings = manifest.pack.profiles.find(p => p.id === 'interactions').bindings;
   for (const key of interactionKeys) assert.ok(bindings[key]?.variants.every(v => manifest.downloads[v.sourceId]));
 });
-test('page probe preserves native decoding, start and speaker connection while recording a parallel output', async () => {
-  const connections = [], starts = [], intervals = [], timers = [];
-  let now = 1000, nativeBuffer;
+test('ordinary target observation skips overlapping units and requires the exact visible building', () => {
+  const center = { x: 100, y: 100 };
+  const window = {
+    __rtsInteractionAudioSnapshot: () => ({ workers: [{ id: 4, point: center }],
+      buildings: [{ id: 10, point: center, bounds: { left: 80, right: 120, top: 60, bottom: 110 } }] }),
+    __rtsInteractionAudioPick: (x, y) => y < 80 ? { kind: 'building', id: 10 } : { kind: 'unit', id: 4 },
+  };
+  const find = (kind, id) => runInNewContext(`(${interactionTargetPoint.toString()})(${JSON.stringify(kind)}, ${id})`, { window });
+  assert.equal(find('unit', 4), center);
+  const roof = find('building', 10);
+  assert.ok(roof.y < 80 && roof.x > 80 && roof.x < 120);
+  assert.equal(find('building', 11), null);
+  window.__rtsInteractionAudioPick = () => ({ kind: 'building', id: 12 });
+  assert.equal(find('building', 10), null, 'a nearby different building cannot satisfy the click');
+  window.__rtsInteractionAudioPick = () => null;
+  assert.equal(find('building', 10), null, 'covered or offscreen art cannot satisfy the click');
+});
+function probeFixture({ delayedStop = false, recorderStartFails = false, dataBytes = 2048 } = {}) {
+  const connections = [], starts = [], events = [], timers = new Map(), stopped = [];
+  let now = 1000, nextTimer = 1, nativeBuffer;
+  const schedule = (fn, delay, repeat = false) => {
+    const id = nextTimer++; timers.set(id, { fn, at: now + delay, repeat: repeat ? delay : null }); return id;
+  };
+  const advance = milliseconds => {
+    const until = now + milliseconds;
+    for (;;) {
+      const due = [...timers].filter(([, timer]) => timer.at <= until).sort((a, b) => a[1].at - b[1].at)[0];
+      if (!due) break;
+      const [id, timer] = due; now = timer.at;
+      if (timer.repeat) timer.at += timer.repeat; else timers.delete(id);
+      timer.fn();
+    }
+    now = until;
+  };
   class NativeNode {
     constructor(context) { this.context = context; }
     connect(destination) { connections.push([this, destination]); return destination; }
   }
-  class NativeSource extends NativeNode { start(...args) { starts.push(args); } }
+  class NativeSource extends NativeNode {
+    start(...args) { starts.push(args); events.push('native-start'); return 'native-result'; }
+  }
   class NativeContext {
     destination = {};
+    get currentTime() { return now / 1000; }
     decodeAudioData() { nativeBuffer = { duration: 1.3 }; return Promise.resolve(nativeBuffer); }
     createMediaStreamDestination() { return { stream: {} }; }
     createAnalyser() { return { getFloatTimeDomainData(data) { data.fill(.1); } }; }
   }
   class Recorder {
     mimeType = 'audio/webm;codecs=opus';
-    start() {}
-    stop() { this.ondataavailable({ data: new Blob([Buffer.from(output().base64, 'base64')]) }); this.onstop(); }
+    start() { events.push('recorder-start'); if (recorderStartFails) throw Error('private recorder error'); }
+    stop() {
+      events.push('recorder-stop');
+      const complete = () => {
+        const bytes = Buffer.alloc(dataBytes); Buffer.from('1a45dfa3', 'hex').copy(bytes);
+        this.ondataavailable({ data: new Blob([bytes]) }); this.onstop();
+      };
+      if (delayedStop) stopped.push(complete); else complete();
+    }
   }
   const window = {};
   runInNewContext(`(${installInteractionAudioProbe.toString()})()`, { window,
     BaseAudioContext: NativeContext, AudioNode: NativeNode, AudioBufferSourceNode: NativeSource,
     MediaRecorder: Recorder, crypto: webcrypto, Blob, Float32Array, Uint8Array,
     performance: { now: () => now }, btoa: text => Buffer.from(text, 'binary').toString('base64'),
-    setInterval: fn => { intervals.push(fn); return 1; }, clearInterval() {}, setTimeout: fn => timers.push(fn),
+    setInterval: (fn, delay) => schedule(fn, delay, true), clearInterval: id => timers.delete(id),
+    setTimeout: (fn, delay) => schedule(fn, delay), clearTimeout: id => timers.delete(id),
   });
-  const context = new NativeContext(), master = new NativeNode(context), source = new NativeSource(context);
+  const context = new NativeContext(), master = new NativeNode(context);
   assert.equal(master.connect(context.destination), context.destination);
   assert.equal(connections.length, 3);
   assert.equal(connections[0][1], context.destination, 'original speaker output must remain connected');
   assert.ok(connections.every(([node]) => node === master), 'tap must observe the existing master');
-  const original = Uint8Array.of(1, 2, 3).buffer;
-  source.buffer = await context.decodeAudioData(original);
-  assert.equal(source.buffer, nativeBuffer, 'native decoded buffer must stay unchanged');
-  const probe = window.__rtsInteractionAudio;
-  probe.begin(); source.start(10, 0, 1.3); intervals[0](); now += 3500; timers[0]();
-  const result = await probe.finish();
-  assert.deepEqual(starts, [[10, 0, 1.3]], 'native start must run exactly once with original timing');
-  const expected = createHash('sha256').update(new Uint8Array(original)).digest('hex');
-  const verified = validateAudioObservation(JSON.parse(JSON.stringify(result)), [expected]);
-  assert.equal(verified.sourceSha256, expected); assert.equal(probe.recording, null);
+  return { probe: window.__rtsInteractionAudio, context, events, starts, timers, advance,
+    skipTimers: milliseconds => { now += milliseconds; }, flushStop: () => stopped.splice(0).forEach(fn => fn()),
+    async source(bytes = [1, 2, 3]) {
+      const original = Uint8Array.from(bytes).buffer, source = new NativeSource(context);
+      source.buffer = await context.decodeAudioData(original);
+      assert.equal(source.buffer, nativeBuffer, 'native decoded buffer must stay unchanged');
+      return { source, hash: createHash('sha256').update(new Uint8Array(original)).digest('hex') };
+    },
+    async finish() { return JSON.parse(JSON.stringify(await window.__rtsInteractionAudio.finish())); },
+  };
+}
+
+test('arming waits for delayed matching playback and preserves native call, return and speaker output', async () => {
+  const f = probeFixture(), expected = await f.source(), unrelated = await f.source([4, 5, 6]);
+  f.probe.begin([expected.hash]);
+  assert.deepEqual(f.events, [], 'arming must not start a recorder or native audio');
+  f.advance(6000); unrelated.source.start(f.context.currentTime, 0, 1.3);
+  assert.deepEqual(f.events, ['native-start'], 'other source hashes must not trigger the recorder');
+  const when = f.context.currentTime;
+  assert.equal(expected.source.start(when, 0, 1.3), 'native-result');
+  assert.deepEqual(f.events, ['native-start', 'recorder-start', 'native-start']);
+  f.advance(3500);
+  const result = await f.finish();
+  assert.equal(result.armedAt, 1000); assert.equal(result.beganAt, 7000); assert.equal(result.endedAt, 10500);
+  assert.equal(validateAudioObservation(result, [expected.hash]).sourceSha256, expected.hash);
+  assert.deepEqual(f.starts, [[when, 0, 1.3], [when, 0, 1.3]], 'every native call keeps its original arguments');
+  assert.equal(f.probe.recording, null); assert.equal(f.timers.size, 0);
+});
+
+test('future scheduled playback is measured at its AudioContext time and must fit the capture window', async () => {
+  for (const delay of [1, 3, 5]) {
+    const f = probeFixture(), expected = await f.source();
+    f.probe.begin([expected.hash]);
+    const when = f.context.currentTime + delay;
+    expected.source.start(when, 0, 1.3); f.advance(3500);
+    const result = await f.finish();
+    assert.deepEqual(f.starts, [[when, 0, 1.3]], 'future scheduling must stay untouched');
+    if (delay === 1) {
+      assert.equal(result.starts[0].time, result.beganAt + 1000);
+      validateAudioObservation(result, [expected.hash]);
+    } else assert.throws(() => validateAudioObservation(result, [expected.hash]));
+    if (delay === 5) assert.equal(result.starts.length, 0, 'playback beyond the window cannot satisfy the receipt');
+    assert.equal(f.timers.size, 0);
+  }
+});
+
+test('starts after stop cannot enter a receipt while the recorder completion event is delayed', async () => {
+  const f = probeFixture({ delayedStop: true }), expected = await f.source();
+  f.probe.begin([expected.hash]); expected.source.start(f.context.currentTime, 0, 1.3);
+  f.advance(3500);
+  assert.equal(f.timers.size, 0, 'metering ends with recording, before the onstop event');
+  f.advance(2000); expected.source.start(f.context.currentTime, 0, 1.3); f.flushStop();
+  const result = await f.finish();
+  assert.equal(result.starts.length, 1); assert.equal(result.elapsedMs, 3500);
+  validateAudioObservation(result, [expected.hash]);
+});
+
+test('arming expires after 30 seconds even when a late native call beats a delayed timer', async () => {
+  for (const delayedTimer of [false, true]) {
+    const f = probeFixture(), expected = await f.source();
+    f.probe.begin([expected.hash]);
+    if (delayedTimer) {
+      f.skipTimers(31000);
+      assert.equal(expected.source.start(f.context.currentTime, 0, 1.3), 'native-result');
+    } else f.advance(30000);
+    const result = await f.finish();
+    assert.deepEqual(result.faults, ['recording-arm-timeout']);
+    assert.equal(result.beganAt, null); assert.deepEqual(result.starts, []);
+    assert.ok(!f.events.includes('recorder-start')); assert.equal(f.timers.size, 0);
+    assert.throws(() => validateAudioObservation(result, [expected.hash]));
+  }
+});
+
+test('capture start failure preserves native playback and oversized output remains a failed bounded receipt', async () => {
+  for (const options of [{ recorderStartFails: true }, { dataBytes: 750000 }]) {
+    const f = probeFixture(options), expected = await f.source();
+    f.probe.begin([expected.hash]);
+    assert.equal(expected.source.start(f.context.currentTime, 0, 1.3), 'native-result');
+    f.advance(3500);
+    const result = await f.finish();
+    assert.deepEqual(result.faults, [options.recorderStartFails ? 'recorder-start-error' : 'recorder-data-limit']);
+    assert.ok(result.base64.length < 1000000); assert.equal(f.timers.size, 0);
+    assert.throws(() => validateAudioObservation(result, [expected.hash]));
+  }
 });

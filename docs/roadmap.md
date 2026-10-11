@@ -11,13 +11,17 @@ owns [delivery across the roster](audio-event-asset-matrix.md#interaction-delive
 beginning with Worker selection/Wood Gather and Barracks/Town Center. Recorded
 assets, default integration and actual deployed listening are separate receipts;
 regional-music audition does not close this outcome.
-The local third increment completes selection/supported-command material for
+The third increment, merged in [PR638](https://github.com/lbeezr/thousand-unit-skirmish/pull/638), completes selection/supported-command material for
 all eight registered unit roles and selection material for all thirteen current
 buildings in `frontier-feedback/v3`, including Worker/Skiff Return Cargo routing.
-The GitHub app connection has confirmed write access; the CLI uses a different
-read-only identity. Publication proceeds through the app. The same owner retains
-identified delivery, full-roster ordinary-game output capture and listening;
-local source coverage is not a claim that the user's running game contains it.
+The GitHub app published the change; the CLI uses a different read-only identity.
+Staging was verified at merged `3a68649d`, including the loading/reconnect correction in
+[PR639](https://github.com/lbeezr/thousand-unit-skirmish/pull/639). All 119 recording
+hashes and both worker modules are verified. The user confirmed villager selection,
+Wood Gather, Town Center and Barracks sounds on staging. Cloud capture now retains
+complete native Town Center and Worker selection output; its later wood-order
+step timed out. The same owner retains the remaining building/full-roster listening;
+these four confirmed meanings do not claim the entire roster accepted.
 
 Build a reusable gameplay foundation and one complete faction. The
 [gameplay foundation plan](gameplay-foundation-plan.md) defines the implementation
@@ -245,7 +249,7 @@ unverified; existing construction/palisade composition ownership is unchanged.
 | Balance | Observe contested openings without changing established baselines prematurely. | [Opening and combat evidence](first-skirmish-balance.md), timings, losses, stocks, player explanations. |
 | Content | Observe finite Farm versus neutral food supply in paired contested matches; keep planting values provisional. Next, complete one Stone defense contract before widening any economic admission. | [Paid finite Farm](farm-finite-planting.md) implements ownership, stock, cancellation/replanting and recovery with a declared placeholder. [Farm QA](qa-finite-farm-2026-10-03.md) is automated evidence; automatic AI planting and distinct crop art remain follow-ups. The [mineral audit](mineral-economy-readiness.md) preserves fail-closed costs; no three-ledger expansion. |
 | Maps | Test Frontier Reach and Highland Grove routes, resources, elevation, and forest access in a match. | Layout/round-trip checks and actual route choices. |
-| Interface | Deliver the approved 72px Obsidian Worker HUD pilot into normal play, with identified release and in-game evidence; Barracks and army follow as separate slices. | [Component specimen and bounded checks](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026), [design-system proposal](ui-design-system.md), [owned HUD sequence](hud-controls-backlog.md#design-system-plan--11-october-2026). |
+| Interface | Extend the user-accepted staged 72px Obsidian Worker treatment across the HUD/UI: building production/research/lifecycle is staged; army/mixed/Skiff selection and stable header navigation are merged. Deliver the shared match-panel/readout/wildlife treatment and retain identified in-game evidence per slice. | [Component specimen and bounded checks](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026), [design-system proposal](ui-design-system.md), [owned HUD sequence](hud-controls-backlog.md#design-system-plan--11-october-2026). |
 | Endings/recap | Preserve truthful terminal recaps and add approved versioned human PvP Resign / mutually agreed Draw. | [Canonical owner/scope/data/rule decision record](match-endings-and-recaps.md) and [uncoached playtest companion](uncoached-match-playtest.md). Hidden Worker and Scout completion evidence stays distinct; PR408 owns voluntary-ending authority/recovery and exact-head source checks; automatic stalemate, rendered usefulness and human acceptance remain separate. |
 | Audio | All-zone source milestone is implemented: 44 originals across ten zones and eleven palettes, a comparison player, and Audio Studio import. Next: creative audition, loop edits, discovery/conflict arrangements and in-match cue recognition. | [All-zone evidence](qa-zone-audio-2026-09-30.md), [source pack](../assets/audio/vaelora-zones-v1/README.md), and later ten-trial results with mix/caption settings. |
 | Renderer | Rendering/compositing retains construction-ground ordering, connected palisade sites and the completed-building dark-square report. Next: finish the reviewed capture increment, inspect paired default-asset pixels and verify a containing identified staged release. | [Composition evidence](qa-site-composition-2026-10-04.md) records PR334/343/359, independent source review, exact source/clean packs and focused/native checks. CI01a10378 owns `site-composition` registration and authorized dispatch; registration and the dispatch-access denial remain unresolved. Source merges/package checks do not establish pixels or staging acceptance. |

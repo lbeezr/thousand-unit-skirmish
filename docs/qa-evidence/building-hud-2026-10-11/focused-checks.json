@@ -1,0 +1,29 @@
+{
+  "scope": "building-hud-focused-cpu",
+  "baseSource": "7d4a588c502a87048f64552c516836fc94197bb5",
+  "testsPassed": 190,
+  "testsFailed": 0,
+  "groups": [
+    "building-hud",
+    "worker-hud",
+    "contextual-hud",
+    "roster-production-ui",
+    "research-ui",
+    "base-lifecycle-ui",
+    "base-lifecycle",
+    "hud-layout",
+    "hud-action-icons"
+  ],
+  "additionalTests": "2 both-seat real-client producer-switch/reconnect cases run after the 188-test set",
+  "checks": [
+    "runtime dependency boundaries",
+    "strict JS types",
+    "strict Node types",
+    "documentation links",
+    "changed JS syntax",
+    "git diff whitespace"
+  ],
+  "independentReview": "No remaining actionable findings after removing reconnect title override",
+  "renderedAcceptance": false,
+  "fullCpuSuitePassed": false
+}

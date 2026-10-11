@@ -35,8 +35,12 @@ try {
     assert.equal(regional.pack.profiles[0].ambience.defaultCompositionId, 'environment');
     assert.equal(Object.keys(regional.sourceBlobs).length, 2);
   }
-  for (const module of ['audio-shipped-loader.mjs', 'audio-shipped-catalog.mjs']) {
+  for (const module of ['audio-shipped-loader.mjs', 'audio-shipped-catalog.mjs',
+    'client/audio/shipped-audio-worker-client.mjs', 'client/audio/shipped-audio-worker.mjs']) {
     const response = await fetch(`${base}/src/${module}`); assert.equal(response.status, 200); assert.match(response.headers.get('content-type'), /javascript/);
+  }
+  for (const path of ['shipped-audio-worker.mjs/extra', 'shipped-audio-worker-client.mjs/extra', 'unknown-worker.mjs']) {
+    assert.equal((await fetch(`${base}/src/client/audio/${path}`)).status, 404);
   }
   assert.notEqual((await fetch(`${base}/assets/audio/runtime/unapproved/v1/manifest.json`)).status, 200);
   console.log('Authoritative server serves verified default interaction recordings, regional packs and loader modules.');

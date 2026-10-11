@@ -1,0 +1,54 @@
+{
+  "ok": true,
+  "environment": "staging",
+  "base": "https://game-staging-21f9.up.railway.app",
+  "identity": {
+    "ok": true,
+    "expected": {
+      "sourceRevision": "b4ad36cf80ca923ed808c06df113ae6bdad5c997"
+    },
+    "served": {
+      "sourceRevision": "b4ad36cf80ca923ed808c06df113ae6bdad5c997",
+      "sourceDirty": null,
+      "digest": null,
+      "origin": "railway-git"
+    },
+    "scope": "source",
+    "issues": []
+  },
+  "checks": [
+    {
+      "path": "/ready",
+      "status": 200
+    },
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/health",
+      "status": 401
+    },
+    {
+      "path": "/src/server/roster-audio-sources.mjs",
+      "status": 404
+    },
+    {
+      "path": "/assets/audio/frontier-roster-feedback-v1/catalog.json",
+      "status": 404
+    },
+    {
+      "path": "/assets/audio/frontier-roster-feedback-v1/plan.json",
+      "status": 404
+    }
+  ],
+  "defaultAudioPack": {
+    "packId": "frontier-feedback",
+    "profileId": "interactions",
+    "version": "v3",
+    "sha256": "ac8b054bdd5dcd0865eccea0eefd34b56316d8df58104cdcc065b5ed6e9828cb"
+  },
+  "verifiedRecordings": 119,
+  "clientModules": 136,
+  "gameplayListening": "incomplete"
+}

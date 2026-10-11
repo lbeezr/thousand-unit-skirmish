@@ -7,6 +7,11 @@ retains the full goal; this receipt covers the first four meanings, the fourteen
 Worker action/readiness meanings and the subsequent 67 current-roster meanings.
 Source coverage does not close deployment or listening acceptance.
 
+Current acceptance: the user has confirmed villager selection, Wood Gather,
+Town Center and Barracks sounds on staging. All 119 default recordings are served
+and hash-verified at `3a68649d`. The remaining roster/building listening is open;
+the cloud case has two complete recordings but is not an overall pass.
+
 ## Source and delivery identity
 
 | Boundary | Observation |
@@ -22,9 +27,11 @@ Source coverage does not close deployment or listening acceptance.
 | Current-roster source | `22c6d7fbe5814f1db9682c2f7257c7500c7c2fd2`; all current selection/supported-command recordings and applied Return Cargo routing. |
 | Current-roster clean release | `sourceDirty: false`, digest `sha256:ea62ef2e6536e5104f9fc7deaf99eeac88264995c94cd2218835c39ee38f837f`; 1,816 files. Real packed server hash-verifies all 119 default recordings and serves all 146 imported client modules. |
 | Audio manifest | `frontier-feedback/v1`, profile `interactions`, SHA-256 `b13cb7b0f5a0e89fa0d8c03d86923964ed78f8a3260d6a3ba035def5aad4f55c`; eleven sources, 450,927 source bytes. |
-| Publication | The CLI identity `lbliii` rejects the fork push and reports `push: false`. On the user's correction, the GitHub app connection was checked separately and confirms `admin: true`, `push: true` for `lbeezr/thousand-unit-skirmish`. Publication is proceeding through that already-authorized app; no permission expansion is needed. |
-| Containing deployment | **Not deployed yet.** The CLI-only access diagnosis was incomplete; app publication and delivery remain owned here. |
-| Ordinary-game listening | **Incomplete.** No cloud game browser, game-output recording or user listening acceptance occurred. |
+| Publication access | The CLI identity `lbliii` rejects the fork push and reports `push: false`. On the user's correction, the GitHub app connection was checked separately and confirms `admin: true`, `push: true` for `lbeezr/thousand-unit-skirmish`. Publication and merge succeeded through that already-authorized app; no permission expansion was needed. |
+| Publication / merge | [PR638](https://github.com/lbeezr/thousand-unit-skirmish/pull/638), published through the GitHub app at `53be9499ccf788594dd08d11d5e3d213c6c76abd`, merged as `b4ad36cf80ca923ed808c06df113ae6bdad5c997`. The published tree exactly matches independently reviewed local `48d4fe37`; all 365 uploaded blob hashes were checked. |
+| Merged clean release | Source `b4ad36cf80ca923ed808c06df113ae6bdad5c997`, `sourceDirty: false`, digest `sha256:c771c5933f5856d564858cb63111c442041e71f8fe72a2eb0c30b5090a6ea468`, 1,821 files. This includes current main's separately merged portal. |
+| Containing deployment | Staging deployment `36e172c3-0439-4507-b596-7fe6bb924f53` serves `b4ad36cf`. The [authenticated served receipt](qa-evidence/interaction-audio-2026-10-11/staging-served.json) verifies exact source identity and all 119 recording hashes. Railway Git identity leaves runtime digest/cleanliness unknown; the clean local/cloud pack digest is separate. |
+| Ordinary-game listening | **Incomplete.** [Cloud native-output run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38153340669) at `b4ad36cf` passed sandboxed WebGL2 and packing but failed during the broad ordinary-entry stage, before any recording or screenshot. [Raw case receipt](qa-evidence/interaction-audio-2026-10-11/first-cloud/interaction-audio/interaction-audio.json). |
 
 The original production sources and editorial selections are retained in
 [Frontier feedback v1](../assets/audio/frontier-feedback-v1/README.md).
@@ -57,6 +64,183 @@ duplicate, reset, unknown-token and unsent orders. The reviewer cleared the
 three-file fix with all 38 audio execution tests passing; the execution/default
 pair passes 50 tests and both type projects pass. No new audio generation was
 needed. This is event-routing evidence, not a listening claim.
+
+All 259 audio tests pass after the fix. Main advanced to `ac9e5579` during
+publication; its portal changes merged cleanly. All 292 combined audio/entry
+tests, both type projects, docs, import boundaries, client static admission and
+cloud-adapter precheck pass on local integration `09fb1abd`. Its tree
+`1368f6129167631f5bc2253c49df93456a2ce86b` exactly matches merged `b4ad36cf`.
+Hosted CI was running at merge; main had no required branch protections or
+rules. [PR638 CI](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38153265164)
+subsequently failed the same three movement checks as
+[pre-audio main CI](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37956916490):
+paid-wall/closed-gate queued destinations, obstructed formation reservations,
+and opt-in planning budgets/order invalidation. The audio checks passed. No
+hosted/full-suite pass is claimed; these pre-existing failures remain separate
+from audio acceptance.
+
+### First cloud execution and served delivery
+
+The first actual cloud run used Linux uid 1001, Chromium 154 with its sandbox
+enabled, and a software WebGL2 renderer. Capability readbacks passed. Its clean
+release digest matches the local merged pack exactly. Game boot reached ready
+with a canvas, but the case failed before recording. Its broad `ordinary-entry`
+stage does not distinguish opening-worker observation, default source loading or
+gesture unlock. The [qualification receipt](qa-evidence/interaction-audio-2026-10-11/first-cloud/interaction-audio/qualification.json)
+also reports an unknown-path canceled request; that independent browser event
+remains unresolved. No audio failure or success is inferred from this receipt.
+
+The follow-up adapter adds specific wait stages, safe probe error names and
+bounded state/screenshot diagnostics. Its source-ready wait now allows 35 seconds,
+exceeding the shipped loader's 30-second deadline. These changes make the next
+cloud run diagnosable; they do not change production audio or assert a fix.
+
+[The third run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38154129086)
+at `e1e63ee3` identifies the failure at `default-audio-ready`. Its
+[case receipt](qa-evidence/interaction-audio-2026-10-11/loading-cloud/interaction-audio.json)
+shows a ready game, the expected map and visible Workers, with no observation
+faults. The default bindings did not become available within 35 seconds. The
+[browser receipt](qa-evidence/interaction-audio-2026-10-11/loading-cloud/qualification.json)
+records canceled voice downloads, and the
+[diagnostic frame](qa-evidence/interaction-audio-2026-10-11/loading-cloud/failure-default-audio-ready.png)
+shows a reconnect. The second run (`38153774353`) failed earlier at menu entry;
+guarding the transient missing document root allowed this third run to proceed.
+
+Inspection found a concrete lifecycle defect: each welcome called `loadMapAudio`
+even for an unchanged map, aborting all pending source downloads and clearing
+the active bindings. The follow-up preserves audio on an unchanged-map welcome;
+actual map changes still reset it. This is independently justified by the
+reconnect path, but the third receipt alone does not distinguish a reconnect
+abort from the loader's 30-second timeout. The reconnect correction passes 355
+audio/recovery tests, both type projects and independent review.
+
+[The fourth run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38154650347)
+at `7a881513` contains that correction. Its
+[download timings](qa-evidence/interaction-audio-2026-10-11/reconnect-cloud/interaction-audio.json)
+show one default-pack attempt: source transfers complete in 2–13 ms, but the
+next batch starts 8–10 seconds later. The load still times out; the observation
+was already 3.27 seconds old. The clean pack digest is
+`sha256:8596db541b0bb68f285ba9484db571f73c4fe9d75dd55ff1e899fbb2252703b1`.
+The next adapter revision removes the per-frame debugger breakpoint in favor
+of an on-demand, read-only snapshot under the existing capture-diagnostics flag.
+This tests possible instrumentation overhead without extending audio deadlines
+or changing gameplay. Playback remains unverified. The user confirms that the
+staging address above is their intended game environment.
+
+[The fifth run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38154999260)
+at `da5770a4` removes the debugger, but its
+[case receipt](qa-evidence/interaction-audio-2026-10-11/no-debugger-cloud/interaction-audio.json)
+still shows the same download scheduling gaps and timeout. The fresh snapshot
+is only 0.1 ms old, so the stale-observer hypothesis does not explain loading.
+Default bindings remain absent while the smaller regional pack becomes ready.
+This motivates the worker-loading correction: the existing verified loader now
+runs in a dedicated browser worker, with the same four-transfer concurrency,
+byte/hash/MIME checks, two-pack cache and 30-second deadline. A separate client
+watchdog bounds worker startup; cancellation IDs and disposal retain ownership.
+Ten worker protocol/canonical-loader/runtime-disposal tests join the existing
+audio and recovery checks: 365 pass. Both type projects, 65 import-boundary tests
+and actual HTTP serving of all 119 default sources and both worker modules pass.
+These CPU/HTTP results do not establish native-worker playback; that cloud run
+remains the next acceptance step.
+
+[The sixth run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38155874639)
+at `8e4e54a9` verifies native worker loading in the actual packed game: all 85
+default bindings become available and the audio context reaches `running` after
+an ordinary gesture. Its clean release digest is
+`sha256:248705f96c62556f07ffaf0b4967a13b1b6e3d965147176131d471292a083a05`.
+The [receipt](qa-evidence/interaction-audio-2026-10-11/worker-cloud/interaction-audio.json)
+then fails at Town Center selection. The
+[frame](qa-evidence/interaction-audio-2026-10-11/worker-cloud/failure-town-center-click.png)
+shows Infantry selected instead: an overlapping unit wins the normal picker at
+the building's projected ground center. The next adapter scans rendered building
+bounds with a read-only observation of the same unit-first picker, without
+advancing stack selection. Loading is now verified; no recording or listening
+pass is inferred. Worker network requests are outside the page CDP session, so
+the empty page-download list does not measure their transfers.
+
+The worker/reconnect fix is merged in [PR639](https://github.com/lbeezr/thousand-unit-skirmish/pull/639)
+as `7d4a588c502a87048f64552c516836fc94197bb5`, including the separately merged
+Worker HUD pilot. At that exact merged source, 403 focused audio/recovery/HUD
+tests and both type projects pass. [Cloud run seven](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38156525628)
+has clean release digest
+`sha256:d21088cbeb9ae60685c092982f8feb4eb54ff3e4f758fbda05eed36a71b90f64`.
+Its [case receipt](qa-evidence/interaction-audio-2026-10-11/merged-worker-cloud/interaction-audio.json)
+records actual native starts for Worker selection and the correctly selected
+Town Center. The strict visual checkpoint then rejects the syncing page before
+the recording is saved. This is native start evidence, not a saved-output or
+listening pass. The previously unidentified canceled requests are now classified
+as room-API fetches; they remain qualification failures.
+
+The capture follow-up arms the recorder for the exact expected recording hash,
+so slow input/decode work cannot use up its recording window before playback.
+Each verified output is saved before attempting the final screenshot; a later
+failure or case deadline leaves the partial evidence explicitly incomplete.
+
+Staging deployment `5b93b8bd-1795-4d6b-a4ba-eff9033c2bcd` is **SUCCESS** for
+`7d4a588c`. Its [served verification](qa-evidence/interaction-audio-2026-10-11/staging-worker-served.json)
+confirms the exact source, all 119 recording hashes, 138 recursively discovered
+client modules and both worker module bytes matching the reviewed source.
+Public gameplay/readiness and private health/source admission checks pass.
+Runtime digest/cleanliness remain unknown for Railway Git identity; the clean
+cloud digest above is separate. After refreshing their confirmed staging address,
+the user answered **“Yes, both responses work”** for villager selection and the
+wood-chopping order. This is human hearing acceptance for those two meanings on
+the identified staging deployment, not a full-roster/building listening pass.
+
+[Run eight](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38157245378)
+at `1daa1f6d` has the same runtime release digest as merged `7d4a588c` because
+only capture tooling/docs changed. Its
+[receipt](qa-evidence/interaction-audio-2026-10-11/armed-cloud/interaction-audio.json)
+again records native Worker and Town Center starts, but a wait times out before
+any native-output file is saved. The shared CDP helper limits an awaited call to
+15 seconds, so the next capture polls recorder completion within a separate
+45-second bound before retrieving the resolved value. Separate schedule/output/
+receipt stages and recorder state make that hypothesis diagnosable; no passing
+recording or exact timeout cause is inferred from this run.
+
+### Retained native output and four confirmed meanings
+
+The next [cloud run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38157939526)
+at `92b2288d8c3c41b0f706d8d7096e47e654b4ca28` retains complete actual game output:
+[Town Center selection](qa-evidence/interaction-audio-2026-10-11/recorded-cloud/town-center-click.webm)
+and [Worker selection](qa-evidence/interaction-audio-2026-10-11/recorded-cloud/worker-click.webm).
+The [case receipt](qa-evidence/interaction-audio-2026-10-11/recorded-cloud/interaction-audio.json)
+binds each WebM hash to its expected source hash, full native playback interval,
+nonzero output meter and unchanged default mix (volume 0.5, captions off).
+The intervals are 8.35 and 8.24 seconds on this slow software renderer. The later
+wood-order step timed out before an accepted-order response; the three-minute
+case deadline then ended the run. The [qualification](qa-evidence/interaction-audio-2026-10-11/recorded-cloud/qualification.json)
+also retains canceled room-API fetches. No final screenshot or overall browser
+pass is claimed. The clean runtime digest remains
+`sha256:d21088cbeb9ae60685c092982f8feb4eb54ff3e4f758fbda05eed36a71b90f64`.
+These artifacts establish recorded output, not an editorial listening judgment.
+
+The user subsequently answered **“Yes, both buildings play sounds”** when asked
+whether Town Center and Barracks each play a distinct sound on the same staging
+site. Together with the earlier villager selection/Wood Gather confirmation,
+the first four meanings have human playback acceptance. A new page revision
+was not read from the user's browser after each later deployment; do not turn
+this into a claim that they rechecked every subsequent source revision.
+
+[PR642](https://github.com/lbeezr/thousand-unit-skirmish/pull/642) merged the capture
+fix as `3a68649d2ae74d7b095014ed3770cabfee03a939`, including the separately merged
+building HUD. At this merged source, 201 focused audio/HUD/capture tests, both
+type projects and documentation checks pass. Staging deployment
+`cf0ee0f5-b137-4a20-9d64-7c622fe5e85c` is SUCCESS; its
+[served receipt](qa-evidence/interaction-audio-2026-10-11/staging-verification-served.json)
+verifies that exact source, all 119 recordings, 139 discovered client modules
+and both unchanged worker modules. Railway runtime digest/cleanliness remain
+unknown and separate from the earlier cloud pack. Broader roster/building
+listening, rapid-order mix and solo/human 1v1 acceptance remain with this owner.
+
+The staging HTTP check passed source `b4ad36cf`, public gameplay/readiness and
+protected health, default v3 manifest/source verification (119 recordings),
+136 recursively discovered client modules, and private source/catalog rejection.
+This served-import count differs from the local architecture graph's 146-module
+set because the checks have different entry coverage. Both are bounded receipts.
+The exact merged local pack also passes the real-server audio scenario. The
+audio owner retains full-roster ordinary interaction output and listening, rapid
+order mix, caption-free recognition and solo/1v1 acceptance.
 
 ### Current-roster source increment
 
@@ -163,15 +347,16 @@ The `interaction-audio` case in the existing Ordinary game capture workflow
 starts from New Game on Tiny Terraced Vale, clicks an ordinary Worker and a
 disclosed wood target, selects the Town Center, and pays for/completes/selects
 a Barracks. It uses the existing packed-release/cloud capability runner.
-Read-only post-render diagnostics observe the actual audio decisions. A parallel
+On-demand read-only diagnostics observe the actual audio decisions. A parallel
 tap preserves the normal speaker connection and records four short WebM/Opus
 outputs, screenshots, source hashes and observed final-output levels. Native
 decode/start hashes distinguish the intended recording from synthesized fallback.
 It adds no microphone access and changes no gameplay or mix settings.
 
-Run after publication with the workflow's `interaction-audio` choice. The local
+Run with the workflow's `interaction-audio` choice. The local
 precheck is `node scripts/renderer-feature-capture.mjs --check interaction-audio`.
-The adapter and receipt tests are CPU checks only: **the cloud case has not run**.
+The adapter and receipt tests are CPU checks only. The first executed cloud case
+failed before recording, as documented above.
 Its `captured-needs-listening` receipt deliberately leaves creative listening
 pending. The shared browser fixture permits autoplay, so this case also does
 not establish browser-policy unlock behavior on the user's device. Staging

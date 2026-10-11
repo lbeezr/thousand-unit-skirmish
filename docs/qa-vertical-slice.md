@@ -9,9 +9,28 @@ has independent code review and 157 focused HUD/input/capture-contract checks.
 The clean local trial reports the exact packaged identity and serves matching
 client bytes: [receipt](qa-evidence/worker-hud-pilot-2026-10-11/local-trial.json).
 Normal entry is New Game → select a Worker on Veyrhold's Terraced Vale.
-Rendered layout, real gameplay use and hosted staging are **not observed** for
-this pilot. [The HUD owner checkpoint](hud-controls-backlog.md#worker-pilot--11-october-2026)
+The merged pilot `819044363ad0d4270fbb99e95777c40770d7c5c1` was verified on
+staging with matching served bytes ([receipt](qa-evidence/worker-hud-pilot-2026-10-11/staging-receipt.json)).
+The user then reported that it “does feel way better” and authorized wider
+HUD/UI rollout. This is user-reported game usability acceptance; the exact
+browser revision at that observation and the full seat/action/viewport matrix
+were not independently captured. [The HUD owner checkpoint](hud-controls-backlog.md#worker-pilot--11-october-2026)
 records publication access and hosted-capture dependencies and retains follow-up.
+
+## HUD rollout — 11 October 2026
+
+Buildings are staged at `9f76585c1d95fa65b30f270b007506296228ffa8` via
+Railway `5ae7146d-a47e-46bc-ae0d-e6e76ffed345`, with 190 focused checks,
+independent review, clean packaging and matching actual client response hashes:
+[receipt](qa-evidence/building-hud-2026-10-11/staging-receipt.json).
+Army/mixed/Skiff PR646 merged at `3310f31c` with 196 focused checks and independent
+review. Remaining in-match surfaces and wildlife have 186 focused checks
+([receipt](qa-evidence/match-ui-2026-10-11/focused-checks.json)).
+The continuation and normal-game matrix are owned in the
+[HUD checkpoint](hud-controls-backlog.md#army-mixed-selection-and-skiffs--11-october-2026).
+Source, DOM and served-byte evidence do not claim rendered appearance; the
+hosted capture/sign-in route remains paused. The HUD owner retains appearance
+and both-seat action checks at an identified containing build.
 
 ## Persistent tactical orders — 30 September 2026
 

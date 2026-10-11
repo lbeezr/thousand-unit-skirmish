@@ -199,10 +199,15 @@ its own production, queue, research and rally. Global economy and navigation sta
 stable, while unrelated entity actions leave the selection area. The
 [11 October design-system plan](ui-design-system.md) develops this intent
 from interactive studies. The user approved the Obsidian Worker pilot with a
-72px portrait. Its default client binding is implemented; the
+72px portrait. The user accepted the staged pilot and requested rollout across the HUD/UI; the
 [HUD checkpoint](hud-controls-backlog.md#worker-pilot--11-october-2026) records
-local trial delivery and the remaining hosted/ordinary-game acceptance.
-Barracks and broader visual coverage remain later slices.
+staged delivery and remaining ordinary-game acceptance. Selected buildings now
+own their production, queue, research and lifecycle surface. Army, mixed and
+Skiff selections use the same identity and command vocabulary, with eligible
+subsets disclosed. Global navigation stays in the header; formation and stance
+changes retain their existing authoritative rules. Sheep/carcass selection,
+match settings, help, objectives, results, resource readouts and tactical-map
+controls share this visual vocabulary while preserving match input behavior.
 
 Left-click or drag on the tactical map navigates the camera. Right-click moves
 only the living selected units owned by the player; Shift plus right-click

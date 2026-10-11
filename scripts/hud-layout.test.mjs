@@ -386,11 +386,9 @@ for (const [width, height] of [[1280, 800], [1280, 720], [800, 640], [621, 640],
       if (width > 620) assert.ok(mapLeft - barRight >= 8, `${size} map must clear the bar's width cap: gap ${mapLeft - barRight}px`);
       else assert.ok(f.pixels(f.map, 'bottom') - (f.pixels(f.bar, 'bottom') + f.pixels(f.bar, 'max-height')) >= 8,
         'narrow layouts stack the map above the observed bar height');
-      if (width > 620 && width <= 920) {
-        const quick = f.d.querySelector('.hud-quick-access');
-        assert.ok(mapLeft - (f.pixels(quick, 'left') + f.pixels(quick, 'max-width')) >= 8,
-          'empty-selection Quick commands use the same current map width');
-      }
+      const quick = f.d.querySelector('.hud-quick-access');
+      assert.ok(quick.closest('.topbar'), 'global navigation occupies the measured header');
+      assert.equal(quick.closest('.workspace'), null, 'global navigation no longer shares the map/bottom-dock row');
       f.d.querySelector('#minimap-size-toggle').click();
     }
   });

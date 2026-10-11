@@ -103,7 +103,7 @@ run(['--experimental-test-coverage', '--test-coverage-include=src/client/audio/a
   '--test', 'scripts/audio-shipped-response.test.mjs'], 'Shipped audio response coverage floor (100%)');
 run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio import provenance');
 run(['--test', 'scripts/audio-building-selection.test.mjs'], 'Civilization fallback and authoritative building selection audio');
-run(['--test', 'scripts/audio-default-feedback.test.mjs'], 'Default interaction recordings and click-to-order speech');
+run(['--test', 'scripts/audio-default-feedback.test.mjs', 'scripts/audio-shipped-worker.test.mjs'], 'Default interaction recordings and click-to-order speech');
 run(['--test', 'scripts/renderer-interaction-audio-scenario.test.mjs'], 'Ordinary interaction audio output receipt contracts');
 run(['--test', 'scripts/audio-composer-preview.test.mjs'], 'Audio composer preview resume cancellation and retry');
 run(['--test', 'scripts/audio-composer-wav.test.mjs'], 'Audio composer WAV read/decode diagnostics and retry');
@@ -231,6 +231,8 @@ run(['--test', 'scripts/minimap-browser-probe.test.mjs'], 'Minimap browser proof
 run(['--test', 'scripts/selection-center-shortcut.test.mjs'], 'Selection camera shortcut and preserved Space drag');
 run(['--test', 'scripts/objective-summary.test.mjs', 'scripts/completion-event-labels.test.mjs'], 'Compact objectives and event feedback');
 run(['--test', 'scripts/selection-context.test.mjs'], 'Contextual selection');
+run(['--test', 'scripts/unit-hud.test.mjs'], 'Obsidian army, mixed-domain action scopes and stable match navigation');
+run(['--test', 'scripts/building-hud.test.mjs'], 'Obsidian building dock, queue identity and local research disclosure');
 run(['--test', 'scripts/worker-hud.test.mjs'], 'Worker HUD model, context ownership and construction gates');
 run(['--test', 'scripts/contextual-hud.test.mjs'], 'Empty selection HUD and command focus');
 run(['--test', 'scripts/roster-production-ui.test.mjs'], 'Roster production choices');

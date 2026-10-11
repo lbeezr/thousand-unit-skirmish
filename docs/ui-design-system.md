@@ -1,8 +1,9 @@
 # RTS interface design system
 
 **Status — 11 October 2026:** the user selected the **72px portrait** and
-authorized the **Obsidian Worker HUD pilot** in normal gameplay. Barracks, army
-and other selection contexts remain subsequent slices. Owner: HUD redesign task
+accepted the **Obsidian Worker HUD pilot** in staging and authorized wider
+HUD/UI rollout. The selected-building dock is the next implementation slice;
+army/mixed and remaining surfaces follow in incremental changes. Owner: HUD redesign task
 `01a12b67-645a-7a33-8fb2-8e8979756ac1`.
 
 The user's central complaint is that unrelated global controls obscure the
@@ -94,8 +95,8 @@ are separate gameplay/input proposals, not implied by this design system.
 
 ## Components and state contract
 
-Build a small component vocabulary from the first real Worker slice, then extend
-it for production. Avoid creating a general UI framework before these uses exist.
+Worker and building contexts share the 72px Obsidian skin in
+`src/client/hud/selection-hud.css`; each retains its own state and controls. Avoid creating a general UI framework before these uses exist.
 
 | Component | Required variants and behavior |
 | --- | --- |
@@ -164,10 +165,22 @@ bindings and all four stances; shows Worker → Build → placement, Barracks �
 → shortage, Army → mixed selection, and empty/recovery states. The
 [review checkpoint](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026)
 records its source and bounded checks. The earlier visual alternatives remain
-preserved. The user selected 72px and authorized the Worker pilot. Its default
+preserved. The user selected 72px, accepted the Worker pilot in staging, and authorized wider rollout. Its default
 runtime binding and clean local trial are recorded in the
 [delivery checkpoint](hud-controls-backlog.md#worker-pilot--11-october-2026);
-hosted delivery and ordinary-game appearance remain incomplete.
+the pilot is merged, staged and accepted by the user. The exact user-observed
+browser revision and full viewport/action capture matrix remain unmeasured.
+
+The shared tokens live in `selection-hud.css` and now also serve match settings,
+help, objectives, results, resources and minimap controls through `match-ui.css`.
+Wildlife uses an explicit Food-symbol fallback with the same 72px identity area.
+These consuming surfaces preserve their existing input and preference behavior.
+
+The building slice is staged with exact served-byte evidence. Army/mixed/Skiff
+adoption reuses the retained composition and recovery storyboard, keeps global
+navigation in the header and discloses each command's eligible subset. The
+[rollout checkpoint](hud-controls-backlog.md#army-mixed-selection-and-skiffs--11-october-2026)
+retains delivery and normal-game acceptance separately.
 
 Proceed through small vertical slices: **Worker → Barracks →
 army/mixed selection → remaining roster and lifecycle coverage → menus/settings**.

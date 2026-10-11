@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "scope": "ordinary-feature-interaction-audio",
+  "status": "failed",
+  "sandbox": "enabled",
+  "uid": 1001,
+  "source": {
+    "revision": "b4ad36cf80ca923ed808c06df113ae6bdad5c997",
+    "dirty": false
+  },
+  "release": {
+    "sourceRevision": "b4ad36cf80ca923ed808c06df113ae6bdad5c997",
+    "digest": "sha256:c771c5933f5856d564858cb63111c442041e71f8fe72a2eb0c30b5090a6ea468",
+    "files": 1821
+  },
+  "runtimeDependencies": [
+    {
+      "name": "three",
+      "version": "0.180.0",
+      "lockSha256": "bb3e172250ea0d91981e270371e9ac293f7b4f378370ae05e86b74ab81fc3499",
+      "files": [
+        {
+          "path": "vendor/three.module.js",
+          "sha256": "c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a"
+        },
+        {
+          "path": "vendor/three.core.js",
+          "sha256": "eb077d2417f61d3e6d9264c317cabc4ea35769ed6b0ab533067292a550784c20"
+        }
+      ]
+    }
+  ],
+  "frames": [],
+  "assets": [
+    {
+      "path": "index.html",
+      "sha256": "96bc6a43bedc49f42e2003e4336c1693ba9b2290ea8b18ab5e48d94e83d89a7f"
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "6e25744bbdc0b69253cd987fc3977085df086f9774febe3da56c552d8b1f6e17"
+    }
+  ],
+  "browserEvents": [
+    {
+      "kind": "http-error",
+      "status": 404,
+      "path": "/favicon.ico",
+      "expected": true
+    },
+    {
+      "kind": "request-failed",
+      "path": null,
+      "canceled": true
+    }
+  ],
+  "droppedBrowserEvents": 0,
+  "unexpectedBrowserEvent": true,
+  "backgroundPolicy": "unthrottled",
+  "issues": [
+    {
+      "stage": "browser",
+      "code": "browser-errors"
+    }
+  ],
+  "cleanup": {
+    "maxAttempts": 3,
+    "attempts": 1,
+    "errors": []
+  },
+  "server": {
+    "entry": "room-supervisor.mjs",
+    "map": null,
+    "logBytes": 208,
+    "listening": true
+  },
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/154.0.8037.97",
+    "revision": "@b510e9d7cd3a2fbd78d0ddc42234103206c5f78d",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+    "jsVersion": "15.4.80.20"
+  },
+  "boot": {
+    "entry": "game",
+    "ready": true,
+    "canvas": true,
+    "assets": null
+  },
+  "pageBoots": [
+    {
+      "entry": "game",
+      "ready": true,
+      "canvas": true,
+      "assets": null
+    }
+  ]
+}
