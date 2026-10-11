@@ -1,0 +1,41 @@
+{
+  "reviewedAt": "2026-10-11T18:16:08.165Z",
+  "owner": "HUD redesign chat 01a12b67-645a-7a33-8fb2-8e8979756ac1",
+  "native": {
+    "run": "https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38161591020",
+    "source": "448f163092be4e4247fd57ec5b8857be9b590f4e",
+    "releaseDigest": "sha256:53c23386177ed236c7c8a70ab9431bd674ba1181da988ab29e9818a557267d8b",
+    "imagesReviewed": [
+      "menu.png",
+      "normal-game.png",
+      "selected-worker.png",
+      "failure.png"
+    ],
+    "observation": "72px Worker portrait and six primary actions visible without apparent clipping at1280x720; header syncing and selected-worker orders disabled during reconnect. No Move was emitted.",
+    "acceptance": "incomplete"
+  },
+  "staging": {
+    "run": "https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38162536764",
+    "captureSource": "77b2ad698232ae6d6ed4b00965817d033527203f",
+    "servedSource": "77b2ad698232ae6d6ed4b00965817d033527203f",
+    "deployment": "629daea7-b613-41ef-8631-d0222c543cfb",
+    "publicHudHashesVerifiedBeforeAndAfter": true,
+    "imagesReviewed": [
+      "failure.png"
+    ],
+    "observation": "Created one owned room. Imported64x64 draft visible inStudio; Save&Play did not apply. Active map remainsTerracedVale; socketopen,recoveringtrue. No HUD frames. Two canceled room-api fetches and optionalfavicon401s retained.",
+    "acceptance": "incomplete"
+  },
+  "capacity": {
+    "original": 8,
+    "hudAuthorized": 9,
+    "observedAfterRun": {
+      "roomCount": 9,
+      "roomLimit": 9
+    },
+    "savedRoomsPreserved": true,
+    "restorationOwner": "Add unit and building audio, chat01a12b6b-d181-79b1-97b4-05de79523245",
+    "restoration": "Audio accepted the shared transition from9 to its separately authorized10 and must restore8 after its capture. HUD must not overwrite that setting."
+  },
+  "complete": false
+}

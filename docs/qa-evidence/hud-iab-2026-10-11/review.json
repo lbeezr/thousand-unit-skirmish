@@ -1,0 +1,211 @@
+{
+  "reviewedAt": "2026-10-11T18:27:45.460054+00:00",
+  "owner": "HUD redesign chat 01a12b67-645a-7a33-8fb2-8e8979756ac1",
+  "authorization": "User explicitly allowed the bounded in-app browser HUD check on the Mac. This overrides the start skill restriction for this check only.",
+  "environment": "Local packaged game through Codex in-app browser; no staging game acceptance",
+  "entry": "Normal New Game, Tiny Terraced Vale, Skirmish PvE, seat 0",
+  "mapSeed": 1580016541,
+  "policySeed": 3773809885,
+  "identity": {
+    "status": "identified",
+    "origin": "packed-manifest",
+    "sourceRevision": "77b2ad698232ae6d6ed4b00965817d033527203f",
+    "sourceDirty": false,
+    "digest": "sha256:53c23386177ed236c7c8a70ab9431bd674ba1181da988ab29e9818a557267d8b"
+  },
+  "dependencies": "Existing locked three@0.180.0 dependency linked into the clean package before reloading. Initial absent dependency caused a module-load error; no game check passed until corrected.",
+  "artBacking": [
+    "../../ui-design-system.md",
+    "../../art-direction/hud-design-system-2026-10-11/component-specimen.html"
+  ],
+  "observations": [
+    "Individual Worker portrait measured 72x72 CSS pixels; Worker group uses aggregate count/health.",
+    "Native right-click Move changed Worker state to Moving; later screenshot shows arrival at destination and Idle.",
+    "Single Infantry Defensive stance visibly confirmed; Army shortcut selected 9 military; Shift-click added one Worker and showed mixed composition.",
+    "Select workers shortcut selected all 5 Workers.",
+    "Town Center training spent 50 food; queue/progress appeared, completed, and population increased from 12 to 13.",
+    "Paid Barracks spent 175 wood and progressed from construction to Ready. Infantry training spent 50 food and completed; population rose to 14.",
+    "Barracks research disclosure showed only its two research choices and their blocking reasons.",
+    "Help, Match Controls and Objectives opened and closed while retaining selection.",
+    "No apparent overlap or clipping in reviewed 1280x720 HUD states. Worker actions reflowed into two rows at 1024x768 clear of minimap.",
+    "1920x1080 viewport capture was clipped by the browser surface to 1873x1080; right-edge acceptance is not claimed.",
+    "Neutral sheep native clicks did not select it; the resulting empty selection view is retained, wildlife HUD acceptance remains open."
+  ],
+  "defects": [
+    {
+      "issue": "Unfinished selected Barracks says SELECT A COMPLETED BUILDING THAT PRODUCES THIS UNIT.",
+      "fix": "FINISH CONSTRUCTION TO TRAIN, with unchanged action availability.",
+      "status": "fixed; verified through normal paid construction in a second ordinary New Game"
+    }
+  ],
+  "console": {
+    "errorsAfterReload": 0,
+    "warnings": [
+      {
+        "message": "THREE.WebGLRenderer: Texture marked for update but no image data found.",
+        "count": 2,
+        "scope": "startup; retained unresolved, not a clean-console claim"
+      }
+    ]
+  },
+  "remaining": [
+    "Staging native interaction and rendered acceptance",
+    "Skiff and land/water mixed selection",
+    "Owned wildlife and carcasses",
+    "Seat 1, comfortable HUD spacing, long queues, lifecycle and victory",
+    "Full-width 1920 screenshot"
+  ],
+  "screenshots": [
+    {
+      "file": "barracks-construction.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "9e7b5ff9b78b9ff647aab0e9e012d9d0ba59524fc420ff5e4f493f32fda01118"
+    },
+    {
+      "file": "barracks-research.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "d19c7b4966f9a0acc9daaf34f0d152fa81fc9b9feaac05c7be380df516c0a3b0"
+    },
+    {
+      "file": "barracks-training.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "3dff50d1e9409e29d8f11917e6be96768350417ae82cc0ffee2658225c24f236"
+    },
+    {
+      "file": "empty-selection.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "dced978d47f2abd4a4668c435d39b37cb9ade81960e7d598300bd2ac04b37064"
+    },
+    {
+      "file": "help.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "077c2b3fbd8e69e5b004f86e9e35c339436d9a22f686e648266235f2983f5323"
+    },
+    {
+      "file": "infantry-defensive.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "73b9bb1f6b3fb4fe183fec1798fb5b4783214c6a0cfc8aa9f4e6636b3aa4e3ae"
+    },
+    {
+      "file": "mixed.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "864ca3bba14a1d327f63f2219ee6b53c9071ca7b95a8fc4c9ea5bfbf0016ed92"
+    },
+    {
+      "file": "objectives.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "25a51909e4d0f8ecba01aa95d5be9c9182cb26219f92c907b926b5027e05a499"
+    },
+    {
+      "file": "settings.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "8609d3b84c6639768ed46078a0b8e123bff6041b65e4a64e5d56a91c72415fe7"
+    },
+    {
+      "file": "town-center-training.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "3ddf8d4c0b18eb1c0e39b0d19f95e0fde29d42a21f5ed41c318d059c333922db"
+    },
+    {
+      "file": "worker-1024x768.jpg",
+      "pixels": [
+        1024,
+        768
+      ],
+      "sha256": "d5052280ae6d4b729717e1823d9b6b161565a37c4def8c76997b4ecd2679d00f"
+    },
+    {
+      "file": "worker-1920x1080-cropped.jpg",
+      "pixels": [
+        1873,
+        1080
+      ],
+      "sha256": "37a69fb979790a30091d2c6b930ba9037796c261e688fe5fa3a6047fe35ae46b"
+    },
+    {
+      "file": "worker-arrived.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "4c8d1f0d1ccf50c39e4bf022027254a22e4850b2ab721d0d0bf3c3b97450f5c1"
+    },
+    {
+      "file": "worker-build.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "5f8de78f384921511a0e5c169b2deb145f7678b44e886f8c171c1f4e380e4d03"
+    },
+    {
+      "file": "worker-moving.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "bfbb96687e3019bcc78dc501910120a0bae1c0efafa238c343502bca351fd4fc"
+    },
+    {
+      "file": "worker.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "4b18719ae93016b6af2725e30823471b3efc92a115ba8039f6331ae48c060bbf"
+    },
+    {
+      "file": "barracks-construction-corrected.jpg",
+      "pixels": [
+        1280,
+        720
+      ],
+      "sha256": "a3652542c72670205f4f20fcf78acf25f844a00ab0c6e01f1ad5b780096f4971"
+    }
+  ],
+  "complete": false,
+  "correctionCheck": {
+    "identity": {
+      "status": "identified",
+      "origin": "packed-manifest",
+      "sourceRevision": "eb437cc22d823bf4dbf3f9e2cd7e4e74130e38ae",
+      "sourceDirty": false,
+      "digest": "sha256:fb6389185bbb828956ca1e4e7fc3c6b54230c3cff7be6263cef9c1d871950c6f"
+    },
+    "mapSeed": 2588405189,
+    "policySeed": 2702279623,
+    "observation": "Barracks selected at 66\u201368% construction. Both training actions remain disabled with FINISH CONSTRUCTION TO TRAIN.",
+    "file": "barracks-construction-corrected.jpg"
+  },
+  "cleanup": "Temporary test tab closed, viewport override reset, owned local supervisor drained; saved test rooms preserved in temporary data directory."
+}

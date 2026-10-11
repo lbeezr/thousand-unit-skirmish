@@ -1,0 +1,110 @@
+{
+  "verifiedAt": "2026-10-11T18:08:14.292Z",
+  "environment": "staging",
+  "origin": "https://game-staging-21f9.up.railway.app",
+  "sourceRevision": "77b2ad698232ae6d6ed4b00965817d033527203f",
+  "providerDeploymentId": "629daea7-b613-41ef-8631-d0222c543cfb",
+  "identity": {
+    "ok": true,
+    "expected": {
+      "sourceRevision": "77b2ad698232ae6d6ed4b00965817d033527203f"
+    },
+    "served": {
+      "sourceRevision": "77b2ad698232ae6d6ed4b00965817d033527203f",
+      "sourceDirty": null,
+      "digest": null,
+      "origin": "railway-git"
+    },
+    "scope": "source",
+    "issues": []
+  },
+  "localPackage": {
+    "sourceDirty": false,
+    "digest": "sha256:53c23386177ed236c7c8a70ab9431bd674ba1181da988ab29e9818a557267d8b",
+    "files": 1845
+  },
+  "served": [
+    {
+      "path": "src/client/hud/wildlife-hud.mjs",
+      "sha256": "e85e5c3cd841e0e1bb24d31cd2c97d67f10351c81a1232bccf6a039853f6ca13",
+      "status": 200
+    },
+    {
+      "path": "src/client/hud/match-ui.css",
+      "sha256": "9fdcc405ebe211d339879957429e858f5524996b3edde23df77d20c2f3a95b25",
+      "status": 200
+    },
+    {
+      "path": "src/client/hud/unit-hud.mjs",
+      "sha256": "24053a3fd5c49c38069447b1de425760814c2370ee8bc6d1e6fe73c3426cfc10",
+      "status": 200
+    },
+    {
+      "path": "src/client/hud/unit-hud.css",
+      "sha256": "3b48bf16b8c2cd7c43ddf665f466eeb4f18928ef5c093ab211dcb5776240254a",
+      "status": 200
+    },
+    {
+      "path": "src/client/hud/selection-hud.css",
+      "sha256": "126179ff484c090e9212d67dac3ad14f9eebf1958d40a97d9d940d7230b76d45",
+      "status": 200
+    },
+    {
+      "path": "src/client/hud/building-hud.css",
+      "sha256": "269d1ebbaf9490701d1b7a6a8b2e7c6a4d7e5e9d1e97eb0197c9061349150118",
+      "status": 200
+    },
+    {
+      "path": "src/client/hud/building-hud.mjs",
+      "sha256": "a598a83672b47f5612e1ab6b852186b7f6047b3cc6cb24ab88bc996326ebb3d7",
+      "status": 200
+    },
+    {
+      "path": "index.html",
+      "sha256": "910f891171b54e8091a50142e2f1b75192f9f71e8cd60a5800367e92187ed75e",
+      "status": 200
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "2d64920c693d5ea64b593d915ad43785be6c6824d0f9500454bb27f1b39ddc51",
+      "status": 200
+    },
+    {
+      "path": "src/client/hud/worker-hud.mjs",
+      "sha256": "d7761569b4997791865ba7fafb3ec1d6ae3a437b920e39086bea229d0a497faa",
+      "status": 200
+    },
+    {
+      "path": "src/client/hud/worker-hud.css",
+      "sha256": "7c36f4e7f33ab60235c3da6ebdc7b42f87d25b27341ba90fd51240bb03f98993",
+      "status": 200
+    },
+    {
+      "path": "src/battlefield-cursor.mjs",
+      "sha256": "4404d3d9d2822c948ad0c2c16d3cd69afeb75565009ec7d201a2573568513b7d",
+      "status": 200
+    },
+    {
+      "path": "assets/ui/fonts/dm-sans.ttf",
+      "sha256": "8cd08d97e89c24d0aa92edd2f0f4c8ee6195eee9b7c9f154865a58b02f0c1c0d",
+      "status": 200
+    },
+    {
+      "path": "assets/ui/fonts/barlow-condensed-medium.ttf",
+      "sha256": "262bd143292ce479ee0cd09a42b47ab173fca8e9c6eb5ed0b5c8a845bc371d17",
+      "status": 200
+    },
+    {
+      "path": "assets/ui/fonts/dm-sans-OFL.txt",
+      "sha256": "9af36190332437f5ecd09974de43c1f7c77a310a996cdd8ceb25628b458840e1",
+      "status": 200
+    },
+    {
+      "path": "assets/ui/fonts/barlow-condensed-OFL.txt",
+      "sha256": "186d750eb496a4c17a76385f82be6aea2ac1cf2de074a811d63786cf374ea73f",
+      "status": 200
+    }
+  ],
+  "clientModules": 141,
+  "scope": "Deployed source/readiness and actual served client/font/license bytes. No browser rendering or ordinary-game visual acceptance."
+}

@@ -135,6 +135,9 @@ for (const team of [0, 1]) {
     Object.assign(f.state, { matchOver: true, seatReservedUnits: 996, totalReservedUnits: 1992,
       populationAvailable: 0, food: 0, wood: 0 });
     assert.equal(f.action().reason, 'SELECT A COMPLETED BUILDING THAT PRODUCES THIS UNIT');
+    f.building.team = team;
+    assert.equal(f.action().reason, 'FINISH CONSTRUCTION TO TRAIN');
+    assert.equal(f.action().available, false);
     Object.assign(f.building, { team, complete: true });
     assert.equal(f.action().reason, 'MATCH FINISHED');
     f.state.matchOver = false;

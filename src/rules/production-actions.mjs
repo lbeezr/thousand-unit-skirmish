@@ -7,8 +7,9 @@ export function productionAction(building, kind, state, definitions = GAMEPLAY_D
   const producer = definitions.buildings[building?.type];
   const missingPrerequisites = missingTechnologyPrerequisites(unit?.requires, state.upgrades, definitions.technologies);
   const reason = !unit ? 'UNKNOWN UNIT TYPE'
-    : !building || building.team !== state.team || !building.complete || !producer?.products.includes(kind)
+    : !building || building.team !== state.team || !producer?.products.includes(kind)
       ? 'SELECT A COMPLETED BUILDING THAT PRODUCES THIS UNIT'
+    : !building.complete ? 'FINISH CONSTRUCTION TO TRAIN'
     : state.matchOver ? 'MATCH FINISHED'
     : building.queue >= state.queueLimit ? `QUEUE FULL ${state.queueLimit}/${state.queueLimit}`
     : state.seatUnits + state.seatReservedUnits >= state.seatLimit

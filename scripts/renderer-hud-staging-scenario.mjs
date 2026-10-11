@@ -7,12 +7,25 @@ import { buildingPad, validateStagingOrigin } from './renderer-roster-audio-plan
 import { rosterControlPoint } from './renderer-roster-audio-capture.mjs';
 import { interactionTargetPoint } from './renderer-interaction-audio-scenario.mjs';
 import { installCatalogImportObserver } from './renderer-building-catalog-scenario.mjs';
+import { ORDINARY_MAP_MIN_SIDE } from '../src/map-size-policy.mjs';
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const stateExpression = 'window.__rtsInteractionAudioSnapshot()';
+// Match the ordinary command gate before pressing a control. Studio keeps
+// Save & Play enabled during recovery so a human can retry; a capture must wait.
+export function hudInputReady() {
+  if (document.documentElement?.dataset.entry === 'menu') return true;
+  if (document.documentElement?.dataset.entry !== 'game') return false;
+  const state = window.__rtsBrowserRecoverySnapshot?.();
+  return state?.socketState === 1 && state.recovering === false
+    && ['ROOM LIVE', 'WAITING FOR PLAYER 2'].includes(document.querySelector('#network-status')?.textContent);
+}
 export function hudFixture(subset) {
   assert.ok(['selections', 'buildings', 'panels', 'rollout'].includes(subset));
   const map = structuredClone(matureSettlementPlan.map);
+  // Normal Studio publication enforces the ordinary Tiny floor. Keep the
+  // reviewed central settlement/pads while expanding the surrounding meadow.
+  map.width = map.height = ORDINARY_MAP_MIN_SIDE;
   map.id = `hud-${subset}`; map.name = `HUD ${subset}`; map.terrainBase = 'meadow'; return map;
 }
 export function readHudCapture() {
@@ -62,11 +75,11 @@ async function key(page,value) {
   for(const type of ['keyDown','keyUp']) await page.cdp.call('Input.dispatchKeyEvent',{type,key:value,code:value});
 }
 async function control(page,selector) {
-  const point=await page.wait(`(${rosterControlPoint.toString()})(${JSON.stringify(selector)})`,'visible enabled HUD control');
+  const point=await page.wait(`(${hudInputReady.toString()})()&&(${rosterControlPoint.toString()})(${JSON.stringify(selector)})`,'live visible enabled HUD control');
   await pointer(page,point);
 }
 async function select(page,kind,id,modifiers=0) {
-  const point=await page.wait(`(${interactionTargetPoint.toString()})(${JSON.stringify(kind)},${id})`,'visible ordinary pick target');
+  const point=await page.wait(`(${hudInputReady.toString()})()&&(${interactionTargetPoint.toString()})(${JSON.stringify(kind)},${id})`,'live visible ordinary pick target');
   await pointer(page,point,modifiers);
 }
 async function enter(page,origin,map,mapFile,bytes) {
