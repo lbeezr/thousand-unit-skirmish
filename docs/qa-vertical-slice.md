@@ -17,6 +17,18 @@ browser revision at that observation and the full seat/action/viewport matrix
 were not independently captured. [The HUD owner checkpoint](hud-controls-backlog.md#worker-pilot--11-october-2026)
 records publication access and hosted-capture dependencies and retains follow-up.
 
+## HUD rollout — 11 October 2026
+
+Buildings are staged at `9f76585c1d95fa65b30f270b007506296228ffa8` via
+Railway `5ae7146d-a47e-46bc-ae0d-e6e76ffed345`, with 190 focused checks,
+independent review, clean packaging and matching actual client response hashes:
+[receipt](qa-evidence/building-hud-2026-10-11/staging-receipt.json).
+The army/mixed/Skiff continuation and normal-game matrix are owned in the
+[HUD checkpoint](hud-controls-backlog.md#army-mixed-selection-and-skiffs--11-october-2026).
+Source, DOM and served-byte evidence do not claim rendered appearance; the
+hosted capture/sign-in route remains paused. The HUD owner retains appearance
+and both-seat action checks at an identified containing build.
+
 ## Persistent tactical orders — 30 September 2026
 
 The tactical command lane now has engineering evidence for Patrol/Follow:

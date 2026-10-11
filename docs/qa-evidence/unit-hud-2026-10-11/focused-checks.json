@@ -1,0 +1,26 @@
+{
+  "scope": "unit-hud-focused-cpu",
+  "baseSource": "9f76585c1d95fa65b30f270b007506296228ffa8",
+  "testsPassed": 196,
+  "testsFailed": 0,
+  "groups": [
+    "unit-hud",
+    "contextual-hud",
+    "combat-stance-ui",
+    "selection-context",
+    "stationary-command",
+    "hud-action-icons",
+    "hud-layout"
+  ],
+  "checks": [
+    "runtime dependency boundaries",
+    "strict JS types",
+    "strict Node types",
+    "documentation links",
+    "changed JS syntax",
+    "git diff whitespace"
+  ],
+  "independentReview": "No remaining actionable findings after Escape cancellation and live Target tooltip corrections; Sheep shared-consumer transition also rechecked.",
+  "renderedAcceptance": false,
+  "fullCpuSuitePassed": false
+}

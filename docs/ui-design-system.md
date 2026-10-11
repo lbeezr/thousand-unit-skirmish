@@ -171,6 +171,12 @@ runtime binding and clean local trial are recorded in the
 the pilot is merged, staged and accepted by the user. The exact user-observed
 browser revision and full viewport/action capture matrix remain unmeasured.
 
+The building slice is staged with exact served-byte evidence. Army/mixed/Skiff
+adoption reuses the retained composition and recovery storyboard, keeps global
+navigation in the header and discloses each command's eligible subset. The
+[rollout checkpoint](hud-controls-backlog.md#army-mixed-selection-and-skiffs--11-october-2026)
+retains delivery and normal-game acceptance separately.
+
 Proceed through small vertical slices: **Worker → Barracks →
 army/mixed selection → remaining roster and lifecycle coverage → menus/settings**.
 The [HUD backlog](hud-controls-backlog.md#design-system-plan--11-october-2026)

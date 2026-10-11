@@ -19,8 +19,8 @@ The preserved comparisons remain the visual backing; there is no runtime preview
 | --- | --- | --- |
 | 1 — specimen reviewed | [Real-data component specimen](art-direction/hud-design-system-2026-10-11/component-specimen.html) compares 52px and 72px portrait framing, Worker/Build, Barracks/queue/shortage, army/mixed, empty and recovery contexts. [Bounded checks](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026) pass. | User chose the expressive 72px portrait for the Worker pilot. Study source is isolated in `src/studies/hud-component-specimen/`; game rules and runtime consumers are unchanged. |
 | 2 — Worker pilot accepted | Tokens and the new selection dock serve a real Worker: task, cargo, Build, Repair, Return and all other supported orders remain reachable. Selecting a different context clears Worker disclosures. | Agreed baseline; existing availability/focus contracts. New code in `src/client/hud/` with bounded existing DOM/style/binding edits; same owner retains package, delivery and game checks. |
-| 3 — Buildings in progress | Selected producer owns products, live queue, research, rally and lifecycle actions; shortages, cancellation and rejection remain truthful. | Worker dock primitives and real economy/lifecycle bindings. Extend production components and their existing consumers; do not copy rules or introduce multi-producer execution. |
-| 4 — Army and mixed selection | Composition, eligible actions, formations and all existing stance states remain readable; repeated snapshots, death and selection changes preserve focus and authority. | Existing selection/stance/command contracts. Extend the dock and its targeted regression checks. |
+| 3 — Buildings staged | Selected producer owns products, live queue, research, rally and lifecycle actions; shortages, cancellation and rejection remain truthful. | Worker dock primitives and real economy/lifecycle bindings. Extend production components and their existing consumers; do not copy rules or introduce multi-producer execution. |
+| 4 — Army, mixed and Skiffs in progress | Composition, eligible actions, formations and all existing stance states remain readable; repeated snapshots, death and selection changes preserve focus and authority. | Existing selection/stance/command contracts. Extend the dock and its targeted regression checks. |
 | 5 — Coverage and reuse | Remaining buildings, boats, wildlife and lifecycle states use the same vocabulary; then apply proven foundations to pause/settings and other menus. | Inventory actual supported contexts first. Small consuming-surface slices; no speculative framework or theme system. |
 
 Each implementation slice must include focused checks, source/release/served
@@ -63,8 +63,57 @@ without another mock approval gate.
 runtime boundaries, both strict type boundaries, changed-file syntax and docs.
 Independent review has no remaining actionable findings after the reconnect
 hover-title correction. [Focused receipt](qa-evidence/building-hud-2026-10-11/focused-checks.json).
-This is not a full-suite or rendered-layout claim. Publication, clean packaging
-and staging identity verification are the next transition.
+**Staged:** [PR644](https://github.com/lbeezr/thousand-unit-skirmish/pull/644)
+merged at `9f76585c1d95fa65b30f270b007506296228ffa8`. The clean 1,841-file
+package digest is `sha256:9c016880767b208b18553403f57402bcb33f375f88c7e7651ec87209e5693baa`.
+Railway staging deployment `5ae7146d-a47e-46bc-ae0d-e6e76ffed345` succeeded;
+authenticated health identifies that exact source, readiness passes, all 139
+client modules resolve and 12 actual HUD/font/license response hashes match.
+[Delivery receipt](qa-evidence/building-hud-2026-10-11/staging-receipt.json).
+The provider does not report a release digest, so the clean local package digest
+is not asserted as its image identity. Ordinary-game appearance remains open
+under the documented hosted capture/sign-in pause; no alternate route was used.
+
+## Army, mixed selection and Skiffs — 11 October 2026
+
+Owner: HUD redesign task `01a12b67-645a-7a33-8fb2-8e8979756ac1`.
+Base: staged buildings `9f76585c`; branch `codex/unit-hud`.
+
+- **Outcome:** a 72px identity, live composition, combined health, typed cargo and
+  queued/persistent-order summary accompanies the actual selected units. Land
+  units expose Target battlefield, Attack move, Stop, Hold, Patrol and Follow;
+  formation sets the next applicable order. Stances name their eligible military
+  subset and reflect confirmed state. Return names carrying Workers or Skiffs.
+- **Boundaries:** mixed land/water routes stay unavailable with a reason; Stop and
+  Hold still address the whole selection. Pure Skiffs show supported orders and
+  the existing 16-Skiff route limit. Missing Skiff portrait uses a text fallback.
+  Commands, Production, Army and Idle navigation remain in the measured header,
+  independent of selection. Worker Formation / route remains reachable.
+- **Backing:** reuse the approved [army/mixed/empty/recovery storyboard](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026),
+  shared Obsidian skin and admitted portraits/glyphs. No new artwork, gameplay
+  rules, optimistic stance state or command protocol.
+- **Scope:** `src/client/hud/unit-hud.*`, existing stable action nodes, bounded
+  main/HTML layout bindings and exact public admission. Escape cancels Attack
+  move before deselection, including combined tap targeting; tooltip state tracks
+  targeting and reconnect. Existing consumers retain actual order dispatch.
+- **Acceptance:** both seats switch Worker → army → mixed → Skiff → building;
+  confirm exact command recipients and generations, input isolation, focus,
+  cancel/reconnect recovery, 1280×720/1920×1080/1024×768 and UI scale in normal
+  New Game. HUD owner retains identified staged delivery and game review. CPU
+  DOM checks cannot establish rendered layout or player comprehension.
+
+**Review-ready checkpoint:** 196 focused CPU checks pass, covering real client
+recipient IDs/generations in both seats, formation synchronization, offline
+activation, targeting/cancellation, glyph retention and header placement.
+Boundaries, both strict type checks, docs, syntax and whitespace pass.
+Independent review has no remaining actionable findings after correcting Attack
+move Escape cancellation and live Target tooltip restoration. [Focused receipt](qa-evidence/unit-hud-2026-10-11/focused-checks.json).
+This is source/DOM evidence; publication, clean packaging and staged identity are
+next, with ordinary-game appearance retained separately.
+
+Remaining consuming surfaces are wildlife, match details/settings/help and
+broader menu consistency. They retain their own bounded outcomes; the new main
+menu portal is a separate active design and is not silently overwritten here.
 
 ## Worker pilot — 11 October 2026
 

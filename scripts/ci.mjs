@@ -231,6 +231,7 @@ run(['--test', 'scripts/minimap-browser-probe.test.mjs'], 'Minimap browser proof
 run(['--test', 'scripts/selection-center-shortcut.test.mjs'], 'Selection camera shortcut and preserved Space drag');
 run(['--test', 'scripts/objective-summary.test.mjs', 'scripts/completion-event-labels.test.mjs'], 'Compact objectives and event feedback');
 run(['--test', 'scripts/selection-context.test.mjs'], 'Contextual selection');
+run(['--test', 'scripts/unit-hud.test.mjs'], 'Obsidian army, mixed-domain action scopes and stable match navigation');
 run(['--test', 'scripts/building-hud.test.mjs'], 'Obsidian building dock, queue identity and local research disclosure');
 run(['--test', 'scripts/worker-hud.test.mjs'], 'Worker HUD model, context ownership and construction gates');
 run(['--test', 'scripts/contextual-hud.test.mjs'], 'Empty selection HUD and command focus');
