@@ -1,0 +1,122 @@
+{
+  "scope": "staging HTTP identity, exact portal bytes, imports, public/protected boundaries; no gameplay created",
+  "time": "2026-10-11T16:00:20.807Z",
+  "source": "b4ad36cf80ca923ed808c06df113ae6bdad5c997",
+  "publicGameplay": true,
+  "identity": {
+    "ok": true,
+    "expected": {
+      "sourceRevision": "b4ad36cf80ca923ed808c06df113ae6bdad5c997"
+    },
+    "served": {
+      "sourceRevision": "b4ad36cf80ca923ed808c06df113ae6bdad5c997",
+      "sourceDirty": null,
+      "digest": null,
+      "origin": "railway-git"
+    },
+    "scope": "source",
+    "issues": []
+  },
+  "hashes": [
+    {
+      "path": "index.html",
+      "sha256": "96bc6a43bedc49f42e2003e4336c1693ba9b2290ea8b18ab5e48d94e83d89a7f",
+      "bytes": 84203,
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "path": "src/game-menu.css",
+      "sha256": "14626ad618df368f7fda96b9e5b3c192a59d485cc535e706993e6d5a8abb3eb4",
+      "bytes": 17132,
+      "contentType": "text/css; charset=utf-8"
+    },
+    {
+      "path": "src/game-entry.mjs",
+      "sha256": "124805d40a8f99cd3b3f52529e7766f5a484e274202809181a2b3672fdc0a956",
+      "bytes": 11126,
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "path": "assets/ui/vaelora-brand-v1/bellweather-map.png",
+      "sha256": "53fd821208acfe8c40fbe516469f71553b3b8feb98b61913ca58c0e6f0e9732d",
+      "bytes": 3845695,
+      "contentType": "image/png"
+    },
+    {
+      "path": "assets/ui/vaelora-brand-v1/brass-surface.webp",
+      "sha256": "5f7407a4adeabe74200b90807a87b540d20ab225a7bfa423367df854374bca55",
+      "bytes": 2367054,
+      "contentType": "image/webp"
+    },
+    {
+      "path": "assets/ui/vaelora-brand-v1/oak-corner.webp",
+      "sha256": "06ceb15e31abcbb3a914d6be197c1ff4555f36bd920872b72ec9347a9c5a3cde",
+      "bytes": 582116,
+      "contentType": "image/webp"
+    }
+  ],
+  "checks": [
+    {
+      "path": "/ready",
+      "status": 200,
+      "authenticated": false
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "authenticated": false
+    },
+    {
+      "path": "/health",
+      "status": 401,
+      "authenticated": false
+    },
+    {
+      "path": "/index.html",
+      "status": 200,
+      "authenticated": true
+    },
+    {
+      "path": "/src/game-menu.css",
+      "status": 200,
+      "authenticated": true
+    },
+    {
+      "path": "/src/game-entry.mjs",
+      "status": 200,
+      "authenticated": true
+    },
+    {
+      "path": "/assets/ui/vaelora-brand-v1/bellweather-map.png",
+      "status": 200,
+      "authenticated": true
+    },
+    {
+      "path": "/assets/ui/vaelora-brand-v1/brass-surface.webp",
+      "status": 200,
+      "authenticated": true
+    },
+    {
+      "path": "/assets/ui/vaelora-brand-v1/oak-corner.webp",
+      "status": 200,
+      "authenticated": true
+    },
+    {
+      "path": "/docs/art-direction/vaelora-brand-v1/interface-reference.html",
+      "status": 404,
+      "authenticated": true
+    },
+    {
+      "path": "/docs/art-direction/vaelora-brand-v1/materials/brass-surface.png",
+      "status": 404,
+      "authenticated": true
+    },
+    {
+      "path": "/assets/ui/vaelora-brand-v1/materials-manifest.json",
+      "status": 404,
+      "authenticated": true
+    }
+  ],
+  "importCount": 136,
+  "ok": true
+}
