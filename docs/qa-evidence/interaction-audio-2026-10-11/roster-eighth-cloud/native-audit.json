@@ -1,0 +1,1021 @@
+{
+  "schemaVersion": 1,
+  "scope": "decoded native playback and source identity; no direct hearing claim",
+  "expectedBindings": 85,
+  "recordings": [
+    {
+      "key": "building.town-center.select",
+      "subset": "buildings-home",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/buildings-home/building.town-center.select.webm",
+      "sha256": "4cd2d67e15ab6f6a8796a03dab1f3858e596abe786f34e7190551cf03ad001bf",
+      "sourceSha256": "3453ea7bf7a57578fdbe1fbc7680340c7a26b75bc2caa8ab5c891ad45dd33f23",
+      "durationSeconds": 3.66,
+      "peakDbfs": -19.277559225709286,
+      "rmsDbfs": -36.5006440224909,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "failed"
+    },
+    {
+      "key": "building.barracks.select",
+      "subset": "buildings-training",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/buildings-training/building.barracks.select.webm",
+      "sha256": "00d514f29a77a8b76f9586a818710c685e60d8a3cbd27907f51ffa195e422d5f",
+      "sourceSha256": "c7d0507c82c47968be2ad72301a9f32e1a19e26e9b02b1db7569dfe265faf97d",
+      "durationSeconds": 3.6,
+      "peakDbfs": -17.786299126486583,
+      "rmsDbfs": -41.07140397423067,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "building.archery-range.select",
+      "subset": "buildings-training",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/buildings-training/building.archery-range.select.webm",
+      "sha256": "c43d7c9fddb132b63b4d46d272965516c3e0be103e33fd763f345d7ccfef2eca",
+      "sourceSha256": "833fb232f86afef1b9677169c4f87490c08142a0b3b6b8210bc66e78ff31c47f",
+      "durationSeconds": 3.66,
+      "peakDbfs": -18.00262556696478,
+      "rmsDbfs": -45.232167204234514,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "building.stable.select",
+      "subset": "buildings-training",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/buildings-training/building.stable.select.webm",
+      "sha256": "8884e73d97f6b25edf6c94570ad9f63db60c6bd4ecf8d62e9b23807df71a759f",
+      "sourceSha256": "9b6adaa5b1d030374fc2671bfb6ae5910906ffcaf2049269159705c27feea78a",
+      "durationSeconds": 3.66,
+      "peakDbfs": -17.615423655620713,
+      "rmsDbfs": -40.5501768757203,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.archer.ready",
+      "subset": "unit-archer",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.ready.webm",
+      "sha256": "8c92b6fd1e22e095290f5a6c99a350466f7bb762a4e1d4bf7e1380e965a6d0f3",
+      "sourceSha256": "100d34ea3802be2347abfa237d1d2636c6dd7a17c485c04a2428c3f992cb3767",
+      "durationSeconds": 3.6,
+      "peakDbfs": -17.034980191401395,
+      "rmsDbfs": -36.49637843600328,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.archer.select",
+      "subset": "unit-archer",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.select.webm",
+      "sha256": "c3d8da004083df176bb447e24bba8cb9e2749fe54c9ea36b19d18093948430ca",
+      "sourceSha256": "7e1b9e99f7e70c44dbd42e463c9d5efb6430dece103d73fa9f3a3c636d908cb6",
+      "durationSeconds": 3.6,
+      "peakDbfs": -15.037444209861452,
+      "rmsDbfs": -35.6959820505122,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.archer.move",
+      "subset": "unit-archer",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.move.webm",
+      "sha256": "e57a4c1ca0274cb1dfa55dfba73383becc1ea946746e80e304c64e56e5e49130",
+      "sourceSha256": "16ac5d9ab7feef0c7a85d2c56d8a1d79a8ac15b167091ccc6b7bac8b7767ec0c",
+      "durationSeconds": 3.66,
+      "peakDbfs": -17.53921356010161,
+      "rmsDbfs": -35.23873789449759,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.archer.stop",
+      "subset": "unit-archer",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.stop.webm",
+      "sha256": "f999129fefecd65da7d1f2ebc4e40909634ffa6904116ae689e842cc8129ea6d",
+      "sourceSha256": "d8557d119d40e1708ea99fae63c6adc4601ca26a54e1e966936469a694a0fdc1",
+      "durationSeconds": 3.6,
+      "peakDbfs": -15.023981190418894,
+      "rmsDbfs": -37.52207608941265,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.archer.hold",
+      "subset": "unit-archer",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.hold.webm",
+      "sha256": "fb782160dd54ae24dff6ad21dc3c90f98b73e0b1af3ac22a01f947256eaed504",
+      "sourceSha256": "c75eb33c6d5dc97439615a8c42770ebb3484458ec92a795e0faf147905de26b5",
+      "durationSeconds": 3.6,
+      "peakDbfs": -14.556955775547607,
+      "rmsDbfs": -36.84550344617262,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.archer.patrol",
+      "subset": "unit-archer",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.patrol.webm",
+      "sha256": "6ddcaf8058294bd78865d8f4e0efd90d1ec666dc1e5300977f29a7688bcd4617",
+      "sourceSha256": "a6c7b323982f873567b96a4feef86f4ae08e8df264af1a6df3697e8cb4094c7b",
+      "durationSeconds": 3.72,
+      "peakDbfs": -15.621003848783017,
+      "rmsDbfs": -35.61925906945931,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.archer.follow",
+      "subset": "unit-archer",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.follow.webm",
+      "sha256": "4d624beb48045b86d4647b9b46fe872a032cff3c959e882282a1128963fb5271",
+      "sourceSha256": "700f1bcbe84d9f05459aef597b7768a02d5b22fcd90fc2ad010ac335632c9c65",
+      "durationSeconds": 3.66,
+      "peakDbfs": -15.484390478684944,
+      "rmsDbfs": -36.284114656980606,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.archer.attack",
+      "subset": "unit-archer",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.attack.webm",
+      "sha256": "7f2c087889ebcb355b22b146e7e6ed2be66a1c9b883750f2affa117a330f7a5c",
+      "sourceSha256": "1254b265a906169f4da010fd103e200a5f0fea036632e921dc11a791a12910b0",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.702652456391332,
+      "rmsDbfs": -37.36323512877843,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.infantry.ready",
+      "subset": "unit-infantry",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.ready.webm",
+      "sha256": "3d01bb3d76257f6cf9804a32d9652307ebc11ef2a976c15c4a1e20bf91ad5d04",
+      "sourceSha256": "97ac8e89cec3041e6e6135c805ad7275375c00b107f1db4e8387bd40115e7977",
+      "durationSeconds": 3.66,
+      "peakDbfs": -16.60670931826357,
+      "rmsDbfs": -36.16965356979085,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.infantry.select",
+      "subset": "unit-infantry",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.select.webm",
+      "sha256": "735ab59d2dd54566d474b5d269ee7b879329217d6619f40b938104d280b0d90a",
+      "sourceSha256": "606864139c4cae3dc2fd568665f7c282e7a5300691604c16d5e3d89d5f5e1f7b",
+      "durationSeconds": 3.6,
+      "peakDbfs": -15.818566156823104,
+      "rmsDbfs": -37.12422923804763,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.infantry.move",
+      "subset": "unit-infantry",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.move.webm",
+      "sha256": "db67ca01532ecd9d322533c4455cd9736bc7bf78d7909a3fe13b4bfdeaf94fe8",
+      "sourceSha256": "7e04b35f3484b6cb1f71d77c55da46d5c87a1360c00688d0756aa3fe46f0e0c2",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.692575182124902,
+      "rmsDbfs": -37.24622898648238,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.infantry.stop",
+      "subset": "unit-infantry",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.stop.webm",
+      "sha256": "28e18a17de27cc38c8f1ada71868593b731a0b2f0fc6b782f96a962d5ed95232",
+      "sourceSha256": "8238a8ff6063c76fd732e42f100b2896f9b80e049c8a10b88407a3fa98d6f0f7",
+      "durationSeconds": 3.6,
+      "peakDbfs": -15.83331995988777,
+      "rmsDbfs": -37.43404990025211,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.infantry.hold",
+      "subset": "unit-infantry",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.hold.webm",
+      "sha256": "1a032e85cdcaaae070e430862781ca61ad003c1cca86005a4f1578dddf0ff1b0",
+      "sourceSha256": "c5fe3362b335bb2fddb144a5d333540d0a0d781e58b7e7db2d54f1a73a887cdf",
+      "durationSeconds": 3.6,
+      "peakDbfs": -17.367210124863263,
+      "rmsDbfs": -36.043013732675654,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.infantry.patrol",
+      "subset": "unit-infantry",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.patrol.webm",
+      "sha256": "df302b80d5a22fc0bfbf5ad0efe9b533ca34d25c01e96525d5bc9c4d7ed1bc0f",
+      "sourceSha256": "d00a348a0e112d7639fd63f025035d0c241ecd86a5dd742d0377a83768acc957",
+      "durationSeconds": 3.66,
+      "peakDbfs": -16.25521933601169,
+      "rmsDbfs": -36.1556037095543,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.infantry.follow",
+      "subset": "unit-infantry",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.follow.webm",
+      "sha256": "a5ece4ba07e1abe8caa2cf27ef8d4a9064f08c403e373e21646b85e6007bfbc9",
+      "sourceSha256": "42f76483da4addeebcf780481d24a6083a945be8fa3f933c5691a419b70841e5",
+      "durationSeconds": 3.66,
+      "peakDbfs": -18.224477637504958,
+      "rmsDbfs": -37.58285887064085,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.infantry.attack",
+      "subset": "unit-infantry",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.attack.webm",
+      "sha256": "16f0f825c6937cc26880c89133126f3d6398bd14e42a6d555b77519f0109cd92",
+      "sourceSha256": "085fc8d63890a7dc928c1ff4565169d7bc50cba0028943a7b1754dfb184aab63",
+      "durationSeconds": 3.66,
+      "peakDbfs": -15.948935333854008,
+      "rmsDbfs": -36.75742310618639,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.rider.ready",
+      "subset": "unit-rider",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.ready.webm",
+      "sha256": "24f0b76ac8588f37c1b3abd7043f239d0ecdf7a3af280c40abb5683b23734ffe",
+      "sourceSha256": "3961857f341f787f78776e4ce553aa15ad335583d75b4c23b2969bb165a6f348",
+      "durationSeconds": 3.66,
+      "peakDbfs": -15.987261623697718,
+      "rmsDbfs": -37.26828846539825,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.rider.select",
+      "subset": "unit-rider",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.select.webm",
+      "sha256": "409a6a44833d766eddbb549c544811244f0f68352b97caf4c0949b7d50994d84",
+      "sourceSha256": "d2e029c581a44fbd3ae37d9dab5eb63ad4c94c570cde150552c92901e23827be",
+      "durationSeconds": 3.6,
+      "peakDbfs": -15.64826504052277,
+      "rmsDbfs": -36.808996631006636,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.rider.move",
+      "subset": "unit-rider",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.move.webm",
+      "sha256": "c302341f57bdd5ccb3b5a95a3f49070d191b192ddbf7b4c4a1568a2b413a6ee5",
+      "sourceSha256": "1e25f5abce019c9ac0e3b89117225f7c63e64d50cf8425e139e0a499680d222a",
+      "durationSeconds": 3.72,
+      "peakDbfs": -15.379428500593736,
+      "rmsDbfs": -37.31834303817201,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.rider.stop",
+      "subset": "unit-rider",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.stop.webm",
+      "sha256": "5a421ae4cb9846b66a64c283a37763eec49ff23612c4070b17b15ed9dd864572",
+      "sourceSha256": "16b00f9136c1a462699343ece3f59cf092aef07e44c1ef980b740204fd56708a",
+      "durationSeconds": 3.6,
+      "peakDbfs": -14.541388392803093,
+      "rmsDbfs": -39.90576997225552,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.rider.hold",
+      "subset": "unit-rider",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.hold.webm",
+      "sha256": "d39e2e229e762bc01720a6b9935b9710121a618398e32f11b830cfa82ac52540",
+      "sourceSha256": "b9d78baed3caa0d836b731ac542426c568f11bb844c2882ce92a782bfa883a4f",
+      "durationSeconds": 3.66,
+      "peakDbfs": -15.957252762085151,
+      "rmsDbfs": -37.31362765952012,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.rider.patrol",
+      "subset": "unit-rider",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.patrol.webm",
+      "sha256": "ba096a227ee28c954c9f24445b865c4f113a83cbad7334504d4856e1ccd5d3ad",
+      "sourceSha256": "b86e9aa70e5f6ff03d846b7f9ffb9036849bdc3e6f99295a76b4fc9b1612e002",
+      "durationSeconds": 3.66,
+      "peakDbfs": -16.544162779640125,
+      "rmsDbfs": -36.13056191219317,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.rider.follow",
+      "subset": "unit-rider",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.follow.webm",
+      "sha256": "234356d69f830801e187b0490a50859bef382ea3dda6f9aa88d7d06fe63d9e16",
+      "sourceSha256": "b042c714451bbfdb53254cee2df61c4be07d9d6e7d7fb810f6e1621333552562",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.528672163326865,
+      "rmsDbfs": -36.990976551617045,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.rider.attack",
+      "subset": "unit-rider",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.attack.webm",
+      "sha256": "d12692ba6fddbd80ed9d9b23f7f91f076b1b3b302cfcdfbef72893ce888646d2",
+      "sourceSha256": "c285fa0c8e5eeaedb56087c06b76848ba19b4f14a256cf804121cf33fcfabbee",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.839120853774945,
+      "rmsDbfs": -36.30920412254115,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.scout.ready",
+      "subset": "unit-scout",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.ready.webm",
+      "sha256": "b7e271daed6c4a9d882c84f4eaa85201e7e334e7baed75cdf25682bce4f2ba29",
+      "sourceSha256": "9c779ece9bec5fbe70192bdae5a6d56f7f507e5e74c308fe2dafcec5c88c7ab2",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.323566532196905,
+      "rmsDbfs": -37.672636523600886,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.scout.select",
+      "subset": "unit-scout",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.select.webm",
+      "sha256": "fedd88e7b15f5475825fd7a6d7ee9161092a6088804965f82e049eb137811772",
+      "sourceSha256": "3afe7368e47ec747a3e6eef404945d7a959a16d42180d86d3d69c1512b8f066e",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.76916700206626,
+      "rmsDbfs": -37.95315846574139,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.scout.move",
+      "subset": "unit-scout",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.move.webm",
+      "sha256": "7a128d128c5c470415f3a0e98b0dfbf5083d4c156e30000c6857c56fdf81013c",
+      "sourceSha256": "941fe04bf3c44f291fd7008c89ba1784be6d47137be5d61de5c6ecbcbe720472",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.469574678779,
+      "rmsDbfs": -36.8073240627598,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.scout.stop",
+      "subset": "unit-scout",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.stop.webm",
+      "sha256": "844641e8b381b55e7745faa9ec6fce3275581995588ec9fe2a5d3fddeccf7ca9",
+      "sourceSha256": "498b3b40c584a706bc793a7434ea0290a8e0c7a5ec622765f7b5219fc74275e0",
+      "durationSeconds": 3.6,
+      "peakDbfs": -14.696892582414966,
+      "rmsDbfs": -36.82251911638496,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.scout.hold",
+      "subset": "unit-scout",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.hold.webm",
+      "sha256": "f172c3fb054590223c38f649b7e041b6442833e87cd9807ab3fb2c9ff01dde53",
+      "sourceSha256": "113bddee12860442a0e4e0ead967c5b9d0a91bdc09d976f89590e097a1729726",
+      "durationSeconds": 3.6,
+      "peakDbfs": -14.748869470724193,
+      "rmsDbfs": -36.97126673497339,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.scout.patrol",
+      "subset": "unit-scout",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.patrol.webm",
+      "sha256": "c1d22b8c017f9876e975f7d1a50fe0d3fbdb2c9c2396a670eab096f955bed801",
+      "sourceSha256": "c9f82981ac7a440ffc0dfd60a149172ef26526c597cfe8912056a04ec7ca89a2",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.679635842358392,
+      "rmsDbfs": -37.99294731290201,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.scout.follow",
+      "subset": "unit-scout",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.follow.webm",
+      "sha256": "f88c98002791d2d27f7ca79f11a883b3c315817561695f9bd7e7323e8ab8466d",
+      "sourceSha256": "5bf560af550098160a1df6bb3fd7c7c722a5eff27b0c625075b74878f075f89b",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.812822092980241,
+      "rmsDbfs": -38.963980652527425,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.scout.attack",
+      "subset": "unit-scout",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.attack.webm",
+      "sha256": "4114244339675a505dcfe1aa10e86f3be71cb32861129ec8285dbb589e74c08e",
+      "sourceSha256": "74a146ceec23eb5d1b107c2e1a045bf938c3ec6b0abffbea983e19182c909674",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.744526163872429,
+      "rmsDbfs": -36.199779460778565,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.spearman.ready",
+      "subset": "unit-spearman",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.ready.webm",
+      "sha256": "b57c2a9e89874e1af16683457f86d85e565af82b545dd0d17dde4264e44838df",
+      "sourceSha256": "a4215bde63be79d3e25ea287c2487330b93d9d26d33f3bb9e1c0cd28dc27ab4e",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.503295418529525,
+      "rmsDbfs": -37.319547961893974,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.spearman.select",
+      "subset": "unit-spearman",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.select.webm",
+      "sha256": "14959ee7dc7cc5bf58eb9eca635a94795526128a2c0ff0bd1d123d9333e904c4",
+      "sourceSha256": "44ded6035f9140a730f4689adb2690b9ca95ab01b724199dd8ba3ea1bd482204",
+      "durationSeconds": 3.6,
+      "peakDbfs": -15.948935333854008,
+      "rmsDbfs": -37.56328313684384,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.spearman.move",
+      "subset": "unit-spearman",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.move.webm",
+      "sha256": "459d6a8dca3718df285fc6fee8fc41c86c3902d4fe3d1e6802ab75981c8d8a3b",
+      "sourceSha256": "d98af50c5ee7bbe773e6e9389e66723c976e5ae9f918fd3fa3aebf2e37382e29",
+      "durationSeconds": 3.66,
+      "peakDbfs": -15.025476051387743,
+      "rmsDbfs": -38.63215136765986,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.spearman.stop",
+      "subset": "unit-spearman",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.stop.webm",
+      "sha256": "ec6ed219389e31e7fa90574f57ccf2a425b758e8c09e690439f4303440b1b9a2",
+      "sourceSha256": "c047ea5be3b7a0b8da0334c197a6daf965b42e9ce15801175576baba1510a9dd",
+      "durationSeconds": 3.6,
+      "peakDbfs": -14.696892582414966,
+      "rmsDbfs": -37.99685699627545,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.spearman.hold",
+      "subset": "unit-spearman",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.hold.webm",
+      "sha256": "0a91554e891e7ad59241746e4277e08fc57f6660cafcd56a0f841a8a469facb3",
+      "sourceSha256": "81fe9081571b1dd7dca558f03447cb4c38f8de6f831c68ffdf34c2b33c59c0e8",
+      "durationSeconds": 3.66,
+      "peakDbfs": -15.943948697239348,
+      "rmsDbfs": -36.31492228565203,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.spearman.patrol",
+      "subset": "unit-spearman",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.patrol.webm",
+      "sha256": "8f532f1972f506c87228ccef028883405834290ec1cda7931159e98ecfbc9643",
+      "sourceSha256": "275cc157565274e9e7f0ecaa9f73cad8e145c602e8c9d012abd857612af523cf",
+      "durationSeconds": 3.66,
+      "peakDbfs": -16.07791533419097,
+      "rmsDbfs": -36.025909640800926,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.spearman.follow",
+      "subset": "unit-spearman",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.follow.webm",
+      "sha256": "b3122d993204b49cc5b136a860625ac9b297cd250ea31375a18ec68795f682ce",
+      "sourceSha256": "bbc67baeb51fe0d34d338fa7875918a33eb667099fca88bbbec19633fc3f3199",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.408091290771859,
+      "rmsDbfs": -39.07170794554571,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.spearman.attack",
+      "subset": "unit-spearman",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.attack.webm",
+      "sha256": "7793639f5e1dae73f6aa1c48f179a0aab0908742c885b20d944ed2bbae9d16cc",
+      "sourceSha256": "aff6fb898323c40653fdfcfe4d614549a2b1b4b07c37759024c3db3ed7f74dfb",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.776427630791357,
+      "rmsDbfs": -36.771219411902514,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "captured-needs-listening"
+    },
+    {
+      "key": "unit.worker.ready",
+      "subset": "unit-worker",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-worker/unit.worker.ready.webm",
+      "sha256": "7433e7482d9859d7d6760c999f5d31b97156acfc60b9079392d074d02d5d0aa1",
+      "sourceSha256": "bca136fefbbfe8cd7e5c3d4c7f10564d93018956d0ef912d41a618525d9b16b0",
+      "durationSeconds": 3.66,
+      "peakDbfs": -15.019498150506179,
+      "rmsDbfs": -36.59604185888279,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "failed"
+    },
+    {
+      "key": "unit.worker.select",
+      "subset": "unit-worker",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-worker/unit.worker.select.webm",
+      "sha256": "f40cfa2938e0a0dac06d197f12dcf9b03508826a59a799780f5ea91e556d5739",
+      "sourceSha256": "c401b213da3bb10dcf54e1828ef341f69f1d10533cd0ef3a02b93e8e8bb09943",
+      "durationSeconds": 3.6,
+      "peakDbfs": -15.879381603793373,
+      "rmsDbfs": -35.82539116108433,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "failed"
+    },
+    {
+      "key": "unit.worker.move",
+      "subset": "unit-worker",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-worker/unit.worker.move.webm",
+      "sha256": "8ccedf6428dfb5e02dbb76f8dfdbd60207907ef7616fb65ea67e5918dea177c9",
+      "sourceSha256": "ea1f86f49f144a380833cbc0dfeb986fa4e676bd43638735c3b810fce26d75ef",
+      "durationSeconds": 3.66,
+      "peakDbfs": -14.565458849783282,
+      "rmsDbfs": -39.2411128664269,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "failed"
+    },
+    {
+      "key": "unit.worker.stop",
+      "subset": "unit-worker",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-worker/unit.worker.stop.webm",
+      "sha256": "edcb4f648fd7bd409cd69683c632f28792d34741c80bb1f51fd77c2090235b14",
+      "sourceSha256": "076aaee9731bb7aff543d9f9972d0797987f8c6c572ae91630cc6a3a4896474b",
+      "durationSeconds": 3.6,
+      "peakDbfs": -14.555539405444499,
+      "rmsDbfs": -39.54190801857925,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "failed"
+    },
+    {
+      "key": "unit.worker.hold",
+      "subset": "unit-worker",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-worker/unit.worker.hold.webm",
+      "sha256": "3adf1ff3c8d964856775098f792f78d48ec983fe143f2e2d747359c3c3f76d78",
+      "sourceSha256": "fc5c2b23a60d733a6822e8137491c0a1d432bcd95f5cc836cd6d442e29d6ae34",
+      "durationSeconds": 3.66,
+      "peakDbfs": -15.421574152557145,
+      "rmsDbfs": -36.42956456657192,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "failed"
+    },
+    {
+      "key": "unit.worker.build",
+      "subset": "worker-jobs",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/worker-jobs/unit.worker.build.webm",
+      "sha256": "895f348b46eb5db99d1eb7dfa9f19213f04bc5b41da9fcbba0f110c346b798be",
+      "sourceSha256": "25d79461fd67e617518660ac1b212e9202c67b30d48e345319dd1e21c15b97a4",
+      "durationSeconds": 3.48,
+      "peakDbfs": -16.057688141728192,
+      "rmsDbfs": -36.4826755348914,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "failed"
+    },
+    {
+      "key": "unit.worker.gather.food",
+      "subset": "worker-jobs",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/worker-jobs/unit.worker.gather.food.webm",
+      "sha256": "e957a55b1109d4b24f5544a92a7762ec26cf98b5a609987fc70d98f9d2792b61",
+      "sourceSha256": "3fbe9643d8940f210306453ad231c90ba37556a4fc9c6317d0542fdfe24045a5",
+      "durationSeconds": 3.72,
+      "peakDbfs": -14.61380080591426,
+      "rmsDbfs": -36.519702876027324,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "failed"
+    },
+    {
+      "key": "unit.worker.return-cargo",
+      "subset": "worker-jobs",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/worker-jobs/unit.worker.return-cargo.webm",
+      "sha256": "d2705fd73a17ce22038d00be648d44d2ea3db52632ea1ff5be8e0eedf2af61b9",
+      "sourceSha256": "75b87b33de0ba6557ec0477cd84f8c8e66cbf6b335bba9c9fb23920b8e5ad9b1",
+      "durationSeconds": 3.72,
+      "peakDbfs": -14.476589045338077,
+      "rmsDbfs": -36.716945951211954,
+      "nearFullScaleSamples": 0,
+      "validated": true,
+      "ordinaryActionObserved": true,
+      "qualification": "failed"
+    }
+  ],
+  "qualifiedKeys": [
+    "building.barracks.select",
+    "building.archery-range.select",
+    "building.stable.select",
+    "unit.archer.ready",
+    "unit.archer.select",
+    "unit.archer.move",
+    "unit.archer.stop",
+    "unit.archer.hold",
+    "unit.archer.patrol",
+    "unit.archer.follow",
+    "unit.archer.attack",
+    "unit.infantry.ready",
+    "unit.infantry.select",
+    "unit.infantry.move",
+    "unit.infantry.stop",
+    "unit.infantry.hold",
+    "unit.infantry.patrol",
+    "unit.infantry.follow",
+    "unit.infantry.attack",
+    "unit.rider.ready",
+    "unit.rider.select",
+    "unit.rider.move",
+    "unit.rider.stop",
+    "unit.rider.hold",
+    "unit.rider.patrol",
+    "unit.rider.follow",
+    "unit.rider.attack",
+    "unit.scout.ready",
+    "unit.scout.select",
+    "unit.scout.move",
+    "unit.scout.stop",
+    "unit.scout.hold",
+    "unit.scout.patrol",
+    "unit.scout.follow",
+    "unit.scout.attack",
+    "unit.spearman.ready",
+    "unit.spearman.select",
+    "unit.spearman.move",
+    "unit.spearman.stop",
+    "unit.spearman.hold",
+    "unit.spearman.patrol",
+    "unit.spearman.follow",
+    "unit.spearman.attack"
+  ],
+  "missingQualifiedKeys": [
+    "unit.worker.select",
+    "unit.worker.gather.wood",
+    "building.town-center.select",
+    "unit.worker.move",
+    "unit.worker.patrol",
+    "unit.worker.follow",
+    "unit.worker.stop",
+    "unit.worker.hold",
+    "unit.worker.attack",
+    "unit.worker.gather.food",
+    "unit.worker.gather.farm",
+    "unit.worker.gather.sheep-carcass",
+    "unit.worker.gather.fish",
+    "unit.worker.gather.stone",
+    "unit.worker.build",
+    "unit.worker.repair",
+    "unit.worker.ready",
+    "unit.siege-engine.select",
+    "unit.siege-engine.move",
+    "unit.siege-engine.patrol",
+    "unit.siege-engine.follow",
+    "unit.siege-engine.stop",
+    "unit.siege-engine.hold",
+    "unit.siege-engine.attack",
+    "unit.siege-engine.ready",
+    "unit.skiff.select",
+    "unit.skiff.move",
+    "unit.skiff.stop",
+    "unit.skiff.hold",
+    "unit.skiff.gather.food",
+    "unit.skiff.ready",
+    "building.palisade-wall.select",
+    "building.palisade-gate.select",
+    "building.house.select",
+    "building.storehouse.select",
+    "building.mill.select",
+    "building.farm.select",
+    "building.dock.select",
+    "building.watchtower.select",
+    "building.workshop.select",
+    "unit.worker.return-cargo",
+    "unit.skiff.return-cargo"
+  ],
+  "subsets": [
+    {
+      "subset": "buildings-defense",
+      "status": "failed",
+      "qualification": "failed",
+      "issues": [
+        {
+          "stage": "building.watchtower.select",
+          "code": "state-wait-timeout"
+        }
+      ],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "buildings-home",
+      "status": "failed",
+      "qualification": "failed",
+      "issues": [
+        {
+          "stage": "building.house.select",
+          "code": "state-wait-timeout"
+        }
+      ],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "buildings-special",
+      "status": "failed",
+      "qualification": "failed",
+      "issues": [
+        {
+          "stage": "building.farm.select",
+          "code": "state-wait-timeout"
+        }
+      ],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "buildings-training",
+      "status": "captured-needs-listening",
+      "qualification": "captured-needs-listening",
+      "issues": [],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "unit-archer",
+      "status": "captured-needs-listening",
+      "qualification": "captured-needs-listening",
+      "issues": [],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "unit-infantry",
+      "status": "captured-needs-listening",
+      "qualification": "captured-needs-listening",
+      "issues": [],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "unit-rider",
+      "status": "captured-needs-listening",
+      "qualification": "captured-needs-listening",
+      "issues": [],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "unit-scout",
+      "status": "captured-needs-listening",
+      "qualification": "captured-needs-listening",
+      "issues": [],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "unit-siege-engine",
+      "status": "failed",
+      "qualification": "failed",
+      "issues": [
+        {
+          "stage": "train-siege-engine",
+          "code": "state-wait-timeout"
+        }
+      ],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "unit-skiff",
+      "status": "failed",
+      "qualification": "failed",
+      "issues": [
+        {
+          "stage": "train-skiff",
+          "code": "state-wait-timeout"
+        }
+      ],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "unit-spearman",
+      "status": "captured-needs-listening",
+      "qualification": "captured-needs-listening",
+      "issues": [],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "unit-worker",
+      "status": "failed",
+      "qualification": "failed",
+      "issues": [
+        {
+          "stage": "unit.worker.patrol-output",
+          "code": "capture-contract-failed"
+        }
+      ],
+      "browserPassed": false,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "worker-jobs",
+      "status": "failed",
+      "qualification": "failed",
+      "issues": [
+        {
+          "stage": "unit.worker.gather.farm",
+          "code": "state-wait-timeout"
+        }
+      ],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    },
+    {
+      "subset": "worker-repair",
+      "status": "failed",
+      "qualification": "failed",
+      "issues": [
+        {
+          "stage": "build-house",
+          "code": "state-wait-timeout"
+        }
+      ],
+      "browserPassed": true,
+      "sourceCheck": {
+        "beforeMatch": true,
+        "afterMatch": true
+      }
+    }
+  ],
+  "listeningReview": "pending"
+}

@@ -259,3 +259,57 @@ its backdrop while editing, then resumes the live battlefield after close.
 No assets, style, editor layout or gameplay state change. The next ordinary
 open/import/Save & Play run must establish recovery and the returned game frame;
 this source change alone does not close the audio goal.
+
+### First full roster result and targeted follow-through
+
+PR [#658](https://github.com/lbeezr/thousand-unit-skirmish/pull/658) integrated
+Studio recovery at `b3f55928d7410a948a2725b1b910b84b178bd749`. The
+[served identity](qa-evidence/interaction-audio-2026-10-11/roster-staging-b3f55928.json)
+separately verifies its public files and source. Full-roster
+[run 38167751445](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38167751445)
+entered all fourteen authored maps through ordinary Studio and retained **52
+native recordings, with 43 keys passing complete subset qualification**.
+The [decoded-output audit](qa-evidence/interaction-audio-2026-10-11/roster-eighth-cloud/native-audit.json)
+links every clip to its unchanged source hash and keeps all 42 unqualified keys
+explicit. Qualified coverage is all eight supported cues each for Infantry,
+Spearman, Archer, Scout and Rider, plus Barracks, Archery Range and Stable
+selection. The nine other recordings are partial evidence, not qualified keys.
+
+Every saved output decodes to nonzero signal. Peaks range from −19.278 to
+−14.324 dBFS, with no absolute signed-PCM samples at or above 32,700. The
+[six inspected native frames](qa-evidence/interaction-audio-2026-10-11/roster-eighth-cloud/frame-review.json)
+show the ordinary battlefield and expected selected unit/building panel without
+an error overlay. Their small, paid-gameplay fixtures are evidence of the audio
+actions, not a broad visual-quality or performance acceptance. Direct listening
+and perceived mix remain unverified by this assistant.
+
+The first Worker case encountered a canceled room lookup and transport recovery
+around the docs-only `3fe971fe9acf1c3c31a14fca514013749dd5f5e9` rollout. Its
+Patrol recording then lacked a native start and retained reject decisions; that
+receipt does not establish the rejection's exact reason. The later subsets
+passed public source hashes because the served client/audio files were unchanged.
+The separate [3fe971fe identity receipt](qa-evidence/interaction-audio-2026-10-11/roster-staging-3fe971fe.json)
+retains that deployed source; neither receipt exposes a clean release digest.
+
+Other failures exposed capture assumptions: builders obscured the entire normal
+pickable footprint of small buildings; selecting an already-selected producer
+was unnecessary, and its open Research panel hid training controls. The guest
+Repair setup tried to validate an enemy House with the owned-building-only
+observer. The runner now moves builders clear through an ordinary Move order,
+closes the visible Research panel before training, and attacks the disclosed
+House body through native input while still requiring an actual attack receipt,
+real damage, stopped attacker, native Repair output and increased health.
+No picker bypass, audio-play call, state injection or synthetic damage is used.
+A fixed classification of the final order notice helps diagnose the Worker
+retry without retaining arbitrary UI text.
+
+Targeted [run 38168804465](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38168804465)
+at `63104caf` retained three Worker-job clips before reproducing the same Farm
+target failure. Its [native audit](qa-evidence/interaction-audio-2026-10-11/roster-ninth-cloud/native-audit.json)
+keeps all keys unqualified. It did not reach the carcass cooldown correction.
+The next runner waits for applied Stop plus 1,350 ms before carcass Gather, and
+can request an explicit ordered list of failed subsets, preserving the six
+passing subsets. Eighty focused runner, batch, interaction and building-selection
+tests pass after integration with `e128775e`. The temporary room secret still
+needs removal after the remaining captures. Capacity stays eight; saved rooms
+are preserved.

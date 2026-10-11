@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "scope": "renderer-capability-only",
+  "status": "ready",
+  "source": {
+    "revision": "63104cafb28306b9b1d9a44f0d56475baab14767",
+    "dirty": false
+  },
+  "backend": "Chromium/CDP",
+  "platform": "linux",
+  "architecture": "x64",
+  "sandbox": "enabled",
+  "maxLaunchAttempts": 1,
+  "launchAttempts": 1,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/154.0.8037.97",
+    "revision": "@b510e9d7cd3a2fbd78d0ddc42234103206c5f78d",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+    "jsVersion": "15.4.80.20"
+  },
+  "renderer": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "vendor": "WebKit",
+    "name": "WebKit WebGL",
+    "unmaskedName": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+  },
+  "softwareRenderer": true,
+  "webglReadbackPassed": true,
+  "renderedGameFrames": 0,
+  "screenshots": 0,
+  "consoleErrors": [],
+  "issues": [],
+  "cleanup": {
+    "maxAttempts": 3,
+    "attempts": 1,
+    "errors": []
+  }
+}
