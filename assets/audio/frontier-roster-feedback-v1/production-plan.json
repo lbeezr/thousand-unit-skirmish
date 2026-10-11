@@ -1,0 +1,3894 @@
+{
+  "schemaVersion": 1,
+  "flowId": "x90bPcikrdNzZaihoYrq",
+  "flowUrl": "https://elevenlabs.io/app/flows/x90bPcikrdNzZaihoYrq",
+  "status": "All 253 accepted generations completed. Fifteen alternate starts rate-limited without a session; no generation retries. Preserve all completed originals; selected takes remain provisional until deployed listening.",
+  "estimatedCredits": 4247.6720000000005,
+  "estimates": [
+    {
+      "credits": 1147.8852000000002,
+      "price_cents": 20.87064,
+      "generations_count": 4,
+      "currency": "usd",
+      "estimated_runtime_seconds": 3
+    },
+    {
+      "credits": 1115.8884,
+      "price_cents": 20.288880000000002,
+      "generations_count": 4,
+      "currency": "usd",
+      "estimated_runtime_seconds": 3
+    },
+    {
+      "credits": 1379.9148,
+      "price_cents": 25.08936,
+      "generations_count": 4,
+      "currency": "usd",
+      "estimated_runtime_seconds": 3
+    },
+    {
+      "credits": 603.9836,
+      "price_cents": 10.98152,
+      "generations_count": 4,
+      "currency": "usd",
+      "estimated_runtime_seconds": 3
+    }
+  ],
+  "nodes": [
+    {
+      "role": "infantry",
+      "action": "select",
+      "prompt": "Line ready.",
+      "eventKey": "unit.infantry.select",
+      "voiceId": "SOYHLrjzK2X1ezoPC6cr",
+      "voiceName": "Harry - Fierce Warrior",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "PCSBryjiTQkLR2di5jYS",
+      "sessionIds": [
+        "Ha6p8c2BHuntGBUzkQRV",
+        "4iY8i5uEFFH2juJKrUoH",
+        "piNEfiUKRQ5qPu4Jt119",
+        "Jgv1oerNC1cfK59kRWuk"
+      ],
+      "generationIds": [
+        "6rtw3TtrheZtsy2xQvYj",
+        "G9aZCu18uY3Cx3gdPHct",
+        "PW0pLHqVgcZUBlUEbKBQ",
+        "gOrP3l5TLDIKUdZiICCj"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "Ha6p8c2BHuntGBUzkQRV",
+          "generationIds": [
+            "6rtw3TtrheZtsy2xQvYj"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "4iY8i5uEFFH2juJKrUoH",
+          "generationIds": [
+            "G9aZCu18uY3Cx3gdPHct"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "piNEfiUKRQ5qPu4Jt119",
+          "generationIds": [
+            "PW0pLHqVgcZUBlUEbKBQ"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "Jgv1oerNC1cfK59kRWuk",
+          "generationIds": [
+            "gOrP3l5TLDIKUdZiICCj"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "infantry",
+      "action": "move",
+      "prompt": "Moving out.",
+      "eventKey": "unit.infantry.move",
+      "voiceId": "SOYHLrjzK2X1ezoPC6cr",
+      "voiceName": "Harry - Fierce Warrior",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "sCmn3ffqBBgQvsDjMYrQ",
+      "sessionIds": [
+        "0HwVQcuiR25t9L9zmPKv",
+        "RR5QfKROvvixi8twfgKB",
+        "NfifT7K5oVUH5Maibd4c",
+        "LZ4MjlS3JIg8vj5UZgBG"
+      ],
+      "generationIds": [
+        "8hqlCtNS9vioOAe3K48Q",
+        "vYY0kOaiSdThuziUXDBV",
+        "7es0j0Nk7hWl1HwKifQF",
+        "Kg9OW0pVL0mDCKv8NDdA"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "0HwVQcuiR25t9L9zmPKv",
+          "generationIds": [
+            "8hqlCtNS9vioOAe3K48Q"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "RR5QfKROvvixi8twfgKB",
+          "generationIds": [
+            "vYY0kOaiSdThuziUXDBV"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "NfifT7K5oVUH5Maibd4c",
+          "generationIds": [
+            "7es0j0Nk7hWl1HwKifQF"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "LZ4MjlS3JIg8vj5UZgBG",
+          "generationIds": [
+            "Kg9OW0pVL0mDCKv8NDdA"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "infantry",
+      "action": "patrol",
+      "prompt": "I'll patrol here.",
+      "eventKey": "unit.infantry.patrol",
+      "voiceId": "SOYHLrjzK2X1ezoPC6cr",
+      "voiceName": "Harry - Fierce Warrior",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "bDUOo4Ki0VH9JJBp4KUQ",
+      "sessionIds": [
+        "Bq7PQYowCKiEXhk4Gw1L",
+        "jEqY46fz3hMn0kvmy73S",
+        "1pMaJaFPbHBZK0tIQrMX",
+        "s2Rc2VoYp0or3iA5ey8D"
+      ],
+      "generationIds": [
+        "8ImSPSmOExNQbgvHcurl",
+        "xH19kndTvhoXAwEfgY3F",
+        "Qsi7COnxo2TiHw4UnbC3",
+        "xb9G32NMwthyTLy24Ubf"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "Bq7PQYowCKiEXhk4Gw1L",
+          "generationIds": [
+            "8ImSPSmOExNQbgvHcurl"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "jEqY46fz3hMn0kvmy73S",
+          "generationIds": [
+            "xH19kndTvhoXAwEfgY3F"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "1pMaJaFPbHBZK0tIQrMX",
+          "generationIds": [
+            "Qsi7COnxo2TiHw4UnbC3"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "s2Rc2VoYp0or3iA5ey8D",
+          "generationIds": [
+            "xb9G32NMwthyTLy24Ubf"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "infantry",
+      "action": "follow",
+      "prompt": "With you.",
+      "eventKey": "unit.infantry.follow",
+      "voiceId": "SOYHLrjzK2X1ezoPC6cr",
+      "voiceName": "Harry - Fierce Warrior",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "GIbl20txMka0YElOfO8o",
+      "sessionIds": [
+        "by9XdqnYMoJsdDmI1gm1",
+        "V4gGAdW0HxIf80GTQmof",
+        "Qbco7XEktYU7X5O8EeyX",
+        "v1IlTeCoZGrIOLChPYV6"
+      ],
+      "generationIds": [
+        "98JylLaTzms0kK9osqVn",
+        "QHlVQXsnviARLH9eR3qq",
+        "X6iXfMBtwfsAYDSfbW1q",
+        "gY0KUTCxmmcEoBj3FFlN"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "by9XdqnYMoJsdDmI1gm1",
+          "generationIds": [
+            "98JylLaTzms0kK9osqVn"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "V4gGAdW0HxIf80GTQmof",
+          "generationIds": [
+            "QHlVQXsnviARLH9eR3qq"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "Qbco7XEktYU7X5O8EeyX",
+          "generationIds": [
+            "X6iXfMBtwfsAYDSfbW1q"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "v1IlTeCoZGrIOLChPYV6",
+          "generationIds": [
+            "gY0KUTCxmmcEoBj3FFlN"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "infantry",
+      "action": "stop",
+      "prompt": "Stopping.",
+      "eventKey": "unit.infantry.stop",
+      "voiceId": "SOYHLrjzK2X1ezoPC6cr",
+      "voiceName": "Harry - Fierce Warrior",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "zRvpXFcBezITvMU5bWnO",
+      "sessionIds": [
+        "0tg2ijZHKEOkFStKP9RT",
+        "qsANOhsotrpUAs6T6Cve",
+        "wk9eAneH5uoRygQeMCEh",
+        "YwjND8Isvsm79xuA6FA0"
+      ],
+      "generationIds": [
+        "sG0Dui3R9rOa938acRBG",
+        "E1DvbxJbH6zMi1R2vHRt",
+        "0daYBeVf7XwFFFdOsoYp",
+        "tMxZGbbi46qlwU7eNilW"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "0tg2ijZHKEOkFStKP9RT",
+          "generationIds": [
+            "sG0Dui3R9rOa938acRBG"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "qsANOhsotrpUAs6T6Cve",
+          "generationIds": [
+            "E1DvbxJbH6zMi1R2vHRt"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "wk9eAneH5uoRygQeMCEh",
+          "generationIds": [
+            "0daYBeVf7XwFFFdOsoYp"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "YwjND8Isvsm79xuA6FA0",
+          "generationIds": [
+            "tMxZGbbi46qlwU7eNilW"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "infantry",
+      "action": "hold",
+      "prompt": "Holding the line.",
+      "eventKey": "unit.infantry.hold",
+      "voiceId": "SOYHLrjzK2X1ezoPC6cr",
+      "voiceName": "Harry - Fierce Warrior",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "psKvzU4XOfSPRuqG8Cgh",
+      "sessionIds": [
+        "L95DRod1mogMy6NrJ9ro",
+        "XasP54QA0CGmwEu1yVfC",
+        "sTvSOQc437JNAM11e0h3"
+      ],
+      "generationIds": [
+        "URWhPaM3nlfuf90mca5q",
+        "chzAVZG988I5oROfowTU",
+        "IUjEdAphMYuqw5FyFWHg"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "L95DRod1mogMy6NrJ9ro",
+          "generationIds": [
+            "URWhPaM3nlfuf90mca5q"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "XasP54QA0CGmwEu1yVfC",
+          "generationIds": [
+            "chzAVZG988I5oROfowTU"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "sTvSOQc437JNAM11e0h3",
+          "generationIds": [
+            "IUjEdAphMYuqw5FyFWHg"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "infantry",
+      "action": "attack",
+      "prompt": "Into the fight.",
+      "eventKey": "unit.infantry.attack",
+      "voiceId": "SOYHLrjzK2X1ezoPC6cr",
+      "voiceName": "Harry - Fierce Warrior",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "TFW8D2YDwdkfOAbyYWEz",
+      "sessionIds": [
+        "MAh9qJtfJfUFWel7mIIN",
+        "EbfUKaQ1ds4vBfwlmJUG",
+        "3ShXOEWqFoU4F2lu0pmR"
+      ],
+      "generationIds": [
+        "19LxO5aCORtDNp8GZSoX",
+        "b2spMApk97EXJQppXjyt",
+        "DXJ7QZLwXVJKvS0cBCYr"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "MAh9qJtfJfUFWel7mIIN",
+          "generationIds": [
+            "19LxO5aCORtDNp8GZSoX"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "EbfUKaQ1ds4vBfwlmJUG",
+          "generationIds": [
+            "b2spMApk97EXJQppXjyt"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "3ShXOEWqFoU4F2lu0pmR",
+          "generationIds": [
+            "DXJ7QZLwXVJKvS0cBCYr"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "infantry",
+      "action": "ready",
+      "prompt": "Infantry ready.",
+      "eventKey": "unit.infantry.ready",
+      "voiceId": "SOYHLrjzK2X1ezoPC6cr",
+      "voiceName": "Harry - Fierce Warrior",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "pS2IwgWNG1fKy1HBvrD2",
+      "sessionIds": [
+        "mQ3gBkCiDwX4IzH3fk0o",
+        "IeohC6d3E9VZHl3dW1tg",
+        "auWXmjUaHsW4kJkoFLK0"
+      ],
+      "generationIds": [
+        "g6h9wowwKIO5Pi9qhpPV",
+        "UYztIIZ678L3KN3eVlsg",
+        "x8TZQ1dF25PMc26bKgg9"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "mQ3gBkCiDwX4IzH3fk0o",
+          "generationIds": [
+            "g6h9wowwKIO5Pi9qhpPV"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "IeohC6d3E9VZHl3dW1tg",
+          "generationIds": [
+            "UYztIIZ678L3KN3eVlsg"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "auWXmjUaHsW4kJkoFLK0",
+          "generationIds": [
+            "x8TZQ1dF25PMc26bKgg9"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "spearman",
+      "action": "select",
+      "prompt": "Spear ready.",
+      "eventKey": "unit.spearman.select",
+      "voiceId": "pNInz6obpgDQGcFmaJgB",
+      "voiceName": "Adam - Dominant, Firm",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "afFbmodFpSKfSRE600AB",
+      "sessionIds": [
+        "4D3Demdu3BMF4v5z8vM4",
+        "HVNmkQ6CIoH3RnfFtjvo",
+        "dtnuPjsA43MKd1004dMb"
+      ],
+      "generationIds": [
+        "vjZK1eLTs23F6z9CvSAT",
+        "F5pv5aB1mu1Y7IXuPXi1",
+        "JX7ytnkm0SwcnuEUE3Ff"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "4D3Demdu3BMF4v5z8vM4",
+          "generationIds": [
+            "vjZK1eLTs23F6z9CvSAT"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "HVNmkQ6CIoH3RnfFtjvo",
+          "generationIds": [
+            "F5pv5aB1mu1Y7IXuPXi1"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "dtnuPjsA43MKd1004dMb",
+          "generationIds": [
+            "JX7ytnkm0SwcnuEUE3Ff"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "spearman",
+      "action": "move",
+      "prompt": "On the march.",
+      "eventKey": "unit.spearman.move",
+      "voiceId": "pNInz6obpgDQGcFmaJgB",
+      "voiceName": "Adam - Dominant, Firm",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "xOlZjyqtLdS7hRuYEvYF",
+      "sessionIds": [
+        "nYIUtBgLgoJmBwrUiCTD",
+        "bewywrlowFYFCZmwIzxB",
+        "voirk0UmuJgmNTwZlTbl"
+      ],
+      "generationIds": [
+        "ARRFy7kBDSZrCZRcfpAL",
+        "FkjGfHGW515vQR9ZBvF8",
+        "y8GU7qq2rcSWKKpIE8DZ"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "nYIUtBgLgoJmBwrUiCTD",
+          "generationIds": [
+            "ARRFy7kBDSZrCZRcfpAL"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "bewywrlowFYFCZmwIzxB",
+          "generationIds": [
+            "FkjGfHGW515vQR9ZBvF8"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "voirk0UmuJgmNTwZlTbl",
+          "generationIds": [
+            "y8GU7qq2rcSWKKpIE8DZ"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "spearman",
+      "action": "patrol",
+      "prompt": "I'll watch this route.",
+      "eventKey": "unit.spearman.patrol",
+      "voiceId": "pNInz6obpgDQGcFmaJgB",
+      "voiceName": "Adam - Dominant, Firm",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "MxdeqtMbkaptHuxs99Wo",
+      "sessionIds": [
+        "jbwQHPqqBpSkFubEovFG",
+        "WBSX9es9aCR8yNj0PEJW",
+        "gq5Eno31gsHTM9iBRpw3"
+      ],
+      "generationIds": [
+        "uVn3GbZu6eagzWu75xAh",
+        "WlIjGYmk7O0o3dfRIdIE",
+        "5NYLuHbVsZGrd1vtwmI9"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "jbwQHPqqBpSkFubEovFG",
+          "generationIds": [
+            "uVn3GbZu6eagzWu75xAh"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "WBSX9es9aCR8yNj0PEJW",
+          "generationIds": [
+            "WlIjGYmk7O0o3dfRIdIE"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "gq5Eno31gsHTM9iBRpw3",
+          "generationIds": [
+            "5NYLuHbVsZGrd1vtwmI9"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "spearman",
+      "action": "follow",
+      "prompt": "Following you.",
+      "eventKey": "unit.spearman.follow",
+      "voiceId": "pNInz6obpgDQGcFmaJgB",
+      "voiceName": "Adam - Dominant, Firm",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "kzTqTmPHXDMkauFwOuFE",
+      "sessionIds": [
+        "N5yrSJbaMTGphXbMhn4R",
+        "8yTPSi2f1lcgX3E1jq2n",
+        "GQcHCCDwXc7lIUdyoTf3"
+      ],
+      "generationIds": [
+        "4B1Z5DDyPrkabXMUstaw",
+        "8ApUvDgqeDFGWOwBKIDF",
+        "4zbgmHHJFAM4S5jUYciy"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "N5yrSJbaMTGphXbMhn4R",
+          "generationIds": [
+            "4B1Z5DDyPrkabXMUstaw"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "8yTPSi2f1lcgX3E1jq2n",
+          "generationIds": [
+            "8ApUvDgqeDFGWOwBKIDF"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "GQcHCCDwXc7lIUdyoTf3",
+          "generationIds": [
+            "4zbgmHHJFAM4S5jUYciy"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "spearman",
+      "action": "stop",
+      "prompt": "Stopping here.",
+      "eventKey": "unit.spearman.stop",
+      "voiceId": "pNInz6obpgDQGcFmaJgB",
+      "voiceName": "Adam - Dominant, Firm",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "ZBo1Ttf3zP9s3UcSqed9",
+      "sessionIds": [
+        "oyUdamh38lNoqwqgZDez",
+        "NNyl4uqa3Y8cnxC7X8Qi",
+        "sGwt7AZ3Y1re7JzQczfN"
+      ],
+      "generationIds": [
+        "rIjs8KcbmWwE5JWk3czL",
+        "TEn0i9yBVVbS5JIFPdYm",
+        "UMg2qqiizh765IE3wMR6"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "oyUdamh38lNoqwqgZDez",
+          "generationIds": [
+            "rIjs8KcbmWwE5JWk3czL"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "NNyl4uqa3Y8cnxC7X8Qi",
+          "generationIds": [
+            "TEn0i9yBVVbS5JIFPdYm"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "sGwt7AZ3Y1re7JzQczfN",
+          "generationIds": [
+            "UMg2qqiizh765IE3wMR6"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "spearman",
+      "action": "hold",
+      "prompt": "Holding firm.",
+      "eventKey": "unit.spearman.hold",
+      "voiceId": "pNInz6obpgDQGcFmaJgB",
+      "voiceName": "Adam - Dominant, Firm",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "xbyefb9j6H6IyuhVyyDz",
+      "sessionIds": [
+        "okv0AnFW24z4aRH3ukDO",
+        "HJedTGzssT4FTjc6PfeS",
+        "Wmk5MPdKQ2wqb1SD79Xr"
+      ],
+      "generationIds": [
+        "KxFcBZuorDXyMml25yJZ",
+        "qzTSyWnjjMFCjBgwMnhd",
+        "iIhBUqMzgmJ6wD7MuscW"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "okv0AnFW24z4aRH3ukDO",
+          "generationIds": [
+            "KxFcBZuorDXyMml25yJZ"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "HJedTGzssT4FTjc6PfeS",
+          "generationIds": [
+            "qzTSyWnjjMFCjBgwMnhd"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "Wmk5MPdKQ2wqb1SD79Xr",
+          "generationIds": [
+            "iIhBUqMzgmJ6wD7MuscW"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "spearman",
+      "action": "attack",
+      "prompt": "Spears forward.",
+      "eventKey": "unit.spearman.attack",
+      "voiceId": "pNInz6obpgDQGcFmaJgB",
+      "voiceName": "Adam - Dominant, Firm",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "jMZU1Zgef6xQALdyKPzf",
+      "sessionIds": [
+        "GJqSYi3tSLznZYQf3W3x",
+        "P8kWpCbN38HPcqkBkxys",
+        "kSJPWwSZXf9mh1QukCy1"
+      ],
+      "generationIds": [
+        "kasCRwAQ7PPZjg7Wr6WV",
+        "5Lp3V4X7pSJMsnHY1ADU",
+        "uO01KYFUQLuMcu7PWCRl"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "GJqSYi3tSLznZYQf3W3x",
+          "generationIds": [
+            "kasCRwAQ7PPZjg7Wr6WV"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "P8kWpCbN38HPcqkBkxys",
+          "generationIds": [
+            "5Lp3V4X7pSJMsnHY1ADU"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "kSJPWwSZXf9mh1QukCy1",
+          "generationIds": [
+            "uO01KYFUQLuMcu7PWCRl"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "spearman",
+      "action": "ready",
+      "prompt": "Spearman ready.",
+      "eventKey": "unit.spearman.ready",
+      "voiceId": "pNInz6obpgDQGcFmaJgB",
+      "voiceName": "Adam - Dominant, Firm",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "uHcQvV83Xr7Aorb48xpZ",
+      "sessionIds": [
+        "y507l0YXYsxukGwTZtxE",
+        "cHaNe7JmFZ0rJsgG4Gao",
+        "ca1RKSKVQRQv0mP7FASH"
+      ],
+      "generationIds": [
+        "pgmrKIQARiMhXu3Dz46O",
+        "asit5hdRC0Hb1w9Smu3V",
+        "DE9e1XEYvIiHbwhPv8Fa"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "y507l0YXYsxukGwTZtxE",
+          "generationIds": [
+            "pgmrKIQARiMhXu3Dz46O"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "cHaNe7JmFZ0rJsgG4Gao",
+          "generationIds": [
+            "asit5hdRC0Hb1w9Smu3V"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "ca1RKSKVQRQv0mP7FASH",
+          "generationIds": [
+            "DE9e1XEYvIiHbwhPv8Fa"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "archer",
+      "action": "select",
+      "prompt": "Bow at hand.",
+      "eventKey": "unit.archer.select",
+      "voiceId": "onwK4e9ZLuTAKqWW03F9",
+      "voiceName": "Daniel - Steady Broadcaster",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "Nw1EocoS8T2Um9bdKrZD",
+      "sessionIds": [
+        "OnXulwNjt8weYYRCeCWi",
+        "JAUiYzNXc1wdTnkdjhgZ",
+        "VxPDqVpoSoHTf0QWTxEd"
+      ],
+      "generationIds": [
+        "GBMpoBGWsH18ZIwNZvII",
+        "zyYn9tfXb89Vvvy1xiid",
+        "oeGs4awuOSIrwiawVEAE"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "OnXulwNjt8weYYRCeCWi",
+          "generationIds": [
+            "GBMpoBGWsH18ZIwNZvII"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "JAUiYzNXc1wdTnkdjhgZ",
+          "generationIds": [
+            "zyYn9tfXb89Vvvy1xiid"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "VxPDqVpoSoHTf0QWTxEd",
+          "generationIds": [
+            "oeGs4awuOSIrwiawVEAE"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "archer",
+      "action": "move",
+      "prompt": "Moving to position.",
+      "eventKey": "unit.archer.move",
+      "voiceId": "onwK4e9ZLuTAKqWW03F9",
+      "voiceName": "Daniel - Steady Broadcaster",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "dk2ELxZoq6aX495Xjyfv",
+      "sessionIds": [
+        "COTRua0bJfxQvK3YK0tp",
+        "JNhSAwZnVvUmwMt3uejX",
+        "DMIYNTEK2VsSqbyrXbzm"
+      ],
+      "generationIds": [
+        "15eu4kbfYlwNyIDo1Hma",
+        "URUKbEsR5BkyZZgD18Wm",
+        "9cOCYpMUmpxwq4VkWGUY"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "COTRua0bJfxQvK3YK0tp",
+          "generationIds": [
+            "15eu4kbfYlwNyIDo1Hma"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "JNhSAwZnVvUmwMt3uejX",
+          "generationIds": [
+            "URUKbEsR5BkyZZgD18Wm"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "DMIYNTEK2VsSqbyrXbzm",
+          "generationIds": [
+            "9cOCYpMUmpxwq4VkWGUY"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "archer",
+      "action": "patrol",
+      "prompt": "I'll watch the path.",
+      "eventKey": "unit.archer.patrol",
+      "voiceId": "onwK4e9ZLuTAKqWW03F9",
+      "voiceName": "Daniel - Steady Broadcaster",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "HYS3X3a5mAu2VzF1sIkq",
+      "sessionIds": [
+        "CiZwfbwlZketEzAdkV5X",
+        "DbY9J581n4RiqTn4f39g",
+        "CalZPCTm06udey5UWDMo"
+      ],
+      "generationIds": [
+        "1f0BnJKS39OXFVTWjIoQ",
+        "N6QDM2amAAQ7SwYJnX81",
+        "tNVD0vwzzYBSHlxKUX2O"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "CiZwfbwlZketEzAdkV5X",
+          "generationIds": [
+            "1f0BnJKS39OXFVTWjIoQ"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "DbY9J581n4RiqTn4f39g",
+          "generationIds": [
+            "N6QDM2amAAQ7SwYJnX81"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "CalZPCTm06udey5UWDMo",
+          "generationIds": [
+            "tNVD0vwzzYBSHlxKUX2O"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "archer",
+      "action": "follow",
+      "prompt": "On your trail.",
+      "eventKey": "unit.archer.follow",
+      "voiceId": "onwK4e9ZLuTAKqWW03F9",
+      "voiceName": "Daniel - Steady Broadcaster",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "9yIi9HPiOyAMoO88CJIX",
+      "sessionIds": [
+        "Ztk1n6EWNFnw1wDQLc6O",
+        "lxgNwnyG1WQIDSYhugbp",
+        "DqLWkVhtmc2cAwoFymGK"
+      ],
+      "generationIds": [
+        "TrSwGOfBt6i71jUYeVqF",
+        "woaRzWEIODqPeDkvbGVv",
+        "nCS59y1DI4BwimkxiwvY"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "Ztk1n6EWNFnw1wDQLc6O",
+          "generationIds": [
+            "TrSwGOfBt6i71jUYeVqF"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "lxgNwnyG1WQIDSYhugbp",
+          "generationIds": [
+            "woaRzWEIODqPeDkvbGVv"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "DqLWkVhtmc2cAwoFymGK",
+          "generationIds": [
+            "nCS59y1DI4BwimkxiwvY"
+          ]
+        },
+        {
+          "take": 4,
+          "success": false,
+          "errorCode": "rate_limit_exceeded"
+        }
+      ]
+    },
+    {
+      "role": "archer",
+      "action": "stop",
+      "prompt": "Stopping.",
+      "eventKey": "unit.archer.stop",
+      "voiceId": "onwK4e9ZLuTAKqWW03F9",
+      "voiceName": "Daniel - Steady Broadcaster",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "1nLtSHhEo2ZITVxVWTmM",
+      "sessionIds": [
+        "ELVEVblZ6XLZ6HvEpapr",
+        "pqVKq1hsH3MB0hrJtLcd",
+        "48Wca4CpmFLfzyMRbuvI",
+        "TF1rexVDKe8Crxz0IL4s"
+      ],
+      "generationIds": [
+        "3PA550UMPjPNyATSZDMe",
+        "eZcUt0oJ3WXYbI5oyncd",
+        "NYOVZx7lI6vBukdSoHWj",
+        "s8E7XxlWoFOasjoAnutk"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "ELVEVblZ6XLZ6HvEpapr",
+          "generationIds": [
+            "3PA550UMPjPNyATSZDMe"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "pqVKq1hsH3MB0hrJtLcd",
+          "generationIds": [
+            "eZcUt0oJ3WXYbI5oyncd"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "48Wca4CpmFLfzyMRbuvI",
+          "generationIds": [
+            "NYOVZx7lI6vBukdSoHWj"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "TF1rexVDKe8Crxz0IL4s",
+          "generationIds": [
+            "s8E7XxlWoFOasjoAnutk"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "archer",
+      "action": "hold",
+      "prompt": "Holding position.",
+      "eventKey": "unit.archer.hold",
+      "voiceId": "onwK4e9ZLuTAKqWW03F9",
+      "voiceName": "Daniel - Steady Broadcaster",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "Rnfe62Vcxg3olYiUiQJT",
+      "sessionIds": [
+        "EEE5D3CXcgqQBKMsQZ8b",
+        "xImOaruL9IWo5lG4Q0wS",
+        "kR19TFf6DLOzjvYoZ1Gr",
+        "S3L5bsF6TThc8zXQKl8p"
+      ],
+      "generationIds": [
+        "uJx7FU4Q5fbpECKp1VrV",
+        "KhunKktRi56D5XMB8ak0",
+        "9MQTkQEbqrAv3VKS4i8n",
+        "yd0fpBHxRwEdWGlYgK32"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "EEE5D3CXcgqQBKMsQZ8b",
+          "generationIds": [
+            "uJx7FU4Q5fbpECKp1VrV"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "xImOaruL9IWo5lG4Q0wS",
+          "generationIds": [
+            "KhunKktRi56D5XMB8ak0"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "kR19TFf6DLOzjvYoZ1Gr",
+          "generationIds": [
+            "9MQTkQEbqrAv3VKS4i8n"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "S3L5bsF6TThc8zXQKl8p",
+          "generationIds": [
+            "yd0fpBHxRwEdWGlYgK32"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "archer",
+      "action": "attack",
+      "prompt": "Taking aim.",
+      "eventKey": "unit.archer.attack",
+      "voiceId": "onwK4e9ZLuTAKqWW03F9",
+      "voiceName": "Daniel - Steady Broadcaster",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "6st0SpAgvd7NxiB2QKgj",
+      "sessionIds": [
+        "SaankFLmqWyxZXp5utMK",
+        "gLzvuz1MAw6iSe4u40ku",
+        "hjGf0u6n5zJScQAYvcli",
+        "ycsz5s9197zazWPVGGeg"
+      ],
+      "generationIds": [
+        "Znk7Acvkp7uzW3sYkKxi",
+        "HjhVcUNFZl7HOhgIUh3t",
+        "TeR1DM0zUtO7zdqcKyT9",
+        "VUou20YkBw6MaazXO35S"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "SaankFLmqWyxZXp5utMK",
+          "generationIds": [
+            "Znk7Acvkp7uzW3sYkKxi"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "gLzvuz1MAw6iSe4u40ku",
+          "generationIds": [
+            "HjhVcUNFZl7HOhgIUh3t"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "hjGf0u6n5zJScQAYvcli",
+          "generationIds": [
+            "TeR1DM0zUtO7zdqcKyT9"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "ycsz5s9197zazWPVGGeg",
+          "generationIds": [
+            "VUou20YkBw6MaazXO35S"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "archer",
+      "action": "ready",
+      "prompt": "Archer ready.",
+      "eventKey": "unit.archer.ready",
+      "voiceId": "onwK4e9ZLuTAKqWW03F9",
+      "voiceName": "Daniel - Steady Broadcaster",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "hiLQxIFnZeKbEdBUIDIO",
+      "sessionIds": [
+        "7vin7Wxg0tkRfcCl82IS",
+        "DfkkS4QDBliMMe6PnZwo",
+        "hfdfwlNT5WzvOMgWFS1a",
+        "wUrFGnpDQ7NFXcdw5aKs"
+      ],
+      "generationIds": [
+        "gkMXzkQfwpQQKeLTmdBh",
+        "5S0dfR3KQ7RtROj6YNBX",
+        "uJdk15IbwCUKQFwkFU3R",
+        "jYBOo0mln0AI4VH1UFOd"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "7vin7Wxg0tkRfcCl82IS",
+          "generationIds": [
+            "gkMXzkQfwpQQKeLTmdBh"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "DfkkS4QDBliMMe6PnZwo",
+          "generationIds": [
+            "5S0dfR3KQ7RtROj6YNBX"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "hfdfwlNT5WzvOMgWFS1a",
+          "generationIds": [
+            "uJdk15IbwCUKQFwkFU3R"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "wUrFGnpDQ7NFXcdw5aKs",
+          "generationIds": [
+            "jYBOo0mln0AI4VH1UFOd"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "scout",
+      "action": "select",
+      "prompt": "Where next?",
+      "eventKey": "unit.scout.select",
+      "voiceId": "TX3LPaxmHKxFdv7VOQHJ",
+      "voiceName": "Liam - Energetic, Social Media Creator",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "3vqLfrY2D7BFSLPMhrAQ",
+      "sessionIds": [
+        "P7dctIuXmdyWMmktlqsH",
+        "xgECoTlFTVnYNwwI1Neo",
+        "glr8Mqh2cG9TgNXO1WCw",
+        "m5hHRMG0azohqAS58KQn"
+      ],
+      "generationIds": [
+        "XT4BJTxP0UDOt8utMM4O",
+        "4w8tTE2PkpHSl9SqvByT",
+        "wbijogpAwV8pejRona7A",
+        "OnhnR3QscVXaIVQawL1k"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "P7dctIuXmdyWMmktlqsH",
+          "generationIds": [
+            "XT4BJTxP0UDOt8utMM4O"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "xgECoTlFTVnYNwwI1Neo",
+          "generationIds": [
+            "4w8tTE2PkpHSl9SqvByT"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "glr8Mqh2cG9TgNXO1WCw",
+          "generationIds": [
+            "wbijogpAwV8pejRona7A"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "m5hHRMG0azohqAS58KQn",
+          "generationIds": [
+            "OnhnR3QscVXaIVQawL1k"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "scout",
+      "action": "move",
+      "prompt": "On my way.",
+      "eventKey": "unit.scout.move",
+      "voiceId": "TX3LPaxmHKxFdv7VOQHJ",
+      "voiceName": "Liam - Energetic, Social Media Creator",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "MuiheowGU7cGtceF2SN6",
+      "sessionIds": [
+        "KPddHKJaRf6H25MUgUmn",
+        "U2XRDLNs9p7ve2WAJS9r",
+        "sONgkeQTtzE9pcXzXana",
+        "XVaSUIuQaFgVBdBIu6en"
+      ],
+      "generationIds": [
+        "I0QQ57TLnasuzBw6N2rU",
+        "FkckokP8sETFAiyYIkkE",
+        "fsVpiIUIiSj6RkmAQnjv",
+        "4gAJ33wEfpTzG61JV1ju"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "KPddHKJaRf6H25MUgUmn",
+          "generationIds": [
+            "I0QQ57TLnasuzBw6N2rU"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "U2XRDLNs9p7ve2WAJS9r",
+          "generationIds": [
+            "FkckokP8sETFAiyYIkkE"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "sONgkeQTtzE9pcXzXana",
+          "generationIds": [
+            "fsVpiIUIiSj6RkmAQnjv"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "XVaSUIuQaFgVBdBIu6en",
+          "generationIds": [
+            "4gAJ33wEfpTzG61JV1ju"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "scout",
+      "action": "patrol",
+      "prompt": "I'll scout this route.",
+      "eventKey": "unit.scout.patrol",
+      "voiceId": "TX3LPaxmHKxFdv7VOQHJ",
+      "voiceName": "Liam - Energetic, Social Media Creator",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "Ouhn7G1ZlBavlc7rzVYN",
+      "sessionIds": [
+        "g4jZdMtYzJ7EtMthVbBY",
+        "xH3ONEfzrRwREXNxpuFq",
+        "0ELUEUK5G8x3aCJ1DjUy",
+        "5UxOFJe34rzwS2GMeuwc"
+      ],
+      "generationIds": [
+        "7JDk2S1UpyeXLlYPByuu",
+        "9aO3GczUvq1ZQIDokY0T",
+        "cS8Q2pPA97L4GF2dOQsV",
+        "GMcw3fvo5mdoKTWjrG4A"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "g4jZdMtYzJ7EtMthVbBY",
+          "generationIds": [
+            "7JDk2S1UpyeXLlYPByuu"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "xH3ONEfzrRwREXNxpuFq",
+          "generationIds": [
+            "9aO3GczUvq1ZQIDokY0T"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "0ELUEUK5G8x3aCJ1DjUy",
+          "generationIds": [
+            "cS8Q2pPA97L4GF2dOQsV"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "5UxOFJe34rzwS2GMeuwc",
+          "generationIds": [
+            "GMcw3fvo5mdoKTWjrG4A"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "scout",
+      "action": "follow",
+      "prompt": "I'll follow.",
+      "eventKey": "unit.scout.follow",
+      "voiceId": "TX3LPaxmHKxFdv7VOQHJ",
+      "voiceName": "Liam - Energetic, Social Media Creator",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "k7PhmiWap4ovDG4igQpL",
+      "sessionIds": [
+        "E6AU0Dw9jOXd7kidq86M",
+        "rfwWEx9M4rAPOretB4c1",
+        "tE9srdUmLxRERMWHWXw8",
+        "HBNYfzxXIv1LHDWShKxS"
+      ],
+      "generationIds": [
+        "ykoMFL9U4DehQANAS7HL",
+        "L7q31xWhw0AYfAUA9jXl",
+        "qg6xDdOA8eHK4XjwgxdC",
+        "BnSLWSKEYeGERAK6SVCH"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "E6AU0Dw9jOXd7kidq86M",
+          "generationIds": [
+            "ykoMFL9U4DehQANAS7HL"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "rfwWEx9M4rAPOretB4c1",
+          "generationIds": [
+            "L7q31xWhw0AYfAUA9jXl"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "tE9srdUmLxRERMWHWXw8",
+          "generationIds": [
+            "qg6xDdOA8eHK4XjwgxdC"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "HBNYfzxXIv1LHDWShKxS",
+          "generationIds": [
+            "BnSLWSKEYeGERAK6SVCH"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "scout",
+      "action": "stop",
+      "prompt": "Stopping here.",
+      "eventKey": "unit.scout.stop",
+      "voiceId": "TX3LPaxmHKxFdv7VOQHJ",
+      "voiceName": "Liam - Energetic, Social Media Creator",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "reAuyhuQ6PLD9W2hJuqT",
+      "sessionIds": [
+        "r0EQekaaStJI25I0ujYz",
+        "vUHkaDRV0zU5PkFadCQC",
+        "lOFx37s6JlboD6AuGMI0",
+        "SznQNrtniacj7sK5blch"
+      ],
+      "generationIds": [
+        "qEUZgYHWYOXoq6jyJXO5",
+        "rmg5EuQ5vtCThXYVJU36",
+        "2Vg0nqLzQoqaHs5iYitw",
+        "FJdrnmy2QqMLHfjfZZzR"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "r0EQekaaStJI25I0ujYz",
+          "generationIds": [
+            "qEUZgYHWYOXoq6jyJXO5"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "vUHkaDRV0zU5PkFadCQC",
+          "generationIds": [
+            "rmg5EuQ5vtCThXYVJU36"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "lOFx37s6JlboD6AuGMI0",
+          "generationIds": [
+            "2Vg0nqLzQoqaHs5iYitw"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "SznQNrtniacj7sK5blch",
+          "generationIds": [
+            "FJdrnmy2QqMLHfjfZZzR"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "scout",
+      "action": "hold",
+      "prompt": "I'll keep watch.",
+      "eventKey": "unit.scout.hold",
+      "voiceId": "TX3LPaxmHKxFdv7VOQHJ",
+      "voiceName": "Liam - Energetic, Social Media Creator",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "tmue3dWkxfcOYtnNiBTg",
+      "sessionIds": [
+        "TGhGQ9ibBpSzOquZwIep",
+        "pbxVRI4mWR9NQMVLhDlq",
+        "em0qNkJCLEFnontAWJqO",
+        "U1qTgJD5boqqVNrgOtyb"
+      ],
+      "generationIds": [
+        "H4gUNNeVNMVBDnqOePdq",
+        "QJUFpFP6Jrg1CK2F2yAh",
+        "uU9GGZz3Tr44aGnFNEhM",
+        "oNC8YLX62WANeqTRnZkJ"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "TGhGQ9ibBpSzOquZwIep",
+          "generationIds": [
+            "H4gUNNeVNMVBDnqOePdq"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "pbxVRI4mWR9NQMVLhDlq",
+          "generationIds": [
+            "QJUFpFP6Jrg1CK2F2yAh"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "em0qNkJCLEFnontAWJqO",
+          "generationIds": [
+            "uU9GGZz3Tr44aGnFNEhM"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "U1qTgJD5boqqVNrgOtyb",
+          "generationIds": [
+            "oNC8YLX62WANeqTRnZkJ"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "scout",
+      "action": "attack",
+      "prompt": "Moving to attack.",
+      "eventKey": "unit.scout.attack",
+      "voiceId": "TX3LPaxmHKxFdv7VOQHJ",
+      "voiceName": "Liam - Energetic, Social Media Creator",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "3YGTcafOFPKJfwoJWV3D",
+      "sessionIds": [
+        "D9PpxZ7a8OtnsC4VwnJv",
+        "0I6BWIBcPZPJhDWWfsSj",
+        "r2IEFdAtFnkJeplRlG6V",
+        "1EYH5MVXwGCddnmr98Jz"
+      ],
+      "generationIds": [
+        "QH6ZCVtnBJX3qMVE4p1M",
+        "6V846icRzVJLWEhgnkgA",
+        "JF8BViInPteSAv5U4jwx",
+        "W9UlRAO3Zno2Mk7vGS2x"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "D9PpxZ7a8OtnsC4VwnJv",
+          "generationIds": [
+            "QH6ZCVtnBJX3qMVE4p1M"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "0I6BWIBcPZPJhDWWfsSj",
+          "generationIds": [
+            "6V846icRzVJLWEhgnkgA"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "r2IEFdAtFnkJeplRlG6V",
+          "generationIds": [
+            "JF8BViInPteSAv5U4jwx"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "1EYH5MVXwGCddnmr98Jz",
+          "generationIds": [
+            "W9UlRAO3Zno2Mk7vGS2x"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "scout",
+      "action": "ready",
+      "prompt": "Scout ready.",
+      "eventKey": "unit.scout.ready",
+      "voiceId": "TX3LPaxmHKxFdv7VOQHJ",
+      "voiceName": "Liam - Energetic, Social Media Creator",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "oyieO8DL3ocm0FguzXAp",
+      "sessionIds": [
+        "hMU5eGx5rKfKPLbcCYmE",
+        "m0nGDm7AVZup2hlnzbjy",
+        "bn3LtlZLCGy7Y1jJ2V8Z",
+        "lv6JUWAxbh7TkmSWF534"
+      ],
+      "generationIds": [
+        "5TXpGR1oVyguc9HUpgul",
+        "pB6qCHfvHLxJCUwMzaMM",
+        "i5ZLFnukOUUQxdh3CQ9g",
+        "LPS1w6xv9jIFBC0TBmlW"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "hMU5eGx5rKfKPLbcCYmE",
+          "generationIds": [
+            "5TXpGR1oVyguc9HUpgul"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "m0nGDm7AVZup2hlnzbjy",
+          "generationIds": [
+            "pB6qCHfvHLxJCUwMzaMM"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "bn3LtlZLCGy7Y1jJ2V8Z",
+          "generationIds": [
+            "i5ZLFnukOUUQxdh3CQ9g"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "lv6JUWAxbh7TkmSWF534",
+          "generationIds": [
+            "LPS1w6xv9jIFBC0TBmlW"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "rider",
+      "action": "select",
+      "prompt": "Ready to ride.",
+      "eventKey": "unit.rider.select",
+      "voiceId": "IKne3meq5aSn9XLyUdCD",
+      "voiceName": "Charlie - Deep, Confident, Energetic",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "OpNIxhPCdmKzl2NhT34U",
+      "sessionIds": [
+        "vu3YOH4Fz553nZd2mh0T",
+        "TgxjRQW0vjfWx9xvGgnr",
+        "rbVnJgijPv14F1oIrOza",
+        "QZbyfeRwH2PbkeIgpaY0"
+      ],
+      "generationIds": [
+        "F29OyAVk1Bd8sj3oetCc",
+        "wFhPEfjsewTpYhZAQ7Bd",
+        "SE89Gs6WNx8XP4WuF7Sj",
+        "A9Hmw135yXmYr1AxKvYP"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "vu3YOH4Fz553nZd2mh0T",
+          "generationIds": [
+            "F29OyAVk1Bd8sj3oetCc"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "TgxjRQW0vjfWx9xvGgnr",
+          "generationIds": [
+            "wFhPEfjsewTpYhZAQ7Bd"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "rbVnJgijPv14F1oIrOza",
+          "generationIds": [
+            "SE89Gs6WNx8XP4WuF7Sj"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "QZbyfeRwH2PbkeIgpaY0",
+          "generationIds": [
+            "A9Hmw135yXmYr1AxKvYP"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "rider",
+      "action": "move",
+      "prompt": "Riding out.",
+      "eventKey": "unit.rider.move",
+      "voiceId": "IKne3meq5aSn9XLyUdCD",
+      "voiceName": "Charlie - Deep, Confident, Energetic",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "jXGsYmSRyVA4uv3pW2gS",
+      "sessionIds": [
+        "TPZuVe05h9qiS8WjjUot",
+        "96V5rdurKSTev8y1lKx0",
+        "0i8tvMvvQ33TxUjjGKJ6",
+        "PWU6564itn0WwyNhj1BC"
+      ],
+      "generationIds": [
+        "wfFsbHJWmfMmMUKHGZHj",
+        "Esawh9Ao2W214EpEh05b",
+        "UyI3CmeuopHi3mR91rK3",
+        "unmlOUvwKC7xenvTffxX"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "TPZuVe05h9qiS8WjjUot",
+          "generationIds": [
+            "wfFsbHJWmfMmMUKHGZHj"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "96V5rdurKSTev8y1lKx0",
+          "generationIds": [
+            "Esawh9Ao2W214EpEh05b"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "0i8tvMvvQ33TxUjjGKJ6",
+          "generationIds": [
+            "UyI3CmeuopHi3mR91rK3"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "PWU6564itn0WwyNhj1BC",
+          "generationIds": [
+            "unmlOUvwKC7xenvTffxX"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "rider",
+      "action": "patrol",
+      "prompt": "I'll ride this route.",
+      "eventKey": "unit.rider.patrol",
+      "voiceId": "IKne3meq5aSn9XLyUdCD",
+      "voiceName": "Charlie - Deep, Confident, Energetic",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "8ieKcx1JrxHmu3n7ay8h",
+      "sessionIds": [
+        "aT9qXLWYKDCsHnax39WA",
+        "JB87oj33tZg3taDsb0SC",
+        "8fBBmqEKjCBA1ONaF8A1",
+        "neVNE7oeA9LeaYQyHLs9"
+      ],
+      "generationIds": [
+        "fHJVxtvCnZ71QPLlXN8H",
+        "aZL0dFQBYSqfN4w6LTSP",
+        "0CJWjXeU8mPYSZtmCIvZ",
+        "aI2zl7FCXlh5Izt6fXyV"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "aT9qXLWYKDCsHnax39WA",
+          "generationIds": [
+            "fHJVxtvCnZ71QPLlXN8H"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "JB87oj33tZg3taDsb0SC",
+          "generationIds": [
+            "aZL0dFQBYSqfN4w6LTSP"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "8fBBmqEKjCBA1ONaF8A1",
+          "generationIds": [
+            "0CJWjXeU8mPYSZtmCIvZ"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "neVNE7oeA9LeaYQyHLs9",
+          "generationIds": [
+            "aI2zl7FCXlh5Izt6fXyV"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "rider",
+      "action": "follow",
+      "prompt": "Riding with you.",
+      "eventKey": "unit.rider.follow",
+      "voiceId": "IKne3meq5aSn9XLyUdCD",
+      "voiceName": "Charlie - Deep, Confident, Energetic",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "csTZ52gWbu0x6eyLPDxC",
+      "sessionIds": [
+        "jvYhMTcKDScftMxv9mhi",
+        "jaUGioDuJ45KBA2DkuDV",
+        "MNkLGUm6pfb2Cdylfims",
+        "yujNPKxUbb4vadbMXjij"
+      ],
+      "generationIds": [
+        "axKvpPfnYVATMgiayu1X",
+        "xfREpLUpaOYXJFA6RPVR",
+        "2AXKPSXBdDpCDGWCjDJ5",
+        "W9gVw9mKdeQXZAI5n8eV"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "jvYhMTcKDScftMxv9mhi",
+          "generationIds": [
+            "axKvpPfnYVATMgiayu1X"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "jaUGioDuJ45KBA2DkuDV",
+          "generationIds": [
+            "xfREpLUpaOYXJFA6RPVR"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "MNkLGUm6pfb2Cdylfims",
+          "generationIds": [
+            "2AXKPSXBdDpCDGWCjDJ5"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "yujNPKxUbb4vadbMXjij",
+          "generationIds": [
+            "W9gVw9mKdeQXZAI5n8eV"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "rider",
+      "action": "stop",
+      "prompt": "Reining in.",
+      "eventKey": "unit.rider.stop",
+      "voiceId": "IKne3meq5aSn9XLyUdCD",
+      "voiceName": "Charlie - Deep, Confident, Energetic",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "5Pc53HfY6CAoerwEdvoI",
+      "sessionIds": [
+        "xxgTuexy9repSaYQs9yb",
+        "C8HZHKedsFNpBQFooleb",
+        "5YGe69cGJmajn2XICtTw",
+        "AMTEDZNqqk1oEFVX5SFS"
+      ],
+      "generationIds": [
+        "dj6UnvMAlZR2GYwSP3Rr",
+        "gr6d0Lj8TKjXbDQA6FWH",
+        "KAw5GoNsIEj35AsDJiAR",
+        "G40s8NnbCKH5zirb4Pa8"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "xxgTuexy9repSaYQs9yb",
+          "generationIds": [
+            "dj6UnvMAlZR2GYwSP3Rr"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "C8HZHKedsFNpBQFooleb",
+          "generationIds": [
+            "gr6d0Lj8TKjXbDQA6FWH"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "5YGe69cGJmajn2XICtTw",
+          "generationIds": [
+            "KAw5GoNsIEj35AsDJiAR"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "AMTEDZNqqk1oEFVX5SFS",
+          "generationIds": [
+            "G40s8NnbCKH5zirb4Pa8"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "rider",
+      "action": "hold",
+      "prompt": "Holding here.",
+      "eventKey": "unit.rider.hold",
+      "voiceId": "IKne3meq5aSn9XLyUdCD",
+      "voiceName": "Charlie - Deep, Confident, Energetic",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "McVYbP2fBvTNIE4YddyS",
+      "sessionIds": [
+        "MDBLMKnu6JuMq2cq6hfM",
+        "9TCBMeZpdzUGslOzoqPt",
+        "W0ORoxwBRLTDt3OmQeGo",
+        "vW9xdi6eR7KSrVxNOGS7"
+      ],
+      "generationIds": [
+        "U4wCp8zl46L1Q9RmhtUm",
+        "Bc9Myr8RLB7p1yxkFBuM",
+        "rwBCjTLXk3mOfsGELJ7m",
+        "JPVG4UbweVyMeSb3RKRt"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "MDBLMKnu6JuMq2cq6hfM",
+          "generationIds": [
+            "U4wCp8zl46L1Q9RmhtUm"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "9TCBMeZpdzUGslOzoqPt",
+          "generationIds": [
+            "Bc9Myr8RLB7p1yxkFBuM"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "W0ORoxwBRLTDt3OmQeGo",
+          "generationIds": [
+            "rwBCjTLXk3mOfsGELJ7m"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "vW9xdi6eR7KSrVxNOGS7",
+          "generationIds": [
+            "JPVG4UbweVyMeSb3RKRt"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "rider",
+      "action": "attack",
+      "prompt": "Riding to attack.",
+      "eventKey": "unit.rider.attack",
+      "voiceId": "IKne3meq5aSn9XLyUdCD",
+      "voiceName": "Charlie - Deep, Confident, Energetic",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "EPqymJEIxVF1MpCYRGzd",
+      "sessionIds": [
+        "VdepGYS87cAkJAjF6Hyz",
+        "xQVCKjJtk6qD3OBXD0YN",
+        "4xDoQGqKYUfJaXgdK55c",
+        "TXBIpdcXusOMgd8niuZ9"
+      ],
+      "generationIds": [
+        "PCNfQ35ANvyKw8EY4uhr",
+        "2pmAx1Rjkclh7x1RbzLf",
+        "kGR4pvPs0pSM9ajStcCI",
+        "fc8UqyalIw5NURzol19i"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "VdepGYS87cAkJAjF6Hyz",
+          "generationIds": [
+            "PCNfQ35ANvyKw8EY4uhr"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "xQVCKjJtk6qD3OBXD0YN",
+          "generationIds": [
+            "2pmAx1Rjkclh7x1RbzLf"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "4xDoQGqKYUfJaXgdK55c",
+          "generationIds": [
+            "kGR4pvPs0pSM9ajStcCI"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "TXBIpdcXusOMgd8niuZ9",
+          "generationIds": [
+            "fc8UqyalIw5NURzol19i"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "rider",
+      "action": "ready",
+      "prompt": "Rider ready.",
+      "eventKey": "unit.rider.ready",
+      "voiceId": "IKne3meq5aSn9XLyUdCD",
+      "voiceName": "Charlie - Deep, Confident, Energetic",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "182JR1nGS1CRRnHOaAQD",
+      "sessionIds": [
+        "5WXYuhLa87ekvsPBJQAV",
+        "HhN3azCy9qO2rtC6zvbf",
+        "AH44Qfdg2lpeWMoUQQzl",
+        "ZpdvpXpGCM6sCGnrJRQp"
+      ],
+      "generationIds": [
+        "PN2BDER6CDjFXD3qlg5b",
+        "oGQ9Ua48awz0LHj7FpCf",
+        "Xm3eLdLSfXlYzFzPw6mo",
+        "Zo0FGJLMMC2Mz1TwaGar"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "5WXYuhLa87ekvsPBJQAV",
+          "generationIds": [
+            "PN2BDER6CDjFXD3qlg5b"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "HhN3azCy9qO2rtC6zvbf",
+          "generationIds": [
+            "oGQ9Ua48awz0LHj7FpCf"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "AH44Qfdg2lpeWMoUQQzl",
+          "generationIds": [
+            "Xm3eLdLSfXlYzFzPw6mo"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "ZpdvpXpGCM6sCGnrJRQp",
+          "generationIds": [
+            "Zo0FGJLMMC2Mz1TwaGar"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "siege-engine",
+      "action": "select",
+      "prompt": "Crew ready.",
+      "eventKey": "unit.siege-engine.select",
+      "voiceId": "nPczCjzI2devNBz1zQrb",
+      "voiceName": "Brian - Deep, Resonant and Comforting",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "mv4jGTZZfAulGo0Y7w9m",
+      "sessionIds": [
+        "cYBlRI6T4kYz9AevSAPk",
+        "3wzanZ81sFr7C2zEUJ3m",
+        "Xd8MsHRv4PuzQ3khC4CH",
+        "goy6mrwvuxTn7vOXRACt"
+      ],
+      "generationIds": [
+        "L6O0mIuqpkqGUZpNdpF7",
+        "32F1B9xhIgrD5t42lIqc",
+        "qKk5kHMDsG5r62oj0KuS",
+        "RArDvRUizNyqhWylw6wO"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "cYBlRI6T4kYz9AevSAPk",
+          "generationIds": [
+            "L6O0mIuqpkqGUZpNdpF7"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "3wzanZ81sFr7C2zEUJ3m",
+          "generationIds": [
+            "32F1B9xhIgrD5t42lIqc"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "Xd8MsHRv4PuzQ3khC4CH",
+          "generationIds": [
+            "qKk5kHMDsG5r62oj0KuS"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "goy6mrwvuxTn7vOXRACt",
+          "generationIds": [
+            "RArDvRUizNyqhWylw6wO"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "siege-engine",
+      "action": "move",
+      "prompt": "Rolling out.",
+      "eventKey": "unit.siege-engine.move",
+      "voiceId": "nPczCjzI2devNBz1zQrb",
+      "voiceName": "Brian - Deep, Resonant and Comforting",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "7pQ3hyEtmXRgSstSVIvO",
+      "sessionIds": [
+        "Rs8FBT9zR9lzGY7A7TEr",
+        "az6FUSR5D0b8olTWUViu",
+        "EInODhfIKfeponmWSnr7",
+        "otjay7DrSJGGQiOgOy6K"
+      ],
+      "generationIds": [
+        "67ZJauoWap2ez78aIg3G",
+        "ZPFefpkAQ5cKR2WkETk4",
+        "taobCvq7qoxwXrxyFRxy",
+        "6bQfDhUMIBdmjAYSPgkd"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "Rs8FBT9zR9lzGY7A7TEr",
+          "generationIds": [
+            "67ZJauoWap2ez78aIg3G"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "az6FUSR5D0b8olTWUViu",
+          "generationIds": [
+            "ZPFefpkAQ5cKR2WkETk4"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "EInODhfIKfeponmWSnr7",
+          "generationIds": [
+            "taobCvq7qoxwXrxyFRxy"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "otjay7DrSJGGQiOgOy6K",
+          "generationIds": [
+            "6bQfDhUMIBdmjAYSPgkd"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "siege-engine",
+      "action": "patrol",
+      "prompt": "We'll patrol here.",
+      "eventKey": "unit.siege-engine.patrol",
+      "voiceId": "nPczCjzI2devNBz1zQrb",
+      "voiceName": "Brian - Deep, Resonant and Comforting",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "Rwyv5iMcxpY2UCtdbyi8",
+      "sessionIds": [
+        "39U2w3KNnQHs1eHKMG07",
+        "X1l2KQsQx6xgEdsgLa58",
+        "gjJeeSIr3X0ewNN0SRqo",
+        "g9VBBKiHAe9yeRRHrm1o"
+      ],
+      "generationIds": [
+        "scUUMt9MbcMfC0FdVc1a",
+        "eK1Os3dDll3r8NSHtnXm",
+        "B2rKDHNLffIBSpwPxc9u",
+        "heWvUwHBwnxtMIPJ0l4O"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "39U2w3KNnQHs1eHKMG07",
+          "generationIds": [
+            "scUUMt9MbcMfC0FdVc1a"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "X1l2KQsQx6xgEdsgLa58",
+          "generationIds": [
+            "eK1Os3dDll3r8NSHtnXm"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "gjJeeSIr3X0ewNN0SRqo",
+          "generationIds": [
+            "B2rKDHNLffIBSpwPxc9u"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "g9VBBKiHAe9yeRRHrm1o",
+          "generationIds": [
+            "heWvUwHBwnxtMIPJ0l4O"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "siege-engine",
+      "action": "follow",
+      "prompt": "Following your lead.",
+      "eventKey": "unit.siege-engine.follow",
+      "voiceId": "nPczCjzI2devNBz1zQrb",
+      "voiceName": "Brian - Deep, Resonant and Comforting",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "t5Wm0SIedXlomybdX3pO",
+      "sessionIds": [
+        "fW4ocMOZc3Ruu4SA1lQ8",
+        "vZNhcQmFNCujHGzHXdpo",
+        "94PYEVZXcxy1htVPZYmL",
+        "03sr9JUTQxe25Z48Fesr"
+      ],
+      "generationIds": [
+        "f8NabIlmxk2H71Qj8cTw",
+        "2Z7lJjR1WNLBsYuHKjrz",
+        "qkBiQzJCy0XjE9iGOR0x",
+        "39Xx4UXIk7UmCNLBfKf7"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "fW4ocMOZc3Ruu4SA1lQ8",
+          "generationIds": [
+            "f8NabIlmxk2H71Qj8cTw"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "vZNhcQmFNCujHGzHXdpo",
+          "generationIds": [
+            "2Z7lJjR1WNLBsYuHKjrz"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "94PYEVZXcxy1htVPZYmL",
+          "generationIds": [
+            "qkBiQzJCy0XjE9iGOR0x"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "03sr9JUTQxe25Z48Fesr",
+          "generationIds": [
+            "39Xx4UXIk7UmCNLBfKf7"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "siege-engine",
+      "action": "stop",
+      "prompt": "Stopping the wheels.",
+      "eventKey": "unit.siege-engine.stop",
+      "voiceId": "nPczCjzI2devNBz1zQrb",
+      "voiceName": "Brian - Deep, Resonant and Comforting",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "MVZkCf8gqkIVcvzAf1pH",
+      "sessionIds": [
+        "xiLc3I8Qmj9wiyikGTkx",
+        "pUiRSsu9wJX8JbwAyi0w",
+        "jzFBOAWh3KlkcegzFtpp",
+        "cBT5MrjVKmmDmXsvDWrk"
+      ],
+      "generationIds": [
+        "NJ6rnuQbE4TIPnGUCib7",
+        "sT9hAsPBB5lc0rNm2ss9",
+        "aO2FtLlzW2f1uG5WxfUk",
+        "uUi3ruQcK88dO30mWbld"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "xiLc3I8Qmj9wiyikGTkx",
+          "generationIds": [
+            "NJ6rnuQbE4TIPnGUCib7"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "pUiRSsu9wJX8JbwAyi0w",
+          "generationIds": [
+            "sT9hAsPBB5lc0rNm2ss9"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "jzFBOAWh3KlkcegzFtpp",
+          "generationIds": [
+            "aO2FtLlzW2f1uG5WxfUk"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "cBT5MrjVKmmDmXsvDWrk",
+          "generationIds": [
+            "uUi3ruQcK88dO30mWbld"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "siege-engine",
+      "action": "hold",
+      "prompt": "Holding position.",
+      "eventKey": "unit.siege-engine.hold",
+      "voiceId": "nPczCjzI2devNBz1zQrb",
+      "voiceName": "Brian - Deep, Resonant and Comforting",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "eR4stAjZCRKt6JMmAGMv",
+      "sessionIds": [
+        "Q5s1m0YhTezwpcM7Ka7i",
+        "HAnVOBysIZ5TqGlmDl1k",
+        "K9dMDAGUzUhwl3xgwOce",
+        "HTahWn0aM4WzSD9iGXEj"
+      ],
+      "generationIds": [
+        "YPOd62XS5JYpyd0c5MP9",
+        "EAs8ifLN7L15kUQ5KF3e",
+        "w4z63zwyf3cuFuyH6J7L",
+        "0osMsoIw8bnWRNtZUIli"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "Q5s1m0YhTezwpcM7Ka7i",
+          "generationIds": [
+            "YPOd62XS5JYpyd0c5MP9"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "HAnVOBysIZ5TqGlmDl1k",
+          "generationIds": [
+            "EAs8ifLN7L15kUQ5KF3e"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "K9dMDAGUzUhwl3xgwOce",
+          "generationIds": [
+            "w4z63zwyf3cuFuyH6J7L"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "HTahWn0aM4WzSD9iGXEj",
+          "generationIds": [
+            "0osMsoIw8bnWRNtZUIli"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "siege-engine",
+      "action": "attack",
+      "prompt": "Preparing to fire.",
+      "eventKey": "unit.siege-engine.attack",
+      "voiceId": "nPczCjzI2devNBz1zQrb",
+      "voiceName": "Brian - Deep, Resonant and Comforting",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "vhv9Xw7GMzxxHDWsl0Sy",
+      "sessionIds": [
+        "y26rzAOcHLtbquh4t7l8",
+        "yaGHRPzRWYLERTAn1hYs",
+        "epTfBmpSJn031wIJEekD",
+        "ovUFoV4E0xbESR23zqmC"
+      ],
+      "generationIds": [
+        "h7A6BelkdMGbglKOo3pV",
+        "zTXqUGAxa8c5LPygw4lp",
+        "UF3MonXTj47l5XXT0ZF5",
+        "BdfhTz5BdYicVbjhqqIH"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "y26rzAOcHLtbquh4t7l8",
+          "generationIds": [
+            "h7A6BelkdMGbglKOo3pV"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "yaGHRPzRWYLERTAn1hYs",
+          "generationIds": [
+            "zTXqUGAxa8c5LPygw4lp"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "epTfBmpSJn031wIJEekD",
+          "generationIds": [
+            "UF3MonXTj47l5XXT0ZF5"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "ovUFoV4E0xbESR23zqmC",
+          "generationIds": [
+            "BdfhTz5BdYicVbjhqqIH"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "siege-engine",
+      "action": "ready",
+      "prompt": "Siege crew ready.",
+      "eventKey": "unit.siege-engine.ready",
+      "voiceId": "nPczCjzI2devNBz1zQrb",
+      "voiceName": "Brian - Deep, Resonant and Comforting",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "5d9376MqLYhvFqLwjbRw",
+      "sessionIds": [
+        "XVhVZ8Vfz4LgddXOE8VD",
+        "WbAZ0zz0hXgkyIld1p7c",
+        "aWmnNZr5h2BIX2lZFB0e",
+        "jbl1X8CruzBGyTC2tv2f"
+      ],
+      "generationIds": [
+        "ULFKuuD4O551q3hmUoM7",
+        "O5ZjsmTHFvmbz27TT59m",
+        "EMdRg3rjqKbtoAeuJm3m",
+        "aN1AkHpLSQbfO14XxSwy"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "XVhVZ8Vfz4LgddXOE8VD",
+          "generationIds": [
+            "ULFKuuD4O551q3hmUoM7"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "WbAZ0zz0hXgkyIld1p7c",
+          "generationIds": [
+            "O5ZjsmTHFvmbz27TT59m"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "aWmnNZr5h2BIX2lZFB0e",
+          "generationIds": [
+            "EMdRg3rjqKbtoAeuJm3m"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "jbl1X8CruzBGyTC2tv2f",
+          "generationIds": [
+            "aN1AkHpLSQbfO14XxSwy"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "skiff",
+      "action": "select",
+      "prompt": "Skiff here.",
+      "eventKey": "unit.skiff.select",
+      "voiceId": "cjVigY5qzO86Huf0OWal",
+      "voiceName": "Eric - Smooth, Trustworthy",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 2,
+      "nodeId": "5TmarZy8bC4vXV9bcQrP",
+      "sessionIds": [
+        "IkQ7XrzHh10tpDYm02Fx",
+        "tuEZDy89AFDGJvuz3xXl",
+        "L4vllMzFJHRXhZXT4msf",
+        "tAbmFcZhO5c6lc7KmWdT"
+      ],
+      "generationIds": [
+        "tOBShbpn4xhfuURThVX0",
+        "vBsHT9nTnemypXFeoWWF",
+        "C8AvFekJhu4Sov8NtjdR",
+        "Rzuhj8RMNmgUqfcdk3sf"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "IkQ7XrzHh10tpDYm02Fx",
+          "generationIds": [
+            "tOBShbpn4xhfuURThVX0"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "tuEZDy89AFDGJvuz3xXl",
+          "generationIds": [
+            "vBsHT9nTnemypXFeoWWF"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "L4vllMzFJHRXhZXT4msf",
+          "generationIds": [
+            "C8AvFekJhu4Sov8NtjdR"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "tAbmFcZhO5c6lc7KmWdT",
+          "generationIds": [
+            "Rzuhj8RMNmgUqfcdk3sf"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "skiff",
+      "action": "move",
+      "prompt": "Rowing out.",
+      "eventKey": "unit.skiff.move",
+      "voiceId": "cjVigY5qzO86Huf0OWal",
+      "voiceName": "Eric - Smooth, Trustworthy",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "prNXkaeR8J4tI8zIurmg",
+      "sessionIds": [
+        "yKejDLaNki4YZfjhh9U7",
+        "AInqthgPUpkpw9KyAr0O",
+        "ExAEfcpjimbzE8B3dA14",
+        "TLH5jLVrAMiCfO0wRqI5"
+      ],
+      "generationIds": [
+        "ljfKgt9zu8cYO2bivglr",
+        "JU8Judoxr14bRJo4oj7p",
+        "adjYZnkans7C0ktsxgyo",
+        "hWdEUc0cwDXpNg6qbfaU"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "yKejDLaNki4YZfjhh9U7",
+          "generationIds": [
+            "ljfKgt9zu8cYO2bivglr"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "AInqthgPUpkpw9KyAr0O",
+          "generationIds": [
+            "JU8Judoxr14bRJo4oj7p"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "ExAEfcpjimbzE8B3dA14",
+          "generationIds": [
+            "adjYZnkans7C0ktsxgyo"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "TLH5jLVrAMiCfO0wRqI5",
+          "generationIds": [
+            "hWdEUc0cwDXpNg6qbfaU"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "skiff",
+      "action": "stop",
+      "prompt": "Stopping here.",
+      "eventKey": "unit.skiff.stop",
+      "voiceId": "cjVigY5qzO86Huf0OWal",
+      "voiceName": "Eric - Smooth, Trustworthy",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "zA97iKuRg2by5CrTw1du",
+      "sessionIds": [
+        "J7jl5qNd3Ufd9HHYgmmE",
+        "73iX4R6U2dLFpwPXlSir",
+        "lDCJO51blTNRrEf7uo7t",
+        "UqzBd6SEnK0lebGn7Fe6"
+      ],
+      "generationIds": [
+        "sXJW9hcNnG7WBbtPX2NS",
+        "nbU4ZzDt5jQMTfDUEN0B",
+        "ZX94nqhBZ5zxeR1Po00S",
+        "mfJ1YOqmGAA1uMLgUFEz"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "J7jl5qNd3Ufd9HHYgmmE",
+          "generationIds": [
+            "sXJW9hcNnG7WBbtPX2NS"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "73iX4R6U2dLFpwPXlSir",
+          "generationIds": [
+            "nbU4ZzDt5jQMTfDUEN0B"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "lDCJO51blTNRrEf7uo7t",
+          "generationIds": [
+            "ZX94nqhBZ5zxeR1Po00S"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "UqzBd6SEnK0lebGn7Fe6",
+          "generationIds": [
+            "mfJ1YOqmGAA1uMLgUFEz"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "skiff",
+      "action": "hold",
+      "prompt": "Holding here.",
+      "eventKey": "unit.skiff.hold",
+      "voiceId": "cjVigY5qzO86Huf0OWal",
+      "voiceName": "Eric - Smooth, Trustworthy",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "Li5AsqOnxfJ3NufVWIv6",
+      "sessionIds": [
+        "94wwnddkX6PdQjkXdhXX",
+        "IvT96Ow2yAC2ifjisYCH",
+        "JfV7pqusdeYQbTqZ0Nxv",
+        "esmGt76H7IsdY82uVfPP"
+      ],
+      "generationIds": [
+        "2ZHuHv1hMoR1AXRMkO0D",
+        "TrqhsLgv7nOsiV6XR4tC",
+        "6FJ2h1WZWvMTv4BigqjM",
+        "pGLDvqsLur6kycX7UK7l"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "94wwnddkX6PdQjkXdhXX",
+          "generationIds": [
+            "2ZHuHv1hMoR1AXRMkO0D"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "IvT96Ow2yAC2ifjisYCH",
+          "generationIds": [
+            "TrqhsLgv7nOsiV6XR4tC"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "JfV7pqusdeYQbTqZ0Nxv",
+          "generationIds": [
+            "6FJ2h1WZWvMTv4BigqjM"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "esmGt76H7IsdY82uVfPP",
+          "generationIds": [
+            "pGLDvqsLur6kycX7UK7l"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "skiff",
+      "action": "gather.food",
+      "prompt": "I'll bring in fish.",
+      "eventKey": "unit.skiff.gather.food",
+      "voiceId": "cjVigY5qzO86Huf0OWal",
+      "voiceName": "Eric - Smooth, Trustworthy",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "w9CbwD7KUGwRymRGLasv",
+      "sessionIds": [
+        "EmcRUC6tW7LCcX79o1Vs",
+        "kh4ZMFgc5OR8KBYl9sKg",
+        "A6l1bAv9xIAWLEwY2dNI",
+        "UfkZGHlzIKBl1zAmg40j"
+      ],
+      "generationIds": [
+        "0u4DmgyuS17nsd6Oel4D",
+        "k2GALNzcuLv3a1mBPNek",
+        "a28VcfjbAxzynBzWw6n9",
+        "QFWH1LQ05f57u03TKeCj"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "EmcRUC6tW7LCcX79o1Vs",
+          "generationIds": [
+            "0u4DmgyuS17nsd6Oel4D"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "kh4ZMFgc5OR8KBYl9sKg",
+          "generationIds": [
+            "k2GALNzcuLv3a1mBPNek"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "A6l1bAv9xIAWLEwY2dNI",
+          "generationIds": [
+            "a28VcfjbAxzynBzWw6n9"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "UfkZGHlzIKBl1zAmg40j",
+          "generationIds": [
+            "QFWH1LQ05f57u03TKeCj"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "skiff",
+      "action": "ready",
+      "prompt": "Skiff ready.",
+      "eventKey": "unit.skiff.ready",
+      "voiceId": "cjVigY5qzO86Huf0OWal",
+      "voiceName": "Eric - Smooth, Trustworthy",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "OVS7zyxB4WA5s3OVKGBE",
+      "sessionIds": [
+        "PvAT6cgqgaLi0BzbzFpA",
+        "99JoaipxYRkEuViLKulT",
+        "IEbs7Tvuwnn8ItSvoxId",
+        "yVrNGETpaIjGHR0S6aQD"
+      ],
+      "generationIds": [
+        "dzh42Eb17mxcGhGReaLI",
+        "OzhfILtNkuPiQRvcLA1v",
+        "tnBGfBaibzJfIAYwsejB",
+        "KFk91k0ehcditQcwoIM3"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "PvAT6cgqgaLi0BzbzFpA",
+          "generationIds": [
+            "dzh42Eb17mxcGhGReaLI"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "99JoaipxYRkEuViLKulT",
+          "generationIds": [
+            "OzhfILtNkuPiQRvcLA1v"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "IEbs7Tvuwnn8ItSvoxId",
+          "generationIds": [
+            "tnBGfBaibzJfIAYwsejB"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "yVrNGETpaIjGHR0S6aQD",
+          "generationIds": [
+            "KFk91k0ehcditQcwoIM3"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "palisade-wall",
+      "action": "select",
+      "prompt": "Two-second naturalistic medieval RTS building selection sound. A close solid knock against a thick timber palisade, followed by a brief heavy wooden brace creak. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+      "eventKey": "building.palisade-wall.select",
+      "caption": "Timber palisade",
+      "nodeType": "sfx",
+      "model": "eleven_text_to_sound_v2",
+      "modelParameters": {
+        "duration_seconds": 2,
+        "prompt_influence": 0.3,
+        "loop": false
+      },
+      "selectedTakes": 1,
+      "nodeId": "cqeSPbmTmMemA8xcjLcI",
+      "sessionIds": [
+        "mAVAWI5GDXsdf3zJXq3f",
+        "8IR3ruVlhmAqDdX9rm0d",
+        "19s7cpZmMYtrsIO4esoQ",
+        "3QnSfP7pWOu1MJ8ObRMw"
+      ],
+      "generationIds": [
+        "b0hc99Ijq6dJjeTNzz59",
+        "JyixOOrEJgs9J7pMtJRJ",
+        "qB4lTAK3NAuNsmPFU7eU",
+        "KGvjBrWDhdnf1SuGDibw"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "mAVAWI5GDXsdf3zJXq3f",
+          "generationIds": [
+            "b0hc99Ijq6dJjeTNzz59"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "8IR3ruVlhmAqDdX9rm0d",
+          "generationIds": [
+            "JyixOOrEJgs9J7pMtJRJ"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "19s7cpZmMYtrsIO4esoQ",
+          "generationIds": [
+            "qB4lTAK3NAuNsmPFU7eU"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "3QnSfP7pWOu1MJ8ObRMw",
+          "generationIds": [
+            "KGvjBrWDhdnf1SuGDibw"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "palisade-gate",
+      "action": "select",
+      "prompt": "Two-second naturalistic medieval RTS building selection sound. A heavy wooden palisade gate swings a short distance on creaking hinges, then a solid wooden latch drops. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+      "eventKey": "building.palisade-gate.select",
+      "caption": "Wooden gate latch",
+      "nodeType": "sfx",
+      "model": "eleven_text_to_sound_v2",
+      "modelParameters": {
+        "duration_seconds": 2,
+        "prompt_influence": 0.3,
+        "loop": false
+      },
+      "selectedTakes": 1,
+      "nodeId": "3yyEGpG6XGGjwMGcg4Tw",
+      "sessionIds": [
+        "uT5mOuXC1TJCqvkA4mhM",
+        "0Nd0mykvtpicnhDbmaai",
+        "MC9Yv36FuwtTM8EEwJMo",
+        "llwr67C7OksN7FdBRmIM"
+      ],
+      "generationIds": [
+        "0MpZ5QsEdKVUiiUP1sDp",
+        "GZOk9XylItdI2lbgBDgM",
+        "L7vyPqqRZldQlOggUYtG",
+        "7qv59tiME1hpoFehcTy4"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "uT5mOuXC1TJCqvkA4mhM",
+          "generationIds": [
+            "0MpZ5QsEdKVUiiUP1sDp"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "0Nd0mykvtpicnhDbmaai",
+          "generationIds": [
+            "GZOk9XylItdI2lbgBDgM"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "MC9Yv36FuwtTM8EEwJMo",
+          "generationIds": [
+            "L7vyPqqRZldQlOggUYtG"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "llwr67C7OksN7FdBRmIM",
+          "generationIds": [
+            "7qv59tiME1hpoFehcTy4"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "house",
+      "action": "select",
+      "prompt": "Two-second naturalistic medieval RTS building selection sound. A cottage door opens softly, with a warm crackling hearth and one pottery cup set down on a wooden table inside. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+      "eventKey": "building.house.select",
+      "caption": "Cottage hearth",
+      "nodeType": "sfx",
+      "model": "eleven_text_to_sound_v2",
+      "modelParameters": {
+        "duration_seconds": 2,
+        "prompt_influence": 0.3,
+        "loop": false
+      },
+      "selectedTakes": 1,
+      "nodeId": "GEqVjypx2ac4Dfpu6HXz",
+      "sessionIds": [
+        "sbyuYtkXBKbqqc6kTUoe",
+        "0FDYHnLsr6KCNiC4NwsX",
+        "J6qqhFPQt0wDYcjT7vuk",
+        "BVMCC6fiDOfEAKLPQs7L"
+      ],
+      "generationIds": [
+        "90mOAFpyvmd2tTQUuMfz",
+        "3jjP9t6KaRJTa0zu85UL",
+        "cpwdE8W3mRb0Thz3mrDy",
+        "QCYmR2Ashs3mFEBA53c7"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "sbyuYtkXBKbqqc6kTUoe",
+          "generationIds": [
+            "90mOAFpyvmd2tTQUuMfz"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "0FDYHnLsr6KCNiC4NwsX",
+          "generationIds": [
+            "3jjP9t6KaRJTa0zu85UL"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "J6qqhFPQt0wDYcjT7vuk",
+          "generationIds": [
+            "cpwdE8W3mRb0Thz3mrDy"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "BVMCC6fiDOfEAKLPQs7L",
+          "generationIds": [
+            "QCYmR2Ashs3mFEBA53c7"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "archery-range",
+      "action": "select",
+      "prompt": "Two-second naturalistic medieval RTS building selection sound. A bowstring draws and releases, with an arrow swishing briefly into a straw target with a dry thud. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+      "eventKey": "building.archery-range.select",
+      "caption": "Bow and straw target",
+      "nodeType": "sfx",
+      "model": "eleven_text_to_sound_v2",
+      "modelParameters": {
+        "duration_seconds": 2,
+        "prompt_influence": 0.3,
+        "loop": false
+      },
+      "selectedTakes": 1,
+      "nodeId": "Yt7wZfjrDhlSFRz0Jxw9",
+      "sessionIds": [
+        "svto8szjtqIjwAKduGiM",
+        "gvnJ56robv0U0C54kDLP",
+        "OCUsoi2lJI3xveghoR7s",
+        "erwbpnlrgqyMULChnpae"
+      ],
+      "generationIds": [
+        "QmyK2Ys1FgkYEYNsp7GO",
+        "8TWRakqv8ZoLrIi8XxfY",
+        "hE28F2nTGvo2IWfS6hc6",
+        "rm4zr7ll4sS0iYfuDeoJ"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "svto8szjtqIjwAKduGiM",
+          "generationIds": [
+            "QmyK2Ys1FgkYEYNsp7GO"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "gvnJ56robv0U0C54kDLP",
+          "generationIds": [
+            "8TWRakqv8ZoLrIi8XxfY"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "OCUsoi2lJI3xveghoR7s",
+          "generationIds": [
+            "hE28F2nTGvo2IWfS6hc6"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "erwbpnlrgqyMULChnpae",
+          "generationIds": [
+            "rm4zr7ll4sS0iYfuDeoJ"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "storehouse",
+      "action": "select",
+      "prompt": "Two-second naturalistic medieval RTS building selection sound. A burlap grain sack is set on a wooden shelf, followed by a short scrape and clunk of a storage crate. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+      "eventKey": "building.storehouse.select",
+      "caption": "Sacks and crates",
+      "nodeType": "sfx",
+      "model": "eleven_text_to_sound_v2",
+      "modelParameters": {
+        "duration_seconds": 2,
+        "prompt_influence": 0.3,
+        "loop": false
+      },
+      "selectedTakes": 1,
+      "nodeId": "qhkH5Y6HWK00lmGFmUT5",
+      "sessionIds": [
+        "KvtESx72sPex1UPayDON",
+        "PxrVAPfRsEJUGyMtMitj",
+        "hsKywCMaGJnNipnvMG2j",
+        "GK97BoxPKMHUfyVRTgGi"
+      ],
+      "generationIds": [
+        "4LgxDyahaJVFrGCRZvwC",
+        "S0zBumDuwL4D9qGgc0X1",
+        "7lDFys5cq68RPYV1wPvf",
+        "0bF8QDIMzSPeZs29nM4p"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "KvtESx72sPex1UPayDON",
+          "generationIds": [
+            "4LgxDyahaJVFrGCRZvwC"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "PxrVAPfRsEJUGyMtMitj",
+          "generationIds": [
+            "S0zBumDuwL4D9qGgc0X1"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "hsKywCMaGJnNipnvMG2j",
+          "generationIds": [
+            "7lDFys5cq68RPYV1wPvf"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "GK97BoxPKMHUfyVRTgGi",
+          "generationIds": [
+            "0bF8QDIMzSPeZs29nM4p"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "mill",
+      "action": "select",
+      "prompt": "Two-second naturalistic medieval RTS building selection sound. Wooden mill gears turn with a rhythmic creak and clack, dry grain patters into a hopper. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+      "eventKey": "building.mill.select",
+      "caption": "Mill gears and grain",
+      "nodeType": "sfx",
+      "model": "eleven_text_to_sound_v2",
+      "modelParameters": {
+        "duration_seconds": 2,
+        "prompt_influence": 0.3,
+        "loop": false
+      },
+      "selectedTakes": 1,
+      "nodeId": "5uxAu4zNrmA11ao3DpUR",
+      "sessionIds": [
+        "TmZLTndxu6mozEm2CGly",
+        "x7t025Gj6vQ7trL4doVC",
+        "KtK6Wg3ovCujlfwpIkS4",
+        "5I1uIKMX0fO0w4c1puTO"
+      ],
+      "generationIds": [
+        "6qBWeW4EzyfB6w5TbemG",
+        "EHG0kDuGgGBf8ILqjDOk",
+        "lNl6gGqeM2ZwLgO39v4W",
+        "GC3TnoiSUtMjdWm9ZUby"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "TmZLTndxu6mozEm2CGly",
+          "generationIds": [
+            "6qBWeW4EzyfB6w5TbemG"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "x7t025Gj6vQ7trL4doVC",
+          "generationIds": [
+            "EHG0kDuGgGBf8ILqjDOk"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "KtK6Wg3ovCujlfwpIkS4",
+          "generationIds": [
+            "lNl6gGqeM2ZwLgO39v4W"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "5I1uIKMX0fO0w4c1puTO",
+          "generationIds": [
+            "GC3TnoiSUtMjdWm9ZUby"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "farm",
+      "action": "select",
+      "prompt": "Two-second naturalistic medieval RTS building selection sound. A hand sickle slices through dry wheat with two crisp swishes and soft rustling stalks in a light breeze. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+      "eventKey": "building.farm.select",
+      "caption": "Wheat harvest",
+      "nodeType": "sfx",
+      "model": "eleven_text_to_sound_v2",
+      "modelParameters": {
+        "duration_seconds": 2,
+        "prompt_influence": 0.3,
+        "loop": false
+      },
+      "selectedTakes": 1,
+      "nodeId": "aK92QjzYwDM2th022aVP",
+      "sessionIds": [
+        "Cfd6hs4KuZfNQe0amn9l",
+        "hFkt84093QUsj66zdTiY",
+        "xGgLi55A5nblS2y2cHL3",
+        "4fVM01xV3jVkghjGp3VY"
+      ],
+      "generationIds": [
+        "WQTS6lf21aDWCi8PI6RN",
+        "u4TEmt9EMuZtNEjt78AK",
+        "OcreOP7eU7qcrZUXcH75",
+        "UN4InQinDAKmpBrhYbS6"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "Cfd6hs4KuZfNQe0amn9l",
+          "generationIds": [
+            "WQTS6lf21aDWCi8PI6RN"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "hFkt84093QUsj66zdTiY",
+          "generationIds": [
+            "u4TEmt9EMuZtNEjt78AK"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "xGgLi55A5nblS2y2cHL3",
+          "generationIds": [
+            "OcreOP7eU7qcrZUXcH75"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "4fVM01xV3jVkghjGp3VY",
+          "generationIds": [
+            "UN4InQinDAKmpBrhYbS6"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "dock",
+      "action": "select",
+      "prompt": "Two-second naturalistic medieval RTS building selection sound. Gentle water laps beneath a timber dock while a mooring rope tightens with a short wooden cleat creak. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+      "eventKey": "building.dock.select",
+      "caption": "Water and mooring rope",
+      "nodeType": "sfx",
+      "model": "eleven_text_to_sound_v2",
+      "modelParameters": {
+        "duration_seconds": 2,
+        "prompt_influence": 0.3,
+        "loop": false
+      },
+      "selectedTakes": 1,
+      "nodeId": "0Qs1wBTxTdiBnzrCH9qh",
+      "sessionIds": [
+        "aH6FX69up311wQPi5RAM",
+        "n7skATsqTgxIz18GPyq2",
+        "ocWgTAYbrEUvCDyUJfjB",
+        "srzhtl1S5a9WRQUbOnsD"
+      ],
+      "generationIds": [
+        "s17unLQyjmMeMuJSpwsZ",
+        "DlLr9P4mNRBDYUd8cgQN",
+        "W65hawYgLGPqHeN88pqs",
+        "P2UrNh5c5Jem3x6PQoHs"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "aH6FX69up311wQPi5RAM",
+          "generationIds": [
+            "s17unLQyjmMeMuJSpwsZ"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "n7skATsqTgxIz18GPyq2",
+          "generationIds": [
+            "DlLr9P4mNRBDYUd8cgQN"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "ocWgTAYbrEUvCDyUJfjB",
+          "generationIds": [
+            "W65hawYgLGPqHeN88pqs"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "srzhtl1S5a9WRQUbOnsD",
+          "generationIds": [
+            "P2UrNh5c5Jem3x6PQoHs"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "watchtower",
+      "action": "select",
+      "prompt": "Two-second naturalistic medieval RTS building selection sound. Two measured boot steps climb a wooden lookout platform, timber creaks briefly and a small pennant flutters in the breeze. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+      "eventKey": "building.watchtower.select",
+      "caption": "Lookout platform",
+      "nodeType": "sfx",
+      "model": "eleven_text_to_sound_v2",
+      "modelParameters": {
+        "duration_seconds": 2,
+        "prompt_influence": 0.3,
+        "loop": false
+      },
+      "selectedTakes": 1,
+      "nodeId": "mJNDa59mChluq0n9USYT",
+      "sessionIds": [
+        "w5AH4GIzjPmNqYsTBWN3",
+        "Kh72QprfeCnSQdiLX3rI",
+        "hb1ThkodUaUVtRwZF1ZA",
+        "yvrioIEQ2LGkrDVGlvtu"
+      ],
+      "generationIds": [
+        "31pUpk95tx724LZOrwk3",
+        "XGaxo9Ox88MLCK9u19su",
+        "8rESQajmauMSxN41QeC3",
+        "ZZFV32io5mXgzMALRjUE"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "w5AH4GIzjPmNqYsTBWN3",
+          "generationIds": [
+            "31pUpk95tx724LZOrwk3"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "Kh72QprfeCnSQdiLX3rI",
+          "generationIds": [
+            "XGaxo9Ox88MLCK9u19su"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "hb1ThkodUaUVtRwZF1ZA",
+          "generationIds": [
+            "8rESQajmauMSxN41QeC3"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "yvrioIEQ2LGkrDVGlvtu",
+          "generationIds": [
+            "ZZFV32io5mXgzMALRjUE"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "stable",
+      "action": "select",
+      "prompt": "Two-second naturalistic medieval RTS building selection sound. A horse gives one quiet snort and stamps a hoof on packed earth, leather tack and a metal harness ring gently jingle. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+      "eventKey": "building.stable.select",
+      "caption": "Horse and tack",
+      "nodeType": "sfx",
+      "model": "eleven_text_to_sound_v2",
+      "modelParameters": {
+        "duration_seconds": 2,
+        "prompt_influence": 0.3,
+        "loop": false
+      },
+      "selectedTakes": 1,
+      "nodeId": "9tzR3m5UukI07dtivDAS",
+      "sessionIds": [
+        "8ciEj222IpGvNe2veoeE",
+        "EoKdmzzbInMzgBYhuLs2",
+        "Z7wyYRzETRB2yM6HF35T",
+        "vTaRvWCVS4zEHXpJF4Zy"
+      ],
+      "generationIds": [
+        "xNNgdI14AxWXzuCFq3pf",
+        "hundFcINOR12xns62Win",
+        "SX5Ar0bpqGkJITeQshf6",
+        "rxerlRtau83k9IOmzZcV"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "8ciEj222IpGvNe2veoeE",
+          "generationIds": [
+            "xNNgdI14AxWXzuCFq3pf"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "EoKdmzzbInMzgBYhuLs2",
+          "generationIds": [
+            "hundFcINOR12xns62Win"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "Z7wyYRzETRB2yM6HF35T",
+          "generationIds": [
+            "SX5Ar0bpqGkJITeQshf6"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "vTaRvWCVS4zEHXpJF4Zy",
+          "generationIds": [
+            "rxerlRtau83k9IOmzZcV"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "workshop",
+      "action": "select",
+      "prompt": "Two-second naturalistic medieval RTS building selection sound. Two measured hand hammer blows on a small iron fitting, followed by a short wooden wheel ratchet clack. Close, clear, grounded materials, brief attack and clean ending. No music, no voices, no battle, no alarm, no synthetic UI tones.",
+      "eventKey": "building.workshop.select",
+      "caption": "Workshop tools",
+      "nodeType": "sfx",
+      "model": "eleven_text_to_sound_v2",
+      "modelParameters": {
+        "duration_seconds": 2,
+        "prompt_influence": 0.3,
+        "loop": false
+      },
+      "selectedTakes": 1,
+      "nodeId": "WKtMrqVgaQh7gzGxY2nl",
+      "sessionIds": [
+        "RNFM6A9lK2LAU6uwaiap",
+        "LnglbU7c1kWMFZm9hKjh",
+        "O6Ouhm43PU1LYjAnNAt3",
+        "AwHUUOC4GTNUZQOjoCCD"
+      ],
+      "generationIds": [
+        "GBMQghg8uyi3X5h7KFUe",
+        "WjtMBjPLQs24lyKYTB2Y",
+        "yXliwf5eflpJBI1jMzeQ",
+        "6sclQH9hXidUMNtorct6"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "RNFM6A9lK2LAU6uwaiap",
+          "generationIds": [
+            "GBMQghg8uyi3X5h7KFUe"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "LnglbU7c1kWMFZm9hKjh",
+          "generationIds": [
+            "WjtMBjPLQs24lyKYTB2Y"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "O6Ouhm43PU1LYjAnNAt3",
+          "generationIds": [
+            "yXliwf5eflpJBI1jMzeQ"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "AwHUUOC4GTNUZQOjoCCD",
+          "generationIds": [
+            "6sclQH9hXidUMNtorct6"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "worker",
+      "action": "return-cargo",
+      "prompt": "I'll bring this back.",
+      "eventKey": "unit.worker.return-cargo",
+      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+      "voiceName": "George - Warm, Captivating Storyteller",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "zXX6AcEJQCXFbkybdHfs",
+      "sessionIds": [
+        "XC8AQ8oLY2T0mbQx5BFa",
+        "gdiy9Q2xDONSqiUGEaSX",
+        "XSJ7tYFEl5SAOTJmApOy",
+        "Pc9qBp7sFmdUYWidXyI6"
+      ],
+      "generationIds": [
+        "1DJvpAF3YX0DT96zzTQ8",
+        "RH8ORCeLLaXUTNWupIwD",
+        "F0Pfu3KADKvSD9A117BX",
+        "Aw6n6vWHyxgl6wmTGLED"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "XC8AQ8oLY2T0mbQx5BFa",
+          "generationIds": [
+            "1DJvpAF3YX0DT96zzTQ8"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "gdiy9Q2xDONSqiUGEaSX",
+          "generationIds": [
+            "RH8ORCeLLaXUTNWupIwD"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "XSJ7tYFEl5SAOTJmApOy",
+          "generationIds": [
+            "F0Pfu3KADKvSD9A117BX"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "Pc9qBp7sFmdUYWidXyI6",
+          "generationIds": [
+            "Aw6n6vWHyxgl6wmTGLED"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "skiff",
+      "action": "return-cargo",
+      "prompt": "Returning the catch.",
+      "eventKey": "unit.skiff.return-cargo",
+      "voiceId": "cjVigY5qzO86Huf0OWal",
+      "voiceName": "Eric - Smooth, Trustworthy",
+      "nodeType": "tts",
+      "model": "eleven_multilingual_v2",
+      "selectedTakes": 1,
+      "nodeId": "XgOZU1vTaqXlzWBwjdd1",
+      "sessionIds": [
+        "cMyZ08yYFbyWwdUO805r",
+        "I0Wk2SsvqNFGTis3888p",
+        "5Lz8sxJLFrl2cv0Z4iB5",
+        "FS9Lk04wWcXCdNyJPLa9"
+      ],
+      "generationIds": [
+        "7zJyMUxszDcG6PBpH52K",
+        "wtwUhCSDMQFBuNFpB0B1",
+        "dji2I3BhRONm7EFpAMcL",
+        "34N6bYvdydU7WP2NTVEh"
+      ],
+      "attempts": [
+        {
+          "take": 1,
+          "success": true,
+          "sessionId": "cMyZ08yYFbyWwdUO805r",
+          "generationIds": [
+            "7zJyMUxszDcG6PBpH52K"
+          ]
+        },
+        {
+          "take": 2,
+          "success": true,
+          "sessionId": "I0Wk2SsvqNFGTis3888p",
+          "generationIds": [
+            "wtwUhCSDMQFBuNFpB0B1"
+          ]
+        },
+        {
+          "take": 3,
+          "success": true,
+          "sessionId": "5Lz8sxJLFrl2cv0Z4iB5",
+          "generationIds": [
+            "dji2I3BhRONm7EFpAMcL"
+          ]
+        },
+        {
+          "take": 4,
+          "success": true,
+          "sessionId": "FS9Lk04wWcXCdNyJPLa9",
+          "generationIds": [
+            "34N6bYvdydU7WP2NTVEh"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -106,11 +106,15 @@ Within each civilization/common layer, these events try
 `unit.worker.gather.farm`, `.fish` or `.sheep-carcass`, then the existing
 `unit.worker.gather.food`, `unit.worker.gather`, `cue.gather` chain and synthesis.
 Missing or unknown `gatherJob` uses the old chain; other roles, cues and resources
-are unchanged. Current manifests still assign no job-specific recording.
-The existing technical food sample remains generic food; it is not a farm, fish
-or sheep voice. Work-loop row 14 remains coarse food. Skiff's server
-`FISHING ORDER` notice is still outside the audio gate's applied-notice list;
-this Worker context slice does not close that separate acknowledgement gap.
+are unchanged. The default interaction pack assigns distinct Worker farm, fish
+and carcass voices; the older technical food sample remains generic. Work-loop
+row 14 remains coarse food. Skiff's matching applied `FISHING ORDER` now releases
+its `unit.skiff.gather.food` response without Worker job metadata.
+Worker and Skiff Return Cargo use `unit.<kind>.return-cargo`, then
+`cue.return-cargo` and movement synthesis. Only a tracked supported-role event
+and applied `RETURN CARGO ORDER` notice admit that acknowledgement; planning,
+rejection, duplicate or reset tokens stay silent. These are intent responses,
+not claims that cargo has reached the drop-off.
 Check: `node --test scripts/audio-execution.test.mjs` (actual committed producer,
 disclosure/token adapters, fallback and scheduling decisions; no hearing claim).
 
@@ -171,7 +175,11 @@ wood, food and repair use distinct existing UI recordings. These bindings prove 
 runtime and are not creative acceptance of worker voices or final work sounds.
 Shipped manifests are capped at 2 MiB, sources at 16 MiB and complete transfers at
 64 MiB. Status, MIME, exact byte count, SHA-256, profile identity and safe same-origin
-paths are checked, with a 30-second total fetch deadline. A two-pack LRU cache stays within 64 MiB; decoded samples retain
+paths are checked, with a 30-second total fetch deadline. All download metadata
+and the aggregate declared size are validated before any source transfer.
+At most four sources are fetched concurrently; any failure cancels peer requests
+and waits for their settlement before rejecting, with no partial cache admission.
+A two-pack LRU cache stays within 64 MiB; decoded samples retain
 the separate 24 MiB bound. Load failures keep synthesized feedback. Local ID-only
 references and portable pack export/import remain supported. Room uploads are absent.
 

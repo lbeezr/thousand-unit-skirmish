@@ -103,6 +103,8 @@ run(['--experimental-test-coverage', '--test-coverage-include=src/client/audio/a
   '--test', 'scripts/audio-shipped-response.test.mjs'], 'Shipped audio response coverage floor (100%)');
 run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio import provenance');
 run(['--test', 'scripts/audio-building-selection.test.mjs'], 'Civilization fallback and authoritative building selection audio');
+run(['--test', 'scripts/audio-default-feedback.test.mjs'], 'Default interaction recordings and click-to-order speech');
+run(['--test', 'scripts/renderer-interaction-audio-scenario.test.mjs'], 'Ordinary interaction audio output receipt contracts');
 run(['--test', 'scripts/audio-composer-preview.test.mjs'], 'Audio composer preview resume cancellation and retry');
 run(['--test', 'scripts/audio-composer-wav.test.mjs'], 'Audio composer WAV read/decode diagnostics and retry');
 run(['--test', 'scripts/audio-composer-export-lifecycle.test.mjs'], 'Audio composer export completion ownership and retry');

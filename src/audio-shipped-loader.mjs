@@ -23,18 +23,35 @@ export async function loadShippedAudio(reference, { fetch = globalThis.fetch, cr
   const manifest = JSON.parse(new TextDecoder().decode(bytes));
   const pack = validateAudioPack(manifest.pack);
   if (manifest.version !== ref.version || pack.id !== ref.packId || !pack.profiles.some((profile) => profile.id === ref.profileId)) throw new Error('Audio pack/version/profile mismatch');
-  const blobs = {}; let total = bytes.length;
+  const blobs = {}, downloads = []; let total = bytes.length;
   for (const source of pack.sources) {
     const item = manifest.downloads?.[source.id];
     if (!item || !/^\/assets\/audio\/[A-Za-z0-9/_-]+\.(mp3|wav|ogg)$/.test(item.path)
       || !Number.isSafeInteger(item.bytes) || item.bytes <= 0 || item.bytes > MAX_SOURCE_BYTES
       || !/^[a-f0-9]{64}$/.test(item.sha256) || !['audio/mpeg', 'audio/wav', 'audio/ogg'].includes(item.mimeType)
       || item.mimeType !== source.mimeType || total + item.bytes > MAX_PACK_BYTES) throw new Error('Invalid shipped audio source reference');
-    const data = await readBounded(await fetch(item.path, { signal, redirect: 'error', cache: 'no-store' }), item.bytes, item.mimeType);
-    if (data.length !== item.bytes) throw new Error('Audio source size mismatch');
-    await verify(data, item.sha256, crypto);
-    blobs[source.id] = new Blob([data], { type: item.mimeType }); total += data.length;
+    total += item.bytes;
+    downloads.push({ source, item });
   }
+  // A character pack contains many short clips. Validate its complete declared
+  // budget before transferring any source, then fetch at most four at a time.
+  // This avoids one serial network round trip per spoken response while keeping
+  // the original pack/source limits and all-or-nothing verified cache admission.
+  const batchAbort = new AbortController();
+  const downloadSignal = AbortSignal.any([signal, batchAbort.signal]);
+  let next = 0, failure = null;
+  await Promise.allSettled(Array.from({ length: Math.min(4, downloads.length) }, async () => {
+    while (!failure && next < downloads.length) {
+      const { source, item } = downloads[next++];
+      try {
+        const data = await readBounded(await fetch(item.path, { signal: downloadSignal, redirect: 'error', cache: 'no-store' }), item.bytes, item.mimeType);
+        if (data.length !== item.bytes) throw new Error('Audio source size mismatch');
+        await verify(data, item.sha256, crypto);
+        blobs[source.id] = new Blob([data], { type: item.mimeType });
+      } catch (error) { failure ||= error; batchAbort.abort(); }
+    }
+  }));
+  if (failure) throw failure;
   const loaded = { pack, sourceBlobs: blobs };
   // A concurrent verified load may have populated this key while we fetched.
   const previous = cache.get(key);

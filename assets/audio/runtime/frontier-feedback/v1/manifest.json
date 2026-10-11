@@ -1,0 +1,366 @@
+{
+  "version": "v1",
+  "pack": {
+    "schemaVersion": 1,
+    "id": "frontier-feedback",
+    "name": "Frontier voices and building sounds",
+    "sources": [
+      {
+        "id": "frontier-worker-select-1",
+        "name": "What needs doing?",
+        "fileName": "worker-select-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "sR6loC2Y1jo4MBlFsXEX",
+          "prompt": "What needs doing?",
+          "createdAt": "2026-10-11T14:45:25.226Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-select-2",
+        "name": "What needs doing?",
+        "fileName": "worker-select-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "zUlaN3XtNHJDRbWyAVFs",
+          "prompt": "What needs doing?",
+          "createdAt": "2026-10-11T14:45:25.294Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-select-3",
+        "name": "What needs doing?",
+        "fileName": "worker-select-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "3G48CzR0nwPVCrsiZeMa",
+          "prompt": "What needs doing?",
+          "createdAt": "2026-10-11T14:45:25.323Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-select-4",
+        "name": "What needs doing?",
+        "fileName": "worker-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "U10rVyANEp3z0GteE69d",
+          "prompt": "What needs doing?",
+          "createdAt": "2026-10-11T14:45:25.352Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-wood-1",
+        "name": "I'll cut wood.",
+        "fileName": "worker-gather-wood-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "klIIdEnomqCbtUvXQmO2",
+          "prompt": "I'll cut wood.",
+          "createdAt": "2026-10-11T14:45:59.224Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-wood-2",
+        "name": "I'll cut wood.",
+        "fileName": "worker-gather-wood-2.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "UcqDaCOGfcMLyRwsznts",
+          "prompt": "I'll cut wood.",
+          "createdAt": "2026-10-11T14:45:59.261Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-wood-3",
+        "name": "I'll cut wood.",
+        "fileName": "worker-gather-wood-3.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "R7c8Mly6wGhmNX6UlkRV",
+          "prompt": "I'll cut wood.",
+          "createdAt": "2026-10-11T14:45:59.320Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-worker-gather-wood-4",
+        "name": "I'll cut wood.",
+        "fileName": "worker-gather-wood-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_multilingual_v2",
+          "generationId": "sIUG85khTD9no8BVFpSP",
+          "prompt": "I'll cut wood.",
+          "createdAt": "2026-10-11T14:45:59.363Z",
+          "attribution": "Voice George - Warm, Captivating Storyteller (JBFqnCBsd6RMkjVDRZzb)"
+        }
+      },
+      {
+        "id": "frontier-barracks-select-4",
+        "name": "barracks selection",
+        "fileName": "barracks-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "xwdvzjwekY1tPFMeNkAJ",
+          "prompt": "A short close clatter of soldiers lifting worn shields from a wooden rack, dull iron fittings and leather, dry ending, no speech or music.",
+          "createdAt": "2026-10-11T14:48:09.101000+00:00",
+          "attribution": "Generated sound effect"
+        }
+      },
+      {
+        "id": "frontier-town-center-select-1",
+        "name": "town-center selection",
+        "fileName": "town-center-select-1.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "SrjX7LTzMiuh0N8tJGps",
+          "prompt": "A brief warm murmur of people talking in a busy timber town hall, indistinct words, natural close room acoustics, no music.",
+          "createdAt": "2026-10-11T14:48:09.016000+00:00",
+          "attribution": "Generated sound effect"
+        }
+      },
+      {
+        "id": "frontier-town-center-select-4",
+        "name": "town-center selection",
+        "fileName": "town-center-select-4.mp3",
+        "mimeType": "audio/mpeg",
+        "tags": [
+          "frontier",
+          "interaction"
+        ],
+        "provenance": {
+          "provider": "ElevenLabs",
+          "model": "eleven_text_to_sound_v2",
+          "generationId": "pFHJxUCWdTzyaa2Ot4mU",
+          "prompt": "A brief warm murmur of people talking in a busy timber town hall, indistinct words, natural close room acoustics, no music.",
+          "createdAt": "2026-10-11T14:48:09.103000+00:00",
+          "attribution": "Generated sound effect"
+        }
+      }
+    ],
+    "profiles": [
+      {
+        "id": "interactions",
+        "name": "Frontier interactions",
+        "bindings": {
+          "unit.worker.select": {
+            "bus": "voice",
+            "priority": 0,
+            "cooldownMs": 450,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-select-1",
+                "gain": 1.7179,
+                "caption": "What needs doing?"
+              },
+              {
+                "sourceId": "frontier-worker-select-2",
+                "gain": 1.39,
+                "caption": "What needs doing?"
+              },
+              {
+                "sourceId": "frontier-worker-select-3",
+                "gain": 1.4808,
+                "caption": "What needs doing?"
+              },
+              {
+                "sourceId": "frontier-worker-select-4",
+                "gain": 1.5031,
+                "caption": "What needs doing?"
+              }
+            ]
+          },
+          "unit.worker.gather.wood": {
+            "bus": "voice",
+            "priority": 1,
+            "cooldownMs": 250,
+            "variants": [
+              {
+                "sourceId": "frontier-worker-gather-wood-1",
+                "gain": 1.094,
+                "caption": "I'll cut wood."
+              },
+              {
+                "sourceId": "frontier-worker-gather-wood-2",
+                "gain": 1.028,
+                "caption": "I'll cut wood."
+              },
+              {
+                "sourceId": "frontier-worker-gather-wood-3",
+                "gain": 1.7338,
+                "caption": "I'll cut wood."
+              },
+              {
+                "sourceId": "frontier-worker-gather-wood-4",
+                "gain": 1.2064,
+                "caption": "I'll cut wood."
+              }
+            ]
+          },
+          "building.barracks.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-barracks-select-4",
+                "gain": 0.7621
+              }
+            ]
+          },
+          "building.town-center.select": {
+            "bus": "effects",
+            "priority": 0,
+            "cooldownMs": 1200,
+            "variants": [
+              {
+                "sourceId": "frontier-town-center-select-1",
+                "gain": 1.1455
+              },
+              {
+                "sourceId": "frontier-town-center-select-4",
+                "gain": 1.1285
+              }
+            ]
+          }
+        },
+        "music": {}
+      }
+    ],
+    "compositions": []
+  },
+  "downloads": {
+    "frontier-worker-select-1": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-1.mp3",
+      "bytes": 38068,
+      "sha256": "5aaf6e689ce1b4acc3fb9c6e16c0857018eba66dd7f0d17e6bfee7c706bf93e5",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-select-2": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-2.mp3",
+      "bytes": 37650,
+      "sha256": "946e51bd83ea67642d73fe13e0ebb3975b3a02740f3cc568f59af002f847c819",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-select-3": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-3.mp3",
+      "bytes": 38903,
+      "sha256": "c401b213da3bb10dcf54e1828ef341f69f1d10533cd0ef3a02b93e8e8bb09943",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-select-4": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-select-4.mp3",
+      "bytes": 36814,
+      "sha256": "adac9581e2bfcf6ea76db5a16fdc410940a9e27c826299bdf3cf4b1f860a6f0b",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-wood-1": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-1.mp3",
+      "bytes": 37650,
+      "sha256": "f86ff881e7ffb6857511084b3659d62fd4960c6a0a11590cadb892e78f9d3985",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-wood-2": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-2.mp3",
+      "bytes": 36814,
+      "sha256": "9e7e60ed5d992f2184d69c430e0ec59c3303b9becae54ee60a71cdbf3a5c8087",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-wood-3": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-3.mp3",
+      "bytes": 36814,
+      "sha256": "f98723ef362ab0c8157af5fce31d3d62e0796bf7f155675435ae6966d7cdc25b",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-worker-gather-wood-4": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/worker-gather-wood-4.mp3",
+      "bytes": 37650,
+      "sha256": "082ec82a647cff33aa33c493c65b816e84a3ec042e7151016691b0366c129cf6",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-barracks-select-4": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/barracks-select-4.mp3",
+      "bytes": 50188,
+      "sha256": "c7d0507c82c47968be2ad72301a9f32e1a19e26e9b02b1db7569dfe265faf97d",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-town-center-select-1": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/town-center-select-1.mp3",
+      "bytes": 50188,
+      "sha256": "3453ea7bf7a57578fdbe1fbc7680340c7a26b75bc2caa8ab5c891ad45dd33f23",
+      "mimeType": "audio/mpeg"
+    },
+    "frontier-town-center-select-4": {
+      "path": "/assets/audio/frontier-feedback-v1/sources/town-center-select-4.mp3",
+      "bytes": 50188,
+      "sha256": "099febfdb6e55752876d1087dbe155a4e8c1f8ccfd30fd7d2ed863c592270fab",
+      "mimeType": "audio/mpeg"
+    }
+  }
+}

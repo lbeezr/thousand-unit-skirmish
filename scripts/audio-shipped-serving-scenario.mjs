@@ -6,7 +6,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { loadShippedAudio } from '../src/audio-shipped-loader.mjs';
-import { SHIPPED_AUDIO_REFERENCES } from '../src/audio-shipped-catalog.mjs';
+import { DEFAULT_GAME_AUDIO_REFERENCE, SHIPPED_AUDIO_REFERENCES } from '../src/audio-shipped-catalog.mjs';
 const reservation = createServer(); reservation.listen(0, '127.0.0.1'); await once(reservation, 'listening');
 const port = reservation.address().port; await new Promise(resolve => reservation.close(resolve));
 const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-audio-serve-'));
@@ -23,6 +23,12 @@ try {
   assert.ok(ready, output);
   const loaded = await loadShippedAudio(SHIPPED_AUDIO_REFERENCES[0], { fetch: (url, options) => fetch(new URL(url, base), options) });
   assert.equal(Object.keys(loaded.sourceBlobs).length, 4);
+  const defaults = await loadShippedAudio(DEFAULT_GAME_AUDIO_REFERENCE, { fetch: (url, options) => fetch(new URL(url, base), options) });
+  assert.equal(Object.keys(defaults.sourceBlobs).length, 119);
+  assert.equal(defaults.pack.profiles[0].bindings['unit.worker.gather.wood'].bus, 'voice');
+  assert.equal(defaults.pack.profiles[0].bindings['unit.worker.gather.farm'].bus, 'voice');
+  assert.equal(defaults.pack.profiles[0].bindings['unit.skiff.return-cargo'].bus, 'voice');
+  assert.equal(defaults.pack.profiles[0].bindings['building.stable.select'].bus, 'effects');
   for (const reference of SHIPPED_AUDIO_REFERENCES.filter(ref => ref.packId.startsWith('vaelora-'))) {
     const regional = await loadShippedAudio(reference, { fetch: (url, options) => fetch(new URL(url, base), options) });
     assert.equal(regional.pack.profiles[0].music.defaultCompositionId, 'everyday');
@@ -33,7 +39,7 @@ try {
     const response = await fetch(`${base}/src/${module}`); assert.equal(response.status, 200); assert.match(response.headers.get('content-type'), /javascript/);
   }
   assert.notEqual((await fetch(`${base}/assets/audio/runtime/unapproved/v1/manifest.json`)).status, 200);
-  console.log('Authoritative server serves verified shipped manifest, four originals and loader modules.');
+  console.log('Authoritative server serves verified default interaction recordings, regional packs and loader modules.');
 } finally {
   child.kill('SIGINT');
   await Promise.race([once(child, 'exit'), new Promise(resolve => setTimeout(resolve, 3000))]);

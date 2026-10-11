@@ -168,6 +168,15 @@ bank and harvest loop are not implemented.
 Implementation is distinct from balance, readability, and external-playtest
 proof. The [QA plan](qa-vertical-slice.md) defines those observations.
 
+Interaction audio should give units a voice: selection acknowledges attention,
+and an accepted order acknowledges the actual task (for example, a Worker
+sent to timber responds about cutting wood). Buildings use brief characteristic
+activity/material sounds. This applies across normal maps, independently of
+regional music, with one group response and bounded repetition. See the
+[event/asset matrix](audio-event-asset-matrix.md#interaction-delivery-owner--11-october-2026)
+for delivered meanings and missing recordings; routing alone does not fulfill
+this player-facing requirement.
+
 Attack-move pathfinding keeps its one-new-flow-field-per-tick budget. Requests
 are scheduled separately from damage updates, with the oldest previous grant
 first and physical position breaking initial ties. Seat labels and roster IDs

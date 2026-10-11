@@ -26,7 +26,7 @@ import { matchesEconomySnapshot, profileDropoffResources, sumTypedCargo } from '
 import { WallPlacementGesture, wallCellAt, previewWallPlacement, wallPlacementFeedback } from './wall-placement.mjs';
 import { createWallPlacementGhost } from './wall-placement-ghost.mjs';
 import { ownedPopulationReadout } from './client/hud/population-readout.mjs';
-import { SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
+import { DEFAULT_GAME_AUDIO_REFERENCE, SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
 import { validateMapAudioReference } from './world/map-audio-reference.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from './hud-layout.mjs';
@@ -474,6 +474,7 @@ let audioRecognitionRound = null;
 let audioRecognitionLastReport = '';
 const audioRecognitionAnswerButtons = [...ui.audioRecognitionAnswers.querySelectorAll('[data-audio-recognition-answer]')];
 const audio = createGameAudio({
+  defaultReference: DEFAULT_GAME_AUDIO_REFERENCE,
   onStatusChange: () => syncAudioControls(),
   onCueDecision: (cue) => showAudioCaption(cue),
   onProfileCaption: (caption) => showProfileAudioCaption(caption),
@@ -7155,10 +7156,11 @@ function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
           && wildlifePointVisible(disclosed)) gatherJob = 'sheep-carcass';
       }
     }
-    orderAudioGate.sent(token, { cue: command.type === 'stop' || command.type === 'stopWildlife' ? 'stop' : command.type === 'holdPosition' ? 'hold' : command.type === 'patrol' ? 'patrol' : command.type === 'follow' ? 'follow' : command.type === 'repairBuilding' ? 'repair' : command.type === 'build' || command.type === 'buildWall' ? 'build'
-      : command.type === 'gather' ? 'gather'
+    orderAudioGate.sent(token, { cue: command.type === 'stop' || command.type === 'stopWildlife' ? 'stop' : command.type === 'holdPosition' ? 'hold' : command.type === 'patrol' ? 'patrol' : command.type === 'follow' ? 'follow' : command.type === 'repairBuilding' ? 'repair' : command.type === 'build' || command.type === 'buildWall' || command.type === 'replantFarm' ? 'build'
+      : command.type === 'gather' ? 'gather' : command.type === 'returnCargo' ? 'return-cargo'
         : command.type === 'attack' || command.type === 'attackBuilding' || command.type === 'attackMove'
-          ? 'attack' : 'move', kind: actor?.kind, resource, gatherJob });
+          ? 'attack' : 'move', kind: actor?.kind, resource, gatherJob,
+      ...(command.type === 'replantFarm' ? { buildJob: 'replant' } : {}) });
     audio.play('send');
     return token;
   }

@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { TERRAIN_MATERIALS } from '../terrain-materials.mjs';
 import { CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH } from './client-asset-paths.mjs';
+import { ROSTER_AUDIO_SOURCES } from './roster-audio-sources.mjs';
 
 // Shared exact static admission contract; does not read or serve files.
 export function isClientStaticAsset(relative) {
@@ -113,8 +114,14 @@ export function isClientStaticAsset(relative) {
   const publicBuildingLifecycleRuntimeAsset = path.dirname(relative) === `${buildingPackRoot}/runtime`
     && /^(?:town-center-(?:foundation|frame|complete|damaged|critical)-view-\d{2}\.webp|team-mask-(?:foundation|frame|complete|damaged|critical)-view-\d{2}\.png)$/.test(path.basename(relative));
   const publicZoneAudioAsset = (relative === 'assets/audio/runtime/rts-feedback-test/v1/manifest.json'
+    || relative === 'assets/audio/runtime/frontier-feedback/v1/manifest.json'
+    || relative === 'assets/audio/runtime/frontier-feedback/v2/manifest.json'
+    || relative === 'assets/audio/runtime/frontier-feedback/v3/manifest.json'
     || /^assets\/audio\/runtime\/vaelora-(?:bellweather|underbough|sereward|ellionar|veyrholds|pale-meridian|siltmouths|vesperra|sombral-mere|ru-lora-fringe|ru-lora-interior)\/v[12]\/manifest\.json$/.test(relative))
     || relative === 'assets/audio/vaelora-zones-v1/catalog.json'
+    || ROSTER_AUDIO_SOURCES.has(relative)
+    || /^assets\/audio\/frontier-feedback-v1\/sources\/(?:worker-(?:select|gather-wood)-[1-4]|barracks-select-4|town-center-select-[14])\.mp3$/.test(relative)
+    || /^assets\/audio\/frontier-worker-actions-v1\/sources\/worker-(?:attack-[34]|build-[34]|follow-[13]|gather-(?:farm-[12]|fish-[23]|food-[12]|sheep-carcass-[24]|stone-[23])|hold-[12]|move-[12]|patrol-[13]|ready-[24]|repair-[12]|stop-[14])\.mp3$/.test(relative)
     || /^assets\/audio\/vaelora-zones-v1\/sources\/tus_(?:bellweather|underbough|sereward|ellionar|veyrholds|pale-meridian|siltmouths|vesperra|sombral-mere|ru-lora-fringe|ru-lora-interior)_(?:music|terrain|contrast|signature)_0[12]_v001\.mp3$/.test(relative)
     || /^assets\/audio\/vaelora-pilot-v1\/sources\/tus_ui_(?:wood-token|iron-latch|muted-pluck|horn-note)_01_v001\.mp3$/.test(relative);
   return !(!publicZoneAudioAsset && !publicClientAsset && !publicEnvironmentModule && !publicPaintedMaterialAtlasAsset && !publicOakDepletionAtlasAsset && !publicEnvironmentAsset && !publicEnvironmentAtlasMetadata && !publicUiAsset

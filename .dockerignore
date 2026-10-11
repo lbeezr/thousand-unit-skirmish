@@ -161,6 +161,15 @@
 !assets/environment/frontier-v1/sombral-mere-lifecycle-atlas.json
 !assets/audio/runtime/
 !assets/audio/runtime/**
+!assets/audio/frontier-feedback-v1/
+!assets/audio/frontier-feedback-v1/sources/
+!assets/audio/frontier-feedback-v1/sources/*.mp3
+!assets/audio/frontier-worker-actions-v1/
+!assets/audio/frontier-worker-actions-v1/sources/
+!assets/audio/frontier-worker-actions-v1/sources/*.mp3
+!assets/audio/frontier-roster-feedback-v1/
+!assets/audio/frontier-roster-feedback-v1/sources/
+!assets/audio/frontier-roster-feedback-v1/sources/*.mp3
 !assets/units/cast-human-sprite-v2/
 !assets/units/cast-human-sprite-v2/sprite-atlas-pack-v1.json
 !assets/units/cast-human-sprite-v2/cast-atlas-runtime.png

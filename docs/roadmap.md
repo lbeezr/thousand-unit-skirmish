@@ -4,6 +4,21 @@
 
 ## Current priority
 
+Interaction audio is a current player-reported gap (11 October): unit selections
+must have character responses, accepted jobs must acknowledge their task, and
+buildings must have characteristic selection sounds. Chat `01a12b6b-d181-79b1-97b4-05de79523245`
+owns [delivery across the roster](audio-event-asset-matrix.md#interaction-delivery-owner--11-october-2026),
+beginning with Worker selection/Wood Gather and Barracks/Town Center. Recorded
+assets, default integration and actual deployed listening are separate receipts;
+regional-music audition does not close this outcome.
+The local third increment completes selection/supported-command material for
+all eight registered unit roles and selection material for all thirteen current
+buildings in `frontier-feedback/v3`, including Worker/Skiff Return Cargo routing.
+The GitHub app connection has confirmed write access; the CLI uses a different
+read-only identity. Publication proceeds through the app. The same owner retains
+identified delivery, full-roster ordinary-game output capture and listening;
+local source coverage is not a claim that the user's running game contains it.
+
 Build a reusable gameplay foundation and one complete faction. The
 [gameplay foundation plan](gameplay-foundation-plan.md) defines the implementation
 sequence and acceptance criteria. Existing solo/two-seat checks are the regression

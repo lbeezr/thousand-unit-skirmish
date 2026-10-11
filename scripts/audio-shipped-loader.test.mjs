@@ -105,6 +105,56 @@ test('cache remains capped and legacy references stay compatible', async () => {
   assert.throws(() => validateMapAudioReference({ ...ref, sha256: undefined }), /version.*hash/);
 });
 
+test('character sources load in bounded parallel batches after complete metadata validation', async () => {
+  const { loadShippedAudio: load } = await freshLoader('bounded-parallel');
+  const f = fixture(m => {
+    const original = [...m.pack.sources];
+    for (const source of original) {
+      const id = `more-${source.id}`;
+      m.pack.sources.push({ ...source, id }); m.downloads[id] = { ...m.downloads[source.id] };
+    }
+  });
+  let active = 0, peak = 0, started = 0;
+  const firstBatch = barrier(), release = barrier();
+  const loading = load(f.reference, { crypto: webcrypto, fetch: async (url, options) => {
+    if (url.endsWith('manifest.json')) return f.fetch(url, options);
+    active++; peak = Math.max(peak, active);
+    if (++started === 4) firstBatch.release();
+    await release.promise;
+    const response = await f.fetch(url, options); active--; return response;
+  } });
+  await firstBatch.promise;
+  assert.equal(started, 4); assert.equal(peak, 4);
+  release.release();
+  const loaded = await loading;
+  assert.equal(Object.keys(loaded.sourceBlobs).length, 8); assert.equal(peak, 4);
+  const invalid = fixture(m => { m.downloads[m.pack.sources.at(-1).id].bytes = 17 * 1024 * 1024; });
+  await assert.rejects(load(invalid.reference, { fetch: invalid.fetch, crypto: webcrypto }), /reference/);
+  assert.equal(invalid.calls(), 1, 'invalid later metadata must prevent all source transfers');
+});
+
+test('a failed source cancels peer downloads and prevents subsequent batches and partial caching', async () => {
+  const { loadShippedAudio: load, shippedAudioCacheState: state } = await freshLoader('cancel-peers');
+  const f = fixture(m => {
+    for (const source of [...m.pack.sources]) {
+      const id = `more-${source.id}`;
+      m.pack.sources.push({ ...source, id }); m.downloads[id] = { ...m.downloads[source.id] };
+    }
+  }), allStarted = barrier(); let started = 0, aborted = 0;
+  const pending = load(f.reference, { crypto: webcrypto, fetch: async (url, options) => {
+    if (url.endsWith('manifest.json')) return f.fetch(url, options);
+    const index = started++;
+    if (started === 4) allStarted.release();
+    if (index === 0) { await allStarted.promise; throw Error('first source failed'); }
+    return new Promise((_, reject) => options.signal.addEventListener('abort', () => {
+      aborted++; reject(Error('peer cancelled'));
+    }, { once: true }));
+  } });
+  await assert.rejects(pending, /first source failed/);
+  assert.equal(started, 4); assert.equal(aborted, 3);
+  assert.deepEqual(state(), { packs: 0, bytes: 0 });
+});
+
 test('stream cleanup failure retains the download failure and leaves cache empty for a retry', async () => {
   const { loadShippedAudio: load, shippedAudioCacheState: state } = await freshLoader('stream-cleanup');
   const cleanupError = new Error('cancel failed');
