@@ -187,3 +187,31 @@ The branding owner is publishing through that existing authorized GitHub app.
 Current remote `main` remains `e0ced8ad21081cdbd221561b784f16575035e5da`, so the
 prepared branch has no upstream conflict. Local tested source, API publication
 commit, clean release and actual deployment identities remain separate receipts.
+
+## Published PR and independent review
+
+[PR #637](https://github.com/lbeezr/thousand-unit-skirmish/pull/637) publishes the
+prepared tree as `f0b83484fbf998a00b056822f6de9ece92f3ef98`. All 63 focused entry
+tests, the 15-group menu scenario, types, import/asset checks, documentation links
+and the packed HTTP/WebSocket scenario passed again at that exact head. Its clean
+1,492-file package has the same `c6acd28c…449e30` digest recorded above.
+
+An in-app browser loaded that identified package at 1440×900. An isolated local
+proxy then returned HTTP 404 for the hero, brass and oak images. Desktop and
+320×844 fallback controls remained readable; the narrow page measured 320px with
+244px controls and no overflow. Settings opened and Escape returned focus. No
+console errors were captured and no match was entered (zero connected players).
+Owned test servers, disposable data and tabs were cleaned up. The available zoom
+keyboard action did not change the browser viewport; explicit 200% zoom remains
+unverified. The documentation specimen's earlier `file:` restriction is unchanged.
+
+The user authorized an independent read-only review agent and a bounded staging
+New Game → portal → Resume check after deployment. Review found one P2:
+unconditional `preventScroll` could initially focus a control below the viewport.
+The correction focuses an initial action only when its complete bounds are
+visible; otherwise document focus remains at the page start, with the existing
+Skip to play link available. It never takes focus from a control the user has
+already selected. Focused regression cases cover a partly visible action and an
+off-screen Settings fallback during an unavailable room service. The corrected
+65-test entry suite and type checks pass. Final review, release identity and
+staging acceptance follow in the PR's live checkpoint.

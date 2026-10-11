@@ -50,9 +50,11 @@ and deployed acceptance. The general cloud/Mac policy remains unchanged.
 The clean material package `dcf78dc0` and packed HTTP scenario pass; the full receipt is
 in the linked QA record. The terminal's `lbliii` account cannot push this fork,
 but the existing GitHub app's `lbeezr` connection has verified admin/write access.
-The earlier general access blocker is corrected in QA. Next: this chat publishes
-through that connection, integrates, inspects staging identity and runs the
-remaining deployed entry/Resume/game-launch recipe in a permitted environment.
+The earlier general access blocker is corrected in QA; [PR #637](https://github.com/lbeezr/thousand-unit-skirmish/pull/637)
+is published through the authorized app. Independent review requested a bounded
+initial-focus correction, now covered by focused regressions. The user also
+authorized one staging New Game → portal → Resume browser check. Next: this chat
+completes review, integrates, identifies staging and verifies that normal entry.
 
 ### Continuing delivery owners — 5 October 2026
 
