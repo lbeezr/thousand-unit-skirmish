@@ -94,7 +94,7 @@ export function observeInteractionAudio() {
     const point = { x: rect.left + (p.x + 1) * rect.width / 2, y: rect.top + (1 - p.y) * rect.height / 2 };
     return Math.abs(p.z) < 1 && document.elementFromPoint(point.x, point.y) === renderer.domElement ? point : null;
   };
-  probe.last = { mapId: mapDefinition?.id, team: localTeam, status: audio.getStatus(),
+  probe.last = { observedAt: performance.now(), mapId: mapDefinition?.id, team: localTeam, status: audio.getStatus(),
     inspector: audio.getInspector(), settings: audio.getSettings(),
     workers: units.filter(u => u?.team === localTeam && u.kind === 'worker' && u.hp > 0).slice(0, 4)
       .map(u => ({ id: u.id, selected: selected.has(u.id), point: project(u.renderX, u.renderZ, .65) })),
@@ -133,6 +133,27 @@ async function control(page, selector) {
 export async function run(value) {
   const { page, origin, source, capture, evidenceDirectory } = validateCaptureContext(value);
   const report = { schemaVersion: 1, source, mapId, status: 'failed', recordings: [], issues: [], listeningReview: 'pending' };
+  // Only local, public audio paths; never retain query strings, headers or
+  // unrelated requests. Completed and aborted transfers distinguish a slow
+  // first load from a lifecycle restart without changing browser networking.
+  const downloads = [], requests = new Map();
+  page.cdp.on('Network.requestWillBeSent', event => {
+    const url = new URL(event.request.url);
+    if (url.origin !== origin || !/^\/assets\/audio\/[A-Za-z0-9/_-]+\.(mp3|wav|ogg|json)$/.test(url.pathname)
+      || downloads.length >= 512) return;
+    const row = { path: url.pathname, startedAt: event.timestamp, state: 'pending' };
+    downloads.push(row); requests.set(event.requestId, row);
+  });
+  page.cdp.on('Network.loadingFinished', event => {
+    const row = requests.get(event.requestId); if (!row) return;
+    Object.assign(row, { state: 'completed', elapsedMs: (event.timestamp - row.startedAt) * 1000, bytes: event.encodedDataLength });
+    requests.delete(event.requestId);
+  });
+  page.cdp.on('Network.loadingFailed', event => {
+    const row = requests.get(event.requestId); if (!row) return;
+    Object.assign(row, { state: event.canceled ? 'canceled' : 'failed', elapsedMs: (event.timestamp - row.startedAt) * 1000 });
+    requests.delete(event.requestId);
+  });
   let stage = 'source';
   try {
     const main = await (await fetch(`${origin}/src/main.js`)).text();
@@ -226,7 +247,9 @@ export async function run(value) {
             return { disabled: e.disabled, x: r.x, y: r.y, width: r.width, height: r.height }; })(),
           probe: Boolean(probe), faults: probe?.faults ?? [],
           mapId: last?.mapId ?? null, team: last?.team ?? null,
+          observationAgeMs: last ? performance.now() - last.observedAt : null,
           audioStatus: last?.status ?? null, packStatus: last?.inspector?.status ?? null,
+          bindingCount: last?.inspector?.bindings?.length ?? 0,
           workers: last?.workers ?? [], buildings: last?.buildings ?? [] };
       })()`);
       // Entry may fail before a rendered game frame exists. Retain a raw
@@ -240,6 +263,7 @@ export async function run(value) {
       report.diagnosticImage = { file, sha256: hash(bytes), scope: 'failure-diagnostic-only' };
     } catch { report.issues.push({ stage, code: 'failure-diagnostic-unavailable' }); }
   }
+  report.downloads = downloads;
   await writeFile(path.join(evidenceDirectory, 'interaction-audio.json'), JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
   const passed = report.status === 'captured-needs-listening';
   return { status: passed ? 'passed' : 'failed', checks: [{ id: 'ordinary-clicks-native-output-recorded', passed }] };

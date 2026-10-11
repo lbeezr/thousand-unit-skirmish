@@ -22,7 +22,7 @@ Source coverage does not close deployment or listening acceptance.
 | Current-roster source | `22c6d7fbe5814f1db9682c2f7257c7500c7c2fd2`; all current selection/supported-command recordings and applied Return Cargo routing. |
 | Current-roster clean release | `sourceDirty: false`, digest `sha256:ea62ef2e6536e5104f9fc7deaf99eeac88264995c94cd2218835c39ee38f837f`; 1,816 files. Real packed server hash-verifies all 119 default recordings and serves all 146 imported client modules. |
 | Audio manifest | `frontier-feedback/v1`, profile `interactions`, SHA-256 `b13cb7b0f5a0e89fa0d8c03d86923964ed78f8a3260d6a3ba035def5aad4f55c`; eleven sources, 450,927 source bytes. |
-| Publication | The CLI identity `lbliii` rejects the fork push and reports `push: false`. On the user's correction, the GitHub app connection was checked separately and confirms `admin: true`, `push: true` for `lbeezr/thousand-unit-skirmish`. Publication is proceeding through that already-authorized app; no permission expansion is needed. |
+| Publication access | The CLI identity `lbliii` rejects the fork push and reports `push: false`. On the user's correction, the GitHub app connection was checked separately and confirms `admin: true`, `push: true` for `lbeezr/thousand-unit-skirmish`. Publication and merge succeeded through that already-authorized app; no permission expansion was needed. |
 | Publication / merge | [PR638](https://github.com/lbeezr/thousand-unit-skirmish/pull/638), published through the GitHub app at `53be9499ccf788594dd08d11d5e3d213c6c76abd`, merged as `b4ad36cf80ca923ed808c06df113ae6bdad5c997`. The published tree exactly matches independently reviewed local `48d4fe37`; all 365 uploaded blob hashes were checked. |
 | Merged clean release | Source `b4ad36cf80ca923ed808c06df113ae6bdad5c997`, `sourceDirty: false`, digest `sha256:c771c5933f5856d564858cb63111c442041e71f8fe72a2eb0c30b5090a6ea468`, 1,821 files. This includes current main's separately merged portal. |
 | Containing deployment | Staging deployment `36e172c3-0439-4507-b596-7fe6bb924f53` serves `b4ad36cf`. The [authenticated served receipt](qa-evidence/interaction-audio-2026-10-11/staging-served.json) verifies exact source identity and all 119 recording hashes. Railway Git identity leaves runtime digest/cleanliness unknown; the clean local/cloud pack digest is separate. |
@@ -66,7 +66,13 @@ tests, both type projects, docs, import boundaries, client static admission and
 cloud-adapter precheck pass on local integration `09fb1abd`. Its tree
 `1368f6129167631f5bc2253c49df93456a2ce86b` exactly matches merged `b4ad36cf`.
 Hosted CI was running at merge; main had no required branch protections or
-rules, and no hosted/full-suite pass is claimed.
+rules. [PR638 CI](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38153265164)
+subsequently failed the same three movement checks as
+[pre-audio main CI](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37956916490):
+paid-wall/closed-gate queued destinations, obstructed formation reservations,
+and opt-in planning budgets/order invalidation. The audio checks passed. No
+hosted/full-suite pass is claimed; these pre-existing failures remain separate
+from audio acceptance.
 
 ### First cloud execution and served delivery
 
@@ -83,6 +89,25 @@ The follow-up adapter adds specific wait stages, safe probe error names and
 bounded state/screenshot diagnostics. Its source-ready wait now allows 35 seconds,
 exceeding the shipped loader's 30-second deadline. These changes make the next
 cloud run diagnosable; they do not change production audio or assert a fix.
+
+[The third run](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38154129086)
+at `e1e63ee3` identifies the failure at `default-audio-ready`. Its
+[case receipt](qa-evidence/interaction-audio-2026-10-11/loading-cloud/interaction-audio.json)
+shows a ready game, the expected map and visible Workers, with no observation
+faults. The default bindings did not become available within 35 seconds. The
+[browser receipt](qa-evidence/interaction-audio-2026-10-11/loading-cloud/qualification.json)
+records canceled voice downloads, and the
+[diagnostic frame](qa-evidence/interaction-audio-2026-10-11/loading-cloud/failure-default-audio-ready.png)
+shows a reconnect. The second run (`38153774353`) failed earlier at menu entry;
+guarding the transient missing document root allowed this third run to proceed.
+
+Inspection found a concrete lifecycle defect: each welcome called `loadMapAudio`
+even for an unchanged map, aborting all pending source downloads and clearing
+the active bindings. The follow-up preserves audio on an unchanged-map welcome;
+actual map changes still reset it. This is independently justified by the
+reconnect path, but the third receipt alone does not distinguish a reconnect
+abort from the loader's 30-second timeout. Bounded, public-path-only network
+timings in the next run will retain that distinction. Playback remains unverified.
 
 The staging HTTP check passed source `b4ad36cf`, public gameplay/readiness and
 protected health, default v3 manifest/source verification (119 recordings),
@@ -204,9 +229,10 @@ outputs, screenshots, source hashes and observed final-output levels. Native
 decode/start hashes distinguish the intended recording from synthesized fallback.
 It adds no microphone access and changes no gameplay or mix settings.
 
-Run after publication with the workflow's `interaction-audio` choice. The local
+Run with the workflow's `interaction-audio` choice. The local
 precheck is `node scripts/renderer-feature-capture.mjs --check interaction-audio`.
-The adapter and receipt tests are CPU checks only: **the cloud case has not run**.
+The adapter and receipt tests are CPU checks only. The first executed cloud case
+failed before recording, as documented above.
 Its `captured-needs-listening` receipt deliberately leaves creative listening
 pending. The shared browser fixture permits autoplay, so this case also does
 not establish browser-policy unlock behavior on the user's device. Staging

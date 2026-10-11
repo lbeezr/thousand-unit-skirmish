@@ -10278,7 +10278,9 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
       if (hasPlayerSeat) cameraSeatTeam = message.player.team;
       else if (message.player.resumePending !== true) cameraSeatTeam = null;
       const { matchWasReset, matchWasRestored } = welcomeSession.recordWelcomeIdentity(message);
-      void loadMapAudio(message.map.audio);
+      // A same-map reconnect must retain the verified sounds and any in-flight
+      // downloads. Restarting this load aborts the entire default voice pack.
+      if (mapChanged) void loadMapAudio(message.map.audio);
       if (mapChanged) {
         mapDefinition = message.map;
         buildMap(mapDefinition);
