@@ -114,7 +114,7 @@ capture context unchanged. Each case is bounded to five minutes, serial within
 the run, with completed and failed screenshots retained before cleanup.
 
 The [scenario](../scripts/renderer-hud-staging-scenario.mjs) enters through the
-normal Map Studio menu, imports a disclosed 64 × 64 derivative of the existing
+normal Map Studio menu, imports a disclosed 160 × 160 derivative of the existing
 mature-settlement fixture, then uses Save & Play, actual picks and enabled HUD
 controls. Buildings and production are paid ordinary actions; no runtime world,
 bank or command handler is changed. This authored-room entry is separate from
@@ -148,7 +148,7 @@ passed sandboxed WebGL2 but all three cases stopped at room creation with HTTP
 existing rooms were changed. The user authorized a temporary staging limit of 9.
 `all` now runs the three groups sequentially in one fresh owned `rollout` room,
 within the existing five-minute deadline, so this check consumes only one slot.
-The HUD owner restores the limit to 8 afterward. The extra saved test room uses
+The original plan assigned restoration to HUD; the later explicit audio handoff below supersedes that ownership. The extra saved test room uses
 ordinary idle expiry; reducing the limit does not delete saved rooms.
 
 The separate normal-entry
@@ -161,3 +161,63 @@ while reconnecting. The shared synchronized checkpoint failed before Move, and
 two canceled room-API fetches remain unresolved. This is partial appearance
 evidence, **not an interaction pass**. HUD retains the ordinary-entry follow-up;
 no recovery or browser-error gate is weakened to accept these frames.
+
+The one-room retry,
+[run 38162536764](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38162536764),
+used and served `77b2ad698232ae6d6ed4b00965817d033527203f`, verified public HUD
+hashes before and after, and created the ninth room successfully. The reviewed
+failure image shows the imported 64 × 64 draft in Map Studio, but Save & Play
+never applied it: the active map remained Terraced Vale with an open socket and
+recovery active. Two canceled room-API fetches remain real failed evidence.
+The [retained review and receipts](qa-evidence/hud-hosted-2026-10-11/review.json)
+separate served identity, clean package digest and partial appearance evidence.
+
+The HUD capture now waits for the ordinary live/nonrecovering command gate before
+native controls or picks; an enabled Studio button alone does not establish
+command availability. The native Worker wrapper likewise waits for its synced
+applied/requested map before invoking the shared checkpoint. Existing frame,
+browser-error and timeout gates remain intact. These readiness corrections
+require another actual capture; CPU predicates cannot prove the connection
+problem resolved. The audio owner is separately correcting the room-lookup
+response lifecycle in `src/main.js`; HUD does not duplicate that shared edit.
+
+After the HUD retry finished, the audio chat
+`01a12b6b-d181-79b1-97b4-05de79523245` accepted the shared capacity transition
+from 9 to its separately user-authorized 10. It owns restoring the configured
+and served limit to 8 after its capture. Existing saved rooms remain preserved;
+HUD leaves the current setting alone to avoid a competing redeployment.
+
+
+### Authorized in-app browser iteration
+
+The user explicitly allowed a bounded Mac in-app browser HUD check on 11 October,
+lifting the start skill's Mac fallback restriction for this check. With staging
+at 9/9 saved rooms and the separately approved tenth slot assigned to audio, HUD
+used the clean local package at `77b2ad698232ae6d6ed4b00965817d033527203f`
+(digest above), through normal New Game into Tiny Terraced Vale. This is actual
+ordinary-game local evidence, separate from staging acceptance.
+
+The [review and screenshots](qa-evidence/hud-iab-2026-10-11/review.json) verify
+72px Worker selection, native movement and arrival, army stance, mixed selection,
+paid Town Center and Barracks queues through completion, research disclosure,
+Help/Settings/Objectives and the compact 1024×768 Worker reflow. The 1920×1080
+image was cropped by the browser surface to 1873 pixels; its right edge remains
+unverified. Two startup texture warnings are retained. Skiffs, owned wildlife,
+both-seat and remaining lifecycle coverage stay open.
+
+A selected unfinished Barracks displayed the generic instruction to select a
+completed building. Its production reason now says `FINISH CONSTRUCTION TO TRAIN`
+without changing availability. This bounded copy correction uses the existing
+[Obsidian specimen](art-direction/hud-design-system-2026-10-11/component-specimen.html)
+and the retained construction frame as visual backing. Separately, the hosted
+fixture now expands the mature settlement to the existing ordinary 160-cell
+minimum. The earlier 64-cell draft was not admissible to normal Studio publication;
+readiness alone could not make it apply. Historical failed runs remain unchanged.
+
+The construction copy was then verified in a second normal New Game using clean
+local source `eb437cc22d823bf4dbf3f9e2cd7e4e74130e38ae`, release digest
+`sha256:fb6389185bbb828956ca1e4e7fc3c6b54230c3cff7be6263cef9c1d871950c6f`.
+At 66–68% Barracks construction, both training actions stayed disabled and showed
+the corrected reason. The temporary browser tab and owned local supervisor were
+closed after capture; the viewport override was reset. No staging room was
+created or altered by this in-app check.

@@ -4,14 +4,30 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import vm from 'node:vm';
 import { HUD_PUBLIC_FILES, HUD_CASES, hudMatrix, identifyHudSource, runHudStaging } from './renderer-hud-staging.mjs';
-import { hudFixture, validateHudFrame } from './renderer-hud-staging-scenario.mjs';
+import { hudFixture, hudInputReady, validateHudFrame } from './renderer-hud-staging-scenario.mjs';
 import { STAGING_ORIGIN } from './renderer-roster-audio-plan.mjs';
+import { mapSizeIdentity } from '../src/map-size-policy.mjs';
 
 const revision='a'.repeat(40);
+test('native control readiness waits through recovery and closed sockets without blocking menu entry',()=>{
+  const read=(entry,state,connection)=>vm.runInNewContext(`(${hudInputReady.toString()})()`,{
+    window:{__rtsBrowserRecoverySnapshot:()=>state}, document:{documentElement:{dataset:{entry}},
+      querySelector:()=>({textContent:connection})}});
+  assert.equal(read('menu',undefined,undefined),true);
+  assert.equal(read(undefined,undefined,undefined),false);
+  assert.equal(read('game',undefined,'ROOM LIVE'),false);
+  for(const socketState of [0,1,2,3]) for(const recovering of [true,false]) {
+    assert.equal(read('game',{socketState,recovering},'ROOM LIVE'),socketState===1&&!recovering);
+  }
+  assert.equal(read('game',{socketState:1,recovering:false},'SYNCING CURRENT STATE'),false);
+  assert.equal(read('game',{socketState:1,recovering:false},'WAITING FOR PLAYER 2'),true);
+});
 test('explicit bounded subsets and authored fixtures cannot dispatch arbitrary work',()=>{
   assert.deepEqual(hudMatrix('all'),['rollout']);
   for(const id of HUD_CASES) { assert.deepEqual(hudMatrix(id),[id]); const map=hudFixture(id);
+    assert.equal(mapSizeIdentity(map).ordinarySelectable,true);
     assert.equal(map.id,`hud-${id}`); assert.equal(map.startingArmySize,24); assert.deepEqual(map.scenarioEvents,[]); }
   for(const bad of ['','../secret','all,selections','shell','buildings;echo']) { assert.throws(()=>hudMatrix(bad)); assert.throws(()=>hudFixture(bad)); }
 });

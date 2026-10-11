@@ -75,11 +75,13 @@
     },
     {
       "requirement": "Ordinary-game in-game verification retained by implementation owner",
-      "status": "incomplete; hosted HUD checks resumed by explicit user authorization on 11 October 2026",
+      "status": "partial ordinary local in-game acceptance; staging and remaining selection coverage incomplete",
       "evidence": [
-        "docs/qa-normal-new-game-capture.md#checks-and-current-acceptance"
+        "docs/qa-normal-new-game-capture.md#checks-and-current-acceptance",
+        "docs/qa-evidence/hud-hosted-2026-10-11/review.json",
+        "docs/qa-evidence/hud-iab-2026-10-11/review.json"
       ],
-      "nextAction": "HUD owner completes native capture and PNG review through the approved hosted routes; current main has two recorded harness failures, neither a game acceptance pass."
+      "nextAction": "HUD owner completes staging native acceptance and Skiff/wildlife/both-seat coverage. Local normal-entry and construction-copy evidence are retained separately from failed hosted runs."
     }
   ],
   "complete": false,

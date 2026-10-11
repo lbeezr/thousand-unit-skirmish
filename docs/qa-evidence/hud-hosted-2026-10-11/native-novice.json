@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "scope": "automated-normal-new-game-worker-move",
+  "status": "failed",
+  "release": {
+    "sourceRevision": "448f163092be4e4247fd57ec5b8857be9b590f4e",
+    "digest": "sha256:53c23386177ed236c7c8a70ab9431bd674ba1181da988ab29e9818a557267d8b"
+  },
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "dpr": 1
+  },
+  "identity": {
+    "ok": true,
+    "expected": {
+      "sourceRevision": "448f163092be4e4247fd57ec5b8857be9b590f4e",
+      "digest": "sha256:53c23386177ed236c7c8a70ab9431bd674ba1181da988ab29e9818a557267d8b"
+    },
+    "served": {
+      "sourceRevision": "448f163092be4e4247fd57ec5b8857be9b590f4e",
+      "sourceDirty": false,
+      "digest": "sha256:53c23386177ed236c7c8a70ab9431bd674ba1181da988ab29e9818a557267d8b",
+      "origin": "packed-manifest"
+    },
+    "scope": "source-and-declared-release-digest",
+    "issues": []
+  },
+  "steps": [
+    {
+      "step": "menu",
+      "entry": "menu",
+      "visible": true,
+      "enabled": true,
+      "png": "menu.png",
+      "pngSha256": "381903905f169ef1a3b16292bcbd3789ec2a03ac2fb58881eab3b2d0782f1916"
+    },
+    {
+      "step": "normal-game",
+      "png": "normal-game.png",
+      "pngSha256": "3a17c90f18176da89ad35ff53ea9d8e78d2d08ed46d5a17a972c338a3430fea5"
+    },
+    {
+      "step": "selection",
+      "selected": 1,
+      "context": "workers",
+      "worker": {
+        "id": 0,
+        "team": 0,
+        "x": -58.6,
+        "z": -0.4,
+        "hp": 100,
+        "generation": 241181305,
+        "task": "idle"
+      },
+      "png": "selected-worker.png",
+      "pngSha256": "749c56b9c57301b69da6074783579cceaaa183a2fb7e5a4122e2a1d261eef35f"
+    }
+  ],
+  "frames": [],
+  "issues": [
+    {
+      "stage": "selection",
+      "code": "execution-failed",
+      "systemCode": null
+    },
+    {
+      "stage": "evidence",
+      "code": "browser-errors"
+    }
+  ],
+  "browserEvents": [
+    {
+      "kind": "network-failure"
+    },
+    {
+      "kind": "network-failure"
+    }
+  ],
+  "match": {
+    "mode": "pve",
+    "map": {
+      "id": "veyrholds-terraced-vale",
+      "width": 160,
+      "height": 160
+    },
+    "matchModeId": "skirmish",
+    "matchModeVersion": 1,
+    "mapSeed": 3061847279,
+    "policySeed": 2603315834,
+    "armySize": 24,
+    "team": 0,
+    "openingWorkers": 4
+  },
+  "final": {
+    "entry": "game",
+    "ready": true,
+    "canvas": true,
+    "menu": {
+      "visible": false,
+      "enabled": false
+    },
+    "selected": 1,
+    "context": "workers",
+    "contextVisible": true,
+    "feedback": {
+      "visible": false,
+      "state": "ready",
+      "text": null
+    },
+    "mode": "pve",
+    "mapSeed": 3061847279,
+    "policySeed": 2603315834,
+    "diagnosticEntry": false,
+    "roomEntry": true,
+    "team": 0,
+    "latest": {
+      "team": 0,
+      "tick": 1314,
+      "mapId": "veyrholds-terraced-vale",
+      "matchModeId": "skirmish",
+      "matchModeVersion": 1,
+      "armySize": 24,
+      "map": null,
+      "workers": [
+        {
+          "id": 0,
+          "team": 0,
+          "x": -58.6,
+          "z": -0.4,
+          "hp": 100,
+          "generation": 241181305,
+          "task": "idle"
+        },
+        {
+          "id": 1,
+          "team": 0,
+          "x": -56.4,
+          "z": -0.4,
+          "hp": 100,
+          "generation": 241181305,
+          "task": "idle"
+        },
+        {
+          "id": 2,
+          "team": 0,
+          "x": -58.6,
+          "z": 1.4,
+          "hp": 100,
+          "generation": 241181305,
+          "task": "idle"
+        },
+        {
+          "id": 3,
+          "team": 0,
+          "x": -56.4,
+          "z": 1.4,
+          "hp": 100,
+          "generation": 241181305,
+          "task": "idle"
+        }
+      ]
+    },
+    "map": {
+      "id": "veyrholds-terraced-vale",
+      "width": 160,
+      "height": 160
+    },
+    "sent": [],
+    "frameNumber": 39,
+    "time": 56686.100000000006,
+    "stateAt": 56685.79999999999,
+    "errors": [],
+    "droppedErrors": 0,
+    "droppedCommands": 0
+  },
+  "failureCapture": {
+    "png": "failure.png",
+    "pngSha256": "87b796e19f919e7a0da4bc5f40cf95e15fd7f96e0b2d205fdc684b336ea8905f"
+  }
+}

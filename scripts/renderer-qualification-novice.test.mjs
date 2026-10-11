@@ -7,7 +7,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { clickNovicePoint, noviceBeforeScript, readNoviceUi, reduceNoviceCommand,
   reduceNoviceMessage, runNoviceScenario, validateNoviceFrames, validateNoviceOrder } from './renderer-qualification-novice.mjs';
-import { contextVersion, id, run, validateWorkerPilot } from './renderer-novice-flow-scenario.mjs';
+import { contextVersion, id, run, validateWorkerPilot, noviceCheckpointReady } from './renderer-novice-flow-scenario.mjs';
 import { loadCaptureCases, runFeatureBatch } from './renderer-feature-capture.mjs';
 
 const revision = 'a'.repeat(40), digest = `sha256:${'b'.repeat(64)}`;
@@ -290,10 +290,22 @@ test('actual positive orchestration rejects final-read network/probe faults and 
   }
 });
 
+test('selected Worker checkpoint waits for the applied map and synchronized connection',()=>{
+  const ready=(applied,requested,connection)=>vm.runInNewContext(`(${noviceCheckpointReady.toString()})()`,{
+    window:{__rtsEnvironmentStateSnapshot:{mapId:applied}}, document:{querySelector:selector=>selector==='#map-select'
+      ? {value:requested}:{textContent:connection}}});
+  assert.equal(ready(state.mapId,state.mapId,'ROOM LIVE'),true);
+  for(const connection of ['SYNCING CURRENT STATE','RECONNECTING','AWAITING SERVER RESPONSE',undefined])
+    assert.equal(ready(state.mapId,state.mapId,connection),false);
+  assert.equal(ready(state.mapId,'open-field','ROOM LIVE'),false);
+  assert.equal(ready(undefined,state.mapId,'ROOM LIVE'),false);
+});
+
 test('registered case binds source and real selection checkpoint, rejecting missing evidence or hidden capture failure', async () => {
   assert.equal(id, 'novice-flow');
   assert.equal(contextVersion, 1);
-  const page = { cdp: { evaluate: async () => workerPilotReceipt } }, captures = [], context = { version: 1, page, origin: 'http://127.0.0.1:4321',
+  let ready = false;
+  const page = { wait: async () => {ready=true;}, cdp: { evaluate: async () => {assert.equal(ready,true);return workerPilotReceipt;} } }, captures = [], context = { version: 1, page, origin: 'http://127.0.0.1:4321',
     source: Object.freeze({ revision, digest }), evidenceDirectory: '/owned/novice-flow',
     capture: async options => captures.push(options) };
   let executions = 0;

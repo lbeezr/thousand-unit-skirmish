@@ -6,6 +6,13 @@ import { runNoviceScenario } from './renderer-qualification-novice.mjs';
 export const id = 'novice-flow';
 export const contextVersion = 1;
 
+export function noviceCheckpointReady() {
+  const map = window.__rtsEnvironmentStateSnapshot?.mapId;
+  return map === 'veyrholds-terraced-vale'
+    && document.querySelector('#map-select')?.value === map
+    && ['ROOM LIVE', 'WAITING FOR PLAYER 2'].includes(document.querySelector('#network-status')?.textContent);
+}
+
 // Bounded DOM observations from the ordinary selected-Worker checkpoint. This
 // accompanies the real GPU/movement captures; it cannot substitute for them.
 export async function readWorkerPilot() {
@@ -49,6 +56,7 @@ export async function run({ version, page, origin, source, capture, evidenceDire
   const result = await execute({ page, origin, evidenceDirectory,
     release: { sourceRevision: source?.revision, digest: source?.digest },
     onSelected: async () => {
+      await page.wait(`(${noviceCheckpointReady.toString()})()`, 'synced Worker checkpoint');
       validateWorkerPilot(await page.cdp.evaluate(`(${readWorkerPilot.toString()})()`));
       workerPilotVerified = true;
       await capture({ page, mapId: 'veyrholds-terraced-vale', checkpoint: 'selected-worker' });

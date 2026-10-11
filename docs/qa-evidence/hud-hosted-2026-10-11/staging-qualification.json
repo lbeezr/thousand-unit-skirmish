@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "subset": "rollout",
+  "expectedRevision": "77b2ad698232ae6d6ed4b00965817d033527203f",
+  "scope": "public-staging-HUD",
+  "status": "failed",
+  "sandbox": "enabled",
+  "deployedRevision": null,
+  "releaseDigest": null,
+  "appearanceReview": "pending",
+  "issues": [
+    {
+      "code": "capture-or-browser-failure"
+    }
+  ],
+  "source": {
+    "expectedRevision": "77b2ad698232ae6d6ed4b00965817d033527203f",
+    "identityScope": "exact-public-HUD-file-hashes",
+    "deployedRevision": null,
+    "releaseDigest": null,
+    "files": [
+      {
+        "path": "/index.html",
+        "bytes": 92151,
+        "sha256": "910f891171b54e8091a50142e2f1b75192f9f71e8cd60a5800367e92187ed75e"
+      },
+      {
+        "path": "/style.css",
+        "bytes": 106152,
+        "sha256": "c4b13fc180201708b8666f8625f8fcad0fa2076aee2b7fbe381b21810e54ae53"
+      },
+      {
+        "path": "/src/main.js",
+        "bytes": 543975,
+        "sha256": "2d64920c693d5ea64b593d915ad43785be6c6824d0f9500454bb27f1b39ddc51"
+      },
+      {
+        "path": "/src/client/hud/selection-hud.css",
+        "bytes": 4431,
+        "sha256": "126179ff484c090e9212d67dac3ad14f9eebf1958d40a97d9d940d7230b76d45"
+      },
+      {
+        "path": "/src/client/hud/worker-hud.mjs",
+        "bytes": 10057,
+        "sha256": "d7761569b4997791865ba7fafb3ec1d6ae3a437b920e39086bea229d0a497faa"
+      },
+      {
+        "path": "/src/client/hud/worker-hud.css",
+        "bytes": 2535,
+        "sha256": "7c36f4e7f33ab60235c3da6ebdc7b42f87d25b27341ba90fd51240bb03f98993"
+      },
+      {
+        "path": "/src/client/hud/building-hud.mjs",
+        "bytes": 8948,
+        "sha256": "a598a83672b47f5612e1ab6b852186b7f6047b3cc6cb24ab88bc996326ebb3d7"
+      },
+      {
+        "path": "/src/client/hud/building-hud.css",
+        "bytes": 3555,
+        "sha256": "269d1ebbaf9490701d1b7a6a8b2e7c6a4d7e5e9d1e97eb0197c9061349150118"
+      },
+      {
+        "path": "/src/client/hud/unit-hud.mjs",
+        "bytes": 8736,
+        "sha256": "24053a3fd5c49c38069447b1de425760814c2370ee8bc6d1e6fe73c3426cfc10"
+      },
+      {
+        "path": "/src/client/hud/unit-hud.css",
+        "bytes": 3557,
+        "sha256": "3b48bf16b8c2cd7c43ddf665f466eeb4f18928ef5c093ab211dcb5776240254a"
+      },
+      {
+        "path": "/src/client/hud/wildlife-hud.mjs",
+        "bytes": 1385,
+        "sha256": "e85e5c3cd841e0e1bb24d31cd2c97d67f10351c81a1232bccf6a039853f6ca13"
+      },
+      {
+        "path": "/src/client/hud/match-ui.css",
+        "bytes": 7857,
+        "sha256": "9fdcc405ebe211d339879957429e858f5524996b3edde23df77d20c2f3a95b25"
+      },
+      {
+        "path": "/assets/ui/fonts/dm-sans.ttf",
+        "bytes": 240164,
+        "sha256": "8cd08d97e89c24d0aa92edd2f0f4c8ee6195eee9b7c9f154865a58b02f0c1c0d"
+      },
+      {
+        "path": "/assets/ui/fonts/barlow-condensed-medium.ttf",
+        "bytes": 103360,
+        "sha256": "262bd143292ce479ee0cd09a42b47ab173fca8e9c6eb5ed0b5c8a845bc371d17"
+      }
+    ]
+  },
+  "browser": "Chrome/154.0.8037.97",
+  "captureStatus": "failed",
+  "sourceAfter": {
+    "expectedRevision": "77b2ad698232ae6d6ed4b00965817d033527203f",
+    "identityScope": "exact-public-HUD-file-hashes",
+    "deployedRevision": null,
+    "releaseDigest": null,
+    "files": [
+      {
+        "path": "/index.html",
+        "bytes": 92151,
+        "sha256": "910f891171b54e8091a50142e2f1b75192f9f71e8cd60a5800367e92187ed75e"
+      },
+      {
+        "path": "/style.css",
+        "bytes": 106152,
+        "sha256": "c4b13fc180201708b8666f8625f8fcad0fa2076aee2b7fbe381b21810e54ae53"
+      },
+      {
+        "path": "/src/main.js",
+        "bytes": 543975,
+        "sha256": "2d64920c693d5ea64b593d915ad43785be6c6824d0f9500454bb27f1b39ddc51"
+      },
+      {
+        "path": "/src/client/hud/selection-hud.css",
+        "bytes": 4431,
+        "sha256": "126179ff484c090e9212d67dac3ad14f9eebf1958d40a97d9d940d7230b76d45"
+      },
+      {
+        "path": "/src/client/hud/worker-hud.mjs",
+        "bytes": 10057,
+        "sha256": "d7761569b4997791865ba7fafb3ec1d6ae3a437b920e39086bea229d0a497faa"
+      },
+      {
+        "path": "/src/client/hud/worker-hud.css",
+        "bytes": 2535,
+        "sha256": "7c36f4e7f33ab60235c3da6ebdc7b42f87d25b27341ba90fd51240bb03f98993"
+      },
+      {
+        "path": "/src/client/hud/building-hud.mjs",
+        "bytes": 8948,
+        "sha256": "a598a83672b47f5612e1ab6b852186b7f6047b3cc6cb24ab88bc996326ebb3d7"
+      },
+      {
+        "path": "/src/client/hud/building-hud.css",
+        "bytes": 3555,
+        "sha256": "269d1ebbaf9490701d1b7a6a8b2e7c6a4d7e5e9d1e97eb0197c9061349150118"
+      },
+      {
+        "path": "/src/client/hud/unit-hud.mjs",
+        "bytes": 8736,
+        "sha256": "24053a3fd5c49c38069447b1de425760814c2370ee8bc6d1e6fe73c3426cfc10"
+      },
+      {
+        "path": "/src/client/hud/unit-hud.css",
+        "bytes": 3557,
+        "sha256": "3b48bf16b8c2cd7c43ddf665f466eeb4f18928ef5c093ab211dcb5776240254a"
+      },
+      {
+        "path": "/src/client/hud/wildlife-hud.mjs",
+        "bytes": 1385,
+        "sha256": "e85e5c3cd841e0e1bb24d31cd2c97d67f10351c81a1232bccf6a039853f6ca13"
+      },
+      {
+        "path": "/src/client/hud/match-ui.css",
+        "bytes": 7857,
+        "sha256": "9fdcc405ebe211d339879957429e858f5524996b3edde23df77d20c2f3a95b25"
+      },
+      {
+        "path": "/assets/ui/fonts/dm-sans.ttf",
+        "bytes": 240164,
+        "sha256": "8cd08d97e89c24d0aa92edd2f0f4c8ee6195eee9b7c9f154865a58b02f0c1c0d"
+      },
+      {
+        "path": "/assets/ui/fonts/barlow-condensed-medium.ttf",
+        "bytes": 103360,
+        "sha256": "262bd143292ce479ee0cd09a42b47ab173fca8e9c6eb5ed0b5c8a845bc371d17"
+      }
+    ]
+  },
+  "browserObservation": {
+    "events": [
+      {
+        "kind": "http-error",
+        "status": 401,
+        "path": "/favicon.ico",
+        "scheme": "https",
+        "route": "static",
+        "resourceType": "Other"
+      },
+      {
+        "kind": "http-error",
+        "status": 401,
+        "path": "/favicon.ico",
+        "scheme": "https",
+        "route": "static",
+        "resourceType": "Other"
+      },
+      {
+        "kind": "http-error",
+        "status": 401,
+        "path": "/favicon.ico",
+        "scheme": "https",
+        "route": "static",
+        "resourceType": "Other"
+      },
+      {
+        "kind": "request-failed",
+        "path": null,
+        "scheme": "https",
+        "route": "room-api",
+        "resourceType": "Fetch",
+        "canceled": true
+      },
+      {
+        "kind": "http-error",
+        "status": 401,
+        "path": "/favicon.ico",
+        "scheme": "https",
+        "route": "static",
+        "resourceType": "Other"
+      },
+      {
+        "kind": "request-failed",
+        "path": null,
+        "scheme": "https",
+        "route": "room-api",
+        "resourceType": "Fetch",
+        "canceled": true
+      }
+    ],
+    "overflow": false,
+    "passed": false
+  }
+}

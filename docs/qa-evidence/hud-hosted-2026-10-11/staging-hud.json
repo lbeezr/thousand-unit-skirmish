@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "subset": "rollout",
+  "status": "failed",
+  "mapId": "hud-rollout",
+  "mapSha256": "d0fcae271faa47fad5698196b504a1a2b57d76ab1aeaae902b72746b8764d1de",
+  "entry": "ordinary-menu-studio-import-save-and-play",
+  "room": "fresh-owned-staging-room",
+  "frames": [],
+  "steps": [],
+  "issues": [
+    {
+      "stage": "entry",
+      "code": "wait-timeout"
+    }
+  ],
+  "appearanceReview": "pending",
+  "failure": {
+    "file": "failure.png",
+    "sha256": "5be1bc39bff6828c1452c74b7dc4872d4702aabe02d18d022d77ab52a7cebddc",
+    "view": {
+      "origin": "https://game-staging-21f9.up.railway.app",
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "dpr": 1
+      },
+      "entry": "game",
+      "boot": "ready",
+      "mapId": "veyrholds-terraced-vale",
+      "team": 0,
+      "tick": 1284,
+      "socketState": 1,
+      "recovering": true,
+      "connection": null,
+      "context": "none",
+      "theme": "",
+      "selected": 0,
+      "bar": null,
+      "portrait": null,
+      "minimap": {
+        "x": 1094,
+        "y": 435,
+        "width": 170,
+        "height": 271
+      },
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 95
+      },
+      "panels": [],
+      "controls": [],
+      "queueLength": 0,
+      "fonts": true,
+      "workerVisible": false,
+      "buildingVisible": false,
+      "unitVisible": false
+    }
+  }
+}
