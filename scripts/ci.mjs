@@ -105,6 +105,7 @@ run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio impor
 run(['--test', 'scripts/audio-building-selection.test.mjs'], 'Civilization fallback and authoritative building selection audio');
 run(['--test', 'scripts/audio-default-feedback.test.mjs', 'scripts/audio-shipped-worker.test.mjs'], 'Default interaction recordings and click-to-order speech');
 run(['--test', 'scripts/renderer-interaction-audio-scenario.test.mjs'], 'Ordinary interaction audio output receipt contracts');
+run(['--test', 'scripts/renderer-roster-audio-capture.test.mjs'], 'Bounded public staging roster audio and partial evidence contracts');
 run(['--test', 'scripts/audio-composer-preview.test.mjs'], 'Audio composer preview resume cancellation and retry');
 run(['--test', 'scripts/audio-composer-wav.test.mjs'], 'Audio composer WAV read/decode diagnostics and retry');
 run(['--test', 'scripts/audio-composer-export-lifecycle.test.mjs'], 'Audio composer export completion ownership and retry');

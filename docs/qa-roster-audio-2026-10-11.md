@@ -42,6 +42,15 @@ covers every selected take, including alternate selection/attack takes and
 Worker resource/job distinctions. The fourteen building recordings yielded no
 detected speech. No replacement material was required by this check.
 
+The [decoded waveform audit](qa-evidence/interaction-audio-2026-10-11/roster-source-waveforms.json)
+also covers all 119 sources. Every source contains nonzero signal, and none has
+samples at or above 32,700 in signed 16-bit PCM. Source peaks range from
+−14.083 to −0.438 dBFS. Farm and Workshop have the lowest whole-file RMS levels
+(−39.205 and −33.901 dBFS); their existing binding gains are 2 and 1.7669.
+These sparse sound effects need review in actual game output before changing
+their mix. The measurements do not establish perceived loudness or absence of
+earlier distortion in the generated material.
+
 The current assistant audio-input tool explicitly reports that it cannot accept
 audio input. Transcription and waveform/meter checks therefore do **not** claim
 direct listening, recognizable building character or pleasant perceived mix.
@@ -55,3 +64,20 @@ read-only observer extension includes all owned living unit/building kinds,
 bounded to 128 units / 64 buildings, with finite, visible-canvas projection. Normal
 clients expose no such observer. The existing four-Worker observation remains
 compatible. Nine focused observer/probe tests and independent review pass.
+
+The [dedicated staging workflow](../.github/workflows/roster-audio-listening.yml)
+uses thirteen independently bounded subsets on 64×64, 24-unit authored maps.
+It covers 84 of 85 keys: all eight roles' supported commands/paid Ready cues,
+all thirteen building selections and the other Worker jobs. Repair still needs
+a separate ordinary damaged-building setup; it is explicitly absent from this
+plan. The runner uses no staging credentials and compares seven public runtime
+files, the manifest and all 119 source files to the checkout. Deployment SHA
+and release digest stay unknown in those public receipts until linked to the
+owner's separate served-identity check.
+
+Each validated WebM is persisted before continuing, and only a matching real
+sample start plus observed ordinary-action scheduling can satisfy coverage.
+Runtime/network errors, incomplete maps, expired bounds and missing output
+remain failures. Eleven runner tests and nine existing observer/probe tests
+pass. This is capture infrastructure; no new native roster result is claimed
+until the cloud run produces it.
