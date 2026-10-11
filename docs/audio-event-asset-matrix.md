@@ -81,13 +81,15 @@ without a provider session and were not retried. All selections remain provision
 All increments merged in [PR638](https://github.com/lbeezr/thousand-unit-skirmish/pull/638).
 [PR639](https://github.com/lbeezr/thousand-unit-skirmish/pull/639) preserves loading
 across same-map reconnects and moves verified downloads to a browser worker.
-Staging source `7d4a588c` is served and hash-verified, including all 119 recordings
-and both worker modules. After refreshing that staging address, the user confirmed
-villager selection and wood-order speech both work. Cloud evidence independently
-records native starts of the intended Worker and Town Center sources.
+Staging source `3a68649d` is served and hash-verified, including all 119 recordings
+and both worker modules. After refreshing staging for the loading fix, the user
+confirmed villager selection and wood-order speech; they subsequently confirmed
+Town Center and Barracks selection sounds. Cloud evidence independently retains
+complete native Worker and Town Center output at `92b2288d`; its later wood-order
+step timed out, so that full capture case remains failed.
 
-Next: retain complete native output and finish building/full-roster listening.
-The first two meanings have user hearing acceptance; captions-off recognition,
+Next: finish the remaining building/full-roster listening.
+The first four meanings have user hearing acceptance; captions-off recognition,
 rapid-order mix and broader solo/human 1v1 acceptance remain with this owner.
 
 ### Preserved 7–9 October source audit
