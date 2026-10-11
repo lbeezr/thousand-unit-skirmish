@@ -123,3 +123,11 @@ are that builder and the preserved standalone HTML. No game imports the study;
 its JS/HTML and provenance are not public server assets. The old study builder
 path has no compatibility consumer and is retired. Original review artifacts
 and hashes remain dated historical evidence.
+
+### Shared selection dock — 11 October 2026
+
+The approved Worker and building views consume `src/client/hud/selection-hud.css`
+for their shared 72px identity, tokens and controls. `worker-hud.css` retains
+Worker disclosures; `building-hud.*` owns building presentation only. Existing
+client production/research/lifecycle handlers remain authoritative consumers.
+These files are exactly admitted by `src/server/client-asset-paths.mjs`.

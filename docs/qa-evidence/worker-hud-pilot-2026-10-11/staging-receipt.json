@@ -1,0 +1,75 @@
+{
+  "verifiedAt": "2026-10-11T16:42:37.804Z",
+  "environment": "staging",
+  "origin": "https://game-staging-21f9.up.railway.app",
+  "sourceRevision": "819044363ad0d4270fbb99e95777c40770d7c5c1",
+  "providerDeploymentId": "efe20fc4-f2eb-4701-94b8-d3b863a58ad1",
+  "identity": {
+    "ok": true,
+    "expected": {
+      "sourceRevision": "819044363ad0d4270fbb99e95777c40770d7c5c1"
+    },
+    "served": {
+      "sourceRevision": "819044363ad0d4270fbb99e95777c40770d7c5c1",
+      "sourceDirty": null,
+      "digest": null,
+      "origin": "railway-git"
+    },
+    "scope": "source",
+    "issues": []
+  },
+  "localPackage": {
+    "sourceDirty": false,
+    "digest": "sha256:2150aab7428d5e24e6d8518fc491849ea636c60390c0a41be66c4cb379914fd5",
+    "files": 1836
+  },
+  "served": [
+    {
+      "path": "index.html",
+      "sha256": "8fde422f60731dba7eb2d3c27090727005753e86067a0ac6e99c8d05c0bfd13d",
+      "status": 200
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "cfe2f3beae2174c30889fd59c240d5632a2c91ed1ca870d3591ebc4bff83182c",
+      "status": 200
+    },
+    {
+      "path": "src/client/hud/worker-hud.mjs",
+      "sha256": "d7761569b4997791865ba7fafb3ec1d6ae3a437b920e39086bea229d0a497faa",
+      "status": 200
+    },
+    {
+      "path": "src/client/hud/worker-hud.css",
+      "sha256": "a5a5e396b99e0e2706a8cbe3d88bc41a517c53e75ba10b969e6231eec7efa732",
+      "status": 200
+    },
+    {
+      "path": "src/battlefield-cursor.mjs",
+      "sha256": "4404d3d9d2822c948ad0c2c16d3cd69afeb75565009ec7d201a2573568513b7d",
+      "status": 200
+    },
+    {
+      "path": "assets/ui/fonts/dm-sans.ttf",
+      "sha256": "8cd08d97e89c24d0aa92edd2f0f4c8ee6195eee9b7c9f154865a58b02f0c1c0d",
+      "status": 200
+    },
+    {
+      "path": "assets/ui/fonts/barlow-condensed-medium.ttf",
+      "sha256": "262bd143292ce479ee0cd09a42b47ab173fca8e9c6eb5ed0b5c8a845bc371d17",
+      "status": 200
+    },
+    {
+      "path": "assets/ui/fonts/dm-sans-OFL.txt",
+      "sha256": "9af36190332437f5ecd09974de43c1f7c77a310a996cdd8ceb25628b458840e1",
+      "status": 200
+    },
+    {
+      "path": "assets/ui/fonts/barlow-condensed-OFL.txt",
+      "sha256": "186d750eb496a4c17a76385f82be6aea2ac1cf2de074a811d63786cf374ea73f",
+      "status": 200
+    }
+  ],
+  "clientModules": 137,
+  "scope": "Deployed source/readiness and actual served client/font/license bytes. No browser rendering or ordinary-game visual acceptance."
+}

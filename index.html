@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./src/room-lobby.css" />
     <link rel="stylesheet" href="./src/game-menu.css" />
+    <link rel="stylesheet" href="./src/client/hud/selection-hud.css" />
     <link rel="stylesheet" href="./src/client/hud/worker-hud.css" />
+    <link rel="stylesheet" href="./src/client/hud/building-hud.css" />
     <script>
       window.reportPrototypeError = (message) => {
         window.clearTimeout(window.prototypeStartupTimeout);
@@ -39,7 +41,7 @@
       }
     </script>
     <script type="module" src="./src/game-entry.mjs" onerror="window.reportPrototypeError('Could not load game entry')"></script>
-  </head>
+</head>
   <body>
     <main id="game-menu" aria-labelledby="game-menu-title">
       <a class="game-menu-skip" href="#menu-play">Skip to play</a>
@@ -199,12 +201,17 @@
             <button type="button" class="selection-portrait" data-selection-portrait data-context-panel="selection" aria-controls="command-deck" aria-label="Selection details" hidden><span class="selection-portrait-art" aria-hidden="true"><img alt="" decoding="async"></span></button>
             <div class="contextual-identity-text"><strong data-worker-health hidden></strong><div class="contextual-summary" data-context-summary></div></div>
             <div data-worker-identity hidden>
-              <span data-worker-portrait-fallback aria-hidden="true" hidden>W</span>
-              <div class="worker-identity-copy"><small>Economy · Builder</small><strong data-worker-name>Worker</strong><span class="worker-health"><span class="worker-health-track" aria-hidden="true"><span data-worker-hp-fill></span></span><span data-worker-hp></span></span></div>
+              <span data-worker-portrait-fallback class="hud-portrait-fallback" aria-hidden="true" hidden>W</span>
+              <div class="worker-identity-copy hud-identity-copy"><small>Economy · Builder</small><strong data-worker-name class="hud-entity-name">Worker</strong><span class="worker-health hud-health"><span class="worker-health-track hud-health-track" aria-hidden="true"><span data-worker-hp-fill class="hud-hp-fill"></span></span><span data-worker-hp></span></span></div>
               <div class="worker-task"><span data-worker-task></span><small data-worker-cargo></small></div>
             </div>
+            <div data-building-identity hidden>
+              <span class="hud-portrait-fallback" data-building-fallback aria-hidden="true"><img src="/assets/ui/icons/build.svg" alt=""></span>
+              <div class="hud-identity-copy"><small data-building-role>Structure</small><strong class="hud-entity-name" data-building-name></strong><span class="hud-health"><span class="hud-health-track" aria-hidden="true"><span class="hud-hp-fill" data-building-hp-fill></span></span><span data-building-hp></span></span></div>
+              <div class="building-state"><strong data-building-state></strong><small data-building-description-short></small></div>
+            </div>
           </div>
-          <section data-worker-hud aria-label="Worker commands" hidden>
+          <section data-worker-hud data-hud-panel aria-label="Worker commands" hidden>
             <div class="worker-command-heading"><span>Orders</span><button type="button" data-worker-action="more" aria-expanded="false" aria-controls="worker-more-orders">More orders</button></div>
             <div class="worker-primary-actions">
               <button type="button" data-worker-action="build" aria-expanded="false" aria-controls="worker-build-palette"><img src="/assets/ui/icons/build.svg" alt=""><span>Build</span><small>Structures</small></button>
@@ -219,6 +226,26 @@
             <section id="worker-more-orders" data-worker-disclosure="more" aria-label="Additional Worker orders" hidden>
               <button type="button" data-worker-action="patrol">Patrol <small>P</small></button><button type="button" data-worker-action="follow">Follow <small>F</small></button><button type="button" data-worker-action="hold">Hold position <small>H</small></button><button type="button" data-worker-action="formation">Formation / route</button><button type="button" data-worker-action="details">Role details</button>
             </section>
+          </section>
+          <section data-building-hud data-hud-panel aria-label="Selected building commands" hidden>
+            <div class="building-command-heading"><span data-building-action-heading>Training</span><button type="button" data-building-action="research" aria-expanded="false" aria-controls="building-research-panel">Research <span data-building-research-count></span></button></div>
+            <div data-context-products></div>
+            <section class="building-queue" data-building-queue aria-label="Production queue" hidden>
+              <div class="building-queue-heading"><strong data-building-production></strong><span data-building-queue-count></span></div>
+              <progress data-building-progress max="1" value="0" aria-label="Training progress"></progress>
+              <ol data-building-queue-list aria-label="Units in training order"></ol>
+            </section>
+            <p data-building-active-research hidden></p>
+            <div class="building-utilities">
+              <button type="button" data-building-action="rally" aria-pressed="false"><img src="/assets/ui/icons/move.svg" alt="">Set rally</button>
+              <button type="button" data-building-action="clear-rally">Clear rally</button>
+              <button type="button" data-building-action="details">Structure details</button>
+            </div>
+            <p data-building-hint role="status" aria-live="polite"></p>
+            <section id="building-research-panel" aria-label="Building research" hidden>
+              <p data-building-research-status></p><div data-context-research-options></div>
+            </section>
+            <div id="building-lifecycle-actions" class="building-lifecycle" aria-label="Building lifecycle"></div>
           </section>
           <div class="contextual-actions">
             <button type="button" data-context-proxy="select-idle-workers">Idle workers</button>
@@ -246,9 +273,6 @@
             <button type="button" data-context-proxy="train-infantry">Train infantry · 50 food</button>
             <button type="button" data-context-proxy="train-archer">Train archer · 25 food / 45 wood</button>
             <button type="button" data-context-proxy="clear-building-rally">Clear rally</button>
-            <div data-context-research-options></div>
-            <div data-context-products></div>
-            <div id="building-lifecycle-actions" class="contextual-actions"></div>
             <button type="button" class="contextual-icon-command" data-context-details data-context-panel="command"><img data-context-formation-icon src="/assets/ui/icons/actions/formation.svg" alt="" width="20" height="20" hidden><span data-context-details-label>Details / formation</span></button>
           </div>
           <small id="context-action-reason" data-context-reason></small>
