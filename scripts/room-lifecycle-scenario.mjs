@@ -171,8 +171,25 @@ try {
   assert.equal((await inventory()).rooms[0].launchOptions.practice, true);
   assert.equal((await lookup(roomId)).status, 200, 'index rebuild never expires recent gameplay from a stale restore marker');
   assert.equal((await status()).roomCount, 1, 'archives do not reappear during index rebuild');
-  assert.equal((await manage(roomId, 'archive')).status, 200);
+  // Fail only index persistence after a successful move. The HTTP error must
+  // not hide or destroy the archive, and restart must reconcile the stale index.
+  await mkdir(path.join(data, `rooms.json.${supervisor.pid}.tmp`));
+  assert.equal((await manage(roomId, 'archive')).status, 503);
   assert.equal((await status()).roomCount, 0);
+  const beforeFailedRestore = await readFile(path.join(archived, 'match-state.json'));
+  await stop();
+  await start();
+  assert.equal((await status()).roomCount, 0, 'stale active index cannot resurrect an archived directory');
+  await mkdir(path.join(data, `rooms.json.${supervisor.pid}.tmp`));
+  assert.equal((await manage(roomId, 'restore')).status, 503);
+  assert.equal((await status()).roomCount, 1, 'successful restore move remains retained after index-write failure');
+  assert.deepEqual(await readFile(path.join(active, 'match-state.json')), beforeFailedRestore);
+  await stop();
+  await start();
+  assert.equal((await lookup(roomId)).status, 200);
+  assert.equal((await inventory()).rooms[0].launchOptions.practice, true);
+  assert.deepEqual(await readFile(path.join(active, 'match-state.json')), beforeFailedRestore);
+  assert.equal((await manage(roomId, 'archive')).status, 200);
   await stop();
 
   // Startup expiry archives rather than deletes; fresh admission sweeps overdue
@@ -198,6 +215,7 @@ try {
     'idle shutdown/session probes do not renew activity', 'ordinary menu Practice after capacity release',
     'bounded restore/create race', 'checkpoint bytes, maps, match identity and seat recovery',
     'restored launch identity after index loss', 'archives stay out of rebuild',
+    'archive/restore index-write failures recover after restart without data loss',
     'startup expiry and admission-time expiry preserve data',
   ] }));
 } finally {
