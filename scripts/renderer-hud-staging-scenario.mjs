@@ -144,7 +144,7 @@ export async function captureHudStaging({page,origin,subset,directory,signal}) {
       await control(page,'[data-building-action="research"]'); await capture('barracks-research','building');
     }
     if(subset==='panels'||subset==='rollout') {
-      await worker();
+      if(subset==='rollout') await worker();
       for(const [name,open,close] of [['help','#help-toggle','#help-close'],['settings','#match-menu-toggle','#match-menu-close'],['objectives','#scenario-brief-toggle','#scenario-brief-close']]) {
         await control(page,open); await capture(name,'workers'); await control(page,close);
       }
