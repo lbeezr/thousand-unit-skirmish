@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "tool": "built-in image_gen",
+  "reference": "docs/art-direction/vaelora-brand-v1/immersive-client-study.png",
+  "assets": [
+    {
+      "source": "docs/art-direction/vaelora-brand-v1/materials/brass-surface.png",
+      "runtime": "assets/ui/vaelora-brand-v1/brass-surface.webp",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "sourceBytes": 3717096,
+      "sourceSha256": "da95e9c23b910fd89fefabe2f8079d68df8436c365198e25f5ca5cb6450972ab",
+      "bytes": 2367054,
+      "sha256": "5f7407a4adeabe74200b90807a87b540d20ab225a7bfa423367df854374bca55",
+      "alphaExtrema": [
+        255,
+        255
+      ],
+      "transparentFraction": 0.0,
+      "export": "lossless WebP, decoded RGBA bytes identical to source"
+    },
+    {
+      "source": "docs/art-direction/vaelora-brand-v1/materials/oak-corner.png",
+      "runtime": "assets/ui/vaelora-brand-v1/oak-corner.webp",
+      "pixels": [
+        1254,
+        1254
+      ],
+      "sourceBytes": 861638,
+      "sourceSha256": "ec95554466c9cfb8915433046bfdec0ec55b1edb05aeb9edf1638782f0e31a98",
+      "bytes": 582116,
+      "sha256": "06ceb15e31abcbb3a914d6be197c1ff4555f36bd920872b72ec9347a9c5a3cde",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "transparentFraction": 0.8057698618010882,
+      "export": "lossless WebP, decoded RGBA bytes identical to source"
+    }
+  ]
+}

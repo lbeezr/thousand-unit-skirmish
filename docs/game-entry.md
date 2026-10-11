@@ -6,10 +6,14 @@ The ordinary root URL opens the main menu. It does not load the renderer or
 connect a WebSocket, even when this browser has an old player token. The menu's
 room-service lookup and optional session check do not allocate a player seat.
 
-The menu's [existing-art composition](game-menu-art-study.md) adds a decorative
-Worker/Barracks vignette beside the choices. It uses the working title and
-existing shipped images, with no additional controls or game-state meaning.
-Narrow and short layouts reduce the art to keep entry choices nearby.
+The menu's [Vaelora identity and portal](vaelora-brand.md) pairs the preserved
+Bellweather world concept with a pine-and-brass launcher. Vaelora is the visible
+name; the play, Practice, room, Resume and settings contracts below remain the
+entry authority. The world section expands existing regional field notes in
+place; atlas and field-guide links open existing reading material. They do not
+select a map or allocate a seat. Narrow layouts reduce
+the hero before the controls. Initial keyboard focus does not scroll past it.
+The [earlier Worker/Barracks study](game-menu-art-study.md) remains a dated reference.
 
 - **New Game** creates the server-supported fresh Play vs AI room: currently
   Skirmish on Tiny Terraced Vale, 160 × 160. The menu reads

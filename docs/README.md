@@ -17,6 +17,7 @@ start; this index covers maintained guides, contracts, experiments, and evidence
 | Where can I compare a civilization's full buildings and village/town/city layouts? | [Frontier and Boughward reference library](art-direction/civilization-settlements-v1/README.md) |
 | What are Vaelora’s selected zone maps and ecology keys? | [Art checkpoint](art-direction/vaelora-v1/README.md) |
 | Where do I read and extend Vaelora's lore? | [Lore wiki](lore/README.md): world, regions, peoples, institutions, history and magic |
+| What are Vaelora's brand, interface colors, materials and button states? | [Brand and interface bible](vaelora-brand.md), [visual component reference](art-direction/vaelora-brand-v1/interface-reference.html), [research](art-direction/vaelora-brand-v1/brand-research.md), [portal QA](qa-vaelora-brand-portal-2026-10-11.md) |
 | Where are saved art iterations and preservation gaps? | [Art evolution](lore/art-evolution.md) |
 | Which new art is bound, and what supplies depth, motion and atmosphere? | [Building/environment runtime audit](art-runtime-audit-2026-10-03.md) |
 | What informs Vaelora's prose, continuity and world-building plan? | [Voice bible](lore-voice-bible.md), [research](lore-research.md), [strategy and plan](lore-strategy.md) |

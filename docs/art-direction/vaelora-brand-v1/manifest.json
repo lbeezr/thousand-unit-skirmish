@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "date": "2026-10-11",
+  "status": "generated-studies-with-runtime-materials-and-local-browser-evidence",
+  "selected": "immersive-client-study.png",
+  "source": "docs/art-direction/vaelora-v1/bellweather-map.png",
+  "files": [
+    {
+      "name": "brand-research.md",
+      "bytes": 4955,
+      "sha256": "95619a799da5e3e4b24454deba64ebbe01da89e382cece892205d9810029d224"
+    },
+    {
+      "name": "browser/desktop.jpg",
+      "bytes": 198560,
+      "sha256": "8f428ffa0d9328ef4a600e998c2a7445278c6670056c295f094270be4cfac901"
+    },
+    {
+      "name": "browser/forced-colors.jpg",
+      "bytes": 74722,
+      "sha256": "5491ba01344e342afe76b084b9b2d387a461642cf518b719fcdbb4158570ee73"
+    },
+    {
+      "name": "browser/join-invalid.jpg",
+      "bytes": 65697,
+      "sha256": "189ca72e3f1ce2cd2ef2192e04579d4268609724bd935fe9695f2ec995b2a08a"
+    },
+    {
+      "name": "browser/narrow-actions.jpg",
+      "bytes": 48250,
+      "sha256": "634ad8956a253cb33f7ee2d446be65aff50e42879fcf8a1e064d47c4c097833f"
+    },
+    {
+      "name": "browser/pending.jpg",
+      "bytes": 194101,
+      "sha256": "006c177aab3e736da31b090b78a0964738f788a98e702ac51259ec416abb2e37"
+    },
+    {
+      "name": "browser/portal-1024.jpg",
+      "bytes": 134783,
+      "sha256": "3d893ba601a0a38be0f71a4df20f3f6d9a545f9fa9ac202774cf04ef47e8206d"
+    },
+    {
+      "name": "browser/portal-320.jpg",
+      "bytes": 54056,
+      "sha256": "ef2e758ca6a8ca45573b12b43b892112c51f0fddaf90e43800700071a70853c5"
+    },
+    {
+      "name": "browser/practice-rules.jpg",
+      "bytes": 221468,
+      "sha256": "a0f06dbb3dae882ef3585c2fa1f2983d5afd8fe8407dfb8f84df66327969fa65"
+    },
+    {
+      "name": "browser/renderer-capability.json",
+      "bytes": 1023,
+      "sha256": "a84c2ff1bc52fd4eb76e568671e4e9bbec957356e311399b6805ca8c9f8c20bb"
+    },
+    {
+      "name": "browser/report.json",
+      "bytes": 7542,
+      "sha256": "7acb63e2adbdc4ced51b17d8118b7c19694c886cf912d9b7696089a3d8ccc869"
+    },
+    {
+      "name": "browser/service-error.jpg",
+      "bytes": 199067,
+      "sha256": "4a8aa6eddc5e584e770c443e7a0c3336c49ace3360a9985abc0fa26ed5ea85fb"
+    },
+    {
+      "name": "browser/settings.jpg",
+      "bytes": 61945,
+      "sha256": "c48999378fe1c0104780fdf300b7d4b8c5d78295544236d5804af592fdccfd0d"
+    },
+    {
+      "name": "entry-storyboard.svg",
+      "bytes": 3793,
+      "sha256": "503b7d148efe3e5c4778dbdfead28d3194c195e2cde871e79c9044952f2bcf70"
+    },
+    {
+      "name": "generation-prompts.txt",
+      "bytes": 4817,
+      "sha256": "54c08302a057116811f7ec25258b5ae8e2549a463a468eff9eec7acf13dab3b4"
+    },
+    {
+      "name": "immersive-client-study.png",
+      "bytes": 3005926,
+      "sha256": "beddfd54f93f0a5c1a437ab3ad53b84611f466452bc62a91385465111f156e2a"
+    },
+    {
+      "name": "interface-reference.css",
+      "bytes": 9465,
+      "sha256": "8430a406c6eca9fd2d8922435554cdd83f38f5718694c7d9f47af62fb4d7d427"
+    },
+    {
+      "name": "interface-reference.html",
+      "bytes": 10146,
+      "sha256": "fef256176df071bae5fbb17beac84845f3aa7d9457521bda3d9114de37803816"
+    },
+    {
+      "name": "interface-validation.json",
+      "bytes": 1926,
+      "sha256": "a439c6a6f458349ac7e1a204d2fbbcd2c4ba8271c05a27e902c8e7469028b3b0"
+    },
+    {
+      "name": "materials/brass-surface.png",
+      "bytes": 3717096,
+      "sha256": "da95e9c23b910fd89fefabe2f8079d68df8436c365198e25f5ca5cb6450972ab"
+    },
+    {
+      "name": "materials/oak-corner.png",
+      "bytes": 861638,
+      "sha256": "ec95554466c9cfb8915433046bfdec0ec55b1edb05aeb9edf1638782f0e31a98"
+    },
+    {
+      "name": "materials/prompts.txt",
+      "bytes": 2668,
+      "sha256": "85aab68ce70d4e394d5906be724b8c8c4f8ad835b05605ca776394ecf52a5c0c"
+    },
+    {
+      "name": "world-first-study.png",
+      "bytes": 2879027,
+      "sha256": "278096cc90779cc374d621b0f522b0ddbad501b287e9048209db01b2e4f7b21c"
+    }
+  ],
+  "runtimeMaterials": "assets/ui/vaelora-brand-v1/materials-manifest.json",
+  "browserEvidence": "browser/report.json",
+  "interfaceSpecification": {
+    "version": "0.2",
+    "status": "proposed-semantic-extensions-selected-material-foundation",
+    "reference": "interface-reference.html",
+    "styles": "interface-reference.css",
+    "research": "brand-research.md",
+    "sourceValidation": "interface-validation.json",
+    "renderedPreview": "blocked-by-browser-file-url-policy"
+  }
+}

@@ -1,0 +1,247 @@
+{
+  "scope": "explicitly-authorized local portal-only check; no match launched",
+  "sourceRevision": "b9e86bcd3b5b4464b4d88690be332ee232a2c762",
+  "sourceDirty": true,
+  "origin": "http://127.0.0.1:55160",
+  "checks": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "metrics": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "scrollY": 0,
+        "focused": "menu-new-game",
+        "buttons": [
+          {
+            "id": "menu-new-game",
+            "width": 431,
+            "height": 103,
+            "scrollWidth": 431,
+            "text": "New Game\nPlay vs AI \u00b7 Skirmish \u00b7 Tiny \u00b7 160 \u00d7 160 \u00b7 Veyrholds \u00b7 Terraced Vale"
+          },
+          {
+            "id": "menu-practice",
+            "width": 431,
+            "height": 70,
+            "scrollWidth": 431,
+            "text": "Practice\nAll maps, including labs \u00b7 one player, no AI commander"
+          },
+          {
+            "id": "menu-create-room",
+            "width": 211,
+            "height": 85,
+            "scrollWidth": 211,
+            "text": "Create Room\nInvite a friend \u00b7 Frontier 1v1 pregame lobby"
+          },
+          {
+            "id": "menu-join",
+            "width": 211,
+            "height": 85,
+            "scrollWidth": 211,
+            "text": "Join Room\nUse a room code or invite link"
+          }
+        ],
+        "decor": [
+          "none",
+          "none"
+        ]
+      }
+    },
+    {
+      "viewport": [
+        1024,
+        768
+      ],
+      "metrics": {
+        "width": 1024,
+        "scrollWidth": 1024,
+        "scrollY": 0,
+        "focused": "menu-new-game",
+        "buttons": [
+          {
+            "id": "menu-new-game",
+            "width": 412,
+            "height": 103,
+            "scrollWidth": 412,
+            "text": "New Game\nPlay vs AI \u00b7 Skirmish \u00b7 Tiny \u00b7 160 \u00d7 160 \u00b7 Veyrholds \u00b7 Terraced Vale"
+          },
+          {
+            "id": "menu-practice",
+            "width": 412,
+            "height": 70,
+            "scrollWidth": 412,
+            "text": "Practice\nAll maps, including labs \u00b7 one player, no AI commander"
+          },
+          {
+            "id": "menu-create-room",
+            "width": 201,
+            "height": 85,
+            "scrollWidth": 201,
+            "text": "Create Room\nInvite a friend \u00b7 Frontier 1v1 pregame lobby"
+          },
+          {
+            "id": "menu-join",
+            "width": 201,
+            "height": 85,
+            "scrollWidth": 201,
+            "text": "Join Room\nUse a room code or invite link"
+          }
+        ],
+        "decor": [
+          "none",
+          "none"
+        ]
+      }
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "metrics": {
+        "width": 390,
+        "scrollWidth": 390,
+        "scrollY": 0,
+        "focused": "menu-new-game",
+        "buttons": [
+          {
+            "id": "menu-new-game",
+            "width": 314,
+            "height": 103,
+            "scrollWidth": 314,
+            "text": "New Game\nPlay vs AI \u00b7 Skirmish \u00b7 Tiny \u00b7 160 \u00d7 160 \u00b7 Veyrholds \u00b7 Terraced Vale"
+          },
+          {
+            "id": "menu-practice",
+            "width": 314,
+            "height": 87,
+            "scrollWidth": 314,
+            "text": "Practice\nAll maps, including labs \u00b7 one player, no AI commander"
+          },
+          {
+            "id": "menu-create-room",
+            "width": 314,
+            "height": 67,
+            "scrollWidth": 314,
+            "text": "Create Room\nInvite a friend \u00b7 Frontier 1v1 pregame lobby"
+          },
+          {
+            "id": "menu-join",
+            "width": 314,
+            "height": 67,
+            "scrollWidth": 314,
+            "text": "Join Room\nUse a room code or invite link"
+          }
+        ],
+        "decor": [
+          "none",
+          "none"
+        ]
+      }
+    },
+    {
+      "viewport": [
+        320,
+        844
+      ],
+      "metrics": {
+        "width": 320,
+        "scrollWidth": 320,
+        "scrollY": 0,
+        "focused": "menu-new-game",
+        "buttons": [
+          {
+            "id": "menu-new-game",
+            "width": 244,
+            "height": 121,
+            "scrollWidth": 244,
+            "text": "New Game\nPlay vs AI \u00b7 Skirmish \u00b7 Tiny \u00b7 160 \u00d7 160 \u00b7 Veyrholds \u00b7 Terraced Vale"
+          },
+          {
+            "id": "menu-practice",
+            "width": 244,
+            "height": 87,
+            "scrollWidth": 244,
+            "text": "Practice\nAll maps, including labs \u00b7 one player, no AI commander"
+          },
+          {
+            "id": "menu-create-room",
+            "width": 244,
+            "height": 85,
+            "scrollWidth": 244,
+            "text": "Create Room\nInvite a friend \u00b7 Frontier 1v1 pregame lobby"
+          },
+          {
+            "id": "menu-join",
+            "width": 244,
+            "height": 67,
+            "scrollWidth": 244,
+            "text": "Join Room\nUse a room code or invite link"
+          }
+        ],
+        "decor": [
+          "none",
+          "none"
+        ]
+      }
+    },
+    "Settings opens, native focus containment, persisted audio choice, Escape and focus return",
+    "Join validates invalid invite; Escape returns focus",
+    "Real New Game click: intercepted pending/503, no room allocated; controls recover and feedback remains readable",
+    "Reduced motion removes transition",
+    "No browser exceptions/console errors; menu never entered a match; zero connected players"
+  ],
+  "captures": [
+    "portal-1440.jpg",
+    "portal-1024.jpg",
+    "portal-390.jpg",
+    "portal-390-actions.jpg",
+    "portal-320.jpg",
+    "settings.jpg",
+    "join-invalid.jpg",
+    "practice-rules.jpg",
+    "pending.jpg",
+    "service-error.jpg",
+    "forced-colors.jpg"
+  ],
+  "consoleErrors": [],
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/154.0.8037.99",
+    "revision": "@45889d77830582727fe00dbfd614bcb7aac35caa",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+    "jsVersion": "15.4.80.20"
+  },
+  "status": "passed",
+  "servedBuildIdentity": {
+    "status": "unknown",
+    "origin": "unavailable",
+    "sourceRevision": null,
+    "sourceDirty": null,
+    "digest": null
+  },
+  "testedRuntimeFiles": {
+    "index.html": "96bc6a43bedc49f42e2003e4336c1693ba9b2290ea8b18ab5e48d94e83d89a7f",
+    "src/game-menu.css": "14626ad618df368f7fda96b9e5b3c192a59d485cc535e706993e6d5a8abb3eb4",
+    "src/game-entry.mjs": "a5cf5dcdc45484b6899f62ac7bfa41ac19147f2b63aff3097b46e4a2b6c2409d",
+    "src/server/client-asset-paths.mjs": "d3599096362303cffd08fc60bbadd61b19c592b3f4db45667ec3b0217b3af424",
+    "assets/ui/vaelora-brand-v1/brass-surface.webp": "5f7407a4adeabe74200b90807a87b540d20ab225a7bfa423367df854374bca55",
+    "assets/ui/vaelora-brand-v1/oak-corner.webp": "06ceb15e31abcbb3a914d6be197c1ff4555f36bd920872b72ec9347a9c5a3cde"
+  },
+  "retainedCaptures": [
+    "service-error.jpg",
+    "portal-1024.jpg",
+    "join-invalid.jpg",
+    "desktop.jpg",
+    "settings.jpg",
+    "narrow-actions.jpg",
+    "forced-colors.jpg",
+    "practice-rules.jpg",
+    "portal-320.jpg",
+    "pending.jpg"
+  ],
+  "captureNotes": "All retained JPEGs are from the completed cache-disabled pass. Earlier PNG attempts hit ENOSPC; duplicate large captures were removed. All owned browser/server/data were cleaned up."
+}

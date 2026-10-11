@@ -178,7 +178,7 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
   win.markPrototypeReady?.();
   await refresh();
   if (doc.activeElement === doc.body) (creationButtons.find(button => !button.disabled)
-    || root.querySelector('#menu-settings')).focus();
+    || root.querySelector('#menu-settings')).focus({ preventScroll: true });
   return { refresh };
 }
 

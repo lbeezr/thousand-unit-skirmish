@@ -32,6 +32,28 @@ a transfer gap. These criteria do not prevent incremental scoped merges.
 
 ## Exact deployment evidence
 
+### Vaelora player portal — 11 October 2026
+
+Owner: Vaelora branding/portal chat `01a12b79`. The [brand plan](vaelora-brand.md)
+and [visual studies](art-direction/vaelora-brand-v1/README.md) back the world-first
+entry. The Bellweather source is copied unchanged into
+`assets/ui/vaelora-brand-v1/bellweather-map.png`, referenced by the ordinary menu
+CSS and admitted by an exact public path. The generated studies remain in docs,
+outside the release. [QA](qa-vaelora-brand-portal-2026-10-11.md) records checks
+and separate source/package/deployment identities. The user-approved material
+iteration adds two independently bound WebP resources: textured brass and alpha
+oak foliage, with exact source/runtime hashes and public admission. The user
+explicitly authorized a portal-only local browser exception. Desktop/narrow
+captures now demonstrate real composition; Settings and Join were exercised.
+The linked QA record distinguishes remaining checks, source/release identity
+and deployed acceptance. The general cloud/Mac policy remains unchanged.
+The clean material package `dcf78dc0` and packed HTTP scenario pass; the full receipt is
+in the linked QA record. The terminal's `lbliii` account cannot push this fork,
+but the existing GitHub app's `lbeezr` connection has verified admin/write access.
+The earlier general access blocker is corrected in QA. Next: this chat publishes
+through that connection, integrates, inspects staging identity and runs the
+remaining deployed entry/Resume/game-launch recipe in a permitted environment.
+
 ### Continuing delivery owners — 5 October 2026
 
 The coordinating parent reports eleven workstreams started or resumed between

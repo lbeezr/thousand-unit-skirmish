@@ -1,5 +1,8 @@
 // Exact public client paths; add explicit entries rather than admitting folders.
 export const CLIENT_ASSET_PATHS = Object.freeze([
+  'assets/ui/vaelora-brand-v1/bellweather-map.png',
+  'assets/ui/vaelora-brand-v1/brass-surface.webp',
+  'assets/ui/vaelora-brand-v1/oak-corner.webp',
   'src/rules/production-actions.mjs', 'src/rules/research-actions.mjs', 'src/rules/population.mjs', 'src/rules/economy-ledger.mjs',
   'assets/ui/portraits/human-archer-source.png', 'assets/ui/portraits/boughward-archer-source.png',
   'assets/ui/portraits/human-scout-source.png', 'assets/ui/portraits/boughward-scout-source.png',
