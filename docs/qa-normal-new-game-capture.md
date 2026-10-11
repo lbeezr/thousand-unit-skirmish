@@ -202,7 +202,7 @@ The [review and screenshots](qa-evidence/hud-iab-2026-10-11/review.json) verify
 paid Town Center and Barracks queues through completion, research disclosure,
 Help/Settings/Objectives and the compact 1024×768 Worker reflow. The 1920×1080
 image was cropped by the browser surface to 1873 pixels; its right edge remains
-unverified. Two startup texture warnings are retained. Skiffs, owned wildlife,
+unverified. Two startup texture warnings are retained. Owned wildlife,
 both-seat and remaining lifecycle coverage stay open.
 
 A selected unfinished Barracks displayed the generic instruction to select a
@@ -221,3 +221,27 @@ At 66–68% Barracks construction, both training actions stayed disabled and sho
 the corrected reason. The temporary browser tab and owned local supervisor were
 closed after capture; the viewport override was reset. No staging room was
 created or altered by this in-app check.
+
+A follow-up in the same clean package published the retained 160-cell
+[Skiff fixture](qa-evidence/hud-iab-2026-10-11/hud-skiff-review.json) through ordinary
+Map Studio Import and Save & Play. Native controls paid for a Dock and Skiff,
+then verified water movement through arrival, Stop, and a Worker/Skiff mixed
+selection with explicit domain restrictions. This is local seat-0 evidence;
+fishing/cargo cycles and staging acceptance remain open.
+
+The [Dock training frame](qa-evidence/hud-iab-2026-10-11/dock-training.jpg) exposed
+a notice partly obscured by the wrapped header. Notices now follow its existing
+measured height. Player-facing Skiff labels also omit internal placeholder wording;
+the art fallback remains documented. These bounded corrections reuse the approved
+Obsidian specimen; the corrected screenshots below complete this bounded local comparison.
+
+The audio owner confirmed restoring staging's configured and served room limit
+to 8 while preserving all ten saved rooms. HUD did not overwrite its transition.
+
+The final integrated clean package `b7b896b7a748cb07fb920e3bc7ce003141c7e38a`
+(`sha256:5815075e64cd7db21d15890bc22bb701a6ebc61c21004d9fda74ef049b43812b`)
+visibly verifies [Dock selection](qa-evidence/hud-iab-2026-10-11/dock-selection-corrected.jpg)
+and [Skiff identity](qa-evidence/hud-iab-2026-10-11/skiff-corrected.jpg).
+The measured wrapped header is 95px; the visible notice begins at 121px. Dock
+selection now omits unsupported rally guidance while Barracks retains it.
+The temporary tab and local supervisor were closed after review.

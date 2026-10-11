@@ -4620,7 +4620,7 @@ function updateCommandUI() {
       : (rallyCell >= 0 ? 'Right-click ground to move the production rally' : 'Right-click ground to set a production rally')
       : coarsePointer ? 'Use Target battlefield, then tap a target'
         : attackMoveMode ? 'Right-click ground to advance and engage' : 'Right-click ground or an enemy';
-  if (selectedBuilding?.type === 'dock' && ui.commandHint) ui.commandHint.textContent = 'Train a Skiff (placeholder) · owned boats deliver food at this Dock · no rally.';
+  if (selectedBuilding?.type === 'dock' && ui.commandHint) ui.commandHint.textContent = 'Train a Skiff · owned boats deliver food at this Dock · no rally.';
   if (!selectedBuilding && selectedWaterUnits() && ui.commandHint) ui.commandHint.textContent = 'Select Skiffs · target fish or water · Shift water queues up to 8 waypoints · fishing boats deliver one load before leaving · Stop clears the queue and keeps cargo.';
   if (persistentTargetMode && ui.commandHint) ui.commandHint.textContent = `${tapOrderArmed ? 'Tap or click' : coarsePointer ? 'Use Target battlefield, then tap' : 'Right-click'} ${persistentTargetMode === 'follow' ? 'a friendly unit' : 'ground to set the second patrol endpoint'}`;
   if (wildlife && ui.commandHint) ui.commandHint.textContent = wildlife.wildlifeState === 'carcass'
@@ -7548,7 +7548,7 @@ function selectBuilding(building) {
   syncSelectionMesh();
   updateSelectionUI();
   for (const [id, visual] of buildingVisuals) updateBuildingSelectionVisual(visual, id === building.id);
-  showToast(`${buildingLabel(building.type)} SELECTED${BUILDING_DEFINITIONS[building.type]?.products.length ? ` · ${window.matchMedia('(pointer: coarse)').matches ? 'USE SET RALLY POINT, THEN TAP GROUND' : 'RIGHT-CLICK GROUND TO SET RALLY'}` : ''}`);
+  showToast(`${buildingLabel(building.type)} SELECTED${buildingSupportsRally(building.type) ? ` · ${window.matchMedia('(pointer: coarse)').matches ? 'USE SET RALLY POINT, THEN TAP GROUND' : 'RIGHT-CLICK GROUND TO SET RALLY'}` : ''}`);
   audio.playEvent({ cue: 'select', buildingType: building.type });
 }
 

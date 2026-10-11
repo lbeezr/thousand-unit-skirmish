@@ -81,7 +81,7 @@
         "docs/qa-evidence/hud-hosted-2026-10-11/review.json",
         "docs/qa-evidence/hud-iab-2026-10-11/review.json"
       ],
-      "nextAction": "HUD owner completes staging native acceptance and Skiff/wildlife/both-seat coverage. Local normal-entry and construction-copy evidence are retained separately from failed hosted runs."
+      "nextAction": "HUD owner completes staging native acceptance and wildlife/both-seat coverage. Local normal-entry, construction-copy, Skiff movement and land/water mixed-selection evidence are retained separately from failed hosted runs."
     }
   ],
   "complete": false,
