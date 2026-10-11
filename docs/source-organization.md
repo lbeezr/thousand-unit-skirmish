@@ -126,8 +126,11 @@ and hashes remain dated historical evidence.
 
 ### Shared selection dock — 11 October 2026
 
-The approved Worker and building views consume `src/client/hud/selection-hud.css`
+The approved Worker, building and army/mixed/Skiff views consume `src/client/hud/selection-hud.css`
 for their shared 72px identity, tokens and controls. `worker-hud.css` retains
-Worker disclosures; `building-hud.*` owns building presentation only. Existing
+Worker disclosures; `building-hud.*` owns building presentation only, and
+`unit-hud.*` presents selection facts and availability around the existing bound
+order controls. Header navigation and selected entity controls have separate
+layout ownership. Existing
 client production/research/lifecycle handlers remain authoritative consumers.
 These files are exactly admitted by `src/server/client-asset-paths.mjs`.

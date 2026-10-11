@@ -127,7 +127,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   ],
   client: [
     'client/networking/welcome-session',
-    'client/hud/worker-hud', 'client/hud/building-hud', 'studies/hud-component-specimen/runtime',
+    'client/hud/worker-hud', 'client/hud/building-hud', 'client/hud/unit-hud', 'studies/hud-component-specimen/runtime',
     'client/hud/match-recap', 'client/hud/match-decisions',
     'client/hud/resource-format', 'client/hud/population-readout', 'client/hud/objective-summary',
     'client/audio/audio-decoded-cache', 'client/audio/audio-shipped-response',

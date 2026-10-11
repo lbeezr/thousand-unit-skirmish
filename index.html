@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="./src/client/hud/selection-hud.css" />
     <link rel="stylesheet" href="./src/client/hud/worker-hud.css" />
     <link rel="stylesheet" href="./src/client/hud/building-hud.css" />
+    <link rel="stylesheet" href="./src/client/hud/unit-hud.css" />
     <script>
       window.reportPrototypeError = (message) => {
         window.clearTimeout(window.prototypeStartupTimeout);
@@ -130,6 +131,12 @@
           </div>
           <div id="population-readout" class="population-readout" role="status" aria-atomic="true" aria-label="Population: connecting." title="Population: connecting."><span aria-hidden="true">POP</span><strong id="population-stock" aria-hidden="true">—</strong></div>
         </div>
+        <nav class="hud-quick-access" aria-label="Quick commands">
+          <button id="dock-toggle" type="button" aria-controls="command-deck" aria-expanded="false">Commands</button>
+          <button type="button" data-open-dock-tab="economy">Production</button>
+          <button id="quick-army" type="button">Army</button>
+          <button id="quick-idle" type="button" disabled>Idle · 0</button>
+        </nav>
         <div class="room-actions" aria-label="Game actions">
           <button id="room-create" class="room-action room-action-primary" type="button" hidden>NEW ROOM</button>
           <button id="room-join" class="room-action" type="button" hidden>JOIN</button>
@@ -210,6 +217,11 @@
               <div class="hud-identity-copy"><small data-building-role>Structure</small><strong class="hud-entity-name" data-building-name></strong><span class="hud-health"><span class="hud-health-track" aria-hidden="true"><span class="hud-hp-fill" data-building-hp-fill></span></span><span data-building-hp></span></span></div>
               <div class="building-state"><strong data-building-state></strong><small data-building-description-short></small></div>
             </div>
+            <div data-unit-identity hidden>
+              <span class="hud-portrait-fallback" data-unit-fallback aria-hidden="true"></span>
+              <div class="hud-identity-copy"><small data-unit-role></small><strong class="hud-entity-name" data-unit-name></strong><span class="hud-health"><span class="hud-health-track" aria-hidden="true"><span class="hud-hp-fill" data-unit-hp-fill></span></span><span data-unit-hp></span></span></div>
+              <div class="unit-composition"><span data-unit-composition></span><small data-unit-cargo></small><small data-unit-orders></small></div>
+            </div>
           </div>
           <section data-worker-hud data-hud-panel aria-label="Worker commands" hidden>
             <div class="worker-command-heading"><span>Orders</span><button type="button" data-worker-action="more" aria-expanded="false" aria-controls="worker-more-orders">More orders</button></div>
@@ -247,18 +259,22 @@
             </section>
             <div id="building-lifecycle-actions" class="building-lifecycle" aria-label="Building lifecycle"></div>
           </section>
-          <div class="contextual-actions">
+          <div class="contextual-actions" data-unit-hud>
+            <div class="unit-command-heading" data-unit-only hidden><span>Orders</span><label>Formation <select data-unit-formation aria-label="Formation for subsequent orders"><option value="box">Box</option><option value="line">Line</option><option value="column">Column</option></select></label></div>
+            <div class="unit-primary-actions">
+            <button type="button" class="contextual-icon-command" data-context-proxy="order-target-toggle"><img src="/assets/ui/icons/move.svg" alt="" width="20" height="20"><span data-command-label>Target battlefield</span></button>
+            <button type="button" class="contextual-icon-command" data-context-proxy="attack-move-toggle" title="Move while attacking enemies encountered · M"><img src="/assets/ui/icons/attack.svg" alt="" width="20" height="20"><span>Attack move · M</span></button>
+            <button type="button" class="contextual-icon-command" data-stationary-order="stop" title="Clear current tasks and queued routes; military sets No attack. Explicit Attack remains available."><img src="/assets/ui/icons/actions/stop.svg" alt="" width="20" height="20"><span>Stop · S</span></button>
+            <button type="button" class="contextual-icon-command" data-stationary-order="holdPosition" title="Stay in place; military sets Stand ground and never chases. A stance choice releases military Hold."><img src="/assets/ui/icons/actions/hold-position.svg" alt="" width="20" height="20"><span>Hold position · H</span></button>
+            <button type="button" class="contextual-icon-command" data-persistent-order="patrol"><img src="/assets/ui/icons/actions/patrol.svg" alt="" width="20" height="20"><span>Patrol · P</span></button>
+            <button type="button" class="contextual-icon-command" data-persistent-order="follow"><img src="/assets/ui/icons/actions/follow.svg" alt="" width="20" height="20"><span>Follow · F</span></button>
+            </div>
             <button type="button" data-context-proxy="select-idle-workers">Idle workers</button>
             <button type="button" data-context-proxy="select-military">Army</button>
             <button type="button" data-context-panel="economy">Production</button>
             <button type="button" data-context-panel="selection">Groups</button>
             <span data-context-groups class="contextual-groups"></span>
-            <button type="button" class="contextual-icon-command" data-context-proxy="order-target-toggle"><img src="/assets/ui/icons/move.svg" alt="" width="20" height="20"><span data-command-label>Target battlefield</span></button>
-            <button type="button" class="contextual-icon-command" data-persistent-order="patrol"><img src="/assets/ui/icons/actions/patrol.svg" alt="" width="20" height="20"><span>Patrol · P</span></button>
-            <button type="button" class="contextual-icon-command" data-persistent-order="follow"><img src="/assets/ui/icons/actions/follow.svg" alt="" width="20" height="20"><span>Follow · F</span></button>
-            <button type="button" class="contextual-icon-command" data-stationary-order="stop" title="Clear current tasks and queued routes; military sets No attack. Explicit Attack remains available."><img src="/assets/ui/icons/actions/stop.svg" alt="" width="20" height="20"><span>Stop · S</span></button>
             <button type="button" class="contextual-icon-command" data-return-cargo hidden title="Deliver selected Workers’ resources or Skiffs’ food to a reachable owned drop-off"><img src="/assets/ui/icons/actions/return-cargo.svg" alt="" width="20" height="20"><span>Return cargo</span></button>
-            <button type="button" class="contextual-icon-command" data-stationary-order="holdPosition" title="Stay in place; military sets Stand ground and never chases. A stance choice releases military Hold."><img src="/assets/ui/icons/actions/hold-position.svg" alt="" width="20" height="20"><span>Hold position · H</span></button>
             <span class="contextual-stances" data-stance-controls data-command-layout role="group" aria-label="Military stance" hidden>
               <span id="military-stance-status" data-stance-status>Stance</span>
               <button type="button" data-combat-stance="aggressive" aria-pressed="false" aria-describedby="military-stance-status"><span data-stance-check aria-hidden="true" hidden>✓ </span>Aggressive</button>
@@ -266,7 +282,6 @@
               <button type="button" data-combat-stance="standGround" aria-pressed="false" aria-describedby="military-stance-status"><span data-stance-check aria-hidden="true" hidden>✓ </span>Stand ground</button>
               <button type="button" data-combat-stance="noAttack" aria-pressed="false" aria-describedby="military-stance-status"><span data-stance-check aria-hidden="true" hidden>✓ </span>No attack</button>
             </span>
-            <button type="button" class="contextual-icon-command" data-context-proxy="attack-move-toggle" title="Move while attacking enemies encountered · M"><img src="/assets/ui/icons/attack.svg" alt="" width="20" height="20"><span>Attack move · M</span></button>
             <button type="button" data-context-proxy="select-workers">Select workers</button>
             <button type="button" data-harvest-wildlife hidden title="Send the nearest idle Worker with empty cargo to harvest this carcass">Harvest · idle Worker</button>
             <button type="button" class="contextual-icon-command" data-context-build data-context-panel="economy" title="Open construction choices"><img src="/assets/ui/icons/build.svg" alt="" width="20" height="20"><span>Build</span></button>
@@ -274,16 +289,11 @@
             <button type="button" data-context-proxy="train-archer">Train archer · 25 food / 45 wood</button>
             <button type="button" data-context-proxy="clear-building-rally">Clear rally</button>
             <button type="button" class="contextual-icon-command" data-context-details data-context-panel="command"><img data-context-formation-icon src="/assets/ui/icons/actions/formation.svg" alt="" width="20" height="20" hidden><span data-context-details-label>Details / formation</span></button>
+            <p data-unit-hint data-unit-only role="status" aria-live="polite" hidden></p>
           </div>
           <small id="context-action-reason" data-context-reason></small>
           <small data-context-research hidden></small>
         </div>
-        <nav class="hud-quick-access" aria-label="Quick commands">
-          <button id="dock-toggle" type="button" aria-controls="command-deck" aria-expanded="false">Commands</button>
-          <button type="button" data-open-dock-tab="economy">Production</button>
-          <button id="quick-army" type="button">Army</button>
-          <button id="quick-idle" type="button" disabled>Idle · 0</button>
-        </nav>
         <aside id="command-deck" class="control-dock" hidden>
           <button id="dock-close" class="hud-panel-close" type="button" aria-label="Close command details">×</button>
           <div class="dock-tabs" role="tablist" aria-label="Command deck">

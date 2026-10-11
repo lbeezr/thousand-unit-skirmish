@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
+import { updateUnitHud } from '../src/client/hud/unit-hud.mjs';
 import { updateBuildingHud } from '../src/client/hud/building-hud.mjs';
 import { updateWorkerHud, workerBuildChoices, workerSelectionKey } from '../src/client/hud/worker-hud.mjs';
 import { selectionContext } from '../src/selection-context.mjs';
@@ -52,7 +53,7 @@ function fixture(team = 0) {
   w.ui = {};
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
   Object.assign(w, { ...economyClientBindings(), ...wildlifeClientBindings(),
-    selectionContext, updateBuildingHud, updateWorkerHud, workerBuildChoices, workerSelectionKey, updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
+    selectionContext, updateUnitHud, updateBuildingHud, updateWorkerHud, workerBuildChoices, workerSelectionKey, updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
     applyUnitStances, updateCombatStanceControls, bindCombatStanceControls, socket: { readyState: 1 },
     castPreview: true, humanRosterPreview: true, roomPageUrl: new URL('http://localhost/'),
     matchMedia: () => ({ matches: false }),
@@ -69,7 +70,7 @@ function fixture(team = 0) {
     selected: new w.Set(), selectedBuildingId: null, latestBuildings: [],
     controlGroups: Array.from({ length: 10 }, () => new w.Set()),
     buildingVisuals: new w.Map(), activeControlGroup: null, lastControlGroupRecall: null,
-    tapOrderArmed: false, workerTargetMode: null, persistentTargetMode: null, buildPlacementActive: false, buildPlacementPending: false, buildPlacementType: 'house',
+    tapOrderArmed: false, attackMoveMode: false, workerTargetMode: null, persistentTargetMode: null, buildPlacementActive: false, buildPlacementPending: false, buildPlacementType: 'house',
     commandDock: d.querySelector('#command-deck'), dockToggle: d.querySelector('#dock-toggle'),
     dockTabs: [...d.querySelectorAll('[data-dock-tab]')], appShell: d.querySelector('.app-shell'),
     matchMenu: d.querySelector('#match-menu'), helpPanel: d.querySelector('#help-panel'),
@@ -104,6 +105,7 @@ function fixture(team = 0) {
     fn('updateRosterProductionOptions', 'updateBuildingLifecycleActions'),
     fn('updateResearchOptions', 'buildingWoodCost'),
     fn('selectedIds', 'issueStationaryOrder'), fn('controlGroupKeyLabel', 'clearControlGroups'),
+    fn('setAttackMoveMode', 'setTapOrderArmed'),
     fn('clearActiveControlGroup', 'assignControlGroup'), fn('assignControlGroup', 'centerCameraOnControlGroup'),
     fn('recallControlGroup', 'syncSelectionMesh'),
     between('function selectWholeTeam(', 'const matchMenu ='),
@@ -198,7 +200,7 @@ for (const team of [0, 1]) test(`seat ${team}: Orders Patrol and Follow require 
   w.selectDockTab('command', true);
   const choices = [...f.d.querySelectorAll('[data-persistent-order]')];
   const patrol = choices.find(button => button.dataset.persistentOrder === 'patrol' && !button.closest('.contextual-command-bar'));
-  const assertDisabled = disabled => { for (const button of choices) assert.equal(button.disabled, disabled, button.textContent); };
+  const assertDisabled = disabled => { for (const button of choices) assert.equal(isHudActionUnavailable(button), disabled, button.textContent); };
   assert.equal(patrol.closest('[hidden]'), null, 'the Orders drawer exposes the affected controls');
   assertDisabled(true);
   w.updateCommandUI(); w.updateEconomyUI(); assertDisabled(true);
@@ -952,7 +954,9 @@ for (const team of [0, 1]) test(`seat ${team}: action glyphs survive selection u
     controls.forEach((button, i) => {
       assert.equal(button.querySelector('img'), images[i]);
       images[i].dispatchEvent(new f.w.Event('error'));
-      assert.equal(button.textContent, labels[i]); assert.equal(button.title, titles[i]);
+      if (button.hasAttribute('data-return-cargo')) assert.match(button.textContent, /^Return cargo/);
+      else assert.equal(button.textContent, labels[i]);
+      if (titles[i]) assert.ok(button.title, 'an existing description remains available or has a current unavailable reason');
     });
   }
   for (const type of ['barracks', 'house']) {
@@ -1268,7 +1272,7 @@ for (const team of [0, 1]) test(`seat ${team}: Return cargo appears for carrying
   f.select([own]); assert.equal(button.hidden, true);
   Object.assign(f.w.units[own], { cargo: 0.5, cargoType: 'food' });
   f.select([own, own + 1]); assert.equal(button.hidden, false); assert.equal(button.disabled, false);
-  assert.equal(button.querySelector('img'), image); assert.equal(button.textContent, 'Return cargo');
+  assert.equal(button.querySelector('img'), image); assert.equal(button.textContent, 'Return cargo · 1 Worker');
   f.click(button); assert.deepEqual([...orders[0].ids], [own]); assert.equal(orders[0].type, 'returnCargo');
   f.select([enemy]); assert.equal(button.hidden, true);
   f.select([], { id: 8, team, type: 'barracks', complete: true, hp: 1800, productionQueue: [] });
@@ -1290,7 +1294,9 @@ for (const team of [0, 1]) test(`seat ${team}: a carrying Skiff exposes Return c
   assert.equal(button.hidden, false); assert.equal(button.disabled, false);
   assert.equal(f.bar.querySelector('[data-context-build]').hidden, true);
   f.click(button); assert.equal(orders[0].type, 'returnCargo'); assert.deepEqual([...orders[0].ids], [id]);
-  f.w.units[id].cargo = 0; f.select([id]); assert.equal(button.hidden, true);
+  f.w.units[id].cargo = 0; f.select([id]); assert.equal(button.hidden, false);
+  assert.equal(isHudActionUnavailable(button), true); assert.match(button.title, /No cargo/);
+  f.click(button); assert.equal(orders.length, 1, 'an empty carrier retains an inspectable, inert Return');
 });
 
 for (const team of [0, 1]) test(`seat ${team}: Objectives dismisses with focus and selection retained while closed urgency advances`, t => {
@@ -1349,11 +1355,12 @@ for (const team of [0, 1]) test(`seat ${team}: empty → Worker → army → bui
   for (const [ids, selectedBuilding, kind] of [[[], null, 'none'], [[worker], null, 'workers'], [[army], null, 'military'], [[], building, 'building'], [[], null, 'none']]) {
     f.select(ids, selectedBuilding);
     assert.equal(f.bar.dataset.context, kind);
-    assert.equal(f.bar.hidden, kind === 'none'); assert.equal(f.quick.hidden, kind !== 'none');
-    assert.equal(f.w.getComputedStyle(kind === 'none' ? f.bar : f.quick).display, 'none');
+    assert.equal(f.bar.hidden, kind === 'none'); assert.equal(f.quick.hidden, false);
+    if (kind === 'none') assert.equal(f.w.getComputedStyle(f.bar).display, 'none');
+    assert.equal(f.quick.closest('.topbar') !== null, true, 'global navigation stays in the header');
     assert.deepEqual([...f.w.selected], ids); assert.equal(f.w.selectedBuildingId, selectedBuilding?.id ?? null);
     assert.deepEqual(protectedElements.map(s => f.d.querySelector(s).outerHTML), protectedMarkup);
-    const opener = kind === 'none' ? f.w.dockToggle : ['workers', 'building'].includes(kind) ? f.bar.querySelector('[data-selection-portrait]') : f.bar.querySelector('[data-context-panel="economy"]');
+    const opener = kind === 'none' ? f.w.dockToggle : ['workers', 'building'].includes(kind) ? f.bar.querySelector('[data-selection-portrait]') : f.quick.querySelector('[data-open-dock-tab="economy"]');
     f.click(opener); assert.equal(f.w.commandDock.hidden, false);
     f.escape(); assert.equal(f.w.commandDock.hidden, true); assert.equal(f.d.activeElement, opener);
     assert.deepEqual([...f.w.selected], ids); assert.equal(f.w.selectedBuildingId, selectedBuilding?.id ?? null);
@@ -1408,7 +1415,7 @@ for (const team of [0, 1]) test(`seat ${team}: minimap browser proof selects fou
   f.click(control);
   assert.deepEqual([...f.w.selected], [team * 2, 4 + team, 6 + team, 8 + team]);
   assert.equal(f.d.querySelector('#selected-total').textContent, '4');
-  assert.equal(f.bar.hidden, false); assert.equal(f.quick.hidden, true);
+  assert.equal(f.bar.hidden, false); assert.equal(f.quick.hidden, false);
   assert.equal(f.w.commandDock.hidden, true);
   assert.deepEqual(f.w.sentCommands, [], 'selection issues no unit order');
 });
@@ -1427,11 +1434,12 @@ test('closing a drawer whose opener became hidden, disabled or disconnected rest
   }
 });
 
-test('both command rows are observed; empty state reserves the Quick row, not a vanished bar', t => {
+test('header navigation stays observed while empty selection reserves no bottom dock height', t => {
   const f = fixture(); t.after(() => f.dom.window.close());
   const rowObserver = f.observers.find(observer => observer.targets.includes(f.bar) && observer.targets.includes(f.quick));
   assert.deepEqual(rowObserver.targets, [f.bar, f.quick]);
-  for (const [ids, expected] of [[[], '52px'], [[0], '86px'], [[1], '86px'], [[], '52px']]) {
+  assert.ok(f.quick.closest('.topbar'));
+  for (const [ids, expected] of [[[], '0px'], [[0], '86px'], [[1], '86px'], [[], '0px']]) {
     f.select(ids); rowObserver.callback();
     assert.equal(f.d.querySelector('.workspace').style.getPropertyValue('--context-bar-height'), expected);
   }
@@ -1832,4 +1840,68 @@ for (const team of [0, 1]) test(`seat ${team}: Obsidian building controls follow
   assert.equal(w.latestBuildings[0].productionQueue.length, 2, 'input does not pretend cancellation was accepted');
   f.select([team * 2]); assert.equal(f.d.querySelector('[data-worker-hud]').hidden, false);
   assert.equal(f.d.querySelector('[data-building-hud]').hidden, true);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: unit dock preserves real formation, cargo and mixed-domain recipients`, t => {
+  const f = fixture(team), w = f.w; t.after(() => f.dom.window.close());
+  const own = team * 2, army = own + 1, boat = 4 + team, orders = [];
+  for (const seat of [0, 1]) w.units.push({ id: 4 + seat, team: seat, kind: 'skiff', hp: 100, generation: 3, cargo: 5, cargoType: 'food' });
+  Object.assign(w.units[own], { cargo: 7, cargoType: 'wood' });
+  Object.assign(w.units[army], { combatStance: 'defensive', generation: 9 });
+  w.sendTrackedOrder = command => { orders.push(JSON.parse(JSON.stringify(command))); return false; };
+  w.setAttackMoveMode = () => {};
+  w.eval(fn('selectedWaterUnits', 'updateCommandUI'));
+  w.eval(between('function issueStationaryOrder(', 'function setPersistentTargetMode('));
+  w.eval(fn('issueMove', 'issueBuildingRallyPoint'));
+  f.select([own, army]);
+  const formation = f.d.querySelector('[data-unit-formation]');
+  formation.value = 'column'; formation.dispatchEvent(new w.Event('change', { bubbles: true }));
+  assert.equal(w.ui.formationSelect.value, 'column'); assert.equal(orders.length, 0);
+  w.issueMove({ x: 5, z: 6 });
+  assert.deepEqual(orders.pop(), { type: 'move', ids: [own, army], x: 5, z: 6, formation: 'column' });
+  const returns = f.bar.querySelector('[data-return-cargo]'); f.click(returns);
+  assert.deepEqual(orders.pop(), { type: 'returnCargo', ids: [own] });
+  f.click(f.bar.querySelector('[data-stationary-order="holdPosition"]'));
+  assert.deepEqual(orders.pop(), { type: 'holdPosition', ids: [own, army] });
+  f.select([army, boat]);
+  f.click(returns); assert.equal(orders.length, 0);
+  assert.match(returns.title, /separately/);
+  f.click(f.bar.querySelector('[data-combat-stance="noAttack"]'));
+  assert.deepEqual(JSON.parse(JSON.stringify(w.sentCommands.at(-1))), { type: 'setStance', ids: [army], unitGenerations: [9], stance: 'noAttack' });
+  assert.equal(w.units[army].combatStance, 'defensive');
+  f.select([boat]); f.click(returns);
+  assert.deepEqual(orders.pop(), { type: 'returnCargo', ids: [boat] });
+  assert.equal(formation.parentElement.hidden, true);
+  const stop = f.bar.querySelector('[data-stationary-order="stop"]');
+  stop.focus(); w.socket.readyState = 3; w.updateContextualCommands(); stop.click();
+  assert.equal(f.d.activeElement, stop); assert.equal(orders.length, 0);
+  w.socket.readyState = 1; w.updateContextualCommands(); stop.click();
+  assert.deepEqual(orders.pop(), { type: 'stop', ids: [boat] });
+  assert.equal(f.quick.hidden, false); assert.ok(f.quick.closest('.topbar'));
+  f.select([own]); f.click(f.bar.querySelector('[data-worker-action="more"]'));
+  f.click(f.bar.querySelector('[data-worker-action="formation"]'));
+  assert.equal(w.ui.formationSelect.closest('[hidden]'), null, 'Worker formation route remains accessible');
+});
+
+for (const team of [0, 1]) test(`seat ${team}: army Target tooltip follows targeting and Escape cancels Attack move before selection`, t => {
+  const f = economyFixture(team), w = f.w; t.after(() => f.dom.window.close());
+  w.eval(fn('setTapOrderArmed', 'issueMove'));
+  w.eval(between("ui.attackMoveToggle?.addEventListener('click'", "ui.clearBuildingRally?.addEventListener"));
+  const id = team * 2 + 1; f.select([id]);
+  const target = f.bar.querySelector('[data-context-proxy="order-target-toggle"]');
+  const attack = f.bar.querySelector('[data-context-proxy="attack-move-toggle"]');
+  assert.match(target.title, /Choose a destination/);
+  f.click(target); assert.equal(w.tapOrderArmed, true); assert.match(target.title, /Cancel battlefield targeting/);
+  w.socket.readyState = 3; w.updateContextualCommands(); assert.match(target.title, /Reconnecting/);
+  w.socket.readyState = 1; w.updateContextualCommands(); assert.match(target.title, /Cancel battlefield targeting/);
+  f.click(target); assert.equal(w.tapOrderArmed, false); assert.match(target.title, /Choose a destination/);
+  for (const alsoTarget of [false, true]) {
+    f.click(attack); assert.equal(w.attackMoveMode, true);
+    if (alsoTarget) f.click(target);
+    f.escape();
+    assert.equal(w.attackMoveMode, false); assert.equal(w.tapOrderArmed, false);
+    assert.deepEqual([...w.selected], [id], 'Escape cancels the order mode before clearing selection');
+    assert.match(target.title, /Choose a destination/);
+  }
+  assert.equal(w.sentCommands.length, 0, 'arming and cancellation send no order');
 });

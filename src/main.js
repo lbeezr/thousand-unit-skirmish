@@ -33,6 +33,7 @@ import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvai
 import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from './client/hud/objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateWorkerHud, workerBuildChoices, workerSelectionKey } from './client/hud/worker-hud.mjs';
+import { updateUnitHud } from './client/hud/unit-hud.mjs';
 import { updateBuildingHud } from './client/hud/building-hud.mjs';
 import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts } from './selection-portrait.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
@@ -3983,10 +3984,10 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     updateProductionPortrait(button, kind, role);
   }
   bar.dataset.context = context.kind;
-  bar.dataset.hudTheme = ['workers', 'building'].includes(context.kind) ? 'obsidian' : '';
+  bar.dataset.hudTheme = ['workers', 'building', 'military', 'mixed', 'boats'].includes(context.kind) ? 'obsidian' : '';
   bar.dataset.hudTeam = String(localTeam);
   if (bar.hidden !== (context.kind === 'none')) bar.hidden = context.kind === 'none';
-  if (quickAccess.hidden !== !bar.hidden) quickAccess.hidden = !bar.hidden;
+  quickAccess.hidden = false;
   updateCombatStanceUI();
   document.querySelector('#assign-selected-group').disabled = !context.total;
   bar.querySelector('[data-context-summary]').textContent = wildlife
@@ -4072,6 +4073,12 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     if (action === 'rally') setTapOrderArmed(!tapOrderArmed);
     if (action === 'clear-rally') ui.clearBuildingRally.click();
   });
+  updateUnitHud(document, {
+    context, units: selectedIds().map(id => units[id]), team: localTeam,
+    connected: socket?.readyState === WebSocket.OPEN, matchFinished: matchWinner >= 0,
+    formation: ui.formationSelect.value, targeting: tapOrderArmed,
+    attackMove: attackMoveMode, orderMode: persistentTargetMode,
+  }, formation => { ui.formationSelect.value = formation; updateContextualCommands(); });
   const currentFocus = document.activeElement;
   const commandHasFocus = (bar.contains(currentFocus) || quickAccess?.contains(currentFocus))
     && currentFocus.isConnected && !currentFocus.disabled && !currentFocus.closest('[hidden]');
@@ -8921,7 +8928,7 @@ bindCombatStanceControls(document, combatStanceContext, sendCommand);
 if (contextualBar) {
   bindContextualCommandStrip(contextualBar.querySelector(':scope > .contextual-actions'));
   const quickAccess = document.querySelector('.hud-quick-access');
-  const syncContextHeight = () => document.querySelector('.workspace').style.setProperty('--context-bar-height', `${Math.max(contextualBar.getBoundingClientRect().height, quickAccess.getBoundingClientRect().height)}px`);
+  const syncContextHeight = () => document.querySelector('.workspace').style.setProperty('--context-bar-height', `${contextualBar.getBoundingClientRect().height}px`);
   const commandRowObserver = new ResizeObserver(syncContextHeight);
   for (const row of [contextualBar, quickAccess]) commandRowObserver.observe(row);
   syncContextHeight();
@@ -9549,7 +9556,8 @@ window.addEventListener('keydown', (event) => {
       updateContextualCommands();
       return;
     }
-    if (tapOrderArmed) {
+    if (tapOrderArmed || attackMoveMode) {
+      setAttackMoveMode(false);
       setTapOrderArmed(false);
       return;
     }
