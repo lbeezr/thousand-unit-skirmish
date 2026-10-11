@@ -215,3 +215,65 @@ already selected. Focused regression cases cover a partly visible action and an
 off-screen Settings fallback during an unavailable room service. The corrected
 65-test entry suite and type checks pass. Final review, release identity and
 staging acceptance follow in the PR's live checkpoint.
+
+## Reviewed integration and live staging acceptance
+
+The independent reviewer approved exact corrected head
+`a0231dd0e83096b811582b3e2c51a25f5f107c53` with no remaining actionable findings.
+The 65-test focused suite, both type configurations, documentation checks and
+the 15-group real menu scenario passed at that head. Its clean package contains
+1,492 files with digest
+`sha256:5bbc66ecc057449e026baabfc5e9a3cabf22aa9c35bc4b30ae8a858c642fda3b`.
+This is the reviewed local package, not an asserted digest of Railway's image.
+
+PR #637 merged at **15:54:09 UTC** as
+`ac9e5579926ca41c11d80e70d5d154b12fa42830`; its tree is identical to the reviewed
+head. Railway deployment `4801a632-8f1f-4290-8312-f133d0f080ad` became `REMOVED`
+when the concurrent audio merge superseded its build. The containing revision
+`b4ad36cf80ca923ed808c06df113ae6bdad5c997` reached `SUCCESS` at **15:59:34 UTC**
+in deployment `36e172c3-0439-4507-b596-7fe6bb924f53`. The portal HTML, menu CSS,
+entry module and brand assets are unchanged between these two source revisions.
+No production trigger or environment configuration was changed.
+
+The [staging HTTP receipt](art-direction/vaelora-brand-v1/browser/staging-http.json)
+identifies the served source at **16:00:20 UTC**. It verifies exact SHA-256 bytes
+and MIME types for all six portal files, 136 imported modules, public root/ready
+responses, protected health, and denial of the documentation specimen, generated
+source material and provenance manifest. Railway identifies this as `railway-git`;
+its served dirty state and release digest are unavailable. They are not inferred
+from the separate clean package above.
+
+Under the user's explicit bounded local-browser exception, the in-app browser
+then loaded the ordinary [staging portal](https://game-staging-21f9.up.railway.app/):
+
+- At 1440×900 and 320×844 the actual hero, brass action and separate oak layers
+  rendered legibly. Document width equaled viewport width. At 320×400, where
+  New Game was below the viewport, focus remained on the document body with
+  `scrollY: 0`; the review correction is observed in the deployed page.
+- Exactly one New Game launched **Play vs AI / Skirmish / Tiny / Veyrholds /
+  Terraced Vale**, map seed `1150140103`, policy seed `3086943928`. The live HUD
+  showed Azure, 150 food, 250 wood and 12/15 population. Terrain, the Town Center,
+  units and tactical map rendered in the ordinary battlefield.
+- The in-game Main Menu link returned to the branded portal. After server
+  validation, Resume appeared. Activating it returned to the same room with
+  `resume=1`, the same visible map/policy seeds, `ROOM LIVE` and `RECONNECTED AS
+  AZURE`. The battlefield rendered again after its assets loaded.
+- No captured console errors. No second game, extra orders, reset or room
+  deletion. The tab returned to the portal, disconnecting its gameplay view;
+  viewport overrides were reset and the resumable portal was retained for the
+  user. Match credentials were not read or recorded.
+
+Actual browser screenshots were inspected in the owning chat during this check;
+they are not claimed as newly archived image files in this receipt. The platform
+still reported the same successful deployment after the browser check, at
+**16:01:54 UTC**: merge-to-verified-staging elapsed **7m 45s**, including the
+superseding build. A precise review-ready timestamp is unavailable.
+
+Default portal binding, packaged assets, identified staging delivery and ordinary
+New Game/Resume use are verified. Remaining coverage limits: explicit 200% browser
+zoom and the rendered documentation specimen remain unverified for the tool
+reasons recorded above. Friend-room and Practice launch contracts have process
+scenario evidence; this bounded staging check did not launch those additional
+matches. These limits remain owned by this branding chat and are not claims of
+a complete browser matrix. The bible's proposed semantic palette remains a
+documented future design decision, separate from this delivered portal.

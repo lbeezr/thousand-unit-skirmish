@@ -51,10 +51,16 @@ The clean material package `dcf78dc0` and packed HTTP scenario pass; the full re
 in the linked QA record. The terminal's `lbliii` account cannot push this fork,
 but the existing GitHub app's `lbeezr` connection has verified admin/write access.
 The earlier general access blocker is corrected in QA; [PR #637](https://github.com/lbeezr/thousand-unit-skirmish/pull/637)
-is published through the authorized app. Independent review requested a bounded
-initial-focus correction, now covered by focused regressions. The user also
-authorized one staging New Game → portal → Resume browser check. Next: this chat
-completes review, integrates, identifies staging and verifies that normal entry.
+merged through the authorized app as `ac9e5579` after independent review of the
+initial-focus correction. The containing staging source `b4ad36cf` reached
+Railway `SUCCESS` in deployment `36e172c3-0439-4507-b596-7fe6bb924f53`; exact
+portal bytes and public/private admission passed. Under the user's expanded
+browser exception, one ordinary New Game → Main Menu → Resume check rendered
+Terraced Vale and reconnected Azure to the same room and seeds. Default portal
+adoption is verified; [QA](qa-vaelora-brand-portal-2026-10-11.md#reviewed-integration-and-live-staging-acceptance)
+records the distinct reviewed package and deployed identities. Remaining coverage
+owned by this chat: explicit 200% browser zoom and rendered documentation-specimen
+inspection when supported; proposed semantic palette additions remain unadopted.
 
 ### Continuing delivery owners — 5 October 2026
 
