@@ -77,9 +77,19 @@ The existing qualification CPU group includes
 `scripts/renderer-qualification-novice.test.mjs` through merged
 [registration PR357](https://github.com/lbeezr/thousand-unit-skirmish/pull/357).
 The artifact-directory and invocation-interface prerequisites are integrated.
-Normal-entry hosted invocation and PNG inspection remain **pending**; dispatch
-and sign-in are paused under the current access decision. Do not retry sign-in,
-change access or substitute a different dispatch route.
+On 11 October 2026 the user explicitly authorized **“Resume hosted HUD checks”**,
+lifting the HUD-specific hosted dispatch/sign-in pause. Other access and sandbox
+constraints remain. The HUD owner resumed the existing Ordinary game capture
+workflow with `novice-flow` in
+[run 38160813082](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38160813082)
+at `30b253d10cec91987924872872e1b2e956d420e2`. Its clean release digest was
+`sha256:53c23386177ed236c7c8a70ab9431bd674ba1181da988ab29e9818a557267d8b`.
+Sandboxed Linux Chrome 154 passed WebGL2 preflight, but the adapter failed before
+New Game because its wait dereferenced a menu button before that button mounted.
+The inspected failure PNG shows the real menu's initial unavailable/loading
+state; it establishes no game or HUD acceptance. The predicate now waits for an
+existing enabled control, with absent/disabled/enabled CPU regression coverage.
+Normal-entry game PNG acceptance and the broader HUD matrix remain **pending**.
 Inspect every retained PNG at the exact reviewed source/release before claiming
 this interaction passed. Record admitted seeds/map/mode, served identity and
 Worker/command/feedback/displacement evidence. A supplied player-pathing

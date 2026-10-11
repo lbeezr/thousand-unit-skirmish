@@ -137,7 +137,19 @@ test('actual adapter preserves the first failure and bounded capture before retu
     const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-novice-test-')), calls = [];
     const safeView = { available: true }, health = { ok: true, buildIdentity: {
       status: 'identified', origin: 'packed-manifest', sourceRevision: revision, sourceDirty: false, digest } };
-    const page = { errors: [], wait: async () => { calls.push('wait'); throw Error('private-menu-token'); }, cdp: {
+    const page = { errors: [], wait: async expression => {
+      calls.push('wait');
+      // The native document can declare menu entry before its button exists,
+      // then render a disabled button while the room capability request loads.
+      for (const [button, expected] of [[null, false], [{ disabled: true }, false], [{ disabled: false }, true]]) {
+        let actual;
+        assert.doesNotThrow(() => { actual = vm.runInNewContext(expression, { document: {
+          documentElement: { dataset: { entry: 'menu' } }, querySelector: () => button,
+        } }); });
+        assert.equal(actual, expected);
+      }
+      throw Error('private-menu-token');
+    }, cdp: {
       on() {}, evaluate: async expression => expression === 'location.href' ? 'about:blank' : safeView,
       call: async (method, params) => { calls.push(method);
         if (method === 'Page.captureScreenshot') { if (captureFails) throw Error('private-capture-token'); return { data: png().toString('base64') }; }
