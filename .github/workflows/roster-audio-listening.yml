@@ -1,0 +1,82 @@
+name: Staging roster audio capture
+
+on:
+  workflow_dispatch:
+    inputs:
+      subset:
+        description: Bounded ordinary audio subset, or the complete matrix
+        type: string
+        default: all
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-roster-audio
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      subsets: ${{ steps.plan.outputs.subsets }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: npm ci
+      - name: Validate explicit bounded plan and CPU contracts
+        id: plan
+        env:
+          SUBSET: ${{ inputs.subset }}
+        run: |
+          node --test scripts/renderer-roster-audio-capture.test.mjs
+          node scripts/renderer-roster-audio-staging.mjs --matrix "$SUBSET" > "${{ runner.temp }}/subsets.json"
+          echo "subsets=$(cat "${{ runner.temp }}/subsets.json")" >> "$GITHUB_OUTPUT"
+  capture:
+    needs: plan
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        subset: ${{ fromJSON(needs.plan.outputs.subsets) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: npm ci
+      - name: Establish normal-sandbox WebGL2 capability once
+        env:
+          PREFLIGHT: ${{ runner.temp }}/roster-preflight
+        run: |
+          test "$(id -u)" -gt 0
+          node scripts/renderer-qualification.mjs --preflight "$PREFLIGHT"
+      - name: Record fresh public staging room through normal gameplay
+        env:
+          SUBSET: ${{ matrix.subset }}
+          REVISION: ${{ github.sha }}
+          EVIDENCE: ${{ runner.temp }}/roster-audio
+          PREFLIGHT: ${{ runner.temp }}/roster-preflight/preflight.json
+        run: node scripts/renderer-roster-audio-staging.mjs "$SUBSET" "$REVISION" "$EVIDENCE" "$PREFLIGHT"
+      - name: Retain each completed recording, partial coverage and safe receipts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: roster-audio-${{ matrix.subset }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/roster-audio/
+            ${{ runner.temp }}/roster-preflight/preflight.json
+          retention-days: 1
+          if-no-files-found: warn
