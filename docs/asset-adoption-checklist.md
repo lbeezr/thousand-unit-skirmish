@@ -419,16 +419,17 @@ recorded in the same QA receipt, alongside merged `b4ad36cf` clean-pack and
 served-source receipts. Full building/roster hearing remains incomplete; the
 villager selection/Wood Gather and Town Center/Barracks have the user's staging confirmation.
 The [remaining-roster receipt](qa-roster-audio-2026-10-11.md) retains all
-105 voice-source transcripts, waveforms for all 119 sources, and 93 native
-recordings from the two main roster passes. Eighty-four of 85 keys pass full
-capture qualification across all eight unit types and thirteen building
-selections. Failed-case partial clips do not close those cases. Only Repair
-remains: the owner corrected its guest camera framing through the ordinary
-minimap and dispatched a bounded final retry in the same owned room. Served
-source `e128775e` and all audio hashes are separately verified; no clean
-release digest is exposed by that Railway build. The assistant cannot directly
-hear recordings, so source transcription, source/output waveform comparison
-and output meters do not claim subjective listening.
+105 voice-source transcripts, source checks for all 119 recordings, and
+[85/85 qualified native event outputs](qa-evidence/interaction-audio-2026-10-11/roster-playback-coverage.json)
+across all eight unit types and thirteen building selections. Repair passed
+through actual enemy damage, Stop, Worker Repair and restored House health.
+Failed-case partial clips are preserved separately and do not close cases.
+Served source `e128775e` and all audio hashes are separately verified; no
+clean release digest is exposed by that Railway build. Functional playback
+coverage is complete. The assistant cannot directly hear recordings, so
+subjective timbre, intelligibility and mix acceptance remain unverified beyond
+the user's four confirmed staging interactions. Audio owner retains any
+subsequent concrete listening feedback.
 The older regional/pilot rows below retain their separate source/listening scope.
 
 | Package/family | Actual use and release | Incomplete work → owner / next action |

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "run": "https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38260196904",
+  "head": "6b2685458b35d0a78295bdc580ce229671f233f0",
+  "conclusion": "failure",
+  "fullSuitePass": false,
+  "failedChecks": [
+    {
+      "artifact": "ci-shard-2.json",
+      "failed": [
+        {
+          "label": "Opt-in planning tick budgets, order invalidation, topology and recovery",
+          "status": "failed",
+          "exitCode": 1,
+          "reason": "Check exited 1."
+        }
+      ]
+    },
+    {
+      "artifact": "ci-shard-3.json",
+      "failed": [
+        {
+          "label": "Paid wall and closed gate queued formation destinations",
+          "status": "failed",
+          "exitCode": 1,
+          "reason": "Check exited 1."
+        }
+      ]
+    },
+    {
+      "artifact": "ci-shard-1.json",
+      "failed": [
+        {
+          "label": "Obstructed formation goals and team reservation",
+          "status": "failed",
+          "exitCode": 1,
+          "reason": "Check exited 1."
+        }
+      ]
+    }
+  ],
+  "scope": "Audio-related checks passed in all three retained shard reports. These movement/planning failures concern unchanged runtime and test files; not repaired by this audio evidence follow-up."
+}

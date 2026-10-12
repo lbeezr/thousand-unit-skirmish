@@ -388,3 +388,60 @@ files pass 87 tests (additional building UI and audio-notice tests also pass).
 was dispatched on runner `e24c8a56dc7ee251ccc0e5553f89aaa2401b8965` at
 2026-10-12 13:58 UTC, using the same owned room and native-stop observer.
 It remains pending; the temporary room secret is retained until capture ends.
+
+Run #11 attempt 1 never reached gameplay: its join dialog remained open and
+no socket or binding loaded. The [failure receipt](qa-evidence/interaction-audio-2026-10-11/roster-eleventh-cloud/roster-audio/roster-audio.json)
+retains this distinction. The operator API confirmed the exact owned room
+was recoverably archived by `idle-expiry` overnight. Only that room was
+restored; the limit stayed eight, with capacity available. The failed capture
+job was retried on the same runner as attempt 2.
+
+### Final functional playback pass — 12 October
+
+Run #11 attempt 2 succeeded at 14:08 UTC with normal sandboxing. The paid
+House took actual enemy Infantry damage from 800 to 786.5 HP, the attacker
+received Stop, and normal Worker Repair restored that same House to 800 HP.
+The [native Repair receipt](qa-evidence/interaction-audio-2026-10-11/roster-eleventh-cloud-attempt2/roster-audio/roster-audio.json)
+records its expected source, an uninterrupted native start (`native-stop-v1`),
+ordinary order acceptance and health increase. Both host and guest browser
+checks passed; their only ignored HTTP errors were favicon requests.
+
+The saved output is nonzero (−14.48 dBFS mono peak, no near-full-scale samples),
+with [0.998 source/output waveform correlation](qa-evidence/interaction-audio-2026-10-11/roster-eleventh-cloud-attempt2/waveform-comparison.json).
+The [ordinary frame](qa-evidence/interaction-audio-2026-10-11/roster-eleventh-cloud-attempt2/frame-review.json)
+shows the selected Worker after completed Repair without an error overlay.
+GitHub retained two same-name artifacts; the successful artifact is
+`11751499418` (ZIP SHA-256 `3d4a6776d0662a40149c96e8e00ccdda2a27e78521e1d6b4ad498101b921880e`),
+downloaded explicitly by ID rather than accidentally reusing attempt 1.
+
+The [combined playback ledger](qa-evidence/interaction-audio-2026-10-11/roster-playback-coverage.json)
+now qualifies all **85/85 current event bindings**, with no missing keys:
+eight unit roles and thirteen building selections. It points to each exact
+recording, source hash, run and qualification. Legacy stop-observation limits
+remain explicit. All 105 voice-source transcripts were previously checked;
+this pass verifies matching final-mix signals and ordinary gameplay actions.
+The assistant has no direct audio perception, so subjective listening, timbre,
+intelligibility and mix preference remain unverified beyond the user's four
+confirmed staging interactions. No additional missing runtime sound was found.
+
+PR661 was merged at 2026-10-12 14:36 UTC as
+`552feef8bacc7cbf838bfa546fc351ce5d486356`. Railway deployment
+`271a58da-b207-4331-8693-ad4ebe448147` reached SUCCESS; a separate
+[served check](qa-evidence/interaction-audio-2026-10-11/roster-staging-552feef8.json)
+verifies the exact source, all 119 recordings, 141 client modules and both
+audio workers. Runtime files are identical to the captured `e128775e`
+build; the merge contains harness/evidence changes. Clean release digest
+is still unavailable and is not inferred from the commit or image.
+
+The hosted full CPU run is **not green**: its three shards stopped at
+[unchanged movement/planning checks](qa-evidence/interaction-audio-2026-10-11/roster-ci-scope.json).
+The audio checks and both type projects pass. This receipt does not claim
+a full-suite pass or repair those unrelated gameplay contracts.
+
+The [cleanup receipt](qa-evidence/interaction-audio-2026-10-11/roster-room-cleanup.json)
+confirms zero active/pending clients before reversible archival of exactly
+the owned audio room, its preserved recoverable state, room limit eight,
+and other rooms unchanged. Deleting the temporary `RTS_AUDIO_REVIEW_ROOM`
+Actions secret reached GitHub's fresh identity-verification prompt. The
+user has been asked to complete that prompt; secret removal remains pending
+and must not be reported complete until its absence is verified.
