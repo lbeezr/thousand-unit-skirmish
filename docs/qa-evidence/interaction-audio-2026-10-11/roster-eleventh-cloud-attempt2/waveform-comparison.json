@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "method": "8000 Hz 1-channel decoded PCM, full-source zero-mean normalized cross-correlation against native final-mix output; fitted gain at best finite lag",
+  "scope": "signal presence and source similarity, not direct listening, intelligibility or perceived mix",
+  "measurementCheck": "known delay/gain/noise passed",
+  "numpyVersion": "2.3.5",
+  "ffmpegVersion": "ffmpeg version 7.1 Copyright (c) 2000-2024 the FFmpeg developers",
+  "recordings": [
+    {
+      "key": "unit.worker.repair",
+      "file": "roster-audio/unit.worker.repair.webm",
+      "sha256": "4b9e1897c8fbe1edd51d18e7df9d73a4c85d332bde4e3704fcf578fd6681a49b",
+      "sourceSha256": "fc3ac22c5fafa4b3ea4eb4004b13bb24dc3f68c699ed60c28e317059a15f336f",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9981475664962576,
+      "offsetSeconds": 0.0165,
+      "fittedGain": 0.4814931979058849
+    }
+  ]
+}

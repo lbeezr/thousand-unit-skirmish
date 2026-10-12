@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-12T14:47:44.319Z",
+  "environment": "staging",
+  "action": "archive-owned-audio-review-room",
+  "roomLimit": 8,
+  "ownedRoom": {
+    "activeConnectionsBefore": 0,
+    "pendingConnectionsBefore": 0,
+    "state": "archived",
+    "recoverable": true,
+    "reason": "operator"
+  },
+  "otherRoomsUnchanged": true
+}

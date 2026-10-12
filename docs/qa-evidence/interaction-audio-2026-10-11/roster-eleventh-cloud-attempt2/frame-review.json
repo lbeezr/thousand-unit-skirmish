@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "run": "38259528458",
+  "attempt": 2,
+  "method": "direct inspection of retained native frame",
+  "scope": "ordinary battlefield and selected Worker panel; no audio hearing claim",
+  "frames": [
+    {
+      "file": "roster-audio/ordinary-game.png",
+      "sha256": "dfaee68b1ca47a62714c31c52133ceb937b26c2a22519d2ae4210d0f96b23add",
+      "review": "Worker selected with full health, idle after Repair completed; ordinary battlefield visible, no error overlay"
+    }
+  ]
+}
