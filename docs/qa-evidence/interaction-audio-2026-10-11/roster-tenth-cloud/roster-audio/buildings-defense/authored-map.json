@@ -1,0 +1,59 @@
+{
+  "id": "audio-buildings-defense",
+  "name": "Audio buildings-defense",
+  "width": 160,
+  "height": 160,
+  "terrainSeed": 19,
+  "fogOfWar": false,
+  "startingArmySize": 24,
+  "startingResources": {
+    "food": 2000,
+    "wood": 3000
+  },
+  "spawnPoints": [
+    {
+      "team": 0,
+      "x": -20.5,
+      "z": 0
+    },
+    {
+      "team": 1,
+      "x": 20.5,
+      "z": 0
+    }
+  ],
+  "obstacles": [],
+  "triggers": [],
+  "scenarioEvents": [],
+  "resourceNodes": [
+    {
+      "id": "s0-food",
+      "type": "food",
+      "x": -18.5,
+      "z": 20.5,
+      "stock": 200
+    },
+    {
+      "id": "s0-wood",
+      "type": "wood",
+      "x": -22.5,
+      "z": 20.5,
+      "stock": 200
+    },
+    {
+      "id": "s1-food",
+      "type": "food",
+      "x": 18.5,
+      "z": 20.5,
+      "stock": 200
+    },
+    {
+      "id": "s1-wood",
+      "type": "wood",
+      "x": 22.5,
+      "z": 20.5,
+      "stock": 200
+    }
+  ],
+  "terrainBase": "meadow"
+}

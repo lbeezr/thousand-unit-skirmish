@@ -418,16 +418,17 @@ release and packed HTTP verification of all 119 recordings / 146 client modules,
 recorded in the same QA receipt, alongside merged `b4ad36cf` clean-pack and
 served-source receipts. Full building/roster hearing remains incomplete; the
 villager selection/Wood Gather and Town Center/Barracks have the user's staging confirmation.
-The [remaining-roster receipt](qa-roster-audio-2026-10-11.md) now retains all
-105 voice-source transcripts, waveforms for all 119 sources, and 52 native
-staging recordings. Forty-three keys pass full capture qualification across
-Infantry, Spearman, Archer, Scout, Rider, Barracks, Archery Range and Stable.
-The nine partial clips do not close failed cases. Owner-run retries cover the
-remaining 42 keys in the same owned room after correcting ordinary target and
-training-panel assumptions. Served source `e128775e` and all audio hashes are
-separately verified; no clean release digest is exposed by that Railway build.
-The assistant cannot directly hear the recordings, so source transcription,
-waveform correlation and output meters do not claim subjective listening.
+The [remaining-roster receipt](qa-roster-audio-2026-10-11.md) retains all
+105 voice-source transcripts, waveforms for all 119 sources, and 93 native
+recordings from the two main roster passes. Eighty-four of 85 keys pass full
+capture qualification across all eight unit types and thirteen building
+selections. Failed-case partial clips do not close those cases. Only Repair
+remains: the owner corrected its guest camera framing through the ordinary
+minimap and dispatched a bounded final retry in the same owned room. Served
+source `e128775e` and all audio hashes are separately verified; no clean
+release digest is exposed by that Railway build. The assistant cannot directly
+hear recordings, so source transcription, source/output waveform comparison
+and output meters do not claim subjective listening.
 The older regional/pilot rows below retain their separate source/listening scope.
 
 | Package/family | Actual use and release | Incomplete work → owner / next action |

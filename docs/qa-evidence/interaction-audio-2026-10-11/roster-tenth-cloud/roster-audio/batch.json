@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "expectedRevision": "ed7f584eb9f7f284f400186d14f5cd2dbac8f9e1",
+  "deployedRevision": null,
+  "releaseDigest": null,
+  "roomScope": "one-owned-public-room",
+  "maxSubsetDurationMs": 300000,
+  "plannedSubsets": [
+    "unit-worker",
+    "buildings-home",
+    "unit-skiff",
+    "unit-siege-engine",
+    "buildings-defense",
+    "buildings-special",
+    "worker-jobs",
+    "worker-repair"
+  ],
+  "results": [
+    {
+      "subset": "unit-worker",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "buildings-home",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "unit-skiff",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "unit-siege-engine",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "buildings-defense",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "buildings-special",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "worker-jobs",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "worker-repair",
+      "status": "failed",
+      "entrySucceeded": true,
+      "issues": [
+        {
+          "code": "incomplete-capture-or-browser-errors"
+        }
+      ]
+    }
+  ],
+  "notRunSubsets": [],
+  "listeningReview": "pending",
+  "issues": []
+}

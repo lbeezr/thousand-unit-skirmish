@@ -347,3 +347,44 @@ Eighty-six focused tests cover the combined runner/selection contracts, includin
 interrupted output, rescheduled stops, native exceptions, clock precision and
 immutable completed receipts. Both type projects pass. Run #10 remains pinned
 to its earlier probe; source/output comparison remains its separate evidence.
+
+The retained [native-output audit command](../scripts/audio-native-output-audit.py)
+reproduces the original 52 clip hashes, source binding checks, decoded PCM
+measurements and complete-subset qualification exactly. Run it from repository
+root with an evidence directory and optional `--ffmpeg PATH`; it emits JSON to
+stdout and leaves artifacts unchanged. Later results additionally identify
+whether native stop observation was available. Missing keys and direct listening
+remain explicit in its output; merely running this diagnostic is not a pass.
+
+### Remaining roster: 84 of 85 qualified; final Repair retry
+
+Run #10 completed seven of eight requested subsets on `e128775e`, saving
+41 additional fully qualified recordings: Worker (9), home buildings (4),
+Skiff (7), Siege Engine (8), defense buildings (3), special buildings (3),
+and Worker jobs (7). The [native audit](qa-evidence/interaction-audio-2026-10-11/roster-tenth-cloud/native-audit.json),
+[waveform comparisons](qa-evidence/interaction-audio-2026-10-11/roster-tenth-cloud/waveform-comparison.json)
+and [seven directly inspected ordinary frames](qa-evidence/interaction-audio-2026-10-11/roster-tenth-cloud/frame-review.json)
+retain those observations. Together with run #8, 84/85 keys are qualified,
+covering all eight unit types and thirteen building selections. Each output
+is nonzero with no near-full-scale samples in the 16 kHz mono audit. This
+is playback qualification, not direct hearing or subjective mix acceptance.
+
+Farm had a low 8 kHz mono correlation (0.305). A
+[48 kHz stereo follow-up](qa-evidence/interaction-audio-2026-10-11/roster-tenth-cloud/stereo-waveform-comparison.json)
+preserves its high-frequency and stereo content: left/right correlations are
+0.871/0.839, with native peaks −17.3/−22.6 dBFS and positive fitted gain.
+Mill and Workshop also match on both channels (0.958–0.965). No gain change
+is justified from the downsampled mono outlier. The measurement command
+accepts `--stereo-48k --keys KEY,KEY` to reproduce this comparison.
+
+Repair alone stopped before its attack order because the guest camera did
+not expose an uncovered House body pixel. The runner now centers that
+disclosed House by a normal minimap click, preserving the selected attacker
+and all actual attack/damage/Stop/Repair/health requirements. A regression
+uses the actual minimap handler with scaled, padded and letterboxed layouts.
+The four principal runner, batch, interaction and building-audio-selection
+files pass 87 tests (additional building UI and audio-notice tests also pass).
+[Repair-only run #11](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38259528458)
+was dispatched on runner `e24c8a56dc7ee251ccc0e5553f89aaa2401b8965` at
+2026-10-12 13:58 UTC, using the same owned room and native-stop observer.
+It remains pending; the temporary room secret is retained until capture ends.

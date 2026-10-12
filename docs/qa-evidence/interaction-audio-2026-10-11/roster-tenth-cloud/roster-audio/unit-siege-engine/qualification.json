@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "subset": "unit-siege-engine",
+  "expectedRevision": "ed7f584eb9f7f284f400186d14f5cd2dbac8f9e1",
+  "status": "captured-needs-listening",
+  "deployedRevision": null,
+  "releaseDigest": null,
+  "sandbox": "enabled",
+  "maxDurationMs": 300000,
+  "scope": "public-staging-native-audio",
+  "listeningReview": "pending",
+  "issues": [],
+  "browser": "Chrome/154.0.8037.97",
+  "captureStatus": "captured-needs-listening",
+  "browserObservation": {
+    "events": [
+      {
+        "kind": "http-error",
+        "status": 401,
+        "path": "/favicon.ico",
+        "scheme": "https",
+        "route": "static",
+        "resourceType": "Other"
+      },
+      {
+        "kind": "http-error",
+        "status": 401,
+        "path": "/favicon.ico",
+        "scheme": "https",
+        "route": "static",
+        "resourceType": "Other"
+      }
+    ],
+    "overflow": false,
+    "passed": true
+  },
+  "sourceCheck": {
+    "beforeMatch": true,
+    "afterMatch": true
+  }
+}
