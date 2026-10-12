@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "expectedRevision": "b3f55928d7410a948a2725b1b910b84b178bd749",
+  "deployedRevision": null,
+  "releaseDigest": null,
+  "roomScope": "one-owned-public-room",
+  "maxSubsetDurationMs": 300000,
+  "plannedSubsets": [
+    "unit-worker",
+    "buildings-home",
+    "unit-skiff",
+    "unit-infantry",
+    "unit-spearman",
+    "unit-archer",
+    "unit-scout",
+    "unit-rider",
+    "unit-siege-engine",
+    "buildings-training",
+    "buildings-defense",
+    "buildings-special",
+    "worker-jobs",
+    "worker-repair"
+  ],
+  "results": [
+    {
+      "subset": "unit-worker",
+      "status": "failed",
+      "entrySucceeded": true,
+      "issues": [
+        {
+          "code": "incomplete-capture-or-browser-errors"
+        }
+      ]
+    },
+    {
+      "subset": "buildings-home",
+      "status": "failed",
+      "entrySucceeded": true,
+      "issues": [
+        {
+          "code": "incomplete-capture-or-browser-errors"
+        }
+      ]
+    },
+    {
+      "subset": "unit-skiff",
+      "status": "failed",
+      "entrySucceeded": true,
+      "issues": [
+        {
+          "code": "incomplete-capture-or-browser-errors"
+        }
+      ]
+    },
+    {
+      "subset": "unit-infantry",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "unit-spearman",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "unit-archer",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "unit-scout",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "unit-rider",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "unit-siege-engine",
+      "status": "failed",
+      "entrySucceeded": true,
+      "issues": [
+        {
+          "code": "incomplete-capture-or-browser-errors"
+        }
+      ]
+    },
+    {
+      "subset": "buildings-training",
+      "status": "captured-needs-listening",
+      "entrySucceeded": true,
+      "issues": []
+    },
+    {
+      "subset": "buildings-defense",
+      "status": "failed",
+      "entrySucceeded": true,
+      "issues": [
+        {
+          "code": "incomplete-capture-or-browser-errors"
+        }
+      ]
+    },
+    {
+      "subset": "buildings-special",
+      "status": "failed",
+      "entrySucceeded": true,
+      "issues": [
+        {
+          "code": "incomplete-capture-or-browser-errors"
+        }
+      ]
+    },
+    {
+      "subset": "worker-jobs",
+      "status": "failed",
+      "entrySucceeded": true,
+      "issues": [
+        {
+          "code": "incomplete-capture-or-browser-errors"
+        }
+      ]
+    },
+    {
+      "subset": "worker-repair",
+      "status": "failed",
+      "entrySucceeded": true,
+      "issues": [
+        {
+          "code": "incomplete-capture-or-browser-errors"
+        }
+      ]
+    }
+  ],
+  "notRunSubsets": [],
+  "listeningReview": "pending",
+  "issues": []
+}

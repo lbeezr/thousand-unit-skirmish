@@ -177,6 +177,23 @@ export function rosterCaptureFailureCode(error) {
   if (/^Runtime\.evaluate timeout$/.test(error?.message ?? '')) return 'cdp-evaluation-timeout';
   return /timeout/i.test(error?.message ?? '') ? 'state-wait-timeout' : 'capture-contract-failed';
 }
+// Keep only fixed classifications, never arbitrary order text or player names.
+export function rosterOrderNoticeDiagnostic(message, state) {
+  const result = { state: ['ready', 'pending', 'planning', 'applied', 'failed'].includes(state) ? state : null,
+    command: null, reason: null };
+  if (typeof message !== 'string') return result;
+  for (const command of ['ATTACK BUILDING', 'ATTACK', 'MOVE', 'STOP', 'HOLD', 'PATROL', 'FOLLOW', 'GATHER', 'REPAIR', 'BUILD']) {
+    if (message.startsWith(`${command} ORDER`) || message.startsWith(`SENDING ${command}`)) { result.command = command.toLowerCase().replaceAll(' ', '-'); break; }
+  }
+  for (const [text, code] of [['NO VALID UNITS', 'no-valid-units'], ['SELECT ONLY SKIFFS', 'mixed-skiffs'],
+    ['SKIFF SUPPORTS MOVE AND STOP', 'unsupported-skiff-order'], ['INVALID DESTINATION', 'invalid-destination'],
+    ['NO REACHABLE', 'unreachable'], ['UNREACHABLE', 'unreachable'], ['SERVER DID NOT CONFIRM', 'unconfirmed'],
+    ['WAITING FOR CURRENT SERVER STATE', 'waiting-for-state'], ['CONNECTION LOST', 'connection-lost'],
+    ['RECONNECTED', 'reconnected']]) {
+    if (message.includes(text)) { result.reason = code; break; }
+  }
+  return result;
+}
 export function validateReviewRoom(value) {
   if (value === undefined || value === null || value === '') return null;
   if (typeof value !== 'string' || !/^[A-Za-z0-9_-]{32}$/.test(value)) throw new Error('Invalid private review room code.');
@@ -406,7 +423,8 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
   }
   async function research(id, type) {
     check(); stage = `research-${id}`;
-    const building = await findBuilding(type); await select('building', building.id);
+    const building = await findBuilding(type);
+    if (!building.selected) await select('building', building.id);
     await rosterControl(page, '[data-building-action="research"]');
     await rosterControl(page, `[data-context-research-options] [data-technology="${id}"]`);
     await page.wait(`Array.from(document.querySelectorAll('[data-context-research-options] [data-technology="${id}"]')).some(e => e.textContent.includes('ALREADY COMPLETED'))`, 'paid research completes', 55000);
@@ -431,7 +449,17 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
     await page.wait('window.__rtsBuildingPlacementSnapshot?.active && window.__rtsBuildingPlacementSnapshot.valid', 'ordinary valid paid site');
     await clickNovicePoint(page, point);
     const building = await findBuilding(type);
-    report.paidSteps.push({ build: type, id: building.id, complete: true }); await persist(); return building;
+    // Small structures can be entirely covered by their builders' normal
+    // unit-first pick radii. Move those Workers away through an ordinary order
+    // before requiring a visible building pixel; preserve the real picker.
+    stage = `clear-builders-${type}`;
+    const builders = (await state()).units.filter(unit => unit.kind === 'worker' && unit.selected).map(unit => unit.id);
+    assert.ok(builders.length > 0);
+    await clickNovicePoint(page, await project(page, { x: -7.5, z: -12.5 }), 'right');
+    const pad = buildingPad(type);
+    await page.wait(`(() => { const rows=window.__rtsEnvironmentStateSnapshot?.workers.filter(w => ${JSON.stringify(builders)}.includes(w.id));
+      return rows?.length === ${builders.length} && rows.every(w => Math.hypot(w.x-(${pad.x}),w.z-(${pad.z})) > 6); })()`, 'ordinary builders clear the building target', 30000);
+    report.paidSteps.push({ build: type, id: building.id, complete: true, buildersCleared: true }); await persist(); return building;
   }
   try {
     report.entry = await enterRosterRoom(page, origin, map, mapFile, mapBytes,
@@ -448,6 +476,7 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
       stage = 'ordinary-two-seat-repair';
       await captureWorkerRepair({ page, openGuest, origin, mapId: map.id, build, record,
         control: (targetPage, selector) => selector === '#camera-fit-map' ? frameRosterArea(targetPage) : rosterControl(targetPage, selector), signal,
+        progress: async step => { stage = `repair-${step}`; report.repairStage = step; await persist(); },
         evidence: async evidence => { report.repair = evidence; await persist(); } });
     } else if (plan.workerJobs) {
       await record('unit.worker.build', () => build('farm'));
@@ -470,6 +499,11 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
       await gatherNode('audio-sheep');
       await page.wait('window.__rtsEnvironmentStateSnapshot.resourceNodes.some(n => n.id === "audio-sheep" && n.wildlifeState === "carcass" && n.stock > 0)', 'ordinary harvest creates disclosed carcass', 45000);
       await key(page, 's');
+      await page.wait(`(() => { const u=window.__rtsBrowserRecoverySnapshot().worker;
+        return u?.id === ${JSON.stringify(worker.id)} && u.task === 'idle'; })()`, 'ordinary Stop applies before carcass order');
+      // Stop and Gather share voice priority. Let the real 1,250 ms speech
+      // cooldown pass before testing the next response; never advance clocks.
+      await new Promise(resolve => setTimeout(resolve, 1350));
       await record('unit.worker.gather.sheep-carcass', () => gatherNode('audio-sheep'));
     } else if (plan.kind) {
       let trainedUnitId = null;
@@ -477,15 +511,21 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
         if (step.build) await build(step.build);
         if (step.research) await ensureResearch(step.research);
         if (step.train) {
-          stage = `train-${step.train}`;
-          const producer = await findBuilding(step.at); await select('building', producer.id);
+          stage = `train-${step.train}-select-producer`;
+          const producer = await findBuilding(step.at);
+          if (!producer.selected) await select('building', producer.id);
+          if (await page.cdp.evaluate('document.querySelector("[data-building-action=research]")?.getAttribute("aria-expanded") === "true"')) {
+            await rosterControl(page, '[data-building-action="research"][aria-expanded="true"]');
+            await page.wait('document.querySelector("#building-research-panel")?.hidden === true', 'ordinary Research panel closes before training');
+          }
           const priorIds = (await state()).units.map(unit => unit.id);
-          const queue = () => rosterControl(page, `[data-context-products] [data-product="${step.train}"]`);
+          const queue = () => { stage = `train-${step.train}-queue`; return rosterControl(page, `[data-context-products] [data-product="${step.train}"]`); };
           // Observe longer paid queues partway through; Worker takes 25s and
           // needs the same headroom as Siege under the unchanged 30s arm bound.
           const observeProgress = U[step.train].trainSeconds >= 20;
           if (observeProgress) {
             await queue();
+            stage = `train-${step.train}-progress`;
             await page.wait(`(() => { const e=document.querySelector('[data-building-progress]'); return e && !e.hidden && e.value >= .25 && e.value < .9; })()`, 'ordinary paid training advances', 40000);
           }
           await record(`unit.${step.train}.ready`, async () => {
@@ -550,6 +590,7 @@ export async function captureRosterSubset({ page, openGuest, origin, revision, s
         timing:window.__rtsRosterTiming ?? null,
         studioOpen:document.querySelector('#map-studio')?.open === true, importObserved:window.__rtsCatalogMapImport?.ok === true,
         entryControls:(${rosterEntryControls.toString()})(),
+        orderNotice:(${rosterOrderNoticeDiagnostic.toString()})(document.querySelector('#order-status')?.textContent,document.querySelector('#order-status')?.dataset.state),
         studioFailureCode:${studioFailureExpression},
         bindingCount:s?.inspector.bindings.length ?? 0, decisions:s?.inspector.decisions.slice(-12) ?? [],
         nativeStarts:p?.starts.slice(-12) ?? [], faults:p?.faults ?? [], recordingPhase:p?.recording?.phase ?? null }; })()`);

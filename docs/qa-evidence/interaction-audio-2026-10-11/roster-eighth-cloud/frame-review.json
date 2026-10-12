@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "run": "38167751445",
+  "method": "direct inspection of retained native frames",
+  "scope": "rendered battlefield, correct selected unit/building panel, no error overlay; no art or audio quality claim",
+  "frames": [
+    {
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/buildings-training/ordinary-game.png",
+      "sha256": "d1abc2218487fbfd2da82d13f52dfbce96ff1277811831db61c3a51b077a49c1",
+      "review": "ordinary battlefield and expected selection panel visible; no error overlay"
+    },
+    {
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/ordinary-game.png",
+      "sha256": "76c9d3545ff748f80e437b94ffb4238b69e21f99517cc2963369467236fe5e6a",
+      "review": "ordinary battlefield and expected selection panel visible; no error overlay"
+    },
+    {
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/ordinary-game.png",
+      "sha256": "39f25705708969045b00b5408d26a84417f9994463d137b198ac052249caa70a",
+      "review": "ordinary battlefield and expected selection panel visible; no error overlay"
+    },
+    {
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/ordinary-game.png",
+      "sha256": "b1028f79a4646392a237b544f693e747d6fea8ca953b566e1b45188e79fad73e",
+      "review": "ordinary battlefield and expected selection panel visible; no error overlay"
+    },
+    {
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/ordinary-game.png",
+      "sha256": "5587fcda6af13471437365dae57833f27e62d5895aee66502ca25b425cf62979",
+      "review": "ordinary battlefield and expected selection panel visible; no error overlay"
+    },
+    {
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/ordinary-game.png",
+      "sha256": "6fdaa3b7ccaed607725424f2064168f80784ba7899471fccda394d071f7649c1",
+      "review": "ordinary battlefield and expected selection panel visible; no error overlay"
+    }
+  ]
+}

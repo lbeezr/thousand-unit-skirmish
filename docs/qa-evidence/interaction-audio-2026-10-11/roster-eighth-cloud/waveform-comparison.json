@@ -1,0 +1,530 @@
+{
+  "schemaVersion": 1,
+  "method": "8 kHz mono decoded PCM, full-source zero-mean normalized cross-correlation against native final-mix output; fitted gain at best finite lag",
+  "scope": "signal presence and source similarity, not direct listening, intelligibility or perceived mix",
+  "measurementCheck": "known delay/gain/noise passed",
+  "numpyVersion": "2.3.5",
+  "ffmpegVersion": "ffmpeg version 7.1 Copyright (c) 2000-2024 the FFmpeg developers",
+  "recordings": [
+    {
+      "key": "building.town-center.select",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/buildings-home/building.town-center.select.webm",
+      "sha256": "4cd2d67e15ab6f6a8796a03dab1f3858e596abe786f34e7190551cf03ad001bf",
+      "sourceSha256": "3453ea7bf7a57578fdbe1fbc7680340c7a26b75bc2caa8ab5c891ad45dd33f23",
+      "qualification": "failed",
+      "correlation": 0.9918064249309368,
+      "offsetSeconds": 0.00725,
+      "fittedGain": 0.2304904431428003
+    },
+    {
+      "key": "building.barracks.select",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/buildings-training/building.barracks.select.webm",
+      "sha256": "00d514f29a77a8b76f9586a818710c685e60d8a3cbd27907f51ffa195e422d5f",
+      "sourceSha256": "c7d0507c82c47968be2ad72301a9f32e1a19e26e9b02b1db7569dfe265faf97d",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.812655769132771,
+      "offsetSeconds": 0.007625,
+      "fittedGain": 0.12682634912041138
+    },
+    {
+      "key": "building.archery-range.select",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/buildings-training/building.archery-range.select.webm",
+      "sha256": "c43d7c9fddb132b63b4d46d272965516c3e0be103e33fd763f345d7ccfef2eca",
+      "sourceSha256": "833fb232f86afef1b9677169c4f87490c08142a0b3b6b8210bc66e78ff31c47f",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.971684325932196,
+      "offsetSeconds": 0.007875,
+      "fittedGain": 0.21687889627980977
+    },
+    {
+      "key": "building.stable.select",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/buildings-training/building.stable.select.webm",
+      "sha256": "8884e73d97f6b25edf6c94570ad9f63db60c6bd4ecf8d62e9b23807df71a759f",
+      "sourceSha256": "9b6adaa5b1d030374fc2671bfb6ae5910906ffcaf2049269159705c27feea78a",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9738053443959594,
+      "offsetSeconds": 0.008375,
+      "fittedGain": 0.31394311017168325
+    },
+    {
+      "key": "unit.archer.ready",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.ready.webm",
+      "sha256": "8c92b6fd1e22e095290f5a6c99a350466f7bb762a4e1d4bf7e1380e965a6d0f3",
+      "sourceSha256": "100d34ea3802be2347abfa237d1d2636c6dd7a17c485c04a2428c3f992cb3767",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9930862427019784,
+      "offsetSeconds": 0.010125,
+      "fittedGain": 0.5399769558679917
+    },
+    {
+      "key": "unit.archer.select",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.select.webm",
+      "sha256": "c3d8da004083df176bb447e24bba8cb9e2749fe54c9ea36b19d18093948430ca",
+      "sourceSha256": "7e1b9e99f7e70c44dbd42e463c9d5efb6430dece103d73fa9f3a3c636d908cb6",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9943912366251854,
+      "offsetSeconds": 0.007875,
+      "fittedGain": 0.6372309254002905
+    },
+    {
+      "key": "unit.archer.move",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.move.webm",
+      "sha256": "e57a4c1ca0274cb1dfa55dfba73383becc1ea946746e80e304c64e56e5e49130",
+      "sourceSha256": "16ac5d9ab7feef0c7a85d2c56d8a1d79a8ac15b167091ccc6b7bac8b7767ec0c",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9970750520020566,
+      "offsetSeconds": 0.00925,
+      "fittedGain": 0.5326409967850507
+    },
+    {
+      "key": "unit.archer.stop",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.stop.webm",
+      "sha256": "f999129fefecd65da7d1f2ebc4e40909634ffa6904116ae689e842cc8129ea6d",
+      "sourceSha256": "d8557d119d40e1708ea99fae63c6adc4601ca26a54e1e966936469a694a0fdc1",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9826306142982817,
+      "offsetSeconds": 0.009125,
+      "fittedGain": 0.4646963285665354
+    },
+    {
+      "key": "unit.archer.hold",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.hold.webm",
+      "sha256": "fb782160dd54ae24dff6ad21dc3c90f98b73e0b1af3ac22a01f947256eaed504",
+      "sourceSha256": "c75eb33c6d5dc97439615a8c42770ebb3484458ec92a795e0faf147905de26b5",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9931546574443977,
+      "offsetSeconds": 0.007875,
+      "fittedGain": 0.4819448709172671
+    },
+    {
+      "key": "unit.archer.patrol",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.patrol.webm",
+      "sha256": "6ddcaf8058294bd78865d8f4e0efd90d1ec666dc1e5300977f29a7688bcd4617",
+      "sourceSha256": "a6c7b323982f873567b96a4feef86f4ae08e8df264af1a6df3697e8cb4094c7b",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.981281370416317,
+      "offsetSeconds": 0.008875,
+      "fittedGain": 0.5535638485683346
+    },
+    {
+      "key": "unit.archer.follow",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.follow.webm",
+      "sha256": "4d624beb48045b86d4647b9b46fe872a032cff3c959e882282a1128963fb5271",
+      "sourceSha256": "700f1bcbe84d9f05459aef597b7768a02d5b22fcd90fc2ad010ac335632c9c65",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9873007541328541,
+      "offsetSeconds": 0.008,
+      "fittedGain": 0.6482440764193593
+    },
+    {
+      "key": "unit.archer.attack",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-archer/unit.archer.attack.webm",
+      "sha256": "7f2c087889ebcb355b22b146e7e6ed2be66a1c9b883750f2affa117a330f7a5c",
+      "sourceSha256": "1254b265a906169f4da010fd103e200a5f0fea036632e921dc11a791a12910b0",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9820144225025532,
+      "offsetSeconds": 0.009375,
+      "fittedGain": 0.5665334151909097
+    },
+    {
+      "key": "unit.infantry.ready",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.ready.webm",
+      "sha256": "3d01bb3d76257f6cf9804a32d9652307ebc11ef2a976c15c4a1e20bf91ad5d04",
+      "sourceSha256": "97ac8e89cec3041e6e6135c805ad7275375c00b107f1db4e8387bd40115e7977",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9955611834511499,
+      "offsetSeconds": 0.008625,
+      "fittedGain": 0.6295348110382836
+    },
+    {
+      "key": "unit.infantry.select",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.select.webm",
+      "sha256": "735ab59d2dd54566d474b5d269ee7b879329217d6619f40b938104d280b0d90a",
+      "sourceSha256": "606864139c4cae3dc2fd568665f7c282e7a5300691604c16d5e3d89d5f5e1f7b",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9580560910666055,
+      "offsetSeconds": 0.008875,
+      "fittedGain": 0.5075894001571275
+    },
+    {
+      "key": "unit.infantry.move",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.move.webm",
+      "sha256": "db67ca01532ecd9d322533c4455cd9736bc7bf78d7909a3fe13b4bfdeaf94fe8",
+      "sourceSha256": "7e04b35f3484b6cb1f71d77c55da46d5c87a1360c00688d0756aa3fe46f0e0c2",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9761749531103097,
+      "offsetSeconds": 0.007375,
+      "fittedGain": 0.5876493267535121
+    },
+    {
+      "key": "unit.infantry.stop",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.stop.webm",
+      "sha256": "28e18a17de27cc38c8f1ada71868593b731a0b2f0fc6b782f96a962d5ed95232",
+      "sourceSha256": "8238a8ff6063c76fd732e42f100b2896f9b80e049c8a10b88407a3fa98d6f0f7",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9938404344844092,
+      "offsetSeconds": 0.009625,
+      "fittedGain": 0.5531712250137363
+    },
+    {
+      "key": "unit.infantry.hold",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.hold.webm",
+      "sha256": "1a032e85cdcaaae070e430862781ca61ad003c1cca86005a4f1578dddf0ff1b0",
+      "sourceSha256": "c5fe3362b335bb2fddb144a5d333540d0a0d781e58b7e7db2d54f1a73a887cdf",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9910693426362859,
+      "offsetSeconds": 0.008875,
+      "fittedGain": 0.5692589121934069
+    },
+    {
+      "key": "unit.infantry.patrol",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.patrol.webm",
+      "sha256": "df302b80d5a22fc0bfbf5ad0efe9b533ca34d25c01e96525d5bc9c4d7ed1bc0f",
+      "sourceSha256": "d00a348a0e112d7639fd63f025035d0c241ecd86a5dd742d0377a83768acc957",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9983576128914613,
+      "offsetSeconds": 0.00725,
+      "fittedGain": 0.5159438609588647
+    },
+    {
+      "key": "unit.infantry.follow",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.follow.webm",
+      "sha256": "a5ece4ba07e1abe8caa2cf27ef8d4a9064f08c403e373e21646b85e6007bfbc9",
+      "sourceSha256": "42f76483da4addeebcf780481d24a6083a945be8fa3f933c5691a419b70841e5",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9852731004952014,
+      "offsetSeconds": 0.0095,
+      "fittedGain": 0.5366739538525702
+    },
+    {
+      "key": "unit.infantry.attack",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-infantry/unit.infantry.attack.webm",
+      "sha256": "16f0f825c6937cc26880c89133126f3d6398bd14e42a6d555b77519f0109cd92",
+      "sourceSha256": "085fc8d63890a7dc928c1ff4565169d7bc50cba0028943a7b1754dfb184aab63",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9891176317812606,
+      "offsetSeconds": 0.0095,
+      "fittedGain": 0.6514413875093666
+    },
+    {
+      "key": "unit.rider.ready",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.ready.webm",
+      "sha256": "24f0b76ac8588f37c1b3abd7043f239d0ecdf7a3af280c40abb5683b23734ffe",
+      "sourceSha256": "3961857f341f787f78776e4ce553aa15ad335583d75b4c23b2969bb165a6f348",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9614445623013845,
+      "offsetSeconds": 0.00875,
+      "fittedGain": 0.5370126733031177
+    },
+    {
+      "key": "unit.rider.select",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.select.webm",
+      "sha256": "409a6a44833d766eddbb549c544811244f0f68352b97caf4c0949b7d50994d84",
+      "sourceSha256": "d2e029c581a44fbd3ae37d9dab5eb63ad4c94c570cde150552c92901e23827be",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.967800931632164,
+      "offsetSeconds": 0.0095,
+      "fittedGain": 0.4923702977429857
+    },
+    {
+      "key": "unit.rider.move",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.move.webm",
+      "sha256": "c302341f57bdd5ccb3b5a95a3f49070d191b192ddbf7b4c4a1568a2b413a6ee5",
+      "sourceSha256": "1e25f5abce019c9ac0e3b89117225f7c63e64d50cf8425e139e0a499680d222a",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9767786405564843,
+      "offsetSeconds": 0.008,
+      "fittedGain": 0.5168204342173767
+    },
+    {
+      "key": "unit.rider.stop",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.stop.webm",
+      "sha256": "5a421ae4cb9846b66a64c283a37763eec49ff23612c4070b17b15ed9dd864572",
+      "sourceSha256": "16b00f9136c1a462699343ece3f59cf092aef07e44c1ef980b740204fd56708a",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9604880177010336,
+      "offsetSeconds": 0.008875,
+      "fittedGain": 0.38701951449121375
+    },
+    {
+      "key": "unit.rider.hold",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.hold.webm",
+      "sha256": "d39e2e229e762bc01720a6b9935b9710121a618398e32f11b830cfa82ac52540",
+      "sourceSha256": "b9d78baed3caa0d836b731ac542426c568f11bb844c2882ce92a782bfa883a4f",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9899370809245355,
+      "offsetSeconds": 0.007375,
+      "fittedGain": 0.49155708559602973
+    },
+    {
+      "key": "unit.rider.patrol",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.patrol.webm",
+      "sha256": "ba096a227ee28c954c9f24445b865c4f113a83cbad7334504d4856e1ccd5d3ad",
+      "sourceSha256": "b86e9aa70e5f6ff03d846b7f9ffb9036849bdc3e6f99295a76b4fc9b1612e002",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9986065802234176,
+      "offsetSeconds": 0.009625,
+      "fittedGain": 0.5265342696678976
+    },
+    {
+      "key": "unit.rider.follow",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.follow.webm",
+      "sha256": "234356d69f830801e187b0490a50859bef382ea3dda6f9aa88d7d06fe63d9e16",
+      "sourceSha256": "b042c714451bbfdb53254cee2df61c4be07d9d6e7d7fb810f6e1621333552562",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9979158442726512,
+      "offsetSeconds": 0.0095,
+      "fittedGain": 0.526225311227438
+    },
+    {
+      "key": "unit.rider.attack",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-rider/unit.rider.attack.webm",
+      "sha256": "d12692ba6fddbd80ed9d9b23f7f91f076b1b3b302cfcdfbef72893ce888646d2",
+      "sourceSha256": "c285fa0c8e5eeaedb56087c06b76848ba19b4f14a256cf804121cf33fcfabbee",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9869611894771837,
+      "offsetSeconds": 0.007625,
+      "fittedGain": 0.549621833539329
+    },
+    {
+      "key": "unit.scout.ready",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.ready.webm",
+      "sha256": "b7e271daed6c4a9d882c84f4eaa85201e7e334e7baed75cdf25682bce4f2ba29",
+      "sourceSha256": "9c779ece9bec5fbe70192bdae5a6d56f7f507e5e74c308fe2dafcec5c88c7ab2",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9855293473349761,
+      "offsetSeconds": 0.0075,
+      "fittedGain": 0.5495289064035217
+    },
+    {
+      "key": "unit.scout.select",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.select.webm",
+      "sha256": "fedd88e7b15f5475825fd7a6d7ee9161092a6088804965f82e049eb137811772",
+      "sourceSha256": "3afe7368e47ec747a3e6eef404945d7a959a16d42180d86d3d69c1512b8f066e",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9963872853555442,
+      "offsetSeconds": 0.009125,
+      "fittedGain": 0.5744625724476947
+    },
+    {
+      "key": "unit.scout.move",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.move.webm",
+      "sha256": "7a128d128c5c470415f3a0e98b0dfbf5083d4c156e30000c6857c56fdf81013c",
+      "sourceSha256": "941fe04bf3c44f291fd7008c89ba1784be6d47137be5d61de5c6ecbcbe720472",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9615321718627357,
+      "offsetSeconds": 0.008625,
+      "fittedGain": 0.5356922648667595
+    },
+    {
+      "key": "unit.scout.stop",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.stop.webm",
+      "sha256": "844641e8b381b55e7745faa9ec6fce3275581995588ec9fe2a5d3fddeccf7ca9",
+      "sourceSha256": "498b3b40c584a706bc793a7434ea0290a8e0c7a5ec622765f7b5219fc74275e0",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.990793259834265,
+      "offsetSeconds": 0.008625,
+      "fittedGain": 0.5748552132522609
+    },
+    {
+      "key": "unit.scout.hold",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.hold.webm",
+      "sha256": "f172c3fb054590223c38f649b7e041b6442833e87cd9807ab3fb2c9ff01dde53",
+      "sourceSha256": "113bddee12860442a0e4e0ead967c5b9d0a91bdc09d976f89590e097a1729726",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9974296756043569,
+      "offsetSeconds": 0.008875,
+      "fittedGain": 0.7020617334195617
+    },
+    {
+      "key": "unit.scout.patrol",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.patrol.webm",
+      "sha256": "c1d22b8c017f9876e975f7d1a50fe0d3fbdb2c9c2396a670eab096f955bed801",
+      "sourceSha256": "c9f82981ac7a440ffc0dfd60a149172ef26526c597cfe8912056a04ec7ca89a2",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9964611496120351,
+      "offsetSeconds": 0.009875,
+      "fittedGain": 0.48451522206559233
+    },
+    {
+      "key": "unit.scout.follow",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.follow.webm",
+      "sha256": "f88c98002791d2d27f7ca79f11a883b3c315817561695f9bd7e7323e8ab8466d",
+      "sourceSha256": "5bf560af550098160a1df6bb3fd7c7c722a5eff27b0c625075b74878f075f89b",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9882837360979073,
+      "offsetSeconds": 0.00725,
+      "fittedGain": 0.5530927755920149
+    },
+    {
+      "key": "unit.scout.attack",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-scout/unit.scout.attack.webm",
+      "sha256": "4114244339675a505dcfe1aa10e86f3be71cb32861129ec8285dbb589e74c08e",
+      "sourceSha256": "74a146ceec23eb5d1b107c2e1a045bf938c3ec6b0abffbea983e19182c909674",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9965642900425336,
+      "offsetSeconds": 0.008125,
+      "fittedGain": 0.6546480427348923
+    },
+    {
+      "key": "unit.spearman.ready",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.ready.webm",
+      "sha256": "b57c2a9e89874e1af16683457f86d85e565af82b545dd0d17dde4264e44838df",
+      "sourceSha256": "a4215bde63be79d3e25ea287c2487330b93d9d26d33f3bb9e1c0cd28dc27ab4e",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9361801415407636,
+      "offsetSeconds": 0.008,
+      "fittedGain": 0.29076594815527396
+    },
+    {
+      "key": "unit.spearman.select",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.select.webm",
+      "sha256": "14959ee7dc7cc5bf58eb9eca635a94795526128a2c0ff0bd1d123d9333e904c4",
+      "sourceSha256": "44ded6035f9140a730f4689adb2690b9ca95ab01b724199dd8ba3ea1bd482204",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9905577982598304,
+      "offsetSeconds": 0.008625,
+      "fittedGain": 0.2723161756275287
+    },
+    {
+      "key": "unit.spearman.move",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.move.webm",
+      "sha256": "459d6a8dca3718df285fc6fee8fc41c86c3902d4fe3d1e6802ab75981c8d8a3b",
+      "sourceSha256": "d98af50c5ee7bbe773e6e9389e66723c976e5ae9f918fd3fa3aebf2e37382e29",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9646594096069917,
+      "offsetSeconds": 0.008375,
+      "fittedGain": 0.7012305198371396
+    },
+    {
+      "key": "unit.spearman.stop",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.stop.webm",
+      "sha256": "ec6ed219389e31e7fa90574f57ccf2a425b758e8c09e690439f4303440b1b9a2",
+      "sourceSha256": "c047ea5be3b7a0b8da0334c197a6daf965b42e9ce15801175576baba1510a9dd",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9686887725551506,
+      "offsetSeconds": 0.009,
+      "fittedGain": 0.31486103748657035
+    },
+    {
+      "key": "unit.spearman.hold",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.hold.webm",
+      "sha256": "0a91554e891e7ad59241746e4277e08fc57f6660cafcd56a0f841a8a469facb3",
+      "sourceSha256": "81fe9081571b1dd7dca558f03447cb4c38f8de6f831c68ffdf34c2b33c59c0e8",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9961178466338593,
+      "offsetSeconds": 0.00925,
+      "fittedGain": 0.28397316233303926
+    },
+    {
+      "key": "unit.spearman.patrol",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.patrol.webm",
+      "sha256": "8f532f1972f506c87228ccef028883405834290ec1cda7931159e98ecfbc9643",
+      "sourceSha256": "275cc157565274e9e7f0ecaa9f73cad8e145c602e8c9d012abd857612af523cf",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9862212107736072,
+      "offsetSeconds": 0.007875,
+      "fittedGain": 0.3052892878999491
+    },
+    {
+      "key": "unit.spearman.follow",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.follow.webm",
+      "sha256": "b3122d993204b49cc5b136a860625ac9b297cd250ea31375a18ec68795f682ce",
+      "sourceSha256": "bbc67baeb51fe0d34d338fa7875918a33eb667099fca88bbbec19633fc3f3199",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9790930916080023,
+      "offsetSeconds": 0.007875,
+      "fittedGain": 0.4354217420766443
+    },
+    {
+      "key": "unit.spearman.attack",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-spearman/unit.spearman.attack.webm",
+      "sha256": "7793639f5e1dae73f6aa1c48f179a0aab0908742c885b20d944ed2bbae9d16cc",
+      "sourceSha256": "aff6fb898323c40653fdfcfe4d614549a2b1b4b07c37759024c3db3ed7f74dfb",
+      "qualification": "captured-needs-listening",
+      "correlation": 0.9933516039534941,
+      "offsetSeconds": 0.010125,
+      "fittedGain": 0.32661585170768814
+    },
+    {
+      "key": "unit.worker.ready",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-worker/unit.worker.ready.webm",
+      "sha256": "7433e7482d9859d7d6760c999f5d31b97156acfc60b9079392d074d02d5d0aa1",
+      "sourceSha256": "bca136fefbbfe8cd7e5c3d4c7f10564d93018956d0ef912d41a618525d9b16b0",
+      "qualification": "failed",
+      "correlation": 0.997733293796469,
+      "offsetSeconds": 0.0095,
+      "fittedGain": 0.51612456739023
+    },
+    {
+      "key": "unit.worker.select",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-worker/unit.worker.select.webm",
+      "sha256": "f40cfa2938e0a0dac06d197f12dcf9b03508826a59a799780f5ea91e556d5739",
+      "sourceSha256": "c401b213da3bb10dcf54e1828ef341f69f1d10533cd0ef3a02b93e8e8bb09943",
+      "qualification": "failed",
+      "correlation": 0.9976727687825208,
+      "offsetSeconds": 0.007875,
+      "fittedGain": 0.5556236725518496
+    },
+    {
+      "key": "unit.worker.move",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-worker/unit.worker.move.webm",
+      "sha256": "8ccedf6428dfb5e02dbb76f8dfdbd60207907ef7616fb65ea67e5918dea177c9",
+      "sourceSha256": "ea1f86f49f144a380833cbc0dfeb986fa4e676bd43638735c3b810fce26d75ef",
+      "qualification": "failed",
+      "correlation": 0.9909575848770422,
+      "offsetSeconds": 0.008625,
+      "fittedGain": 0.4491845633515104
+    },
+    {
+      "key": "unit.worker.stop",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-worker/unit.worker.stop.webm",
+      "sha256": "edcb4f648fd7bd409cd69683c632f28792d34741c80bb1f51fd77c2090235b14",
+      "sourceSha256": "076aaee9731bb7aff543d9f9972d0797987f8c6c572ae91630cc6a3a4896474b",
+      "qualification": "failed",
+      "correlation": 0.9621521049775273,
+      "offsetSeconds": 0.0095,
+      "fittedGain": 0.40903088739112575
+    },
+    {
+      "key": "unit.worker.hold",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/unit-worker/unit.worker.hold.webm",
+      "sha256": "3adf1ff3c8d964856775098f792f78d48ec983fe143f2e2d747359c3c3f76d78",
+      "sourceSha256": "fc5c2b23a60d733a6822e8137491c0a1d432bcd95f5cc836cd6d442e29d6ae34",
+      "qualification": "failed",
+      "correlation": 0.9965791437858413,
+      "offsetSeconds": 0.0095,
+      "fittedGain": 0.5914643997011347
+    },
+    {
+      "key": "unit.worker.build",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/worker-jobs/unit.worker.build.webm",
+      "sha256": "895f348b46eb5db99d1eb7dfa9f19213f04bc5b41da9fcbba0f110c346b798be",
+      "sourceSha256": "25d79461fd67e617518660ac1b212e9202c67b30d48e345319dd1e21c15b97a4",
+      "qualification": "failed",
+      "correlation": 0.9966734170769918,
+      "offsetSeconds": 0.009,
+      "fittedGain": 0.5852939682946231
+    },
+    {
+      "key": "unit.worker.gather.food",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/worker-jobs/unit.worker.gather.food.webm",
+      "sha256": "e957a55b1109d4b24f5544a92a7762ec26cf98b5a609987fc70d98f9d2792b61",
+      "sourceSha256": "3fbe9643d8940f210306453ad231c90ba37556a4fc9c6317d0542fdfe24045a5",
+      "qualification": "failed",
+      "correlation": 0.9853710032329067,
+      "offsetSeconds": 0.010125,
+      "fittedGain": 0.4619099486030842
+    },
+    {
+      "key": "unit.worker.return-cargo",
+      "file": "roster-audio-all-b3f55928d7410a948a2725b1b910b84b178bd749/roster-audio/worker-jobs/unit.worker.return-cargo.webm",
+      "sha256": "d2705fd73a17ce22038d00be648d44d2ea3db52632ea1ff5be8e0eedf2af61b9",
+      "sourceSha256": "75b87b33de0ba6557ec0477cd84f8c8e66cbf6b335bba9c9fb23920b8e5ad9b1",
+      "qualification": "failed",
+      "correlation": 0.9761683476549299,
+      "offsetSeconds": 0.01,
+      "fittedGain": 0.4843832142584501
+    }
+  ]
+}

@@ -60,6 +60,45 @@ async function fixture(t, { capture, identify, guestCleanupFails = false } = {})
 }
 const success = args => ({ status: 'captured-needs-listening', entry: { mapId: `audio-${args.subset}` } });
 
+test('an explicit retry list captures only requested subsets in order in one owned room', async t => {
+  const f = await fixture(t);
+  const subsets = ['buildings-special', 'unit-worker', 'unit-skiff'];
+  f.options.subset = subsets.join(',');
+  const result = await f.run();
+  assert.equal(result.status, 'captured-needs-listening');
+  assert.deepEqual(result.plannedSubsets, subsets);
+  assert.deepEqual(result.results.map(row => row.subset), subsets);
+  assert.deepEqual(f.calls.map(args => args.subset), subsets);
+  assert.deepEqual(f.calls.map(args => args.reuseRoom), [false, true, true]);
+  assert.ok(f.calls.every(args => args.page === f.pages[0]));
+  assert.equal(f.opened, 1); assert.equal(f.pages.length, 1); assert.equal(f.maxActive, 1);
+  assert.equal(f.identified, subsets.length + 1); assert.deepEqual(result.notRunSubsets, []);
+  for (const subset of subsets) assert.deepEqual((await f.read(subset)).sourceCheck, { beforeMatch: true, afterMatch: true });
+});
+test('failed retry entry preserves only the requested remaining cases and never opens another room', async t => {
+  const f = await fixture(t, { capture: async (args, state) => state.calls.length === 2 ? { status: 'failed' } : success(args) });
+  f.options.subset = 'unit-skiff,buildings-special,unit-worker';
+  const result = await f.run();
+  assert.equal(result.status, 'failed');
+  assert.deepEqual(f.calls.map(args => args.subset), ['unit-skiff', 'buildings-special']);
+  assert.deepEqual(result.notRunSubsets, ['unit-worker']);
+  assert.equal(f.opened, 1); assert.equal(f.pages.length, 1);
+  assert.ok(result.results[1].issues.some(issue => issue.code === 'owned-room-entry-missing'));
+});
+test('invalid subset lists fail before source requests, browser or room creation', async t => {
+  for (const subset of [null, '', 'unit-worker,', 'unit-worker,unit-worker', 'all,unit-worker', 'unit-unknown', Array(15).fill('unit-worker').join(',')]) {
+    const f = await fixture(t); f.options.subset = subset;
+    await assert.rejects(f.run());
+    assert.equal(f.identified, 0); assert.equal(f.opened, 0); assert.equal(f.calls.length, 0);
+  }
+});
+test('explicit all preserves the default full-batch order', async t => {
+  const f = await fixture(t); f.options.subset = 'all';
+  const result = await f.run();
+  assert.equal(result.status, 'captured-needs-listening');
+  assert.deepEqual(result.plannedSubsets, ['unit-worker', 'buildings-home',
+    ...rosterSubsets.filter(subset => !['unit-worker', 'buildings-home'].includes(subset))]);
+});
 test('full roster uses one browser and host page sequentially, with only the owned Repair guest', async t => {
   const f = await fixture(t), result = await f.run();
   assert.equal(result.status, 'captured-needs-listening'); assert.equal(result.listeningReview, 'pending');

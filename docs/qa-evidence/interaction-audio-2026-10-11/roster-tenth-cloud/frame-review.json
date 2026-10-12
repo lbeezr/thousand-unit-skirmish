@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "run": "38170842734",
+  "method": "direct inspection of retained native frames",
+  "scope": "rendered battlefield and expected selection panel; no art or audio quality claim",
+  "frames": [
+    {
+      "file": "roster-audio/buildings-defense/ordinary-game.png",
+      "sha256": "264273caf8aa46c0bdb04ee99f8e7ac8092fbd9ca2d6d3d1c479852c5e8e3627",
+      "review": "Completed closed Gate selected; no error overlay"
+    },
+    {
+      "file": "roster-audio/buildings-home/ordinary-game.png",
+      "sha256": "a98678fdd4c1df44f2fca7762965c330567f5221fb7cfc0d67c726b36ac7d472",
+      "review": "Completed Mill selected; ordinary battlefield visible; no error overlay"
+    },
+    {
+      "file": "roster-audio/buildings-special/ordinary-game.png",
+      "sha256": "00604b6d4e10a3427335dabfc288e97e93e8a2af83d72fc7c623a574ccbc472f",
+      "review": "Completed Siege Workshop selected; normal Siege Engineering requirement visible; no error overlay"
+    },
+    {
+      "file": "roster-audio/unit-siege-engine/ordinary-game.png",
+      "sha256": "4f891e971517be3efab2be6509c0e1f8ab1317640f03a14651f30c131231b29d",
+      "review": "Siege Engine selected with full health; no error overlay"
+    },
+    {
+      "file": "roster-audio/unit-skiff/ordinary-game.png",
+      "sha256": "e6a8babc54add60f6aad373f7c967f036ee6054ce172befe8ecd26539ac5212d",
+      "review": "Skiff selected; ordinary battlefield visible; no error overlay"
+    },
+    {
+      "file": "roster-audio/unit-worker/ordinary-game.png",
+      "sha256": "0e894297c2a94221f9151383803202e977f00ed1899dd11cd0adab2c8727f96b",
+      "review": "Worker selected with Gather task and wood cargo visible; no error overlay"
+    },
+    {
+      "file": "roster-audio/worker-jobs/ordinary-game.png",
+      "sha256": "3f24cdade8c7618eaa9d48ecea4f1488cc39c6db934f030f7ba1ac4da29bad14",
+      "review": "Worker selected with Gathering task visible; no error overlay"
+    }
+  ]
+}

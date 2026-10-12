@@ -3,11 +3,10 @@
 import assert from 'node:assert/strict';
 import { clickNovicePoint } from './renderer-qualification-novice.mjs';
 import { interactionTargetPoint } from './renderer-interaction-audio-scenario.mjs';
-import { validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
+import { ROSTER_MAP_SIDE, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
 
-// The regular roster snapshot lists owned buildings only. For the second seat,
-// examine a bounded set of visible pixels around the disclosed House position
-// and accept only the real picker's exact building identity.
+// Host Repair uses its normal friendly-building picker. This observer must not
+// validate the guest attack: it deliberately cannot return an enemy building.
 export function repairBuildingPoint(id, x, z) {
   if (!Number.isSafeInteger(id) || id < 0 || ![x, z].every(Number.isFinite)) return null;
   for (const lift of [0, .5, 1, 1.5, 2, 3]) {
@@ -20,6 +19,38 @@ export function repairBuildingPoint(id, x, z) {
     }
   }
   return null;
+}
+// The disclosed paid House has a solid body at this lift. Projection only
+// establishes an uncovered canvas point; the ordinary attack acknowledgement
+// and subsequent damage to this exact House establish the actual target.
+export function repairAttackPoint(x, z) {
+  if (![x, z].every(Number.isFinite)) return null;
+  return window.__rtsInteractionAudioProject(x, z, 1);
+}
+// Invert the ordinary minimap's bitmap/content-box mapping. Native left-click
+// recenters the camera without changing the selected attacker or issuing an order.
+export function repairMinimapPoint(x, z, side) {
+  if (![x, z, side].every(Number.isFinite) || side <= 0
+    || Math.abs(x) >= side / 2 || Math.abs(z) >= side / 2) return null;
+  const canvas = document.querySelector('#minimap-canvas');
+  if (!canvas || canvas.closest('[hidden]') || !(canvas.width > 0 && canvas.height > 0)) return null;
+  const rect = canvas.getBoundingClientRect(), style = getComputedStyle(canvas);
+  const inset = edge => (parseFloat(style[`border${edge}Width`]) || 0) + (parseFloat(style[`padding${edge}`]) || 0);
+  const left = inset('Left'), top = inset('Top');
+  const width = rect.width - left - inset('Right'), height = rect.height - top - inset('Bottom');
+  if (!(width > 0 && height > 0)) return null;
+  const scale = Math.min(canvas.width / side, canvas.height / side);
+  const point = {
+    x: rect.left + left + ((canvas.width - side * scale) / 2 + (x + side / 2) * scale) * width / canvas.width,
+    y: rect.top + top + ((canvas.height - side * scale) / 2 + (z + side / 2) * scale) * height / canvas.height,
+  };
+  return document.elementFromPoint(point.x, point.y) === canvas ? point : null;
+}
+export async function centerRepairTarget(page, house) {
+  const point = await page.wait(`(${repairMinimapPoint.toString()})(${house.x},${house.z},${ROSTER_MAP_SIDE})`, 'visible House position on ordinary minimap');
+  await clickNovicePoint(page, point);
+  await page.wait(`(() => { const c=window.__rtsBrowserRecoverySnapshot?.().camera;
+    return c && Math.hypot(c.x-(${house.x}),c.z-(${house.z})) < .01; })()`, 'native minimap centers the disclosed House');
 }
 export function validateRepairHealth(before, after, buildingId) {
   for (const row of [before, after]) {
@@ -45,20 +76,23 @@ async function housePoint(page, house) {
   return page.wait(`(${repairBuildingPoint.toString()})(${house.id},${house.x},${house.z})`, 'exact visible paid House pixel');
 }
 export async function captureWorkerRepair({ page, openGuest, origin, mapId, build, record, control, signal,
-  evidence = async () => {} }) {
+  evidence = async () => {}, progress = async () => {} }) {
   validateStagingOrigin(origin); assert.equal(typeof openGuest, 'function');
   let guest, roomCode = null;
   const receipt = { method: 'ordinary-two-seat-attack-stop-repair', status: 'preparing', guestDisposed: false };
   const check = () => signal?.throwIfAborted();
+  const step = async stage => { check(); await progress(stage); };
   try {
-    check();
+    await step('build-house');
     const placed = await build('house');
+    await step('house-ready');
     const house = await page.cdp.evaluate(building(placed.id));
     assert.ok(house?.complete && house.hp === house.maxHp && house.hp > 10);
     receipt.buildingId = house.id; receipt.initialHp = house.hp;
     await evidence({ ...receipt });
     // Clear builders and set all host units to Stop/No attack so they cannot
     // kill the one guest Infantry approaching the structure.
+    await step('clear-host-units');
     await key(page, 'a');
     const workers = (await page.cdp.evaluate(snapshot)).units.filter(unit => unit.kind === 'worker').map(unit => unit.id);
     assert.ok(workers.length > 0);
@@ -66,42 +100,58 @@ export async function captureWorkerRepair({ page, openGuest, origin, mapId, buil
     await clickNovicePoint(page, parking, 'right');
     await page.wait(`(() => { const rows=window.__rtsEnvironmentStateSnapshot?.workers.filter(w => ${JSON.stringify(workers)}.includes(w.id));
       return rows?.length === ${workers.length} && rows.every(w => Math.hypot(w.x-(${house.x}),w.z-(${house.z})) > 6); })()`, 'builders clear the attack target', 30000);
+    await step('host-stop');
     await key(page, 's');
     await page.wait('document.querySelector("#order-status")?.dataset.state === "applied" && document.querySelector("#order-status").textContent.startsWith("STOP ORDER")', 'host Stop applied');
     await page.wait('Array.from(document.querySelectorAll("[data-combat-stance=noAttack]")).some(e => !e.closest("[hidden]") && e.getAttribute("aria-pressed") === "true")', 'host military shows No attack');
-    check();
+    await step('guest-open');
     roomCode = await page.cdp.evaluate('new URL(location.href).searchParams.get("room")');
     assert.ok(typeof roomCode === 'string' && /^[A-Za-z0-9_-]{32}$/.test(roomCode), 'fresh room code required');
     guest = await openGuest(); check();
     assert.equal(await guest.cdp.evaluate('location.href'), 'about:blank');
     await guest.cdp.call('Page.addScriptToEvaluateOnNewDocument', { source: 'window.__rtsCaptureDiagnostics=true;' });
+    await step('guest-menu');
     await guest.cdp.call('Page.navigate', { url: `${origin}/` });
     await guest.wait('document.documentElement?.dataset.entry === "menu" && document.querySelector("#menu-join")?.disabled === false', 'guest public menu');
+    await step('guest-join');
     await control(guest, '#menu-join');
     await control(guest, '#menu-join-dialog input');
     await guest.cdp.call('Input.insertText', { text: roomCode }); roomCode = null;
     await control(guest, '#menu-join-dialog button[type="submit"]');
+    await step('guest-seat');
     await guest.wait(`window.__rtsInteractionAudioSnapshot?.().mapId === ${JSON.stringify(mapId)} && ${snapshot}.team === 1`, 'fresh guest owns only the second seat', 35000);
+    await step('guest-camera');
     await control(guest, '#camera-fit-map');
+    await step('guest-unit');
     const infantry = (await guest.cdp.evaluate(snapshot)).units.find(unit => unit.kind === 'infantry' && unit.point);
     assert.ok(infantry); await selectUnit(guest, infantry.id);
-    await clickNovicePoint(guest, await housePoint(guest, house), 'right');
+    await step('guest-focus-house');
+    await centerRepairTarget(guest, house);
+    await step('guest-target');
+    const attackPoint = await guest.wait(`(${repairAttackPoint.toString()})(${house.x},${house.z})`, 'visible disclosed enemy House body pixel');
+    await step('guest-attack');
+    await clickNovicePoint(guest, attackPoint, 'right');
     await guest.wait('document.querySelector("#order-status")?.dataset.state === "applied" && document.querySelector("#order-status").textContent.startsWith("ATTACK BUILDING ORDER")', 'ordinary guest building attack applied');
-    check();
+    await step('house-damage');
     await page.wait(`(() => { const b=${building(house.id)}; return b && b.hp > 0 && b.hp <= b.maxHp-10 && b; })()`, 'actual enemy hits damage paid House', 60000);
+    await step('guest-stop');
     await key(guest, 's');
     await guest.wait('document.querySelector("#order-status")?.dataset.state === "applied" && document.querySelector("#order-status").textContent.startsWith("STOP ORDER")', 'guest attack stops');
     await guest.wait('Array.from(document.querySelectorAll("[data-combat-stance=noAttack]")).some(e => !e.closest("[hidden]") && e.getAttribute("aria-pressed") === "true")', 'guest Infantry shows No attack');
     const damaged = await page.cdp.evaluate(building(house.id));
     assert.ok(damaged?.hp > 0 && damaged.hp < damaged.maxHp);
     receipt.status = 'damaged'; receipt.damagedHp = damaged.hp; receipt.guestAttackStopped = true;
-    await evidence({ ...receipt }); check();
+    await evidence({ ...receipt });
+    await step('host-worker');
     await selectUnit(page, workers[0]);
+    await step('repair-recording');
     await record('unit.worker.repair', async () => {
+      await step('repair-order');
       await control(page, '[data-worker-action="repair"]');
       await clickNovicePoint(page, await housePoint(page, house));
       await page.wait('document.querySelector("#order-status")?.dataset.state === "applied" && document.querySelector("#order-status").textContent.startsWith("REPAIR ORDER")', 'ordinary tracked Repair applied');
     });
+    await step('repair-health');
     const repaired = await page.wait(`(() => { const b=${building(house.id)}; return b && b.hp > ${damaged.hp} && b; })()`, 'paid Repair increases health', 45000);
     receipt.health = validateRepairHealth(damaged, repaired, house.id);
     receipt.status = 'repaired'; await evidence({ ...receipt });

@@ -18,10 +18,12 @@ const node = () => ({ connect() {}, disconnect() {} });
 // Execute the committed selection caller with its existing presentation boundary
 // injected. No renderer, HUD changes, browser or hearing are inferred from this.
 const mainSource = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
-const selectionNode = parse(mainSource, { ecmaVersion: 'latest', sourceType: 'module' }).body
-  .find(node => node.type === 'FunctionDeclaration' && node.id.name === 'selectBuilding');
-assert.ok(selectionNode, 'actual selection consumer remains discoverable');
-const selectionSource = mainSource.slice(selectionNode.start, selectionNode.end);
+const mainDeclarations = parse(mainSource, { ecmaVersion: 'latest', sourceType: 'module' }).body;
+const selectionSource = ['buildingSupportsRally', 'selectBuilding'].map(name => {
+  const declaration = mainDeclarations.find(node => node.type === 'FunctionDeclaration' && node.id.name === name);
+  assert.ok(declaration, `actual ${name} remains discoverable`);
+  return mainSource.slice(declaration.start, declaration.end);
+}).join('\n');
 function actualSelectionConsumer(audio) {
   return Function('audio', 'BUILDING_DEFINITIONS', `
     const localTeam = 0, selected = new Set(), buildingVisuals = new Map();

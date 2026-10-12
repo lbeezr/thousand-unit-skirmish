@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       subset:
-        description: Bounded ordinary audio subset, or all subsets sequentially in one owned room
+        description: One audio subset, an ordered comma-separated list (up to 14 unique subsets), or all; sequential in one owned room
         type: string
         default: all
         required: true

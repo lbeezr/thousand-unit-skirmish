@@ -19,6 +19,7 @@ function output() {
 test('output receipt requires native media, actual signal and one matching recording start', () => {
   const valid = validateAudioObservation(output(), [sourceSha256]);
   assert.equal(valid.bytes.length, 2048); assert.equal(valid.sourceSha256, sourceSha256);
+  assert.equal(valid.stopObservation, 'unavailable', 'historical receipts cannot acquire stop observation');
   assert.match(valid.sha256, /^[0-9a-f]{64}$/);
   for (const changed of [
     { base64: Buffer.alloc(2048).toString('base64') }, { mimeType: 'audio/mpeg' },
@@ -30,6 +31,20 @@ test('output receipt requires native media, actual signal and one matching recor
     { starts: [{ sha256: sourceSha256, duration: 0 }] },
     ...[-100, 3000, 4000].map(time => ({ starts: [{ ...output().starts[0], time }] })),
   ]) assert.throws(() => validateAudioObservation({ ...output(), ...changed }, [sourceSha256]));
+});
+test('stop-observed receipts require an explicit uninterrupted source while retaining legacy evidence limits', () => {
+  const legacy = output(), current = { ...legacy, stopObservation: 'native-stop-v1',
+    starts: [{ ...legacy.starts[0], stopTime: null }] };
+  assert.equal(validateAudioObservation(current, [sourceSha256]).stopObservation, 'native-stop-v1');
+  for (const stopTime of [undefined, NaN, 1000, 1799]) {
+    assert.throws(() => validateAudioObservation({ ...current,
+      starts: [{ ...current.starts[0], stopTime }] }, [sourceSha256]), /stopped before its nominal completion/);
+  }
+  for (const stopTime of [1800, 3000]) validateAudioObservation({ ...current,
+    starts: [{ ...current.starts[0], stopTime }] }, [sourceSha256]);
+  assert.throws(() => validateAudioObservation({ ...current, stopObservation: 'unknown' }, [sourceSha256]));
+  assert.equal(validateAudioObservation(legacy, [sourceSha256]).stopObservation, 'unavailable');
+  assert.equal(Object.hasOwn(legacy, 'stopObservation'), false, 'reading old evidence must not rewrite it');
 });
 test('ordinary audio adapter is registered without executing browser or provider work on import', async () => {
   const loaded = await loadCaptureCases('interaction-audio');
@@ -99,8 +114,9 @@ test('gated audio observation covers the owned roster with bounded read-only pro
   const disabled = { window: {} }; runInNewContext(code, disabled);
   assert.deepEqual(Object.keys(disabled.window), [], 'normal clients expose none of the audit observations');
 });
-function probeFixture({ delayedStop = false, recorderStartFails = false, dataBytes = 2048 } = {}) {
-  const connections = [], starts = [], events = [], timers = new Map(), stopped = [];
+function probeFixture({ delayedStop = false, recorderStartFails = false, dataBytes = 2048,
+  nativeStartError = null, nativeStopError = null } = {}) {
+  const connections = [], starts = [], stops = [], events = [], timers = new Map(), stopped = [];
   let now = 1000, nextTimer = 1, nativeBuffer;
   const schedule = (fn, delay, repeat = false) => {
     const id = nextTimer++; timers.set(id, { fn, at: now + delay, repeat: repeat ? delay : null }); return id;
@@ -121,7 +137,16 @@ function probeFixture({ delayedStop = false, recorderStartFails = false, dataByt
     connect(destination) { connections.push([this, destination]); return destination; }
   }
   class NativeSource extends NativeNode {
-    start(...args) { starts.push(args); events.push('native-start'); return 'native-result'; }
+    start(...args) {
+      starts.push(args); events.push('native-start');
+      if (nativeStartError) throw nativeStartError;
+      return 'native-result';
+    }
+    stop(...args) {
+      stops.push(args); events.push('native-stop');
+      if (nativeStopError) throw nativeStopError;
+      return 'native-stop-result';
+    }
   }
   class NativeContext {
     destination = {};
@@ -155,7 +180,7 @@ function probeFixture({ delayedStop = false, recorderStartFails = false, dataByt
   assert.equal(connections.length, 3);
   assert.equal(connections[0][1], context.destination, 'original speaker output must remain connected');
   assert.ok(connections.every(([node]) => node === master), 'tap must observe the existing master');
-  return { probe: window.__rtsInteractionAudio, context, events, starts, timers, advance,
+  return { probe: window.__rtsInteractionAudio, context, events, starts, stops, timers, advance,
     skipTimers: milliseconds => { now += milliseconds; }, flushStop: () => stopped.splice(0).forEach(fn => fn()),
     async source(bytes = [1, 2, 3]) {
       const original = Uint8Array.from(bytes).buffer, source = new NativeSource(context);
@@ -182,6 +207,87 @@ test('arming waits for delayed matching playback and preserves native call, retu
   assert.equal(validateAudioObservation(result, [expected.hash]).sourceSha256, expected.hash);
   assert.deepEqual(f.starts, [[when, 0, 1.3], [when, 0, 1.3]], 'every native call keeps its original arguments');
   assert.equal(f.probe.recording, null); assert.equal(f.timers.size, 0);
+});
+
+test('an interrupted matching source fails even when the full window contains metered output', async () => {
+  const f = probeFixture(), expected = await f.source();
+  f.probe.begin([expected.hash]); expected.source.start(f.context.currentTime, 0, 1.3);
+  f.advance(400);
+  assert.equal(expected.source.stop(), 'native-stop-result');
+  f.advance(3100);
+  const result = await f.finish();
+  assert.equal(result.stopObservation, 'native-stop-v1');
+  assert.ok(Math.abs(result.starts[0].stopTime - result.starts[0].time - 400) < .000001);
+  assert.equal(result.elapsedMs, 3500); assert.ok(result.peak > .001 && result.rms > .0001);
+  assert.deepEqual(f.stops, [[]], 'the native stop keeps its omitted arguments');
+  assert.throws(() => validateAudioObservation(result, [expected.hash]), /stopped before its nominal completion/);
+  assert.equal(f.timers.size, 0);
+});
+
+test('scheduled stops use AudioContext time, preserving future replacements and completed interruptions', async () => {
+  for (const scenario of ['early', 'at-end', 'replaced-future', 'already-stopped', 'before-start', 'unrelated']) {
+    const f = probeFixture(), expected = await f.source(), unrelated = await f.source([9, 8, 7]);
+    f.probe.begin([expected.hash]);
+    const when = f.context.currentTime + (scenario === 'before-start' ? 1 : 0);
+    expected.source.start(when, 0, 1.3);
+    const args = [];
+    const stopAt = time => {
+      args.push([time]); assert.equal(expected.source.stop(time), 'native-stop-result');
+    };
+    if (scenario === 'unrelated') {
+      unrelated.source.start(f.context.currentTime, 0, 1.3); unrelated.source.stop();
+    } else if (scenario === 'at-end') stopAt(when + 1.3);
+    else {
+      stopAt(f.context.currentTime + .4);
+      if (scenario === 'replaced-future' || scenario === 'already-stopped') {
+        f.advance(scenario === 'already-stopped' ? 500 : 200); stopAt(when + 1.3);
+      }
+    }
+    f.advance(3500);
+    const result = await f.finish();
+    if (scenario !== 'unrelated') assert.deepEqual(f.stops, args);
+    if (['at-end', 'replaced-future', 'unrelated'].includes(scenario)) validateAudioObservation(result, [expected.hash]);
+    else assert.throws(() => validateAudioObservation(result, [expected.hash]), /stopped before its nominal completion/);
+    assert.equal(f.timers.size, 0);
+  }
+});
+
+test('stop observation preserves native errors and does not record a failed stop as successful', async () => {
+  for (const operation of ['start', 'stop']) {
+    const nativeError = new Error(`native ${operation} rejected`);
+    const f = probeFixture({ [operation === 'start' ? 'nativeStartError' : 'nativeStopError']: nativeError });
+    const expected = await f.source(); f.probe.begin([expected.hash]);
+    if (operation === 'start') {
+      assert.throws(() => expected.source.start(1, 0, 1.3), error => error === nativeError);
+      assert.deepEqual(f.starts, [[1, 0, 1.3]]); assert.equal(f.probe.starts.length, 0);
+    } else {
+      expected.source.start(1, 0, 1.3);
+      assert.throws(() => expected.source.stop(-1), error => error === nativeError);
+      assert.deepEqual(f.stops, [[-1]]); assert.equal(f.probe.starts[0].stopTime, null);
+    }
+    f.advance(3500); const result = await f.finish();
+    assert.deepEqual(result.faults, []);
+    if (operation === 'stop') validateAudioObservation(result, [expected.hash]);
+    else assert.throws(() => validateAudioObservation(result, [expected.hash]));
+  }
+});
+
+test('a stop scheduled at exact completion stays exact when converting fractional context clocks', async () => {
+  const f = probeFixture(), expected = await f.source(); f.advance(13702);
+  f.probe.begin([expected.hash]); expected.source.start(f.context.currentTime, 0, 1.3);
+  expected.source.stop(f.context.currentTime + 1.3); f.advance(3500);
+  const result = await f.finish();
+  assert.equal(result.starts[0].stopTime, result.starts[0].time + 1300);
+  validateAudioObservation(result, [expected.hash]);
+});
+
+test('later stop calls cannot rewrite a settled receipt', async () => {
+  const f = probeFixture(), expected = await f.source();
+  f.probe.begin([expected.hash]); expected.source.start(f.context.currentTime, 0, 1.3);
+  f.advance(3500); const result = await f.probe.finish();
+  expected.source.stop();
+  assert.equal(result.starts[0].stopTime, null);
+  assert.equal(f.probe.starts[0].stopTime, 4500);
 });
 
 test('future scheduled playback is measured at its AudioContext time and must fit the capture window', async () => {

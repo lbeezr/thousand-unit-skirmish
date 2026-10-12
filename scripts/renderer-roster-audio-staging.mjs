@@ -11,7 +11,12 @@ import { rosterPlan, rosterSubsets, STAGING_ORIGIN, SUBSET_TIMEOUT_MS } from './
 
 export function rosterMatrix(requested) {
   if (requested === 'all') return [...rosterSubsets];
-  rosterPlan(requested); return [requested];
+  assert.equal(typeof requested, 'string', 'an audio subset request is required');
+  const subsets = requested.split(',').map(subset => subset.trim());
+  assert.ok(subsets.length > 0 && subsets.length <= 14, 'one to fourteen audio subsets required');
+  assert.equal(new Set(subsets).size, subsets.length, 'audio subsets must be unique');
+  for (const subset of subsets) rosterPlan(subset);
+  return subsets;
 }
 export function validateRosterCapability(capability, revision, platform = process.platform) {
   assert.equal(platform, 'linux', 'roster capture is cloud Linux only');
@@ -176,8 +181,11 @@ export async function runRosterStagingBatch(options, {
 } = {}) {
   reviewRoom = validateReviewRoom(reviewRoom);
   const { revision, directory } = options;
+  const requested = options.subset === undefined ? 'all' : options.subset;
+  const subsets = requested === 'all'
+    ? ['unit-worker', 'buildings-home', ...rosterMatrix(requested).filter(subset => !['unit-worker', 'buildings-home'].includes(subset))]
+    : rosterMatrix(requested);
   await validatePrerequisites(options, { source, platform }); await mkdir(directory);
-  const subsets = ['unit-worker', 'buildings-home', ...rosterSubsets.filter(subset => !['unit-worker', 'buildings-home'].includes(subset))];
   const report = { schemaVersion: 1, status: 'failed', expectedRevision: revision,
     deployedRevision: null, releaseDigest: null, roomScope: 'one-owned-public-room',
     maxSubsetDurationMs: SUBSET_TIMEOUT_MS, plannedSubsets: subsets, results: [],
@@ -235,8 +243,10 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     else {
       assert.equal(args.length, 4, 'subset revision new-directory preflight-json required');
       const [subset, revision, directory, preflightFile] = args;
-      const run = subset === 'all' ? runRosterStagingBatch : runRosterStaging;
-      const result = await run({ subset, revision, directory: path.resolve(directory), preflightFile: path.resolve(preflightFile) });
+      const subsets = rosterMatrix(subset);
+      const run = subsets.length > 1 ? runRosterStagingBatch : runRosterStaging;
+      const result = await run({ subset: subsets.length === 1 ? subsets[0] : subset,
+        revision, directory: path.resolve(directory), preflightFile: path.resolve(preflightFile) });
       console.log(JSON.stringify({ subset, status: result.status, listeningReview: result.listeningReview }));
       process.exitCode = result.status === 'captured-needs-listening' ? 0 : 1;
     }

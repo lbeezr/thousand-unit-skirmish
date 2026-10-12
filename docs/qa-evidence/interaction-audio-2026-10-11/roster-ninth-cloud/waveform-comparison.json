@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "method": "8 kHz mono decoded PCM, full-source zero-mean normalized cross-correlation against native final-mix output; fitted gain at best finite lag",
+  "scope": "signal presence and source similarity, not direct listening, intelligibility or perceived mix",
+  "measurementCheck": "known delay/gain/noise passed",
+  "numpyVersion": "2.3.5",
+  "ffmpegVersion": "ffmpeg version 7.1 Copyright (c) 2000-2024 the FFmpeg developers",
+  "recordings": [
+    {
+      "key": "unit.worker.build",
+      "file": "roster-audio-worker-jobs-63104cafb28306b9b1d9a44f0d56475baab14767/roster-audio/unit.worker.build.webm",
+      "sha256": "9d927d8fb21c17343e96bb6b282f0ac866c13e3afe939ed4d649061c30356ec5",
+      "sourceSha256": "25d79461fd67e617518660ac1b212e9202c67b30d48e345319dd1e21c15b97a4",
+      "qualification": "failed",
+      "correlation": 0.993471896354979,
+      "offsetSeconds": 0.009125,
+      "fittedGain": 0.5831416411777747
+    },
+    {
+      "key": "unit.worker.gather.food",
+      "file": "roster-audio-worker-jobs-63104cafb28306b9b1d9a44f0d56475baab14767/roster-audio/unit.worker.gather.food.webm",
+      "sha256": "5c4ff1c78f5559e04688274d7a9a644b9070379e0cf91b0eea92f73478ca842f",
+      "sourceSha256": "f74d9eb7ccba305aaff47a007612699b4383dd893d22492e8814f08666537fdf",
+      "qualification": "failed",
+      "correlation": 0.9978238614577327,
+      "offsetSeconds": 0.00825,
+      "fittedGain": 0.45860153526968617
+    },
+    {
+      "key": "unit.worker.return-cargo",
+      "file": "roster-audio-worker-jobs-63104cafb28306b9b1d9a44f0d56475baab14767/roster-audio/unit.worker.return-cargo.webm",
+      "sha256": "9d21a982cd8f5ea2f446352371ab0e479212eeefc7157a385c1f861d738de20c",
+      "sourceSha256": "75b87b33de0ba6557ec0477cd84f8c8e66cbf6b335bba9c9fb23920b8e5ad9b1",
+      "qualification": "failed",
+      "correlation": 0.991695943325392,
+      "offsetSeconds": 0.0095,
+      "fittedGain": 0.488404035508861
+    }
+  ]
+}

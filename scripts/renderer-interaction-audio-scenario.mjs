@@ -23,7 +23,7 @@ export const interactionKeys = Object.freeze([
 // Only this disposable page is instrumented. No microphone or device capture.
 export function installInteractionAudioProbe() {
   const probe = window.__rtsInteractionAudio = { starts: [], faults: [], recording: null };
-  const decoded = new WeakMap(), tapped = new WeakSet();
+  const decoded = new WeakMap(), tapped = new WeakSet(), sources = new WeakMap();
   const nativeDecode = BaseAudioContext.prototype.decodeAudioData;
   BaseAudioContext.prototype.decodeAudioData = function (bytes, ...callbacks) {
     const copy = bytes.slice(0);
@@ -42,9 +42,34 @@ export function installInteractionAudioProbe() {
     try { probe.recording?.start(sha256); }
     catch { probe.faults.push('recorder-start-error'); }
     const result = nativeStart.apply(this, args);
-    if (sha256 && probe.starts.length < 128) probe.starts.push({ sha256,
-      time: performance.now() + Math.max(0, (Number(args[0]) || 0) - (this.context.currentTime || 0)) * 1000,
-      duration: this.buffer.duration });
+    if (sha256 && probe.starts.length < 128) {
+      const now = this.context.currentTime || 0, startedAt = Math.max(now, Number(args[0]) || 0);
+      const entry = { sha256, time: performance.now() + (startedAt - now) * 1000,
+        duration: this.buffer.duration, stopTime: null };
+      probe.starts.push(entry); sources.set(this, { entry, startedAt, stoppedAt: null });
+    }
+    return result;
+  };
+  const nativeStop = AudioBufferSourceNode.prototype.stop;
+  AudioBufferSourceNode.prototype.stop = function (...args) {
+    // Observe only successful native calls, preserving their arguments, result
+    // and errors. A later scheduled stop replaces an earlier one only while the
+    // earlier deadline has not passed; stopping an ended node cannot revive it.
+    const result = nativeStop.apply(this, args);
+    try {
+      const source = sources.get(this);
+      if (source) {
+        const now = this.context.currentTime, when = args[0] === undefined ? 0 : args[0];
+        if (!Number.isFinite(now) || !Number.isFinite(when)) throw Error('Unobservable stop time');
+        if (source.stoppedAt === null || source.stoppedAt > now) {
+          source.stoppedAt = Math.max(now, when);
+          // Anchor conversion at nominal completion so a stop scheduled exactly
+          // there cannot appear prematurely ended through floating subtraction.
+          source.entry.stopTime = source.entry.time + source.entry.duration * 1000
+            + (source.stoppedAt - (source.startedAt + source.entry.duration)) * 1000;
+        }
+      }
+    } catch { probe.faults.push('source-stop-observation-error'); }
     return result;
   };
   const nativeConnect = AudioNode.prototype.connect;
@@ -86,9 +111,10 @@ export function installInteractionAudioProbe() {
       record.result = { base64: btoa(binary), mimeType: recorder.mimeType, peak: record.peak,
         rms: Math.sqrt(record.energy / Math.max(1, record.samples)), meteredSamples: record.samples,
         armedAt: record.armedAt, beganAt: record.began, endedAt: record.ended,
+        stopObservation: 'native-stop-v1',
         elapsedMs: record.began === null || record.ended === null ? 0 : record.ended - record.began,
         starts: record.began === null ? [] : probe.starts.slice(record.from)
-          .filter(start => start.time >= record.began && start.time <= record.ended),
+          .filter(start => start.time >= record.began && start.time <= record.ended).map(start => ({ ...start })),
         faults: [...probe.faults] };
       finish(record.result);
     };
@@ -143,8 +169,17 @@ export function validateAudioObservation(record, allowedHashes) {
   assert.ok(matching[0].duration > .2 && matching[0].duration < 5);
   assert.ok(matching[0].time >= record.beganAt
     && matching[0].time + matching[0].duration * 1000 <= record.endedAt,
-  'the entire expected recording must play within the captured interval');
-  return { bytes, sha256: hash(bytes), sourceSha256: matching[0].sha256 };
+  'the nominal expected recording duration must fit within the captured interval');
+  // Historical receipts predate stop observation. Keep them readable without
+  // claiming the stronger observation retroactively.
+  const stopObservation = record.stopObservation ?? 'unavailable';
+  assert.ok(['native-stop-v1', 'unavailable'].includes(stopObservation), 'known source stop observation required');
+  if (stopObservation === 'native-stop-v1') {
+    assert.ok(matching[0].stopTime === null || (Number.isFinite(matching[0].stopTime)
+      && matching[0].stopTime >= matching[0].time + matching[0].duration * 1000),
+    'the expected recording must not be stopped before its nominal completion');
+  }
+  return { bytes, sha256: hash(bytes), sourceSha256: matching[0].sha256, stopObservation };
 }
 
 async function control(page, selector) {
@@ -245,13 +280,15 @@ export async function run(value) {
       const output = await page.cdp.evaluate('window.__rtsInteractionAudio.finish()');
       stage = `${checkpoint}-receipt`;
       report.lastOutput = { key, armedAt: output.armedAt, beganAt: output.beganAt, endedAt: output.endedAt, elapsedMs: output.elapsedMs,
-        starts: output.starts, faults: output.faults, peak: output.peak, rms: output.rms, meteredSamples: output.meteredSamples };
+        starts: output.starts, stopObservation: output.stopObservation,
+        faults: output.faults, peak: output.peak, rms: output.rms, meteredSamples: output.meteredSamples };
       await persistReport();
       const verified = validateAudioObservation(output, allowed);
       const file = `${checkpoint}.webm`;
       await writeFile(path.join(evidenceDirectory, file), verified.bytes, { flag: 'wx' });
       const current = await state();
       report.recordings.push({ key, file, sha256: verified.sha256, sourceSha256: verified.sourceSha256,
+        stopObservation: verified.stopObservation, starts: output.starts,
         peak: output.peak, rms: output.rms, elapsedMs: output.elapsedMs, settings: current.settings });
       delete report.lastOutput;
       // Keep each completed native recording even if a later visual checkpoint

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "method": "48000 Hz 2-channel decoded PCM, full-source zero-mean normalized cross-correlation against native final-mix output; fitted gain at best finite lag",
+  "scope": "signal presence and source similarity, not direct listening, intelligibility or perceived mix",
+  "measurementCheck": "known delay/gain/noise passed",
+  "numpyVersion": "2.3.5",
+  "ffmpegVersion": "ffmpeg version 7.1 Copyright (c) 2000-2024 the FFmpeg developers",
+  "recordings": [
+    {
+      "key": "building.mill.select",
+      "file": "roster-audio/buildings-home/building.mill.select.webm",
+      "sha256": "36df8660b295b7009dec5ecc074a39b29a0778d99d14689488d44943f5b6a7f9",
+      "sourceSha256": "9fd34053a7150054f97bb177e8d1e93635ebf5bce3a021dfa5c3bb32a0b1533d",
+      "qualification": "captured-needs-listening",
+      "channels": [
+        {
+          "correlation": 0.9614999584434218,
+          "offsetSeconds": 0.008791666666666666,
+          "fittedGain": 0.20299275418637358,
+          "peakDbfs": -16.12868124255384,
+          "rmsDbfs": -44.27775710672961
+        },
+        {
+          "correlation": 0.9651506313009298,
+          "offsetSeconds": 0.008791666666666666,
+          "fittedGain": 0.2033515968281608,
+          "peakDbfs": -14.687630095654827,
+          "rmsDbfs": -44.44913244890343
+        }
+      ]
+    },
+    {
+      "key": "building.farm.select",
+      "file": "roster-audio/buildings-special/building.farm.select.webm",
+      "sha256": "64a3328ec3a5f2905e120cf052e825fadb3d1156da5a4b2d78e626b764011238",
+      "sourceSha256": "a5c0e7bbd32a0dccea3f62fc73ba2e1d142a30415d9579eb89b8d4656a88b026",
+      "qualification": "captured-needs-listening",
+      "channels": [
+        {
+          "correlation": 0.8706467643112729,
+          "offsetSeconds": 0.0083125,
+          "fittedGain": 0.3680469442024616,
+          "peakDbfs": -17.32424734991175,
+          "rmsDbfs": -44.90082204317365
+        },
+        {
+          "correlation": 0.8385936918752698,
+          "offsetSeconds": 0.0083125,
+          "fittedGain": 0.36640257787554853,
+          "peakDbfs": -22.594465002783018,
+          "rmsDbfs": -47.89656940180973
+        }
+      ]
+    },
+    {
+      "key": "building.workshop.select",
+      "file": "roster-audio/buildings-special/building.workshop.select.webm",
+      "sha256": "ed084865824b1fcdfccca0d939fda5e908bda107550a2a12050a361d522cfb16",
+      "sourceSha256": "e67976dccb2ee30cea291ab61d0fd780b4f8d58743874da12caa8aadc216d861",
+      "qualification": "captured-needs-listening",
+      "channels": [
+        {
+          "correlation": 0.959522334847139,
+          "offsetSeconds": 0.007770833333333334,
+          "fittedGain": 0.35449276756811116,
+          "peakDbfs": -16.344666934512468,
+          "rmsDbfs": -45.079354969618294
+        },
+        {
+          "correlation": 0.9584606567264352,
+          "offsetSeconds": 0.007770833333333334,
+          "fittedGain": 0.3546587760553464,
+          "peakDbfs": -16.583771005154762,
+          "rmsDbfs": -45.10217050668628
+        }
+      ]
+    }
+  ]
+}
