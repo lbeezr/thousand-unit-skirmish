@@ -26,6 +26,19 @@ priority guides next-work choices, not PR approval or merge timing.
 
 ## Art outcomes
 
+Preserve every new Meshy model, rig and animation GLB in the shared permanent
+[Meshy source archive](docs/meshy-source-archive.md), outside disposable worktrees.
+Use its archive runner for generation/download, or import an existing download
+immediately and verify its hash before treating source delivery as complete.
+Every new run names its stable asset, versioned variant and production stage;
+the runner requires those names and creates readable, hash-suffixed model paths.
+Retain sanitized task lineage and record missing originals; an ignored
+`meshy_output/` folder, task ID or provider URL is not a preserved source.
+Do not delete a generation worktree until its model copies verify in the archive.
+Cloud work must use an explicitly persistent `RTS_MESHY_ARCHIVE` and supported
+private transfer when this Mac archive is unavailable; do not claim archival
+completion from temporary container storage. Publication rules remain separate.
+
 Every player-facing creative or visual outcome must have linked art, storyboards
 or explorations supporting its intended treatment. Follow the
 [visual development contract](docs/art-direction-contract-v1.md#visual-development-backing):

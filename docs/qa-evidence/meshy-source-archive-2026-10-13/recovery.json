@@ -1,0 +1,407 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-13",
+  "owner": "Meshy source archive chat 01a13546-557e-7331-ab06-096841398918",
+  "archive": "/Users/lb/Documents/thousand-unit-skirmish-source-archive/meshy",
+  "sourceRevision": "e773ec5639e84e723fe328fd87c0f267eb53282e",
+  "archivedUniqueModels": 54,
+  "archivedBytes": 2901571740,
+  "searches": [
+    "GLB/model paths in Codex worktrees, Developer checkouts, Downloads and Documents",
+    "Git reachable model blobs across all local refs",
+    "connected Google Drive searches for Meshy and thousand-unit-skirmish (no results)",
+    "Verified Meshy CLI account list and exact retained task retrieval; authenticated website recovery of four user-confirmed account models"
+  ],
+  "knownCurrentSources": [
+    {
+      "name": "town-center.glb",
+      "sha256": "c86e1e55223df8b26c8060622ea3bbd2fb49e78ae576417734bd8eb6a30c6faa",
+      "provenance": [
+        "assets/buildings/frontier-civilization-scale-pilot-v1/model-provenance.json"
+      ],
+      "taskId": "01a0f31c-cd41-7568-a45e-db9a04a63497",
+      "resource": "image-to-3d",
+      "bytes": 129781816,
+      "status": "missing-local-source"
+    },
+    {
+      "name": "house.glb",
+      "sha256": "235fd3be4424165e5ae9b4447425881c00502d2c120cf068a555f118a3b3ad27",
+      "provenance": [
+        "assets/buildings/frontier-civilization-scale-pilot-v1/model-provenance.json"
+      ],
+      "taskId": "01a0f31d-7e92-7365-a8b0-454b5d4be422",
+      "resource": "image-to-3d",
+      "bytes": 86543008,
+      "status": "missing-local-source"
+    },
+    {
+      "name": "storehouse.glb",
+      "sha256": "5860105a3642ce304b4166eaad0874bd522bcea49b2f95dabcf82e8ed805e2a1",
+      "provenance": [
+        "assets/buildings/frontier-civilization-models-v1/model-provenance.json"
+      ],
+      "bytes": 133849016,
+      "status": "missing-local-source"
+    },
+    {
+      "name": "stable.glb",
+      "sha256": "88b515890240032aa991a86cde171d6e40f21f5c2520cf3c4a3428b17bf17312",
+      "provenance": [
+        "assets/buildings/frontier-civilization-models-v1/model-provenance.json"
+      ],
+      "bytes": 96694824,
+      "status": "missing-local-source"
+    },
+    {
+      "name": "workshop.glb",
+      "sha256": "0b9dcf150f862eea876ab396942cb9c6cb2e7205576dd33a6f728ab8a7589aea",
+      "provenance": [
+        "assets/buildings/frontier-civilization-models-v1/model-provenance.json"
+      ],
+      "bytes": 146061612,
+      "status": "missing-local-source"
+    },
+    {
+      "name": "watchtower.glb",
+      "sha256": "c269d92488273da2f914044940008b21c429455281e690c6f39980b97764df21",
+      "provenance": [
+        "assets/buildings/frontier-civilization-models-v1/model-provenance.json"
+      ],
+      "bytes": 69870376,
+      "status": "missing-local-source"
+    },
+    {
+      "name": "mill.glb",
+      "sha256": "0c9eed4604ac59ae3c26d95ffa3f1b05be7cbfe722c21bc27143f69d053713d0",
+      "provenance": [
+        "docs/art-direction/frontier-economy-meshy-v1/provenance.json"
+      ],
+      "taskId": "01a107cb-427e-712c-b142-1d661883e5f7",
+      "resource": "image-to-3d",
+      "bytes": 75041060,
+      "status": "missing-local-source"
+    },
+    {
+      "name": "farm.glb",
+      "sha256": "6cc2a5552138f9f9fe2730318a392d2ede7b291b79051ca9442f468704ab26e6",
+      "provenance": [
+        "docs/art-direction/frontier-economy-meshy-v1/provenance.json"
+      ],
+      "taskId": "01a107cb-53fe-7134-b790-640f71952e1c",
+      "resource": "image-to-3d",
+      "bytes": 245852316,
+      "status": "missing-local-source"
+    },
+    {
+      "name": "dock.glb",
+      "sha256": "4f1ef8d15bd167315c98186bd3814ea66a7467ce3545096e950c75b93bb8b023",
+      "provenance": [
+        "docs/art-direction/frontier-economy-meshy-v1/provenance.json"
+      ],
+      "taskId": "01a107cb-60f7-7626-857a-570c93910152",
+      "resource": "image-to-3d",
+      "bytes": 62514200,
+      "status": "missing-local-source"
+    },
+    {
+      "name": "oak-optimized.glb",
+      "sha256": "31236eb10a8cc3ac5a8d06b85899e607ab67fb00b87de63cad6d74116ee83b03",
+      "provenance": [
+        "assets/environment/frontier-meshy-sprites-v1/oak/manifest.json"
+      ],
+      "taskId": "01a0e07d-f988-7772-810b-ed7a1e40bf8d",
+      "resource": "remesh",
+      "status": "archived-exact-hash"
+    },
+    {
+      "name": "pine-optimized.glb",
+      "sha256": "75be41cb521f51f25c33c4634a3d1b871e6d0d8f498919c56b0a2060d9025c27",
+      "provenance": [
+        "assets/environment/frontier-meshy-sprites-v1/pine/manifest.json"
+      ],
+      "taskId": "01a0e079-d166-76cc-b3a7-42ab091febf7",
+      "resource": "remesh",
+      "status": "archived-exact-hash"
+    },
+    {
+      "name": "berries-optimized.glb",
+      "sha256": "a7345a4726631b6521b75a50a011589a946566efaade12dc09cd79d44a5be9c8",
+      "provenance": [
+        "assets/environment/frontier-meshy-sprites-v1/berries/manifest.json"
+      ],
+      "taskId": "01a0e07a-d117-7650-a903-4d7601a3a286",
+      "resource": "remesh",
+      "status": "archived-exact-hash"
+    },
+    {
+      "name": "town-center-foundation-optimized.glb",
+      "sha256": "3b448a38bb1552b094b5b9dee6e341e19886e5ae01495a6f5940fd427b102c3e",
+      "provenance": [
+        "assets/buildings/town-center-lifecycle-meshy-v1/lifecycle-grid.json"
+      ],
+      "status": "archived-exact-hash"
+    },
+    {
+      "name": "town-center-frame-optimized.glb",
+      "sha256": "8b8ef42c61443e06b65c87276297c0b2d64e3de27db287a8cdd352d1b11a81ad",
+      "provenance": [
+        "assets/buildings/town-center-lifecycle-meshy-v1/lifecycle-grid.json"
+      ],
+      "status": "archived-exact-hash"
+    },
+    {
+      "name": "town-center-damaged-optimized.glb",
+      "sha256": "f673dfbbea8861a958efb1e5a644b64c50d211f82ddea71fa6af42101ca0722a",
+      "provenance": [
+        "assets/buildings/town-center-lifecycle-meshy-v1/lifecycle-grid.json"
+      ],
+      "status": "archived-exact-hash"
+    },
+    {
+      "name": "town-center-critical-optimized.glb",
+      "sha256": "6dc71fd459cbb4f85920e82efc58dea7685281d30f9eb83e4a52dbc2dd91dece",
+      "provenance": [
+        "assets/buildings/town-center-lifecycle-meshy-v1/lifecycle-grid.json"
+      ],
+      "status": "archived-exact-hash"
+    },
+    {
+      "name": "bellweather-sheep-original.glb",
+      "sha256": "f26faaa05e40da6c9b2bb629a22cd78297d74a65405956dd332d0039303cb30f",
+      "provenance": [
+        "assets/wildlife/bellweather-sheep-static-v1/source/capture-contract.json"
+      ],
+      "bytes": 44244524,
+      "status": "archived-exact-hash"
+    },
+    {
+      "name": "infantry-model.glb",
+      "sha256": "683bdf56dec89804ab151d0aff9d629963654e81739eb297f939eba38c4569b8",
+      "provenance": [
+        "assets/units/worker-sprite-v3/sprite-atlas-pack-v1.json"
+      ],
+      "taskId": "01a0e00a-3253-7633-b6d7-9731537bec0e",
+      "resource": "image-to-3d",
+      "status": "missing-local-source"
+    },
+    {
+      "name": "infantry-walking.glb",
+      "sha256": "03c68f083ea1cdc1ef77b4fe9d953c41040b6d3ef447952de1b7fc8c87aeca1e",
+      "provenance": [
+        "assets/units/worker-sprite-v3/sprite-atlas-pack-v1.json"
+      ],
+      "taskId": "01a0e00d-f7d7-77c4-8dcb-8176fa88a0f3",
+      "resource": "rigging",
+      "status": "missing-local-source"
+    },
+    {
+      "name": "infantry-attack.glb",
+      "sha256": "d1198928f644ced25a2e8b9465f83d8e35abdc01489fb70bf69d17d1137eb1a3",
+      "provenance": [
+        "assets/units/worker-sprite-v3/sprite-atlas-pack-v1.json"
+      ],
+      "taskId": "01a0e012-089c-72c3-afaa-1128e8881858",
+      "resource": "animate",
+      "status": "missing-local-source"
+    },
+    {
+      "name": "infantry-defeat.glb",
+      "sha256": "a8fbd41fa10e7ccf6586ebbd6c91e220d3cb17f741a939bbb11c809fb02730a5",
+      "provenance": [
+        "assets/units/worker-sprite-v3/sprite-atlas-pack-v1.json"
+      ],
+      "taskId": "01a0e012-9d14-77e9-b7d9-d8ca9f42e9ba",
+      "resource": "animate",
+      "status": "missing-local-source"
+    }
+  ],
+  "additionalMissingSources": [
+    {
+      "name": "infantry-rigged.glb",
+      "sha256": null,
+      "reportedBytes": 6133660,
+      "taskId": "01a0e00d-f7d7-77c4-8dcb-8176fa88a0f3",
+      "resource": "rigging",
+      "status": "missing-local-source",
+      "provenance": [
+        "docs/unit-character-meshy-pipeline.md"
+      ]
+    }
+  ],
+  "providerRecovery": {
+    "status": "queried-existing-tasks",
+    "sessionVerified": true,
+    "attempts": [
+      {
+        "taskId": "01a0f31c-cd41-7568-a45e-db9a04a63497",
+        "resource": "image-to-3d",
+        "exitCode": 5,
+        "archivedModels": false,
+        "error": {
+          "code": "not_found",
+          "http_status": 404
+        }
+      },
+      {
+        "taskId": "01a0f31d-7e92-7365-a8b0-454b5d4be422",
+        "resource": "image-to-3d",
+        "exitCode": 5,
+        "archivedModels": false,
+        "error": {
+          "code": "not_found",
+          "http_status": 404
+        }
+      },
+      {
+        "taskId": "01a107cb-427e-712c-b142-1d661883e5f7",
+        "resource": "image-to-3d",
+        "exitCode": 5,
+        "archivedModels": false,
+        "error": {
+          "code": "not_found",
+          "http_status": 404
+        }
+      },
+      {
+        "taskId": "01a107cb-53fe-7134-b790-640f71952e1c",
+        "resource": "image-to-3d",
+        "exitCode": 5,
+        "archivedModels": false,
+        "error": {
+          "code": "not_found",
+          "http_status": 404
+        }
+      },
+      {
+        "taskId": "01a107cb-60f7-7626-857a-570c93910152",
+        "resource": "image-to-3d",
+        "exitCode": 5,
+        "archivedModels": false,
+        "error": {
+          "code": "not_found",
+          "http_status": 404
+        }
+      },
+      {
+        "taskId": "01a0e00a-3253-7633-b6d7-9731537bec0e",
+        "resource": "image-to-3d",
+        "exitCode": 5,
+        "archivedModels": false,
+        "error": {
+          "code": "not_found",
+          "http_status": 404
+        }
+      },
+      {
+        "taskId": "01a0e00d-f7d7-77c4-8dcb-8176fa88a0f3",
+        "resource": "rigging",
+        "exitCode": 5,
+        "archivedModels": false,
+        "error": {
+          "code": "not_found",
+          "http_status": 404
+        }
+      },
+      {
+        "taskId": "01a0e012-089c-72c3-afaa-1128e8881858",
+        "resource": "animate",
+        "exitCode": 5,
+        "archivedModels": false,
+        "error": {
+          "code": "not_found",
+          "http_status": 404
+        }
+      },
+      {
+        "taskId": "01a0e012-9d14-77e9-b7d9-d8ca9f42e9ba",
+        "resource": "animate",
+        "exitCode": 5,
+        "archivedModels": false,
+        "error": {
+          "code": "not_found",
+          "http_status": 404
+        }
+      }
+    ],
+    "result": "All nine retained old task IDs return not_found (HTTP 404). Four newer building task IDs were not retained and are absent from the current seven-item image-to-3d account list. Do not infer why tasks are unavailable.",
+    "nextAction": "The retained old tasks are unavailable in this verified account. Recover exact hashes only from a surviving copy or restored provider access; do not replace them with another version or regenerate."
+  },
+  "offDeviceBackup": {
+    "status": "not-authorized",
+    "reason": "Automatic approval review rejected catalog upload to Google Drive; local archive remains complete for recovered files."
+  },
+  "archivedSourcePaths": 59,
+  "accountRecovery": {
+    "attribution": "User confirmed all four belong to Thousand Unit Skirmish on 13 October 2026",
+    "initialCliResult": "All four GLB downloads returned HTTP 403 even after automatic task refresh",
+    "recoveryRoute": "Authenticated Meshy website downloads, GLB with resizing disabled; then local archive import and SHA-256/byte/GLB verification",
+    "archivedVersions": [
+      {
+        "name": "Human Field Worker",
+        "bytes": 89327312,
+        "sha256": "bf0d4aef3ae1f8aca454a467c6100f88ce950f08dadab06ed7eb2591788ec883",
+        "status": "archived-separate-version"
+      },
+      {
+        "name": "medieval_town_hall_complete",
+        "bytes": 161952664,
+        "sha256": "8cef78337d317a8e416af69329c74d4c3159d5ef80b44ec50e66fccca8d54f39",
+        "status": "archived-separate-version"
+      },
+      {
+        "name": "medieval_town_hall_c1_foundation",
+        "bytes": 169468252,
+        "sha256": "948e659ffc9db2dc809d234dc17d0dbe86cf0b2d2fa179a2eaab2baa3963ba31",
+        "status": "archived-separate-version"
+      },
+      {
+        "name": "medieval_town_hall_c2_framing",
+        "bytes": 213223316,
+        "sha256": "0ef87b2042423640dcbb89c96209d46e12749a390be71ed3358dc137933f33da",
+        "status": "archived-separate-version"
+      }
+    ],
+    "accountTaskLineage": "Retained privately in archive/provenance",
+    "creditsSpent": 0
+  },
+  "verification": {
+    "scope": "Source archive and production tooling only; runtime/release/deployment/appearance N/A",
+    "focusedTests": {
+      "command": "node --test scripts/meshy-source-archive.test.mjs scripts/ci-lanes.test.mjs",
+      "passed": 21
+    },
+    "staticChecks": [
+      "npm run architecture:check",
+      "npm run check:types",
+      "node scripts/check-docs.mjs",
+      "git diff --check"
+    ],
+    "realCliDryRun": {
+      "exitCode": 0,
+      "requestsMade": 0,
+      "workspace": "permanent archive/jobs",
+      "names": {
+        "asset": "archive-check",
+        "variant": "v1",
+        "stage": "plan"
+      },
+      "modelVerification": "pending (correct for a plan that submits no model)"
+    },
+    "fullCpuSuiteClaimed": false
+  },
+  "archivedProvenanceRecords": 227,
+  "futureAutomation": {
+    "runner": "scripts/assets/meshy-source-archive.mjs",
+    "requiredNames": [
+      "asset",
+      "variant",
+      "stage"
+    ],
+    "readablePaths": "by-asset/<asset>/<variant>/<stage>/<asset>--<variant>--<stage>--<hash-prefix>.glb",
+    "byteIdentity": "SHA-256 objects, immutable independent source copies, hard-linked readable names",
+    "deliveryGate": "modelVerification passed only after delivered GLBs and named paths verify; pending when no model landed",
+    "failedOperations": "Nonzero provider/signaled exits retained; already delivered GLBs preserved",
+    "restoration": "index verifies objects and rebuilds named paths and missing support directories"
+  }
+}
