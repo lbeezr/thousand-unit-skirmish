@@ -9,6 +9,11 @@ records observed consumers and unresolved roles separately from proposed paths.
 
 ## Determine the role before choosing the path
 
+Meshy production originals use the private, persistent
+[source archive](meshy-source-archive.md), outside Git checkouts and disposable
+worktrees. Its tooling lives in `scripts/assets/`; only the workflow and recovery
+evidence are tracked. Runtime derivatives retain their owning asset-pack paths.
+
 | Role | Evidence required | Placement |
 | --- | --- | --- |
 | Shipped default runtime | Normal game/server entry, actual consumer, default call or loader and release inclusion. Import reachability alone establishes loading, not invocation or rendered acceptance. | `src/rules/`, `src/world/`, `src/simulation/`, `src/presentation/`, `src/client/`, or `src/server/` according to responsibility. |
