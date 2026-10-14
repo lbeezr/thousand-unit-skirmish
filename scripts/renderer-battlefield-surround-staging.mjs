@@ -126,7 +126,11 @@ export async function captureSurroundScene({ pages, directory, map }) {
     appearanceReview: 'pending', frames: [], checks: [], issues: [], room: 'fresh-owned-two-seat-room' };
   const persist = () => writeFile(path.join(directory, 'scene.json'), JSON.stringify(report, null, 2) + '\n');
   let phase = 'entry';
-  const ready = p => p.wait(`document.querySelector('#room-lobby')?.open===false&&window.__rtsInteractionAudioSnapshot?.().mapId===${JSON.stringify(SURROUND_MAP_ID)}&&window.__rtsBrowserRecoverySnapshot?.().socketState===1&&!window.__rtsBrowserRecoverySnapshot?.().recovering`, 'normal Terraced Vale and live socket', 35000);
+  const ready = async p => {
+    await p.cdp.call('Page.bringToFront');
+    return p.wait(`document.querySelector('#room-lobby')?.open===false&&window.__rtsInteractionAudioSnapshot?.().mapId===${JSON.stringify(SURROUND_MAP_ID)}&&window.__rtsBrowserRecoverySnapshot?.().socketState===1&&!window.__rtsBrowserRecoverySnapshot?.().recovering`, 'normal Terraced Vale and live socket', 35000);
+  };
+  const readyBoth = async () => { for (const p of pages) await ready(p); };
   const shot = async (p, name, mapId = SURROUND_MAP_ID) => {
     assert.ok(report.frames.length < 32);
     const prior = await p.cdp.evaluate(`${snapshotExpression}.tick`);
@@ -161,13 +165,19 @@ export async function captureSurroundScene({ pages, directory, map }) {
     await host.wait('document.querySelector("#menu-create-room")?.disabled===false', 'normal New Game');
     await control(host, '#menu-create-room');
     await host.wait('document.querySelector("#lobby-map")?.disabled===false', 'ordinary map picker');
+    phase = 'default-lobby-settings';
+    // The first map control can render before the mode/socket acknowledgement.
+    // Wait for the real default settings; never select or manufacture them.
+    await host.wait(`document.querySelector('#lobby-map')?.value===${JSON.stringify(SURROUND_MAP_ID)}&&document.querySelector('#lobby-match-mode')?.value==='skirmish@1'&&window.__rtsInteractionAudioSnapshot?.().mapId===${JSON.stringify(SURROUND_MAP_ID)}&&window.__rtsBrowserRecoverySnapshot?.().socketState===1`, 'acknowledged normal default map and mode', 35000);
     assert.equal(await host.cdp.evaluate('document.querySelector("#lobby-map").value'), SURROUND_MAP_ID, 'normal default map required');
     assert.equal(await host.cdp.evaluate('document.querySelector("#lobby-match-mode").value'), 'skirmish@1');
+    phase = 'owned-room-url';
     const roomUrl = await host.cdp.evaluate('location.href');
     assert.equal(new URL(roomUrl).origin, STAGING_ORIGIN);
     assert.match(new URL(roomUrl).searchParams.get('room') ?? '', /^[A-Za-z0-9_-]{32}$/);
     await peer.cdp.call('Page.navigate', { url: roomUrl });
-    await launch(); await Promise.all(pages.map(ready));
+    phase = 'normal-two-seat-launch';
+    await launch(); await readyBoth();
     assert.deepEqual((await Promise.all(pages.map(p => p.cdp.evaluate('window.__rtsInteractionAudioSnapshot().team')))).sort(), [0, 1]);
     report.checks.push({ id: 'normal-default-two-seat-Terraced-Vale', passed: true });
     phase = 'view-matrix';
@@ -203,18 +213,19 @@ export async function captureSurroundScene({ pages, directory, map }) {
       }
       assert.ok(goal, 'reachable visible map-edge destination required'); moves.push({ p, goal, id: worker.id });
     }
-    await Promise.all(moves.map(async ({ p, goal, id }) => {
+    for (const { p, goal, id } of moves) {
+      await p.cdp.call('Page.bringToFront');
       await p.wait(`(()=>{const w=${snapshotExpression}.worker;return w?.id===${id}&&Math.hypot(w.serverX-${goal.x},w.serverZ-${goal.z})<2;})()`, 'normal Worker Move reaches map edge', 95000);
       await minimapPoint(p, (goal.x + map.width / 2) / map.width, (goal.z + map.height / 2) / map.height);
       await zoom(p, .91);
       assert.ok(await p.cdp.evaluate(`window.__rtsInteractionAudioSnapshot().workers.find(w=>w.id===${id})?.point`), 'edge Worker visible beside scenery');
       const team = await p.cdp.evaluate('window.__rtsInteractionAudioSnapshot().team');
       await shot(p, `team-${team}-visible-edge-worker`);
-    }));
+    }
     report.checks.push({ id: 'native-Worker-edge-Move-both-seats', passed: true });
     phase = 'rematch-and-map-switch';
     await reset();
-    await launch(); await Promise.all(pages.map(ready));
+    await launch(); await readyBoth();
     for (const p of pages) { const team = await p.cdp.evaluate('window.__rtsInteractionAudioSnapshot().team'); await control(p, '#camera-home-base'); await shot(p, `team-${team}-rematch`); }
     await reset();
     await host.wait('document.querySelector("#lobby-map")?.disabled===false', 'host can change pregame map');
@@ -227,7 +238,7 @@ export async function captureSurroundScene({ pages, directory, map }) {
     assert.ok(other); await select(other); await launch();
     for (const p of pages) { await p.wait(`window.__rtsInteractionAudioSnapshot?.().mapId===${JSON.stringify(other)}`, 'applied alternate map'); await control(p, '#camera-fit-map'); const team = await p.cdp.evaluate('window.__rtsInteractionAudioSnapshot().team'); await shot(p, `team-${team}-alternate-map`, other); }
     await reset(); await host.wait('document.querySelector("#lobby-map")?.disabled===false', 'return-map lobby');
-    await select(SURROUND_MAP_ID); await launch(); await Promise.all(pages.map(ready));
+    await select(SURROUND_MAP_ID); await launch(); await readyBoth();
     for (const p of pages) { await control(p, '#camera-fit-map'); const team = await p.cdp.evaluate('window.__rtsInteractionAudioSnapshot().team'); await shot(p, `team-${team}-returned-map`); }
     report.checks.push({ id: 'ordinary-rematch-and-map-switch-both-seats', passed: true });
     report.status = 'captured-needs-review';
