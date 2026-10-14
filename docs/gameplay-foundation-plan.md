@@ -766,6 +766,20 @@ even when a refund assertion fails. No timer, rule, balance, deadline or refund
 assertion is relaxed. Artifact `11899852841` ZIP hash is
 `f774d71515b04ce51e2e5b402a6f8abf1d1d94654bd0395bcc322c21258a7f3c`.
 
+The fresh-head [run 38576741835](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38576741835)
+at `1530298c` retained three inspected queue frames and both successful pointer
+refunds: waiting Infantry 50F/0W; active Spearman 48.166667F/16.055556W. The
+following slot remained focused. Its Enter attempt did not credit a refund;
+the empty queue alone correctly failed acceptance. The driver had supplied only
+DOM key/code names. The next correction supplies Enter's virtual key code 13 and
+carriage-return text, matching the [official Puppeteer CDP driver](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/cdp/Input.ts)
+and [key definition](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/common/USKeyboardLayout.ts).
+A bounded observer additionally requires trusted Enter down/keypress/up and the
+focused queue button's trusted click; it retains no unrelated key content.
+ZIP `11902705128` SHA-256 is
+`4f83978977d405495956a3bf2c340a5e3a646243ba6dd3264269825f1847c562`.
+Keyboard acceptance remains open until the corrected native input succeeds.
+
 Next building work is ranked by actual observation: finish this queue interaction
 at an identified release; inspect construction/repair and utility-state feedback;
 then verify building purpose, research and characteristic audio together in

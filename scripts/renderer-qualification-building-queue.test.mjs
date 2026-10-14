@@ -6,7 +6,7 @@ import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { QUEUE_CAPTURE_MAP, readQueueObservation, validateQueueObservation,
-  validateQueueRefund } from './renderer-qualification-building-queue.mjs';
+  validateQueueRefund, dispatchQueueEnter, installQueueKeyObserver } from './renderer-qualification-building-queue.mjs';
 import { mapSizeIdentity } from '../src/map-size-policy.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
@@ -22,6 +22,31 @@ test('qualification CLI and reused selector imports initialize without a capture
     cwd: new URL('..', import.meta.url), encoding: 'utf8', timeout: 5000,
   });
   assert.equal(result.status, 2); assert.match(result.stderr, /^Usage:/); assert.equal(result.stdout, '');
+});
+
+test('Enter input carries native activation data and observes only trusted planned events', async () => {
+  const calls = [];
+  await dispatchQueueEnter({ cdp: { async call(method, parameters) { calls.push({ method, parameters }); } } });
+  assert.deepEqual(calls.map(call => call.method), ['Input.dispatchKeyEvent', 'Input.dispatchKeyEvent']);
+  const [down, up] = calls.map(call => call.parameters);
+  assert.equal(down.type, 'keyDown'); assert.equal(up.type, 'keyUp');
+  for (const input of [down, up]) {
+    assert.equal(input.key, 'Enter'); assert.equal(input.code, 'Enter'); assert.equal(input.windowsVirtualKeyCode, 13);
+  }
+  assert.equal(down.text, '\r'); assert.equal(down.unmodifiedText, '\r'); assert.equal(up.text, undefined);
+  const listeners = {}, window = {}, target = { closest: () => true };
+  const context = vm.createContext({ window, document: { addEventListener(type, listener) { listeners[type] = listener; } } });
+  vm.runInContext(`(${installQueueKeyObserver.toString()})()`, context);
+  for (const type of ['keydown', 'keypress', 'keyup']) {
+    listeners[type]({ key: 'private-unrelated-key', keyCode: 81, isTrusted: true, target });
+    assert.equal(window.__rtsQueueKeyReceipt[type], false);
+    listeners[type]({ key: 'Enter', keyCode: 0, isTrusted: true, target }); assert.equal(window.__rtsQueueKeyReceipt[type], false);
+    listeners[type]({ key: 'Enter', keyCode: 13, isTrusted: false, target }); assert.equal(window.__rtsQueueKeyReceipt[type], false);
+    listeners[type]({ key: 'Enter', keyCode: 13, isTrusted: true, target }); assert.equal(window.__rtsQueueKeyReceipt[type], true);
+  }
+  listeners.click({ target, isTrusted: false }); assert.equal(window.__rtsQueueKeyReceipt.trustedClick, false);
+  listeners.click({ target, isTrusted: true }); assert.equal(window.__rtsQueueKeyReceipt.trustedClick, true);
+  assert.doesNotMatch(JSON.stringify(window.__rtsQueueKeyReceipt), /private-unrelated/);
 });
 
 test('queue fixture admits ordinary authored play without starting buildings or a bank override', () => {

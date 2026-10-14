@@ -14,6 +14,25 @@ export const QUEUE_CAPTURE_MAP = Object.freeze({ ...BUILDING_ORIENTATION_CAPTURE
 const snapshot = 'window.__rtsEnvironmentStateSnapshot';
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 
+export async function dispatchQueueEnter(page) {
+  // Match native browser automation's Enter descriptor: DOM key/code names
+  // alone do not carry the character/default activation through CDP.
+  await page.cdp.call('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter',
+    windowsVirtualKeyCode: 13, text: '\r', unmodifiedText: '\r' });
+  await page.cdp.call('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
+}
+
+export function installQueueKeyObserver() {
+  const receipt = window.__rtsQueueKeyReceipt = { keydown: false, keypress: false, keyup: false, trustedClick: false };
+  for (const type of ['keydown', 'keypress', 'keyup']) document.addEventListener(type, event => {
+    if (event.key !== 'Enter' || (type !== 'keyup' && !event.target.closest?.('[data-queue-index]'))) return;
+    receipt[type] = event.isTrusted && event.keyCode === 13;
+  }, true);
+  document.addEventListener('click', event => {
+    if (event.target.closest?.('[data-queue-index]') && event.isTrusted) receipt.trustedClick = true;
+  }, true);
+}
+
 export function readQueueObservation(buildingId) {
   const state = window.__rtsEnvironmentStateSnapshot;
   const building = state?.buildings.find(row => row.id === buildingId);
@@ -156,7 +175,12 @@ export async function captureBuildingQueue(page, directory, { source, release, o
     await capture('building-queue-active-cancelled', ['spearman']);
     await page.wait(`${snapshot}.buildings.find(b=>b.id===${buildingId}).trainingRemaining<${UNIT_DEFINITIONS.spearman.trainSeconds}`, 'next paid head timer advances');
     before = await observe(); assert.equal(before.focus, '0', 'queue refresh preserves keyboard focus');
-    for (const type of ['keyDown', 'keyUp']) await page.cdp.call('Input.dispatchKeyEvent', { type, key: 'Enter', code: 'Enter' });
+    onStage('building-queue-enter');
+    await page.cdp.evaluate(`(${installQueueKeyObserver.toString()})()`);
+    await dispatchQueueEnter(page);
+    report.keyboard = await page.cdp.evaluate('window.__rtsQueueKeyReceipt'); await persist();
+    assert.deepEqual(report.keyboard, { keydown: true, keypress: true, keyup: true, trustedClick: true },
+      'native Enter must activate the actually focused queue button');
     await waitQueue([]); await retainRefund('Enter', before, 0);
     await capture('building-queue-empty', []); report.status = 'captured-needs-review';
     return report;
