@@ -112,3 +112,14 @@ it was natively rasterized and visually inspected, not captured from a browser.
 Source integration, clean packaging, staging identity and ordinary-room appearance
 remain separate receipts in that QA record. The original fifteen references and
 their source hashes are unchanged.
+
+## Result/return follow-up — 14 October 2026
+
+The [result/return state storyboard](result-return-storyboard.svg) extends the
+same journey through player/observer outcomes, optional recap, existing host/guest
+authority and real lobby/replay/menu paths. It continues the approved Obsidian
+instrument with calm working text and no forced transition. Historical result
+captures and the selected component system remain linked in the
+[runtime increment's QA](../../qa-vaelora-result-return-2026-10-14.md). New source
+backing and actual ordinary-result appearance stay separate; the original art
+references are unchanged.

@@ -32,6 +32,25 @@ a transfer gap. These criteria do not prevent incremental scoped merges.
 
 ## Exact deployment evidence
 
+### Vaelora result and return — 14 October 2026
+
+Owner: **Unify game art direction and lore**, chat
+`01a13a8a-37a9-7812-800a-12e48c842b52`. The
+[result/return QA record](qa-vaelora-result-return-2026-10-14.md) owns the
+copy/style/navigation increment and separate source/package/staging/appearance
+receipts. The selected Obsidian component family, historical result captures
+and [new state storyboard](art-direction/creative-atlas-v1/result-return-storyboard.svg)
+back readable reasons, literal authored names and current host/guest return paths.
+No new runtime asset, recording, font, route or preview flag is introduced.
+
+- [x] Runtime implementation uses the default result card and existing menu/reset paths.
+- [ ] Clean release and served HTTP/hash receipts recorded.
+- [ ] Identified staging revision containing the increment verified.
+- [ ] Ordinary host/guest/observer result, recap, menu and rematch appearance verified.
+
+The same owner retains unchecked steps. A qualified cloud browser is not exposed
+to the task; no Mac fallback or inference of game pixels from source checks is used.
+
 ### Vaelora pregame lobby — 14 October 2026
 
 Owner: **Unify game art direction and lore**, chat

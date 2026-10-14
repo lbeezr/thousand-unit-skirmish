@@ -69,7 +69,7 @@ function fixture(team) {
   }
   const noop = () => {};
   const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), clearOwnedBuildingFog, formatResourceStock, readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS, fixedMatchArmySize, renderMatchRecap, matchDecisions: { update() {}, disconnect() {}, feedback() {}, close() {} },
-    applyLobby() {}, applyWaypointQueueCounts() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
+    latestLobby:null, applyLobby(lobby) { context.latestLobby = lobby || null; }, applyWaypointQueueCounts() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
     document: {visibilityState:'visible',querySelector:element,querySelectorAll:() => []}, window: {clearTimeout:noop},
@@ -111,6 +111,7 @@ function fixture(team) {
     declaration('updateMatchArmySizeControls','applyLobby'),
     wildlifeClientFunctionSource(source), declaration('clearActiveControlGroup','assignControlGroup'),
     declaration('syncMatchResultActions','updateMatchResult'),declaration('updateMatchResult','updateCommandUI'),
+    declaration('formatVictoryHoldTime','updateVictoryHoldCard'),
     declaration('setArmySize','updateSelectionUI'),declaration('appendUnitFromState','applyState'),
     declaration('applyState','updateEnvironmentStateCaptureSnapshot'),declaration('setPlayer','setMapCatalog'),socketSource,
     'setArmySize(24); connectSocket();',
@@ -504,7 +505,7 @@ for (const team of [0,1]) for (const reconnect of [false,true]) {
     f.context.selected.add(24);
     f.context.controlGroups[0].add(24);
     old.message(snapshot(team,{trained:true,elapsed:60,winner:team}));
-    assert.equal(f.element('#match-result-title').textContent,'VICTORY');
+    assert.equal(f.element('#match-result-title').textContent,'Victory');
     assert.equal(f.element('#match-play-again').hidden,team !== 0);
     const current = reconnect ? f.connect() : old;
     const fresh = snapshot(team,{generation:2});
@@ -551,7 +552,7 @@ for (const team of [0,1]) {
       f.welcome(f.connect(),snapshot(team,{winner,elapsed:60,trained:true}));
       assert.equal(f.context.matchWinner,winner);
       assert.equal(f.context.matchResult.hidden,false);
-      assert.equal(f.element('#match-result-title').textContent,winner === 2 ? 'DRAW' : winner === team ? 'VICTORY' : 'DEFEAT');
+      assert.equal(f.element('#match-result-title').textContent,winner === 2 ? 'Draw' : winner === team ? 'Victory' : 'Defeat');
       assert.equal(f.context.units[24].team,team);
     }
     const old = f.connections.at(-1);
@@ -651,12 +652,12 @@ for (const team of [0, 1]) {
     f.connections[0].message(state);
     assert.equal(f.context.matchWinner, 2);
     assert.equal(f.context.matchResult.hidden, false);
-    assert.equal(f.element('#match-result-title').textContent, 'DRAW');
-    assert.equal(f.element('#match-result-detail').textContent, 'BOTH ORIGINAL TOWN CENTERS DESTROYED ON THE SAME COMBAT TICK');
+    assert.equal(f.element('#match-result-title').textContent, 'Draw');
+    assert.equal(f.element('#match-result-detail').textContent, 'Both original Town Centers were destroyed together.');
     assert.equal(f.element('#match-recap-posts').textContent, 'Posts held: 1 of 2');
     f.welcome(f.connect(), state);
     assert.equal(f.context.matchWinner, 2);
-    assert.equal(f.element('#match-result-title').textContent, 'DRAW');
+    assert.equal(f.element('#match-result-title').textContent, 'Draw');
     assert.equal(f.element('#match-recap').hidden, false);
     f.connections.at(-1).message({ ...state, winnerReason: 'unrecognized-draw' });
     assert.equal(f.context.matchWinner, -1);
@@ -671,7 +672,7 @@ for (const team of [0, 1]) {
     assert.equal(f.element('#match-recap').hidden, true);
     f.connections[0].message(recapSnapshot(team));
     assert.equal(f.element('#match-recap').hidden, false);
-    assert.match(f.element('#match-result-detail').textContent, /RECOVERABLE LAND PRODUCTION/);
+    assert.match(f.element('#match-result-detail').textContent, /no land units and cannot produce more/);
   });
 }
 
@@ -694,17 +695,62 @@ test('terminal recap missing fields are unavailable; recorded zeroes are real ze
   }
 });
 
+test('result binding preserves authored place names and explains land survival and stronghold loss from each viewpoint', () => {
+  for (const team of [0, 1, null]) {
+    const f = fixture(0);
+    f.context.localTeam = team;
+    f.context.mapDefinition = { ...map, victoryMode: 'all', victoryHoldSeconds: 5,
+      triggers: [{ id: 'gate', name: 'Ru’Lora · Watch Gate', victory: true }] };
+    f.context.updateMatchResult(1, 'gate', 'timed-control');
+    assert.equal(f.element('#match-result-title').textContent,
+      team === null ? 'Ember wins' : team === 1 ? 'Victory' : 'Defeat');
+    assert.equal(f.element('#match-result-detail').textContent, 'Ember controlled Ru’Lora · Watch Gate at the deadline.');
+    assert.equal(f.context.matchResult.dataset.team, 'ember');
+    f.context.updateMatchResult(1, null, 'stronghold-destruction');
+    assert.equal(f.element('#match-result-detail').textContent, team === null ? 'Azure’s original Town Center was destroyed.'
+      : team === 1 ? 'Your opponent’s original Town Center was destroyed.' : 'Your original Town Center was destroyed.');
+    f.context.updateMatchResult(1, null, 'elimination');
+    assert.equal(f.element('#match-result-detail').textContent, team === null ? 'Azure has no land units and cannot produce more.'
+      : team === 1 ? 'Your opponent has no land units and cannot produce more.' : 'You have no land units and cannot produce more.');
+    f.context.updateMatchResult(1, null, 'capture-hold');
+    assert.equal(f.element('#match-result-detail').textContent, 'Ember held all victory zones for 5s.');
+    f.context.updateMatchResult(1, 'gate', null);
+    assert.equal(f.element('#match-result-detail').textContent, 'Ember secured all objectives.');
+    f.context.mapDefinition.victoryMode = 'any';
+    f.context.updateMatchResult(1, 'gate', null);
+    assert.equal(f.element('#match-result-detail').textContent, 'Ember secured Ru’Lora · Watch Gate.');
+  }
+});
+
+test('terminal return actions describe the existing reset destination and retain guest authority', () => {
+  for (const team of [0, 1]) {
+    const f = fixture(team), terminal = recapSnapshot(team);
+    f.welcome(f.connections[0], terminal);
+    assert.equal(f.element('#match-play-again').textContent, '↻ Play again');
+    assert.equal(f.element('#match-play-again').hidden, team !== 0);
+    f.welcome(f.connect(), { ...terminal, lobby: { phase: 'running' } });
+    assert.equal(f.element('#match-play-again').textContent, '↻ Back to lobby');
+    assert.equal(f.element('#match-play-again').hidden, team !== 0);
+    assert.equal(f.element('#match-waiting-for-host').textContent, 'Waiting for the host to open the lobby.');
+    assert.equal(f.element('#match-waiting-for-host').hidden, team === 0);
+    f.welcome(f.connect(), terminal);
+    assert.equal(f.element('#match-play-again').textContent, '↻ Play again', 'a restored immediate room does not inherit lobby wording');
+  }
+  const document = new JSDOM(readFileSync(new URL('../index.html', import.meta.url), 'utf8')).window.document;
+  assert.equal(document.querySelector('#match-main-menu').getAttribute('href'), '/', 'the result returns through the existing ordinary menu entry');
+});
+
 for (const team of [0, 1]) test(`seat ${team}: real result binding labels agreed draw and resignation without invented destruction`, () => {
   const f = fixture(team);
   const draw = { ...recapSnapshot(team), winner: 2, winnerReason: 'agreed-draw' };
   f.connections[0].message(draw);
-  assert.equal(f.element('#match-result-title').textContent, 'DRAW');
-  assert.equal(f.element('#match-result-detail').textContent, 'BOTH PLAYERS AGREED TO A DRAW');
+  assert.equal(f.element('#match-result-title').textContent, 'Draw');
+  assert.equal(f.element('#match-result-detail').textContent, 'Both players agreed to a draw.');
   assert.equal(f.element('#match-recap').hidden, false);
   for (const winner of [team, 1 - team]) {
     const resigned = { ...recapSnapshot(team), winner, winnerReason: 'resignation' };
     f.welcome(f.connect(), resigned);
-    assert.equal(f.element('#match-result-detail').textContent, winner === team ? 'YOUR OPPONENT RESIGNED' : 'YOU RESIGNED');
+    assert.equal(f.element('#match-result-detail').textContent, winner === team ? 'Your opponent resigned.' : 'You resigned.');
     assert.equal(f.element('#match-recap').hidden, false);
   }
 });

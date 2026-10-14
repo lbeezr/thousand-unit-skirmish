@@ -34,7 +34,7 @@ test('shared input fixture renders terminal recap with seat privacy, closes open
       assert.equal(f.w.helpToggle.getAttribute('aria-expanded'), 'false');
       assert.deepEqual(f.w.heldCameraKeys.pressed, []);
       assert.equal(f.w.lastKeyboardPanTime, 0);
-      assert.equal(document.querySelector('#match-result-title').textContent, 'DRAW');
+      assert.equal(document.querySelector('#match-result-title').textContent, 'Draw');
       assert.equal(document.querySelector('#match-recap').hidden, false);
       assert.equal(document.querySelector('#match-recap-duration').textContent, 'Duration 2:03');
       const resources = document.querySelector('#match-recap-resources');

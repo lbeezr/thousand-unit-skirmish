@@ -188,7 +188,11 @@ client palette, brass action and control hierarchy into match preparation, with
 full map naming and distinct written/team-shape seat identities. The original
 source milestone remains dated; the new runtime increment has its own checks
 and [state storyboard](art-direction/creative-atlas-v1/lobby-state-storyboard.svg).
-The current creative owner retains clean-release, staging and qualified normal-room
-appearance verification. The next independent creative seam is the result/return
-language and identity; it must keep the actual reason and replay availability
-clear without inventing a fictional history for a friendly match.
+The same owner retains the lobby's qualified normal-room appearance verification;
+its separate package/staging receipts are in the QA record. The
+[result/return increment](qa-vaelora-result-return-2026-10-14.md) continues the
+journey with readable sentence-case reasons, preserved authored names and the
+existing lobby/replay/menu destinations. Its
+[state storyboard](art-direction/creative-atlas-v1/result-return-storyboard.svg)
+keeps resolution calm and optional recap facts distinct from invented battle history.
+The same owner retains its source, release, staging and ordinary-result acceptance.

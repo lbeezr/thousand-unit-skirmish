@@ -4517,8 +4517,13 @@ function renderObjectiveSummary(elapsed = latestMatchElapsedSeconds) {
 }
 
 function syncMatchResultActions() {
-  document.querySelector('#match-play-again').hidden = !isHost;
-  document.querySelector('#match-waiting-for-host').hidden = isHost;
+  const replay = document.querySelector('#match-play-again');
+  replay.hidden = !isHost;
+  replay.textContent = latestLobby ? '↻ Back to lobby' : '↻ Play again';
+  const waiting = document.querySelector('#match-waiting-for-host');
+  waiting.hidden = isHost;
+  waiting.textContent = latestLobby ? 'Waiting for the host to open the lobby.'
+    : 'Waiting for the host to start another match.';
 }
 
 function updateMatchResult(winner, triggerId = null, reason = null) {
@@ -4549,37 +4554,39 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
   let detail;
   if (isDraw) {
     matchResult.dataset.team = 'neutral';
-    outcome = 'DRAW';
-    if (reason === 'agreed-draw') detail = 'BOTH PLAYERS AGREED TO A DRAW';
+    outcome = 'Draw';
+    if (reason === 'agreed-draw') detail = 'Both players agreed to a draw.';
     else if (reason === 'timed-control') {
-      const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
-      detail = `${objectiveName.toUpperCase()} UNCLAIMED AT DEADLINE`;
-    } else if (reason === 'stronghold-destruction') detail = 'BOTH ORIGINAL TOWN CENTERS DESTROYED ON THE SAME COMBAT TICK';
-    else if (reason === 'capture-hold') detail = 'BOTH TEAMS COMPLETED THE VICTORY HOLD';
-    else detail = 'NEITHER TEAM HAS LAND UNITS OR RECOVERABLE LAND PRODUCTION';
+      const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'The zone';
+      detail = `${objectiveName} was unclaimed at the deadline.`;
+    } else if (reason === 'stronghold-destruction') detail = 'Both original Town Centers were destroyed together.';
+    else if (reason === 'capture-hold') detail = 'Both teams completed the victory hold.';
+    else detail = 'Neither team has land units or a way to produce more.';
   } else {
-    const teamName = TEAM_NAMES[matchWinner].toUpperCase();
+    const teamName = TEAM_NAMES[matchWinner];
+    const losingTeamName = TEAM_NAMES[1 - matchWinner];
     matchResult.dataset.team = TEAM_NAMES[matchWinner].toLowerCase();
-    outcome = localTeam === null ? `${teamName} WINS` : localTeam === matchWinner ? 'VICTORY' : 'DEFEAT';
-    if (reason === 'resignation') detail = localTeam === null ? `${TEAM_NAMES[1 - matchWinner].toUpperCase()} RESIGNED`
-      : localTeam === matchWinner ? 'YOUR OPPONENT RESIGNED' : 'YOU RESIGNED';
-    else if (reason === 'elimination') detail = localTeam === matchWinner ? 'ENEMY HAS NO LAND UNITS OR RECOVERABLE LAND PRODUCTION'
-      : localTeam === null ? `${teamName} WINS · ENEMY HAS NO LAND UNITS OR RECOVERABLE LAND PRODUCTION`
-        : 'YOU HAVE NO LAND UNITS OR RECOVERABLE LAND PRODUCTION';
-    else if (reason === 'stronghold-destruction') detail = `${teamName} WINS · ENEMY ORIGINAL TOWN CENTER DESTROYED`;
+    outcome = localTeam === null ? `${teamName} wins` : localTeam === matchWinner ? 'Victory' : 'Defeat';
+    if (reason === 'resignation') detail = localTeam === null ? `${losingTeamName} resigned.`
+      : localTeam === matchWinner ? 'Your opponent resigned.' : 'You resigned.';
+    else if (reason === 'elimination') detail = localTeam === matchWinner ? 'Your opponent has no land units and cannot produce more.'
+      : localTeam === null ? `${losingTeamName} has no land units and cannot produce more.`
+        : 'You have no land units and cannot produce more.';
+    else if (reason === 'stronghold-destruction') detail = localTeam === null ? `${losingTeamName}’s original Town Center was destroyed.`
+      : localTeam === matchWinner ? 'Your opponent’s original Town Center was destroyed.' : 'Your original Town Center was destroyed.';
     else if (reason === 'timed-control') {
-      const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
-      detail = `${teamName} CONTROLLED ${objectiveName.toUpperCase()} AT DEADLINE`;
+      const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'the zone';
+      detail = `${teamName} controlled ${objectiveName} at the deadline.`;
     } else if (reason === 'capture-hold') {
-      const condition = mapDefinition?.victoryMode === 'all' ? 'ALL VICTORY ZONES' : 'A VICTORY ZONE';
+      const condition = mapDefinition?.victoryMode === 'all' ? 'all victory zones' : 'a victory zone';
       const duration = formatVictoryHoldTime(mapDefinition?.victoryHoldSeconds ?? 0);
-      detail = `HELD ${condition} FOR ${duration.toUpperCase()}`;
+      detail = `${teamName} held ${condition} for ${duration}.`;
     } else {
       const resultTrigger = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)
         || mapDefinition?.triggers?.find((trigger) => trigger.victory === true);
       const objectiveName = mapDefinition?.victoryMode === 'all'
-        ? 'ALL OBJECTIVES' : resultTrigger?.name || 'THE OBJECTIVE';
-      detail = `${teamName} SECURED ${objectiveName.toUpperCase()}`;
+        ? 'all objectives' : resultTrigger?.name || 'the objective';
+      detail = `${teamName} secured ${objectiveName}.`;
     }
   }
   document.querySelector('#match-result-title').textContent = outcome;
