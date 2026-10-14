@@ -72,7 +72,7 @@ export function validateQueueRefund(before, after, index) {
 
 export async function captureBuildingQueue(page, directory, { source, release, onStage = () => {} } = {}) {
   const report = { schemaVersion: 1, scope: 'authored-map-paid-building-queue-native-HUD',
-    source, release, mapId: QUEUE_CAPTURE_MAP.id, team: 0, status: 'failed', frames: [], transitions: [],
+    source, release, mapId: QUEUE_CAPTURE_MAP.id, team: 0, status: 'failed', frames: [], transitions: [], attempts: [],
     appearanceReview: 'pending', ordinaryTinyAcceptance: 'unverified' };
   const file = path.join(directory, 'building-queue.json');
   const persist = () => writeFile(file, JSON.stringify(report, null, 2) + '\n');
@@ -86,6 +86,11 @@ export async function captureBuildingQueue(page, directory, { source, release, o
   let buildingId;
   const observe = () => page.cdp.evaluate(`(${readQueueObservation.toString()})(${buildingId})`);
   const waitQueue = queue => page.wait(`JSON.stringify(${snapshot}?.buildings.find(b=>b.id===${buildingId})?.productionQueue)===${JSON.stringify(JSON.stringify(queue))}`, 'authoritative ordered queue');
+  async function retainRefund(input, before, index) {
+    const after = await observe();
+    report.attempts.push({ input, index, before, after }); await persist();
+    report.transitions.push({ input, ...validateQueueRefund(before, after, index) }); await persist();
+  }
   async function capture(name, queue) {
     onStage(name);
     const before = await observe(); validateQueueObservation(before, queue);
@@ -132,16 +137,27 @@ export async function captureBuildingQueue(page, directory, { source, release, o
     for (const kind of queue) await click(`[data-context-products] [data-product="${kind}"]`);
     await waitQueue(queue); await capture('building-queue-mixed', queue);
     let before = await observe(); await click('[data-queue-index="1"]'); await waitQueue(['spearman', 'spearman']);
-    report.transitions.push({ input: 'pointer', ...validateQueueRefund(before, await observe(), 1) });
+    await retainRefund('pointer', before, 1);
     await capture('building-queue-waiting-cancelled', ['spearman', 'spearman']);
-    await page.wait(`${snapshot}.buildings.find(b=>b.id===${buildingId}).trainingRemaining<12`, 'active Spearman timer advances');
+    // Readback/PNG transfer can consume most of the first 12-second timer on
+    // the cloud renderer. Let that paid unit finish naturally, then buy one
+    // waiting Spearman behind its fresh successor. No clock or stock mutation.
+    onStage('building-queue-fresh-active-head');
+    await waitQueue(['spearman']);
+    const paidBefore = await observe();
+    await click('[data-context-products] [data-product="spearman"]'); await waitQueue(['spearman', 'spearman']);
+    const paidAfter = await observe();
+    assert.deepEqual({ food: paidBefore.bank.food - paidAfter.bank.food,
+      wood: paidBefore.bank.wood - paidAfter.bank.wood }, UNIT_DEFINITIONS.spearman.cost);
+    report.replenishment = { before: paidBefore, after: paidAfter }; await persist();
+    await page.wait(`${snapshot}.buildings.find(b=>b.id===${buildingId}).trainingRemaining<${UNIT_DEFINITIONS.spearman.trainSeconds}`, 'fresh active Spearman timer advances');
     before = await observe(); await click('[data-queue-index="0"]'); await waitQueue(['spearman']);
-    report.transitions.push({ input: 'pointer', ...validateQueueRefund(before, await observe(), 0) });
+    await retainRefund('pointer', before, 0);
     await capture('building-queue-active-cancelled', ['spearman']);
-    await page.wait(`${snapshot}.buildings.find(b=>b.id===${buildingId}).trainingRemaining<12`, 'next paid head timer advances');
+    await page.wait(`${snapshot}.buildings.find(b=>b.id===${buildingId}).trainingRemaining<${UNIT_DEFINITIONS.spearman.trainSeconds}`, 'next paid head timer advances');
     before = await observe(); assert.equal(before.focus, '0', 'queue refresh preserves keyboard focus');
     for (const type of ['keyDown', 'keyUp']) await page.cdp.call('Input.dispatchKeyEvent', { type, key: 'Enter', code: 'Enter' });
-    await waitQueue([]); report.transitions.push({ input: 'Enter', ...validateQueueRefund(before, await observe(), 0) });
+    await waitQueue([]); await retainRefund('Enter', before, 0);
     await capture('building-queue-empty', []); report.status = 'captured-needs-review';
     return report;
   } finally { await persist(); }

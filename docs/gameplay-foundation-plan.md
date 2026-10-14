@@ -755,6 +755,17 @@ The retained House Complete image was inspected; this partial run supplies no
 queue interaction or Dock acceptance. The source owner retains the corrected
 run and image review before claiming the production capture complete.
 
+The corrected [run 38575271173](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38575271173)
+at `6b57830f` completed Dock orientation and reached the new HUD. Its inspected
+mixed-queue and waiting-cancel images retain the exact 50-food Infantry refund.
+Active-refund validation failed after the first head had only 2.13 seconds left
+in the last retained observation; it supplied no complete active/keyboard proof.
+The next bounded adapter sequence lets that paid head finish naturally, pays
+for a waiting Spearman behind its fresh successor and retains before/after facts
+even when a refund assertion fails. No timer, rule, balance, deadline or refund
+assertion is relaxed. Artifact `11899852841` ZIP hash is
+`f774d71515b04ce51e2e5b402a6f8abf1d1d94654bd0395bcc322c21258a7f3c`.
+
 Next building work is ranked by actual observation: finish this queue interaction
 at an identified release; inspect construction/repair and utility-state feedback;
 then verify building purpose, research and characteristic audio together in
