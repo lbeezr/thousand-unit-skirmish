@@ -63,6 +63,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   rules: [
     'rules/base-lifecycle', 'rules/gameplay-action-rules',
     'rules/production-actions', 'rules/research-actions', 'rules/population', 'rules/economy-ledger',
+    'rules/forest-resources',
     'bannerfall-rules', 'base-lifecycle', 'combat-rules', 'economy-ledger',
     'economy-profile', 'farm-harvest', 'gameplay-action-rules', 'gameplay-definitions',
     'match-modes', 'palisade-gate', 'palisade-profile', 'population',
@@ -156,6 +157,8 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'authoring/map-studio-form-state',
     'authoring/map-studio-terrain-packing',
     'authoring/map-studio-terrain-history',
+    'authoring/map-resource-diagnostics', 'authoring/map-resource-diagnostics-controls',
+    'authoring/map-resource-budgets',
     'authoring/map-import-validator',
     'authoring/map-studio-draft-store',
     'authoring/map-studio/draft/v1/contract',

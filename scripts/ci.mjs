@@ -80,6 +80,7 @@ run(['--test', 'scripts/stone-map-profile.test.mjs'], 'Typed Stone layout and ma
 run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush preview and editor transactions');
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
 run(['--test', 'scripts/map-studio-terrain-history.test.mjs'], 'Map Studio terrain gestures, bounded undo and portable recovery');
+run(['--test', 'scripts/map-resource-diagnostics.test.mjs'], 'Per-seat authored resource budgets, access and live editor diagnostics');
 run(['--test', 'scripts/map-studio-draft-recovery.test.mjs'], 'Map Studio draft recovery container preflight');
 run(['--test', 'scripts/map-studio-import-errors.test.mjs'], 'Map Studio import read and parse failure contracts');
 run(['--test', 'scripts/map-publish-feedback.test.mjs'], 'Map Studio rejected publish feedback and explicit retry');

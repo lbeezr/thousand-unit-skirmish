@@ -93,6 +93,14 @@ ordinary PRs use checks proportionate to their changes under
 
 ## Known findings and historical evidence
 
+### Map Studio resource budgets and access — 14 October 2026
+
+[Diagnostics evidence](qa-map-resource-diagnostics-2026-10-14.md) records
+per-seat banks, conserved node allocation, initial route/frontage and forest
+potential, with live draft/undo/recovery checks across the shipped catalog.
+The owner retains served and rendered editor acceptance; static allocation
+differences motivate pocket/trip observations before map balance changes.
+
 ### Map Studio terrain history — 14 October 2026
 
 [Terrain history evidence](qa-map-studio-terrain-history-2026-10-14.md) records
