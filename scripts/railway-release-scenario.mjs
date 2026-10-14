@@ -300,6 +300,7 @@ try {
     'src/authoring/map-studio-terrain-history.mjs',
     'src/authoring/map-resource-diagnostics.mjs', 'src/authoring/map-resource-diagnostics-controls.mjs',
     'src/authoring/map-resource-budgets.mjs',
+    'src/authoring/resource-patch-presets.mjs',
     'src/rules/forest-resources.mjs',
     'src/authoring/map-studio/draft/v1/contract.mjs']) {
     const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
@@ -315,6 +316,7 @@ try {
     'src/authoring/map-studio-terrain-history.mjs/extra',
     'src/authoring/map-resource-diagnostics.mjs/extra', 'src/authoring/map-resource-diagnostics-controls.mjs/extra',
     'src/authoring/map-resource-budgets.mjs/extra',
+    'src/authoring/resource-patch-presets.mjs/extra',
     'src/rules/forest-resources.mjs/extra',
     'src/authoring/map-studio-draft-store.mjs/extra',
     'src/authoring/map-studio/draft/v1/contract.mjs/extra',

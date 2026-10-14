@@ -1,11 +1,14 @@
 import { createResourceBrushEditor, resourceBrushMapKey } from './resource-brush-authoring.mjs';
 import { economyResources } from './economy-profile.mjs';
+import { RESOURCE_PATCH_PRESETS } from './authoring/resource-patch-presets.mjs';
 
 // DOM/canvas adapter; preview receipts and history live only in this editor session.
 export function mountResourceBrushControls({ host, readMap, readSelectedId, commit, redraw, onCommitted }) {
   const panel = host.ownerDocument.createElement('details');
   panel.innerHTML = `<summary>RESOURCE PATCHES</summary>
     <div class="studio-fields">
+      <label>PRESET<select id="studio-brush-preset"><option value="custom">Custom patch</option></select></label>
+      <small data-brush-preset-description>Choose a recipe or edit a custom patch. Recipes preserve seed, anchor and total stock.</small>
       <div class="studio-fields two-up">
         <label>RESOURCE<select id="studio-brush-type"><option value="food">Food</option><option value="wood">Wood</option></select></label>
         <label>SEED<input id="studio-brush-seed" type="number" step="1" value="93000" required></label>
@@ -35,6 +38,21 @@ export function mountResourceBrushControls({ host, readMap, readSelectedId, comm
   panel.open = true;
   host.append(panel);
   const field = name => panel.querySelector(`#studio-brush-${name}`);
+  for (const preset of RESOURCE_PATCH_PRESETS) {
+    const option = host.ownerDocument.createElement('option');
+    option.value = preset.id; option.textContent = preset.label; field('preset').append(option);
+  }
+  const presetDescription = panel.querySelector('[data-brush-preset-description]');
+  const presetFields = { type: 'type', nodesPerPatch: 'count', radius: 'radius', distribution: 'distribution' };
+  function syncPreset() {
+    const preset = RESOURCE_PATCH_PRESETS.find(preset => preset.id === field('preset').value);
+    if (!preset || Object.entries(preset.settings).some(([name, value]) => field(presetFields[name]).value !== String(value))) {
+      field('preset').value = 'custom';
+    }
+    presetDescription.textContent = field('preset').value === 'custom' || !preset
+      ? 'Choose a recipe or edit a custom patch. Recipes preserve seed, anchor and total stock.'
+      : `${preset.description} Seed, anchor and total stock stay unchanged. Preview checks available space and both-seat access.`;
+  }
   const buttons = Object.fromEntries([...panel.querySelectorAll('[data-brush]')].map(button => [button.dataset.brush, button]));
   const status = panel.querySelector('[role="status"]');
   let editor = null, observedKey = null, preview = null, picking = false;
@@ -44,6 +62,7 @@ export function mountResourceBrushControls({ host, readMap, readSelectedId, comm
   }
   function refresh(available = true) {
     updateBudgetMinimum();
+    syncPreset();
     buttons.pick.disabled = buttons.preview.disabled = !available;
     buttons.pick.setAttribute('aria-pressed', String(picking));
     buttons.apply.disabled = !available || !preview;
@@ -124,8 +143,16 @@ export function mountResourceBrushControls({ host, readMap, readSelectedId, comm
   });
   buttons.cancel.addEventListener('click', () => { cancel(); buttons.preview.focus(); });
   for (const action of ['apply', 'undo', 'redo']) buttons[action].addEventListener('click', () => change(action));
-  for (const event of ['input', 'change']) panel.addEventListener(event, () => {
-    updateBudgetMinimum(); cancel('Settings changed; preview again.');
+  for (const event of ['input', 'change']) panel.addEventListener(event, changeEvent => {
+    const priorPreset = field('preset').value;
+    const presetChange = changeEvent.target === field('preset');
+    const preset = presetChange && RESOURCE_PATCH_PRESETS.find(preset => preset.id === field('preset').value);
+    if (preset) for (const [name, value] of Object.entries(preset.settings)) field(presetFields[name]).value = String(value);
+    updateBudgetMinimum(); syncPreset(); cancel('Settings changed; preview again.');
+    if (presetChange) status.textContent = preset
+      ? `${preset.label} settings loaded. Preview before applying; keep at least ${preset.settings.nodesPerPatch} total stock.`
+      : 'Custom patch selected. Current settings retained; preview before applying.';
+    else if (priorPreset !== 'custom' && field('preset').value === 'custom') status.textContent = 'Preset customized. Preview before applying.';
   });
   panel.addEventListener('toggle', () => { if (!panel.open) cancel(); });
   panel.addEventListener('keydown', event => {

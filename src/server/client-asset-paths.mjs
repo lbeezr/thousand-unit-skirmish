@@ -44,6 +44,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/authoring/map-studio-terrain-history.mjs',
   'src/authoring/map-resource-diagnostics.mjs', 'src/authoring/map-resource-diagnostics-controls.mjs',
   'src/authoring/map-resource-budgets.mjs',
+  'src/authoring/resource-patch-presets.mjs',
   'src/rules/forest-resources.mjs',
   'src/authoring/map-import-validator.mjs',
   'src/authoring/map-studio-draft-store.mjs',
