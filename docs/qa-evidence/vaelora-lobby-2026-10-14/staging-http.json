@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-14T14:14:18.708Z",
+  "environment": "staging",
+  "domain": "game-staging-21f9.up.railway.app",
+  "providerDeployment": "f13f0ef5-c3c5-4bf4-b165-6656e77076cd",
+  "publicGameplayConfigured": true,
+  "identity": {
+    "ok": true,
+    "expected": {
+      "sourceRevision": "115cbebd8b30dd4f7968b3db6fc5c5167f4cab47"
+    },
+    "served": {
+      "sourceRevision": "115cbebd8b30dd4f7968b3db6fc5c5167f4cab47",
+      "sourceDirty": null,
+      "digest": null,
+      "origin": "railway-git"
+    },
+    "scope": "source",
+    "issues": []
+  },
+  "routes": [
+    {
+      "path": "/",
+      "status": 200,
+      "authenticated": false
+    },
+    {
+      "path": "/ready",
+      "status": 200,
+      "authenticated": false
+    },
+    {
+      "path": "/health",
+      "status": 401,
+      "authenticated": false
+    },
+    {
+      "path": "/api/rooms",
+      "status": 401,
+      "authenticated": false
+    }
+  ],
+  "files": [
+    {
+      "path": "src/room-lobby.css",
+      "status": 200,
+      "mime": "text/css; charset=utf-8",
+      "bytes": 6816,
+      "sha256": "82bd770ccff5285ce4b1257bfbb4c91ba93c30018a546ae8d2a7fb72bf78b865"
+    },
+    {
+      "path": "src/room-lobby-ui.mjs",
+      "status": 200,
+      "mime": "text/javascript; charset=utf-8",
+      "bytes": 11120,
+      "sha256": "99a20b9da7d0bf46b461c5b13ceb8d4a4d7a3997a68cea1d39e82226f9921c7d"
+    },
+    {
+      "path": "assets/ui/vaelora-brand-v1/brass-surface.webp",
+      "status": 200,
+      "mime": "image/webp",
+      "bytes": 2367054,
+      "sha256": "5f7407a4adeabe74200b90807a87b540d20ab225a7bfa423367df854374bca55"
+    }
+  ],
+  "importChecks": 142,
+  "ok": true,
+  "scope": "Provider/source and exact served bytes; zero browser game frames"
+}
