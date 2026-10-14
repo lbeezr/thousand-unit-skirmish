@@ -713,7 +713,10 @@ refreshes the controls before a new choice. Timer-only updates preserve nodes.
 
 Write scope is the existing building HUD module/CSS, its main-client callback,
 the queue explanation in `index.html`, the optional authority content guard,
-existing building/contextual/lifecycle tests and this guide/game bible. No
+existing building/contextual/lifecycle tests and this guide/game bible. The
+existing Linux renderer qualification additionally owns a bounded production
+capture after its paid orientation checks, with registered rejection controls
+and own-team-only production facts in the existing opt-in diagnostic. No
 production, research, audio, economy, checkpoint or asset-format redesign is
 required. The public module and stylesheet already have exact HTTP admission;
 the ordinary HTML imports and release inputs already include these files.
@@ -726,6 +729,19 @@ game screenshots, native keyboard/touch usability and identified deployment
 remain incomplete until separately observed at the containing release. Owner
 retains the existing Linux staging HUD capture route; stopped Mac captures are
 not a fallback. The source change is useful independently of that evidence.
+
+The clean-pack cloud capture pays for a Barracks on the existing authored flat
+fixture, queues Spearman/Infantry/Spearman through visible HUD controls, cancels
+the waiting Infantry by pointer, cancels the active Spearman and activates the
+remaining focused entry with Enter. Four PNG/canvas pairs bracket observations
+of the actual disclosed queue and bank. Waiting refunds must equal the complete
+price; active food/wood fractions must match, stay below the complete price and
+not exceed observed unfinished work. A failure retains its partial sidecar;
+success remains `captured-needs-review`. This is an authored seat-0 production
+capture, not normal Tiny entry, seat-1 acceptance or a deployed listening proof.
+The existing workflow's normal sandbox, clean pack, non-root Linux runner,
+read-only permissions and ten-minute limit remain in force. Registration and
+CPU rejection controls alone do not claim a cloud run or actual images.
 
 Next building work is ranked by actual observation: finish this queue interaction
 at an identified release; inspect construction/repair and utility-state feedback;

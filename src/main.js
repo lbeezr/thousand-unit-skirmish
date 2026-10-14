@@ -4974,6 +4974,8 @@ function updateEnvironmentStateCaptureSnapshot(state) {
       id: building.id, team: building.team, type: building.type, orientation: building.orientation ?? 0,
       x: building.x, z: building.z, progress: building.progress, complete: building.complete,
       hp: building.hp, maxHp: building.maxHp, harvestStock: building.harvestStock,
+      ...(building.team === localTeam ? { productionQueue: [...(building.productionQueue || [])],
+        trainingRemaining: building.trainingRemaining, productionBlocked: building.productionBlocked === true } : {}),
       groundStage: constructionGroundStage(building.progress, building.complete),
       screen: {x: rect.left + (screen.x + 1) * rect.width / 2, y: rect.top + (1 - screen.y) * rect.height / 2},
       capture: art ? {visible: Boolean(visual.group.visible && sprite.visible && sprite.material.map),
