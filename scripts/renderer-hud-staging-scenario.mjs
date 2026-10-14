@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { matureSettlementPlan } from './mature-settlement-scenario.mjs';
 import { buildingPad, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
-import { rosterControlPoint } from './renderer-roster-audio-capture.mjs';
+import { rosterControlPoint, frameRosterArea } from './renderer-roster-audio-capture.mjs';
 import { interactionTargetPoint } from './renderer-interaction-audio-scenario.mjs';
 import { installCatalogImportObserver } from './renderer-building-catalog-scenario.mjs';
 import { ORDINARY_MAP_MIN_SIDE } from '../src/map-size-policy.mjs';
@@ -97,7 +97,8 @@ async function enter(page,origin,map,mapFile,bytes) {
   assert.equal(imported.sha256,hash(bytes));
   await control(page,'#studio-publish');
   await page.wait(`!document.querySelector('#map-studio')?.open&&${stateExpression}?.mapId===${JSON.stringify(map.id)}&&${stateExpression}.team===0`,'Save & Play applies fixture',35000);
-  await control(page,'#camera-fit-map');
+  await page.wait(`(${hudInputReady.toString()})()`,'live authored game before native camera framing');
+  await frameRosterArea(page);
 }
 export async function captureHudStaging({page,origin,subset,directory,signal}) {
   const map=hudFixture(subset),bytes=Buffer.from(JSON.stringify(map,null,2)+'\n'),mapFile=path.join(directory,'authored-map.json');
@@ -138,8 +139,10 @@ export async function captureHudStaging({page,origin,subset,directory,signal}) {
       await key(page,'Escape'); await capture('empty','none');
     }
     if(subset==='buildings'||subset==='rollout') {
+      stage='town-center-selection';
       const town=(await state()).buildings.find(b=>b.type==='town-center'&&b.complete&&b.point); assert.ok(town);
       await select(page,'building',town.id); await capture('town-center','building');
+      stage='town-center-training';
       await control(page,'[data-context-products] [data-product="worker"]');
       await page.wait('document.querySelector("[data-building-queue-list]")?.children.length>0','paid Worker in production queue');
       await capture('town-center-training','building');
@@ -151,6 +154,7 @@ export async function captureHudStaging({page,origin,subset,directory,signal}) {
       await page.wait('window.__rtsBuildingPlacementSnapshot?.active&&window.__rtsBuildingPlacementSnapshot.valid','valid Barracks placement');
       await pointer(page,point);
       const barracks=await page.wait(`${stateExpression}.buildings.find(b=>b.type==='barracks'&&b.complete&&b.point)`,'paid Barracks completes',60000);
+      stage='barracks-selection';
       await select(page,'building',barracks.id); await capture('barracks','building');
       await control(page,'[data-context-products] [data-product="infantry"]');
       await page.wait('document.querySelector("[data-building-queue-list]")?.children.length>0','paid Infantry queue');
