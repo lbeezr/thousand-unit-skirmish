@@ -237,6 +237,16 @@ text controls, menus and dialogs retain their keyboard behavior.
 
 The working world name is **Vaelora**. Its visual identity combines warm, expressive everyday life with tangible remnants of immense lost power. The [art checkpoint](art-direction/vaelora-v1/README.md) defines ten regional palettes and ecology references, from Bellweather's farms and Ellionar's stepped gardens to the Pale Meridian's observatories and Ru’Lora's petrified jungle.
 
+The [connected creative direction](creative-direction.md) develops the through
+line **a world worth tending, and a world worth contesting**: inhabited craft,
+particular landscapes, companionable competence and material consequences of
+older power. It carries the selected welcome into clear room/rules decisions,
+the approved quiet command interface and honest results. The
+[curated reference atlas](art-direction/creative-atlas-v1/README.md) supplies
+inspectable backing and a journey storyboard. These new editorial studies add
+no canon or runtime capability; the client and battlefield retain their selected
+treatments and separate implementation evidence.
+
 The [Vaelora brand and interface bible](vaelora-brand.md) applies this world name to
 the player-facing entry and compact game lockup, with the proposed promise
 “A living world. Yours to command.” The user selected world-first presentation
@@ -510,10 +520,12 @@ The normal game uses the Vaelora Human Worker, Infantry, Spearman and Archer spr
 
 ## Playable regional interpretation
 
-The default roster uses multiple local battlefields inspired by Vaelora's regional
-landscapes, with Bellweather Millrace as the first match. Region palettes determine
-current ground, vegetation, everyday music and terrain ambience; the shared Frontier gameplay rules
-remain usable throughout. A playable map does not settle unknown inhabitants,
+The roster includes local battlefields inspired by Vaelora's regional landscapes.
+Fresh normal entry starts Veyrholds · Terraced Vale in Skirmish; Bellweather ·
+Millrace remains a historical authored scenario, while Bellweather concept art
+welcomes players in the portal. Region palettes determine current ground,
+vegetation, everyday music and terrain ambience; the shared Frontier gameplay
+rules remain usable throughout. A playable map does not settle unknown inhabitants,
 exact atlas geography or divine histories. See the [map catalog](maps.md).
 
 

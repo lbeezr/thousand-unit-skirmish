@@ -35,6 +35,15 @@ preserved regional art and existing play/room/Resume contracts, then verify its
 identified served revision. Subsequent lobby and identity refinement are separate
 slices; no new account, matchmaking or game-mode system is implied.
 
+Creative stewardship across the entry, lobby, modes, art, voice and lore now
+belongs to **Unify game art direction and lore**, chat `01a13a8a-37a9-7812-800a-12e48c842b52`.
+Its [connected direction and reference atlas](creative-direction.md) provide
+the first source-only outcome: curated existing art, provenance/status and a
+journey storyboard. The next application is the pregame-lobby material/hierarchy
+bridge, retaining its room/mode contracts and requiring identified release and
+normal-room visual evidence. This complements core-match work without adding
+another approval queue or changing approved client/HUD selections.
+
 The [canonical building action matrix](gameplay-foundation-plan.md#canonical-building-action-coverage--4-october-2026)
 owns all thirteen roles, six technologies, finite Farm diagnosis and small B0–B4
 action/production/ordinary-acceptance slices in the existing Interface/Content
