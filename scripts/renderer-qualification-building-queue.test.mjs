@@ -76,6 +76,16 @@ test('waiting cancellation proves its exact refund and preserves the other paid 
   assert.throws(() => validateQueueRefund(before, { ...after, building: { ...after.building, id: 8 } }, 1));
 });
 
+test('the same refund contract supports an explicit staging fixture without accepting mixed map identities', () => {
+  const before = observation(), after = observation(['spearman', 'spearman']);
+  before.mapId = after.mapId = 'hud-buildings';
+  after.bank = { food: before.bank.food + 50, wood: before.bank.wood };
+  assert.throws(() => validateQueueRefund(before, after, 1));
+  assert.deepEqual(validateQueueRefund(before, after, 1, 'hud-buildings').refund, { food: 50, wood: 0 });
+  for (const changed of [{ mapId: QUEUE_CAPTURE_MAP.id }, { team: 1 }, { bank: { food: 881, wood: 785 } }])
+    assert.throws(() => validateQueueRefund(before, { ...after, ...changed }, 1, 'hud-buildings'));
+});
+
 test('active cancellation proves proportional incomplete-work refund, including the final entry', () => {
   for (const queue of [['spearman', 'spearman'], ['spearman']]) {
     const before = observation(queue), after = observation(queue.slice(1));

@@ -8,6 +8,7 @@ import { rosterControlPoint } from './renderer-roster-audio-capture.mjs';
 import { interactionTargetPoint } from './renderer-interaction-audio-scenario.mjs';
 import { installCatalogImportObserver } from './renderer-building-catalog-scenario.mjs';
 import { ORDINARY_MAP_MIN_SIDE } from '../src/map-size-policy.mjs';
+import { readQueueObservation, validateQueueObservation, validateQueueRefund } from './renderer-qualification-building-queue.mjs';
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const stateExpression = 'window.__rtsInteractionAudioSnapshot()';
@@ -154,6 +155,24 @@ export async function captureHudStaging({page,origin,subset,directory,signal}) {
       await control(page,'[data-context-products] [data-product="infantry"]');
       await page.wait('document.querySelector("[data-building-queue-list]")?.children.length>0','paid Infantry queue');
       await capture('barracks-training','building');
+      // Let the photographed paid unit finish, then exercise a chosen waiting
+      // entry on a fresh paid queue. No timer, stock or selection injection.
+      stage='barracks-queue-cancellation';
+      const queueState=`window.__rtsEnvironmentStateSnapshot.buildings.find(b=>b.id===${barracks.id}).productionQueue`;
+      const waitQueue=queue=>page.wait(`JSON.stringify(${queueState})===${JSON.stringify(JSON.stringify(queue))}`,'ordered paid staging queue');
+      await waitQueue([]);
+      for(const [index,kind] of ['infantry','spearman'].entries()) {
+        await control(page,`[data-context-products] [data-product="${kind}"]`);
+        await waitQueue(['infantry','spearman'].slice(0,index+1));
+      }
+      const observe=()=>page.cdp.evaluate(`(${readQueueObservation.toString()})(${barracks.id})`);
+      const before=await observe(); validateQueueObservation(before,['infantry','spearman'],map.id);
+      await control(page,'[data-queue-index="1"]'); await waitQueue(['infantry']);
+      const after=await observe();
+      const attempt={action:'cancel-chosen-waiting-unit',buildingId:barracks.id,before,after};
+      report.steps.push(attempt); await persist();
+      Object.assign(attempt,validateQueueRefund(before,after,1,map.id)); await persist();
+      await capture('barracks-queue-cancelled','building');
       await control(page,'[data-building-action="research"]'); await capture('barracks-research','building');
     }
     if(subset==='panels'||subset==='rollout') {

@@ -66,8 +66,8 @@ export function readQueueSetupFailure() {
       valid: placement.valid, visible: placement.visible } : null };
 }
 
-export function validateQueueObservation(observation, queue) {
-  assert.equal(observation.mapId, QUEUE_CAPTURE_MAP.id); assert.equal(observation.team, 0);
+export function validateQueueObservation(observation, queue, mapId = QUEUE_CAPTURE_MAP.id) {
+  assert.equal(observation.mapId, mapId); assert.equal(observation.team, 0);
   assert.equal(observation.building?.team, observation.team); assert.equal(observation.building.type, 'barracks');
   assert.equal(observation.building.complete, true); assert.equal(observation.selected, true);
   assert.deepEqual(observation.building.queue, queue);
@@ -81,10 +81,10 @@ export function validateQueueObservation(observation, queue) {
   }
 }
 
-export function validateQueueRefund(before, after, index) {
+export function validateQueueRefund(before, after, index, mapId = QUEUE_CAPTURE_MAP.id) {
   const kinds = before.building.queue;
-  validateQueueObservation(before, kinds);
-  validateQueueObservation(after, kinds.filter((_, position) => position !== index));
+  validateQueueObservation(before, kinds, mapId);
+  validateQueueObservation(after, kinds.filter((_, position) => position !== index), mapId);
   assert.equal(after.building.id, before.building.id);
   const kind = kinds[index], rule = UNIT_DEFINITIONS[kind];
   assert.ok(rule, 'cancelled slot must identify a registered paid unit');
@@ -196,7 +196,6 @@ export async function captureBuildingQueue(page, directory, { source, release, o
     await waitQueue(queue); await capture('building-queue-mixed', queue);
     let before = await observe(); await click('[data-queue-index="1"]'); await waitQueue(['spearman', 'spearman']);
     await retainRefund('pointer', before, 1);
-    await capture('building-queue-waiting-cancelled', ['spearman', 'spearman']);
     // Readback/PNG transfer can consume most of the first 12-second timer on
     // the cloud renderer. Let that paid unit finish naturally, then buy one
     // waiting Spearman behind its fresh successor. No clock or stock mutation.
@@ -208,6 +207,10 @@ export async function captureBuildingQueue(page, directory, { source, release, o
     assert.deepEqual({ food: paidBefore.bank.food - paidAfter.bank.food,
       wood: paidBefore.bank.wood - paidAfter.bank.wood }, UNIT_DEFINITIONS.spearman.cost);
     report.replenishment = { before: paidBefore, after: paidAfter }; await persist();
+    // The cancellation receipt above already proves both remaining entries.
+    // Take the next image after natural FIFO completion and the disclosed new
+    // purchase, when the fresh head has time to survive the PNG/readback work.
+    await capture('building-queue-waiting-cancelled', ['spearman', 'spearman']);
     await page.wait(`${snapshot}.buildings.find(b=>b.id===${buildingId}).trainingRemaining<${UNIT_DEFINITIONS.spearman.trainSeconds}`, 'fresh active Spearman timer advances');
     before = await observe(); await click('[data-queue-index="0"]'); await waitQueue(['spearman']);
     await retainRefund('pointer', before, 0);
