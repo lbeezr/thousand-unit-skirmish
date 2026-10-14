@@ -743,6 +743,18 @@ The existing workflow's normal sandbox, clean pack, non-root Linux runner,
 read-only permissions and ten-minute limit remain in force. Registration and
 CPU rejection controls alone do not claim a cloud run or actual images.
 
+The first cloud attempt at `6673c5a2`, [run 38573973100](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38573973100),
+passed sandboxed WebGL2 capability and retained two movement frames plus the
+House/Mill/Farm placement PNGs. It stopped in the pre-existing Dock orientation
+sequence: applying its shoreline map closes Commands, but the next step tried
+the hidden Worker control. The bounded fixture correction reopens Commands and
+Economy after that real map reset. It changes no game state or security policy.
+Artifact `11898612152` ZIP SHA-256 is
+`f35ec06a9c8aca6352f32a75b86aca01209cefe01bbfc623c6081863ff75fcab`.
+The retained House Complete image was inspected; this partial run supplies no
+queue interaction or Dock acceptance. The source owner retains the corrected
+run and image review before claiming the production capture complete.
+
 Next building work is ranked by actual observation: finish this queue interaction
 at an identified release; inspect construction/repair and utility-state feedback;
 then verify building purpose, research and characteristic audio together in
